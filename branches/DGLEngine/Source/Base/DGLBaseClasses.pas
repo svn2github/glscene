@@ -127,7 +127,7 @@ type
     destructor Destroy; override;
 
     function Push(Value: pointer): PStackElement;
-    function Pop: pointer;
+    function Pop: Pointer;
 
     function Find(Value: pointer): PStackElement;
     procedure Remove(Element: PStackElement);
@@ -271,7 +271,8 @@ end;
 
 function TStackList.Pop: pointer;
 begin
-  if Assigned(FTop) and (FCount > 0) then
+  DGLSLogger.LogInfo('Pop Stack Element');
+  if Assigned(FTop) and (FCount > 1) then
   begin
     Dec(FCount);
     Result := FTop.Data;
@@ -279,8 +280,8 @@ begin
   end
   else
   begin
-    DGLSLogger.LogError('Transformation stack underflow');
-    Result := nil;
+    //DGLSLogger.LogError('Transformation stack underflow');
+    Result := FTop.Data;
   end;
 end;
 
@@ -288,6 +289,7 @@ function TStackList.Push(Value: pointer): PStackElement;
 var
   Element: PStackElement;
 begin
+  DGLSLogger.LogInfo('Push Stack Element');
   Inc(FCount);
   if FCount > FMaxElement then
   begin
@@ -302,12 +304,14 @@ begin
   Element.Next := nil;
   if not Assigned(FRoot) then
   begin
+    DGLSLogger.LogInfo('Assign Root Stack Element');
     FRoot      := Element;
     FTop       := FRoot;
     FRoot.Prev := nil;
   end
   else
   begin
+    DGLSLogger.LogInfo('New on Top Stack Element');
     FTop.Next    := Element;
     Element.Prev := FTop;
     FTop         := Element;
@@ -326,7 +330,10 @@ end;
 destructor TStackList.Destroy;
 begin
   while Assigned(FRoot) do
+  begin
+    dispose(FTop.data);
     Remove(FTop);
+  end;
   inherited;
 end;
 

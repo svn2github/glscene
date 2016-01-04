@@ -1,14 +1,22 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : GLSceneRegister<p>
+{ : GLSceneRegister
 
-  Registration unit for GLScene library components, property editors and
-  IDE experts.<p>
-
+  @HTML (
+  <p>
+  Registration unit for GLScene library components, property editors and IDE experts.</p>
+  <p>
   <b>History : </b><font size=-1><ul>
-  <li>28/12/15 - EG - Imported and Updated Form GLScene
-  </ul></font>
+  <li>28/12/15 - JD - Imported and Updated Form GLScene
+  </ul></font></p>
+  <p>
+  <b>Status : </b>In Progress<br>
+  <b>Todo : </b>
+  <ul>
+      <li>Adding new Material Editor Form</li>
+  </ul></p>
+   )
 }
 unit DGLEngineRegister;
 
@@ -70,169 +78,175 @@ type
   //======================================== MATERIAL ======================================
   //========================================================================================
 
-//  // TDGLLibMaterialNameProperty
-//  //
-//  TDGLLibMaterialNameProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  // TDGLMaterialProperty
-//  //
+  // TDGLLibMaterialNameProperty
+  //
+  TDGLLibMaterialNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TDGLMaterialProperty
+  //
 //  TDGLMaterialProperty = class(TClassProperty)
 //  public
 //    { Public Declarations }
 //    function GetAttributes: TPropertyAttributes; override;
 //    procedure Edit; override;
 //  end;
-//
-//  // TDGLMaterialLibraryEditor
-//  //
-//  { : Editor for material library.<p> }
-//  TDGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
-//  protected
-//    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-//  public
-//    procedure ExecuteVerb(Index: Integer); override;
-//    function GetVerb(Index: Integer): string; override;
-//    function GetVerbCount: Integer; override;
-//  end;
-//
-//  // TDGLMaterialComponentNameProperty
-//  //
-//  TDGLMaterialComponentNameProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  TDGLLibTextureNameProperty = class(TDGLMaterialComponentNameProperty)
-//  public
-//    { Public Declarations }
-//    procedure GetValues(Proc: TGetStrProc); override;
-//  end;
-//
-//  TDGLLibSamplerNameProperty = class(TDGLMaterialComponentNameProperty)
-//  public
-//    { Public Declarations }
-//    procedure GetValues(Proc: TGetStrProc); override;
-//  end;
-//
-//  TDGLLibCombinerNameProperty = class(TDGLMaterialComponentNameProperty)
-//  public
-//    { Public Declarations }
-//    procedure GetValues(Proc: TGetStrProc); override;
-//  end;
-//
-//  TDGLLibAttachmentNameProperty = class(TDGLMaterialComponentNameProperty)
-//  public
-//    { Public Declarations }
-//    procedure GetValues(Proc: TGetStrProc); override;
-//  end;
-//
-//  // TTextureProperty
-//  //
+
+  // TDGLMaterialLibraryEditor
+  //
+  { : Editor for material library.<p> }
+  TDGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
+  protected
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+  public
+    procedure ExecuteVerb(Index: Integer); override;
+    function GetVerb(Index: Integer): string; override;
+    function GetVerbCount: Integer; override;
+  end;
+
+  // TDGLMaterialComponentNameProperty
+  //
+  TDGLMaterialComponentNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  TDGLLibTextureNameProperty = class(TDGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TDGLLibSamplerNameProperty = class(TDGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TDGLLibCombinerNameProperty = class(TDGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  TDGLLibAttachmentNameProperty = class(TDGLMaterialComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  // TTextureProperty
+  //
 //  TDGLTextureProperty = class(TClassProperty)
 //  public
 //    { Protected Declarations }
 //    function GetAttributes: TPropertyAttributes; override;
 //  end;
-//
-//  // TDGLTextureImageProperty
-//  //
+
+  // TDGLTextureImageProperty
+  //
 //  TDGLTextureImageProperty = class(TClassProperty)
 //  public
 //    { Protected Declarations }
 //    function GetAttributes: TPropertyAttributes; override;
 //    procedure Edit; override;
 //  end;
-//
-//  // TPictureFileProperty
-//  //
-//  TPictureFileProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
+
+  // TPictureFileProperty
+  //
+  TPictureFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
 
   //========================================================================================
   //======================================== SHADER ========================================
   //========================================================================================
 
-//  // TDGLLibMaterialNameProperty
-//  //
-//  TDGLLibShaderNameProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  // TDGLMaterialProperty
-//  //
-////  TDGLShaderProperty = class(TClassProperty)
-////  public
-////    { Public Declarations }
-////    function GetAttributes: TPropertyAttributes; override;
-////    procedure Edit; override;
-////  end;
-//
-//  // TDGLMaterialLibraryEditor
-//  //
-//  { : Editor for material library.<p> }
-//  TDGLShaderLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
-//  protected
-//    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
-//  public
-//    procedure ExecuteVerb(Index: Integer); override;
-//    function GetVerb(Index: Integer): string; override;
-//    function GetVerbCount: Integer; override;
-//  end;
-//
-//  // TDGLMaterialComponentNameProperty
-//  //
-//  TDGLShaderComponentNameProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  // TShaderFileProperty
-//  //
-//  TShaderFileProperty = class(TStringProperty)
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  // TUniformAutoSetProperty
-//  //
-//  TUniformAutoSetProperty = class(TPropertyEditor)
-//  private
-//    procedure PassUniform(const S: string);
-//  public
-//    { Public Declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
-//
-//  TDGLShaderEditorProperty = class(TClassProperty)
-//  protected
-//    { Protected declarations }
-//    function GetStrings: TStrings;
-//    procedure SetStrings(const Value: TStrings);
-//    procedure OnShaderCheck(Sender: TObject);
-//  public
-//    { Public declarations }
-//    function GetAttributes: TPropertyAttributes; override;
-//    procedure Edit; override;
-//  end;
+  // TDGLLibShaderNameProperty
+  //
+  TDGLLibShaderNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TDGLShaderProperty
+  //
+  TDGLShaderProperty = class(TClassProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TDGLShaderLibraryEditor
+
+  { : Editor for Shader library.<p> }
+  TDGLShaderLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
+  protected
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+  public
+    procedure ExecuteVerb(Index: Integer); override;
+    function GetVerb(Index: Integer): string; override;
+    function GetVerbCount: Integer; override;
+  end;
+
+  // TDGLShaderComponentNameProperty
+  //
+  TDGLShaderComponentNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  TDGLShaderScriptNameProperty = class(TDGLShaderComponentNameProperty)
+  public
+    { Public Declarations }
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
+
+  // TShaderFileProperty
+  //
+  TShaderFileProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  // TUniformAutoSetProperty
+  //
+  TUniformAutoSetProperty = class(TPropertyEditor)
+  private
+    procedure PassUniform(const S: string);
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
+
+  TDGLShaderEditorProperty = class(TClassProperty)
+  protected
+    { Protected declarations }
+    function GetStrings: TStrings;
+    procedure SetStrings(const Value: TStrings);
+    procedure OnShaderCheck(Sender: TObject);
+  public
+    { Public declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure Edit; override;
+  end;
 
   //========================================================================================
   //======================================== SCENE =========================================
@@ -321,30 +335,50 @@ type
   //========================================================================================
   //======================================== SOUND =========================================
   //========================================================================================
+
+  { : Selection editor for TGLSoundLibrary.<p>
+    Allows units to be added to the uses clause automatically when
+    sound files are loaded into a TDGLSoundLibrary at design-time. }
+  TDGLSoundLibrarySelectionEditor = class(TSelectionEditor)
+  public
+    procedure RequiresUnits(Proc: TGetStrProc); override;
+  end;
+
   // TSoundFileProperty
   //
-  // TSoundFileProperty = class(TClassProperty)
-  // public
-  // { Public Declarations }
-  // function GetAttributes: TPropertyAttributes; override;
-  // function GetValue: string; override;
-  // procedure Edit; override;
-  // end;
+  TSoundFileProperty = class(TClassProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    function GetValue: string; override;
+    procedure Edit; override;
+  end;
 
   // TSoundNameProperty
   //
-  // TSoundNameProperty = class(TStringProperty)
-  // public
-  // { Public Declarations }
-  // function GetAttributes: TPropertyAttributes; override;
-  // procedure GetValues(Proc: TGetStrProc); override;
-  // end;
+  TSoundNameProperty = class(TStringProperty)
+  public
+    { Public Declarations }
+    function GetAttributes: TPropertyAttributes; override;
+    procedure GetValues(Proc: TGetStrProc); override;
+  end;
 
 
   //========================================================================================
   //======================================= OTHERS =========================================
   //========================================================================================
 
+  // TGLSArchiveManagerEditor
+  //
+  { : Editor for GLScene Archive Manager. }
+  TDGLArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
+  protected
+    procedure EditProperty(const Prop: IProperty; var Continue: Boolean); override;
+  public
+    procedure ExecuteVerb(Index: Integer); override;
+    function GetVerb(Index: Integer): string; override;
+    function GetVerbCount: Integer; override;
+  end;
 
 //******************************************************************************************
 
@@ -368,9 +402,9 @@ implementation
 
 uses
   // DesignTime Editors
-  //FDGLLibMaterialPicker,
-  //FDGLLibShaderPicker,
-  //FDGLShaderMemo,
+  FDGLLibMaterialPicker,
+  FDGLLibShaderPicker,
+  FDGLShaderMemo,
   FDGLShaderUniformEditor,
   FDGLVectorEditor,
   DGLSceneEdit,
@@ -388,10 +422,19 @@ uses
   DGLVectorMaths,
   DGLCoordinates,
 
+  // Sound
+  DGLOpenal,
+  DGLSound,
+  DGLSoundFileObjects,
+  DGLSMWaveOut,
+  DGLSMOpenAL,
+
   // Tools units
   DGLSLog,
   DGLCadencer,
   DGLSMemo,
+  DGLAsyncTimer,
+  DGLSArchiveManager,
 
   // Main Units
   DGLScreen,
@@ -399,9 +442,9 @@ uses
   DGLMaterial,
   DGLShader,
   DGLObjects,
+  DGLVectorObjects,
 
   // Image file formats
-
   DGLDDSImage,
   DGLTGA,
   DGLDXTC,
@@ -524,78 +567,78 @@ end;
 
 //======================================== MATERIAL ======================================
 
-//// ------------------
-//{ TDGLMaterialLibraryEditor }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialLibraryEditor'}{$ENDIF}
-//
-//procedure TDGLMaterialLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
-//begin
-//  if CompareText(Prop.GetName, 'MATERIALS') = 0 then
-//  begin
-//    FBest := Prop;
-//  end;
-//end;
-//
-//procedure TDGLMaterialLibraryEditor.ExecuteVerb(Index: Integer);
-//begin
-//  case Index of
-//    0:
-//      Edit;
-//  end;
-//end;
-//
-//function TDGLMaterialLibraryEditor.GetVerb(Index: Integer): string;
-//begin
-//  case Index of
-//    0:
-//      Result := 'Show Material Library Editor';
-//  end;
-//end;
-//
-//function TDGLMaterialLibraryEditor.GetVerbCount: Integer;
-//begin
-//  Result := 1
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLLibMaterialNameProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLLibMaterialNameProperty'}{$ENDIF}
-//
-//function TDGLLibMaterialNameProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog];
-//end;
-//
-//procedure TDGLLibMaterialNameProperty.Edit;
-//var
-//  buf: string;
-//  ml:  TDGLAbstractMaterialLibrary;
-//  obj: TPersistent;
-//  Int: IDGLMaterialLibrarySupported;
-//begin
-//  buf := GetStrValue;
-//  obj := GetComponent(0);
-//  if Supports(obj, IDGLMaterialLibrarySupported, Int) then
-//    ml := Int.GetMaterialLibrary
-//  else
-//  begin
-//    ml := nil;
-//    Assert(False, 'oops, unsupported...');
-//  end;
-//  if not Assigned(ml) then
-//    ShowMessage('Select the material library first.')
-//  else if DGLLibMaterialPicker.Execute(buf, ml) then
-//    SetStrValue(buf);
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLMaterialProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialProperty'}{$ENDIF}
-//
+// ------------------
+{ TDGLMaterialLibraryEditor }
+{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialLibraryEditor'}{$ENDIF}
+
+procedure TDGLMaterialLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
+begin
+  if CompareText(Prop.GetName, 'MATERIALS') = 0 then
+  begin
+    FBest := Prop;
+  end;
+end;
+
+procedure TDGLMaterialLibraryEditor.ExecuteVerb(Index: Integer);
+begin
+  case Index of
+    0:
+      Edit;
+  end;
+end;
+
+function TDGLMaterialLibraryEditor.GetVerb(Index: Integer): string;
+begin
+  case Index of
+    0:
+      Result := 'Show Material Library Editor';
+  end;
+end;
+
+function TDGLMaterialLibraryEditor.GetVerbCount: Integer;
+begin
+  Result := 1
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLLibMaterialNameProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLLibMaterialNameProperty'}{$ENDIF}
+
+function TDGLLibMaterialNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+procedure TDGLLibMaterialNameProperty.Edit;
+var
+  buf: string;
+  ml:  TDGLAbstractMaterialLibrary;
+  obj: TPersistent;
+  Int: IDGLMaterialLibrarySupported;
+begin
+  buf := GetStrValue;
+  obj := GetComponent(0);
+  if Supports(obj, IDGLMaterialLibrarySupported, Int) then
+    ml := Int.GetMaterialLibrary
+  else
+  begin
+    ml := nil;
+    Assert(False, 'oops, unsupported...');
+  end;
+  if not Assigned(ml) then
+    ShowMessage('Select the material library first.')
+  else if DGLLibMaterialPicker.Execute(buf, ml) then
+    SetStrValue(buf);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLMaterialProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialProperty'}{$ENDIF}
+
 //function TDGLMaterialProperty.GetAttributes: TPropertyAttributes;
 //begin
 //  Result := [paDialog, paSubProperties];
@@ -605,114 +648,107 @@ end;
 //begin
 ////  if FMaterialEditorForm.MaterialEditorForm.Execute(TDGLMaterial(GetOrdValue)) then Modified;
 //end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLMaterialComponentNameProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialComponentNameProperty'}{$ENDIF}
-//
-//procedure TDGLMaterialComponentNameProperty.Edit;
-//var
-//  LOwner: IDGLMaterialLibrarySupported;
-//  LItem:  TDGLBaseMaterialCollectionItem;
-//begin
-//  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
-//  begin
-//    LItem := TDGLMaterialLibrary(LOwner.GetMaterialLibrary).Components.GetItemByName(GetStrValue);
-//    if Assigned(LItem) then
-//      Designer.SelectComponent(LItem);
-//    Modified;
-//  end;
-//end;
-//
-//function TDGLMaterialComponentNameProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paValueList];
-//end;
-//
-//procedure TDGLLibTextureNameProperty.GetValues(Proc: TGetStrProc);
-//var
-//  LOwner: IDGLMaterialLibrarySupported;
-//begin
-//  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
-//  begin
-//    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTexture);
-//    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLFrameBufferAttachment);
-//  end;
-//end;
-//
-//procedure TDGLLibSamplerNameProperty.GetValues(Proc: TGetStrProc);
-//var
-//  LOwner: IDGLMaterialLibrarySupported;
-//begin
-//  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
-//    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTextureSampler);
-//end;
-//
-//procedure TDGLLibCombinerNameProperty.GetValues(Proc: TGetStrProc);
-//var
-//  LOwner: IDGLMaterialLibrarySupported;
-//begin
-//  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
-//    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTextureCombiner);
-//end;
-//
-////procedure TDGLLibShaderNameProperty.GetValues(Proc: TGetStrProc);
-////var
-////  LOwner: IGLMaterialLibrarySupported;
-////begin
-////  if Supports(GetComponent(0), IGLMaterialLibrarySupported, LOwner) then
-////    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLLibShader);
-////end;
-//
-//procedure TDGLLibAttachmentNameProperty.GetValues(Proc: TGetStrProc);
-//var
-//  LOwner: IDGLMaterialLibrarySupported;
-//begin
-//  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
-//    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLFrameBufferAttachment);
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TPictureFileProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
-//
-//function TPictureFileProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog];
-//end;
-//
-//procedure TPictureFileProperty.Edit;
-//var
-//  LFileName: string;
-//begin
-//  if OpenPictureDialog(LFileName) then
-//  begin
-//    SetStrValue(RelativePath(LFileName));
-//  end;
-//  Modified;
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLTextureProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLTextureProperty'}{$ENDIF}
-//
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLMaterialComponentNameProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLMaterialComponentNameProperty'}{$ENDIF}
+
+procedure TDGLMaterialComponentNameProperty.Edit;
+var
+  LOwner: IDGLMaterialLibrarySupported;
+  LItem:  TDGLBaseMaterialCollectionItem;
+begin
+  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
+  begin
+    LItem := TDGLMaterialLibrary(LOwner.GetMaterialLibrary).Components.GetItemByName(GetStrValue);
+    if Assigned(LItem) then
+      Designer.SelectComponent(LItem);
+    Modified;
+  end;
+end;
+
+function TDGLMaterialComponentNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TDGLLibTextureNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IDGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
+  begin
+    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTexture);
+    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLFrameBufferAttachment);
+  end;
+end;
+
+procedure TDGLLibSamplerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IDGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
+    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTextureSampler);
+end;
+
+procedure TDGLLibCombinerNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IDGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
+    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLTextureCombiner);
+end;
+
+procedure TDGLLibAttachmentNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IDGLMaterialLibrarySupported;
+begin
+  if Supports(GetComponent(0), IDGLMaterialLibrarySupported, LOwner) then
+    TDGLMaterialLibrary(LOwner.GetMaterialLibrary).GetNames(Proc, TDGLFrameBufferAttachment);
+end;
+
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TPictureFileProperty }
+{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+
+function TPictureFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+procedure TPictureFileProperty.Edit;
+var
+  LFileName: string;
+begin
+  if OpenPictureDialog(LFileName) then
+  begin
+    SetStrValue(RelativePath(LFileName));
+  end;
+  Modified;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLTextureProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureProperty'}{$ENDIF}
+
 //function TDGLTextureProperty.GetAttributes: TPropertyAttributes;
 //begin
 //  Result := [paSubProperties];
 //end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLTextureImageProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLTextureImageProperty'}{$ENDIF}
-//
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLTextureImageProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLTextureImageProperty'}{$ENDIF}
+
 //function TDGLTextureImageProperty.GetAttributes: TPropertyAttributes;
 //begin
 //  Result := [paDialog];
@@ -723,252 +759,256 @@ end;
 ////  if EditDGLTextureImage(TDGLTexture(GetOrdValue)) then
 ////    Designer.Modified;
 //end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLImageClassProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLImageClassProperty'}{$ENDIF}
-//
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLImageClassProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLImageClassProperty'}{$ENDIF}
+
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 
 //======================================== SHADER ========================================
 
-//// ------------------
-//{ TDGLShaderLibraryEditor }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLShaderLibraryEditor'}{$ENDIF}
-//
-//
-//procedure TDGLShaderLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
-//begin
-//  if CompareText(Prop.GetName, 'SHADERS') = 0 then
-//  begin
-//    FBest := Prop;
-//  end;
-//end;
-//
-//procedure TDGLShaderLibraryEditor.ExecuteVerb(Index: Integer);
-//begin
-//  case Index of
-//    0: Edit;
-//  end;
-//end;
-//
-//function TDGLShaderLibraryEditor.GetVerb(Index: Integer): string;
-//begin
-//  case Index of
-//    0: Result := 'Show Shader Library Editor';
-//  end;
-//end;
-//
-//function TDGLShaderLibraryEditor.GetVerbCount: Integer;
-//begin
-//  Result := 1
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLLibShaderNameProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLLibShaderNameProperty'}{$ENDIF}
-//
-//function TDGLLibShaderNameProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog];
-//end;
-//
-//procedure TDGLLibShaderNameProperty.Edit;
-//var
-//  buf: string;
-//  ml:  TDGLAbstractShaderLibrary;
-//  obj: TPersistent;
-//  Int: IDGLShaderLibrarySupported;
-//begin
-//  buf := GetStrValue;
-//  obj := GetComponent(0);
-//  if Supports(obj, IDGLShaderLibrarySupported, Int) then
-//    ml := Int.GetShaderLibrary
-//  else
-//  begin
-//    ml := nil;
-//    Assert(False, 'oops, unsupported...');
-//  end;
-//  if not Assigned(ml) then
-//    ShowMessage('Select the Shader library first.')
-//  else if DGLLibShaderPicker.Execute(buf, ml) then
-//    SetStrValue(buf);
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLShaderProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLShaderProperty'}{$ENDIF}
-//
-////function TDGLShaderProperty.GetAttributes: TPropertyAttributes;
-////begin
-////  Result := [paDialog, paSubProperties];
-////end;
-////
-////procedure TDGLShaderProperty.Edit;
-////begin
-////  if FShaderEditorForm.ShaderEditorForm.Execute(TDGLLibShader(GetOrdValue)) then
-////    Modified;
-////end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{ TDGLShaderComponentNameProperty }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLShaderComponentNameProperty'}{$ENDIF}
-//
-//procedure TDGLShaderComponentNameProperty.Edit;
-//var
-//  LOwner: IDGLShaderLibrarySupported;
-//  LItem:  TDGLBaseShaderCollectionItem;
-//begin
-//  if Supports(GetComponent(0), IDGLShaderLibrarySupported, LOwner) then
-//  begin
-//    LItem := TDGLShaderLibrary(LOwner.GetShaderLibrary).Components.GetItemByName(GetStrValue);
-//    if Assigned(LItem) then
-//      Designer.SelectComponent(LItem);
-//    Modified;
-//  end;
-//end;
-//
-//function TDGLShaderComponentNameProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paValueList];
-//end;
-//
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//
-//// ------------------
-//{  }
-//{$IFDEF GLS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
-//
-//procedure TShaderFileProperty.Edit;
-//var
-//  ODialog: TOpenDialog;
-//begin
-//  ODialog := TOpenDialog.Create(nil);
-//  try
-//    ODialog.Filter := '*.glsl';
-//    if ODialog.Execute then
-//    begin
-//      SetStrValue(RelativePath(ODialog.FileName));
-//      Modified;
-//    end;
-//  finally
-//    ODialog.Free;
-//  end;
-//end;
-//
-//function TShaderFileProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog];
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{  }
-//{$IFDEF GLS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
-//
-//function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog, paFullWidthName];
-//end;
-//
-//procedure TUniformAutoSetProperty.PassUniform(const S: string);
-//begin
-//  DGLShaderUniformEditor.AddUniform(TDGLBaseShaderModel(GetComponent(0)).Uniforms[S]);
-//end;
-//
-//procedure TUniformAutoSetProperty.Edit;
-//var
-//  LOwner: TDGLBaseShaderModel;
-//begin
-//  LOwner := TDGLBaseShaderModel(GetComponent(0));
-//  if LOwner.Enabled and LOwner.IsValid then
-//  begin
-//    with DGLShaderUniformEditor do
-//    begin
-//      Clear;
-//      LOwner.MaterialLibrary.GetNames(AddTextureName, TDGLTexture);
-//      LOwner.MaterialLibrary.GetNames(AddTextureName, TDGLFrameBufferAttachment);
-//      LOwner.MaterialLibrary.GetNames(AddSamplerName, TDGLTextureSampler);
-//      LOwner.GetUniformNames(PassUniform);
-//      Execute;
-//    end;
-//  end;
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
-//// ------------------
-//{  }
-//{$IFDEF GLS_REGION}{$REGION 'TDGLShaderEditorProperty'}{$ENDIF}
-//
-//function TDGLShaderEditorProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := inherited GetAttributes + [paDialog] - [paSubProperties];
-//end;
-//
-//function TDGLShaderEditorProperty.GetStrings: TStrings;
-//begin
-//  Result := TStrings(GetOrdValue);
-//end;
-//
-//procedure TDGLShaderEditorProperty.OnShaderCheck(Sender: TObject);
-////var
-////  LShader:  TDGLLibShader;
-////  LContext: TDGLContext;
-//begin
-////  SetStrings(GLShaderEditorForm.GLSLMemo.Lines);
-////  LShader  := TDGLLibShader(GetComponent(0));
-////  LContext := LShader.ShaderModel.Handle.RenderingContext;
-////  if Assigned(LContext) then
-////  begin
-////    LContext.Activate;
-////    try
-////      LShader.ShaderModel.DoOnPrepare(LContext);
-////      GLShaderEditorForm.CompilatorLog.Lines.Add(LShader.ShaderModel.InfoLog);
-////    finally
-////      LContext.Deactivate;
-////    end;
-////  end
-////  else
-////    DGLShaderEditorForm.CompilatorLog.Lines.Add('There is no any rendering context for work with OpenGL');
-//end;
-//
-//procedure TDGLShaderEditorProperty.SetStrings(const Value: TStrings);
-//begin
-//  SetOrdValue(Longint(Value));
-//end;
-//
-//procedure TDGLShaderEditorProperty.Edit;
-//begin
-////  with DGLShaderEditorForm do
-////  begin
-////    OnCheck := OnShaderCheck;
-////    GLSLMemo.Lines.Assign(GetStrings);
-////    GLSLMemo.CurX := 0;
-////    GLSLMemo.CurY := 0;
-////    if ShowModal = mrOk then
-////    begin
-////      SetStrings(GLSLMemo.Lines);
-////      Modified;
-////    end;
-////  end;
-//end;
-//
-//{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-//
+// ------------------
+{ TDGLShaderLibraryEditor }
+{$IFDEF GLS_REGION}{$REGION 'TDGLShaderLibraryEditor'}{$ENDIF}
+
+
+procedure TDGLShaderLibraryEditor.EditProperty(const Prop: IProperty; var Continue: Boolean);
+begin
+  if CompareText(Prop.GetName, 'SHADERS') = 0 then
+  begin
+    FBest := Prop;
+  end;
+end;
+
+procedure TDGLShaderLibraryEditor.ExecuteVerb(Index: Integer);
+begin
+  case Index of
+    0: Edit;
+  end;
+end;
+
+function TDGLShaderLibraryEditor.GetVerb(Index: Integer): string;
+begin
+  case Index of
+    0: Result := 'Show Shader Library Editor';
+  end;
+end;
+
+function TDGLShaderLibraryEditor.GetVerbCount: Integer;
+begin
+  Result := 1
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLLibShaderNameProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLLibShaderNameProperty'}{$ENDIF}
+
+function TDGLLibShaderNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+procedure TDGLLibShaderNameProperty.Edit;
+var
+  buf: string;
+  ml:  TDGLAbstractShaderLibrary;
+  obj: TPersistent;
+  Int: IDGLShaderLibrarySupported;
+begin
+  buf := GetStrValue;
+  obj := GetComponent(0);
+  if Supports(obj, IDGLShaderLibrarySupported, Int) then
+    ml := Int.GetShaderLibrary
+  else
+  begin
+    ml := nil;
+    Assert(False, 'oops, unsupported...');
+  end;
+  if not Assigned(ml) then
+    ShowMessage('Select the Shader library first.')
+  else if DGLLibShaderPicker.Execute(buf, ml) then
+    SetStrValue(buf);
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLShaderProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLShaderProperty'}{$ENDIF}
+
+function TDGLShaderProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paSubProperties];
+end;
+
+procedure TDGLShaderProperty.Edit;
+begin
+//  if FShaderEditorForm.ShaderEditorForm.Execute(TDGLLibShader(GetOrdValue)) then
+    Modified;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLShaderComponentNameProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLShaderComponentNameProperty'}{$ENDIF}
+
+procedure TDGLShaderComponentNameProperty.Edit;
+var
+  LOwner: IDGLShaderLibrarySupported;
+  LItem:  TDGLBaseShaderComponentItem;
+begin
+  if Supports(GetComponent(0), IDGLShaderLibrarySupported, LOwner) then
+  begin
+    LItem := TDGLShaderLibrary(LOwner.GetShaderLibrary).Components.GetItemByName(GetStrValue);
+    if Assigned(LItem) then
+      Designer.SelectComponent(LItem);
+    Modified;
+  end;
+end;
+
+function TDGLShaderComponentNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TDGLShaderScriptNameProperty.GetValues(Proc: TGetStrProc);
+var
+  LOwner: IDGLShaderLibrarySupported;
+begin
+  if Supports(GetComponent(0), IDGLShaderLibrarySupported, LOwner) then
+    TDGLShaderLibrary(LOwner.GetShaderLibrary).GetNames(Proc, TDGLSLShaderScript);
+end;
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TShaderFileProperty }
+{$IFDEF GLS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
+
+procedure TShaderFileProperty.Edit;
+var
+  ODialog: TOpenDialog;
+begin
+  ODialog := TOpenDialog.Create(nil);
+  try
+    ODialog.Filter := '*.glsl';
+    if ODialog.Execute then
+    begin
+      SetStrValue(RelativePath(ODialog.FileName));
+      Modified;
+    end;
+  finally
+    ODialog.Free;
+  end;
+end;
+
+function TShaderFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TUniformAutoSetProperty }
+{$IFDEF GLS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
+
+function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog, paFullWidthName];
+end;
+
+procedure TUniformAutoSetProperty.PassUniform(const S: string);
+begin
+  DGLShaderUniformEditor.AddUniform(TDGLCustomGLSLShaderModel(GetComponent(0)).Uniforms[S]);
+end;
+
+procedure TUniformAutoSetProperty.Edit;
+var
+  LOwner: TDGLCustomGLSLShaderModel;
+begin
+  LOwner := TDGLCustomGLSLShaderModel(GetComponent(0));
+  if LOwner.Enabled and LOwner.IsValid then
+  begin
+    with DGLShaderUniformEditor do
+    begin
+      Clear;
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TDGLTexture);
+      LOwner.MaterialLibrary.GetNames(AddTextureName, TDGLFrameBufferAttachment);
+      LOwner.MaterialLibrary.GetNames(AddSamplerName, TDGLTextureSampler);
+      LOwner.GetUniformNames(PassUniform);
+      Execute;
+    end;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLShaderEditorProperty }
+{$IFDEF GLS_REGION}{$REGION 'TDGLShaderEditorProperty'}{$ENDIF}
+
+function TDGLShaderEditorProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := inherited GetAttributes + [paDialog] - [paSubProperties];
+end;
+
+function TDGLShaderEditorProperty.GetStrings: TStrings;
+begin
+  Result := TStrings(GetOrdValue);
+end;
+
+procedure TDGLShaderEditorProperty.OnShaderCheck(Sender: TObject);
+var
+  LShader:  TDGLLibShader;
+  LContext: TDGLContext;
+begin
+  SetStrings(DGLShaderEditorForm.GLSLMemo.Lines);
+  LShader  := TDGLLibShader(GetComponent(0));
+  LContext := LShader.ShaderModel.Handle.RenderingContext;
+  if Assigned(LContext) then
+  begin
+    LContext.Activate;
+    try
+      LShader.ShaderModel.DoOnPrepare(LContext);
+      DGLShaderEditorForm.CompilatorLog.Lines.Add(LShader.ShaderModel.InfoLog);
+    finally
+      LContext.Deactivate;
+    end;
+  end
+  else
+    DGLShaderEditorForm.CompilatorLog.Lines.Add('There is no any rendering context for work with OpenGL');
+end;
+
+procedure TDGLShaderEditorProperty.SetStrings(const Value: TStrings);
+begin
+  SetOrdValue(Longint(Value));
+end;
+
+procedure TDGLShaderEditorProperty.Edit;
+begin
+  with DGLShaderEditorForm do
+  begin
+    OnCheck := OnShaderCheck;
+    GLSLMemo.Lines.Assign(GetStrings);
+    GLSLMemo.CurX := 0;
+    GLSLMemo.CurY := 0;
+    if ShowModal = mrOk then
+    begin
+      SetStrings(GLSLMemo.Lines);
+      Modified;
+    end;
+  end;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 //======================================== SCENE =========================================
 
@@ -1290,79 +1330,66 @@ end;
 // ------------------
 { TSoundFileProperty }
 {$IFDEF GLS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
-// GetAttributes
-//
-//
-//function TSoundFileProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paDialog];
-//end;
-//
-//// GetValue
-////
-//
-//function TSoundFileProperty.GetValue: string;
-//var
-//  sample: TDGLSoundSample;
-//begin
-//  sample := GetComponent(0) as TDGLSoundSample;
-//  if sample.Data <> nil then
-//    Result := '(' + sample.Data.ClassName + ')'
-//  else
-//    Result := '(empty)';
-//end;
-//
-//// Edit
-////
-//
-//procedure TSoundFileProperty.Edit;
-//var
-//  ODialog: TOpenDialog;
-//  sample:  TDGLSoundSample;
-//  Desc, F: string;
-//begin
-//  sample  := GetComponent(0) as TDGLSoundSample;
-//  ODialog := TOpenDialog.Create(nil);
-//  try
-//    GeTDGLSoundFileFormats.BuildFilterStrings(TDGLSoundFile, Desc, F);
-//    ODialog.Filter := Desc;
-//    if ODialog.Execute then
-//    begin
-//      sample.LoadFromFile(ODialog.FileName);
-//      Modified;
-//    end;
-//  finally
-//    ODialog.Free;
-//  end;
-//end;
+
+function TSoundFileProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paDialog];
+end;
+
+function TSoundFileProperty.GetValue: string;
+var
+  sample: TDGLSoundSample;
+begin
+  sample := GetComponent(0) as TDGLSoundSample;
+  if sample.Data <> nil then
+    Result := '(' + sample.Data.ClassName + ')'
+  else
+    Result := '(empty)';
+end;
+
+procedure TSoundFileProperty.Edit;
+var
+  ODialog: TOpenDialog;
+  sample:  TDGLSoundSample;
+  Desc, F: string;
+begin
+  sample  := GetComponent(0) as TDGLSoundSample;
+  ODialog := TOpenDialog.Create(nil);
+  try
+    GeTDGLSoundFileFormats.BuildFilterStrings(TDGLSoundFile, Desc, F);
+    ODialog.Filter := Desc;
+    if ODialog.Execute then
+    begin
+      sample.LoadFromFile(ODialog.FileName);
+      Modified;
+    end;
+  finally
+    ODialog.Free;
+  end;
+end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 { TSoundNameProperty }
 {$IFDEF GLS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
-// GetAttributes
-//
 
-//function TSoundNameProperty.GetAttributes: TPropertyAttributes;
-//begin
-//  Result := [paValueList];
-//end;
-//
-// GetValues
-//
-//
-//procedure TSoundNameProperty.GetValues(Proc: TGetStrProc);
-//var
-//  i:      Integer;
-//  source: TDGLBaseSoundSource;
-//begin
-//  source := (GetComponent(0) as TDGLBaseSoundSource);
-//  if Assigned(source.SoundLibrary) then
-//    with source.SoundLibrary do
-//      for i := 0 to Samples.Count - 1 do
-//        Proc(Samples[i].Name);
-//end;
+function TSoundNameProperty.GetAttributes: TPropertyAttributes;
+begin
+  Result := [paValueList];
+end;
+
+procedure TSoundNameProperty.GetValues(Proc: TGetStrProc);
+var
+  i:      Integer;
+  source: TDGLBaseSoundSource;
+begin
+  source := (GetComponent(0) as TDGLBaseSoundSource);
+  if Assigned(source.SoundLibrary) then
+    with source.SoundLibrary do
+      for i := 0 to Samples.Count - 1 do
+        Proc(Samples[i].Name);
+end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -1370,29 +1397,62 @@ end;
 { TDGLSoundLibrarySelectionEditor }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSoundLibrarySelectionEditor'}{$ENDIF}
 
-//procedure TDGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
-//var
-//  i, j: Integer;
-//  comp: TDGLSoundLibrary;
-//begin
-//  if (Designer = nil) or (Designer.Root = nil) then
-//    Exit;
-//
-//  for i := 0 to Designer.Root.ComponentCount - 1 do
-//  begin
-//    if (Designer.Root.Components[i] is TDGLSoundLibrary) then
-//    begin
-//      comp  := TDGLSoundLibrary(Designer.Root.Components[i]);
-//      for j := 0 to comp.Samples.Count - 1 do
-//        if Assigned(comp.Samples[j].Data) then
-//          Proc(FindUnitName(comp.Samples[j].Data));
-//    end;
-//  end;
-//end;
+procedure TDGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
+var
+  i, j: Integer;
+  comp: TDGLSoundLibrary;
+begin
+  if (Designer = nil) or (Designer.Root = nil) then Exit;
+
+  for i := 0 to Designer.Root.ComponentCount - 1 do
+  begin
+    if (Designer.Root.Components[i] is TDGLSoundLibrary) then
+    begin
+      comp  := TDGLSoundLibrary(Designer.Root.Components[i]);
+      for j := 0 to comp.Samples.Count - 1 do
+        if Assigned(comp.Samples[j].Data) then
+          Proc(FindUnitName(comp.Samples[j].Data));
+    end;
+  end;
+end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 //======================================= OTHERS =========================================
+
+// ------------------
+{ TDGLSArchiveManagerEditor }
+{$IFDEF GLS_REGION}{$REGION 'TDGLSArchiveManagerEditor'}{$ENDIF}
+
+procedure TDGLArchiveManagerEditor.EditProperty(const Prop: IProperty;
+  var Continue: Boolean);
+begin
+  if CompareText(Prop.GetName, 'ARCHIVES') = 0 then
+  begin
+    FBest := Prop;
+  end;
+end;
+
+procedure TDGLArchiveManagerEditor.ExecuteVerb(Index: Integer);
+begin
+  case Index of
+    0: Edit;
+  end;
+end;
+
+function TDGLArchiveManagerEditor.GetVerb(Index: Integer): string;
+begin
+  case Index of
+    0: Result := 'Show Archive Manager Editor';
+  end;
+end;
+
+function TDGLArchiveManagerEditor.GetVerbCount: Integer;
+begin
+  Result := 1
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 { EMPTY }
@@ -1412,60 +1472,73 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLCamera), TypeInfo(TDGLSceneBuffer), TypeInfo(TVSyncMode)]);
   //TypeInfo(TDGLScreenDepth)]); // TDGLScreenDepth in GLWin32FullScreenViewer
   {$ENDIF}
+
   // TDGLSceneViewer
   RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLSceneViewer, ['*Render']);
 
   { GLScene }
-  RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLObjectsSorting), TypeInfo(TDGLProgressEvent), TypeInfo(TDGLBehaviours), TypeInfo(TDGLObjectEffects), TypeInfo(TDirectRenderEvent), TypeInfo(TDGLCameraStyle), TypeInfo(TOnCustomPerspective),
-    TypeInfo(TDGLScene)]);
+  RegisterPropertiesInCategory(sOpenGLCategoryName,
+  [
+   TypeInfo(TDGLObjectsSorting), TypeInfo(TDGLProgressEvent), TypeInfo(TDGLBehaviours), TypeInfo(TDGLObjectEffects),
+   TypeInfo(TDirectRenderEvent), TypeInfo(TDGLCameraStyle), TypeInfo(TOnCustomPerspective),TypeInfo(TDGLScene)
+  ]);
+
   RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TDGLObjectsSorting), TypeInfo(TNormalDirection)]);
   RegisterPropertiesInCategory(sVisualCategoryName, [TypeInfo(TDGLVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TDGLColor), TypeInfo(TNormalDirection), TypeInfo(TDGLCameraStyle)]);
+
   // TDGLBaseSceneObject
   RegisterPropertiesInCategory(sVisualCategoryName, TDGLBaseSceneObject, ['Rotation', 'Direction', 'Position', 'Up', 'Scale', '*Angle', 'ShowAxes', 'FocalLength']);
+
   // TDGLSceneObject
-  RegisterPropertiesInCategory(sVisualCategoryName, TDGLSceneObject, ['Parts']);
+  RegisterPropertiesInCategory(sVisualCategoryName, TDGLBaseVertexBufferedObject, ['Parts']);
+
   // TDGLDirectOpenGL
   RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLDirectOpenGL, ['UseBuildList']);
-  // TDGLProxyObject
-  RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLProxyObjectOptions)]);
+
   // TDGLLightSource
   RegisterPropertiesInCategory(sVisualCategoryName, TDGLLightSource, ['*Attenuation', 'Shining', 'Spot*']);
+
   // TDGLCamera
   RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLCamera, ['TargetObject']);
   RegisterPropertiesInCategory(sVisualCategoryName, TDGLCamera, ['DepthOfView', 'SceneScale']);
 
   { GLObjects }
+
   // TDGLDummyCube
   RegisterPropertiesInCategory(sLayoutCategoryName, TDGLDummyCube, ['VisibleAtRunTime']);
   RegisterPropertiesInCategory(sVisualCategoryName, TDGLDummyCube, ['CubeSize', 'VisibleAtRunTime']);
+
   // TDGLPlane
-  RegisterPropertiesInCategory(sVisualCategoryName, TDGLPlane, ['*Offset', '*Tiles']);
-  // TDGLSprite
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLSprite, ['NoZWrite']);
-  RegisterPropertiesInCategory(sLayoutCategoryName, TDGLSprite, ['NoZWrite']);
-  RegisterPropertiesInCategory(sVisualCategoryName, TDGLSprite, ['AlphaChannel', 'Rotation']);
+//  RegisterPropertiesInCategory(sVisualCategoryName, TDGLPlane, ['*Offset', '*Tiles']);
+//
+//  // TDGLSprite
+//  RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLSprite, ['NoZWrite']);
+//  RegisterPropertiesInCategory(sLayoutCategoryName, TDGLSprite, ['NoZWrite']);
+//  RegisterPropertiesInCategory(sVisualCategoryName, TDGLSprite, ['AlphaChannel', 'Rotation']);
+
   // TDGLCube
   RegisterPropertiesInCategory(sVisualCategoryName, TDGLCube, ['Cube*']);
+
   // TDGLSphere
-  RegisterPropertiesInCategory(sVisualCategoryName, TDGLSphere, ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
-  // TDGLDisk
-  RegisterPropertiesInCategory(sVisualCategoryName, TDGLDisk, ['*Radius', 'Loops', 'Slices']);
+//  RegisterPropertiesInCategory(sVisualCategoryName, TDGLSphere, ['Bottom', 'Radius', 'Slices', 'Stacks', 'Start', 'Stop']);
+//
+//  // TDGLDisk
+//  RegisterPropertiesInCategory(sVisualCategoryName, TDGLDisk, ['*Radius', 'Loops', 'Slices']);
 
 
   { GLHUDObjects }
 //  RegisterPropertiesInCategory(sLayoutCategoryName, [TypeInfo(TTextLayout)]);
 
-  { GLTexture }
-//  RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLMaterial), TypeInfo(TDGLMaterialLibrary), TypeInfo(TDGLLibMaterials), TypeInfo(TTextureNeededEvent)]);
-  // TDGLLibMaterial
-//  RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLLibMaterial, ['Texture2Name']);
-//  RegisterPropertiesInCategory(sVisualCategoryName, TDGLLibMaterial, ['TextureOffset', 'TextureScale']);
-  // TDGLMaterialLibrary
-//  RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLMaterialLibrary, ['TexturePaths']);
 
-  { GLCadencer }
+  { TDGLMaterialLibrary }
+  RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLMaterial), TypeInfo(TDGLMaterialLibrary), TypeInfo(TDGLLibMaterials) ]);
+  RegisterPropertiesInCategory(sOpenGLCategoryName, TDGLMaterialLibrary, ['TexturePaths']);
+
+  { TDGLShaderLibrary }
+  RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLLibShader), TypeInfo(TDGLShaderLibrary), TypeInfo(TDGLLibShaders) ]);
+
+  { TDGLCadencer }
   RegisterPropertiesInCategory(sOpenGLCategoryName, [TypeInfo(TDGLCadencer)]);
-
 
 end;
 
@@ -1473,41 +1546,43 @@ procedure Register;
 begin
   //-------------- COMPONENTS -----------------------------------------
   RegisterComponents('DGLEngine', [TDGLScene, TDGLSceneViewer, TDGLMaterialLibrary, TDGLShaderLibrary, TDGLCadencer]);
-  RegisterComponents('DGLEngine Tools', [TDGLApplicationFileIO, TDGLSLogger,  TDGLSSynHiMemo]);
+  RegisterComponents('DGLEngine Sound', [TDGLSoundLibrary, TDGLSMWaveOut, TDGLSMOpenAL]);
+  RegisterComponents('DGLEngine Tools', [TDGLApplicationFileIO, TDGLLogger,  TDGLSynHiMemo, TDGLAsyncTimer, TDGLArchiveManager]);
+
+
+  GLRegisterPropertiesInCategories;
 
   //========================================= DESIGNTIME EDITORS ==============================================================
-
-  //-------------- MATERIAL ------------------------------------------------
-//  RegisterComponentEditor(TDGLMaterialLibrary, TDGLMaterialLibraryEditor);
-//
-//  RegisterPropertyEditor(TypeInfo(TDGLLibMaterialName), TDGLMaterial, '', TDGLLibMaterialNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterial), nil, '', TDGLMaterialProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLTexture), TDGLMaterial, '', TDGLTextureProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLTextureProperties, 'LibTextureName', TDGLLibTextureNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLTextureProperties, 'LibSamplerName', TDGLLibSamplerNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLMultitexturingProperties, 'LibCombinerName', TDGLLibCombinerNameProperty);
-//  RegisterPropertyEditor(TypeInfo(string), TDGLTexture, 'SourceFile', TPictureFileProperty);
-
-  //-------------- SHADER ------------------------------------------------
-//  RegisterComponentEditor(TDGLShaderLibrary, TDGLShaderLibraryEditor);
-//
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLShaderModel, 'LibVertexShaderName', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLShaderModel, 'LibFragmentShaderName', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLShaderModel, 'LibGeometryShaderName', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLShaderModel, 'LibTessControlShaderName', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLShaderModel, 'LibTessEvalShaderName', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(string), TDGLLibShader, 'SourceFile', TShaderFileProperty);
-//  RegisterPropertyEditor(TypeInfo(TDGLLibShaderName), TDGLLibShaderProperty, 'NextPass', TDGLLibShaderNameProperty);
-//  RegisterPropertyEditor(TypeInfo(Boolean), TDGLBaseShaderModel, 'AutoFillOfUniforms', TUniformAutoSetProperty);
-//  RegisterPropertyEditor(TypeInfo(TStringList), TDGLLibShader, 'Source', TDGLShaderEditorProperty);
-
 
   //-------------- SCENE -----------------------------------------------
   RegisterComponentEditor(TDGLSceneViewer, TDGLSceneViewerEditor);
   RegisterComponentEditor(TDGLScene, TDGLSceneEditor);
 
   RegisterSelectionEditor(TDGLBaseSceneObject, TDGLBaseSceneObjectSelectionEditor);
-  GLRegisterPropertiesInCategories;
+  RegisterPropertyEditor(TypeInfo(TDGLLibShaderName),TDGLBaseVertexBufferedObject, 'ShaderName',TDGLLibShaderNameProperty);
+  //-------------- MATERIAL ------------------------------------------------
+  RegisterComponentEditor(TDGLMaterialLibrary, TDGLMaterialLibraryEditor);
+
+  RegisterPropertyEditor(TypeInfo(TDGLLibMaterialName), TDGLMaterial, '', TDGLLibMaterialNameProperty);
+  //RegisterPropertyEditor(TypeInfo(TDGLMaterial), nil, '', TDGLMaterialProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLTextureProperties, 'TextureName', TDGLLibTextureNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLTextureProperties, 'SamplerName', TDGLLibSamplerNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLMaterialComponentName), TDGLMultitexturingProperties, 'CombinerName', TDGLLibCombinerNameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TDGLTexture, 'SourceFile', TPictureFileProperty);
+
+  //-------------- SHADER ------------------------------------------------
+  RegisterComponentEditor(TDGLShaderLibrary, TDGLShaderLibraryEditor);
+
+  RegisterPropertyEditor(TypeInfo(TDGLShaderComponentName), TDGLBaseGLSLShaderModel, 'VertexShaderName', TDGLShaderScriptNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLShaderComponentName), TDGLBaseGLSLShaderModel, 'FragmentShaderName', TDGLShaderScriptNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLShaderComponentName), TDGLBaseGLSLShaderModel, 'GeometryShaderName', TDGLShaderScriptNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLShaderComponentName), TDGLBaseGLSLShaderModel, 'TessControlShaderName', TDGLShaderScriptNameProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLShaderComponentName), TDGLBaseGLSLShaderModel, 'TessEvalShaderName', TDGLShaderScriptNameProperty);
+  RegisterPropertyEditor(TypeInfo(string), TDGLSLShaderScript, 'SourceFile', TShaderFileProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLLibShaderName), TDGLLibShaderProperty, 'NextPass', TDGLLibShaderNameProperty);
+  RegisterPropertyEditor(TypeInfo(Boolean), TDGLCustomGLSLShaderModel, 'AutoUniforms', TUniformAutoSetProperty);
+  RegisterPropertyEditor(TypeInfo(TStringList), TDGLSLShaderScript, 'Source', TDGLShaderEditorProperty);
+  RegisterPropertyEditor(TypeInfo(TDGLLibMaterialName),TDGLCustomGLSLShaderModel, 'MaterialName',TDGLLibMaterialNameProperty);
 
   //-------------- COMMON ----------------------------------------------
   RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
@@ -1515,8 +1590,12 @@ begin
   RegisterPropertyEditor(TypeInfo(TDGLColor), nil, '', TDGLColorProperty);
 
   //-------------- SOUND -----------------------------------------------
+  RegisterSelectionEditor(TDGLSoundLibrary, TDGLSoundLibrarySelectionEditor);
+  RegisterPropertyEditor(TypeInfo(TDGLSoundFile), TDGLSoundSample, '', TSoundFileProperty);
+  RegisterPropertyEditor(TypeInfo(string), TDGLBaseSoundSource, 'SoundName', TSoundNameProperty);
 
   //-------------- OTHERS ----------------------------------------------
+  RegisterComponentEditor(TDGLArchiveManager, TDGLArchiveManagerEditor);
 end;
 
 
@@ -1586,13 +1665,12 @@ begin
 end;
 
 
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
 
-SplashScreenServices.AddPluginBitmap(GeTDGLSceneVersion, LoadBitmap(HInstance, 'TDGLScene'), False, 'MPL 1.1 license', 'SVN version');
+SplashScreenServices.AddPluginBitmap(GetDGLSceneVersion, LoadBitmap(HInstance, 'TDGLScene'), False, 'MPL 1.1 license', 'SVN version');
 DGLCrossPlatform.IsDesignTime            := True;
 DGLCrossPlatform.vProjectTargetName      := GetProjectTargetName;
 DGLColor.vUseDefaultColorSets            := True;
@@ -1607,11 +1685,11 @@ begin
   RegisterSceneObject(TDGLDummyCube, 'DummyCube', '', HInstance);
 
   // Basic geometry
-  RegisterSceneObject(TDGLSprite, 'Sprite', glsOCBasicGeometry, HInstance);
+//  RegisterSceneObject(TDGLSprite, 'Sprite', glsOCBasicGeometry, HInstance);
   RegisterSceneObject(TDGLPlane, 'Plane', glsOCBasicGeometry, HInstance);
   RegisterSceneObject(TDGLCube, 'Cube', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TDGLSphere, 'Sphere', glsOCBasicGeometry, HInstance);
-  RegisterSceneObject(TDGLDisk, 'Disk', glsOCBasicGeometry, HInstance);
+//  RegisterSceneObject(TDGLSphere, 'Sphere', glsOCBasicGeometry, HInstance);
+//  RegisterSceneObject(TDGLDisk, 'Disk', glsOCBasicGeometry, HInstance);
 
   // Other objects.
   RegisterSceneObject(TDGLDirectOpenGL, 'Direct OpenGL', '', HInstance);

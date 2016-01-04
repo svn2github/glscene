@@ -1,11 +1,11 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLSMemo<p>
+{ : DGLSMemo<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>28/12/15 - JD - Imported from GLScene
- </ul></font>
+  <b>History : </b><font size=-1><ul>
+  <li>28/12/15 - JD - Imported from GLScene
+  </ul></font>
 }
 
 unit DGLSMemo;
@@ -20,54 +20,53 @@ uses
   VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
   VCL.StdCtrls, VCL.ExtCtrls;
 
-
-
 type
   TBorderType = (btRaised, btLowered, btFlatRaised, btFlatLowered);
-  TCommand = Integer;
+  TCommand    = Integer;
 
   TCellSize = record
-    W, H: integer;
+    W, H: Integer;
   end;
 
   TCellPos = record
-    X, Y: integer;
+    X, Y: Integer;
   end;
 
   TFullPos = record
-    LineNo, Pos: integer;
+    LineNo, Pos: Integer;
   end;
 
   TLineProp = class
     FObject: TObject;
-    FStyleNo: integer;
+    FStyleNo: Integer;
     FInComment: Boolean;
-    FInBrackets: integer;
+    FInBrackets: Integer;
     FValidAttrs: Boolean;
     FCharAttrs: string;
   end;
 
+  // ****************************************************************************************
   // TCharStyle
   //
   TCharStyle = class(TPersistent)
   private
     { Private Declarations }
     FTextColor, FBkColor: TColor;
-    FStyle: TFontStyles;
+    FStyle:               TFontStyles;
   published
     { Published Declarations }
     property TextColor: TColor read FTextColor write FTextColor;
-    property BkColor: TColor read FBkColor write FBkColor;
-    property Style: TFontStyles read FStyle write FStyle;
+    property BkColor:   TColor read FBkColor write FBkColor;
+    property Style:     TFontStyles read FStyle write FStyle;
   end;
 
+  // ****************************************************************************************
   // TStyleList
   //
-
   TStyleList = class(TList)
   private
     { Private Declarations }
-    procedure CheckRange(Index: integer);
+    procedure CheckRange(Index: Integer);
     function GetTextColor(Index: Integer): TColor;
     procedure SetTextColor(Index: Integer; Value: TColor);
     function GetBkColor(Index: Integer): TColor;
@@ -76,74 +75,59 @@ type
     procedure SetStyle(Index: Integer; Value: TFontStyles);
   protected
     { Protected Declarations }
-    property TextColor[Index: Integer]: TColor read GetTextColor write
-    SetTextColor;
-    property BkColor[Index: Integer]: TColor read GetBkColor write SetBkColor;
-    property Style[Index: Integer]: TFontStyles read GetStyle write SetStyle;
+    property TextColor[Index: Integer]: TColor read GetTextColor write SetTextColor;
+    property BkColor[Index: Integer]:   TColor read GetBkColor write SetBkColor;
+    property Style[Index: Integer]:     TFontStyles read GetStyle write SetStyle;
   public
     { Public Declarations }
     destructor Destroy; override;
     procedure Clear; override;
     procedure Delete(Index: Integer);
     function Add(ATextColor, ABkCOlor: TColor; AStyle: TFontStyles): Integer;
-    procedure Change(Index: integer; ATextColor, ABkColor: TColor; AStyle:
-      TFontStyles);
+    procedure Change(Index: Integer; ATextColor, ABkCOlor: TColor; AStyle: TFontStyles);
   end;
 
+  // ****************************************************************************************
   // TDGLAbstractMemoObject
   //
-
   TDGLAbstractMemoObject = class(TObject)
   public
     { Public Declarations }
-    function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
-      Boolean; virtual; abstract;
-    function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
-      Boolean; virtual; abstract;
-    function MouseMove(Shift: TShiftState; X, Y: Integer):
-      Boolean; virtual; abstract;
+    function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; virtual; abstract;
+    function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; virtual; abstract;
+    function MouseMove(Shift: TShiftState; X, Y: Integer): Boolean; virtual; abstract;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoAbstractScrollableObject
   //
-
   TDGLSMemoScrollBar = class;
 
   TDGLSMemoAbstractScrollableObject = class(TCustomControl)
   protected
     { Protected Declarations }
-    procedure DoScroll(Sender: TDGLSMemoScrollBar; ByValue: integer);
-      virtual; abstract;
-    procedure DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue: integer);
-      virtual; abstract;
+    procedure DoScroll(Sender: TDGLSMemoScrollBar; ByValue: Integer); virtual; abstract;
+    procedure DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue: Integer); virtual; abstract;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoScrollBar
   //
-
   TDGLSCustomMemo = class;
 
-  TsbState =
-    (
-    sbsWait,
-    sbsBack,
-    sbsForward,
-    sbsPageBack,
-    sbsPageForward,
-    sbsDragging
-    );
+  TsbState = (sbsWait, sbsBack, sbsForward, sbsPageBack, sbsPageForward, sbsDragging);
 
   TDGLSMemoScrollBar = class(TDGLAbstractMemoObject)
   private
     { Private Declarations }
-    FKind: TScrollBarKind;
-    FParent: TDGLSMemoAbstractScrollableObject;
-    FLeft, FTop, FWidth, FHeight: integer;
-    FTotal, FMaxPosition, FPosition: integer;
-    FButtonLength: integer;
-    FState: TsbState;
-    FXOffset, FYOffset: integer;
-    procedure SetParams(Index: integer; Value: integer);
+    FKind:                           TScrollBarKind;
+    FParent:                         TDGLSMemoAbstractScrollableObject;
+    FLeft, FTop, FWidth, FHeight:    Integer;
+    FTotal, FMaxPosition, FPosition: Integer;
+    FButtonLength:                   Integer;
+    FState:                          TsbState;
+    FXOffset, FYOffset:              Integer;
+    procedure SetParams(Index: Integer; Value: Integer);
     procedure SetState(Value: TsbState);
     function GetRect: TRect;
     function GetThumbRect: TRect;
@@ -154,29 +138,25 @@ type
     function GetPgForwardRect: TRect;
   public
     { Public Declarations }
-    constructor Create(AParent: TDGLSMemoAbstractScrollableObject;
-      AKind: TScrollBarKind);
+    constructor Create(AParent: TDGLSMemoAbstractScrollableObject; AKind: TScrollBarKind);
     procedure PaintTo(ACanvas: TCanvas);
 
-    function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
-      Boolean; override;
-    function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
-      Boolean; override;
-    function MouseMove(Shift: TShiftState; X, Y: Integer):
-      Boolean; override;
+    function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean; override;
+    function MouseMove(Shift: TShiftState; X, Y: Integer): Boolean; override;
 
-    function MoveThumbTo(X, Y: Integer): integer;
+    function MoveThumbTo(X, Y: Integer): Integer;
 
     property Parent: TDGLSMemoAbstractScrollableObject read FParent;
     property Kind: TScrollBarKind read FKind write FKind;
     property State: TsbState read FState write SetState;
-    property Left: integer index 0 read FLeft write SetParams;
-    property Top: integer index 1 read FTop write SetParams;
-    property Width: integer index 2 read FWidth write SetParams;
-    property Height: integer index 3 read FHeight write SetParams;
-    property Total: integer index 4 read FTotal write SetParams;
-    property MaxPosition: integer index 5 read FMaxPosition write SetParams;
-    property Position: integer index 6 read FPosition write SetParams;
+    property Left: Integer index 0 read FLeft write SetParams;
+    property Top: Integer index 1 read FTop write SetParams;
+    property Width: Integer index 2 read FWidth write SetParams;
+    property Height: Integer index 3 read FHeight write SetParams;
+    property Total: Integer index 4 read FTotal write SetParams;
+    property MaxPosition: Integer index 5 read FMaxPosition write SetParams;
+    property Position: Integer index 6 read FPosition write SetParams;
     property FullRect: TRect read GetRect;
     property ThumbRect: TRect read GetThumbRect;
     property BackRect: TRect read GetBackRect;
@@ -186,24 +166,24 @@ type
     property PageBackRect: TRect read GetPgBackRect;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoStrings
   //
-
   TDGLSMemoStrings = class(TStringList)
   private
     { Private Declarations }
-    FMemo: TDGLSCustomMemo;
-    FLockCount: integer;
-    FDeleting: Boolean;
-    procedure CheckRange(Index: integer);
-    function GetLineProp(Index: integer): TLineProp;
+    FMemo:      TDGLSCustomMemo;
+    FLockCount: Integer;
+    FDeleting:  Boolean;
+    procedure CheckRange(Index: Integer);
+    function GetLineProp(Index: Integer): TLineProp;
 
-    procedure SetLineStyle(Index: integer; Value: integer);
-    function GetLineStyle(Index: integer): integer;
+    procedure SetLineStyle(Index: Integer; Value: Integer);
+    function GetLineStyle(Index: Integer): Integer;
     function GetInComment(Index: Integer): Boolean;
     procedure SetInComment(Index: Integer; Value: Boolean);
-    function GetInBrackets(Index: Integer): integer;
-    procedure SetInBrackets(Index: Integer; Value: integer);
+    function GetInBrackets(Index: Integer): Integer;
+    procedure SetInBrackets(Index: Integer; Value: Integer);
     function GetValidAttrs(Index: Integer): Boolean;
     procedure SetValidAttrs(Index: Integer; Value: Boolean);
     function GetCharAttrs(Index: Integer): string;
@@ -213,18 +193,13 @@ type
     function GetObject(Index: Integer): TObject; override;
     procedure PutObject(Index: Integer; AObject: TObject); override;
     procedure SetUpdateState(Updating: Boolean); override;
-    function CreateProp(Index: integer): TLineProp;
-    property LineProp[Index: integer]: TLineProp read GetLineProp;
-    property Style[Index: integer]: integer read GetLineStyle write
-    SetLineStyle;
-    property InComment[Index: integer]: Boolean read GetInComment write
-    SetInComment;
-    property InBrackets[Index: integer]: integer read GetInBrackets write
-    SetInBrackets;
-    property ValidAttrs[Index: integer]: Boolean read GetValidAttrs write
-    SetValidAttrs;
-    property CharAttrs[Index: integer]: string read GetCharAttrs write
-    SetCharAttrs;
+    function CreateProp(Index: Integer): TLineProp;
+    property LineProp[Index: Integer]: TLineProp read GetLineProp;
+    property Style[Index: Integer]: Integer read GetLineStyle write SetLineStyle;
+    property InComment[Index: Integer]: Boolean read GetInComment write SetInComment;
+    property InBrackets[Index: Integer]: Integer read GetInBrackets write SetInBrackets;
+    property ValidAttrs[Index: Integer]: Boolean read GetValidAttrs write SetValidAttrs;
+    property CharAttrs[Index: Integer]: string read GetCharAttrs write SetCharAttrs;
   public
     { Public Declarations }
     destructor Destroy; override;
@@ -235,22 +210,21 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Insert(Index: Integer; const S: string); override;
     procedure DoInsert(Index: Integer; const S: string);
-    procedure InsertObject(Index: Integer; const S: string; AObject: TObject);
-      override;
+    procedure InsertObject(Index: Integer; const S: string; AObject: TObject); override;
     procedure Delete(Index: Integer); override;
     procedure LoadFromFile(const FileName: string); override;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoGutter
   //
-
   TDGLSMemoGutter = class(TObject)
   private
     { Private Declarations }
-    FMemo: TDGLSCustomMemo;
-    FLeft, FTop, FWidth, FHeight: integer;
-    FColor: TColor;
-    procedure SetParams(Index: integer; Value: integer);
+    FMemo:                        TDGLSCustomMemo;
+    FLeft, FTop, FWidth, FHeight: Integer;
+    FColor:                       TColor;
+    procedure SetParams(Index: Integer; Value: Integer);
     function GetRect: TRect;
   protected
     { Protected Declarations }
@@ -258,37 +232,38 @@ type
     procedure Invalidate;
   public
     { Public Declarations }
-    property Left: integer index 0 read FLeft write SetParams;
-    property Top: integer index 1 read FTop write SetParams;
-    property Width: integer index 2 read FWidth write SetParams;
-    property Height: integer index 3 read FHeight write SetParams;
+    property Left:     Integer index 0 read FLeft write SetParams;
+    property Top:      Integer index 1 read FTop write SetParams;
+    property Width:    Integer index 2 read FWidth write SetParams;
+    property Height:   Integer index 3 read FHeight write SetParams;
     property FullRect: TRect read GetRect;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoUndo
   //
-
   TDGLSMemoUndo = class
   private
     { Private Declarations }
-    FMemo: TDGLSCustomMemo;
-    FUndoCurX0, FUndoCurY0: integer;
-    FUndoCurX, FUndoCurY: integer;
-    FUndoText: string;
+    FMemo:                  TDGLSCustomMemo;
+    FUndoCurX0, FUndoCurY0: Integer;
+    FUndoCurX, FUndoCurY:   Integer;
+    FUndoText:              string;
   public
     { Public Declarations }
-    constructor Create(ACurX0, ACurY0, ACurX, ACurY: integer; AText: string);
+    constructor Create(ACurX0, ACurY0, ACurX, ACurY: Integer; AText: string);
     function Append(NewUndo: TDGLSMemoUndo): Boolean; virtual;
     procedure Undo;
     procedure Redo;
     procedure PerformUndo; virtual; abstract;
     procedure PerformRedo; virtual; abstract;
-    property UndoCurX0: integer read FUndoCurX0 write FUndoCurX0;
-    property UndoCurY0: integer read FUndoCurY0 write FUndoCurY0;
-    property UndoCurX: integer read FUndoCurX write FUndoCurX;
-    property UndoCurY: integer read FUndoCurY write FUndoCurY;
+    property UndoCurX0: Integer read FUndoCurX0 write FUndoCurX0;
+    property UndoCurY0: Integer read FUndoCurY0 write FUndoCurY0;
+    property UndoCurX: Integer read FUndoCurX write FUndoCurX;
+    property UndoCurY: Integer read FUndoCurY write FUndoCurY;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoInsCharUndo = class(TDGLSMemoUndo)
   public
     { Public Declarations }
@@ -297,6 +272,7 @@ type
     procedure PerformRedo; override;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoDelCharUndo = class(TDGLSMemoUndo)
   private
     { Private Declarations }
@@ -309,31 +285,32 @@ type
     property IsBackspace: Boolean read FIsBackspace write FIsBackspace;
   end;
 
+  // ****************************************************************************************
   TDGLSMEmoDelLineUndo = class(TDGLSMemoUndo)
   private
     { Private Declarations }
-    FIndex: integer;
+    FIndex: Integer;
   public
     { Public Declarations }
-    constructor Create(AIndex, ACurX0, ACurY0, ACurX, ACurY: integer; AText:
-      string);
+    constructor Create(AIndex, ACurX0, ACurY0, ACurX, ACurY: Integer; AText: string);
     procedure PerformUndo; override;
     procedure PerformRedo; override;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoSelUndo = class(TDGLSMemoUndo)
   private
     { Private Declarations }
-    FUndoSelStartX, FUndoSelStartY,
-      FUndoSelEndX, FUndoSelEndY: integer;
+    FUndoSelStartX, FUndoSelStartY, FUndoSelEndX, FUndoSelEndY: Integer;
   public
     { Public Declarations }
-    property UndoSelStartX: integer read FUndoSelStartX write FUndoSelStartX;
-    property UndoSelStartY: integer read FUndoSelStartY write FUndoSelStartY;
-    property UndoSelEndX: integer read FUndoSelEndX write FUndoSelEndX;
-    property UndoSelEndY: integer read FUndoSelEndY write FUndoSelEndY;
+    property UndoSelStartX: Integer read FUndoSelStartX write FUndoSelStartX;
+    property UndoSelStartY: Integer read FUndoSelStartY write FUndoSelStartY;
+    property UndoSelEndX:   Integer read FUndoSelEndX write FUndoSelEndX;
+    property UndoSelEndY:   Integer read FUndoSelEndY write FUndoSelEndY;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoDeleteBufUndo = class(TDGLSMemoSelUndo)
   public
     { Public Declarations }
@@ -341,6 +318,7 @@ type
     procedure PerformRedo; override;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoPasteUndo = class(TDGLSMemoUndo)
   public
     { Public Declarations }
@@ -348,17 +326,18 @@ type
     procedure PerformRedo; override;
   end;
 
+  // ****************************************************************************************
   TDGLSMemoUndoList = class(TList)
   private
     { Private Declarations }
-    FPos: integer;
-    FMemo: TDGLSCustomMemo;
+    FPos:          Integer;
+    FMemo:         TDGLSCustomMemo;
     FIsPerforming: Boolean;
-    FLimit: integer;
+    FLimit:        Integer;
   protected
     { Protected Declarations }
     function Get(Index: Integer): TDGLSMemoUndo;
-    procedure SetLimit(Value: integer);
+    procedure SetLimit(Value: Integer);
   public
     { Public Declarations }
     constructor Create;
@@ -371,111 +350,105 @@ type
     property Items[Index: Integer]: TDGLSMemoUndo read Get; default;
     property IsPerforming: Boolean read FIsPerforming write FIsPerforming;
     property Memo: TDGLSCustomMemo read FMemo write FMemo;
-    property Pos: integer read FPos write FPos;
-    property Limit: integer read FLimit write SetLimit;
+    property Pos: Integer read FPos write FPos;
+    property Limit: Integer read FLimit write SetLimit;
   end;
 
-  //--------------------------------------------------------------
+  // --------------------------------------------------------------
 
-  TGutterClickEvent = procedure(Sender: TObject; LineNo: integer) of object;
-  TGutterDrawEvent = procedure(Sender: TObject; ACanvas: TCanvas;
-    LineNo: integer; rct: TRect) of object;
-  TGetLineAttrsEvent = procedure(Sender: TObject; LineNo: integer;
-    var Attrs: string) of object;
-  TUndoChangeEvent = procedure(Sender: TObject;
-    CanUndo, CanRedo: Boolean) of object;
-  TScrollMode = (smAuto, smStrict);
+  TGutterClickEvent  = procedure(Sender: TObject; LineNo: Integer) of object;
+  TGutterDrawEvent   = procedure(Sender: TObject; ACanvas: TCanvas; LineNo: Integer; rct: TRect) of object;
+  TGetLineAttrsEvent = procedure(Sender: TObject; LineNo: Integer; var Attrs: string) of object;
+  TUndoChangeEvent   = procedure(Sender: TObject; CanUndo, CanRedo: Boolean) of object;
+  TScrollMode        = (smAuto, smStrict);
 
+  // ****************************************************************************************
   // TDGLSCustomMemo
   //
-
   TDGLSCustomMemo = class(TDGLSMemoAbstractScrollableObject)
   private
     { Private Declarations }
-    FAutoIndent: Boolean;
-    FMargin: integer;
-    FHiddenCaret, FCaretVisible: Boolean;
-    FCellSize: TCellSize;
-    FCurX, FCurY: integer;
-    FLeftCol, FTopLine: integer;
-    FTabSize: integer;
-    FFont: TFont;
-    FBkColor: TColor;
-    FSelColor: TColor;
-    FSelBkColor: TColor;
-    FReadOnly: Boolean;
-    FDelErase: Boolean;
-    FLines: TStrings;
-    FSelStartX, FSelStartY,
-      FSelEndX, FSelEndY,
-      FPrevSelX, FPrevSelY: integer;
-    FScrollBars: System.UITypes.TScrollStyle;
-    FScrollBarWidth: integer;
-    FGutter: TDGLSMemoGutter;
-    FGutterWidth: integer;
-    sbVert, sbHorz: TDGLSMemoScrollBar;
-    FStyles: TStyleList;
-    FLineBitmap: TBitmap;
-    FSelCharPos: TFullPos;
-    FSelCharStyle: integer;
-    FLeftButtonDown: Boolean;
-    FScrollMode: TScrollMode;
-    FUndoList: TDGLSMemoUndoList;
-    FFirstUndoList: TDGLSMemoUndoList;
-    FUndoLimit: integer;
-    FLastMouseUpX,
-      FLastMouseUpY: integer;
-    FAfterDoubleClick: Boolean;
-    {events}
-    FOnMoveCursor: TNotifyEvent;
-    FOnChange: TNotifyEvent;
-    FOnAttrChange: TNotifyEvent;
-    FOnStatusChange: TNotifyEvent;
+    FAutoIndent:                                                      Boolean;
+    FMargin:                                                          Integer;
+    FHiddenCaret, FCaretVisible:                                      Boolean;
+    FCellSize:                                                        TCellSize;
+    FCurX, FCurY:                                                     Integer;
+    FLeftCol, FTopLine:                                               Integer;
+    FTabSize:                                                         Integer;
+    FFont:                                                            TFont;
+    FBkColor:                                                         TColor;
+    FSelColor:                                                        TColor;
+    FSelBkColor:                                                      TColor;
+    FReadOnly:                                                        Boolean;
+    FDelErase:                                                        Boolean;
+    FLines:                                                           TStrings;
+    FSelStartX, FSelStartY, FSelEndX, FSelEndY, FPrevSelX, FPrevSelY: Integer;
+    FScrollBars:                                                      System.UITypes.TScrollStyle;
+    FScrollBarWidth:                                                  Integer;
+    FGutter:                                                          TDGLSMemoGutter;
+    FGutterWidth:                                                     Integer;
+    sbVert, sbHorz:                                                   TDGLSMemoScrollBar;
+    FStyles:                                                          TStyleList;
+    FLineBitmap:                                                      TBitmap;
+    FSelCharPos:                                                      TFullPos;
+    FSelCharStyle:                                                    Integer;
+    FLeftButtonDown:                                                  Boolean;
+    FScrollMode:                                                      TScrollMode;
+    FUndoList:                                                        TDGLSMemoUndoList;
+    FFirstUndoList:                                                   TDGLSMemoUndoList;
+    FUndoLimit:                                                       Integer;
+    FLastMouseUpX, FLastMouseUpY:                                     Integer;
+    FAfterDoubleClick:                                                Boolean;
+    { events }
+    FOnMoveCursor:      TNotifyEvent;
+    FOnChange:          TNotifyEvent;
+    FOnAttrChange:      TNotifyEvent;
+    FOnStatusChange:    TNotifyEvent;
     FOnSelectionChange: TNotifyEvent;
-    FOnGutterDraw: TGutterDrawEvent;
-    FOnGutterClick: TGutterClickEvent;
-    FOnGetLineAttrs: TGetLineAttrsEvent;
-    FOnUndoChange: TUndoChangeEvent;
-    FHideCursor: Boolean;
+    FOnGutterDraw:      TGutterDrawEvent;
+    FOnGutterClick:     TGutterClickEvent;
+    FOnGetLineAttrs:    TGetLineAttrsEvent;
+    FOnUndoChange:      TUndoChangeEvent;
+    FHideCursor:        Boolean;
 
     procedure SetHiddenCaret(Value: Boolean);
 
     procedure SetScrollBars(Value: System.UITypes.TScrollStyle);
 
-    procedure SetGutterWidth(Value: integer);
+    procedure SetGutterWidth(Value: Integer);
     procedure SetGutterColor(Value: TColor);
     function GetGutterColor: TColor;
 
-    procedure SetCurX(Value: integer);
-    procedure SetCurY(Value: integer);
+    procedure SetCurX(Value: Integer);
+    procedure SetCurY(Value: Integer);
     procedure SetFont(Value: TFont);
-    procedure SetColor(Index: integer; Value: TColor);
+    procedure SetColor(Index: Integer; Value: TColor);
     function GetSelStart: TPoint;
     function GetSelEnd: TPoint;
 
     procedure SetLines(ALines: TStrings);
-    procedure SetLineStyle(Index: integer; Value: integer);
-    function GetLineStyle(Index: integer): integer;
-    function GetInComment(Index: integer): Boolean;
-    procedure SetInComment(Index: integer; Value: Boolean);
-    function GetInBrackets(Index: Integer): integer;
-    procedure SetInBrackets(Index: Integer; Value: integer);
-    function GetValidAttrs(Index: integer): Boolean;
-    procedure SetValidAttrs(Index: integer; Value: Boolean);
-    function GetCharAttrs(Index: integer): string;
-    procedure SetCharAttrs(Index: integer; Value: string);
+    procedure SetLineStyle(Index: Integer; Value: Integer);
+    function GetLineStyle(Index: Integer): Integer;
+    function GetInComment(Index: Integer): Boolean;
+    procedure SetInComment(Index: Integer; Value: Boolean);
+    function GetInBrackets(Index: Integer): Integer;
+    procedure SetInBrackets(Index: Integer; Value: Integer);
+    function GetValidAttrs(Index: Integer): Boolean;
+    procedure SetValidAttrs(Index: Integer; Value: Boolean);
+    function GetCharAttrs(Index: Integer): string;
+    procedure SetCharAttrs(Index: Integer; Value: string);
 
     procedure ExpandSelection;
     function GetSelText: string;
     procedure SetSelText(const AValue: string);
 
-    function GetSelLength: integer;
+    function GetSelLength: Integer;
 
-    procedure MovePage(dP: integer; Shift: TShiftState);
+    procedure MovePage(dP: Integer; Shift: TShiftState);
     procedure ShowCaret(State: Boolean);
     procedure MakeVisible;
-    function GetVisible(Index: integer): integer;
-    function MaxLength: integer;
+    function GetVisible(Index: Integer): Integer;
+    function MaxLength: Integer;
 
     procedure WMSize(var Msg: TWMSize); message WM_SIZE;
     procedure WMGetDlgCode(var Msg: TWMGetDlgCode); message WM_GETDLGCODE;
@@ -485,18 +458,18 @@ type
     procedure WMKillFocus(var Msg: TWMSetFocus); message WM_KILLFOCUS;
     procedure WMMouseWheel(var Message: TMessage); message WM_MOUSEWHEEL;
 
-    procedure MoveCursor(dX, dY: integer; Shift: TShiftState);
+    procedure MoveCursor(dX, dY: Integer; Shift: TShiftState);
 
     procedure ResizeEditor;
     procedure ResizeScrollBars;
     procedure ResizeGutter;
     procedure DoCommand(cmd: TCommand; const AShift: TShiftState);
 
-    procedure DrawLine(LineNo: integer);
-    function IsLineVisible(LineNo: integer): Boolean;
+    procedure DrawLine(LineNo: Integer);
+    function IsLineVisible(LineNo: Integer): Boolean;
     procedure FreshLineBitmap;
 
-    procedure SetUndoLimit(Value: integer);
+    procedure SetUndoLimit(Value: Integer);
 
   protected
     { Protected Declarations }
@@ -504,19 +477,18 @@ type
 
     function EditorRect: TRect;
 
-    function LineRangeRect(FromLine, ToLine: integer): TRect;
-    function ColRangeRect(FromCol, ToCol: integer): TRect;
-    procedure InvalidateLineRange(FromLine, ToLine: integer);
+    function LineRangeRect(FromLine, ToLine: Integer): TRect;
+    function ColRangeRect(FromCol, ToCol: Integer): TRect;
+    procedure InvalidateLineRange(FromLine, ToLine: Integer);
 
-    function AddString(S: string): integer;
-    procedure InsertString(Index: integer; S: string);
+    function AddString(S: string): Integer;
+    procedure InsertString(Index: Integer; S: string);
 
     procedure GoHome(Shift: TShiftState);
     procedure GoEnd(Shift: TShiftState);
     procedure InsertChar(C: Char);
-    procedure DeleteChar(OldX, OldY: integer);
-    procedure DeleteLine(Index, OldX, OldY, NewX, NewY: integer; FixUndo:
-      Boolean);
+    procedure DeleteChar(OldX, OldY: Integer);
+    procedure DeleteLine(Index, OldX, OldY, NewX, NewY: Integer; FixUndo: Boolean);
     procedure BackSpace;
     procedure BackSpaceWord;
 
@@ -533,26 +505,23 @@ type
     procedure KeyDown(var Key: Word; Shift: TShiftState); override;
     procedure KeyPress(var Key: Char); override;
 
-    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y:
-      Integer); override;
+    procedure MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
-    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-      override;
+    procedure MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
     procedure DblClick; override;
 
-    procedure DoScroll(Sender: TDGLSMemoScrollBar; ByValue: integer); override;
-    procedure DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue: integer);
-      override;
+    procedure DoScroll(Sender: TDGLSMemoScrollBar; ByValue: Integer); override;
+    procedure DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue: Integer); override;
 
-    property VisiblePosCount: integer index 0 read GetVisible;
-    property VisibleLineCount: integer index 1 read GetVisible;
-    property LastVisiblePos: integer index 2 read GetVisible;
-    property LastVisibleLine: integer index 3 read GetVisible;
+    property VisiblePosCount: Integer index 0 read GetVisible;
+    property VisibleLineCount: Integer index 1 read GetVisible;
+    property LastVisiblePos: Integer index 2 read GetVisible;
+    property LastVisibleLine: Integer index 3 read GetVisible;
 
     procedure DeleteSelection(bRepaint: Boolean);
 
-    procedure Changed(FromLine, ToLine: integer); virtual;
-    procedure AttrChanged(LineNo: integer); virtual;
+    procedure Changed(FromLine, ToLine: Integer); virtual;
+    procedure AttrChanged(LineNo: Integer); virtual;
     procedure SelectionChanged; virtual;
     procedure StatusChanged; virtual;
 
@@ -560,10 +529,9 @@ type
     procedure UndoChange;
 
     property AutoIndent: Boolean read FAutoIndent write FAutoIndent;
-    property GutterWidth: integer read FGutterWidth write SetGutterWidth;
+    property GutterWidth: Integer read FGutterWidth write SetGutterWidth;
     property GutterColor: TColor read GetGutterColor write SetGutterColor;
-    property ScrollBars: System.UITypes.TScrollStyle read FScrollBars write SetScrollBars
-      default ssBoth;
+    property ScrollBars: System.UITypes.TScrollStyle read FScrollBars write SetScrollBars default ssBoth;
     property Font: TFont read FFont write SetFont;
     property ReadOnly: Boolean read FReadOnly write FReadOnly;
     property Lines: TStrings read FLines write SetLines;
@@ -571,37 +539,26 @@ type
     property SelColor: TColor index 1 read FSelColor write SetColor;
     property SelBkColor: TColor index 2 read FSelBkColor write SetColor;
     property HiddenCaret: Boolean read FHiddenCaret write SetHiddenCaret;
-    property TabSize: integer read FTabSize write FTabSize;
-    property ScrollMode: TScrollMode read FScrollMode write FScrollMode default
-      smAuto;
-    property UndoLimit: integer read FUndoLimit write SetUndoLimit;
+    property TabSize: Integer read FTabSize write FTabSize;
+    property ScrollMode: TScrollMode read FScrollMode write FScrollMode default smAuto;
+    property UndoLimit: Integer read FUndoLimit write SetUndoLimit;
     property HideCursor: Boolean read FHideCursor write FHideCursor;
 
-    property InComment[Index: integer]: Boolean read GetInComment write
-    SetInComment;
-    property InBrackets[Index: integer]: integer read GetInBrackets write
-    SetInBrackets;
-    property ValidAttrs[Index: integer]: Boolean read GetValidAttrs write
-    SetValidAttrs;
-    property CharAttrs[Index: integer]: string read GetCharAttrs write
-    SetCharAttrs;
+    property InComment[Index: Integer]: Boolean read GetInComment write SetInComment;
+    property InBrackets[Index: Integer]: Integer read GetInBrackets write SetInBrackets;
+    property ValidAttrs[Index: Integer]: Boolean read GetValidAttrs write SetValidAttrs;
+    property CharAttrs[Index: Integer]: string read GetCharAttrs write SetCharAttrs;
 
-    {events}
-    property OnGutterClick: TGutterClickEvent read FOnGutterClick write
-      FOnGutterClick;
-    property OnGutterDraw: TGutterDrawEvent read FOnGutterDraw write
-      FOnGutterDraw;
+    { events }
+    property OnGutterClick: TGutterClickEvent read FOnGutterClick write FOnGutterClick;
+    property OnGutterDraw: TGutterDrawEvent read FOnGutterDraw write FOnGutterDraw;
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property OnMoveCursor: TNotifyEvent read FOnMoveCursor write FOnMoveCursor;
     property OnAttrChange: TNotifyEvent read FOnAttrChange write FOnAttrChange;
-    property OnSelectionChange: TNotifyEvent read FOnSelectionChange
-      write FOnSelectionChange;
-    property OnStatusChange: TNotifyEvent read FOnStatusChange write
-      FOnStatusChange;
-    property OnGetLineAttrs: TGetLineAttrsEvent read FOnGetLineAttrs write
-      FOnGetLineAttrs;
-    property OnUndoChange: TUndoChangeEvent read FOnUndoChange write
-      FOnUndoChange;
+    property OnSelectionChange: TNotifyEvent read FOnSelectionChange write FOnSelectionChange;
+    property OnStatusChange: TNotifyEvent read FOnStatusChange write FOnStatusChange;
+    property OnGetLineAttrs: TGetLineAttrsEvent read FOnGetLineAttrs write FOnGetLineAttrs;
+    property OnUndoChange: TUndoChangeEvent read FOnUndoChange write FOnUndoChange;
 
   public
     { Public Declarations }
@@ -615,44 +572,42 @@ type
     property SelStart: TPoint read GetSelStart;
     property SelEnd: TPoint read GetSelEnd;
     property Selection: string read GetSelText write SetSelText;
-    property SelLength: integer read GetSelLength;
+    property SelLength: Integer read GetSelLength;
     procedure ClearSelection;
     procedure Clear;
     procedure SetCursor(ACurX, ACurY: Integer);
-    function SelectLine(LineNo, StyleNo: Integer): integer;
+    function SelectLine(LineNo, StyleNo: Integer): Integer;
     procedure SelectChar(LineNo, Pos, StyleNo: Integer);
-    function CellFromPos(X, Y: integer): TCellPos;
-    function CharFromPos(X, Y: integer): TFullPos;
-    function CellRect(ACol, ARow: integer): TRect;
-    function LineRect(ARow: integer): TRect;
-    function ColRect(ACol: integer): TRect;
-    function CharStyleNo(LineNo, Pos: integer): integer;
+    function CellFromPos(X, Y: Integer): TCellPos;
+    function CharFromPos(X, Y: Integer): TFullPos;
+    function CellRect(ACol, ARow: Integer): TRect;
+    function LineRect(ARow: Integer): TRect;
+    function ColRect(ACol: Integer): TRect;
+    function CharStyleNo(LineNo, Pos: Integer): Integer;
     procedure InsertTemplate(AText: string);
     procedure UnSelectChar;
     procedure Undo;
     procedure Redo;
     function CanUndo: Boolean;
     function CanRedo: Boolean;
-    function FindText(Text: string; Options: TFindOptions; Select: Boolean):
-      Boolean;
-    property CurX: integer read FCurX write SetCurX;
-    property CurY: integer read FCurY write SetCurY;
+    function FindText(Text: string; Options: TFindOptions; Select: Boolean): Boolean;
+    property CurX: Integer read FCurX write SetCurX;
+    property CurY: Integer read FCurY write SetCurY;
     property DelErase: Boolean read FDelErase write FDelErase;
-    property LineStyle[Index: integer]: integer read GetLineStyle write
-    SetLineStyle;
+    property LineStyle[Index: Integer]: Integer read GetLineStyle write SetLineStyle;
     property Styles: TStyleList read FStyles;
     property UndoList: TDGLSMemoUndoList read FUndoList write FUndoList;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemo
   //
-
   TDGLSMemo = class(TDGLSCustomMemo)
   published
     { Published Declarations }
-    {: TControl }
+    { : TControl }
     property PopupMenu;
-    {: TCustomControl }
+    { : TCustomControl }
     property Align;
     property Enabled;
     property ShowHint;
@@ -660,7 +615,7 @@ type
     property TabStop;
     property Visible;
     property ReadOnly;
-    {: TDGLSCustomMemo }
+    { : TDGLSCustomMemo }
     property AutoIndent;
     property GutterColor;
     property GutterWidth;
@@ -676,7 +631,7 @@ type
     property ScrollMode;
     property UndoLimit;
     property DelErase;
-    {: Inherited events }
+    { : Inherited events }
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -691,7 +646,7 @@ type
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
-    {: Events }
+    { : Events }
     property OnGutterDraw;
     property OnGutterClick;
     property OnChange;
@@ -703,9 +658,9 @@ type
     property OnUndoChange;
   end;
 
+  // ****************************************************************************************
   // TDGLSMemoStringList
   //
-
   TDGLSMemoStringList = class(TStringList)
   private
     { Private Declarations }
@@ -717,52 +672,37 @@ type
   end;
 
   TDelimiters = TSysCharSet;
-  TTokenType =
-    (
-    ttWord,
-    ttBracket,
-    ttSpecial,
-    ttDelimiter,
-    ttSpace,
-    ttEOL,
-    ttInteger,
-    ttFloat,
-    ttComment,
-    ttOther,
-    ttWrongNumber);
+  TTokenType  = (ttWord, ttBracket, ttSpecial, ttDelimiter, ttSpace, ttEOL, ttInteger, ttFloat, ttComment, ttOther, ttWrongNumber);
 
-  //--------------------------------------------------------------
-  //        SYNTAX MEMO - declaration
-  //--------------------------------------------------------------
-  TDGLSSynHiMemo = class(TDGLSCustomMemo)
+  // ****************************************************************************************
+  // --------------------------------------------------------------
+  // SYNTAX MEMO - declaration
+  // --------------------------------------------------------------
+  TDGLSynHiMemo = class(TDGLSCustomMemo)
   private
     { Private declarations }
     FIsPainting: Boolean;
-    FInComment: Boolean;
+    FInComment:  Boolean;
 
-    FWordList: TDGLSMemoStringList;
-    FSpecialList: TDGLSMemoStringList;
-    FBracketList: TDGLSMemoStringList;
-    FDelimiters: TDelimiters;
-    FInBrackets: integer;
-    FLineComment: string;
-    FMultiCommentLeft: string;
-    FMultiCommentRight: string;
-    FDelimiterStyle: TCharStyle;
-    FCommentStyle: TCharStyle;
-    FNumberStyle: TCharStyle;
-    FDelimiterStyleNo,
-      FCommentStyleNo,
-      FNumberStyleNo: integer;
-    FCaseSensitive: Boolean;
-    function GetToken(S: string; var From: integer;
-      var TokenType: TTokenType; var StyleNo: integer): string;
+    FWordList:                                          TDGLSMemoStringList;
+    FSpecialList:                                       TDGLSMemoStringList;
+    FBracketList:                                       TDGLSMemoStringList;
+    FDelimiters:                                        TDelimiters;
+    FInBrackets:                                        Integer;
+    FLineComment:                                       string;
+    FMultiCommentLeft:                                  string;
+    FMultiCommentRight:                                 string;
+    FDelimiterStyle:                                    TCharStyle;
+    FCommentStyle:                                      TCharStyle;
+    FNumberStyle:                                       TCharStyle;
+    FDelimiterStyleNo, FCommentStyleNo, FNumberStyleNo: Integer;
+    FCaseSensitive:                                     Boolean;
+    function GetToken(S: string; var From: Integer; var TokenType: TTokenType; var StyleNo: Integer): string;
     procedure SetWordList(Value: TDGLSMemoStringList);
     procedure SetSpecialList(Value: TDGLSMemoStringList);
     procedure SetBracketList(Value: TDGLSMemoStringList);
-    procedure FindLineAttrs(Sender: TObject; LineNo: integer; var Attrs:
-      string);
-    procedure SetStyle(Index: integer; Value: TCharStyle);
+    procedure FindLineAttrs(Sender: TObject; LineNo: Integer; var Attrs: string);
+    procedure SetStyle(Index: Integer; Value: TCharStyle);
     procedure SetCaseSensitive(Value: Boolean);
   protected
     { Protected declarations }
@@ -771,17 +711,17 @@ type
     { Public declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure AddWord(StyleNo: integer; ArrS: array of string);
-    procedure AddSpecial(StyleNo: integer; ArrS: array of string);
-    procedure AddBrackets(StyleNo: integer; ArrS: array of string);
+    procedure AddWord(StyleNo: Integer; ArrS: array of string);
+    procedure AddSpecial(StyleNo: Integer; ArrS: array of string);
+    procedure AddBrackets(StyleNo: Integer; ArrS: array of string);
 
     property Delimiters: TDelimiters read FDelimiters write FDelimiters;
   published
     { Published declarations }
 
-    {: TControl}
+    { : TControl }
     property PopupMenu;
-    {: TCustomControl}
+    { : TCustomControl }
     property Align;
     property Enabled;
     property ShowHint;
@@ -789,7 +729,7 @@ type
     property TabStop;
     property Visible;
     property ReadOnly;
-    {: TDGLSCustomMemo}
+    { : TDGLSCustomMemo }
     property AutoIndent;
     property GutterColor;
     property GutterWidth;
@@ -804,7 +744,7 @@ type
     property ScrollMode;
     property UndoLimit;
     property DelErase;
-    {: Inherited events }
+    { : Inherited events }
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -819,7 +759,7 @@ type
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
-    {: Events }
+    { : Events }
     property OnGutterClick;
     property OnGutterDraw;
     property OnChange;
@@ -827,25 +767,22 @@ type
     property OnSelectionChange;
     property OnStatusChange;
     property OnUndoChange;
-    {: TGLSSyntaxMemo }
-    property LineComment: string read FLineComment write FLineComment;
-    property MultiCommentLeft: string read FMultiCommentLeft write
-      FMultiCommentLeft;
-    property MultiCommentRight: string read FMultiCommentRight write
-      FMultiCommentRight;
+    { : TGLSSyntaxMemo }
+    property LineComment:       string read FLineComment write FLineComment;
+    property MultiCommentLeft:  string read FMultiCommentLeft write FMultiCommentLeft;
+    property MultiCommentRight: string read FMultiCommentRight write FMultiCommentRight;
 
-    property WordList: TDGLSMemoStringList read FWordList write SetWordList;
-    property SpecialList: TDGLSMemoStringList read FSpecialList write
-      SetSpecialList;
-    property BracketList: TDGLSMemoStringList read FBracketList write
-      SetBracketList;
+    property WordList:    TDGLSMemoStringList read FWordList write SetWordList;
+    property SpecialList: TDGLSMemoStringList read FSpecialList write SetSpecialList;
+    property BracketList: TDGLSMemoStringList read FBracketList write SetBracketList;
 
-    property DelimiterStyle: TCharStyle index 0 read FDelimiterStyle write
-      SetStyle;
-    property CommentStyle: TCharStyle index 1 read FCommentStyle write SetStyle;
-    property NumberStyle: TCharStyle index 2 read FNumberStyle write SetStyle;
-    property CaseSensitive: Boolean read FCaseSensitive write SetCaseSensitive;
+    property DelimiterStyle: TCharStyle index 0 read FDelimiterStyle write SetStyle;
+    property CommentStyle:   TCharStyle index 1 read FCommentStyle write SetStyle;
+    property NumberStyle:    TCharStyle index 2 read FNumberStyle write SetStyle;
+    property CaseSensitive:  Boolean read FCaseSensitive write SetCaseSensitive;
   end;
+
+// ****************************************************************************************
 
 procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
 
@@ -853,66 +790,65 @@ procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 const
-  cmDelete = VK_DELETE;
-  cmBackSpace = VK_BACK;
+  cmDelete        = VK_DELETE;
+  cmBackSpace     = VK_BACK;
   cmWordBackSpace = 127; // Ctrl-BackSpace
-  cmNewLine = VK_RETURN;
-  cmHome = VK_HOME;
-  cmEnd = VK_END;
-  cmPageUp = VK_PRIOR;
-  cmPageDown = VK_NEXT;
-  cmInsert = VK_INSERT;
-  cmDelLine = 25; // Ctrl-Y
-  cmCopy = 3; // Ctrl-C
-  cmCut = 24; // Ctrl-X
-  cmPaste = 22; // Ctrl-V
+  cmNewLine       = VK_RETURN;
+  cmHome          = VK_HOME;
+  cmEnd           = VK_END;
+  cmPageUp        = VK_PRIOR;
+  cmPageDown      = VK_NEXT;
+  cmInsert        = VK_INSERT;
+  cmDelLine       = 25; // Ctrl-Y
+  cmCopy          = 3; // Ctrl-C
+  cmCut           = 24; // Ctrl-X
+  cmPaste         = 22; // Ctrl-V
 
 resourcestring
   SObjectsNotSupported = 'Linked object not supported';
 
 var
-  bmScrollBarFill: TBitmap;
-  bmScrollBarUp: TBitmap;
-  bmScrollBarDown: TBitmap;
-  bmScrollBarLeft: TBitmap;
+  bmScrollBarFill:  TBitmap;
+  bmScrollBarUp:    TBitmap;
+  bmScrollBarDown:  TBitmap;
+  bmScrollBarLeft:  TBitmap;
   bmScrollBarRight: TBitmap;
 
   fIntelliWheelSupport: Boolean; // True if IntelliMouse + wheel enabled
-  fIntelliMessage: UINT; // message sent from mouse on wheel roll
-  fIntelliScrollLines: Integer; // number of lines to scroll per wheel roll
+  fIntelliMessage:      UINT; // message sent from mouse on wheel roll
+  fIntelliScrollLines:  Integer; // number of lines to scroll per wheel roll
 
-// ------------------
-{ Helper functions }
-{$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
+  // ------------------
+  { Helper functions }
+  {$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
 
 function PointInRect(P: TPoint; rct: TRect): Boolean;
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+{$IFDEF GLS_INLINE}inline; {$ENDIF}
 begin
   with rct do
-    Result := (Left <= P.X) and (Top <= P.Y) and
-      (Right >= P.X) and (Bottom >= P.Y);
+    Result := (Left <= P.X) and (Top <= P.Y) and (Right >= P.X) and (Bottom >= P.Y);
 end;
 
-procedure Swap(var I1, I2: integer);
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure Swap(var I1, I2: Integer);
+{$IFDEF GLS_INLINE}inline; {$ENDIF}
 var
-  temp: integer;
+  temp: Integer;
 begin
   temp := I1;
-  I1 := I2;
-  I2 := temp;
+  I1   := I2;
+  I2   := temp;
 end;
 
-procedure OrderPos(var StartX, StartY, EndX, EndY: integer);
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+procedure OrderPos(var StartX, StartY, EndX, EndY: Integer);
+{$IFDEF GLS_INLINE}inline; {$ENDIF}
 begin
-  if (EndY < StartY) or
-    ((EndY = StartY) and (EndX < StartX)) then
+  if (EndY < StartY) or ((EndY = StartY) and (EndX < StartX)) then
   begin
     Swap(StartX, EndX);
     Swap(StartY, EndY);
@@ -920,7 +856,7 @@ begin
 end;
 
 function TotalRect(rct1, rct2: TRect): TRect;
-{$IFDEF GLS_INLINE}inline;{$ENDIF}
+{$IFDEF GLS_INLINE}inline; {$ENDIF}
 begin
   Result := rct1;
   with Result do
@@ -937,7 +873,6 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TDGLSCustomMemo functions }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSCustomMemo functions'}{$ENDIF}
@@ -957,12 +892,12 @@ procedure TDGLSCustomMemo.WndProc(var Message: TMessage);
     if GetAsyncKeyState(vk_MButton) < 0 then
       Result := Result or mk_MButton;
   end;
-  //---------------------------------------------------
+
+// ---------------------------------------------------
 begin
-  if (Message.Msg = fIntelliMessage) and (fIntelliMessage <> wm_MouseWheel) then
+  if (Message.Msg = fIntelliMessage) and (fIntelliMessage <> WM_MOUSEWHEEL) then
   begin
-    PostMessage(Handle, wm_MouseWheel, MakeLong(GetShiftState, Message.wParam),
-      Message.lParam);
+    PostMessage(Handle, WM_MOUSEWHEEL, MakeLong(GetShiftState, Message.wParam), Message.lParam);
   end
   else
     inherited;
@@ -970,33 +905,36 @@ end;
 
 procedure IntelliMouseInit;
 var
-  hWndMouse: hWnd;
+  hWndMouse:         hWnd;
   mQueryScrollLines: UINT;
-  //--------------------------------------------
+  // --------------------------------------------
   function NativeMouseWheelSupport: Boolean;
   var
     ver: TOSVersionInfo;
   begin
-    Result := False;
+    Result                  := False;
     ver.dwOSVersionInfoSize := sizeof(ver);
     // For Windows 98, assume dwMajorVersion = 5 (It's 4 for W95)
     // For NT, we need 4.0 or better.
     if GetVersionEx(ver) then
       case ver.dwPlatformID of
-        ver_Platform_Win32_Windows: Result := ver.dwMajorVersion >= 5;
-        ver_Platform_Win32_NT: Result := ver.dwMajorVersion >= 4;
+        ver_Platform_Win32_Windows:
+          Result := ver.dwMajorVersion >= 5;
+        ver_Platform_Win32_NT:
+          Result := ver.dwMajorVersion >= 4;
       end;
     { Quick and dirty temporary hack for Windows 98 beta 3 }
     if (Result = False) and (ver.szCSDVersion = ' Beta 3') then
       Result := True;
   end;
-  //--------------------------------------------
+
+// --------------------------------------------
 begin
   if NativeMouseWheelSupport then
   begin
     fIntelliWheelSupport := Boolean(GetSystemMetrics(sm_MouseWheelPresent));
     SystemParametersInfo(spi_GetWheelScrollLines, 0, @fIntelliScrollLines, 0);
-    fIntelliMessage := wm_MouseWheel;
+    fIntelliMessage := WM_MOUSEWHEEL;
   end
   else
   begin
@@ -1006,8 +944,8 @@ begin
     begin
       { We're in business - get the scroll line info }
       fIntelliWheelSupport := True;
-      mQueryScrollLines := RegisterWindowMessage('MSH_SCROLL_LINES_MSG');
-      fIntelliScrollLines := SendMessage(hWndMouse, mQueryScrollLines, 0, 0);
+      mQueryScrollLines    := RegisterWindowMessage('MSH_SCROLL_LINES_MSG');
+      fIntelliScrollLines  := SendMessage(hWndMouse, mQueryScrollLines, 0, 0);
       { Finally, get the custom mouse message as well }
       fIntelliMessage := RegisterWindowMessage('MSWHEEL_ROLLMSG');
     end;
@@ -1048,13 +986,13 @@ begin
   CurX := ACurX;
 end;
 
-function TDGLSCustomMemo.SelectLine(LineNo, StyleNo: Integer): integer;
+function TDGLSCustomMemo.SelectLine(LineNo, StyleNo: Integer): Integer;
 var
   rct: TRect;
 begin
-  Result := LineStyle[LineNo];
+  Result            := LineStyle[LineNo];
   LineStyle[LineNo] := StyleNo;
-  rct := LineRect(LineNo);
+  rct               := LineRect(LineNo);
   InvalidateRect(Handle, @rct, True);
 end;
 
@@ -1064,22 +1002,22 @@ var
 begin
   FSelStartX := 0;
   FSelStartY := StartLine;
-  FSelEndX := Length(Lines[EndLine]);
-  FSelEndY := EndLine;
-  rct := LineRangeRect(FSelStartY, FSelEndY);
+  FSelEndX   := Length(Lines[EndLine]);
+  FSelEndY   := EndLine;
+  rct        := LineRangeRect(FSelStartY, FSelEndY);
   SelectionChanged;
-  InvalidateRect(Handle, @rct, true);
+  InvalidateRect(Handle, @rct, True);
 end;
 
 procedure TDGLSCustomMemo.SelectChar(LineNo, Pos, StyleNo: Integer);
 var
   rct: TRect;
 begin
-  UnselectChar;
+  UnSelectChar;
   FSelCharPos.LineNo := LineNo;
-  FSelCharPos.Pos := Pos;
-  FSelCharStyle := StyleNo;
-  rct := LineRect(LineNo);
+  FSelCharPos.Pos    := Pos;
+  FSelCharStyle      := StyleNo;
+  rct                := LineRect(LineNo);
   InvalidateRect(Handle, @rct, True);
 end;
 
@@ -1091,9 +1029,9 @@ begin
   begin
     if LineNo < 0 then
       Exit;
-    rct := LineRect(LineNo);
+    rct    := LineRect(LineNo);
     LineNo := -1;
-    Pos := -1;
+    Pos    := -1;
   end;
   FSelCharStyle := -1;
   InvalidateRect(Handle, @rct, True);
@@ -1101,8 +1039,8 @@ end;
 
 procedure TDGLSCustomMemo.Clear;
 begin
-  CurY := 0;
-  CurX := 0;
+  CurY     := 0;
+  CurX     := 0;
   FLeftCol := 0;
   FTopLine := 0;
   Lines.Clear;
@@ -1115,14 +1053,14 @@ procedure TDGLSCustomMemo.SelectAll;
 begin
   FSelStartY := 0;
   FSelStartX := 0;
-  FSelEndY := Lines.Count - 1;
-  FSelEndX := Length(Lines[Lines.Count - 1]);
+  FSelEndY   := Lines.Count - 1;
+  FSelEndX   := Length(Lines[Lines.Count - 1]);
   Invalidate;
 end;
 
 procedure SetClipboardCodePage(const CodePage: longint);
 var
-  Data: THandle;
+  Data:    THandle;
   DataPtr: Pointer;
 begin
   // Define new code page for clipboard
@@ -1161,16 +1099,16 @@ end;
 
 procedure TDGLSCustomMemo.PasteFromClipBoard;
 var
-  H, len: integer;
-  Buff: string;
+  H, len: Integer;
+  Buff:   string;
 begin
-  H := ClipBoard.GetAsHandle(CF_TEXT);
+  H   := Clipboard.GetAsHandle(CF_TEXT);
   len := GlobalSize(H);
   if len = 0 then
     Exit;
 
   SetLength(Buff, len);
-  SetLength(Buff, ClipBoard.GetTextBuf(PChar(Buff), len));
+  SetLength(Buff, Clipboard.GetTextBuf(PChar(Buff), len));
   AdjustLineBreaks(Buff);
 
   SetSelText(Buff);
@@ -1178,40 +1116,39 @@ end;
 
 procedure TDGLSCustomMemo.DeleteSelection(bRepaint: Boolean);
 var
-  xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
-  i, len: integer;
-  OldX, OldY: integer;
-  S1, S2, S, AddSpaces: string;
-  Undo: TDGLSMemoDeleteBufUndo;
+  xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
+  i, len:                                     Integer;
+  OldX, OldY:                                 Integer;
+  S1, S2, S, AddSpaces:                       string;
+  Undo:                                       TDGLSMemoDeleteBufUndo;
 begin
   if (FSelStartY = FSelEndY) and (FSelStartX = FSelEndX) then
     Exit;
 
-  OldX := CurX;
-  OldY := CurY;
+  OldX       := CurX;
+  OldY       := CurY;
   xSelStartX := FSelStartX;
   xSelStartY := FSelStartY;
-  xSelEndX := FSelEndX;
-  xSelEndY := FSelEndY;
+  xSelEndX   := FSelEndX;
+  xSelEndY   := FSelEndY;
   OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
 
   if xSelStartY = xSelEndY then
   begin
-    S1 := Copy(Lines[xSelStartY], xSelStartX + 1, xSelEndX - xSelStartX);
-    S2 := '';
+    S1        := Copy(Lines[xSelStartY], xSelStartX + 1, xSelEndX - xSelStartX);
+    S2        := '';
     AddSpaces := '';
   end
   else
   begin
-    len := Length(Lines[xSelStartY]);
-    S1 := Copy(Lines[xSelStartY], xSelStartX + 1, len);
+    len       := Length(Lines[xSelStartY]);
+    S1        := Copy(Lines[xSelStartY], xSelStartX + 1, len);
     AddSpaces := StringOfChar(' ', xSelStartX - len);
-    S2 := Copy(Lines[xSelEndY], 1, xSelEndX);
+    S2        := Copy(Lines[xSelEndY], 1, xSelEndX);
   end;
-  Lines[xSelStartY] := Copy(Lines[xSelStartY], 1, xSelStartX) + AddSpaces +
-    Copy(Lines[xSelEndY], xSelEndX + 1, Length(Lines[xSelEndY]));
-  S := S1;
-  for i := xSelStartY + 1 to xSelEndY do
+  Lines[xSelStartY] := Copy(Lines[xSelStartY], 1, xSelStartX) + AddSpaces + Copy(Lines[xSelEndY], xSelEndX + 1, Length(Lines[xSelEndY]));
+  S                 := S1;
+  for i             := xSelStartY + 1 to xSelEndY do
   begin
     S := S + #13#10;
     if i <> xSelEndY then
@@ -1229,25 +1166,25 @@ begin
   if bRepaint then
     Invalidate;
 
-  Undo := TDGLSMemoDeleteBufUndo.Create(OldX, OldY, CurX, CurY, S);
+  Undo               := TDGLSMemoDeleteBufUndo.Create(OldX, OldY, CurX, CurY, S);
   Undo.UndoSelStartX := xSelStartX;
   Undo.UndoSelStartY := xSelStartY;
-  Undo.UndoSelEndX := xSelEndX;
-  Undo.UndoSelEndY := xSelEndY;
+  Undo.UndoSelEndX   := xSelEndX;
+  Undo.UndoSelEndY   := xSelEndY;
   if Assigned(FUndoList) then
     FUndoList.Add(Undo);
 end;
 
 procedure TDGLSCustomMemo.CutToClipBoard;
 begin
-  ClipBoard.SetTextBuf(PChar(GetSelText));
+  Clipboard.SetTextBuf(PChar(GetSelText));
   DeleteSelection(True);
 end;
 
 function TDGLSCustomMemo.GetSelText: string;
 var
-  i: integer;
-  xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
+  i:                                          Integer;
+  xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
 begin
   Result := '';
   if (FSelStartY = FSelEndY) and (FSelStartX = FSelEndX) then
@@ -1255,91 +1192,89 @@ begin
 
   xSelStartX := FSelStartX;
   xSelStartY := FSelStartY;
-  xSelEndX := FSelEndX;
-  xSelEndY := FSelEndY;
+  xSelEndX   := FSelEndX;
+  xSelEndY   := FSelEndY;
   OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
 
   if xSelStartY = xSelEndY then
     Result := Copy(Lines[xSelStartY], xSelStartX + 1, xSelEndX - xSelStartX)
   else
   begin
-    Result := Copy(Lines[xSelStartY], xSelStartX + 1,
-      Length(Lines[xSelStartY]));
-    for i := xSelStartY + 1 to xSelEndY - 1 do
+    Result   := Copy(Lines[xSelStartY], xSelStartX + 1, Length(Lines[xSelStartY]));
+    for i    := xSelStartY + 1 to xSelEndY - 1 do
       Result := Result + #13#10 + Lines[i];
-    Result := Result + #13#10 + Copy(Lines[xSelEndY], 1, xSelEndX);
+    Result   := Result + #13#10 + Copy(Lines[xSelEndY], 1, xSelEndX);
   end;
 end;
 
 function TDGLSCustomMemo.GetSelStart: TPoint;
 var
-  xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
+  xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
 begin
   xSelStartX := FSelStartX;
   xSelStartY := FSelStartY;
-  xSelEndX := FSelEndX;
-  xSelEndY := FSelEndY;
+  xSelEndX   := FSelEndX;
+  xSelEndY   := FSelEndY;
   OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
   Result := Point(xSelStartX, xSelStartY);
 end;
 
 function TDGLSCustomMemo.GetSelEnd: TPoint;
 var
-  xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
+  xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
 begin
   xSelStartX := FSelStartX;
   xSelStartY := FSelStartY;
-  xSelEndX := FSelEndX;
-  xSelEndY := FSelEndY;
+  xSelEndX   := FSelEndX;
+  xSelEndY   := FSelEndY;
   OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
   Result := Point(xSelEndX, xSelEndY);
 end;
 
 procedure TDGLSCustomMemo.SetSelText(const AValue: string);
 var
-  i, k: integer;
-  xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
-  Buff, S: string;
-  OldX, OldY: integer;
+  i, k:                                       Integer;
+  xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
+  Buff, S:                                    string;
+  OldX, OldY:                                 Integer;
 begin
-  Buff := AValue;
+  Buff       := AValue;
   xSelStartX := FSelStartX;
   xSelStartY := FSelStartY;
-  xSelEndX := FSelEndX;
-  xSelEndY := FSelEndY;
+  xSelEndX   := FSelEndX;
+  xSelEndY   := FSelEndY;
   OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
 
   DeleteSelection(False);
 
   OldX := CurX;
   OldY := CurY;
-  i := Pos(#13#10, Buff);
-  S := Lines[xSelStartY];
+  i    := Pos(#13#10, Buff);
+  S    := Lines[xSelStartY];
   if i = 0 then
   begin
-    Lines[xSelStartY] := Copy(S, 1, xSelStartX) + Buff
-      + Copy(S, xSelStartX + 1, Length(S));
-    CurX := xSelStartX;
+    Lines[xSelStartY] := Copy(S, 1, xSelStartX) + Buff + Copy(S, xSelStartX + 1, Length(S));
+    CurX              := xSelStartX;
     if Buff <> '' then
       CurX := CurX + Length(Buff);
   end
   else
   begin
-    k := xSelStartY;
+    k        := xSelStartY;
     Lines[k] := Copy(S, 1, xSelStartX) + Copy(Buff, 1, i - 1);
     TDGLSMemoStrings(Lines).DoInsert(k + 1, Copy(S, xSelStartX + 1, Length(S)));
     while True do
     begin
       Buff := Copy(Buff, i + 2, Length(Buff));
-      i := Pos(#13#10, Buff);
-      k := k + 1;
+      i    := Pos(#13#10, Buff);
+      k    := k + 1;
       if i = 0 then
         break;
       TDGLSMemoStrings(Lines).DoInsert(k, Copy(Buff, 1, i - 1));
     end;
     Lines[k] := Buff + Lines[k];
-    CurY := k;
-    CurX := Length(Buff);
+    CurY     := k;
+    CurX     := Length(Buff);
   end;
 
   ClearSelection;
@@ -1349,25 +1284,25 @@ begin
   Invalidate;
 end;
 
-function TDGLSCustomMemo.GetSelLength: integer;
+function TDGLSCustomMemo.GetSelLength: Integer;
 begin
   Result := Length(GetSelText);
 end;
 
-procedure TDGLSCustomMemo.Changed(FromLine, ToLine: integer);
+procedure TDGLSCustomMemo.Changed(FromLine, ToLine: Integer);
 var
-  i: integer;
+  i: Integer;
 begin
   if ToLine < FromLine then
-    ToLine := Lines.Count - 1;
-  for i := FromLine to ToLine do
+    ToLine        := Lines.Count - 1;
+  for i           := FromLine to ToLine do
     ValidAttrs[i] := False;
   InvalidateLineRange(FromLine, ToLine);
   if Assigned(FOnChange) then
     FOnChange(Self);
 end;
 
-procedure TDGLSCustomMemo.AttrChanged(LineNo: integer);
+procedure TDGLSCustomMemo.AttrChanged(LineNo: Integer);
 begin
   ValidAttrs[LineNo] := False;
   InvalidateLineRange(LineNo, LineNo);
@@ -1389,21 +1324,21 @@ end;
 
 procedure TDGLSCustomMemo.ClearSelection;
 var
-  rct: TRect;
+  rct:     TRect;
   Changed: Boolean;
 begin
-  Changed := not ((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY));
-  rct := LineRangeRect(FSelStartY, FSelEndY);
+  Changed    := not((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY));
+  rct        := LineRangeRect(FSelStartY, FSelEndY);
   FSelStartX := CurX;
   FSelStartY := CurY;
-  FSelEndX := CurX;
-  FSelEndY := CurY;
-  FPrevSelX := CurX;
-  FPrevSelY := CurY;
+  FSelEndX   := CurX;
+  FSelEndY   := CurY;
+  FPrevSelX  := CurX;
+  FPrevSelY  := CurY;
   if Changed then
   begin
     SelectionChanged;
-    InvalidateRect(Handle, @rct, true);
+    InvalidateRect(Handle, @rct, True);
   end;
   if Assigned(FOnMoveCursor) then
     FOnMoveCursor(Self);
@@ -1413,23 +1348,23 @@ procedure TDGLSCustomMemo.ExpandSelection;
 var
   rct: TRect;
 begin
-  rct := LineRangeRect(FPrevSelY, CurY);
-  FSelEndX := CurX;
-  FSelEndY := CurY;
+  rct       := LineRangeRect(FPrevSelY, CurY);
+  FSelEndX  := CurX;
+  FSelEndY  := CurY;
   FPrevSelX := CurX;
   FPrevSelY := CurY;
   SelectionChanged;
-  InvalidateRect(Handle, @rct, true);
+  InvalidateRect(Handle, @rct, True);
   if Assigned(FOnMoveCursor) then
     FOnMoveCursor(Self);
 end;
 
-function TDGLSCustomMemo.MaxLength: integer;
+function TDGLSCustomMemo.MaxLength: Integer;
 var
-  i, len: integer;
+  i, len: Integer;
 begin
   Result := 0;
-  for i := 0 to Lines.Count - 1 do
+  for i  := 0 to Lines.Count - 1 do
   begin
     len := Length(Lines[i]);
     if len > Result then
@@ -1437,16 +1372,16 @@ begin
   end;
 end;
 
-procedure TDGLSCustomMemo.DoScroll(Sender: TDGLSMemoScrollBar; ByValue: integer);
+procedure TDGLSCustomMemo.DoScroll(Sender: TDGLSMemoScrollBar; ByValue: Integer);
 var
   eRect, scrRect, sbRect: TRect;
-  Old: integer;
+  Old:                    Integer;
 begin
   eRect := EditorRect;
   case Sender.Kind of
     sbVertical:
       begin
-        Old := FTopLine;
+        Old      := FTopLine;
         FTopLine := FTopLine + ByValue;
         if FTopLine > Sender.MaxPosition then
           FTopLine := Sender.MaxPosition;
@@ -1460,8 +1395,7 @@ begin
           if CurY > LastVisibleLine then
             CurY := LastVisibleLine;
 
-          ScrollDC(Canvas.Handle, 0, (Old - FTopLine) * FCellSize.H,
-            eRect, eRect, 0, @scrRect);
+          ScrollDC(Canvas.Handle, 0, (Old - FTopLine) * FCellSize.H, eRect, eRect, 0, @scrRect);
           InvalidateRect(Handle, @scrRect, True);
           sbRect := Sender.FullRect;
           InvalidateRect(Handle, @sbRect, True);
@@ -1471,7 +1405,7 @@ begin
       end;
     sbHorizontal:
       begin
-        Old := FLeftCol;
+        Old      := FLeftCol;
         FLeftCol := FLeftCol + ByValue;
         if FLeftCol > Sender.MaxPosition then
           FLeftCol := Sender.MaxPosition;
@@ -1484,8 +1418,7 @@ begin
             CurX := FLeftCol;
           if CurX > LastVisiblePos then
             CurX := LastVisiblePos;
-          ScrollDC(Canvas.Handle, (Old - FLeftCol) * FCellSize.W, 0,
-            eRect, eRect, 0, @scrRect);
+          ScrollDC(Canvas.Handle, (Old - FLeftCol) * FCellSize.W, 0, eRect, eRect, 0, @scrRect);
           InvalidateRect(Handle, @scrRect, True);
           sbRect := Sender.FullRect;
           InvalidateRect(Handle, @sbRect, True);
@@ -1495,12 +1428,13 @@ begin
   end;
 end;
 
-procedure TDGLSCustomMemo.DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue:
-  integer);
+procedure TDGLSCustomMemo.DoScrollPage(Sender: TDGLSMemoScrollBar; ByValue: Integer);
 begin
   case Sender.Kind of
-    sbVertical: DoScroll(Sender, ByValue * VisibleLineCount);
-    sbHorizontal: DoScroll(Sender, ByValue * VisiblePosCount);
+    sbVertical:
+      DoScroll(Sender, ByValue * VisibleLineCount);
+    sbHorizontal:
+      DoScroll(Sender, ByValue * VisiblePosCount);
   end;
 end;
 
@@ -1515,63 +1449,63 @@ begin
   end;
 end;
 
-procedure TDGLSCustomMemo.SetLineStyle(Index: integer; Value: integer);
+procedure TDGLSCustomMemo.SetLineStyle(Index: Integer; Value: Integer);
 begin
   TDGLSMemoStrings(FLines).Style[Index] := Value;
   if IsLineVisible(Index) then
     AttrChanged(Index);
 end;
 
-function TDGLSCustomMemo.GetLineStyle(Index: integer): integer;
+function TDGLSCustomMemo.GetLineStyle(Index: Integer): Integer;
 begin
   Result := TDGLSMemoStrings(FLines).Style[Index];
 end;
 
-function TDGLSCustomMemo.GetInComment(Index: integer): Boolean;
+function TDGLSCustomMemo.GetInComment(Index: Integer): Boolean;
 begin
   Result := TDGLSMemoStrings(FLines).InComment[Index];
 end;
 
-procedure TDGLSCustomMemo.SetInComment(Index: integer; Value: Boolean);
+procedure TDGLSCustomMemo.SetInComment(Index: Integer; Value: Boolean);
 begin
   TDGLSMemoStrings(FLines).InComment[Index] := Value;
 end;
 
-function TDGLSCustomMemo.GetInBrackets(Index: integer): integer;
+function TDGLSCustomMemo.GetInBrackets(Index: Integer): Integer;
 begin
   Result := TDGLSMemoStrings(FLines).InBrackets[Index];
 end;
 
-procedure TDGLSCustomMemo.SetInBrackets(Index: integer; Value: integer);
+procedure TDGLSCustomMemo.SetInBrackets(Index: Integer; Value: Integer);
 begin
   TDGLSMemoStrings(FLines).InBrackets[Index] := Value;
 end;
 
-function TDGLSCustomMemo.GetValidAttrs(Index: integer): Boolean;
+function TDGLSCustomMemo.GetValidAttrs(Index: Integer): Boolean;
 begin
   Result := TDGLSMemoStrings(FLines).ValidAttrs[Index];
 end;
 
-procedure TDGLSCustomMemo.SetValidAttrs(Index: integer; Value: Boolean);
+procedure TDGLSCustomMemo.SetValidAttrs(Index: Integer; Value: Boolean);
 begin
   TDGLSMemoStrings(FLines).ValidAttrs[Index] := Value;
 end;
 
-function TDGLSCustomMemo.GetCharAttrs(Index: integer): string;
+function TDGLSCustomMemo.GetCharAttrs(Index: Integer): string;
 begin
   Result := TDGLSMemoStrings(FLines).CharAttrs[Index];
 end;
 
-procedure TDGLSCustomMemo.SetCharAttrs(Index: integer; Value: string);
+procedure TDGLSCustomMemo.SetCharAttrs(Index: Integer; Value: string);
 begin
   TDGLSMemoStrings(FLines).CharAttrs[Index] := Value;
   if IsLineVisible(Index) then
     AttrChanged(Index);
 end;
 
-procedure TDGLSCustomMemo.SetCurX(Value: integer);
+procedure TDGLSCustomMemo.SetCurX(Value: Integer);
 var
-  len: integer;
+  len:        Integer;
   WasVisible: Boolean;
 begin
   if Value < 0 then
@@ -1579,7 +1513,7 @@ begin
       Value := 0
     else
     begin
-      CurY := CurY - 1;
+      CurY  := CurY - 1;
       Value := Length(Lines[CurY]);
     end;
 
@@ -1607,9 +1541,9 @@ begin
     ShowCaret(True);
 end;
 
-procedure TDGLSCustomMemo.SetCurY(Value: integer);
+procedure TDGLSCustomMemo.SetCurY(Value: Integer);
 var
-  Old: integer;
+  Old:        Integer;
   WasVisible: Boolean;
 begin
   WasVisible := FCaretVisible;
@@ -1625,7 +1559,7 @@ begin
   FCurY := Value;
   if (CurY <> Old) and (Old >= 0) and (Old < Lines.Count) then
     Lines[Old] := TrimRight(Lines[Old]);
-  CurX := CurX;
+  CurX         := CurX;
 
   MakeVisible;
   ResizeScrollBars;
@@ -1634,25 +1568,25 @@ begin
     ShowCaret(True);
 end;
 
-procedure TDGLSCustomMemo.MoveCursor(dX, dY: integer; Shift: TShiftState);
+procedure TDGLSCustomMemo.MoveCursor(dX, dY: Integer; Shift: TShiftState);
 var
   Selecting: Boolean;
-  S: string;
-  //------------------------------------------------------------
-  function IsDelimiter(c: char): Boolean;
+  S:         string;
+  // ------------------------------------------------------------
+  function IsDelimiter(C: Char): Boolean;
   begin
-    Result := Pos(c, ' .,;:/?!@#$%^&*(){}[]<>-+=|\') > 0;
+    Result := Pos(C, ' .,;:/?!@#$%^&*(){}[]<>-+=|\') > 0;
   end;
-  //------------------------------------------------------------
-  function IsStopChar(c, cThis: char): Boolean;
+// ------------------------------------------------------------
+  function IsStopChar(C, cThis: Char): Boolean;
   begin
-    Result := IsDelimiter(c) <> IsDelimiter(cThis);
+    Result := IsDelimiter(C) <> IsDelimiter(cThis);
   end;
-  //------------------------------------------------------------
+// ------------------------------------------------------------
   procedure MoveWordLeft;
   begin
     CurX := CurX - 1;
-    S := TrimRight(Lines[CurY]);
+    S    := TrimRight(Lines[CurY]);
     while CurX > 0 do
     begin
       if IsStopChar(S[CurX], S[CurX + 1]) then
@@ -1666,31 +1600,31 @@ var
         CurX := Length(Lines[CurY]);
       end;
   end;
-  //------------------------------------------------------------
+// ------------------------------------------------------------
   procedure MoveWordRight;
   var
-    Len: integer;
+    len: Integer;
   begin
-    S := TrimRight(Lines[CurY]);
-    Len := Length(S);
+    S    := TrimRight(Lines[CurY]);
+    len  := Length(S);
     CurX := CurX + 1;
-    while CurX < Len do
+    while CurX < len do
     begin
       if IsStopChar(S[CurX + 1], S[CurX]) then
         break;
       CurX := CurX + 1;
     end;
-    if CurX > Len then
+    if CurX > len then
       if CurY < Lines.Count - 1 then
       begin
         CurY := CurY + 1;
         CurX := 0;
       end;
   end;
-  //------------------------------------------------------------
+
+// ------------------------------------------------------------
 begin
-  Selecting := (ssShift in Shift) and (CurX = FPrevSelX)
-    and (CurY = FPrevSelY);
+  Selecting := (ssShift in Shift) and (CurX = FPrevSelX) and (CurY = FPrevSelY);
   if ssCtrl in Shift then
   begin
     if dX > 0 then
@@ -1709,19 +1643,18 @@ begin
     ClearSelection;
 end;
 
-procedure TDGLSCustomMemo.MovePage(dP: integer; Shift: TShiftState);
+procedure TDGLSCustomMemo.MovePage(dP: Integer; Shift: TShiftState);
 var
-  eRect: TRect;
-  LinesPerPage: integer;
-  Selecting: Boolean;
+  eRect:        TRect;
+  LinesPerPage: Integer;
+  Selecting:    Boolean;
 begin
   if FCellSize.H = 0 then
     Exit;
-  Selecting := (ssShift in Shift) and (CurX = FPrevSelX)
-    and (CurY = FPrevSelY);
-  eRect := EditorRect;
+  Selecting    := (ssShift in Shift) and (CurX = FPrevSelX) and (CurY = FPrevSelY);
+  eRect        := EditorRect;
   LinesPerPage := (eRect.Bottom - eRect.Top) div FCellSize.H - 1;
-  CurY := CurY + dP * LinesPerPage;
+  CurY         := CurY + dP * LinesPerPage;
   if ssCtrl in Shift then
     if dP > 0 then
     begin
@@ -1743,10 +1676,9 @@ procedure TDGLSCustomMemo.GoHome(Shift: TShiftState);
 var
   Selecting: Boolean;
 begin
-  Selecting := (ssShift in Shift) and (CurX = FPrevSelX)
-    and (CurY = FPrevSelY);
-  CurX := 0;
-  FLeftCol := 0;
+  Selecting := (ssShift in Shift) and (CurX = FPrevSelX) and (CurY = FPrevSelY);
+  CurX      := 0;
+  FLeftCol  := 0;
   if Selecting then
     ExpandSelection
   else
@@ -1756,16 +1688,15 @@ end;
 procedure TDGLSCustomMemo.GoEnd(Shift: TShiftState);
 var
   Selecting: Boolean;
-  S, S1: string;
+  S, S1:     string;
 begin
-  Selecting := (ssShift in Shift) and (CurX = FPrevSelX)
-    and (CurY = FPrevSelY);
+  Selecting := (ssShift in Shift) and (CurX = FPrevSelX) and (CurY = FPrevSelY);
 
   S := Lines[CurY];
   if not Selecting then
-    S := TrimRight(S);
-  S1 := TrimRight(Copy(S, CurX + 1, Length(S)));
-  S := Copy(S, 1, CurX);
+    S         := TrimRight(S);
+  S1          := TrimRight(Copy(S, CurX + 1, Length(S)));
+  S           := Copy(S, 1, CurX);
   Lines[CurY] := S + S1;
 
   CurX := Length(Lines[CurY]);
@@ -1777,14 +1708,14 @@ end;
 
 procedure TDGLSCustomMemo.InsertChar(C: Char);
 var
-  S, S1: string;
-  NewPlace: integer;
-  rct: TRect;
-  CurX0, CurY0: integer;
+  S, S1:        string;
+  NewPlace:     Integer;
+  rct:          TRect;
+  CurX0, CurY0: Integer;
 begin
-  CurX0 := CurX;
-  CurY0 := CurY;
-  S := Lines[CurY];
+  CurX0    := CurX;
+  CurY0    := CurY;
+  S        := Lines[CurY];
   NewPlace := CurX + 1;
   if C = #9 then
   begin
@@ -1796,7 +1727,7 @@ begin
     S1 := C;
   Insert(S1, S, CurX + 1);
   Lines[CurY] := S;
-  CurX := NewPlace;
+  CurX        := NewPlace;
   ClearSelection;
   rct := LineRect(CurY);
   Changed(CurY, CurY);
@@ -1809,19 +1740,19 @@ end;
 
 procedure TDGLSCustomMemo.InsertTemplate(AText: string);
 var
-  i, NewCurX, NewCurY: integer;
-  Indent: string;
-  FoundCursor: Boolean;
+  i, NewCurX, NewCurY: Integer;
+  Indent:              string;
+  FoundCursor:         Boolean;
 begin
   Indent := IndentCurrLine;
 
   DeleteSelection(False);
   ClearSelection;
 
-  NewCurX := CurX;
-  NewCurY := CurY;
+  NewCurX     := CurX;
+  NewCurY     := CurY;
   FoundCursor := False;
-  i := 1;
+  i           := 1;
   while i <= Length(AText) do
   begin
     if AText[i] = #13 then
@@ -1861,20 +1792,20 @@ begin
 
 end;
 
-procedure TDGLSCustomMemo.DeleteChar(OldX, OldY: integer);
+procedure TDGLSCustomMemo.DeleteChar(OldX, OldY: Integer);
 var
-  S, S1: string;
-  rct: TRect;
-  C: char;
-  Undo: TDGLSMemoDelCharUndo;
+  S, S1:       string;
+  rct:         TRect;
+  C:           Char;
+  Undo:        TDGLSMemoDelCharUndo;
   IsBackspace: Boolean;
 begin
   if FReadOnly then
     Exit;
   if OldX < 0 then
   begin
-    OldX := CurX;
-    OldY := CurY;
+    OldX        := CurX;
+    OldY        := CurY;
     IsBackspace := False;
   end
   else
@@ -1882,11 +1813,11 @@ begin
 
   ClearSelection;
 
-  S := Lines[CurY];
+  S  := Lines[CurY];
   S1 := Copy(S, CurX + 1, Length(S));
   if not IsBackspace then
-    S1 := TrimRight(S1);
-  S := Copy(S, 1, CurX);
+    S1        := TrimRight(S1);
+  S           := Copy(S, 1, CurX);
   Lines[CurY] := S + S1;
 
   if CurX < Length(Lines[CurY]) then
@@ -1896,21 +1827,21 @@ begin
     Delete(S, CurX + 1, 1);
     Lines[CurY] := S;
     Changed(CurY, CurY);
-    rct := LineRect(CurY);
-    Undo := TDGLSMemoDelCharUndo.Create(OldX, OldY, CurX, CurY, C);
-    Undo.IsBackSpace := IsBackSpace;
+    rct              := LineRect(CurY);
+    Undo             := TDGLSMemoDelCharUndo.Create(OldX, OldY, CurX, CurY, C);
+    Undo.IsBackspace := IsBackspace;
     if Assigned(FUndoList) then
       FUndoList.Add(Undo);
   end
   else if CurY < Lines.Count - 1 then
   begin
-    S := Lines[CurY] + Lines[CurY + 1];
+    S           := Lines[CurY] + Lines[CurY + 1];
     Lines[CurY] := S;
     DeleteLine(CurY + 1, OldX, OldY, CurX, CurY, False);
     Changed(CurY, -1);
-    rct := EditorRect;
-    Undo := TDGLSMemoDelCharUndo.Create(OldX, OldY, CurX, CurY, #13);
-    Undo.IsBackSpace := IsBackSpace;
+    rct              := EditorRect;
+    Undo             := TDGLSMemoDelCharUndo.Create(OldX, OldY, CurX, CurY, #13);
+    Undo.IsBackspace := IsBackspace;
     if Assigned(FUndoList) then
       FUndoList.Add(Undo);
   end;
@@ -1918,11 +1849,10 @@ begin
   InvalidateRect(Handle, @rct, True);
 end;
 
-procedure TDGLSCustomMemo.DeleteLine(Index, OldX, OldY, NewX, NewY: integer;
-  FixUndo: Boolean);
+procedure TDGLSCustomMemo.DeleteLine(Index, OldX, OldY, NewX, NewY: Integer; FixUndo: Boolean);
 var
   rct: TRect;
-  s: string;
+  S:   string;
 begin
   if Index < 0 then
     Index := CurY;
@@ -1932,7 +1862,7 @@ begin
     OldY := CurY;
   end;
 
-  s := Lines[Index];
+  S := Lines[Index];
 
   TDGLSMemoStrings(Lines).FDeleting := True;
   if Lines.Count = 1 then
@@ -1957,8 +1887,8 @@ begin
       CurY := Index - 1
     else
       CurY := Index;
-    NewX := CurX;
-    NewY := CurY;
+    NewX   := CurX;
+    NewY   := CurY;
   end
   else
   begin
@@ -1966,12 +1896,12 @@ begin
     CurY := NewY;
   end;
   if Assigned(FUndoList) and FixUndo then
-    FUndoList.Add(TDGLSMEmoDelLineUndo.Create(Index, OldX, OldY, NewX, NewY, s));
+    FUndoList.Add(TDGLSMEmoDelLineUndo.Create(Index, OldX, OldY, NewX, NewY, S));
 end;
 
 procedure TDGLSCustomMemo.BackSpace;
 var
-  OldX, OldY: integer;
+  OldX, OldY: Integer;
 begin
   OldX := CurX;
   OldY := CurY;
@@ -1990,16 +1920,16 @@ end;
 
 function TDGLSCustomMemo.IndentCurrLine: string;
 var
-  Len, Count: integer;
-  CurS: string;
+  len, Count: Integer;
+  CurS:       string;
 begin
   Result := '';
   if not AutoIndent then
     Exit;
-  CurS := Lines[CurY];
-  Len := Length(CurS);
+  CurS  := Lines[CurY];
+  len   := Length(CurS);
   Count := 0;
-  while (Count < CurX) and (Count < Len) do
+  while (Count < CurX) and (Count < len) do
   begin
     if CurS[Count + 1] <> ' ' then
       break;
@@ -2011,12 +1941,12 @@ end;
 procedure TDGLSCustomMemo.NewLine;
 var
   S, sIndent: string;
-  OldX, OldY: integer;
+  OldX, OldY: Integer;
 begin
-  OldX := CurX;
-  OldY := CurY;
-  S := Lines[CurY];
-  sIndent := IndentCurrLine;
+  OldX        := CurX;
+  OldY        := CurY;
+  S           := Lines[CurY];
+  sIndent     := IndentCurrLine;
   Lines[CurY] := Copy(S, 1, CurX);
 
   S := TrimRight(Copy(S, CurX + 1, Length(S)));
@@ -2030,18 +1960,17 @@ begin
   CurX := Length(sIndent);
   ClearSelection;
   if Assigned(FUndoList) then
-    FUndoList.Add(TDGLSMemoInsCharUndo.Create(OldX, OldY, CurX, CurY, #13 +
-      sIndent));
+    FUndoList.Add(TDGLSMemoInsCharUndo.Create(OldX, OldY, CurX, CurY, #13 + sIndent));
   Invalidate;
   Changed(CurY - 1, -1);
 end;
 
-function TDGLSCustomMemo.AddString(S: string): integer;
+function TDGLSCustomMemo.AddString(S: string): Integer;
 begin
   if Lines.Count = 0 then
     TDGLSMemoStrings(Lines).DoAdd('');
   MovePage(1, [ssCtrl]); // end of text
-  if not ((Lines.Count = 1) and (Lines[0] = '')) then
+  if not((Lines.Count = 1) and (Lines[0] = '')) then
   begin
     TDGLSMemoStrings(Lines).DoAdd('');
     CurX := 0;
@@ -2053,12 +1982,12 @@ begin
   Result := Lines.Count - 1;
 end;
 
-procedure TDGLSCustomMemo.InsertString(Index: integer; S: string);
+procedure TDGLSCustomMemo.InsertString(Index: Integer; S: string);
 begin
   CurY := Index;
   CurX := 0;
   ClearSelection;
-  if not ((Lines.Count = 1) and (Lines[0] = '')) then
+  if not((Lines.Count = 1) and (Lines[0] = '')) then
     S := S + #13#10;
   SetSelText(S);
 end;
@@ -2066,33 +1995,44 @@ end;
 procedure TDGLSCustomMemo.DoCommand(cmd: TCommand; const AShift: TShiftState);
 begin
   case cmd of
-    cmDelete: if not FReadOnly then
+    cmDelete:
+      if not FReadOnly then
       begin
         if ssShift in AShift then
-          CutToClipboard
-        else if FDelErase and
-          (not ((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY))) then
+          CutToClipBoard
+        else if FDelErase and (not((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY))) then
           DeleteSelection(True)
         else
           DeleteChar(-1, -1);
       end;
-    cmBackSpace: BackSpace;
-    cmWordBackSpace: BackSpaceWord;
-    cmNewLine: NewLine;
-    cmDelLine: DeleteLine(-1, -1, -1, -1, -1, True);
-    cmCopy: CopyToClipboard;
-    cmCut: CutToClipboard;
-    cmPaste: PasteFromClipboard;
-    cmHome: GoHome(AShift);
-    cmEnd: GoEnd(AShift);
-    cmPageDown: MovePage(1, AShift);
-    cmPageUp: MovePage(-1, AShift);
+    cmBackSpace:
+      BackSpace;
+    cmWordBackSpace:
+      BackSpaceWord;
+    cmNewLine:
+      NewLine;
+    cmDelLine:
+      DeleteLine(-1, -1, -1, -1, -1, True);
+    cmCopy:
+      CopyToClipBoard;
+    cmCut:
+      CutToClipBoard;
+    cmPaste:
+      PasteFromClipBoard;
+    cmHome:
+      GoHome(AShift);
+    cmEnd:
+      GoEnd(AShift);
+    cmPageDown:
+      MovePage(1, AShift);
+    cmPageUp:
+      MovePage(-1, AShift);
     cmInsert:
       begin
         if ssShift in AShift then
-          PasteFromClipboard;
+          PasteFromClipBoard;
         if ssCtrl in AShift then
-          CopyToClipboard;
+          CopyToClipBoard;
       end;
   end;
 end;
@@ -2102,15 +2042,20 @@ begin
   ShowCaret(False);
   inherited;
   case Key of
-    VK_LEFT: MoveCursor(-1, 0, Shift);
-    VK_RIGHT: MoveCursor(1, 0, Shift);
-    VK_UP: MoveCursor(0, -1, Shift);
-    VK_DOWN: MoveCursor(0, 1, Shift);
-    VK_HOME, VK_END,
-      VK_DELETE: DoCommand(Key, Shift);
+    VK_LEFT:
+      MoveCursor(-1, 0, Shift);
+    VK_RIGHT:
+      MoveCursor(1, 0, Shift);
+    VK_UP:
+      MoveCursor(0, -1, Shift);
+    VK_DOWN:
+      MoveCursor(0, 1, Shift);
+    VK_HOME, VK_END, VK_DELETE:
+      DoCommand(Key, Shift);
     VK_PRIOR, VK_NEXT:
       DoCommand(Key, Shift);
-    VK_INSERT: DoCommand(Key, Shift);
+    VK_INSERT:
+      DoCommand(Key, Shift);
   end;
   ShowCaret(True);
 end;
@@ -2121,10 +2066,9 @@ begin
     Exit;
   ShowCaret(False);
   inherited;
-  if (ord(Key) in [9, 32..255]) and (ord(Key) <> 127) then
+  if (Ord(Key) in [9, 32 .. 255]) and (Ord(Key) <> 127) then
   begin
-    if FDelErase and (not ((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY)))
-      then
+    if FDelErase and (not((FSelStartX = FSelEndX) and (FSelStartY = FSelEndY))) then
       DeleteSelection(True);
     InsertChar(Key);
   end
@@ -2133,18 +2077,17 @@ begin
   ShowCaret(True);
 end;
 
-procedure TDGLSCustomMemo.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X, Y: Integer);
+procedure TDGLSCustomMemo.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-  newPos: TCellPos;
-  charPos: TFullPos;
+  newPos:    TCellPos;
+  charPos:   TFullPos;
   Selecting: Boolean;
 begin
   inherited;
   if not Focused then
   begin
     SetFocus;
-    //     Exit;
+    // Exit;
   end;
 
   if FAfterDoubleClick then
@@ -2153,9 +2096,8 @@ begin
     Exit;
   end;
 
-  if Button <>mbLeft then
+  if Button <> mbLeft then
     Exit;
-
 
   if sbVert.MouseDown(Button, Shift, X, Y) then
     Exit;
@@ -2166,8 +2108,8 @@ begin
   begin
     ShowCaret(False);
     newPos := CellFromPos(X, Y);
-    CurY := newPos.Y + FTopLine;
-    CurX := newPos.X + FLeftCol;
+    CurY   := newPos.Y + FTopLine;
+    CurX   := newPos.X + FLeftCol;
     if Assigned(FOnMoveCursor) then
       FOnMoveCursor(Self);
 
@@ -2207,15 +2149,14 @@ begin
     if (ssLeft in Shift) and FLeftButtonDown then
     begin
       newPos := CellFromPos(X, Y);
-      CurY := newPos.Y + FTopLine;
-      CurX := newPos.X + FLeftCol;
+      CurY   := newPos.Y + FTopLine;
+      CurX   := newPos.X + FLeftCol;
       ExpandSelection;
     end;
   end
 end;
 
-procedure TDGLSCustomMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y:
-  Integer);
+procedure TDGLSCustomMemo.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   inherited;
   if sbVert.MouseUp(Button, Shift, X, Y) then
@@ -2225,44 +2166,41 @@ begin
   if Button = mbLeft then
     ShowCaret(True);
   FLeftButtonDown := False;
-  FLastMouseUpX := X;
-  FLastMouseUpY := Y;
+  FLastMouseUpX   := X;
+  FLastMouseUpY   := Y;
 end;
 
 procedure TDGLSCustomMemo.DblClick;
 var
-  clickPos: TCellPos;
-  clickX, clickY: integer;
-  //------------------------------------------------------------
-  //   SELECT WORD
-  //------------------------------------------------------------
+  clickPos:       TCellPos;
+  clickX, clickY: Integer;
+  // ------------------------------------------------------------
+  // SELECT WORD
+  // ------------------------------------------------------------
   procedure SelectWord;
   const
-    stopChars: TSysCharSet = [' ', ';', '.', ',', ':', '?', '!', '''', '"',
-      '<', '>', '/', '*', '+', '-', '=', '(', ')',
-      '[', ']', '{', '}', '@', '#', '$', '%', '^',
-      '&', '|', '\'];
+    stopChars: TSysCharSet = [' ', ';', '.', ',', ':', '?', '!', '''', '"', '<', '>', '/', '*', '+', '-', '=', '(', ')', '[', ']', '{', '}', '@', '#', '$', '%', '^', '&', '|', '\'];
   var
-    s: string;
-    i: integer;
+    S:   string;
+    i:   Integer;
     rct: TRect;
   begin
     CurX := clickX;
     CurY := clickY;
     if (CurX = clickX) and (CurY = clickY) then
     begin
-      s := Lines[clickY];
-      if s[clickX + 1] = ' ' then
+      S := Lines[clickY];
+      if S[clickX + 1] = ' ' then
         Exit;
 
       i := clickX;
-      while (i >= 0) and not CharInSet(s[i + 1], stopChars) do
+      while (i >= 0) and not CharInSet(S[i + 1], stopChars) do
         Dec(i);
       FSelStartY := clickY;
       FSelStartX := i + 1;
 
       i := clickX;
-      while (i < Length(s)) and not CharInSet(s[i + 1], stopChars) do
+      while (i < Length(S)) and not CharInSet(S[i + 1], stopChars) do
         Inc(i);
       FSelEndY := clickY;
       FSelEndX := i;
@@ -2270,20 +2208,21 @@ var
       if FSelEndX <> FSelStartX then
       begin
         FAfterDoubleClick := True;
-        rct := LineRangeRect(CurY, CurY);
+        rct               := LineRangeRect(CurY, CurY);
         SelectionChanged;
-        InvalidateRect(Handle, @rct, true);
+        InvalidateRect(Handle, @rct, True);
       end;
     end;
   end;
-  //------------------------------------------------------------
+
+// ------------------------------------------------------------
 begin
 
   if PointInRect(Point(FLastMouseUpX, FLastMouseUpY), EditorRect) then
   begin
     clickPos := CellFromPos(FLastMouseUpX, FLastMouseUpY);
-    clickX := clickPos.X + FLeftCol;
-    clickY := clickPos.Y + FTopLine;
+    clickX   := clickPos.X + FLeftCol;
+    clickY   := clickPos.Y + FTopLine;
     SelectWord;
   end;
   inherited;
@@ -2301,7 +2240,7 @@ end;
 
 procedure TDGLSCustomMemo.WMSize(var Msg: TWMSize);
 begin
-  if not (csLoading in ComponentState) then
+  if not(csLoading in ComponentState) then
     try
       ResizeEditor;
     except
@@ -2316,9 +2255,9 @@ begin
   GetCursorPos(P);
   P := ScreenToClient(P);
   if PointInRect(P, EditorRect) then
-    Winapi.Windows.SetCursor(Screen.Cursors[crIBeam])
+    WinApi.Windows.SetCursor(Screen.Cursors[crIBeam])
   else
-    Winapi.Windows.SetCursor(Screen.Cursors[crArrow]);
+    WinApi.Windows.SetCursor(Screen.Cursors[crArrow]);
 end;
 
 procedure TDGLSCustomMemo.WMSetFocus(var Msg: TWMSetFocus);
@@ -2326,7 +2265,7 @@ begin
   if FCellSize.H = 0 then
     SetFont(FFont);
   CreateCaret(Handle, HBITMAP(0), 2, FCellSize.H - 2);
-  ShowCaret(true);
+  ShowCaret(True);
 end;
 
 procedure TDGLSCustomMemo.WMKillFocus(var Msg: TWMSetFocus);
@@ -2347,74 +2286,71 @@ begin
   begin
     rct := CellRect(CurX - FLeftCol, CurY - FTopLine);
     SetCaretPos(rct.Left, rct.Top + 1);
-    Winapi.Windows.ShowCaret(Handle);
+    WinApi.Windows.ShowCaret(Handle);
     FCaretVisible := True;
   end;
 end;
 
-function TDGLSCustomMemo.CellRect(ACol, ARow: integer): TRect;
+function TDGLSCustomMemo.CellRect(ACol, ARow: Integer): TRect;
 var
   rct: TRect;
 begin
   rct := EditorRect;
   with FCellSize do
-    Result := Rect(rct.Left + W * ACol, rct.Top + H * ARow,
-      rct.Left + W * (ACol + 1), rct.Top + H * (ARow + 1));
+    Result := Rect(rct.Left + W * ACol, rct.Top + H * ARow, rct.Left + W * (ACol + 1), rct.Top + H * (ARow + 1));
 end;
 
-function TDGLSCustomMemo.LineRect(ARow: integer): TRect;
+function TDGLSCustomMemo.LineRect(ARow: Integer): TRect;
 var
   rct: TRect;
 begin
-  rct := EditorRect;
+  rct  := EditorRect;
   ARow := ARow - FTopLine;
   with FCellSize do
-    Result := Rect(rct.Left, rct.Top + H * ARow, rct.Right, rct.Top + H * (ARow
-      + 1));
+    Result := Rect(rct.Left, rct.Top + H * ARow, rct.Right, rct.Top + H * (ARow + 1));
 end;
 
-function TDGLSCustomMemo.ColRect(ACol: integer): TRect;
+function TDGLSCustomMemo.ColRect(ACol: Integer): TRect;
 var
   rct: TRect;
 begin
-  rct := EditorRect;
+  rct  := EditorRect;
   ACol := ACol - FLeftCol;
   with FCellSize do
-    Result := Rect(rct.Left + W * ACol, rct.Top, rct.Left + W * (ACol + 1),
-      rct.Bottom);
+    Result := Rect(rct.Left + W * ACol, rct.Top, rct.Left + W * (ACol + 1), rct.Bottom);
 end;
 
-function TDGLSCustomMemo.LineRangeRect(FromLine, ToLine: integer): TRect;
+function TDGLSCustomMemo.LineRangeRect(FromLine, ToLine: Integer): TRect;
 var
   rct1, rct2: TRect;
 begin
-  rct1 := LineRect(FromLine);
-  rct2 := LineRect(ToLine);
+  rct1   := LineRect(FromLine);
+  rct2   := LineRect(ToLine);
   Result := TotalRect(rct1, rct2);
 end;
 
-procedure TDGLSCustomMemo.InvalidateLineRange(FromLine, ToLine: integer);
+procedure TDGLSCustomMemo.InvalidateLineRange(FromLine, ToLine: Integer);
 var
   rct: TRect;
 begin
   if ToLine < FromLine then
     ToLine := Lines.Count - 1;
-  rct := LineRangeRect(FromLine, ToLine);
+  rct      := LineRangeRect(FromLine, ToLine);
   if GutterWidth > 2 then
     rct.Left := FGutter.Left;
   InvalidateRect(Handle, @rct, True);
 end;
 
-function TDGLSCustomMemo.ColRangeRect(FromCol, ToCol: integer): TRect;
+function TDGLSCustomMemo.ColRangeRect(FromCol, ToCol: Integer): TRect;
 var
   rct1, rct2: TRect;
 begin
-  rct1 := ColRect(FromCol);
-  rct2 := ColRect(ToCol);
+  rct1   := ColRect(FromCol);
+  rct2   := ColRect(ToCol);
   Result := TotalRect(rct1, rct2);
 end;
 
-function TDGLSCustomMemo.CellFromPos(X, Y: integer): TCellPos;
+function TDGLSCustomMemo.CellFromPos(X, Y: Integer): TCellPos;
 var
   rct: TRect;
 begin
@@ -2433,7 +2369,7 @@ begin
   end;
 end;
 
-function TDGLSCustomMemo.CharFromPos(X, Y: integer): TFullPos;
+function TDGLSCustomMemo.CharFromPos(X, Y: Integer): TFullPos;
 var
   rct: TRect;
 begin
@@ -2442,38 +2378,41 @@ begin
     SetFont(FFont);
   if (FCellSize.W <> 0) and (FCellSize.H <> 0) then
   begin
-    Result.Pos := (X - rct.Left) div FCellSize.W + FLeftCol;
+    Result.Pos    := (X - rct.Left) div FCellSize.W + FLeftCol;
     Result.LineNo := (Y - rct.Top) div FCellSize.H + FTopLine;
   end
   else
   begin
-    Result.Pos := 1;
+    Result.Pos    := 1;
     Result.LineNo := 1;
   end;
 end;
 
-procedure TDGLSCustomMemo.SetColor(Index: integer; Value: TColor);
+procedure TDGLSCustomMemo.SetColor(Index: Integer; Value: TColor);
 var
-  eRect: TRect;
+  eRect:   TRect;
   Changed: Boolean;
 begin
   Changed := False;
   case Index of
-    0: if FBkColor <> Value then
+    0:
+      if FBkColor <> Value then
       begin
-        FBkColor := Value;
+        FBkColor           := Value;
         FStyles.BkColor[0] := Value;
-        Changed := True;
+        Changed            := True;
       end;
-    1: if FSelColor <> Value then
+    1:
+      if FSelColor <> Value then
       begin
         FSelColor := Value;
-        Changed := True;
+        Changed   := True;
       end;
-    2: if FSelBkColor <> Value then
+    2:
+      if FSelBkColor <> Value then
       begin
         FSelBkColor := Value;
-        Changed := True;
+        Changed     := True;
       end;
   end;
   if Changed then
@@ -2485,14 +2424,14 @@ end;
 
 procedure TDGLSCustomMemo.SetFont(Value: TFont);
 var
-  wW, wi: integer;
+  wW, wi:      Integer;
   OldFontName: string;
-  eRect: TRect;
+  eRect:       TRect;
 begin
-  OldFontName := Canvas.Font.Name;
+  OldFontName      := Canvas.Font.Name;
   Canvas.Font.Name := Value.Name;
-  wW := Canvas.TextWidth('W');
-  wi := Canvas.TextWidth('i');
+  wW               := Canvas.TextWidth('W');
+  wi               := Canvas.TextWidth('i');
   Canvas.Font.Name := OldFontName;
 
   if wW <> wi then
@@ -2508,21 +2447,21 @@ begin
     ShowCaret(False);
     DestroyCaret;
     CreateCaret(Handle, HBITMAP(0), 2, FCellSize.H - 2);
-    ShowCaret(true);
+    ShowCaret(True);
   end;
 
   FStyles.TextColor[0] := FFont.Color;
-  FStyles.Style[0] := FFont.Style;
+  FStyles.Style[0]     := FFont.Style;
 
   eRect := EditorRect;
   InvalidateRect(Handle, @eRect, True);
 end;
 
-procedure TDGLSCustomMemo.SetGutterWidth(Value: integer);
+procedure TDGLSCustomMemo.SetGutterWidth(Value: Integer);
 begin
-  FGutterWidth := Value;
+  FGutterWidth   := Value;
   FGutter.FWidth := Value;
-  if not (csLoading in ComponentState) then
+  if not(csLoading in ComponentState) then
     ResizeEditor;
 end;
 
@@ -2540,7 +2479,7 @@ begin
   Result := FGutter.FColor;
 end;
 
-function TDGLSCustomMemo.CharStyleNo(LineNo, Pos: integer): integer;
+function TDGLSCustomMemo.CharStyleNo(LineNo, Pos: Integer): Integer;
 var
   ChStyle: string;
 begin
@@ -2552,37 +2491,37 @@ begin
   if (Pos <= 0) or (Pos > Length(ChStyle)) then
     Exit;
 
-  Result := integer(ChStyle[Pos]);
+  Result := Integer(ChStyle[Pos]);
 end;
 
-procedure TDGLSCustomMemo.DrawLine(LineNo: integer);
+procedure TDGLSCustomMemo.DrawLine(LineNo: Integer);
 var
-  eRect, rct0, rct1, rct, lineRct: TRect;
-  LineSelStart, LineSelEnd, LineStyleNo, pos: integer;
-  S, S1, S2, S3, ChStyle: string;
-  //--------- FIND LINE SELECTION -------------
+  eRect, rct0, rct1, rct, lineRct:            TRect;
+  LineSelStart, LineSelEnd, LineStyleNo, Pos: Integer;
+  S, S1, S2, S3, ChStyle:                     string;
+  // --------- FIND LINE SELECTION -------------
   procedure FindLineSelection;
   var
-    len: integer;
-    xSelStartX, xSelStartY, xSelEndX, xSelEndY: integer;
+    len:                                        Integer;
+    xSelStartX, xSelStartY, xSelEndX, xSelEndY: Integer;
   begin
     xSelStartX := FSelStartX;
     xSelStartY := FSelStartY;
-    xSelEndX := FSelEndX;
-    xSelEndY := FSelEndY;
+    xSelEndX   := FSelEndX;
+    xSelEndY   := FSelEndY;
     OrderPos(xSelStartX, xSelStartY, xSelEndX, xSelEndY);
-    len := Length(Lines[LineNo]);
+    len          := Length(Lines[LineNo]);
     LineSelStart := 0;
-    LineSelEnd := 0;
-    if xSelStartY = Lineno then
+    LineSelEnd   := 0;
+    if xSelStartY = LineNo then
     begin
       LineSelStart := xSelStartX - FLeftCol;
-      LineSelEnd := len - FLeftCol;
+      LineSelEnd   := len - FLeftCol;
     end
     else if (xSelStartY < LineNo) and (LineNo < xSelEndY) then
     begin
       LineSelStart := 0;
-      LineSelEnd := len - FLeftCol;
+      LineSelEnd   := len - FLeftCol;
     end;
 
     if xSelEndY = LineNo then
@@ -2593,100 +2532,96 @@ var
 
     if LineSelStart < 0 then
       LineSelStart := 0;
-    S := Copy(Lines[LineNo], FLeftCol + 1, len);
-    S1 := Copy(S, 1, LineSelStart);
-    S2 := Copy(S, LineSelStart + 1, LineSelEnd - LineSelStart);
-    S3 := Copy(S, LineSelEnd + 1, len);
+    S              := Copy(Lines[LineNo], FLeftCol + 1, len);
+    S1             := Copy(S, 1, LineSelStart);
+    S2             := Copy(S, LineSelStart + 1, LineSelEnd - LineSelStart);
+    S3             := Copy(S, LineSelEnd + 1, len);
   end;
-  //------------- DRAW PART ---------------------
-  procedure DrawPart(Part: string; PartStyle, StartPos: integer;
-    var rct: TRect; IsSelection: Boolean);
+// ------------- DRAW PART ---------------------
+  procedure DrawPart(Part: string; PartStyle, StartPos: Integer; var rct: TRect; IsSelection: Boolean);
   var
-    len, w: integer;
+    len, W:      Integer;
     rctInternal: TRect;
   begin
     len := Length(Part);
     if len > 0 then
       with FLineBitmap.Canvas do
       begin
-        w := FCellSize.W * len;
+        W          := FCellSize.W * len;
         Font.Style := FStyles.Style[PartStyle];
         if IsSelection then
         begin
-          Font.Color := SelColor;
+          Font.Color  := SelColor;
           Brush.Color := SelBkColor;
         end
         else
         begin
           if LineStyleNo = 0 then
           begin
-            Font.Color := FStyles.TextColor[PartStyle];
+            Font.Color  := FStyles.TextColor[PartStyle];
             Brush.Color := FStyles.BkColor[PartStyle];
           end
           else
           begin
-            if (LineNo = FSelCharPos.LineNo) and
-              (StartPos = FSelCharPos.Pos + 1) and (Length(Part) = 1) then
+            if (LineNo = FSelCharPos.LineNo) and (StartPos = FSelCharPos.Pos + 1) and (Length(Part) = 1) then
             begin
-              Font.Color := FStyles.TextColor[PartStyle];
+              Font.Color  := FStyles.TextColor[PartStyle];
               Brush.Color := FStyles.BkColor[PartStyle];
             end
             else
             begin
-              Font.Color := FStyles.TextColor[LineStyleNo];
+              Font.Color  := FStyles.TextColor[LineStyleNo];
               Brush.Color := FStyles.BkColor[LineStyleNo];
-              Font.Style := FStyles.Style[LineStyleNo];
+              Font.Style  := FStyles.Style[LineStyleNo];
             end;
           end;
         end;
-        rct.Right := rct.Left + w;
-        rctInternal := rct;
-        rctInternal.Left := rctInternal.Left - eRect.Left;
-        rctInternal.Right := rctInternal.Right - eRect.Left;
-        rctInternal.Top := rctInternal.Top - rct.Top;
+        rct.Right          := rct.Left + W;
+        rctInternal        := rct;
+        rctInternal.Left   := rctInternal.Left - eRect.Left;
+        rctInternal.Right  := rctInternal.Right - eRect.Left;
+        rctInternal.Top    := rctInternal.Top - rct.Top;
         rctInternal.Bottom := rctInternal.Bottom - rct.Top;
         FillRect(rctInternal);
-        DrawText(Handle, PChar(Part), len, rctInternal, DT_LEFT
-          or DT_SINGLELINE or DT_NOPREFIX);
-        rct0.Left := rct.Left + w;
-        rct := rct0;
+        DrawText(Handle, PChar(Part), len, rctInternal, DT_LEFT or DT_SINGLELINE or DT_NOPREFIX);
+        rct0.Left := rct.Left + W;
+        rct       := rct0;
       end;
   end;
-  //------------- DRAW SEGMENTS ---------------------
-  procedure DrawSegments(S: string; WorkPos: integer;
-    var rct: TRect; IsSelection: Boolean);
+// ------------- DRAW SEGMENTS ---------------------
+  procedure DrawSegments(S: string; WorkPos: Integer; var rct: TRect; IsSelection: Boolean);
   var
-    i, len, ThisStyle: integer;
+    i, len, ThisStyle: Integer;
   begin
     while True do
     begin
-      Len := Length(S);
-      if Len = 0 then
+      len := Length(S);
+      if len = 0 then
         Exit;
       ThisStyle := Ord(ChStyle[WorkPos]);
-      i := 1;
-      while (i <= Len) and
-        (ThisStyle = Ord(ChStyle[WorkPos + i - 1])) do
+      i         := 1;
+      while (i <= len) and (ThisStyle = Ord(ChStyle[WorkPos + i - 1])) do
         Inc(i);
       DrawPart(Copy(S, 1, i - 1), ThisStyle, WorkPos, rct, IsSelection);
       Inc(WorkPos, i - 1);
-      s := Copy(s, i, Len);
+      S := Copy(S, i, len);
     end;
   end;
-  //---------------------------------------------
+
+// ---------------------------------------------
 begin
-  eRect := EditorRect;
-  rct := CellRect(0, LineNo - FTopLine);
-  rct0 := Rect(eRect.Left, rct.Top, eRect.Right, rct.Bottom);
+  eRect   := EditorRect;
+  rct     := CellRect(0, LineNo - FTopLine);
+  rct0    := Rect(eRect.Left, rct.Top, eRect.Right, rct.Bottom);
   lineRct := rct0;
 
   if LineNo < Lines.Count then
   begin
 
-    rct := rct0;
-    S := Lines[LineNo];
+    rct         := rct0;
+    S           := Lines[LineNo];
     LineStyleNo := LineStyle[LineNo];
-    ChStyle := CharAttrs[LineNo];
+    ChStyle     := CharAttrs[LineNo];
     FindLineSelection;
 
     if not Assigned(FOnGetLineAttrs) then
@@ -2696,23 +2631,23 @@ begin
       if (FSelCharStyle >= 0) and (LineNo = FSelCharPos.LineNo) then
         ChStyle[FSelCharPos.Pos + 1] := Char(FSelCharStyle);
 
-    pos := FLeftCol + 1; // 1
-    DrawSegments(S1, pos, rct, False);
-    Inc(pos, Length(S1));
-    DrawSegments(S2, pos, rct, True);
-    Inc(pos, Length(S2));
-    DrawSegments(S3, pos, rct, False);
+    Pos := FLeftCol + 1; // 1
+    DrawSegments(S1, Pos, rct, False);
+    Inc(Pos, Length(S1));
+    DrawSegments(S2, Pos, rct, True);
+    Inc(Pos, Length(S2));
+    DrawSegments(S3, Pos, rct, False);
 
-    //       else begin
-    //            DrawPart(S1,StyleNo,rct,False);
-    //            DrawPart(S2,StyleNo,rct,True);
-    //            DrawPart(S3,StyleNo,rct,False);
-    //       end;
+    // else begin
+    // DrawPart(S1,StyleNo,rct,False);
+    // DrawPart(S2,StyleNo,rct,True);
+    // DrawPart(S3,StyleNo,rct,False);
+    // end;
 
-    rct1 := rct;
-    rct1.Left := rct1.Left - eRect.Left;
-    rct1.Right := rct1.Right - eRect.Left;
-    rct1.Top := rct1.Top - rct.Top;
+    rct1        := rct;
+    rct1.Left   := rct1.Left - eRect.Left;
+    rct1.Right  := rct1.Right - eRect.Left;
+    rct1.Top    := rct1.Top - rct.Top;
     rct1.Bottom := rct1.Bottom - rct.Top;
     with FLineBitmap.Canvas do
     begin
@@ -2720,9 +2655,8 @@ begin
       FillRect(rct1);
     end;
 
-    with LineRct do
-      BitBlt(Canvas.Handle, Left, Top, Right - Left, Bottom - Top,
-        FLineBitmap.Canvas.Handle, 0, 0, SRCCOPY);
+    with lineRct do
+      BitBlt(Canvas.Handle, Left, Top, Right - Left, Bottom - Top, FLineBitmap.Canvas.Handle, 0, 0, SRCCOPY);
   end
   else
     with Canvas do
@@ -2745,11 +2679,7 @@ end;
 
 procedure Border(Canvas: TCanvas; rct: TRect; BorderType: TBorderType);
 const
-  Colors: array[TBorderType] of array[1..4] of TColor
-    = (($D0D0D0, clWhite, clGray, clBlack),
-    (clGray, clBlack, $D0D0D0, clWhite),
-    (clWhite, clWhite, clWhite, clGray),
-    (clGray, clWhite, clWhite, clGray));
+  Colors: array [TBorderType] of array [1 .. 4] of TColor = (($D0D0D0, clWhite, clGray, clBlack), (clGray, clBlack, $D0D0D0, clWhite), (clWhite, clWhite, clWhite, clGray), (clGray, clWhite, clWhite, clGray));
 begin
   with Canvas do
   begin
@@ -2777,7 +2707,7 @@ end;
 
 function TDGLSCustomMemo.EditorRect: TRect;
 var
-  l, t, r, b: integer;
+  l, t, r, b: Integer;
 begin
   l := 2;
   r := Width - 2;
@@ -2788,20 +2718,20 @@ begin
   if FScrollBars in [ssBoth, ssVertical] then
     r := r - FScrollBarWidth;
   if FScrollBars in [ssBoth, ssHorizontal] then
-    b := b - FScrollBarWidth;
+    b    := b - FScrollBarWidth;
   Result := Rect(l + FMargin, t, r, b);
 end;
 
 procedure TDGLSCustomMemo.DrawMargin;
 var
   eRect: TRect;
-  i: integer;
+  i:     Integer;
 begin
   eRect := EditorRect;
   with Canvas do
   begin
     Pen.Color := clWhite;
-    for i := 1 to FMargin do
+    for i     := 1 to FMargin do
     begin
       MoveTo(eRect.Left - i, eRect.Top);
       LineTo(eRect.Left - i, eRect.Bottom + 1);
@@ -2828,8 +2758,7 @@ begin
     with Canvas do
     begin
       Brush.Color := clSilver;
-      FillRect(Rect(sbVert.Left, sbHorz.Top + 1,
-        sbVert.Left + sbVert.Width, sbHorz.Top + sbHorz.Height));
+      FillRect(Rect(sbVert.Left, sbHorz.Top + 1, sbVert.Left + sbVert.Width, sbHorz.Top + sbHorz.Height));
     end;
 end;
 
@@ -2840,7 +2769,7 @@ begin
   eRect := EditorRect;
   with FLineBitmap do
   begin
-    Width := eRect.Right - eRect.Left;
+    Width  := eRect.Right - eRect.Left;
     Height := FCellSize.H;
     FLineBitmap.Canvas.Font.Assign(Self.Canvas.Font);
   end;
@@ -2849,10 +2778,10 @@ end;
 procedure TDGLSCustomMemo.Paint;
 var
   pTop, pBottom: TFullPos;
-  rct, eRect: TRect;
-  i: integer;
-  clipRgn: HRGN;
-  Attrs: string;
+  rct, eRect:    TRect;
+  i:             Integer;
+  clipRgn:       HRGN;
+  Attrs:         string;
 begin
   if TDGLSMemoStrings(Lines).FLockCount > 0 then
     Exit;
@@ -2867,13 +2796,13 @@ begin
     DrawGutter;
     DrawScrollBars;
 
-    eRect := EditorRect;
+    eRect   := EditorRect;
     clipRgn := CreateRectRgn(eRect.Left, eRect.Top, eRect.Right, eRect.Bottom);
     ExtSelectClipRgn(Canvas.Handle, clipRgn, RGN_AND);
     DeleteObject(clipRgn);
 
-    rct := Canvas.ClipRect;
-    pTop := CharFromPos(rct.Left, rct.Top);
+    rct     := Canvas.ClipRect;
+    pTop    := CharFromPos(rct.Left, rct.Top);
     pBottom := CharFromPos(rct.Left, rct.Bottom);
 
     if Assigned(FOnGetLineAttrs) then
@@ -2881,7 +2810,7 @@ begin
         if not ValidAttrs[i] then
         begin
           FOnGetLineAttrs(Self, i, Attrs);
-          CharAttrs[i] := Attrs;
+          CharAttrs[i]  := Attrs;
           ValidAttrs[i] := True;
         end;
 
@@ -2890,26 +2819,30 @@ begin
   end;
 end;
 
-function TDGLSCustomMemo.GetVisible(Index: integer): integer;
+function TDGLSCustomMemo.GetVisible(Index: Integer): Integer;
 var
   Coord: TFullPos;
-  Cell: TCellPos;
+  Cell:  TCellPos;
   eRect: TRect;
 begin
   eRect := EditorRect;
   Coord := CharFromPos(eRect.Right - 1, eRect.Bottom - 1);
-  Cell := CellFromPos(eRect.Right - 1, eRect.Bottom - 1);
+  Cell  := CellFromPos(eRect.Right - 1, eRect.Bottom - 1);
   case Index of
-    0: Result := Cell.X;
-    1: Result := Cell.Y;
-    2: Result := Coord.Pos - 1;
-    3: Result := Coord.LineNo - 1;
+    0:
+      Result := Cell.X;
+    1:
+      Result := Cell.Y;
+    2:
+      Result := Coord.Pos - 1;
+    3:
+      Result := Coord.LineNo - 1;
   else
     Result := 0;
   end;
 end;
 
-function TDGLSCustomMemo.IsLineVisible(LineNo: integer): Boolean;
+function TDGLSCustomMemo.IsLineVisible(LineNo: Integer): Boolean;
 begin
   if FCellSize.H = 0 then
     SetFont(FFont);
@@ -2926,17 +2859,16 @@ begin
     FLeftCol := CurX - 2;
     if FLeftCol < 0 then
       FLeftCol := 0;
-    Modified := True;
+    Modified   := True;
   end;
   if CurX > LastVisiblePos then
   begin
-    if (FScrollBars in [ssBoth, ssHorizontal]) or
-      (ScrollMode = smAuto) then
+    if (FScrollBars in [ssBoth, ssHorizontal]) or (ScrollMode = smAuto) then
     begin
       FLeftCol := FLeftCol + CurX - LastVisiblePos + 2;
     end
     else
-      CurX := LastVisiblePos;
+      CurX   := LastVisiblePos;
     Modified := True;
   end;
   if CurY < FTopLine then
@@ -2944,17 +2876,16 @@ begin
     FTopLine := CurY;
     if FTopLine < 0 then
       FTopLine := 0;
-    Modified := True;
+    Modified   := True;
   end;
   if CurY > LastVisibleLine then
   begin
-    if (FScrollBars in [ssBoth, ssVertical]) or
-      (ScrollMode = smAuto) then
+    if (FScrollBars in [ssBoth, ssVertical]) or (ScrollMode = smAuto) then
     begin
       FTopLine := FTopLine + CurY - LastVisibleLine;
     end
     else
-      CurY := LastVisibleLine;
+      CurY   := LastVisibleLine;
     Modified := True;
   end;
   if Modified then
@@ -2969,26 +2900,25 @@ begin
   Invalidate;
 end;
 
-function TDGLSCustomMemo.FindText(Text: string; Options: TFindOptions; Select:
-  Boolean): Boolean;
+function TDGLSCustomMemo.FindText(Text: string; Options: TFindOptions; Select: Boolean): Boolean;
 var
-  i, p: integer;
-  s1, s0, s: string;
-  //-----------------------------------------------------------
-  function LastPos(Substr, s: string): integer;
+  i, P:      Integer;
+  S1, s0, S: string;
+  // -----------------------------------------------------------
+  function LastPos(Substr, S: string): Integer;
   var
-    i, j, lenSub: integer;
+    i, j, lenSub: Integer;
   begin
     Result := 0;
     lenSub := Length(Substr);
-    i := Length(s) - lenSub + 1;
+    i      := Length(S) - lenSub + 1;
     while i > 0 do
     begin
-      if s[i] = Substr[1] then
+      if S[i] = Substr[1] then
       begin
         Result := i;
-        for j := i + 1 to i + lenSub - 1 do
-          if s[j] <> Substr[j - i + 1] then
+        for j  := i + 1 to i + lenSub - 1 do
+          if S[j] <> Substr[j - i + 1] then
           begin
             Result := 0;
             break;
@@ -2999,44 +2929,45 @@ var
       Dec(i);
     end;
   end;
-  //-----------------------------------------------------------
+
+// -----------------------------------------------------------
 begin
   Result := False;
-  if not (frMatchCase in Options) then
+  if not(frMatchCase in Options) then
     Text := AnsiLowerCase(Text);
 
   if SelLength > 0 then
     ClearSelection;
-  s := Lines[CurY];
-  s0 := Copy(s, 1, CurX);
-  s1 := Copy(s, CurX + 1, Length(s));
-  i := CurY;
+  S  := Lines[CurY];
+  s0 := Copy(S, 1, CurX);
+  S1 := Copy(S, CurX + 1, Length(S));
+  i  := CurY;
 
   while True do
   begin
 
-    if not (frMatchCase in Options) then
+    if not(frMatchCase in Options) then
     begin
       s0 := AnsiLowerCase(s0);
-      s1 := AnsiLowerCase(s1);
+      S1 := AnsiLowerCase(S1);
     end;
 
     if frDown in Options then
-      p := Pos(Text, s1)
+      P := Pos(Text, S1)
     else
-      p := LastPos(Text, s0);
+      P := LastPos(Text, s0);
 
-    if p > 0 then
+    if P > 0 then
     begin
       Result := True;
-      CurY := i;
+      CurY   := i;
       if frDown in Options then
-        CurX := Length(s0) + p - 1
+        CurX := Length(s0) + P - 1
       else
-        CurX := p - 1;
+        CurX := P - 1;
       if Select then
       begin
-        if not (frDown in Options) then
+        if not(frDown in Options) then
           CurX := CurX + Length(Text);
         ClearSelection;
         if frDown in Options then
@@ -3057,12 +2988,12 @@ begin
     if frDown in Options then
     begin
       s0 := '';
-      s1 := Lines[i];
+      S1 := Lines[i];
     end
     else
     begin
       s0 := Lines[i];
-      s1 := '';
+      S1 := '';
     end;
 
   end;
@@ -3071,32 +3002,32 @@ end;
 
 procedure TDGLSCustomMemo.ResizeScrollBars;
 var
-  eRect, sbRect: TRect;
-  MaxLen, OldMax, NewTop, Margin: integer;
+  eRect, sbRect:                  TRect;
+  MaxLen, OldMax, NewTop, Margin: Integer;
 begin
   eRect := EditorRect;
   if FScrollBars in [ssBoth, ssVertical] then
   begin
     with sbVert do
     begin
-      Width := 16;
-      Height := eRect.Bottom - eRect.Top + 1;
-      Left := eRect.Right;
-      Top := eRect.Top;
-      OldMax := MaxPosition;
+      Width       := 16;
+      Height      := eRect.Bottom - eRect.Top + 1;
+      Left        := eRect.Right;
+      Top         := eRect.Top;
+      OldMax      := MaxPosition;
       MaxPosition := (Lines.Count - 1) - (LastVisibleLine - FTopLine);
-      NewTop := FTopLine;
+      NewTop      := FTopLine;
       if (FTopLine > 0) and (LastVisibleLine > Lines.Count - 1) then
       begin
         Dec(NewTop, LastVisibleLine - (Lines.Count - 1));
         if NewTop < 0 then
-          NewTop := 0;
+          NewTop    := 0;
         MaxPosition := NewTop;
       end;
       if MaxPosition < 0 then
         MaxPosition := 0;
-      Position := NewTop;
-      Total := Lines.Count;
+      Position      := NewTop;
+      Total         := Lines.Count;
       if OldMax <> MaxPosition then
       begin
         if NewTop <> FTopLine then
@@ -3117,27 +3048,26 @@ begin
       Width := Self.Width - 4;
       if FScrollBars = ssBoth then
         Width := Width - sbVert.Width;
-      Height := 16;
-      Left := 2;
-      Top := eRect.Bottom;
-      OldMax := MaxPosition;
+      Height  := 16;
+      Left    := 2;
+      Top     := eRect.Bottom;
+      OldMax  := MaxPosition;
 
       Margin := LastVisiblePos - MaxLen;
       if Margin < 2 then
-        Margin := 2;
+        Margin    := 2;
       MaxPosition := MaxLen - (LastVisiblePos - FLeftCol) + Margin;
 
       if MaxPosition < 0 then
         MaxPosition := 0;
-      Position := FLeftCol;
-      Total := MaxLen;
+      Position      := FLeftCol;
+      Total         := MaxLen;
       if OldMax <> MaxPosition then
       begin
         if MaxPosition = 0 then
         begin
           FLeftCol := 0;
-          InvalidateRect(Handle, @eRect, True);
-          ;
+          InvalidateRect(Handle, @eRect, True);;
           FGutter.Invalidate;
         end;
         sbRect := sbHorz.FullRect;
@@ -3173,15 +3103,15 @@ begin
   FUndoList.Redo;
 end;
 
-procedure TDGLSCustomMemo.SetUndoLimit(Value: integer);
+procedure TDGLSCustomMemo.SetUndoLimit(Value: Integer);
 begin
   if (FUndoLimit <> Value) then
   begin
     if Value <= 0 then
       Value := 1;
     if Value > 100 then
-      Value := 100;
-    FUndoLimit := Value;
+      Value         := 100;
+    FUndoLimit      := Value;
     FUndoList.Limit := Value;
   end;
 end;
@@ -3192,7 +3122,7 @@ begin
     FOnUndoChange(Self, (FUndoList.Pos < FUndoList.Count), (FUndoList.Pos > 0));
 end;
 
-function TDGLSCustomMemo.CanUndo: boolean;
+function TDGLSCustomMemo.CanUndo: Boolean;
 begin
   Result := FUndoList.FPos < FUndoList.Count;
 end;
@@ -3213,7 +3143,7 @@ begin
   if FScrollBars <> Value then
   begin
     FScrollBars := Value;
-    if not (csLoading in ComponentState) then
+    if not(csLoading in ComponentState) then
       ResizeEditor;
   end;
 end;
@@ -3222,71 +3152,70 @@ constructor TDGLSCustomMemo.Create(AOwner: TComponent);
 begin
   inherited;
 
-  ControlStyle := [csCaptureMouse, csClickEvents,
-    csDoubleClicks, csReplicatable];
-  Width := 100;
-  Height := 40;
-  TabStop := True;
-  Cursor := crIBeam;
+  ControlStyle := [csCaptureMouse, csClickEvents, csDoubleClicks, csReplicatable];
+  Width        := 100;
+  Height       := 40;
+  TabStop      := True;
+  Cursor       := crIBeam;
 
-  FFont := TFont.Create;
+  FFont      := TFont.Create;
   FFont.Name := 'Courier New';
   FFont.Size := 10;
   Canvas.Font.Assign(FFont);
 
-  FHiddenCaret := False;
+  FHiddenCaret  := False;
   FCaretVisible := False;
 
-  FCurX := 0;
-  FCurY := 0;
-  FLeftCol := 0;
-  FTopLine := 0;
-  FTabSize := 4;
-  FMargin := 2;
-  FAutoIndent := True;
-  FLines := TDGLSMemoStrings.Create;
+  FCurX                          := 0;
+  FCurY                          := 0;
+  FLeftCol                       := 0;
+  FTopLine                       := 0;
+  FTabSize                       := 4;
+  FMargin                        := 2;
+  FAutoIndent                    := True;
+  FLines                         := TDGLSMemoStrings.Create;
   TDGLSMemoStrings(FLines).FMemo := Self;
 
-  FScrollBars := ssBoth;
+  FScrollBars     := ssBoth;
   FScrollBarWidth := 16;
-  sbVert := TDGLSMemoScrollBar.Create(Self, sbVertical);
-  sbVert.Width := FScrollBarWidth;
-  sbHorz := TDGLSMemoScrollBar.Create(Self, sbHorizontal);
-  sbHorz.Height := FScrollBarWidth;
+  sbVert          := TDGLSMemoScrollBar.Create(Self, sbVertical);
+  sbVert.Width    := FScrollBarWidth;
+  sbHorz          := TDGLSMemoScrollBar.Create(Self, sbHorizontal);
+  sbHorz.Height   := FScrollBarWidth;
 
   FGutter := TDGLSMemoGutter.Create;
   with FGutter do
   begin
-    FLeft := 2;
-    FTop := 2;
-    FWidth := 0;
+    FLeft   := 2;
+    FTop    := 2;
+    FWidth  := 0;
     FHeight := 0;
-    FColor := clBtnFace;
-    FMemo := Self;
+    FColor  := clBtnFace;
+    FMemo   := Self;
   end;
 
   FSelStartX := 0;
   FSelStartY := 0;
-  FSelEndX := 0;
-  FSelEndY := 0;
+  FSelEndX   := 0;
+  FSelEndY   := 0;
 
-  FBkColor := clWhite;
-  FSelColor := clWhite;
+  FBkColor    := clWhite;
+  FSelColor   := clWhite;
   FSelBkColor := clNavy;
 
   FStyles := TStyleList.Create;
   FStyles.Add(clBlack, clWhite, []);
 
   FSelCharPos.LineNo := -1;
-  FSelCharPos.Pos := -1;
-  FSelCharStyle := -1;
+  FSelCharPos.Pos    := -1;
+  FSelCharStyle      := -1;
 
   FLineBitmap := TBitmap.Create;
 
   FLeftButtonDown := False;
-  FScrollMode := smAuto;
+  FScrollMode     := smAuto;
 
-  FUndoList := TDGLSMemoUndoList.Create;
+  FUndoList      := TDGLSMemoUndoList.Create;
   FFirstUndoList := FUndoList;
   FUndoList.Memo := Self;
 
@@ -3312,38 +3241,43 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
-{ TDGLSMemoScrollBar functions}
+{ TDGLSMemoScrollBar functions }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSMemoScrollBar functions'}{$ENDIF}
 
-procedure TDGLSMemoScrollBar.SetParams(Index: integer; Value: integer);
+procedure TDGLSMemoScrollBar.SetParams(Index: Integer; Value: Integer);
 begin
   case Index of
-    0: if Left <> Value then
+    0:
+      if Left <> Value then
         FLeft := Value;
-    1: if Top <> Value then
+    1:
+      if Top <> Value then
         FTop := Value;
-    2: if Width <> Value then
+    2:
+      if Width <> Value then
         FWidth := Value;
-    3: if Height <> Value then
+    3:
+      if Height <> Value then
         FHeight := Value;
-    4: if Total <> Value then
+    4:
+      if Total <> Value then
         FTotal := Value;
-    5: if MaxPosition <> Value then
+    5:
+      if MaxPosition <> Value then
         FMaxPosition := Value;
-    6: if Position <> Value then
+    6:
+      if Position <> Value then
         FPosition := Value;
   end;
 end;
 
-constructor TDGLSMemoScrollBar.Create(AParent: TDGLSMemoAbstractScrollableObject;
-  AKind: TScrollBarKind);
+constructor TDGLSMemoScrollBar.Create(AParent: TDGLSMemoAbstractScrollableObject; AKind: TScrollBarKind);
 begin
-  FParent := AParent;
+  FParent       := AParent;
   FButtonLength := 16;
-  FKind := AKind;
-  FState := sbsWait;
+  FKind         := AKind;
+  FState        := sbsWait;
 end;
 
 function TDGLSMemoScrollBar.GetRect: TRect;
@@ -3353,8 +3287,8 @@ end;
 
 function TDGLSMemoScrollBar.GetThumbRect: TRect;
 var
-  TotalLen, FreeLen, ThumbLen, ThumbOffset, ThumbCoord: integer;
-  K: double;
+  TotalLen, FreeLen, ThumbLen, ThumbOffset, ThumbCoord: Integer;
+  k:                                                    double;
 begin
   if MaxPosition <= 0 then
   begin
@@ -3365,12 +3299,12 @@ begin
     TotalLen := Height
   else
     TotalLen := Width;
-  FreeLen := TotalLen - 2 * FButtonLength;
+  FreeLen    := TotalLen - 2 * FButtonLength;
 
-  K := (Total - MaxPosition) / MaxPosition;
-  if K > 0 then
+  k := (Total - MaxPosition) / MaxPosition;
+  if k > 0 then
   begin
-    ThumbLen := round(FreeLen * K / (1 + K));
+    ThumbLen := round(FreeLen * k / (1 + k));
     if ThumbLen < 8 then
       ThumbLen := 8;
   end
@@ -3382,13 +3316,11 @@ begin
   else
   begin
     ThumbOffset := round((FreeLen - ThumbLen) * Position / MaxPosition);
-    ThumbCoord := FButtonLength + ThumbOffset;
+    ThumbCoord  := FButtonLength + ThumbOffset;
     if Kind = sbVertical then
-      Result := Rect(Left + 1, Top + ThumbCoord, Left + Width, Top + ThumbCoord
-        + ThumbLen)
+      Result := Rect(Left + 1, Top + ThumbCoord, Left + Width, Top + ThumbCoord + ThumbLen)
     else
-      Result := Rect(Left + ThumbCoord, Top + 1, Left + ThumbCoord + ThumbLen,
-        Top + Height);
+      Result := Rect(Left + ThumbCoord, Top + 1, Left + ThumbCoord + ThumbLen, Top + Height);
   end;
 end;
 
@@ -3415,11 +3347,9 @@ end;
 function TDGLSMemoScrollBar.GetForwardRect: TRect;
 begin
   if Kind = sbVertical then
-    Result := Rect(Left + 1, Top + Height - FButtonLength, Left + Width, Top +
-      Height)
+    Result := Rect(Left + 1, Top + Height - FButtonLength, Left + Width, Top + Height)
   else
-    Result := Rect(Left + Width - FButtonLength, Top + 1, Left + Width, Top +
-      Height);
+    Result := Rect(Left + Width - FButtonLength, Top + 1, Left + Width, Top + Height);
 end;
 
 function TDGLSMemoScrollBar.GetPgBackRect: TRect;
@@ -3435,8 +3365,7 @@ begin
   if Kind = sbVertical then
     Result := Rect(Left + 1, Top + FButtonLength, Left + Width, thRect.Top - 1)
   else
-    Result := Rect(Left + FButtonLength, Top + 1, thRect.Left - 1, Top +
-      Height);
+    Result := Rect(Left + FButtonLength, Top + 1, thRect.Left - 1, Top + Height);
 end;
 
 function TDGLSMemoScrollBar.GetPgForwardRect: TRect;
@@ -3450,17 +3379,15 @@ begin
     Exit;
   end;
   if Kind = sbVertical then
-    Result := Rect(Left + 1, thRect.Bottom, Left + Width, Top + Height -
-      FButtonLength)
+    Result := Rect(Left + 1, thRect.Bottom, Left + Width, Top + Height - FButtonLength)
   else
-    Result := Rect(thRect.Right, Top + 1, Left + Width - FButtonLength, Top +
-      Height);
+    Result := Rect(thRect.Right, Top + 1, Left + Width - FButtonLength, Top + Height);
 end;
 
 procedure TDGLSMemoScrollBar.PaintTo(ACanvas: TCanvas);
 var
   sRect, mRect, gRect, thRect: TRect;
-  iconX, iconY, shift: integer;
+  iconX, iconY, Shift:         Integer;
 begin
   with ACanvas do
   begin
@@ -3470,43 +3397,43 @@ begin
       MoveTo(Left, Top);
       LineTo(Left, Top + Height);
 
-      sRect := BackRect;
+      sRect       := BackRect;
       Brush.Color := clSilver;
       FillRect(sRect);
       if State = sbsBack then
       begin
-        shift := 1;
+        Shift     := 1;
         Pen.Color := clGray;
         with sRect do
           Rectangle(Left, Top, Right, Bottom);
       end
       else
       begin
-        shift := 0;
+        Shift := 0;
         Border(ACanvas, sRect, btFlatRaised);
       end;
       iconX := sRect.Left + (Width - 1 - 7) div 2;
       iconY := sRect.Top + (FButtonLength - 8) div 2;
-      Draw(iconX + shift, iconY + shift, bmScrollBarUp);
+      Draw(iconX + Shift, iconY + Shift, bmScrollBarUp);
 
-      gRect := ForwardRect;
+      gRect       := ForwardRect;
       Brush.Color := clSilver;
       FillRect(gRect);
       if State = sbsForward then
       begin
-        shift := 1;
+        Shift     := 1;
         Pen.Color := clGray;
         with gRect do
           Rectangle(Left, Top, Right, Bottom);
       end
       else
       begin
-        shift := 0;
+        Shift := 0;
         Border(ACanvas, gRect, btFlatRaised);
       end;
       iconX := gRect.Left + (Width - 1 - 7) div 2;
       iconY := gRect.Top + (FButtonLength - 8) div 2;
-      Draw(iconX + shift, iconY + shift, bmScrollBarDown);
+      Draw(iconX + Shift, iconY + Shift, bmScrollBarDown);
 
       mRect := Rect(sRect.Left, sRect.Bottom, gRect.Right, gRect.Top);
     end
@@ -3516,43 +3443,43 @@ begin
       MoveTo(Left, Top);
       LineTo(Left + Width, Top);
 
-      sRect := BackRect;
+      sRect       := BackRect;
       Brush.Color := clSilver;
       FillRect(sRect);
       if State = sbsBack then
       begin
-        shift := 1;
+        Shift     := 1;
         Pen.Color := clGray;
         with sRect do
           Rectangle(Left, Top, Right, Bottom);
       end
       else
       begin
-        shift := 0;
+        Shift := 0;
         Border(ACanvas, sRect, btFlatRaised);
       end;
-      iconX := sRect.Left + shift + (FButtonLength - 8) div 2;
-      iconY := sRect.Top + shift + (Height - 1 - 7) div 2;
-      Draw(iconX + shift, iconY + shift, bmScrollBarLeft);
+      iconX := sRect.Left + Shift + (FButtonLength - 8) div 2;
+      iconY := sRect.Top + Shift + (Height - 1 - 7) div 2;
+      Draw(iconX + Shift, iconY + Shift, bmScrollBarLeft);
 
-      gRect := ForwardRect;
+      gRect       := ForwardRect;
       Brush.Color := clSilver;
       FillRect(gRect);
       if State = sbsForward then
       begin
-        shift := 1;
+        Shift     := 1;
         Pen.Color := clGray;
         with gRect do
           Rectangle(Left, Top, Right, Bottom);
       end
       else
       begin
-        shift := 0;
+        Shift := 0;
         Border(ACanvas, gRect, btFlatRaised);
       end;
       iconX := gRect.Left + (FButtonLength - 8) div 2;
       iconY := gRect.Top + (Height - 1 - 7) div 2;
-      Draw(iconX + shift, iconY + shift, bmScrollBarRight);
+      Draw(iconX + Shift, iconY + Shift, bmScrollBarRight);
 
       mRect := Rect(sRect.Right, sRect.Top, gRect.Left, gRect.Bottom);
     end;
@@ -3571,7 +3498,7 @@ begin
       FillRect(PageForwardRect);
     end;
 
-    thRect := ThumbRect;
+    thRect      := ThumbRect;
     Brush.Color := clSilver;
     FillRect(thRect);
     Border(ACanvas, thRect, btFlatRaised);
@@ -3586,18 +3513,15 @@ begin
   end;
 end;
 
-function TDGLSMemoScrollBar.MouseDown(Button: TMouseButton; Shift: TShiftState;
-  X,
-  Y: Integer):
-  Boolean;
+function TDGLSMemoScrollBar.MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean;
 var
   sRect, gRect, thRect, pbRect, pfRect: TRect;
 begin
   Result := False;
   if (Width = 0) or (Height = 0) then
     Exit;
-  sRect := BackRect;
-  gRect := ForwardRect;
+  sRect  := BackRect;
+  gRect  := ForwardRect;
   pbRect := PageBackRect;
   pfRect := PageForwardRect;
   thRect := ThumbRect;
@@ -3631,27 +3555,24 @@ begin
   end;
   if PointInRect(Point(X, Y), thRect) then
   begin
-    State := sbsDragging;
+    State    := sbsDragging;
     FXOffset := X - thRect.Left;
     FYOffset := Y - thRect.Top;
-    Result := True;
+    Result   := True;
     Exit;
   end;
 
 end;
 
-function TDGLSMemoScrollBar.MouseUp(Button: TMouseButton; Shift: TShiftState; X,
-  Y:
-  Integer):
-  Boolean;
+function TDGLSMemoScrollBar.MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer): Boolean;
 var
   sRect, gRect, thRect, pbRect, pfRect: TRect;
 begin
   Result := False;
   if (Width = 0) or (Height = 0) then
     Exit;
-  sRect := BackRect;
-  gRect := ForwardRect;
+  sRect  := BackRect;
+  gRect  := ForwardRect;
   pbRect := PageBackRect;
   pfRect := PageForwardRect;
   thRect := ThumbRect;
@@ -3690,23 +3611,22 @@ begin
       end;
     sbsDragging:
       begin
-        State := sbsWait;
+        State  := sbsWait;
         Result := True;
         Exit;
       end;
   end;
 end;
 
-function TDGLSMemoScrollBar.MouseMove(Shift: TShiftState; X, Y: Integer):
-  Boolean;
+function TDGLSMemoScrollBar.MouseMove(Shift: TShiftState; X, Y: Integer): Boolean;
 var
   sRect, gRect, thRect, pbRect, pfRect: TRect;
 begin
   Result := False;
   if (Width = 0) or (Height = 0) then
     Exit;
-  sRect := BackRect;
-  gRect := ForwardRect;
+  sRect  := BackRect;
+  gRect  := ForwardRect;
   pbRect := PageBackRect;
   pfRect := PageForwardRect;
   thRect := ThumbRect;
@@ -3752,58 +3672,60 @@ begin
   end;
 end;
 
-function TDGLSMemoScrollBar.MoveThumbTo(X, Y: Integer): integer;
+function TDGLSMemoScrollBar.MoveThumbTo(X, Y: Integer): Integer;
 var
-  thRect, mRect: TRect;
-  FreeLen, ThumbLen, NewPosition, NewOffset: integer;
+  thRect, mRect:                             TRect;
+  FreeLen, ThumbLen, NewPosition, NewOffset: Integer;
 begin
-  thRect := ThumbRect;
-  mRect := MiddleRect;
+  thRect    := ThumbRect;
+  mRect     := MiddleRect;
   NewOffset := 0;
-  FreeLen := 0;
-  ThumbLen := 0;
+  FreeLen   := 0;
+  ThumbLen  := 0;
   case Kind of
     sbVertical:
       begin
-        FreeLen := mRect.Bottom - mRect.Top;
-        ThumbLen := thRect.Bottom - thRect.Top;
+        FreeLen   := mRect.Bottom - mRect.Top;
+        ThumbLen  := thRect.Bottom - thRect.Top;
         NewOffset := Y - FYOffset - (Top + FButtonLength);
       end;
     sbHorizontal:
       begin
-        FreeLen := mRect.Right - mRect.Left;
-        ThumbLen := thRect.Right - thRect.Left;
+        FreeLen   := mRect.Right - mRect.Left;
+        ThumbLen  := thRect.Right - thRect.Left;
         NewOffset := X - FXOffset - (Left + FButtonLength);
       end
   end;
   NewPosition := round(NewOffset * MaxPosition / (FreeLen - ThumbLen));
-  Result := NewPosition - Position;
+  Result      := NewPosition - Position;
   if NewPosition <> Position then
   begin
     Parent.DoScroll(Self, NewPosition - Position);
   end;
 end;
 
-
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TDGLSMemoGutter }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSMemoGutter'}{$ENDIF}
 
-procedure TDGLSMemoGutter.SetParams(Index: integer; Value: integer);
+procedure TDGLSMemoGutter.SetParams(Index: Integer; Value: Integer);
 begin
   case Index of
-    0: FLeft := Value;
-    1: FTop := Value;
-    2: FWidth := Value;
-    3: FHeight := Value;
+    0:
+      FLeft := Value;
+    1:
+      FTop := Value;
+    2:
+      FWidth := Value;
+    3:
+      FHeight := Value;
   end;
 end;
 
 procedure TDGLSMemoGutter.PaintTo(ACanvas: TCanvas);
 var
-  LineNo, T, H: integer;
+  LineNo, t, H: Integer;
 begin
   with ACanvas do
   begin
@@ -3817,14 +3739,13 @@ begin
     FillRect(Rect(Left, Top, Left + Width - 2, Top + Height));
     if Assigned(FMemo.OnGutterDraw) then
     begin
-      T := Top;
-      H := FMemo.FCellSize.H;
+      t      := Top;
+      H      := FMemo.FCellSize.H;
       LineNo := FMemo.FTopLine;
-      while T < Top + Height do
+      while t < Top + Height do
       begin
-        FMemo.OnGutterDraw(FMemo, ACanvas, LineNo,
-          Rect(Left, T, Left + Width - 2, T + H));
-        T := T + H;
+        FMemo.OnGutterDraw(FMemo, ACanvas, LineNo, Rect(Left, t, Left + Width - 2, t + H));
+        t := t + H;
         Inc(LineNo);
         if LineNo >= FMemo.Lines.Count then
           break;
@@ -3847,12 +3768,11 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TStyleList }
 {$IFDEF GLS_REGION}{$REGION 'TStyleList'}{$ENDIF}
 
-procedure TStyleList.CheckRange(Index: integer);
+procedure TStyleList.CheckRange(Index: Integer);
 begin
   if (Index < 0) or (Index >= Count) then
     raise EListError.Create('Incorrect list item index ' + IntToStr(Index));
@@ -3864,20 +3784,18 @@ begin
   inherited;
 end;
 
-procedure TStyleList.Change(Index: integer; ATextColor, ABkCOlor: TColor;
-  AStyle: TFontStyles);
+procedure TStyleList.Change(Index: Integer; ATextColor, ABkCOlor: TColor; AStyle: TFontStyles);
 var
   P: TCharStyle;
 begin
   CheckRange(Index);
-  P := TCharStyle(Items[Index]);
+  P           := TCharStyle(Items[Index]);
   P.TextColor := ATextColor;
-  P.BkColor := ABkColor;
-  P.Style := AStyle;
+  P.BkColor   := ABkCOlor;
+  P.Style     := AStyle;
 end;
 
-function TStyleList.Add(ATextColor, ABkColor: TColor; AStyle: TFontStyles):
-  Integer;
+function TStyleList.Add(ATextColor, ABkCOlor: TColor; AStyle: TFontStyles): Integer;
 var
   P: TCharStyle;
 begin
@@ -3885,8 +3803,8 @@ begin
   with P do
   begin
     TextColor := ATextColor;
-    BkColor := ABkColor;
-    Style := AStyle;
+    BkColor   := ABkCOlor;
+    Style     := AStyle;
   end;
   Result := inherited Add(P);
 end;
@@ -3944,7 +3862,6 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TDGLSMemoStrings }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSMemoStrings'}{$ENDIF}
@@ -3986,7 +3903,7 @@ begin
         P.Free;
         inherited Delete(0);
       end;
-      //      inherited Clear;
+      // inherited Clear;
       AddStrings(TStrings(Source));
     finally
       EndUpdate;
@@ -4016,8 +3933,7 @@ begin
   Result := DoAdd(S);
 end;
 
-procedure TDGLSMemoStrings.InsertObject(Index: Integer;
-  const S: string; AObject: TObject);
+procedure TDGLSMemoStrings.InsertObject(Index: Integer; const S: string; AObject: TObject);
 begin
   if AObject <> nil then
     raise EInvalidOp.Create(SObjectsNotSupported);
@@ -4077,7 +3993,7 @@ begin
     Dec(FLockCount);
 end;
 
-procedure TDGLSMemoStrings.CheckRange(Index: integer);
+procedure TDGLSMemoStrings.CheckRange(Index: Integer);
 begin
   if (Index < 0) or (Index >= Count) then
     raise EListError('Incorrect index of list item ' + IntToStr(Index));
@@ -4103,33 +4019,33 @@ begin
     inherited PutObject(Index, AObject);
 end;
 
-function TDGLSMemoStrings.GetLineProp(Index: integer): TLineProp;
+function TDGLSMemoStrings.GetLineProp(Index: Integer): TLineProp;
 var
   P: TObject;
 begin
   CheckRange(Index);
   Result := nil;
-  P := inherited GetObject(Index);
+  P      := inherited GetObject(Index);
   if Assigned(P) and (P is TLineProp) then
     Result := TLineProp(P);
 end;
 
-function TDGLSMemoStrings.CreateProp(Index: integer): TLineProp;
+function TDGLSMemoStrings.CreateProp(Index: Integer): TLineProp;
 begin
   Result := TLineProp.Create;
   with Result do
   begin
-    FStyleNo := 0;
-    FInComment := False;
+    FStyleNo    := 0;
+    FInComment  := False;
     FInBrackets := -1;
     FValidAttrs := False;
-    FCharAttrs := '';
-    FObject := Objects[Index];
+    FCharAttrs  := '';
+    FObject     := Objects[Index];
   end;
   inherited PutObject(Index, Result);
 end;
 
-function TDGLSMemoStrings.GetLineStyle(Index: integer): integer;
+function TDGLSMemoStrings.GetLineStyle(Index: Integer): Integer;
 var
   P: TLineProp;
 begin
@@ -4140,13 +4056,13 @@ begin
     Result := P.FStyleNo;
 end;
 
-procedure TDGLSMemoStrings.SetLineStyle(Index: integer; Value: integer);
+procedure TDGLSMemoStrings.SetLineStyle(Index: Integer; Value: Integer);
 var
   P: TLineProp;
 begin
   P := LineProp[Index];
   if P = nil then
-    P := CreateProp(Index);
+    P        := CreateProp(Index);
   P.FStyleNo := Value;
 end;
 
@@ -4167,11 +4083,11 @@ var
 begin
   P := LineProp[Index];
   if P = nil then
-    P := CreateProp(Index);
+    P          := CreateProp(Index);
   P.FInComment := Value;
 end;
 
-function TDGLSMemoStrings.GetInBrackets(Index: Integer): integer;
+function TDGLSMemoStrings.GetInBrackets(Index: Integer): Integer;
 var
   P: TLineProp;
 begin
@@ -4182,13 +4098,13 @@ begin
     Result := P.FInBrackets;
 end;
 
-procedure TDGLSMemoStrings.SetInBrackets(Index: Integer; Value: integer);
+procedure TDGLSMemoStrings.SetInBrackets(Index: Integer; Value: Integer);
 var
   P: TLineProp;
 begin
   P := LineProp[Index];
   if P = nil then
-    P := CreateProp(Index);
+    P           := CreateProp(Index);
   P.FInBrackets := Value;
 end;
 
@@ -4209,7 +4125,7 @@ var
 begin
   P := LineProp[Index];
   if P = nil then
-    P := CreateProp(Index);
+    P           := CreateProp(Index);
   P.FValidAttrs := Value;
 end;
 
@@ -4230,25 +4146,23 @@ var
 begin
   P := LineProp[Index];
   if P = nil then
-    P := CreateProp(Index);
+    P          := CreateProp(Index);
   P.FCharAttrs := Value;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TDGLSMemoUndo }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSMemoUndo'}{$ENDIF}
 
-constructor TDGLSMemoUndo.Create(ACurX0, ACurY0, ACurX, ACurY: integer; AText:
-  string);
+constructor TDGLSMemoUndo.Create(ACurX0, ACurY0, ACurX, ACurY: Integer; AText: string);
 begin
   inherited Create;
   FUndoCurX0 := ACurX0;
   FUndoCurY0 := ACurY0;
-  FUndoCurX := ACurX;
-  FUndoCurY := ACurY;
-  FUndoText := AText;
+  FUndoCurX  := ACurX;
+  FUndoCurY  := ACurY;
+  FUndoText  := AText;
 end;
 
 procedure TDGLSMemoUndo.Undo;
@@ -4284,21 +4198,20 @@ end;
 
 procedure TDGLSMemoInsCharUndo.PerformUndo;
 var
-  i: integer;
+  i:        Integer;
   CurrLine: string;
 begin
   for i := Length(FUndoText) downto 1 do
   begin
     CurrLine := FMemo.Lines[FMemo.CurY];
-    if ((FUndoText[i] = #13) and (FMemo.CurX = 0)) or
-      (FUndoText[i] = CurrLine[FMemo.CurX]) then
+    if ((FUndoText[i] = #13) and (FMemo.CurX = 0)) or (FUndoText[i] = CurrLine[FMemo.CurX]) then
       FMemo.BackSpace;
   end;
 end;
 
 procedure TDGLSMemoInsCharUndo.PerformRedo;
 var
-  i: integer;
+  i: Integer;
 begin
   with FMemo do
     for i := 1 to Length(FUndoText) do
@@ -4311,19 +4224,17 @@ end;
 function TDGLSMemoInsCharUndo.Append(NewUndo: TDGLSMemoUndo): Boolean;
 begin
   Result := False;
-  if not ((NewUndo is TDGLSMemoInsCharUndo) and
-    (NewUndo.UndoCurX0 = FUndoCurX) and
-    (NewUndo.UndoCurY0 = FUndoCurY)) then
+  if not((NewUndo is TDGLSMemoInsCharUndo) and (NewUndo.UndoCurX0 = FUndoCurX) and (NewUndo.UndoCurY0 = FUndoCurY)) then
     Exit;
   FUndoText := FUndoText + NewUndo.FUndoText;
   FUndoCurX := NewUndo.UndoCurX;
   FUndoCurY := NewUndo.UndoCurY;
-  Result := True;
+  Result    := True;
 end;
 
 procedure TDGLSMemoDelCharUndo.PerformUndo;
 var
-  i: integer;
+  i: Integer;
 begin
   with FMemo do
     for i := 1 to Length(FUndoText) do
@@ -4342,7 +4253,7 @@ end;
 
 procedure TDGLSMemoDelCharUndo.PerformRedo;
 var
-  i: integer;
+  i: Integer;
 begin
   with FMemo do
     for i := 1 to Length(FUndoText) do
@@ -4355,20 +4266,17 @@ end;
 function TDGLSMemoDelCharUndo.Append(NewUndo: TDGLSMemoUndo): Boolean;
 begin
   Result := False;
-  if not ((NewUndo is TDGLSMemoDelCharUndo) and
-    (NewUndo.UndoCurX0 = FUndoCurX) and
-    (NewUndo.UndoCurY0 = FUndoCurY)) then
+  if not((NewUndo is TDGLSMemoDelCharUndo) and (NewUndo.UndoCurX0 = FUndoCurX) and (NewUndo.UndoCurY0 = FUndoCurY)) then
     Exit;
   if TDGLSMemoDelCharUndo(NewUndo).FIsBackspace <> FIsBackspace then
     Exit;
   FUndoText := NewUndo.FUndoText + FUndoText;
   FUndoCurX := NewUndo.UndoCurX;
   FUndoCurY := NewUndo.UndoCurY;
-  Result := True;
+  Result    := True;
 end;
 
-constructor TDGLSMEmoDelLineUndo.Create(AIndex, ACurX0, ACurY0, ACurX, ACurY:
-  integer; AText: string);
+constructor TDGLSMEmoDelLineUndo.Create(AIndex, ACurX0, ACurY0, ACurX, ACurY: Integer; AText: string);
 begin
   inherited Create(ACurX0, ACurY0, ACurX, ACurY, AText);
   FIndex := AIndex;
@@ -4376,12 +4284,12 @@ end;
 
 procedure TDGLSMEmoDelLineUndo.PerformUndo;
 var
-  SaveCurX: integer;
+  SaveCurX: Integer;
 begin
   with FMemo do
   begin
     SaveCurX := CurX;
-    CurX := 0;
+    CurX     := 0;
     ClearSelection;
     SetSelText(PChar(FUndoText + #13#10));
     CurX := SaveCurX;
@@ -4408,8 +4316,8 @@ begin
   begin
     FSelStartX := FUndoSelStartX;
     FSelStartY := FUndoSelStartY;
-    FSelEndX := FUndoSelEndX;
-    FSelEndY := FUndoSelEndY;
+    FSelEndX   := FUndoSelEndX;
+    FSelEndY   := FUndoSelEndY;
     DeleteSelection(True);
   end;
 end;
@@ -4420,8 +4328,8 @@ begin
   begin
     FSelStartX := FUndoCurX0;
     FSelStartY := FUndoCurY0;
-    FSelEndX := FUndoCurX;
-    FSelEndY := FUndoCurY;
+    FSelEndX   := FUndoCurX;
+    FSelEndY   := FUndoCurY;
     DeleteSelection(True);
   end;
 end;
@@ -4438,9 +4346,9 @@ end;
 constructor TDGLSMemoUndoList.Create;
 begin
   inherited;
-  FPos := 0;
+  FPos          := 0;
   FIsPerforming := False;
-  FLimit := 100;
+  FLimit        := 100;
 end;
 
 destructor TDGLSMemoUndoList.Destroy;
@@ -4463,8 +4371,7 @@ begin
     Exit;
   end;
 
-  if (Count > 0) and
-    Items[0].Append(TDGLSMemoUndo(Item)) then
+  if (Count > 0) and Items[0].Append(TDGLSMemoUndo(Item)) then
   begin
     TDGLSMemoUndo(Item).Free;
     Exit;
@@ -4490,7 +4397,7 @@ begin
     Delete(0);
   FPos := 0;
   with Memo do
-    if not (csDestroying in ComponentState) then
+    if not(csDestroying in ComponentState) then
       UndoChange;
 end;
 
@@ -4506,12 +4413,12 @@ var
 begin
   if FPos < Count then
   begin
-    OldAutoIndent := Memo.AutoIndent;
+    OldAutoIndent   := Memo.AutoIndent;
     Memo.AutoIndent := False;
-    FIsPerforming := True;
+    FIsPerforming   := True;
     Items[FPos].Undo;
     Inc(FPos);
-    FIsPerforming := False;
+    FIsPerforming   := False;
     Memo.AutoIndent := OldAutoIndent;
     Memo.UndoChange;
   end;
@@ -4523,18 +4430,18 @@ var
 begin
   if FPos > 0 then
   begin
-    OldAutoIndent := Memo.AutoIndent;
+    OldAutoIndent   := Memo.AutoIndent;
     Memo.AutoIndent := False;
-    FIsPerforming := True;
+    FIsPerforming   := True;
     Dec(FPos);
     Items[FPos].Redo;
-    FIsPerforming := False;
+    FIsPerforming   := False;
     Memo.AutoIndent := OldAutoIndent;
     Memo.UndoChange;
   end;
 end;
 
-procedure TDGLSMemoUndoList.SetLimit(Value: integer);
+procedure TDGLSMemoUndoList.SetLimit(Value: Integer);
 begin
   if FLimit <> Value then
   begin
@@ -4542,18 +4449,18 @@ begin
       Value := 10;
     if Value > 0 then
       Value := 100;
-    FLimit := Value;
+    FLimit  := Value;
     Clear;
   end;
 end;
 
-procedure TDGLSSynHiMemo.Paint;
+procedure TDGLSynHiMemo.Paint;
 begin
   FIsPainting := True;
   try
     DelimiterStyle := FDelimiterStyle;
-    CommentStyle := FCommentStyle;
-    NumberStyle := FNumberStyle;
+    CommentStyle   := FCommentStyle;
+    NumberStyle    := FNumberStyle;
     inherited;
   finally
     FIsPainting := False;
@@ -4561,21 +4468,23 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
-{ TDGLSSynHiMemo }
-{$IFDEF GLS_REGION}{$REGION 'TDGLSSynHiMemo'}{$ENDIF}
+{ TDGLSynHiMemo }
+{$IFDEF GLS_REGION}{$REGION 'TDGLSynHiMemo'}{$ENDIF}
 
-procedure TDGLSSynHiMemo.SetStyle(Index: integer; Value: TCharStyle);
+procedure TDGLSynHiMemo.SetStyle(Index: Integer; Value: TCharStyle);
 var
-  No: integer;
+  No:    Integer;
   eRect: TRect;
 begin
   No := -1;
   case Index of
-    0: No := FDelimiterStyleNo;
-    1: No := FCommentStyleNo;
-    2: No := FNumberStyleNo;
+    0:
+      No := FDelimiterStyleNo;
+    1:
+      No := FCommentStyleNo;
+    2:
+      No := FNumberStyleNo;
   end;
   with Value do
     Styles.Change(No, TextColor, BkColor, Style);
@@ -4586,78 +4495,77 @@ begin
   end;
 end;
 
-procedure TDGLSSynHiMemo.SetWordList(Value: TDGLSMemoStringList);
+procedure TDGLSynHiMemo.SetWordList(Value: TDGLSMemoStringList);
 begin
   FWordList.Assign(Value);
 end;
 
-procedure TDGLSSynHiMemo.SetSpecialList(Value: TDGLSMemoStringList);
+procedure TDGLSynHiMemo.SetSpecialList(Value: TDGLSMemoStringList);
 begin
   FSpecialList.Assign(Value);
 end;
 
-procedure TDGLSSynHiMemo.SetBracketList(Value: TDGLSMemoStringList);
+procedure TDGLSynHiMemo.SetBracketList(Value: TDGLSMemoStringList);
 begin
   FBracketList.Assign(Value);
 end;
 
-procedure TDGLSSynHiMemo.SetCaseSensitive(Value: Boolean);
+procedure TDGLSynHiMemo.SetCaseSensitive(Value: Boolean);
 var
-  LineNo: integer;
+  LineNo: Integer;
 begin
   if Value <> FCaseSensitive then
   begin
-    FCaseSensitive := Value;
-    for LineNo := 0 to Lines.Count - 1 do
+    FCaseSensitive       := Value;
+    for LineNo           := 0 to Lines.Count - 1 do
       ValidAttrs[LineNo] := False;
     Invalidate;
   end;
 end;
 
-function TDGLSSynHiMemo.GetToken(S: string; var From: integer;
-  var TokenType: TTokenType; var StyleNo: integer): string;
+function TDGLSynHiMemo.GetToken(S: string; var From: Integer; var TokenType: TTokenType; var StyleNo: Integer): string;
 var
-  i, toStart, toEnd, Len, LenSpec: integer;
-  Done: Boolean;
-  Brackets: string;
-  IntPart: integer;
-  WasPoint: Boolean;
-  //-------------------------------------------------------------
-  function StartsFrom(S: string; Pos: integer; S0: string): Boolean;
+  i, toStart, toEnd, len, LenSpec: Integer;
+  Done:                            Boolean;
+  Brackets:                        string;
+  IntPart:                         Integer;
+  WasPoint:                        Boolean;
+  // -------------------------------------------------------------
+  function StartsFrom(S: string; Pos: Integer; s0: string): Boolean;
   begin
-    Result := (StrLComp(PChar(S) + Pos - 1, PChar(S0), Length(S0)) = 0);
+    Result := (StrLComp(PChar(S) + Pos - 1, PChar(s0), Length(s0)) = 0);
   end;
-  //-------------------------------------------------------------
-  function Equal(s1, s2: string): Boolean;
+// -------------------------------------------------------------
+  function Equal(S1, S2: string): Boolean;
   begin
     if FCaseSensitive then
-      Result := s1 = s2
+      Result := S1 = S2
     else
-      Result := AnsiLowerCase(s1) = AnsiLowerCase(s2);
+      Result := AnsiLowerCase(S1) = AnsiLowerCase(S2);
   end;
+
 begin
-  toStart := From;
-  toEnd := From;
+  toStart   := From;
+  toEnd     := From;
   TokenType := ttOther;
-  StyleNo := 0;
-  Len := Length(S);
+  StyleNo   := 0;
+  len       := Length(S);
   // End of line
-  if From > Len then
+  if From > len then
   begin
-    From := -1;
-    Result := '';
+    From      := -1;
+    Result    := '';
     TokenType := ttEOL;
-    StyleNo := 0;
+    StyleNo   := 0;
     Exit;
   end;
   // Begin of multiline comment
-  if (MultiCommentLeft <> '') and (MultiCommentRight <> '') and
-    StartsFrom(S, From, MultiCommentLeft) then
+  if (MultiCommentLeft <> '') and (MultiCommentRight <> '') and StartsFrom(S, From, MultiCommentLeft) then
   begin
-    Result := MultiCommentLeft;
+    Result     := MultiCommentLeft;
     FInComment := True;
-    TokenType := ttComment;
-    StyleNo := FCommentStyleNo;
+    TokenType  := ttComment;
+    StyleNo    := FCommentStyleNo;
     Inc(From, Length(MultiCommentLeft));
     Exit;
   end;
@@ -4665,22 +4573,22 @@ begin
   if FInComment then
   begin
     toEnd := toStart;
-    while (toEnd <= Len) and (not StartsFrom(S, toEnd, MultiCommentRight)) do
+    while (toEnd <= len) and (not StartsFrom(S, toEnd, MultiCommentRight)) do
       Inc(toEnd);
-    if toEnd > Len then
+    if toEnd > len then
     begin
       Result := Copy(S, From, toEnd - From);
-      From := toEnd;
+      From   := toEnd;
     end
     else
     begin
       FInComment := False;
-      toEnd := toEnd + Length(MultiCommentRight);
-      Result := Copy(S, From, toEnd - From);
-      From := toEnd;
+      toEnd      := toEnd + Length(MultiCommentRight);
+      Result     := Copy(S, From, toEnd - From);
+      From       := toEnd;
     end;
     TokenType := ttComment;
-    StyleNo := FCommentStyleNo;
+    StyleNo   := FCommentStyleNo;
     Exit;
   end;
 
@@ -4688,55 +4596,54 @@ begin
   if FInBrackets >= 0 then
   begin
     Brackets := FBracketList[FInBrackets];
-    toEnd := toStart + 1;
-    while (toEnd <= Len) and (S[toEnd] <> Brackets[2]) do
+    toEnd    := toStart + 1;
+    while (toEnd <= len) and (S[toEnd] <> Brackets[2]) do
       Inc(toEnd);
-    StyleNo := integer(FBracketList.Objects[FInBrackets]);
-    if toEnd <= Len then
+    StyleNo := Integer(FBracketList.Objects[FInBrackets]);
+    if toEnd <= len then
     begin
       FInBrackets := -1;
-      From := toEnd + 1;
+      From        := toEnd + 1;
     end
     else
-      From := toEnd;
-    Result := Copy(S, toStart, toEnd - toStart + 1);
+      From    := toEnd;
+    Result    := Copy(S, toStart, toEnd - toStart + 1);
     TokenType := ttBracket;
     Exit;
   end;
   // Spaces
-  while (toStart <= Len) and (S[toStart] = ' ') do
+  while (toStart <= len) and (S[toStart] = ' ') do
     Inc(toStart);
   if toStart > From then
   begin
-    Result := Copy(S, From, toStart - From);
-    From := toStart;
+    Result    := Copy(S, From, toStart - From);
+    From      := toStart;
     TokenType := ttSpace;
-    StyleNo := 0;
+    StyleNo   := 0;
     Exit;
   end;
   // Comment
   if (FLineComment <> '') and StartsFrom(S, From, FLineComment) then
   begin
-    Result := Copy(S, From, Len);
-    From := Len + 1;
+    Result    := Copy(S, From, len);
+    From      := len + 1;
     TokenType := ttComment;
-    StyleNo := FCommentStyleNo;
+    StyleNo   := FCommentStyleNo;
     Exit;
   end;
 
   // Special keyword
-  Done := False;
+  Done  := False;
   for i := 0 to FSpecialList.Count - 1 do
   begin
     LenSpec := Length(FSpecialList[i]);
-    if StrLComp(PChar(S) + toStart - 1,
-      PChar(FSpecialList[i]), LenSpec) = 0 then
+    if StrLComp(PChar(S) + toStart - 1, PChar(FSpecialList[i]), LenSpec) = 0 then
     begin
-      toEnd := toStart + LenSpec - 1;
-      StyleNo := integer(FSpecialList.Objects[i]);
+      toEnd     := toStart + LenSpec - 1;
+      StyleNo   := Integer(FSpecialList.Objects[i]);
       TokenType := ttSpecial;
-      From := toEnd + 1;
-      Done := True;
+      From      := toEnd + 1;
+      Done      := True;
       break;
     end;
   end;
@@ -4749,16 +4656,16 @@ begin
       if S[toStart] = Brackets[1] then
       begin
         FInBrackets := i;
-        toEnd := toStart + 1;
-        while (toEnd <= Len) and (S[toEnd] <> Brackets[2]) do
+        toEnd       := toStart + 1;
+        while (toEnd <= len) and (S[toEnd] <> Brackets[2]) do
           Inc(toEnd);
-        if toEnd <= Len then
+        if toEnd <= len then
           FInBrackets := -1
         else
           Dec(toEnd);
-        StyleNo := integer(FBracketList.Objects[i]);
+        StyleNo   := Integer(FBracketList.Objects[i]);
         TokenType := ttBracket;
-        Done := True;
+        Done      := True;
         break;
       end;
     end;
@@ -4766,33 +4673,33 @@ begin
   // Delimeters
   if not Done and CharInSet(S[toStart], Delimiters) then
   begin
-    toEnd := toStart;
-    StyleNo := FDelimiterStyleNo;
+    toEnd     := toStart;
+    StyleNo   := FDelimiterStyleNo;
     TokenType := ttDelimiter;
-    Done := True;
+    Done      := True;
   end;
   // --- Integer or float type
-  if not Done and CharInSet(S[toStart], ['0'..'9', '.']) then
+  if not Done and CharInSet(S[toStart], ['0' .. '9', '.']) then
   begin
-    IntPart := 0;
-    WasPoint := False;
-    toEnd := toStart;
-    Done := True;
+    IntPart   := 0;
+    WasPoint  := False;
+    toEnd     := toStart;
+    Done      := True;
     TokenType := ttInteger;
-    StyleNo := FNumberStyleNo;
-    while (toEnd <= Len) and CharInSet(S[toEnd], ['0'..'9', '.']) do
+    StyleNo   := FNumberStyleNo;
+    while (toEnd <= len) and CharInSet(S[toEnd], ['0' .. '9', '.']) do
     begin
       if S[toEnd] = '.' then
       begin
         if not WasPoint then
         begin
-          WasPoint := True;
+          WasPoint  := True;
           TokenType := ttFloat;
         end
         else
         begin
           TokenType := ttWrongNumber;
-          Color := clRed;
+          Color     := clRed;
         end;
       end
       else if not WasPoint then
@@ -4809,52 +4716,51 @@ begin
   if not Done then
   begin
     toEnd := toStart;
-    while (toEnd <= Len) and not CharInSet(S[toEnd], Delimiters) do
+    while (toEnd <= len) and not CharInSet(S[toEnd], Delimiters) do
       Inc(toEnd);
     Dec(toEnd);
   end;
   // Find in dictionary
   Result := Copy(S, toStart, toEnd - toStart + 1);
-  for i := 0 to FWordList.Count - 1 do
+  for i  := 0 to FWordList.Count - 1 do
     if Equal(Result, FWordList[i]) then
     begin
-      StyleNo := integer(FWordList.Objects[i]);
+      StyleNo   := Integer(FWordList.Objects[i]);
       TokenType := ttWord;
       break;
     end;
   From := toEnd + 1;
 end;
 
-procedure TDGLSSynHiMemo.FindLineAttrs(Sender: TObject; LineNo: integer;
-  var Attrs: string);
+procedure TDGLSynHiMemo.FindLineAttrs(Sender: TObject; LineNo: Integer; var Attrs: string);
 var
-  i, From, TokenLen: integer;
-  S, Token: string;
-  TokenType: TTokenType;
-  StyleNo, OldInBrackets: integer;
-  OldInComment: Boolean;
+  i, From, TokenLen:      Integer;
+  S, Token:               string;
+  TokenType:              TTokenType;
+  StyleNo, OldInBrackets: Integer;
+  OldInComment:           Boolean;
 begin
   S := Lines[LineNo];
   SetLength(Attrs, Length(S));
-  FInComment := InComment[LineNo];
+  FInComment  := InComment[LineNo];
   FInBrackets := InBrackets[LineNo];
-  From := 1;
+  From        := 1;
   while True do
   begin
     Token := GetToken(S, From, TokenType, StyleNo);
     if TokenType = ttEOL then
       break;
-    TokenLen := Length(Token);
-    for i := From - TokenLen to From - 1 do
+    TokenLen   := Length(Token);
+    for i      := From - TokenLen to From - 1 do
       Attrs[i] := Char(StyleNo);
   end;
   if LineNo < Lines.Count - 1 then
   begin
-    OldInComment := InComment[LineNo + 1];
+    OldInComment  := InComment[LineNo + 1];
     OldInBrackets := InBrackets[LineNo + 1];
     if OldInComment <> FInComment then
     begin
-      InComment[LineNo + 1] := FInComment;
+      InComment[LineNo + 1]  := FInComment;
       ValidAttrs[LineNo + 1] := False;
     end;
     if OldInBrackets <> FInBrackets then
@@ -4865,37 +4771,37 @@ begin
   end;
 end;
 
-procedure TDGLSSynHiMemo.AddWord(StyleNo: integer; ArrS: array of string);
+procedure TDGLSynHiMemo.AddWord(StyleNo: Integer; ArrS: array of string);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := Low(ArrS) to high(ArrS) do
     FWordList.AddObject(ArrS[i], TObject(StyleNo));
 end;
 
-procedure TDGLSSynHiMemo.AddSpecial(StyleNo: integer; ArrS: array of string);
+procedure TDGLSynHiMemo.AddSpecial(StyleNo: Integer; ArrS: array of string);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := Low(ArrS) to high(ArrS) do
     FSpecialList.AddObject(ArrS[i], TObject(StyleNo));
 end;
 
-procedure TDGLSSynHiMemo.AddBrackets(StyleNo: integer; ArrS: array of string);
+procedure TDGLSynHiMemo.AddBrackets(StyleNo: Integer; ArrS: array of string);
 var
-  i: integer;
+  i: Integer;
 begin
   for i := Low(ArrS) to high(ArrS) do
     FBracketList.AddObject(ArrS[i], TObject(StyleNo));
 end;
 
-constructor TDGLSSynHiMemo.Create(AOwner: TComponent);
+constructor TDGLSynHiMemo.Create(AOwner: TComponent);
 begin
   inherited;
-  FInBrackets := -1;
-  FIsPainting := False;
-  FInComment := False;
-  FWordList := TDGLSMemoStringList.Create;
+  FInBrackets  := -1;
+  FIsPainting  := False;
+  FInComment   := False;
+  FWordList    := TDGLSMemoStringList.Create;
   FSpecialList := TDGLSMemoStringList.Create;
   FBracketList := TDGLSMemoStringList.Create;
 
@@ -4903,37 +4809,35 @@ begin
   with FDelimiterStyle do
   begin
     TextColor := clBlue;
-    BkColor := clWhite;
-    Style := [];
+    BkColor   := clWhite;
+    Style     := [];
   end;
 
   FCommentStyle := TCharStyle.Create;
   with FCommentStyle do
   begin
     TextColor := clYellow;
-    BkColor := clSkyBlue;
-    Style := [fsItalic];
+    BkColor   := clSkyBlue;
+    Style     := [fsItalic];
   end;
 
   FNumberStyle := TCharStyle.Create;
   with FNumberStyle do
   begin
     TextColor := clNavy;
-    BkColor := clWhite;
-    Style := [fsBold];
+    BkColor   := clWhite;
+    Style     := [fsBold];
   end;
 
   FDelimiterStyleNo := Styles.Add(clBlue, clWhite, []);
-  FCommentStyleNo := Styles.Add(clSilver, clWhite, [fsItalic]);
-  FNumberStyleNo := Styles.Add(clNavy, clWhite, [fsBold]);
+  FCommentStyleNo   := Styles.Add(clSilver, clWhite, [fsItalic]);
+  FNumberStyleNo    := Styles.Add(clNavy, clWhite, [fsBold]);
 
   OnGetLineAttrs := FindLineAttrs;
-  Delimiters := [' ', ',', ';', ':', '.', '(', ')', '{', '}', '[', ']',
-    '=', '+', '-', '*', '/', '^', '%', '<', '>',
-    '"', '''', #13, #10];
+  Delimiters     := [' ', ',', ';', ':', '.', '(', ')', '{', '}', '[', ']', '=', '+', '-', '*', '/', '^', '%', '<', '>', '"', '''', #13, #10];
 end;
 
-destructor TDGLSSynHiMemo.Destroy;
+destructor TDGLSynHiMemo.Destroy;
 begin
   FWordList.Free;
   FSpecialList.Free;
@@ -4945,7 +4849,6 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { TDGLSMemoStringList }
 {$IFDEF GLS_REGION}{$REGION 'TDGLSMemoStringList'}{$ENDIF}
@@ -4959,7 +4862,7 @@ begin
     Clear;
     while not Reader.EndOfList do
     begin
-      i := Add(Reader.ReadString);
+      i          := Add(Reader.ReadString);
       Objects[i] := TObject(Reader.ReadInteger);
     end;
     Reader.ReadListEnd;
@@ -4967,9 +4870,9 @@ begin
   end;
 end;
 
-//--------------------------------------------------------------
-//        STRING LIST - WRITE STRINGS
-//--------------------------------------------------------------
+// --------------------------------------------------------------
+// STRING LIST - WRITE STRINGS
+// --------------------------------------------------------------
 
 procedure TDGLSMemoStringList.WriteStrings(Writer: TWriter);
 var
@@ -4987,9 +4890,9 @@ begin
   end;
 end;
 
-//--------------------------------------------------------------
-//        STRING LIST - DEFINE PROPERTIES
-//--------------------------------------------------------------
+// --------------------------------------------------------------
+// STRING LIST - DEFINE PROPERTIES
+// --------------------------------------------------------------
 
 procedure TDGLSMemoStringList.DefineProperties(Filer: TFiler);
 begin
@@ -4997,23 +4900,22 @@ begin
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
 // ------------------
 { ScrollBar bitmaps }
 {$IFDEF GLS_REGION}{$REGION 'ScrollBar bitmaps'}{$ENDIF}
 
 procedure CreateScrollBarBitmaps;
 var
-  i, j: integer;
+  i, j: Integer;
 begin
   bmScrollBarFill := TBitmap.Create;
   with bmScrollBarFill, Canvas do
   begin
-    Width := 8;
-    Height := 8;
+    Width       := 8;
+    Height      := 8;
     Transparent := False;
-    for i := 0 to 7 do
-      for j := 0 to 7 do
+    for i       := 0 to 7 do
+      for j     := 0 to 7 do
         if Odd(i + j) then
           Pixels[i, j] := clSilver;
   end;
@@ -5021,8 +4923,8 @@ begin
   bmScrollBarUp := TBitmap.Create;
   with bmScrollBarUp, Canvas do
   begin
-    Width := 7;
-    Height := 8;
+    Width       := 7;
+    Height      := 8;
     Brush.Color := clSilver;
     FillRect(Rect(0, 0, Width, Height));
     Pixels[3, 2] := clBlack;
@@ -5037,8 +4939,8 @@ begin
   bmScrollBarDown := TBitmap.Create;
   with bmScrollBarDown, Canvas do
   begin
-    Width := 7;
-    Height := 8;
+    Width       := 7;
+    Height      := 8;
     Brush.Color := clSilver;
     FillRect(Rect(0, 0, Width, Height));
     MoveTo(0, 2);
@@ -5053,8 +4955,8 @@ begin
   bmScrollBarLeft := TBitmap.Create;
   with bmScrollBarLeft, Canvas do
   begin
-    Width := 8;
-    Height := 7;
+    Width       := 8;
+    Height      := 7;
     Brush.Color := clSilver;
     FillRect(Rect(0, 0, Width, Height));
     Pixels[2, 3] := clBlack;
@@ -5069,8 +4971,8 @@ begin
   bmScrollBarRight := TBitmap.Create;
   with bmScrollBarRight, Canvas do
   begin
-    Width := 8;
-    Height := 7;
+    Width       := 8;
+    Height      := 7;
     Brush.Color := clSilver;
     FillRect(Rect(0, 0, Width, Height));
     MoveTo(2, 0);
@@ -5083,7 +4985,7 @@ begin
   end;
 
 end;
-//------------------ FREE SCROLL BAR BITMAPs -------------------
+// ------------------ FREE SCROLL BAR BITMAPs -------------------
 
 procedure FreeScrollBarBitmaps;
 begin
@@ -5096,18 +4998,17 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
 
-  RegisterClasses([TDGLSSynHiMemo]);
-  CreateScrollBarBitmaps;
-  IntelliMouseInit;
+RegisterClasses([TDGLSynHiMemo]);
+CreateScrollBarBitmaps;
+IntelliMouseInit;
 
 finalization
-  FreeScrollBarBitmaps;
+
+FreeScrollBarBitmaps;
 
 end.
-

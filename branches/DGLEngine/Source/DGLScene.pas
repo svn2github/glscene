@@ -1,13 +1,13 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : DGLScene<p>
+{ @HTML ( DGLScene<p>
 
-  Base classes and structures for DGLEngine.<p>
-
-  <b>Historique : </b><font size=-1><ul>
+  Base classes and structures for DGLEngine.</p>
+  <p>
+  <b>History: </b><font size=-1><ul>
   <li>21/12/15 - JD -  Imported From GLScene
-  </ul></font>
+  </ul></font></p> )
 }
 unit DGLScene;
 
@@ -23,7 +23,7 @@ uses
   // DGLE
   DGLSLog, DGLResStrings,
   dglOpenGL, DGLCrossPlatform, DGLTypes,
-  DGLContext, DGLState, DGLPipeLineTransformation, DGLRenderContextInfo, //DGLXOpenGL,
+  DGLContext, DGLState, DGLPipeLineTransformation, DGLRenderContextInfo, // DGLXOpenGL,
 
   DGLBaseClasses,
   DGLPersistentClasses,
@@ -44,24 +44,15 @@ uses
   DGLShader,
 
   DGLSilhouette;
-  //DGLSelection;
-
+// DGLSelection;
 
 Const
   GLSCENE_REVISION = '$Revision: 1$';
   GLSCENE_VERSION  = '2.0.0.%s';
 
-Type
-  // TDGLProxyObjectOption
-  //
-  { : Defines which features are taken from the master object. }
-  TDGLProxyObjectOption  = (pooEffects, pooObjects, pooTransformation);
-  TDGLProxyObjectOptions = set of TDGLProxyObjectOption;
-
-const
-  cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
 
 Type
+  // ****************************************************************************************
   // TObjectChanges
   //
   // used to decribe only the changes in an object,
@@ -77,61 +68,59 @@ Type
   { : Event for user-specific rendering in a TDGLDirectOpenGL object. }
   TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo) of object;
 
+//  TDGLProxyObjectClass = class of TDGLProxyObject;
 
-
-  TDGLProxyObjectClass = class of TDGLProxyObject;
-
-  TDGLScene = class;
-  TDGLSceneBuffer = class;
+  TDGLScene             = class;
+  TDGLSceneBuffer       = class;
   TDGLBaseSceneObject   = class;
   TDGLSceneObjectClass  = class of TDGLBaseSceneObject;
-  TDGLCustomSceneObject = class;
-  TDGLBehaviour          = class;
-  TDGLBehaviourClass     = class of TDGLBehaviour;
-  TDGLBehaviours         = class;
+//  TDGLCustomSceneObject = class;
+  TDGLBehaviour         = class;
+  TDGLBehaviourClass    = class of TDGLBehaviour;
+  TDGLBehaviours        = class;
 
   TDGLObjectEffect      = class;
   TDGLObjectEffectClass = class of TDGLObjectEffect;
   TDGLObjectEffects     = class;
 
-
-  // IGLInitializable
+  // ****************************************************************************************
+  // IDGLInitializable
   //
-  { : Interface to objects that need initialization<p> }
-  IGLInitializable = interface
+  { : Interface to objects that need initialization }
+  IDGLInitializable = interface
     ['{EA40AE8E-79B3-42F5-ADF1-7A901B665E12}']
     procedure InitializeObject(ASender: TObject; const ARci: TRenderContextInfo);
   end;
 
+  // ****************************************************************************************
   // TDGLInitializableObjectList
   //
-  { : Just a list of objects that support IGLInitializable.<p> }
+  { : Just a list of objects that support IDGLInitializable. }
   TDGLInitializableObjectList = class(TList)
   private
-    function GetItems(const Index: Integer): IGLInitializable;
-    procedure PutItems(const Index: Integer; const Value: IGLInitializable);
+    function GetItems(const Index: Integer): IDGLInitializable;
+    procedure PutItems(const Index: Integer; const Value: IDGLInitializable);
   public
-    function Add(const Item: IGLInitializable): Integer;
-    property Items[const Index: Integer]: IGLInitializable read GetItems write PutItems; default;
+    function Add(const Item: IDGLInitializable): Integer;
+    property Items[const Index: Integer]: IDGLInitializable read GetItems write PutItems; default;
   end;
 
-
-
+  // ****************************************************************************************
   // TDGLBaseSceneObject
   //
-  { : Base class for all scene objects.<p>
+  { @HTML ( Base class for all scene objects.<p>
     A scene object is part of scene hierarchy (each scene object can have
     multiple children), this hierarchy primarily defines transformations
     (each child coordinates are relative to its parent), but is also used
-    for depth-sorting, bounding and visibility culling purposes.<p>
+    for depth-sorting, bounding and visibility culling purposes.</p><p>
     Subclasses implement either visual scene objects (that are made to be
     visible at runtime, like a Cube) or structural objects (that influence
     rendering or are used for varied structural manipulations,
-    like the ProxyObject).<p>
+    like the ProxyObject).</p><p>
     To add children at runtime, use the AddNewChild method of TDGLBaseSceneObject;
     other children manipulations methods and properties are provided (to browse,
     move and delete them). Using the regular TComponent methods is not
-    encouraged. }
+    encouraged.</p> ) }
 
   TDGLBaseSceneObject = class(TDGLCoordinatesUpdateAbleComponent)
   private
@@ -139,14 +128,6 @@ Type
     FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
     FLocalMatrix:                        PMatrix;
     FObjectStyle:                        TDGLObjectStyles;
-  //  FListHandle: TDGLListHandle; // created on 1st use DEPRECATED
-
-    // FVertices : TVectorList;
-    // FNormals  : TAffineVectorList;
-    // FIndices  : TIntegerList;
-    // FTexCoord : TVectorList;
-    // FTangents : TVectorList;
-    // FBinormals : TAffineVectorList;
 
     FPosition:       TDGLCoordinates;
     FDirection, FUp: TDGLCoordinates;
@@ -163,7 +144,7 @@ Type
     FChildren:          TDGLPersistentObjectList; // created on 1st use
     FVisible:           Boolean;
     FUpdateCount:       Integer;
-    FShowAxes:          Boolean;
+//    FShowAxes:          Boolean;
     FRotation:          TDGLCoordinates; // current rotation angles
     FIsCalculating:     Boolean;
     FObjectsSorting:    TDGLObjectsSorting;
@@ -201,7 +182,7 @@ Type
     function GetTurnAngle: Single;
     function GetRollAngle: Single;
 
-    procedure SetShowAxes(aValue: Boolean);
+//    procedure SetShowAxes(aValue: Boolean);
     procedure SetScaling(aValue: TDGLCoordinates);
     procedure SetObjectsSorting(const val: TDGLObjectsSorting);
     procedure SetVisibilityCulling(const val: TDGLVisibilityCulling);
@@ -259,17 +240,17 @@ Type
     procedure RebuildMatrix;
     procedure SetName(const NewName: TComponentName); override;
     procedure SetParentComponent(Value: TComponent); override;
-    procedure DestroyHandle; dynamic;
-    procedure DestroyHandles;
+    // procedure DestroyHandle; dynamic;
+    // procedure DestroyHandles;
     procedure DeleteChildCameras;
     procedure DoOnAddedToParent; virtual;
 
-    { : Used to re-calculate BoundingBoxes every time we need it.
-      GetLocalUnscaleBB() must return the local BB, not the axis-aligned one.
+    { @HTML ( Used to re-calculate BoundingBoxes every time we need it.<p>
+      GetLocalUnscaleBB() must return the local BB, not the axis-aligned one.</p><p>
 
       By default it is calculated from AxisAlignedBoundingBoxUnscaled and
       BarycenterAbsolutePosition, but for most objects there is a more
-      efficient method, that's why it is virtual. }
+      efficient method, that's why it is virtual.</p> ) }
     procedure CalculateBoundingBoxPersonalUnscaled(var ANewBoundingBox: THmgBoundingBox); virtual;
   public
     { Public Declarations }
@@ -278,49 +259,49 @@ Type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    { : Controls and adjusts internal optimizations based on object's style.<p>
-      Advanced user only. }
+    { @HTML ( Controls and adjusts internal optimizations based on object's style.<p>
+      Advanced user only.</p> ) }
     property ObjectStyle: TDGLObjectStyles read FObjectStyle write FObjectStyle;
 
-    { : Returns the handle to the object's build list.<p>
-      Use with caution! Some objects don't support buildlists! }
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
-    function ListHandleAllocated: Boolean;
+    { @HTML ( Returns the handle to the object's build list.<p>
+      Use with caution! Some objects don't support buildlists!</p> ) }
+    // function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
+    // function ListHandleAllocated: Boolean;
 
-    { : The local transformation (relative to parent).<p>
+    { @HTML ( The local transformation (relative to parent).<p>
       If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
-      for quicker access. }
+      for quicker access.</p> ) }
     property Matrix: TMatrix read GetMatrix write SetMatrix;
     { : See Matrix. }
     function MatrixAsAddress: PMatrix;
-    { : Holds the local transformation (relative to parent).<p>
-      If you're not *sure* the local matrix is up-to-date, use Matrix property. }
+    { @HTML ( Holds the local transformation (relative to parent).<p>
+      If you're not *sure* the local matrix is up-to-date, use Matrix property.</p> ) }
     property LocalMatrix: PMatrix read FLocalMatrix;
-    { : Forces the local matrix to the specified value.<p>
+    { @HTML ( Forces the local matrix to the specified value.<p>
       AbsoluteMatrix, InverseMatrix, etc. will honour that change, but
       may become invalid if the specified matrix isn't orthonormal (can
       be used for specific rendering or projection effects).<br>
       The local matrix will be reset by the next TransformationChanged,
-      position or attitude change. }
+      position or attitude change.</p> ) }
     procedure ForceLocalMatrix(const aMatrix: TMatrix);
 
     { : See AbsoluteMatrix. }
     function AbsoluteMatrixAsAddress: PMatrix;
-    { : Holds the absolute transformation matrix.<p>
+    { @HTML ( Holds the absolute transformation matrix.<p>
       If you're not *sure* the absolute matrix is up-to-date,
-      use the AbsoluteMatrix property, this one may be nil... }
+      use the AbsoluteMatrix property, this one may be nil...</p> ) }
     property DirectAbsoluteMatrix: PMatrix read FAbsoluteMatrix;
 
-    { : Calculates the object's absolute inverse matrix.<p>
-      Multiplying an absolute coordinate with this matrix gives a local coordinate.<p>
+    { @HTML ( Calculates the object's absolute inverse matrix.<p>
+      Multiplying an absolute coordinate with this matrix gives a local coordinate.<br>
       The current implem uses transposition(AbsoluteMatrix), which is true
-      unless you're using some scaling... }
+      unless you're using some scaling...</p> ) }
     function InvAbsoluteMatrix: TMatrix;
     { : See InvAbsoluteMatrix. }
     function InvAbsoluteMatrixAsAddress: PMatrix;
 
-    { : The object's absolute matrix by composing all local matrices.<p>
-      Multiplying a local coordinate with this matrix gives an absolute coordinate. }
+    { @HTML ( The object's absolute matrix by composing all local matrices.<p>
+      Multiplying a local coordinate with this matrix gives an absolute coordinate.</p> ) }
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix write SetAbsoluteMatrix;
 
     { : Direction vector in absolute coordinates. }
@@ -342,7 +323,7 @@ Type
     { : Calculate the left vector in absolute coordinates. }
     function AbsoluteLeft: TVector;
 
-    { : Computes and allows to set the object's absolute coordinates.<p> }
+    { : Computes and allows to set the object's absolute coordinates. }
     property AbsolutePosition: TVector read GetAbsolutePosition write SetAbsolutePosition;
     property AbsoluteAffinePosition: TAffineVector read GetAbsoluteAffinePosition write SetAbsoluteAffinePosition;
     function AbsolutePositionAsAddress: PVector;
@@ -373,40 +354,40 @@ Type
     { : Returns the Left vector (based on Up and Direction) }
     function AffineLeftVector: TAffineVector;
 
-    { : Calculates the object's square distance to a point/object.<p>
+    { @HTML ( Calculates the object's square distance to a point/object.<p>
       pt is assumed to be in absolute coordinates,
-      AbsolutePosition is considered as being the object position. }
+      AbsolutePosition is considered as being the object position.</p> ) }
     function SqrDistanceTo(anObject: TDGLBaseSceneObject): Single; overload;
     function SqrDistanceTo(const pt: TVector): Single; overload;
     function SqrDistanceTo(const pt: TAffineVector): Single; overload;
 
-    { : Computes the object's distance to a point/object.<p>
-      Only objects AbsolutePositions are considered. }
+    { @HTML ( Computes the object's distance to a point/object.<p>
+      Only objects AbsolutePositions are considered.</p> ) }
     function DistanceTo(anObject: TDGLBaseSceneObject): Single; overload;
     function DistanceTo(const pt: TAffineVector): Single; overload;
     function DistanceTo(const pt: TVector): Single; overload;
 
-    { : Calculates the object's barycenter in absolute coordinates.<p>
+    { @HTML ( Calculates the object's barycenter in absolute coordinates.<p>
       Default behaviour is to consider Barycenter=AbsolutePosition
       (whatever the number of children).<br>
       SubClasses where AbsolutePosition is not the barycenter should
       override this method as it is used for distance calculation, during
-      rendering for instance, and may lead to visual inconsistencies. }
+      rendering for instance, and may lead to visual inconsistencies.</p> ) }
     function BarycenterAbsolutePosition: TVector; virtual;
-    { : Calculates the object's barycenter distance to a point.<p> }
+    { : Calculates the object's barycenter distance to a point. }
     function BarycenterSqrDistanceTo(const pt: TVector): Single;
 
-    { : Shall returns the object's axis aligned extensions.<p>
+    { @HTML ( Shall returns the object's axis aligned extensions.<p>
       The dimensions are measured from object center and are expressed
       <i>with</i> scale accounted for, in the object's coordinates
-      (not in absolute coordinates).<p>
-      Default value is half the object's Scale.<br> }
+      (not in absolute coordinates).<br>
+      Default value is half the object's Scale.</p> ) }
     function AxisAlignedDimensions: TVector; virtual;
     function AxisAlignedDimensionsUnscaled: TVector; virtual;
 
-    { : Calculates and return the AABB for the object.<p>
-      The AABB is currently calculated from the BB.
-      There is <b>no</b> caching scheme for them. }
+    { @HTML ( Calculates and return the AABB for the object.<p>
+      The AABB is currently calculated from the BB.<br>
+      There is <b>no</b> caching scheme for them.</p> ) }
     function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True): TAABB;
     function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean = True): TAABB;
     function AxisAlignedBoundingBoxAbsolute(const AIncludeChilden: Boolean = True; const AUseBaryCenter: Boolean = False): TAABB;
@@ -416,11 +397,11 @@ Type
     function AxisAlignedBoundingBoxEx: TAABB;
     function AxisAlignedBoundingBoxAbsoluteEx: TAABB;
 
-    { : Calculates and return the Bounding Box for the object.<p>
+    { @HTML ( Calculates and return the Bounding Box for the object.<p>
       The BB is calculated <b>each</b> time this method is invoked,
       based on the AxisAlignedDimensions of the object and that of its
-      children.
-      There is <b>no</b> caching scheme for them. }
+      children.<br>
+      There is <b>no</b> caching scheme for them.</p> ) }
     function BoundingBox(const AIncludeChilden: Boolean = True; const AUseBaryCenter: Boolean = False): THmgBoundingBox;
     function BoundingBoxUnscaled(const AIncludeChilden: Boolean = True; const AUseBaryCenter: Boolean = False): THmgBoundingBox;
     function BoundingBoxAbsolute(const AIncludeChilden: Boolean = True; const AUseBaryCenter: Boolean = False): THmgBoundingBox;
@@ -435,27 +416,27 @@ Type
     function BoundingSphereRadius: Single;
     function BoundingSphereRadiusUnscaled: Single;
 
-    { : Indicates if a point is within an object.<p>
+    { @HTML ( Indicates if a point is within an object.<p>
       Given coordinate is an absolute coordinate.<br>
-      Linear or surfacic objects shall always return False.<p>
-      Default value is based on AxisAlignedDimension and a cube bounding. }
+      Linear or surfacic objects shall always return False.<br>
+      Default value is based on AxisAlignedDimension and a cube bounding.</p> ) }
     function PointInObject(const point: TVector): Boolean; virtual;
-    { : Request to determine an intersection with a casted ray.<p>
+    { @HTML ( Request to determine an intersection with a casted ray.<p>
       Given coordinates & vector are in absolute coordinates, rayVector
       must be normalized.<br>
       rayStart may be a point inside the object, allowing retrieval of
-      the multiple intersects of the ray.<p>
+      the multiple intersects of the ray.<br>
       When intersectXXX parameters are nil (default) implementation should
       take advantage of this to optimize calculus, if not, and an intersect
-      is found, non nil parameters should be defined.<p>
-      The intersectNormal needs NOT be normalized by the implementations.<p>
-      Default value is based on bounding sphere. }
+      is found, non nil parameters should be defined.<br>
+      The intersectNormal needs NOT be normalized by the implementations.<br>
+      Default value is based on bounding sphere.</p> ) }
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; virtual;
 
-    { : Request to generate silhouette outlines.<p>
+    { @HTML ( Request to generate silhouette outlines.<p>
       Default implementation assumes the objects is a sphere of
       AxisAlignedDimensionUnscaled size. Subclasses may choose to return
-      nil instead, which will be understood as an empty silhouette. }
+      nil instead, which will be understood as an empty silhouette.</p> ) }
     function GenerateSilhouette(const silhouetteParameters: TDGLSilhouetteParameters): TDGLSilhouette; virtual;
 
     property Children[Index: Integer]: TDGLBaseSceneObject read Get; default;
@@ -476,9 +457,9 @@ Type
     function HasSubChildren: Boolean;
     procedure DeleteChildren; dynamic;
     procedure Insert(AIndex: Integer; AChild: TDGLBaseSceneObject); dynamic;
-    { : Takes a scene object out of the child list, but doesn't destroy it.<p>
+    { @HTML ( Takes a scene object out of the child list, but doesn't destroy it.<p>
       If 'KeepChildren' is true its children will be kept as new children
-      in this scene object. }
+      in this scene object.</p> ) }
     procedure Remove(AChild: TDGLBaseSceneObject; keepChildren: Boolean); dynamic;
     function IndexOfChild(AChild: TDGLBaseSceneObject): Integer;
     function FindChild(const aName: string; ownChildrenOnly: Boolean): TDGLBaseSceneObject;
@@ -503,9 +484,9 @@ Type
     procedure MoveLast;
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
-    { : Make object-specific geometry description here.<p>
+    { @HTML ( Make object-specific geometry description here.<p>
       Subclasses should MAINTAIN OpenGL states (restore the states if
-      they were altered). }
+      they were altered).</p> ) }
     procedure BuildList(var rci: TRenderContextInfo); virtual;
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
@@ -522,11 +503,11 @@ Type
     procedure Roll(angle: Single);
     procedure Turn(angle: Single);
 
-    { : Sets all rotations to zero and restores default Direction/Up.<p>
+    { @HTML ( Sets all rotations to zero and restores default Direction/Up.<p>
       Using this function then applying roll/pitch/turn in the order that
       suits you, you can give an "absolute" meaning to rotation angles
-      (they are still applied locally though).<br>
-      Scale and Position are not affected. }
+      (they are still applied locally though).
+      Scale and Position are not affected.</p> ) }
     procedure ResetRotations;
     { : Reset rotations and applies them back in the specified order. }
     procedure ResetAndPitchTurnRoll(const degX, degY, degZ: Single);
@@ -559,7 +540,7 @@ Type
     property RollAngle: Single read GetRollAngle write SetRollAngle;
     property TurnAngle: Single read GetTurnAngle write SetTurnAngle;
 
-    property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
+//    property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
 
     property Changes: TObjectChanges read FChanges;
     property BBChanges: TObjectBBChanges read FBBChanges write SetBBChanges;
@@ -587,57 +568,46 @@ Type
 
   end;
 
-  // TDGLSceneRootObject
-  //
-  { : This class shall be used only as a hierarchy root.<p>
-    It exists only as a container and shall never be rotated/scaled etc. as
-    the class type is used in parenting optimizations.<p>
-    Shall never implement or add any functionality, the "Create" override
-    only take cares of disabling the build list. }
-  TDGLSceneRootObject = class(TDGLBaseSceneObject)
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-  end;
+
   // TDGLBaseBehaviour
   //
-  { : Base class for implementing behaviours in TDGLScene.<p>
-    Behaviours are regrouped in a collection attached to a TDGLBaseSceneObject,
-    and are part of the "Progress" chain of events. Behaviours allows clean
-    application of time-based alterations to objects (movements, shape or
-    texture changes...).<p>
-    Since behaviours are implemented as classes, there are basicly two kinds
-    of strategies for subclasses :<ul>
-    <li>stand-alone : the subclass does it all, and holds all necessary data
-    (covers animation, inertia etc.)
-    <li>proxy : the subclass is an interface to and external, shared operator
-    (like gravity, force-field effects etc.)
-    </ul><br>
-    Some behaviours may be cooperative (like force-fields affects inertia)
-    or unique (e.g. only one inertia behaviour per object).<p>
-    NOTES :<ul>
-    <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
-    methods if you add data in a subclass !
-    <li>Subclasses must be registered using the RegisterXCollectionItemClass
-    function
-    </ul> }
+  {: Base class for implementing behaviours in TGLScene.<p>
+     Behaviours are regrouped in a collection attached to a TDGLBaseSceneObject,
+     and are part of the "Progress" chain of events. Behaviours allows clean
+     application of time-based alterations to objects (movements, shape or
+     texture changes...).<p>
+     Since behaviours are implemented as classes, there are basicly two kinds
+     of strategies for subclasses :<ul>
+     <li>stand-alone : the subclass does it all, and holds all necessary data
+        (covers animation, inertia etc.)
+     <li>proxy : the subclass is an interface to and external, shared operator
+        (like gravity, force-field effects etc.)
+     </ul><br>
+     Some behaviours may be cooperative (like force-fields affects inertia)
+     or unique (e.g. only one inertia behaviour per object).<p>
+     NOTES :<ul>
+     <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+        methods if you add data in a subclass !
+     <li>Subclasses must be registered using the RegisterXCollectionItemClass
+        function
+     </ul> }
   TDGLBaseBehaviour = class(TDGLXCollectionItem)
   protected
     { Protected Declarations }
     procedure SetName(const val: string); override;
 
-    { : Override this function to write subclass data. }
+    {: Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
-    { : Override this function to read subclass data. }
+    {: Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
-    { : Returns the TDGLBaseSceneObject on which the behaviour should be applied.<p>
-      Does NOT check for nil owners. }
+    {: Returns the TDGLBaseSceneObject on which the behaviour should be applied.<p>
+       Does NOT check for nil owners. }
     function OwnerBaseSceneObject: TDGLBaseSceneObject;
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TDGLXCollection); override;
+    constructor Create(aOwner: TDGLXCollection); override;
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
@@ -645,30 +615,30 @@ Type
 
   // TDGLBehaviour
   //
-  { : Ancestor for non-rendering behaviours.<p>
-    This class shall never receive any properties, it's just here to differentiate
-    rendereing and non-rendering behaviours. Rendereing behaviours are named
-    "TDGLObjectEffect", non-rendering effects (like inertia) are simply named
-    "TDGLBehaviour". }
+  {: Ancestor for non-rendering behaviours.<p>
+     This class shall never receive any properties, it's just here to differentiate
+     rendereing and non-rendering behaviours. Rendereing behaviours are named
+     "TDGLObjectEffect", non-rendering effects (like inertia) are simply named
+     "TDGLBehaviour". }
 
   TDGLBehaviour = class(TDGLBaseBehaviour)
   end;
 
   // TDGLBehaviours
   //
-  { : Holds a list of TDGLBehaviour objects.<p>
-    This object expects itself to be owned by a TDGLBaseSceneObject.<p>
-    As a TDGLXCollection (and contrary to a TCollection), this list can contain
-    objects of varying class, the only constraint being that they should all
-    be TDGLBehaviour subclasses. }
+  {: Holds a list of TDGLBehaviour objects.<p>
+     This object expects itself to be owned by a TDGLBaseSceneObject.<p>
+     As a TDGLXCollection (and contrary to a TCollection), this list can contain
+     objects of varying class, the only constraint being that they should all
+     be TDGLBehaviour subclasses. }
   TDGLBehaviours = class(TDGLXCollection)
   protected
     { Protected Declarations }
-    function GetBehaviour(Index: Integer): TDGLBehaviour;
+    function GetBehaviour(index: Integer): TDGLBehaviour;
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TPersistent); override;
+    constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
 
@@ -683,28 +653,28 @@ Type
 
   // TDGLObjectEffect
   //
-  { : A rendering effect that can be applied to SceneObjects.<p>
-    ObjectEffect is a subclass of behaviour that gets a chance to Render
-    an object-related special effect.<p>
-    TDGLObjectEffect should not be used as base class for custom effects,
-    instead you should use the following base classes :<ul>
-    <li>TDGLObjectPreEffect is rendered before owner object render
-    <li>TDGLObjectPostEffect is rendered after the owner object render
-    <li>TDGLObjectAfterEffect is rendered at the end of the scene rendering
-    </ul><br>NOTES :<ul>
-    <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
-    methods if you add data in a subclass !
-    <li>Subclasses must be registered using the RegisterXCollectionItemClass
-    function
-    </ul> }
-  // TDGLObjectEffectClass = class of TDGLObjectEffect;
+  {: A rendering effect that can be applied to SceneObjects.<p>
+     ObjectEffect is a subclass of behaviour that gets a chance to Render
+     an object-related special effect.<p>
+     TDGLObjectEffect should not be used as base class for custom effects,
+     instead you should use the following base classes :<ul>
+     <li>TDGLObjectPreEffect is rendered before owner object render
+     <li>TDGLObjectPostEffect is rendered after the owner object render
+     <li>TDGLObjectAfterEffect is rendered at the end of the scene rendering
+     </ul><br>NOTES :<ul>
+     <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+        methods if you add data in a subclass !
+     <li>Subclasses must be registered using the RegisterXCollectionItemClass
+        function
+     </ul> }
+//   TDGLObjectEffectClass = class of TDGLObjectEffect;
 
   TDGLObjectEffect = class(TDGLBaseBehaviour)
   protected
     { Protected Declarations }
-    { : Override this function to write subclass data. }
+    {: Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
-    { : Override this function to read subclass data. }
+    {: Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
   public
@@ -714,91 +684,77 @@ Type
 
   // TDGLObjectPreEffect
   //
-  { : An object effect that gets rendered before owner object's render.<p>
-    The current OpenGL matrices and material are that of the owner object. }
+  {: An object effect that gets rendered before owner object's render.<p>
+     The current OpenGL matrices and material are that of the owner object. }
   TDGLObjectPreEffect = class(TDGLObjectEffect)
   end;
 
   // TDGLObjectPostEffect
   //
-  { : An object effect that gets rendered after owner object's render.<p>
-    The current OpenGL matrices and material are that of the owner object. }
+  {: An object effect that gets rendered after owner object's render.<p>
+     The current OpenGL matrices and material are that of the owner object. }
   TDGLObjectPostEffect = class(TDGLObjectEffect)
   end;
 
   // TDGLObjectAfterEffect
   //
-  { : An object effect that gets rendered at scene's end.<p>
-    No particular OpenGL matrices or material should be assumed. }
+  {: An object effect that gets rendered at scene's end.<p>
+     No particular OpenGL matrices or material should be assumed. }
   TDGLObjectAfterEffect = class(TDGLObjectEffect)
   end;
 
   // TDGLObjectEffects
   //
-  { : Holds a list of object effects.<p>
-    This object expects itself to be owned by a TDGLBaseSceneObject.<p> }
+  {: Holds a list of object effects.<p>
+     This object expects itself to be owned by a TDGLBaseSceneObject.<p> }
   TDGLObjectEffects = class(TDGLXCollection)
   protected
     { Protected Declarations }
-    function GetEffect(Index: Integer): TDGLObjectEffect;
+    function GetEffect(index: Integer): TDGLObjectEffect;
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TPersistent); override;
+    constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
 
     class function ItemsClass: TDGLXCollectionItemClass; override;
 
-    property ObjectEffect[index: Integer]: TDGLObjectEffect read GetEffect; default;
+    property ObjectEffect[index: Integer]: TDGLObjectEffect read GetEffect;
+    default;
 
     function CanAdd(aClass: TDGLXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes);
     procedure RenderPreEffects(var rci: TRenderContextInfo);
-    { : Also take care of registering after effects with the GLSceneViewer. }
+    {: Also take care of registering after effects with the GLSceneViewer. }
     procedure RenderPostEffects(var rci: TRenderContextInfo);
   end;
-
-  // TDGLCustomSceneObject
+  // ****************************************************************************************
+  // TDGLSceneRootObject
   //
-  { : Extended base scene object class with a material property.<p>
-    The material allows defining a color and texture for the object,
-    see TDGLMaterial. }
-  TDGLCustomSceneObject = class(TDGLBaseSceneObject)
-  private
-    { Private Declarations }
-    FShader: TDGLLibShader;
-    FHint:     string;
-
-  protected
-    { Protected Declarations }
-    function Blended: Boolean; override;
-
-    procedure SetShader(aValue: TDGLLibShader);
-    procedure DestroyHandle; override;
-    procedure Loaded; override;
-
+  { @HTML ( This class shall be used only as a hierarchy root.<p>
+    It exists only as a container and shall never be rotated/scaled etc. as
+    the class type is used in parenting optimizations.<p>
+    Shall never implement or add any functionality, the "Create" override
+    only take cares of disabling the build list.</p> ) }
+  TDGLSceneRootObject = class(TDGLBaseSceneObject)
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
-
-    property Shader: TDGLLibShader read FShader write SetShader;
-    property Hint: string read FHint write FHint;
   end;
 
+
+  // ****************************************************************************************
   // TDGImmaterialSceneObject
   //
-  { : Base class for objects that do not have a published "material".<p>
+  { @HTML ( Base class for objects that do not have a published "material".<p>
     Note that the material is available in public properties, but isn't
     applied automatically before invoking BuildList.<br>
     Subclassing should be reserved to structural objects and objects that
-    have no material of their own. }
-  TDGImmaterialSceneObject = class(TDGLCustomSceneObject)
+    have no material of their own.</p> ) }
+//  TDGImmaterialSceneObject = class(TDGLCustomSceneObject)
+  TDGImmaterialSceneObject = class(TDGLBaseSceneObject)
   public
     { Public Declarations }
     procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
@@ -812,24 +768,25 @@ Type
     property Position;
     property RollAngle;
     property Scale;
-    property ShowAxes;
+//    property ShowAxes;
     property TurnAngle;
     property Up;
     property Visible;
     property Pickable;
     property OnProgress;
     property OnPicked;
-    property Behaviours;
-    property Effects;
-    property Hint;
+//    property Behaviours;
+//    property Effects;
+//    property Hint;
   end;
 
+  // ****************************************************************************************
   // TDGLCameraInvariantObject
   //
-  { : Base class for camera invariant objects.<p>
+  { @HTML ( Base class for camera invariant objects.<p>
     Camera invariant objects bypass camera settings, such as camera
     position (object is always centered on camera) or camera orientation
-    (object always has same orientation as camera). }
+    (object always has same orientation as camera).</p> ) }
   TDGLCameraInvariantObject = class(TDGImmaterialSceneObject)
   private
     { Private Declarations }
@@ -849,17 +806,18 @@ Type
     procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
-
+  // ****************************************************************************************
   // TOnCustomPerspective
   //
   TOnCustomPerspective = procedure(const viewport: TRectangle; width, height: Integer; DPI: Integer; var viewPortRadius: Single) of object;
 
+  // ****************************************************************************************
   // TDGLCamera
   //
-  { : Camera object.<p>
+  { @HTML ( Camera object.<p>
     This object is commonly referred by TDGLSceneViewer and defines a position,
     direction, focal length, depth of view... all the properties needed for
-    defining a point of view and optical characteristics. }
+    defining a point of view and optical characteristics.</p> ) }
   TDGLCamera = class(TDGLBaseSceneObject)
   private
     { Private Declarations }
@@ -877,30 +835,33 @@ Type
     FOnCustomPerspective: TOnCustomPerspective;
     FDesign:              Boolean;
     FFOVY, FFOVX:         Double;
+    FProjectionMatrix : TMatrix;
+	  FViewMatrix : TMatrix;
+
 
   protected
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetTargetObject(const val: TDGLBaseSceneObject);
-    procedure SetDepthOfView(AValue: Single);
-    procedure SetFocalLength(AValue: Single);
+    procedure SetDepthOfView(aValue: Single);
+    procedure SetFocalLength(aValue: Single);
     procedure SetCameraStyle(const val: TDGLCameraStyle);
     procedure SetKeepFOVMode(const val: TDGLCameraKeepFOVMode);
-    procedure SetSceneScale(value: Single);
+    procedure SetSceneScale(Value: Single);
     function StoreSceneScale: Boolean;
-    procedure SetNearPlaneBias(value: Single);
+    procedure SetNearPlaneBias(Value: Single);
     function StoreNearPlaneBias: Boolean;
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TComponent); override;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    { : Nearest clipping plane for the frustum.<p>
+    { @HTML ( Nearest clipping plane for the frustum.<p>
       This value depends on the FocalLength and DepthOfView fields and
       is calculated to minimize Z-Buffer crawling as suggested by the
-      OpenGL documentation. }
+      OpenGL documentation.</p> ) }
     property NearPlane: Single read FNearPlane;
 
     // : Apply camera transformation
@@ -917,20 +878,21 @@ Type
     procedure RotateObject(obj: TDGLBaseSceneObject; pitchDelta, turnDelta: Single; rollDelta: Single = 0);
     procedure RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single = 0);
 
-    { : Change camera's position to make it move around its target.<p>
+    { @HTML ( Change camera's position to make it move around its target.<p>
       If TargetObject is nil, nothing happens. This method helps in quickly
-      implementing camera controls. Camera's Up and Direction properties
-      are unchanged.<br>
-      Angle deltas are in degrees, camera parent's coordinates should be identity.<p>
+      implementing camera controls. Camera's Up and Direction properties are unchanged.</p>
+
+      <p>
+      Angle deltas are in degrees, camera parent's coordinates should be identity.<br>
       Tip : make the camera a child of a "target" dummycube and make
       it a target the dummycube. Now, to pan across the scene, just move
-      the dummycube, to change viewing angle, use this method. }
+      the dummycube, to change viewing angle, use this method.</p> ) }
     procedure MoveAroundTarget(pitchDelta, turnDelta: Single);
-    { : Change camera's position to make it move all around its target.<p>
+    { @HTML ( Change camera's position to make it move all around its target.<p>
       If TargetObject is nil, nothing happens. This method helps in quickly
       implementing camera controls. Camera's Up and Direction properties
       are changed.<br>
-      Angle deltas are in degrees.<p> }
+      Angle deltas are in degrees.</p> ) }
     procedure MoveAllAroundTarget(pitchDelta, turnDelta: Single);
     { : Moves the camera in eye space coordinates. }
     procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance: Single);
@@ -972,60 +934,69 @@ Type
     { : Sets the FocalLength in degrees, given a field of view and a viewport
       dimension (width or height). }
     procedure SetFieldOfView(const AFieldOfView, AViewportDimension: Single);
+	
+       property ViewMatrix: TMatrix read FViewMatrix write FViewMatrix;
+//       property ViewMatrixAsAddress: pointer read GetMatrixAdr;
+       property ProjectionMatrix: TMatrix read FProjectionMatrix write FProjectionMatrix;
+
   published
     { Published Declarations }
-    { : Depth of field/view.<p>
+    { @HTML ( Depth of field/view.<p>
       Adjusts the maximum distance, beyond which objects will be clipped
-      (ie. not visisble).<p>
+      (ie. not visisble).</p><p>
       You must adjust this value if you are experiencing disappearing
       objects (increase the value) of Z-Buffer crawling (decrease the
       value). Z-Buffer crawling happens when depth of view is too large
       and the Z-Buffer precision cannot account for all that depth
-      accurately : objects farther overlap closer objects and vice-versa.<p>
-      Note that this value is ignored in cSOrtho2D mode. }
+      accurately : objects farther overlap closer objects and vice-versa.<br>
+      Note that this value is ignored in cSOrtho2D mode.</p> ) }
     property DepthOfView: Single read FDepthOfView write SetDepthOfView;
-    { : Focal Length of the camera.<p>
+    { @HTML ( Focal Length of the camera.<p>
       Adjusting this value allows for lens zooming effects (use SceneScale
-      for linear zooming). This property affects near/far planes clipping. }
+      for linear zooming). This property affects near/far planes clipping.</p> ) }
     property FocalLength: Single read FFocalLength write SetFocalLength;
-    { : Scene scaling for camera point.<p>
+    { @HTML ( Scene scaling for camera point.<p>
       This is a linear 2D scaling of the camera's output, allows for
-      linear zooming (use FocalLength for lens zooming). }
+      linear zooming (use FocalLength for lens zooming).</p> ) }
     property SceneScale: Single read FSceneScale write SetSceneScale stored StoreSceneScale;
-    { : Scaling bias applied to near-plane calculation.<p>
+    { @HTML ( Scaling bias applied to near-plane calculation.<p>
       Values inferior to one will move the nearplane nearer, and also
       reduce medium/long range Z-Buffer precision, values superior
       to one will move the nearplane farther, and also improve medium/long
-      range Z-Buffer precision. }
+      range Z-Buffer precision.</p> ) }
     property NearPlaneBias: Single read FNearPlaneBias write SetNearPlaneBias stored StoreNearPlaneBias;
-    { : If set, camera will point to this object.<p>
+    { @HTML ( If set, camera will point to this object.<p>
       When camera is pointing an object, the Direction vector is ignored
-      and the Up vector is used as an absolute vector to the up. }
+      and the Up vector is used as an absolute vector to the up.</p> ) }
     property TargetObject: TDGLBaseSceneObject read FTargetObject write SetTargetObject;
-    { : Adjust the camera style.<p>
+    { @HTML ( Adjust the camera style.<p>
       Three styles are available :<ul>
-      <li>csPerspective, the default value for perspective projection
-      <li>csOrthogonal, for orthogonal (or isometric) projection.
+      <li>csPerspective, the default value for perspective projection</li>
+      <li>csOrthogonal, for orthogonal (or isometric) projection.</li>
       <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
-      (in x or y) represents 1 pixel.
-      <li>csInfinitePerspective, for perspective view without depth limit.
-      <li>csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
-      <li>csCustom, setup is deferred to the OnCustomPerspective event.
-      </ul> }
+      (in x or y) represents 1 pixel.</li>
+      <li>csInfinitePerspective, for perspective view without depth limit.</li>
+      <li>csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.</li>
+      <li>csCustom, setup is deferred to the OnCustomPerspective event.</li>
+      </ul>
+      </p> ) }
+
     property CameraStyle: TDGLCameraStyle read FCameraStyle write SetCameraStyle default csPerspective;
 
-    { : Keep camera angle mode. <p>
-      When CameraStyle is csKeepCamAnglePerspective, select which camera angle you want to keep.
-      <li>kaHeight, for Keep Height oriented camera angle
-      <li>kaWidth,  for Keep Width oriented camera angle
+    { @HTML ( Keep camera angle mode. <p>
+      When CameraStyle is csKeepCamAnglePerspective, select which camera angle you want to keep.</p>
+      <ul>
+      <li>kaHeight, for Keep Height oriented camera angle</li>
+      <li>kaWidth,  for Keep Width oriented camera angle</li>
+      </ul>
     }
     property KeepFOVMode: TDGLCameraKeepFOVMode read FKeepFOVMode write SetKeepFOVMode default ckmHorizontalFOV;
 
-    { : Custom perspective event.<p>
+    { @HTML ( Custom perspective event.<p>
       This event allows you to specify your custom perpective, either
       with a glFrustrum, a glOrtho or whatever method suits you.<br>
       You must compute viewPortRadius for culling to work.<br>
-      This event is only called if CameraStyle is csCustom. }
+      This event is only called if CameraStyle is csCustom.</p> ) }
     property OnCustomPerspective: TOnCustomPerspective read FOnCustomPerspective write FOnCustomPerspective;
 
     property Position;
@@ -1034,41 +1005,17 @@ Type
     property OnProgress;
   end;
 
-  // TDGLSceneObject
-  //
-  { : Base class for standard scene objects.<p>
-    Publishes the Material property. }
-  TDGLSceneObject = class(TDGLCustomSceneObject)
-  published
-    { Published Declarations }
-    property Shader;
-    property ObjectsSorting;
-    property VisibilityCulling;
-    property Direction;
-    property PitchAngle;
-    property Position;
-    property RollAngle;
-    property Scale;
-    property ShowAxes;
-    property TurnAngle;
-    property Up;
-    property Visible;
-    property Pickable;
-    property OnProgress;
-    property OnPicked;
-    property Behaviours;
-    property Effects;
-    property Hint;
-  end;
 
+
+  // ****************************************************************************************
   // TDGLRenderPoint
   //
-  { : Scene object that allows other objects to issue rendering at some point.<p>
+  { @HTML ( Scene object that allows other objects to issue rendering at some point.<p>
     This object is used to specify a render point for which other components
     have (rendering) tasks to perform. It doesn't render anything itself
     and is invisible, but other components can register and be notified
     when the point is reached in the rendering phase.<br>
-    Callbacks must be explicitly unregistered. }
+    Callbacks must be explicitly unregistered.</p> ) }
   TDGLRenderPoint = class(TDGImmaterialSceneObject)
   private
     { Private Declarations }
@@ -1092,71 +1039,15 @@ Type
     { Published Declarations }
   end;
 
-  // TDGLProxyObject
-  //
-  { : A full proxy object.<p>
-    This object literally uses another object's Render method to do its own
-    rendering, however, it has a coordinate system and a life of its own.<br>
-    Use it for duplicates of an object. }
-  TDGLProxyObject = class(TDGLBaseSceneObject)
-  private
-    { Private Declarations }
-    FMasterObject: TDGLBaseSceneObject;
-    FProxyOptions: TDGLProxyObjectOptions;
 
-  protected
-    { Protected Declarations }
-    FRendering: Boolean;
-
-    procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure SetMasterObject(const val: TDGLBaseSceneObject); virtual;
-    procedure SetProxyOptions(const val: TDGLProxyObjectOptions);
-
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-
-    procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
-
-    function BarycenterAbsolutePosition: TVector; override;
-    function AxisAlignedDimensions: TVector; override;
-    function AxisAlignedDimensionsUnscaled: TVector; override;
-    function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
-    function GenerateSilhouette(const silhouetteParameters: TDGLSilhouetteParameters): TDGLSilhouette; override;
-
-  published
-    { Published Declarations }
-    { : Specifies the Master object which will be proxy'ed. }
-    property MasterObject: TDGLBaseSceneObject read FMasterObject write SetMasterObject;
-    { : Specifies how and what is proxy'ed. }
-    property ProxyOptions: TDGLProxyObjectOptions read FProxyOptions write SetProxyOptions default cDefaultProxyOptions;
-
-    property ObjectsSorting;
-    property Direction;
-    property PitchAngle;
-    property Position;
-    property RollAngle;
-    property Scale;
-    property ShowAxes;
-    property TurnAngle;
-    property Up;
-    property Visible;
-    property Pickable;
-    property OnProgress;
-    property OnPicked;
-    property Behaviours;
-  end;
-
-
+  // ****************************************************************************************
   // TDGLDirectOpenGL
   //
-  { : Provides a way to issue direct OpenGL calls during the rendering.<p>
+  { @HTML ( Provides a way to issue direct OpenGL calls during the rendering.<p>
     You can use this object to do your specific rendering task in its OnRender
     event. The OpenGL calls shall restore the OpenGL states they found when
     entering, or exclusively use the GLMisc utility functions to alter the
-    states.<br> }
+    states.</p> ) }
   TDGLDirectOpenGL = class(TDGImmaterialSceneObject)
   private
     { Private Declarations }
@@ -1179,40 +1070,39 @@ Type
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    { : Specifies if a build list be made.<p>
+    { @HTML ( Specifies if a build list be made.<p>
       If True, GLScene will generate a build list (OpenGL-side cache),
       ie. OnRender will only be invoked once for the first render, or after
       a StructureChanged call. This is suitable for "static" geometry and
       will usually speed up rendering of things that don't change.<br>
       If false, OnRender will be invoked for each render. This is suitable
-      for dynamic geometry (things that change often or constantly). }
+      for dynamic geometry (things that change often or constantly).</p> ) }
     property UseBuildList: Boolean read FUseBuildList write SetUseBuildList;
-    { : Place your specific OpenGL code here.<p>
+    { @HTML ( Place your specific OpenGL code here.<p>
       The OpenGL calls shall restore the OpenGL states they found when
       entering, or exclusively use the GLMisc utility functions to alter
-      the states.<br> }
+      the states.</p> ) }
     property OnRender: TDirectRenderEvent read FOnRender write FOnRender;
-    { : Defines if the object uses blending.<p>
+    { @HTML ( Defines if the object uses blending.<p>
       This property will allow direct opengl objects to be flagged as
-      blended for object sorting purposes.<br> }
+      blended for object sorting purposes.</p> ) }
     property Blend: Boolean read FBlend write SetBlend;
   end;
 
-
-
+  // ****************************************************************************************
   // TDGLLightSource
   //
-  { : Standard light source.<p>
+  { @HTML ( Standard light source.<p>
     The standard GLScene light source covers spotlights, omnidirectionnal and
     parallel sources (see TLightStyle).<br>
     Lights are colored, have distance attenuation parameters and are turned
-    on/off through their Shining property.<p>
+    on/off through their Shining property.</p><p>
     Lightsources are managed in a specific object by the TDGLScene for rendering
     purposes. The maximum number of light source in a scene is limited by the
     OpenGL implementation (8 lights are supported under most ICDs), though the
     more light you use, the slower rendering may get. If you want to render
     many more light/lightsource, you may have to resort to other techniques
-    like lightmapping. }
+    like lightmapping.</p> ) }
   TDGLLightSource = class(TDGLBaseSceneObject)
   private
     { Private Declarations }
@@ -1226,15 +1116,15 @@ Type
 
   protected
     { Protected Declarations }
-    procedure SetAmbient(AValue: TDGLColor);
-    procedure SetDiffuse(AValue: TDGLColor);
-    procedure SetSpecular(AValue: TDGLColor);
-    procedure SetConstAttenuation(AValue: Single);
-    procedure SetLinearAttenuation(AValue: Single);
-    procedure SetQuadraticAttenuation(AValue: Single);
-    procedure SetShining(AValue: Boolean);
+    procedure SetAmbient(aValue: TDGLColor);
+    procedure SetDiffuse(aValue: TDGLColor);
+    procedure SetSpecular(aValue: TDGLColor);
+    procedure SetConstAttenuation(aValue: Single);
+    procedure SetLinearAttenuation(aValue: Single);
+    procedure SetQuadraticAttenuation(aValue: Single);
+    procedure SetShining(aValue: Boolean);
     procedure SetSpotDirection(AVector: TDGLCoordinates);
-    procedure SetSpotExponent(AValue: Single);
+    procedure SetSpotExponent(aValue: Single);
     procedure SetSpotCutOff(const val: Single);
     procedure SetLightStyle(const val: TLightStyle);
 
@@ -1244,7 +1134,7 @@ Type
     destructor Destroy; override;
     procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
     // : light sources have different handle types than normal scene objects
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; override;
+    // function GetHandle(var rci: TRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     procedure CoordinateChanged(Sender: TDGLCustomCoordinates); override;
     function GenerateSilhouette(const silhouetteParameters: TDGLSilhouetteParameters): TDGLSilhouette; override;
@@ -1270,17 +1160,18 @@ Type
     property OnProgress;
   end;
 
+  // ****************************************************************************************
   // TDGLScene
   //
-  { : Scene object.<p>
+  { @HTML Scene object.<p>
     The scene contains the scene description (lights, geometry...), which is
     basicly a hierarchical scene graph made of TDGLBaseSceneObject. It will
     usually contain one or more TDGLCamera object, which can be referred by
-    a Viewer component for rendering purposes.<p>
+    a Viewer component for rendering purposes.</p><p>
     The scene's objects can be accessed directly from Delphi code (as regular
     components), but those are edited with a specific editor (double-click
     on the TDGLScene component at design-time to invoke it). To add objects
-    at runtime, use the AddNewChild method of TDGLBaseSceneObject. }
+    at runtime, use the AddNewChild method of TDGLBaseSceneObject. </p> ) }
   TDGLScene = class(TDGLUpdateAbleComponent)
   private
     { Private Declarations }
@@ -1311,7 +1202,7 @@ Type
     procedure SetObjectsSorting(const val: TDGLObjectsSorting);
     procedure SetVisibilityCulling(const val: TDGLVisibilityCulling);
 
-    procedure ReadState(Reader: TReader); override;
+    procedure ReadState(reader: TReader); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -1327,23 +1218,23 @@ Type
     procedure NotifyChange(Sender: TObject); override;
     procedure Progress(const deltaTime, newTime: Double);
 
-    function FindSceneObject(const AName: string): TDGLBaseSceneObject;
-    { : Calculates, finds and returns the first object intercepted by the ray.<p>
+    function FindSceneObject(const aName: string): TDGLBaseSceneObject;
+    { @HTML ( Calculates, finds and returns the first object intercepted by the ray.<p>
       Returns nil if no intersection was found. This function will be
       accurate only for objects that overrided their RayCastIntersect
       method with accurate code, otherwise, bounding sphere intersections
-      will be returned. }
+      will be returned.</p> ) }
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): TDGLBaseSceneObject; virtual;
 
     procedure ShutdownAllLights;
 
     { : Saves the scene to a file (recommended extension : .GLS) }
     procedure SaveToFile(const fileName: string);
-    { : Load the scene from a file.<p>
+    { @HTML ( Load the scene from a file.<p>
       Existing objects/lights/cameras are freed, then the file is loaded.<br>
       Delphi's IDE is not handling this behaviour properly yet, ie. if
       you load a scene in the IDE, objects will be properly loaded, but
-      no declare will be placed in the code. }
+      no declare will be placed in the code.</p> ) }
     procedure LoadFromFile(const fileName: string);
 
     procedure SaveToStream(aStream: TStream);
@@ -1360,8 +1251,8 @@ Type
     property Objects: TDGLSceneRootObject read FObjects;
     property CurrentBuffer: TDGLSceneBuffer read FCurrentBuffer;
 
-    { : List of objects that request to be initialized when rendering context is active.<p>
-      They are removed automaticly from this list once initialized. }
+    { @HTML ( List of objects that request to be initialized when rendering context is active.<p>
+      They are removed automaticly from this list once initialized.</p> ) }
     property InitializableObjects: TDGLInitializableObjectList read FInitializableObjects;
     property CurrentDeltaTime: Double read FCurrentDeltaTime;
   published
@@ -1374,78 +1265,23 @@ Type
     property OnProgress:        TDGLProgressEvent read FOnProgress write FOnProgress;
   end;
 
-
-  // TDGLFogEnvironment ------> MOVE TO DGLEnvironment
-  //
-  { : Parameters for fog environment in a scene.<p>
-    The fog descibed by this object is a distance-based fog, ie. the "intensity"
-    of the fog is given by a formula depending solely on the distance, this
-    intensity is used for blending to a fixed color. }
-  TDGLFogEnvironment = class(TDGLUpdateAbleObject)
-  private
-    { Private Declarations }
-    FSceneBuffer:       TDGLSceneBuffer;
-    FFogColor:          TDGLColor; // alpha value means the fog density
-    FFogStart, FFogEnd: Single;
-    FFogMode:           TFogMode;
-    FFogDistance:       TFogDistance;
-
-  protected
-    { Protected Declarations }
-    procedure SetFogColor(Value: TDGLColor);
-    procedure SetFogStart(Value: Single);
-    procedure SetFogEnd(Value: Single);
-    procedure SetFogMode(Value: TFogMode);
-    procedure SetFogDistance(const val: TFogDistance);
-
-  public
-    { Public Declarations }
-    constructor Create(AOwner: TPersistent); override;
-    destructor Destroy; override;
-
-    procedure ApplyFog;
-    procedure Assign(Source: TPersistent); override;
-
-    function IsAtDefaultValues: Boolean;
-
-  published
-    { Published Declarations }
-    { : Color of the fog when it is at 100% intensity. }
-    property FogColor: TDGLColor read FFogColor write SetFogColor;
-    { : Minimum distance for fog, what is closer is not affected. }
-    property FogStart: Single read FFogStart write SetFogStart;
-    { : Maximum distance for fog, what is farther is at 100% fog intensity. }
-    property FogEnd: Single read FFogEnd write SetFogEnd;
-    { : The formula used for converting distance to fog intensity. }
-    property FogMode: TFogMode read FFogMode write SetFogMode default fmLinear;
-    { : Adjusts the formula used for calculating fog distances.<p>
-      This option is honoured if and only if the OpenGL ICD supports the
-      GL_NV_fog_distance extension, otherwise, it is ignored.<ul>
-      <li>fdDefault: let OpenGL use its default formula
-      <li>fdEyeRadial: uses radial "true" distance (best quality)
-      <li>fdEyePlane: uses the distance to the projection plane
-      (same as Z-Buffer, faster)
-      </ul> }
-    property FogDistance: TFogDistance read FFogDistance write SetFogDistance default fdDefault;
-  end;
-
-
+  // ****************************************************************************************
   // TDGLSceneBuffer
   //
-  { : Encapsulates an OpenGL frame/rendering buffer.<p> }
+  { : Encapsulates an OpenGL frame/rendering buffer. }
   TDGLSceneBuffer = class(TDGLUpdateAbleObject)
   private
     { Private Declarations }
     // Internal state
-    FRendering:              Boolean;
-    FRenderingContext:       TDGLContext;
-    FAfterRenderEffects:     TDGLPersistentObjectList;
-      //FViewMatrixStack:        array of TMatrix;
-      //FProjectionMatrixStack:  array of TMatrix;
+    FRendering:          Boolean;
+    FRenderingContext:   TDGLContext;
+    FAfterRenderEffects: TDGLPersistentObjectList;
+     FViewMatrixStack:        array of TMatrix;
+     FProjectionMatrixStack:  array of TMatrix;
     FBaseProjectionMatrix:   TMatrix;
     FCameraAbsolutePosition: TVector;
     FViewPort:               TRectangle;
-   // FSelector:               TDGLBaseSelectTechnique;
+    // FSelector:               TDGLBaseSelectTechnique;
 
     // Options & User Properties
     FFaceCulling, FFogEnable, FLighting: Boolean;
@@ -1459,7 +1295,7 @@ Type
     FContextOptions:                     TContextOptions;
     FShadeModel:                         TDGLShadeModel;
     FRenderDPI:                          Integer;
-    FFogEnvironment:                     TDGLFogEnvironment;
+//    FFogEnvironment:                     TDGLFogEnvironment;
     FAccumBufferBits:                    Integer;
     FLayer:                              TDGLContextLayer;
 
@@ -1498,20 +1334,20 @@ Type
     function GetLimit(Which: TLimitType): Integer;
     procedure SetCamera(ACamera: TDGLCamera);
     procedure SetContextOptions(Options: TContextOptions);
-    procedure SetDepthTest(AValue: Boolean);
-    procedure SetFaceCulling(AValue: Boolean);
-    procedure SetLighting(AValue: Boolean);
+    procedure SetDepthTest(aValue: Boolean);
+    procedure SetFaceCulling(aValue: Boolean);
+    procedure SetLighting(aValue: Boolean);
     procedure SetAntiAliasing(const val: TDGLAntiAliasing);
     procedure SetDepthPrecision(const val: TDGLDepthPrecision);
     procedure SetColorDepth(const val: TDGLColorDepth);
     procedure SetShadeModel(const val: TDGLShadeModel);
-    procedure SetFogEnable(AValue: Boolean);
-    procedure SeTDGLFogEnvironment(AValue: TDGLFogEnvironment);
-    function StoreFog: Boolean;
+//    procedure SetFogEnable(aValue: Boolean);
+//    procedure SeTDGLFogEnvironment(aValue: TDGLFogEnvironment);
+//    function StoreFog: Boolean;
     procedure SetAccumBufferBits(const val: Integer);
 
-    procedure PrepareRenderingMatrices(const aViewPort: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
-    procedure DoBaseRender(const aViewPort: TRectangle; resolution: Integer; drawState: TDrawState; baseObject: TDGLBaseSceneObject);
+    procedure PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
+    procedure DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TDrawState; baseObject: TDGLBaseSceneObject);
 
     procedure SetupRenderingContext(context: TDGLContext);
     procedure SetupRCOptions(context: TDGLContext);
@@ -1541,16 +1377,16 @@ Type
     // function Acceleration: TDGLContextAcceleration;
 
     // : ViewPort for current/last render
-    property ViewPort: TRectangle read FViewPort;
+    property viewport: TRectangle read FViewPort;
 
     // : Fills the PickList with objects in Rect area
-//    procedure PickObjects(const rect: TGLRect; pickList: TDGLPickList; objectCountGuess: Integer);
+    // procedure PickObjects(const rect: TGLRect; pickList: TDGLPickList; objectCountGuess: Integer);
     { : Returns a PickList with objects in Rect area.<p>
       Returned list should be freed by caller.<br>
       Objects are sorted by depth (nearest objects first). }
-//    function GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer = 64): TDGLPickList;
+    // function GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer = 64): TDGLPickList;
     // : Returns the nearest object at x, y coordinates or nil if there is none
-//    function GetPickedObject(x, y: Integer): TDGLBaseSceneObject;
+    // function GetPickedObject(x, y: Integer): TDGLBaseSceneObject;
 
     // : Returns the color of the pixel at x, y in the frame buffer
     function GetPixelColor(x, y: Integer): TColor;
@@ -1595,15 +1431,15 @@ Type
     function CreateSnapShot: TDGLImage;
     { : Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
     function CreateSnapShotBitmap: TDGLBitmap;
-//    procedure CopyToTexture(aTexture: TDGLTexture); overload;
-//    procedure CopyToTexture(aTexture: TDGLTexture; xSrc, ySrc, AWidth, AHeight: Integer; xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
+    // procedure CopyToTexture(aTexture: TDGLTexture); overload;
+    // procedure CopyToTexture(aTexture: TDGLTexture; xSrc, ySrc, AWidth, AHeight: Integer; xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
     { : Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
     { : Event reserved for viewer-specific uses.<br> }
     property ViewerBeforeRender: TNotifyEvent read FViewerBeforeRender write FViewerBeforeRender stored False;
     procedure SetViewPort(x, y, W, H: Integer);
-    function Width: Integer;
-    function Height: Integer;
+    function width: Integer;
+    function height: Integer;
 
     { : Indicates if the Viewer is "frozen". }
     property Freezed: Boolean read FFreezed;
@@ -1623,10 +1459,10 @@ Type
     { : Adjusts background alpha channel. }
     property BackgroundAlpha: Single read FBackgroundAlpha write SetBackgroundAlpha;
     { : Returns the projection matrix in use or used for the last rendering. }
-    function ProjectionMatrix: TMatrix; //deprecated;
+    function ProjectionMatrix: TMatrix; // deprecated;
     { : Returns the view matrix in use or used for the last rendering. }
-    function ViewMatrix: TMatrix; //deprecated;
-    function ModelMatrix: TMatrix; //deprecated;
+    function ViewMatrix: TMatrix; // deprecated;
+    function ModelMatrix: TMatrix; // deprecated;
 
     { : Returns the base projection matrix in use or used for the last rendering.<p>
       The "base" projection is (as of now) either identity or the pick
@@ -1637,12 +1473,12 @@ Type
     { : Back up current View matrix and replace it with newMatrix.<p>
       This method has no effect on the OpenGL matrix, only on the Buffer's
       matrix, and is intended for special effects rendering. }
-    procedure PushViewMatrix(const newMatrix: TMatrix); //deprecated;
+    procedure PushViewMatrix(const newMatrix: TMatrix); // deprecated;
     { : Restore a View matrix previously pushed. }
-    procedure PopViewMatrix; //deprecated;
+    procedure PopViewMatrix; // deprecated;
 
-    procedure PushProjectionMatrix(const newMatrix: TMatrix); //deprecated;
-    procedure PopProjectionMatrix; //deprecated;
+    procedure PushProjectionMatrix(const newMatrix: TMatrix); // deprecated;
+    procedure PopProjectionMatrix; // deprecated;
 
     { : Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
       This function accepts standard canvas coordinates, with (0,0) being
@@ -1732,7 +1568,7 @@ Type
     { Published Declarations }
     { : Fog environment options.<p>
       See TDGLFogEnvironment. }
-    property FogEnvironment: TDGLFogEnvironment read FFogEnvironment write SeTDGLFogEnvironment stored StoreFog;
+//    property FogEnvironment: TDGLFogEnvironment read FFogEnvironment write SeTDGLFogEnvironment stored StoreFog;
     { : Color used for filling the background prior to any rendering. }
     property BackgroundColor: TColor read FBackgroundColor write SetBackgroundColor default clBtnFace;
     { : Scene ambient color vector.<p>
@@ -1759,7 +1595,7 @@ Type
       only faces whose normal points towards the observer are rendered. }
     property FaceCulling: Boolean read FFaceCulling write SetFaceCulling default True;
     { : Toggle to enable or disable the fog settings. }
-    property FogEnable: Boolean read FFogEnable write SetFogEnable default False;
+//    property FogEnable: Boolean read FFogEnable write SetFogEnable default False;
     { : Toggle to enable or disable lighting calculations.<p>
       When lighting is enabled, objects will be lit according to lightsources,
       when lighting is disabled, objects are rendered in their own colors,
@@ -1813,9 +1649,9 @@ Type
 
   TInvokeInfoForm = procedure(aSceneBuffer: TDGLSceneBuffer; Modal: Boolean);
 
-  { : Register an event handler triggered by any TDGLBaseSceneObject Name change.<p>
-    *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
-    GLSceneEdit in the IDE. }
+{ : Register an event handler triggered by any TDGLBaseSceneObject Name change.<p>
+  *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
+  GLSceneEdit in the IDE. }
 procedure RegisterGLBaseSceneObjectNameChangeEvent(notifyEvent: TNotifyEvent);
 { : Deregister an event handler triggered by any TDGLBaseSceneObject Name change.<p>
   See RegisterGLBaseSceneObjectNameChangeEvent. }
@@ -1829,7 +1665,7 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
 { : Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen: Single);
+//procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen: Single);
 
 { : Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
@@ -1847,13 +1683,12 @@ implementation
 // ------------------------------------------------------------------------------
 
 var
-  vCounterFrequency: Int64;
-  vInfoForm: TInvokeInfoForm = nil;
+  vCounterFrequency:                 Int64;
+  vInfoForm:                         TInvokeInfoForm = nil;
   vGLBaseSceneObjectNameChangeEvent: TNotifyEvent;
   vGLBehaviourNameChangeEvent:       TNotifyEvent;
 
-
-threadvar vCurrentRenderingObject: TDGLBaseSceneObject;
+  threadvar vCurrentRenderingObject: TDGLBaseSceneObject;
 
 
 // ------------------
@@ -1909,7 +1744,6 @@ begin
   // glVertex3f(0, 0, AxisLen);
   // glEnd;
 end;
-
 
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
 begin
@@ -1982,23 +1816,23 @@ end;
 destructor TDGLBaseSceneObject.Destroy;
 begin
   DeleteChildCameras;
-  if assigned(FLocalMatrix) then
+  if Assigned(FLocalMatrix) then
     FreeMem(FLocalMatrix, SizeOf(TMatrix));
-  if assigned(FAbsoluteMatrix) then
+  if Assigned(FAbsoluteMatrix) then
     // This bug have coming surely from a bad commit file.
     FreeMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
-  // k00m memory fix and remove some leak of the old version.
+
   FGLObjectEffects.Free;
   FGLBehaviours.Free;
-  //FListHandle.Free;
+
   FPosition.Free;
   FRotation.Free;
   FDirection.Free;
   FUp.Free;
   FScaling.Free;
-  if assigned(FParent) then
+  if Assigned(FParent) then
     FParent.Remove(Self, False);
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
   begin
     DeleteChildren;
     FChildren.Free;
@@ -2006,59 +1840,59 @@ begin
   inherited Destroy;
 end;
 
-function TDGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
-begin
-//  if not assigned(FListHandle) then
-//    FListHandle := TDGLListHandle.Create;
-//  Result        := FListHandle.Handle;
-//  if Result = 0 then
-//    Result := FListHandle.AllocateHandle;
+// function TDGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
+// begin
+// if not assigned(FListHandle) then
+// FListHandle := TDGLListHandle.Create;
+// Result        := FListHandle.Handle;
+// if Result = 0 then
+// Result := FListHandle.AllocateHandle;
 //
-//  if ocStructure in FChanges then
-//  begin
-//    ClearStructureChanged;
-//    FListHandle.NotifyChangesOfData;
-//  end;
+// if ocStructure in FChanges then
+// begin
+// ClearStructureChanged;
+// FListHandle.NotifyChangesOfData;
+// end;
 //
-//  if FListHandle.IsDataNeedUpdate then
-//  begin
-//    rci.GLStates.NewList(Result, GL_COMPILE);
-//    try
-//      BuildList(rci);
-//    finally
-//      rci.GLStates.EndList;
-//    end;
-//    FListHandle.NotifyDataUpdated;
-//  end;
-result:=0;
-end;
+// if FListHandle.IsDataNeedUpdate then
+// begin
+// rci.GLStates.NewList(Result, GL_COMPILE);
+// try
+// BuildList(rci);
+// finally
+// rci.GLStates.EndList;
+// end;
+// FListHandle.NotifyDataUpdated;
+// end;
+// result:=0;
+// end;
 
-function TDGLBaseSceneObject.ListHandleAllocated: Boolean;
-begin
-  Result := false;//assigned(FListHandle) and (FListHandle.Handle <> 0) and not(ocStructure in FChanges);
-end;
+// function TDGLBaseSceneObject.ListHandleAllocated: Boolean;
+// begin
+// Result := true;//assigned(FListHandle) and (FListHandle.Handle <> 0) and not(ocStructure in FChanges);
+// end;
 
-procedure TDGLBaseSceneObject.DestroyHandle;
-begin
-//  if assigned(FListHandle) then
-//    FListHandle.DestroyHandle;
-end;
-
-procedure TDGLBaseSceneObject.DestroyHandles;
-var
-  i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    Children[i].DestroyHandles;
-  DestroyHandle;
-end;
+// procedure TDGLBaseSceneObject.DestroyHandle;
+// begin
+/// /  if assigned(FListHandle) then
+/// /    FListHandle.DestroyHandle;
+// end;
+//
+// procedure TDGLBaseSceneObject.DestroyHandles;
+// var
+// i: Integer;
+// begin
+// for i := 0 to Count - 1 do
+// Children[i].DestroyHandles;
+// DestroyHandle;
+// end;
 
 procedure TDGLBaseSceneObject.SetBBChanges(const Value: TObjectBBChanges);
 begin
   if Value <> FBBChanges then
   begin
     FBBChanges := Value;
-    if assigned(FParent) then
+    if Assigned(FParent) then
       FParent.BBChanges := FParent.BBChanges + [oBBcChild];
   end;
 end;
@@ -2087,6 +1921,7 @@ end;
 
 procedure TDGLBaseSceneObject.BuildList(var rci: TRenderContextInfo);
 begin
+  DGLSLogger.LogInfo('TDGLBaseSceneObject : BuildList');
   // nothing
 end;
 
@@ -2096,7 +1931,7 @@ var
   child: TDGLBaseSceneObject;
 begin
   i := 0;
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     while i < FChildren.Count do
     begin
       child := TDGLBaseSceneObject(FChildren.List^[i]);
@@ -2116,15 +1951,15 @@ var
   child: TDGLBaseSceneObject;
 begin
   DeleteChildCameras;
-  if assigned(FScene) then
-  //  FScene.RemoveLights(Self);
-  if assigned(FChildren) then
-    while FChildren.Count > 0 do
-    begin
-      child         := TDGLBaseSceneObject(FChildren.Pop);
-      child.FParent := nil;
-      child.Free;
-    end;
+  if Assigned(FScene) then
+    // FScene.RemoveLights(Self);
+    if Assigned(FChildren) then
+      while FChildren.Count > 0 do
+      begin
+        child         := TDGLBaseSceneObject(FChildren.Pop);
+        child.FParent := nil;
+        child.Free;
+      end;
   BBChanges := BBChanges + [oBBcChild];
 end;
 
@@ -2132,9 +1967,9 @@ procedure TDGLBaseSceneObject.Loaded;
 begin
   inherited;
   FPosition.W := 1;
-  if assigned(FGLBehaviours) then
+  if Assigned(FGLBehaviours) then
     FGLBehaviours.Loaded;
-  if assigned(FGLObjectEffects) then
+  if Assigned(FGLObjectEffects) then
     FGLObjectEffects.Loaded;
 end;
 
@@ -2143,8 +1978,8 @@ begin
   inherited;
   { FOriginalFiler := Filer; }
 
-  Filer.DefineBinaryProperty('BehavioursData', ReadBehaviours, WriteBehaviours, (assigned(FGLBehaviours) and (FGLBehaviours.Count > 0)));
-  Filer.DefineBinaryProperty('EffectsData', ReadEffects, WriteEffects, (assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0)));
+  Filer.DefineBinaryProperty('BehavioursData', ReadBehaviours, WriteBehaviours, (Assigned(FGLBehaviours) and (FGLBehaviours.Count > 0)));
+  Filer.DefineBinaryProperty('EffectsData', ReadEffects, WriteEffects, (Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0)));
   { FOriginalFiler:=nil; }
 end;
 
@@ -2233,7 +2068,7 @@ procedure TDGLBaseSceneObject.GetChildren(AProc: TGetChildProc; Root: TComponent
 var
   i: Integer;
 begin
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     for i := 0 to FChildren.Count - 1 do
       if not IsSubComponent(TComponent(FChildren.List^[i])) then
         AProc(TComponent(FChildren.List^[i]));
@@ -2241,7 +2076,7 @@ end;
 
 function TDGLBaseSceneObject.Get(Index: Integer): TDGLBaseSceneObject;
 begin
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     Result := TDGLBaseSceneObject(FChildren[Index])
   else
     Result := nil;
@@ -2249,7 +2084,7 @@ end;
 
 function TDGLBaseSceneObject.GetCount: Integer;
 begin
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     Result := FChildren.Count
   else
     Result := 0;
@@ -2271,9 +2106,9 @@ end;
 
 procedure TDGLBaseSceneObject.AddChild(AChild: TDGLBaseSceneObject);
 begin
-  if assigned(FScene) then
+  if Assigned(FScene) then
     FScene.AddLights(AChild);
-  if not assigned(FChildren) then
+  if not Assigned(FChildren) then
     FChildren := TDGLPersistentObjectList.Create;
   FChildren.Add(AChild);
   AChild.FParent := Self;
@@ -2322,9 +2157,9 @@ procedure TDGLBaseSceneObject.RebuildMatrix;
 begin
   if ocTransformation in Changes then
   begin
-    VectorScale(LeftVector, Scale.X, FLocalMatrix^.v[0]);
-    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.v[1]);
-    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.v[2]);
+    VectorScale(LeftVector, Scale.x, FLocalMatrix^.v[0]);
+    VectorScale(FUp.AsVector, Scale.y, FLocalMatrix^.v[1]);
+    VectorScale(FDirection.AsVector, Scale.z, FLocalMatrix^.v[2]);
     SetVector(FLocalMatrix^.v[3], FPosition.AsVector);
     Exclude(FChanges, ocTransformation);
     Include(FChanges, ocAbsoluteMatrix);
@@ -2345,12 +2180,12 @@ begin
   if ocAbsoluteMatrix in FChanges then
   begin
     RebuildMatrix;
-    if not assigned(FAbsoluteMatrix) then
+    if not Assigned(FAbsoluteMatrix) then
     begin
       GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
       FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) + SizeOf(TMatrix));
     end;
-    if assigned(Parent) and (not(Parent is TDGLSceneRootObject)) then
+    if Assigned(Parent) and (not(Parent is TDGLSceneRootObject)) then
     begin
       MatrixMultiply(FLocalMatrix^, TDGLBaseSceneObject(Parent).AbsoluteMatrixAsAddress^, FAbsoluteMatrix^);
     end
@@ -2373,7 +2208,7 @@ begin
   begin
     if VectorEquals(Scale.DirectVector, XYZHmgVector) then
     begin
-      if not assigned(FAbsoluteMatrix) then
+      if not Assigned(FAbsoluteMatrix) then
       begin
         GetMem(FAbsoluteMatrix, SizeOf(TMatrix) * 2);
         FInvAbsoluteMatrix := PMatrix(PtrUInt(FAbsoluteMatrix) + SizeOf(TMatrix));
@@ -2471,7 +2306,7 @@ end;
 
 procedure TDGLBaseSceneObject.SetAbsolutePosition(const v: TVector);
 begin
-  if assigned(Parent) then
+  if Assigned(Parent) then
     Position.AsVector := Parent.AbsoluteToLocal(v)
   else
     Position.AsVector := v;
@@ -2537,7 +2372,7 @@ end;
 
 function TDGLBaseSceneObject.SqrDistanceTo(anObject: TDGLBaseSceneObject): Single;
 begin
-  if assigned(anObject) then
+  if Assigned(anObject) then
     Result := VectorDistance2(AbsolutePosition, anObject.AbsolutePosition)
   else
     Result := 0;
@@ -2550,7 +2385,7 @@ end;
 
 function TDGLBaseSceneObject.DistanceTo(anObject: TDGLBaseSceneObject): Single;
 begin
-  if assigned(anObject) then
+  if Assigned(anObject) then
     Result := VectorDistance(AbsolutePosition, anObject.AbsolutePosition)
   else
     Result := 0;
@@ -2591,7 +2426,7 @@ var
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   // not tested for child objects
-  if AIncludeChilden and assigned(FChildren) then
+  if AIncludeChilden and Assigned(FChildren) then
   begin
     for i := 0 to FChildren.Count - 1 do
     begin
@@ -2611,7 +2446,7 @@ var
 begin
   SetAABB(Result, AxisAlignedDimensionsUnscaled);
   // not tested for child objects
-  if AIncludeChilden and assigned(FChildren) then
+  if AIncludeChilden and Assigned(FChildren) then
   begin
     for i := 0 to FChildren.Count - 1 do
     begin
@@ -2685,7 +2520,7 @@ var
 begin
   dim     := AxisAlignedDimensions;
   localPt := VectorTransform(point, InvAbsoluteMatrix);
-  Result  := (Abs(localPt.v[0] * Scale.X) <= dim.v[0]) and (Abs(localPt.v[1] * Scale.Y) <= dim.v[1]) and (Abs(localPt.v[2] * Scale.Z) <= dim.v[2]);
+  Result  := (Abs(localPt.v[0] * Scale.x) <= dim.v[0]) and (Abs(localPt.v[1] * Scale.y) <= dim.v[1]) and (Abs(localPt.v[2] * Scale.z) <= dim.v[2]);
 end;
 
 procedure TDGLBaseSceneObject.CalculateBoundingBoxPersonalUnscaled(var ANewBoundingBox: THmgBoundingBox);
@@ -2729,7 +2564,7 @@ begin
   begin
     // Computing
     FBoundingBoxOfChildren := NullBoundingBox;
-    if assigned(FChildren) then
+    if Assigned(FChildren) then
     begin
       for i := 0 to FChildren.Count - 1 do
       begin
@@ -2778,9 +2613,9 @@ begin
   if RayCastSphereIntersect(rayStart, rayVector, absPos, BoundingSphereRadius, i1, i2) > 0 then
   begin
     Result := True;
-    if assigned(intersectPoint) then
+    if Assigned(intersectPoint) then
       SetVector(intersectPoint^, i1);
-    if assigned(intersectNormal) then
+    if Assigned(intersectNormal) then
     begin
       SubtractVector(i1, absPos);
       NormalizeVector(i1);
@@ -2840,20 +2675,20 @@ var
   i:               Integer;
   child, newChild: TDGLBaseSceneObject;
 begin
-  if assigned(Source) and (Source is TDGLBaseSceneObject) then
+  if Assigned(Source) and (Source is TDGLBaseSceneObject) then
   begin
-    DestroyHandles;
+    // DestroyHandles;
     FVisible := TDGLBaseSceneObject(Source).FVisible;
     TDGLBaseSceneObject(Source).RebuildMatrix;
     SetMatrix(TDGLBaseSceneObject(Source).FLocalMatrix^);
-    FShowAxes          := TDGLBaseSceneObject(Source).FShowAxes;
+//    FShowAxes          := TDGLBaseSceneObject(Source).FShowAxes;
     FObjectsSorting    := TDGLBaseSceneObject(Source).FObjectsSorting;
     FVisibilityCulling := TDGLBaseSceneObject(Source).FVisibilityCulling;
     FRotation.Assign(TDGLBaseSceneObject(Source).FRotation);
     DeleteChildren;
-    if assigned(Scene) then
+    if Assigned(Scene) then
       Scene.BeginUpdate;
-    if assigned(TDGLBaseSceneObject(Source).FChildren) then
+    if Assigned(TDGLBaseSceneObject(Source).FChildren) then
     begin
       for i := 0 to TDGLBaseSceneObject(Source).FChildren.Count - 1 do
       begin
@@ -2862,14 +2697,14 @@ begin
         newChild.Assign(child);
       end;
     end;
-    if assigned(Scene) then
+    if Assigned(Scene) then
       Scene.EndUpdate;
     OnProgress := TDGLBaseSceneObject(Source).OnProgress;
-    if assigned(TDGLBaseSceneObject(Source).FGLBehaviours) then
+    if Assigned(TDGLBaseSceneObject(Source).FGLBehaviours) then
       Behaviours.Assign(TDGLBaseSceneObject(Source).Behaviours)
     else
       FreeAndNil(FGLBehaviours);
-    if assigned(TDGLBaseSceneObject(Source).FGLObjectEffects) then
+    if Assigned(TDGLBaseSceneObject(Source).FGLObjectEffects) then
       Effects.Assign(TDGLBaseSceneObject(Source).Effects)
     else
       FreeAndNil(FGLObjectEffects);
@@ -2895,7 +2730,7 @@ end;
 
 function TDGLBaseSceneObject.HasParent: Boolean;
 begin
-  Result := assigned(FParent);
+  Result := Assigned(FParent);
 end;
 
 procedure TDGLBaseSceneObject.Lift(ADistance: Single);
@@ -3016,13 +2851,13 @@ begin
     FUp.Normalize;
     FDirection.Rotate(rightVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.Y, VectorLength(FDirection.X, FDirection.Z)));
-    if FDirection.X < 0 then
-      if FDirection.Y < 0 then
+    r := -RadToDeg(ArcTan2(FDirection.y, VectorLength(FDirection.x, FDirection.z)));
+    if FDirection.x < 0 then
+      if FDirection.y < 0 then
         r := 180 - r
       else
         r       := -180 - r;
-    FRotation.X := r;
+    FRotation.x := r;
   finally
     FIsCalculating := False;
   end;
@@ -3034,13 +2869,13 @@ var
   diff:      Single;
   rotMatrix: TMatrix;
 begin
-  if aValue <> FRotation.X then
+  if aValue <> FRotation.x then
   begin
     if not(csLoading in ComponentState) then
     begin
       FIsCalculating := True;
       try
-        diff             := DegToRadian(FRotation.X - aValue);
+        diff             := DegToRadian(FRotation.x - aValue);
         rotMatrix        := CreateRotationMatrix(Right, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -3077,7 +2912,7 @@ begin
         r := 180 - r
       else
         r       := -180 - r;
-    FRotation.Z := r;
+    FRotation.z := r;
   finally
     FIsCalculating := False;
   end;
@@ -3089,13 +2924,13 @@ var
   diff:      Single;
   rotMatrix: TMatrix;
 begin
-  if aValue <> FRotation.Z then
+  if aValue <> FRotation.z then
   begin
     if not(csLoading in ComponentState) then
     begin
       FIsCalculating := True;
       try
-        diff             := DegToRadian(FRotation.Z - aValue);
+        diff             := DegToRadian(FRotation.z - aValue);
         rotMatrix        := CreateRotationMatrix(Direction.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -3123,13 +2958,13 @@ begin
     FUp.Normalize;
     FDirection.Rotate(upVector, angle);
     FDirection.Normalize;
-    r := -RadToDeg(ArcTan2(FDirection.X, VectorLength(FDirection.Y, FDirection.Z)));
-    if FDirection.X < 0 then
-      if FDirection.Y < 0 then
+    r := -RadToDeg(ArcTan2(FDirection.x, VectorLength(FDirection.y, FDirection.z)));
+    if FDirection.x < 0 then
+      if FDirection.y < 0 then
         r := 180 - r
       else
         r       := -180 - r;
-    FRotation.Y := r;
+    FRotation.y := r;
   finally
     FIsCalculating := False;
   end;
@@ -3141,13 +2976,13 @@ var
   diff:      Single;
   rotMatrix: TMatrix;
 begin
-  if aValue <> FRotation.Y then
+  if aValue <> FRotation.y then
   begin
     if not(csLoading in ComponentState) then
     begin
       FIsCalculating := True;
       try
-        diff             := DegToRadian(FRotation.Y - aValue);
+        diff             := DegToRadian(FRotation.y - aValue);
         rotMatrix        := CreateRotationMatrix(Up.AsVector, diff);
         FUp.DirectVector := VectorTransform(FUp.AsVector, rotMatrix);
         FUp.Normalize;
@@ -3170,17 +3005,17 @@ end;
 
 function TDGLBaseSceneObject.GetPitchAngle: Single;
 begin
-  Result := FRotation.X;
+  Result := FRotation.x;
 end;
 
 function TDGLBaseSceneObject.GetTurnAngle: Single;
 begin
-  Result := FRotation.Y;
+  Result := FRotation.y;
 end;
 
 function TDGLBaseSceneObject.GetRollAngle: Single;
 begin
-  Result := FRotation.Z;
+  Result := FRotation.z;
 end;
 
 procedure TDGLBaseSceneObject.PointTo(const ATargetObject: TDGLBaseSceneObject; const AUpVector: TVector);
@@ -3212,14 +3047,14 @@ begin
   TransformationChanged
 end;
 
-procedure TDGLBaseSceneObject.SetShowAxes(aValue: Boolean);
-begin
-  if FShowAxes <> aValue then
-  begin
-    FShowAxes := aValue;
-    NotifyChange(Self);
-  end;
-end;
+//procedure TDGLBaseSceneObject.SetShowAxes(aValue: Boolean);
+//begin
+//  if FShowAxes <> aValue then
+//  begin
+//    FShowAxes := aValue;
+//    NotifyChange(Self);
+//  end;
+//end;
 
 procedure TDGLBaseSceneObject.SetScaling(aValue: TDGLCoordinates);
 begin
@@ -3232,7 +3067,7 @@ begin
   if Name <> NewName then
   begin
     inherited SetName(NewName);
-    if assigned(vGLBaseSceneObjectNameChangeEvent) then
+    if Assigned(vGLBaseSceneObjectNameChangeEvent) then
       vGLBaseSceneObjectNameChangeEvent(Self);
   end;
 end;
@@ -3244,7 +3079,7 @@ end;
 
 function TDGLBaseSceneObject.GetIndex: Integer;
 begin
-  if assigned(FParent) then
+  if Assigned(FParent) then
     Result := FParent.FChildren.IndexOf(Self)
   else
     Result := -1;
@@ -3255,7 +3090,7 @@ var
   LCount:       Integer;
   parentBackup: TDGLBaseSceneObject;
 begin
-  if assigned(FParent) then
+  if Assigned(FParent) then
   begin
     if aValue < 0 then
       aValue := 0;
@@ -3264,12 +3099,12 @@ begin
       aValue := LCount - 1;
     if aValue <> Index then
     begin
-      if assigned(FScene) then
+      if Assigned(FScene) then
         FScene.BeginUpdate;
       parentBackup := FParent;
       parentBackup.Remove(Self, False);
       parentBackup.Insert(aValue, Self);
-      if assigned(FScene) then
+      if Assigned(FScene) then
         FScene.EndUpdate;
     end;
   end;
@@ -3316,7 +3151,7 @@ begin
   if matSet * FChanges <> matSet then
   begin
     FChanges := FChanges + matSet;
-    if assigned(FChildren) then
+    if Assigned(FChildren) then
     begin
       List  := FChildren.List;
       for i := 0 to FChildren.Count - 1 do
@@ -3340,12 +3175,12 @@ procedure TDGLBaseSceneObject.MoveTo(newParent: TDGLBaseSceneObject);
 begin
   if newParent = FParent then
     Exit;
-  if assigned(FParent) then
+  if Assigned(FParent) then
   begin
     FParent.Remove(Self, False);
     FParent := nil;
   end;
-  if assigned(newParent) then
+  if Assigned(newParent) then
     newParent.AddChild(Self)
   else
     SetScene(nil);
@@ -3353,25 +3188,25 @@ end;
 
 procedure TDGLBaseSceneObject.MoveUp;
 begin
-  if assigned(Parent) then
+  if Assigned(Parent) then
     Parent.MoveChildUp(Parent.IndexOfChild(Self));
 end;
 
 procedure TDGLBaseSceneObject.MoveDown;
 begin
-  if assigned(Parent) then
+  if Assigned(Parent) then
     Parent.MoveChildDown(Parent.IndexOfChild(Self));
 end;
 
 procedure TDGLBaseSceneObject.MoveFirst;
 begin
-  if assigned(Parent) then
+  if Assigned(Parent) then
     Parent.MoveChildFirst(Parent.IndexOfChild(Self));
 end;
 
 procedure TDGLBaseSceneObject.MoveLast;
 begin
-  if assigned(Parent) then
+  if Assigned(Parent) then
     Parent.MoveChildLast(Parent.IndexOfChild(Self));
 end;
 
@@ -3380,7 +3215,7 @@ var
   originalT2C, normalT2C, normalCameraRight, newPos: TVector;
   pitchNow, dist:                                    Single;
 begin
-  if assigned(anObject) then
+  if Assigned(anObject) then
   begin
     // normalT2C points away from the direction the camera is looking
     originalT2C := VectorSubtract(AbsolutePosition, anObject.AbsolutePosition);
@@ -3405,8 +3240,7 @@ begin
     RotateVector(normalT2C, AbsoluteUp, -DegToRadian(turnDelta));
     ScaleVector(normalT2C, dist);
     newPos := VectorAdd(AbsolutePosition, VectorSubtract(normalT2C, originalT2C));
-    if assigned(Parent) then
-      newPos          := Parent.AbsoluteToLocal(newPos);
+    if Assigned(Parent) then newPos := Parent.AbsoluteToLocal(newPos);
     Position.AsVector := newPos;
   end;
 end;
@@ -3422,7 +3256,7 @@ var
 begin
 
   // if camera has got a target
-  if assigned(anObject) then
+  if Assigned(anObject) then
   begin
     // vector camera to target
     lookat := VectorNormalize(VectorSubtract(anObject.AbsolutePosition, AbsolutePosition));
@@ -3517,33 +3351,33 @@ procedure TDGLBaseSceneObject.DoProgress(const progressTime: TProgressTimes);
 var
   i: Integer;
 begin
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     for i := FChildren.Count - 1 downto 0 do
       TDGLBaseSceneObject(FChildren.List^[i]).DoProgress(progressTime);
-  if assigned(FGLBehaviours) then
+  if Assigned(FGLBehaviours) then
     FGLBehaviours.DoProgress(progressTime);
-  if assigned(FGLObjectEffects) then
+  if Assigned(FGLObjectEffects) then
     FGLObjectEffects.DoProgress(progressTime);
-  if assigned(FOnProgress) then
+  if Assigned(FOnProgress) then
     with progressTime do
       FOnProgress(Self, deltaTime, newTime);
 end;
 
 procedure TDGLBaseSceneObject.Insert(AIndex: Integer; AChild: TDGLBaseSceneObject);
 begin
-  if not assigned(FChildren) then
+  if not Assigned(FChildren) then
     FChildren := TDGLPersistentObjectList.Create;
   with FChildren do
   begin
-    if assigned(AChild.FParent) then
+    if Assigned(AChild.FParent) then
       AChild.FParent.Remove(AChild, False);
     Insert(AIndex, AChild);
   end;
   AChild.FParent := Self;
-  if AChild.FScene <> FScene then
-    AChild.DestroyHandles;
+  // if AChild.FScene <> FScene then
+  // AChild.DestroyHandles;
   AChild.SetScene(FScene);
-  if assigned(FScene) then
+  if Assigned(FScene) then
     FScene.AddLights(AChild);
   AChild.TransformationChanged;
 
@@ -3554,11 +3388,11 @@ procedure TDGLBaseSceneObject.Remove(AChild: TDGLBaseSceneObject; keepChildren: 
 var
   i: Integer;
 begin
-  if not assigned(FChildren) then
+  if not Assigned(FChildren) then
     Exit;
   if AChild.Parent = Self then
   begin
-    if assigned(FScene) then
+    if Assigned(FScene) then
       FScene.RemoveLights(AChild);
     if AChild.Owner = Self then
       RemoveComponent(AChild);
@@ -3580,7 +3414,7 @@ end;
 
 function TDGLBaseSceneObject.IndexOfChild(AChild: TDGLBaseSceneObject): Integer;
 begin
-  if assigned(FChildren) then
+  if Assigned(FChildren) then
     Result := FChildren.IndexOf(AChild)
   else
     Result := -1;
@@ -3593,7 +3427,7 @@ var
 begin
   res    := nil;
   Result := nil;
-  if not assigned(FChildren) then
+  if not Assigned(FChildren) then
     Exit;
   for i := 0 to FChildren.Count - 1 do
   begin
@@ -3609,24 +3443,24 @@ begin
       with TDGLBaseSceneObject(FChildren[i]) do
       begin
         Result := FindChild(aName, ownChildrenOnly);
-        if assigned(Result) then
+        if Assigned(Result) then
           Break;
       end;
   end;
-  if not assigned(Result) then
+  if not Assigned(Result) then
     Result := res;
 end;
 
 procedure TDGLBaseSceneObject.ExchangeChildren(anIndex1, anIndex2: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   FChildren.Exchange(anIndex1, anIndex2);
   NotifyChange(Self);
 end;
 
 procedure TDGLBaseSceneObject.ExchangeChildrenSafe(anIndex1, anIndex2: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   if (anIndex1 < FChildren.Count) and (anIndex2 < FChildren.Count) and (anIndex1 > -1) and (anIndex2 > -1) and (anIndex1 <> anIndex2) then
   begin
     FChildren.Exchange(anIndex1, anIndex2);
@@ -3636,7 +3470,7 @@ end;
 
 procedure TDGLBaseSceneObject.MoveChildUp(anIndex: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   if anIndex > 0 then
   begin
     FChildren.Exchange(anIndex, anIndex - 1);
@@ -3646,7 +3480,7 @@ end;
 
 procedure TDGLBaseSceneObject.MoveChildDown(anIndex: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   if anIndex < FChildren.Count - 1 then
   begin
     FChildren.Exchange(anIndex, anIndex + 1);
@@ -3656,7 +3490,7 @@ end;
 
 procedure TDGLBaseSceneObject.MoveChildFirst(anIndex: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   if anIndex <> 0 then
   begin
     FChildren.Move(anIndex, 0);
@@ -3666,7 +3500,7 @@ end;
 
 procedure TDGLBaseSceneObject.MoveChildLast(anIndex: Integer);
 begin
-  Assert(assigned(FChildren), 'No children found!');
+  Assert(Assigned(FChildren), 'No children found!');
   if anIndex <> FChildren.Count - 1 then
   begin
     FChildren.Move(anIndex, FChildren.Count - 1);
@@ -3684,30 +3518,38 @@ begin
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(Length(Name) + Length('.Render'), PGLChar(TDGLString(Name + '.Render')));
   {$ENDIF}
+  DGLSLogger.LogInfo('TDGLBaseSceneObject : Render');
   if (ARci.drawState = dsPicking) and not FPickable then
     Exit;
   // visibility culling determination
+
   if ARci.VisibilityCulling in [vcObjectBased, vcHierarchical] then
   begin
+    DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->visibility culling determination');
     if ARci.VisibilityCulling = vcObjectBased then
     begin
       shouldRenderSelf     := (osNoVisibilityCulling in ObjectStyle) or (not IsVolumeClipped(BarycenterAbsolutePosition, BoundingSphereRadius, ARci.rcci.frustum));
-      shouldRenderChildren := assigned(FChildren);
+      shouldRenderChildren := Assigned(FChildren);
     end
     else
     begin // vcHierarchical
       aabb                 := AxisAlignedBoundingBox;
       shouldRenderSelf     := (osNoVisibilityCulling in ObjectStyle) or (not IsVolumeClipped(aabb.min, aabb.max, ARci.rcci.frustum));
-      shouldRenderChildren := shouldRenderSelf and assigned(FChildren);
+      shouldRenderChildren := shouldRenderSelf and Assigned(FChildren);
     end;
+
     if not(shouldRenderSelf or shouldRenderChildren) then
+    begin
+      DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Nothing to Render Exit');
       Exit;
+    end;
   end
   else
   begin
+    DGLSLogger.LogNotice('TDGLBaseSceneObject : Render--> Unknown visibility culling option');
     Assert(ARci.VisibilityCulling in [vcNone, vcInherited], 'Unknown visibility culling option');
     shouldRenderSelf     := True;
-    shouldRenderChildren := assigned(FChildren);
+    shouldRenderChildren := Assigned(FChildren);
   end;
 
   // Prepare Matrix and PickList stuff
@@ -3720,24 +3562,26 @@ begin
   else
     ARci.PipelineTransformation.ModelMatrix := AbsoluteMatrix;
 
-  master := nil;
-  if ARci.drawState = dsPicking then
-  begin
-  //  if ARci.proxySubObject then
-  //    master := TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject;
-  //  TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := Self;
-  end;
+//  master := nil;
+//  if ARci.drawState = dsPicking then
+//  begin
+//    // if ARci.proxySubObject then
+//    // master := TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject;
+//    // TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := Self;
+//  end;
 
   // Start rendering
   if shouldRenderSelf then
   begin
+    DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Start Rendering');
     vCurrentRenderingObject := Self;
     {$IFNDEF GLS_OPTIMIZATIONS}
-    if FShowAxes then
-      DrawAxes(ARci, $CCCC);
+//    if FShowAxes then
+//      DrawAxes(ARci, $CCCC);
     {$ENDIF}
-    if assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
+    if Assigned(FGLObjectEffects) and (FGLObjectEffects.Count > 0) then
     begin
+      DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Effects');
       ARci.PipelineTransformation.Push;
       FGLObjectEffects.RenderPreEffects(ARci);
       ARci.PipelineTransformation.Pop;
@@ -3759,18 +3603,23 @@ begin
     begin
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
+        DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Ignore Depth Buffer');
         ARci.GLStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
         ARci.GLStates.Enable(stDepthTest);
       end
       else
+      begin
+        DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Normal Rendering');
         DoRender(ARci, True, shouldRenderChildren);
+      end;
 
     end;
     vCurrentRenderingObject := nil;
   end
   else
   begin
+    DGLSLogger.LogInfo('TDGLBaseSceneObject : Render-->Rendering Childs');
     if (osIgnoreDepthBuffer in ObjectStyle) and TDGLSceneBuffer(ARci.buffer).DepthTest then
     begin
       ARci.GLStates.Disable(stDepthTest);
@@ -3781,20 +3630,21 @@ begin
       DoRender(ARci, False, shouldRenderChildren);
   end;
   // Pop Name & Matrix
-  if assigned(master) then
-//    TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := master;
+  // if assigned(master) then
+  // TDGLSceneBuffer(ARci.buffer).FSelector.CurrentObject := master;
   ARci.PipelineTransformation.Pop;
 end;
 
 procedure TDGLBaseSceneObject.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
+  DGLSLogger.LogInfo('TDGLBaseSceneObject DoRender (' + Self.Name + ')');
   if ARenderSelf then
   begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
-//    else
-//      ARci.GLStates.CallList(GetHandle(ARci));
+      // else
+      // ARci.GLStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -3805,20 +3655,23 @@ procedure TDGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex: In
 var
   i:          Integer;
   objList:    TDGLPersistentObjectList;
-  distList:   TSingleList;
+  distList:   TDGLSingleList;
   plist:      PPointerObjectList;
   obj:        TDGLBaseSceneObject;
   oldSorting: TDGLObjectsSorting;
   oldCulling: TDGLVisibilityCulling;
 begin
-  if not assigned(FChildren) then
+  if not Assigned(FChildren) then
     Exit;
+  DGLSLogger.LogInfo('TDGLBaseSceneObject RenderChildren');
   oldCulling := rci.VisibilityCulling;
   if Self.VisibilityCulling <> vcInherited then
     rci.VisibilityCulling := Self.VisibilityCulling;
+
   if lastChildIndex = firstChildIndex then
   begin
     obj := TDGLBaseSceneObject(FChildren.List^[firstChildIndex]);
+    DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren --> ' + obj.Name);
     if obj.Visible then
       obj.Render(rci)
   end
@@ -3834,13 +3687,14 @@ begin
           for i := firstChildIndex to lastChildIndex do
           begin
             obj := TDGLBaseSceneObject(plist^[i]);
+            DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren --> ' + obj.Name);
             if obj.Visible then
               obj.Render(rci);
           end;
         end;
       osRenderFarthestFirst, osRenderBlendedLast, osRenderNearestFirst:
         begin
-          distList             := TSingleList.Create;
+          distList             := TDGLSingleList.Create;
           objList              := TDGLPersistentObjectList.Create;
           distList.GrowthDelta := lastChildIndex + 1; // no reallocations
           objList.GrowthDelta  := distList.GrowthDelta;
@@ -3853,6 +3707,7 @@ begin
                   obj := TDGLBaseSceneObject(FChildren.List^[i]);
                   if obj.Visible then
                   begin
+                    DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren --> ' + obj.Name);
                     if not obj.Blended then
                       obj.Render(rci)
                     else
@@ -3865,9 +3720,11 @@ begin
               osRenderFarthestFirst:
                 for i := firstChildIndex to lastChildIndex do
                 begin
+
                   obj := TDGLBaseSceneObject(FChildren.List^[i]);
                   if obj.Visible then
                   begin
+                    DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren --> ' + obj.Name);
                     objList.Add(obj);
                     distList.Add(1 + obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                   end;
@@ -3878,6 +3735,7 @@ begin
                   obj := TDGLBaseSceneObject(FChildren.List^[i]);
                   if obj.Visible then
                   begin
+                    DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren --> ' + obj.Name);
                     objList.Add(obj);
                     distList.Add(-1 - obj.BarycenterSqrDistanceTo(rci.cameraPosition));
                   end;
@@ -3891,7 +3749,10 @@ begin
                 FastQuickSortLists(0, distList.Count - 1, distList, objList);
               plist := objList.List;
               for i := objList.Count - 1 downto 0 do
+              begin
+                DGLSLogger.LogInfo('TDGLBaseSceneObject : RenderChildren -->Rendrering ' + TDGLBaseSceneObject(plist^[i]).Name);
                 TDGLBaseSceneObject(plist^[i]).Render(rci);
+              end;
             end;
           finally
             objList.Free;
@@ -3908,7 +3769,7 @@ end;
 
 procedure TDGLBaseSceneObject.NotifyChange(Sender: TObject);
 begin
-  if assigned(FScene) and (not IsUpdating) then
+  if Assigned(FScene) and (not IsUpdating) then
     FScene.NotifyChange(Self);
 end;
 
@@ -4004,7 +3865,7 @@ end;
 
 function TDGLBaseSceneObject.GetBehaviours: TDGLBehaviours;
 begin
-  if not assigned(FGLBehaviours) then
+  if not Assigned(FGLBehaviours) then
     FGLBehaviours := TDGLBehaviours.Create(Self);
   Result          := FGLBehaviours;
 end;
@@ -4016,7 +3877,7 @@ end;
 
 function TDGLBaseSceneObject.GetEffects: TDGLObjectEffects;
 begin
-  if not assigned(FGLObjectEffects) then
+  if not Assigned(FGLObjectEffects) then
     FGLObjectEffects := TDGLObjectEffects.Create(Self);
   Result             := FGLObjectEffects;
 end;
@@ -4028,11 +3889,11 @@ begin
   if Value <> FScene then
   begin
     // must be freed, the new scene may be using a non-compatible RC
-//    if FScene <> nil then
-//      DestroyHandles;
+    // if FScene <> nil then
+    // DestroyHandles;
     FScene := Value;
     // propagate for childs
-    if assigned(FChildren) then
+    if Assigned(FChildren) then
       for i := 0 to FChildren.Count - 1 do
         Children[i].SetScene(FScene);
   end;
@@ -4104,7 +3965,7 @@ end;
 
 procedure TDGLBaseSceneObject.DoOnAddedToParent;
 begin
-  if assigned(FOnAddedToParent) then
+  if Assigned(FOnAddedToParent) then
     FOnAddedToParent(Self);
 end;
 
@@ -4119,6 +3980,291 @@ begin
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+
+
+
+// Create
+//
+
+constructor TDGLBaseBehaviour.Create(aOwner: TDGLXCollection);
+begin
+  inherited Create(aOwner);
+  // nothing more, yet
+end;
+
+// Destroy
+//
+
+destructor TDGLBaseBehaviour.Destroy;
+begin
+  // nothing more, yet
+  inherited Destroy;
+end;
+
+// SetName
+//
+
+procedure TDGLBaseBehaviour.SetName(const val: string);
+begin
+  inherited SetName(val);
+  if Assigned(vGLBehaviourNameChangeEvent) then
+    vGLBehaviourNameChangeEvent(Self);
+end;
+
+// WriteToFiler
+//
+
+procedure TDGLBaseBehaviour.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+
+  with writer do
+  begin
+    WriteInteger(0); // Archive Version 0
+    // nothing more, yet
+  end;
+end;
+
+// ReadFromFiler
+//
+
+procedure TDGLBaseBehaviour.ReadFromFiler(reader: TReader);
+begin
+  if Owner.ArchiveVersion > 0 then
+    inherited;
+
+  with reader do
+  begin
+    if ReadInteger <> 0 then
+      Assert(False);
+    // nothing more, yet
+  end;
+end;
+
+// OwnerBaseSceneObject
+//
+
+function TDGLBaseBehaviour.OwnerBaseSceneObject: TDGLBaseSceneObject;
+begin
+  Result := TDGLBaseSceneObject(Owner.Owner);
+end;
+
+// DoProgress
+//
+
+procedure TDGLBaseBehaviour.DoProgress(const progressTime: TProgressTimes);
+begin
+  // does nothing
+end;
+
+// ------------------
+// ------------------ TDGLBehaviours ------------------
+// ------------------
+
+// Create
+//
+
+constructor TDGLBehaviours.Create(aOwner: TPersistent);
+begin
+  Assert(aOwner is TDGLBaseSceneObject);
+  inherited Create(aOwner);
+end;
+
+// GetNamePath
+//
+
+function TDGLBehaviours.GetNamePath: string;
+var
+  s: string;
+begin
+  Result := ClassName;
+  if GetOwner = nil then
+    Exit;
+  s := GetOwner.GetNamePath;
+  if s = '' then
+    Exit;
+  Result := s + '.Behaviours';
+end;
+
+// ItemsClass
+//
+
+class function TDGLBehaviours.ItemsClass: TDGLXCollectionItemClass;
+begin
+  Result := TDGLBehaviour;
+end;
+
+// GetBehaviour
+//
+
+function TDGLBehaviours.GetBehaviour(index: Integer): TDGLBehaviour;
+begin
+  Result := TDGLBehaviour(Items[index]);
+end;
+
+// CanAdd
+//
+
+function TDGLBehaviours.CanAdd(aClass: TDGLXCollectionItemClass): Boolean;
+begin
+  Result := (not aClass.InheritsFrom(TDGLObjectEffect)) and (inherited
+    CanAdd(aClass));
+end;
+
+// DoProgress
+//
+
+procedure TDGLBehaviours.DoProgress(const progressTimes: TProgressTimes);
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    TDGLBehaviour(Items[i]).DoProgress(progressTimes);
+end;
+
+// ------------------
+// ------------------ TDGLObjectEffect ------------------
+// ------------------
+
+// WriteToFiler
+//
+
+procedure TDGLObjectEffect.WriteToFiler(writer: TWriter);
+begin
+  inherited;
+  with writer do
+  begin
+    WriteInteger(0); // Archive Version 0
+    // nothing more, yet
+  end;
+end;
+
+// ReadFromFiler
+//
+
+procedure TDGLObjectEffect.ReadFromFiler(reader: TReader);
+begin
+  if Owner.ArchiveVersion > 0 then
+    inherited;
+
+  with reader do
+  begin
+    if ReadInteger <> 0 then
+      Assert(False);
+    // nothing more, yet
+  end;
+end;
+
+// Render
+//
+
+procedure TDGLObjectEffect.Render(var rci: TRenderContextInfo);
+begin
+  // nothing here, this implem is just to avoid "abstract error"
+end;
+
+// ------------------
+// ------------------ TDGLObjectEffects ------------------
+// ------------------
+
+// Create
+//
+
+constructor TDGLObjectEffects.Create(aOwner: TPersistent);
+begin
+  Assert(aOwner is TDGLBaseSceneObject);
+  inherited Create(aOwner);
+end;
+
+// GetNamePath
+//
+
+function TDGLObjectEffects.GetNamePath: string;
+var
+  s: string;
+begin
+  Result := ClassName;
+  if GetOwner = nil then
+    Exit;
+  s := GetOwner.GetNamePath;
+  if s = '' then
+    Exit;
+  Result := s + '.Effects';
+end;
+
+// ItemsClass
+//
+
+class function TDGLObjectEffects.ItemsClass: TDGLXCollectionItemClass;
+begin
+  Result := TDGLObjectEffect;
+end;
+
+// GetEffect
+//
+
+function TDGLObjectEffects.GetEffect(index: Integer): TDGLObjectEffect;
+begin
+  Result := TDGLObjectEffect(Items[index]);
+end;
+
+// CanAdd
+//
+
+function TDGLObjectEffects.CanAdd(aClass: TDGLXCollectionItemClass): Boolean;
+begin
+  Result := (aClass.InheritsFrom(TDGLObjectEffect)) and (inherited
+    CanAdd(aClass));
+end;
+
+// DoProgress
+//
+
+procedure TDGLObjectEffects.DoProgress(const progressTime: TProgressTimes);
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    TDGLObjectEffect(Items[i]).DoProgress(progressTime);
+end;
+
+// RenderPreEffects
+//
+
+procedure TDGLObjectEffects.RenderPreEffects(var rci: TRenderContextInfo);
+var
+  i: Integer;
+  effect: TDGLObjectEffect;
+begin
+  for i := 0 to Count - 1 do
+  begin
+    effect := TDGLObjectEffect(Items[i]);
+    if effect is TDGLObjectPreEffect then
+      effect.Render(rci);
+  end;
+end;
+
+// RenderPostEffects
+//
+
+procedure TDGLObjectEffects.RenderPostEffects(var rci: TRenderContextInfo);
+var
+  i: Integer;
+  effect: TDGLObjectEffect;
+begin
+  for i := 0 to Count - 1 do
+  begin
+    effect := TDGLObjectEffect(Items[i]);
+    if effect is TDGLObjectPostEffect then
+      effect.Render(rci)
+    else if Assigned(rci.afterRenderEffects) and (effect is TDGLObjectAfterEffect) then
+      rci.afterRenderEffects.Add(effect);
+  end;
+end;
+
+
+
 
 // ------------------
 { TDGLSceneRootObject }
@@ -4135,298 +4281,6 @@ end;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
-{ TDGLBaseBehaviour }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLBaseBehaviour'}{$ENDIF}
-
-constructor TDGLBaseBehaviour.Create(AOwner: TDGLXCollection);
-begin
-  inherited Create(AOwner);
-  // nothing more, yet
-end;
-
-destructor TDGLBaseBehaviour.Destroy;
-begin
-  // nothing more, yet
-  inherited Destroy;
-end;
-
-procedure TDGLBaseBehaviour.SetName(const val: string);
-begin
-  inherited SetName(val);
-  if assigned(vGLBehaviourNameChangeEvent) then
-    vGLBehaviourNameChangeEvent(Self);
-end;
-
-procedure TDGLBaseBehaviour.WriteToFiler(writer: TWriter);
-begin
-  inherited;
-
-  with writer do
-  begin
-    WriteInteger(0); // Archive Version 0
-    // nothing more, yet
-  end;
-end;
-
-procedure TDGLBaseBehaviour.ReadFromFiler(reader: TReader);
-begin
-  if Owner.ArchiveVersion > 0 then
-    inherited;
-
-  with reader do
-  begin
-    if ReadInteger <> 0 then
-      Assert(False);
-    // nothing more, yet
-  end;
-end;
-
-function TDGLBaseBehaviour.OwnerBaseSceneObject: TDGLBaseSceneObject;
-begin
-  Result := TDGLBaseSceneObject(Owner.Owner);
-end;
-
-procedure TDGLBaseBehaviour.DoProgress(const progressTime: TProgressTimes);
-begin
-  // does nothing
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLBehaviour }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLBehaviour'}{$ENDIF}
-
-constructor TDGLBehaviours.Create(AOwner: TPersistent);
-begin
-  Assert(AOwner is TDGLBaseSceneObject);
-  inherited Create(AOwner);
-end;
-
-function TDGLBehaviours.GetNamePath: string;
-var
-  s: string;
-begin
-  Result := ClassName;
-  if GetOwner = nil then
-    Exit;
-  s := GetOwner.GetNamePath;
-  if s = '' then
-    Exit;
-  Result := s + '.Behaviours';
-end;
-
-class function TDGLBehaviours.ItemsClass: TDGLXCollectionItemClass;
-begin
-  Result := TDGLBehaviour;
-end;
-
-function TDGLBehaviours.GetBehaviour(Index: Integer): TDGLBehaviour;
-begin
-  Result := TDGLBehaviour(Items[index]);
-end;
-
-function TDGLBehaviours.CanAdd(aClass: TDGLXCollectionItemClass): Boolean;
-begin
-  Result := (not aClass.InheritsFrom(TDGLObjectEffect)) and (inherited CanAdd(aClass));
-end;
-
-procedure TDGLBehaviours.DoProgress(const progressTimes: TProgressTimes);
-var
-  i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    TDGLBehaviour(Items[i]).DoProgress(progressTimes);
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLObjectEffect }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLObjectEffect'}{$ENDIF}
-
-procedure TDGLObjectEffect.WriteToFiler(writer: TWriter);
-begin
-  inherited;
-  with writer do
-  begin
-    WriteInteger(0); // Archive Version 0
-    // nothing more, yet
-  end;
-end;
-
-procedure TDGLObjectEffect.ReadFromFiler(reader: TReader);
-begin
-  if Owner.ArchiveVersion > 0 then
-    inherited;
-
-  with reader do
-  begin
-    if ReadInteger <> 0 then
-      Assert(False);
-    // nothing more, yet
-  end;
-end;
-
-procedure TDGLObjectEffect.Render(var rci: TRenderContextInfo);
-begin
-  // nothing here, this implem is just to avoid "abstract error"
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLObjectEffects }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLObjectEffects'}{$ENDIF}
-
-constructor TDGLObjectEffects.Create(AOwner: TPersistent);
-begin
-  Assert(AOwner is TDGLBaseSceneObject);
-  inherited Create(AOwner);
-end;
-
-function TDGLObjectEffects.GetNamePath: string;
-var
-  s: string;
-begin
-  Result := ClassName;
-  if GetOwner = nil then
-    Exit;
-  s := GetOwner.GetNamePath;
-  if s = '' then
-    Exit;
-  Result := s + '.Effects';
-end;
-
-class function TDGLObjectEffects.ItemsClass: TDGLXCollectionItemClass;
-begin
-  Result := TDGLObjectEffect;
-end;
-
-function TDGLObjectEffects.GetEffect(Index: Integer): TDGLObjectEffect;
-begin
-  Result := TDGLObjectEffect(Items[index]);
-end;
-
-function TDGLObjectEffects.CanAdd(aClass: TDGLXCollectionItemClass): Boolean;
-begin
-  Result := (aClass.InheritsFrom(TDGLObjectEffect)) and (inherited CanAdd(aClass));
-end;
-
-procedure TDGLObjectEffects.DoProgress(const progressTime: TProgressTimes);
-var
-  i: Integer;
-begin
-  for i := 0 to Count - 1 do
-    TDGLObjectEffect(Items[i]).DoProgress(progressTime);
-end;
-
-procedure TDGLObjectEffects.RenderPreEffects(var rci: TRenderContextInfo);
-var
-  i:      Integer;
-  effect: TDGLObjectEffect;
-begin
-  for i := 0 to Count - 1 do
-  begin
-    effect := TDGLObjectEffect(Items[i]);
-    if effect is TDGLObjectPreEffect then
-      effect.Render(rci);
-  end;
-end;
-
-procedure TDGLObjectEffects.RenderPostEffects(var rci: TRenderContextInfo);
-var
-  i:      Integer;
-  effect: TDGLObjectEffect;
-begin
-  for i := 0 to Count - 1 do
-  begin
-    effect := TDGLObjectEffect(Items[i]);
-    if effect is TDGLObjectPostEffect then
-      effect.Render(rci)
-    else if assigned(rci.afterRenderEffects) and (effect is TDGLObjectAfterEffect) then
-      rci.afterRenderEffects.Add(effect);
-  end;
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLCustomSceneObject }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLCustomSceneObject'}{$ENDIF}
-
-constructor TDGLCustomSceneObject.Create(AOwner: TComponent);
-begin
-  inherited Create(AOwner);
-  FShader := TDGLLibShader.Create(nil);
-end;
-
-destructor TDGLCustomSceneObject.Destroy;
-begin
-  inherited Destroy;
-  FShader.Free;
-end;
-
-procedure TDGLCustomSceneObject.Assign(Source: TPersistent);
-begin
-  if Source is TDGLCustomSceneObject then
-  begin
-    FShader.Assign(TDGLCustomSceneObject(Source).FShader);
-    FHint := TDGLCustomSceneObject(Source).FHint;
-  end;
-  inherited Assign(Source);
-end;
-
-function TDGLCustomSceneObject.Blended: Boolean;
-begin
-  Result := Shader.ShaderModel.Material.Blended;
-end;
-
-procedure TDGLCustomSceneObject.Loaded;
-begin
-  inherited;
-//  FMaterial.Loaded;
-end;
-
-procedure TDGLCustomSceneObject.SetShader(aValue: TDGLLibShader);
-begin
-  FShader.Assign(aValue);
-  NotifyChange(Self);
-end;
-
-procedure TDGLCustomSceneObject.DestroyHandle;
-begin
-  inherited;
-//  FMaterial.DestroyHandles;
-end;
-
-procedure TDGLCustomSceneObject.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
-begin
-  // start rendering self
-  if ARenderSelf then
-    if ARci.ignoreMaterials then
-      if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-        BuildList(ARci)
-//      else
-//        ARci.GLStates.CallList(GetHandle(ARci))
-    else
-    begin
-      FShader.Apply(ARci);
-      repeat
-        if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
-          BuildList(ARci)
-//        else
-//          ARci.GLStates.CallList(GetHandle(ARci));
-      until not FShader.UnApply(ARci);
-    end;
-  // start rendering children (if any)
-  if ARenderChildren then
-    Self.RenderChildren(0, Count - 1, ARci);
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
 { TDGImmaterialSceneObject }
 {$IFDEF GLS_REGIONS}{$REGION 'TDGImmaterialSceneObject'}{$ENDIF}
 
@@ -4437,8 +4291,8 @@ begin
   begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
-//    else
-//      ARci.GLStates.CallList(GetHandle(ARci));
+      // else
+      // ARci.GLStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -4494,8 +4348,8 @@ begin
         begin
           if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
             BuildList(ARci)
-//          else
-//            ARci.GLStates.CallList(GetHandle(ARci));
+            // else
+            // ARci.GLStates.CallList(GetHandle(ARci));
         end;
         if ARenderChildren then
           Self.RenderChildren(0, Count - 1, ARci);
@@ -4522,9 +4376,9 @@ end;
 { TDGLCamera }
 {$IFDEF GLS_REGIONS}{$REGION 'TDGLCamera'}{$ENDIF}
 
-constructor TDGLCamera.Create(aOwner: TComponent);
+constructor TDGLCamera.Create(AOwner: TComponent);
 begin
-  inherited Create(aOwner);
+  inherited Create(AOwner);
   FFocalLength   := 50;
   FDepthOfView   := 100;
   FNearPlaneBias := 1;
@@ -4644,7 +4498,13 @@ begin
       LM             := CreateLookAtMatrix(absPos, v2, d);
     end;
     with CurrentDGLContext.PipelineTransformation do
+    begin
+      DGLSLogger.LogInfo('TDGLCamera : Set View Matrix');
       ViewMatrix := MatrixMultiply(LM, ViewMatrix);
+      FViewMAtrix:=ViewMatrix;
+    end;
+
+//    CurrentDGLContext.
     ClearStructureChanged;
   end;
 end;
@@ -4654,7 +4514,7 @@ var
   vLeft, vRight, vBottom, vTop, vFar: Single;
   MaxDim, ratio, f:                   Double;
   xmax, ymax:                         Double;
-  mat:                                TMatrix;
+  mat,matlast:                                TMatrix;
 const
   cEpsilon: Single = 1E-4;
 
@@ -4676,9 +4536,11 @@ begin
     FNearPlane := -1;
     vFar       := 1;
     mat        := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
-    with CurrentDGLContext.PipelineTransformation do
+
+   with CurrentDGLContext.PipelineTransformation do
       ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
-    FViewPortRadius    := VectorLength(AWidth, AHeight) / 2;
+
+    FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
   else if CameraStyle = csCustom then
   begin
@@ -4786,9 +4648,12 @@ begin
     else
       Assert(False);
     end;
-
     with CurrentDGLContext.PipelineTransformation do
+    begin
+      DGLSLogger.LogInfo('TDGLCamera : Set Projection Matrix');
       ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
+      FProjectionMatrix := ProjectionMatrix;
+    end;
 
     FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
   end;
@@ -4799,7 +4664,7 @@ var
   rightVector, rotAxis: TVector;
   angle:                Single;
 begin
-  angle   := RadToDeg(arccos(VectorDotProduct(FUp.AsVector, YVector)));
+  angle   := RadToDeg(ArcCos(VectorDotProduct(FUp.AsVector, YVector)));
   rotAxis := VectorCrossProduct(YHmgVector, FUp.AsVector);
   if (angle > 1) and (VectorLength(rotAxis) > 0) then
   begin
@@ -4808,7 +4673,7 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z             := -RadToDeg(ArcTan2(rightVector.v[1], VectorLength(rightVector.v[0], rightVector.v[2])));
+    FRotation.z             := -RadToDeg(ArcTan2(rightVector.v[1], VectorLength(rightVector.v[0], rightVector.v[2])));
   end;
 end;
 
@@ -4837,16 +4702,16 @@ procedure TDGLCamera.Reset(aSceneBuffer: TDGLSceneBuffer);
 var
   Extent: Single;
 begin
-  FRotation.Z  := 0;
+  FRotation.z  := 0;
   FFocalLength := 50;
   with aSceneBuffer do
   begin
-    ApplyPerspective(FViewport, FViewport.width, FViewport.height, FRenderDPI);
+    ApplyPerspective(FViewPort, FViewPort.width, FViewPort.height, FRenderDPI);
     FUp.DirectVector := YHmgVector;
-    if FViewport.height < FViewport.width then
-      Extent := FViewport.height * 0.25
+    if FViewPort.height < FViewPort.width then
+      Extent := FViewPort.height * 0.25
     else
-      Extent := FViewport.width * 0.25;
+      Extent := FViewPort.width * 0.25;
   end;
   FPosition.SetPoint(0, 0, FNearPlane * Extent);
   FDirection.SetVector(0, 0, -1, 0);
@@ -4859,14 +4724,14 @@ var
 begin
   with aSceneBuffer do
   begin
-    if FViewport.height < FViewport.width then
-      Extent := FViewport.height * 0.25
+    if FViewPort.height < FViewPort.width then
+      Extent := FViewPort.height * 0.25
     else
-      Extent               := FViewport.width * 0.25;
+      Extent               := FViewPort.width * 0.25;
     FPosition.DirectVector := NullHmgPoint;
     Move(-FNearPlane * Extent);
     // let the camera look at the scene center
-    FDirection.SetVector(-FPosition.X, -FPosition.Y, -FPosition.Z, 0);
+    FDirection.SetVector(-FPosition.x, -FPosition.y, -FPosition.z, 0);
   end;
 end;
 
@@ -4962,12 +4827,9 @@ end;
 function TDGLCamera.AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance: Single): TVector;
 begin
   Result := NullHmgVector;
-  if forwardDistance <> 0 then
-    CombineVector(Result, AbsoluteVectorToTarget, forwardDistance);
-  if rightDistance <> 0 then
-    CombineVector(Result, AbsoluteRightVectorToTarget, rightDistance);
-  if upDistance <> 0 then
-    CombineVector(Result, AbsoluteUpVectorToTarget, upDistance);
+  if forwardDistance <> 0 then CombineVector(Result, AbsoluteVectorToTarget, forwardDistance);
+  if rightDistance <> 0 then CombineVector(Result, AbsoluteRightVectorToTarget, rightDistance);
+  if upDistance <> 0 then CombineVector(Result, AbsoluteUpVectorToTarget, upDistance);
 end;
 
 procedure TDGLCamera.AdjustDistanceToTarget(distanceRatio: Single);
@@ -4981,8 +4843,7 @@ begin
     // ratio -> translation vector
     ScaleVector(vect, -(1 - distanceRatio));
     AddVector(vect, AbsolutePosition);
-    if Assigned(Parent) then
-      vect            := Parent.AbsoluteToLocal(vect);
+    if Assigned(Parent) then vect := Parent.AbsoluteToLocal(vect);
     Position.AsVector := vect;
   end;
 end;
@@ -5009,7 +4870,8 @@ begin
   if Assigned(FTargetObject) then
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
-    screenY                  := Direction.AsVector;
+    screenY := Direction.AsVector;
+
   screenYoutOfPlaneComponent := VectorDotProduct(screenY, planeNormal);
   screenY                    := VectorCombine(screenY, planeNormal, 1, -screenYoutOfPlaneComponent);
   NormalizeVector(screenY);
@@ -5094,27 +4956,25 @@ begin
   Result := PointIsInHalfSpace(point, AbsolutePosition, AbsoluteDirection);
 end;
 
-procedure TDGLCamera.SetDepthOfView(AValue: Single);
+procedure TDGLCamera.SetDepthOfView(aValue: Single);
 begin
-  if FDepthOfView <> AValue then
+  if FDepthOfView <> aValue then
   begin
-    FDepthOfView := AValue;
+    FDepthOfView := aValue;
     FFOVY        := -1;
-    if not(csLoading in ComponentState) then
-      TransformationChanged;
+    if not(csLoading in ComponentState) then TransformationChanged;
   end;
 end;
 
-procedure TDGLCamera.SetFocalLength(AValue: Single);
+procedure TDGLCamera.SetFocalLength(aValue: Single);
 begin
-  if AValue <= 0 then
-    AValue := 1;
-  if FFocalLength <> AValue then
+  if aValue <= 0 then
+    aValue := 1;
+  if FFocalLength <> aValue then
   begin
-    FFocalLength := AValue;
+    FFocalLength := aValue;
     FFOVY        := -1;
-    if not(csLoading in ComponentState) then
-      TransformationChanged;
+    if not(csLoading in ComponentState) then TransformationChanged;
   end;
 end;
 
@@ -5152,13 +5012,13 @@ begin
   end;
 end;
 
-procedure TDGLCamera.SetSceneScale(value: Single);
+procedure TDGLCamera.SetSceneScale(Value: Single);
 begin
-  if value = 0 then
-    value := 1;
-  if FSceneScale <> value then
+  if Value = 0 then
+    Value := 1;
+  if FSceneScale <> Value then
   begin
-    FSceneScale := value;
+    FSceneScale := Value;
     FFOVY       := -1;
     NotifyChange(Self);
   end;
@@ -5169,13 +5029,13 @@ begin
   Result := (FSceneScale <> 1);
 end;
 
-procedure TDGLCamera.SetNearPlaneBias(value: Single);
+procedure TDGLCamera.SetNearPlaneBias(Value: Single);
 begin
-  if value <= 0 then
-    value := 1;
-  if FNearPlaneBias <> value then
+  if Value <= 0 then
+    Value := 1;
+  if FNearPlaneBias <> Value then
   begin
-    FNearPlaneBias := value;
+    FNearPlaneBias := Value;
     FFOVY          := -1;
     NotifyChange(Self);
   end;
@@ -5188,6 +5048,7 @@ end;
 
 procedure TDGLCamera.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
+  DGLSLogger.LogInfo('TDGLCamera DoRender');
   if ARenderChildren and (Count > 0) then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
@@ -5271,176 +5132,6 @@ begin
   end;
 end;
 
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLProxyObject }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLProxyObject'}{$ENDIF}
-
-constructor TDGLProxyObject.Create(AOwner: TComponent);
-begin
-  inherited;
-  FProxyOptions := cDefaultProxyOptions;
-end;
-
-destructor TDGLProxyObject.Destroy;
-begin
-  SetMasterObject(nil);
-  inherited;
-end;
-
-procedure TDGLProxyObject.Assign(Source: TPersistent);
-begin
-  if Source is TDGLProxyObject then
-  begin
-    SetMasterObject(TDGLProxyObject(Source).MasterObject);
-  end;
-  inherited Assign(Source);
-end;
-
-procedure TDGLProxyObject.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
-var
-  gotMaster, masterGotEffects, oldProxySubObject: Boolean;
-begin
-  if FRendering then
-    Exit;
-  FRendering := True;
-  try
-    gotMaster        := assigned(FMasterObject);
-    masterGotEffects := gotMaster and (pooEffects in FProxyOptions) and (FMasterObject.Effects.Count > 0);
-    if gotMaster then
-    begin
-      if pooObjects in FProxyOptions then
-      begin
-        oldProxySubObject   := ARci.proxySubObject;
-        ARci.proxySubObject := True;
-        if pooTransformation in FProxyOptions then
-          with ARci.PipelineTransformation do
-            ModelMatrix := MatrixMultiply(FMasterObject.Matrix, ModelMatrix);
-        FMasterObject.DoRender(ARci, ARenderSelf, (FMasterObject.Count > 0));
-        ARci.proxySubObject := oldProxySubObject;
-      end;
-    end;
-    // now render self stuff (our children, our effects, etc.)
-    if ARenderChildren and (Count > 0) then
-      Self.RenderChildren(0, Count - 1, ARci);
-    if masterGotEffects then
-      FMasterObject.Effects.RenderPostEffects(ARci);
-  finally
-    FRendering := False;
-  end;
-  ClearStructureChanged;
-end;
-
-function TDGLProxyObject.AxisAlignedDimensions: TVector;
-begin
-  If assigned(FMasterObject) then
-  begin
-    Result := FMasterObject.AxisAlignedDimensionsUnscaled;
-    If (pooTransformation in ProxyOptions) then
-      ScaleVector(Result, FMasterObject.Scale.AsVector)
-    else
-      ScaleVector(Result, Scale.AsVector);
-  end
-  else
-    Result := inherited AxisAlignedDimensions;
-end;
-
-function TDGLProxyObject.AxisAlignedDimensionsUnscaled: TVector;
-begin
-  if assigned(FMasterObject) then
-  begin
-    Result := FMasterObject.AxisAlignedDimensionsUnscaled;
-  end
-  else
-    Result := inherited AxisAlignedDimensionsUnscaled;
-end;
-
-function TDGLProxyObject.BarycenterAbsolutePosition: TVector;
-var
-  lAdjustVector: TVector;
-begin
-  if assigned(FMasterObject) then
-  begin
-    // Not entirely correct, but better than nothing...
-    lAdjustVector     := VectorSubtract(FMasterObject.BarycenterAbsolutePosition, FMasterObject.AbsolutePosition);
-    Position.AsVector := VectorAdd(Position.AsVector, lAdjustVector);
-    Result            := AbsolutePosition;
-    Position.AsVector := VectorSubtract(Position.AsVector, lAdjustVector);
-  end
-  else
-    Result := inherited BarycenterAbsolutePosition;
-end;
-
-procedure TDGLProxyObject.Notification(AComponent: TComponent; Operation: TOperation);
-begin
-  if (Operation = opRemove) and (AComponent = FMasterObject) then
-    MasterObject := nil;
-  inherited;
-end;
-
-procedure TDGLProxyObject.SetMasterObject(const val: TDGLBaseSceneObject);
-begin
-  if FMasterObject <> val then
-  begin
-    if assigned(FMasterObject) then
-      FMasterObject.RemoveFreeNotification(Self);
-    FMasterObject := val;
-    if assigned(FMasterObject) then
-      FMasterObject.FreeNotification(Self);
-    StructureChanged;
-  end;
-end;
-
-procedure TDGLProxyObject.SetProxyOptions(const val: TDGLProxyObjectOptions);
-begin
-  if FProxyOptions <> val then
-  begin
-    FProxyOptions := val;
-    StructureChanged;
-  end;
-end;
-
-function TDGLProxyObject.RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
-var
-  localRayStart, localRayVector: TVector;
-begin
-  if assigned(MasterObject) then
-  begin
-    SetVector(localRayStart, AbsoluteToLocal(rayStart));
-    SetVector(localRayStart, MasterObject.LocalToAbsolute(localRayStart));
-    SetVector(localRayVector, AbsoluteToLocal(rayVector));
-    SetVector(localRayVector, MasterObject.LocalToAbsolute(localRayVector));
-    NormalizeVector(localRayVector);
-
-    Result := MasterObject.RayCastIntersect(localRayStart, localRayVector, intersectPoint, intersectNormal);
-    if Result then
-    begin
-      if assigned(intersectPoint) then
-      begin
-        SetVector(intersectPoint^, MasterObject.AbsoluteToLocal(intersectPoint^));
-        SetVector(intersectPoint^, LocalToAbsolute(intersectPoint^));
-      end;
-      if assigned(intersectNormal) then
-      begin
-        SetVector(intersectNormal^, MasterObject.AbsoluteToLocal(intersectNormal^));
-        SetVector(intersectNormal^, LocalToAbsolute(intersectNormal^));
-      end;
-    end;
-  end
-  else
-    Result := False;
-end;
-
-function TDGLProxyObject.GenerateSilhouette(const silhouetteParameters: TDGLSilhouetteParameters): TDGLSilhouette;
-begin
-  if assigned(MasterObject) then
-    Result := MasterObject.GenerateSilhouette(silhouetteParameters)
-  else
-    Result := nil;
-end;
-
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
@@ -5469,7 +5160,7 @@ procedure TDGLDirectOpenGL.BuildList(var rci: TRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
-//    xgl.MapTexCoordToMain; // single texturing by default
+    // xgl.MapTexCoordToMain; // single texturing by default
     OnRender(Self, rci);
   end;
 end;
@@ -5539,6 +5230,7 @@ end;
 
 procedure TDGLLightSource.DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
+  DGLSLogger.LogInfo('TDGLLightSource DoRender');
   if ARenderChildren and Assigned(FChildren) then
     Self.RenderChildren(0, Count - 1, ARci);
 end;
@@ -5560,16 +5252,16 @@ begin
   Result := nil;
 end;
 
-function TDGLLightSource.GetHandle(var rci: TRenderContextInfo): Cardinal;
-begin
-  Result := 0;
-end;
+// function TDGLLightSource.GetHandle(var rci: TRenderContextInfo): Cardinal;
+// begin
+// Result := 0;
+// end;
 
-procedure TDGLLightSource.SetShining(AValue: Boolean);
+procedure TDGLLightSource.SetShining(aValue: Boolean);
 begin
-  if AValue <> FShining then
+  if aValue <> FShining then
   begin
-    FShining := AValue;
+    FShining := aValue;
     NotifyChange(Self);
   end;
 end;
@@ -5581,11 +5273,11 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TDGLLightSource.SetSpotExponent(AValue: Single);
+procedure TDGLLightSource.SetSpotExponent(aValue: Single);
 begin
-  if FSpotExponent <> AValue then
+  if FSpotExponent <> aValue then
   begin
-    FSpotExponent := AValue;
+    FSpotExponent := aValue;
     NotifyChange(Self);
   end;
 end;
@@ -5611,47 +5303,47 @@ begin
   end;
 end;
 
-procedure TDGLLightSource.SetAmbient(AValue: TDGLColor);
+procedure TDGLLightSource.SetAmbient(aValue: TDGLColor);
 begin
-  FAmbient.Color := AValue.Color;
+  FAmbient.Color := aValue.Color;
   NotifyChange(Self);
 end;
 
-procedure TDGLLightSource.SetDiffuse(AValue: TDGLColor);
+procedure TDGLLightSource.SetDiffuse(aValue: TDGLColor);
 begin
-  FDiffuse.Color := AValue.Color;
+  FDiffuse.Color := aValue.Color;
   NotifyChange(Self);
 end;
 
-procedure TDGLLightSource.SetSpecular(AValue: TDGLColor);
+procedure TDGLLightSource.SetSpecular(aValue: TDGLColor);
 begin
-  FSpecular.Color := AValue.Color;
+  FSpecular.Color := aValue.Color;
   NotifyChange(Self);
 end;
 
-procedure TDGLLightSource.SetConstAttenuation(AValue: Single);
+procedure TDGLLightSource.SetConstAttenuation(aValue: Single);
 begin
-  if FConstAttenuation <> AValue then
+  if FConstAttenuation <> aValue then
   begin
-    FConstAttenuation := AValue;
+    FConstAttenuation := aValue;
     NotifyChange(Self);
   end;
 end;
 
-procedure TDGLLightSource.SetLinearAttenuation(AValue: Single);
+procedure TDGLLightSource.SetLinearAttenuation(aValue: Single);
 begin
-  if FLinearAttenuation <> AValue then
+  if FLinearAttenuation <> aValue then
   begin
-    FLinearAttenuation := AValue;
+    FLinearAttenuation := aValue;
     NotifyChange(Self);
   end;
 end;
 
-procedure TDGLLightSource.SetQuadraticAttenuation(AValue: Single);
+procedure TDGLLightSource.SetQuadraticAttenuation(aValue: Single);
 begin
-  if FQuadraticAttenuation <> AValue then
+  if FQuadraticAttenuation <> aValue then
   begin
-    FQuadraticAttenuation := AValue;
+    FQuadraticAttenuation := aValue;
     NotifyChange(Self);
   end;
 end;
@@ -5666,7 +5358,6 @@ end;
 // ------------------
 { TDGLScene }
 {$IFDEF GLS_REGIONS}{$REGION 'TDGLScene'}{$ENDIF}
-
 
 constructor TDGLScene.Create(AOwner: TComponent);
 begin
@@ -5686,7 +5377,7 @@ end;
 destructor TDGLScene.Destroy;
 begin
   InitializableObjects.Free;
-  FObjects.DestroyHandles;
+  // FObjects.DestroyHandles;
   FLights.Free;
   FObjects.Free;
   if Assigned(FBuffers) then
@@ -5738,14 +5429,14 @@ end;
 
 procedure TDGLScene.ShutdownAllLights;
 
-  procedure DoShutdownLight(Obj: TDGLBaseSceneObject);
+  procedure DoShutdownLight(obj: TDGLBaseSceneObject);
   var
     i: Integer;
   begin
-    if Obj is TDGLLightSource then
-      TDGLLightSource(Obj).Shining := False;
-    for i                         := 0 to Obj.Count - 1 do
-      DoShutdownLight(Obj[i]);
+    if obj is TDGLLightSource then
+      TDGLLightSource(obj).Shining := False;
+    for i                          := 0 to obj.Count - 1 do
+      DoShutdownLight(obj[i]);
   end;
 
 begin
@@ -5841,17 +5532,17 @@ begin
   end;
 end;
 
-procedure TDGLScene.ReadState(Reader: TReader);
+procedure TDGLScene.ReadState(reader: TReader);
 var
   SaveRoot: TComponent;
 begin
-  SaveRoot := Reader.Root;
+  SaveRoot := reader.Root;
   try
     if Owner <> nil then
-      Reader.Root := Owner;
+      reader.Root := Owner;
     inherited;
   finally
-    Reader.Root := SaveRoot;
+    reader.Root := SaveRoot;
   end;
 end;
 
@@ -5885,12 +5576,12 @@ procedure TDGLScene.LoadFromFile(const fileName: string);
 
   procedure CheckResFileStream(stream: TStream);
   var
-    N: Integer;
+    n: Integer;
     B: Byte;
   begin
-    N := stream.Position;
-    stream.Read(B, Sizeof(B));
-    stream.Position := N;
+    n := stream.Position;
+    stream.Read(B, SizeOf(B));
+    stream.Position := n;
     if B = $FF then
       stream.ReadResHeader;
   end;
@@ -5945,7 +5636,7 @@ procedure TDGLScene.LoadFromStream(aStream: TStream);
 var
   fixups: TStringList;
   i:      Integer;
-  Obj:    TDGLBaseSceneObject;
+  obj:    TDGLBaseSceneObject;
 begin
   fixups := TStringList.Create;
   try
@@ -5960,9 +5651,9 @@ begin
     aStream.ReadComponent(Self);
     for i := 0 to fixups.Count - 1 do
     begin
-      Obj := FindSceneObject(fixups[i]);
-      if Obj is TDGLCamera then
-        TDGLSceneBuffer(fixups.Objects[i]).Camera := TDGLCamera(Obj)
+      obj := FindSceneObject(fixups[i]);
+      if obj is TDGLCamera then
+        TDGLSceneBuffer(fixups.Objects[i]).Camera := TDGLCamera(obj)
       else { can assign default camera (if existing, of course) instead }
           ;
     end;
@@ -5976,9 +5667,9 @@ begin
   aStream.WriteComponent(Self);
 end;
 
-function TDGLScene.FindSceneObject(const AName: string): TDGLBaseSceneObject;
+function TDGLScene.FindSceneObject(const aName: string): TDGLBaseSceneObject;
 begin
-  Result := FObjects.FindChild(AName, False);
+  Result := FObjects.FindChild(aName, False);
 end;
 
 function TDGLScene.RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): TDGLBaseSceneObject;
@@ -6075,25 +5766,25 @@ begin
               if LightStyle in [lsParallel, lsParallelSpot] then
               begin
                 ModelMatrix := AbsoluteMatrix;
-//                glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
+                // glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
               end
               else
               begin
                 ModelMatrix := Parent.AbsoluteMatrix;
-//                glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
+                // glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
               if LightStyle in [lsSpot, lsParallelSpot] then
               begin
                 if FSpotCutOff <> 180 then
-//                  glLightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
+                  // glLightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
               end;
             end;
 
             lPos := lightSource.AbsolutePosition;
             if LightStyle in [lsParallel, lsParallelSpot] then
-              lPos.V[3] := 0.0
+              lPos.v[3] := 0.0
             else
-              lPos.V[3]                  := 1.0;
+              lPos.v[3]                  := 1.0;
             LightPosition[FLightID]      := lPos;
             LightSpotDirection[FLightID] := lightSource.SpotDirection.AsAffineVector;
 
@@ -6113,156 +5804,9 @@ begin
         LightEnabling[i] := False;
     end;
     // turn off other lights
-    for i              := nbLights to maxLights - 1 do
-      LightEnabling[i] := False;
-    ModelMatrix        := IdentityHmgMatrix;
+    for i := nbLights to maxLights - 1 do LightEnabling[i] := False;
+    ModelMatrix := IdentityHmgMatrix;
   end;
-end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLFogEnvironment }
-{$IFDEF GLS_REGIONS}{$REGION 'TDGLFogEnvironment'}{$ENDIF}
-
-// Note: The fog implementation is not conformal with the rest of the scene management
-// because it is Shader bound not scene bound.
-
-constructor TDGLFogEnvironment.Create(AOwner: TPersistent);
-begin
-  inherited;
-  FSceneBuffer := (AOwner as TDGLSceneBuffer);
-  FFogColor    := TDGLColor.CreateInitialized(Self, clrBlack);
-  FFogMode     := fmLinear;
-  FFogStart    := 10;
-  FFogEnd      := 1000;
-  FFogDistance := fdDefault;
-end;
-
-destructor TDGLFogEnvironment.Destroy;
-begin
-  FFogColor.Free;
-  inherited Destroy;
-end;
-
-procedure TDGLFogEnvironment.SetFogColor(Value: TDGLColor);
-begin
-  if Assigned(Value) then
-  begin
-    FFogColor.Assign(Value);
-    NotifyChange(Self);
-  end;
-end;
-
-procedure TDGLFogEnvironment.SetFogStart(Value: Single);
-begin
-  if Value <> FFogStart then
-  begin
-    FFogStart := Value;
-    NotifyChange(Self);
-  end;
-end;
-
-procedure TDGLFogEnvironment.SetFogEnd(Value: Single);
-begin
-  if Value <> FFogEnd then
-  begin
-    FFogEnd := Value;
-    NotifyChange(Self);
-  end;
-end;
-
-procedure TDGLFogEnvironment.Assign(Source: TPersistent);
-begin
-  if Source is TDGLFogEnvironment then
-  begin
-    FFogColor.Assign(TDGLFogEnvironment(Source).FFogColor);
-    FFogStart    := TDGLFogEnvironment(Source).FFogStart;
-    FFogEnd      := TDGLFogEnvironment(Source).FFogEnd;
-    FFogMode     := TDGLFogEnvironment(Source).FFogMode;
-    FFogDistance := TDGLFogEnvironment(Source).FFogDistance;
-    NotifyChange(Self);
-  end;
-  inherited;
-end;
-
-function TDGLFogEnvironment.IsAtDefaultValues: Boolean;
-begin
-  Result := VectorEquals(FogColor.Color, FogColor.DefaultColor) and (FogStart = 10) and (FogEnd = 1000) and (FogMode = fmLinear) and (FogDistance = fdDefault);
-end;
-
-procedure TDGLFogEnvironment.SetFogMode(Value: TFogMode);
-begin
-  if Value <> FFogMode then
-  begin
-    FFogMode := Value;
-    NotifyChange(Self);
-  end;
-end;
-
-procedure TDGLFogEnvironment.SetFogDistance(const val: TFogDistance);
-begin
-  if val <> FFogDistance then
-  begin
-    FFogDistance := val;
-    NotifyChange(Self);
-  end;
-end;
-
-var
-  vImplemDependantFogDistanceDefault: Integer = -1;
-
-procedure TDGLFogEnvironment.ApplyFog;
-//var
-//  tempActivation: Boolean;
-begin
-//  with FSceneBuffer do
-//  begin
-//    if not Assigned(FRenderingContext) then
-//      Exit;
-//    tempActivation := not FRenderingContext.Active;
-//    if tempActivation then
-//      FRenderingContext.Activate;
-//  end;
-
-//  case FFogMode of
-//    fmLinear:
-////      GLFogi(GL_FOG_MODE, GL_LINEAR);
-//    fmExp:
-//      begin
-//        GLFogi(GL_FOG_MODE, GL_EXP);
-//        GLFogf(GL_FOG_DENSITY, FFogColor.alpha);
-//      end;
-//    fmExp2:
-//      begin
-//        GLFogi(GL_FOG_MODE, GL_EXP2);
-//        GLFogf(GL_FOG_DENSITY, FFogColor.alpha);
-//      end;
-//  end;
-//  GLFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
-//  GLFogf(GL_FOG_START, FFogStart);
-//  GLFogf(GL_FOG_END, FFogEnd);
-//  if dglCheckExtension('GL.NV_fog_distance') then
-//  begin
-//    case FogDistance of
-//      fdDefault:
-//        begin
-//          if vImplemDependantFogDistanceDefault = -1 then
-//            glGetIntegerv(GL_FOG_DISTANCE_MODE_NV, @vImplemDependantFogDistanceDefault)
-////          else
-////            GLFogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
-//        end;
-//      fdEyePlane:
-//        GLFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
-//      fdEyeRadial:
-//        GLFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
-//    else
-//      Assert(False);
-//    end;
-//  end;
-//
-//  if tempActivation then
-//    FSceneBuffer.RenderingContext.Deactivate;
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
@@ -6276,7 +5820,7 @@ begin
   inherited Create(AOwner);
 
   // initialize private state variables
-  FFogEnvironment     := TDGLFogEnvironment.Create(Self);
+//  FFogEnvironment     := TDGLFogEnvironment.Create(Self);
   FBackgroundColor    := clBtnFace;
   FBackgroundAlpha    := 1;
   FAmbientColor       := TDGLColor.CreateInitialized(Self, clrGray20);
@@ -6302,14 +5846,13 @@ begin
   DestroyRC;
   FAmbientColor.Free;
   FAfterRenderEffects.Free;
-  FFogEnvironment.Free;
+//  FFogEnvironment.Free;
   inherited Destroy;
 end;
 
 procedure TDGLSceneBuffer.PrepareGLContext;
 begin
-  if Assigned(FOnPrepareGLContext) then
-    FOnPrepareGLContext(Self);
+  if Assigned(FOnPrepareGLContext) then FOnPrepareGLContext(Self);
 end;
 
 procedure TDGLSceneBuffer.SetupRCOptions(context: TDGLContext);
@@ -6344,16 +5887,16 @@ begin
     locAlphaBits := 0;
   with context do
   begin
-    Options                 := locOptions;
-    ColorBits               := locColorBits;
-    DepthBits               := cDepthPrecisionToDepthBits[DepthPrecision];
-    StencilBits             := locStencilBits;
-    AlphaBits               := locAlphaBits;
-    AccumBits               := AccumBufferBits;
-    AuxBuffers              := 0;
-    AntiAliasing            := Self.AntiAliasing;
-    Layer                   := Self.Layer;
-//    GLStates.ForwardContext := roForwardContext in ContextOptions;
+    Options      := locOptions;
+    ColorBits    := locColorBits;
+    DepthBits    := cDepthPrecisionToDepthBits[DepthPrecision];
+    StencilBits  := locStencilBits;
+    AlphaBits    := locAlphaBits;
+    AccumBits    := AccumBufferBits;
+    AuxBuffers   := 0;
+    AntiAliasing := Self.AntiAliasing;
+    Layer        := Self.Layer;
+    // GLStates.ForwardContext := roForwardContext in ContextOptions;
     PrepareGLContext;
   end;
 end;
@@ -6366,8 +5909,8 @@ begin
   try
     // will be freed in DestroyWindowHandle
     FRenderingContext := DGLContextManager.CreateContext;
-    if not Assigned(FRenderingContext) then
-      raise Exception.Create('Failed to create RenderingContext.');
+    if not Assigned(FRenderingContext) then raise Exception.Create('Failed to create RenderingContext.');
+
     SetupRCOptions(FRenderingContext);
 
     if Assigned(FCamera) and Assigned(FCamera.FScene) then
@@ -6377,7 +5920,7 @@ begin
     begin
       try
         if memoryContext then
-          CreateMemoryContext(AWindowHandle, FViewPort.Width, FViewPort.Height, BufferCount)
+          CreateMemoryContext(AWindowHandle, FViewPort.width, FViewPort.height, BufferCount)
         else
           CreateContext(AWindowHandle);
       except
@@ -6391,11 +5934,11 @@ begin
       if not GL_VERSION_3_3 then
       begin
         DGLSLogger.LogFatalError(glsWrongVersion);
-        Abort;
+        abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
-      FRenderingContext.GLStates.ViewPort := Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
+      FRenderingContext.GLStates.viewport := Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.width, FViewPort.height);
       // set up initial context states
       SetupRenderingContext(FRenderingContext);
       FRenderingContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
@@ -6413,10 +5956,9 @@ begin
   begin
     Melt;
     // for some obscure reason, Mesa3D doesn't like this call... any help welcome
-//    FreeAndNil(FSelector);
+    // FreeAndNil(FSelector);
     FreeAndNil(FRenderingContext);
-    if Assigned(FCamera) and Assigned(FCamera.FScene) then
-      FCamera.FScene.RemoveBuffer(Self);
+    if Assigned(FCamera) and Assigned(FCamera.FScene) then FCamera.FScene.RemoveBuffer(Self);
   end;
 end;
 
@@ -6433,14 +5975,14 @@ begin
     newHeight      := 1;
   FViewPort.Left   := newLeft;
   FViewPort.Top    := newTop;
-  FViewPort.Width  := newWidth;
-  FViewPort.Height := newHeight;
+  FViewPort.width  := newWidth;
+  FViewPort.height := newHeight;
   if Assigned(FRenderingContext) then
   begin
     FRenderingContext.Activate;
     try
       // Part of workaround for MS OpenGL "black borders" bug
-      FRenderingContext.GLStates.ViewPort := Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
+      FRenderingContext.GLStates.viewport := Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.width, FViewPort.height);
     finally
       FRenderingContext.Deactivate;
     end;
@@ -6473,28 +6015,27 @@ procedure TDGLSceneBuffer.SetupRenderingContext(context: TDGLContext);
     end;
   end;
 
-//var
-//  LColorDepth: Cardinal;
+// var
+// LColorDepth: Cardinal;
 begin
-  if not Assigned(context) then Exit;
+  if not Assigned(context) then
+    Exit;
 
-//  if not(roForwardContext in ContextOptions) then
-//  begin
-////    GLLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
-//    if roTwoSideLighting in FContextOptions then
-//      GLLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
-//    else
-//      GLLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-//    GLHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-//    case ShadeModel of
-//      smDefault, smSmooth:
-//        GLShadeModel(GL_SMOOTH);
-//      smFlat:
-//        GLShadeModel(GL_FLAT);
-//    else
-//      Assert(False, glsErrorEx + glsUnknownType);
-//    end;
-//  end;
+  DGLSLogger.LogInfo('DGLSceneBuffer : Setup RC');
+  // GLLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
+  // if roTwoSideLighting in FContextOptions then
+  // GLLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
+  // else
+  // GLLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+  // GLHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  // case ShadeModel of
+  // smDefault, smSmooth:
+  // GLShadeModel(GL_SMOOTH);
+  // smFlat:
+  // GLShadeModel(GL_FLAT);
+  // else
+  // Assert(False, glsErrorEx + glsUnknownType);
+  // end;
 
   with context.GLStates do
   begin
@@ -6503,42 +6044,41 @@ begin
     SetState(FaceCulling, stCullFace);
     // SetState(Lighting, stLighting);
     // SetState(FogEnable, stFog);
-    if dglCheckExtension('ARB_depth_clamp') then  Disable(stDepthClamp);
-//    if not(roForwardContext in ContextOptions) then
-//    begin
-//      glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
-//      SetState((LColorDepth < 8), stDither);
-//    end;
-    //ResetAllGLTextureMatrix;
+    if dglCheckExtension('ARB_depth_clamp') then Disable(stDepthClamp);
+    // if not(roForwardContext in ContextOptions) then
+    // begin
+    // glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
+    // SetState((LColorDepth < 8), stDither);
+    // end;
+    // ResetAllGLTextureMatrix;
   end;
 end;
-
 
 function TDGLSceneBuffer.GetLimit(Which: TLimitType): Integer;
 var
   VP: array [0 .. 1] of Double;
 begin
   case Which of
-//    limClipPlanes:
-//      glGetIntegerv(GL_MAX_CLIP_PLANES, @Result);
-//    limEvalOrder:
-//      glGetIntegerv(GL_MAX_EVAL_ORDER, @Result);
-//    limLights:
-//      glGetIntegerv(GL_MAX_LIGHTS, @Result);
-//    limListNesting:
-//      glGetIntegerv(GL_MAX_LIST_NESTING, @Result);
-//    limModelViewStack:
-//      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
-//    limNameStack:
-//      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
-//    limPixelMapTable:
-//      glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
-//    limProjectionStack:
-//      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
+    // limClipPlanes:
+    // glGetIntegerv(GL_MAX_CLIP_PLANES, @Result);
+    // limEvalOrder:
+    // glGetIntegerv(GL_MAX_EVAL_ORDER, @Result);
+    // limLights:
+    // glGetIntegerv(GL_MAX_LIGHTS, @Result);
+    // limListNesting:
+    // glGetIntegerv(GL_MAX_LIST_NESTING, @Result);
+    // limModelViewStack:
+    // glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
+    // limNameStack:
+    // glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
+    // limPixelMapTable:
+    // glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
+    // limProjectionStack:
+    // glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
     limTextureSize:
       glGetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
-//    limTextureStack:
-//      glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
+    // limTextureStack:
+    // glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
     limViewportDims:
       begin
         GLGetDoublev(GL_MAX_VIEWPORT_DIMS, @VP);
@@ -6547,30 +6087,30 @@ begin
         else
           Result := Round(VP[1]);
       end;
-//    limAccumAlphaBits:
-//      glGetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
-//    limAccumBlueBits:
-//      glGetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
-//    limAccumGreenBits:
-//      glGetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
-//    limAccumRedBits:
-//      glGetIntegerv(GL_ACCUM_RED_BITS, @Result);
-//    limAlphaBits:
-//      glGetIntegerv(GL_ALPHA_BITS, @Result);
-//    limAuxBuffers:
-//      glGetIntegerv(GL_AUX_BUFFERS, @Result);
-//    limDepthBits:
-//      glGetIntegerv(GL_DEPTH_BITS, @Result);
-//    limStencilBits:
-//      glGetIntegerv(GL_STENCIL_BITS, @Result);
-//    limBlueBits:
-//      glGetIntegerv(GL_BLUE_BITS, @Result);
-//    limGreenBits:
-//      glGetIntegerv(GL_GREEN_BITS, @Result);
-//    limRedBits:
-//      glGetIntegerv(GL_RED_BITS, @Result);
-//    limIndexBits:
-//      glGetIntegerv(GL_INDEX_BITS, @Result);
+    // limAccumAlphaBits:
+    // glGetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
+    // limAccumBlueBits:
+    // glGetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
+    // limAccumGreenBits:
+    // glGetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
+    // limAccumRedBits:
+    // glGetIntegerv(GL_ACCUM_RED_BITS, @Result);
+    // limAlphaBits:
+    // glGetIntegerv(GL_ALPHA_BITS, @Result);
+    // limAuxBuffers:
+    // glGetIntegerv(GL_AUX_BUFFERS, @Result);
+    // limDepthBits:
+    // glGetIntegerv(GL_DEPTH_BITS, @Result);
+    // limStencilBits:
+    // glGetIntegerv(GL_STENCIL_BITS, @Result);
+    // limBlueBits:
+    // glGetIntegerv(GL_BLUE_BITS, @Result);
+    // limGreenBits:
+    // glGetIntegerv(GL_GREEN_BITS, @Result);
+    // limRedBits:
+    // glGetIntegerv(GL_RED_BITS, @Result);
+    // limIndexBits:
+    // glGetIntegerv(GL_INDEX_BITS, @Result);
     limStereo:
       glGetIntegerv(GL_STEREO, @Result);
     limDoubleBuffer:
@@ -6596,8 +6136,8 @@ begin
   Assert((not FRendering), glsAlreadyRendering);
   ABitmap := TDGLBitmap.Create;
   try
-    ABitmap.Width       := FViewPort.Width;
-    ABitmap.Height      := FViewPort.Height;
+    ABitmap.width       := FViewPort.width;
+    ABitmap.height      := FViewPort.height;
     ABitmap.PixelFormat := glpf24Bit;
     RenderToBitmap(ABitmap, DPI);
     fileName := AFile;
@@ -6626,10 +6166,10 @@ begin
   Assert((not FRendering), glsAlreadyRendering);
   ABitmap := TDGLBitmap.Create;
   try
-    ABitmap.Width       := bmpWidth;
-    ABitmap.Height      := bmpHeight;
+    ABitmap.width       := bmpWidth;
+    ABitmap.height      := bmpHeight;
     ABitmap.PixelFormat := glpf24Bit;
-    RenderToBitmap(ABitmap, (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle)) * bmpWidth) div FViewPort.Width);
+    RenderToBitmap(ABitmap, (GetDeviceLogicalPixelsX(Cardinal(ABitmap.Canvas.Handle)) * bmpWidth) div FViewPort.width);
     fileName := AFile;
     if fileName = '' then
       saveAllowed := SavePictureDialog(fileName)
@@ -6650,13 +6190,13 @@ end;
 function TDGLSceneBuffer.CreateSnapShot: TDGLBitmap32;
 begin
   Result        := TDGLBitmap32.Create;
-  Result.Width  := FViewPort.Width;
-  Result.Height := FViewPort.Height;
+  Result.width  := FViewPort.width;
+  Result.height := FViewPort.height;
   if Assigned(Camera) and Assigned(Camera.Scene) then
   begin
     FRenderingContext.Activate;
     try
-      Result.ReadPixels(rect(0, 0, FViewPort.Width, FViewPort.Height));
+      Result.ReadPixels(rect(0, 0, FViewPort.width, FViewPort.height));
     finally
       FRenderingContext.Deactivate;
     end;
@@ -6678,44 +6218,44 @@ end;
 // CopyToTexture
 //
 
-//procedure TDGLSceneBuffer.CopyToTexture(aTexture: TDGLTexture);
-//begin
-//  CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
-//end;
+// procedure TDGLSceneBuffer.CopyToTexture(aTexture: TDGLTexture);
+// begin
+// CopyToTexture(aTexture, 0, 0, Width, Height, 0, 0);
+// end;
 
 // CopyToTexture
 //
 
-//procedure TDGLSceneBuffer.CopyToTexture(aTexture: TDGLTexture; xSrc, ySrc, AWidth, AHeight: Integer; xDest, yDest: Integer; glCubeFace: TGLEnum = 0);
-//var
-//  bindTarget: TDGLTextureTarget;
-//begin
-//  if RenderingContext <> nil then
-//  begin
-//    RenderingContext.Activate;
-//    try
-//      if not(aTexture.Image is TDGLBlankImage) then
-//        aTexture.ImageClassName := TDGLBlankImage.ClassName;
-//      if aTexture.Image.Width <> AWidth then
-//        TDGLBlankImage(aTexture.Image).Width := AWidth;
-//      if aTexture.Image.Height <> AHeight then
-//        TDGLBlankImage(aTexture.Image).Height := AHeight;
-//      if aTexture.Image.Depth <> 0 then
-//        TDGLBlankImage(aTexture.Image).Depth := 0;
-//      if TDGLBlankImage(aTexture.Image).CubeMap <> (glCubeFace > 0) then
-//        TDGLBlankImage(aTexture.Image).CubeMap := (glCubeFace > 0);
+// procedure TDGLSceneBuffer.CopyToTexture(aTexture: TDGLTexture; xSrc, ySrc, AWidth, AHeight: Integer; xDest, yDest: Integer; glCubeFace: TGLEnum = 0);
+// var
+// bindTarget: TDGLTextureTarget;
+// begin
+// if RenderingContext <> nil then
+// begin
+// RenderingContext.Activate;
+// try
+// if not(aTexture.Image is TDGLBlankImage) then
+// aTexture.ImageClassName := TDGLBlankImage.ClassName;
+// if aTexture.Image.Width <> AWidth then
+// TDGLBlankImage(aTexture.Image).Width := AWidth;
+// if aTexture.Image.Height <> AHeight then
+// TDGLBlankImage(aTexture.Image).Height := AHeight;
+// if aTexture.Image.Depth <> 0 then
+// TDGLBlankImage(aTexture.Image).Depth := 0;
+// if TDGLBlankImage(aTexture.Image).CubeMap <> (glCubeFace > 0) then
+// TDGLBlankImage(aTexture.Image).CubeMap := (glCubeFace > 0);
 //
-//      bindTarget                                              := aTexture.Image.NativeTextureTarget;
-//      RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
-//      if glCubeFace > 0 then
-//        glCopyTexSubImage2D(glCubeFace, 0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
-//      else
-//        glCopyTexSubImage2D(DecodeGLTextureTarget(bindTarget), 0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
-//    finally
-//      RenderingContext.Deactivate;
-//    end;
-//  end;
-//end;
+// bindTarget                                              := aTexture.Image.NativeTextureTarget;
+// RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
+// if glCubeFace > 0 then
+// glCopyTexSubImage2D(glCubeFace, 0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
+// else
+// glCopyTexSubImage2D(DecodeGLTextureTarget(bindTarget), 0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
+// finally
+// RenderingContext.Deactivate;
+// end;
+// end;
+// end;
 
 procedure TDGLSceneBuffer.SaveAsFloatToFile(const aFilename: string);
 var
@@ -6727,11 +6267,11 @@ const
 begin
   if Assigned(Camera) and Assigned(Camera.Scene) then
   begin
-    DataSize := Width * Height * FloatSize * FloatSize;
+    DataSize := width * height * FloatSize * FloatSize;
     GetMem(Data, DataSize);
     FRenderingContext.Activate;
     try
-      glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, Data);
+      glReadPixels(0, 0, width, height, GL_RGBA, GL_FLOAT, Data);
       CheckOpenGLError;
 
       stream := TMemoryStream.Create;
@@ -6754,20 +6294,20 @@ begin
   begin
     Left   := x;
     Top    := y;
-    Width  := W;
-    Height := H;
+    width  := W;
+    height := H;
   end;
   NotifyChange(Self);
 end;
 
-function TDGLSceneBuffer.Width: Integer;
+function TDGLSceneBuffer.width: Integer;
 begin
-  Result := FViewPort.Width;
+  Result := FViewPort.width;
 end;
 
-function TDGLSceneBuffer.Height: Integer;
+function TDGLSceneBuffer.height: Integer;
 begin
-  Result := FViewPort.Height;
+  Result := FViewPort.height;
 end;
 
 procedure TDGLSceneBuffer.Freeze;
@@ -6780,8 +6320,8 @@ begin
   FFreezed := True;
   RenderingContext.Activate;
   try
-    FFreezeBuffer := AllocMem(FViewPort.Width * FViewPort.Height * 4);
-    glReadPixels(0, 0, FViewPort.Width, FViewPort.Height, GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
+    FFreezeBuffer := AllocMem(FViewPort.width * FViewPort.height * 4);
+    glReadPixels(0, 0, FViewPort.width, FViewPort.height, GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
     FFreezedViewPort := FViewPort;
   finally
     RenderingContext.Deactivate;
@@ -6828,9 +6368,9 @@ begin
         begin
           Left                                := 0;
           Top                                 := 0;
-          Width                               := ABitmap.Width;
-          Height                              := ABitmap.Height;
-          FRenderingContext.GLStates.ViewPort := Vector4iMake(Left, Top, Width, Height);
+          width                               := ABitmap.width;
+          height                              := ABitmap.height;
+          FRenderingContext.GLStates.viewport := Vector4iMake(Left, Top, width, height);
         end;
         ClearBuffers;
         FRenderDPI := DPI;
@@ -6839,7 +6379,7 @@ begin
         // render
         DoBaseRender(FViewPort, FRenderDPI, dsPrinting, nil);
         if nativeContext <> nil then
-          FViewPort := TRectangle(nativeContext.GLStates.ViewPort);
+          FViewPort := TRectangle(nativeContext.GLStates.viewport);
         glFinish;
       finally
         FRenderingContext.Deactivate;
@@ -6879,88 +6419,109 @@ end;
 
 procedure TDGLSceneBuffer.PushViewMatrix(const newMatrix: TMatrix);
 var
-  N: PTransformationRec;
+  n: integer;
 begin
-//  TTransformationRec = record
-//    FStates: TGLPipelineTransformationStates;
-//    FModelMatrix: TMatrix;
-//    FViewMatrix: TMatrix;
-//    FProjectionMatrix: TMatrix;
-//    FInvModelMatrix: TMatrix;
-//    FNormalModelMatrix: TAffineMatrix;
-//    FModelViewMatrix: TMatrix;
-//    FInvModelViewMatrix: TMatrix;
-//    FViewProjectionMatrix: TMatrix;
-//    FFrustum: TFrustum;
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Push ViewMatrix');
+
+   N := Length(FViewMatrixStack);
+   SetLength(FViewMatrixStack, N + 1);
+   FViewMatrixStack[N]                                := RenderingContext.PipelineTransformation.ViewMatrix;
+   RenderingContext.PipelineTransformation.ViewMatrix := newMatrix;
+//  n := new(PTransformationRec);
+//  with n^ do
+//  begin
+//    FStates     := [trsViewProjChanged];
+//    FViewMatrix := newMatrix;
 //  end;
-
-
-//  N := Length(FViewMatrixStack);
-//  SetLength(FViewMatrixStack, N + 1);
-//  FViewMatrixStack[N]                                := RenderingContext.PipelineTransformation.ViewMatrix;
-//  RenderingContext.PipelineTransformation.ViewMatrix := newMatrix;
-  n:=new(PTransformationRec);
-  with n^ do
-  begin
-   FStates := [trsViewProjChanged];
-   FViewMatrix := newMatrix;
-  end;
-  RenderingContext.PipelineTransformation.Push(n);
+//  RenderingContext.PipelineTransformation.Push(n);
 end;
 
 procedure TDGLSceneBuffer.PopViewMatrix;
-//var
-//  N: Integer;
+ var
+ N: Integer;
 begin
-//  N := High(FViewMatrixStack);
-//  Assert(N >= 0, 'Unbalanced PopViewMatrix');
-//  RenderingContext.PipelineTransformation.ViewMatrix := FViewMatrixStack[N];
-//  SetLength(FViewMatrixStack, N);
-  RenderingContext.PipelineTransformation.Pop;
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Pop ViewMatrix');
+   N := High(FViewMatrixStack);
+   Assert(N >= 0, 'Unbalanced PopViewMatrix');
+   RenderingContext.PipelineTransformation.ViewMatrix := FViewMatrixStack[N];
+   SetLength(FViewMatrixStack, N);
+//  RenderingContext.PipelineTransformation.Pop;
 end;
 
 procedure TDGLSceneBuffer.PushProjectionMatrix(const newMatrix: TMatrix);
+ var
+ N: Integer;
 //var
-//  N: Integer;
-var
-  N: PTransformationRec;
+//  n: PTransformationRec;
 begin
-//  N := Length(FProjectionMatrixStack);
-//  SetLength(FProjectionMatrixStack, N + 1);
-//  FProjectionMatrixStack[N]                                := RenderingContext.PipelineTransformation.ProjectionMatrix;
-//  RenderingContext.PipelineTransformation.ProjectionMatrix := newMatrix;
-  n:=new(PTransformationRec);
-  with n^ do
-  begin
-   FStates := [trsViewProjChanged];
-   FProjectionMatrix := newMatrix;
-  end;
-  RenderingContext.PipelineTransformation.Push(n);
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Push ProjectionMatrix');
+   N := Length(FProjectionMatrixStack);
+   SetLength(FProjectionMatrixStack, N + 1);
+   FProjectionMatrixStack[N]                                := RenderingContext.PipelineTransformation.ProjectionMatrix;
+   RenderingContext.PipelineTransformation.ProjectionMatrix := newMatrix;
+//  n := new(PTransformationRec);
+//  with n^ do
+//  begin
+//    FStates           := [trsViewProjChanged];
+//    FProjectionMatrix := newMatrix;
+//  end;
+//  RenderingContext.PipelineTransformation.Push(n);
 end;
 
 procedure TDGLSceneBuffer.PopProjectionMatrix;
-//var
-//  N: Integer;
+ var
+ N: Integer;
 begin
-//  N := High(FProjectionMatrixStack);
-//  Assert(N >= 0, 'Unbalanced PopProjectionMatrix');
-//  RenderingContext.PipelineTransformation.ProjectionMatrix := FProjectionMatrixStack[N];
-//  SetLength(FProjectionMatrixStack, N);
-  RenderingContext.PipelineTransformation.Pop;
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Pop ProjectionMatrix');
+   N := High(FProjectionMatrixStack);
+   Assert(N >= 0, 'Unbalanced PopProjectionMatrix');
+   RenderingContext.PipelineTransformation.ProjectionMatrix := FProjectionMatrixStack[N];
+   SetLength(FProjectionMatrixStack, N);
+//  RenderingContext.PipelineTransformation.Pop;
 end;
 
-function TDGLSceneBuffer.ProjectionMatrix;
+function TDGLSceneBuffer.ProjectionMatrix:TMatrix;
+// var
+// N: Integer;
 begin
-  Result := RenderingContext.PipelineTransformation.ProjectionMatrix;
+
+//  N := High(FProjectionMatrixStack);
+//  Assert(N >= 0, 'Unbalanced PopProjectionMatrix');
+//  result:=FProjectionMatrixStack[N];
+//  if Assigned(FCamera) then
+//  begin
+//    DGLSLogger.LogInfo('TDGLSceneBuffer : Get ProjectionMatrix From Camera');
+//    result:=FCamera.ProjectionMatrix
+//  end
+//  else
+//  begin
+    DGLSLogger.LogInfo('TDGLSceneBuffer : Get ProjectionMatrix From RenderingContext');
+    Result := RenderingContext.PipelineTransformation.ProjectionMatrix;
+//  end;
 end;
 
 function TDGLSceneBuffer.ViewMatrix: TMatrix;
+// var
+// N: Integer;
 begin
-  Result := RenderingContext.PipelineTransformation.ViewMatrix;
+  //DGLSLogger.LogInfo('TDGLSceneBuffer : Get ViewMatrix');
+//  N := High(FViewMatrixStack);
+//  result:=FViewMatrixStack[N];
+//  if Assigned(FCamera) then
+//  begin
+//    DGLSLogger.LogInfo('TDGLSceneBuffer : Get ViewMatrix From Camera');
+//    Result :=FCamera.ViewMatrix
+//  end
+//  else
+//  begin
+    DGLSLogger.LogInfo('TDGLSceneBuffer : Get ViewMatrix From RenderingContext');
+    result:=RenderingContext.PipelineTransformation.ViewMatrix;
+//  end;
 end;
 
 function TDGLSceneBuffer.ModelMatrix: TMatrix;
 begin
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Get ModelMatrix');
   Result := RenderingContext.PipelineTransformation.ModelMatrix;
 end;
 
@@ -6983,11 +6544,11 @@ begin
       SetVector(camRight, Camera.AbsoluteRight);
     end;
     f := 100 * FCamera.NearPlaneBias / (FCamera.FocalLength * FCamera.SceneScale);
-    if FViewPort.Width > FViewPort.Height then
-      f := f / FViewPort.Width
+    if FViewPort.width > FViewPort.height then
+      f := f / FViewPort.width
     else
-      f := f / FViewPort.Height;
-    SetVector(Result, VectorCombine3(camPos, camUp, camRight, 1, (screenY - (FViewPort.Height div 2)) * f, (screenX - (FViewPort.Width div 2)) * f));
+      f := f / FViewPort.height;
+    SetVector(Result, VectorCombine3(camPos, camUp, camRight, 1, (screenY - (FViewPort.height div 2)) * f, (screenX - (FViewPort.width div 2)) * f));
   end
   else
     Result := NullVector;
@@ -7010,7 +6571,7 @@ end;
 
 function TDGLSceneBuffer.ScreenToWorld(screenX, screenY: Integer): TAffineVector;
 begin
-  Result := ScreenToWorld(AffineVectorMake(screenX, FViewPort.Height - screenY, 0));
+  Result := ScreenToWorld(AffineVectorMake(screenX, FViewPort.height - screenY, 0));
 end;
 
 function TDGLSceneBuffer.WorldToScreen(const aPoint: TAffineVector): TAffineVector;
@@ -7056,16 +6617,16 @@ end;
 function TDGLSceneBuffer.ScreenToVector(const aPoint: TVector): TVector;
 begin
   SetVector(Result, VectorSubtract(ScreenToWorld(aPoint), FCameraAbsolutePosition));
-  Result.V[3] := 0;
+  Result.v[3] := 0;
 end;
 
 function TDGLSceneBuffer.ScreenToVector(const x, y: Integer): TVector;
 var
   av: TAffineVector;
 begin
-  av.V[0] := x;
-  av.V[1] := y;
-  av.V[2] := 0;
+  av.v[0] := x;
+  av.v[1] := y;
+  av.v[2] := 0;
   SetVector(Result, ScreenToVector(av));
 end;
 
@@ -7076,13 +6637,13 @@ end;
 
 function TDGLSceneBuffer.ScreenVectorIntersectWithPlane(const aScreenPoint: TVector; const planePoint, planeNormal: TVector; var intersectPoint: TVector): Boolean;
 var
-  V: TVector;
+  v: TVector;
 begin
   if Assigned(FCamera) then
   begin
-    SetVector(V, ScreenToVector(aScreenPoint));
-    Result              := RayCastPlaneIntersect(FCameraAbsolutePosition, V, planePoint, planeNormal, @intersectPoint);
-    intersectPoint.V[3] := 1;
+    SetVector(v, ScreenToVector(aScreenPoint));
+    Result              := RayCastPlaneIntersect(FCameraAbsolutePosition, v, planePoint, planeNormal, @intersectPoint);
+    intersectPoint.v[3] := 1;
   end
   else
     Result := False;
@@ -7091,19 +6652,19 @@ end;
 function TDGLSceneBuffer.ScreenVectorIntersectWithPlaneXY(const aScreenPoint: TVector; const z: Single; var intersectPoint: TVector): Boolean;
 begin
   Result              := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, 0, z), ZHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.v[3] := 0;
 end;
 
 function TDGLSceneBuffer.ScreenVectorIntersectWithPlaneYZ(const aScreenPoint: TVector; const x: Single; var intersectPoint: TVector): Boolean;
 begin
   Result              := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(x, 0, 0), XHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.v[3] := 0;
 end;
 
 function TDGLSceneBuffer.ScreenVectorIntersectWithPlaneXZ(const aScreenPoint: TVector; const y: Single; var intersectPoint: TVector): Boolean;
 begin
   Result              := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, y, 0), YHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.v[3] := 0;
 end;
 
 function TDGLSceneBuffer.PixelRayToWorld(x, y: Integer): TAffineVector;
@@ -7123,17 +6684,17 @@ begin
   // ------------------------
   // z:=1-(fp/d-1)/(fp/np-1);  //calc from world depth to z-buffer value
   // ------------------------
-  vec.V[0] := x;
-  vec.V[1] := FViewPort.Height - y;
-  vec.V[2] := 0;
+  vec.v[0] := x;
+  vec.v[1] := FViewPort.height - y;
+  vec.v[2] := 0;
   vec      := ScreenToVector(vec);
   NormalizeVector(vec);
   SetVector(cam, Camera.AbsolutePosition);
   // targ:=Camera.TargetObject.Position.AsAffineVector;
   // SubtractVector(targ,cam);
-  pix.V[0] := FViewPort.Width * 0.5;
-  pix.V[1] := FViewPort.Height * 0.5;
-  pix.V[2] := 0;
+  pix.v[0] := FViewPort.width * 0.5;
+  pix.v[1] := FViewPort.height * 0.5;
+  pix.v[2] := 0;
   targ     := Self.ScreenToVector(pix);
 
   camAng := VectorAngleCosine(targ, vec);
@@ -7147,11 +6708,12 @@ procedure TDGLSceneBuffer.ClearBuffers;
 var
   bufferBits: TGLBitfield;
 begin
+  DGLSLogger.LogInfo('TDGLSceneBuffer : ClearBuffers');
   if roNoDepthBufferClear in ContextOptions then
     bufferBits := 0
   else
   begin
-    bufferBits                               := GL_DEPTH_BUFFER_BIT;
+    bufferBits                                := GL_DEPTH_BUFFER_BIT;
     CurrentDGLContext.GLStates.DepthWriteMask := True;
   end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
@@ -7174,73 +6736,73 @@ end;
 // PickObjects
 //
 
-//procedure TDGLSceneBuffer.PickObjects(const rect: TGLRect; pickList: TDGLPickList; objectCountGuess: Integer);
-//var
-//  i:   Integer;
-//  Obj: TDGLBaseSceneObject;
-//begin
-//  if not Assigned(FCamera) then
-//    Exit;
-//  Assert((not FRendering), glsAlreadyRendering);
-//  Assert(Assigned(pickList));
-//  FRenderingContext.Activate;
-//  FRendering := True;
-//  try
-//    // Create best selector which techniques is hardware can do
-//    if not Assigned(FSelector) then
-//      FSelector := GetBestSelectorClass.Create;
+// procedure TDGLSceneBuffer.PickObjects(const rect: TGLRect; pickList: TDGLPickList; objectCountGuess: Integer);
+// var
+// i:   Integer;
+// Obj: TDGLBaseSceneObject;
+// begin
+// if not Assigned(FCamera) then
+// Exit;
+// Assert((not FRendering), glsAlreadyRendering);
+// Assert(Assigned(pickList));
+// FRenderingContext.Activate;
+// FRendering := True;
+// try
+// // Create best selector which techniques is hardware can do
+// if not Assigned(FSelector) then
+// FSelector := GetBestSelectorClass.Create;
 //
-////    xgl.MapTexCoordToNull; // turn off
-//    PrepareRenderingMatrices(FViewPort, RenderDPI, @rect);
-//    FSelector.Hits := -1;
-//    if objectCountGuess > 0 then
-//      FSelector.objectCountGuess := objectCountGuess;
-//    repeat
-//      FSelector.Start;
-//      // render the scene (in select mode, nothing is drawn)
-//      FRenderDPI := 96;
-//      if Assigned(FCamera) and Assigned(FCamera.FScene) then
-//        RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height, dsPicking, nil);
-//    until FSelector.Stop;
-//    FSelector.FillPickingList(pickList);
-//    for i := 0 to pickList.Count - 1 do
-//    begin
-//      Obj := TDGLBaseSceneObject(pickList[i]);
-//      if Assigned(Obj.FOnPicked) then
-//        Obj.FOnPicked(Obj);
-//    end;
-//  finally
-//    FRendering := False;
-//    FRenderingContext.Deactivate;
-//  end;
-//end;
+/// /    xgl.MapTexCoordToNull; // turn off
+// PrepareRenderingMatrices(FViewPort, RenderDPI, @rect);
+// FSelector.Hits := -1;
+// if objectCountGuess > 0 then
+// FSelector.objectCountGuess := objectCountGuess;
+// repeat
+// FSelector.Start;
+// // render the scene (in select mode, nothing is drawn)
+// FRenderDPI := 96;
+// if Assigned(FCamera) and Assigned(FCamera.FScene) then
+// RenderScene(FCamera.FScene, FViewPort.Width, FViewPort.Height, dsPicking, nil);
+// until FSelector.Stop;
+// FSelector.FillPickingList(pickList);
+// for i := 0 to pickList.Count - 1 do
+// begin
+// Obj := TDGLBaseSceneObject(pickList[i]);
+// if Assigned(Obj.FOnPicked) then
+// Obj.FOnPicked(Obj);
+// end;
+// finally
+// FRendering := False;
+// FRenderingContext.Deactivate;
+// end;
+// end;
 
 // GetPickedObjects
 //
 
-//function TDGLSceneBuffer.GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer = 64): TDGLPickList;
-//begin
-//  Result := TDGLPickList.Create(psMinDepth);
-//  PickObjects(rect, Result, objectCountGuess);
-//end;
+// function TDGLSceneBuffer.GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer = 64): TDGLPickList;
+// begin
+// Result := TDGLPickList.Create(psMinDepth);
+// PickObjects(rect, Result, objectCountGuess);
+// end;
 
 // GetPickedObject
 //
 
-//function TDGLSceneBuffer.GetPickedObject(x, y: Integer): TDGLBaseSceneObject;
-//var
-//  pkList: TDGLPickList;
-//begin
-//  pkList := GetPickedObjects(rect(x - 1, y - 1, x + 1, y + 1));
-//  try
-//    if pkList.Count > 0 then
-//      Result := TDGLBaseSceneObject(pkList.Hit[0])
-//    else
-//      Result := nil;
-//  finally
-//    pkList.Free;
-//  end;
-//end;
+// function TDGLSceneBuffer.GetPickedObject(x, y: Integer): TDGLBaseSceneObject;
+// var
+// pkList: TDGLPickList;
+// begin
+// pkList := GetPickedObjects(rect(x - 1, y - 1, x + 1, y + 1));
+// try
+// if pkList.Count > 0 then
+// Result := TDGLBaseSceneObject(pkList.Hit[0])
+// else
+// Result := nil;
+// finally
+// pkList.Free;
+// end;
+// end;
 
 function TDGLSceneBuffer.GetPixelColor(x, y: Integer): TColor;
 var
@@ -7253,7 +6815,7 @@ begin
   end;
   FRenderingContext.Activate;
   try
-    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, @buf[0]);
+    glReadPixels(x, FViewPort.height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, @buf[0]);
   finally
     FRenderingContext.Deactivate;
   end;
@@ -7269,7 +6831,7 @@ begin
   end;
   FRenderingContext.Activate;
   try
-    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, @Result);
+    glReadPixels(x, FViewPort.height - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, @Result);
   finally
     FRenderingContext.Deactivate;
   end;
@@ -7303,11 +6865,11 @@ begin
   fp    := np + dov; // Far plane distance
   dst   := (np * fp) / (fp - z * dov);
   // calculate from z-buffer value to frustrum depth
-  coord.V[0] := x;
-  coord.V[1] := y;
+  coord.v[0] := x;
+  coord.v[1] := y;
   vec        := Self.ScreenToVector(coord); // get the pixel vector
-  coord.V[0] := FViewPort.Width div 2;
-  coord.V[1] := FViewPort.Height div 2;
+  coord.v[0] := FViewPort.width div 2;
+  coord.v[1] := FViewPort.height div 2;
   norm       := Self.ScreenToVector(coord); // get the absolute camera direction
   camAng     := VectorAngleCosine(norm, vec);
   Result     := dst / camAng; // compensate for flat frustrum face
@@ -7318,13 +6880,14 @@ begin
   // Nothing
 end;
 
-procedure TDGLSceneBuffer.PrepareRenderingMatrices(const aViewPort: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
+procedure TDGLSceneBuffer.PrepareRenderingMatrices(const AViewport: TRectangle; resolution: Integer; pickingRect: PGLRect = nil);
 begin
+  DGLSLogger.LogInfo('TDGLSceneBuffer : Preparing Rendering Matrix');
   RenderingContext.PipelineTransformation.IdentityAll;
   // setup projection matrix
   if Assigned(pickingRect) then
   begin
-    CurrentDGLContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix((pickingRect^.Left + pickingRect^.Right) div 2, FViewPort.Height - ((pickingRect^.Top + pickingRect^.Bottom) div 2), Abs(pickingRect^.Right - pickingRect^.Left),
+    CurrentDGLContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix((pickingRect^.Left + pickingRect^.Right) div 2, FViewPort.height - ((pickingRect^.Top + pickingRect^.Bottom) div 2), Abs(pickingRect^.Right - pickingRect^.Left),
       Abs(pickingRect^.Bottom - pickingRect^.Top), TVector4i(FViewPort));
   end;
   FBaseProjectionMatrix := CurrentDGLContext.PipelineTransformation.ProjectionMatrix;
@@ -7333,7 +6896,7 @@ begin
   begin
     FCamera.Scene.FCurrenTDGLCamera := FCamera;
     // apply camera perpective
-    FCamera.ApplyPerspective(aViewPort, FViewPort.Width, FViewPort.Height, resolution);
+    FCamera.ApplyPerspective(AViewport, FViewPort.width, FViewPort.height, resolution);
     // setup model view matrix
     // apply camera transformation (viewpoint)
     FCamera.Apply;
@@ -7341,15 +6904,12 @@ begin
   end;
 end;
 
-procedure TDGLSceneBuffer.DoBaseRender(const aViewPort: TRectangle; resolution: Integer; drawState: TDrawState; baseObject: TDGLBaseSceneObject);
+procedure TDGLSceneBuffer.DoBaseRender(const AViewport: TRectangle; resolution: Integer; drawState: TDrawState; baseObject: TDGLBaseSceneObject);
 begin
+  DGLSLogger.LogInfo('TDGLSceneBuffer : DoBaseRender');
   with RenderingContext.GLStates do
   begin
-    PrepareRenderingMatrices(aViewPort, resolution);
-
- //     xgl.MapTexCoordToNull; // force XGL rebind
-//      xgl.MapTexCoordToMain;
-
+    PrepareRenderingMatrices(AViewport, resolution);
 
     if Assigned(FViewerBeforeRender) and (drawState <> dsPrinting) then
       FViewerBeforeRender(Self);
@@ -7362,18 +6922,17 @@ begin
     begin
       with FCamera.FScene do
       begin
-//        SetupLights(maxLights);
-//
-//          if FogEnable then
-//          begin
-//            Enable(stFog);
-//            FogEnvironment.ApplyFog;
-//          end
-//          else
-//            Disable(stFog);
+        // SetupLights(maxLights);
+        //
+        // if FogEnable then
+        // begin
+        // Enable(stFog);
+        // FogEnvironment.ApplyFog;
+        // end
+        // else
+        // Disable(stFog);
 
-
-        RenderScene(FCamera.FScene, aViewPort.Width, aViewPort.Height, drawState, baseObject);
+        RenderScene(FCamera.FScene, AViewport.width, AViewport.height, drawState, baseObject);
       end;
     end;
     if Assigned(FPostRender) then
@@ -7381,8 +6940,8 @@ begin
         if not(csDesigning in TComponent(Owner).ComponentState) then
           FPostRender(Self);
   end;
-//  Assert(Length(FViewMatrixStack) = 0, 'Unbalance Push/PopViewMatrix.');
-//  Assert(Length(FProjectionMatrixStack) = 0, 'Unbalance Push/PopProjectionMatrix.');
+   Assert(Length(FViewMatrixStack) = 0, 'Unbalance Push/PopViewMatrix.');
+   Assert(Length(FProjectionMatrixStack) = 0, 'Unbalance Push/PopProjectionMatrix.');
 end;
 
 procedure TDGLSceneBuffer.Render;
@@ -7394,10 +6953,9 @@ procedure TDGLSceneBuffer.Render(baseObject: TDGLBaseSceneObject);
 var
   perfCounter, framePerf: Int64;
 begin
-  if FRendering then
-    Exit;
-  if not Assigned(FRenderingContext) then
-    Exit;
+  if Assigned(baseObject) then DGLSLogger.LogInfo('TDGLSceneBuffer : Render = ' + baseObject.Name);
+  if FRendering then Exit;
+  if not Assigned(FRenderingContext) then Exit;
 
   if Freezed and (FFreezeBuffer <> nil) then
   begin
@@ -7405,13 +6963,14 @@ begin
     try
       RenderingContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
-//      GLMatrixMode(GL_PROJECTION);
-//      GLLoadIdentity;
-//      GLMatrixMode(GL_MODELVIEW);
-//      GLLoadIdentity;
-//      GLRasterPos2f(-1, -1);
-//      GLDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height, GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
-      if not(roNoSwapBuffers in ContextOptions) then  RenderingContext.SwapBuffers;
+      // GLMatrixMode(GL_PROJECTION);
+      // GLLoadIdentity;
+      // GLMatrixMode(GL_MODELVIEW);
+      // GLLoadIdentity;
+      // GLRasterPos2f(-1, -1);
+      // GLDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height, GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
+      if not(roNoSwapBuffers in ContextOptions) then
+        RenderingContext.SwapBuffers;
     finally
       RenderingContext.Deactivate;
     end;
@@ -7430,8 +6989,7 @@ begin
   try
     FRenderingContext.Activate;
     try
-      if FFrameCount = 0 then
-        QueryPerformanceCounter(FFirstPerfCounter);
+      if FFrameCount = 0 then QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
       ClearOpenGLError;
@@ -7443,23 +7001,20 @@ begin
       // render
       DoBaseRender(FViewPort, RenderDPI, dsRendering, baseObject);
 
-      if not(roNoSwapBuffers in ContextOptions) then
-        RenderingContext.SwapBuffers;
+      if not(roNoSwapBuffers in ContextOptions) then RenderingContext.SwapBuffers;
 
       // yes, calculate average frames per second...
       Inc(FFrameCount);
       QueryPerformanceCounter(perfCounter);
       FLastFrameTime := (perfCounter - framePerf) / vCounterFrequency;
       Dec(perfCounter, FFirstPerfCounter);
-      if perfCounter > 0 then
-        FFramesPerSecond := (FFrameCount * vCounterFrequency) / perfCounter;
+      if perfCounter > 0 then FFramesPerSecond := (FFrameCount * vCounterFrequency) / perfCounter;
       CheckOpenGLError;
     finally
       FRenderingContext.Deactivate;
     end;
     if Assigned(FAfterRender) and (Owner is TComponent) then
-      if not(csDesigning in TComponent(Owner).ComponentState) then
-        FAfterRender(Self);
+      if not(csDesigning in TComponent(Owner).ComponentState) then FAfterRender(Self);
   finally
     FRendering := False;
   end;
@@ -7472,11 +7027,12 @@ var
   rci:         TRenderContextInfo;
   rightVector: TVector;
 begin
+  DGLSLogger.LogInfo('TDGLSceneBuffer : RenderScene');
   FAfterRenderEffects.Clear;
   aScene.FCurrentBuffer := Self;
-  FillChar(rci, Sizeof(rci), 0);
+  FillChar(rci, SizeOf(rci), 0);
   rci.Scene              := aScene;
-  rci.Buffer             := Self;
+  rci.buffer             := Self;
   rci.afterRenderEffects := FAfterRenderEffects;
   rci.ObjectsSorting     := aScene.ObjectsSorting;
   rci.VisibilityCulling  := aScene.VisibilityCulling;
@@ -7492,7 +7048,7 @@ begin
     rci.cameraPosition  := FCameraAbsolutePosition;
     rci.cameraDirection := FLastDirection;
     NormalizeVector(rci.cameraDirection);
-    rci.cameraDirection.V[3] := 0;
+    rci.cameraDirection.v[3] := 0;
     rightVector              := VectorCrossProduct(rci.cameraDirection, Up.AsVector);
     rci.cameraUp             := VectorCrossProduct(rightVector, rci.cameraDirection);
     NormalizeVector(rci.cameraUp);
@@ -7516,8 +7072,8 @@ begin
   rci.ignoreMaterials        := (roNoColorBuffer in FContextOptions) or (rci.drawState = dsPicking);
   rci.amalgamating           := rci.drawState = dsPicking;
   rci.GLStates.SeTDGLColorWriting(not rci.ignoreMaterials);
-  if Assigned(FInitiateRendering) then
-    FInitiateRendering(Self, rci);
+
+  if Assigned(FInitiateRendering) then FInitiateRendering(Self, rci);
 
   if aScene.InitializableObjects.Count <> 0 then
   begin
@@ -7529,20 +7085,27 @@ begin
     end;
   end;
 
-  if RenderingContext.IsPreparationNeed then
-    RenderingContext.PrepareHandlesData;
+  if RenderingContext.IsPreparationNeed then RenderingContext.PrepareHandlesData;
 
   if baseObject = nil then
   begin
+    DGLSLogger.LogInfo('BaseObject = Nil');
+    DGLSLogger.LogInfo('Render : ' + aScene.Objects.Name);
     aScene.Objects.Render(rci);
   end
   else
+  begin
+    DGLSLogger.LogInfo('Render : ' + baseObject.Name);
     baseObject.Render(rci);
-  rci.GLStates.SeTDGLColorWriting(True);
+  end;
+
+  rci.GLStates.SetDGLColorWriting(True);
+
   with FAfterRenderEffects do
     if Count > 0 then
       for i := 0 to Count - 1 do
         TDGLObjectAfterEffect(Items[i]).Render(rci);
+
   if Assigned(FWrapUpRendering) then
     FWrapUpRendering(Self, rci);
 end;
@@ -7598,20 +7161,20 @@ begin
   end;
 end;
 
-procedure TDGLSceneBuffer.SetDepthTest(AValue: Boolean);
+procedure TDGLSceneBuffer.SetDepthTest(aValue: Boolean);
 begin
-  if FDepthTest <> AValue then
+  if FDepthTest <> aValue then
   begin
-    FDepthTest := AValue;
+    FDepthTest := aValue;
     NotifyChange(Self);
   end;
 end;
 
-procedure TDGLSceneBuffer.SetFaceCulling(AValue: Boolean);
+procedure TDGLSceneBuffer.SetFaceCulling(aValue: Boolean);
 begin
-  if FFaceCulling <> AValue then
+  if FFaceCulling <> aValue then
   begin
-    FFaceCulling := AValue;
+    FFaceCulling := aValue;
     NotifyChange(Self);
   end;
 end;
@@ -7625,11 +7188,11 @@ begin
   end;
 end;
 
-procedure TDGLSceneBuffer.SetLighting(AValue: Boolean);
+procedure TDGLSceneBuffer.SetLighting(aValue: Boolean);
 begin
-  if FLighting <> AValue then
+  if FLighting <> aValue then
   begin
-    FLighting := AValue;
+    FLighting := aValue;
     NotifyChange(Self);
   end;
 end;
@@ -7670,25 +7233,25 @@ begin
   end;
 end;
 
-procedure TDGLSceneBuffer.SetFogEnable(AValue: Boolean);
-begin
-  if FFogEnable <> AValue then
-  begin
-    FFogEnable := AValue;
-    NotifyChange(Self);
-  end;
-end;
+//procedure TDGLSceneBuffer.SetFogEnable(aValue: Boolean);
+//begin
+//  if FFogEnable <> aValue then
+//  begin
+//    FFogEnable := aValue;
+//    NotifyChange(Self);
+//  end;
+//end;
 
-procedure TDGLSceneBuffer.SetDGLFogEnvironment(AValue: TDGLFogEnvironment);
-begin
-  FFogEnvironment.Assign(AValue);
-  NotifyChange(Self);
-end;
-
-function TDGLSceneBuffer.StoreFog: Boolean;
-begin
-  Result := (not FFogEnvironment.IsAtDefaultValues);
-end;
+//procedure TDGLSceneBuffer.SeTDGLFogEnvironment(aValue: TDGLFogEnvironment);
+//begin
+//  FFogEnvironment.Assign(aValue);
+//  NotifyChange(Self);
+//end;
+//
+//function TDGLSceneBuffer.StoreFog: Boolean;
+//begin
+//  Result := (not FFogEnvironment.IsAtDefaultValues);
+//end;
 
 procedure TDGLSceneBuffer.SetAccumBufferBits(const val: Integer);
 begin
@@ -7709,12 +7272,10 @@ procedure TDGLSceneBuffer.DoStructuralChange;
 var
   bCall: Boolean;
 begin
-  if Assigned(Owner) then
-    bCall := not(csLoading in TComponent(GetOwner).ComponentState)
+  if Assigned(Owner) then bCall := not(csLoading in TComponent(GetOwner).ComponentState)
   else
     bCall := True;
-  if bCall and Assigned(FOnStructuralChange) then
-    FOnStructuralChange(Self);
+  if bCall and Assigned(FOnStructuralChange) then FOnStructuralChange(Self);
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
@@ -7723,19 +7284,17 @@ end;
 { TDGLInitializableObjectList }
 {$IFDEF GLS_REGIONS}{$REGION 'TDGLInitializableObjectList'}{$ENDIF}
 
-
-function TDGLInitializableObjectList.Add(const Item: IGLInitializable): Integer;
+function TDGLInitializableObjectList.Add(const Item: IDGLInitializable): Integer;
 begin
   Result := inherited Add(Pointer(Item));
 end;
 
-
-function TDGLInitializableObjectList.GetItems(const Index: Integer): IGLInitializable;
+function TDGLInitializableObjectList.GetItems(const Index: Integer): IDGLInitializable;
 begin
-  Result := IGLInitializable(inherited Get(Index));
+  Result := IDGLInitializable(inherited Get(Index));
 end;
 
-procedure TDGLInitializableObjectList.PutItems(const Index: Integer; const Value: IGLInitializable);
+procedure TDGLInitializableObjectList.PutItems(const Index: Integer; const Value: IDGLInitializable);
 begin
   inherited Put(Index, Pointer(Value));
 end;
@@ -7745,17 +7304,12 @@ end;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
+
 initialization
 
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------
+  RegisterClasses([TDGLLightSource, TDGLCamera, TDGLScene, TDGLRenderPoint, TDGLDirectOpenGL]);
 
-RegisterClasses([TDGLLightSource, TDGLCamera, TDGLScene, TDGLDirectOpenGL]);
-//TDGLMemoryViewer
-// TDGLRenderPoint, TDGLProxyObject,
-
-// preparation for high resolution timer
-QueryPerformanceFrequency(vCounterFrequency);
+  // preparation for high resolution timer
+  QueryPerformanceFrequency(vCounterFrequency);
 
 end.

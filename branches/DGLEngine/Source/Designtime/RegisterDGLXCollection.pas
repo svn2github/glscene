@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: RegisterXCollection<p>
+{ @HTML ( RegisterXCollection<p>
 
 	Register TDGLXCollection property editor<p>
 

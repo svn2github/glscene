@@ -1,7 +1,7 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLVectorTypes<p>
+{ @HTML ( DGLVectorTypes<p>
 
    Defines base vector types for use in Geometry.pas and OpenGL1x.pas.<p>
 

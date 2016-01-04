@@ -2,11 +2,11 @@
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
 // FDGLLibMaterialPicker
-{: <p>
+{ @HTML ( <p>
 
  Allows choosing a material in a material library<p>
 
-    <b>Historique : </b><font size=-1><ul>
+    <b>History: </b><font size=-1><ul>
       <li>29/12/15 - JD - Imported and Updated from GLScene
     </ul></font>
 }
@@ -25,13 +25,9 @@ uses
 type
   TDGLLibMaterialPicker = class(TForm)
     LBMaterials: TListBox;
-    Label1: TLabel;
     Label2: TLabel;
     BBOk: TBitBtn;
     BBCancel: TBitBtn;
-    Panel1: TPanel;
-    CBBackground: TComboBox;
-    CBObject: TComboBox;
     procedure LBMaterialsClick(Sender: TObject);
     procedure LBMaterialsKeyPress(Sender: TObject; var Key: Char);
     procedure LBMaterialsDblClick(Sender: TObject);

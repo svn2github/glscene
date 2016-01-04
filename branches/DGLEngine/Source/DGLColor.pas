@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: GLColor<p>
+{ @HTML ( GLColor<p>
 
    All color types, constants and utilities should go here<p>
 
@@ -32,7 +32,7 @@ type
 
    // TDGLColor
    //
-   {: Wraps an OpenGL color. }
+   { @HTML ( Wraps an OpenGL color. }
    TDGLColor = class(TDGLUpdateAbleObject)
       private
          { Private Properties }
@@ -98,7 +98,7 @@ type
     procedure EnumColors(AValues: TStrings); overload;
 
     function  FindColor(const aName: String): TColorVector;
-    {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
+    { @HTML ( Convert a clrXxxx or a '<red green blue alpha> to a color vector }
     function  GetColor(const aName: String): TColorVector;
     function  GetColorName(const aColor: TColorVector): String;
     procedure RegisterDefaultColors;
@@ -116,12 +116,12 @@ function GetGValue(rgb: DWORD): Byte;  {$NODEFINE GetGValue}
 function GetBValue(rgb: DWORD): Byte;  {$NODEFINE GetBValue}
 
 procedure InitGLSceneColors;
-{: Converts a delphi color into its RGB fragments and correct range. }
+{ @HTML ( Converts a delphi color into its RGB fragments and correct range. }
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
 
 //: Converts a color vector (containing float values)
 function ConvertColorVector(const AColor: TColorVector): TColor; overload;
-{: Converts a color vector (containing float values) and alter intensity.<p>
+{ @HTML ( Converts a color vector (containing float values) and alter intensity.<p>
    intensity is in [0..1] }
 function ConvertColorVector(const AColor: TColorVector; intensity: Single): TColor; overload;
 //: Converts RGB components into a color vector with correct range

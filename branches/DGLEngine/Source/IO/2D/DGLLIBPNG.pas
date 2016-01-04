@@ -1,9 +1,9 @@
 
 // This unit is part of the GLScene Project, http://glscene.org
 
-{: LIBPNG<p>
+{ @HTML ( LIBPNG<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
       <li>28/12/15 - JD- Imported from GLScene
   </ul></font>
 }
@@ -239,7 +239,7 @@ type
   end;
   jmp_bufp = ^jmp_buf;
 
-  {: Three color definitions.  The order of the red, green, and blue, (and the
+  { @HTML ( Three color definitions.  The order of the red, green, and blue, (and the
     exact size) is not important, although the size of the fields need to
     be png_byte or png_uint_16 (as defined below). }
   png_color = record
@@ -274,7 +274,7 @@ type
   png_color_16pp = ^png_color_16p;
   ppng_color_16p = ^png_color_16p;
 
-  {: png_unknown_chunk is a structure to hold queued chunks for which there is
+  { @HTML ( png_unknown_chunk is a structure to hold queued chunks for which there is
      no specific support.  The idea is that we can use this to queue
      up private chunks for output even though the library doesn't actually
      know about their semantics. }
@@ -284,7 +284,7 @@ type
     Data: png_bytep;
     size: png_size_t;
 
-    {: libpng-using applications should NOT directly modify this byte.
+    { @HTML ( libpng-using applications should NOT directly modify this byte.
        png_byte location;  mode of operation at read time }
   end;
   png_unknown_chunk_array =
@@ -294,25 +294,25 @@ type
   png_unknown_chunkpp = ^png_unknown_chunkp;
 
   png_text = record
-    {: compression value:
+    { @HTML ( compression value:
        -1: tEXt, none
         0: zTXt, deflate
         1: iTXt, none
         2: iTXt, deflate  }
     compression: integer;
-    {: keyword, 1-79 character description of "text" }
+    { @HTML ( keyword, 1-79 character description of "text" }
     key: png_charp;
-    {: comment, may be an empty string (ie "")
+    { @HTML ( comment, may be an empty string (ie "")
        or a NULL pointer }
     Text: png_charp;
-    {: length of the text string }
+    { @HTML ( length of the text string }
     text_length: png_size_t;
-    {: length of the itxt string }
+    { @HTML ( length of the itxt string }
     itxt_length: png_size_t;
-    {: language code, 0-79 characters
+    { @HTML ( language code, 0-79 characters
        or a NULL pointer }
     lang: png_charp;
-    {: keyword translated UTF-8 string, 0 or more
+    { @HTML ( keyword translated UTF-8 string, 0 or more
        chars or a NULL pointer }
     lang_key: png_charp;
   end;
@@ -323,12 +323,12 @@ type
   ppng_textp = ^png_textp;
 
   png_time = record
-    year: png_uint_16; {: full year, as in, 1995 }
-    month: png_byte; {: month of year, 1 - 12 }
-    day: png_byte; {: day of month, 1 - 31 }
-    hour: png_byte; {: hour of day, 0 - 23 }
-    minute: png_byte; {: minute of hour, 0 - 59 }
-    second: png_byte; {: second of minute, 0 - 60 (for leap seconds) }
+    year: png_uint_16; { @HTML ( full year, as in, 1995 }
+    month: png_byte; { @HTML ( month of year, 1 - 12 }
+    day: png_byte; { @HTML ( day of month, 1 - 31 }
+    hour: png_byte; { @HTML ( hour of day, 0 - 23 }
+    minute: png_byte; { @HTML ( minute of hour, 0 - 59 }
+    second: png_byte; { @HTML ( second of minute, 0 - 60 (for leap seconds) }
   end;
   png_timep = ^png_time;
   png_timepp = ^png_timep;
@@ -346,10 +346,10 @@ type
   png_sPLT_entrypp = ^png_sPLT_entryp;
 
   png_sPLT_t = record
-    Name: png_charp; {: palette name }
-    depth: png_byte; {: depth of palette samples }
-    entries: png_sPLT_entryp; {: palette entries }
-    nentries: png_int_32; {: number of palette entries }
+    Name: png_charp; { @HTML ( palette name }
+    depth: png_byte; { @HTML ( depth of palette samples }
+    entries: png_sPLT_entryp; { @HTML ( palette entries }
+    nentries: png_int_32; { @HTML ( number of palette entries }
   end;
   png_sPLT_tp_array =
     array[0..MaxInt div (2 * SizeOf(png_sPLT_t))] of png_sPLT_t;
@@ -361,49 +361,49 @@ type
   png_structpp = ^png_structp;
 
   png_info = record
-    Width: png_uint_32; {: width of image in pixels (from IHDR) }
-    Height: png_uint_32; {: height of image in pixels (from IHDR) }
-    valid: png_uint_32; {: valid chunk data (see PNG_INFO_ below) }
-    rowbytes: png_size_t; {: bytes needed to hold an untransformed row }
-    palette: png_colorp; {: array of color values (valid & PNG_INFO_PLTE) }
-    num_palette: png_uint_16; {: number of color entries in "palette" (PLTE) }
-    num_trans: png_uint_16; {: number of transparent palette color (tRNS) }
-    bit_depth: png_byte; {: 1, 2, 4, 8, or 16 bits/channel (from IHDR) }
-    color_type: png_byte; {: see PNG_COLOR_TYPE_ below (from IHDR) }
+    Width: png_uint_32; { @HTML ( width of image in pixels (from IHDR) }
+    Height: png_uint_32; { @HTML ( height of image in pixels (from IHDR) }
+    valid: png_uint_32; { @HTML ( valid chunk data (see PNG_INFO_ below) }
+    rowbytes: png_size_t; { @HTML ( bytes needed to hold an untransformed row }
+    palette: png_colorp; { @HTML ( array of color values (valid & PNG_INFO_PLTE) }
+    num_palette: png_uint_16; { @HTML ( number of color entries in "palette" (PLTE) }
+    num_trans: png_uint_16; { @HTML ( number of transparent palette color (tRNS) }
+    bit_depth: png_byte; { @HTML ( 1, 2, 4, 8, or 16 bits/channel (from IHDR) }
+    color_type: png_byte; { @HTML ( see PNG_COLOR_TYPE_ below (from IHDR) }
 
-    compression_type: png_byte; {: must be PNG_COMPRESSION_TYPE_BASE (IHDR) }
-    filter_type: png_byte; {: must be PNG_FILTER_TYPE_BASE (from IHDR) }
-    interlace_type: png_byte; {: One of PNG_INTERLACE_NONE, PNG_INTERLACE_ADAM7 }
+    compression_type: png_byte; { @HTML ( must be PNG_COMPRESSION_TYPE_BASE (IHDR) }
+    filter_type: png_byte; { @HTML ( must be PNG_FILTER_TYPE_BASE (from IHDR) }
+    interlace_type: png_byte; { @HTML ( One of PNG_INTERLACE_NONE, PNG_INTERLACE_ADAM7 }
 
-    channels: png_byte; {: number of data channels per pixel (1, 2, 3, 4) }
-    pixel_depth: png_byte; {: number of bits per pixel }
-    spare_byte: png_byte; {: to align the data, and for future use }
+    channels: png_byte; { @HTML ( number of data channels per pixel (1, 2, 3, 4) }
+    pixel_depth: png_byte; { @HTML ( number of bits per pixel }
+    spare_byte: png_byte; { @HTML ( to align the data, and for future use }
     signature: array[0..7] of png_byte;
-    {: magic bytes read by libpng from start of file }
+    { @HTML ( magic bytes read by libpng from start of file }
 
-    gamma: single; {: gamma value of image, if (valid & PNG_INFO_gAMA) }
-    srgb_intent: png_byte; {: sRGB rendering intent [0, 1, 2, or 3] }
+    gamma: single; { @HTML ( gamma value of image, if (valid & PNG_INFO_gAMA) }
+    srgb_intent: png_byte; { @HTML ( sRGB rendering intent [0, 1, 2, or 3] }
 
-    num_text: integer; {: number of comments read/to write }
-    max_text: integer; {: current size of text array }
-    Text: png_textp; {: array of comments read/to write }
+    num_text: integer; { @HTML ( number of comments read/to write }
+    max_text: integer; { @HTML ( current size of text array }
+    Text: png_textp; { @HTML ( array of comments read/to write }
 
     mod_time: png_time;
 
-    sig_bit: png_color_8; {: significant bits in color channels }
+    sig_bit: png_color_8; { @HTML ( significant bits in color channels }
 
-    trans_alpha: png_bytep; {: alpha values for paletted image }
-    trans_color: png_color_16; {: transparent color for non-palette image }
+    trans_alpha: png_bytep; { @HTML ( alpha values for paletted image }
+    trans_color: png_color_16; { @HTML ( transparent color for non-palette image }
 
     background: png_color_16;
 
-    x_offset: png_int_32; {: x offset on page }
-    y_offset: png_int_32; {: y offset on page }
-    offset_unit_type: png_byte; {: offset units type }
+    x_offset: png_int_32; { @HTML ( x offset on page }
+    y_offset: png_int_32; { @HTML ( y offset on page }
+    offset_unit_type: png_byte; { @HTML ( offset units type }
 
-    x_pixels_per_unit: png_uint_32; {: horizontal pixel density }
-    y_pixels_per_unit: png_uint_32; {: vertical pixel density }
-    phys_unit_type: png_byte; {: resolution type (see PNG_RESOLUTION_ below) }
+    x_pixels_per_unit: png_uint_32; { @HTML ( horizontal pixel density }
+    y_pixels_per_unit: png_uint_32; { @HTML ( vertical pixel density }
+    phys_unit_type: png_byte; { @HTML ( resolution type (see PNG_RESOLUTION_ below) }
 
     hist: png_uint_16p;
 
@@ -416,37 +416,37 @@ type
     x_blue: single;
     y_blue: single;
 
-    pcal_purpose: png_charp; {: pCAL chunk description string }
-    pcal_X0: png_int_32; {: minimum value }
-    pcal_X1: png_int_32; {: maximum value }
-    pcal_units: png_charp; {: Latin-1 string giving physical units }
-    pcal_params: png_charpp; {: ASCII strings containing parameter values }
-    pcal_type: png_byte; {: equation type (see PNG_EQUATION_ below) }
-    pcal_nparams: png_byte; {: number of parameters given in pcal_params }
+    pcal_purpose: png_charp; { @HTML ( pCAL chunk description string }
+    pcal_X0: png_int_32; { @HTML ( minimum value }
+    pcal_X1: png_int_32; { @HTML ( maximum value }
+    pcal_units: png_charp; { @HTML ( Latin-1 string giving physical units }
+    pcal_params: png_charpp; { @HTML ( ASCII strings containing parameter values }
+    pcal_type: png_byte; { @HTML ( equation type (see PNG_EQUATION_ below) }
+    pcal_nparams: png_byte; { @HTML ( number of parameters given in pcal_params }
 
-    free_me: png_uint_32; {: flags items libpng is responsible for freeing }
+    free_me: png_uint_32; { @HTML ( flags items libpng is responsible for freeing }
 
     unknown_chunks: png_unknown_chunkp;
     unknown_chunks_num: png_size_t;
 
-    iccp_name: png_charp; {: profile name }
-    iccp_profile: png_charp; {: International Color Consortium profile data }
-    {: Note to maintainer: should be png_bytep }
-    iccp_proflen: png_uint_32; {: ICC profile data length }
-    iccp_compression: png_byte; {: Always zero }
+    iccp_name: png_charp; { @HTML ( profile name }
+    iccp_profile: png_charp; { @HTML ( International Color Consortium profile data }
+    { @HTML ( Note to maintainer: should be png_bytep }
+    iccp_proflen: png_uint_32; { @HTML ( ICC profile data length }
+    iccp_compression: png_byte; { @HTML ( Always zero }
 
     splt_palettes: png_sPLT_tp;
     splt_palettes_num: png_uint_32;
 
-    scal_unit: png_byte; {: unit of physical scale }
-    scal_pixel_width: double; {: width of one pixel }
-    scal_pixel_height: double; {: height of one pixel }
-    scal_s_width: png_charp; {: string containing height }
-    scal_s_height: png_charp; {: string containing width }
+    scal_unit: png_byte; { @HTML ( unit of physical scale }
+    scal_pixel_width: double; { @HTML ( width of one pixel }
+    scal_pixel_height: double; { @HTML ( height of one pixel }
+    scal_s_width: png_charp; { @HTML ( string containing height }
+    scal_s_height: png_charp; { @HTML ( string containing width }
 
-    row_pointers: png_bytepp; {: the image bits }
+    row_pointers: png_bytepp; { @HTML ( the image bits }
 
-    int_gamma: png_fixed_point; {: gamma of image, if (valid & PNG_INFO_gAMA) }
+    int_gamma: png_fixed_point; { @HTML ( gamma of image, if (valid & PNG_INFO_gAMA) }
 
     int_x_white: png_fixed_point;
     int_y_white: png_fixed_point;
@@ -791,7 +791,7 @@ function inflateInit2_(var strm: TZStreamRec; windowBits: integer;
 function inflateBackInit_(var strm: TZStreamRec; windowBits: integer;
   window: PAnsiChar; const version: PAnsiChar; stream_size: integer): integer;
 
-{: Main libpng functions }
+{ @HTML ( Main libpng functions }
 function _png_sig_cmp(sig: png_bytep; start: png_size_t;
   num_to_check: png_size_t): integer; cdecl; forward;
 function _png_create_read_struct(user_png_ver: png_const_charp;
@@ -1188,16 +1188,16 @@ var
 implementation
 
 {$IFNDEF FPC}
-{$L LinkedObjects\adler32.obj}
-{$L LinkedObjects\deflate.obj}
-{$L LinkedObjects\infback.obj}
-{$L LinkedObjects\inffast.obj}
-{$L LinkedObjects\inflate.obj}
-{$L LinkedObjects\inftrees.obj}
-{$L LinkedObjects\trees.obj}
-{$L LinkedObjects\compress.obj}
-{$L LinkedObjects\crc32.obj}
-{$L LinkedObjects\png_check_sig.obj}
+{$L ..\LinkedObjects\adler32.obj}
+{$L ..\LinkedObjects\deflate.obj}
+{$L ..\LinkedObjects\infback.obj}
+{$L ..\LinkedObjects\inffast.obj}
+{$L ..\LinkedObjects\inflate.obj}
+{$L ..\LinkedObjects\inftrees.obj}
+{$L ..\LinkedObjects\trees.obj}
+{$L ..\LinkedObjects\compress.obj}
+{$L ..\LinkedObjects\crc32.obj}
+{$L ..\LinkedObjects\png_check_sig.obj}
 
 function adler32; external;
 function compress; external;
@@ -1236,21 +1236,21 @@ begin
   FreeMem(Block);
 end;
 
-{$LINK LinkedObjects\png.obj}
-{$LINK LinkedObjects\pngerror.obj}
-{$LINK LinkedObjects\pngget.obj}
-{$LINK LinkedObjects\pngmem.obj}
-{$LINK LinkedObjects\pngpread.obj}
-{$LINK LinkedObjects\pngread.obj}
-{$LINK LinkedObjects\pngrio.obj}
-{$LINK LinkedObjects\pngrtran.obj}
-{$LINK LinkedObjects\pngrutil.obj}
-{$LINK LinkedObjects\pngset.obj}
-{$LINK LinkedObjects\pngtrans.obj}
-{$LINK LinkedObjects\pngwio.obj}
-{$LINK LinkedObjects\pngwrite.obj}
-{$LINK LinkedObjects\pngwtran.obj}
-{$LINK LinkedObjects\pngwutil.obj}
+{$LINK ..\LinkedObjects\png.obj}
+{$LINK ..\LinkedObjects\pngerror.obj}
+{$LINK ..\LinkedObjects\pngget.obj}
+{$LINK ..\LinkedObjects\pngmem.obj}
+{$LINK ..\LinkedObjects\pngpread.obj}
+{$LINK ..\LinkedObjects\pngread.obj}
+{$LINK ..\LinkedObjects\pngrio.obj}
+{$LINK ..\LinkedObjects\pngrtran.obj}
+{$LINK ..\LinkedObjects\pngrutil.obj}
+{$LINK ..\LinkedObjects\pngset.obj}
+{$LINK ..\LinkedObjects\pngtrans.obj}
+{$LINK ..\LinkedObjects\pngwio.obj}
+{$LINK ..\LinkedObjects\pngwrite.obj}
+{$LINK ..\LinkedObjects\pngwtran.obj}
+{$LINK ..\LinkedObjects\pngwutil.obj}
 
 function _malloc(Size: cardinal): Pointer; cdecl;
 begin
@@ -1395,14 +1395,14 @@ var
 begin
   need_crc := 1;
 
-  if (png_ptr.chunk_name[0] and $20) <> 0 then {: ancillary }
+  if (png_ptr.chunk_name[0] and $20) <> 0 then { @HTML ( ancillary }
   begin
     if (png_ptr.flags and PNG_FLAG_CRC_ANCILLARY_MASK) =
       (PNG_FLAG_CRC_ANCILLARY_USE or PNG_FLAG_CRC_ANCILLARY_NOWARN) then
       need_crc := 0;
   end
   else
-  begin {: critical }
+  begin { @HTML ( critical }
     if (png_ptr.flags and PNG_FLAG_CRC_CRITICAL_IGNORE) <> 0 then
       need_crc := 0;
   end;
@@ -1482,7 +1482,7 @@ var
 begin
   error := 0;
 
-  {: Check for width and height valid values }
+  { @HTML ( Check for width and height valid values }
   if Width = 0 then
   begin
     _png_warning(png_ptr, 'Image width is zero in IHDR');
@@ -1519,13 +1519,13 @@ begin
     error := 1;
   end;
 
-  if Width > (PNG_UINT_32_MAX shr 3) {: 8-byte RGBA pixels  } -
-    64 {: bigrowbuf hack  } - 1 {: filter byte  } - 7 *
-    8 {: rounding of width to multiple of 8 pixels  } - 8 then
-    {: extra max_pixel_depth pad  }
+  if Width > (PNG_UINT_32_MAX shr 3) { @HTML ( 8-byte RGBA pixels  } -
+    64 { @HTML ( bigrowbuf hack  } - 1 { @HTML ( filter byte  } - 7 *
+    8 { @HTML ( rounding of width to multiple of 8 pixels  } - 8 then
+    { @HTML ( extra max_pixel_depth pad  }
     _png_warning(png_ptr, 'Width is too large for libpng to process pixels');
 
-  {: Check other values  }
+  { @HTML ( Check other values  }
   if (bit_depth <> 1) and (bit_depth <> 2) and (bit_depth <> 4) and
     (bit_depth <> 8) and (bit_depth <> 16) then
   begin
@@ -1559,7 +1559,7 @@ begin
     error := 1;
   end;
 
-  {: Accept filter_method 64 (intrapixel differencing) only if
+  { @HTML ( Accept filter_method 64 (intrapixel differencing) only if
      1. Libpng was compiled with PNG_MNG_FEATURES_SUPPORTED and
      2. Libpng did not read a PNG signature (this filter_method is only
         used in PNG datastreams that are embedded in MNG datastreams) and
@@ -1614,7 +1614,7 @@ begin
   if (png_ptr = nil) or (info_ptr = nil) then
     exit;
 
-  {: Free text item num or (if num = -1) all text items }
+  { @HTML ( Free text item num or (if num = -1) all text items }
   if (mask and PNG_FREE_TEXT <> 0) and (info_ptr.free_me <> 0) then
   begin
     if num <> -1 then
@@ -1636,7 +1636,7 @@ begin
     end;
   end;
 
-  {: Free any tRNS entry }
+  { @HTML ( Free any tRNS entry }
   if (mask and PNG_FREE_TRNS <> 0) and (info_ptr.free_me <> 0) then
   begin
     _png_free(png_ptr, info_ptr.trans_alpha);
@@ -1644,7 +1644,7 @@ begin
     info_ptr.valid := info_ptr.valid and not PNG_INFO_tRNS;
   end;
 
-  {: Free any pCAL entry }
+  { @HTML ( Free any pCAL entry }
   if (mask and PNG_FREE_PCAL <> 0) and (info_ptr.free_me <> 0) then
   begin
     _png_free(png_ptr, info_ptr.pcal_purpose);
@@ -1664,7 +1664,7 @@ begin
     info_ptr.valid := info_ptr.valid and not PNG_INFO_pCAL;
   end;
 
-  {: Free any sCAL entry }
+  { @HTML ( Free any sCAL entry }
   if (mask and PNG_FREE_SCAL <> 0) and (info_ptr.free_me <> 0) then
   begin
     _png_free(png_ptr, info_ptr.scal_s_width);
@@ -1674,7 +1674,7 @@ begin
     info_ptr.valid := info_ptr.valid and not PNG_INFO_sCAL;
   end;
 
-  {: Free any iCCP entry }
+  { @HTML ( Free any iCCP entry }
   if (mask and PNG_FREE_ICCP <> 0) and (info_ptr.free_me <> 0) then
   begin
     _png_free(png_ptr, info_ptr.iccp_name);
@@ -1684,7 +1684,7 @@ begin
     info_ptr.valid := info_ptr.valid and not PNG_INFO_iCCP;
   end;
 
-  {: Free a given sPLT entry, or (if num == -1) all sPLT entries }
+  { @HTML ( Free a given sPLT entry, or (if num == -1) all sPLT entries }
   if (mask and PNG_FREE_SPLT <> 0) and (info_ptr.free_me <> 0) then
   begin
     if num <> -1 then
@@ -1745,7 +1745,7 @@ begin
     end;
   end;
 
-  {: Free any hIST entry }
+  { @HTML ( Free any hIST entry }
   if (mask and PNG_FREE_HIST <> 0) and (info_ptr.free_me <> 0) then
   begin
     _png_free(png_ptr, info_ptr.hist);
@@ -1753,7 +1753,7 @@ begin
     info_ptr.valid := info_ptr.valid and not PNG_INFO_hIST;
   end;
 
-  {: Free any PLTE entry that was internally allocated }
+  { @HTML ( Free any PLTE entry that was internally allocated }
   if (mask and PNG_FREE_PLTE <> 0) and (info_ptr.free_me <> 0) then
   begin
     FreeMem(info_ptr.palette);
@@ -1762,7 +1762,7 @@ begin
     info_ptr.num_palette := 0;
   end;
 
-  {: Free any image bits attached to the info structure }
+  { @HTML ( Free any image bits attached to the info structure }
   if (mask and PNG_FREE_ROWS <> 0) and (info_ptr.free_me <> 0) then
   begin
     if info_ptr.row_pointers <> nil then
@@ -1817,7 +1817,7 @@ var
   i: integer;
   p: png_bytep;
 begin
-  {: Check chunk_name and return "keep" value if it's on the list, else 0 }
+  { @HTML ( Check chunk_name and return "keep" value if it's on the list, else 0 }
   if (png_ptr = nil) or (chunk_name = nil) or (png_ptr.num_chunk_list <= 0) then
   begin
     Result := 0;

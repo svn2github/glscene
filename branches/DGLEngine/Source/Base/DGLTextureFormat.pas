@@ -1,11 +1,11 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLTextureFormat<p>
+{ @HTML ( DGLTextureFormat<p>
 
      Describe OpenGL Texture Formats<p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>22/12/15 - JD -  Imported and improved From GLScene
  </ul></font>
 }
@@ -263,35 +263,35 @@ var
 
 
 
-{: Give a openGL texture format from GLScene texture format. }
+{ @HTML ( Give a openGL texture format from GLScene texture format. }
 function InternalFormatToOpenGLFormat(intFormat: TDGLInternalFormat): TGLEnum;
-{: Give a GLScene texture format from openGL texture format. }
+{ @HTML ( Give a GLScene texture format from openGL texture format. }
 function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TDGLInternalFormat;
-{: Give a pixel size in bytes from texture format or data format. }
+{ @HTML ( Give a pixel size in bytes from texture format or data format. }
 function GetTextureElementSize(intFormat: TDGLInternalFormat): Integer; overload;
 function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum): Integer; overload;
-{: Give compatible openGL image format and data type. }
+{ @HTML ( Give compatible openGL image format and data type. }
 procedure FindCompatibleDataFormat(intFormat: TDGLInternalFormat; out dFormat: GLenum; out dType: GLenum);
-{: Give a compressed openGL texture format from GLScene texture format
+{ @HTML ( Give a compressed openGL texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
 function CompressedInternalFormatToOpenGL(intFormat: TDGLInternalFormat): Integer;
-{: True if texture target supported. }
+{ @HTML ( True if texture target supported. }
 function IsTargetSupported(glTarget: TGLEnum): Boolean; overload;
 function IsTargetSupported(target: TDGLTextureTarget): Boolean; overload;
-{: True if texture format is supported by hardware or software. }
+{ @HTML ( True if texture format is supported by hardware or software. }
 function IsFormatSupported(intFormat: TDGLInternalFormat): Boolean;
-{: True if texture format is float. }
+{ @HTML ( True if texture format is float. }
 function IsFloatFormat(intFormat: TDGLInternalFormat): Boolean; overload;
 function IsFloatFormat(glFormat: TGLEnum): Boolean; overload;
-{: True if depth texture. }
+{ @HTML ( True if depth texture. }
 function IsDepthFormat(intFormat: TDGLInternalFormat): boolean; overload;
 function IsDepthFormat(glFormat: TGLEnum): Boolean; overload;
-{: True if texture compressed. }
+{ @HTML ( True if texture compressed. }
 function IsCompressedFormat(intFormat: TDGLInternalFormat): Boolean; overload;
 function IsCompressedFormat(glFormat: TGLEnum): Boolean; overload;
-{: Give generic compressed OpenGL texture format. }
+{ @HTML ( Give generic compressed OpenGL texture format. }
 function GetGenericCompressedFormat(const intFormat: TDGLInternalFormat; const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
-{: Give uncompressed texture format and OpenGL color format. }
+{ @HTML ( Give uncompressed texture format and OpenGL color format. }
 function GetUncompressedFormat(const intFormat: TDGLInternalFormat; out internalFormat: TDGLInternalFormat; out colorFormat: TGLEnum): Boolean;
 
 function DecodeGLTextureTarget(const TextureTarget: TDGLTextureTarget): TGLEnum;

@@ -1,0 +1,16 @@
+gls_camera BITMAP objects\gls_camera.bmp
+gls_lights BITMAP objects\gls_lights.bmp
+gls_objects BITMAP objects\gls_objects.bmp
+gls_root BITMAP objects\gls_root.bmp
+gls_cross BITMAP objects\gls_cross.bmp
+
+TDGLCamera BITMAP objects\TGLCamera.bmp
+TDGLDirectOpenGL BITMAP objects\TGLDirectOpenGL.bmp
+TDGLDummyCube BITMAP objects\TGLDummyCube.bmp
+TDGLLightSource BITMAP objects\TGLLightSource.bmp
+
+TDGLRenderPoint BITMAP objects\TGLRenderPoint.bmp
+
+TDGLCube BITMAP objects\basic_geometry\TGLCube.bmp
+TDGLPLANE BITMAP objects\basic_geometry\TGLPLANE.bmp
+

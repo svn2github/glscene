@@ -5,7 +5,7 @@
 
   Routines to interact with the screen/desktop.<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>06/02/00 - JD - Inmported from GLScene
   </ul></font>
 }

@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLFileDDS<p>
+{ @HTML ( DGLFileDDS<p>
 
    DDS File support for GLScene.
 
@@ -36,14 +36,14 @@ type
   private
     procedure flipSurface(chgData: PGLubyte; w, h, d: integer);
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { @HTML ( Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TDGLContext;
       const textureHandle: TGLuint;
       textureTarget: TDGLTextureTarget;
@@ -52,7 +52,7 @@ type
   end;
 
 var
-  {: Variable determines which resolution to use textures,
+  { @HTML ( Variable determines which resolution to use textures,
      high - it loads all levels,
      midle - skipped the first level,
      low - skipped the first two levels. }
@@ -150,7 +150,7 @@ begin
 
   with header.SurfaceFormat do
   begin
-    {: There are flags that are supposed to mark these fields as valid,
+    { @HTML ( There are flags that are supposed to mark these fields as valid,
        but some dds files don't set them properly }
     UnMipmap;
     FLOD[0].Width := dwWidth;
@@ -607,7 +607,7 @@ begin
   end;
 end;
 
-class function TDGLDDSImage.Capabilities: TDataFileCapabilities;
+class function TDGLDDSImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

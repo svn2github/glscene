@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: HDRImage<p>
+{ @HTML ( HDRImage<p>
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
 

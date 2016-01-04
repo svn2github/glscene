@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLSilhouette<p>
+{ @HTML ( DGLSilhouette<p>
 
    Enhanced silhouette classes.<p>
 
@@ -29,7 +29,7 @@ type
 
    // TDGLSilhouetteParameters
    //
-   {: Silouhette generation parameters.<p>
+   { @HTML ( Silouhette generation parameters.<p>
       SeenFrom and LightDirection are expected in local coordinates. }
    TDGLSilhouetteParameters = packed record
       SeenFrom, LightDirection : TAffineVector;
@@ -39,7 +39,7 @@ type
 
    // TDGLSilhouette
    //
-   {: Base class storing a volume silhouette.<p>
+   { @HTML ( Base class storing a volume silhouette.<p>
       Made of a set of indexed vertices defining an outline, and another set
       of indexed vertices defining a capping volume. Coordinates system
       is the object's unscaled local coordinates system.<br>
@@ -48,16 +48,16 @@ type
    TDGLSilhouette = class
       private
          { Private Declarations }
-         FVertices : TVectorList;
-         FIndices : TIntegerList;
-         FCapIndices : TIntegerList;
+         FVertices : TDGLVectorList;
+         FIndices : TDGLIntegerList;
+         FCapIndices : TDGLIntegerList;
          FParameters : TDGLSilhouetteParameters;
 
       protected
          { Protected Declarations }
-         procedure SetIndices(const value : TIntegerList);
-         procedure SetCapIndices(const value : TIntegerList);
-         procedure SetVertices(const value : TVectorList);
+         procedure SetIndices(const value : TDGLIntegerList);
+         procedure SetCapIndices(const value : TDGLIntegerList);
+         procedure SetVertices(const value : TDGLVectorList);
 
       public
          { Public Declarations }
@@ -65,16 +65,16 @@ type
          destructor Destroy; override;
 
          property Parameters : TDGLSilhouetteParameters read FParameters write FParameters;
-         property Vertices : TVectorList read FVertices write SetVertices;
-         property Indices : TIntegerList read FIndices write SetIndices;
-         property CapIndices : TIntegerList read FCapIndices write SetCapIndices;
+         property Vertices : TDGLVectorList read FVertices write SetVertices;
+         property Indices : TDGLIntegerList read FIndices write SetIndices;
+         property CapIndices : TDGLIntegerList read FCapIndices write SetCapIndices;
 
          procedure Flush;
          procedure Clear;
 
          procedure ExtrudeVerticesToInfinity(const origin : TAffineVector);
 
-         {: Adds an edge (two vertices) to the silhouette.<p>
+         { @HTML ( Adds an edge (two vertices) to the silhouette.<p>
             If TightButSlow is true, no vertices will be doubled in the
             silhouette list. This should only be used when creating re-usable
             silhouettes, because it's much slower. }
@@ -82,7 +82,7 @@ type
                                        tightButSlow : Boolean);
          procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1 : integer);
 
-         {: Adds a capping triangle to the silhouette.<p>
+         { @HTML ( Adds a capping triangle to the silhouette.<p>
             If TightButSlow is true, no vertices will be doubled in the
             silhouette list. This should only be used when creating re-usable
             silhouettes, because it's much slower. }
@@ -118,13 +118,13 @@ type
           it'd be nicer with Structs or classes, but it's actually faster this way.
           The reason it's faster is because of less cache overwrites when we only
           access a tiny bit of a triangle (for instance), not all data.}
-          FEdgeVertices : TIntegerList;
-          FEdgeFaces : TIntegerList;
-          FFaceVisible : TByteList;
-          FFaceVertexIndex : TIntegerList;
-          FFaceNormal : TAffineVectorList;
-          FVertexMemory : TIntegerList;
-          FVertices : TAffineVectorList;
+          FEdgeVertices : TDGLIntegerList;
+          FEdgeFaces : TDGLIntegerList;
+          FFaceVisible : TDGLByteList;
+          FFaceVertexIndex : TDGLIntegerList;
+          FFaceNormal : TDGLAffineVectorList;
+          FVertexMemory : TDGLIntegerList;
+          FVertices : TDGLAffineVectorList;
 
           function GetEdgeCount: integer; override;
           function GetFaceCount: integer; override;
@@ -132,7 +132,7 @@ type
           function ReuseOrFindVertexID(const seenFrom : TAffineVector;
                      aSilhouette : TDGLSilhouette; index : Integer) : Integer;
        public
-          {: Clears out all connectivity information. }
+          { @HTML ( Clears out all connectivity information. }
           procedure Clear; virtual;
 
           procedure CreateSilhouette(const silhouetteParameters : TDGLSilhouetteParameters; var aSilhouette : TDGLSilhouette; AddToSilhouette : boolean); override;
@@ -167,9 +167,9 @@ uses SysUtils;
 constructor TDGLSilhouette.Create;
 begin
    inherited;
-   FVertices:=TVectorList.Create;
-   FIndices:=TIntegerList.Create;
-   FCapIndices:=TIntegerList.Create;
+   FVertices:=TDGLVectorList.Create;
+   FIndices:=TDGLIntegerList.Create;
+   FCapIndices:=TDGLIntegerList.Create;
 end;
 
 destructor TDGLSilhouette.Destroy;
@@ -180,17 +180,17 @@ begin
    inherited;
 end;
 
-procedure TDGLSilhouette.SetIndices(const value : TIntegerList);
+procedure TDGLSilhouette.SetIndices(const value : TDGLIntegerList);
 begin
    FIndices.Assign(value);
 end;
 
-procedure TDGLSilhouette.SetCapIndices(const value : TIntegerList);
+procedure TDGLSilhouette.SetCapIndices(const value : TDGLIntegerList);
 begin
    FCapIndices.Assign(value);
 end;
 
-procedure TDGLSilhouette.SetVertices(const value : TVectorList);
+procedure TDGLSilhouette.SetVertices(const value : TDGLVectorList);
 begin
    FVertices.Assign(value);
 end;
@@ -314,19 +314,19 @@ end;
 
 constructor TConnectivity.Create(APrecomputeFaceNormal : boolean);
 begin
-  FFaceVisible := TByteList.Create;
+  FFaceVisible := TDGLByteList.Create;
 
-  FFaceVertexIndex := TIntegerList.Create;
-  FFaceNormal := TAffineVectorList.Create;
+  FFaceVertexIndex := TDGLIntegerList.Create;
+  FFaceNormal := TDGLAffineVectorList.Create;
 
-  FEdgeVertices := TIntegerList.Create;
-  FEdgeFaces := TIntegerList.Create;
+  FEdgeVertices := TDGLIntegerList.Create;
+  FEdgeFaces := TDGLIntegerList.Create;
 
   FPrecomputeFaceNormal := APrecomputeFaceNormal;
 
-  FVertexMemory := TIntegerList.Create;
+  FVertexMemory := TDGLIntegerList.Create;
 
-  FVertices := TAffineVectorList.Create;
+  FVertices := TDGLAffineVectorList.Create;
 end;
 
 destructor TConnectivity.Destroy;

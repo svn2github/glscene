@@ -3,7 +3,7 @@
 //
 { : JPG<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>28/12/15 - JD - Imported from GLScene
   </ul></font>
 }
@@ -786,49 +786,49 @@ var
   __turboFloat: LongBool = False;
 
 
-{$L LinkedObjects/jdapimin.obj}
-{$L LinkedObjects/jmemmgr.obj}
-{$L LinkedObjects/jmemnobs.obj}
-{$L LinkedObjects/jdinput.obj}
-{$L LinkedObjects/jdatasrc.obj}
-{$L LinkedObjects/jdapistd.obj}
-{$L LinkedObjects/jdmaster.obj}
-{$L LinkedObjects/jdphuff.obj}
-{$L LinkedObjects/jdhuff.obj}
-{$L LinkedObjects/jdmerge.obj}
-{$L LinkedObjects/jdcolor.obj}
-{$L LinkedObjects/jquant1.obj}
-{$L LinkedObjects/jquant2.obj}
-{$L LinkedObjects/jdmainct.obj}
-{$L LinkedObjects/jdcoefct.obj}
-{$L LinkedObjects/jdpostct.obj}
-{$L LinkedObjects/jddctmgr.obj}
-{$L LinkedObjects/jdsample.obj}
-{$L LinkedObjects/jidctflt.obj}
-{$L LinkedObjects/jidctfst.obj}
-{$L LinkedObjects/jidctint.obj}
-{$L LinkedObjects/jidctred.obj}
-{$L LinkedObjects/jdmarker.obj}
-{$L LinkedObjects/jutils.obj}
-{$L LinkedObjects/jcomapi.obj}
-{$L LinkedObjects/jdatadst.obj}
-{$L LinkedObjects/jcparam.obj}
-{$L LinkedObjects/jcapistd.obj}
-{$L LinkedObjects/jcapimin.obj}
-{$L LinkedObjects/jcinit.obj}
-{$L LinkedObjects/jcmarker.obj}
-{$L LinkedObjects/jcmaster.obj}
-{$L LinkedObjects/jcmainct.obj}
-{$L LinkedObjects/jcprepct.obj}
-{$L LinkedObjects/jccoefct.obj}
-{$L LinkedObjects/jccolor.obj}
-{$L LinkedObjects/jcsample.obj}
-{$L LinkedObjects/jcdctmgr.obj}
-{$L LinkedObjects/jcphuff.obj}
-{$L LinkedObjects/jfdctint.obj}
-{$L LinkedObjects/jfdctfst.obj}
-{$L LinkedObjects/jfdctflt.obj}
-{$L LinkedObjects/jchuff.obj}
+{$L  ..\LinkedObjects\jdapimin.obj}
+{$L  ..\LinkedObjects\jmemmgr.obj}
+{$L  ..\LinkedObjects\jmemnobs.obj}
+{$L  ..\LinkedObjects\jdinput.obj}
+{$L  ..\LinkedObjects\jdatasrc.obj}
+{$L  ..\LinkedObjects\jdapistd.obj}
+{$L  ..\LinkedObjects\jdmaster.obj}
+{$L  ..\LinkedObjects\jdphuff.obj}
+{$L  ..\LinkedObjects\jdhuff.obj}
+{$L  ..\LinkedObjects\jdmerge.obj}
+{$L  ..\LinkedObjects\jdcolor.obj}
+{$L  ..\LinkedObjects\jquant1.obj}
+{$L  ..\LinkedObjects\jquant2.obj}
+{$L  ..\LinkedObjects\jdmainct.obj}
+{$L  ..\LinkedObjects\jdcoefct.obj}
+{$L  ..\LinkedObjects\jdpostct.obj}
+{$L  ..\LinkedObjects\jddctmgr.obj}
+{$L  ..\LinkedObjects\jdsample.obj}
+{$L  ..\LinkedObjects\jidctflt.obj}
+{$L  ..\LinkedObjects\jidctfst.obj}
+{$L  ..\LinkedObjects\jidctint.obj}
+{$L  ..\LinkedObjects\jidctred.obj}
+{$L  ..\LinkedObjects\jdmarker.obj}
+{$L  ..\LinkedObjects\jutils.obj}
+{$L  ..\LinkedObjects\jcomapi.obj}
+{$L  ..\LinkedObjects\jdatadst.obj}
+{$L  ..\LinkedObjects\jcparam.obj}
+{$L  ..\LinkedObjects\jcapistd.obj}
+{$L  ..\LinkedObjects\jcapimin.obj}
+{$L  ..\LinkedObjects\jcinit.obj}
+{$L  ..\LinkedObjects\jcmarker.obj}
+{$L  ..\LinkedObjects\jcmaster.obj}
+{$L  ..\LinkedObjects\jcmainct.obj}
+{$L  ..\LinkedObjects\jcprepct.obj}
+{$L  ..\LinkedObjects\jccoefct.obj}
+{$L  ..\LinkedObjects\jccolor.obj}
+{$L  ..\LinkedObjects\jcsample.obj}
+{$L  ..\LinkedObjects\jcdctmgr.obj}
+{$L  ..\LinkedObjects\jcphuff.obj}
+{$L  ..\LinkedObjects\jfdctint.obj}
+{$L  ..\LinkedObjects\jfdctfst.obj}
+{$L  ..\LinkedObjects\jfdctflt.obj}
+{$L  ..\LinkedObjects\jchuff.obj}
 
 // External functions referenced by JPEG OBJ files.
 // These are replacements for fread, fwrite, and fflush.

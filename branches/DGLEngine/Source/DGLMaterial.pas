@@ -1,25 +1,38 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : DGLMaterial<p>
-
-  Handles Maerials and Shaders
-    TDGLMaterilLibrary :  all the colors and texture stuff,
-                          all the materials and it components: textures, samplers, combiners and etc.
-
-
+{ : DGLMaterial
+  @HTML (
+  <p>
+  Handles Materials via TDGLMaterilLibrary<br>
+  All the colors and texture stuff, all the materials and it components: textures, samplers, combiners, FBO Texture and etc.
+  </p>
+  <p>
   Features:
-  - material can contain different level of applying accordingly to hardware i.e. Features scaling.
-  - if automatically or by user selected level failed, material down to lower level.
-  - direct state access can be used for uniforms setting. (material shader is linked with shader in ShaderLibrary)
-  - economy mode for texture bindig to active units,
-    i.e. if textures less than maximum units may be not one binding occur per frame.
+  <ul>
+    <li> Material can contain different level of applying accordingly to hardware i.e. Features scaling.</li>
+    <li> If automatically or by user selected level failed, material down to lower level.</li>
+    <li> Direct state access can be used for uniforms setting. (material is linked with shader in ShaderLibrary)</li>
+    <li> Economy mode for texture binding to active units<br>
+         i.e. if textures less than maximum units may be not one binding occur per frame.
+    </li>
+  </ul>
 
+  <p>
   <b>History : </b><font size=-1><ul>
   <li>24/12/15 - JD - Imported, Updated and Improved From GLScene (GLMaterialEx)
-                    - Create ShaderLibrary
-                    - Create LightLibrary ????
-  </ul></font>
+  </ul></font></p>
+
+  <p>
+  <b>Status : </b>In Progress<br>
+  <b>Todo : </b>
+  <ul>
+      <li>Support for Pixel Buffer Object (PBO)</li>
+      <li>Add TDGLTextureCube = class(TDGLTexture)</li>
+      <li>Add TDGLTexture3D = class(TDGLTexture)</li>
+      <li>Add TDGLProceduralTexture = class(TDGLTexture)</li>
+      <li>Add Stream Loading Without Windows Services Context (see DGLGraphic)</li>
+  </ul></p> )
 }
 unit DGLMaterial;
 
@@ -28,41 +41,16 @@ interface
 {$I DGLEngine.inc}
 
 uses
-  System.Classes,
-  System.SysUtils,
-
+  System.Classes,System.SysUtils,System.Types,
   // GLS
-  DGLCrossPlatform,
-  DGLResStrings,
-  DGLSLog,
-
-  dglOpenGL,
-  //DGLXOpenGL,
-
-  DGLTypes,
-  DGLBaseClasses,
-  DGLPersistentClasses,
-  DGLXCollection,
-
-  DGLApplicationFileIO,
-  DGLUtils,
-
-  DGLContext,
-  DGLContextHandles,
-  DGLState,
-  DGLRenderContextInfo,
-
-  DGLVectorTypes,
-  DGLVectorMaths,
-  DGLCoordinates,
-
-  DGLGraphics,
-  DGLTextureFormat,
-  DGLColor,
-  DGLImageUtils,
-  DGLTextureCombiners;
+  DGLCrossPlatform,DGLResStrings,DGLSLog,dglOpenGL,
+  DGLTypes,DGLBaseClasses,DGLPersistentClasses,DGLXCollection,DGLApplicationFileIO,DGLUtils,
+  DGLContext,DGLContextHandles,DGLState,DGLRenderContextInfo,
+  DGLVectorTypes,DGLVectorMaths,DGLCoordinates,
+  DGLGraphics,DGLTextureFormat,DGLColor,DGLImageUtils,DGLTextureCombiners;
 
 type
+  // ****************************************************************************************
   ETexture = class(Exception);
 
   TDGLMaterialComponentName = string;
@@ -77,6 +65,7 @@ type
   TDGLLibMaterial             = class;
   TDGLTexture = class;
 
+  // ****************************************************************************************
   // an interface for proper TDGLLibMaterialNameProperty support
   IDGLMaterialLibrarySupported = interface(IInterface)
     ['{F33BE60E-98ED-4452-8224-0182145B19A7}']
@@ -86,6 +75,7 @@ type
   TShininess       = 0 .. 128;
   TMaterialOptions = set of TMaterialOption;
 
+  // ****************************************************************************************
   // TDGLAbstractLibMaterial
   //
   TDGLAbstractLibMaterial = class( TCollectionItem, IDGLMaterialLibrarySupported, IDGLNotifyAble)
@@ -138,6 +128,7 @@ type
     property Tag: Integer read FTag write FTag;
   end;
 
+  // ****************************************************************************************
   // TDGLAbstractLibMaterials
   //
   TDGLAbstractLibMaterials = class(TOwnedCollection)
@@ -149,6 +140,7 @@ type
     function MakeUniqueName(const nameRoot: TDGLLibMaterialName): TDGLLibMaterialName; virtual;
   end;
 
+  // ****************************************************************************************
   // TGLAbstractMaterialLibrary
   //
   TDGLAbstractMaterialLibrary = class(TDGLCadenceAbleComponent)
@@ -165,19 +157,20 @@ type
     { Public Declarations }
 
     procedure SetNamesToTStrings(AStrings: TStrings);
-    {: Applies the material of given name.<p>
+    { @HTML ( Applies the material of given name.<p>
        Returns False if the material could not be found. ake sure this
        call is balanced with a corresponding UnApplyMaterial (or an
        assertion will be triggered in the destructor).<br>
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string; var ARci: TRenderContextInfo): Boolean; virtual;
-    {: Un-applies the last applied material.<p>
+    { @HTML ( Un-applies the last applied material.<p>
        Use this function in conjunction with ApplyMaterial.<br>
        If no material was applied, an assertion will be triggered. }
     function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
   end;
 
+  // ****************************************************************************************
   // TDGLLibMaterials
   //
   TDGLLibMaterials = class(TDGLAbstractLibMaterials)
@@ -197,6 +190,7 @@ type
     function GetLibMaterialByName(const AName: TDGLLibMaterialName): TDGLLibMaterial;
   end;
 
+  // ****************************************************************************************
   // TGLFaceProperties
   //
   { : Stores basic face lighting properties.<p>
@@ -236,6 +230,7 @@ type
     property Specular:  TDGLColor read FSpecular write SetSpecular;
   end;
 
+  // ****************************************************************************************
   // TDGLDepthParameters
   //
   TDGLDepthProperties = class(TDGLUpdateAbleObject)
@@ -290,6 +285,7 @@ type
     property DepthClamp: boolean read FDepthClamp write SetDepthClamp default False;
   end;
 
+  // ****************************************************************************************
   // TDGLBlendingParameters
   //
   TDGLBlendingParameters = class(TDGLUpdateAbleObject)
@@ -329,6 +325,7 @@ type
     property AlphaBlendFuncDFactor: TBlendFunction read FAlphaBlendFuncDFactor write SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
   end;
 
+  // ****************************************************************************************
   // TDGLTextureSwizzling
   //
   { : Swizzle the components of a texture fetches in
@@ -354,9 +351,10 @@ type
     property AlphaFrom: TDGLTextureSwizzle index 3 read GetSwizzle write SetSwizzle stored StoreSwizzle;
   end;
 
+  // ****************************************************************************************
   // TGLBaseMaterialCollectionItem
   //
-  TDGLBaseMaterialCollectionItem = class(TDGLXCollectionItem)//, IGLMaterialLibrarySupported)
+  TDGLBaseMaterialCollectionItem = class(TDGLXCollectionItem, IDGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FNameHashKey:  Integer;
@@ -379,7 +377,7 @@ type
     procedure RegisterUser(AUser: TDGLUpdateAbleObject);
     procedure UnregisterUser(AUser: TDGLUpdateAbleObject);
     function GetUserCount: Integer;
-    function GetMaterialLibrary: TDGLMaterialLibrary;
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
 
     property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLib;
     property IsValid: Boolean read FIsValid;
@@ -393,15 +391,16 @@ type
 
   CGLBaseMaterialCollectionItem = class of TDGLBaseMaterialCollectionItem;
 
+  // ****************************************************************************************
   // TGLLibMaterialProperty
   //
-  TDGLLibMaterialProperty = class(TDGLUpdateAbleObject)
+  TDGLLibMaterialProperty = class(TDGLUpdateAbleObject, IDGLMaterialLibrarySupported)
   protected
     { Protected Declarations }
     FEnabled:      Boolean;
     //FNextPassName: TDGLLibMaterialName;
     function GetMaterial: TDGLLibMaterial ;
-    function GetMaterialLibrary: TDGLMaterialLibrary;
+    function GetMaterialLib: TDGLMaterialLibrary;
     procedure SetEnabled(AValue: Boolean); virtual;
     //procedure SetNextPass(const AValue: TDGLLibMaterialName);
     procedure Loaded; virtual;
@@ -409,14 +408,15 @@ type
   public
     { Public Declarations }
     procedure NotifyChange(Sender: TObject); override;
-    function GetOwnerMaterialLibrary: TDGLAbstractMaterialLibrary;
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
 
-    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLibrary;
+    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLib;
   published
     { Published Declarations }
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
+  // ****************************************************************************************
   // TDGLTextureSampler
   //
   TDGLTextureSampler = class(TDGLBaseMaterialCollectionItem)
@@ -487,6 +487,7 @@ type
     property sRGB_Encode: Boolean read FDecodeSRGB write SetDecodeSRGB default True;
   end;
 
+  // ****************************************************************************************
   // TDGLTextureCombiner
   //
   TDGLTextureCombiner = class(TDGLBaseMaterialCollectionItem)
@@ -518,6 +519,7 @@ type
     property Script: TStringList read FScript write SetScript;
   end;
 
+  // ****************************************************************************************
   // TGLAbstractTexture
   //
   TDGLAbstractTexture = class(TDGLBaseMaterialCollectionItem)
@@ -573,8 +575,7 @@ type
   TDGLTextureChange = (tcImage, tcParams);
   TDGLTextureChanges = set of TDGLTextureChange;
 
-
-
+  // ****************************************************************************************
   // TDGLTextureImageEx
   //
   TDGLTexture = class(TDGLAbstractTexture)
@@ -586,7 +587,6 @@ type
     { Private Declarations }
     FCompression:         TDGLTextureCompression;
     FImage:               TDGLBaseImage;
-//    FGLImage : TDGLBaseImage;    //
     FImageAlpha:          TDGLTextureImageAlpha;
     FImageBrightness:     Single;
     FImageGamma:          Single;
@@ -599,12 +599,12 @@ type
     FBaseLevel:           Integer;
     FMaxLevel:            Integer;
     FLastTime:            Double;
-      FUsePBO :                      Boolean;
-      pboRBId,pboWBId :              GLUInt;
+//      FUsePBO :                      Boolean;
+//      pboRBId,pboWBId :              GLUInt;
 
 
-    function GetReadPBO: GLUint;
-    function GetWritePBO: GLUint;
+//    function GetReadPBO: GLUint;
+//    function GetWritePBO: GLUint;
     procedure SetInternalFormat(const AValue: TDGLInternalFormat);
     procedure SetImageAlpha(const AValue: TDGLTextureImageAlpha);
     procedure SetImageBrightness(const AValue: Single);
@@ -640,19 +640,21 @@ type
     procedure Apply(var ARci: TRenderContextInfo); override;
     procedure UnApply(var ARci: TRenderContextInfo); override;
 
-    function  ReadFromPBO(pboId: GLUInt): boolean;
-    function  WriteToPBO(pboId: GLUInt): boolean;
-    procedure SetPixel(x,y: integer; color: TVector);
-    function  ReadPixel(x,y: integer): TVector;
-    procedure FreePBO;
-    procedure UploadData(Data: pointer; UsePBO: boolean=false);
-    function  DownloadData(var Datas: pointer; UsePBO: boolean=false): boolean;
+//    function  ReadFromPBO(pboId: GLUInt): boolean;
+//    function  WriteToPBO(pboId: GLUInt): boolean;
+//    procedure SetPixel(x,y: integer; color: TVector);
+//    function  ReadPixel(x,y: integer): TVector;
+//    procedure FreePBO;
+//    procedure UploadData(Data: pointer; UsePBO: boolean=false);
+//    function  DownloadData(var Datas: pointer; UsePBO: boolean=false): boolean;
 
     class function FriendlyName: string; override;
 
-
-
+    property Image :  TDGLBaseImage read FImage write FImage;
+//    property PBOReadBuffer: GLUint read GetReadPBO;
+//    property PBOWriteBuffer: GLUint read GetWritePBO;
     property ApplyCounter : Integer read FApplyCounter Write FApplyCounter;
+    property UseStreaming: Boolean read FUseStreaming write SetUseStreaming default False;
   published
     { Published Declarations }
 
@@ -661,8 +663,7 @@ type
     property InternalHeight: Integer read FHeight;
     property InternalDepth:  Integer read FDepth;
     property InternalFormat: TDGLInternalFormat read FInternalFormat write SetInternalFormat default tfRGBA8;
-   {: Image data for the texture.<p> }
-    property Image: TDGLBaseImage read FImage;// write SetImage;  //TDGLBaseImage
+   
     { : Automatic Image Alpha setting.<p>
       Allows to control how and if the image's Alpha channel (transparency)
       is computed. }
@@ -693,27 +694,12 @@ type
     { : Mipmap generation mode. }
     property MipGenMode: TMipmapGenerationMode read FMipGenMode write SetMipGenMode default mgmOnFly;
     { : Enable streaming loading. }
-    property UseStreaming: Boolean read FUseStreaming write SetUseStreaming default False;
 
-  {: Image ClassName for enabling True polymorphism.<p>
-    This is ugly, but since the default streaming mechanism does a
-    really bad job at storing	polymorphic owned-object properties,
-    and neither TFiler nor TPicture allow proper use of the built-in
-    streaming, that's the only way I found to allow a user-extensible
-    mechanism. }
-//    property ImageClassName: string read GetImageClassName write SetImageClassName stored StoreImageClassName;
-    {: Native opengl texture target.<p> }
+    { @HTML ( Native opengl texture target.<p> }
     property NativeTextureTarget: TDGLTextureTarget read GetTextureTarget;
-
-    property PBOReadBuffer: GLUint read GetReadPBO;
-    property PBOWriteBuffer: GLUint read GetWritePBO;
   end;
 
-  //@TODO TDGLTextureCube = class(TDGLTexture);
-  //@TODO TDGLTexture3D = class(TDGLTexture);
-  //@TODO TDGLProceduralTexture = class(TDGLTexture);
-
-
+  // ****************************************************************************************
   // TDGLFrameBufferAttachment
   //
   TDGLFrameBufferAttachment = class(TDGLAbstractTexture)
@@ -773,7 +759,7 @@ type
     property FixedSamplesLocation: Boolean read FFixedSamplesLocation write SetFixedSamplesLocation default False;
   end;
 
-
+  // ****************************************************************************************
   // TDGLTextureProperties
   //
   TDGLTextureProperties = class(TDGLLibMaterialProperty)
@@ -796,7 +782,6 @@ type
     FMapRCoordinates:              TDGLCoordinates4;
     FMapQCoordinates:              TDGLCoordinates4;
     FSwizzling:                    TDGLTextureSwizzling;
-
 
     function GetLibTextureName: TDGLMaterialComponentName;
     function GetLibSamplerName: TDGLMaterialComponentName;
@@ -846,7 +831,7 @@ type
     procedure Apply(var ARci: TRenderContextInfo);
     procedure UnApply(var ARci: TRenderContextInfo);
 
-    {: Returns the OpenGL memory used by the texture.<p>
+    { @HTML ( Returns the OpenGL memory used by the texture.<p>
       The compressed size is returned if, and only if texture compression
       if active and possible, and the texture has been allocated (Handle
       is defined), otherwise the estimated size (from TextureFormat
@@ -856,8 +841,8 @@ type
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
   published
     { Published Declarations }
-    property LibTextureName: TDGLMaterialComponentName read GetLibTextureName write SetLibTextureName;
-    property LibSamplerName: TDGLMaterialComponentName read GetLibSamplerName write SetLibSamplerName;
+    property TextureName: TDGLMaterialComponentName read GetLibTextureName write SetLibTextureName;
+    property SamplerName: TDGLMaterialComponentName read GetLibSamplerName write SetLibSamplerName;
     property TextureOffset:  TDGLCoordinates read GetTextureOffset write SetTextureOffset stored StoreTextureOffset;
     { : Texture coordinates scaling.<p>
       Scaling is applied before applying the offset, and is applied
@@ -884,27 +869,91 @@ type
     property Swizzling: TDGLTextureSwizzling read FSwizzling write SetSwizzling stored StoreSwizzling;
   end;
 
-  // TGLFixedFunctionProperties
+  // ****************************************************************************************
+  // TDGLAdvancedProperties
+  //
+  TDGLAdvancedProperties = class(TDGLLibMaterialProperty)
+  private
+    { Private Declarations }
+    FDiffuseLightMap : TDGLTextureProperties;
+    FAmbientMap : TDGLTextureProperties;
+    FSpecularMap : TDGLTextureProperties;
+    FBumpMapHeight : TDGLTextureProperties;
+    FBumpMapNormal : TDGLTextureProperties;
+    FAlphaMap : TDGLTextureProperties;
+   // FAlphaThresHold : Single;
+    FReflectionMap : TDGLTextureProperties;
+    FRefractionMap : TDGLTextureProperties;
+    FDiffuseLightMode : TDGLDiffuseLightMode;
+    FSpecularLightMode : TDGLSpecularLightMode;
+    //FFresnel : Boolean; // RefactionMode : TDGLRefractionMode;
+    //FBumpMapping :Boolean;
+
+    function GetDiffuseLightMap:TDGLTextureProperties;
+    function GetAmbientMap:TDGLTextureProperties;
+    function GetSpecularMap:TDGLTextureProperties;
+    function GetBumpMapHeight:TDGLTextureProperties;
+    function GetBumpMapNormal:TDGLTextureProperties;
+    function GetAlphaMap:TDGLTextureProperties;
+    function GetReflectionMap:TDGLTextureProperties;
+    function GetRefractionMap:TDGLTextureProperties;
+
+    procedure SetDiffuseLightMap(AValue: TDGLTextureProperties);
+    procedure SetAmbientMap(AValue: TDGLTextureProperties);
+    procedure SetSpecularMap(AValue: TDGLTextureProperties);
+    procedure SetBumpMapHeight(AValue: TDGLTextureProperties);
+    procedure SetBumpMapNormal(AValue: TDGLTextureProperties);
+    procedure SetAlphaMap(AValue: TDGLTextureProperties);
+    procedure SetReflectionMap(AValue: TDGLTextureProperties);
+    procedure SetRefractionMap(AValue: TDGLTextureProperties);
+//    procedure SetTexProp(AValue: TDGLTextureProperties);
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    //procedure Apply(var ARci: TRenderContextInfo);
+//    procedure UnApply(var ARci: TRenderContextInfo);
+
+  published
+    { Published Declarations }
+    property DiffuseLightMap : TDGLTextureProperties read getDiffuseLightMap write setDiffuseLightMap;
+    property AmbientMap : TDGLTextureProperties read getAmbientMap write setAmbientMap;
+    property SpecularMap : TDGLTextureProperties read getSpecularMap write setSpecularMap;
+    property BumpMapHeight : TDGLTextureProperties read getBumpMapHeight write setBumpMapHeight;
+    property BumpMapNormal : TDGLTextureProperties read getBumpMapNormal write setBumpMapNormal;
+    property AlphaMap : TDGLTextureProperties read getAlphaMap write setAlphaMap;
+    property ReflectionMap : TDGLTextureProperties read getReflectionMap write setReflectionMap;
+//    FReflectionCubeMap : TDGLTextureProperties;
+    property RefractionMap : TDGLTextureProperties read getRefractionMap write setRefractionMap;
+    property DiffuseLightMode : TDGLDiffuseLightMode read FDiffuseLightMode write FDiffuseLightMode;
+    property SpecularLightMode : TDGLSpecularLightMode read FSpecularLightMode write FSpecularLightMode;
+
+  end;
+
+  // ****************************************************************************************
+  // TDGLBaseMaterialProperties
   //
   TDGLBaseMaterialProperties = class(TDGLLibMaterialProperty)
   private
     { Private Declarations }
-    FFrontProperties: TDGLFaceProperties;
-    FBackProperties:  TDGLFaceProperties;
+    FFaceProperties: TDGLFaceProperties;
+    FAdvancedProperties:  TDGLAdvancedProperties;
     FDepthProperties: TDGLDepthProperties;
     FBlendingMode:    TBlendingMode;
     FBlendingParams:  TDGLBlendingParameters;
     FTexProp:         TDGLTextureProperties;
-    FMaterialOptions: TMaterialOptions;
+    //FMaterialOptions: TMaterialOptions;
     FFaceCulling:     TFaceCulling;
     FPolygonMode:     TPolygonMode;
     FTextureMode:     TDGLTextureMode;
-    function GetBackProperties: TDGLFaceProperties;
-    procedure SetBackProperties(AValues: TDGLFaceProperties);
-    procedure SetFrontProperties(AValues: TDGLFaceProperties);
+//    function GetAdvancedProperties: TDGLAdvancedProperties;
+    procedure SetAdvancedProperties(AValues: TDGLAdvancedProperties);
+    procedure SetFaceProperties(AValues: TDGLFaceProperties);
     procedure SetDepthProperties(AValues: TDGLDepthProperties);
     procedure SetBlendingMode(const AValue: TBlendingMode);
-    procedure SetMaterialOptions(const AValue: TMaterialOptions);
+    //procedure SetMaterialOptions(const AValue: TMaterialOptions);
     procedure SetFaceCulling(const AValue: TFaceCulling);
     procedure SetPolygonMode(AValue: TPolygonMode);
     procedure SetBlendingParams(const AValue: TDGLBlendingParameters);
@@ -923,10 +972,10 @@ type
 
   published
     { Published Declarations }
-    property MaterialOptions: TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
+    //property MaterialOptions: TMaterialOptions read FMaterialOptions write SetMaterialOptions default [];
 
-    property BackProperties:  TDGLFaceProperties read GetBackProperties write SetBackProperties;
-    property FrontProperties: TDGLFaceProperties read FFrontProperties write SetFrontProperties;
+    property AdvancedProperties:  TDGLAdvancedProperties read FAdvancedProperties write SetAdvancedProperties;
+    property FaceProperties: TDGLFaceProperties read FFaceProperties write SetFaceProperties;
     property DepthProperties: TDGLDepthProperties read FDepthProperties write SetDepthProperties;
     property BlendingMode:    TBlendingMode read FBlendingMode write SetBlendingMode default bmOpaque;
     property BlendingParams:  TDGLBlendingParameters read FBlendingParams write SetBlendingParams;
@@ -940,48 +989,14 @@ type
     //property NextPass;
   end;
 
-//  TDGLAdvancedMaterialProperties = class(TDGLLibMaterialProperty)
-//  private
-//    { Private Declarations }
-//    FDiffuseLightMap : TDGLTextureProperties;
-//    FAmbientMap : TDGLTextureProperties;
-//    FSpecularMap : TDGLTextureProperties;
-//    FBumpMapHeight : TDGLTextureProperties;
-//    FBumpMapNormal : TDGLTextureProperties;
-//    FAlphaMap : TDGLTextureProperties;
-//    FReflectionMap : TDGLTextureProperties;
-//    FReflectionCubeMap : TDGLTextureProperties;
-//    FRefractionMap : TDGLTextureProperties;
-//    FDiffuseLightMode : TDGLDiffuseLightMode;
-//    FSpecularLightMode : TDGLSpecularLightMode;
-//    FFresnel : Boolean;
-//    //FMapping :Boolean;
-//
-//
-//  public
-//    { Public Declarations }
-//    constructor Create(AOwner: TPersistent); override;
-//    destructor Destroy; override;
-//    procedure Assign(Source: TPersistent); override;
-//
-//    procedure Apply(var ARci: TRenderContextInfo);
-//    procedure UnApply(var ARci: TRenderContextInfo);
-//
-//
-//  published
-//    { Published Declarations }
-//
-//  end;
-
+  // ****************************************************************************************
   // TGLMultitexturingProperties
   //
   TLightDir2TexEnvColor = (l2eNone, l2eEnvColor0, l2eEnvColor1, l2eEnvColor2, l2eEnvColor3);
   TDGLMultitexturingProperties = class(TDGLLibMaterialProperty)
   private
     FLibCombiner:      TDGLTextureCombiner;
-//    FLibAsmProg:       TGLASMVertexProgram;
     FLibCombinerName:  TDGLMaterialComponentName;
-//    FLibAsmProgName:   TGLMaterialComponentName;
     FTexProps:         array [0 .. 3] of TDGLTextureProperties;
     FTextureMode:      TDGLTextureMode;
     FLightDir:         TLightDir2TexEnvColor;
@@ -1006,7 +1021,7 @@ type
     procedure UnApply(var ARci: TRenderContextInfo);
   published
     { Published Declarations }
-    property LibCombinerName: string read GetLibCombinerName write SetLibCombinerName;
+    property CombinerName: string read GetLibCombinerName write SetLibCombinerName;
     property Texture0:        TDGLTextureProperties index 0 read GetTexProps write SetTexProps;
     property Texture1:        TDGLTextureProperties index 1 read GetTexProps write SetTexProps;
     property Texture2:        TDGLTextureProperties index 2 read GetTexProps write SetTexProps;
@@ -1022,6 +1037,7 @@ type
 //    property NextPass;
   end;
 
+  // ****************************************************************************************
   // TDGLLibMaterial
   //
   TDGLLibMaterial = class(TDGLAbstractLibMaterial)
@@ -1032,10 +1048,7 @@ type
 //    FSelectedLevel:       TDGLMaterialLevel;
     FBaseMaterial:           TDGLbaseMaterialProperties;
     FMultitexturing:      TDGLMultitexturingProperties;
-    // FShaderLibrary : TDGLShaderLibrary
-    // FShaderName : TDGLShaderName;
-    // FOnShaderUniformSetting: TOnUniformSetting;
-
+    // FAdvancedMaterial : TDGLAdvancedMaterialProperties
 
     FStoreAmalgamating:   Boolean;
 
@@ -1068,9 +1081,10 @@ type
     property Multitexturing:  TDGLMultitexturingProperties read FMultitexturing write SetMultitexturing;
     // property ShaderLibrary
     // property ShaderName
-    // property OnShaderUniformSetting
+
   end;
 
+  // ****************************************************************************************
   // TDGLMatLibComponents
   //
   TDGLMatLibComponents = class(TDGLXCollection)
@@ -1088,11 +1102,11 @@ type
     function GetAttachmentByName(const AName: TDGLMaterialComponentName): TDGLFrameBufferAttachment;
     function GetSamplerByName(const AName: TDGLMaterialComponentName): TDGLTextureSampler;
     function GetCombinerByName(const AName: TDGLMaterialComponentName): TDGLTextureCombiner;
-  //  function GetShaderByName(const AName: TGLMaterialComponentName): TGLShaderEx;
-  //  function GetAsmProgByName(const AName: TGLMaterialComponentName): TGLASMVertexProgram;
+
     function MakeUniqueName(const AName: TDGLMaterialComponentName): TDGLMaterialComponentName;
   end;
 
+  // ****************************************************************************************
   // TDGLMaterialLibrary
   //
   TDGLMaterialLibrary = class(TDGLAbstractMaterialLibrary)
@@ -1134,25 +1148,20 @@ type
 
   TDGLMaterial = TDGLLibMaterial;
 
-////: Register a TDGLTextureImageClass (used for persistence and IDE purposes)
-//procedure RegisterGLTextureImageClass(textureImageClass: TDGLTextureImageClass);
-////: Finds a registerer TDGLTextureImageClass using its classname
-//function FindGLTextureImageClass(const className: string): TDGLTextureImageClass;
-////: Finds a registerer TDGLTextureImageClass using its FriendlyName
-//function FindGLTextureImageClassByFriendlyName(const friendlyName: string): TDGLTextureImageClass;
-////: Defines a TStrings with the list of registered TDGLTextureImageClass.
-//procedure SeTDGLTextureImageClassesToStrings(aStrings: TStrings);
-//{: Creates a TStrings with the list of registered TDGLTextureImageClass.<p>
-// To be freed by caller. }
-//function GeTDGLTextureImageClassesAsStrings: TStrings;
-//procedure RegisterTGraphicClassFileExtension(const extension: string;const aClass: TGraphicClass);
-//function CreateGraphicFromFile(const fileName: string): TDGLGraphic;
+// ****************************************************************************************
+
+function CreateGraphicFromFile(const fileName: string): TDGLGraphic;
 
 procedure RegisterGLMaterialNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLMaterialNameChangeEvent(AEvent: TNotifyEvent);
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 uses Math,
      DGLPictureRegisteredFormats;
@@ -1162,9 +1171,6 @@ type
 
 var
   vGLMaterialNameChangeEvent:    TNotifyEvent;
-//  vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-//  vStoreBegin:                     procedure(mode: TGLEnum);{$IFDEF MSWINDOWS}stdcall; {$ENDIF}{$IFDEF UNIX}cdecl; {$ENDIF}
-//  vGLTextureImageClasses: TList;
   vTGraphicFileExtension: array of string;
   vTGraphicClass: array of TGraphicClass;
 
@@ -1859,7 +1865,7 @@ end;
 
 // ------------------
 { TDGLDepthProperties }
-{$IFDEF GLS_REGION}{$REGION 'TGLBlendingParameters'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TGLDepthProperties'}{$ENDIF}
 
 constructor TDGLDepthProperties.Create(AOwner: TPersistent);
 begin
@@ -2218,9 +2224,9 @@ begin
   Result := TDGLMaterialLibrary(TDGLMatLibComponents(Owner).Owner);
 end;
 
-function TDGLBaseMaterialCollectionItem.GetMaterialLibrary: TDGLMaterialLibrary;
+function TDGLBaseMaterialCollectionItem.GetMaterialLibrary: TDGLAbstractMaterialLibrary;
 begin
-  Result := TDGLMaterialLibrary(TDGLMatLibComponents(Owner).Owner);
+  Result := TDGLAbstractMaterialLibrary(TDGLMatLibComponents(Owner).Owner);
 end;
 
 function TDGLBaseMaterialCollectionItem.GetUserCount: Integer;
@@ -2310,7 +2316,7 @@ begin
     Result := nil;
 end;
 
-function TDGLLibMaterialProperty.GetMaterialLibrary: TDGLMaterialLibrary;
+function TDGLLibMaterialProperty.GetMaterialLib: TDGLMaterialLibrary;
 begin
   if Owner is TDGLBaseMaterialCollectionItem then
     Result := TDGLMaterialLibrary( TDGLBaseMaterialCollectionItem(Owner).GetMaterialLibrary)
@@ -2318,12 +2324,12 @@ begin
     Result := TDGLMaterialLibrary(GetMaterial.GetMaterialLibrary);
 end;
 
-function TDGLLibMaterialProperty.GetOwnerMaterialLibrary: TDGLAbstractMaterialLibrary;
+function TDGLLibMaterialProperty.GetMaterialLibrary: TDGLAbstractMaterialLibrary;
 begin
   if Owner is TDGLBaseMaterialCollectionItem then
     Result := TDGLBaseMaterialCollectionItem(Owner).GetMaterialLibrary
   else
-    Result := TDGLMaterialLibrary(GetMaterial.GetMaterialLibrary);
+    Result := TDGLAbstractMaterialLibrary(GetMaterial.GetMaterialLibrary);
 end;
 
 //procedure TDGLLibMaterialProperty.SetNextPass(const AValue: TDGLLibMaterialName);
@@ -3715,18 +3721,18 @@ begin
   FMipGenMode          := mgmOnFly;
   FUseStreaming        := False;
   Name                 := TDGLMatLibComponents(AOwner).MakeUniqueName('Texture');
-  FUsePBO              := False;
-  pboRBId:=0;
-  pboWBId:=0;
+//  FUsePBO              := False;
+//  pboRBId:=0;
+//  pboWBId:=0;
   FFullSize:=-1;
   FPixelSize:=0;
 //  FKeepImageAfterTransfer := False;
 end;
 
 
-function TDGLTexture.DownloadData(var Datas: pointer; UsePBO: boolean): boolean;
+//function TDGLTexture.DownloadData(var Datas: pointer; UsePBO: boolean): boolean;
 //var t:pointer;
-begin
+//begin
 //  if not FTexture.Created then begin result:=false;exit;
 //  end else result:=true;
 //  assert(FTexture.Target<>GL_TEXTURE_CUBE_MAP, 'Not working with Cubemap textures');
@@ -3753,10 +3759,10 @@ begin
 //     end;
 //     glBindTexture(Target, 0); glDisable(Target);
 //  end;
-end;
+//end;
 
-procedure TDGLTexture.UpLoadData(Data: pointer; UsePBO: boolean);
-begin
+//procedure TDGLTexture.UpLoadData(Data: pointer; UsePBO: boolean);
+//begin
 //  assert(FTexture.Target<>GL_TEXTURE_CUBE_MAP, 'Not working with Cubemap textures');
 //  FTexture.Data:=Data;
 //  FTexture.UsePBO:=UsePBO;
@@ -3767,29 +3773,29 @@ begin
 //     glBindTexture(FTexture.Target,0);
 //  end;
 //  FSettedParams:=FSettedParams+[stData];
-end;
+//end;
 
-procedure TDGLTexture.FreePBO;
-begin
-
-     glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
-     glBindBuffer(GL_PIXEL_PACK_BUFFER,0);
-     if pboRBId<>0 then glDeleteBuffers(1,@pboRBId);
-     if pboWBId<>0 then glDeleteBuffers(1,@pboWBId);
-     pboRBId:=0; pboWBId:=0;
-
-end;
+//procedure TDGLTexture.FreePBO;
+//begin
+//
+//     glBindBuffer(GL_PIXEL_UNPACK_BUFFER,0);
+//     glBindBuffer(GL_PIXEL_PACK_BUFFER,0);
+//     if pboRBId<>0 then glDeleteBuffers(1,@pboRBId);
+//     if pboWBId<>0 then glDeleteBuffers(1,@pboWBId);
+//     pboRBId:=0; pboWBId:=0;
+//
+//end;
 
 destructor TDGLTexture.Destroy;
 begin
-  FreePBO;
+  //FreePBO;
   FHandle.Destroy;
   FImage.Free;
   inherited;
 end;
 
-function TDGLTexture.ReadFromPBO(pboId: GLUInt): boolean;
-begin
+//function TDGLTexture.ReadFromPBO(pboId: GLUInt): boolean;
+//begin
 // if (not FTexture.Created) or (pboId<=0) then begin result:=false;exit;
 // end else result:=true;
 // with FTexture do begin
@@ -3805,10 +3811,10 @@ begin
 //  glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 //  if GenerateMipMaps then glGenerateMipmapEXT(Target);
 // end;
-end;
+//end;
 
-function TDGLTexture.WriteToPBO(pboId: GLUInt): boolean;
-begin
+//function TDGLTexture.WriteToPBO(pboId: GLUInt): boolean;
+//begin
 //  if (not FTexture.Created) or (pboId<=0) then begin result:=false;exit;
 //  end else result:=true;
 //  with FTexture do begin
@@ -3818,12 +3824,12 @@ begin
 //    glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 //    glBindTexture(Target, 0); glDisable(Target);
 //  end;
-end;
+//end;
 
-function TDGLTexture.ReadPixel(x, y: integer): TVector;
-var t:pointer;
-    i,offs: integer;
-begin
+//function TDGLTexture.ReadPixel(x, y: integer): TVector;
+//var t:pointer;
+//    i,offs: integer;
+//begin
 //  if not FTexture.Created then exit;
 //  with FTexture do begin
 //     glEnable(Target); glBindTexture(Target, Id);
@@ -3849,37 +3855,37 @@ begin
 //     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 //     glBindTexture(Target, 0); glDisable(Target);
 //  end;
-end;
+//end;
 
-function TDGLTexture.GetReadPBO: GLUint;
-begin
-  if pboRBId=0 then
-  begin
-     glGenBuffers(1,@pboRBId);
-     glBindBuffer(GL_PIXEL_PACK_BUFFER, pboRBId);
-     glBufferData(GL_PIXEL_PACK_BUFFER, FullSize, nil, GL_STREAM_DRAW);
-     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-  end;
-  result:=pboRBId;
-end;
+//function TDGLTexture.GetReadPBO: GLUint;
+//begin
+//  if pboRBId=0 then
+//  begin
+//     glGenBuffers(1,@pboRBId);
+//     glBindBuffer(GL_PIXEL_PACK_BUFFER, pboRBId);
+//     glBufferData(GL_PIXEL_PACK_BUFFER, FullSize, nil, GL_STREAM_DRAW);
+//     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+//  end;
+//  result:=pboRBId;
+//end;
 
 
-function TDGLTexture.GetWritePBO: GLUint;
-begin
-  if pboWBId=0 then
-  begin
-     glGenBuffers(1,@pboWBId);
-     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboWBId);
-     glBufferData(GL_PIXEL_UNPACK_BUFFER, FullSize, nil, GL_STREAM_READ);
-     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-  end;
-  result:=pboWBId;
-end;
+//function TDGLTexture.GetWritePBO: GLUint;
+//begin
+//  if pboWBId=0 then
+//  begin
+//     glGenBuffers(1,@pboWBId);
+//     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboWBId);
+//     glBufferData(GL_PIXEL_UNPACK_BUFFER, FullSize, nil, GL_STREAM_READ);
+//     glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+//  end;
+//  result:=pboWBId;
+//end;
 
-procedure TDGLTexture.SetPixel(x, y: integer; color: TVector);
-var t:pointer;
-    i,offs: integer;
-begin
+//procedure TDGLTexture.SetPixel(x, y: integer; color: TVector);
+//var t:pointer;
+//    i,offs: integer;
+//begin
 //  if (not FTexture.Created) then exit;
 //  with FTexture do begin
 //    glEnable(Target); glBindTexture(Target, Id);
@@ -3902,7 +3908,7 @@ begin
 //    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 //    glBindTexture(Target, 0); glDisable(Target);
 //  end;
-end;
+//end;
 
 procedure TDGLTexture.NotifyChange(Sender: TObject);
 begin
@@ -3969,17 +3975,17 @@ begin
       else UnpackAlignment := 1; //glPixelStorei ( GL_UNPACK_ALIGNMENT,   1 );
     end;
 
-    if FUsePBO then
-    begin
-      glGenBuffers(1,@pboRBId);
-      glGenBuffers(1,@pboWBId);
-      Sender.GLStates.PixelUnPackBufferBinding:=pboWBID; //glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboWBId);
-      glBufferData(GL_PIXEL_UNPACK_BUFFER, FullSize, nil, GL_STREAM_READ);
-      Sender.GLStates.PixelUnPackBufferBinding:=0; // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-      Sender.GLStates.PixelPackBufferBinding:=pboRBID; // glBindBuffer(GL_PIXEL_PACK_BUFFER, pboRBId);
-      glBufferData(GL_PIXEL_PACK_BUFFER, FullSize, nil, GL_STREAM_DRAW);
-      Sender.GLStates.PixelPackBufferBinding:=0; // glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-    end;
+//    if FUsePBO then
+//    begin
+//      glGenBuffers(1,@pboRBId);
+//      glGenBuffers(1,@pboWBId);
+//      Sender.GLStates.PixelUnPackBufferBinding:=pboWBID; //glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pboWBId);
+//      glBufferData(GL_PIXEL_UNPACK_BUFFER, FullSize, nil, GL_STREAM_READ);
+//      Sender.GLStates.PixelUnPackBufferBinding:=0; // glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+//      Sender.GLStates.PixelPackBufferBinding:=pboRBID; // glBindBuffer(GL_PIXEL_PACK_BUFFER, pboRBId);
+//      glBufferData(GL_PIXEL_PACK_BUFFER, FullSize, nil, GL_STREAM_DRAW);
+//      Sender.GLStates.PixelPackBufferBinding:=0; // glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+//    end;
 
     if not IsDesignTime and FUseStreaming then
     begin
@@ -4050,69 +4056,6 @@ begin
       FHandle.NotifyDataUpdated;
 
 end;
-
-// SetImage
-//
-
-//procedure TDGLTexture.SetImage(AValue: TDGLBaseImage);
-//begin
-//  if Assigned(aValue) then
-//  begin
-//    if FImage.ClassType <> AValue.ClassType then
-//    begin
-//      FImage.Free;
-//      FImage := TDGLBaseImage(AValue.ClassType).Create(Self);
-////      FImage.OnTextureNeeded := DoOnTextureNeeded;
-//    end;
-//    FImage.Assign(AValue);
-//  end
-//  else
-//  begin
-//    FImage.Free;
-//    FImage := TDGLImage.Create(Self);
-////    FImage.OnTextureNeeded := DoOnTextureNeeded;
-//  end;
-//end;
-
-// SetImageClassName
-//
-
-//procedure TDGLTexture.SetImageClassName(const val: string);
-//var
-//  newImage: TDGLTextureImage;
-//  newImageClass: TDGLTextureImageClass;
-//begin
-//  if val <> '' then
-//    if FImage.ClassName <> val then
-//    begin
-//      newImageClass := FindGLTextureImageClass(val);
-//      Assert(newImageClass <> nil, 'Make sure you include the unit for ' + val +
-//        ' in your uses clause');
-//      if newImageClass = nil then
-//        exit;
-//      newImage := newImageClass.Create(Self);
-//      newImage.OnTextureNeeded := DoOnTextureNeeded;
-//      FImage.Free;
-//      FImage := newImage;
-//    end;
-//end;
-
-// GetImageClassName
-//
-//
-//function TDGLTexture.GetImageClassName: string;
-//begin
-//  Result := FImage.ClassName;
-//end;
-
-
-// StoreImageClassName
-//
-
-//function TDGLTexture.StoreImageClassName: Boolean;
-//begin
-//  Result := (FImage.ClassName <> TDGLPersistentImage.ClassName);
-//end;
 
 procedure TDGLTexture.CalcLODRange(out AFirstLOD, ALastLOD: Integer);
 var
@@ -4199,13 +4142,13 @@ begin
           if FBaseLevel < level then
             FBaseLevel                      := FMaxLevel;
           LImage.LevelStreamingState[level] := ssLoading;
-//          LImage.DoStreaming;
+          LImage.DoStreaming;
           bContinueStreaming := True;
         end;
 
       ssLoading:
         begin
-//          LImage.DoStreaming;
+          LImage.DoStreaming;
           bContinueStreaming := True;
           if FBaseLevel < level then
             FBaseLevel := FMaxLevel;
@@ -4249,10 +4192,10 @@ begin
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, FBaseLevel);
   end;
 
-  if FUSePBO then
-  begin
-
-  end;
+//  if FUSePBO then
+//  begin
+//
+//  end;
 
   // Smooth transition between levels
   if Assigned(FApplicableSampler) then
@@ -5265,8 +5208,8 @@ begin
   if Source is TDGLTextureProperties then
   begin
     LTexProp       := TDGLTextureProperties(Source);
-    LibTextureName := LTexProp.LibTextureName;
-    LibSamplerName := LTexProp.LibSamplerName;
+    TextureName := LTexProp.TextureName;
+    SamplerName := LTexProp.SamplerName;
     TextureOffset.Assign(LTexProp.TextureOffset);
     TextureScale.Assign(LTexProp.TextureScale);
     FTextureRotate := LTexProp.TextureRotate;
@@ -5640,6 +5583,173 @@ end;
 //      end;
 //    end;
 //end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLAdvancedProperties }
+{$IFDEF GLS_REGION}{$REGION 'TDGLAdvancedProperties'}{$ENDIF}
+
+function TDGLAdvancedProperties.GetDiffuseLightMap:TDGLTextureProperties;
+begin
+  if not Assigned(FDiffuseLightMap) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FDiffuseLightMap;
+end;
+
+function TDGLAdvancedProperties.GetAmbientMap:TDGLTextureProperties;
+begin
+  if not Assigned(FAmbientMap) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FAmbientMap;
+end;
+
+function TDGLAdvancedProperties.GetSpecularMap:TDGLTextureProperties;
+begin
+  if not Assigned(FSpecularMap) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FSpecularMap;
+end;
+
+function TDGLAdvancedProperties.GetBumpMapHeight:TDGLTextureProperties;
+begin
+  if not Assigned(FBumpMapHeight) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FBumpMapHeight;
+end;
+
+function TDGLAdvancedProperties.GetBumpMapNormal:TDGLTextureProperties;
+begin
+  if not Assigned(FBumpMapNormal) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FBumpMapNormal;
+end;
+
+function TDGLAdvancedProperties.GetAlphaMap:TDGLTextureProperties;
+begin
+  if not Assigned(FAlphaMap) then
+    FAlphaMap:= TDGLTextureProperties.Create(Self);
+  Result            := FAlphaMap;
+end;
+
+function TDGLAdvancedProperties.GetReflectionMap:TDGLTextureProperties;
+begin
+  if not Assigned(FReflectionMap) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FReflectionMap;
+end;
+
+function TDGLAdvancedProperties.GetRefractionMap:TDGLTextureProperties;
+begin
+  if not Assigned(FRefractionMap) then
+    FDiffuseLightMap:= TDGLTextureProperties.Create(Self);
+  Result            := FRefractionMap;
+end;
+
+procedure TDGLAdvancedProperties.SetDiffuseLightMap(AValue: TDGLTextureProperties);
+begin
+  FDiffuseLightMap.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetAmbientMap(AValue: TDGLTextureProperties);
+begin
+  FAmbientMap.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetSpecularMap(AValue: TDGLTextureProperties);
+begin
+  FSpecularMap.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetBumpMapHeight(AValue: TDGLTextureProperties);
+begin
+  FBumpMapHeight.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetBumpMapNormal(AValue: TDGLTextureProperties);
+begin
+  FBumpMapNormal.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetAlphaMap(AValue: TDGLTextureProperties);
+begin
+  FAlphaMap.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetReflectionMap(AValue: TDGLTextureProperties);
+begin
+  FReflectionMap.Assign(AValue);
+end;
+
+procedure TDGLAdvancedProperties.SetRefractionMap(AValue: TDGLTextureProperties);
+begin
+  FRefractionMap.Assign(AValue);
+end;
+
+constructor TDGLAdvancedProperties.Create(AOwner: TPersistent);
+begin
+  inherited;
+end;
+
+destructor TDGLAdvancedProperties.Destroy;
+begin
+  if Assigned(FDiffuseLightMap) then FreeAndNil(FDiffuseLightMap);
+  if Assigned(FAmbientMap) then FreeAndNil(FAmbientMap);
+  if Assigned(FSpecularMap) then FreeAndNil(FSpecularMap);
+  if Assigned(FBumpMapHeight) then FreeAndNil(FBumpMapHeight);
+  if Assigned(FBumpMapNormal) then FreeAndNil(FBumpMapNormal);
+  if Assigned(FReflectionMap) then FreeAndNil(FReflectionMap);
+  if Assigned(FRefractionMap) then FreeAndNil(FRefractionMap);
+  inherited;
+end;
+
+procedure TDGLAdvancedProperties.Assign(Source: TPersistent);
+var
+  LFFP: TDGLAdvancedProperties;
+begin
+  if Source is TDGLAdvancedProperties then
+  begin
+    LFFP := TDGLAdvancedProperties(Source);
+    if Assigned(LFFP.FDiffuseLightMap) then
+      DiffuseLightMap.Assign(LFFP.DiffuseLightMap)
+    else
+      FreeAndNil(FDiffuseLightMap);
+
+    if Assigned(LFFP.FAmbientMap) then
+      AmbientMap.Assign(LFFP.AmbientMap)
+    else
+      FreeAndNil(FAmbientMap);
+
+    if Assigned(LFFP.FSpecularMap) then
+      SpecularMap.Assign(LFFP.SpecularMap)
+    else
+      FreeAndNil(FSpecularMap);
+
+    if Assigned(LFFP.FBumpMapHeight) then
+      BumpMapHeight.Assign(LFFP.BumpMapHeight)
+    else
+      FreeAndNil(FBumpMapHeight);
+
+    if Assigned(LFFP.FBumpMapNormal) then
+      BumpMapNormal.Assign(LFFP.BumpMapNormal)
+    else
+      FreeAndNil(FBumpMapNormal);
+
+    if Assigned(LFFP.FReflectionMap) then
+      ReflectionMap.Assign(LFFP.ReflectionMap)
+    else
+      FreeAndNil(FReflectionMap);
+
+    if Assigned(LFFP.FRefractionMap) then
+      RefractionMap.Assign(LFFP.RefractionMap)
+    else
+      FreeAndNil(FRefractionMap);
+
+    NotifyChange(Self);
+  end;
+  inherited;
+end;
+
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
@@ -6105,14 +6215,14 @@ begin
             Enable(stCullFace)
           else
             Disable(stCullFace);
-          BackProperties.Apply(ARci, cmBack);
+          FaceProperties.Apply(ARci, cmBack);
         end;
       fcCull:
         Enable(stCullFace);
       fcNoCull:
         begin
           Disable(stCullFace);
-          BackProperties.Apply(ARci, cmBack);
+          FaceProperties.Apply(ARci, cmBack);
         end;
     end;
     // note: Front + Back with different PolygonMode are no longer supported.
@@ -6196,14 +6306,15 @@ begin
   if Source is TDGLBaseMaterialProperties then
   begin
     LFFP := TDGLBaseMaterialProperties(Source);
-    if Assigned(LFFP.FBackProperties) then
-      BackProperties.Assign(LFFP.BackProperties)
-    else
-      FreeAndNil(FBackProperties);
-    FFrontProperties.Assign(LFFP.FFrontProperties);
+//    if Assigned(LFFP.FBackProperties) then
+//      BackProperties.Assign(LFFP.BackProperties)
+//    else
+//      FreeAndNil(FBackProperties);
+    FFaceProperties.Assign(LFFP.FFaceProperties);
+    FAdvancedProperties.Assign(LFFP.FAdvancedProperties);
     FPolygonMode     := LFFP.FPolygonMode;
     FBlendingMode    := LFFP.FBlendingMode;
-    FMaterialOptions := LFFP.FMaterialOptions;
+    //FMaterialOptions := LFFP.FMaterialOptions;
     FFaceCulling     := LFFP.FFaceCulling;
     FDepthProperties.Assign(LFFP.FDepthProperties);
     FTexProp.Assign(LFFP.FTexProp);
@@ -6221,7 +6332,8 @@ end;
 constructor TDGLBaseMaterialProperties.Create(AOwner: TPersistent);
 begin
   inherited;
-  FFrontProperties := TDGLFaceProperties.Create(Self);
+  FFaceProperties := TDGLFaceProperties.Create(Self);
+  FAdvancedProperties := TDGLAdvancedProperties.Create(Self);
   FFaceCulling     := fcBufferDefault;
   FPolygonMode     := pmFill;
   FBlendingParams  := TDGLBlendingParameters.Create(Self);
@@ -6233,24 +6345,24 @@ end;
 
 destructor TDGLBaseMaterialProperties.Destroy;
 begin
-  FFrontProperties.Destroy;
-  FBackProperties.Free;
+  FFaceProperties.Destroy;
+  FAdvancedProperties.Free;
   FDepthProperties.Destroy;
   FBlendingParams.Destroy;
   FTexProp.Destroy;
   inherited;
 end;
 
-function TDGLBaseMaterialProperties.GetBackProperties: TDGLFaceProperties;
-begin
-  if not Assigned(FBackProperties) then
-    FBackProperties := TDGLFaceProperties.Create(Self);
-  Result            := FBackProperties;
-end;
+//function TDGLBaseMaterialProperties.GetBackProperties: TDGLFaceProperties;
+//begin
+//  if not Assigned(FBackProperties) then
+//    FBackProperties := TDGLFaceProperties.Create(Self);
+//  Result            := FBackProperties;
+//end;
 
-procedure TDGLBaseMaterialProperties.SetBackProperties(AValues: TDGLFaceProperties);
+procedure TDGLBaseMaterialProperties.SetAdvancedProperties(AValues: TDGLAdvancedProperties);
 begin
-  BackProperties.Assign(AValues);
+  AdvancedProperties.Assign(AValues);
   NotifyChange(Self);
 end;
 
@@ -6298,20 +6410,20 @@ begin
   end;
 end;
 
-procedure TDGLBaseMaterialProperties.SetFrontProperties(AValues: TDGLFaceProperties);
+procedure TDGLBaseMaterialProperties.SetFaceProperties(AValues: TDGLFaceProperties);
 begin
-  FFrontProperties.Assign(AValues);
+  FFaceProperties.Assign(AValues);
   NotifyChange(Self);
 end;
 
-procedure TDGLBaseMaterialProperties.SetMaterialOptions(const AValue: TMaterialOptions);
-begin
-  if AValue <> FMaterialOptions then
-  begin
-    FMaterialOptions := AValue;
-    NotifyChange(Self);
-  end;
-end;
+//procedure TDGLBaseMaterialProperties.SetMaterialOptions(const AValue: TMaterialOptions);
+//begin
+//  if AValue <> FMaterialOptions then
+//  begin
+//    FMaterialOptions := AValue;
+//    NotifyChange(Self);
+//  end;
+//end;
 
 procedure TDGLBaseMaterialProperties.SetPolygonMode(AValue: TPolygonMode);
 begin
@@ -7159,15 +7271,19 @@ end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-// ----------------
-{ }
+initialization
 
+RegisterClasses([TDGLTexture, TDGLFrameBufferAttachment, TDGLTextureSampler, TDGLTextureCombiner, TDGLMaterialLibrary]);
 
-// ----------------
-{ }
+RegisterXCollectionItemClass(TDGLTexture);
+RegisterXCollectionItemClass(TDGLTextureSampler);
+RegisterXCollectionItemClass(TDGLFrameBufferAttachment);
+RegisterXCollectionItemClass(TDGLTextureCombiner);
 
+finalization
 
-// ----------------
-{ }
 end.

@@ -1,11 +1,11 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLUtils<p>
+{ @HTML ( DGLUtils<p>
 
    Miscellaneous support utilities & classes.<p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Imported From GLScene
  </ul></font>
 }
@@ -36,7 +36,7 @@ function RoundUpToPowerOf2(value: Integer): Integer;
 function RoundDownToPowerOf2(value: Integer): Integer;
 //: Returns True if value is a true power of two
 function IsPowerOf2(value: Integer): Boolean;
-{: Read a CRLF terminated string from a stream.<p>
+{ @HTML ( Read a CRLF terminated string from a stream.<p>
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream: TStream): AnsiString;
 //: Write the string and a CRLF in the stream
@@ -53,48 +53,48 @@ function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Bool
 //: Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
-{: Parses the next integer in the string.<p>
+{ @HTML ( Parses the next integer in the string.<p>
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p: PChar): Integer;
-{: Parses the next integer in the string.<p>
+{ @HTML ( Parses the next integer in the string.<p>
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
 
-{: Saves ansistring "data" to "filename". }
+{ @HTML ( Saves ansistring "data" to "filename". }
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
-{: Returns the ansistring content of "filename". }
+{ @HTML ( Returns the ansistring content of "filename". }
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 
-{: Saves string "data" to "filename". }
+{ @HTML ( Saves string "data" to "filename". }
 procedure SaveStringToFile(const fileName: string; const data: String);
-{: Returns the string content of "filename". }
+{ @HTML ( Returns the string content of "filename". }
 function LoadStringFromFile(const fileName: string): String;
 
-{: Saves component to a file. }
+{ @HTML ( Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
-{: Loads component from a file. }
+{ @HTML ( Loads component from a file. }
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 
-{: Returns the size of "filename".<p>
+{ @HTML ( Returns the size of "filename".<p>
    Returns 0 (zero) is file does not exists. }
 function SizeOfFile(const fileName: string): Int64;
 
-{: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
+{ @HTML ( Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array: PSqrt255Array;
 
-{: Pops up a simple dialog with msg and an Ok button. }
+{ @HTML ( Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg: string);
-{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+{ @HTML ( Pops up a simple question dialog with msg and yes/no buttons.<p>
    Returns True if answer was "yes". }
 function QuestionDlg(const msg: string): Boolean;
-{: Posp a simple dialog with a string input. }
+{ @HTML ( Posp a simple dialog with a string input. }
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 
-{: Pops up a simple save picture dialog. }
+{ @HTML ( Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{: Pops up a simple open picture dialog. }
+{ @HTML ( Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 
 procedure SetDGLSceneMediaDir();
@@ -114,6 +114,9 @@ var
 resourcestring
   gluInvalidColor = '''%s'' is not a valid color format!';
 
+
+
+
 function ComputeNameHashKey(const AName: string): Integer;
 var
   i, n: Integer;
@@ -126,7 +129,7 @@ end;
 
   // WordToIntegerArray
   //
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal); assembler;
 // EAX contains Source

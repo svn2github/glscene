@@ -39,7 +39,7 @@ type
 
   // TDGLFullScreenResolution
   //
-  {: Defines how GLSceneForm will handle fullscreen request
+  { @HTML ( Defines how GLSceneForm will handle fullscreen request
      fcWindowMaximize: Use current resolution (just maximize form and hide OS bars)
      fcNearestResolution: Change to nearest valid resolution from current window size
      fcManualResolution: Use FFullScreenVideoMode settings }
@@ -50,7 +50,7 @@ type
 
   // TDGLFullScreenVideoMode
   //
-  {: Screen mode settings }
+  { @HTML ( Screen mode settings }
   TDGLFullScreenVideoMode = class(TPersistent)
   private
     FOwner: TDGLSceneForm;

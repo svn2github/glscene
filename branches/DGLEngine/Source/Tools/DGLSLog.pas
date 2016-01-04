@@ -4,10 +4,10 @@
 { : DGLSLog<p>
 
   Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
-  You may have only one instance of TDGLSLogger<p>
+  You may have only one instance of TDGLLogger<p>
   To obtain it, call UserLog() function from any unit.<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
     <li>18/12/15 - JD - Imported from GLScene
   </ul></font>
 
@@ -38,7 +38,7 @@ type
   { : Log level setting type }
   TLogLevels = set of TLogLevel;
 
-  {: What to do when number of messages exceeds message limit. }
+  { @HTML ( What to do when number of messages exceeds message limit. }
   TLogMessageLimitAction = (mlaContinue, mlaStopLogging, mlaHalt);
 
 var
@@ -68,7 +68,7 @@ type
     lfDateTime,
     { : include time elapsed since startup in the log }
     lfElapsed);
-  {: How log is buffered. }
+  { @HTML ( How log is buffered. }
   TLogBufferingMode =
   (
    lbmWriteEmidiatly,
@@ -80,7 +80,7 @@ type
   CLogSession = class of TLogSession;
   TLogSession = class;
 
-  {: Thread that periodically flushes the buffer to disk. }
+  { @HTML ( Thread that periodically flushes the buffer to disk. }
   TLogBufferFlushThread = class(TThread)
   private
     FParent: TLogSession;
@@ -90,7 +90,7 @@ type
     constructor Create(const AParent: TLogSession);
   end;
 
-  {: Thread that checks file size and splits the file if nessesary. }
+  { @HTML ( Thread that checks file size and splits the file if nessesary. }
   TLogCheckSizeThread = class(TThread)
   private
     FParent: TLogSession;
@@ -100,7 +100,7 @@ type
     constructor Create(const AParent: TLogSession);
   end;
 
-  {: Abstract Logger class }
+  { @HTML ( Abstract Logger class }
   TLogSession = class(TPersistent)
   private
     FBuffer: TStringList;
@@ -151,13 +151,13 @@ type
     { : Appends a string to log. Thread-safe. }
     procedure AppendLog(const AString: string; const ALevel: TLogLevel; const ALogTime: Boolean = True);
 
-    {: Writes string to log. Returns True if everything went ok.}
+    { @HTML ( Writes string to log. Returns True if everything went ok.}
     function DoWriteToLog(const AString: string): Boolean; virtual;
 
-    {: Writes FBuffer to log. Returns True if everything went ok.}
+    { @HTML ( Writes FBuffer to log. Returns True if everything went ok.}
     function DoWriteBufferToLog(): Boolean; virtual;
 
-    {: Resets log. Returns True if everything went ok.}
+    { @HTML ( Resets log. Returns True if everything went ok.}
     function DoResetLog: Boolean; virtual;
   public
     { Initializes a log session with the specified log file name, time and level settings }
@@ -209,12 +209,12 @@ type
     property MessageLimitAction: TLogMessageLimitAction read FMessageLimitAction write FMessageLimitAction default mlaHalt;
     property WriteInternalMessages: Boolean read FWriteInternalMessages write FWriteInternalMessages default True;
 
-    {: To always display log, put all log types. To never display log, leave this empty. }
+    { @HTML ( To always display log, put all log types. To never display log, leave this empty. }
     property DisplayLogOnExitIfItContains: TLogLevels read FDisplayLogOnExitIfItContains write FDisplayLogOnExitIfItContains
       default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
 
 
-    {: If LogFileMaxSize is not 0, then:
+    { @HTML ( If LogFileMaxSize is not 0, then:
        1) At start, all logs with the same extention will be deleted.
        2) All logs wil be periodically cheked for FileSize.
           New log file will be created when this size exceeds limit.
@@ -228,7 +228,7 @@ type
 
   { : Abstract class for control loging.<p> }
 
-  TDGLSLogger = class(TComponent)
+  TDGLLogger = class(TComponent)
   private
     { Private Declarations }
     FReplaceAssertion: Boolean;
@@ -260,7 +260,7 @@ type
 
   TIDELogProc = procedure(const AMsg: string);
 
-  { : Return logger wich created by TDGLSLogger component }
+  { : Return logger wich created by TDGLLogger component }
 function UserLog: TLogSession;
 function SkipBeforeSTR(var TextFile: Text; SkipSTR: string): Boolean;
 function ReadLine(var TextFile: Text): string;
@@ -291,7 +291,7 @@ implementation
 var
   v_DGLSLogger: TLogSession;
   vAssertErrorHandler: TAssertErrorProc;
-  vCurrentLogger: TDGLSLogger;
+  vCurrentLogger: TDGLLogger;
 
 { : GLScene inner logger. Create on first use, not in unit initialization. }
 function DGLSLogger(): TLogSession;
@@ -328,14 +328,14 @@ const
                   'AnsiString  : ', 'Currency    : ', 'Variant     : ', 'Interface   : ',
                   'WideString  : ', 'Int64       : ', '#HLType     : ');
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ @HTML ( Function from HotLog by Olivier Touzot "QnnO".}
 Function GetOriginalValue(s:String):String;
 //  Called to remove the false 'AnsiString :' assertion, for pointers and objects
 Begin
   result := RightStr(s,Length(s)-19);
 End;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ @HTML ( Function from HotLog by Olivier Touzot "QnnO".}
 Function VarRecToStr(vr:TVarRec):String;
 // See D6PE help topic "TVarRec"
 Begin
@@ -374,7 +374,7 @@ Begin
   END;
 end;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ @HTML ( Function from HotLog by Olivier Touzot "QnnO".}
 Function GetBasicValue(s:String; vKind:Byte):String;
 var iTmp : Integer;
     wasTObject: Boolean;
@@ -396,7 +396,7 @@ Begin
   EXCEPT; END;
 End;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ @HTML ( Function from HotLog by Olivier Touzot "QnnO".}
 function ConstArrayToString(const Elements: array of const): String;
 // -2-> Returns à string, surrounded by parenthesis : '(elts[0]; ...; elts[n-1]);'
 //      ("Basic infos" only.)
@@ -502,10 +502,10 @@ begin
 end;
 
 // ------------------
-// ------------------ TDGLSLogger ------------------
+// ------------------ TDGLLogger ------------------
 // ------------------
 
-constructor TDGLSLogger.Create(AOwner: TComponent);
+constructor TDGLLogger.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FTimeFormat := lfElapsed;
@@ -514,7 +514,7 @@ begin
   vCurrentLogger := Self;
 end;
 
-destructor TDGLSLogger.Destroy;
+destructor TDGLLogger.Destroy;
 begin
   if vCurrentLogger = Self then
     vCurrentLogger := nil;
@@ -523,19 +523,19 @@ begin
   inherited Destroy;
 end;
 
-function TDGLSLogger.GetLog: TLogSession;
+function TDGLLogger.GetLog: TLogSession;
 begin
   if not Assigned(FLog) then
     FLog := TLogSession.Init(Name + '.log', FTimeFormat, FLogLevels);
   Result := FLog;
 end;
 
-procedure TDGLSLogger.DoPrimary;
+procedure TDGLLogger.DoPrimary;
 begin
   vCurrentLogger := Self;
 end;
 
-procedure TDGLSLogger.SetReplaceAssertion(Value: Boolean);
+procedure TDGLLogger.SetReplaceAssertion(Value: Boolean);
 begin
   if Value <> FReplaceAssertion then
   begin

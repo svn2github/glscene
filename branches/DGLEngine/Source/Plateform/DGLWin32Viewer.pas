@@ -1,11 +1,11 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLWin32Context<p>
+{ @HTML ( DGLWin32Context<p>
 
       Win32 specific Scene viewer.<p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Imported From GLScene
  </ul></font>
 }
@@ -28,7 +28,7 @@ type
 
   // TDGLSceneViewer
   //
-  {: Component where the GLScene objects get rendered.<p>
+  { @HTML ( Component where the GLScene objects get rendered.<p>
      This component delimits the area where OpenGL renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
      camera property). This component can also render to a file or to a bitmap.<p>
@@ -91,7 +91,7 @@ type
     destructor Destroy; override;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    {: Makes TWinControl's RecreateWnd public.<p>
+    { @HTML ( Makes TWinControl's RecreateWnd public.<p>
        This procedure allows to work around limitations in some OpenGL
        drivers (like MS Software OpenGL) that are not able to share lists
        between RCs that already have display lists. }
@@ -114,30 +114,30 @@ type
 
   published
     { Published Declarations }
-    {: Camera from which the scene is rendered. }
+    { @HTML ( Camera from which the scene is rendered. }
     property Camera: TDGLCamera read GetCamera write SetCamera;
 
-    {: Specifies if the refresh should be synchronized with the VSync signal.<p>
+    { @HTML ( Specifies if the refresh should be synchronized with the VSync signal.<p>
        If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
-    {: Triggered before the scene's objects get rendered.<p>
+    { @HTML ( Triggered before the scene's objects get rendered.<p>
        You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
-    {: Triggered just after all the scene's objects have been rendered.<p>
+    { @HTML ( Triggered just after all the scene's objects have been rendered.<p>
        The OpenGL context is still active in this event, and you may use it
        to execute your own OpenGL rendering.<p> }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    {: Called after rendering.<p>
+    { @HTML ( Called after rendering.<p>
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    {: Access to buffer properties. }
+    { @HTML ( Access to buffer properties. }
     property Buffer: TDGLSceneBuffer read FBuffer write SetBuffer;
 
-    {: Returns or sets the field of view for the viewer, in degrees.<p>
+    { @HTML ( Returns or sets the field of view for the viewer, in degrees.<p>
     This value depends on the camera and the width and height of the scene.
     The value isn't persisted, if the width/height or camera.focallength is
     changed, FieldOfView is changed also. }

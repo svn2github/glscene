@@ -5,7 +5,7 @@
 
   Coordinate related classes.<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>21/12/15 - JD -  Imported From GLScene
   </ul></font>
 }

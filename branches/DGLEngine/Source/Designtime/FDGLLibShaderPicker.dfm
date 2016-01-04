@@ -3,8 +3,8 @@ object DGLLibShaderPicker: TDGLLibShaderPicker
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Library Shader Picker'
-  ClientHeight = 399
-  ClientWidth = 194
+  ClientHeight = 440
+  ClientWidth = 262
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,15 +25,15 @@ object DGLLibShaderPicker: TDGLLibShaderPicker
   object LBShaders: TListBox
     Left = 9
     Top = 24
-    Width = 177
-    Height = 337
+    Width = 240
+    Height = 377
     ItemHeight = 13
     TabOrder = 0
     OnDblClick = LBShadersDblClick
   end
   object BBCancel: TBitBtn
-    Left = 8
-    Top = 367
+    Left = 93
+    Top = 407
     Width = 75
     Height = 25
     Kind = bkCancel
@@ -41,8 +41,8 @@ object DGLLibShaderPicker: TDGLLibShaderPicker
     TabOrder = 1
   end
   object BBOk: TBitBtn
-    Left = 110
-    Top = 367
+    Left = 174
+    Top = 407
     Width = 75
     Height = 25
     Kind = bkOK

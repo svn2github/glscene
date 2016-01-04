@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: GLFileBMP<p>
+{ @HTML ( GLFileBMP<p>
 
    Graphic engine friendly loading of BMP image.<p>
 
@@ -54,7 +54,7 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TDGLContext;
       const textureHandle: TGLuint;
@@ -567,7 +567,7 @@ begin
   {$Message Hint 'TDGLBMPImage.AssignFromTexture not yet implemented' }
 end;
 
-class function TDGLBMPImage.Capabilities: TDataFileCapabilities;
+class function TDGLBMPImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

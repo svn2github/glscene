@@ -1,4 +1,4 @@
-package DGLEngine_RunTime;
+package DGLEngine_Runtime;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -16,7 +16,7 @@ package DGLEngine_RunTime;
 {$OVERFLOWCHECKS OFF}
 {$RANGECHECKS OFF}
 {$REFERENCEINFO ON}
-{$SAFEDIVIDE ON}
+{$SAFEDIVIDE OFF}
 {$STACKFRAMES ON}
 {$TYPEDADDRESS OFF}
 {$VARSTRINGCHECKS ON}
@@ -25,7 +25,7 @@ package DGLEngine_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'Delphi 3D OpenGL 3.3+ / Vulkan Engine'}
+{$DESCRIPTION 'GLScene 2 (DGLEngine) 3D OpenGL 3.3+/ Vulkan Engine'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -36,67 +36,71 @@ requires
   xmlrtl;
 
 contains
-  DGLContext in '..\Source\Base\DGLContext.pas',
-  dglOpenGL in '..\Source\Base\dglOpenGL.pas',
-  DGLResStrings in '..\Source\Base\DGLResStrings.pas',
-  DGLContextHandles in '..\Source\Base\DGLContextHandles.pas',
-  DGLViewer in '..\Source\DGLViewer.pas',
-  DGLRenderContextInfo in '..\Source\Base\DGLRenderContextInfo.pas',
-  DGLCrossPlatform in '..\Source\Plateform\DGLCrossPlatform.pas',
-  DGLWin32Context in '..\Source\Plateform\DGLWin32Context.pas',
-  DGLWin32Viewer in '..\Source\Plateform\DGLWin32Viewer.pas',
-  DGLState in '..\Source\Base\DGLState.pas',
-  DGLColor in '..\Source\DGLColor.pas',
-  DGLPersistentClasses in '..\Source\Base\DGLPersistentClasses.pas',
-  DGLBaseClasses in '..\Source\Base\DGLBaseClasses.pas',
-  DGLApplicationFileIO in '..\Source\Base\DGLApplicationFileIO.pas',
-  DGLPipelineTransformation in '..\Source\Base\DGLPipelineTransformation.pas',
-  DGLXCollection in '..\Source\Base\DGLXCollection.pas',
   DGLUtils in '..\Source\Base\DGLUtils.pas',
-  DGLVectorLists in '..\Source\Geometry\DGLVectorLists.pas',
+  DGLGraphics in '..\Source\Base\DGLGraphics.pas',
+  DGLContextHandles in '..\Source\Base\DGLContextHandles.pas',
+  DGLRenderManager in '..\Source\Base\DGLRenderManager.pas',
+  DGLApplicationFileIO in '..\Source\Base\DGLApplicationFileIO.pas',
+  DGLCrossPlatform in '..\Source\Base\DGLCrossPlatform.pas',
+  DGLXCollection in '..\Source\Base\DGLXCollection.pas',
+  DGLTextureFormat in '..\Source\Base\DGLTextureFormat.pas',
+  DGLRenderContextInfo in '..\Source\Base\DGLRenderContextInfo.pas',
+  DGLImageUtils in '..\Source\Base\DGLImageUtils.pas',
+  DGLContext in '..\Source\Base\DGLContext.pas',
+  DGLResStrings in '..\Source\Base\DGLResStrings.pas',
+  DGLPipelineTransformation in '..\Source\Base\DGLPipelineTransformation.pas',
+  DGLBaseClasses in '..\Source\Base\DGLBaseClasses.pas',
+  DGLState in '..\Source\Base\DGLState.pas',
+  DGLSLParameters in '..\Source\Base\DGLSLParameters.pas',
+  DGLPersistentClasses in '..\Source\Base\DGLPersistentClasses.pas',
+  DGLTypes in '..\Source\Base\DGLTypes.pas',
+  DGLTextureCombiners in '..\Source\Base\DGLTextureCombiners.pas',
+  dglOpenGL in '..\Source\Base\dglOpenGL.pas',
   DGLVectorMaths in '..\Source\Geometry\DGLVectorMaths.pas',
-  DGLVectorTypes in '..\Source\Geometry\DGLVectorTypes.pas',
+  DGLVectorLists in '..\Source\Geometry\DGLVectorLists.pas',
   DGLGeometryBB in '..\Source\Geometry\DGLGeometryBB.pas',
   DGLCoordinates in '..\Source\Geometry\DGLCoordinates.pas',
-  DGLGraphics in '..\Source\Base\DGLGraphics.pas',
-  DGLImageUtils in '..\Source\Base\DGLImageUtils.pas',
-  DGLTextureCombiners in '..\Source\DGLTextureCombiners.pas',
-  DGLTypes in '..\Source\Base\DGLTypes.pas',
-  DGLScene in '..\Source\DGLScene.pas',
-  DGLTextureFormat in '..\Source\Base\DGLTextureFormat.pas',
-  DGLRenderManager in '..\Source\Base\DGLRenderManager.pas',
+  DGLVectorTypes in '..\Source\Geometry\DGLVectorTypes.pas',
   DGLMeshUtils in '..\Source\Geometry\DGLMeshUtils.pas',
-  DGLMaterial in '..\Source\DGLMaterial.pas',
-  DGLObjects in '..\Source\DGLObjects.pas',
-  DGLSLParameters in '..\Source\Shaders\DGLSLParameters.pas',
   DGLSilhouette in '..\Source\Geometry\DGLSilhouette.pas',
-  DGLCustomShader in '..\Source\Shaders\DGLCustomShader.pas',
-  DGLSLShader in '..\Source\Shaders\DGLSLShader.pas',
-  DGLShader in '..\Source\DGLShader.pas',
-  DGLCadencer in '..\Source\DGLCadencer.pas',
-  DGLFileDDS in '..\Source\IO\2D\DGLFileDDS.pas',
-  DGLFileHDR in '..\Source\IO\2D\DGLFileHDR.pas',
-  DGLFileJPEG in '..\Source\IO\2D\DGLFileJPEG.pas',
-  DGLFilePNG in '..\Source\IO\2D\DGLFilePNG.pas',
-  DGLFileTGA in '..\Source\IO\2D\DGLFileTGA.pas',
-  DGLPictureRegisteredFormats in '..\Source\IO\2D\DGLPictureRegisteredFormats.pas',
+  DGLWin32Viewer in '..\Source\Plateform\DGLWin32Viewer.pas',
+  DGLWin32Context in '..\Source\Plateform\DGLWin32Context.pas',
   DGLSJPG in '..\Source\IO\2D\DGLSJPG.pas',
-  DGLSRGBE in '..\Source\IO\2D\DGLSRGBE.pas',
-  DGLDXTC in '..\Source\IO\2D\DGLDXTC.pas',
+  DGLLIBPNG in '..\Source\IO\2D\DGLLIBPNG.pas',
+  DGLFileTGA in '..\Source\IO\2D\DGLFileTGA.pas',
+  DGLFilePNG in '..\Source\IO\2D\DGLFilePNG.pas',
+  DGLFileO3TC in '..\Source\IO\2D\DGLFileO3TC.pas',
+  DGLFileJPEG in '..\Source\IO\2D\DGLFileJPEG.pas',
+  DGLFileHDR in '..\Source\IO\2D\DGLFileHDR.pas',
+  DGLFileDDS in '..\Source\IO\2D\DGLFileDDS.pas',
+  DGLFileBMP in '..\Source\IO\2D\DGLFileBMP.pas',
   DGLLIBFREETYPE in '..\Source\IO\2D\DGLLIBFREETYPE.pas',
-  DGLSMemo in '..\Source\Tools\DGLSMemo.pas',
-  DGLScreen in '..\Source\DGLScreen.pas',
+  DGLDXTC in '..\Source\IO\2D\DGLDXTC.pas',
   DGLDDSImage in '..\Source\IO\2D\DGLDDSImage.pas',
   DGLHDRImage in '..\Source\IO\2D\DGLHDRImage.pas',
-  DGLLIBPNG in '..\Source\IO\2D\DGLLIBPNG.pas',
   DGLTGA in '..\Source\IO\2D\DGLTGA.pas',
-  DGLKeyboard in '..\Source\DGLKeyboard.pas',
+  DGLSRGBE in '..\Source\IO\2D\DGLSRGBE.pas',
+  DGLPictureRegisteredFormats in '..\Source\IO\2D\DGLPictureRegisteredFormats.pas',
+  DGLSMemo in '..\Source\Tools\DGLSMemo.pas',
   DGLSLog in '..\Source\Tools\DGLSLog.pas',
-  DGLFileO3TC in '..\Source\IO\2D\DGLFileO3TC.pas',
-  DGLFileBMP in '..\Source\IO\2D\DGLFileBMP.pas';
+  DGLSArchiveManager in '..\Source\Tools\DGLSArchiveManager.pas',
+  DGLAsyncTimer in '..\Source\Tools\DGLAsyncTimer.pas',
+  DGLSoundFileObjects in '..\Source\Sound\DGLSoundFileObjects.pas',
+  dglopenal in '..\Source\Sound\dglopenal.pas',
+  DGLSMWaveOut in '..\Source\Sound\DGLSMWaveOut.pas',
+  DGLSound in '..\Source\Sound\DGLSound.pas',
+  DGLSMOpenAL in '..\Source\Sound\DGLSMOpenAL.pas',
+  DGLShader in '..\Source\DGLShader.pas',
+  DGLObjects in '..\Source\DGLObjects.pas',
+  DGLMaterial in '..\Source\DGLMaterial.pas',
+  DGLViewer in '..\Source\DGLViewer.pas',
+  DGLScreen in '..\Source\DGLScreen.pas',
+  DGLScene in '..\Source\DGLScene.pas',
+  DGLKeyboard in '..\Source\DGLKeyboard.pas',
+  DGLCadencer in '..\Source\DGLCadencer.pas',
+  DGLColor in '..\Source\DGLColor.pas',
+  DGLObjectManager in '..\Source\DGLObjectManager.pas',
+  DGLFileZLIB in '..\Source\IO\DGLFileZLIB.pas',
+  DGLVectorObjects in '..\Source\DGLVectorObjects.pas';
 
 end.
-
-
-
-

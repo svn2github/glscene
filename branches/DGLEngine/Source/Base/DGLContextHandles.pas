@@ -1,5 +1,5 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
 { : DGLContextHandles<p>
 
@@ -22,7 +22,7 @@
   <li>Shader Program
   </ul><p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>21/12/15 - JD -  Simplyfied and Imported From GLScene
   </ul></font>
 }
@@ -513,7 +513,7 @@ Type
 
   // TDGLRenderbufferHandle
   //
-  { : Manages a handle to a Renderbuffer Object.
+  { : Manages a handle to a Renderbuffer Object (FBO).
     A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
     rendering and it also provides a means to support rendering to GL logical
     buffer types which have no corresponding texture format (stencil, accum, etc). }
@@ -2121,7 +2121,7 @@ end;
 function TDGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
   Result := glGetUniformLocation(GetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
+//  Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
 end;
 
 //function TDGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
@@ -2250,11 +2250,13 @@ end;
 function TDGLProgramHandle.GetUniformMatrix4fv(const index: string): TMatrix;
 begin
   glGetUniformfv(GetHandle, GetUniformLocation(index), @Result);
+
 end;
 
 procedure TDGLProgramHandle.SetUniformMatrix4fv(const index: string; const val: TMatrix);
 begin
-  glUniformMatrix4fv(GetUniformLocation(index), 1, False, @val);
+  glUniformMatrix4fv(GetUniformLocation(index), 1, GL_FALSE, @val);
+
 end;
 
 procedure TDGLProgramHandle.SetUniformf(const index: string; const val: Single);

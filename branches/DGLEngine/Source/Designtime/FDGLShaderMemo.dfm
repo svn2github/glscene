@@ -3,8 +3,8 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
   Top = 92
   BorderIcons = [biSystemMenu]
   Caption = 'GLSL Shader Source Editor'
-  ClientHeight = 622
-  ClientWidth = 751
+  ClientHeight = 593
+  ClientWidth = 612
   Color = clBtnFace
   Constraints.MinHeight = 400
   Constraints.MinWidth = 500
@@ -23,7 +23,7 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
   object ToolBar: TToolBar
     Left = 0
     Top = 0
-    Width = 751
+    Width = 612
     AutoSize = True
     BorderWidth = 1
     ButtonHeight = 28
@@ -175,9 +175,9 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
   end
   object CompilatorLog: TMemo
     Left = 0
-    Top = 456
-    Width = 751
-    Height = 123
+    Top = 488
+    Width = 612
+    Height = 62
     TabStop = False
     Align = alBottom
     Color = clInfoBk
@@ -187,16 +187,16 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 579
-    Width = 751
+    Top = 550
+    Width = 612
     Height = 43
     Align = alBottom
     TabOrder = 1
     DesignSize = (
-      751
+      612
       43)
     object CancelButton: TButton
-      Left = 668
+      Left = 529
       Top = 10
       Width = 75
       Height = 25
@@ -207,7 +207,7 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
       TabOrder = 0
     end
     object OKButton: TButton
-      Left = 588
+      Left = 449
       Top = 10
       Width = 75
       Height = 25
@@ -222,34 +222,58 @@ object DGLShaderMemoForm: TDGLShaderMemoForm
       Width = 75
       Height = 25
       Anchors = [akLeft, akBottom]
-      Caption = 'Compile'
+      Caption = 'Check'
       TabOrder = 2
       OnClick = CheckButtonClick
     end
   end
-  object GLSLMemo: TMemo
+  object GLSLMemo: TDGLSynHiMemo
     Left = 0
     Top = 32
-    Width = 751
-    Height = 424
+    Width = 612
+    Height = 456
     Cursor = crIBeam
     Align = alClient
+    TabOrder = 3
+    TabStop = True
+    ReadOnly = False
+    AutoIndent = True
+    GutterColor = clGray
+    GutterWidth = 48
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -12
+    Font.Height = -13
     Font.Name = 'Courier New'
     Font.Style = []
+    BkColor = 3025704
+    SelColor = clWhite
+    SelBkColor = 10841427
     Lines.Strings = (
       '')
-    ParentFont = False
-    ScrollBars = ssBoth
-    TabOrder = 3
+    HiddenCaret = False
+    TabSize = 4
+    UndoLimit = 100
+    DelErase = False
+    DelimiterStyle.TextColor = 1008639
+    DelimiterStyle.BkColor = 3025704
+    DelimiterStyle.Style = []
+    CommentStyle.TextColor = clSilver
+    CommentStyle.BkColor = 3025704
+    CommentStyle.Style = [fsItalic]
+    NumberStyle.TextColor = 2995967
+    NumberStyle.BkColor = 3025704
+    NumberStyle.Style = [fsBold]
+    CaseSensitive = False
+    ExplicitLeft = 264
+    ExplicitTop = 272
+    ExplicitWidth = 100
+    ExplicitHeight = 40
   end
   object ImageList: TImageList
     Left = 80
     Top = 64
     Bitmap = {
-      494C01010E001800AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E001800B80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

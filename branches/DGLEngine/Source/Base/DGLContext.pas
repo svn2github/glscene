@@ -1,13 +1,13 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLContext<p>
-
-      Prototypes and base implementation of TDGLContext.<p>
-
- <b>Historique : </b><font size=-1><ul>
+{@HTML (
+   DGLContext
+   <p>Prototypes and base implementation of TDGLContext.</p>
+   <p>
+   <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Simplyfied and Imported From GLScene
- </ul></font>
+   </ul></font></p> )
 }
 unit DGLContext;
 
@@ -21,13 +21,13 @@ uses
   System.Classes, System.SysUtils, System.Types, System.SyncObjs,
   VCL.Forms, VCL.Controls, VCL.Consts,
   //DGLE
+  DGLSLog,
   dglOpenGL,
   DGLCrossPlatform,
   DGLTypes,
   DGLResStrings,
   DGLState,
   DGLTextureFormat,
-  DGLSLog,
   DGLPipelineTransformation;
 
   //array[0..3] of GLenum = (GL_FRONT_LEFT), GL_AUX0, GL_AUX1, GL_AUX2);  Deprecated
@@ -55,39 +55,27 @@ Type
   TAbstractMultitextureCoordinatorClass = class of TAbstractMultitextureCoordinator;
 
 
-//  TFinishTaskEvent = class(TEvent)
-//  public
-//    constructor Create; reintroduce;
-//  end;
-//
-//  TTaskProcedure = procedure of object; stdcall;
-//  TServiceContextTask = record
-//    Task: TTaskProcedure;
-//    Event: TFinishTaskEvent;
-//  end;
-
-
-
-
+  // ****************************************************************************************
   // TContextOption
   //
-  {: Options for the rendering context.<p>
-     roDoubleBuffer: enables double-buffering.<br>
-     roRenderToWindows: ignored (legacy).<br>
-     roTwoSideLighting: enables two-side lighting model.<br>
-     roStereo: enables stereo support in the driver (dunno if it works, I don't have a stereo device to test...)<br>
-     roDestinationAlpha: request an Alpha channel for the rendered output<br>
-     roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
-     roNoColorBufferClear: do not clear the color buffer automatically, if the whole viewer is fully repainted each frame, this can improve framerate<br>
-     roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
-     roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for early-z culling.<br>
-     roForwardContext: force OpenGL forward context }
+  { @HTML ( Options for the rendering context.<p>
+     <ul>
+     <li>roDoubleBuffer: enables double-buffering.</li>
+     <li>roRenderToWindows: ignored (legacy).</li>
+     <li>roTwoSideLighting: enables two-side lighting model.</li>
+     <li>roStereo: enables stereo support in the driver (dunno if it works, I don't have a stereo device to test...)</li>
+     <li>roDestinationAlpha: request an Alpha channel for the rendered output</li>
+     <li>roNoColorBuffer: don't request a color buffer (color depth setting ignored)</li>
+     <li>roNoColorBufferClear: do not clear the color buffer automatically, if the whole viewer is fully repainted each frame, this can improve framerate</li>
+     <li>roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering</li>
+     <li>roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for early-z culling.</li>
+     </ul></p> ) }
 
   TContextOption = ( roDoubleBuffer, roStencilBuffer,
                     roRenderToWindow, roTwoSideLighting, roStereo,
                     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
                     roNoSwapBuffers, roNoDepthBufferClear, roDebugContext,
-                    roForwardContext, roOpenGL_ES2_Context);
+                    roOpenGL_ES2_Context);
 
   TContextOptions = set of TContextOption;
 
@@ -100,16 +88,17 @@ Type
 
   TOnPrepareHandleData = procedure(AContext: TDGLContext) of object;
 
+  // ****************************************************************************************
   // TGLContext
   //
-  {: Wrapper around an OpenGL rendering context.<p>
+  { @HTML ( Wrapper around an OpenGL rendering context.<p>
      The aim of this class is to offer platform-independant
      initialization, activation and management of OpenGL
      rendering context. The class also offers notifications
      event and error/problems detection.<br>
      This is a virtual abstract a class, and platform-specific
      subclasses must be used.<br>
-     All rendering context share the same lists. }
+     All rendering context share the same lists.</p> ) }
   TDGLContext = class
   private
     FColorBits    : Integer;
@@ -126,8 +115,6 @@ Type
     FManager: TDGLContextManager;
 
     FOnDestroyContext: TNotifyEvent;
-
-
 
     FIsPreparationNeed : Boolean;
 
@@ -174,49 +161,49 @@ Type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    {: Creates the context.<p>
+    { @HTML ( Creates the context.<p>
        This method must be invoked before the context can be used. }
     procedure CreateContext(ADeviceHandle: HDC); overload;
 
-    {: Creates an in-memory context.<p>
+    { @HTML ( Creates an in-memory context.<p>
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
-       contexts). }
+       contexts). </p> ) }
     procedure CreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer = 1);
-    {: Destroy the context.<p>
+    { @HTML ( Destroy the context.<p>
        Will fail if no context has been created.<br>
        The method will first invoke the OnDestroyContext
        event, then attempts to deactivate the context
-       (if it is active) before destroying it. }
+       (if it is active) before destroying it. </p> ) }
     procedure DestroyContext;
 
-    {: Activates the context.<p>
+    { @HTML ( Activates the context.<p>
        A context can be activated multiple times (and must be
        deactivated the same number of times), but this function
-       will fail if another context is already active. }
+       will fail if another context is already active. </p> ) }
     procedure Activate;
 
-    {: Deactivates the context.<p>
+    { @HTML ( Deactivates the context.<p>
        Will fail if the context is not active or another
-       context has been activated. }
+       context has been activated. </p> ) }
     procedure Deactivate;
 
-    {: Setup display list sharing between two rendering contexts.<p>
-       Both contexts must have the same pixel format. }
+    { @HTML ( <p>Setup display list sharing between two rendering contexts.
+       Both contexts must have the same pixel format. </p> ) }
     procedure ShareLists(aContext: TDGLContext);
 
-    {: Call OnPrepare for all handles.<p> }
+    { @HTML ( <p>Call OnPrepare for all handles. </p> ) }
     procedure PrepareHandlesData;
 
-    {: Returns true if the context is valid.<p>
+    { @HTML ( Returns true if the context is valid.<p>
        A context is valid from the time it has been successfully
-       created to the time of its destruction. }
+       created to the time of its destruction. </p> ) }
     function IsValid: Boolean; virtual; abstract;
 
-    {: Request to swap front and back buffers if they were defined. }
+    { @HTML ( <p>Request to swap front and back buffers if they were defined. </p> ) }
     procedure SwapBuffers; virtual; abstract;
 
-    {: Returns the first compatible context that isn't self in the shares. }
+    { @HTML ( <p>Returns the first compatible context that isn't self in the shares.</p> ) }
     function FindCompatibleContext: TDGLContext;
 
     procedure DestroyAllHandles;
@@ -225,43 +212,43 @@ Type
 
     //---------------------------------------------------------------------------------------
 
-    {: Color bits for the rendering context }
+    { @HTML ( <p>Color bits for the rendering context </p> ) }
     property ColorBits: Integer read FColorBits write SetColorBits;
 
-    {: Alpha bits for the rendering context }
+    { @HTML (<p> Alpha bits for the rendering context </p> ) }
     property AlphaBits: Integer read FAlphaBits write SetAlphaBits;
 
-    {: Depth bits for the rendering context }
+    { @HTML (<p> Depth bits for the rendering context </p> ) }
     property DepthBits: Integer read FDepthBits write SetDepthBits;
 
-    {: Stencil bits for the rendering context }
+    { @HTML (<p> Stencil bits for the rendering context  </p> )}
     property StencilBits: Integer read FStencilBits write SetStencilBits;
 
-    {: Accumulation buffer bits for the rendering context }
+    { @HTML (<p> Accumulation buffer bits for the rendering context </p> ) }
     property AccumBits: Integer read FAccumBits write SetAccumBits;
 
-    {: Auxiliary buffers bits for the rendering context }
+    { @HTML (<p> Auxiliary buffers bits for the rendering context  </p> )}
     property AuxBuffers: Integer read FAuxBuffers write SetAuxBuffers;
 
-    {: AntiAliasing option.<p>
-       Ignored if not hardware supported, currently based on ARB_multisample. }
+    { @HTML ( AntiAliasing option.<p>
+       Ignored if not hardware supported, currently based on ARB_multisample. </p> ) }
     property AntiAliasing: TDGLAntiAliasing read FAntiAliasing write SetAntiAliasing;
 
-    {: Specifies the layer plane that the rendering context is bound to. }
+    { @HTML ( <p>Specifies the layer plane that the rendering context is bound to. </p> ) }
     property Layer: TDGLContextLayer read FLayer write SetLayer;
 
-    {: Rendering context options. }
+    { @HTML ( <p>Rendering context options. </p> ) }
     property Options: TDGLRCOptions read FOptions write SetOptions;
 
-    {: Allows reading and defining the activity for the context.<p>
+    { @HTML ( Allows reading and defining the activity for the context.<p>
        The methods of this property are just wrappers around calls
-       to Activate and Deactivate. }
+       to Activate and Deactivate. </p> ) }
     property Active: Boolean read GetActive write SetActive;
 
-    {: Triggered whenever the context is destroyed.<p>
+    { @HTML ( Triggered whenever the context is destroyed.<p>
        This events happens *before* the context has been
        actually destroyed, OpenGL resource cleanup can
-       still occur here. }
+       still occur here. </p> ) }
     property OnDestroyContext: TNotifyEvent read FOnDestroyContext write FOnDestroyContext;
 
     property IsPreparationNeed: Boolean read FIsPreparationNeed;
@@ -274,9 +261,9 @@ Type
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
   end;
 
-
   TDGLContextClass = class of TDGLContext;
 
+  // ****************************************************************************************
   // TGLContextNotification
   //
   TDGLContextNotification = record
@@ -284,9 +271,10 @@ Type
     event: TNotifyEvent;
   end;
 
+  // ****************************************************************************************
   // TGLContextManager
   //
-  {: Stores and manages all the TGLContext objects.<p> }
+  { @HTML ( <p>Stores and manages all the TGLContext objects. </p> ) }
   TDGLContextManager = class
   private
     { Private Declarations }
@@ -314,41 +302,41 @@ Type
     constructor Create;
     destructor Destroy; override;
 
-    {: Returns an appropriate, ready-to use context.<p>
-       The returned context should be freed by caller. }
+    { @HTML ( Returns an appropriate, ready-to use context.<p>
+       The returned context should be freed by caller. </p> ) }
     function CreateContext(AClass: TDGLContextClass = nil): TDGLContext;
 
-    {: Returns the number of TGLContext object.<p>
-       This is *not* the number of OpenGL rendering contexts! }
+    { @HTML ( Returns the number of TGLContext object.<p>
+       This is *not* the number of OpenGL rendering contexts! </p> ) }
     function ContextCount: Integer;
-    {: Registers a new object to notify when the last context is destroyed.<p>
+    { @HTML ( Registers a new object to notify when the last context is destroyed.<p>
        When the last rendering context is destroyed, the 'anEvent' will
        be invoked with 'anObject' as parameter.<br>
        Note that the registration is kept until the notification is triggered
-       or a RemoveNotification on 'anObject' is issued. }
+       or a RemoveNotification on 'anObject' is issued. </p> ) }
     procedure LastContextDestroyNotification(anObject: TObject; anEvent: TNotifyEvent);
-    {: Unregisters an object from the notification lists.<p> }
+    { @HTML ( <p>Unregisters an object from the notification lists. </p> ) }
     procedure RemoveNotification(anObject: TObject);
 
-    //: Marks the context manager for termination
+    { @HTML ( <p> Marks the context manager for termination </p> ) }
     procedure Terminate;
 
-    {: Request all contexts to destroy all their handles. }
+    { @HTML ( <p>Request all contexts to destroy all their handles.</p> ) }
     procedure DestroyAllHandles;
 
-    {: Notify all contexts about necessity of handles preparation. }
+    { @HTML ( <p>Notify all contexts about necessity of handles preparation.</p> ) }
     procedure NotifyPreparationNeed;
    // function RenderOutputDevice: Pointer; override;
     //property ServiceContext: TDGLContext read FServiceContext;
   end;
 
-
+  // ****************************************************************************************
   // TGLContextHandle
   //
-  {: Wrapper around an OpenGL context handle.<p>
+  { @HTML ( Wrapper around an OpenGL context handle.<p>
      This wrapper also takes care of context registrations and data releases
      related to context releases an cleanups. This is an abstract class,
-     use the TGLListHandle and TGLTextureHandle subclasses. }
+     use the TGLListHandle and TGLTextureHandle subclasses.</p> ) }
   TDGLContextHandle = class
   private
     { Private Declarations }
@@ -380,18 +368,18 @@ Type
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
 
-    {: Return OpenGL identifier in current context. }
+    { @HTML ( <p>Return OpenGL identifier in current context. </p> )}
     property Handle: TGLuint read GetHandle;
-    {: Return current rendering context if handle is allocated in it
-       or first context where handle is allocated. }
+    { @HTML ( <p>Return current rendering context if handle is allocated in it
+       or first context where handle is allocated. </p> )}
     property RenderingContext: TDGLContext read GetContext;
-    {: Return True is data need update in current context. }
+    { @HTML ( <p>Return True is data need update in current context. </p> )}
     function IsDataNeedUpdate: Boolean;
-    {: Return True if data updated in all contexts. }
+    { @HTML ( <p>Return True if data updated in all contexts. </p> )}
     function IsDataComplitelyUpdated: Boolean;
-    {: Notify the data was updated in current context. }
+    { @HTML ( <p>Notify the data was updated in current context. </p> )}
     procedure NotifyDataUpdated;
-    {: Notify the data was changed through all context. }
+    { @HTML ( <p>Notify the data was changed through all context. </p> )}
     procedure NotifyChangesOfData;
 
     //: Checks if required extensions / OpenGL version are met
@@ -402,16 +390,16 @@ Type
     function  AllocateHandle: TGLuint;
     procedure DestroyHandle;
 
-
-
     property OnPrepare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
   end;
 
-{: Drivers should register themselves via this function. }
+// ****************************************************************************************
+
+{ @HTML ( <p>Drivers should register themselves via this function.</p> ) }
 procedure RegisterDGLContextClass(aDGLContextClass: TDGLContextClass);
 
-{: The TGLContext that is the currently active context, if any.<p>
-   Returns nil if no context is active. }
+{ @HTML ( The TGLContext that is the currently active context, if any.<p>
+   Returns nil if no context is active.</p> ) }
 function CurrentDGLContext: TDGLContext;
 function SafeCurrentDGLContext: TDGLContext;
 function IsMainThread: Boolean;
@@ -426,7 +414,13 @@ var
   vContextActivationFailureOccurred: Boolean = false;
   vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 var
   vContextClasses: TList;
@@ -555,9 +549,9 @@ begin
   FSharedContexts.Add(Self);
 
   //FAcceleration := chaUnknown;
-  //FGLStates := TGLStateCache.Create;
+  FGLStates := TDGLStateCache.Create;
   //FGL := TGLExtensionsAndEntryPoints.Create;
-  //FTransformation := TGLTransformation.Create;
+  FTransformation := TDGLTransformation.Create;
   //FTransformation.LoadMatricesEnabled := True;
 
   DGLContextManager.RegisterContext(Self);
@@ -1140,9 +1134,6 @@ begin
     raise EDGLContext.Create('Auto-allocation failed');
 end;
 
-// Destroy
-//
-
 destructor TDGLContextHandle.Destroy;
 var
   i : integer;
@@ -1194,7 +1185,7 @@ begin
         if (P.FHandle > 0) then
         begin
           // Copy shared handle
-          //FLastHandle.FRenderingContext := vCurrentDGLContext;
+          FLastHandle.FRenderingContext := vCurrentDGLContext;
           FLastHandle.FHandle           := P.FHandle;
           FLastHandle.FChanged          := P.FChanged;
           Inc(vCurrentDGLContext.FOwnedHandlesCount);
@@ -1261,11 +1252,9 @@ end;
 
 function TDGLContextHandle.GetHandle: TGLuint;
 begin
-//  CheckCurrentRC;
+ //CheckCurrentRC;
 //inline doesn't always work... so optimize it here
-  if vCurrentDGLContext <> FLastHandle.FRenderingContext then
-    FLastHandle := SearchRC(vCurrentDGLContext);
-
+  if vCurrentDGLContext <> FLastHandle.FRenderingContext then FLastHandle := SearchRC(vCurrentDGLContext);
   Result := FLastHandle.FHandle;
 end;
 
@@ -1374,8 +1363,7 @@ begin
     begin
       Result := P.FRenderingContext;
       // If handle allocated in active context - return it
-      if (Result = vCurrentDGLContext) then
-        exit;
+      if (Result = vCurrentDGLContext) then exit;
     end;
   end;
 end;
@@ -1506,9 +1494,6 @@ end;
 // ------------------------------------------------------------------
 
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
 
   vMainThread := True;
   DGLContextManager := TDGLContextManager.Create;

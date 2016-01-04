@@ -1,11 +1,11 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLViewer<p>
+{ @HTML ( DGLViewer<p>
 
       Platform independant viewer.<p><p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Imported From GLScene
  </ul></font>
 }

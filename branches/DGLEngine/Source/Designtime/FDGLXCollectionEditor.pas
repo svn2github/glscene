@@ -5,7 +5,7 @@
 
   Edits a TXCollection<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>20/01/11 - DanB - Collection items are now grouped by ItemCategory
   <li>16/06/10 - YP - Fixed IDE exception when item removed
   <li>05/10/08 - DanB - removed Kylix support + some other old ifdefs

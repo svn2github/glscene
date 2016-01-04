@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DXTC<p>
+{ @HTML ( DXTC<p>
 
    DXTC (also S3TC) decoding.<br>
    Adapted from DevIL image library (http://openil.sourceforge.net)<p>
@@ -69,7 +69,7 @@ type
       dwFlags,
       dwHeight,
       dwWidth,
-      dwPitchOrLinearSize, {: The number of bytes per scan line in an
+      dwPitchOrLinearSize, { @HTML ( The number of bytes per scan line in an
                               uncompressed texture; the total number of bytes
                               in the top level texture for a compressed texture.}
       dwDepth,

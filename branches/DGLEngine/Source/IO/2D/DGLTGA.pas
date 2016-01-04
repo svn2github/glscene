@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: TGA<p>
+{ @HTML ( TGA<p>
 
    Simple TGA formats supports for Delphi.<br>
    Currently supports only 24 and 32 bits RGB formats (uncompressed
@@ -27,7 +27,7 @@ type
 
 	// TTGAImage
 	//
-   {: TGA image load/save capable class for Delphi.<p>
+   { @HTML ( TGA image load/save capable class for Delphi.<p>
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
         TTGAImage = class (TDGLBitmap)

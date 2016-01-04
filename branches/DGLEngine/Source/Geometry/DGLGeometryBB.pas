@@ -5,7 +5,7 @@
 
   Calculations and manipulations on Bounding Boxes.<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>21/12/15 - JD -  Imported From GLScene
   </ul></font>
 }
@@ -131,7 +131,7 @@ function PointInAABB(const P: TVector; const Aabb: TAABB): Boolean; overload;
 { : Checks if a plane (given by the normal+d) intersects the AABB }
 function PlaneIntersectAABB(Normal: TAffineVector; D: Single; Aabb: TAABB): Boolean;
 { : Compute the intersection between a plane and the AABB }
-function PlaneAABBIntersection(const plane: THmgPlane; const Aabb: TAABB): TAffineVectorList;
+function PlaneAABBIntersection(const plane: THmgPlane; const Aabb: TAABB): TDGLAffineVectorList;
 { : Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB }
 function TriangleIntersectAABB(const Aabb: TAABB; const V1, V2, V3: TAffineVector): Boolean;
 
@@ -764,7 +764,7 @@ end;
 
 // PlaneAABBIntersection
 //
-function PlaneAABBIntersection(const plane: THmgPlane; const Aabb: TAABB): TAffineVectorList;
+function PlaneAABBIntersection(const plane: THmgPlane; const Aabb: TAABB): TDGLAffineVectorList;
 var
   I, J, annexe: Integer;
   index:        array [0 .. 2] of Integer;
@@ -784,7 +784,7 @@ begin
   box[0] := Aabb.Min;
   box[1] := Aabb.Max;
 
-  Result := TAffineVectorList.Create;
+  Result := TDGLAffineVectorList.Create;
 
   // loop on vertices
   for I := 0 to 7 do

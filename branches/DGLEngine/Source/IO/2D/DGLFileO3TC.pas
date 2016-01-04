@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLFileO3TC<p>
+{ @HTML ( DGLFileO3TC<p>
       oZone3D Texture Compression file support<p>
 
  <b>History : </b><font size=-1><ul>
@@ -30,7 +30,7 @@ type
 
   TDGLO3TCImage = class(TDGLBaseImage)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -404,7 +404,7 @@ begin
   end;
 end;
 
-class function TDGLO3TCImage.Capabilities: TDataFileCapabilities;
+class function TDGLO3TCImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

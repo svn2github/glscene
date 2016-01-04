@@ -1,7 +1,7 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLResStrings<p>
+{ @HTML ( DGLResStrings<p>
 
    Reference all needed internal strings for messages.
    Pleas keep this unit updated if your unit use ResourceString.<p>
@@ -36,6 +36,7 @@ resourcestring
   glsFailedToShare = 'DoCreateContext - Failed to share contexts';
   rstrOpenGLError = 'OpenGL error - %s';
   cBackwardContextFailed = 'Can not create backward compatible context: #%X, %s';
+  cpbufferFailed = 'CUnabled to create pbuffer''s RC.: #%X, %s';
   cFailHWRC = 'Unable to create rendering context with hardware acceleration - down to software';
   glsTmpRC_Created = 'Temporary rendering context created';
   glsDriverNotSupportFRC = 'Driver not support creating of forward context';

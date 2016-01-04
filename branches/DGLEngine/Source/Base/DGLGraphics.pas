@@ -1,14 +1,17 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : DGLGraphics<p>
+{ : DGLGraphics
 
+  @HTML (
+  <p>
   Utility class and functions to manipulate a bitmap in OpenGL's default
-  byte order (GL_RGBA vs TBitmap's GL_BGRA)<p>
-
-  <b>Historique : </b><font size=-1><ul>
+  byte order (GL_RGBA vs TBitmap's GL_BGRA)</p>
+  <p>
+  <b>History: </b><font size=-1><ul>
   <li>23/12/15 - JD - Imported from GLScene
-  </ul></font>
+  </ul></font></p>
+  )
 }
 unit DGLGraphics;
 
@@ -58,10 +61,11 @@ type
   PGLPixel32 = ^TDGLPixel32;
 
   TDGLPixel32Array = array [0 .. MaxInt shr 3] of TDGLPixel32;
-  PGLPixel32Array = ^TDGLPixel32Array;
+  PGLPixel32Array  = ^TDGLPixel32Array;
 
   TDGLLODStreamingState = (ssKeeping, ssLoading, ssLoaded, ssTransfered);
 
+  // ****************************************************************************************
   // TDGLImageLevelDesc
   //
   TDGLImageLevelDesc = record
@@ -80,9 +84,10 @@ type
 
   TDGLImagePiramid = array [TDGLImageLODRange] of TDGLImageLevelDesc;
 
+  // ****************************************************************************************
   // TDGLBaseImage
   //
-  TDGLBaseImage = class(TDataFile)
+  TDGLBaseImage = class(TDGLDataFile)
   private
     FSourceStream: TStream;
     FStreamLevel:  TDGLImageLODRange;
@@ -118,7 +123,7 @@ type
     procedure SaveHeader;
     procedure LoadHeader;
     procedure StartStreaming;
-//    procedure DoStreaming;
+    procedure DoStreaming;
   public
     constructor Create; reintroduce; virtual;
     destructor Destroy; override;
@@ -179,6 +184,7 @@ type
 
   TDGLBaseImageClass = class of TDGLBaseImage;
 
+  // ****************************************************************************************
   // TDGLImage
   //
   { : Contains and manipulates a 32 bits (24+8) bitmap.<p>
@@ -323,6 +329,7 @@ type
 
   TDGLBitmap32 = TDGLImage;
 
+  // ****************************************************************************************
   // TRasterFileFormat
   //
   TRasterFileFormat = class
@@ -333,6 +340,7 @@ type
     DescResID:      Integer;
   end;
 
+  // ****************************************************************************************
   // TRasterFileFormatsList
   //
   { : Stores registered raster file formats. }
@@ -351,6 +359,8 @@ type
   end;
 
   EInvalidRasterFile = class(Exception);
+
+  // ****************************************************************************************
 
 procedure Div2(var Value: Integer);
 
@@ -416,10 +426,10 @@ begin
   Result := L;
 end;
 
-//procedure CalcImagePiramid(var APiramid: TDGLImagePiramid);
-//begin
+// procedure CalcImagePiramid(var APiramid: TDGLImagePiramid);
+// begin
 //
-//end;
+// end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -746,7 +756,7 @@ end;
 
 // BGR24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
@@ -799,7 +809,7 @@ end;
 {$ENDIF}
 // RGB24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
@@ -847,7 +857,7 @@ end;
 {$ENDIF}
 // BGRA32ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
@@ -1982,84 +1992,85 @@ begin
     FLOD[level].State := ssKeeping;
 end;
 
-// procedure TDGLBaseImage.DoStreaming;
-// begin
-// {$IFDEF GLS_SERVICE_CONTEXT}
-// if Assigned(FFinishEvent) then
-// begin
-// if FFinishEvent.WaitFor(0) <> wrSignaled then
-// Exit;
-// end
-// else
-// FFinishEvent := TFinishTaskEvent.Create;
+procedure TDGLBaseImage.DoStreaming;
+begin
+{$MESSAGE Hint 'Only available with Windows and Services Context, but removed here' }
+//  if Assigned(FFinishEvent) then
+//  begin
+//    if FFinishEvent.WaitFor(0) <> wrSignaled then
+//      Exit;
+//  end
+//  else
+//    FFinishEvent := TFinishTaskEvent.Create;
 //
-// Inc(vGlobalStreamingTaskCounter);
-// AddTaskForServiceContext(ImageStreamingTask, FFinishEvent);
-// {$ENDIF}
-// end;
+//  Inc(vGlobalStreamingTaskCounter);
+//  AddTaskForServiceContext(ImageStreamingTask, FFinishEvent);
 
-// {$IFDEF GLS_SERVICE_CONTEXT}
+end;
+
+
+
+//procedure TDGLBaseImage.ImageStreamingTask;
+//var
+//  readSize: Integer;
+//  ptr:      PByte;
+//begin
+//  with FLOD[FStreamLevel] do
+//  begin
+//    if PBO = nil then
+//      PBO := TDGLUnpackPBOHandle.Create;
 //
-// procedure TDGLBaseImage.ImageStreamingTask;
-// var
-// readSize: Integer;
-// ptr:      PByte;
-// begin
-// with FLOD[FStreamLevel] do
-// begin
-// if PBO = nil then
-// PBO := TDGLUnpackPBOHandle.Create;
+//    PBO.AllocateHandle;
+//    if PBO.IsDataNeedUpdate then
+//    begin
+//      { : This may work with multiple unshared context, but never tested
+//        because unlikely. }
+//      PBO.BindBufferData(nil, MaxInteger(Size, 1024), GL_STREAM_DRAW);
+//      if Assigned(MapAddress) then
+//        if not PBO.UnmapBuffer then
+//          Exit;
+//      MapAddress   := PBO.MapBuffer(GL_WRITE_ONLY);
+//      StreamOffset := 0;
+//      PBO.UnBind;
+//      PBO.NotifyDataUpdated;
+//    end;
 //
-// PBO.AllocateHandle;
-// if PBO.IsDataNeedUpdate then
-// begin
-// { : This may work with multiple unshared context, but never tested
-// because unlikely. }
-// PBO.BindBufferData(nil, MaxInteger(Size, 1024), GL_STREAM_DRAW);
-// if Assigned(MapAddress) then
-// if not PBO.UnmapBuffer then
-// Exit;
-// MapAddress   := PBO.MapBuffer(GL_WRITE_ONLY);
-// StreamOffset := 0;
-// PBO.UnBind;
-// PBO.NotifyDataUpdated;
-// end;
+//    if FSourceStream = nil then
+//    begin
+//      FSourceStream := CreateFileStream(ResourceName + IntToHex(FStreamLevel, 2));
+//    end;
 //
-// if FSourceStream = nil then
-// begin
-// FSourceStream := CreateFileStream(ResourceName + IntToHex(FStreamLevel, 2));
-// end;
+//    // Move to position of next piece and read it
+//    readSize := MinInteger(Cardinal(8192 div vGlobalStreamingTaskCounter), Cardinal(Size - StreamOffset));
+//    if readSize > 0 then
+//    begin
+//      ptr := PByte(MapAddress);
+//      Inc(ptr, StreamOffset);
+//      FSourceStream.Read(ptr^, readSize);
+//      Inc(StreamOffset, readSize);
+//    end;
 //
-// // Move to position of next piece and read it
-// readSize := MinInteger(Cardinal(8192 div vGlobalStreamingTaskCounter), Cardinal(Size - StreamOffset));
-// if readSize > 0 then
-// begin
-// ptr := PByte(MapAddress);
-// Inc(ptr, StreamOffset);
-// FSourceStream.Read(ptr^, readSize);
-// Inc(StreamOffset, readSize);
-// end;
+//    Dec(vGlobalStreamingTaskCounter);
 //
-// Dec(vGlobalStreamingTaskCounter);
-//
-// if StreamOffset >= Size then
-// begin
-// PBO.Bind;
-// if PBO.UnmapBuffer then
-// State := ssLoaded;
-// PBO.UnBind;
-// if State <> ssLoaded then
-// Exit; // Can't unmap
-// MapAddress   := nil;
-// StreamOffset := 0;
-// if FStreamLevel > 0 then
-// Dec(FStreamLevel);
-// FSourceStream.Destroy;
-// FSourceStream := nil;
-// end;
-// end;
-// end;
-// {$ENDIF}
+//    if StreamOffset >= Size then
+//    begin
+//      PBO.Bind;
+//      if PBO.UnmapBuffer then
+//        State := ssLoaded;
+//      PBO.UnBind;
+//      if State <> ssLoaded then
+//        Exit; // Can't unmap
+//      MapAddress   := nil;
+//      StreamOffset := 0;
+//      if FStreamLevel > 0 then
+//        Dec(FStreamLevel);
+//      FSourceStream.Destroy;
+//      FSourceStream := nil;
+//    end;
+//  end;
+//end;
+
+
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
@@ -2691,7 +2702,7 @@ type
   T2Pixel32 = packed array [0 .. 1] of TDGLPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-  {$IFNDEF GEOMETRY_NO_ASM}
+  {$IFNDEF GLS_NO_ASM}
   procedure ProcessRow3DNow(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n: Integer);
   asm     // 3DNow! version 30% faster
     db $0F,$EF,$C0           /// pxor        mm0, mm0          // set mm0 to [0, 0, 0, 0]
@@ -2758,7 +2769,7 @@ begin
   pDest  := @fData[0];
   pLineA := @fData[0];
   pLineB := @fData[Width];
-  {$IFNDEF GEOMETRY_NO_ASM}
+  {$IFNDEF GLS_NO_ASM}
   if vSIMD = 1 then
   begin
     for y := 0 to h2 - 1 do
@@ -2805,10 +2816,11 @@ end;
 procedure TDGLImage.DrawPixels(const x, y: Single);
 begin
   { Message Hint 'TGLImage.DrawPixels not implemented. Is reintroduce in TDGLTexture in DGLMaterial Unit' }
-  if FBlank or IsEmpty then Exit;
-//  Assert(not CurrentDGLContext.GLStates.ForwardContext);
-//  glRasterPos2f(x, y);
-//  glDrawPixels(Width, Height, fColorFormat, fDataType, fData);
+  if FBlank or IsEmpty then
+    Exit;
+  // Assert(not CurrentDGLContext.GLStates.ForwardContext);
+  // glRasterPos2f(x, y);
+  // glDrawPixels(Width, Height, fColorFormat, fDataType, fData);
 end;
 
 procedure TDGLImage.GrayScaleToNormalMap(const scale: Single; wrapX: Boolean = True; wrapY: Boolean = True);
@@ -2996,6 +3008,10 @@ begin
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 initialization
 

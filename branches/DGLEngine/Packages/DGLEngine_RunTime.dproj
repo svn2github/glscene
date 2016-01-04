@@ -1,9 +1,9 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{CD072C88-820B-41A0-835D-8A218CA64021}</ProjectGuid>
-        <MainSource>DGLEngine_RunTime.dpk</MainSource>
+        <ProjectGuid>{C334D21C-B4F2-4E23-90F7-37952697D851}</ProjectGuid>
+        <MainSource>DGLEngine_Runtime.dpk</MainSource>
         <ProjectVersion>17.2</ProjectVersion>
-        <FrameworkType>None</FrameworkType>
+        <FrameworkType>VCL</FrameworkType>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
@@ -55,11 +55,12 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
+        <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
+        <SanitizedProjectName>DGLEngine_Runtime</SanitizedProjectName>
+        <GenPackage>true</GenPackage>
         <GenDll>true</GenDll>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <SanitizedProjectName>DGLEngine_RunTime</SanitizedProjectName>
-        <GenPackage>true</GenPackage>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
@@ -69,8 +70,8 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
-        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
         <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>
+        <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSDevice32)'!=''">
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
@@ -82,9 +83,9 @@
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
@@ -96,19 +97,17 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <VerInfo_PreRelease>true</VerInfo_PreRelease>
-        <DCC_AdditionalSwitches> -LUDesignIDE</DCC_AdditionalSwitches>
-        <DCC_DebugDCUs>false</DCC_DebugDCUs>
-        <DCC_HppOutput>..\Source\include\</DCC_HppOutput>
-        <DCC_ObjOutput>..\Source\lib\</DCC_ObjOutput>
-        <DCC_BpiOutput>..\Source\lib\</DCC_BpiOutput>
-        <DCC_PentiumSafeDivide>true</DCC_PentiumSafeDivide>
-        <DCC_MapFile>3</DCC_MapFile>
-        <VerInfo_Debug>true</VerInfo_Debug>
-        <VerInfo_Keys>CompanyName=GLScene.org;FileDescription=Delphi 3D OpenGL 3.3+ / Vulkan Engine;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=MPL;OriginalFilename=;ProductName=DGLEngine;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_Description>Delphi 3D OpenGL 3.3+ / Vulkan Engine</DCC_Description>
+        <VerInfo_PreRelease>true</VerInfo_PreRelease>
+        <DCC_Description>GLScene 2 (DGLEngine) 3D OpenGL 3.3+/ Vulkan Engine</DCC_Description>
+        <DCC_AdditionalSwitches>-LUDesignIDE</DCC_AdditionalSwitches>
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <VerInfo_Keys>CompanyName=www.glscene.org;FileDescription=GLScene 2.0 (DGLEngine) 3D OpenGL 3.3+ / Vulkan Engine;FileVersion=1.0.0.0;InternalName=DGLENGINE;LegalCopyright=MPL 1.0;LegalTrademarks=MPL 1.0;OriginalFilename=;ProductName=GLSCENE 2.0;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <DCC_ObjOutput>..\source\lib</DCC_ObjOutput>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <DCC_BpiOutput>..\source\lib</DCC_BpiOutput>
+        <DCC_HppOutput>..\source\include</DCC_HppOutput>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -125,65 +124,72 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
-        <DCCReference Include="..\Source\Base\DGLContext.pas"/>
-        <DCCReference Include="..\Source\Base\dglOpenGL.pas"/>
-        <DCCReference Include="..\Source\Base\DGLResStrings.pas"/>
-        <DCCReference Include="..\Source\Base\DGLContextHandles.pas"/>
-        <DCCReference Include="..\Source\DGLViewer.pas"/>
-        <DCCReference Include="..\Source\Base\DGLRenderContextInfo.pas"/>
-        <DCCReference Include="..\Source\Plateform\DGLCrossPlatform.pas"/>
-        <DCCReference Include="..\Source\Plateform\DGLWin32Context.pas"/>
-        <DCCReference Include="..\Source\Plateform\DGLWin32Viewer.pas"/>
-        <DCCReference Include="..\Source\Base\DGLState.pas"/>
-        <DCCReference Include="..\Source\DGLColor.pas"/>
-        <DCCReference Include="..\Source\Base\DGLPersistentClasses.pas"/>
-        <DCCReference Include="..\Source\Base\DGLBaseClasses.pas"/>
-        <DCCReference Include="..\Source\Base\DGLApplicationFileIO.pas"/>
-        <DCCReference Include="..\Source\Base\DGLPipelineTransformation.pas"/>
-        <DCCReference Include="..\Source\Base\DGLXCollection.pas"/>
         <DCCReference Include="..\Source\Base\DGLUtils.pas"/>
-        <DCCReference Include="..\Source\Geometry\DGLVectorLists.pas"/>
+        <DCCReference Include="..\Source\Base\DGLGraphics.pas"/>
+        <DCCReference Include="..\Source\Base\DGLContextHandles.pas"/>
+        <DCCReference Include="..\Source\Base\DGLRenderManager.pas"/>
+        <DCCReference Include="..\Source\Base\DGLApplicationFileIO.pas"/>
+        <DCCReference Include="..\Source\Base\DGLCrossPlatform.pas"/>
+        <DCCReference Include="..\Source\Base\DGLXCollection.pas"/>
+        <DCCReference Include="..\Source\Base\DGLTextureFormat.pas"/>
+        <DCCReference Include="..\Source\Base\DGLRenderContextInfo.pas"/>
+        <DCCReference Include="..\Source\Base\DGLImageUtils.pas"/>
+        <DCCReference Include="..\Source\Base\DGLContext.pas"/>
+        <DCCReference Include="..\Source\Base\DGLResStrings.pas"/>
+        <DCCReference Include="..\Source\Base\DGLPipelineTransformation.pas"/>
+        <DCCReference Include="..\Source\Base\DGLBaseClasses.pas"/>
+        <DCCReference Include="..\Source\Base\DGLState.pas"/>
+        <DCCReference Include="..\Source\Base\DGLSLParameters.pas"/>
+        <DCCReference Include="..\Source\Base\DGLPersistentClasses.pas"/>
+        <DCCReference Include="..\Source\Base\DGLTypes.pas"/>
+        <DCCReference Include="..\Source\Base\DGLTextureCombiners.pas"/>
+        <DCCReference Include="..\Source\Base\dglOpenGL.pas"/>
         <DCCReference Include="..\Source\Geometry\DGLVectorMaths.pas"/>
-        <DCCReference Include="..\Source\Geometry\DGLVectorTypes.pas"/>
+        <DCCReference Include="..\Source\Geometry\DGLVectorLists.pas"/>
         <DCCReference Include="..\Source\Geometry\DGLGeometryBB.pas"/>
         <DCCReference Include="..\Source\Geometry\DGLCoordinates.pas"/>
-        <DCCReference Include="..\Source\Base\DGLGraphics.pas"/>
-        <DCCReference Include="..\Source\Base\DGLImageUtils.pas"/>
-        <DCCReference Include="..\Source\DGLTextureCombiners.pas"/>
-        <DCCReference Include="..\Source\Base\DGLTypes.pas"/>
-        <DCCReference Include="..\Source\DGLScene.pas"/>
-        <DCCReference Include="..\Source\Base\DGLTextureFormat.pas"/>
-        <DCCReference Include="..\Source\Base\DGLRenderManager.pas"/>
+        <DCCReference Include="..\Source\Geometry\DGLVectorTypes.pas"/>
         <DCCReference Include="..\Source\Geometry\DGLMeshUtils.pas"/>
-        <DCCReference Include="..\Source\DGLMaterial.pas"/>
-        <DCCReference Include="..\Source\DGLObjects.pas"/>
-        <DCCReference Include="..\Source\Shaders\DGLSLParameters.pas"/>
         <DCCReference Include="..\Source\Geometry\DGLSilhouette.pas"/>
-        <DCCReference Include="..\Source\Shaders\DGLCustomShader.pas"/>
-        <DCCReference Include="..\Source\Shaders\DGLSLShader.pas"/>
-        <DCCReference Include="..\Source\DGLShader.pas"/>
-        <DCCReference Include="..\Source\DGLCadencer.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileDDS.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileHDR.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileJPEG.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFilePNG.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileTGA.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLPictureRegisteredFormats.pas"/>
+        <DCCReference Include="..\Source\Plateform\DGLWin32Viewer.pas"/>
+        <DCCReference Include="..\Source\Plateform\DGLWin32Context.pas"/>
         <DCCReference Include="..\Source\IO\2D\DGLSJPG.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLSRGBE.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLDXTC.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLLIBPNG.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileTGA.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFilePNG.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileO3TC.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileJPEG.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileHDR.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileDDS.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLFileBMP.pas"/>
         <DCCReference Include="..\Source\IO\2D\DGLLIBFREETYPE.pas"/>
-        <DCCReference Include="..\Source\Tools\DGLSMemo.pas"/>
-        <DCCReference Include="..\Source\DGLScreen.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLDXTC.pas"/>
         <DCCReference Include="..\Source\IO\2D\DGLDDSImage.pas"/>
         <DCCReference Include="..\Source\IO\2D\DGLHDRImage.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLLIBPNG.pas"/>
         <DCCReference Include="..\Source\IO\2D\DGLTGA.pas"/>
-        <DCCReference Include="..\Source\DGLKeyboard.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLSRGBE.pas"/>
+        <DCCReference Include="..\Source\IO\2D\DGLPictureRegisteredFormats.pas"/>
+        <DCCReference Include="..\Source\Tools\DGLSMemo.pas"/>
         <DCCReference Include="..\Source\Tools\DGLSLog.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileO3TC.pas"/>
-        <DCCReference Include="..\Source\IO\2D\DGLFileBMP.pas"/>
-        <None Include="..\Source\DGLEngine.inc"/>
+        <DCCReference Include="..\Source\Tools\DGLSArchiveManager.pas"/>
+        <DCCReference Include="..\Source\Tools\DGLAsyncTimer.pas"/>
+        <DCCReference Include="..\Source\Sound\DGLSoundFileObjects.pas"/>
+        <DCCReference Include="..\Source\Sound\dglopenal.pas"/>
+        <DCCReference Include="..\Source\Sound\DGLSMWaveOut.pas"/>
+        <DCCReference Include="..\Source\Sound\DGLSound.pas"/>
+        <DCCReference Include="..\Source\Sound\DGLSMOpenAL.pas"/>
+        <DCCReference Include="..\Source\DGLShader.pas"/>
+        <DCCReference Include="..\Source\DGLObjects.pas"/>
+        <DCCReference Include="..\Source\DGLMaterial.pas"/>
+        <DCCReference Include="..\Source\DGLViewer.pas"/>
+        <DCCReference Include="..\Source\DGLScreen.pas"/>
+        <DCCReference Include="..\Source\DGLScene.pas"/>
+        <DCCReference Include="..\Source\DGLKeyboard.pas"/>
+        <DCCReference Include="..\Source\DGLCadencer.pas"/>
+        <DCCReference Include="..\Source\DGLColor.pas"/>
+        <DCCReference Include="..\Source\DGLObjectManager.pas"/>
+        <DCCReference Include="..\Source\IO\DGLFileZLIB.pas"/>
+        <DCCReference Include="..\Source\DGLVectorObjects.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -201,24 +207,24 @@
         <Borland.ProjectType>Package</Borland.ProjectType>
         <BorlandProject>
             <Delphi.Personality>
-                <Source>
-                    <Source Name="MainSource">DGLEngine_RunTime.dpk</Source>
-                </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\16.0\Bpl\GR32_DSGN_RSXE5.bpl">Graphics32 Design Time Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k220.bpl">Composants Microsoft Office 2000 Sample Automation Server Wrapper</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp220.bpl">Composants Microsoft Office XP Sample Automation Server Wrapper</Excluded_Packages>
                 </Excluded_Packages>
+                <Source>
+                    <Source Name="MainSource">DGLEngine_Runtime.dpk</Source>
+                </Source>
             </Delphi.Personality>
             <Deployment Version="1">
-                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
-                    <Platform Name="OSX32">
+                <DeployFile LocalName="..\..\..\Bpl\DGLEngine_Runtime.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>DGLEngine_Runtime.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="..\..\..\Bpl\DGLEngine_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>DGLEngine_RunTime.bpl</RemoteName>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -549,9 +555,9 @@
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
-                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
             </Deployment>
             <Platforms>
                 <Platform value="Android">False</Platform>

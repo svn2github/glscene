@@ -1,13 +1,21 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLWin32Context<p>
+{ @HTML ( DGLWin32Context<p>
 
       Win32 specific Context.<p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Simplyfied and Imported From GLScene and make compatible with dglOpenGL Library
  </ul></font>
+
+ ========================================================================
+ @STATUS : NEED UPDATE
+ ========================================================================
+ @TODO : - Adding OPENGL ES 3.0 support
+         - Improving Context Creation, is a little "fuzzy"
+ ========================================================================
+
 }
 unit DGLWin32Context;
 
@@ -37,7 +45,7 @@ type
 
   // TGLWin32Context
   //
-  {: A context driver for standard Windows OpenGL (via MS OpenGL). }
+  { @HTML ( A context driver for standard Windows OpenGL (via MS OpenGL). }
   TDGLWin32Context = class(TDGLContext)
   protected
     { Protected Declarations }
@@ -70,7 +78,7 @@ type
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-    {: DoGetHandles must be implemented in child classes,
+    { @HTML ( DoGetHandles must be implemented in child classes,
        and return the display + window }
   public
     { Public Declarations }
@@ -127,7 +135,7 @@ var
 { Helpers Functions }
 {$IFDEF GLS_REGION}{$REGION 'Helpers Functions'}{$ENDIF}
 
-function TrackHookProc(nCode: Integer; wParam: wParam; lParam: LPARAM): Integer;
+function TrackHookProc(nCode: Integer; wParam: WParam; lParam: LPARAM): Integer;
   stdcall;
 var
   i: Integer;
@@ -162,6 +170,7 @@ end;
 
 procedure TrackWindow(h: HWND; notifyEvent: TNotifyEvent);
 begin
+  DGLSLogger.LogInfo('- Track Windows');
   if not IsWindow(h) then Exit;
   if vTrackingCount = 0 then
     vTrackingHook := SetWindowsHookEx(WH_CALLWNDPROC, @TrackHookProc, 0, GetCurrentThreadID);
@@ -176,6 +185,7 @@ procedure UnTrackWindow(h: HWND);
 var
   i, k: Integer;
 begin
+  DGLSLogger.LogInfo('- UnTrack Windows');
   if not IsWindow(h) then Exit;
   if vTrackingCount = 0 then Exit;
   k := 0;
@@ -204,6 +214,7 @@ var
   classRegistered: Boolean;
   tempClass: TWndClass;
 begin
+  DGLSLogger.LogInfo('- Create Temporary Windows');
   vUtilWindowClass.hInstance := HInstance;
   classRegistered := GetClassInfo(HInstance, vUtilWindowClass.lpszClassName, tempClass);
   if not classRegistered then Winapi.Windows.RegisterClass(vUtilWindowClass);
@@ -218,6 +229,7 @@ end;
 
 constructor TDGLWin32Context.Create;
 begin
+  DGLSLogger.LogInfo('- Create Win32 Context');
   inherited Create;
   FInitialized:=False;
   ClearIAttribs;
@@ -226,6 +238,7 @@ end;
 
 destructor TDGLWin32Context.Destroy;
 begin
+  DGLSLogger.LogInfo('- Destroy Win32 Context');
   inherited Destroy;
 end;
 
@@ -350,13 +363,14 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not WGLChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32, PGLint(piFormats), @nNumFormats) then nNumFormats := 0;
+    if not(WGLChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32, PGLint(piFormats), @nNumFormats)) then nNumFormats := 0;
   end;
 
 var
   float: boolean;
   aa: TDGLAntiAliasing;
 begin
+  DGLSLogger.LogInfo('- Choose WGL Format');
   float := (ColorBits = 64) or (ColorBits = 128); // float_type
 
   if float then
@@ -514,9 +528,11 @@ begin
         PropagateSharedContext;
       end;
     end;
-//    FGL.DebugMode := False;
-//    FGL.Initialize;
-//    MakeGLCurrent;
+
+    // Initialize openGL Extensions
+    ReadImplementationProperties;
+    ReadExtensions;
+
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
@@ -536,10 +552,16 @@ end;
 procedure TDGLWin32Context.CreateNewContext(aDC: HDC);
 var
   bSuccess, bOES,OpenGLInitialized: Boolean;
+  LegacyRC     : HGLRC;
 begin
   bSuccess := False;
   bOES := False;
   OpenGLInitialized := False;
+  DGLSLogger.LogInfo('- Try to Create New OpenGL Rendering Context');
+  // Create legacy render context first for we need function pointers to
+  // create new OpenGL render contexts
+  LegacyRC := wglCreateContext(aDC);
+  wglMakeCurrent(aDC, LegacyRC);
 
   try
     ClearIAttribs;
@@ -549,57 +571,66 @@ begin
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 5);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.5');
     end
     else
     if GL_VERSION_4_4 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 4);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.4');
     end
     else
     if GL_VERSION_4_3 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.3');
     end
     else
     if GL_VERSION_4_2 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.2');
     end
     else if GL_VERSION_4_1 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.1');
     end
     else if GL_VERSION_4_0 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 4.0');
     end
     else if GL_VERSION_3_3 then
     begin
       AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
       AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+      DGLSLogger.LogInfo('- OPENGL VERSION : 3.3');
     end
     else
     begin
+      DGLSLogger.LogError('It is not possible to create context. At least, minimum OpenGL version 3.3 is required');
       MessageBox(0, 'It is not possible to create context. At least, minimum OpenGL version 3.3 is required', 'Error', MB_OK or MB_ICONERROR);
       Abort;
     end;
 
-   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
+ //  AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
 
    if rcoOGL_ES in Options then DGLSLogger.LogWarning(glsOESvsForwardRC);
 
     if rcoOGL_ES in Options then
     begin
-      if dglCheckExtension('WGL_EXT_create_context_es2_profile') then
+      if WGL_EXT_create_context_es2_profile then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
         AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
+        DGLSLogger.LogInfo('- OPENGL ES VERSION : 2.0');
         bOES := True;
       end
       else
@@ -619,43 +650,73 @@ begin
       clOverlay2: AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
     end;
 
+    // Attribute flags must be finalized with a zero
+//    AddIAttrib(Length(FiAttribs)+1,0);
+
+    // Get function pointer for new context creation function
+    wglCreateContextAttribsARB := wglGetProcAddress('wglCreateContextAttribsARB');
+
+    if not Assigned(wglCreateContextAttribsARB) then
+    begin
+      raise Exception.Create('Could not get function pointer adress for wglCreateContextAttribsARB - OpenGL 3.x and above not supported!');
+      wglDeleteContext(LegacyRC);
+      DGLSLogger.LogErrorFmt(cBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
+      Abort;
+    end;
+
     FRC := 0;
     if Assigned(FShareContext) then
     begin
       // Create OpenGL 3.3 context using the attribs
+      DGLSLogger.LogInfo('- Create Shared OpenGL 3.x and above context using the attribs');
       FRC := WGLCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
       if FRC <> 0 then
       begin
         FSharedContexts.Add(FShareContext);
         OpenGLInitialized :=True;
+        wglDeleteContext(LegacyRC);
       end
       else
-        DGLSLogger.LogWarning(glsFailedToShare)
+      begin
+        DGLSLogger.LogWarning(glsFailedToShare);
+        //raise Exception.Create('Could not create the desired OpenGL rendering context!');
+        wglDeleteContext(LegacyRC);
+      end;
     end;
 
     if FRC = 0 then
     begin
+      DGLSLogger.LogInfo('- Create OpenGL 3.x and above context using the attribs');
       FRC := WGLCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        if OpenGLInitialized then
-    //      DGLSLogger.LogErrorFmt(cForwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)])
+//        if OpenGLInitialized then
+          //DGLSLogger.LogErrorFmt(cForwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)])
 //        else
           DGLSLogger.LogErrorFmt(cBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
+        wglDeleteContext(LegacyRC);
+        raise Exception.Create('Could not create the desired OpenGL rendering context!');
         Abort;
       end;
     end;
 
-    FDC := aDC;
+    wglDeleteContext(LegacyRC);
 
+    FDC := aDC;
+    // ActivateRenderingContext
+    DGLSLogger.LogInfo('- Activate Rendering Context');
     if not wglMakeCurrent(FDC, FRC) then
     begin
       DGLSLogger.LogErrorFmt(cContextActivationFailed,[GetLastError, SysErrorMessage(GetLastError)]);
+      raise Exception.Create('Activating rendering context Failed!');
       Abort;
     end;
 
-    //FGL.Initialize;
-    //MakeGLCurrent;
+    // Initialize openGL Extensions
+    DGLSLogger.LogInfo('- Init OpenGL Extensions');
+    ReadImplementationProperties;
+    ReadExtensions;
+
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
@@ -668,7 +729,7 @@ begin
     bSuccess := True;
   finally
     FInitialized := OpenGLInitialized and bSuccess;
-    //PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
+//    PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
   end;
 end;
 
@@ -710,13 +771,22 @@ var
 var
   i, iAttrib, iValue: Integer;
 begin
+  DGLSLogger.LogInfo('- Try to Create Context');
   if vUseWindowTrackingHook and not FLegacyContextsOnly then TrackWindow(WindowFromDC(ADeviceHandle), DestructionEarlyWarning);
 
   // New call to initialize and bind the OpenGL dll
   // Just in case it didn't happen already.
-  if not InitOpenGL then RaiseLastOSError;
+  DGLSLogger.LogInfo('- Init OpenGL');
+  InitOpenGL;
+  if not Assigned(GL_LibHandle) then
+  begin
+    raise Exception.Create('GL_LibHandle is NIL. Could not load OpenGL library!');
+     DGLSLogger.LogError('GL_LibHandle is NIL. Could not load OpenGL library!');
+  end;
+
 
   // Prepare PFD
+  DGLSLogger.LogInfo('- Prepare Pixel Format Descriptor');
   FillChar(pfDescriptor, SizeOf(pfDescriptor), 0);
   with PFDescriptor do
   begin
@@ -728,8 +798,11 @@ begin
     aType := GetObjectType(ADeviceHandle);
     if aType = 0 then RaiseLastOSError;
 
-    if aType in cMemoryDCs then dwFlags := dwFlags or PFD_DRAW_TO_BITMAP
-    else dwFlags := dwFlags or PFD_DRAW_TO_WINDOW;
+    if aType in cMemoryDCs then
+      dwFlags := dwFlags or PFD_DRAW_TO_BITMAP
+    else
+      dwFlags := dwFlags or PFD_DRAW_TO_WINDOW;
+
     if rcoDoubleBuffered in Options then dwFlags := dwFlags or PFD_DOUBLEBUFFER;
 
     if rcoStereo in Options then dwFlags := dwFlags or PFD_STEREO;
@@ -768,12 +841,14 @@ begin
       dwFlags := dwFlags or PFD_SWAP_LAYER_BUFFERS;
 
   end;
+
   pixelFormat := 0;
 
   // WGL_ARB_pixel_format is used if available
-  //
+
   if not (FLegacyContextsOnly or (aType in cMemoryDCs)) then
   begin
+    DGLSLogger.LogInfo('- Create Dummy Rendering Context');
     // the WGL mechanism is a little awkward: we first create a dummy context
     // on the TOP-level DC (ie. screen), to retrieve our pixelformat, create
     // our stuff, etc.
@@ -790,6 +865,7 @@ begin
           if dglCheckExtension('WGL_ARB_pixel_format') then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
+            DGLSLogger.LogInfo('- New pixel format selection via wglChoosePixelFormatARB');
             ClearIAttribs;
             AddIAttrib(WGL_DRAW_TO_WINDOW_ARB, 1);//GL_TRUE
             AddIAttrib(WGL_STEREO_ARB, cBoolToInt[rcoStereo in Options]);
@@ -798,7 +874,7 @@ begin
             ChooseWGLFormat(ADeviceHandle, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
-              if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault]) then
+              if dglCheckExtension('WGL_ARB_multisample') and (AntiAliasing in [aaNone, aaDefault]) then
               begin
                 // Pick first non AntiAliased for aaDefault and aaNone modes
                 iAttrib := WGL_SAMPLE_BUFFERS_ARB;
@@ -826,7 +902,7 @@ begin
         sharedRC := FShareContext;
         DoDestroyContext;
         FShareContext := sharedRC;
-        DGLSLogger.LogInfo('Temporary rendering context destroyed');
+        DGLSLogger.LogInfo('- Dummy rendering context destroyed');
       end;
     finally
       ReleaseDC(0, tempDC);
@@ -839,6 +915,7 @@ begin
   if pixelFormat = 0 then
   begin
     // Legacy pixel format selection
+    DGLSLogger.LogInfo('- Legacy pixel format selection');
     pixelFormat := ChoosePixelFormat(ADeviceHandle, @PFDescriptor);
     if (not (aType in cMemoryDCs)) and (not CurrentPixelFormatIsHardwareAccelerated) then
     begin
@@ -882,14 +959,14 @@ begin
     if bReserved = 0 then FLayer := clMainPlane;
   end;
 
-  if not FLegacyContextsOnly then
-  begin
-    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) then
-    begin
-      DGLSLogger.LogWarning(cFailHWRC);
-      Exit;
-    end;
-  end;
+//  if not FLegacyContextsOnly then
+//  begin
+//    if ((pfDescriptor.dwFlags and PFD_GENERIC_FORMAT) > 0) then
+//    begin
+//      DGLSLogger.LogWarning(cFailHWRC);
+//      Exit;
+//    end;
+//  end;
 
   if not FLegacyContextsOnly and dglCheckExtension('WGL_ARB_create_context') then
     CreateNewContext(ADeviceHandle)
@@ -900,6 +977,7 @@ end;
 
 procedure TDGLWin32Context.SpawnLegacyContext(aDC: HDC);
 begin
+  DGLSLogger.LogInfo('- Spawn Legacy Context');
   try
     FLegacyContextsOnly := True;
     try
@@ -930,6 +1008,7 @@ var
   pfDescriptor: TPixelFormatDescriptor;
   bOES: Boolean;
 begin
+  DGLSLogger.LogInfo('- Try to Create Memory Rendering Context');
   localHPBuffer := 0;
   localDC := 0;
   localRC := 0;
@@ -954,9 +1033,7 @@ begin
               EPBuffer.Create('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := WGLCreatePbufferARB(tempDC, iFormats[0], width,
-            height,
-            @iPBufferAttribs[0]);
+          localHPBuffer := WGLCreatePbufferARB(tempDC, iFormats[0], width, height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then raise EPBuffer.Create('Unabled to create pbuffer.');
           try
             localDC := WGLGetPbufferDCARB(localHPBuffer);
@@ -967,15 +1044,58 @@ begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
-//                if GLStates.ForwardContext then
-//                begin
-//                  if FGL.VERSION_4_2 then
-//                  begin
-//                    AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
-//                    AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
-//                  else
-//                    Abort;
-                  AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
+                if GL_VERSION_4_5 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 5);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.5');
+                end
+                else
+                if GL_VERSION_4_4 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 4);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.4');
+                end
+                else
+                if GL_VERSION_4_3 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.3');
+                end
+                else
+                if GL_VERSION_4_2 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.2');
+                end
+                else if GL_VERSION_4_1 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.1');
+                end
+                else if GL_VERSION_4_0 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 4.0');
+                end
+                else if GL_VERSION_3_3 then
+                begin
+                  AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
+                  AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
+                  DGLSLogger.LogInfo('- OPENGL VERSION : 3.3');
+                end
+                else
+                begin
+                  MessageBox(0, 'It is not possible to create context. At least, minimum OpenGL version 3.3 is required', 'Error', MB_OK or MB_ICONERROR);
+                  Abort;
+                end;
+
+//                  AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
                   if rcoOGL_ES in Options then
                     DGLSLogger.LogWarning(glsOESvsForwardRC);
               end
@@ -986,6 +1106,7 @@ begin
                   AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
                   AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
+                  DGLSLogger.LogInfo('- OPENGL ES VERSION : 2.0');
                 end
                 else
                   DGLSLogger.LogError(glsDriverNotSupportOESRC);
@@ -1011,9 +1132,10 @@ begin
 //                  if GLStates.ForwardContext then
 //                    DGLSLogger.LogErrorFmt(cForwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)])
 //                  else
-                DGLSLogger.LogErrorFmt(cBackwardContextFailed, [GetLastError, SysErrorMessage(GetLastError)]);
+                DGLSLogger.LogErrorFmt(cpbufferFailed, [GetLastError, SysErrorMessage(GetLastError)]);
                 Abort;
-               {$ELSE}
+                {$ELSE}
+                DGLSLogger.LogErrorFmt(cpbufferFailed, [GetLastError, SysErrorMessage(GetLastError)]);
                 raise Exception.Create('Unabled to create pbuffer''s RC.');
                {$ENDIF}
               end
@@ -1023,8 +1145,7 @@ begin
                 localRC := wglCreateContext(localDC);
                 if localRC = 0 then
                 begin
-                  DGLSLogger.LogErrorFmt(cBackwardContextFailed,
-                    [GetLastError, SysErrorMessage(GetLastError)]);
+                  DGLSLogger.LogErrorFmt(cBackwardContextFailed,[GetLastError, SysErrorMessage(GetLastError)]);
                   Abort;
                 end;
               end;
@@ -1065,6 +1186,8 @@ begin
   end;
 
   Activate;
+  ReadImplementationProperties;
+  ReadExtensions;
   //Initialize;    --> procedure TGLExtensionsAndEntryPoints.Initialize(ATemporary: boolean);
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -1114,7 +1237,7 @@ procedure TDGLWin32Context.DoDestroyContext;
 begin
   // Makes current rendering context not current, and releases the device
   // context that is used by the rendering context.
-
+  DGLSLogger.LogInfo('- Destroy Context');
   if vUseWindowTrackingHook then
     UnTrackWindow(WindowFromDC(FDC));
 
@@ -1130,6 +1253,7 @@ begin
     begin
       DGLSLogger.LogErrorFmt(cDeleteContextFailed,[GetLastError, SysErrorMessage(GetLastError)]);
       MessageBox(0, 'Release of rendering context failed!', 'Error', MB_OK or MB_ICONERROR);
+      abort;
     end;
 
   FRC := 0;
@@ -1139,6 +1263,7 @@ end;
 
 procedure TDGLWin32Context.DoActivate;
 begin
+  DGLSLogger.LogInfo('- Activate Rendering Context');
   if not wglMakeCurrent(FDC, FRC) then
   begin
     MessageBox(0, 'Activation of rendering context failed!', 'Error', MB_OK or MB_ICONERROR);
@@ -1146,12 +1271,15 @@ begin
     Abort;
   end;
 
+  ReadImplementationProperties;
+  ReadExtensions;
 //  if not FGL.IsInitialized then
 //    FGL.Initialize(CurrentGLContext = nil);
 end;
 
 procedure TDGLWin32Context.DoDeactivate;
 begin
+  DGLSLogger.LogInfo('- Desactivate Rendering Context');
   if not wglMakeCurrent(0, 0) then
   begin
     MessageBox(0, 'Desactivation of rendering context failed!', 'Error', MB_OK or MB_ICONERROR);

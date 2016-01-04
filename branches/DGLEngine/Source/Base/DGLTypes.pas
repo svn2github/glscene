@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLTypes<p>
+{ @HTML ( DGLTypes<p>
 
    Reference all needed types, vars and consts.
    This file is here for removing many units dependancies.<p>
@@ -131,7 +131,7 @@ type
 
   // TDGLInternalCompression
   //
-  {: Texture compression option.<p>
+  { @HTML ( Texture compression option.<p>
      If OpenGL supports it, this will activate a compressed texture format:<ul>
      <li>tcDefault : uses global default compression option
      <li>tcNone : do not use compression
@@ -152,7 +152,7 @@ type
   TDGLDepthCompareFunc = TDepthFunction;
 
 
-  {: Texture format for OpenGL (rendering) use.<p>
+  { @HTML ( Texture format for OpenGL (rendering) use.<p>
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
   specify a generic format to reduce OpenGL texture memory use:<ul>}
   TDGLTextureFormat = (
@@ -170,7 +170,7 @@ type
     tfRGBAFloat32, // = tfRGBA_FLOAT32_ATI
     tfExtended);
 
-  {: Defines how and if Alpha channel is defined for a texture image.<ul>
+  { @HTML ( Defines how and if Alpha channel is defined for a texture image.<ul>
    <li>tiaDefault : uses the alpha channel in the image if any
    <li>tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
@@ -220,7 +220,7 @@ type
 
   // TDGLObjectsSorting
   //
-  {: Determines if objects are sorted, and how.<p>
+  { @HTML ( Determines if objects are sorted, and how.<p>
      Sorting is done level by level (and not for all entities), values are :<ul>
      <li>osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
      <li>osNone : do not sort objects.
@@ -235,7 +235,7 @@ type
 
   // TDGLVisibilityCulling
   //
-  {: Determines the visibility culling mode.
+  { @HTML ( Determines the visibility culling mode.
      Culling is done level by level, allowed values are:<ul>
      <li>vcInherited : use inherited culling value, if selected for the root
         level, defaults to vcNone
@@ -266,7 +266,7 @@ type
 
   // TDGLShaderStyle
   //
-  {: Define GLShader style application relatively to a material.<ul>
+  { @HTML ( Define GLShader style application relatively to a material.<ul>
      <li>ssHighLevel: shader is applied before material application, and unapplied
            after material unapplication
      <li>ssLowLevel: shader is applied after material application, and unapplied
@@ -278,7 +278,7 @@ type
 
   // TDGLShaderFailedInitAction
   //
-  {: Defines what to do if for some reason shader failed to initialize.<ul>
+  { @HTML ( Defines what to do if for some reason shader failed to initialize.<ul>
      <li>fiaSilentdisable:          just disable it
      <li>fiaRaiseHandledException:  raise an exception, and handle it right away
                                     (usefull, when debigging within Delphi)
@@ -465,8 +465,8 @@ type
     Tag: Integer;
     DataType: TDGLSLDataType;
     WarningAbsenceLoged: Boolean;
-    property ID: Integer read FID;
-    property Name: string read FName;
+    property ID: Integer read FID write FID;
+    property Name: string read FName write FName;
   end;
 
   TDGLSLUniform = record
@@ -478,8 +478,8 @@ type
     Tag: Integer;
     DataType: TDGLSLDataType;
     WarningAbsenceLoged: Boolean;
-    property ID: Integer read FID;
-    property Name: string read FName;
+    property ID: Integer read FID write FID;
+    property Name: string read FName write FName;
   end;
   PGLSLUniform = ^TDGLSLUniform;
   PGLSLAttribute = ^TDGLSLAttribute;

@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: LIBFREETYPE<p>
+{ @HTML ( LIBFREETYPE<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
       <li>28/12/15 - JD - Imported from GLScene
   </ul></font>
 }

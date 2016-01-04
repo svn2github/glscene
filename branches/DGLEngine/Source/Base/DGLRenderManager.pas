@@ -1,16 +1,19 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : DGLRenderManagers<p>
-
-  Base unit to drawing geometry data with Vertex Array Object (VAO) and Vertex Buffer Objects. (VBO) <p>
-  Require OpenGL 3.3.<p>
-  Try to not change buffer usage during runtime because static <p>
-  and stream data not removed from video memory until application running.<p>
-
+{ : DGLRenderManagers
+  @HTML (
+  <p>
+  Base unit to drawing geometry data with Vertex Array Object (VAO) and Vertex Buffer Objects.(VBO) </p>
+  Require OpenGL 3.3.<br>
+  Try to not change buffer usage during runtime because static
+  and stream data not removed from video memory until application running.</p>
+  <p>
   <b>History : </b><font size=-1><ul>
-  <li>24/12/15 - JD - Creation  - Base on a code of Yar, Thanks
-  </ul></font>
+    <li>24/12/15 - JD - Creation  - Base on codes from Yar and Phantom, Thanks</li>
+  </ul></font></p>
+
+   )
 }
 unit DGLRenderManager;
 
@@ -30,13 +33,14 @@ const
   GLVBOM_MAX_DIFFERENT_PRIMITIVES = 8;
 
 type
-
+  // ****************************************************************************************
   TDGLBaseRenderManager      = class;
   TDGLBaseRenderManagerClass = class of TDGLBaseRenderManager;
   TDGLBuiltProperties        = class;
 
+  // ****************************************************************************************
   // TGLRenderPacket
-  {: Information about object graphic data (something like DIP) }
+  { @HTML ( Information about object graphic data (something like DIP) }
   TGLRenderPacket = record
     VertexHandle: TDGLVBOArrayBufferHandle;
     IndexHandle: TDGLVBOElementArrayHandle;
@@ -57,6 +61,7 @@ type
   end;
   PGLRenderPacket = ^TGLRenderPacket;
 
+  // ****************************************************************************************
   // TDGLBuiltProperties
   //
   TDGLBuiltProperties = class(TPersistent)
@@ -99,6 +104,7 @@ type
     property InstancesNumber:   Integer read FInstancesNumber write SetInstancesNumber default 0;
   end;
 
+  // ****************************************************************************************
   // TDGLBaseRenderManager
   //
   TDGLBaseRenderManager = class
@@ -111,11 +117,11 @@ type
     Usage:              LongWord;
     CurrentClient:      PGLRenderPacket;
     GLVBOMState:        TGLVBOMState;
-    AttributeArrays:    array [0 .. GLS_VERTEX_ATTR_NUM - 1] of T4ByteList;
-    CurrentValue:       array [0 .. GLS_VERTEX_ATTR_NUM - 1, 0 .. 3] of T4ByteData;
+    AttributeArrays:    array [0 .. GLS_VERTEX_ATTR_NUM - 1] of TDGL4ByteList;
+    CurrentValue:       array [0 .. GLS_VERTEX_ATTR_NUM - 1, 0 .. 3] of TDGL4ByteData;
     OneVertexDataSize:  LongWord;
     ObjectVertexCount:  Integer; // From BeginObject to EndObject
-    HostIndexBuffer:    TLongWordList;
+    HostIndexBuffer:    TDGLLongWordList;
     ObjectIndex:        LongWord;
     Doubling:           Boolean;
     RestartIndex:       GLUInt;
@@ -161,10 +167,10 @@ type
     { : Takes a full list of attribute values,
       but does not determine its type, so you must use AttributeXX
       between BeginObject and BeginPrimitives }
-    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TSingleList); overload;
-    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TIntegerList); overload;
+    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLSingleList); overload;
+    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLIntegerList); overload;
     { : Count of list should be a multiple of four }
-    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TByteList); overload;
+    procedure AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLByteList); overload;
     { : Specifies a new vertex of a primitive. }
     procedure EmitVertex;
     { : Provides a feature to create an empty buffer
@@ -189,13 +195,14 @@ type
     property RenderingContext: TDGLContext read FRenderingContext;
   end;
 
+  // ****************************************************************************************
   // TDGLStaticRenderManager
   //
   TDGLStaticRenderManager = class(TDGLBaseRenderManager)
   private
     { Private declarations }
     ClientList:       TList;
-    HostVertexBuffer: T4ByteList;
+    HostVertexBuffer: TDGL4ByteList;
     indexType:        GLenum; // UByte, UShort or UInt
   public
     { Public Declarations }
@@ -211,6 +218,7 @@ type
     function UsageStatistic(const TimeInterval: Double): Single;
   end;
 
+  // ****************************************************************************************
   // TDGLDynamicRenderManager
   //
   TDGLDynamicRenderManager = class(TDGLBaseRenderManager)
@@ -228,6 +236,7 @@ type
     procedure EndPrimitives; override;
   end;
 
+  // ****************************************************************************************
   // TDGLStreamRenderManager
   //
   TDGLStreamRenderManager = class(TDGLBaseRenderManager)
@@ -246,22 +255,28 @@ type
     procedure RenderClient(const BuiltProp: TDGLBuiltProperties; const rci: TRenderContextInfo); override;
   end;
 
+// ****************************************************************************************
+
 var
   vUseMappingForOftenBufferUpdate: Boolean = False;
-
-
 
 function StaticVBOManager: TDGLStaticRenderManager;
 function DynamicVBOManager: TDGLDynamicRenderManager;
 function StreamVBOManager: TDGLStreamRenderManager;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 uses
   DGLVectorMaths, DGLUtils, DGLresStrings, DGLMeshUtils;
 
 const
-  FourByteZero: T4ByteData                                                              = (Int: (Value: 0));
+  FourByteZero: TDGL4ByteData  = (Int: (Value: 0));
   cPrimitiveType: array [GLVBOM_TRIANGLES .. GLVBOM_TRIANGLE_STRIP_ADJACENCY] of GLenum = (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_POINTS, GL_LINES, GL_LINE_LOOP, GL_LINE_STRIP,  GL_LINES_ADJACENCY,
     GL_LINE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY, GL_TRIANGLE_STRIP_ADJACENCY);
 
@@ -512,13 +527,13 @@ begin
   FRenderingContext                    := AContext;
   FVertexHandle                        := TDGLVBOArrayBufferHandle.Create;
   FIndexHandle                         := TDGLVBOElementArrayHandle.Create;
-  HostIndexBuffer                      := TLongWordList.Create;
+  HostIndexBuffer                      := TDGLLongWordList.Create;
   HostIndexBuffer.SetCountResetsMemory := False;
   GLVBOMState                          := GLVBOM_DEFAULT;
   OneVertexDataSize                    := 0;
   WasUsedList                          := False;
   for I                                := 0 to High(AttributeArrays) do
-    AttributeArrays[I]                 := T4ByteList.Create;
+    AttributeArrays[I]                 := TDGL4ByteList.Create;
   RestartIndex                         := $FFFFFFFF;
 end;
 
@@ -619,7 +634,7 @@ end;
 procedure TDGLBaseRenderManager.EmitVertex;
 var
   a, v, I, etalon, Count: Integer;
-  AA:                     T4ByteList;
+  AA:                     TDGL4ByteList;
   dt:                     TGLVBOMEnum;
   weld:                   Boolean;
 begin
@@ -656,13 +671,13 @@ begin
           Assert(etalon = Count, 'EmitVertex: Lists of attributes do not match the length');
       end;
 
-    // for i := 0 to etalon - 1 do
-    // begin
-    // HostIndexBuffer.Push(ObjectIndex);
-    // Inc(ObjectIndex);
-    // end;
-    //
-    // Inc(CurrentClient.IndexCount[PrimitiveTypeCount], etalon);
+     for i := 0 to etalon - 1 do
+     begin
+     HostIndexBuffer.Push(ObjectIndex);
+     Inc(ObjectIndex);
+     end;
+
+     Inc(CurrentClient.IndexCount[PrimitiveTypeCount], etalon);
     Inc(CurrentClient.VertexCount[PrimitiveTypeCount], etalon);
     Inc(ObjectVertexCount, etalon);
     if MaxIndexValue < ObjectIndex then
@@ -820,7 +835,7 @@ var
 begin
   // if the attribute has never been used before
   Result := -1;
-  Assert(AttrName.ID > 0, 'GetAttributeLocation: attribute not registered');
+  Assert(AttrName.ID > 0, 'GetAttributeLocation: attribute '+AttrName.Name+' not registered');
   Finded := False;
 
   for a := 0 to GLS_VERTEX_ATTR_NUM - 1 do
@@ -848,13 +863,13 @@ begin
       CurrentClient.AttributesInUse[Result] := True;
 
       if (eType = GLVBOM_1F) or (eType = GLVBOM_1I) or (eType = GLVBOM_4UB) then
-        Inc(OneVertexDataSize, 1 * sizeof(T4ByteData))
+        Inc(OneVertexDataSize, 1 * sizeof(TDGL4ByteData))
       else if (eType = GLVBOM_2F) or (eType = GLVBOM_2I) then
-        Inc(OneVertexDataSize, 2 * sizeof(T4ByteData))
+        Inc(OneVertexDataSize, 2 * sizeof(TDGL4ByteData))
       else if (eType = GLVBOM_3F) or (eType = GLVBOM_3I) then
-        Inc(OneVertexDataSize, 3 * sizeof(T4ByteData))
+        Inc(OneVertexDataSize, 3 * sizeof(TDGL4ByteData))
       else if (eType = GLVBOM_4F) or (eType = GLVBOM_4I) then
-        Inc(OneVertexDataSize, 4 * sizeof(T4ByteData));
+        Inc(OneVertexDataSize, 4 * sizeof(TDGL4ByteData));
     end
     else
       exit;
@@ -1042,11 +1057,11 @@ begin
   CurrentValue[Location, 0].Bytes.Value[3] := a4;
 end;
 
-procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TSingleList);
+procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLSingleList);
 var
   Location: Integer;
   Valid:    Boolean;
-  AA:       T4ByteList;
+  AA:       TDGL4ByteList;
   Last:     Integer;
 begin
   Location := GetAttributeLocation(AttrName, GLVBOM_CUSTOM_DATA);
@@ -1067,15 +1082,15 @@ begin
   AA       := AttributeArrays[Location];
   Last     := AA.Count;
   AA.Count := Last + AList.Count;
-  System.Move(AList.List^, AA.List[Last], AList.Count * sizeof(T4ByteData));
+  System.Move(AList.List^, AA.List[Last], AList.Count * sizeof(TDGL4ByteData));
   WasUsedList := True;
 end;
 
-procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TIntegerList);
+procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLIntegerList);
 var
   Location: Integer;
   Valid:    Boolean;
-  AA:       T4ByteList;
+  AA:       TDGL4ByteList;
   Last:     Integer;
 begin
   Location := GetAttributeLocation(AttrName, GLVBOM_CUSTOM_DATA);
@@ -1096,14 +1111,14 @@ begin
   AA       := AttributeArrays[Location];
   Last     := AA.Count;
   AA.Count := Last + AList.Count;
-  System.Move(AList.List^, AA.List[Last], AList.Count * sizeof(T4ByteData));
+  System.Move(AList.List^, AA.List[Last], AList.Count * sizeof(TDGL4ByteData));
   WasUsedList := True;
 end;
 
-procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TByteList);
+procedure TDGLBaseRenderManager.AttributeList(const AttrName: TDGLSLAttribute; const AList: TDGLByteList);
 var
   Location: Integer;
-  AA:       T4ByteList;
+  AA:       TDGL4ByteList;
   Last:     Integer;
 begin
   Location := GetAttributeLocation(AttrName, GLVBOM_CUSTOM_DATA);
@@ -1183,7 +1198,7 @@ end;
 procedure TDGLDynamicRenderManager.EndObject(const rci: TRenderContextInfo);
 var
   a, I, p, n, fullPartCount:                Integer;
-  Attr:                                     T4ByteList;
+  Attr:                                     TDGL4ByteList;
   offset, size:                             LongWord;
   //start,
   restPart, IndexStart, VertexStart: LongWord;
@@ -1264,7 +1279,7 @@ begin
     if CurrentClient.AttributesInUse[a] then
     begin
       Attr := AttributeArrays[a];
-      size := Attr.Count * sizeof(T4ByteData);
+      size := Attr.Count * sizeof(TDGL4ByteData);
 
       if vUseMappingForOftenBufferUpdate then
         Move(Attr.List^, PByte(Integer(HostVertexMap) + Integer(offset))^, size)
@@ -1468,7 +1483,7 @@ constructor TDGLStaticRenderManager.Create(const AContext: TDGLContext);
 begin
   inherited Create(AContext);
   Usage            := GL_STATIC_DRAW;
-  HostVertexBuffer := T4ByteList.Create;
+  HostVertexBuffer := TDGL4ByteList.Create;
   ClientList       := TList.Create;
   FBuilded         := False;
   MaxIndexValue    := 0;
@@ -1495,16 +1510,17 @@ procedure TDGLStaticRenderManager.BeginObject(const BuiltProp: TDGLBuiltProperti
 var
   I: Integer;
 begin
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : BeginObject');
   Assert(not FBuilded, glsCanNotRebuild);
   Assert(GLVBOMState = GLVBOM_DEFAULT, glsWrongCallBegin);
-  Assert(FRenderingContext.GLStates.CurrentProgram > 0, glsNoShader);
+//  Assert(FRenderingContext.GLStates.CurrentProgram > 0, glsNoShader);
 
   Assert(BuiltProp.ID = 0, glsAlreadyDefined);
 
   InitClient(CurrentClient);
   CurrentClient.VertexHandle := FVertexHandle;
   CurrentClient.IndexHandle  := FIndexHandle;
-  CurrentClient.FirstVertex  := HostVertexBuffer.Count * sizeof(T4ByteData);
+  CurrentClient.FirstVertex  := HostVertexBuffer.Count * sizeof(TDGL4ByteData);
   CurrentClient.FirstIndex   := HostIndexBuffer.Count;
   CurrentClient.BuiltProp    := BuiltProp;
 
@@ -1525,8 +1541,9 @@ end;
 procedure TDGLStaticRenderManager.EndObject(const rci: TRenderContextInfo);
 var
   a:    Integer;
-  Attr: T4ByteList;
+  Attr: TDGL4ByteList;
 begin
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : EndObject');
   Assert(GLVBOMState = GLVBOM_OBJECT, glsWrongCallEnd);
   GLVBOMState := GLVBOM_DEFAULT;
 
@@ -1544,7 +1561,7 @@ begin
     begin
       Attr := AttributeArrays[a];
       HostVertexBuffer.Add(Attr);
-      CurrentClient.DataSize[a] := Attr.Count * sizeof(T4ByteData);
+      CurrentClient.DataSize[a] := Attr.Count * sizeof(TDGL4ByteData);
     end;
 
   ClientList.Add(CurrentClient);
@@ -1554,6 +1571,7 @@ end;
 
 procedure TDGLStaticRenderManager.BeginPrimitives(eType: TGLVBOMEnum);
 begin
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : BeginPrimitive');
   Assert(GLVBOMState = GLVBOM_OBJECT, glsWrongCallBeginPrim);
   GLVBOMState := GLVBOM_PRIMITIVE;
   Assert((eType >= GLVBOM_TRIANGLES) and (eType <= GLVBOM_TRIANGLE_STRIP_ADJACENCY), glsInvalidPrimType);
@@ -1573,9 +1591,10 @@ var
   Valid:                       Boolean;
   Index:                       LongWord;
   p:                           Integer;
-  IndicesList, adjIndicesList: TLongWordList;
+  IndicesList, adjIndicesList: TDGLLongWordList;
   start, Count:                LongWord;
 begin
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : EndPrimitive');
   Assert(GLVBOMState = GLVBOM_PRIMITIVE, glsWrongCallEndPrim);
   GLVBOMState := GLVBOM_OBJECT;
 
@@ -1683,10 +1702,9 @@ var
   Client:          PGLRenderPacket;
   tempIndexBuffer: Pointer;
 begin
-  if FBuilded then
-    exit;
-  if (HostVertexBuffer.Count = 0) or (HostIndexBuffer.Count = 0) then
-    exit;
+  if FBuilded then exit;
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : BuildBuffer');
+  if (HostVertexBuffer.Count = 0) or (HostIndexBuffer.Count = 0) then exit;
 
   if vMaxElementsIndices = 0 then
     glGetintegerv(GL_MAX_ELEMENTS_INDICES, @vMaxElementsIndices);
@@ -1694,7 +1712,7 @@ begin
   FVertexHandle.AllocateHandle;
   FVertexHandle.Bind;
   // Upload all vertices data in one buffer
-  FVertexHandle.BufferData(HostVertexBuffer.List, HostVertexBuffer.Count * sizeof(T4ByteData), Usage);
+  FVertexHandle.BufferData(HostVertexBuffer.List, HostVertexBuffer.Count * sizeof(TDGL4ByteData), Usage);
   // Upload all indices data in one buffer
   FIndexHandle.AllocateHandle;
   FIndexHandle.Bind;
@@ -1776,7 +1794,7 @@ begin
         glDisableVertexAttribArray(a)
     end;
 
-    Client.RelativeSize := (offset - Client.FirstVertex) / (HostVertexBuffer.Count * sizeof(T4ByteData));
+    Client.RelativeSize := (offset - Client.FirstVertex) / (HostVertexBuffer.Count * sizeof(TDGL4ByteData));
 
     // Add index buffer to array
     FIndexHandle.Bind;
@@ -1801,9 +1819,8 @@ var
   uniform:                GLint;
   start, restPart:        LongWord;
 begin
-  if not FBuilded then
-    exit;
-
+  if not FBuilded then exit;
+  DGLSLogger.LogInfo('TDGLStaticRenderManager : RenderClient');
   Client   := ClientList.Items[BuiltProp.ID - 1];
   offset   := Client.FirstIndex;
   typeSize := sizeof(GLubyte);
@@ -1956,7 +1973,7 @@ end;
 procedure TDGLStreamRenderManager.EndObject(const rci: TRenderContextInfo);
 var
   a:             Integer;
-  Attr:          T4ByteList;
+  Attr:          TDGL4ByteList;
   offset, size:  LongWord;
   HostVertexMap: Pointer;
   HostIndexMap:  Pointer;
@@ -2031,7 +2048,7 @@ begin
     if CurrentClient.AttributesInUse[a] then
     begin
       Attr := AttributeArrays[a];
-      size := Attr.Count * sizeof(T4ByteData);
+      size := Attr.Count * sizeof(TDGL4ByteData);
 
       if vUseMappingForOftenBufferUpdate then
         Move(Attr.List^, PByte(Integer(HostVertexMap) + Integer(offset))^, size)

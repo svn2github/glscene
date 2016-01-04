@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{3269129F-43B4-4BB2-B43C-2728F2326835}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="DGLEngine_Runtime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DGLEngine_Designtime.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="DGLEngine_Runtime">
+        <MSBuild Projects="DGLEngine_Runtime.dproj"/>
+    </Target>
+    <Target Name="DGLEngine_Runtime:Clean">
+        <MSBuild Projects="DGLEngine_Runtime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGLEngine_Runtime:Make">
+        <MSBuild Projects="DGLEngine_Runtime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime">
+        <MSBuild Projects="DGLEngine_Designtime.dproj"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime:Clean">
+        <MSBuild Projects="DGLEngine_Designtime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DGLEngine_Designtime:Make">
+        <MSBuild Projects="DGLEngine_Designtime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="DGLEngine_Runtime;DGLEngine_Designtime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="DGLEngine_Runtime:Clean;DGLEngine_Designtime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="DGLEngine_Runtime:Make;DGLEngine_Designtime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

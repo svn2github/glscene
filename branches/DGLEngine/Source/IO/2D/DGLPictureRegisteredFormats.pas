@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: PictureRegisteredFormats<p>
+{ @HTML ( PictureRegisteredFormats<p>
 
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
@@ -22,11 +22,11 @@ uses
 
 {$DEFINE PRF_HACK_PASSES}
 
-{: Returns the TGraphicClass associated to the extension, if any.<p>
+{ @HTML ( Returns the TGraphicClass associated to the extension, if any.<p>
    Accepts anExtension with or without the '.' }
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 
-{: Adds to the passed TStrings the list of registered formats.<p>
+{ @HTML ( Adds to the passed TStrings the list of registered formats.<p>
    Convention is "extension=description" for the string, the Objects hold
    the corresponding TGraphicClass (extensions do not include the '.'). }
 procedure HackTPictureRegisteredFormats(destList: TStrings);
@@ -91,7 +91,7 @@ var
   list: TList;
   fileFormat: PFileFormat;
 begin
-  {$MESSAGE WARN 'HackTPictureRegisteredFormats will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option'}
+  {$MESSAGE Hint 'HackTPictureRegisteredFormats will crash when Graphics.pas is compiled with the 'Use Debug DCUs' option'}
 
   pRegisterFileFormat := PAnsiChar(@TPicture.RegisterFileFormat);
   if pRegisterFileFormat[0] = #$FF then // in case of BPL redirector

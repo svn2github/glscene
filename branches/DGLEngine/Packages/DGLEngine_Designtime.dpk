@@ -1,8 +1,8 @@
 package DGLEngine_Designtime;
 
 {$R *.res}
-{$R '..\Source\ressources\DGLEngineObjects.dcr'}
-{$R '..\Source\ressources\DGLEngineVCL.dcr'}
+{$R '..\Source\Ressources\DGLEngineObjects.dcr'}
+{$R '..\Source\Ressources\DGLEngineVCL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,6 +27,7 @@ package DGLEngine_Designtime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene 2 (DGLEngine) 3D OpenGL 3.3+/ Vulkan Engine VCL'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
@@ -36,16 +37,18 @@ requires
   vclimg,
   vcl,
   VclSmp,
-  DGLEngine_RunTime;
+  DGLEngine_Runtime;
 
 contains
   DGLEngineRegister in '..\Source\Designtime\DGLEngineRegister.pas',
   DGLSceneEdit in '..\Source\Designtime\DGLSceneEdit.pas' {DGLSceneEditorForm},
   DGLSceneForm in '..\Source\Designtime\DGLSceneForm.pas',
+  FDGLLibMaterialPicker in '..\Source\Designtime\FDGLLibMaterialPicker.pas' {DGLLibMaterialPicker},
+  FDGLLibShaderPicker in '..\Source\Designtime\FDGLLibShaderPicker.pas' {DGLLibShaderPicker},
+  FDGLShaderMemo in '..\Source\Designtime\FDGLShaderMemo.pas' {DGLShaderMemoForm},
   FDGLShaderUniformEditor in '..\Source\Designtime\FDGLShaderUniformEditor.pas' {DGLShaderUniformEditor},
   FDGLVectorEditor in '..\Source\Designtime\FDGLVectorEditor.pas' {DGLVectorEditorForm},
   FDGLXCollectionEditor in '..\Source\Designtime\FDGLXCollectionEditor.pas' {DGLXCollectionEditor},
-  RegisterDGLXCollection in '..\Source\Designtime\RegisterDGLXCollection.pas',
-  DGLObjectManager in '..\Source\DGLObjectManager.pas';
+  RegisterDGLXCollection in '..\Source\Designtime\RegisterDGLXCollection.pas';
 
 end.

@@ -1,11 +1,11 @@
 //
-// This unit is part of the DGLEngine Project, http://DGLEngine.org
+// This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLRenderContextInfo<p>
+{ @HTML ( DGLRenderContextInfo<p>
 
       Stores contextual info useful during rendering methods.<p>
 
- <b>Historique : </b><font size=-1><ul>
+ <b>History: </b><font size=-1><ul>
       <li>21/12/15 - JD -  Imported From GLScene
  </ul></font>
 }
@@ -35,7 +35,7 @@ type
 
   // TRenderContextInfo
   //
-  {: Stores contextual info useful during rendering methods. }
+  { @HTML ( Stores contextual info useful during rendering methods. }
   TRenderContextInfo = record
     scene: TObject; //usually TGLScene
     buffer: TObject; //usually TGLSceneBuffer

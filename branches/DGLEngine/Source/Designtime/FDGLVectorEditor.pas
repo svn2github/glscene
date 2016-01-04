@@ -1,11 +1,11 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: FVectorEditor<p>
+{ @HTML ( FVectorEditor<p>
 
    Editor for a vector.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History: </b><font size=-1><ul>
       <li>05/10/08 - JD - Imported from GLScene
    </ul></font>
 }

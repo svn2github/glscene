@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLFileTGA<p>
+{ @HTML ( DGLFileTGA<p>
 
    Graphic engine friendly loading of TGA image.
 
@@ -39,7 +39,7 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TDGLContext;
       const textureHandle: TGLuint;
@@ -302,7 +302,7 @@ begin
 {$MESSAGE Hint 'TDGLTGAImage.AssignFromTexture not yet implemented' }
 end;
 
-class function TDGLTGAImage.Capabilities: TDataFileCapabilities;
+class function TDGLTGAImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

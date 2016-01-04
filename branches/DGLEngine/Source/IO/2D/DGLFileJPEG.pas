@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: GLFileJPEG<p>
+{ @HTML ( GLFileJPEG<p>
 
   <b>History : </b><font size=-1><ul>
       <li>28/12/15 - JD - Imported and updated from GLScene
@@ -38,14 +38,14 @@ type
     procedure SetSmoothing(const AValue: boolean);
   public
     constructor Create; override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { @HTML ( Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TDGLContext;
       const textureHandle: TGLuint;
       textureTarget: TDGLTextureTarget;
@@ -262,7 +262,7 @@ begin
     FSmoothing := AValue;
 end;
 
-class function TDGLJPEGImage.Capabilities: TDataFileCapabilities;
+class function TDGLJPEGImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

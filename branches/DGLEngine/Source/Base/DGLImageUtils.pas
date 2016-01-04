@@ -5,7 +5,7 @@
 
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History: </b><font size=-1><ul>
   <li>07/09/11 - JD - Imported from GLScene
   </ul></font>
 

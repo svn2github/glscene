@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{C5DE2180-EB34-46AE-817D-16848CC510A8}</ProjectGuid>
+        <ProjectGuid>{22D282F6-24D0-420E-9CF1-14DFECCFACD9}</ProjectGuid>
         <MainSource>DGLEngine_Designtime.dpk</MainSource>
         <ProjectVersion>17.2</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
@@ -33,8 +33,18 @@
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='OSX32' and '$(Base)'=='true') or '$(Base_OSX32)'!=''">
+        <Base_OSX32>true</Base_OSX32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
         <Base_Win32>true</Base_Win32>
+        <CfgParent>Base</CfgParent>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Base)'=='true') or '$(Base_Win64)'!=''">
+        <Base_Win64>true</Base_Win64>
         <CfgParent>Base</CfgParent>
         <Base>true</Base>
     </PropertyGroup>
@@ -55,11 +65,12 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <GenDll>true</GenDll>
+        <DesignOnlyPackage>true</DesignOnlyPackage>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
+        <GenDll>true</GenDll>
         <SanitizedProjectName>DGLEngine_Designtime</SanitizedProjectName>
-        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <GenPackage>true</GenPackage>
+        <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
@@ -69,23 +80,34 @@
         <DCC_K>false</DCC_K>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
-        <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
+        <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSDevice32)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSDevice64)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSSimulator)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_CBuilderOutput>None</DCC_CBuilderOutput>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_OSX32)'!=''">
+        <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_UsePackage>rtl;vcl;vclimg;VclSmp;DGLEngine_Runtime;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <DCC_UsePackage>rtl;vcl;vclimg;VclSmp;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -96,6 +118,17 @@
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <DCC_ObjOutput>..\source\lib</DCC_ObjOutput>
+        <DCC_SYMBOL_PLATFORM>false</DCC_SYMBOL_PLATFORM>
+        <DCC_HppOutput>..\source\include</DCC_HppOutput>
+        <DCC_AdditionalSwitches>-LUDesignIDE</DCC_AdditionalSwitches>
+        <DCC_BpiOutput>..\source\lib</DCC_BpiOutput>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Debug>true</VerInfo_Debug>
+        <DCC_Description>GLScene 2 (DGLEngine) 3D OpenGL 3.3+/ Vulkan Engine VCL</DCC_Description>
+        <VerInfo_Keys>CompanyName=www.glscene.org;FileDescription=GLScene 2 (DGLEngine) 3D OpenGL 3.3+/ Vulkan Engine;FileVersion=1.0.0.0;InternalName=DGLENGINE;LegalCopyright=MPL 1.1;LegalTrademarks=MPL 1.1;OriginalFilename=;ProductName=GLScene 2.0;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_PreRelease>true</VerInfo_PreRelease>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
@@ -108,20 +141,32 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Source\ressources\DGLEngineObjects.dcr"/>
-        <DCCReference Include="..\Source\ressources\DGLEngineVCL.dcr"/>
+        <DCCReference Include="..\Source\Ressources\DGLEngineObjects.dcr"/>
+        <DCCReference Include="..\Source\Ressources\DGLEngineVCL.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="designide.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
-        <DCCReference Include="DGLEngine_RunTime.dcp"/>
+        <DCCReference Include="DGLEngine_Runtime.dcp"/>
         <DCCReference Include="..\Source\Designtime\DGLEngineRegister.pas"/>
         <DCCReference Include="..\Source\Designtime\DGLSceneEdit.pas">
             <Form>DGLSceneEditorForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\Source\Designtime\DGLSceneForm.pas"/>
+        <DCCReference Include="..\Source\Designtime\FDGLLibMaterialPicker.pas">
+            <Form>DGLLibMaterialPicker</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Source\Designtime\FDGLLibShaderPicker.pas">
+            <Form>DGLLibShaderPicker</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Source\Designtime\FDGLShaderMemo.pas">
+            <Form>DGLShaderMemoForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <DCCReference Include="..\Source\Designtime\FDGLShaderUniformEditor.pas">
             <Form>DGLShaderUniformEditor</Form>
             <FormType>dfm</FormType>
@@ -135,7 +180,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\Source\Designtime\RegisterDGLXCollection.pas"/>
-        <DCCReference Include="..\Source\DGLObjectManager.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -153,6 +197,11 @@
         <Borland.ProjectType>Package</Borland.ProjectType>
         <BorlandProject>
             <Delphi.Personality>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\16.0\Bpl\GR32_DSGN_RSXE5.bpl">Graphics32 Design Time Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k220.bpl">Composants Microsoft Office 2000 Sample Automation Server Wrapper</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp220.bpl">Composants Microsoft Office XP Sample Automation Server Wrapper</Excluded_Packages>
+                </Excluded_Packages>
                 <Source>
                     <Source Name="MainSource">DGLEngine_Designtime.dpk</Source>
                 </Source>
@@ -492,13 +541,13 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
+                <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>
                 <Platform value="Android">False</Platform>

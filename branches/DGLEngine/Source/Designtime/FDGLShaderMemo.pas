@@ -1,22 +1,28 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FShaderMemo<p>
-   Shader code editor.<p>
-
+{ @HTML ( FShaderMemo
+  @HTML (<p>
+   DesignTime Shader code editor.</p>
+   <p>
    <b>Historique : </b><font size=-1><ul>
-      <li>31/03/11 - Yar - Creation
-   </ul></font>
+      <li>28/12/15 - JD - Imported and updated from GLScene</li>
+   </ul></font></p>
+   p>
+  <b>Status : </b>In Progress<br>
+  <b>Todo : </b>
+  <ul>
+     <li>decide how to load templates from external file, update it without package recompilation</li>
+  </ul></p>
+    )
 }
 
-// TODO: decide how to load templates from external file,
-//       update it without package recompilation
 
 unit FDGLShaderMemo;
 
 interface
 
-{$I GLScene.inc}
+{$I DGLEngine.inc}
 
 uses
   Winapi.Windows,
@@ -37,7 +43,7 @@ uses
   VCL.StdCtrls,
   VCL.Graphics,
   //GLS
-  GLSMemo, System.ImageList;
+  DGLSMemo, System.ImageList;
 
 type
 
@@ -75,7 +81,8 @@ type
     CancelButton: TButton;
     OKButton: TButton;
     CheckButton: TButton;
-    GLSLMemo: TMemo;
+    GLSLMemo: TDGLSynHiMemo;
+
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLSLMemoGutterClick(Sender: TObject; LineNo: Integer);
@@ -105,8 +112,8 @@ type
     property OnCheck: TNotifyEvent read FOnCheck write FOnCheck;
   end;
 
-function GLShaderEditorForm: TDGLShaderMemoForm;
-procedure ReleaseGLShaderEditor;
+function DGLShaderEditorForm: TDGLShaderMemoForm;
+procedure ReleaseDGLShaderEditor;
 
 //------------------------------------------------------------------
 //------------------------------------------------------------------
@@ -142,7 +149,7 @@ const
     '#line'
     );
 
-  GLSLQualifiers: array[0..33] of string =
+  GLSLQualifiers: array[0..34] of string =
     (
     'attribute', 'const', 'uniform', 'varying',
     'layout',
@@ -154,7 +161,7 @@ const
     'in', 'out', 'inout',
     'true', 'false',
     'invariant',
-    'discard', 'return',
+    'discard', 'return', 'void',
     'lowp', 'mediump', 'highp', 'precision'
     );
 
@@ -713,19 +720,19 @@ const
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 type
-  TFriendlyMemo = class(TGLSSynHiMemo);
+  TFriendlyMemo = class(TDGLSynHiMemo);
 
 var
   vGLShaderEditor: TDGLShaderMemoForm;
 
-function GLShaderEditorForm: TDGLShaderMemoForm;
+function DGLShaderEditorForm: TDGLShaderMemoForm;
 begin
   if not Assigned(vGLShaderEditor) then
     vGLShaderEditor := TDGLShaderMemoForm.Create(nil);
   Result := vGLShaderEditor;
 end;
 
-procedure ReleaseGLShaderEditor;
+procedure ReleaseDGLShaderEditor;
 begin
   if Assigned(vGLShaderEditor) then
   begin
@@ -762,23 +769,24 @@ begin
     reg.Free;
   end;
 
-  No := GLSLMemo.Styles.Add(clRed, clWhite, []);
+
+  No := GLSLMemo.Styles.Add($001F53DB, $002E2B28, []);
   GLSLMemo.AddWord(No, GLSLDirectives);
 
-  No := GLSLMemo.Styles.Add(clPurple, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add($005DA068, $002E2B28, [fsBold]);
   GLSLMemo.AddWord(No, GLSLQualifiers);
 
-  No := GLSLMemo.Styles.Add(clBlue, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add($00ADBB8C, $002E2B28, [fsBold]);
   GLSLMemo.AddWord(No, GLSLTypes);
 
-  No := GLSLMemo.Styles.Add(clGray, clWhite, [fsBold]);
+  No := GLSLMemo.Styles.Add(clSkyBlue, $002E2B28, [fsBold]);
   GLSLMemo.AddWord(No, GLSLBuildIn);
 
-  No := GLSLMemo.Styles.Add(clGreen, clWhite, [fsItalic]);
+  No := GLSLMemo.Styles.Add(clMoneyGreen, $002E2B28, [fsItalic]);
   GLSLMemo.AddWord(No, GLSLFunctions);
 
-  No := GLSLMemo.Styles.Add(clYellow, clSilver, [fsItalic]);
-  GLSLMemo.AddWord(No, GLSLFunctions);
+//  No := GLSLMemo.Styles.Add(clYellow, clSilver, [fsItalic]);
+//  GLSLMemo.AddWord(No, GLSLFunctions);
 
   FLightLineStyle := GLSLMemo.Styles.Add(clBlack, clLtGray, []);
 
@@ -1036,7 +1044,7 @@ end;
 initialization
 
 finalization
-  ReleaseGLShaderEditor;
+  ReleaseDGLShaderEditor;
 
 end.
 

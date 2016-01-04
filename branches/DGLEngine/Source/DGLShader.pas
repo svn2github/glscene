@@ -1,110 +1,106 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{ : DGLShader<p>
-
+{ : DGLShader
+  @HTML (
+  <p>
   Handles all Shader Programs and Uniforms parameters
-  Shader is the base of the object rendering. Shader is attached to an object.
-
-  The Shader is linked with a Material from a Material Library.
-  The Shader is linked with Lights form a Light Library
-  The Shader can apply automatically or manually uniforms parameters
-
+  Shader is the base of the object rendering. Shader is attached to an object. </p>
+  <p>
+  <ul>
+  <li>The Shader is linked with a Material from a Material Library.</li>
+  <li>The Shader is linked with Lights form a Light Library</li>
+  <li>The Shader can apply automatically or manually uniforms parameters</li>
+  </ul>
   The MVP matrix is automacilly retreive from the current RCI
-
+  <br>
   The Uniforms "In_Vertex", "In_VertexColors", "In_TexCoord", "In_Normals", "In_Tagents" are send
   to the right uniform location by the object itself.
   These parameters are automatically send to GPU via the object's VAOs.
-
+  <br>
   This library support OpenGL 3.3 (GLSL version #330 Core) minimum.
+  <br>
+  It's support DSA (Direct Shader Access)</p>
 
-  It's support DSA (Direct Shader Access)
-
-  OpenGL 4.0 Atomic Counter is supported
-  OpenGL 4.3 SubRoutine is supported
-  OpenGL 4.4 SSBO (Sub Shader Buffer Object) is supported
-
+  <p>
   Shader have a multipass mechanism with the "NextPass" Parameters, so you can apply more than 1 shader to an object
-
+  <br>
   Sample of the minimum GLSL Shader Script required :
-  - Vertex Program :
+  </p><p><br>
+  - Vertex Program :<br>
 
-     #VERSION 330 Core
-     attrib (location=0) vec3 In_Vertex
-     uniform mat4 ModelViewProjection;
-     out vec4 Position
-     void main() [
-         Position = ModelViewProjection * In_Vertex;
-     ]
-
-  - Fragment Program :
-
-    #VERSION 330 Core
-    in vec4 Position;
-    uniform vec4 DiffuseColor;
-    out vec4 FragColor;
-    void main() [
-      out FragColor = DiffuseColor;
-    ]
-
-
+     #VERSION 330 Core<br>
+     attrib (location=0) vec3 In_Vertex<br>
+     uniform mat4 ModelViewProjection;<br>
+     out vec4 Position<br>
+     void main() [<br>
+         Position = ModelViewProjection * In_Vertex;<br>
+     ]<br>
+   </p><p>
+  - Fragment Program :<br>
+    <br>
+    #VERSION 330 Core<br>
+    in vec4 Position;<br>
+    uniform vec4 DiffuseColor;<br>
+    out vec4 FragColor;<br>
+    void main() [<br>
+      out FragColor = DiffuseColor;<br>
+    ]<br>
+    </p>
+  <p>
   <b>History : </b><font size=-1><ul>
-  <li>25/12/15 - JD - Created
-  </ul></font>
+    <li>25/12/15 - JD - Created</li>
+  </ul></font></p>
+  <p>
+  <ul>
+    <li> Status : In progress </li>
+    <li> Todo :
+    <ul>
+      <li>Add a ShaderModel's Collection in LibShader with a Register/Unregister function<br>
+          Like this will can including and using our own Customs Shaders without having growing list of components<br>
+          in palette components</li>
+      <li>OpenGL 4.0 Atomic Counter support</li>
+      <li>OpenGL 4.3 SubRoutine support</li>
+      <li>OpenGL 4.4 SSBO (Sub Shader Buffer Object) support</li>
+      <li>OpenGL 4.5 Compute program support</li>
+    </ul></li>
+  </ul>
+  </p> )
 }
 unit DGLShader;
 
 interface
+
 {$I DGLEngine.inc}
 
 uses
   System.Classes,
   System.SysUtils,
-
+  System.Types,
   // GLS
-  DGLCrossPlatform,
-  DGLResStrings,
-  DGLSLog,
-
-  dglOpenGL,
-  //DGLXOpenGL,
-
-  DGLTypes,
-  DGLBaseClasses,
-  DGLPersistentClasses,
-  DGLXCollection,
-
-  DGLApplicationFileIO,
-  DGLUtils,
-
-  DGLContext,
-  DGLContextHandles,
-  DGLState,
-  DGLRenderContextInfo,
-
-  DGLVectorTypes,
-  DGLVectorMaths,
-  DGLCoordinates,
-
-  DGLSLShader,
-  DGLSLParameters,
-  DGLTextureFormat,
-  DGLMaterial;
+  DGLCrossPlatform,DGLResStrings,DGLSLog,dglOpenGL,
+  DGLTypes,DGLBaseClasses,DGLPersistentClasses,DGLXCollection,DGLApplicationFileIO,DGLUtils,
+  DGLContext,DGLContextHandles,DGLState,DGLRenderContextInfo,
+  DGLVectorTypes,DGLVectorMaths,DGLCoordinates,DGLSLParameters,
+  DGLTextureFormat,DGLMaterial;
 
 Type
+  // ****************************************************************************************
   TDGLShaderComponentName = string;
   TDGLLibShaderName        = string;
   TDGLAbstractShaderLibrary = class;
   TDGLLibShader             = class;
   TDGLShaderLibrary         = class;
+  EDGLShaderException = class(Exception);
 
-
+  // ****************************************************************************************
   // an interface for proper TGLLibShaderNameProperty support
   IDGLShaderLibrarySupported = interface(IInterface)
     ['{53129B31-5505-4F5D-B950-3A8DA7581630}']
     function GetShaderLibrary: TDGLAbstractShaderLibrary;
   end;
 
+  // ****************************************************************************************
   // TDGLAbstractLibShader
   //
   TDGLAbstractLibShader = class( TCollectionItem,IDGLShaderLibrarySupported, IDGLNotifyAble)
@@ -116,20 +112,13 @@ Type
     FTag: Integer;
     FNotifying: Boolean; // used for recursivity protection
 
-//    FMaterialLibrary: TDGLMaterialLibrary;
-//    FMaterialName: TGLLibMaterialName;
-//    FMaterial : TDGLMaterial;
-    //implementing IGLMaterialLibrarySupported
+    //implementing IDGLShaderLibrarySupported
     function GetShaderLibrary: TDGLAbstractShaderLibrary;
     //implementing IInterface
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
 
-    // implementing IGLMaterialLibrarySupported
-//    function GetMaterialLibrary: TDGLMaterialLibrary;
-//    procedure SetMaterialLibrary(const Value: TDGLMaterialLibrary);
-//    procedure SetMaterialName(const Value: TGLLibMaterialName);
   protected
     { Protected Declarations }
     function GetDisplayName: string; override;
@@ -160,16 +149,14 @@ Type
     procedure NotifyChange(Sender: TObject); virtual;
 
     property ShaderLibrary: TDGLAbstractShaderLibrary read GetShaderLibrary;
-//    property Material : TDGLMaterial read FMaterial;
+
   published
     { Published Declarations }
     property Name: TDGLLibShaderName read FName write SetName;
     property Tag: Integer read FTag write FTag;
-
-//    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLibrary write SetMaterialLibrary;
-//    property MaterialName: TGLLibMaterialName read FMaterialName write SetMaterialName;
   end;
 
+  // ****************************************************************************************
   // TDGLAbstractLibShaders
   //
   TDGLAbstractLibShaders = class(TOwnedCollection)
@@ -181,6 +168,7 @@ Type
     function MakeUniqueName(const nameRoot: TDGLLibShaderName): TDGLLibShaderName; virtual;
   end;
 
+  // ****************************************************************************************
   // TGLAbstractShaderLibrary
   //
   TDGLAbstractShaderLibrary = class(TDGLCadenceAbleComponent)
@@ -197,19 +185,20 @@ Type
     { Public Declarations }
 
     procedure SetNamesToTStrings(AStrings: TStrings);
-    {: Applies the Shader of given name.<p>
+    { @HTML ( Applies the Shader of given name.<p>
        Returns False if the Shader could not be found. ake sure this
        call is balanced with a corresponding UnApplyShader (or an
        assertion will be triggered in the destructor).<br>
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyShader(const AName: string; var ARci: TRenderContextInfo): Boolean; virtual;
-    {: Un-applies the last applied material.<p>
+    { @HTML ( Un-applies the last applied material.<p>
        Use this function in conjunction with ApplyShader.<br>
        If no material was applied, an assertion will be triggered. }
     function UnApplyShader(var ARci: TRenderContextInfo): Boolean; virtual;
   end;
 
+  // ****************************************************************************************
   // TDGLLibShaders
   //
   TDGLLibShaders = class(TDGLAbstractLibShaders)
@@ -229,9 +218,10 @@ Type
     function GetLibShaderByName(const AName: TDGLLibShaderName): TDGLLibShader;
   end;
 
+  // ****************************************************************************************
   // TGLBaseShaderCollectionItem
   //
-  TDGLBaseShaderCollectionItem = class(TDGLXCollectionItem)
+  TDGLBaseShaderComponentItem = class(TDGLXCollectionItem, IDGLShaderLibrarySupported)
   private
     { Private Declarations }
     FNameHashKey:  Integer;
@@ -240,7 +230,7 @@ Type
     FNotifying:    Boolean;
     FIsValid:      Boolean;
     function GetUserList: TDGLPersistentObjectList;
-    function GetShaderLib: TDGLShaderLibrary;
+    function GetShaderLibEx: TDGLShaderLibrary;
   protected
     { Protected Declarations }
     procedure SetName(const AValue: TDGLShaderComponentName); override;
@@ -254,20 +244,21 @@ Type
     procedure RegisterUser(AUser: TDGLUpdateAbleObject);
     procedure UnregisterUser(AUser: TDGLUpdateAbleObject);
     function GetUserCount: Integer;
-    function GetShaderLibrary: TDGLShaderLibrary;
+    function GetShaderLibrary: TDGLAbstractShaderLibrary;
 
-    property ShaderLibrary: TDGLShaderLibrary read GetShaderLib;
+    property ShaderLibrary: TDGLShaderLibrary read GetShaderLibEx;
     property IsValid: Boolean read FIsValid;
   published
     { Published Declarations }
     property Name: TDGLShaderComponentName read GetName write SetName;
   end;
 
-  CDGLBaseShaderCollectionItem = class of TDGLBaseShaderCollectionItem;
-  // TGLLibMaterialProperty
-  //
+  CDGLBaseShaderCollectionItem = class of TDGLBaseShaderComponentItem;
 
-  TDGLLibShaderProperty = class(TDGLUpdateAbleObject)
+  // ****************************************************************************************
+  // TGLLibShaderProperty
+  //
+  TDGLLibShaderProperty = class(TDGLUpdateAbleObject, IDGLShaderLibrarySupported)
   protected
     { Protected Declarations }
     FEnabled:      Boolean;
@@ -275,26 +266,28 @@ Type
     FNextPass: TDGLLibShader;
 
     function GetShader: TDGLLibShader;
-    function GetShaderLibrary: TDGLShaderLibrary;
+    function GetShaderLibraryEx: TDGLShaderLibrary;
     procedure SetEnabled(AValue: Boolean); virtual;
     procedure SetNextPass(const AValue: TDGLLibShaderName);
     procedure Loaded; virtual;
-
+    property NextPass: TDGLLibShaderName read FNextPassName write SetNextPass;
   public
     { Public Declarations }
     procedure NotifyChange(Sender: TObject); override;
-    function GetOwnerShaderLibrary: TDGLShaderLibrary;
+    function GetShaderLibrary: TDGLAbstractShaderLibrary;
 
-    property ShaderLibrary: TDGLShaderLibrary read GetShaderLibrary;
+    property ShaderLibrary: TDGLShaderLibrary read GetShaderLibraryEx;
   published
     { Published Declarations }
+    { @HTML ( Turns on/off shader application.}
     property Enabled: Boolean read FEnabled write SetEnabled;
-    property NextPass: TDGLLibShaderName read FNextPassName write SetNextPass;
-  end;
-  // TDGLSLShader
-  //
 
-  TDGLSLShader = class(TDGLBaseShaderCollectionItem)
+  end;
+
+  // ****************************************************************************************
+  // TDGLSLShaderScript
+  //
+  TDGLSLShaderScript = class(TDGLBaseShaderComponentItem)
   protected
     { Protected Declarations }
     procedure WriteToFiler(AWriter: TWriter); override;
@@ -339,9 +332,9 @@ Type
     property GeometryVerticesOut: TGLint read FGeometryVerticesOut write SetGeometryVerticesOut default 1;
   end;
 
+  // ****************************************************************************************
   // TGLAbstractShaderUniform
   //
-
   TDGLAbstractShaderUniform = class(TDGLUpdateAbleObject, IShaderParameter)
   protected
     { Protected Declarations }
@@ -411,9 +404,9 @@ Type
 
   CGLAbstractShaderUniform = class of TDGLAbstractShaderUniform;
 
+  // ****************************************************************************************
   // TDGLShaderUniform
   //
-
   TDGLShaderUniform = class(TDGLAbstractShaderUniform, IShaderParameter)
   protected
     { Protected Declarations }
@@ -482,9 +475,9 @@ Type
     property GLSLType: TDGLSLDataType read GetGLSLType;
   end;
 
+  // ****************************************************************************************
   // TDGLShaderUniformDSA
   //
-
   TDGLShaderUniformDSA = class(TDGLShaderUniform)
   protected
     { Protected Declarations }
@@ -513,10 +506,9 @@ Type
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
   end;
 
-
+  // ****************************************************************************************
   // TDGLShaderUniformTexture
   //
-
   TDGLShaderUniformTexture = class(TDGLShaderUniform)
   private
     { Private Declarations }
@@ -561,29 +553,142 @@ Type
     property Swizzling: TSwizzleVector read GetTextureSwizzle write SetTextureSwizzle;
   end;
 
+  // @TODO ADD a TDGLShaderUniformLight  ?????
 
-  // @TODO ADD a TDGLShaderUniformLight
+  // ****************************************************************************************
+  // TDGLShaderFailedInitAction
+  //
+  { @HTML ( Defines what to do if for some reason shader failed to initialize.<ul>
+     <li>fiaSilentdisable:          just disable it
+     <li>fiaRaiseHandledException:  raise an exception, and handle it right away
+                                    (usefull, when debigging within Delphi)
+     <li>fiaRaiseStardardException: raises the exception with a string from this
+                                      function GetStardardNotSupportedMessage
+     <li>fiaReRaiseException:       Re-raises the exception
+     <li>fiaGenerateEvent:          Handles the exception, but generates an event
+                                    that user can respond to. For example, he can
+                                    try to compile a substitude shader, or replace
+                                    it by a material.
+                                    Note: HandleFailedInitialization does *not*
+                                    create this event, it is left to user shaders
+                                    which may chose to override this procedure.
+                                    Commented out, because not sure if this
+                                    option should exist, let other generations of
+                                    developers decide ;)
+     </ul> }
+  TDGLShaderFailedInitAction = (
+    fiaSilentDisable, fiaRaiseStandardException,
+    fiaRaiseHandledException, fiaReRaiseException,fiaGenerateEvent);
 
+  // ****************************************************************************************
   // TGLBaseShaderModel
   //
-
-  TDGLBaseShaderModel = class(TDGLLibShaderProperty)
+  { @HTML ( @HTML( Generic, abstract shader Model class.<p>
+     Shaders are modeled here as an abstract material-altering entity with
+     transaction-like behaviour. The base class provides basic context and user
+     tracking, as well as setup/application facilities.<br>
+     Subclasses are expected to provide implementation for DoInitialize,
+     DoApply, DoUnApply and DoFinalize.</p> ) }
+  TDGLAbstractShaderModel = class(TDGLLibShaderProperty)
   private
-
+     FFailedInitAction: TDGLShaderFailedInitAction;
+     FVirtualHandle: TDGLVirtualHandle;
+     FUpdateCount: Integer;
+     FShaderActive: Boolean;
   protected
     { Protected Declarations }
+
+    { @HTML ( Invoked once, before the first call to DoApply.
+       The call happens with the OpenGL context being active. }
+    procedure DoInitialize(var rci: TRenderContextInfo); dynamic;
+    { @HTML ( Request to apply the shader.
+       Always followed by a DoUnApply when the shader is no longer needed. }
+    procedure DoApply(var rci: TRenderContextInfo); virtual;
+    { @HTML ( Request to un-apply the shader.
+       Subclasses can assume the shader has been applied previously.<br>
+       Return True to request a multipass. }
+    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
+    { @HTML ( Invoked once, before the destruction of context or release of shader.
+       The call happens with the OpenGL context being active. }
+    procedure DoFinalize; dynamic;
+    procedure DoOnPrepare(Sender: TDGLContext);virtual;
+
+     { @HTML ( Defines if shader is supported by hardware/drivers.
+       Default - always supported. Descendants are encouraged to override
+       this function. }
+    class function IsSupported: Boolean; virtual; abstract;
+
+    function GetShaderInitialized: Boolean;
+    procedure InitializeShader(var rci: TRenderContextInfo);
+    procedure FinalizeShader;
+    procedure OnVirtualHandleAllocate(sender: TDGLVirtualHandle; var handle:Cardinal);
+    procedure OnVirtualHandleDestroy(sender: TDGLVirtualHandle; var handle: Cardinal);
+
+    { @HTML ( Used by the DoInitialize procedure of descendant classes to raise errors. }
+    procedure HandleFailedInitialization(const LastErrorMessage: string = ''); virtual;
+
+    { @HTML ( May be this should be a function inside HandleFailedInitialization... }
+    function GetStandardNotSupportedMessage: string; virtual;
+
+    //property ComputeShaderName : TDGLShaderComponentName index shtCompute read GetLibShaderName write SetLibShaderName;
+    property ShaderInitialized: Boolean read GetShaderInitialized;
+    property ShaderActive: Boolean read FShaderActive;
+    { @HTML ( Defines what to do if for some reason shader failed to initialize.
+       Note, that in some cases it cannon be determined by just checking the
+       required OpenGL extentions. You need to try to compile and link the
+       shader - only at that stage you might catch an error }
+    property FailedInitAction: TDGLShaderFailedInitAction read FFailedInitAction write FFailedInitAction default fiaRaiseStandardException;
+
+  public
+    { Public Declarations }
+    constructor Create(AOwner: TPersistent); override;
+    destructor Destroy; override;
+    procedure Assign(Source: TPersistent); override;
+
+    { @HTML ( Subclasses should invoke this function when shader properties are altered.
+        This procedure can also be used to reset/recompile the shader. }
+    procedure NotifyChange(Sender: TObject); override;
+    procedure BeginUpdate;
+    procedure EndUpdate;
+
+    { @HTML ( Apply shader to OpenGL state machine.}
+    procedure Apply(var Rci: TRenderContextInfo); //virtual;
+    { @HTML ( UnApply shader.
+       When returning True, the caller is expected to perform a multipass
+       rendering by re-rendering then invoking UnApply again, until a
+       "False" is returned. }
+    function UnApply(var Rci: TRenderContextInfo):Boolean; //virtual;
+
+
+  published
+    { Published Declarations }
+
+    property NextPass;
+  end;
+
+  // ****************************************************************************************
+  // TDGLCustomGLSLShaderModel
+  //
+  TDGLCustomGLSLShaderModel = class(TDGLAbstractShaderModel, IDGLMaterialLibrarySupported)
+  private
     FHandle:        TDGLProgramHandle;
+  protected
+
+    FShaders:       array [TDGLShaderType] of TDGLSLShaderScript;
     FLibShaderName: array [TDGLShaderType] of string;
-    FShaders:       array [TDGLShaderType] of TDGLSLShader;
+
     FIsValid:       Boolean;
     FInfoLog:       string;
     FUniforms:      TDGLPersistentObjectList;
     FAutoFill:      Boolean;
-    FMaterialName : TdGLLibMaterialName;
+    FMaterialName : TDGLLibMaterialName;
     Fmaterial : TDGLMaterial;
     FMaterialLibrary  : TDGLMaterialLibrary;
+
+
     // implementing IGLMaterialLibrarySupported
-    function GetMaterialLibrary: TDGLMaterialLibrary;
+    function GetMaterialLib: TDGLMaterialLibrary;
+    function GetMaterialLibrary: TDGLAbstractMaterialLibrary;
     procedure SetMaterialLibrary(const Value: TDGLMaterialLibrary);
     procedure SetMaterialName(const value : TDGLLibMaterialName);
 
@@ -593,83 +698,95 @@ Type
     function GetUniform(const AName: string): IShaderParameter;
     class procedure ReleaseUniforms(AList: TDGLPersistentObjectList);
 
-    property LibVertexShaderName: TDGLShaderComponentName index shtVertex read GetLibShaderName write SetLibShaderName;
-    property LibFragmentShaderName: TDGLShaderComponentName index shtFragment read GetLibShaderName write SetLibShaderName;
-    property LibGeometryShaderName: TDGLShaderComponentName index shtGeometry read GetLibShaderName write SetLibShaderName;
-    property LibTessEvalShaderName: TDGLShaderComponentName index shtEvaluation read GetLibShaderName write SetLibShaderName;
-    property LibTessControlShaderName: TDGLShaderComponentName index shtControl read GetLibShaderName write SetLibShaderName;
-
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadUniforms(AStream: TStream);
     procedure WriteUniforms(AStream: TStream);
     procedure Loaded; override;
-    class function IsSupported: Boolean; virtual; abstract;
-//    class function IsModel4Supported: Boolean; virtual; abstract;
-//    class function IsModel5Supported: Boolean; virtual; abstract;
+
 
   public
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
+
     procedure Assign(Source: TPersistent); override;
-
-    procedure NotifyChange(Sender: TObject); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
+    procedure NotifyChange(Sender: TObject); override;
 
-    procedure DoOnPrepare(Sender: TDGLContext);
-    procedure Apply(var ARci: TRenderContextInfo); virtual;
-    procedure UnApply(var ARci: TRenderContextInfo); virtual;
+
+    procedure DoApply(var ARci: TRenderContextInfo); override;
+    function DoUnApply(var ARci: TRenderContextInfo):boolean; override;
+    class function IsSupported: Boolean; override;
+
+    procedure DoOnPrepare(Sender: TDGLContext);override;
+
+    property VertexShaderName: TDGLShaderComponentName index shtVertex read GetLibShaderName write SetLibShaderName;
+    property FragmentShaderName: TDGLShaderComponentName index shtFragment read GetLibShaderName write SetLibShaderName;
+    property GeometryShaderName: TDGLShaderComponentName index shtGeometry read GetLibShaderName write SetLibShaderName;
+    property TessEvalShaderName: TDGLShaderComponentName index shtEvaluation read GetLibShaderName write SetLibShaderName;
+    property TessControlShaderName: TDGLShaderComponentName index shtControl read GetLibShaderName write SetLibShaderName;
+
+    property Uniforms[const AName: string]: IShaderParameter read GetUniform;
+    property Material : TDGLMaterial read FMaterial;
+
+  published
+    { Published Declarations }
 
     procedure GetUniformNames(Proc: TGetStrProc);
 
     property Handle: TDGLProgramHandle read FHandle;
     property IsValid: Boolean read FIsValid;
-    property Uniforms[const AName: string]: IShaderParameter read GetUniform;
-    property Material : TDGLMaterial read FMaterial;
-  published
-    { Published Declarations }
+
+
     // Compilation info log for design time
     property InfoLog: string read FInfoLog;
     // Turn on autofill of uniforms
-    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLibrary write SetMaterialLibrary;
-    property MaterialName : TDGLLibMaterialName read FMaterialName write SetMaterialName;
-    property AutoFillOfUniforms: Boolean read FAutoFill write FAutoFill stored False;
-    property NextPass;
+    property MaterialLibrary: TDGLMaterialLibrary read GetMaterialLib write SetMaterialLibrary;
+    property MaterialName: TDGLLibMaterialName read FMaterialName write SetMaterialName;
+
+    property AutoUniforms: Boolean read FAutoFill write FAutoFill stored False;
+
   end;
 
-  TDGLShaderModel = class(TDGLBaseShaderModel)
+  // ****************************************************************************************
+  // TDGLBaseGLSLShaderModel
+  //
+  TDGLBaseGLSLShaderModel = class(TDGLCustomGLSLShaderModel)
+  private
+
+  protected
+
   public
-    { Public Declarations }
-    procedure Apply(var ARci: TRenderContextInfo); override;
-    procedure UnApply(var ARci: TRenderContextInfo); override;
-    class function IsSupported: Boolean; override;
+
   published
     { Published Declarations }
-    property LibTessControlShaderName;
-    property LibTessEvalShaderName;
-    property LibVertexShaderName;
-    property LibGeometryShaderName;
-    property LibFragmentShaderName;
+
+    property TessControlShaderName;
+    property TessEvalShaderName;
+    property VertexShaderName;
+    property GeometryShaderName;
+    property FragmentShaderName;
   end;
 
-  // TGLLibMaterialEx
+  // ****************************************************************************************
+  // TGLLibShader
   //
-  TOnUniformInitialize = procedure(Sender: TDGLBaseShaderModel) of object;
-  TOnUniformSetting    = procedure(Sender: TDGLBaseShaderModel; var ARci: TRenderContextInfo) of object;
+  TOnUniformInitialize = procedure(Sender: TDGLAbstractShaderModel) of object;
+  TOnUniformSetting    = procedure(Sender: TDGLAbstractShaderModel; var ARci: TRenderContextInfo) of object;
 
   TDGLLibShader = class(TDGLAbstractLibShader)
   private
     { Private Declarations }
     FHandle:             TDGLVirtualHandle;
-    FSM:                 TDGLShaderModel;
+    FSM:                 TDGLBaseGLSLShaderModel; //TDGLCustomGLSLShaderModel; @TODO Replace by a Collection
     FOnSMUniformInit:    TOnUniformInitialize;
     FOnSMUniformSetting: TOnUniformSetting;
     FApplicableLevel:     TDGLShaderMaterialLevel;
     FSelectedLevel:       TDGLShaderMaterialLevel;
     FNextPass:            TDGLLibShader;
-
+    // FOnShaderUniformSetting: TOnUniformSetting;
     procedure SetLevel(AValue: TDGLShaderMaterialLevel);
-    procedure SetSM(AValue: TDGLShaderModel);
+    procedure SetSM(AValue: TDGLBaseGLSLShaderModel);
     procedure DoAllocate(Sender: TDGLVirtualHandle; var Handle: TGLUint);
     procedure DoDeallocate(Sender: TDGLVirtualHandle; var Handle: TGLUint);
   protected
@@ -689,37 +806,36 @@ Type
 
   published
     { Published Declarations }
-    property ShaderModel:    TDGLShaderModel read FSM write SetSM;
+    property ShaderModel:    TDGLBaseGLSLShaderModel read FSM write SetSM;
     property ApplicableLevel: TDGLShaderMaterialLevel read FApplicableLevel write SetLevel default mlAuto;
     property SelectedLevel:   TDGLShaderMaterialLevel read FSelectedLevel;
 
     property OnUniformInitialize: TOnUniformInitialize read FOnSMUniformInit write FOnSMUniformInit;
     property OnUniformSetting:    TOnUniformSetting read FOnSMUniformSetting write FOnSMUniformSetting;
-
+    // property OnShaderUniformSetting
     //property NextPass;
   end;
 
-
+  // ****************************************************************************************
   // TGLShaderLibComponents
   //
-
   TDGLShaderLibComponents = class(TDGLXCollection)
   protected
     { Protected Declarations }
-    function GetItems(Index: Integer): TDGLBaseShaderCollectionItem;
+    function GetItems(Index: Integer): TDGLBaseShaderComponentItem;
   public
     { Public Declarations }
     function GetNamePath: string; override;
     class function ItemsClass: TDGLXCollectionItemClass; override;
-    property Items[index: Integer]: TDGLBaseShaderCollectionItem read GetItems; default;
+    property Items[index: Integer]: TDGLBaseShaderComponentItem read GetItems; default;
 
-    function GetItemByName(const AName: TDGLShaderComponentName): TDGLBaseShaderCollectionItem;
+    function GetItemByName(const AName: TDGLShaderComponentName): TDGLBaseShaderComponentItem;
     function MakeUniqueName(const AName: TDGLShaderComponentName): TDGLShaderComponentName;
   end;
 
-  // TGLMaterialLibraryEx
+  // ****************************************************************************************
+  // TGLShaderLibrary
   //
-
   TDGLShaderLibrary = class(TDGLAbstractShaderLibrary)
   private
     { Private Declarations }
@@ -742,7 +858,7 @@ Type
 
     procedure GetNames(Proc: TGetStrProc; AClass: CDGLBaseShaderCollectionItem); overload;
 
-    function AddShader(const AName: TDGLShaderComponentName): TDGLSLShader;
+    function AddShader(const AName: TDGLShaderComponentName): TDGLSLShaderScript;
 
   published
     { Published Declarations }
@@ -752,9 +868,9 @@ Type
     property ShaderPaths;
   end;
 
-
-
-Type
+  // ****************************************************************************************
+  // TStandardUniformAutoSetExecutor
+  //
   TStandardUniformAutoSetExecutor = class
   public
     constructor Create;
@@ -783,12 +899,17 @@ Type
     procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci: TRenderContextInfo);
   end;
 
+// ****************************************************************************************
 
 procedure RegisterGLShaderNameChangeEvent(AEvent: TNotifyEvent);
 procedure DeRegisterGLShaderNameChangeEvent(AEvent: TNotifyEvent);
 
+// ****************************************************************************************
+
 Var
   vStandartUniformAutoSetExecutor: TStandardUniformAutoSetExecutor;
+
+// ****************************************************************************************
 
 Const
   DefaultShader_vp: AnsiString =
@@ -823,7 +944,13 @@ Const
     '	FragColor = vec4(tc.s*df, tc.t*df, 0.0, 1.0);' + #10#13 +
     '}';
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 var
   vGLShaderNameChangeEvent:    TNotifyEvent;
@@ -864,7 +991,7 @@ begin
   if Source is TDGLAbstractLibShader then
   begin
     FName :=
-      TDGLLibMaterials(Collection).MakeUniqueName(TDGLLibMaterial(Source).Name);
+      TDGLLibShaders(Collection).MakeUniqueName(TDGLLibShader(Source).Name);
     FNameHashKey := ComputeNameHashKey(FName);
   end
   else
@@ -1151,8 +1278,7 @@ function TDGLAbstractShaderLibrary.ApplyShader(const AName: string;
 begin
   FLastAppliedShader := FShaders.GetShader(AName);
   Result := Assigned(FLastAppliedShader);
-  if Result then
-    FLastAppliedShader.Apply(ARci);
+  if Result then FLastAppliedShader.Apply(ARci);
 end;
 
 function TDGLAbstractShaderLibrary.UnApplyShader(
@@ -1161,8 +1287,7 @@ begin
   if Assigned(FLastAppliedShader) then
   begin
     Result := FLastAppliedShader.UnApply(ARci);
-    if not Result then
-      FLastAppliedShader := nil;
+    if not Result then FLastAppliedShader := nil;
   end
   else
     Result := False;
@@ -1256,10 +1381,10 @@ end;
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
-{ TDGLBaseShaderCollectionItem }
-{$IFDEF GLS_REGION}{$REGION 'TDGLBaseShaderCollectionItem'}{$ENDIF}
+{ TDGLBaseShaderComponentItem }
+{$IFDEF GLS_REGION}{$REGION 'TDGLBaseShaderComponentItem'}{$ENDIF}
 
-destructor TDGLBaseShaderCollectionItem.Destroy;
+destructor TDGLBaseShaderComponentItem.Destroy;
 var
   i: Integer;
 begin
@@ -1273,17 +1398,17 @@ begin
   inherited;
 end;
 
-function TDGLBaseShaderCollectionItem.GetShaderLib: TDGLShaderLibrary;
+function TDGLBaseShaderComponentItem.GetShaderLibEx: TDGLShaderLibrary;
 begin
   Result := TDGLShaderLibrary(TDGLMatLibComponents(Owner).Owner);
 end;
 
-function TDGLBaseShaderCollectionItem.GetShaderLibrary: TDGLShaderLibrary;
+function TDGLBaseShaderComponentItem.GetShaderLibrary: TDGLAbstractShaderLibrary;
 begin
-  Result := TDGLShaderLibrary(TDGLMatLibComponents(Owner).Owner);
+  Result := TDGLAbstractShaderLibrary(TDGLMatLibComponents(Owner).Owner);
 end;
 
-function TDGLBaseShaderCollectionItem.GetUserCount: Integer;
+function TDGLBaseShaderComponentItem.GetUserCount: Integer;
 begin
   if Assigned(FUserList) then
     Result := FUserList.Count
@@ -1291,7 +1416,7 @@ begin
     Result := 0;
 end;
 
-function TDGLBaseShaderCollectionItem.GetUserList: TDGLPersistentObjectList;
+function TDGLBaseShaderComponentItem.GetUserList: TDGLPersistentObjectList;
 begin
   if FUserList = nil then
   begin
@@ -1301,7 +1426,7 @@ begin
   Result := FUserList;
 end;
 
-procedure TDGLBaseShaderCollectionItem.NotifyChange(Sender: TObject);
+procedure TDGLBaseShaderComponentItem.NotifyChange(Sender: TObject);
 var
   i: Integer;
 begin
@@ -1314,19 +1439,19 @@ begin
   FNotifying := False;
 end;
 
-procedure TDGLBaseShaderCollectionItem.RegisterUser(AUser: TDGLUpdateAbleObject);
+procedure TDGLBaseShaderComponentItem.RegisterUser(AUser: TDGLUpdateAbleObject);
 begin
   if not FNotifying and (UserList.IndexOf(AUser) < 0) then
     UserList.Add(AUser);
 end;
 
-procedure TDGLBaseShaderCollectionItem.UnregisterUser(AUser: TDGLUpdateAbleObject);
+procedure TDGLBaseShaderComponentItem.UnregisterUser(AUser: TDGLUpdateAbleObject);
 begin
   if not FNotifying then
     UserList.Remove(AUser);
 end;
 
-procedure TDGLBaseShaderCollectionItem.SetName(const AValue: string);
+procedure TDGLBaseShaderComponentItem.SetName(const AValue: string);
 begin
   if AValue <> Name then
   begin
@@ -1370,20 +1495,20 @@ begin
     Result := nil;
 end;
 
-function TDGLLibShaderProperty.GetShaderLibrary: TDGLShaderLibrary;
+function TDGLLibShaderProperty.GetShaderLibraryEx: TDGLShaderLibrary;
 begin
-  if Owner is TDGLBaseShaderCollectionItem then
-    Result := TDGLBaseShaderCollectionItem(Owner).GetShaderLibrary
-  else
+//  if Owner is TDGLBaseShaderComponentItem then
+//    Result := TDGLBaseShaderComponentItem(Owner).GetShaderLibraryEx
+//  else
     Result := TDGLShaderLibrary(GetShader.GetShaderLibrary);
 end;
 
-function TDGLLibShaderProperty.GetOwnerShaderLibrary: TDGLShaderLibrary;
+function TDGLLibShaderProperty.GetShaderLibrary: TDGLAbstractShaderLibrary;
 begin
-  if Owner is TDGLBaseShaderCollectionItem then
-    Result := TDGLBaseShaderCollectionItem(Owner).GetShaderLibrary
+  if Owner is TDGLBaseShaderComponentItem then
+    Result := TDGLBaseShaderComponentItem(Owner).GetShaderLibrary
   else
-    Result := TDGLShaderLibrary(GetShader.GetShaderLibrary);
+    Result := GetShader.GetShaderLibrary;
 end;
 
 procedure TDGLLibShaderProperty.SetNextPass(const AValue: TDGLLibShaderName);
@@ -1425,16 +1550,16 @@ end;
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
-{ TDGLSLShader }
-{$IFDEF GLS_REGION}{$REGION 'TDGLSLShader'}{$ENDIF}
+{ TDGLSLShaderScript }
+{$IFDEF GLS_REGION}{$REGION 'TDGLSLShaderScript'}{$ENDIF}
 
-procedure TDGLSLShader.Assign(Source: TPersistent);
+procedure TDGLSLShaderScript.Assign(Source: TPersistent);
 var
-  LShader: TDGLSLShader;
+  LShader: TDGLSLShaderScript;
 begin
-  if Source is TDGLSLShader then
+  if Source is TDGLSLShaderScript then
   begin
-    LShader := TDGLSLShader(Source);
+    LShader := TDGLSLShaderScript(Source);
     FSource.Assign(LShader.Source);
     FShaderType := LShader.FShaderType;
     NotifyChange(Self);
@@ -1442,14 +1567,16 @@ begin
   inherited;
 end;
 
-constructor TDGLSLShader.Create(AOwner: TDGLXCollection);
+constructor TDGLSLShaderScript.Create(AOwner: TDGLXCollection);
 const
-  cShaderClasses: array [TDGLShaderType] of TDGLShaderHandleClass = (TDGLVertexShaderHandle, TDGLTessControlShaderHandle, TDGLTessEvaluationShaderHandle, TDGLGeometryShaderHandle, TDGLFragmentShaderHandle);
+  cShaderClasses: array [TDGLShaderType] of TDGLShaderHandleClass = (TDGLVertexShaderHandle, TDGLTessControlShaderHandle,
+                                                                     TDGLTessEvaluationShaderHandle, TDGLGeometryShaderHandle,
+                                                                     TDGLFragmentShaderHandle); //TDGLComputeShaderHandle
 var
   S: TDGLShaderType;
 begin
   inherited;
-//  FDefferedInit := False;
+
   for S         := Low(TDGLShaderType) to High(TDGLShaderType) do
   begin
     FHandle[S]           := cShaderClasses[S].Create;
@@ -1464,7 +1591,7 @@ begin
   Name                 := TDGLShaderLibComponents(AOwner).MakeUniqueName('Shader');
 end;
 
-destructor TDGLSLShader.Destroy;
+destructor TDGLSLShaderScript.Destroy;
 var
   S: TDGLShaderType;
 begin
@@ -1474,7 +1601,7 @@ begin
   inherited;
 end;
 
-procedure TDGLSLShader.NotifyChange(Sender: TObject);
+procedure TDGLSLShaderScript.NotifyChange(Sender: TObject);
 var
   S: TDGLShaderType;
 begin
@@ -1487,7 +1614,7 @@ begin
   inherited;
 end;
 
-procedure TDGLSLShader.DoOnPrepare(Sender: TDGLContext);
+procedure TDGLSLShaderScript.DoOnPrepare(Sender: TDGLContext);
 begin
 //  if not IsDesignTime and FDefferedInit then exit;
   try
@@ -1517,8 +1644,7 @@ begin
     else
     begin
       FIsValid := False;
-      if IsDesignTime then
-        FInfoLog := 'Not supported by hardware';
+      if IsDesignTime then FInfoLog := 'Not supported by hardware';
     end;
   except
     on E: Exception do
@@ -1532,17 +1658,17 @@ begin
   end;
 end;
 
-class function TDGLSLShader.FriendlyName: string;
+class function TDGLSLShaderScript.FriendlyName: string;
 begin
-  Result := 'GLSL Shader';
+  Result := 'Shader Script';
 end;
 
-function TDGLSLShader.GetHandle: TDGLShaderHandle;
+function TDGLSLShaderScript.GetHandle: TDGLShaderHandle;
 begin
   Result := FHandle[FShaderType];
 end;
 
-procedure TDGLSLShader.ReadFromFiler(AReader: TReader);
+procedure TDGLSLShaderScript.ReadFromFiler(AReader: TReader);
 var
   archiveVersion: Integer;
 begin
@@ -1565,7 +1691,7 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.SetGeometryInput(AValue: TDGLgsInTypes);
+procedure TDGLSLShaderScript.SetGeometryInput(AValue: TDGLgsInTypes);
 begin
   if AValue <> FGeometryInput then
   begin
@@ -1574,7 +1700,7 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.SetGeometryOutput(AValue: TDGLgsOutTypes);
+procedure TDGLSLShaderScript.SetGeometryOutput(AValue: TDGLgsOutTypes);
 begin
   if AValue <> FGeometryOutput then
   begin
@@ -1583,7 +1709,7 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.SetGeometryVerticesOut(AValue: TGLint);
+procedure TDGLSLShaderScript.SetGeometryVerticesOut(AValue: TGLint);
 begin
   if AValue < 1 then
     AValue := 1
@@ -1597,7 +1723,7 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.SetShaderType(AValue: TDGLShaderType);
+procedure TDGLSLShaderScript.SetShaderType(AValue: TDGLShaderType);
 begin
   if FShaderType <> AValue then
   begin
@@ -1606,12 +1732,12 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.SetSource(AValue: TStringList);
+procedure TDGLSLShaderScript.SetSource(AValue: TStringList);
 begin
   FSource.Assign(AValue);
 end;
 
-procedure TDGLSLShader.SetSourceFile(AValue: string);
+procedure TDGLSLShaderScript.SetSourceFile(AValue: string);
 begin
   FixPathDelimiter(AValue);
   if FSourceFile <> AValue then
@@ -1621,7 +1747,7 @@ begin
   end;
 end;
 
-procedure TDGLSLShader.WriteToFiler(AWriter: TWriter);
+procedure TDGLSLShaderScript.WriteToFiler(AWriter: TWriter);
 begin
   with AWriter do
   begin
@@ -1905,7 +2031,7 @@ end;
 
 function TDGLShaderUniform.GetProgram: TGLUint;
 begin
-  Result := TDGLBaseShaderModel(Owner).FHandle.Handle;
+  Result := TDGLCustomGLSLShaderModel(Owner).FHandle.Handle;
 end;
 
 procedure TDGLShaderUniform.Apply(var ARci: TRenderContextInfo);
@@ -2262,7 +2388,7 @@ procedure TDGLShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
           if LTex.ApplyCounter > 16 then
           begin
            LTex.Image.Free;
-//           LTex.Image := nil;
+           LTex.Image := nil;
           end;
         end;
       end
@@ -2483,7 +2609,7 @@ procedure TDGLShaderUniformTexture.SetTextureName(const AValue: string);
 var
   LTexture: TDGLAbstractTexture;
 begin
-  if csLoading in TDGLBaseShaderModel(Owner).GetShaderLibrary.ComponentState then
+  if csLoading in TDGLAbstractShaderModel(Owner).GetShaderLibrary.ComponentState then
   begin
     FLibTexureName := AValue;
     exit;
@@ -2497,8 +2623,7 @@ begin
     FLibTexture := nil;
   end;
 
-  LTexture := TDGLBaseShaderModel(Owner).MaterialLibrary.Components.GetTextureByName(AValue);
-  //GetMaterialLibrary.Components.GetTextureByName(AValue);
+  LTexture := TDGLCustomGLSLShaderModel(Owner).MaterialLibrary.Components.GetTextureByName(AValue);
 
   if Assigned(LTexture) then
   begin
@@ -2524,7 +2649,7 @@ procedure TDGLShaderUniformTexture.SetSamplerName(const AValue: string);
 var
   LSampler: TDGLTextureSampler;
 begin
-  if csLoading in TDGLBaseShaderModel(Owner).GetMaterialLibrary.ComponentState then
+  if csLoading in TDGLCustomGLSLShaderModel(Owner).GetMaterialLibrary.ComponentState then
   begin
     FLibSamplerName := AValue;
     exit;
@@ -2538,8 +2663,7 @@ begin
     FLibSampler := nil;
   end;
 
-  LSampler := TDGLBaseShaderModel(Owner).MaterialLibrary.Components.GetSamplerByName(AValue);
-  //GetMaterialLibrary.Components.GetSamplerByName(AValue);
+  LSampler := TDGLCustomGLSLShaderModel(Owner).MaterialLibrary.Components.GetSamplerByName(AValue);
 
   if Assigned(LSampler) then
   begin
@@ -2572,76 +2696,311 @@ end;
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
-{ TDGLBaseShaderModel }
-{$IFDEF GLS_REGION}{$REGION 'TGLBaseShaderModel'}{$ENDIF}
+{ TDGLAbstractShaderModel }
+{$IFDEF GLS_REGION}{$REGION 'TDGLAbstractShaderModel'}{$ENDIF}
 
-procedure TDGLBaseShaderModel.Apply(var ARci: TRenderContextInfo);
-var
-  i:      Integer;
-  LEvent: TOnUniformSetting;
+constructor TDGLAbstractShaderModel.Create(AOwner: TPersistent);
 begin
-  if FIsValid then
-  begin
-    FHandle.UseProgramObject;
-    if FAutoFill then
-      for i := FUniforms.Count - 1 downto 0 do
-        TDGLAbstractShaderUniform(FUniforms[i]).Apply(ARci);
-
- //   if Self is TGLShaderModel3 then
-//      LEvent := GetMaterial.FOnSM3UniformSetting
-//    else if Self is TGLShaderModel4 then
-//      LEvent := GetMaterial.FOnSM4UniformSetting
-//    else
-  if Self is TDGLShaderModel then
-      LEvent := GetShader.FOnSMUniformSetting
-    else
-      LEvent := nil;
-
-    if Assigned(LEvent) then
-      LEvent(Self, ARci);
-  end;
-end;
-
-procedure TDGLBaseShaderModel.Assign(Source: TPersistent);
-var
-  SM: TDGLBaseShaderModel;
-begin
-  if Source is TDGLBaseShaderModel then
-  begin
-    SM                       := TDGLBaseShaderModel(Source);
-    LibVertexShaderName      := SM.LibVertexShaderName;
-    LibFragmentShaderName    := SM.LibFragmentShaderName;
-    LibGeometryShaderName    := SM.LibGeometryShaderName;
-    LibTessControlShaderName := SM.LibTessControlShaderName;
-    LibTessEvalShaderName    := SM.LibTessEvalShaderName;
-  end;
   inherited;
+  FVirtualHandle := TDGLVirtualHandle.Create;
+  FVirtualHandle.OnAllocate := OnVirtualHandleAllocate;
+  FVirtualHandle.OnDestroy := OnVirtualHandleDestroy;
+//  FShaderStyle := ssLowLevel;
+  FEnabled := True;
+  FFailedInitAction := fiaRaiseStandardException;
 end;
 
-constructor TDGLBaseShaderModel.Create(AOwner: TPersistent);
+destructor TDGLAbstractShaderModel.Destroy;
+begin
+  FVirtualHandle.DestroyHandle;
+  FinalizeShader;
+  inherited;
+  FVirtualHandle.Free;
+end;
+
+procedure TDGLAbstractShaderModel.OnVirtualHandleDestroy(sender: TDGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 0;
+end;
+
+procedure TDGLAbstractShaderModel.OnVirtualHandleAllocate(sender: TDGLVirtualHandle; var handle: Cardinal);
+begin
+  handle := 1;
+end;
+
+procedure TDGLAbstractShaderModel.Apply(var rci : TRenderContextInfo);
+begin
+ // Need to check it twice, because shader may refuse to initialize
+  // and choose to disable itself during initialization.
+  if Enabled then
+    if FVirtualHandle.IsDataNeedUpdate then
+      InitializeShader(rci);
+
+  if Enabled then DoApply(rci);
+
+  FShaderActive := True;
+end;
+
+function TDGLAbstractShaderModel.UnApply(var rci: TRenderContextInfo): Boolean;
+begin
+  if Enabled then
+  begin
+    Result := DoUnApply(rci);
+    if not Result then
+      FShaderActive := False;
+  end
+  else
+  begin
+    FShaderActive := False;
+    Result := False;
+  end;
+end;
+
+procedure TDGLAbstractShaderModel.HandleFailedInitialization(const LastErrorMessage: string = '');
+begin
+  case FailedInitAction of
+    fiaSilentdisable: ; // Do nothing ;)
+    fiaRaiseHandledException:
+      try
+        raise EDGLShaderException.Create(GetStandardNotSupportedMessage);
+      except
+      end;
+    fiaRaiseStandardException:
+      raise EDGLShaderException.Create(GetStandardNotSupportedMessage);
+    fiaReRaiseException:
+      begin
+        if LastErrorMessage <> '' then
+          raise EDGLShaderException.Create(LastErrorMessage)
+        else
+          raise EDGLShaderException.Create(GetStandardNotSupportedMessage)
+      end;
+    //    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
+    //                       // which may choose to override this procedure.
+  else
+    Assert(False, glsErrorEx + glsUnknownType);
+  end;
+end;
+
+function TDGLAbstractShaderModel.GetStandardNotSupportedMessage: string;
+begin
+    Result := 'Your hardware/driver doesn''t support shader "' + ClassName + '"!';
+end;
+
+procedure TDGLAbstractShaderModel.BeginUpdate;
+begin
+  Inc(FUpdateCount);
+end;
+
+procedure TDGLAbstractShaderModel.EndUpdate;
+begin
+  Dec(FUpdateCount);
+  if FUpdateCount = 0 then
+    NotifyChange(Self);
+end;
+
+procedure TDGLAbstractShaderModel.DoOnPrepare(Sender: TDGLContext);
+begin
+  // nothing here
+end;
+
+procedure TDGLAbstractShaderModel.DoInitialize(var rci: TRenderContextInfo);
+begin
+  // nothing here
+end;
+
+procedure TDGLAbstractShaderModel.DoFinalize;
+begin
+  // nothing here
+end;
+
+procedure TDGLAbstractShaderModel.DoApply(var rci: TRenderContextInfo);
+begin
+  // nothing here
+end;
+
+function TDGLAbstractShaderModel.DoUnApply(var rci: TRenderContextInfo): Boolean;
+begin
+  // nothing here
+  result:=true;
+end;
+
+procedure TDGLAbstractShaderModel.Assign(Source: TPersistent);
+begin
+  if Source is TDGLAbstractShaderModel then
+  begin
+//    FShaderStyle := TGLShader(Source).FShaderStyle;
+    FFailedInitAction := TDGLAbstractShaderModel(Source).FFailedInitAction;
+    Enabled := TDGLAbstractShaderModel(Source).FEnabled;
+  end
+  else
+    inherited Assign(Source); //to the pit of doom ;)
+end;
+
+function TDGLAbstractShaderModel.GetShaderInitialized: Boolean;
+begin
+  Result := (FVirtualHandle.Handle <> 0);
+end;
+
+procedure TDGLAbstractShaderModel.InitializeShader(var rci: TRenderContextInfo);
+begin
+  FVirtualHandle.AllocateHandle;
+  if FVirtualHandle.IsDataNeedUpdate then
+  begin
+    DoInitialize(rci);
+    FVirtualHandle.NotifyDataUpdated;
+  end;
+end;
+
+procedure TDGLAbstractShaderModel.FinalizeShader;
+begin
+  FVirtualHandle.NotifyChangesOfData;
+  DoFinalize;
+end;
+
+procedure TDGLAbstractShaderModel.NotifyChange(Sender: TObject);
+begin
+  if FUpdateCount = 0 then
+  begin
+    FinalizeShader;
+  End;
+end;
+
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
+// ------------------
+{ TDGLCustomGLSLShaderModel }
+{$IFDEF GLS_REGION}{$REGION 'TDGLCustomGLSLShaderModel'}{$ENDIF}
+
+constructor TDGLCustomGLSLShaderModel.Create(AOwner: TPersistent);
 begin
   inherited;
   FHandle           := TDGLProgramHandle.Create;
   FHandle.OnPrepare := DoOnPrepare;
-//  FEnabled          := False;
+  FEnabled          := False;
   FUniforms         := TDGLPersistentObjectList.Create;
   FAutoFill         := True;
 end;
 
-function TDGLBaseShaderModel.GetMaterialLibrary: TDGLMaterialLibrary;
+destructor TDGLCustomGLSLShaderModel.Destroy;
+begin
+  FHandle.Destroy;
+  VertexShaderName      := '';
+  FragmentShaderName    := '';
+  GeometryShaderName    := '';
+  TessControlShaderName := '';
+  TessEvalShaderName    := '';
+  FUniforms.CleanFree;
+  inherited;
+end;
+
+procedure TDGLCustomGLSLShaderModel.DefineProperties(Filer: TFiler);
+begin
+  inherited;
+  Filer.DefineBinaryProperty('Uniforms', ReadUniforms, WriteUniforms, FUniforms.Count > 0);
+end;
+
+class function TDGLCustomGLSLShaderModel.IsSupported: Boolean;
+begin
+//dglCheckExtension('ARB_shader_objects');
+  Result := dglCheckExtension('EXT_gpu_shader4') or dglCheckExtension('ARB_gpu_shader5');
+end;
+
+procedure TDGLCustomGLSLShaderModel.Loaded;
+var
+  T: TDGLShaderType;
+  i: Integer;
+begin
+  for T := Low(TDGLShaderType) to High(TDGLShaderType) do
+    SetLibShaderName(T, FLibShaderName[T]);
+  for i := 0 to FUniforms.Count - 1 do
+    if FUniforms[i] is TDGLShaderUniformTexture then
+      TDGLShaderUniformTexture(FUniforms[i]).Loaded;
+end;
+
+procedure BeginPatch; //(mode: TGLEnum);
+begin
+//  if mode = GL_PATCHES then
+//    glBegin(GL_PATCHES)
+//  else
+//  if (mode = GL_TRIANGLES) or (mode = GL_TRIANGLE_STRIP) or (mode = GL_TRIANGLE_FAN)  then
+//  begin
+//    if mode = GL_QUADS then
+//      GL.PatchParameteri(GL_PATCH_VERTICES, 4)
+//    else
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
+//    vStoreBegin(GL_PATCHES);
+//  end
+//  else
+//  begin
+////   // glBegin := vStoreBegin;
+//    DGLSLogger.LogError('BeginPatch called with unsupported primitive for tessellation');
+//    Abort;
+//  end;
+end;
+
+procedure TDGLCustomGLSLShaderModel.Notification(Sender: TObject; Operation: TOperation);
+var
+  ST: TDGLShaderType;
+begin
+  if Operation = opRemove then
+  begin
+    for ST := Low(TDGLShaderType) to High(TDGLShaderType) do
+      if FShaders[ST] = Sender then
+      begin
+        FShaders[ST]       := nil;
+        FLibShaderName[ST] := '';
+        NotifyChange(Self);
+        exit;
+      end;
+  end;
+end;
+
+procedure TDGLCustomGLSLShaderModel.NotifyChange(Sender: TObject);
+begin
+  FHandle.NotifyChangesOfData;
+  inherited;
+end;
+
+procedure TDGLCustomGLSLShaderModel.Assign(Source: TPersistent);
+var
+  SM: TDGLCustomGLSLShaderModel;
+begin
+  if Source is TDGLCustomGLSLShaderModel then
+  begin
+    SM                    := TDGLCustomGLSLShaderModel(Source);
+    VertexShaderName      := SM.VertexShaderName;
+    FragmentShaderName    := SM.FragmentShaderName;
+    GeometryShaderName    := SM.GeometryShaderName;
+    TessControlShaderName := SM.TessControlShaderName;
+    TessEvalShaderName    := SM.TessEvalShaderName;
+    //ComputeShaderName
+    FFailedInitAction := SM.FFailedInitAction;
+  end;
+  inherited;
+end;
+
+function TDGLCustomGLSLShaderModel.GetMaterialLib: TDGLMaterialLibrary;
 begin
  if assigned(FMaterialLibrary) then
    result := FMaterialLibrary
  else result:=nil;
 end;
 
-procedure TDGLBaseShaderModel.SetMaterialLibrary(const Value: TDGLMaterialLibrary);
+function TDGLCustomGLSLShaderModel.GetMaterialLibrary: TDGLAbstractMaterialLibrary;
+begin
+ if assigned(FMaterialLibrary) then
+   result := TDGLAbstractMaterialLibrary(FMaterialLibrary)
+ else result:=nil;
+end;
+
+
+procedure TDGLCustomGLSLShaderModel.SetMaterialLibrary(const Value: TDGLMaterialLibrary);
 begin
   if FMaterialLibrary = Value then exit;
   FMaterialLibrary := Value;
 end;
 
-procedure TDGLBaseShaderModel.SetMaterialName(const Value: TDGLLibMaterialName);
+procedure TDGLCustomGLSLShaderModel.SetMaterialName(const Value: TDGLLibMaterialName);
 var
   LMat: TDGLMaterial;
 begin
@@ -2658,7 +3017,7 @@ begin
     FMaterial := nil;
   end;
 
-  LMat := GetMaterialLibrary.Materials.GetLibMaterialByName(Value);
+  LMat := GetMaterialLib.Materials.GetLibMaterialByName(Value);
 
   if Assigned(LMat) then
   begin
@@ -2671,26 +3030,7 @@ begin
   NotifyChange(Self);
 end;
 
-
-procedure TDGLBaseShaderModel.DefineProperties(Filer: TFiler);
-begin
-  inherited;
-  Filer.DefineBinaryProperty('Uniforms', ReadUniforms, WriteUniforms, FUniforms.Count > 0);
-end;
-
-destructor TDGLBaseShaderModel.Destroy;
-begin
-  FHandle.Destroy;
-  LibVertexShaderName      := '';
-  LibFragmentShaderName    := '';
-  LibGeometryShaderName    := '';
-  LibTessControlShaderName := '';
-  LibTessEvalShaderName    := '';
-  FUniforms.CleanFree;
-  inherited;
-end;
-
-procedure TDGLBaseShaderModel.DoOnPrepare(Sender: TDGLContext);
+procedure TDGLCustomGLSLShaderModel.DoOnPrepare(Sender: TDGLContext);
 var
   T:                   TDGLShaderType;
   LUniforms:           TDGLPersistentObjectList;
@@ -2709,7 +3049,7 @@ var
   bNew:                Boolean;
   LEvent:              TOnUniformInitialize;
 begin
-//  if FEnabled then
+  if FEnabled then
     try
       if IsSupported and FHandle.IsSupported then
       begin
@@ -2736,8 +3076,7 @@ begin
               FHandle.AttachObject(FShaders[T].Handle);
           ID := FHandle.Handle;
 
-        //  with GL do
-//          begin
+
             // Can be override by layouts in shader
             if Assigned(FShaders[shtGeometry]) then
             begin
@@ -2754,29 +3093,20 @@ begin
               begin
                 glGetProgramiv(ID, GL_GEOMETRY_INPUT_TYPE_EXT, @AType);
                 case AType of
-                  GL_POINTS:
-                    FShaders[shtGeometry].FGeometryInput := gsInPoints;
-                  GL_LINES:
-                    FShaders[shtGeometry].FGeometryInput := gsInLines;
-                  GL_LINES_ADJACENCY_EXT:
-                    FShaders[shtGeometry].FGeometryInput := gsInAdjLines;
-                  GL_TRIANGLES:
-                    FShaders[shtGeometry].FGeometryInput := gsInTriangles;
-                  GL_TRIANGLES_ADJACENCY_EXT:
-                    FShaders[shtGeometry].FGeometryInput := gsInAdjTriangles;
+                  GL_POINTS: FShaders[shtGeometry].FGeometryInput := gsInPoints;
+                  GL_LINES: FShaders[shtGeometry].FGeometryInput := gsInLines;
+                  GL_LINES_ADJACENCY_EXT: FShaders[shtGeometry].FGeometryInput := gsInAdjLines;
+                  GL_TRIANGLES: FShaders[shtGeometry].FGeometryInput := gsInTriangles;
+                  GL_TRIANGLES_ADJACENCY_EXT: FShaders[shtGeometry].FGeometryInput := gsInAdjTriangles;
                 end;
                 glGetProgramiv(ID, GL_GEOMETRY_OUTPUT_TYPE_EXT, @AType);
                 case AType of
-                  GL_POINTS:
-                    FShaders[shtGeometry].FGeometryOutput := gsOutPoints;
-                  GL_LINE_STRIP:
-                    FShaders[shtGeometry].FGeometryOutput := gsOutLineStrip;
-                  GL_TRIANGLE_STRIP:
-                    FShaders[shtGeometry].FGeometryOutput := sOutTriangleStrip;
+                  GL_POINTS: FShaders[shtGeometry].FGeometryOutput := gsOutPoints;
+                  GL_LINE_STRIP: FShaders[shtGeometry].FGeometryOutput := gsOutLineStrip;
+                  GL_TRIANGLE_STRIP: FShaders[shtGeometry].FGeometryOutput := sOutTriangleStrip;
                 end;
                 glGetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @i);
-                if i > 0 then
-                  FShaders[shtGeometry].FGeometryVerticesOut := i;
+                if i > 0 then FShaders[shtGeometry].FGeometryVerticesOut := i;
                 ClearOpenGLError;
               end;
 
@@ -2788,101 +3118,56 @@ begin
               begin
                 glGetActiveUniform(ID, TGLUint(i), Length(buff), Len, Size, AType, @buff[0]);
                 Loc := glGetUniformLocation(ID, @buff[0]);
-                if Loc < 0 then
-                  continue;
+                if Loc < 0 then continue;
                 UName       := Copy(string(buff), 0, Len);
                 GLSLData    := GLSLTypeUndefined;
                 GLSLSampler := GLSLSamplerUndefined;
                 case AType of
-                  GL_FLOAT:
-                    GLSLData := GLSLType1F;
-                  GL_FLOAT_VEC2:
-                    GLSLData := GLSLType2F;
-                  GL_FLOAT_VEC3:
-                    GLSLData := GLSLType3F;
-                  GL_FLOAT_VEC4:
-                    GLSLData := GLSLType4F;
-                  GL_INT:
-                    GLSLData := GLSLType1I;
-                  GL_INT_VEC2:
-                    GLSLData := GLSLType2I;
-                  GL_INT_VEC3:
-                    GLSLData := GLSLType3I;
-                  GL_INT_VEC4:
-                    GLSLData := GLSLType4I;
-                  GL_UNSIGNED_INT:
-                    GLSLData := GLSLType1UI;
-                  GL_UNSIGNED_INT_VEC2:
-                    GLSLData := GLSLType2UI;
-                  GL_UNSIGNED_INT_VEC3:
-                    GLSLData := GLSLType3UI;
-                  GL_UNSIGNED_INT_VEC4:
-                    GLSLData := GLSLType4UI;
-                  GL_BOOL:
-                    GLSLData := GLSLType1I;
-                  GL_BOOL_VEC2:
-                    GLSLData := GLSLType2I;
-                  GL_BOOL_VEC3:
-                    GLSLData := GLSLType3I;
-                  GL_BOOL_VEC4:
-                    GLSLData := GLSLType4I;
-                  GL_FLOAT_MAT2:
-                    GLSLData := GLSLTypeMat2F;
-                  GL_FLOAT_MAT3:
-                    GLSLData := GLSLTypeMat3F;
-                  GL_FLOAT_MAT4:
-                    GLSLData := GLSLTypeMat4F;
+                  GL_FLOAT: GLSLData := GLSLType1F;
+                  GL_FLOAT_VEC2: GLSLData := GLSLType2F;
+                  GL_FLOAT_VEC3: GLSLData := GLSLType3F;
+                  GL_FLOAT_VEC4: GLSLData := GLSLType4F;
+                  GL_INT: GLSLData := GLSLType1I;
+                  GL_INT_VEC2: GLSLData := GLSLType2I;
+                  GL_INT_VEC3: GLSLData := GLSLType3I;
+                  GL_INT_VEC4: GLSLData := GLSLType4I;
+                  GL_UNSIGNED_INT: GLSLData := GLSLType1UI;
+                  GL_UNSIGNED_INT_VEC2: GLSLData := GLSLType2UI;
+                  GL_UNSIGNED_INT_VEC3: GLSLData := GLSLType3UI;
+                  GL_UNSIGNED_INT_VEC4: GLSLData := GLSLType4UI;
+                  GL_BOOL: GLSLData := GLSLType1I;
+                  GL_BOOL_VEC2: GLSLData := GLSLType2I;
+                  GL_BOOL_VEC3: GLSLData := GLSLType3I;
+                  GL_BOOL_VEC4: GLSLData := GLSLType4I;
+                  GL_FLOAT_MAT2: GLSLData := GLSLTypeMat2F;
+                  GL_FLOAT_MAT3: GLSLData := GLSLTypeMat3F;
+                  GL_FLOAT_MAT4: GLSLData := GLSLTypeMat4F;
                   // ------------------------------------------------------------------------------
-                  GL_SAMPLER_1D:
-                    GLSLSampler := GLSLSampler1D;
-                  GL_SAMPLER_2D:
-                    GLSLSampler := GLSLSampler2D;
-                  GL_SAMPLER_3D:
-                    GLSLSampler := GLSLSampler3D;
-                  GL_SAMPLER_CUBE:
-                    GLSLSampler := GLSLSamplerCube;
-                  GL_SAMPLER_1D_SHADOW:
-                    GLSLSampler := GLSLSampler1DShadow;
-                  GL_SAMPLER_2D_SHADOW:
-                    GLSLSampler := GLSLSampler2DShadow;
-                  GL_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLSamplerRect;
-                  GL_SAMPLER_2D_RECT_SHADOW:
-                    GLSLSampler := GLSLSamplerRectShadow;
-                  GL_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLSamplerBuffer;
-                  GL_INT_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLIntSamplerRect;
-                  GL_INT_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLIntSamplerBuffer;
-                  GL_UNSIGNED_INT_SAMPLER_1D:
-                    GLSLSampler := GLSLUIntSampler1D;
-                  GL_UNSIGNED_INT_SAMPLER_2D:
-                    GLSLSampler := GLSLUIntSampler2D;
-                  GL_UNSIGNED_INT_SAMPLER_3D:
-                    GLSLSampler := GLSLUIntSampler3D;
-                  GL_UNSIGNED_INT_SAMPLER_CUBE:
-                    GLSLSampler := GLSLUIntSamplerCube;
-                  GL_UNSIGNED_INT_SAMPLER_1D_ARRAY:
-                    GLSLSampler := GLSLUIntSampler1DArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
-                    GLSLSampler := GLSLUIntSampler2DArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_RECT:
-                    GLSLSampler := GLSLUIntSamplerRect;
-                  GL_UNSIGNED_INT_SAMPLER_BUFFER:
-                    GLSLSampler := GLSLUIntSamplerBuffer;
-                  GL_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLSamplerMS;
-                  GL_INT_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLIntSamplerMS;
-                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
-                    GLSLSampler := GLSLUIntSamplerMS;
-                  GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLSamplerMSArray;
-                  GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLIntSamplerMSArray;
-                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
-                    GLSLSampler := GLSLUIntSamplerMSArray;
+                  GL_SAMPLER_1D: GLSLSampler := GLSLSampler1D;
+                  GL_SAMPLER_2D: GLSLSampler := GLSLSampler2D;
+                  GL_SAMPLER_3D: GLSLSampler := GLSLSampler3D;
+                  GL_SAMPLER_CUBE: GLSLSampler := GLSLSamplerCube;
+                  GL_SAMPLER_1D_SHADOW: GLSLSampler := GLSLSampler1DShadow;
+                  GL_SAMPLER_2D_SHADOW: GLSLSampler := GLSLSampler2DShadow;
+                  GL_SAMPLER_2D_RECT: GLSLSampler := GLSLSamplerRect;
+                  GL_SAMPLER_2D_RECT_SHADOW: GLSLSampler := GLSLSamplerRectShadow;
+                  GL_SAMPLER_BUFFER: GLSLSampler := GLSLSamplerBuffer;
+                  GL_INT_SAMPLER_2D_RECT: GLSLSampler := GLSLIntSamplerRect;
+                  GL_INT_SAMPLER_BUFFER: GLSLSampler := GLSLIntSamplerBuffer;
+                  GL_UNSIGNED_INT_SAMPLER_1D: GLSLSampler := GLSLUIntSampler1D;
+                  GL_UNSIGNED_INT_SAMPLER_2D: GLSLSampler := GLSLUIntSampler2D;
+                  GL_UNSIGNED_INT_SAMPLER_3D: GLSLSampler := GLSLUIntSampler3D;
+                  GL_UNSIGNED_INT_SAMPLER_CUBE: GLSLSampler := GLSLUIntSamplerCube;
+                  GL_UNSIGNED_INT_SAMPLER_1D_ARRAY: GLSLSampler := GLSLUIntSampler1DArray;
+                  GL_UNSIGNED_INT_SAMPLER_2D_ARRAY: GLSLSampler := GLSLUIntSampler2DArray;
+                  GL_UNSIGNED_INT_SAMPLER_2D_RECT: GLSLSampler := GLSLUIntSamplerRect;
+                  GL_UNSIGNED_INT_SAMPLER_BUFFER: GLSLSampler := GLSLUIntSamplerBuffer;
+                  GL_SAMPLER_2D_MULTISAMPLE: GLSLSampler := GLSLSamplerMS;
+                  GL_INT_SAMPLER_2D_MULTISAMPLE: GLSLSampler := GLSLIntSamplerMS;
+                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE: GLSLSampler := GLSLUIntSamplerMS;
+                  GL_SAMPLER_2D_MULTISAMPLE_ARRAY: GLSLSampler := GLSLSamplerMSArray;
+                  GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY: GLSLSampler := GLSLIntSamplerMSArray;
+                  GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY: GLSLSampler := GLSLUIntSamplerMSArray;
                 end;
 
                 bSampler := False;
@@ -2905,11 +3190,9 @@ begin
                 bNew  := True;
                 for J := 0 to FUniforms.Count - 1 do
                 begin
-                  if not(FUniforms[J] is TDGLShaderUniform) then
-                    continue;
+                  if not(FUniforms[J] is TDGLShaderUniform) then continue;
                   LUniform := TDGLShaderUniform(FUniforms[J]);
-                  if not Assigned(LUniform) then
-                    continue;
+                  if not Assigned(LUniform) then continue;
                   if LUniform.Name = UName then
                   begin
                     if bSampler and (LUniform is TDGLShaderUniformTexture) then
@@ -2986,7 +3269,7 @@ begin
 //              else if Self is TGLShaderModel4 then
 //                LEvent := GetMaterial.FOnSM4UniformInit
 //              else
-              if Self is TDGLShaderModel then
+              if Self is TDGLCustomGLSLShaderModel then
                 LEvent := GetShader.FOnSMUniformInit
               else
                 LEvent := nil;
@@ -3030,30 +3313,51 @@ begin
     end;
 end;
 
-procedure TDGLBaseShaderModel.Notification(Sender: TObject; Operation: TOperation);
-var
-  ST: TDGLShaderType;
+function TDGLCustomGLSLShaderModel.DoUnApply(var ARci: TRenderContextInfo):boolean;
 begin
-  if Operation = opRemove then
+  ARci.amalgamating := False;
+  result:=false;
+  if FIsValid then
   begin
-    for ST := Low(TDGLShaderType) to High(TDGLShaderType) do
-      if FShaders[ST] = Sender then
-      begin
-        FShaders[ST]       := nil;
-        FLibShaderName[ST] := '';
-        NotifyChange(Self);
-        exit;
-      end;
+    FHandle.EndUseProgramObject;
+    result:=true;
   end;
 end;
 
-procedure TDGLBaseShaderModel.NotifyChange(Sender: TObject);
+procedure TDGLCustomGLSLShaderModel.DoApply(var ARci: TRenderContextInfo);
+var
+  i:      Integer;
+  LEvent: TOnUniformSetting;
 begin
-  FHandle.NotifyChangesOfData;
-  inherited;
+  if FIsValid then
+  begin
+    FHandle.UseProgramObject;
+    if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
+    begin
+      BeginPatch;
+      ARci.amalgamating := True;
+    end;
+
+    if FAutoFill then
+      for i := FUniforms.Count - 1 downto 0 do
+        TDGLAbstractShaderUniform(FUniforms[i]).Apply(ARci);
+
+ //   if Self is TGLShaderModel3 then
+//      LEvent := GetMaterial.FOnSM3UniformSetting
+//    else if Self is TGLShaderModel4 then
+//      LEvent := GetMaterial.FOnSM4UniformSetting
+//    else
+  if Self is TDGLCustomGLSLShaderModel then
+      LEvent := GetShader.FOnSMUniformSetting
+    else
+      LEvent := nil;
+
+    if Assigned(LEvent) then
+      LEvent(Self, ARci);
+  end;
 end;
 
-procedure TDGLBaseShaderModel.ReadUniforms(AStream: TStream);
+procedure TDGLCustomGLSLShaderModel.ReadUniforms(AStream: TStream);
 var
   LReader:  TReader;
   n, i:     Integer;
@@ -3078,7 +3382,7 @@ begin
   end;
 end;
 
-class procedure TDGLBaseShaderModel.ReleaseUniforms(AList: TDGLPersistentObjectList);
+class procedure TDGLCustomGLSLShaderModel.ReleaseUniforms(AList: TDGLPersistentObjectList);
 var
   i: Integer;
 begin
@@ -3088,7 +3392,7 @@ begin
   AList.Destroy;
 end;
 
-function TDGLBaseShaderModel.GetLibShaderName(AType: TDGLShaderType): string;
+function TDGLCustomGLSLShaderModel.GetLibShaderName(AType: TDGLShaderType): string;
 begin
   if Assigned(FShaders[AType]) then
     Result := FShaders[AType].Name
@@ -3096,7 +3400,7 @@ begin
     Result := '';
 end;
 
-function TDGLBaseShaderModel.GetUniform(const AName: string): IShaderParameter;
+function TDGLCustomGLSLShaderModel.GetUniform(const AName: string): IShaderParameter;
 var
   h, i: Integer;
   U:    TDGLAbstractShaderUniform;
@@ -3125,19 +3429,7 @@ begin
   end;
 end;
 
-procedure TDGLBaseShaderModel.Loaded;
-var
-  T: TDGLShaderType;
-  i: Integer;
-begin
-  for T := Low(TDGLShaderType) to High(TDGLShaderType) do
-    SetLibShaderName(T, FLibShaderName[T]);
-  for i := 0 to FUniforms.Count - 1 do
-    if FUniforms[i] is TDGLShaderUniformTexture then
-      TDGLShaderUniformTexture(FUniforms[i]).Loaded;
-end;
-
-procedure TDGLBaseShaderModel.GetUniformNames(Proc: TGetStrProc);
+procedure TDGLCustomGLSLShaderModel.GetUniformNames(Proc: TGetStrProc);
 var
   i: Integer;
 begin
@@ -3145,11 +3437,11 @@ begin
     Proc(TDGLAbstractShaderUniform(FUniforms[i]).FName);
 end;
 
-procedure TDGLBaseShaderModel.SetLibShaderName(AType: TDGLShaderType; const AValue: string);
+procedure TDGLCustomGLSLShaderModel.SetLibShaderName(AType: TDGLShaderType; const AValue: string);
 var
-  LShader: TDGLSLShader;
+  LShader: TDGLSLShaderScript;
 begin
-  if csLoading in GetShaderLibrary.ComponentState then
+  if csLoading in GetShaderLibraryEx.ComponentState then
   begin
     FLibShaderName[AType] := AValue;
     exit;
@@ -3162,7 +3454,7 @@ begin
     FLibShaderName[AType] := '';
   end;
 
-  LShader :=  TDGLSLShader(GetShaderLibrary.Components.GetItemByName(AValue));
+  LShader :=  TDGLSLShaderScript(GetShaderLibraryEx.Components.GetItemByName(AValue));
   if Assigned(LShader) then
   begin
     if LShader.ShaderType <> AType then
@@ -3178,12 +3470,7 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TDGLBaseShaderModel.UnApply(var ARci: TRenderContextInfo);
-begin
-  if FIsValid then FHandle.EndUseProgramObject;
-end;
-
-procedure TDGLBaseShaderModel.WriteUniforms(AStream: TStream);
+procedure TDGLCustomGLSLShaderModel.WriteUniforms(AStream: TStream);
 var
   LWriter: TWriter;
   i:       Integer;
@@ -3199,60 +3486,6 @@ begin
   finally
     LWriter.Free;
   end;
-end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-// ------------------
-{ TDGLShaderModel }
-{$IFDEF GLS_REGION}{$REGION 'TDGLShaderModel'}{$ENDIF}
-
-
-class function TDGLShaderModel.IsSupported: Boolean;
-begin
-//dglCheckExtension('ARB_shader_objects');
-//dglCheckExtension('EXT_gpu_shader4');
-  Result := dglCheckExtension('GL.ARB_gpu_shader5');
-end;
-
-procedure BeginPatch; //(mode: TGLEnum);
-begin
-//  if mode = GL_PATCHES then
-//    glBegin(GL_PATCHES)
-//  else if (mode = GL_TRIANGLES) or (mode = GL_TRIANGLE_STRIP) or (mode = GL_TRIANGLE_FAN)  then
-//  begin
-//    if mode = GL_QUADS then
-//      GL.PatchParameteri(GL_PATCH_VERTICES, 4)
-//    else
-      glPatchParameteri(GL_PATCH_VERTICES, 3);
-//    vStoreBegin(GL_PATCHES);
-//  end
-//  else
-//  begin
-//   // glBegin := vStoreBegin;
-//    DGLSLogger.LogError('glBegin called with unsupported primitive for tessellation');
-//    Abort;
-//  end;
-end;
-
-procedure TDGLShaderModel.Apply(var ARci: TRenderContextInfo);
-begin
-  if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
-  begin
-//    vStoreBegin       := glBegin;
-//    glBegin         :=
-    BeginPatch;
-    ARci.amalgamating := True;
-  end;
-  inherited;
-end;
-
-procedure TDGLShaderModel.UnApply(var ARci: TRenderContextInfo);
-begin
-  inherited;
-//  if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
-//    glBegin       := vStoreBegin;
-  ARci.amalgamating := False;
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -3276,14 +3509,10 @@ begin
   if FHandle.IsDataNeedUpdate then
   begin
     // Other value than mlAuto indicates a level failure
-    // Need remove deffered initialization and reinitialize used resources
-//    if not IsDesignTime and (FSelectedLevel <> mlAuto) then RemoveDefferedInit;
     // Level selection
     LevelReady[mlBaseMaterial]  :=  FSM.Material.BaseMaterial.Enabled;
     LevelReady[mlMultitexturing] := FSM.Material.Multitexturing.Enabled and FSM.Material.Multitexturing.IsValid;
     LevelReady[mlShader]         := FSM.Enabled and FSM.IsValid;
-//    LevelReady[mlSM4]            := FSM4.Enabled and FSM4.IsValid;
-//    LevelReady[mlSM5]            := FSM5.Enabled and FSM5.IsValid;
 
     if FApplicableLevel = mlAuto then
       MaxLevel := mlShader
@@ -3338,17 +3567,13 @@ begin
   if Source is TDGLLibShader then
   begin
     LShader := TDGLLibShader(Source);
-//    FBaseShader.Assign(LShader.FBaseShader);
-//   FSM.Material.Multitexturing.Assign(LShader.ShaderModel.Material.Multitexturing);
-//    FSM3.Assign(LShader.FSM3);
-//    FSM4.Assign(LShader.FSM4);
+
     FSM.Assign(LShader.FSM);
     FApplicableLevel := LShader.FApplicableLevel;
     NotifyChange(Self);
   end;
   inherited;
 end;
-
 
 constructor TDGLLibShader.Create(ACollection: TCollection);
 begin
@@ -3359,15 +3584,12 @@ begin
   FHandle.OnPrepare  := DoOnPrepare;
   FApplicableLevel   := mlAuto;
   FSelectedLevel     := mlAuto;
-//  FBaseShader        := TDGLBaseShaderProperties.Create(Self);
 
-//  FSM3               := TGLShaderModel3.Create(Self);
-//  FSM4               := TGLShaderModel4.Create(Self);
-//  FSM5               := TGLShaderModel5.Create(Self);
+  FSM               := TDGLBaseGLSLShaderModel.Create(Self);
 end;
 
 //type
-//  TGLFriendlyShader = class(TGLShader);
+//  TGLFriendlyShaderModel = class(TDGLCustomGLSLShader);
 
 destructor TDGLLibShader.Destroy;
 //var
@@ -3375,15 +3597,11 @@ destructor TDGLLibShader.Destroy;
 //  LUser: TObject;
 begin
   FHandle.Destroy;
-//  FBaseShader.Destroy;
-//  FMultitexturing.Destroy;
-//  FSM3.Destroy;
-//  FSM4.Destroy;
-    FSM.Destroy;
+  FSM.Destroy;
 //  for i := 0 to FUserList.Count - 1 do
 //  begin
 //    LUser := TObject(FUserList[i]);
-//    if LUser is TGLShader then
+//    if LUser is TDGLShader then
 //      TGLFriendlyShader(LUser).NotifyLibShaderDestruction;
 //  end;
   inherited;
@@ -3401,15 +3619,12 @@ end;
 
 procedure TDGLLibShader.DoOnPrepare(Sender: TDGLContext);
 begin
+ FSM.DoOnPrepare(Sender);
 end;
 
 procedure TDGLLibShader.Loaded;
 begin
-//  FBaseShader.FTexProp.Loaded;
-//  FMultitexturing.Loaded;
-//  FSM3.Loaded;
-//  FSM4.Loaded;
-    FSM.Loaded;
+  FSM.Loaded;
 end;
 
 procedure TDGLLibShader.NotifyChange(Sender: TObject);
@@ -3435,11 +3650,6 @@ end;
 //end;
 
 
-//procedure TDGLLibShader.SetBaseShader(AValue: TDGLBaseShaderProperties);
-//begin
-//  FBaseShader.Assign(AValue);
-//end;
-
 procedure TDGLLibShader.SetLevel(AValue: TDGLShaderMaterialLevel);
 begin
   if FApplicableLevel <> AValue then
@@ -3449,8 +3659,7 @@ begin
   end;
 end;
 
-
-procedure TDGLLibShader.SetSM(AValue: TDGLShaderModel);
+procedure TDGLLibShader.SetSM(AValue: TDGLBaseGLSLShaderModel);
 begin
   FSM.Assign(AValue);
 end;
@@ -3473,15 +3682,15 @@ function TDGLLibShader.UnApply(var ARci: TRenderContextInfo): Boolean;
 
 begin
 
-//  if Assigned(NextPass) then
-//  begin
-//    Result := NextPass.UnApply(ARci);
-//    if Result then
-//      FNextPass.Apply(ARci)
-//    else
-//      FNextPass := nil;
-//    exit;
-//  end;
+  if Assigned(FNextPass) then
+  begin
+    Result := FNextPass.UnApply(ARci);
+    if Result then
+      FNextPass.Apply(ARci)
+    else
+      FNextPass := nil;
+    exit;
+  end;
 
   case FSelectedLevel of
     mlBaseMaterial :
@@ -3525,27 +3734,7 @@ end;
 { TDGLMatLibComponents }
 {$IFDEF GLS_REGION}{$REGION 'TDGLMatLibComponents'}{$ENDIF}
 
-//function TDGLMatLibComponents.GetAttachmentByName(const AName: TDGLShaderComponentName): TDGLFrameBufferAttachment;
-//var
-//  n, i: Integer;
-//begin
-//  n     := ComputeNameHashKey(AName);
-//  for i := 0 to Count - 1 do
-//  begin
-//    if (Items[i] is TDGLFrameBufferAttachment) and (Items[i].FNameHashKey = n) then
-//    begin
-//      if Items[i].Name = AName then
-//      begin
-//        Result := TDGLFrameBufferAttachment(Items[i]);
-//        exit;
-//      end;
-//    end;
-//  end;
-//  Result := nil;
-//end;
-
-
-function TDGLShaderLibComponents.GetItemByName(const AName: TDGLShaderComponentName): TDGLBaseShaderCollectionItem;
+function TDGLShaderLibComponents.GetItemByName(const AName: TDGLShaderComponentName): TDGLBaseShaderComponentItem;
 var
   n, i: Integer;
 begin
@@ -3561,9 +3750,9 @@ begin
   Result := nil;
 end;
 
-function TDGLShaderLibComponents.GetItems(Index: Integer): TDGLBaseShaderCollectionItem;
+function TDGLShaderLibComponents.GetItems(Index: Integer): TDGLBaseShaderComponentItem;
 begin
-  Result := TDGLBaseShaderCollectionItem(inherited GetItems(index));
+  Result := TDGLBaseShaderComponentItem(inherited GetItems(index));
 end;
 
 function TDGLShaderLibComponents.GetNamePath: string;
@@ -3579,30 +3768,9 @@ begin
   Result := S + '.Components';
 end;
 
-
-//function TDGLShaderLibComponents.GetShaderByName(const AName: TDGLShaderComponentName): TDGLSLShader;
-//var
-//  n, i: Integer;
-//begin
-//  n     := ComputeNameHashKey(AName);
-//  for i := 0 to Count - 1 do
-//  begin
-//    if (Items[i] is TDGLSLShader) and (Items[i].FNameHashKey = n) then
-//    begin
-//      if Items[i].Name = AName then
-//      begin
-//        Result := TDGLSLShader(Items[i]);
-//        exit;
-//      end;
-//    end;
-//  end;
-//  Result := nil;
-//end;
-
-
 class function TDGLShaderLibComponents.ItemsClass: TDGLXCollectionItemClass;
 begin
-  Result := TDGLBaseShaderCollectionItem;
+  Result := TDGLBaseShaderComponentItem;
 end;
 
 function TDGLShaderLibComponents.MakeUniqueName(const AName: TDGLShaderComponentName): TDGLShaderComponentName;
@@ -3624,30 +3792,12 @@ end;
 { TDGLShaderLibrary }
 {$IFDEF GLS_REGION}{$REGION 'TDGLShaderLibrary'}{$ENDIF}
 
-//function TDGLShaderLibrary.AddAttachment(const AName: TGLShaderComponentName): TGLFrameBufferAttachment;
-//begin
-//  Result      := TGLFrameBufferAttachment.Create(Components);
-//  Result.Name := AName;
-//  Components.Add(Result);
-//end;
-
-
-
-function TDGLShaderLibrary.AddShader(const AName: TDGLShaderComponentName): TDGLSLShader;
+function TDGLShaderLibrary.AddShader(const AName: TDGLShaderComponentName): TDGLSLShaderScript;
 begin
-  Result      := TDGLSLShader.Create(Components);
+  Result      := TDGLSLShaderScript.Create(Components);
   Result.Name := AName;
   Components.Add(Result);
 end;
-
-//function TDGLShaderLibrary.AddAsmProg(const AName: TGLShaderComponentName): TGLASMVertexProgram;
-//begin
-//  Result      := TGLASMVertexProgram.Create(Components);
-//  Result.Name := AName;
-//  Components.Add(Result);
-//end;
-
-
 
 constructor TDGLShaderLibrary.Create(AOwner: TComponent);
 begin
@@ -3880,9 +4030,9 @@ end;
 
 initialization
 
-RegisterClasses([ TDGLSLShader, TDGLShaderLibrary, TDGLShaderUniform, TDGLShaderUniformDSA, TDGLShaderUniformTexture]);
+RegisterClasses([ TDGLSLShaderScript, TDGLShaderLibrary, TDGLShaderUniform, TDGLShaderUniformDSA, TDGLShaderUniformTexture]);
 
-RegisterXCollectionItemClass(TDGLSlShader);
+RegisterXCollectionItemClass(TDGLSlShaderScript);
 
 
 vStandartUniformAutoSetExecutor := TStandardUniformAutoSetExecutor.Create;

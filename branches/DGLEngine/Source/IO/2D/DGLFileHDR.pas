@@ -1,7 +1,7 @@
 //
 // This unit is part of the DGLEngine Project, http://glscene.org
 //
-{: DGLFileHDR<p>
+{ @HTML ( DGLFileHDR<p>
 
    HDR File support for GLScene.
 
@@ -45,7 +45,7 @@ type
     // defaults to 1.0
     fProgramType: string[16];
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TDGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
@@ -319,7 +319,7 @@ end;
 // Capabilities
 //
 
-class function TDGLHDRImage.Capabilities: TDataFileCapabilities;
+class function TDGLHDRImage.Capabilities: TDGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;
