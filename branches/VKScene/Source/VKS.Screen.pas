@@ -1,36 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Screen<p>
-
-  Routines to interact with the screen/desktop.<p>
-
-  <b>Historique : </b><font size=-1><ul>
-  <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
-  <li>06/06/10 - Yar - Fixed warnings
-  <li>13/04/10 - Yar - Fixed conditional for delphi (thanks mif)
-  <li>07/01/10 - DaStr - Enhanced cross-platform compatibility (thanks Predator)
-  <li>17/12/09 - DaStr - Added screen utility functions from
-  VKS.CrossPlatform.pas (thanks Predator)
-  <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
-  directory (BugtrackerID = 2893580) (thanks Predator)
-  <li>23/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>03/07/04 - LR - Suppress CurrentScreenColorDepth because there are in VKS.CrossPlatform
-  <li>24/07/03 - EG - Video modes now read on request only, removed
-  the non-standard low-res video modes
-  <li>27/09/02 - EG - Added Ability to set display frequency
-  <li>27/07/01 - EG - Removed the "absolute" in RestoreDefaultMode
-  <li>08/02/00 - EG - TLowResMode & TVideoMode packed (wins 5 kb)
-  <li>06/02/00 - EG - Javadocisation, added "default"s to properties
-  </ul></font>
+{
+  Routines to interact with the screen/desktop. 
+   
 }
 unit VKS.Screen;
-
-// VKS.Screen    - This units contains routines to interact with the screen/desktop.
-// Version     - 0.0.8
-// Last Change - 30. September 1998
-// for more information see help file
 
 interface
 
@@ -38,7 +13,7 @@ interface
 
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
+{$IFDEF VKS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
   System.Classes, 
   VKS.VectorGeometry, VKS.CrossPlatform;
 
@@ -114,7 +89,7 @@ var
 {$IFDEF MSWINDOWS}
   vVideoModes: array of TVideoMode;
 {$ENDIF} // Unix
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
   vDisplay: PDisplay;
   vScreenModeChanged: Boolean;
   vVideoModes: array of PXF86VidModeModeInfo;
@@ -211,7 +186,7 @@ begin
       end;
     end;
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
   with vVideoModes[I]^ do
   begin
     if (hDisplay >= XRes) and ((hDisplay - XRes) <= XDiff) and
@@ -275,7 +250,7 @@ begin
   end;
   Inc(vNumberVideoModes);
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
 
   procedure TryToAddToList(); // Without input parameters.
   begin
@@ -356,7 +331,7 @@ begin
         end;
       end;
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
       var
         I, j: Integer;
       begin
@@ -422,7 +397,7 @@ begin
           if Result then
             vCurrentVideoMode := modeIndex;
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
           var
             vSettings: TXF86VidModeModeInfo;
             wnd: TWindow;
@@ -489,7 +464,7 @@ begin
               t := nil;
               ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
               begin
                 // if vCurrentVideoMode=0 then
                 ReadVideoModes;
@@ -520,7 +495,7 @@ begin
                 begin
                   SetCursorPos(AScreenX, AScreenY);
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
                   var
                     dpy: PDisplay;
                     root: TWindow;
@@ -542,7 +517,7 @@ begin
                     begin
                       GetCursorPos(point);
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
                       var
                         dpy: PDisplay;
                         root, child: TWindow;
@@ -593,7 +568,7 @@ finalization
 {$IFDEF MSWINDOWS}
 if vCurrentVideoMode <> 0 then
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
   if vScreenModeChanged then
 {$ENDIF}
     RestoreDefaultMode; // set default video mode

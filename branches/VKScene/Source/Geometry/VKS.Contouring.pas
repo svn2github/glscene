@@ -1,16 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Contouring<p>
-
-  Class and routines to output isolines.<p>
-
-  <b>History : </b><font size=-1><ul>
-  25/04/15 - PW - Fixed TriangleElevationSegments procedure
-  06/07/02 - Phil Scadden - Added TVKIsoline class and Initialise_Isolining procedure
-  15/08/01 - Alexander Weidauer - Added CONREC Delphi implementation
-             (based on Nicholas Yue CONREC.C and  Paul Bourke CONREC.F)
-  15/07/01 - PW - Creation of the unit
+{
+  Class and routines to output isolines. 
 }
 unit VKS.Contouring;
 
@@ -25,9 +17,7 @@ uses
   VKS.Types, VKS.Color, VKS.Spline, VKS.SpaceText, VKS.VectorTypes,
   VKS.VectorFileObjects;
 
-
-
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 type
   TVKVector = array of Single;
@@ -63,7 +53,7 @@ type
     constructor Create(AOwner: TComponent); virtual;
     destructor Destroy; override;
 
-  { : CONREC is a contouring routine for rectangular spaced data or regular 2D grids
+  { CONREC is a contouring routine for rectangular spaced data or regular 2D grids
     It takes each rectangle of adjacent data points and splits it
     into 4 triangles after choosing the height at the centre of the rectangle.
     For each of the triangles the line segment resulting from the intersection
@@ -97,7 +87,7 @@ procedure Initialize_Contouring(var DataGrid: TVKMatrix;
 procedure Release_Memory_Isoline;
 function GetNextIsoline(var Isoline: TVKIsoline): Boolean;
 
-{ : Defines contouring segments inside a triangle using elevations }
+{ Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 
@@ -786,7 +776,7 @@ begin
                   and (x1<MaxX1) and (x1>MinX1)     )   then
                    begin
                      GlSpaceTextSF[K].Free;
-                     GlSpaceTextSF[K]:= TGlspacetext.CreateAsChild(self);
+                     GlSpaceTextSF[K]:= TVKSpacetext.CreateAsChild(self);
 
                      with GlspaceTextSF[K] do
                      begin

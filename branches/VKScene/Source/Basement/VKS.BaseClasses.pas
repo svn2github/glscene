@@ -1,12 +1,6 @@
 //
-// This unit is part of the GLScene Project
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: Base classes for VKScene.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>02/01/16 - PW - Imported from GLScene
-   </ul></font>
-}
 
 unit VKS.BaseClasses;
 
@@ -14,7 +8,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //VKS
   VKS.Strings, VKS.PersistentClasses, VKS.CrossPlatform;
 
 type
@@ -27,7 +21,7 @@ type
 
   // TVKProgressEvent
   //
-  {: Progression event for time-base animations/simulations.<p>
+  { Progression event for time-base animations/simulations. 
      deltaTime is the time delta since last progress and newTime is the new
      time after the progress event is completed. }
   TVKProgressEvent = procedure(Sender: TObject; const deltaTime, newTime: Double) of object;
@@ -44,8 +38,8 @@ type
 
   // TVKUpdateAbleObject
   //
-  {: An abstract class describing the "update" interface.<p> }
-  TVKUpdateAbleObject = class(TVKInterfacedPersistent, IGLNotifyAble)
+  { An abstract class describing the "update" interface.  }
+  TVKUpdateAbleObject = class(TGLInterfacedPersistent, IGLNotifyAble)
   private
     { Private Declarations }
     FOwner: TPersistent;
@@ -70,7 +64,7 @@ type
 
   // TVKCadenceAbleComponent
   //
-  {: A base class describing the "cadenceing" interface.<p> }
+  { A base class describing the "cadenceing" interface.  }
   TVKCadenceAbleComponent = class(TVKComponent, IGLProgessAble)
   public
     { Public Declarations }
@@ -79,7 +73,7 @@ type
 
   // TVKUpdateAbleComponent
   //
-  {: A base class describing the "update" interface.<p> }
+  { A base class describing the "update" interface.  }
   TVKUpdateAbleComponent = class(TVKCadenceAbleComponent, IGLNotifyAble)
   public
     { Public Declarations }
@@ -105,7 +99,7 @@ type
 
 implementation
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKUpdateAbleObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKUpdateAbleObject'}{$ENDIF}
 //---------------------- TVKUpdateAbleObject -----------------------------------------
 
 // Create
@@ -171,9 +165,9 @@ begin
     NotifyChange(Self);
   end;
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TVKUpdateAbleObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION 'TVKUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKCadenceAbleComponent'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TVKCadenceAbleComponent ------------------
 // ------------------
@@ -199,9 +193,9 @@ begin
     if (Owner is TVKUpdateAbleComponent) then
       (Owner as TVKUpdateAbleComponent).NotifyChange(Self);
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TVKUpdateAbleObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION 'TVKUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TNotifyCollection ------------------
 // ------------------
@@ -225,7 +219,7 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
 
 end.
 

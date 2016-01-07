@@ -1,16 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDAFFTPlan <p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>03/01/15 - PW - Upgraded to use with FMX
-  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
-  <li>04/05/11 - Yar - Fixed Source/Destination size checking
-  <li>05/03/11 - Yar - Refactored
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
-}
 
 unit VKS.CUDAFFTPlan;
 
@@ -151,7 +141,7 @@ begin
       LType := CUFFT_Z2Z;
   else
     begin
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
       LType := CUFFT_R2C;
     end;
   end;

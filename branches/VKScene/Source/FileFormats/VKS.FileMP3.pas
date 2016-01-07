@@ -1,14 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileMP3<p>
-
-	Support for MP3 format.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>25/07/09 - DaStr - Added $I GLScene.inc  
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+{
+	Support for MP3 format. 
 }
 unit VKS.FileMP3;
 
@@ -23,7 +17,7 @@ type
 
    // TVKMP3File
    //
-   {: Support for MP3 format.<p>
+   { Support for MP3 format. 
       *Partial* support only, access to PCMData is NOT supported. }
    TVKMP3File = class (TVKSoundFile)
       private

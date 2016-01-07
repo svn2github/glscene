@@ -1,45 +1,15 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.SpaceText<p>
-
-  3D Text component.<p>
+{
+  3D Text component. 
 
   Note: You can get valid extents (including AABB's) of this component only
   after it has been rendered for the first time. It means if you ask its
   extents during / after its creation, you will get zeros.
 
-  Also extents are valid only when SpaceText has one line. <p>
+  Also extents are valid only when SpaceText has one line.  
 
-  <b>History : </b><font size=-1><ul>
-  <li>25/03/11 - Yar - Fixed issue with unsharable virtual handle of font entry
-  <li>22/09/10 - Yar - Added unicode support (Delphi 2009 & up only)
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>05/03/10 - DanB - More state added to TVKStateCache
-  <li>25/12/07 - DaStr - Added MultiLine support (thanks Lexer)
-  Fixed Memory leak in TFontManager.Destroy
-  (Bugtracker ID = 1857814)
-  <li>19/09/07 - DaStr - Added some comments
-  Optimized TVKSpaceText.BarycenterAbsolutePosition
-  <li>12/09/07 - DaStr - Bugfixed TVKSpaceText.BarycenterAbsolutePosition
-  (Didn't consider rotations)
-  <li>08/09/07 - DaStr - Implemented AxisAlignedDimensionsUnscaled and
-  BarycenterAbsolutePosition for TVKSpaceText
-  <li>28/03/07 - DaStr - Renamed parameters in some methods
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>16/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>19/10/06 - LC - Added TVKSpaceText.Assign. Bugtracker ID=1576445 (thanks Zapology)
-  <li>16/09/06 - NC - TVKVirtualHandle update (thx Lionel Reynaud)
-  <li>03/06/02 - EG - VirtualHandle notification fix (Sören Mühlbauer)
-  <li>07/03/02 - EG - GetFontBase fix (Sören Mühlbauer)
-  <li>30/01/02 - EG - Text Alignment (Sören Mühlbauer),
-  TFontManager now VKS.Context compliant (RenderToBitmap ok!)
-  <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
-  <li>12/12/01 - EG - Creation (split from GLScene.pas)
-  </ul></font>
 }
 unit VKS.SpaceText;
 
@@ -115,7 +85,7 @@ type
 
   // TVKSpaceText
   //
-  { : Renders a text in 3D. }
+  { Renders a text in 3D. }
   TVKSpaceText = class(TVKSceneObject)
   private
     { Private Declarations }
@@ -162,7 +132,7 @@ type
     function TextMaxHeight(const str: WideString = ''): Single;
     function TextMaxUnder(const str: WideString = ''): Single;
 
-    { : Note: this fuction is valid only after text has been rendered
+    { Note: this fuction is valid only after text has been rendered
       the first time. Before that it returns zeros. }
     procedure TextMetrics(const str: WideString;
       out width, maxHeight, maxUnder: Single);
@@ -173,17 +143,17 @@ type
     function BarycenterAbsolutePosition: TVector; override;
   published
     { Published Declarations }
-    { : Adjusts the 3D font extrusion.<p>
+    { Adjusts the 3D font extrusion. 
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
     property Extrusion: Single read FExtrusion write SetExtrusion;
     property Font: TFont read FFont write SetFont;
     property Text: WideString read GetText write SetText stored False;
     property Lines: TStringList read FLines write SetLines;
-    { : Quality related, see Win32 help for wglUseFontOutlines }
+    { Quality related, see Win32 help for wglUseFontOutlines }
     property allowedDeviation: Single read FAllowedDeviation
       write SetAllowedDeviation;
-    { : Character range to convert.<p>
+    { Character range to convert. 
       Converting less characters saves time and memory... }
     property CharacterRange: TSpaceTextCharRange read FCharacterRange
       write SetCharacterRange default stcrDefault;
@@ -195,7 +165,7 @@ type
 
   // TFontManager
   //
-  { : Manages a list of fonts for which display lists were created. }
+  { Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
     { Private Declarations }
@@ -449,7 +419,7 @@ var
   textL, maxUnder, maxHeight: Single;
   charScale: Single;
   i, j, k, c: Integer;
-  glBase: TVKuint;
+  glBase: TGLuint;
   dirtyLine, cleanLine: WideString;
 begin
   if Length(GetText) > 0 then
@@ -465,9 +435,9 @@ begin
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
       stcrAlphaNum:
-        GL.ListBase(TVKuint(Integer(glBase) - 32));
+        GL.ListBase(TGLuint(Integer(glBase) - 32));
       stcrNumbers:
-        GL.ListBase(TVKuint(Integer(glBase) - Integer('0')));
+        GL.ListBase(TGLuint(Integer(glBase) - Integer('0')));
     else
       GL.ListBase(glBase);
     end;
@@ -527,7 +497,7 @@ begin
       end
       else
         GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
-          PGLChar(TVKString(FLines.Strings[i])));
+          PGLChar(TGLString(FLines.Strings[i])));
       GL.PopMatrix;
     end;
     rci.GLStates.PopAttrib();
@@ -793,7 +763,7 @@ begin
   else
     begin
       AdjustVector.V[0] := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, vksErrorEx + vksUnknownType); // Not implemented...
     end;
   end;
 
@@ -809,7 +779,7 @@ begin
   else
     begin
       AdjustVector.V[1] := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, vksErrorEx + vksUnknownType); // Not implemented...
     end;
   end;
 

@@ -1,13 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
 {
   VKS.ODERegister - Design time registration code for the ODE Manager
-
-  History:
-
-    18/06/03 - SG - Creation.
 }
+
 unit VKS.ODERegister;
 
 interface

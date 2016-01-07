@@ -1,16 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileJPEG<p>
 
-  <b>History : </b><font size=-1><ul>
-      <li>02/02/15 - PW - Changed usage of GLSJPEG unit with FMX tools
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>29/06/10 - Yar - Improved FPC compatibility
-      <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
-      <li>27/02/10 - Yar - Creation
-  </ul><p>
-}
 unit VKS.FileJPEG;
 
 interface
@@ -41,12 +32,12 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKuint;
+      const textureHandle: TGLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: boolean;
-      const intFormat: TVKInternalFormat); reintroduce;
+      const intFormat: TGLInternalFormat); reintroduce;
 
     property DivScale: longword read FDivScale write FDivScale;
     property Dither: boolean read FDither write FDither;
@@ -125,8 +116,8 @@ end;
 
 
 procedure TVKJPEGImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKuint; textureTarget: TVKTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TVKInternalFormat);
+  const textureHandle: TGLuint; textureTarget: TVKTextureTarget;
+  const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
 begin
 
 end;

@@ -1,28 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SkyBox<p>
-
+{
    A TVKImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
-   for use as a skybox always centered on the camera.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>26/03/09 - DanB - Skybox is now a TVKCameraInvariantObject
-      <li>10/10/08 - DanB - changed Skybox DoRender to use rci instead
-                            of Scene.CurrentGLCamera
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>21/01/07 - DaStr - Added IGLMaterialLibrarySupported support
-      <li>12/04/04 - EG - Added Style property, multipass support
-      <li>27/11/03 - EG - Cleanup and fixes
-      <li>09/11/03 - MRQZZZ - mandatory changes suggested by Eric.
-      <li>02/09/03 - MRQZZZ - Creation
-   </ul></font>
+   for use as a skybox always centered on the camera. 
+    
 }
 unit VKS.SkyBox;
 

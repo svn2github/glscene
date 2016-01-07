@@ -1,21 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ODESkeletonColliders<p>
-
-   Skeleton colliders for defining and controlling ODE geoms.<p>
-
-   <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
-      <li>17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>12/04/08 - DaStr - Cleaned up uses section
-                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
-      <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
-                             CCilinder (ode 0.8) with Capsule(ode 0.9))
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-      <li>04/12/03 - SG - Creation.
-   </ul></font>
+{
+   Skeleton colliders for defining and controlling ODE geoms. 
 }
 unit VKS.ODESkeletonColliders;
 
@@ -31,7 +18,7 @@ type
 
   // TSCODEBase
   //
-  {: Base ODE skeleton collider class. }
+  { Base ODE skeleton collider class. }
   TSCODEBase = class(TSkeletonCollider)
     private
       FGeom : PdxGeom;
@@ -43,13 +30,13 @@ type
       procedure AddToSpace(Space : PdxSpace); virtual;
       procedure AlignCollider; override;
 
-      {: The geoms are created through the AddToSpace procedure. }
+      { The geoms are created through the AddToSpace procedure. }
       property Geom : PdxGeom read FGeom;
   end;
 
   // TSCODESphere
   //
-  {: Sphere shaped ODE geom in a skeleton collider. }
+  { Sphere shaped ODE geom in a skeleton collider. }
   TSCODESphere = class(TSCODEBase)
     private
       FRadius : TdReal;
@@ -68,7 +55,7 @@ type
 
   // TSCODECCylinder
   //
-  {: Capsule (sphere capped cylinder) shaped ODE geom in a skeleton 
+  { Capsule (sphere capped cylinder) shaped ODE geom in a skeleton 
      collider. }
   TSCODECCylinder = class(TSCODEBase)
     private
@@ -91,7 +78,7 @@ type
 
   // TSCODEBox
   //
-  {: Box shaped ODE geom in a skeleton collider. }
+  { Box shaped ODE geom in a skeleton collider. }
   TSCODEBox = class(TSCODEBase)
     private
       FBoxWidth,
@@ -114,7 +101,7 @@ type
       property BoxDepth : TdReal read FBoxDepth write SetBoxDepth;
   end;
 
-{: After loading call this function to add all the geoms in a
+{ After loading call this function to add all the geoms in a
    skeleton collider list to a given ODE space. }
 procedure AddSCODEGeomsToODESpace(
   colliders : TSkeletonColliderList; space : PdxSpace);

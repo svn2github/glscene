@@ -1,123 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ODEManager<p>
-
-  An ODE Manager for GLScene.<p>
-
-  Where can I find ... ?<ul>
-    <li>GLScene              (http://glscene.org)
-    <li>Open Dynamics Engine (http://opende.sourceforge.org)
-    <li>DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
-  </ul>
+{
+  An ODE Manager for VKScene.  
 
   Notes:
-  This code is still being developed so any part of it may change at anytime.
-  To install use the GLS_ODE?.dpk in the GLScene/Packages folder.<p>
-
-  <b>History : </b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-    <li>21/01/01 - DanB - Added "inherited" call to TODEElementPlane.WriteToFiler
-    <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
-    <li>22/04/10 - Yar - Fixes after VKS.State revision
-    <li>05/03/10 - DanB - More state added to TVKStateCache
-    <li>17/11/09 - DaStr - Improved Unix compatibility
-                           (thanks Predator) (BugtrackerID = 2893580)
-    <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
-                         joint parms now have a 1 appended to them for first parm
-                         example dParamLoStop is now dParamLoStop1
-    <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
-    <li>12/04/08 - DaStr - Cleaned up uses section
-                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>10/04/08 - DaStr - Removed compiler hints from TVKODEDynamic.AddNewElement()
-    <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
-                            Don't create contact between static objects;
-                            In Destroying procedures placed to last line the "Inherited"
-    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint
-                             creation in TODEJointUniversal.Create
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello;
-                             fixes for runtime creation)
-    <li>25/12/07 - DaStr  - Fixed access violation in TVKODEManager.Destroy()
-                             (thanks Sandor Domokos) (BugtrackerID = 1808371)
-    <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
-    <li>10/10/07 - Mrqzzz - Fixed in TVKODEDynamic.AlignObject the explocit
-                             reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^)
-                             to avoid ambiguous overloading
-    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
-                           make GLODEManager compatible with non-GLODEManager based ODE worlds
-                           Added public property "ContactGroup"
-    <li>24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
-    <li>07/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-                           Added $I GLScene.inc
-    <li>28/03/07 - DaStr - Renamed parameters in some methods
-                           (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-    <li>01/03/05 - Mrqzzz - Moved in TODEJointBase protected code from Loaded to
-                          public DoLoaded.
-    <li>20/12/04 - SG - TVKODEStatic objects now realign geoms on step,
-                        Fix for Hinge2 and Universal joints,
-                        Fix for TVKODEDynamic.Enabled property persistence.
-    <li>10/12/04 - SG - Added TODEElementPlane,
-                        Fixed TODEElementCone.Render function.
-    <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
-    <li>19/11/04 - SG - Major structural changes/improvements,
-                        Dropped TVKBaseSceneObject style object in favour of
-                        TVKBehaviour style ones,
-                        TVKODEBaseBehaviour is now TVKODEBehaviour,
-                        TVKODEDynamicBehaviour is now TVKODEDynamic,
-                        TVKODEStaticBehaviour is now TVKODEStatic,
-                        Added TODEJointParams to handle joint axis parameters,
-                        Added RenderPoint to GLODEManager to handle rendering.
-    <li>17/11/04 - SG - Changed Deinitialize to Finalize,
-                        Changed TVKODEDummy to TVKODEDynamicDummy.
-    <li>09/11/04 - SG - Fixed problems with contact geom generation (k00m).
-    <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
-    <li>23/04/04 - SG - Fixes for object registration,
-                        Exception raised now if ODE fails to initialize at run-time.
-    <li>21/04/04 - SG - Changed to dynamic linking DelphiODE,
-                        Design-time no longer makes any DelphiODE calls.
-    <li>15/04/04 - SG - Added OnCustomCollision event to TVKODEManager.
-    <li>14/04/04 - SG - Minor DelphiODE compatibility changes.
-    <li>30/03/04 - SG - Joint objects are now fully persistent.
-    <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
-    <li>25/02/04 - SG - Added the GLODEStaticBehaviour.
-    <li>24/02/04 - SG - Added the static GLODETerrain collider.
-    <li>23/02/04 - SG - Fix for design to real time gravity persistence.
-                        Added cone, cylinder and tri-mesh elements.
-                        Other various fixes/enhancements.
-    <li>28/01/04 - SG - Added TVKODEStaticDummy. Fixed Element alignment code.
-                        Other minor fixes/changes.
-    <li>13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
-                        registered objects to Deinitialize.
-                        Fixed up some comments.
-    <li>12/11/03 - SG - Fixed bug with TVKODEManager.Collision
-    <li>01/09/03 - SG - Changed all relevant floating point types to TdReal,
-                        Changed Read/Write Single/Double to Read/Write Float.
-    <li>19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
-                        Added StepFast and FastIterations to GLODEManager.
-    <li>11/08/03 - SG - Added some force/torque methods to dynamic objects.
-    <li>30/07/03 - SG - Split terrain collider into GLODECustomColliders unit.
-    <li>25/07/03 - SG - Fixed Manager property persistence, other minor changes.
-    <li>24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
-                        improved object and joint initialization system.
-                        Manager properties not persitent in joints and behaviours.
-    <li>26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
-                        dropped Contnrs dependency (D5 compatibility)
-    <li>23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
-                        terrain demo (buggy caused assertion error in VKS.HeightData.pas).
-    <li>13/06/03 - SG - Added more joints.
-    <li>11/06/03 - SG - Base joint classes implemented and added hinge joint.
-    <li>09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
-    <li>08/06/03 - SG - Added rolling friction (experimental).
-    <li>06/06/03 - SG - Added cylinder element (experimental).
-    <li>04/06/03 - SG - Changes to structures, added TVKODEDynamicBehaviour.
-    <li>30/05/03 - SG - Added capsule element and plane object,
-                        Fixed problems with Collision callback method.
-    <li>29/05/03 - SG - Better GetCollisionSurface code (thanks to Mattias Fagerlund).
-    <li>28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
-                        Added TVKODEDummy.CalibrateCenterOfMass
-    <li>01/03/03 - SG - Creation.
-  </ul>
+  This code is still under development so any part of it may change at anytime.
 }
 
 unit VKS.ODEManager;
@@ -312,7 +200,7 @@ type
 
   // TVKODEBehaviour
   //
-  {: Basis structures for GLScene behaviour style implementations. }
+  { Basis structures for GLScene behaviour style implementations. }
   TVKODEBehaviour = class (TVKBehaviour)
     private
       { Private Declartions }
@@ -542,7 +430,7 @@ type
 
   // TODEElementBox
   //
-  {: ODE box implementation. }
+  { ODE box implementation. }
   TODEElementBox = class (TODEElementBase)
     private
       { Private Declarations }
@@ -583,7 +471,7 @@ type
 
   // TODEElementSphere
   //
-  {: ODE sphere implementation. }
+  { ODE sphere implementation. }
   TODEElementSphere = class (TODEElementBase)
     private
       { Private Declarations }
@@ -619,7 +507,7 @@ type
 
   // TODEElementCapsule
   //
-  {: ODE capped cylinder implementation. }
+  { ODE capped cylinder implementation. }
   TODEElementCapsule = class (TODEElementBase)
     private
       { Private Declarations }
@@ -659,7 +547,7 @@ type
 
   // TODEElementCylinder
   //
-  {: ODE cylinder implementation. }
+  { ODE cylinder implementation. }
   TODEElementCylinder = class (TODEElementBase)
     private
       { Private Declarations }
@@ -700,7 +588,7 @@ type
 
   // TODEElementTriMesh
   //
-  {: ODE tri-mesh implementation. }
+  { ODE tri-mesh implementation. }
   TODEElementTriMesh = class (TODEElementBase)
     private
       { Private Declarations }
@@ -738,7 +626,7 @@ type
 
   // TODEElementPlane
   //
-  {: ODE plane implementation. }
+  { ODE plane implementation. }
   TODEElementPlane = class (TODEElementBase)
     protected
       { Protected Declarations }
@@ -760,7 +648,7 @@ type
 
   // TVKODEJoints
   //
-  {: An XCollection decendant for ODE Joints. }
+  { An XCollection decendant for ODE Joints. }
   TODEJoints = class(TXCollection)
     protected
       { Protected Declarations }
@@ -779,7 +667,7 @@ type
 
   // TVKODEJointList
   //
-  {: Component front-end for storing ODE Joints. }
+  { Component front-end for storing ODE Joints. }
   TVKODEJointList = class(TComponent)
     private
       { Private Declarations }
@@ -810,7 +698,7 @@ type
 
   // TODEJointBase
   //
-  {: Base structures for ODE Joints. }
+  { Base structures for ODE Joints. }
   TODEJointBase = class (TXCollectionItem)
     private
       { Private Declarations }
@@ -964,7 +852,7 @@ type
 
   // TODEJointHinge
   //
-  {: ODE hinge joint implementation. }
+  { ODE hinge joint implementation. }
   TODEJointHinge = class (TODEJointBase)
     private
       { Private Declarations }
@@ -1007,7 +895,7 @@ type
 
   // TODEJointBall
   //
-  {: ODE ball joint implementation. }
+  { ODE ball joint implementation. }
   TODEJointBall = class (TODEJointBase)
     private
       { Private Declarations }
@@ -1041,7 +929,7 @@ type
 
   // TODEJointSlider
   //
-  {: ODE slider joint implementation. }
+  { ODE slider joint implementation. }
   TODEJointSlider = class (TODEJointBase)
     private
       { Private Declarations }
@@ -1081,7 +969,7 @@ type
 
   // TODEJointFixed
   //
-  {: ODE fixed joint implementation. }
+  { ODE fixed joint implementation. }
   TODEJointFixed = class (TODEJointBase)
     protected
       { Protected Declarations }
@@ -1099,7 +987,7 @@ type
 
   // TODEJointHinge2
   //
-  {: ODE hinge2 joint implementation. }
+  { ODE hinge2 joint implementation. }
   TODEJointHinge2 = class (TODEJointBase)
     private
       { Private Declarations }
@@ -1152,7 +1040,7 @@ type
 
   // TODEJointUniversal
   //
-  {: ODE universal joint implementation. }
+  { ODE universal joint implementation. }
   TODEJointUniversal = class (TODEJointBase)
     private
       { Private Declarations }
@@ -1204,10 +1092,10 @@ type
   end;
 
 
-{: ODE nearCallBack, throws near callback to the collision procedure
+{ ODE nearCallBack, throws near callback to the collision procedure
    of the ODE manager linked by the Data pointer. }
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
-{: Helper functions for extracting data from objects with different
+{ Helper functions for extracting data from objects with different
    inheritance. }
 function GetBodyFromObject(anObject : TObject):PdxBody;
 function GetBodyFromGLSceneObject(anObject : TVKBaseSceneObject):PdxBody;

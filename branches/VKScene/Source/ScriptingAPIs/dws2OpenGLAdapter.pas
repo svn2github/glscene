@@ -1,15 +1,12 @@
-// dws2OpenGL1x
-{: DelphiWebScriptII symbol creation for OpenGL procedures
-   and functions.<p>
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
 
-   This unit is still under development.<p>
+{
+  DelphiWebScriptII symbol creation for OpenGL procedures
+  and functions. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/01/2011 - Yar - Rename to dws2OpenGLAdapter, update to current main package
-      <li>08/10/2008 - DanB - Split AddUnitSymbols into two procedures, to prevent error
-      <li>23/09/2004 - SG - Added main GL constants and a few procedures
-      <li>21/09/2004 - SG - Creation
-   </ul></font>
+  This unit is still under development. 
 }
 unit dws2OpenGLAdapter;
 

@@ -1,38 +1,16 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
 
-{: VKS.CameraController<p>
+{
 
   Component for animating camera movement.
   Can be used to zoom in/out, for linear movement, orbiting and Google Earth - like "fly-to"
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
-
-  <b>History : </b><font size=-1><ul>
-      <li>30/06/11 - DaStr - [Smooth]OrbitToPos now correctly uses local and absolute coordinates
-                             Camera is now a TVKBaseSceneObject
-                             Added CameraTarget property
-                             Most procedures now use "const" parameters
-                             Restructured TVKCameraJob: published some properties, deleted others
-                             Added basic Notification
-                             Removed Cadencer dependancy 
-      <li>14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
-      <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
-      <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
-      <li>10/05/11 - Vince - Add OnMove event
-      <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support OrbitToPos when axis are different from -1,0 or 1
-      <li>24/07/09 - DaStr - Got rid of compiler hints
-      <li>20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
-    </ul></font>
+       
+     
+     
 }
-
-//GLCameraController v1.1
-//Bogdan Deaky / Bluemind Software
-//Bluemind Software allows free usage and distribution of this component
-//Do let the author know if you do code changes/improvements
-//bogdan@bluemind-software.ro
-//v1.0 2007
-//v1.1 2009 (for VKS.Scene, ships with glscene_icon_TVKCameraController.bmp)
 
 
 //IMPORTANT!
@@ -41,7 +19,7 @@
 //Block user GUI access while AllowUserAction is false to avoid behaviour errors
 //simply put
 //if GLCameraController1.AllowUserAction then
-// //do whatever you want on mouse move, form wheel etc
+//do whatever you want on mouse move, form wheel etc
 
 // methods and properties are explained in the interface section (through comments)
 // additional comments might apear in implementation section where needed
@@ -52,7 +30,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math, System.Contnrs,
-
+  //VKS
   VKS.Scene, VKS.VectorGeometry,
   VKS.SmoothNavigator, VKS.VectorTypes;
 

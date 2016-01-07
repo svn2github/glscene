@@ -1,16 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CgPostTransformationShader<p>
-
+{
    A shader that uses a texture to distort the view by adjusting texture
    coordinates.
-   Does not have any practical use, but is fun to play around with.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/04/07 - DaStr - Contributed to GLScene
-      <li>04/11/06 - DaStr - Creation (based on demo by Rick)
+   Does not have any practical use, but is fun to play around with. 
 
 }
 unit VKS.CgPostTransformationShader;

@@ -1,219 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Texture<p>
-
- Handles all the color and texture stuff.<p>
-
- <b>History : </b><font size=-1><ul>
-       <li>04/01/13 - PW - Added ReleaseBitmap32 in TVKBlankImage destructor to remove
-                           a memory leak (thanks to Lars Nebel)
-       <li>04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from VKS.Color unit to here
-       <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
-                           restored definition of TVKCubeMapTarget as integer type
-       <li>12/05/11 - Yar - Added KeepImageAfterTransfer for TVKTexture
-       <li>04/10/10 - Yar - Improved multycontext features for TVKTexture
-       <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses
-       <li>21/05/10 - Yar - Removed TVKFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
-       <li>16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TVKTextureImage
-       <li>14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
-       <li>09/05/10 - Yar - Fixed texture compression (thanks Hacker)
-       <li>22/04/10 - Yar - Fixes after VKS.State revision
-       <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
-                             cause errors on hardware that doesn't support them
-       <li>05/03/10 - DanB - More state added to TVKStateCache
-       <li>23/01/10 - Yar  - Added TextureFormatEx to TVKTexture
-                             and tfExtended to TVKTextureFormat (thanks mif for idea)
-       <li>22/01/10 - Yar  - Added VKS.TextureFormat to uses,
-                             1D, 3D, array, cube map array target support,
-                             texture error indication,
-                             TVKTextureImage ResorceName property,
-                             Depth property,
-                             NativeTextureTarget becomes property
-      <li>07/01/10 - DaStr - Added tmAdd TextureMode and enhanced documentation
-                             (thanks DungeonLords)
-                             Removed IncludeTrailingBackslash function
-      <li>10/11/09 - DaStr - Added more texture formats (thanks YarUnderoaker)
-      <li>04/06/09 - DanB - Delphi 5 fix
-      <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
-      <li>08/10/08 - DanB - split materials related stuff into VKS.Material.pas
-      <li>06/10/08 - DanB - added Assert check for trying to create texture images
-      <li>05/10/08 - DanB - separated texture image editor from texture unit
-                            moved color related stuff to VKS.Color.pas
-                            moved TRenderContextInfo into separate unit
-      <li>12/04/08 - DaStr - Bugfixed TVKTextureExItem.Create()
-                              (thanks dAlex) (BugTracker ID = 1940451)
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TVKMaterial (BugTracker ID = 1938988)
-      <li>08/02/08 - Mrqzzz - Added tiaBottomRightPointColorTransparent
-      <li>29/07/07 - LC - Modified how tmmEyeLinear is applied, see
-                          Bugtracker ID = 1762966.
-      <li>06/06/07 - DaStr - Moved all color types, constants and functions
-                              to VKS.Color.pas (Bugtracker ID = 1732211)
-      <li>31/03/07 - DaStr - Bugfixed TVKTexture.Assign (missed some properties)
-                              (Bugtracker ID = 1692012) (thanks Zapology)
-      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
-                              (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>06/03/07 - DaStr - Removed obsolete FPC IFDEF's
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678642)
-      <li>14/03/07 - DaStr - TVKPicFileImage now provides correct Width and Height
-                                                        (BugtrackerID = 1680742)
-      <li>09/03/07 - DaStr - Added TVKMaterial.GetActualPrimaryMaterial, GetLibMaterial
-                             Bugfixed TVKColor.Initialize and TVKColor.Destroy
-                              (thanks Burkhard Carstens) (BugtrackerID = 1678650)
-      <li>04/03/07 - DaStr - Added TVKTextureTarget, [Encode/Decode]GLTextureTarget
-      <li>23/02/07 - DaStr - Added TVKShaderClass, TVKShaderFailedInitAction,
-                              EGLShaderException
-                             Added TVKShader.HandleFailedInitialization, ShaderSupported,
-                              GetStardardNotSupportedMessage, FailedInitAction
-                             Added default value for TVKShader.ShaderStyle
-                             Fixed TVKShader.InitializeShader
-                             Fixed TVKTextureExItem.Create (TVKCoordinatesStyle stuff)
-      <li>16/02/07 - DaStr - Global $Q- removed
-                             Added TVKLibMaterials.GetTextureIndex, GetMaterialIndex,
-                               GetNameOfTexture, GetNameOfLibMaterial
-                             Added TVKMaterialLibrary.TextureByName,
-                               GetNameOfTexture, GetNameOfLibMaterial
-      <li>01/02/07 - LIN - Added TVKLibMaterial.IsUsed : true if texture has registered users
-      <li>23/01/07 - LIN - Added TVKTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
-      <li>23/01/07 - LIN - Added TVKTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
-      <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
-                             TVKLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
-      <li>20/12/06 - DaStr - TVKColorManager.Enumcolors overloaded
-                             TVKShader.Apply bugfixed, TVKShader.Assign added
-      <li>19/10/06 - LC - Fixed TVKLibMaterial.UnApply so it doesn't unapply a 2nd
-                          texture that was never applied. Bugtracker ID=1234085
-      <li>19/10/06 - LC - Fixed TVKLibMaterial.Assign. Bugtracker ID=1549843 (thanks Zapology)
-      <li>15/09/06 - NC - TVKShader.handle as Integer -> Cardinal
-      <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
-      <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
-      <li>30/11/04 - EG - No longer stores TextureEx if empty
-      <li>06/10/04 - NC - Corrected filtering param. setting for float texture,
-                          Now keep using GL_TEXTURE_RECTANGLE_NV for TVKFloatDataImage
-      <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
-      <li>04/10/04 - NC - Added TVKFloatDataImage
-      <li>02/08/04 - LR, YHC - BCB corrections: Added dummy method for the abstract problem
-                          Changed type of TVKCubeMapTarget to integer
-      <li>03/07/04 - LR - Move InitWinColors to VKS.CrossPlatform
-                          Replace TGraphics, TBitmap by TVKGraphics, TVKBitmap
-      <li>29/06/04 - SG - Added bmModulate blending mode
-      <li>08/04/04 - EG - Added AddMaterialsFromXxxx logic
-      <li>04/09/03 - EG - Added TVKShader.Enabled
-      <li>02/09/03 - EG - Added TVKColor.HSVA
-      <li>28/07/03 - aidave - Added TVKColor.RandomColor
-      <li>24/07/03 - EG - Introduced TVKTextureImageEditor mechanism
-      <li>04/07/03 - EG - Material.Texture now autocreating,
-                          added per-texture brightness and gamma correction
-      <li>13/06/03 - EG - cubemap images can now be saved/restored as a whole
-      <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
-      <li>23/05/03 - EG - More generic libmaterial registration
-      <li>08/12/02 - EG - Added tiaInverseLuminance
-      <li>13/11/02 - EG - Added tmmCubeMapLight0
-      <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
-      <li>24/07/02 - EG - Added TVKLibMaterials.DeleteUnusedMaterials
-      <li>13/07/02 - EG - Improved materials when lighting is off
-      <li>10/07/02 - EG - Added basic protection against cyclic material refs
-      <li>08/07/02 - EG - Multipass support
-      <li>18/06/02 - EG - Added TVKShader
-      <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
-      <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
-                          TVKPictureImage no longer systematically creates a TPicture
-      <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
-      <li>20/01/02 - EG - Fixed texture memory use report error
-      <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
-                          are now Linear/MipMap
-      <li>07/01/02 - EG - Added renderDPI to rci
-      <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
-      <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
-      <li>14/09/01 - EG - Use of vFileStreamClass
-      <li>06/09/01 - EG - No longers depends on 'Windows'
-      <li>04/09/01 - EG - Texture binding cache
-      <li>31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
-      <li>25/08/01 - EG - Added TVKBlankImage
-      <li>16/08/01 - EG - drawState now part of TRenderContextInfo
-      <li>15/08/01 - EG - TexGen support (object_linear, eye_linear and sphere_map)
-      <li>13/08/01 - EG - Fixed OnTextureNeeded handling (paths for mat lib)
-      <li>12/08/01 - EG - Completely rewritten handles management
-      <li>27/07/01 - EG - TVKLibMaterials now a TOwnedCollection
-      <li>19/07/01 - EG - Added "Enabled" to TVKTexture
-      <li>28/06/01 - EG - Added AddTextureMaterial TGraphic variant
-      <li>14/03/01 - EG - Streaming fixes by Uwe Raabe
-      <li>08/03/01 - EG - TVKPicFileImage.GetBitmap32 now resets filename if not found
-      <li>01/03/01 - EG - Fixed TVKMaterial.DestroyHandle,
-                          Added Texture2 notifications and material cacheing
-      <li>26/02/01 - EG - Added support for GL_EXT_texture_filter_anisotropic
-      <li>23/02/01 - EG - Fixed texture matrix messup (second was using first)
-      <li>21/02/01 - EG - Minor fix for TextureImageRequiredMemory,
-                          TexGen calls now based on VKS.XOpenGL
-      <li>14/02/01 - EG - Added support for texture format & texture compression
-      <li>31/01/01 - EG - Added Multitexture support
-      <li>28/01/01 - EG - Added MaterialOptions
-      <li>15/01/01 - EG - Enhanced TVKPicFileImage.LoadFromFile
-      <li>13/01/01 - EG - New helper functions for TVKMaterialLibrary
-      <li>08/01/01 - EG - Not-so-clean fix for TVKTexture.Destroy... better fix
-                          will require awareness of rendering contexts...
-      <li>06/12/00 - EG - Added PrepareBuildList mechanism
-      <li>16/10/00 - EG - Fix in TVKPictureImage.Assign
-      <li>25/09/00 - EG - New texture management implemented
-      <li>13/08/00 - EG - Added AddTextureMaterial
-      <li>06/08/00 - EG - File not found error now happens only once per texture,
-                          also added some more doc and texture transforms support
-                          to TVKLibMaterial
-      <li>27/07/00 - EG - TVKPictureImage.Assign now accepts TGraphic & TPicture,
-                          Added max texture size clamping
-      <li>15/07/00 - EG - Upgrade for new list/handle destruction scheme
-      <li>05/07/00 - EG - Added tiaTopLeftPointColorTransparent
-      <li>28/06/00 - EG - Added asserts for missing texture files
-      <li>01/06/00 - EG - Added ReloadTexture (support for texture library),
-                          Fixed persistence of material names in a texture library
-      <li>28/05/00 - EG - TVKColor now has NotifyChange support for TVKBaseSceneObject
-      <li>23/04/00 - EG - Fixed bugs with TVKPicFileImage & TVKPersistentImage,
-                          Added tiaOpaque
-      <li>17/04/00 - EG - Added Assign to DummyCube and Sprite
-      <li>16/04/00 - EG - Added TVKPicFileImage.Assign
-      <li>26/03/00 - EG - Finally fixed nasty bug in TVKMaterial.Free
-      <li>22/03/00 - EG - Added BeginUpdate/EndUpdate to TVKPictureImage,
-          Made use of [Un]SetGLState in TVKMaterial
-          (gain = 7-10% on T&L intensive rendering),
-                          TVKTexBaseClass is no more (RIP)
-      <li>21/03/00 - EG - TVKMaterial props are now longer stored when it is
-                          linked to a material library entry,
-                          Added TVKPictureImage (split from TVKPersistentImage),
-                          TVKPicFileImage has been updated and reactivated,
-                          ColorManager is now autocreated and non longer force-linked.
-      <li>19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TVKMaterialLibrary
-      <li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
-                          Added FindGLTextureImageClassByFriendlyName,
-                          FChanges states now ignored in TVKTexture.GetHandle,
-                          Added SaveToFile/LoadFromFile to TextureImage
-      <li>17/03/00 - EG - Added tiaLuminance
-      <li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
-                          Added ImageAlpha
-      <li>13/03/00 - EG - Changed TVKTextureImage image persistence again,
-                          Added "Edit" method for texture image classes,
-                          TMagFilter/TMinFilter -> TVKMagFilter/TVKMinFilter
-      <li>03/03/00 - EG - Removed TImagePath,
-                          Started major rework of the whole TVKTextureImage stuff,
-                          Fixed and optimized TVKTexture.PrepareImage
-      <li>12/02/00 - EG - Added Material Library
-      <li>10/02/00 - EG - Fixed crash when texture is empty
-      <li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TVKColor,
-                          fixed notification on material property setXxx methods,
-                          Objects now begin with 'TVK'
-      <li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
-      <li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
-                          IsPowerOf2 moved to GLMisc, added TVKPersistentImage.Assign,
-                          fixed TVKMaterial.Assign,
-                          disable inheritance stuff in TVKFaceProperties.Apply (needs fixing),
-                          Diffuse & ambient color now default to openGL values
-      <li>05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
-                          TVKColor.Update, ConvertWinColor, TPicImage,
-          TVKMaterial.Apply
-   </ul></font>
+{
+   Handles all the color and texture stuff. 
+    
 }
 unit VKS.Texture;
 
@@ -224,8 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
   FMX.Graphics, FMX.Objects,
-
-   
+  //VKS
   VKS.Strings, VKS.CrossPlatform, VKS.BaseClasses, VKS.OpenGLTokens,
   VKS.VectorGeometry, VKS.Graphics, VKS.Context, VKS.State, VKS.Color, VKS.Coordinates,
   VKS.RenderContextInfo, VKS.TextureFormat, VKS.ApplicationFileIO, VKS.Utils;
@@ -263,9 +52,9 @@ type
   // Specifies the depth comparison function.
   TVKDepthCompareFunc = TDepthFunction;
 
-  {: Texture format for OpenGL (rendering) use.<p>
+  { Texture format for OpenGL (rendering) use. 
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
-  specify a generic format to reduce OpenGL texture memory use:<ul>}
+  specify a generic format to reduce OpenGL texture memory use: }
   TVKTextureFormat = (
     tfDefault,
     tfRGB, // = tfRGB8
@@ -283,7 +72,7 @@ type
 
   // TVKTextureCompression
   //
-  TVKTextureCompression = TVKInternalCompression;
+  TVKTextureCompression = TGLInternalCompression;
 
   TVKTexture = class;
 
@@ -300,19 +89,19 @@ type
   TVKTextureChange = (tcImage, tcParams);
   TVKTextureChanges = set of TVKTextureChange;
 
-  {: Defines how and if Alpha channel is defined for a texture image.<ul>
-   <li>tiaDefault : uses the alpha channel in the image if any
-   <li>tiaAlphaFromIntensity : the alpha channel value is deduced from other
+  { Defines how and if Alpha channel is defined for a texture image. 
+    tiaDefault : uses the alpha channel in the image if any
+    tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
-   <li>tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
+    tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
     completely transparent, others are completely opaque
-   <li>tiaLuminance : the luminance value is calculated for each pixel
+    tiaLuminance : the luminance value is calculated for each pixel
     and used for RGB and Alpha values
-   <li>tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
-       <li>tiaOpaque : alpha channel is uniformously set to 1.0
-       <li>tiaTopLeftPointColorTransparent : points of the same color as the
+    tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
+        tiaOpaque : alpha channel is uniformously set to 1.0
+        tiaTopLeftPointColorTransparent : points of the same color as the
           top left point of the bitmap are transparent, others are opaque.
-       </ul>
+        
     }
   TVKTextureImageAlpha =
   (
@@ -330,9 +119,9 @@ type
 
   // TVKTextureImage
   //
-  {: Base class for texture image data.<p>
+  { Base class for texture image data. 
    Basicly, subclasses are to be considered as different ways of getting
-   a HBitmap (interfacing the actual source).<br>
+   a HBitmap (interfacing the actual source). 
    SubClasses should be registered using RegisterGLTextureImageClass to allow
    proper persistence and editability in the IDE experts. }
   TVKTextureImage = class(TVKUpdateAbleObject)
@@ -343,11 +132,11 @@ type
     FOnTextureNeeded: TTextureNeededEvent;
     FResourceFile: string;
     class function IsSelfLoading: Boolean; virtual;
-    procedure LoadTexture(AInternalFormat: TVKInternalFormat); virtual;
+    procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
     function GetTextureTarget: TVKTextureTarget; virtual; abstract;
-    function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    function GetDepth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetHeight: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    function GetWidth: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    function GetDepth: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
@@ -359,47 +148,47 @@ type
     property OwnerTexture: TVKTexture read FOwnerTexture write FOwnerTexture;
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Save textureImage to file.<p>
+    { Save textureImage to file. 
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Load textureImage from a file.<p>
+    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    { Load textureImage from a file. 
      This may not load a picture, but for instance, parameters, if the
-     textureImage is a procedural texture.<br>
+     textureImage is a procedural texture. 
              Subclasses should invoke inherited which will take care of the
              "OnTextureNeeded" stuff. }
     procedure LoadFromFile(const fileName: string); dynamic;
-    {: Returns a user-friendly denomination for the class.<p>
+    { Returns a user-friendly denomination for the class. 
      This denomination is used for picking a texture image class
      in the IDE expert. }
-    class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Returns a user-friendly description for the class.<p>
+    class function FriendlyName: string; virtual;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    { Returns a user-friendly description for the class. 
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
      takes its value from FriendlyName. }
     class function FriendlyDescription: string; virtual;
 
-    {: Request reload/refresh of data upon next use. }
+    { Request reload/refresh of data upon next use. }
     procedure Invalidate; dynamic;
 
-    {: Returns image's bitmap handle.<p>
+    { Returns image's bitmap handle. 
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32: TVKImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Request for unloading bitmapData, to free some memory.<p>
+    function GetBitmap32: TVKImage; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    { Request for unloading bitmapData, to free some memory. 
      This one is invoked when GLScene no longer needs the Bitmap data
-     it got through a call to GetHBitmap.<br>
+     it got through a call to GetHBitmap. 
      Subclasses may ignore this call if the HBitmap was obtained at
      no particular memory cost. }
     procedure ReleaseBitmap32; virtual;
-    //{: AsBitmap : Returns the TextureImage as a TBitmap }
+    //{ AsBitmap : Returns the TextureImage as a TBitmap }
     function AsBitmap: TVKBitmap;
     procedure AssignToBitmap(aBitmap: TVKBitmap);
 
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
     property Depth: Integer read GetDepth;
-    {: Native opengl texture target.<p> }
+    { Native opengl texture target.  }
     property NativeTextureTarget: TVKTextureTarget read GetTextureTarget;
     property ResourceName: string read GetResourceName;
   end;
@@ -408,7 +197,7 @@ type
 
   // TVKBlankImage
   //
-  {: A texture image with no specified content, only a size.<p>
+  { A texture image with no specified content, only a size. 
        This texture image type is of use if the context of your texture is
        calculated at run-time (with a TVKMemoryViewer for instance). }
   TVKBlankImage = class(TVKTextureImage)
@@ -424,11 +213,11 @@ type
     fBitmap: TVKImage;
 
     fWidth, fHeight, fDepth: Integer;
-    {: Store a icolor format, because fBitmap is not always defined}
+    { Store a icolor format, because fBitmap is not always defined}
     fColorFormat: GLenum;
-    {: Blank Cube Map }
+    { Blank Cube Map }
     fCubeMap: Boolean;
-    {: Flag to interparate depth as layer }
+    { Flag to interparate depth as layer }
     fArray: Boolean;
 
     function GetWidth: Integer; override;
@@ -452,7 +241,7 @@ type
 
   published
     { Published Declarations }
-    {: Width, heigth and depth of the blank image (for memory allocation). }
+    { Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
     property Depth: Integer read GetDepth write SetDepth default 0;
@@ -463,7 +252,7 @@ type
 
   // TVKPictureImage
   //
-  {: Base class for image data classes internally based on a TPicture. }
+  { Base class for image data classes internally based on a TPicture. }
   TVKPictureImage = class(TVKTextureImage)
   private
     { Private Declarations }
@@ -489,25 +278,25 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    { Use this function if you are going to modify the Picture directly. 
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
-    {: Ends a direct picture modification session.<p>
+    { Ends a direct picture modification session. 
        Follows a BeginUpdate. }
     procedure EndUpdate;
     function GetBitmap32: TVKImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Holds the image content. }
+    { Holds the image content. }
     property Picture: TVKPicture read GetPicture write SetPicture;
   end;
 
   // TVKPersistentImage
   //
-  {: Stores any image compatible with Delphi's TPicture mechanism.<p>
+  { Stores any image compatible with Delphi's TPicture mechanism. 
    The picture's data is actually stored into the DFM, the original
    picture name or path is not remembered. It is similar in behaviour
-   to Delphi's TImage.<p>
+   to Delphi's TImage. 
    Note that if original image is for instance JPEG format, only the JPEG
    data will be stored in the DFM (compact) }
   TVKPersistentImage = class(TVKPictureImage)
@@ -530,7 +319,7 @@ type
 
   // TVKPicFileImage
   //
-  {: Uses a picture whose data is found in a file (only filename is stored).<p>
+  { Uses a picture whose data is found in a file (only filename is stored). 
        The image is unloaded after upload to OpenGL. }
   TVKPicFileImage = class(TVKPictureImage)
   private
@@ -554,7 +343,7 @@ type
 
     //: Only picture file name is saved
     procedure SaveToFile(const fileName: string); override;
-    {: Load picture file name or use fileName as picture filename.<p>
+    { Load picture file name or use fileName as picture filename. 
        The autodetection is based on the filelength and presence of zeros. }
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;
@@ -565,7 +354,7 @@ type
     procedure Invalidate; override;
 
   published
-    {: Filename of the picture to use. }
+    { Filename of the picture to use. }
     property PictureFileName: string read FPictureFileName write
       SetPictureFileName;
   end;
@@ -577,8 +366,8 @@ type
 
   // TVKCubeMapImage
   //
-  {: A texture image used for specifying and stroing a cube map.<p>
-       Not unlike TVKPictureImage, but storing 6 of them instead of just one.<br>
+  { A texture image used for specifying and stroing a cube map. 
+       Not unlike TVKPictureImage, but storing 6 of them instead of just one. 
        Saving & loading as a whole currently not supported. }
   TVKCubeMapImage = class(TVKTextureImage)
   private
@@ -607,7 +396,7 @@ type
     function GetBitmap32: TVKImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    { Use this function if you are going to modify the Picture directly. 
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -618,7 +407,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
 
-    {: Indexed access to the cube map's sub pictures. }
+    { Indexed access to the cube map's sub pictures. }
     property Picture[index: TVKCubeMapTarget]: TVKPicture read GetPicture write
     SetPicture;
 
@@ -640,9 +429,9 @@ type
 
   // TVKTexture
   //
-    {: Defines basic texturing properties.<p>
+    { Defines basic texturing properties. 
        You can control texture wrapping, smoothing/filtering and of course define
-       the texture map (note that texturing is disabled by default).<p>
+       the texture map (note that texturing is disabled by default). 
        A built-in mechanism (through ImageAlpha) allows auto-generation of an
        Alpha channel for all bitmaps (see TVKTextureImageAlpha). }
   TVKTexture = class(TVKUpdateAbleObject)
@@ -650,7 +439,7 @@ type
     { Private Declarations }
     FTextureHandle: TVKTextureHandle;
     FSamplerHandle: TVKVirtualHandle;
-    FTextureFormat: TVKInternalFormat;
+    FTextureFormat: TGLInternalFormat;
     FTextureMode: TVKTextureMode;
     FTextureWrap: TVKTextureWrap;
     FMinFilter: TVKMinFilter;
@@ -699,7 +488,7 @@ type
     procedure SetTextureWrapR(AValue: TVKSeparateTextureWrap);
     function GetTextureFormat: TVKTextureFormat;
     procedure SetTextureFormat(const val: TVKTextureFormat);
-    procedure SetTextureFormatEx(const val: TVKInternalFormat);
+    procedure SetTextureFormatEx(const val: TGLInternalFormat);
     function StoreTextureFormatEx: Boolean;
     procedure SetCompression(const val: TVKTextureCompression);
     procedure SetFilteringQuality(const val: TVKTextureFilteringQuality);
@@ -729,11 +518,11 @@ type
 
     function StoreImageClassName: Boolean;
 
-    function GetHandle: TVKuint; virtual;
+    function GetHandle: TGLuint; virtual;
     //: Load texture to OpenGL subsystem
-    procedure PrepareImage(target: TVKUInt); virtual;
+    procedure PrepareImage(target: TGLuint); virtual;
     //: Setup OpenGL texture parameters
-    procedure PrepareParams(target: TVKUInt); virtual;
+    procedure PrepareParams(target: TGLuint); virtual;
 
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnSamplerAllocate(Sender: TVKVirtualHandle; var Handle: Cardinal);
@@ -753,12 +542,12 @@ type
     procedure UnApplyMappingMode;
     procedure Apply(var rci: TRenderContextInfo);
     procedure UnApply(var rci: TRenderContextInfo);
-    {: Applies to TEXTURE1 }
+    { Applies to TEXTURE1 }
     procedure ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix: PMatrix
       = nil);
     procedure UnApplyAsTexture2(var rci: TRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
-    {: N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
+    { N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
     procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
       textureMatrix: PMatrix = nil);
     procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
@@ -774,40 +563,40 @@ type
     procedure SetImageClassName(const val: string);
     function GetImageClassName: string;
 
-    {: Returns the OpenGL memory used by the texture.<p>
+    { Returns the OpenGL memory used by the texture. 
       The compressed size is returned if, and only if texture compression
       if active and possible, and the texture has been allocated (Handle
       is defined), otherwise the estimated size (from TextureFormat
       specification) is returned. }
     function TextureImageRequiredMemory: Integer;
-    {: Allocates the texture handle if not already allocated.<p>
+    { Allocates the texture handle if not already allocated. 
       The texture is binded and parameters are setup, but no image data
       is initialized by this call - for expert use only. }
-    function AllocateHandle: TVKuint;
+    function AllocateHandle: TGLuint;
     function IsHandleAllocated: Boolean;
-    {: Returns OpenGL texture format corresponding to current options. }
+    { Returns OpenGL texture format corresponding to current options. }
     function OpenGLTextureFormat: Integer;
-    {: Returns if of float data type}
+    { Returns if of float data type}
     function IsFloatType: Boolean;
-    {: Is the texture enabled?.<p>
+    { Is the texture enabled?. 
       Always equals to 'not Disabled'. }
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    {: Handle to the OpenGL texture object.<p>
+    { Handle to the OpenGL texture object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
-    property Handle: TVKuint read GetHandle;
+    property Handle: TGLuint read GetHandle;
     property TextureHandle: TVKTextureHandle read FTextureHandle;
 
-    {: Actual width, height and depth used for last texture
+    { Actual width, height and depth used for last texture
       specification binding. }
     property TexWidth: Integer read FTexWidth;
     property TexHeight: Integer read FTexHeight;
     property TexDepth: Integer read FTexDepth;
-    {: Give texture rendering context }
+    { Give texture rendering context }
   published
     { Published Declarations }
 
-    {: Image ClassName for enabling True polymorphism.<p>
+    { Image ClassName for enabling True polymorphism. 
     This is ugly, but since the default streaming mechanism does a
     really bad job at storing	polymorphic owned-object properties,
     and neither TFiler nor TPicture allow proper use of the built-in
@@ -815,41 +604,41 @@ type
     mechanism. }
     property ImageClassName: string read GetImageClassName write
       SetImageClassName stored StoreImageClassName;
-    {: Image data for the texture.<p> }
+    { Image data for the texture.  }
     property Image: TVKTextureImage read FImage write SetImage;
 
-    {: Automatic Image Alpha setting.<p>
+    { Automatic Image Alpha setting. 
     Allows to control how and if the image's Alpha channel (transparency)
     is computed. }
     property ImageAlpha: TVKTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {: Texture brightness correction.<p>
+    { Texture brightness correction. 
     This correction is applied upon loading a TVKTextureImage, it's a
     simple saturating scaling applied to the RGB components of
     the 32 bits image, before it is passed to OpenGL, and before
     gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
-    {: Texture gamma correction.<p>
+    { Texture gamma correction. 
     The gamma correction is applied upon loading a TVKTextureImage,
     applied to the RGB components of the 32 bits image, before it is
     passed to OpenGL, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
 
-    {: Texture magnification filter. }
+    { Texture magnification filter. }
     property MagFilter: TVKMagFilter read FMagFilter write SetMagFilter default
       maLinear;
-    {: Texture minification filter. }
+    { Texture minification filter. }
     property MinFilter: TVKMinFilter read FMinFilter write SetMinFilter default
       miLinearMipMapLinear;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TVKTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Wrapping mode for the texture. }
+    { Wrapping mode for the texture. }
     property TextureWrap: TVKTextureWrap read FTextureWrap write SetTextureWrap
       default twBoth;
-    {: Wrapping mode for the texture when TextureWrap=twSeparate. }
+    { Wrapping mode for the texture when TextureWrap=twSeparate. }
     property TextureWrapS: TVKSeparateTextureWrap read FTextureWrapS write
       SetTextureWrapS default twRepeat;
     property TextureWrapT: TVKSeparateTextureWrap read FTextureWrapT write
@@ -857,30 +646,30 @@ type
     property TextureWrapR: TVKSeparateTextureWrap read FTextureWrapR write
       SetTextureWrapR default twRepeat;
 
-    {: Texture format for use by the renderer.<p>
+    { Texture format for use by the renderer. 
     See TVKTextureFormat for details. }
     property TextureFormat: TVKTextureFormat read GetTextureFormat write
       SetTextureFormat default tfDefault;
-    property TextureFormatEx: TVKInternalFormat read FTextureFormat write
+    property TextureFormatEx: TGLInternalFormat read FTextureFormat write
       SetTextureFormatEx stored StoreTextureFormatEx;
 
-    {: Texture compression control.<p>
+    { Texture compression control. 
     If True the compressed TextureFormat variant (the OpenGL ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TVKTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {: Specifies texture filtering quality.<p>
-    You can choose between bilinear and trilinear filetring (anisotropic).<p>
+    { Specifies texture filtering quality. 
+    You can choose between bilinear and trilinear filetring (anisotropic). 
     The OpenGL ICD must support GL_EXT_texture_filter_anisotropic or
     this property is ignored. }
     property FilteringQuality: TVKTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfIsotropic;
 
-    {: Texture coordinates mapping mode.<p>
+    { Texture coordinates mapping mode. 
     This property controls automatic texture coordinates generation. }
     property MappingMode: TVKTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {: Texture mapping coordinates mode for S, T, R and Q axis.<p>
+    { Texture mapping coordinates mode for S, T, R and Q axis. 
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TVKCoordinates4 read GetMappingSCoordinates
@@ -892,14 +681,14 @@ type
     property MappingQCoordinates: TVKCoordinates4 read GetMappingQCoordinates
       write SetMappingQCoordinates stored StoreMappingQCoordinates;
 
-    {: Texture Environment color. }
+    { Texture Environment color. }
     property EnvColor: TVKColor read FEnvColor write SetEnvColor;
-    {: Texture Border color. }
+    { Texture Border color. }
     property BorderColor: TVKColor read FBorderColor write SetBorderColor;
-    {: If true, the texture is disabled (not used). }
+    { If true, the texture is disabled (not used). }
     property Disabled: Boolean read FDisabled write SetDisabled default True;
 
-    {: Normal Map scaling.<p>
+    { Normal Map scaling. 
     Only applies when TextureFormat is tfNormalMap, this property defines
     the scaling that is applied during normal map generation (ie. controls
     the intensity of the bumps). }
@@ -913,7 +702,7 @@ type
     property DepthTextureMode: TVKDepthTextureMode read fDepthTextureMode write
       SetDepthTextureMode default dtmLuminance;
 
-    {: Disable image release after transfering it to VGA. }
+    { Disable image release after transfering it to VGA. }
     property KeepImageAfterTransfer: Boolean read FKeepImageAfterTransfer
       write FKeepImageAfterTransfer default False;
   end;
@@ -1009,7 +798,7 @@ function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
   TVKTextureImageClass;
 //: Defines a TStrings with the list of registered TVKTextureImageClass.
 procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
-{: Creates a TStrings with the list of registered TVKTextureImageClass.<p>
+{ Creates a TStrings with the list of registered TVKTextureImageClass. 
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings: TStrings;
 
@@ -1034,11 +823,11 @@ uses
   VKS.VectorTypes;
 
 const
-  cTextureMode: array[tmDecal..tmAdd] of TVKEnum =
+  cTextureMode: array[tmDecal..tmAdd] of TGLenum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
   cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of
-    TVKInternalFormat = (
+    TGLInternalFormat = (
     tfRGB8,
     tfRGBA8,
     tfRGB5,
@@ -1059,7 +848,7 @@ var
 type
   TFriendlyImage = class(TVKBaseImage);
 
-{$IFDEF GLS_CPPB}
+{$IFDEF VKS_CPPB}
   // Dummy methods for CPP
   //
 function TVKTextureImage.GetHeight: Integer;
@@ -1094,7 +883,7 @@ end;
 {$ENDIF}
 
 
-{$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
   // RegisterTGraphicClassFileExtension
   //
@@ -1241,13 +1030,13 @@ begin
   SetGLTextureImageClassesToStrings(Result);
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKTextureImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureImage'}{$ENDIF}
 
 // Create
 //
@@ -1351,17 +1140,17 @@ begin
   Result := False;
 end;
 
-procedure TVKTextureImage.LoadTexture(AInternalFormat: TVKInternalFormat);
+procedure TVKTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
 begin
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKBlankImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKBlankImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKBlankImage'}{$ENDIF}
 
 // Create
 //
@@ -1573,7 +1362,7 @@ begin
   end
   else
   begin
-    Assert(False, Format(glsFailedOpenFile, [fileName]));
+    Assert(False, Format(vksFailedOpenFile, [fileName]));
   end;
 end;
 
@@ -1633,13 +1422,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPictureImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKPictureImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKPictureImage'}{$ENDIF}
 
 // Create
 //
@@ -1813,13 +1602,13 @@ begin
   Result := ttTexture2D;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPersistentImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKPersistentImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKPersistentImage'}{$ENDIF}
 
 // Create
 //
@@ -1874,7 +1663,7 @@ begin
     Exit;
   end;
   Picture.Bitmap := nil;
-  raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
+  raise ETexture.CreateFmt(vksFailedOpenFile, [fileName]);
 end;
 
 // FriendlyName
@@ -1894,13 +1683,13 @@ begin
     + 'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPicFileImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKPicFileImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKPicFileImage'}{$ENDIF}
 
 // Create
 //
@@ -2013,7 +1802,7 @@ begin
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
-          GLOKMessageBox(Format(glsFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),glsError);
+          GLOKMessageBox(Format(vksFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),vksError);
         end;
       end;
       Result := inherited GetBitmap32;
@@ -2076,13 +1865,13 @@ begin
   Result := 'Image data is retrieved from a file.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKCubeMapImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKCubeMapImage'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKCubeMapImage'}{$ENDIF}
 
 // Create
 //
@@ -2339,13 +2128,13 @@ begin
   Result := FPicture[index];
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKTexture ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKTexture'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKTexture'}{$ENDIF}
 
 // Create
 //
@@ -2830,7 +2619,7 @@ end;
 // SetTextureFormat
 //
 
-procedure TVKTexture.SetTextureFormatEx(const val: TVKInternalFormat);
+procedure TVKTexture.SetTextureFormatEx(const val: TGLInternalFormat);
 begin
   if val <> FTextureFormat then
   begin
@@ -3212,7 +3001,7 @@ procedure TVKTexture.Apply(var rci: TRenderContextInfo);
     end;
   end;
 var
-  H : TVKuint;
+  H : TGLuint;
 begin
   // Multisample image do not work with FFP
   if (FTextureHandle.Target = ttTexture2DMultisample) or
@@ -3353,7 +3142,7 @@ end;
 // AllocateHandle
 //
 
-function TVKTexture.AllocateHandle: TVKuint;
+function TVKTexture.AllocateHandle: TGLuint;
 var
   vTarget: TVKTextureTarget;
 begin
@@ -3402,10 +3191,10 @@ end;
 // GetHandle
 //
 
-function TVKTexture.GetHandle: TVKuint;
+function TVKTexture.GetHandle: TGLuint;
 var
-  target: TVKUInt;
-  LBinding: array[TVKTextureTarget] of TVKuint;
+  target: TGLuint;
+  LBinding: array[TVKTextureTarget] of TGLuint;
 
   procedure StoreBindings;
   var
@@ -3517,11 +3306,11 @@ end;
 // PrepareImage
 //
 
-procedure TVKTexture.PrepareImage(target: TVKUInt);
+procedure TVKTexture.PrepareImage(target: TGLuint);
 var
   bitmap32: TVKImage;
   texComp: TVKTextureCompression;
-  glFormat: TVKEnum;
+  glFormat: TGLenum;
 begin
   if Image.IsSelfLoading then
   begin
@@ -3611,7 +3400,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, glsErrorEx + glsUnknownType);
+          Assert(False, vksErrorEx + vksUnknownType);
         end;
         glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
       end
@@ -3644,31 +3433,31 @@ end;
 // PrepareParams
 //
 
-procedure TVKTexture.PrepareParams(target: TVKUInt);
+procedure TVKTexture.PrepareParams(target: TGLuint);
 const
-  cTextureSWrap: array[twBoth..twHorizontal] of TVKEnum =
+  cTextureSWrap: array[twBoth..twHorizontal] of TGLenum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT);
-  cTextureTWrap: array[twBoth..twHorizontal] of TVKEnum =
+  cTextureTWrap: array[twBoth..twHorizontal] of TGLenum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureRWrap: array[twBoth..twHorizontal] of TVKEnum =
+  cTextureRWrap: array[twBoth..twHorizontal] of TGLenum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureSWrapOld: array[twBoth..twHorizontal] of TVKEnum =
+  cTextureSWrapOld: array[twBoth..twHorizontal] of TGLenum =
     (GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT);
-  cTextureTWrapOld: array[twBoth..twHorizontal] of TVKEnum =
+  cTextureTWrapOld: array[twBoth..twHorizontal] of TGLenum =
     (GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP);
-  cTextureMagFilter: array[maNearest..maLinear] of TVKEnum =
+  cTextureMagFilter: array[maNearest..maLinear] of TGLenum =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TVKEnum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLenum =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
   cFilteringQuality: array[tfIsotropic..tfAnisotropic] of Integer = (1, 2);
-  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of TVKenum =
+  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of TGLenum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TVKenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TVKenum =
+  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
     (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
 
 var
@@ -3787,13 +3576,13 @@ begin
 end;
 
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TVKTextureExItem ---------------
 // ---------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureExItem'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureExItem'}{$ENDIF}
 
 // Create
 //
@@ -4031,13 +3820,13 @@ begin
   CalculateTextureMatrix;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TVKTextureEx ---------------
 // ---------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureEx'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureEx'}{$ENDIF}
 
 // Create
 //
@@ -4157,7 +3946,7 @@ begin
       Result := Result or Items[i].Texture.Enabled;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   // ------------------------------------------------------------------

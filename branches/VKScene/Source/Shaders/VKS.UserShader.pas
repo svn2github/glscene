@@ -1,18 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.UserShader<p>
-
+{
    A shader that passes control of the DoApply and DoUnApply
    methods through published events. This component is 
    designed to make it a little easier to implement a 
    customized shader. Be sure to keep the shader balanced
-   by returning the OpenGL state to how you found it.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>05/08/03 - SG - Creation
-   </ul></font>
+   by returning the OpenGL state to how you found it. 
+               
 }
 unit VKS.UserShader;
 

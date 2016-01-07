@@ -1,21 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FMaterialEditorForm<p>
-
-   Editor window for a material (with preview).<p>
-
-   <b>Historique : </b><font size=-1><ul>
-      <li>05/01/14 - PW - Converted to FMX
-      <li>07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
-      <li>05/10/08 - DanB - Removed Kylix support
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
-                             (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-      <li>03/07/04 - LR  - Make change for Linux
-      <li>24/03/00 - Egg - Added Blending
-      <li>06/02/00 - Egg - Creation
-   </ul></font>
+{
+   Editor window for a material (with preview). 
 }
 unit FMaterialEditorForm;
 

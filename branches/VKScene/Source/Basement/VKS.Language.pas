@@ -1,7 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Language.<p>
+{
   En:
   Language created to localize your application.
   In Delphi, the text is encoded using Ansi cp1251 and can not be encoded \ decoding.
@@ -10,13 +10,7 @@
   TLanguage создан дл€ локализации вашего приложени€
   ¬ Delphi текст имеет кодировку Ansi cp1251 и не подлежит кодировке\декодировке.
   ¬ Lazarus можно загружать текст любой кодировки
-
-  <b>History : </b><font size=-1><ul>
-  <li>25/01/15 - PW - Fixed usage of String instead of AnsiString types
-  <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
-  <li>20/04/10 - Yar - Added to GLScene
-  (Created by Rustam Asmandiarov aka Predator)
-  </ul></font>
+   
 }
 unit VKS.Language;
 
@@ -78,8 +72,8 @@ type
 
   { TVKSLanguage }
 
-  { : Abstract class for control Language.<p> }
-  { : јбстрактный класс,  дл€ палитры компонентов<p> }
+  { Abstract class for control Language.  }
+  { јбстрактный класс,  дл€ палитры компонентов  }
   TVKSLanguage = class(TComponent)
   private
     FLanguage: TLanguageExt;
@@ -122,7 +116,7 @@ begin
     Exit;
   if not FileExists(string(Language)) then
   begin
-{$IFDEF GLS_LOGGING}
+{$IFDEF VKS_LOGGING}
     GLSLogger.LogFatalError(ExtractFileName(string(Language)) +
       ' Languagefile missing!');
 {$ENDIF}

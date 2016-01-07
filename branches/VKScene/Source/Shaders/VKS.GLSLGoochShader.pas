@@ -1,36 +1,33 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.SimpleGoochShader <p>
-
+{
    Gooch shader : Gooch shading is used to substitute photorealistic
    rendering by rendering that focuses on structore and shape of the object.
    Instead of usage of light and shadow, Gooch shading uses concept of warm and cool colors.
    Standard Blinn-Phong shading only modulates base color of the object.
-   In Gooch shading intensity of diffuse lighting is used to determine how to blend warm and cold colors together.<p>
+   In Gooch shading intensity of diffuse lighting is used to determine how to blend warm and cold colors together. 
 
    At this time only one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Creation
-
+     
 }
-unit GLSL.GoochShader;
+
+unit VKS.GLSLGoochShader;
 
 interface
 
-//{$I GLScene.inc}
+//{$i VKScene.inc}
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, GLSL.Shader, VKS.CustomShader;
 
 //TVKCustomGLSLSimpleGoochShader
 //
-{: Custom class for GLSLSimpleGoochShader.<p>}
+{ Custom class for GLSLSimpleGoochShader. }
 type
   TVKCustomGLSLSimpleGoochShader = class(TVKCustomGLSLShader)
   private

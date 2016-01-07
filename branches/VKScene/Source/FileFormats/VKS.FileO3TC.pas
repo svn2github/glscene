@@ -1,20 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileO3TC<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-        <li>31/05/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after VKS.State revision
-        <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
-        <li>23/11/10 - DaStr - Added $I GLScene.inc
-        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
-                             Fixed cube map loading bug
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
-}
 unit VKS.FileO3TC;
 
 interface
@@ -43,10 +30,10 @@ type
     procedure SaveToStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKuint;
+      const textureHandle: TGLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TVKInternalFormat); reintroduce;
+      const intFormat: TGLInternalFormat); reintroduce;
   end;
 
 implementation
@@ -271,21 +258,21 @@ end;
 //
 
 procedure TVKO3TCImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKuint;
+  const textureHandle: TGLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TVKInternalFormat);
+  const intFormat: TGLInternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat, texLod, optLod: Cardinal;
   level, faceCount, face: Integer;
-  residentFormat: TVKInternalFormat;
+  residentFormat: TGLInternalFormat;
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PByte;
   i, j, k: Integer;
   cw, ch: Integer;
-  glTarget: TVKEnum;
+  glTarget: TGLenum;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin

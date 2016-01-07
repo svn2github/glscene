@@ -1,18 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileSTL<p>
-
-    Support-code to load STL Files into TVKFreeForm-Components in GLScene.<p>
+{
+    Support-code to load STL Files into TVKFreeForm-Components in VKScene.  
     Note that you must manually add this unit to one of your project's uses
-    to enable support for STL files at run-time.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>22/11/02 - EG - Write capability now properly declared
-      <li>17/10/02 - EG - Created from split of VKS.VectorFileObjects,
-                          ASCII STL support (Adem)
-   </ul><p>
+    to enable support for STL files at run-time. 
+     
 }
 unit VKS.FileSTL;
 
@@ -25,11 +18,11 @@ type
 
    // TVKSTLVectorFile
    //
-   {: The STL vector file (stereolithography format).<p>
+   { The STL vector file (stereolithography format). 
       It is a list of the triangular surfaces that describe a computer generated
-      solid model. This is the standard input for most rapid prototyping machines.<p>
+      solid model. This is the standard input for most rapid prototyping machines. 
       There are two flavors of STL, the "text" and the "binary", this class
-      reads both, but exports only the "binary" version.<p>
+      reads both, but exports only the "binary" version. 
       Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
    TVKSTLVectorFile = class(TVectorFile)
       public

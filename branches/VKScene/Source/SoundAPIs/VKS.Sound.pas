@@ -1,24 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Sound<p>
-
- Base classes and interface for GLScene Sound System<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>24/04/11 - Yar - Bugfixed TVKSoundSample.Assign (thanks to Anonymous)
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>06/05/09 - DanB - Split TVKSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
-      <li>02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
-      <li>05/03/02 - EG - TVKBSoundEmitter.Loaded
-      <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
-      <li>13/01/01 - EG - Added CPUUsagePercent
-      <li>09/06/00 - EG - Various enhancements
-    <li>04/06/00 - EG - Creation
- </ul></font>
+{
+  Base classes and interface for GLScene Sound System 
 }
+
 unit VKS.Sound;
 
 interface
@@ -35,7 +21,7 @@ type
 
   // TVKSoundSample
   //
-    {: Stores a single PCM coded sound sample. }
+    { Stores a single PCM coded sound sample. }
   TVKSoundSample = class(TCollectionItem)
   private
     { Private Declarations }
@@ -131,7 +117,7 @@ type
 
   // TVKBaseSoundSource
   //
-    {: Base class for origin of sound playback. }
+    { Base class for origin of sound playback. }
   TVKBaseSoundSource = class(TCollectionItem)
   private
     { Private Declarations }
@@ -188,11 +174,11 @@ type
     //: This Tag is reserved for sound manager use only
     property ManagerTag: PtrUInt read FTag write FTag;
 
-    {: Origin object for the sound sources.<p>
+    { Origin object for the sound sources. 
        Absolute object position/orientation are taken into account, the
-       object's TVKBInertia is considered if any.<p>
-       If origin is nil, the source is assumed to be static at the origin.<p>
-       <b>Note :</b> since TCollectionItem do not support the "Notification"
+       object's TVKBInertia is considered if any. 
+       If origin is nil, the source is assumed to be static at the origin. 
+        Note :  since TCollectionItem do not support the "Notification"
        scheme, it is up to the Origin object to take care of updating this
        property prior to release/destruction. }
     property Origin: TVKBaseSceneObject read FOrigin write SetOrigin;
@@ -203,52 +189,52 @@ type
       SetSoundLibrary;
     property SoundName: string read FSoundName write SetSoundName;
 
-    {: Volume of the source, [0.0; 1.0] range }
+    { Volume of the source, [0.0; 1.0] range }
     property Volume: Single read FVolume write SetVolume;
-    {: Nb of playing loops. }
+    { Nb of playing loops. }
     property NbLoops: Integer read FNbLoops write SetNbLoops default 1;
 
     property Mute: Boolean read FMute write SetMute default False;
     property Pause: Boolean read FPause write SetPause default False;
 
-    {: Sound source priority, the higher the better.<p>
+    { Sound source priority, the higher the better. 
        When maximum number of sound sources is reached, only the sources
        with the highest priority will continue to play, however, even
        non-playing sources should be tracked by the manager, thus allowing
        an "unlimited" amount of sources from the application point of view. }
     property Priority: Integer read FPriority write SetPriority default 0;
 
-    {: Min distance before spatial attenuation occurs.<p>
+    { Min distance before spatial attenuation occurs. 
        1.0 by default }
     property MinDistance: Single read FMinDistance write SetMinDistance;
-    {: Max distance, if source is further away, it will not be heard.<p>
+    { Max distance, if source is further away, it will not be heard. 
        100.0 by default }
     property MaxDistance: Single read FMaxDistance write SetMaxDistance;
 
-    {: Inside cone angle, [0°; 360°].<p>
-       Sound volume is maximal within this cone.<p>
+    { Inside cone angle, [0°; 360°]. 
+       Sound volume is maximal within this cone. 
        See DirectX SDK for details. }
     property InsideConeAngle: Single read FInsideConeAngle write
       SetInsideConeAngle;
-    {: Outside cone angle, [0°; 360°].<p>
+    { Outside cone angle, [0°; 360°]. 
        Between inside and outside cone, sound volume decreases between max
-       and cone outside volume.<p>
+       and cone outside volume. 
        See DirectX SDK for details. }
     property OutsideConeAngle: Single read FOutsideConeAngle write
       SetOutsideConeAngle;
-    {: Cone outside volume, [0.0; 1.0] range.<p>
+    { Cone outside volume, [0.0; 1.0] range. 
        See DirectX SDK for details. }
     property ConeOutsideVolume: Single read FConeOutsideVolume write
       SetConeOutsideVolume;
-    {: Sample custom playback frequency.<p>
+    { Sample custom playback frequency. 
        Values null or negative are interpreted as 'default frequency'. }
     property Frequency: Integer read FFrequency write SetFrequency default -1;
   end;
 
   // TVKSoundSource
   //
-    {: Origin of sound playback.<p>
-       Just publishes the 'Origin' property.<p>
+    { Origin of sound playback. 
+       Just publishes the 'Origin' property. 
        Note that the "orientation" is the the source's Direction, ie. the "Z"
        vector. }
   TVKSoundSource = class(TVKBaseSoundSource)
@@ -284,7 +270,7 @@ type
 
   // TVKSoundEnvironment
   //
-  {: EAX standard sound environments. }
+  { EAX standard sound environments. }
   TVKSoundEnvironment = (seDefault, sePaddedCell, seRoom, seBathroom,
     seLivingRoom, seStoneroom, seAuditorium,
     seConcertHall, seCave, seArena, seHangar,
@@ -295,10 +281,10 @@ type
 
   // TVKSoundManager
   //
-    {: Base class for sound manager components.<p>
+    { Base class for sound manager components. 
        The sound manager component is the interface to a low-level audio API
        (like DirectSound), there can only be one active manager at any time
-       (this class takes care of this).<p>
+       (this class takes care of this). 
        Subclass should override the DoActivate and DoDeActivate protected methods
        to "initialize/unitialize" their sound layer, actual data releases should
        occur in destructor however. }
@@ -356,19 +342,19 @@ type
     function DoActivate: Boolean; dynamic;
     //: Invoked AFTER all sources have been stopped
     procedure DoDeActivate; dynamic;
-    {: Effect mute of all sounds.<p>
+    { Effect mute of all sounds. 
        Default implementation call MuteSource for all non-muted sources
        with "True" as parameter. }
     function DoMute: Boolean; dynamic;
-    {: Effect un-mute of all sounds.<p>
+    { Effect un-mute of all sounds. 
        Default implementation call MuteSource for all non-muted sources
        with "False" as parameter. }
     procedure DoUnMute; dynamic;
-    {: Effect pause of all sounds.<p>
+    { Effect pause of all sounds. 
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
     function DoPause: Boolean; dynamic;
-    {: Effect un-pause of all sounds.<p>
+    { Effect un-pause of all sounds. 
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
     procedure DoUnPause; dynamic;
@@ -379,7 +365,7 @@ type
 
     //: Called when a source will be freed
     procedure KillSource(aSource: TVKBaseSoundSource); virtual;
-    {: Request to update source's data in low-level sound API.<p>
+    { Request to update source's data in low-level sound API. 
        Default implementation just clears the "Changes" flags. }
     procedure UpdateSource(aSource: TVKBaseSoundSource); virtual;
     procedure MuteSource(aSource: TVKBaseSoundSource; muted: Boolean); virtual;
@@ -391,96 +377,96 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    {: Manual request to update all sources to reflect changes.<p>
+    { Manual request to update all sources to reflect changes. 
        Default implementation invokes UpdateSource for all known sources. }
     procedure UpdateSources; virtual;
-    {: Stop and free all sources. }
+    { Stop and free all sources. }
     procedure StopAllSources;
 
-    {: Progress notification for time synchronization.<p>
+    { Progress notification for time synchronization. 
        This method will call UpdateSources depending on the last time
        it was performed and the value of the UpdateFrequency property. }
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Sound manager API reported CPU Usage.<p>
+    { Sound manager API reported CPU Usage. 
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
-    {: True if EAX is supported. }
+    { True if EAX is supported. }
     function EAXSupported: Boolean; dynamic;
 
   published
     { Published Declarations }
-      {: Activation/deactivation of the low-level sound API }
+      { Activation/deactivation of the low-level sound API }
     property Active: Boolean read FActive write SetActive default False;
 
-    {: Maximum number of sound output channels.<p>
+    { Maximum number of sound output channels. 
        While some drivers will just ignore this value, others cannot
        dynamically adjust the maximum number of channels (you need to
        de-activate and re-activate the manager for this property to be
        taken into account). }
     property MaxChannels: Integer read FMaxChannels write SetMaxChannels default
       8;
-    {: Sound output mixing frequency.<p>
-       Commonly used values ar 11025, 22050 and 44100.<p>
+    { Sound output mixing frequency. 
+       Commonly used values ar 11025, 22050 and 44100. 
        Note that most driver cannot dynamically adjust the output frequency
        (you need to de-ativate and re-activate the manager for this property
        to be taken into account). }
     property OutputFrequency: Integer read FOutputFrequency write
       SetOutputFrequency default 44100;
 
-    {: Request to mute all sounds.<p>
+    { Request to mute all sounds. 
        All sound requests should be handled as if sound is unmuted though,
        however drivers should try to take a CPU advantage of mute over
        MasterVolume=0 }
     property Mute: Boolean read FMute write SetMute default False;
-    {: Request to pause all sound, sound output should be muted too.<p>
+    { Request to pause all sound, sound output should be muted too. 
        When unpausing, all sound should resume at the point they were paused. }
     property Pause: Boolean read FPause write SetPause default False;
-    {: Master Volume adjustement in the [0.0; 1.0] range.<p>
+    { Master Volume adjustement in the [0.0; 1.0] range. 
        Driver should take care of properly clamping the master volume. }
     property MasterVolume: Single read FMasterVolume write SetMasterVolume;
 
-    {: Scene object that materializes the listener.<p>
+    { Scene object that materializes the listener. 
        The sceneobject's AbsolutePosition and orientation are used to define
        the listener coordinates, velocity is automatically calculated
-       (if you're using DoProgress or connected the manager to a cadencer).<p>
+       (if you're using DoProgress or connected the manager to a cadencer). 
        If this property is nil, the listener is assumed to be static at
        the NullPoint coordinate, facing Z axis, with up being Y (ie. the
        default GLScene orientation). }
     property Listener: TVKBaseSceneObject read FListener write SetListener;
-    {: Currently active and playing sound sources. }
+    { Currently active and playing sound sources. }
     property Sources: TVKSoundSources read FSources write SetSources;
 
-    {: Update frequency for time-based control (DoProgress).<p>
+    { Update frequency for time-based control (DoProgress). 
        Default value is 10 Hz (frequency is clamped in the 1Hz-60Hz range). }
     property UpdateFrequency: Single read FUpdateFrequency write
       SetUpdateFrequency stored StoreUpdateFrequency;
-    {: Cadencer for time-based control.<p> }
+    { Cadencer for time-based control.  }
     property Cadencer: TVKCadencer read FCadencer write SetCadencer;
-    {: Engine relative distance factor, compared to 1.0 meters.<p>
+    { Engine relative distance factor, compared to 1.0 meters. 
        Equates to 'how many units per meter' your engine has. }
     property DistanceFactor: Single read FDistanceFactor write SetDistanceFactor
       stored StoreDistanceFactor;
-    {: Sets the global attenuation rolloff factor.<p>
+    { Sets the global attenuation rolloff factor. 
        Normally volume for a sample will scale at 1 / distance.
        This gives a logarithmic attenuation of volume as the source gets
-       further away (or closer).<br>
+       further away (or closer). 
        Setting this value makes the sound drop off faster or slower.
        The higher the value, the faster volume will fall off. }
     property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor
       stored StoreRollOffFactor;
-    {: Engine relative Doppler factor, compared to 1.0 meters.<p>
+    { Engine relative Doppler factor, compared to 1.0 meters. 
        Equates to 'how many units per meter' your engine has. }
     property DopplerFactor: Single read FDopplerFactor write SetDopplerFactor
       stored False;
-    {: Sound environment (requires EAX compatible soundboard). }
+    { Sound environment (requires EAX compatible soundboard). }
     property Environment: TVKSoundEnvironment read FSoundEnvironment write
       SetSoundEnvironment default seDefault;
   end;
 
   // TVKBSoundEmitter
   //
-  {: A sound emitter behaviour, plug it on any object to make it noisy.<p>
+  { A sound emitter behaviour, plug it on any object to make it noisy. 
        This behaviour is just an interface to a TVKSoundSource, for editing
        convenience. }
   TVKBSoundEmitter = class(TVKBehaviour)

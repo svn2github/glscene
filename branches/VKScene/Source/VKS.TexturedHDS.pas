@@ -1,8 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TexturedHDS<p>
-   Implements a HDS, which automatically maps textures onto a parent HDS .<p>
+{
+   Implements a HDS, which automatically maps textures onto a parent HDS . 
    This HDS links to and extracts its height data from a parent HDS. (like TVKHeightTileFile)
 
    The HDS also links to a TVKMaterial Library, and maps ALL textures from the
@@ -16,13 +16,7 @@
    WARNING: Only one base texture is mapped onto each terrain tile, so, make
    sure your texture edges are alligned to height tile edges, or gaps will show.
    (Of course you can still multitexture in a detail texture too.)
-
-	<b>History : </b><font size=-1><ul>
-      <li>22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
-                           Removed 'Active' property
-                           Now works with both TVKHeightTileFileHDS AND TVKBitmapHDS
-      <li>19/01/07 - LIN - Creation
-	</ul></font>
+ 	 
 }
 
 unit VKS.TexturedHDS;

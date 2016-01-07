@@ -1,59 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Win32Context<p>
-
-   Win32 specific Context.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>11/09/11 - Yar - Added layers support (not tested because need Quadro or FireFX VGA)
-      <li>18/07/11 - Yar - Added ability of creating OpenGL ES 2.0 profile context
-      <li>03/12/10 - Yar - Fixed window tracking (thanks to Gabriel Corneanu)
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens. Improved context creation.
-      <li>18/06/10 - Yar - Changed context sharing method for similarity to GLX
-      <li>06/06/10 - Yar - Moved forward context creation to DoCreateContext
-                           make outputDevice HWND type
-      <li>19/05/10 - Yar - Added choice between hardware and software acceleration
-      <li>06/05/10 - Yar - Added vLastVendor clearing when multithreading is enabled
-      <li>06/04/10 - Yar - Added DoGetHandles to TVKWin32Context (thanks Rustam Asmandiarov aka Predator)
-      <li>28/03/10 - Yar - Added 3.3 forward context creation and eliminate memory leaks when multithreading
-      <li>06/03/10 - Yar - Added forward context creation in TVKWin32Context.DoActivate
-      <li>20/02/10 - DanB - Allow double-buffered memory viewers, if you want single
-                            buffered, or no swapping, then change buffer options instead.
-                            Some changes from Cardinal to the appropriate HDC /HGLRC type.
-      <li>15/01/10 - DaStr - Bugfixed TVKWin32Context.ChooseWGLFormat()
-                             (BugtrackerID = 2933081) (thanks YarUndeoaker)
-      <li>08/01/10 - DaStr - Added more AntiAliasing modes (thanks YarUndeoaker)
-      <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)
-      <li>30/08/09 - DanB - vIgnoreContextActivationFailures renamed to
-                            vContextActivationFailureOccurred + check removed.
-      <li>06/11/07 - mrqzzz - Ignore ContextActivation failure
-                   if VKS.Context.vIgnoreContextActivationFailures=true
-      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-      <li>11/09/06 - NC - Added support for Multiple-Render-Target
-      <li>03/10/04 - NC - Added float texture support
-      <li>03/07/02 - EG - ChooseWGLFormat Kyro fix (Patrick Chevalley)
-      <li>13/03/02 - EG - aaDefault now prefers non-AA when possible
-      <li>03/03/02 - EG - Fixed aaNone mode (AA specifically off)
-      <li>01/03/02 - EG - Fixed CurrentPixelFormatIsHardwareAccelerated
-      <li>22/02/02 - EG - Unified ChooseWGLFormat for visual & non-visual
-      <li>21/02/02 - EG - AntiAliasing support *experimental* (Chris N. Strahm)
-      <li>05/02/02 - EG - Fixed UnTrackWindow
-      <li>03/02/02 - EG - Added experimental Hook-based window tracking
-      <li>29/01/02 - EG - Improved recovery for ICDs without pbuffer  support
-      <li>21/01/02 - EG - More graceful recovery for ICDs without pbuffer support
-      <li>07/01/02 - EG - DoCreateMemoryContext now retrieved topDC when needed
-      <li>15/12/01 - EG - Added support for AlphaBits
-      <li>30/11/01 - EG - Hardware acceleration support now detected
-      <li>20/11/01 - EG - New temp HWnd code for memory contexts (improved compat.)
-      <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
-      <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
-      <li>24/08/01 - EG - Fixed PropagateSharedContext
-      <li>12/08/01 - EG - Handles management completed
-      <li>22/07/01 - EG - Creation (glcontext.omm)
-   </ul></font>
+{
+   Win32 specific Context. 
 }
+
 unit VKS.Win32Context;
 
 interface
@@ -84,7 +35,7 @@ type
 
   // TVKWin32Context
   //
-  {: A context driver for standard Windows OpenGL (via MS OpenGL). }
+  { A context driver for standard Windows OpenGL (via MS OpenGL). }
   TVKWin32Context = class(TVKContext)
   protected
     { Protected Declarations }
@@ -119,7 +70,7 @@ type
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-    {: DoGetHandles must be implemented in child classes,
+    { DoGetHandles must be implemented in child classes,
        and return the display + window }
   public
     { Public Declarations }
@@ -630,7 +581,7 @@ begin
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
-      {$IFDEF GLS_LOGGING}
+      {$IFDEF VKS_LOGGING}
         GLSLogger.LogWarning(glsFailedToShare)
       {$ENDIF}
       else
@@ -1181,7 +1132,7 @@ begin
 
                 localRC := FGL.WCreateContextAttribsARB(localDC, 0, @FiAttribs[0]);
                 if localRC = 0 then
-               {$IFDEF GLS_LOGGING}
+               {$IFDEF VKS_LOGGING}
                 begin
                   if GLStates.ForwardContext then
                     GLSLogger.LogErrorFmt(cForwardContextFailed,

@@ -1,15 +1,6 @@
 ﻿//
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSceneFormDesign<p>
-
-   <b>History : </b><font size=-1><ul>
-    <li>03/04/11 - Yar - Added three project wizard for Delphi
-    <li>05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
-    <li>23/08/10 - Yar - Creation
- </ul></font>
-}
-
 unit VKS.SceneFormDesign;
 
 interface
@@ -1190,7 +1181,7 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-{: This line inserted automatically by IDE
+{ This line inserted automatically by IDE
     '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;

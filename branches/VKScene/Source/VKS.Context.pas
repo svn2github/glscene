@@ -1,82 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Context<p>
-
-   Prototypes and base implementation of TVKContext.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>01/06/11 - Yar - Now number of rendering contexts is unlimited (by Gabriel Corneanu)  
-      <li>13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
-      <li>24/03/11 - Yar - Added preparation arrangement to TVKContext, TVKContextHandle 
-      <li>24/11/10 - Yar - Added TVKBooleanOcclusionQueryHandle
-      <li>14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
-      <li>16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-                           Added to TVKContext property PipelineTransformation
-                           Added feature of debug context creating
-                           Improved TVKContextHandle destroying
-                           Added TVKARBVertexProgramHandle, TVKARBFragmentProgramHandle, TVKARBGeometryProgramHandle
-      <li>02/08/10 - DaStr - Bugfixed TVKContextHandle.DestroyHandle()
-      <li>18/07/10 - Yar - Added TVKTessControlShaderHandle, TVKTessEvaluationShaderHandle, TVKSamplerHandle
-      <li>17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TVKContextHandle
-      <li>02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
-      <li>02/05/10 - Yar - Handles are universal for contexts.
-                           You can use one handle in different contexts, regardless of the compatibility of contexts.
-      <li>01/05/10 - Yar - Added buffer objects state cashing
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>18/03/10 - Yar - Added MapBufferRange, Flush to TVKBufferObjectHandle
-      <li>06/03/10 - Yar - Added to TVKProgramHandle BindFragDataLocation, GetUniformOffset, GetUniformBlockIndex
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/02/10 - DanB - Added TVKContext.GLStates, to be used to cache
-                            global per-context state. Removed BindedGLSLProgram
-                            since it should be per-context state.
-      <li>21/02/10 - Yar - Added function BindedGLSLProgram
-      <li>08/01/10 - DaStr - Added TVKFramebufferHandle.AttachLayer()
-                             Added more AntiAliasing modes (thanks YarUndeoaker)
-      <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)
-      <li>30/08/09 - DanB - renamed vIgnoreContextActivationFailures to vContextActivationFailureOccurred
-                            + re-enabled it's original behaviour (fixes major memory leak).
-      <li>30/08/09 - DanB - Added TVKTransformFeedbackBufferHandle, TVKTextureBufferHandle,
-                            TVKUniformBufferHandle, TVKVertexArrayHandle,
-                            TVKFramebufferHandle, TVKRenderbufferHandle
-      <li>24/08/09 - DaStr - Added TVKProgramHandle.GetVaryingLocation(),
-                              AddActiveVarying() (thanks YarUnderoaker)
-      <li>21/08/09 - DanB - TVKQueryHandle.GetTarget no longer a class function,
-                            for earlier Delphi compatibility
-      <li>13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
-                            use OpenGL 1.5+ queries, instead of GL_NV_occlusion_query extension
-      <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
-      <li>16/03/08 - DanB - moved MRT_BUFFERS into unit from opengl1x.pas rewrite,
-                            and added some experimental geometry shader code
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
-                                                      (BugTracker ID = 1914782)
-      <li>06/11/07 - LC - moved vIgnoreContextActivationFailures to "Interface" section
-      <li>24/06/06 - LC - Refactored TVKVBOHandle, introduced TVKBufferObjectHandle
-                          and TVKPackPBOHandle/TVKUnpackPBOHandle
-      <li>15/02/07 - DaStr - Added more parameters to TVKProgramHandle
-                             TVKProgramHandle.Name is now a property
-      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-      <li>15/09/06 - NC - TVKContextHandle.handle as Integer -> Cardinal
-      <li>11/09/06 - NC - Added TVKProgramHandle.Name, TVKProgramHandle.Uniform2f,
-                          SetUniform*, support for Multiple-Render-Target
-      <li>25/04/04 - EG - Added TVKOcclusionQueryHandle.Active
-      <li>25/09/03 - EG - Added TVKVBOHandle
-      <li>20/09/03 - EG - Added TVKOcclusionQueryHandle
-      <li>30/01/02 - EG - Added TVKVirtualHandle
-      <li>29/01/02 - EG - Improved recovery for context creation failures
-      <li>28/01/02 - EG - Activation failures always ignored
-      <li>21/01/02 - EG - Activation failures now ignored if application is
-                          terminating (workaround for some weird ICDs)
-      <li>15/12/01 - EG - Added support for AlphaBits
-      <li>30/11/01 - EG - Added TVKContextAcceleration
-      <li>06/09/01 - EG - Win32Context moved to new GLWin32Context unit
-      <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
-      <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
-      <li>24/08/01 - EG - Fixed PropagateSharedContext
-      <li>12/08/01 - EG - Handles management completed
-      <li>22/07/01 - EG - Creation (glcontext.omm)
-   </ul></font>
+{
+   Prototypes and base implementation of TVKContext. 
+      
 }
 unit VKS.Context;
 
@@ -94,7 +21,7 @@ uses
   FMX.Controls,
   FMX.Types,
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
   VKS.Generics,
 {$ENDIF}
   VKS.OpenGLTokens,
@@ -132,10 +59,10 @@ type
     Event: TFinishTaskEvent;
   end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
-  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
+{$IFDEF VKS_SERVICE_CONTEXT}
+  TServiceContextTaskList = {$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList < TServiceContextTask > ;
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF VKS_SERVICE_CONTEXT}
 
   TVKContext = class;
   TVKContextManager = class;
@@ -167,13 +94,13 @@ type
 
   // TVKContext
   //
-  {: Wrapper around an OpenGL rendering context.<p>
+  { Wrapper around an OpenGL rendering context. 
      The aim of this class is to offer platform-independant
      initialization, activation and management of OpenGL
      rendering context. The class also offers notifications
-     event and error/problems detection.<br>
+     event and error/problems detection. 
      This is a virtual abstract a class, and platform-specific
-     subclasses must be used.<br>
+     subclasses must be used. 
      All rendering context share the same lists. }
   TVKContext = class
   private
@@ -204,13 +131,13 @@ type
     procedure SetLayer(const Value: TVKContextLayer);
   protected
     { Protected Declarations }
-    FGL: TVKExtensionsAndEntryPoints;
+    FGL: TGLExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TVKStateCache;
     FTransformation: TVKTransformation;
     FAcceleration: TVKContextAcceleration;
     FLayer: TVKContextLayer;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     FSharedContexts: TList;
 {$ELSE}
     FSharedContexts: TThreadList;
@@ -233,7 +160,7 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    {: An application-side cache of global per-context OpenGL states
+    { An application-side cache of global per-context OpenGL states
        and parameters }
     property GLStates: TVKStateCache read FGLStates;
 
@@ -242,82 +169,82 @@ type
     //: Context manager reference
     property Manager: TVKContextManager read FManager;
 
-    {: Color bits for the rendering context }
+    { Color bits for the rendering context }
     property ColorBits: Integer read FColorBits write SetColorBits;
-    {: Alpha bits for the rendering context }
+    { Alpha bits for the rendering context }
     property AlphaBits: Integer read FAlphaBits write SetAlphaBits;
-    {: Depth bits for the rendering context }
+    { Depth bits for the rendering context }
     property DepthBits: Integer read FDepthBits write SetDepthBits;
-    {: Stencil bits for the rendering context }
+    { Stencil bits for the rendering context }
     property StencilBits: Integer read FStencilBits write SetStencilBits;
-    {: Accumulation buffer bits for the rendering context }
+    { Accumulation buffer bits for the rendering context }
     property AccumBits: Integer read FAccumBits write SetAccumBits;
-    {: Auxiliary buffers bits for the rendering context }
+    { Auxiliary buffers bits for the rendering context }
     property AuxBuffers: Integer read FAuxBuffers write SetAuxBuffers;
-    {: AntiAliasing option.<p>
+    { AntiAliasing option. 
        Ignored if not hardware supported, currently based on ARB_multisample. }
     property AntiAliasing: TVKAntiAliasing read FAntiAliasing write
       SetAntiAliasing;
-    {: Specifies the layer plane that the rendering context is bound to. }
+    { Specifies the layer plane that the rendering context is bound to. }
     property Layer: TVKContextLayer read FLayer write SetLayer;
-    {: Rendering context options. }
+    { Rendering context options. }
     property Options: TVKRCOptions read FOptions write SetOptions;
-    {: Allows reading and defining the activity for the context.<p>
+    { Allows reading and defining the activity for the context. 
        The methods of this property are just wrappers around calls
        to Activate and Deactivate. }
     property Active: Boolean read GetActive write SetActive;
-    {: Indicates if the context is hardware-accelerated. }
+    { Indicates if the context is hardware-accelerated. }
     property Acceleration: TVKContextAcceleration read FAcceleration write SetAcceleration;
-    {: Triggered whenever the context is destroyed.<p>
+    { Triggered whenever the context is destroyed. 
        This events happens *before* the context has been
        actually destroyed, OpenGL resource cleanup can
        still occur here. }
     property OnDestroyContext: TNotifyEvent read FOnDestroyContext write
       FOnDestroyContext;
 
-    {: Creates the context.<p>
+    { Creates the context. 
        This method must be invoked before the context can be used. }
     procedure CreateContext(ADeviceHandle: THandle); overload; //VCL -> HDC
-    {: Creates an in-memory context.<p>
+    { Creates an in-memory context. 
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
        contexts). }
     procedure CreateMemoryContext(OutputDevice: THandle; Width, Height: //HWND
       Integer; BufferCount: integer = 1);
-    {: Setup display list sharing between two rendering contexts.<p>
+    { Setup display list sharing between two rendering contexts. 
        Both contexts must have the same pixel format. }
     procedure ShareLists(AContext: TVKContext);
-    {: Destroy the context.<p>
-       Will fail if no context has been created.<br>
+    { Destroy the context. 
+       Will fail if no context has been created. 
        The method will first invoke the OnDestroyContext
        event, then attempts to deactivate the context
        (if it is active) before destroying it. }
     procedure DestroyContext;
-    {: Activates the context.<p>
+    { Activates the context. 
        A context can be activated multiple times (and must be
        deactivated the same number of times), but this function
        will fail if another context is already active. }
     procedure Activate;
-    {: Deactivates the context.<p>
+    { Deactivates the context. 
        Will fail if the context is not active or another
        context has been activated. }
     procedure Deactivate;
-    {: Call OnPrepare for all handles.<p> }
+    { Call OnPrepare for all handles.  }
     procedure PrepareHandlesData;
-    {: Returns true if the context is valid.<p>
+    { Returns true if the context is valid. 
        A context is valid from the time it has been successfully
        created to the time of its destruction. }
     function IsValid: Boolean; virtual; abstract;
-    {: Request to swap front and back buffers if they were defined. }
+    { Request to swap front and back buffers if they were defined. }
     procedure SwapBuffers; virtual; abstract;
 
-    {: Returns the first compatible context that isn't self in the shares. }
+    { Returns the first compatible context that isn't self in the shares. }
     function FindCompatibleContext: TVKContext;
     procedure DestroyAllHandles;
 
     function RenderOutputDevice: Pointer; virtual; abstract;
-    {: Access to OpenGL command and extension. }
-    property GL: TVKExtensionsAndEntryPoints read FGL;
+    { Access to OpenGL command and extension. }
+    property GL: TGLExtensionsAndEntryPoints read FGL;
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
@@ -326,9 +253,9 @@ type
 
   // TVKScreenControlingContext
   //
-  {: A TVKContext with screen control property and methods.<p>
+  { A TVKContext with screen control property and methods. 
      This variety of contexts is for drivers that access windows and OpenGL
-     through an intermediate opaque cross-platform API.<p>
+     through an intermediate opaque cross-platform API. 
      TVKSceneViewer won't use them, TVKMemoryViewer may be able to use them,
      but most of the time they will be accessed through a specific viewer
      class/subclass. }
@@ -351,7 +278,7 @@ type
   PGLRCHandle = ^TVKRCHandle;
   TVKRCHandle = record
     FRenderingContext: TVKContext;
-    FHandle: TVKuint;
+    FHandle: TGLuint;
     FChanged: Boolean;
   end;
 
@@ -359,7 +286,7 @@ type
 
   // TVKContextHandle
   //
-  {: Wrapper around an OpenGL context handle.<p>
+  { Wrapper around an OpenGL context handle. 
      This wrapper also takes care of context registrations and data releases
      related to context releases an cleanups. This is an abstract class,
      use the TVKListHandle and TVKTextureHandle subclasses. }
@@ -369,10 +296,10 @@ type
     FHandles: TList;
     FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
-    function GetHandle: TVKuint;
+    function GetHandle: TGLuint;
     function GetContext: TVKContext;
     function SearchRC(AContext: TVKContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
+    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF VKS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
     { Protected Declarations }
@@ -384,7 +311,7 @@ type
     class function IsValid(const ID: GLuint): Boolean; virtual;
 
     function DoAllocateHandle: Cardinal; virtual; abstract;
-    procedure DoDestroyHandle(var AHandle: TVKuint); virtual; abstract;
+    procedure DoDestroyHandle(var AHandle: TGLuint); virtual; abstract;
 
   public
     { Public Declarations }
@@ -392,18 +319,18 @@ type
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
 
-    {: Return OpenGL identifier in current context. }
-    property Handle: TVKuint read GetHandle;
-    {: Return current rendering context if handle is allocated in it
+    { Return OpenGL identifier in current context. }
+    property Handle: TGLuint read GetHandle;
+    { Return current rendering context if handle is allocated in it
        or first context where handle is allocated. }
     property RenderingContext: TVKContext read GetContext;
-    {: Return True is data need update in current context. }
+    { Return True is data need update in current context. }
     function IsDataNeedUpdate: Boolean;
-    {: Return True if data updated in all contexts. }
+    { Return True if data updated in all contexts. }
     function IsDataComplitelyUpdated: Boolean;
-    {: Notify the data was updated in current context. }
+    { Notify the data was updated in current context. }
     procedure NotifyDataUpdated;
-    {: Notify the data was changed through all context. }
+    { Notify the data was changed through all context. }
     procedure NotifyChangesOfData;
 
     //: Checks if required extensions / OpenGL version are met
@@ -411,7 +338,7 @@ type
     function IsAllocatedForContext(AContext: TVKContext = nil): Boolean;
     function IsShared: Boolean;
 
-    function  AllocateHandle: TVKuint;
+    function  AllocateHandle: TGLuint;
     procedure DestroyHandle;
 
     property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
@@ -419,11 +346,11 @@ type
 
   TVKVirtualHandle = class;
   TVKVirtualHandleEvent = procedure(Sender: TVKVirtualHandle; var handle:
-    TVKuint) of object;
+    TGLuint) of object;
 
   // TVKVirtualHandle
   //
-  {: A context handle with event-based handle allocation and destruction. }
+  { A context handle with event-based handle allocation and destruction. }
   TVKVirtualHandle = class(TVKContextHandle)
   private
     { Private Declarations }
@@ -432,7 +359,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function Transferable: Boolean; override;
   public
     { Public Declarations }
@@ -445,7 +372,7 @@ type
 
   // TVKVirtualHandleTransf
   //
-  {: Transferable virtual handle. }
+  { Transferable virtual handle. }
   TVKVirtualHandleTransf = class(TVKVirtualHandle)
   protected
     class function Transferable: Boolean; override;
@@ -453,7 +380,7 @@ type
 
   // TVKListHandle
   //
-  {: Manages a handle to a display list. }
+  { Manages a handle to a display list. }
   TVKListHandle = class(TVKContextHandle)
   private
     { Private Declarations }
@@ -461,7 +388,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
@@ -472,7 +399,7 @@ type
 
   // TVKTextureHandle
   //
-  {: Manages a handle to a texture. }
+  { Manages a handle to a texture. }
   TVKTextureHandle = class(TVKContextHandle)
   private
     FTarget: TVKTextureTarget;
@@ -480,7 +407,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
@@ -489,12 +416,12 @@ type
 
   // TVKSamplerHandle
   //
-  {: Manages a handle to a sampler. }
+  { Manages a handle to a sampler. }
   TVKSamplerHandle = class(TVKContextHandle)
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
@@ -503,7 +430,7 @@ type
 
   // TVKQueryHandle
   //
-  {: Manages a handle to a query.<br>
+  { Manages a handle to a query. 
      Do not use this class directly, use one of its subclasses instead. }
   TVKQueryHandle = class(TVKContextHandle)
   private
@@ -513,8 +440,8 @@ type
     { Protected Declarations }
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
-    function GetTarget: TVKuint; virtual; abstract;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
+    function GetTarget: TGLuint; virtual; abstract;
     function GetQueryType: TQueryType; virtual; abstract;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
@@ -528,28 +455,28 @@ type
     // Number of bits used to store the query result. eg. 32/64 bit
     function CounterBits: integer;
     // Retrieve query result, may cause a stall if the result is not available yet
-    function QueryResultInt: TVKInt;
-    function QueryResultUInt: TVKUInt;
-    function QueryResultInt64: TVKint64EXT;
-    function QueryResultUInt64: TVKuint64EXT;
-    function QueryResultBool: TVKboolean;
+    function QueryResultInt: TGLInt;
+    function QueryResultUInt: TGLUInt;
+    function QueryResultInt64: TGLint64EXT;
+    function QueryResultUInt64: TGLuint64EXT;
+    function QueryResultBool: TGLboolean;
 
-    property Target: TVKuint read GetTarget;
+    property Target: TGLuint read GetTarget;
     property QueryType: TQueryType read GetQueryType;
 
-    {: True if within a Begin/EndQuery. }
+    { True if within a Begin/EndQuery. }
     property Active: Boolean read FActive;
   end;
 
   // TVKOcclusionQueryHandle
   //
-  {: Manages a handle to an occlusion query.<br>
-     Requires OpenGL 1.5+<br>
+  { Manages a handle to an occlusion query. 
+     Requires OpenGL 1.5+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TVKOcclusionQueryHandle = class(TVKQueryHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
     function GetQueryType: TQueryType; override;
   public
     class function IsSupported: Boolean; override;
@@ -560,7 +487,7 @@ type
 
   TVKBooleanOcclusionQueryHandle = class(TVKQueryHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
     function GetQueryType: TQueryType; override;
   public
     class function IsSupported: Boolean; override;
@@ -568,13 +495,13 @@ type
 
   // TVKTimerQueryHandle
   //
-  {: Manages a handle to a timer query.<br>
-     Requires GL_EXT_timer_query extension.<br>
+  { Manages a handle to a timer query. 
+     Requires GL_EXT_timer_query extension. 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TVKTimerQueryHandle = class(TVKQueryHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
     function GetQueryType: TQueryType; override;
   public
     class function IsSupported: Boolean; override;
@@ -586,13 +513,13 @@ type
 
   // TVKPrimitiveQueryHandle
   //
-  {: Manages a handle to a primitive query.<br>
-     Requires OpenGL 3.0+<br>
+  { Manages a handle to a primitive query. 
+     Requires OpenGL 3.0+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TVKPrimitiveQueryHandle = class(TVKQueryHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
     function GetQueryType: TQueryType; override;
   public
     class function IsSupported: Boolean; override;
@@ -603,9 +530,9 @@ type
 
   // TVKBufferObjectHandle
   //
-  {: Manages a handle to a Buffer Object.<br>
+  { Manages a handle to a Buffer Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user.  }
   TVKBufferObjectHandle = class(TVKContextHandle)
   private
     { Private Declarations }
@@ -613,82 +540,82 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
-    function GetTarget: TVKuint; virtual; abstract;
+    function GetTarget: TGLuint; virtual; abstract;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     { Public Declarations }
-    {: Creates the buffer object buffer and initializes it. }
-    constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: TVKuint);
+    { Creates the buffer object buffer and initializes it. }
+    constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: TGLuint);
 
     procedure Bind; virtual; abstract;
-    {: Note that it is not necessary to UnBind before Binding another buffer. }
+    { Note that it is not necessary to UnBind before Binding another buffer. }
     procedure UnBind; virtual; abstract;
 
-    {: Bind a buffer object to an indexed target, used by transform feedback
+    { Bind a buffer object to an indexed target, used by transform feedback
        buffer objects and uniform buffer objects. (OpenGL 3.0+) }
-    procedure BindRange(index: TVKuint; offset: TVKintptr; size: TVKsizeiptr);
+    procedure BindRange(index: TGLuint; offset: TGLintptr; size: TGLsizeiptr);
       virtual;
-    {: Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
-    procedure BindBase(index: TVKuint); virtual;
-    procedure UnBindBase(index: TVKuint); virtual;
+    { Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
+    procedure BindBase(index: TGLuint); virtual;
+    procedure UnBindBase(index: TGLuint); virtual;
 
-    {: Specifies buffer content.<p>
+    { Specifies buffer content. 
        Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
        change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
        once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
-       that is re-specified very often.<p>
+       that is re-specified very often. 
        Valid only if the buffer has been bound. }
-    procedure BufferData(p: Pointer; size: Integer; bufferUsage: TVKuint);
+    procedure BufferData(p: Pointer; size: Integer; bufferUsage: TGLuint);
     //: Invokes Bind then BufferData
-    procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: TVKuint);
-    {: Updates part of an already existing buffer.<p>
+    procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: TGLuint);
+    { Updates part of an already existing buffer. 
        offset and size indicate which part of the data in the buffer is
        to bo modified and p where the data should be taken from. }
     procedure BufferSubData(offset, size: Integer; p: Pointer);
-    {: Map buffer content to memory.<p>
+    { Map buffer content to memory. 
        Values for access are GL_READ_ONLY_ARB, GL_WRITE_ONLY_ARB and
-       GL_READ_WRITE_ARB.<p>
+       GL_READ_WRITE_ARB. 
        Valid only if the buffer has been bound, must be followed by
        an UnmapBuffer, only one buffer may be mapped at a time. }
-    function MapBuffer(access: TVKuint): Pointer;
-    function MapBufferRange(offset: TVKint; len: TVKsizei; access: TVKbitfield):
+    function MapBuffer(access: TGLuint): Pointer;
+    function MapBufferRange(offset: TGLint; len: TGLsizei; access: TGLbitfield):
       Pointer;
-    procedure Flush(offset: TVKint; len: TVKsizei);
-    {: Unmap buffer content from memory.<p>
+    procedure Flush(offset: TGLint; len: TGLsizei);
+    { Unmap buffer content from memory. 
        Must follow a MapBuffer, and happen before the buffer is unbound. }
     function UnmapBuffer: Boolean;
 
     class function IsSupported: Boolean; override;
 
-    property Target: TVKuint read GetTarget;
+    property Target: TGLuint read GetTarget;
     property BufferSize: Integer read FSize;
   end;
 
   // TVKVBOHandle
   //
-  {: Manages a handle to an Vertex Buffer Object.<br>
+  { Manages a handle to an Vertex Buffer Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user. 
      Do not use this class directly, use one of its subclasses instead. }
   TVKVBOHandle = class(TVKBufferObjectHandle)
   private
     { Private Declarations }
 
-    function GetVBOTarget: TVKuint;
+    function GetVBOTarget: TGLuint;
   public
 
-    property VBOTarget: TVKuint read GetVBOTarget;
+    property VBOTarget: TGLuint read GetVBOTarget;
   end;
 
   // TVKVBOArrayBufferHandle
   //
-  {: Manages a handle to VBO Array Buffer.<p>
+  { Manages a handle to VBO Array Buffer. 
      Typically used to store vertices, normals, texcoords, etc. }
   TVKVBOArrayBufferHandle = class(TVKVBOHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
@@ -696,11 +623,11 @@ type
 
   // TVKVBOElementArrayHandle
   //
-  {: Manages a handle to VBO Element Array Buffer.<p>
+  { Manages a handle to VBO Element Array Buffer. 
      Typically used to store vertex indices. }
   TVKVBOElementArrayHandle = class(TVKVBOHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
@@ -708,12 +635,12 @@ type
 
   // TVKPackPBOHandle
   //
-  {: Manages a handle to PBO Pixel Pack Buffer.<p>
+  { Manages a handle to PBO Pixel Pack Buffer. 
      When bound, commands such as ReadPixels write
      their data into a buffer object. }
   TVKPackPBOHandle = class(TVKBufferObjectHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
@@ -722,12 +649,12 @@ type
 
   // TVKUnpackPBOHandle
   //
-  {: Manages a handle to PBO Pixel Unpack Buffer.<p>
+  { Manages a handle to PBO Pixel Unpack Buffer. 
      When bound, commands such as DrawPixels read
      their data from a buffer object. }
   TVKUnpackPBOHandle = class(TVKBufferObjectHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
@@ -736,34 +663,34 @@ type
 
   // TVKTransformFeedbackBufferHandle
   //
-  {: Manages a handle to a Transform Feedback Buffer Object.<p>
+  { Manages a handle to a Transform Feedback Buffer Object. 
      Transform feedback buffers can be used to capture vertex data from the
      vertex or geometry shader stage to perform further processing without
      going on to the fragment shader stage. }
   TVKTransformFeedbackBufferHandle = class(TVKBufferObjectHandle)
-    //    FTransformFeedbackBufferBuffer: array[0..15] of TVKuint; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferStart: array[0..15] of TVKuint64; // (0, 0, 0, ...)
-    //    FTransformFeedbackBufferSize: array[0..15] of TVKuint64; // (0, 0, 0, ...)
+    //    FTransformFeedbackBufferBuffer: array[0..15] of TGLuint; // (0, 0, 0, ...)
+    //    FTransformFeedbackBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    //    FTransformFeedbackBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
-    procedure BeginTransformFeedback(primitiveMode: TVKenum);
+    procedure BeginTransformFeedback(primitiveMode: TGLenum);
     procedure EndTransformFeedback();
-    procedure BindRange(index: TVKuint; offset: TVKintptr; size: TVKsizeiptr); override;
-    procedure BindBase(index: TVKuint); override;
-    procedure UnBindBase(index: TVKuint); override;
+    procedure BindRange(index: TGLuint; offset: TGLintptr; size: TGLsizeiptr); override;
+    procedure BindBase(index: TGLuint); override;
+    procedure UnBindBase(index: TGLuint); override;
 
     class function IsSupported: Boolean; override;
   end;
 
   // TVKTextureBufferHandle
   //
-  {: Manages a handle to a Buffer Texture. (TBO) }
+  { Manages a handle to a Buffer Texture. (TBO) }
   TVKTextureBufferHandle = class(TVKBufferObjectHandle)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
@@ -772,34 +699,34 @@ type
 
   // TVKUniformBufferHandle
   //
-  {: Manages a handle to a Uniform Buffer Object (UBO).
+  { Manages a handle to a Uniform Buffer Object (UBO).
      Uniform buffer objects store "uniform blocks"; groups of uniforms
      that can be passed as a group into a GLSL program. }
   TVKUniformBufferHandle = class(TVKBufferObjectHandle)
-    //    FUniformBufferBuffer: array[0..15] of TVKuint; // (0, 0, 0, ...)
-    //    FUniformBufferStart: array[0..15] of TVKuint64; // (0, 0, 0, ...)
-    //    FUniformBufferSize: array[0..15] of TVKuint64; // (0, 0, 0, ...)
+    //    FUniformBufferBuffer: array[0..15] of TGLuint; // (0, 0, 0, ...)
+    //    FUniformBufferStart: array[0..15] of TGLuint64; // (0, 0, 0, ...)
+    //    FUniformBufferSize: array[0..15] of TGLuint64; // (0, 0, 0, ...)
   protected
-    function GetTarget: TVKuint; override;
+    function GetTarget: TGLuint; override;
   public
     procedure Bind; override;
     procedure UnBind; override;
-    procedure BindRange(index: TVKuint; offset: TVKintptr; size: TVKsizeiptr); override;
-    procedure BindBase(index: TVKuint); override;
-    procedure UnBindBase(index: TVKuint); override;
+    procedure BindRange(index: TGLuint; offset: TGLintptr; size: TGLsizeiptr); override;
+    procedure BindBase(index: TGLuint); override;
+    procedure UnBindBase(index: TGLuint); override;
     class function IsSupported: Boolean; override;
   end;
 
   // TVKVertexArrayHandle
   //
-  {: Manages a handle to a Vertex Array Object (VAO).
+  { Manages a handle to a Vertex Array Object (VAO).
      Vertex array objects are used to rapidly switch between large sets
      of array state. }
   TVKVertexArrayHandle = class(TVKContextHandle)
   protected
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     procedure Bind;
@@ -817,7 +744,7 @@ type
 
   // TVKFramebufferHandle
   //
-  {: Manages a handle to a Framebuffer Object (FBO).
+  { Manages a handle to a Framebuffer Object (FBO).
      Framebuffer objects provide a way of drawing to rendering
      destinations other than the buffers provided to the GL by the
      window-system.  One or more "framebuffer-attachable images" can be attached
@@ -837,7 +764,7 @@ type
   protected
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     // Bind framebuffer for both drawing + reading
@@ -846,37 +773,37 @@ type
     procedure BindForDrawing;
     // Bind framebuffer for reading
     procedure BindForReading;
-    {: Note that it is not necessary to unbind before binding another framebuffer. }
+    { Note that it is not necessary to unbind before binding another framebuffer. }
     procedure UnBind;
     procedure UnBindForDrawing;
     procedure UnBindForReading;
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (attach to both READ + DRAW)
     // attachment = COLOR_ATTACHMENTi, DEPTH_ATTACHMENT, STENCIL_ATTACHMENT, DEPTH_STENCIL_ATTACHMENT
-    procedure Attach1DTexture(target: TVKenum; attachment: TVKenum; textarget:
-      TVKenum; texture: TVKuint; level: TVKint);
-    procedure Attach2DTexture(target: TVKenum; attachment: TVKenum; textarget:
-      TVKenum; texture: TVKuint; level: TVKint);
-    procedure Attach3DTexture(target: TVKenum; attachment: TVKenum; textarget:
-      TVKenum; texture: TVKuint; level: TVKint; layer: TVKint);
-    procedure AttachLayer(target: TVKenum; attachment: TVKenum; texture:
-      TVKuint; level: TVKint; layer: TVKint);
-    procedure AttachRenderBuffer(target: TVKenum; attachment: TVKenum;
-      renderbuffertarget: TVKenum; renderbuffer: TVKuint);
+    procedure Attach1DTexture(target: TGLenum; attachment: TGLenum; textarget:
+      TGLenum; texture: TGLuint; level: TGLint);
+    procedure Attach2DTexture(target: TGLenum; attachment: TGLenum; textarget:
+      TGLenum; texture: TGLuint; level: TGLint);
+    procedure Attach3DTexture(target: TGLenum; attachment: TGLenum; textarget:
+      TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
+    procedure AttachLayer(target: TGLenum; attachment: TGLenum; texture:
+      TGLuint; level: TGLint; layer: TGLint);
+    procedure AttachRenderBuffer(target: TGLenum; attachment: TGLenum;
+      renderbuffertarget: TGLenum; renderbuffer: TGLuint);
     // OpenGL 3.2+ only.
     // If texture is the name of a three-dimensional texture, cube map texture, one-or
     // two-dimensional array texture, or two-dimensional multisample array texture, the
     // texture level attached to the framebuffer attachment point is an array of images,
     // and the framebuffer attachment is considered layered.
-    procedure AttachTexture(target: TVKenum; attachment: TVKenum; texture:
-      TVKuint; level: TVKint);
+    procedure AttachTexture(target: TGLenum; attachment: TGLenum; texture:
+      TGLuint; level: TGLint);
     // OpenGL 3.2+ only
-    procedure AttachTextureLayer(target: TVKenum; attachment: TVKenum; texture:
-      TVKuint; level: TVKint; layer: TVKint);
+    procedure AttachTextureLayer(target: TGLenum; attachment: TGLenum; texture:
+      TGLuint; level: TGLint; layer: TGLint);
 
     // copy rect from bound read framebuffer to bound draw framebuffer
-    procedure Blit(srcX0: TVKint; srcY0: TVKint; srcX1: TVKint; srcY1: TVKint;
-      dstX0: TVKint; dstY0: TVKint; dstX1: TVKint; dstY1: TVKint;
-      mask: TVKbitfield; filter: TVKenum);
+    procedure Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
+      dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
+      mask: TGLbitfield; filter: TGLenum);
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (equivalent to GL_DRAW_FRAMEBUFFER)
     // If default framebuffer (0) is bound:
     // attachment = GL_FRONT_LEFT, GL_FRONT_RIGHT, GL_BACK_LEFT, or GL_BACK_RIGHT, GL_DEPTH, GL_STENCIL
@@ -885,15 +812,15 @@ type
     // param = GL_FRAMEBUFFER_ATTACHMENT_(OBJECT_TYPE, OBJECT_NAME,
     //       RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
     //       COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
-    function GetAttachmentParameter(target: TVKenum; attachment: TVKenum; pname:
-      TVKenum): TVKint;
+    function GetAttachmentParameter(target: TGLenum; attachment: TGLenum; pname:
+      TGLenum): TGLint;
     // Returns the type of object bound to attachment point:
     // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER
-    function GetAttachmentObjectType(target: TVKenum; attachment: TVKenum):
-      TVKint;
+    function GetAttachmentObjectType(target: TGLenum; attachment: TGLenum):
+      TGLint;
     // Returns the name (ID) of the texture or renderbuffer attached to attachment point
-    function GetAttachmentObjectName(target: TVKenum; attachment: TVKenum):
-      TVKint;
+    function GetAttachmentObjectName(target: TGLenum; attachment: TGLenum):
+      TGLint;
 
     function GetStatus: TVKFramebufferStatus;
     function GetStringStatus(out clarification: string): TVKFramebufferStatus;
@@ -903,21 +830,21 @@ type
 
   // TVKRenderbufferHandle
   //
-  {: Manages a handle to a Renderbuffer Object.
+  { Manages a handle to a Renderbuffer Object.
      A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
      rendering and it also provides a means to support rendering to GL logical
      buffer types which have no corresponding texture format (stencil, accum, etc). }
   TVKRenderbufferHandle = class(TVKContextHandle)
   protected
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
     procedure Bind;
     procedure UnBind;
-    procedure SetStorage(internalformat: TVKenum; width, height: TVKsizei);
-    procedure SetStorageMultisample(internalformat: TVKenum; samples: TVKsizei;
-      width, height: TVKsizei);
+    procedure SetStorage(internalformat: TGLenum; width, height: TGLsizei);
+    procedure SetStorageMultisample(internalformat: TGLenum; samples: TGLsizei;
+      width, height: TGLsizei);
     class function IsSupported: Boolean; override;
   end;
 
@@ -929,9 +856,9 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
-    class function GetTarget: TVKenum; virtual; abstract;
+    class function GetTarget: TGLenum; virtual; abstract;
   public
     { Public Declarations }
     procedure LoadARBProgram(AText: string);
@@ -945,7 +872,7 @@ type
   TVKARBVertexProgramHandle = class(TVKARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TVKenum; override;
+    class function GetTarget: TGLenum; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -954,7 +881,7 @@ type
   TVKARBFragmentProgramHandle = class(TVKARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TVKenum; override;
+    class function GetTarget: TGLenum; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -963,7 +890,7 @@ type
   TVKARBGeometryProgramHandle = class(TVKARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TVKenum; override;
+    class function GetTarget: TGLenum; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -971,7 +898,7 @@ type
 
   // TVKSLHandle
   //
-  {: Base class for GLSL handles (programs and shaders).<p>
+  { Base class for GLSL handles (programs and shaders). 
      Do not use this class directly, use one of its subclasses instead. }
   TVKSLHandle = class(TVKContextHandle)
   private
@@ -979,7 +906,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure DoDestroyHandle(var AHandle: TVKuint); override;
+    procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
   public
     { Public Declarations }
@@ -989,9 +916,9 @@ type
 
   // TVKShaderHandle
   //
-  {: Manages a handle to a Shader Object.<br>
+  { Manages a handle to a Shader Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user. 
      Do not use this class directly, use one of its subclasses instead. }
   TVKShaderHandle = class(TVKSLHandle)
   private
@@ -1015,7 +942,7 @@ type
 
   // TVKVertexShaderHandle
   //
-  {: Manages a handle to a Vertex Shader Object. }
+  { Manages a handle to a Vertex Shader Object. }
   TVKVertexShaderHandle = class(TVKShaderHandle)
   public
     { Public Declarations }
@@ -1025,7 +952,7 @@ type
 
   // TVKGeometryShaderHandle
   //
-  {: Manages a handle to a Geometry Shader Object. }
+  { Manages a handle to a Geometry Shader Object. }
   TVKGeometryShaderHandle = class(TVKShaderHandle)
   public
     { Public Declarations }
@@ -1035,7 +962,7 @@ type
 
   // TVKFragmentShaderHandle
   //
-  {: Manages a handle to a Fragment Shader Object. }
+  { Manages a handle to a Fragment Shader Object. }
   TVKFragmentShaderHandle = class(TVKShaderHandle)
   public
     { Public Declarations }
@@ -1045,7 +972,7 @@ type
 
   // TVKTessControlShaderHandle
   //
-  {: Manages a handle to a Tessellation Control Shader Object. }
+  { Manages a handle to a Tessellation Control Shader Object. }
   TVKTessControlShaderHandle = class(TVKShaderHandle)
   public
     { Public Declarations }
@@ -1055,7 +982,7 @@ type
 
   // TVKTessEvaluationShaderHandle
   //
-  {: Manages a handle to a Tessellation Evaluation Shader Object. }
+  { Manages a handle to a Tessellation Evaluation Shader Object. }
   TVKTessEvaluationShaderHandle = class(TVKShaderHandle)
   public
     { Public Declarations }
@@ -1065,9 +992,9 @@ type
 
   // TVKProgramHandle
   //
-  {: Manages a GLSL Program Object.<br>
+  { Manages a GLSL Program Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user.  }
   TVKProgramHandle = class(TVKSLHandle)
   public
     class function IsValid(const ID: GLuint): Boolean; override;
@@ -1117,7 +1044,7 @@ type
 
     constructor Create; override;
 
-    {: Compile and attach a new shader.<p>
+    { Compile and attach a new shader. 
        Raises an EGLShader exception in case of failure. }
     procedure AddShader(shaderType: TVKShaderHandleClass; const shaderSource:
       string;
@@ -1154,7 +1081,7 @@ type
     procedure SetUniformf(const index: string; const val: TVector3f); overload;
     procedure SetUniformf(const index: string; const val: TVector4f); overload;
 
-    {: Shader parameters. }
+    { Shader parameters. }
     property Uniform1i[const index: string]: Integer read GetUniform1i write
     SetUniform1i;
     property Uniform2i[const index: string]: TVector2i read GetUniform2i write
@@ -1196,7 +1123,7 @@ type
 
   // TVKContextManager
   //
-  {: Stores and manages all the TVKContext objects.<p> }
+  { Stores and manages all the TVKContext objects.  }
   TVKContextManager = class
   private
     { Private Declarations }
@@ -1205,13 +1132,13 @@ type
     FNotifications: array of TVKContextNotification;
     FCreatedRCCount: Integer;
 
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     FHandles: TList;
 {$ELSE}
     FHandles: TThreadList;
-{$ENDIF GLS_MULTITHREAD}
+{$ENDIF VKS_MULTITHREAD}
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
     FThread: TThread;
     FServiceStarter: TEvent;
     FThreadTask: TServiceContextTaskList;
@@ -1228,8 +1155,8 @@ type
     procedure ContextCreatedBy(aContext: TVKContext);
     procedure DestroyingContextBy(aContext: TVKContext);
 
-{$IFDEF GLS_SERVICE_CONTEXT}
-    {: Create a special service and resource-keeper context. }
+{$IFDEF VKS_SERVICE_CONTEXT}
+    { Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
     procedure QueueTaskDepleted;
     property ServiceStarter: TEvent read FServiceStarter;
@@ -1240,30 +1167,30 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    {: Returns an appropriate, ready-to use context.<p>
+    { Returns an appropriate, ready-to use context. 
        The returned context should be freed by caller. }
     function CreateContext(AClass: TVKContextClass = nil): TVKContext;
 
-    {: Returns the number of TVKContext object.<p>
+    { Returns the number of TVKContext object. 
        This is *not* the number of OpenGL rendering contexts! }
     function ContextCount: Integer;
-    {: Registers a new object to notify when the last context is destroyed.<p>
+    { Registers a new object to notify when the last context is destroyed. 
        When the last rendering context is destroyed, the 'anEvent' will
-       be invoked with 'anObject' as parameter.<br>
+       be invoked with 'anObject' as parameter. 
        Note that the registration is kept until the notification is triggered
        or a RemoveNotification on 'anObject' is issued. }
     procedure LastContextDestroyNotification(anObject: TObject; anEvent:
       TNotifyEvent);
-    {: Unregisters an object from the notification lists.<p> }
+    { Unregisters an object from the notification lists.  }
     procedure RemoveNotification(anObject: TObject);
 
     //: Marks the context manager for termination
     procedure Terminate;
 
-    {: Request all contexts to destroy all their handles. }
+    { Request all contexts to destroy all their handles. }
     procedure DestroyAllHandles;
 
-    {: Notify all contexts about necessity of handles preparation. }
+    { Notify all contexts about necessity of handles preparation. }
     procedure NotifyPreparationNeed;
   end;
 
@@ -1273,17 +1200,17 @@ type
 
   EGLShader = class(EGLContext);
 
-  {: Drivers should register themselves via this function. }
+  { Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass: TVKContextClass);
-{: The TVKContext that is the currently active context, if any.<p>
+{ The TVKContext that is the currently active context, if any. 
    Returns nil if no context is active. }
 function CurrentGLContext: TVKContext;
 function SafeCurrentGLContext: TVKContext;
-function GL: TVKExtensionsAndEntryPoints;
+function GL: TGLExtensionsAndEntryPoints;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
 procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 {$ENDIF}
 
@@ -1318,7 +1245,7 @@ resourcestring
   cContextNotCreated = 'Context not created';
   cUnbalancedContexActivations = 'Unbalanced context activations';
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
 type
   // TServiceContextThread
   //
@@ -1339,18 +1266,18 @@ type
 
 var
   vContextClasses: TList;
-  GLwithoutContext: TVKExtensionsAndEntryPoints;
+  GLwithoutContext: TGLExtensionsAndEntryPoints;
   vServiceWindow: TForm;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
   OldInitProc: Pointer;
 {$ENDIF}
 
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
 var
 {$ELSE}
 threadvar
 {$ENDIF}
-  vGL: TVKExtensionsAndEntryPoints;
+  vGL: TGLExtensionsAndEntryPoints;
   vCurrentGLContext: TVKContext;
   vMainThread: Boolean;
 
@@ -1367,14 +1294,14 @@ begin
   Result := CurrentGLContext;
   if not Assigned(Result) then
   begin
-   {$IFDEF GLS_LOGGING}
+   {$IFDEF VKS_LOGGING}
     GLSLogger.LogError(cNoActiveRC);
    {$ENDIF}
     Abort;
   end;
 end;
 
-function GL: TVKExtensionsAndEntryPoints;
+function GL: TGLExtensionsAndEntryPoints;
 begin
   Result := vGL;
 end;
@@ -1420,7 +1347,7 @@ end;
 constructor TVKContext.Create;
 begin
   inherited Create;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
   FLock := TCriticalSection.Create;
 {$ENDIF}
   FColorBits := 32;
@@ -1429,7 +1356,7 @@ begin
   FAuxBuffers := 0;
   FLayer := clMainPlane;
   FOptions := [];
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   FSharedContexts := TList.Create;
 {$ELSE}
   FSharedContexts := TThreadList.Create;
@@ -1437,7 +1364,7 @@ begin
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
   FGLStates := TVKStateCache.Create;
-  FGL := TVKExtensionsAndEntryPoints.Create;
+  FGL := TGLExtensionsAndEntryPoints.Create;
   FTransformation := TVKTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);
@@ -1457,7 +1384,7 @@ begin
   FXGL.Free;
   FTransformation.Free;
   FSharedContexts.Free;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
   FLock.Free;
 {$ENDIF}
   inherited Destroy;
@@ -1626,7 +1553,7 @@ var
 begin
   if vCurrentGLContext = Self then
   begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       LHandle := TVKContextHandle(Manager.FHandles[i]);
@@ -1659,7 +1586,7 @@ var
   otherContext: TVKContext;
   otherList: TList;
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   with FSharedContexts do
   begin
     for i := 1 to Count - 1 do
@@ -1709,7 +1636,7 @@ end;
 
 procedure TVKContext.ShareLists(AContext: TVKContext);
 begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   if FSharedContexts.IndexOf(AContext) < 0 then
   begin
     if DoShareLists(AContext) then
@@ -1744,7 +1671,7 @@ var
 begin
   Activate;
   try
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
       TVKContextHandle(Manager.FHandles[i]).ContextDestroying;
 {$ELSE}
@@ -1783,7 +1710,7 @@ begin
 
   Activate;
   try
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       contextHandle := TVKContextHandle(Manager.FHandles[i]);
@@ -1803,7 +1730,7 @@ begin
 {$ENDIF}
     Manager.DestroyingContextBy(Self);
 
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
     aList := FSharedContexts.LockList;
 {$ELSE}
     aList := FSharedContexts;
@@ -1815,7 +1742,7 @@ begin
     end;
     FSharedContexts.Clear;
     FSharedContexts.Add(Self);
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
     FSharedContexts.UnlockList;
 {$ENDIF}
     Active := False;
@@ -1833,7 +1760,7 @@ end;
 
 procedure TVKContext.Activate;
 begin
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
   FLock.Enter;
 {$ENDIF}
   if FActivationCount = 0 then
@@ -1873,7 +1800,7 @@ begin
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
 end;
@@ -1886,7 +1813,7 @@ var
   i: Integer;
 begin
   Result := nil;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   for i := 0 to FSharedContexts.Count - 1 do
     if TVKContext(FSharedContexts[i]) <> Self then
     begin
@@ -1974,7 +1901,7 @@ end;
 // AllocateHandle
 //
 
-function TVKContextHandle.AllocateHandle: TVKuint;
+function TVKContextHandle.AllocateHandle: TGLuint;
 var
   I: Integer;
   bSucces: Boolean;
@@ -2002,7 +1929,7 @@ begin
   bSucces := False;
   if Transferable then
   begin
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2022,7 +1949,7 @@ begin
           break;
         end;
       end;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
 {$ELSE}
     finally
       vCurrentGLContext.FSharedContexts.UnlockList;
@@ -2082,7 +2009,7 @@ begin
     FLastHandle := SearchRC(vCurrentGLContext);
 end;
 
-function TVKContextHandle.GetHandle: TVKuint;
+function TVKContextHandle.GetHandle: TGLuint;
 begin
 //  CheckCurrentRC;
 //inline doesn't always work... so optimize it here
@@ -2146,12 +2073,12 @@ begin
     bShared := False;
     if Transferable then
     begin
-    {$IFNDEF GLS_MULTITHREAD}
+    {$IFNDEF VKS_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
     {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
-    {$ENDIF GLS_MULTITHREAD}
+    {$ENDIF VKS_MULTITHREAD}
         for I := FHandles.Count-1 downto 1 do
         begin
           P := RCItem(I);
@@ -2163,11 +2090,11 @@ begin
               break;
             end;
         end;
-    {$IFDEF GLS_MULTITHREAD}
+    {$IFDEF VKS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnLockList;
       end;
-    {$ENDIF GLS_MULTITHREAD}
+    {$ENDIF VKS_MULTITHREAD}
     end;
 
     for I := FHandles.Count-1 downto 1 do
@@ -2250,7 +2177,7 @@ begin
     end
     else
     begin
-  {$IFNDEF GLS_MULTITHREAD}
+  {$IFNDEF VKS_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
   {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2262,7 +2189,7 @@ begin
             if (FHandle <> 0) then
               FChanged := False;
         end;
-  {$IFDEF GLS_MULTITHREAD}
+  {$IFDEF VKS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnlockList;
       end;
@@ -2299,7 +2226,7 @@ begin
   if not Transferable then
     exit;
   Result := True;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
   aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2313,7 +2240,7 @@ begin
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
   finally
     vCurrentGLContext.FSharedContexts.UnlockList;
   end;
@@ -2358,7 +2285,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKVirtualHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKVirtualHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -2400,7 +2327,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKListHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKListHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -2463,9 +2390,9 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKTextureHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKTextureHandle.DoDestroyHandle(var AHandle: TGLuint);
 var
-  a: TVKint;
+  a: TGLint;
   t: TVKTextureTarget;
 begin
   if not vContextActivationFailureOccurred then
@@ -2473,7 +2400,7 @@ begin
   begin
     // reset error status
     GetError;
-    {: Unbind identifier from all image selectors. }
+    { Unbind identifier from all image selectors. }
     if ARB_multitexture then
     begin
       with GetContext.GLStates do
@@ -2526,7 +2453,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKSamplerHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKSamplerHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -2590,7 +2517,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKQueryHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKQueryHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -2635,7 +2562,7 @@ end;
 // QueryResultInt
 //
 
-function TVKQueryHandle.QueryResultInt: TVKInt;
+function TVKQueryHandle.QueryResultInt: TGLInt;
 begin
   GL.GetQueryObjectiv(Handle, GL_QUERY_RESULT, @Result);
 end;
@@ -2643,7 +2570,7 @@ end;
 // QueryResultInt64
 //
 
-function TVKQueryHandle.QueryResultInt64: TVKint64EXT;
+function TVKQueryHandle.QueryResultInt64: TGLint64EXT;
 begin
   GL.GetQueryObjecti64v(Handle, GL_QUERY_RESULT, @Result);
 end;
@@ -2651,7 +2578,7 @@ end;
 // QueryResultUInt
 //
 
-function TVKQueryHandle.QueryResultUInt: TVKUInt;
+function TVKQueryHandle.QueryResultUInt: TGLuint;
 begin
   GL.GetQueryObjectuiv(Handle, GL_QUERY_RESULT, @Result);
 end;
@@ -2659,14 +2586,14 @@ end;
 // QueryResultUInt64
 //
 
-function TVKQueryHandle.QueryResultUInt64: TVKuint64EXT;
+function TVKQueryHandle.QueryResultUInt64: TGLuint64EXT;
 begin
   GL.GetQueryObjectui64v(Handle, GL_QUERY_RESULT, @Result);
 end;
 
-function TVKQueryHandle.QueryResultBool: TVKboolean;
+function TVKQueryHandle.QueryResultBool: TGLboolean;
 var
-  I: TVKUInt;
+  I: TGLuint;
 begin
   GL.GetQueryObjectuiv(Handle, GL_QUERY_RESULT, @I);
   Result := I > 0;
@@ -2695,7 +2622,7 @@ end;
 // GetTarget
 //
 
-function TVKOcclusionQueryHandle.GetTarget: TVKuint;
+function TVKOcclusionQueryHandle.GetTarget: TGLuint;
 begin
   Result := GL_SAMPLES_PASSED;
 end;
@@ -2731,7 +2658,7 @@ end;
 // GetTarget
 //
 
-function TVKBooleanOcclusionQueryHandle.GetTarget: TVKuint;
+function TVKBooleanOcclusionQueryHandle.GetTarget: TGLuint;
 begin
   Result := GL_ANY_SAMPLES_PASSED;
 end;
@@ -2756,7 +2683,7 @@ begin
   Result := qryTimeElapsed;
 end;
 
-function TVKTimerQueryHandle.GetTarget: TVKuint;
+function TVKTimerQueryHandle.GetTarget: TGLuint;
 begin
   Result := GL_TIME_ELAPSED;
 end;
@@ -2792,7 +2719,7 @@ end;
 // GetTarget
 //
 
-function TVKPrimitiveQueryHandle.GetTarget: TVKuint;
+function TVKPrimitiveQueryHandle.GetTarget: TGLuint;
 begin
   Result := GL_PRIMITIVES_GENERATED;
 end;
@@ -2821,7 +2748,7 @@ end;
 //
 
 constructor TVKBufferObjectHandle.CreateFromData(p: Pointer; size: Integer;
-  bufferUsage: TVKuint);
+  bufferUsage: TGLuint);
 begin
   Create;
   AllocateHandle;
@@ -2842,7 +2769,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKBufferObjectHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKBufferObjectHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -2876,8 +2803,8 @@ end;
 // BindRange
 //
 
-procedure TVKBufferObjectHandle.BindRange(index: TVKuint; offset: TVKintptr;
-  size: TVKsizeiptr);
+procedure TVKBufferObjectHandle.BindRange(index: TGLuint; offset: TGLintptr;
+  size: TGLsizeiptr);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2885,7 +2812,7 @@ end;
 // BindBase
 //
 
-procedure TVKBufferObjectHandle.BindBase(index: TVKuint);
+procedure TVKBufferObjectHandle.BindBase(index: TGLuint);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2893,7 +2820,7 @@ end;
 // UnBindBase
 //
 
-procedure TVKBufferObjectHandle.UnBindBase(index: TVKuint);
+procedure TVKBufferObjectHandle.UnBindBase(index: TGLuint);
 begin
   Assert(False, 'BindRange only XBO and UBO');
 end;
@@ -2902,7 +2829,7 @@ end;
 //
 
 procedure TVKBufferObjectHandle.BufferData(p: Pointer; size: Integer;
-  bufferUsage: TVKuint);
+  bufferUsage: TGLuint);
 begin
   FSize := size;
   GL.BufferData(Target, size, p, bufferUsage);
@@ -2912,7 +2839,7 @@ end;
 //
 
 procedure TVKBufferObjectHandle.BindBufferData(p: Pointer; size: Integer;
-  bufferUsage: TVKuint);
+  bufferUsage: TGLuint);
 begin
   Bind;
   FSize := size;
@@ -2932,7 +2859,7 @@ end;
 // MapBuffer
 //
 
-function TVKBufferObjectHandle.MapBuffer(access: TVKuint): Pointer;
+function TVKBufferObjectHandle.MapBuffer(access: TGLuint): Pointer;
 begin
   Result := GL.MapBuffer(Target, access);
 end;
@@ -2940,8 +2867,8 @@ end;
 // MapBufferRange
 //
 
-function TVKBufferObjectHandle.MapBufferRange(offset: TVKint; len: TVKsizei;
-  access: TVKbitfield): Pointer;
+function TVKBufferObjectHandle.MapBufferRange(offset: TGLint; len: TGLsizei;
+  access: TGLbitfield): Pointer;
 begin
   Result := GL.MapBufferRange(Target, offset, len, access);
 end;
@@ -2949,7 +2876,7 @@ end;
 // Flush
 //
 
-procedure TVKBufferObjectHandle.Flush(offset: TVKint; len: TVKsizei);
+procedure TVKBufferObjectHandle.Flush(offset: TGLint; len: TGLsizei);
 begin
   GL.FlushMappedBufferRange(Target, offset, len);
 end;
@@ -2969,7 +2896,7 @@ end;
 // GetVBOTarget
 //
 
-function TVKVBOHandle.GetVBOTarget: TVKuint;
+function TVKVBOHandle.GetVBOTarget: TGLuint;
 begin
   Result := Target;
 end;
@@ -2991,7 +2918,7 @@ end;
 // GetTarget
 //
 
-function TVKVBOArrayBufferHandle.GetTarget: TVKuint;
+function TVKVBOArrayBufferHandle.GetTarget: TGLuint;
 begin
   Result := GL_ARRAY_BUFFER;
 end;
@@ -3013,7 +2940,7 @@ end;
 // GetTarget
 //
 
-function TVKVBOElementArrayHandle.GetTarget: TVKuint;
+function TVKVBOElementArrayHandle.GetTarget: TGLuint;
 begin
   Result := GL_ELEMENT_ARRAY_BUFFER;
 end;
@@ -3035,7 +2962,7 @@ end;
 // GetTarget
 //
 
-function TVKPackPBOHandle.GetTarget: TVKuint;
+function TVKPackPBOHandle.GetTarget: TGLuint;
 begin
   Result := GL_PIXEL_PACK_BUFFER;
 end;
@@ -3065,7 +2992,7 @@ end;
 // GetTarget
 //
 
-function TVKUnpackPBOHandle.GetTarget: TVKuint;
+function TVKUnpackPBOHandle.GetTarget: TGLuint;
 begin
   Result := GL_PIXEL_UNPACK_BUFFER;
 end;
@@ -3095,7 +3022,7 @@ begin
   vCurrentGLContext.GLStates.TransformFeedbackBufferBinding := 0;
 end;
 
-function TVKTransformFeedbackBufferHandle.GetTarget: TVKuint;
+function TVKTransformFeedbackBufferHandle.GetTarget: TGLuint;
 begin
   Result := GL_TRANSFORM_FEEDBACK_BUFFER;
 end;
@@ -3104,7 +3031,7 @@ end;
 //
 
 procedure TVKTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode:
-  TVKenum);
+  TGLenum);
 begin
   GL.BeginTransformFeedback(primitiveMode);
 end;
@@ -3117,20 +3044,20 @@ begin
   GL.EndTransformFeedback();
 end;
 
-procedure TVKTransformFeedbackBufferHandle.BindRange(index: TVKuint; offset: TVKintptr;
-  size: TVKsizeiptr);
+procedure TVKTransformFeedbackBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
+  size: TGLsizeiptr);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
     index, offset, size);
 end;
 
-procedure TVKTransformFeedbackBufferHandle.BindBase(index: TVKuint);
+procedure TVKTransformFeedbackBufferHandle.BindBase(index: TGLuint);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
     index, BufferSize);
 end;
 
-procedure TVKTransformFeedbackBufferHandle.UnBindBase(index: TVKuint);
+procedure TVKTransformFeedbackBufferHandle.UnBindBase(index: TGLuint);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
     index, 0);
@@ -3161,7 +3088,7 @@ end;
 // GetTarget
 //
 
-function TVKTextureBufferHandle.GetTarget: TVKuint;
+function TVKTextureBufferHandle.GetTarget: TGLuint;
 begin
   Result := GL_TEXTURE_BUFFER;
 end;
@@ -3189,20 +3116,20 @@ begin
   vCurrentGLContext.GLStates.UniformBufferBinding := 0;
 end;
 
-procedure TVKUniformBufferHandle.BindRange(index: TVKuint; offset: TVKintptr;
-  size: TVKsizeiptr);
+procedure TVKUniformBufferHandle.BindRange(index: TGLuint; offset: TGLintptr;
+  size: TGLsizeiptr);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
     index, offset, size);
 end;
 
-procedure TVKUniformBufferHandle.BindBase(index: TVKuint);
+procedure TVKUniformBufferHandle.BindBase(index: TGLuint);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
     index, BufferSize);
 end;
 
-procedure TVKUniformBufferHandle.UnBindBase(index: TVKuint);
+procedure TVKUniformBufferHandle.UnBindBase(index: TGLuint);
 begin
   vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtUniform,
     index, 0);
@@ -3211,7 +3138,7 @@ end;
 // GetTarget
 //
 
-function TVKUniformBufferHandle.GetTarget: TVKuint;
+function TVKUniformBufferHandle.GetTarget: TGLuint;
 begin
   Result := GL_UNIFORM_BUFFER;
 end;
@@ -3240,7 +3167,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKVertexArrayHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKVertexArrayHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -3312,7 +3239,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKFramebufferHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKFramebufferHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -3391,8 +3318,8 @@ end;
 // Attach1DTexture
 //
 
-procedure TVKFramebufferHandle.Attach1DTexture(target: TVKenum; attachment:
-  TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint);
+procedure TVKFramebufferHandle.Attach1DTexture(target: TGLenum; attachment:
+  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture1D(target, attachment, textarget, texture, level);
 end;
@@ -3400,8 +3327,8 @@ end;
 // Attach2DTexture
 //
 
-procedure TVKFramebufferHandle.Attach2DTexture(target: TVKenum; attachment:
-  TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint);
+procedure TVKFramebufferHandle.Attach2DTexture(target: TGLenum; attachment:
+  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture2D(target, attachment, textarget, texture, level);
 end;
@@ -3409,8 +3336,8 @@ end;
 // Attach3DTexture
 //
 
-procedure TVKFramebufferHandle.Attach3DTexture(target: TVKenum; attachment:
-  TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint; layer: TVKint);
+procedure TVKFramebufferHandle.Attach3DTexture(target: TGLenum; attachment:
+  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTexture3D(target, attachment, textarget, texture, level, layer);
 end;
@@ -3418,8 +3345,8 @@ end;
 // AttachLayer
 //
 
-procedure TVKFramebufferHandle.AttachLayer(target: TVKenum; attachment: TVKenum;
-  texture: TVKuint; level: TVKint; layer: TVKint);
+procedure TVKFramebufferHandle.AttachLayer(target: TGLenum; attachment: TGLenum;
+  texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
@@ -3427,8 +3354,8 @@ end;
 // AttachRenderBuffer
 //
 
-procedure TVKFramebufferHandle.AttachRenderBuffer(target: TVKenum; attachment:
-  TVKenum; renderbuffertarget: TVKenum; renderbuffer: TVKuint);
+procedure TVKFramebufferHandle.AttachRenderBuffer(target: TGLenum; attachment:
+  TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint);
 begin
   GL.FramebufferRenderbuffer(target, attachment, renderbuffertarget,
     renderbuffer);
@@ -3437,8 +3364,8 @@ end;
 // AttachTexture
 //
 
-procedure TVKFramebufferHandle.AttachTexture(target: TVKenum; attachment:
-  TVKenum; texture: TVKuint; level: TVKint);
+procedure TVKFramebufferHandle.AttachTexture(target: TGLenum; attachment:
+  TGLenum; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture(target, attachment, texture, level);
 end;
@@ -3446,8 +3373,8 @@ end;
 // AttachTextureLayer
 //
 
-procedure TVKFramebufferHandle.AttachTextureLayer(target: TVKenum; attachment:
-  TVKenum; texture: TVKuint; level: TVKint; layer: TVKint);
+procedure TVKFramebufferHandle.AttachTextureLayer(target: TGLenum; attachment:
+  TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
@@ -3455,10 +3382,10 @@ end;
 // Blit
 //
 
-procedure TVKFramebufferHandle.Blit(srcX0: TVKint; srcY0: TVKint; srcX1: TVKint;
-  srcY1: TVKint;
-  dstX0: TVKint; dstY0: TVKint; dstX1: TVKint; dstY1: TVKint;
-  mask: TVKbitfield; filter: TVKenum);
+procedure TVKFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
+  srcY1: TGLint;
+  dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
+  mask: TGLbitfield; filter: TGLenum);
 begin
   GL.BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
     mask, filter);
@@ -3467,8 +3394,8 @@ end;
 // GetAttachmentParameter
 //
 
-function TVKFramebufferHandle.GetAttachmentParameter(target: TVKenum;
-  attachment: TVKenum; pname: TVKenum): TVKint;
+function TVKFramebufferHandle.GetAttachmentParameter(target: TGLenum;
+  attachment: TGLenum; pname: TGLenum): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
 end;
@@ -3476,8 +3403,8 @@ end;
 // GetAttachmentObjectType
 //
 
-function TVKFramebufferHandle.GetAttachmentObjectType(target: TVKenum;
-  attachment: TVKenum): TVKint;
+function TVKFramebufferHandle.GetAttachmentObjectType(target: TGLenum;
+  attachment: TGLenum): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
@@ -3486,8 +3413,8 @@ end;
 // GetAttachmentObjectName
 //
 
-function TVKFramebufferHandle.GetAttachmentObjectName(target: TVKenum;
-  attachment: TVKenum): TVKint;
+function TVKFramebufferHandle.GetAttachmentObjectName(target: TGLenum;
+  attachment: TGLenum): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
@@ -3572,7 +3499,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKRenderbufferHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKRenderbufferHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -3614,8 +3541,8 @@ end;
 // SetStorage
 //
 
-procedure TVKRenderbufferHandle.SetStorage(internalformat: TVKenum; width,
-  height: TVKsizei);
+procedure TVKRenderbufferHandle.SetStorage(internalformat: TGLenum; width,
+  height: TGLsizei);
 begin
   GL.RenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
 end;
@@ -3623,8 +3550,8 @@ end;
 // SetStorageMultisample
 //
 
-procedure TVKRenderbufferHandle.SetStorageMultisample(internalformat: TVKenum;
-  samples: TVKsizei; width, height: TVKsizei);
+procedure TVKRenderbufferHandle.SetStorageMultisample(internalformat: TGLenum;
+  samples: TGLsizei; width, height: TGLsizei);
 begin
   GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
     width, height);
@@ -3655,7 +3582,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKARBProgramHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKARBProgramHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -3686,7 +3613,7 @@ var
 begin
   Bind;
   GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
-    Length(AText), PGLChar(TVKString(AText)));
+    Length(AText), PGLChar(TGLString(AText)));
   GL.GetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
   if errPos > -1 then
   begin
@@ -3725,7 +3652,7 @@ begin
   GL.BindProgram(GetTarget, Handle);
 end;
 
-class function TVKARBVertexProgramHandle.GetTarget: TVKenum;
+class function TVKARBVertexProgramHandle.GetTarget: TGLenum;
 begin
   Result := GL_VERTEX_PROGRAM_ARB;
 end;
@@ -3735,7 +3662,7 @@ begin
   Result := GL.ARB_vertex_program;
 end;
 
-class function TVKARBFragmentProgramHandle.GetTarget: TVKenum;
+class function TVKARBFragmentProgramHandle.GetTarget: TGLenum;
 begin
   Result := GL_FRAGMENT_PROGRAM_ARB;
 end;
@@ -3745,7 +3672,7 @@ begin
   Result := GL.ARB_vertex_program;
 end;
 
-class function TVKARBGeometryProgramHandle.GetTarget: TVKenum;
+class function TVKARBGeometryProgramHandle.GetTarget: TGLenum;
 begin
   Result := GL_GEOMETRY_PROGRAM_NV;
 end;
@@ -3759,7 +3686,7 @@ end;
 // ------------------ TVKSLHandle ------------------
 // ------------------
 
-procedure TVKSLHandle.DoDestroyHandle(var AHandle: TVKuint);
+procedure TVKSLHandle.DoDestroyHandle(var AHandle: TGLuint);
 begin
   if not vContextActivationFailureOccurred then
   with GL do
@@ -3779,7 +3706,7 @@ end;
 function TVKSLHandle.InfoLog: string;
 var
   maxLength: Integer;
-  log: TVKString;
+  log: TGLString;
 begin
   maxLength := 0;
   GL.GetObjectParameteriv(GetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
@@ -3827,7 +3754,7 @@ procedure TVKShaderHandle.ShaderSource(const source: AnsiString);
 var
   p: PGLChar;
 begin
-  p := PGLChar(TVKString(source));
+  p := PGLChar(TGLString(source));
   GL.ShaderSource(GetHandle, 1, @p, nil);
 end;
 
@@ -3837,7 +3764,7 @@ end;
 function TVKShaderHandle.CompileShader: Boolean;
 var
   compiled: Integer;
-  glH: TVKuint;
+  glH: TGLuint;
 begin
   glH := GetHandle;
   GL.CompileShader(glH);
@@ -4010,10 +3937,10 @@ end;
 
 procedure TVKProgramHandle.DetachAllObject;
 var
-  glH: TVKuint;
+  glH: TGLuint;
   I: Integer;
   count: GLSizei;
-  buffer: array[0..255] of TVKuint;
+  buffer: array[0..255] of TGLuint;
 begin
   glH := GetHandle;
   if glH > 0 then
@@ -4032,7 +3959,7 @@ end;
 procedure TVKProgramHandle.BindAttribLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindAttribLocation(GetHandle, index, PGLChar(TVKString(aName)));
+  GL.BindAttribLocation(GetHandle, index, PGLChar(TGLString(aName)));
 end;
 
 // BindFragDataLocation
@@ -4041,7 +3968,7 @@ end;
 procedure TVKProgramHandle.BindFragDataLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindFragDataLocation(GetHandle, index, PGLChar(TVKString(name)));
+  GL.BindFragDataLocation(GetHandle, index, PGLChar(TGLString(name)));
 end;
 
 // LinkProgram
@@ -4050,7 +3977,7 @@ end;
 function TVKProgramHandle.LinkProgram: Boolean;
 var
   status: Integer;
-  glH: TVKuint;
+  glH: TGLuint;
 begin
   glH := GetHandle;
   GL.LinkProgram(glH);
@@ -4065,7 +3992,7 @@ end;
 function TVKProgramHandle.ValidateProgram: Boolean;
 var
   validated: Integer;
-  h: TVKuint;
+  h: TGLuint;
 begin
   h := GetHandle;
   GL.ValidateProgram(h);
@@ -4079,8 +4006,8 @@ end;
 
 function TVKProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
-  Result := GL.GetAttribLocation(GetHandle, PGLChar(TVKString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['attrib', aName, Name]));
+  Result := GL.GetAttribLocation(GetHandle, PGLChar(TGLString(aName)));
+  Assert(Result >= 0, Format(vksUnknownParam, ['attrib', aName, Name]));
 end;
 
 // GetUniformLocation
@@ -4088,8 +4015,8 @@ end;
 
 function TVKProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
-  Result := GL.GetUniformLocation(GetHandle, PGLChar(TVKString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
+  Result := GL.GetUniformLocation(GetHandle, PGLChar(TGLString(aName)));
+  Assert(Result >= 0, Format(vksUnknownParam, ['uniform', aName, Name]));
 end;
 
 // GetVaryingLocation
@@ -4097,8 +4024,8 @@ end;
 
 function TVKProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
-  Result := GL.GetVaryingLocation(GetHandle, PGLChar(TVKString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['varying', aName, Name]));
+  Result := GL.GetVaryingLocation(GetHandle, PGLChar(TGLString(aName)));
+  Assert(Result >= 0, Format(vksUnknownParam, ['varying', aName, Name]));
 end;
 
 // AddActiveVarying
@@ -4106,7 +4033,7 @@ end;
 
 procedure TVKProgramHandle.AddActiveVarying(const aName: string);
 begin
-  GL.ActiveVarying(GetHandle, PGLChar(TVKString(aName)));
+  GL.ActiveVarying(GetHandle, PGLChar(TGLString(aName)));
 end;
 
 // GetAttribLocation
@@ -4435,8 +4362,8 @@ end;
 
 function TVKProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
-  Result := GL.GetUniformBlockIndex(Handle, PGLChar(TVKString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform block', aName, Name]));
+  Result := GL.GetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
+  Assert(Result >= 0, Format(vksUnknownParam, ['uniform block', aName, Name]));
 end;
 
 // Create
@@ -4452,7 +4379,7 @@ end;
 // ------------------ TVKContextManager ------------------
 // ------------------
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
@@ -4467,11 +4394,11 @@ end;
 constructor TVKContextManager.Create;
 begin
   inherited Create;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
   FHandles := TList.Create;
 {$ELSE}
   FHandles := TThreadList.Create;
-{$ENDIF GLS_MULTITHREAD}
+{$ENDIF VKS_MULTITHREAD}
   FList := TThreadList.Create;
 end;
 
@@ -4504,7 +4431,7 @@ begin
     Result := nil;
 end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
 
 procedure TVKContextManager.CreateServiceContext;
 begin
@@ -4550,7 +4477,7 @@ begin
   end;
 end;
 
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF VKS_SERVICE_CONTEXT}
 
 
 // Lock
@@ -4724,7 +4651,7 @@ end;
 procedure TVKContextManager.Terminate;
 begin
   FTerminated := True;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
   // Sevice context may not be created becouse Application.Initialize not happened
   if Assigned(FServiceContext) then
   begin
@@ -4761,7 +4688,7 @@ begin
     end;
 end;
 
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
 
 {$REGION 'TServiceContextThread'}
 
@@ -4948,7 +4875,7 @@ begin
   end;
 end;
 
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF VKS_SERVICE_CONTEXT}
 
 constructor TFinishTaskEvent.Create;
 begin
@@ -4965,12 +4892,12 @@ initialization
   // ------------------------------------------------------------------
 
   vMainThread := True;
-{$IFDEF GLS_SERVICE_CONTEXT}
+{$IFDEF VKS_SERVICE_CONTEXT}
   OldInitProc := InitProc;
   InitProc := @OnApplicationInitialize;
-{$ENDIF GLS_SERVICE_CONTEXT}
+{$ENDIF VKS_SERVICE_CONTEXT}
   GLContextManager := TVKContextManager.Create;
-  GLwithoutContext := TVKExtensionsAndEntryPoints.Create;
+  GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
   GLwithoutContext.Close;
   vLocalGL := @GL;
 

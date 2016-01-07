@@ -1,65 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.Gizmo<p>
-
+{ 
   Invisible component for helping to Move, Rotate and Scale an Object
-  under GLScene (usefull for an Editor).<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;
-                 replaced uppercase characters in prefixes for enum types to lower case
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
-  <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
-                (thanks Lukasz Sokol)
-  <li>18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
-                 J.Delauney, Degiovani, Marcus Oblak and a bit myself)
-  </ul></font>
+  under GLScene (usefull for an Editor).
 }
-//
-// Original Header:
-//
-// ------------------------------------------------------------------------------
-// Unit : GLGizmo  RC 1.0
-// ------------------------------------------------------------------------------
-// Original Author : ???????  (glGizmo In an ODEEditor)
-// ------------------------------------------------------------------------------
-// Modified by     : J.Delauney
-// Web Site        : http://KheopsInteractive.cjb.net
-// EMail           : wmkheops@free.fr
-// Date            : 08/05/2005
-//
-// Modified by     : Marcus Oblak (8/3/2007)
-// - Corrected moving/rotating for children objects
-// - Better quantization for mouse operations (MoveCoef,RotationCoef)
-// - Added ScaleCoef
-// - Added GizmoThickness
-//
-// If you make some changes, please send your new version. Thanks
-// ------------------------------------------------------------------------------
-// Description :
-// Invisible component for helping to Move, Rotate and Scale an Object
-// under GLScene (usefull for an Editor)
-// ------------------------------------------------------------------------------
-// Features :
-// - Interaction When All Gizmo parts are Invisible
-// - Add "gpMoveGizmo and  gpRotateGizmo" operations and use Like a "Pivot"
-// or use RootGizmo As "Pivot"
-// - Add Interactive Camera Movements
-// - Adding Extended Controls with Keys
-// - Maybe An Undo Function
-// - Others Ideas ???
-// ------------------------------------------------------------------------------
-// Bugs Known :
-// - When you change the BoundingBoxColor and LabelInfosColor
-// The New Color is not Updated immediately, only after a new Click
-// (see in UpdateGizmo, SetBoundingBoxColor
-// and SetLabelInfosColor Procedures)
-// -  DaStr: Bounding Box is not alway drawn correctly because it does not
-// use objects' BarryCenter. For Example, if you select Space Text.
-// ------------------------------------------------------------------------------
-
 unit VKS.Gizmo;
 
 interface
@@ -68,10 +13,11 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //VKS
   VKS.Scene, VKS.Color, VKS.Objects, VKS.VectorGeometry, VKS.Material, VKS.Strings,
-  VKS.GeomObjects, VKS.BitmapFont, VKS.SceneViewer, VKS.VectorFileObjects, VKS.CrossPlatform,
-  VKS.Coordinates, VKS.RenderContextInfo, VKS.State, VKS.Selection, VKS.VectorTypes;
+  VKS.GeomObjects, VKS.BitmapFont, VKS.SceneViewer, VKS.VectorFileObjects,
+  VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo, VKS.State,
+  VKS.Selection, VKS.VectorTypes;
 
 type
   TVKGizmoUndoCollection = class;
@@ -227,13 +173,13 @@ type
     FPickMode: TVKGizmoPickMode;
     FInternalRaycastHitData: TList;
 
-    FUndoHistory: TVKGizmoUndoCollection;
+    FUndoHistory:  TVKGizmoUndoCollection;
     FLabelFont: TVKCustomBitmapFont;
 
     procedure SetRootGizmo(const AValue: TVKBaseSceneObject);
 
     procedure SetGizmoElements(const AValue: TVKGizmoElements);
-    procedure SeTVKGizmoVisibleInfoLabels(const AValue
+    procedure SetVKGizmoVisibleInfoLabels(const AValue
       : TVKGizmoVisibleInfoLabels);
     procedure SetBoundingBoxColor(const AValue: TVKColor);
     procedure SetSelectedColor(const AValue: TVKColor);
@@ -247,7 +193,7 @@ type
     function MouseWorldPos(const X, Y: Integer): TVector;
     function CheckObjectInExcludeList(const Obj: TVKBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
-    procedure SetGLGizmoThickness(const Value: Single);
+    procedure SetVKGizmoThickness(const Value: Single);
 
     function InternalGetPickedObjects(const X1, Y1, X2, Y2: Integer;
       const GuessCount: Integer = 8): TVKPickList;
@@ -319,9 +265,9 @@ type
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
 
     property GizmoThickness: Single read FGizmoThickness
-      write SeTVKGizmoThickness;
+      write SetVKGizmoThickness;
 
-    { : Indicates whether the gizmo is enabled or not.
+    { Indicates whether the gizmo is enabled or not.
       WARNING: When loading/editing (possibly whenever a structureChanged
       call is made) a model, sometimes the gizmo will trigger a
       bug if the mouse is inside the glscene Viewer. To prevent that,
@@ -329,7 +275,7 @@ type
       messages (i.e. application.processMessage) and then enable the gizmo
       again. }
 
-    { : Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
+    { Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
     property Enabled: Boolean read FEnabled write FEnabled default False;
@@ -342,7 +288,7 @@ type
     property OnSelectionLost: TNotifyEvent read FOnSelectionLost
       write FOnSelectionLost;
 
-    { : Called before an Update is applied. The "vector" parameter is the difference
+    { Called before an Update is applied. The "vector" parameter is the difference
       that will be applied to the object, according to the axis and
       operation selected. }
     property OnBeforeUpdate: TVKGizmoUpdateEvent read FOnBeforeUpdate
@@ -888,7 +834,7 @@ begin
   FExcludeObjectsList.AddStrings(AValue);
 end;
 
-procedure TVKGizmo.SetGLGizmoThickness(const Value: Single);
+procedure TVKGizmo.SetVKGizmoThickness(const Value: Single);
 var
   Thk: Single;
 begin
@@ -1042,7 +988,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, GlsErrorEx + GlsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
 
   end;
@@ -1225,7 +1171,7 @@ var
     else
       begin
         PickObj := nil;
-        Assert(False, GlsErrorEx + GlsUnknownType);
+        Assert(False, vksErrorEx + vksUnknownType);
       end;
     end;
 
@@ -1607,7 +1553,7 @@ begin
       end;
   else
     begin
-      Assert(False, GlsErrorEx + GlsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
 
   end;

@@ -1,17 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Teapot<p>
-
-   Implements the standard Teapot, build from evaluators.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>21/07/03 - EG - Creation from VKS.Objects split
-   </ul></font>
+{
+   Implements the standard Teapot, build from evaluators. 
+   
 }
 unit VKS.Teapot;
 
@@ -29,7 +21,7 @@ type
 
   // TVKTeapot
   //
-  {: The classic teapot.<p>
+  { The classic teapot. 
      The only use of this object is as placeholder for testing... }
   TVKTeapot = class(TVKSceneObject)
   private
@@ -88,7 +80,7 @@ const
     (68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83), // spout
     (80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95)); // spout
 
-  CPData: array[0..126, 0..2] of TVKFloat =
+  CPData: array[0..126, 0..2] of TGLfloat =
     ((0.2, 0, 2.7), (0.2, -0.112, 2.7), (0.112, -0.2, 2.7), (0, -0.2, 2.7), (1.3375, 0, 2.53125),
     (1.3375, -0.749, 2.53125), (0.749, -1.3375, 2.53125), (0, -1.3375, 2.53125),
     (1.4375, 0, 2.53125), (1.4375, -0.805, 2.53125), (0.805, -1.4375, 2.53125),
@@ -116,11 +108,11 @@ const
     (0.728, -1.3, 2.4), (0, -1.3, 2.4), (0, 0, 0), (1.425, -0.798, 0), (1.5, 0, 0.075), (1.425, 0, 0),
     (0.798, -1.425, 0), (0, -1.5, 0.075), (0, -1.425, 0), (1.5, -0.84, 0.075), (0.84, -1.5, 0.075));
 
-  Tex: array[0..1, 0..1, 0..1] of TVKFloat =
+  Tex: array[0..1, 0..1, 0..1] of TGLfloat =
     (((0, 0), (1, 0)), ((0, 1), (1, 1)));
 
 var
-  P, Q, R, S: array[0..3, 0..3, 0..2] of TVKFloat;
+  P, Q, R, S: array[0..3, 0..3, 0..2] of TGLfloat;
   I, J, K, L, GRD: Integer;
 begin
   if FGrid < 2 then

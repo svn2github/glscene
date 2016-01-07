@@ -1,15 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileDAE<p>
-
-	Quake2 MD2 vector file format implementation.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>17/01/14 - PW - Bugfixed for XE5
-      <li>16/01/14 - PW - Added $I GLScene.inc
-      <li>15/01/14 - PW - Creation
-	</ul></font>
+{
+	Quake2 MD2 vector file format implementation. 
+	 
 }
 unit VKS.FileDAE;
 
@@ -26,10 +20,10 @@ uses
 type
    // TVKFileDAE
    //
-   {: The DAE vector file (COLLADA actor file).<p>
+   { The DAE vector file (COLLADA actor file). 
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TVKActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap).<p>}
+      (the whole mesh uses a single texture bitmap). }
    TVKFileDAE = class(TVectorFile)
       public
          { Public Declarations }
@@ -41,10 +35,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TVKDAEVectorFile ------------------
 // ------------------

@@ -1,39 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.HUDObjects<p>
-
-  GLScene objects that get rendered in 2D coordinates<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>27/01/12 - Yar - Added texture coordinates mirroring for HUDSprite (thanks Tamahome)
-  <li>15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  Fixed light state changing
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>05/03/10 - DanB - More state added to TVKStateCache
-  <li>15/03/08 - DaStr - Bugfixed TVKAbsoluteHUDText.DoRender()
-  (thanks Nicoara Adrian) (BugtrackerID = 1914823)
-  <li>18/09/07 - DaStr - Added TVKResolutionIndependantHUDText and
-  TVKAbsoluteHUDText to the list of registered classes
-  Cleaned up "uses" section
-  <li>07/09/07 - DaStr - AlphaChannel is now applied to ActualPrimaryMaterial
-  Added TVKResolutionIndependantHUDText,
-  TVKAbsoluteHUDText
-  <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>23/02/07 - DaStr - Added default values to TVKHUDSprite.Width & Height
-  <li>15/02/07 - DaStr - Added default values to TVKHUDText.Alignment & Layout
-  <li>28/06/04 - LR - Change TTextLayout to TVKTextLayout for Linux
-  <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
-  <li>23/11/02 - EG - Added X/YTiles to HUDSprite
-  <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
-  <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
-  <li>18/07/01 - EG - VisibilityCulling compatibility changes
-  <li>20/06/01 - EG - Default hud sprite size is now 16x16
-  <li>21/02/01 - EG - Now VKS.XOpenGL based (multitexture)
-  <li>15/01/01 - EG - Creation
-  </ul></font>
+{
+  VKScene objects that get rendered in 2D coordinates 
 }
 unit VKS.HUDObjects;
 
@@ -60,21 +29,21 @@ type
 
   // TVKHUDSprite
   //
-  { : A rectangular area, NOT perspective projected.<p>
+  { A rectangular area, NOT perspective projected. 
     (x, y) coordinates map directly to the viewport (in pixels) and refer
-    the center of the area.<br>
+    the center of the area. 
     The coordinate system is that of an equivalent TCanvas, ie. top-left
-    point is the origin (0, 0).<p>
-    The z component is ignored and Z-Buffer is disabled when rendering.<p>
-    <b>Using TVKHUDSprite in 2D only scenes :</b><br>
+    point is the origin (0, 0). 
+    The z component is ignored and Z-Buffer is disabled when rendering. 
+     Using TVKHUDSprite in 2D only scenes :  
     The most convenient way to use a TVKHUDSprite as a simple 2D sprite with
     blending capabilities (transparency or additive), is to set the texture
     mode to tmModulate, in FrontProperties, to use the Emission color to
     control coloring/intensity, and finally use the Diffuse color's alpha
-    to control transparency (while setting the other RGB components to 0).<br>
+    to control transparency (while setting the other RGB components to 0). 
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
-    alpha-blended blitting.<p>
+    alpha-blended blitting. 
     Note : since TVKHUDSprite works in absolute coordinates, TVKProxyObject
     can't be used to duplicate an hud sprite. }
   TVKHUDSprite = class(TVKSprite)
@@ -106,7 +75,7 @@ type
 
   // TVKHUDText
   //
-  { : A 2D text displayed and positionned in 2D coordinates.<p>
+  { A 2D text displayed and positionned in 2D coordinates. 
     The HUDText uses a character font defined and stored by a TVKBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
@@ -144,29 +113,29 @@ type
 
   published
     { Published Declarations }
-    { : Refers the bitmap font to use.<p>
+    { Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TVKCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render.<p>
+    { Text to render. 
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
-    { : Rotation angle in degrees (2d). }
+    { Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    { : Controls the text alignment (horizontal).<p>
+    { Controls the text alignment (horizontal). 
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    { : Controls the text layout (vertical).<p>
+    { Controls the text layout (vertical). 
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TVKTextLayout read FLayout write SetLayout default tlTop;
-    { : Color modulation, can be used for fade in/out too. }
+    { Color modulation, can be used for fade in/out too. }
     property ModulateColor: TVKColor read FModulateColor write SetModulateColor;
   end;
 
-  { : Position (X, Y and X) is in absolute coordinates. This component converts
+  { Position (X, Y and X) is in absolute coordinates. This component converts
     them to screen coordinates and renderes text there. }
   TVKAbsoluteHUDText = class(TVKHUDText)
   public
@@ -174,7 +143,7 @@ type
       renderSelf, renderChildren: Boolean); override;
   end;
 
-  { : Position (X and Y) is expected in a [0..1] range (from Screen size)
+  { Position (X and Y) is expected in a [0..1] range (from Screen size)
     This component converts this position to the actual screen position and
     renders the text there. This way a HUD text always appears to be in the
     the same place, regardless of the currect screen resolution.

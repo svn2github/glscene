@@ -1,14 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileTIN<p>
-
-	TIN (Triangular Irregular Network) vector file format implementation.<p>
-  <b>History :</b><font size=-1><ul>
-      <li>08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
-      <li>17/11/05 - PW - Added support for ascii TIN files with materials
-      <li>05/06/03 - SG - Separated from VKS.VectorFileObjects.pas
-	</ul></font>
+{
+	TIN (Triangular Irregular Network) vector file format implementation. 
+   
 }
 unit VKS.FileTIN;
 
@@ -23,9 +18,9 @@ uses
 type
    // TVKTINVectorFile
    //
-   {: The TIN vector file (triangle irregular network).<p>
+   { The TIN vector file (triangle irregular network). 
       It is a simple text format, with one triangle record per line, no materials,
-      no texturing (there may be more, but I never saw anything in this files).<p>
+      no texturing (there may be more, but I never saw anything in this files). 
       This format is encountered in the DEM/DTED world and used in place of grids. }
    TVKTINVectorFile = class(TVectorFile)
       public

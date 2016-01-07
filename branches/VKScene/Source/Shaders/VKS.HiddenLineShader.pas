@@ -1,23 +1,12 @@
-{: VKS.HiddenLineShader<p>
-
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
+{
    A shader that renders hidden (back-faced) lines differently from visible
    (front) lines. Polygon offset is used to displace fragments depths a little
-   so that there is no z-fighting in rendering the same geometry multiple times.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added $I GLScene.inc
-                             Added GLColor to uses (BugtrackerID = 1732211)
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>25/09/04 - NelC - Fixed bug of disabled blend (thx Carlos)
-      <li>05/02/04 - NelC - Fixed memory leak in TVKHiddenLineShader.Destroy (thx Achim Hammes)
-      <li>13/12/03 - NelC - Added SurfaceLit, ShadeModel
-      <li>05/12/03 - NelC - Added ForceMaterial
-      <li>03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
-                            the multipass demo.
-   </ul></font>
+   so that there is no z-fighting in rendering the same geometry multiple times. 
+                  
+    
 }
 unit VKS.HiddenLineShader;
 
@@ -37,11 +26,11 @@ type
     { Private Declarations }
     FColor: TVKColor;
     FWidth: Single;
-    FPattern: TVKushort;
+    FPattern: TGLushort;
 
     FForceMaterial: Boolean;
 
-    procedure SetPattern(const value: TVKushort);
+    procedure SetPattern(const value: TGLushort);
     procedure SetColor(const v: TVKColor);
     procedure SetWidth(const Value: Single);
     procedure SetForceMaterial(v: boolean);
@@ -57,8 +46,8 @@ type
     { Published Declarations }
     property Width: Single read FWidth write SetWidth;
     property Color: TVKColor read FColor write SetColor;
-    property Pattern: TVKushort read FPattern write SetPattern default $FFFF;
-    {: Set ForceMaterial to true to enforce the application of the line settings
+    property Pattern: TGLushort read FPattern write SetPattern default $FFFF;
+    { Set ForceMaterial to true to enforce the application of the line settings
        for objects that sets their own color, line width and pattern. }
     property ForceMaterial: Boolean read FForceMaterial write SetForceMaterial
       default false;
@@ -98,18 +87,18 @@ type
     { Published Declarations }
     property FrontLine: TVKLineSettings read FFrontLine write FFrontLine;
     property BackLine: TVKLineSettings read FBackLine write FBackLine;
-    {: Line smoothing control }
+    { Line smoothing control }
     property LineSmooth: Boolean read FlineSmooth write SetlineSmooth default
       false;
-    {: Solid controls if you can see through the front-line wireframe. }
+    { Solid controls if you can see through the front-line wireframe. }
     property Solid: Boolean read FSolid write SetSolid default false;
-    {: Color used for solid fill. }
+    { Color used for solid fill. }
     property BackgroundColor: TVKColor read FBackgroundColor write
       SetBackgroundColor;
-    {: When Solid is True, determines if lighting or background color is used. }
+    { When Solid is True, determines if lighting or background color is used. }
     property SurfaceLit: Boolean read FLighting write SetLighting default true;
-    {: Shade model.<p>
-       Default is "Smooth".<p> }
+    { Shade model. 
+       Default is "Smooth".  }
     property ShadeModel: TVKShadeModel read FShadeModel write SetShadeModel
       default smDefault;
   end;
@@ -147,7 +136,7 @@ end;
 // SetPattern
 //
 
-procedure TVKLineSettings.SetPattern(const value: TVKushort);
+procedure TVKLineSettings.SetPattern(const value: TGLushort);
 begin
   if FPattern <> value then
   begin

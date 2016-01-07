@@ -1,13 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FShaderMemo<p>
-   Shader code editor.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>06/01/15 - PW - Converted to FMX
-      <li>31/03/11 - Yar - Creation
-   </ul></font>
+{
+   Shader code editor. 
 }
 
 // TODO: decide how to load templates from external file,

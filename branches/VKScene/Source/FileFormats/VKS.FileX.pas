@@ -1,45 +1,20 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.FileX<p>
-
-   Simple X format support for Delphi (Microsoft's favorite format)<p>
-   
-   <b>History : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-   </ul></font>
-
-
-   <b>Previous version history : </b><font size=-1><ul>
-      $Log$
-      Revision 1.1  2009/11/07 22:12:25  da_stranger
-      Initial version (Added from the GLScene-Lazarus SVN)
-
-      Revision 1.1  2006/01/10 20:50:44  z0m3ie
-      recheckin to make shure that all is lowercase
-
-      Revision 1.1  2006/01/09 21:02:31  z0m3ie
-      *** empty log message ***
-
-      Revision 1.3  2005/12/04 16:53:04  z0m3ie
-      renamed everything to lowercase to get better codetools support and avoid unit finding bugs
-
-      Revision 1.2  2005/08/03 00:41:38  z0m3ie
-      - added automatical generated History from CVS
-   </ul></font>
+{
+   Simple X format support for Delphi (Microsoft's favorite format)
+    
 }
 
 unit VKS.FileX;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
-   
   System.Classes, System.SysUtils,
-
-   
+  //VKS
   VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.Texture,
   VKS.VectorLists, VKS.Material,
 

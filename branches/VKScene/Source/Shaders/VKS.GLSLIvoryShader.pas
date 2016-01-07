@@ -1,17 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.IvoryShader <p>
-
-   Ivory shader simulate Ivory material.<p>
+{
+   Ivory shader simulate Ivory material. 
    At this time only one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Creation
-
 }
 
-unit GLSL.IvoryShader;
+unit VKS.GLSLIvoryShader;
 
 interface
 
@@ -19,7 +14,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material,
@@ -27,7 +22,7 @@ uses
 
 //TVKCustomGLSLIvoryShader
 //
-{: Custom class for GLSLIvoryShader.<p>
+{ Custom class for GLSLIvoryShader. 
  A shader that simulate Ivory Material }
 type
   TVKCustomGLSLIvoryShader = class(TVKCustomGLSLShader)

@@ -1,32 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.Octree<p>
+{ 
+  Octree management classes and structures.
+  TODO: move the many public vars/fields to private/protected
 
-  Octree management classes and structures.<p>
-
-  TODO: move the many public vars/fields to private/protected<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/14 - PW - Renamed from "Octree.pas" to "VKS.Octree.pas" and added ListHandle in TOctreeNode
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/03/07 - DaStr - Renamed parameters in some methods
-                        (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-  <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                        (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
-  <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
-  <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
-  <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
-  <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
-  <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
-  <li>29/11/02 - EG - Added triangleInfo
-  <li>14/07/02 - EG - Dropped VKS.VectorFileObjects dependency
-  <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
-  <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
-  </ul></font>
 }
 unit VKS.Octree;
 
@@ -36,7 +14,8 @@ interface
 
 uses
   System.Classes,
-  VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists, VKS.GeometryBB, VKS.Context;
+  VKS.VectorTypes, VKS.VectorGeometry,
+  VKS.VectorLists, VKS.GeometryBB, VKS.Context;
 
 type
 
@@ -45,7 +24,7 @@ type
 
   // TOctreeTriangleInfo
   //
-  { : Stores information about an intersected triangle. }
+  { Stores information about an intersected triangle. }
   TOctreeTriangleInfo = record
     Index: Integer;
     Vertex: array [0 .. 2] of TAffineVector;
@@ -72,7 +51,7 @@ type
 
   // TOctree
   //
-  { : Manages an Octree containing references to triangles.<p> }
+  { Manages an Octree containing references to triangles.  }
   TOctree = class(TObject)
   private
     { Private Declarations }
@@ -103,7 +82,7 @@ type
     function GetExtent(const Flags: array of Byte; ParentNode: POctreeNode)
       : TAffineFLTVector;
 
-    { : Recursive routine to build nodes from parent to max depth level. }
+    { Recursive routine to build nodes from parent to max depth level. }
     procedure Refine(ParentNode: POctreeNode; Level: Integer);
 
     // Main "walking" routines.  Walks the item through the Octree down to a leaf node.
@@ -137,7 +116,7 @@ type
     procedure WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
       Radius: Single);
 
-    { : Initializes the tree from the triangle list.<p>
+    { Initializes the tree from the triangle list. 
       All triangles must be contained in the world extent to be properly
       taken into account. }
     procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent
@@ -155,13 +134,13 @@ type
       IntersectNormal: PVector = nil): Boolean;
 
     function TriangleIntersect(const V1, V2, V3: TAffineVector): Boolean;
-    { : Returns all triangles in the AABB. }
+    { Returns all triangles in the AABB. }
     function GetTrianglesFromNodesIntersectingAABB(const ObjAABB: TAABB)
       : TAffineVectorList;
-    { : Returns all triangles in an arbitrarily placed cube }
+    { Returns all triangles in an arbitrarily placed cube }
     function GetTrianglesFromNodesIntersectingCube(const ObjAABB: TAABB;
       const ObjToSelf, SelfToObj: TMatrix): TAffineVectorList;
-    { : Checks if an AABB intersects a face on the octree }
+    { Checks if an AABB intersects a face on the octree }
     function AABBIntersect(const AABB: TAABB; M1to2, M2to1: TMatrix;
       Triangles: TAffineVectorList = nil): Boolean;
     // function SphereIntersect(position:TAffineVector; radius:single);

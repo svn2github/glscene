@@ -1,20 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-// VKS.BumpMapping
-{: Some useful methods for setting up bump maps.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Removed function RGB that is included in VKS.CrossPlatform.pas
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records with arrays
-      <li>08/07/04 - LR - Replace Graphics by VKS.CrossPlatform for Linux
-      <li>30/03/04 - SG - Minor optimizations
-      <li>22/09/03 - SG - Partially fixed tangent space normal map creation,
-                          Fixed normal blending coefficients
-      <li>18/09/03 - SG - Added methods for creating normal maps,
-                          CreateTangentSpaceNormalMap is a little buggy
-      <li>28/07/03 - SG - Creation
-   </ul></font>
+{
+ Some useful methods for setting up bump maps. 
 }
 unit VKS.BumpMapping;
 

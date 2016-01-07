@@ -1,14 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MeshOptimizer.<p>
-      Mesh optimization for GLScene
-
-	<b>History : </b><font size=-1><ul>
-      <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
-      <li>21/08/03 - EG - Added basic mooStandardize support
-      <li>03/06/03 - EG - Creation
-	</ul></font>
+{
+    Mesh optimization for GLScene
+ 
 }
 unit VKS.MeshOptimizer;
 
@@ -16,13 +11,12 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //VKS
   VKS.VectorGeometry, VKS.VectorFileObjects, VKS.PersistentClasses,
   VKS.VectorLists, VKS.MeshUtils;
 
 
 type
-
    // TMeshOptimizerOptions
    //
    TMeshOptimizerOption = (mooStandardize, mooVertexCache, mooSortByMaterials,
@@ -157,7 +151,8 @@ begin
             normals.Free;
             texCoords.Free;
          end;
-      end else Assert(False, 'Standardization with multiple facegroups not supported... yet.');
+      end else
+        Assert(False, 'Standardization with multiple facegroups not supported');
    end;
 
    if (mooVertexCache in options) and (aMeshObject.Mode=momFaceGroups) then begin

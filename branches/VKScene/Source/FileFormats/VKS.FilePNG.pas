@@ -1,18 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FilePNG<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>02/02/15 - PW - Changed usage of LIBPNG unit with FMX tools
-        <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-        <li>31/05/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after VKS.State revision
-        <li>16/03/10 - Yar - Improved FPC compatibility
-        <li>05/03/10 - Yar - Creation
-   </ul><p>
-}
 unit VKS.FilePNG;
 
 interface
@@ -36,12 +25,12 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKuint;
+      const textureHandle: TGLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TVKInternalFormat); reintroduce;
+      const intFormat: TGLInternalFormat); reintroduce;
   end;
 
 implementation
@@ -110,16 +99,16 @@ end;
 //
 
 procedure TVKPNGImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKuint;
+  const textureHandle: TGLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TVKInternalFormat);
+  const intFormat: TGLInternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat: TVKInternalFormat;
-  glTarget: TVKEnum;
+  residentFormat: TGLInternalFormat;
+  glTarget: TGLenum;
 begin
   if not ((textureTarget = ttTexture2D)
     or (textureTarget = ttTextureRect)) then

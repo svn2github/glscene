@@ -1,25 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: Types3DS<p>
-
-   Implements the standard Teapot, build from evaluators.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>06/04/08 - DaStr - Fixed sizes of some array pointer types.
-                             Now $R- is not required for units that use them.
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>20/07/00 -  Egg  - Fixed array declarations (non null range to allow bound checks),
-                             Renamed "TIntegerList" to "TIntegerArray"
-   </ul></font>
+{
+   Implements the standard Teapot, build from evaluators.
+   This unit contains all of the data types used by the core routines.
+   Most of these are only used with the internal database,
+   created when a file is loaded.
 }
-
-// This unit contains all of the data types used by the core routines. Most of these are only used
-// with the internal database, created when a file is loaded.
-//
-// Last change - 03. October 1999
-//
-// (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
 unit Types3DS;
 

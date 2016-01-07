@@ -1,101 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.SceneRegister<p>
-
+{
   Registration unit for GLScene library components, property editors and
-  IDE experts.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>10/01/15 - PW - Converted to FMX platform
-  <li>10/03/13 - PW - Added TVKOctahedron and TVKTetrahedron registration
-  <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
-  <li>04/06/10 - Yar - Added GLSArchiveManager
-  <li>20/04/10 - Yar - Added GLSLanguage
-  <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
-  <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
-  <li>07/05/09 - DanB - Added TVKSoundLibrarySelectionEditor, TVKBaseSceneObjectSelectionEditor
-  <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
-  editors to interface section, and made their methods public.
-  <li>08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
-  + register TVKSLPostBlurShader
-  <li>05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
-  + GLMisc split, tidied up some old ifdefs
-  <li>24/03/08 - DaStr - Moved TVKMinFilter and TVKMagFilter from VKS.Utils.pas
-  to VKS.Graphics.pas (BugTracker ID = 1923844)
-  <li>21/03/08 - DaStr - Renamed TMMat to TVKTextureSharingShaderMaterial
-  <li>17/03/08 - mrqzzz - Registered TVKTextureSharingShader
-  <li>20/01/08 - DaStr - Registered TVKCapsule (thanks Dave Gravel)
-  Registered TVKGizmo
-  <li>06/11/07 - mrqzzz - Registered material picker for TVKActorProxy
-  <li>18/09/07 - DaStr - Added TVKMaterialProxy, TVKAbsoluteHUDText,
-  TVKResolutionIndependantHUDText
-  <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
-  (Bugtracker ID = 1684432)
-  <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>23/03/07 - fig - Added TVKSLProjectedTextures
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
-  <li>14/03/07 - DaStr - SpriteAnimation now makes use of
-  TVKLibMaterialName's property editor
-  <li>04/03/07 - DaStr - Added TVKPostShaderHolder
-  <li>28/02/07 - LIN   - Added GLShadowHDS
-  <li>25/02/07 - DaStr - Added TVKPostEffect
-  Moved all terrain components to a separate tab
-  Moved all shader components registration here
-  <li>23/02/07 - DaStr - Added TVKSLShader, TVKSLDiffuseSpecularShader,
-  TVKSLBumpShader, TVKAsmShader, TVKShaderCombiner
-  TVKSmoothNavigator, TVKSmoothUserInterface
-  Moved TVKLibMaterialNameProperty to the interface
-  section
-  <li>21/02/07 - DaStr - Added TVKActorProxy and TVKMotionBlur
-  <li>16/02/07 - DaStr - Added VKS.MaterialMultiProxy
-  <li>15/02/07 - DaStr - Added GLConsole and VKS.Atmosphere
-  <li>13/02/07 - LIN   - Added VKS.AsyncHDS and VKS.TexturedHDS
-  <li>06/02/07 - DaStr - Added GLSimpleNavigation
-  <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
-  procedures from other units to this one
-  <li>21/01/07 - DaStr - TVKLibMaterialNameProperty.Edit fixed
-  (to support IGLMaterialLibrarySupported)
-  <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
-  <li>13/10/04 - MRQZZZ - Added GLTrail
-  <li>03/07/04 - LR - Completly review to take account designtime for Linux
-  Note a problem with TVKColorProperty
-  <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
-  <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
-  <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
-  <li>08/04/02 - EG - Added verb to TVKSceneEditor
-  <li>26/01/02 - EG - Color property drawing in D6 too now
-  <li>22/08/01 - EG - D6 related changes
-  <li>08/07/01 - EG - Register for TVKExtrusionSolid (Uwe Raabe)
-  <li>18/02/01 - EG - Added Terrain/HeightData objects
-  <li>21/01/01 - EG - Enhanced GetAttributes for some property editors
-  <li>09/10/00 - EG - Added registration for TVKMultiPolygon
-  <li>09/06/00 - EG - Added TSoundFileProperty & TSoundNameProperty
-  <li>23/05/00 - EG - Added GLCollision
-  <li>16/05/00 - EG - Delphi 4 Compatibility
-  <li>28/04/00 - EG - Removed ObjectStock in TObjectManager (was useless)
-  <li>26/04/00 - EG - Added Categories in ObjectManager,
-  enhanced GetRegisteredSceneObjects
-  <li>16/04/00 - EG - Objects icons are now loaded from ressources using
-  ClassName (more VCL-like)
-  <li>11/04/00 - EG - Components now install under 'GLScene',
-  Fixed DestroySceneObjectList (thanks Uwe Raabe)
-  <li>06/04/00 - EG - Added TVKBehavioursProperty
-  <li>18/03/00 - EG - Added TVKImageClassProperty
-  <li>13/03/00 - EG - Updated TVKTextureImageProperty
-  <li>14/02/00 - EG - Added MaterialLibrary editor and picker
-  <li>09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
-  object-oriented and encapsulated
-  <li>06/02/00 - EG - Fixed TVKScenedEditor logic
-  (was causing Delphi IDE crashes on package unload)
-  <li>05/02/00 - EG - Added TVKColorProperty and TVKCoordinatesProperty
-  </ul></font>
+  IDE experts. 
+  
 }
 unit VKS.SceneRegister;
-
-// Registration unit for GLScene library
-// 30-DEC-99 ml: scene editor added, structural changes
 
 interface
 
@@ -284,7 +195,7 @@ type
 
   // TReuseableDefaultEditor
   //
-  { : Editor copied from DsgnIntf.<p>
+  { Editor copied from DsgnIntf. 
     Could have been avoided, if only that guy at Borland didn't chose to
     publish only half of the stuff (and that's not the only class with
     that problem, most of the subitems handling code in TVKSceneBaseObject is
@@ -308,7 +219,7 @@ type
 
   // TVKMaterialLibraryEditor
   //
-  { : Editor for material library.<p> }
+  { Editor for material library.  }
   TVKMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
@@ -328,7 +239,7 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TVKSoundLibrary.<p>
+  { Selection editor for TVKSoundLibrary. 
     Allows units to be added to the uses clause automatically when
     sound files are loaded into a TVKSoundLibrary at design-time. }
   TVKSoundLibrarySelectionEditor = class(TSelectionEditor)
@@ -336,7 +247,7 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TVKBaseSceneObject.<p>
+  { Selection editor for TVKBaseSceneObject. 
     Allows units to be added to the uses clause automatically when
     behaviours/effects are added to a TVKBaseSceneObject at design-time. }
   TVKBaseSceneObjectSelectionEditor = class(TSelectionEditor)
@@ -346,7 +257,7 @@ type
 
   // TVKSArchiveManagerEditor
   //
-  { : Editor for GLScene Archive Manager.<p> }
+  { Editor for GLScene Archive Manager.  }
   TVKSArchiveManagerEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
@@ -646,9 +557,9 @@ begin
   Result := vObjectManager;
 end;
 
-{$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKSceneViewerEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSceneViewerEditor'}{$ENDIF}
 // ExecuteVerb
 //
 
@@ -682,8 +593,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKSceneEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSceneEditor'}{$ENDIF}
 // Edit
 //
 
@@ -726,8 +637,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -827,16 +738,16 @@ begin
     SetOrdValue(0);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureProperty'}{$ENDIF}
 
 function TVKTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureImageProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureImageProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -854,8 +765,8 @@ begin
     Designer.Modified;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKImageClassProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKImageClassProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -904,8 +815,8 @@ begin
   Modified;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKColorProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKColorProperty'}{$ENDIF}
 
 procedure TVKColorProperty.Edit;
 var
@@ -1021,8 +932,8 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1069,8 +980,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1094,8 +1005,8 @@ begin
         Proc(Samples[i].Name);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKCoordinatesProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKCoordinatesProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1123,8 +1034,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKMaterialProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMaterialProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1143,8 +1054,8 @@ begin
     Modified;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKGUILayoutEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKGUILayoutEditor'}{$ENDIF}
 
 procedure TVKGUILayoutEditor.Edit;
 begin
@@ -1172,8 +1083,8 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
 // CheckEdit
 //
 
@@ -1241,8 +1152,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKMaterialLibraryEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMaterialLibraryEditor'}{$ENDIF}
 
 // EditProperty
 //
@@ -1276,8 +1187,8 @@ begin
   Result := 1
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialNameProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1311,8 +1222,8 @@ begin
     SetStrValue(buf);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKAnimationNameProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKAnimationNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1343,8 +1254,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKBaseSceneObjectSelectionEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKBaseSceneObjectSelectionEditor'}{$ENDIF}
 
 procedure TVKBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1367,8 +1278,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKSoundLibrarySelectionEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSoundLibrarySelectionEditor'}{$ENDIF}
 
 procedure TVKSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
@@ -1390,8 +1301,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKSArchiveManagerEditor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSArchiveManagerEditor'}{$ENDIF}
 
 procedure TVKSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
@@ -1423,8 +1334,8 @@ begin
   Result := 1
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKMaterialComponentNameProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMaterialComponentNameProperty'}{$ENDIF}
 
 procedure TVKMaterialComponentNameProperty.Edit;
 var
@@ -1503,8 +1414,8 @@ begin
       .GetNames(Proc, TVKASMVertexProgram);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
 
 function TPictureFileProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1522,8 +1433,8 @@ begin
   Modified;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
 
 procedure TShaderFileProperty.Edit;
 var
@@ -1547,8 +1458,8 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
 
 procedure TAsmProgFileProperty.Edit;
 var
@@ -1572,8 +1483,8 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
 
 function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1605,8 +1516,8 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TVKShaderEditorProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKShaderEditorProperty'}{$ENDIF}
 
 function TVKShaderEditorProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1662,7 +1573,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ******************************************************************************
 
 procedure GLRegisterPropertiesInCategories;
@@ -2294,7 +2205,7 @@ begin
   RegisterSceneObject(TVKAdvancedLabel, 'GLAdvancedLabel', glsOCGuiObjects,
     HInstance);
   RegisterSceneObject(TVKScrollbar, 'GLScrollbar', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TVKStringGrid, 'GLStringGrid', glsOCGuiObjects,
+  RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects,
     HInstance);
   RegisterSceneObject(TVKCustomControl, 'GLBitmapControl', glsOCGuiObjects,
     HInstance);

@@ -1,37 +1,21 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.VectorTypes<p>
-
-   Defines base vector types for use in Geometry.pas and OpenGL1x.pas.<p>
+{
+   Defines base vector types for use in Geometry.pas and OpenGL1x.pas. 
 
    The sole aim of this unit is to limit dependency between the Geometry
    and OpenGL1x units by introducing the base compatibility types
-   (and only the *base* types).<p>
+   (and only the *base* types). 
 
-   Conventions:<ul>
-      <li><b>d</b> is used for Double precision floating points values (64 bits)
-      <li><b>f</b> is used for Single precision floating points values (32 bits)
-      <li><b>i</b> is used for 32 bits signed integers (longint)
-      <li><b>s</b> is uses for 16 bits signed integers (smallint)
-   </ul>
+   Conventions: 
+        d  is used for Double precision floating points values (64 bits)
+        f  is used for Single precision floating points values (32 bits)
+        i  is used for 32 bits signed integers (longint)
+        s  is uses for 16 bits signed integers (smallint)
 
-   Note : D3D types untested.<p>
-
-	<b>History : </b><font size=-1><ul>
-    <li>10/12/14 - PW - Renamed from "VectorTypes.pas" to "VKS.VectorTypes.pas"
-    <li>18/12/12 - PW - Restored CPP compatibility: changed arrays to records
-    <li>21/02/11 - Yar - Added half and signed byte vectors
-    <li>03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
-    <li>13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
-    <li>19/12/04 - PhP - Added byte vectors
-    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-                             move PAffineVectorArray, PVectorArray and PMatrixArray
-                             from VKS.VectorGeometry to this Unit
-    <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-    <li>24/08/03 - PhP - Added smallint vectors
-    <li>04/07/01 - EG - Creation
-  </ul>
+   Note : D3D types untested. 
+     
 }
 unit VKS.VectorTypes;
 

@@ -1,18 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Coordinates<p>
-
-  Coordinate related classes.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
-  <li>30/06/11 - DaStr - Added TVKCustomCoordinates.Coordinate default property
-  <li>05/09/10 - Yar - Fix notification in TVKCustomCoordinates.NotifyChange (thanks C4)
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses
-  <li>05/10/08 - DanB - Created, from GLMisc.pas
-  </ul></font>
+{
+  Coordinate related classes. 
 }
+
 unit VKS.Coordinates;
 
 interface
@@ -29,21 +21,21 @@ type
 
   // TVKCoordinatesStyle
   //
-  { : Identifie le type de données stockées au sein d'un TVKCustomCoordinates.<p>
-    <ul><li>csPoint2D : a simple 2D point (Z=0, W=0)
-    <ul><li>csPoint : un point (W=1)
-    <li>csVector : un vecteur (W=0)
-    <li>csUnknown : aucune contrainte
-    </ul> }
+  { Identifie le type de données stockées au sein d'un TVKCustomCoordinates. 
+      csPoint2D : a simple 2D point (Z=0, W=0)
+      csPoint : un point (W=1)
+     csVector : un vecteur (W=0)
+     csUnknown : aucune contrainte
+      }
   TVKCoordinatesStyle = (CsPoint2D, CsPoint, CsVector, CsUnknown);
 
   // TVKCustomCoordinates
   //
-  { : Stores and homogenous vector.<p>
+  { Stores and homogenous vector. 
     This class is basicly a container for a TVector, allowing proper use of
     delphi property editors and editing in the IDE. Vector/Coordinates
-    manipulation methods are only minimal.<br>
-    Handles dynamic default values to save resource file space.<p> }
+    manipulation methods are only minimal. 
+    Handles dynamic default values to save resource file space.  }
   TVKCustomCoordinates = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
@@ -56,10 +48,10 @@ type
     function GetAsAffineVector: TAffineVector;
     function GetAsPoint2D: TVector2f;
     function GetAsString: String;
-    function GetCoordinate(const AIndex: Integer): TVKFloat;
-    procedure SetCoordinate(const AIndex: Integer; const AValue: TVKFloat);
-    function GetDirectCoordinate(const Index: Integer): TVKFloat;
-    procedure SetDirectCoordinate(const Index: Integer; const AValue: TVKFloat);
+    function GetCoordinate(const AIndex: Integer): TGLfloat;
+    procedure SetCoordinate(const AIndex: Integer; const AValue: TGLfloat);
+    function GetDirectCoordinate(const Index: Integer): TGLfloat;
+    procedure SetDirectCoordinate(const Index: Integer; const AValue: TGLfloat);
 
   protected
     { Protected Declarations }
@@ -81,9 +73,9 @@ type
     procedure Initialize(const Value: TVector);
     procedure NotifyChange(Sender: TObject); override;
 
-    { : Identifies the coordinates styles.<p>
+    { Identifies the coordinates styles. 
       The property is NOT persistent, csUnknown by default, and should be
-      managed by owner object only (internally).<p>
+      managed by owner object only (internally). 
       It is used by the TVKCustomCoordinates for internal "assertion" checks
       to detect "misuses" or "misunderstandings" of what the homogeneous
       coordinates system implies. }
@@ -100,8 +92,8 @@ type
     procedure Normalize;
     procedure Invert;
     procedure Scale(Factor: Single);
-    function VectorLength: TVKFloat;
-    function VectorNorm: TVKFloat;
+    function VectorLength: TGLfloat;
+    function VectorNorm: TGLfloat;
     function MaxXYZ: Single;
     function Equals(const AVector: TVector): Boolean; reintroduce;
 
@@ -122,54 +114,54 @@ type
     procedure SetToZero;
     function AsAddress: PGLFloat;
 
-    { : The coordinates viewed as a vector.<p>
+    { The coordinates viewed as a vector. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
 
-    { : The coordinates viewed as an affine vector.<p>
+    { The coordinates viewed as an affine vector. 
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead.<br>
+      if you don't want so, use DirectVector instead. 
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;
 
-    { : The coordinates viewed as a 2D point.<p>
+    { The coordinates viewed as a 2D point. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;
 
-    property X: TVKFloat index 0 read GetCoordinate write SetCoordinate;
-    property Y: TVKFloat index 1 read GetCoordinate write SetCoordinate;
-    property Z: TVKFloat index 2 read GetCoordinate write SetCoordinate;
-    property W: TVKFloat index 3 read GetCoordinate write SetCoordinate;
+    property X: TGLfloat index 0 read GetCoordinate write SetCoordinate;
+    property Y: TGLfloat index 1 read GetCoordinate write SetCoordinate;
+    property Z: TGLfloat index 2 read GetCoordinate write SetCoordinate;
+    property W: TGLfloat index 3 read GetCoordinate write SetCoordinate;
 
-    property Coordinate[const AIndex: Integer]: TVKFloat read GetCoordinate
+    property Coordinate[const AIndex: Integer]: TGLfloat read GetCoordinate
       write SetCoordinate; default;
 
-    { : The coordinates, in-between brackets, separated by semi-colons. }
+    { The coordinates, in-between brackets, separated by semi-colons. }
     property AsString: String read GetAsString;
 
     // : Similar to AsVector but does not trigger notification events
     property DirectVector: TVector read FCoords write SetDirectVector;
-    property DirectX: TVKFloat index 0 read GetDirectCoordinate
+    property DirectX: TGLfloat index 0 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectY: TVKFloat index 1 read GetDirectCoordinate
+    property DirectY: TGLfloat index 1 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectZ: TVKFloat index 2 read GetDirectCoordinate
+    property DirectZ: TGLfloat index 2 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectW: TVKFloat index 3 read GetDirectCoordinate
+    property DirectW: TGLfloat index 3 read GetDirectCoordinate
       write SetDirectCoordinate;
   end;
 
-  { : A TVKCustomCoordinates that publishes X, Y properties. }
+  { A TVKCustomCoordinates that publishes X, Y properties. }
   TVKCoordinates2 = class(TVKCustomCoordinates)
   published
     property X stored False;
     property Y stored False;
   end;
 
-  { : A TVKCustomCoordinates that publishes X, Y, Z properties. }
+  { A TVKCustomCoordinates that publishes X, Y, Z properties. }
   TVKCoordinates3 = class(TVKCustomCoordinates)
   published
     property X stored False;
@@ -179,7 +171,7 @@ type
 
   // TVKCoordinates4
   //
-  { : A TVKCustomCoordinates that publishes X, Y, Z, W properties. }
+  { A TVKCustomCoordinates that publishes X, Y, Z, W properties. }
   TVKCoordinates4 = class(TVKCustomCoordinates)
   published
     property X stored False;
@@ -432,14 +424,14 @@ end;
 
 // VectorLength
 //
-function TVKCustomCoordinates.VectorLength: TVKFloat;
+function TVKCustomCoordinates.VectorLength: TGLfloat;
 begin
   Result := VKS.VectorGeometry.VectorLength(FCoords);
 end;
 
 // VectorNorm
 //
-function TVKCustomCoordinates.VectorNorm: TVKFloat;
+function TVKCustomCoordinates.VectorNorm: TGLfloat;
 begin
   Result := VKS.VectorGeometry.VectorNorm(FCoords);
 end;
@@ -497,7 +489,7 @@ end;
 // SetDirectVector
 //
 procedure TVKCustomCoordinates.SetDirectCoordinate(const Index: Integer;
-  const AValue: TVKFloat);
+  const AValue: TGLfloat);
 begin
   FCoords.V[index] := AValue;
 end;
@@ -668,7 +660,7 @@ end;
 // SetCoordinate
 //
 procedure TVKCustomCoordinates.SetCoordinate(const AIndex: Integer;
-  const AValue: TVKFloat);
+  const AValue: TGLfloat);
 begin
   FCoords.V[AIndex] := AValue;
   NotifyChange(Self);
@@ -676,13 +668,13 @@ end;
 
 // GetCoordinate
 //
-function TVKCustomCoordinates.GetCoordinate(const AIndex: Integer): TVKFloat;
+function TVKCustomCoordinates.GetCoordinate(const AIndex: Integer): TGLfloat;
 begin
   Result := FCoords.V[AIndex];
 end;
 
 function TVKCustomCoordinates.GetDirectCoordinate(
-  const Index: Integer): TVKFloat;
+  const Index: Integer): TGLfloat;
 begin
   Result := FCoords.V[index]
 end;

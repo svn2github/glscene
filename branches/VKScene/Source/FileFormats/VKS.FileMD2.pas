@@ -1,15 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileMD2<p>
-
-	Quake2 MD2 vector file format implementation.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from VKS.VectorFileObjects.pas
-	</ul></font>
+{
+	Quake2 MD2 vector file format implementation. 
 }
 unit VKS.FileMD2;
 
@@ -24,10 +17,10 @@ uses
 type
    // TVKMD2VectorFile
    //
-   {: The MD2 vector file (Quake2 actor file).<p>
+   { The MD2 vector file (Quake2 actor file). 
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TVKActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap).<p>
+      (the whole mesh uses a single texture bitmap). 
       Based on code by Roger Cao. }
    TVKMD2VectorFile = class(TVectorFile)
       public
@@ -40,10 +33,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-
 // ------------------
 // ------------------ TVKMD2VectorFile ------------------
 // ------------------

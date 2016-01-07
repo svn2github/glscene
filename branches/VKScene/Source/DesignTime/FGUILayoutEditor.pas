@@ -1,3 +1,6 @@
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
 unit FGUILayoutEditor;
 
 interface

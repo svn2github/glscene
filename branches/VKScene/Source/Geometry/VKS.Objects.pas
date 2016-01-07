@@ -1,146 +1,16 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.Objects<p>
-
-  Implementation of basic scene objects plus some management routines.<p>
+{ 
+  Implementation of basic scene objects plus some management routines.
 
   All objects declared in this unit are part of the basic GLScene package,
-  these are only simple objects and should be kept simple and lightweight.<br>
+  these are only simple objects and should be kept simple and lightweight.
 
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
-  objects can be found VKS.GeomObjects.<p>
+  objects can be found VKS.GeomObjects.
 
-  <b>History : </b><font size=-1><ul>
-  <li>12/03/13 - Yar - Added TVKSuperellipsoid (contributed by Eric Hardinge)
-  <li>10/03/13 - PW - Added OctahedronBuildList and TetrahedronBuildList
-  <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
-                 getter and a setter methods
-  <li>23/03/11 - Yar - Bugfixed TVKPlane.Assign (thanks ltyrosine)
-                       Replaced plane primitives to triangles, added tangent and binormal attributes
-  <li>29/11/10 - Yar - Bugfixed client color array enabling in TVKPoints.BuildList when it not used (thanks rbenetis)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>29/06/10 - Yar - Added loColorLogicXor to TVKLines.Options
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TVKDummyCube.DoRender
-  <li>05/03/10 - DanB - More state added to TVKStateCache
-  <li>22/02/10 - Yar - Removed NoZWrite in TVKPlane, TVKSprite
-                 Now use Material.DepthProperties
-  <li>28/12/09 - DanB - Modifying TVKLineBase.LineColor now calls StructureChanged
-  <li>13/03/09 - DanB - ScreenRect now accepts a buffer parameter, rather than using CurrentBuffer
-  <li>05/10/08 - DaStr - Added lsmLoop support to TVKLines
-                (thanks Alejandro Leon Escalera) (BugtrackerID = 2084250)
-  <li>22/01/08 - DaStr - Fixed rendering of TVKPoints
-                (thanks Kapitan) (BugtrackerID = 1876920)
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                 (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>15/02/07 - DaStr - Global $R- removed, added default values to
-                 TVKSprite.NoZWrite, MirrorU, MirrorV
-  <li>14/01/07 - DaStr - Fixed TVKCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
-  <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
-  <li>19/10/06 - LC - Fixed TVKLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
-  <li>08/10/05 - Mathx - Fixed TVKLines.nodes.assign problem (thanks to  Yong Yoon Kit);
-                 Also fixed a TVKLineBase.assign problem (object being assigned to
-                 was refering the base lists, not copying them).
-                 Bugtracker ID=830846
-  <li>17/01/05 - SG - Added color support for bezier style TVKLines
-  <li>03/12/04 - MF - Added TVKSprite.AxisAlignedDimensionsUnscaled override
-  <li>06/07/04 - SG - TVKCube.RayCastIntersect fix (Eric Pascual)
-  <li>20/01/04 - SG - Added IcosahedronBuildList
-  <li>30/11/03 - MF - Added TVKSphere.GenerateSilhouette - it now takes the
-                      stacks/slices of the sphere into account
-  <li>10/09/03 - EG - Introduced TVKNodedLines
-  <li>18/08/03 - SG - Added MirrorU and MirrorV to TVKSprite for mirroring textures
-  <li>21/07/03 - EG - TVKTeapot moved to new GLTeapot unit,
-                      TVKDodecahedron moved to new GLPolyhedron unit,
-                      TVKCylinder, TVKCone, TVKTorus, TVKDisk, TVKArrowLine,
-                      TVKAnnulus, TVKFrustrum and TVKPolygon moved to new
-                      VKS.GeomObjects unit
-  <li>16/07/03 - EG - Style changes and cleanups
-  <li>19/06/03 - MF - Added GenerateSilhouette to TVKCube and TVKPlane.
-  <li>13/06/03 - EG - Fixed TVKAnnulus.RayCastIntersect (Alexandre Hirzel)
-  <li>03/06/03 - EG - Added TVKAnnulus.RayCastIntersect (Alexandre Hirzel)
-  <li>01/05/03 - SG - Added NURBS Curve to TVKLines (color not supported yet)
-  <li>14/04/03 - SG - Added a Simple Bezier Spline to TVKLines (color not supported yet)
-  <li>02/04/03 - EG - TVKPlane.RayCastIntersect fix (Erick Schuitema)
-  <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
-  <li>22/01/03 - EG - TVKCube.RayCastIntersect fixes (Dan Bartlett)
-  <li>10/01/03 - EG - TVKCube.RayCastIntersect (Stuart Gooding)
-  <li>08/01/03 - RC - Added TVKPlane.XScope and YScope, to use just a part of the texture
-  <li>27/09/02 - EG - Added TVKPointParameters
-  <li>24/07/02 - EG - Added TVKCylinder.Alignment
-  <li>23/07/02 - EG - Added TVKPoints (experimental)
-  <li>20/07/02 - EG - TVKCylinder.RayCastIntersect and TVKPlane.RayCastIntersect
-  <li>18/07/02 - EG - Added TVKCylinder.Align methods
-  <li>07/07/02 - EG - Added TVKPlane.Style
-  <li>03/07/02 - EG - TVKPolygon now properly setups normals (filippo)
-  <li>17/03/02 - EG - Support for transparent lines
-  <li>02/02/02 - EG - Fixed TVKSprite change notification
-  <li>26/01/02 - EG - TVKPlane & TVKCube now osDirectDraw
-  <li>20/01/02 - EG - TVKSpaceText moved to GLSpaceText
-  <li>22/08/01 - EG - TVKTorus.RayCastIntersect fixes
-  <li>30/07/01 - EG - Updated AxisAlignedDimensions implems
-  <li>16/03/01 - EG - TVKCylinderBase, changed default Stacks from 8 to 4
-  <li>27/02/01 - EG - Fix in TVKCube texcoords, added TVKFrustrum (thx Robin Gerrets)
-  <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
-  <li>05/02/01 - EG - Minor changes to TVKCube.BuildList
-  <li>21/01/01 - EG - BaseProjectionMatrix fix for TVKHUDSprite (picking issue),
-  TVKHUDSprite moved to VKS.HUDObjects
-  <li>14/01/01 - EG - Fixed TVKSphere texture coordinates
-  <li>13/01/01 - EG - TVKSprite matrix compatibility update
-  <li>09/01/01 - EG - TVKSpaceText now handles its TFont.OnFontChange
-  <li>08/01/01 - EG - Added TVKLinesNode (color support) and Node size control
-  <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
-                      updated TVKSprite.BuildList to work with new matrices
-  <li>14/11/00 - EG - Added TVKDummyCube.Destroy (thx Airatz)
-  <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
-  <li>06/08/00 - EG - TRotationSolid renamed to TVKRevolutionSolid & moved to GLExtrusion
-  <li>04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
-  <li>02/08/00 - EG - Added TVKPolygonBase
-  <li>19/07/00 - EG - Added TVKHUDSprite
-  <li>18/07/00 - EG - Added TVKRevolutionSolid
-  <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
-                      Added TVKLineBase (split of TVKLines),
-                      TVKDummyCube now uses osDirectDraw instead of special behaviour
-  <li>13/07/00 - EG - Added TVKArrowLine (code by Aaron Hochwimmer)
-  <li>28/06/00 - EG - Support for "ObjectStyle"
-  <li>23/06/00 - EG - Reduced default Loop count for TVKDisk
-  <li>18/06/00 - EG - TVKMesh and accompanying stuff moved to GLMesh
-  <li>14/06/00 - EG - Added Capacity to TVertexList
-  <li>09/06/00 - EG - First row of Geometry-related upgrades
-  <li>08/06/00 - EG - Added ReleaseFontManager, fixed TVKSpaceText DestroyList,
-  <li>01/06/00 - EG - Added TVKAnnulus (code by Aaron Hochwimmer)
-  <li>29/05/00 - EG - TVKLines now uses TVKNode/TVKNodes
-  <li>28/05/00 - EG - Added persistence ability to TVKLines,
-                      Added defaults for all TVKLines properties
-  <li>27/05/00 - EG - Moved in RogerCao's TVKLines object, added a TLineNode
-                      class (currently private) and various enhancements + fixes,
-                      DodecahedronBuildList now available as a procedure,
-                      CubeWireframeBuildList now available as a procedure
-  <li>26/05/00 - RoC - Added division property to TVKLines, and Spline supported
-  <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
-  <li>14/05/00 - EG - Removed Top/Bottom checks for TVKSphere,
-  Added mmTriangleStrip support in CalcNormals
-  <li>08/05/00 - EG - Uncommented DisableAutoTexture in TVKSpaceText.BuildList
-  <li>07/05/00 - RoC - TVKLines added, to show a list of vertex
-  <li>26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
-  <li>18/04/00 - EG - Overriden TVKDummyCube.Render
-  <li>16/04/00 - EG - FontManager now published and auto-creating
-  <li>12/04/00 - EG - Added TVKCylinderBase.Loops (fixes a bug, thanks Uwe)
-  <li>24/03/00 - EG - Added Rotation to TVKSprite, fixed sprite size
-  <li>20/03/00 - EG - Enhanced FontManager
-  <li>17/03/00 - EG - Fixed SpaceText glBaseList bug,
-  TVKSprite now uses a transposition of the globalmatrix
-  <li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
-  <li>14/03/00 - EG - Added subobjects Barycenter support for TVKDummyCube
-  <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
-  FreeForm and vector file stuff moved to new VKS.VectorFileObjects
-  <li>08/02/00 - EG - Added TVKDummyCube
-  <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
-                      TVertexList.AddVertex, "default"s to properties
-  </ul></font>
 }
 unit VKS.Objects;
 
@@ -150,7 +20,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-
+  //VKS
   VKS.VectorGeometry, VKS.VectorTypes, VKS.Scene, VKS.OpenGLAdapter,
   VKS.OpenGLTokens, VKS.VectorLists, VKS.CrossPlatform, VKS.Context,
   VKS.Silhouette, VKS.Color, VKS.RenderContextInfo, VKS.BaseClasses,
@@ -174,17 +44,17 @@ type
 
   // TVKDummyCube
   //
-  { : A simple cube, invisible at run-time.<p>
+  { A simple cube, invisible at run-time. 
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
-    mechanism needs be described, you can use DummyCubes.<br>
-    DummyCube's barycenter is its children's barycenter.<br>
+    mechanism needs be described, you can use DummyCubes. 
+    DummyCube's barycenter is its children's barycenter. 
     The DummyCube can optionnally amalgamate all its children into a single
     display list (see Amalgamate property). }
   TVKDummyCube = class(TVKCameraInvariantObject)
   private
     { Private Declarations }
-    FCubeSize: TVKFloat;
+    FCubeSize: TGLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
     FGroupList: TVKListHandle;
@@ -192,7 +62,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetCubeSize(const val: TVKFloat);
+    procedure SetCubeSize(const val: TGLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetAmalgamate(const val: Boolean);
@@ -216,32 +86,32 @@ type
 
   published
     { Published Declarations }
-    property CubeSize: TVKFloat read FCubeSize write SetCubeSize;
+    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
-    { : If true the dummycube's edges will be visible at runtime.<p>
+    { If true the dummycube's edges will be visible at runtime. 
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime
       write SetVisibleAtRunTime default False;
-    { : Amalgamate the dummy's children in a single OpenGL entity.<p>
+    { Amalgamate the dummy's children in a single OpenGL entity. 
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
       situations, however, this means that changes to the children will
-      be ignored untill you call StructureChanged on the dummy cube.<br>
+      be ignored untill you call StructureChanged on the dummy cube. 
       Some objects, that have their own display list management, may not
       be compatible with this behaviour. This will also prevents sorting
-      and culling to operate as usual.<p>
+      and culling to operate as usual. 
       In short, this features is best used for static, non-transparent
       geometry, or when the point of view won't change over a large
       number of frames. }
     property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
       default False;
-    { : Camera Invariance Options.<p>
+    { Camera Invariance Options. 
       These options allow to "deactivate" sensitivity to camera, f.i. by
       centering the object on the camera or ignoring camera orientation. }
     property CamInvarianceMode default cimNone;
-    { : Event for custom visibility determination.<p>
+    { Event for custom visibility determination. 
       Event handler should return True if the dummycube and its children
       are to be considered visible for the current render. }
     property OnVisibilityDetermination: TVKVisibilityDeterminationEvent
@@ -255,15 +125,15 @@ type
 
   // TVKPlane
   //
-  { : A simple plane object.<p>
+  { A simple plane object. 
     Note that a plane is always made of a single quad (two triangles) and the
     tiling is only applied to texture coordinates. }
   TVKPlane = class(TVKSceneObject)
   private
     { Private Declarations }
-    FXOffset, FYOffset: TVKFloat;
-    FXScope, FYScope: TVKFloat;
-    FWidth, FHeight: TVKFloat;
+    FXOffset, FYOffset: TGLfloat;
+    FXScope, FYScope: TGLfloat;
+    FWidth, FHeight: TGLfloat;
     FXTiles, FYTiles: Cardinal;
     FStyle: TVKPlaneStyles;
     FMesh: array of array of TVertexRec;
@@ -271,12 +141,12 @@ type
     { Protected Declarations }
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
-    procedure SetXOffset(const Value: TVKFloat);
-    procedure SetXScope(const Value: TVKFloat);
+    procedure SetXOffset(const Value: TGLfloat);
+    procedure SetXScope(const Value: TGLfloat);
     function StoreXScope: Boolean;
     procedure SetXTiles(const Value: Cardinal);
-    procedure SetYOffset(const Value: TVKFloat);
-    procedure SetYScope(const Value: TVKFloat);
+    procedure SetYOffset(const Value: TGLfloat);
+    procedure SetYScope(const Value: TGLfloat);
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TVKPlaneStyles);
@@ -295,23 +165,23 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-    { : Computes the screen coordinates of the smallest rectangle encompassing the plane.<p>
+    { Computes the screen coordinates of the smallest rectangle encompassing the plane. 
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
 
-    { : Computes the signed distance to the point.<p>
+    { Computes the signed distance to the point. 
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
 
   published
     { Public Declarations }
-    property Height: TVKFloat read FHeight write SetHeight;
-    property Width: TVKFloat read FWidth write SetWidth;
-    property XOffset: TVKFloat read FXOffset write SetXOffset;
-    property XScope: TVKFloat read FXScope write SetXScope stored StoreXScope;
+    property Height: TGLfloat read FHeight write SetHeight;
+    property Width: TGLfloat read FWidth write SetWidth;
+    property XOffset: TGLfloat read FXOffset write SetXOffset;
+    property XScope: TGLfloat read FXScope write SetXScope stored StoreXScope;
     property XTiles: Cardinal read FXTiles write SetXTiles default 1;
-    property YOffset: TVKFloat read FYOffset write SetYOffset;
-    property YScope: TVKFloat read FYScope write SetYScope stored StoreYScope;
+    property YOffset: TGLfloat read FYOffset write SetYOffset;
+    property YScope: TGLfloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
     property Style: TVKPlaneStyles read FStyle write SetStyle
       default [psSingleQuad, psTileTexture];
@@ -319,23 +189,23 @@ type
 
   // TVKSprite
   //
-  { : A rectangular area, perspective projected, but always facing the camera.<p>
+  { A rectangular area, perspective projected, but always facing the camera. 
     A TVKSprite is perspective projected and as such is scaled with distance,
     if you want a 2D sprite that does not get scaled, see TVKHUDSprite. }
   TVKSprite = class(TVKSceneObject)
   private
     { Private Declarations }
-    FWidth: TVKFloat;
-    FHeight: TVKFloat;
-    FRotation: TVKFloat;
+    FWidth: TGLfloat;
+    FHeight: TGLfloat;
+    FRotation: TGLfloat;
     FAlphaChannel: Single;
     FMirrorU, FMirrorV: Boolean;
 
   protected
     { Protected Declarations }
-    procedure SetWidth(const val: TVKFloat);
-    procedure SetHeight(const val: TVKFloat);
-    procedure SetRotation(const val: TVKFloat);
+    procedure SetWidth(const val: TGLfloat);
+    procedure SetHeight(const val: TGLfloat);
+    procedure SetRotation(const val: TGLfloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetMirrorU(const val: Boolean);
@@ -350,23 +220,23 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
-    procedure SetSize(const Width, Height: TVKFloat);
+    procedure SetSize(const Width, Height: TGLfloat);
     // : Set width and height to "size"
-    procedure SetSquareSize(const Size: TVKFloat);
+    procedure SetSquareSize(const Size: TGLfloat);
 
   published
     { Published Declarations }
-    { : Sprite Width in 3D world units. }
-    property Width: TVKFloat read FWidth write SetWidth;
-    { : Sprite Height in 3D world units. }
-    property Height: TVKFloat read FHeight write SetHeight;
-    { : This the ON-SCREEN rotation of the sprite.<p>
+    { Sprite Width in 3D world units. }
+    property Width: TGLfloat read FWidth write SetWidth;
+    { Sprite Height in 3D world units. }
+    property Height: TGLfloat read FHeight write SetHeight;
+    { This the ON-SCREEN rotation of the sprite. 
       Rotatation=0 is handled faster. }
-    property Rotation: TVKFloat read FRotation write SetRotation;
-    { : If different from 1, this value will replace that of Diffuse.Alpha }
+    property Rotation: TGLfloat read FRotation write SetRotation;
+    { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
       stored StoreAlphaChannel;
-    { : Reverses the texture coordinates in the U and V direction to mirror
+    { Reverses the texture coordinates in the U and V direction to mirror
       the texture. }
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
     property MirrorV: Boolean read FMirrorV write SetMirrorV default False;
@@ -379,7 +249,7 @@ type
 
   // TVKPointParameters
   //
-  { : Point parameters as in ARB_point_parameters.<p>
+  { Point parameters as in ARB_point_parameters. 
     Make sure to read the ARB_point_parameters spec if you want to understand
     what each parameter does. }
   TVKPointParameters = class(TVKUpdateAbleObject)
@@ -419,14 +289,14 @@ type
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
     property FadeTresholdSize: Single read FFadeTresholdSize
       write SetFadeTresholdSize stored False;
-    { : Components XYZ are for constant, linear and quadratic attenuation. }
+    { Components XYZ are for constant, linear and quadratic attenuation. }
     property DistanceAttenuation: TVKCoordinates read FDistanceAttenuation
       write SetDistanceAttenuation;
   end;
 
   // TVKPoints
   //
-  { : Renders a set of non-transparent colored points.<p>
+  { Renders a set of non-transparent colored points. 
     The points positions and their color are defined through the Positions
     and Colors properties. }
   TVKPoints = class(TVKImmaterialSceneObject)
@@ -458,32 +328,32 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
 
-    { : Points positions.<p>
+    { Points positions. 
       If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
-    { : Defines the points colors.<p>
-      <ul>
-      <li>if empty, point color will be opaque white
-      <li>if contains a single color, all points will use that color
-      <li>if contains N colors, the first N points (at max) will be rendered
+    { Defines the points colors. 
+       
+       if empty, point color will be opaque white
+       if contains a single color, all points will use that color
+       if contains N colors, the first N points (at max) will be rendered
       using the corresponding colors.
-      </ul> }
+        }
     property Colors: TVectorList read FColors write SetColors;
 
   published
     { Published Declarations }
-    { : If true points do not write their Z to the depth buffer. }
+    { If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
-    { : Tells the component if point coordinates are static.<p>
+    { Tells the component if point coordinates are static. 
       If static, changes to the positions should be notified via an
-      explicit StructureChanged call, or may not refresh.<br>
+      explicit StructureChanged call, or may not refresh. 
       Static sets of points may render faster than dynamic ones. }
     property Static: Boolean read FStatic write SetStatic;
-    { : Point size, all points have a fixed size. }
+    { Point size, all points have a fixed size. }
     property Size: Single read FSize write SetSize stored StoreSize;
-    { : Points style.<p> }
+    { Points style.  }
     property Style: TVKPointStyle read FStyle write SetStyle default psSquare;
-    { : Point parameters as of ARB_point_parameters.<p>
+    { Point parameters as of ARB_point_parameters. 
       Allows to vary the size and transparency of points depending
       on their distance to the observer. }
     property PointParameters: TVKPointParameters read FPointParameters
@@ -493,18 +363,18 @@ type
 
   // TLineNodesAspect
   //
-  { : Possible aspects for the nodes of a TLine. }
+  { Possible aspects for the nodes of a TLine. }
   TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
 
   // TLineSplineMode
   //
-  { : Available spline modes for a TLine. }
+  { Available spline modes for a TLine. }
   TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
     lsmSegments, lsmLoop);
 
   // TVKLinesNode
   //
-  { : Specialized Node for use in a TVKLines objects.<p>
+  { Specialized Node for use in a TVKLines objects. 
     Adds a Color property (TVKColor). }
   TVKLinesNode = class(TVKNode)
   private
@@ -526,7 +396,7 @@ type
   published
     { Published Declarations }
 
-    { : The node color.<p>
+    { The node color. 
       Can also defined the line color (interpolated between nodes) if
       loUseNodeColorForLines is set (in TVKLines). }
     property Color: TVKColor read FColor write SetColor stored StoreColor;
@@ -534,7 +404,7 @@ type
 
   // TVKLinesNodes
   //
-  { : Specialized collection for Nodes in a TVKLines objects.<p>
+  { Specialized collection for Nodes in a TVKLines objects. 
     Stores TVKLinesNode items. }
   TVKLinesNodes = class(TVKNodes)
   public
@@ -546,26 +416,26 @@ type
 
   // TVKLineBase
   //
-  { : Base class for line objects.<p>
+  { Base class for line objects. 
     Introduces line style properties (width, color...). }
   TVKLineBase = class(TVKImmaterialSceneObject)
   private
     { Private Declarations }
     FLineColor: TVKColor;
-    FLinePattern: TVKushort;
+    FLinePattern: TGLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
 
   protected
     { Protected Declarations }
     procedure SetLineColor(const Value: TVKColor);
-    procedure SetLinePattern(const Value: TVKushort);
+    procedure SetLinePattern(const Value: TGLushort);
     procedure SetLineWidth(const val: Single);
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
 
-    { : Setup OpenGL states according to line style.<p>
-      You must call RestoreLineStyle after drawing your lines.<p>
+    { Setup OpenGL states according to line style. 
+      You must call RestoreLineStyle after drawing your lines. 
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TRenderContextInfo);
 
@@ -578,19 +448,19 @@ type
 
   published
     { Published Declarations }
-    { : Indicates if OpenGL should smooth line edges.<p>
+    { Indicates if OpenGL should smooth line edges. 
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
     property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
       default False;
-    { : Default color of the lines. }
+    { Default color of the lines. }
     property LineColor: TVKColor read FLineColor write SetLineColor;
-    { : Bitwise line pattern.<p>
+    { Bitwise line pattern. 
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
-    property LinePattern: TVKushort read FLinePattern write SetLinePattern
+    property LinePattern: TGLushort read FLinePattern write SetLinePattern
       default $FFFF;
-    { : Default width of the lines. }
+    { Default width of the lines. }
     property LineWidth: Single read FLineWidth write SetLineWidth
       stored StoreLineWidth;
     property Visible;
@@ -598,7 +468,7 @@ type
 
   // TVKNodedLines
   //
-  { : Class that defines lines via a series of nodes.<p>
+  { Class that defines lines via a series of nodes. 
     Base class, does not render anything. }
   TVKNodedLines = class(TVKLineBase)
   private
@@ -630,23 +500,23 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
     procedure AddNode(const coords: TVKCoordinates); overload;
-    procedure AddNode(const X, Y, Z: TVKFloat); overload;
+    procedure AddNode(const X, Y, Z: TGLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
     { Published Declarations }
-    { : Default color for nodes.<p>
+    { Default color for nodes. 
       lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TVKColor read FNodeColor write SetNodeColor;
-    { : The nodes list.<p> }
+    { The nodes list.  }
     property Nodes: TVKLinesNodes read FNodes write SetNodes;
 
-    { : Default aspect of line nodes.<p>
+    { Default aspect of line nodes. 
       May help you materialize nodes, segments and control points. }
     property NodesAspect: TLineNodesAspect read FNodesAspect
       write SetNodesAspect default lnaAxes;
-    { : Size for the various node aspects. }
+    { Size for the various node aspects. }
     property NodeSize: Single read FNodeSize write SetNodeSize
       stored StoreNodeSize;
   end;
@@ -658,10 +528,10 @@ type
 
   // TVKLines
   //
-  { : Set of 3D line segments.<p>
+  { Set of 3D line segments. 
     You define a 3D Line by adding its nodes in the "Nodes" property. The line
     may be rendered as a set of segment or as a curve (nodes then act as spline
-    control points).<p>
+    control points). 
     Alternatively, you can also use it to render a set of spacial nodes (points
     in space), just make the lines transparent and the nodes visible by picking
     the node aspect that suits you. }
@@ -698,20 +568,20 @@ type
 
   published
     { Published Declarations }
-    { : Number of divisions for each segment in spline modes.<p>
+    { Number of divisions for each segment in spline modes. 
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    { : Default spline drawing mode.<p> }
+    { Default spline drawing mode.  }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
-    { : Rendering options for the line.<p>
-      <ul>
-      <li>loUseNodeColorForLines: if set lines will be drawn using node
+    { Rendering options for the line. 
+       
+       loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
       will be used (single color).
       loColorLogicXor: enable logic operation for color of XOR type.
-      </ul> }
+        }
     property Options: TLinesOptions read FOptions write SetOptions;
   end;
 
@@ -720,7 +590,7 @@ type
 
   // TVKCube
   //
-  { : A simple cube object.<p>
+  { A simple cube object. 
     This cube use the same material for each of its faces, ie. all faces look
     the same. If you want a multi-material cube, use a mesh in conjunction
     with a TVKFreeForm and a material library. }
@@ -730,8 +600,8 @@ type
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    function GetCubeWHD(const Index: Integer): TVKFloat;
-    procedure SetCubeWHD(Index: Integer; AValue: TVKFloat);
+    function GetCubeWHD(const Index: Integer): TGLfloat;
+    procedure SetCubeWHD(Index: Integer; AValue: TGLfloat);
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
@@ -756,11 +626,11 @@ type
 
   published
     { Published Declarations }
-    property CubeWidth: TVKFloat index 0 read GetCubeWHD write SetCubeWHD
+    property CubeWidth: TGLfloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeHeight: TVKFloat index 1 read GetCubeWHD write SetCubeWHD
+    property CubeHeight: TGLfloat index 1 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeDepth: TVKFloat index 2 read GetCubeWHD write SetCubeWHD
+    property CubeDepth: TGLfloat index 2 read GetCubeWHD write SetCubeWHD
       stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
@@ -770,15 +640,15 @@ type
 
   // TNormalSmoothing
   //
-  { : Determines how and if normals are smoothed.<p>
-    - nsFlat : facetted look<br>
-    - nsSmooth : smooth look<br>
+  { Determines how and if normals are smoothed. 
+    - nsFlat : facetted look 
+    - nsSmooth : smooth look 
     - nsNone : unlighted rendering, usefull for decla texturing }
   TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
 
   // TVKQuadricObject
   //
-  { : Base class for quadric objects.<p>
+  { Base class for quadric objects. 
     Introduces some basic Quadric interaction functions (the actual quadric
     math is part of the GLU library). }
   TVKQuadricObject = class(TVKSceneObject)
@@ -814,14 +684,14 @@ type
 
   // TVKSphere
   //
-  { : A sphere object.<p>
+  { A sphere object. 
     The sphere can have to and bottom caps, as well as being just a slice
     of sphere. }
   TVKSphere = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FRadius: TVKFloat;
-    FSlices, FStacks: TVKInt;
+    FRadius: TGLfloat;
+    FSlices, FStacks: TGLInt;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
     FStart: TAngleLimit2;
@@ -829,11 +699,11 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: TVKFloat);
-    procedure SetSlices(aValue: TVKInt);
+    procedure SetRadius(const aValue: TGLfloat);
+    procedure SetSlices(aValue: TGLInt);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
-    procedure SetStacks(aValue: TVKInt);
+    procedure SetStacks(aValue: TGLInt);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
 
@@ -855,9 +725,9 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: TVKFloat read FRadius write SetRadius;
-    property Slices: TVKInt read FSlices write SetSlices default 16;
-    property Stacks: TVKInt read FStacks write SetStacks default 16;
+    property Radius: TGLfloat read FRadius write SetRadius;
+    property Slices: TGLInt read FSlices write SetSlices default 16;
+    property Stacks: TGLInt read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
@@ -866,7 +736,7 @@ type
 
   // TVKPolygonBase
   //
-  { : Base class for objects based on a polygon. }
+  { Base class for objects based on a polygon. }
   TVKPolygonBase = class(TVKSceneObject)
   private
     { Private Declarations }
@@ -889,18 +759,18 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
     procedure AddNode(const coords: TVKCoordinates); overload;
-    procedure AddNode(const X, Y, Z: TVKFloat); overload;
+    procedure AddNode(const X, Y, Z: TGLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
     { Published Declarations }
-    { : The nodes list.<p> }
+    { The nodes list.  }
     property Nodes: TVKNodes read FNodes write SetNodes;
-    { : Number of divisions for each segment in spline modes.<p>
+    { Number of divisions for each segment in spline modes. 
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    { : Default spline drawing mode.<p>
+    { Default spline drawing mode. 
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
@@ -909,14 +779,14 @@ type
 
   // TVKSuperellipsoid
   //
-  { : A Superellipsoid object.<p>
+  { A Superellipsoid object. 
     The Superellipsoid can have top and bottom caps,
     as well as being just a slice of Superellipsoid. }
   TVKSuperellipsoid = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FRadius, FxyCurve, FzCurve: TVKFloat;
-    FSlices, FStacks: TVKInt;
+    FRadius, FxyCurve, FzCurve: TGLfloat;
+    FSlices, FStacks: TGLInt;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
     FStart: TAngleLimit2;
@@ -924,13 +794,13 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: TVKFloat);
-    procedure SetxyCurve(const aValue: TVKFloat);
-    procedure SetzCurve(const aValue: TVKFloat);
-    procedure SetSlices(aValue: TVKInt);
+    procedure SetRadius(const aValue: TGLfloat);
+    procedure SetxyCurve(const aValue: TGLfloat);
+    procedure SetzCurve(const aValue: TGLfloat);
+    procedure SetSlices(aValue: TGLInt);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
-    procedure SetStacks(aValue: TVKInt);
+    procedure SetStacks(aValue: TGLInt);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
 
@@ -952,11 +822,11 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: TVKFloat read FRadius write SetRadius;
-    property xyCurve: TVKFloat read FxyCurve write SetxyCurve;
-    property zCurve: TVKFloat read FzCurve write SetzCurve;
-    property Slices: TVKInt read FSlices write SetSlices default 16;
-    property Stacks: TVKInt read FStacks write SetStacks default 16;
+    property Radius: TGLfloat read FRadius write SetRadius;
+    property xyCurve: TGLfloat read FxyCurve write SetxyCurve;
+    property zCurve: TGLfloat read FzCurve write SetzCurve;
+    property Slices: TGLInt read FSlices write SetSlices default 16;
+    property Stacks: TGLInt read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
@@ -964,16 +834,16 @@ type
   end;
 
 
-{ : Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TVKFloat;
+{ Issues OpenGL for a unit-size cube stippled wireframe. }
+procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLfloat;
   Stipple: Boolean; const Color: TColorVector);
-{ : Issues OpenGL for a unit-size dodecahedron. }
+{ Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
-{ : Issues OpenGL for a unit-size icosahedron. }
+{ Issues OpenGL for a unit-size icosahedron. }
 procedure IcosahedronBuildList;
-{ : Issues OpenGL for a unit-size octahedron. }
+{ Issues OpenGL for a unit-size octahedron. }
 procedure OctahedronBuildList;
-{ : Issues OpenGL for a unit-size tetrahedron. }
+{ Issues OpenGL for a unit-size tetrahedron. }
 procedure TetrahedronBuildList;
 
 
@@ -1002,12 +872,12 @@ const
   // CubeWireframeBuildList
   //
 
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TVKFloat;
+procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLfloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
@@ -1356,7 +1226,7 @@ end;
 // SetCubeSize
 //
 
-procedure TVKDummyCube.SetCubeSize(const val: TVKFloat);
+procedure TVKDummyCube.SetCubeSize(const val: TGLfloat);
 begin
   if val <> FCubeSize then
   begin
@@ -1555,16 +1425,16 @@ end;
 
 procedure TVKPlane.BuildList(var rci: TRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec); {$IFDEF VKS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     GL.Vertex3fv(@ptr^.Position);
   end;
 
 var
-  hw, hh, posXFact, posYFact, pX, pY1: TVKFloat;
-  tx0, tx1, ty0, ty1, texSFact, texTFact: TVKFloat;
-  texS, texT1: TVKFloat;
+  hw, hh, posXFact, posYFact, pX, pY1: TGLfloat;
+  tx0, tx1, ty0, ty1, texSFact, texTFact: TGLfloat;
+  texS, texT1: TGLfloat;
   X, Y: Integer;
   TanLoc, BinLoc: Integer;
   pVertex: PVertexRec;
@@ -1695,7 +1565,7 @@ function TVKPlane.ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
 var
   v: array [0 .. 3] of TVector;
   buf: TVKSceneBuffer;
-  hw, hh: TVKFloat;
+  hw, hh: TGLfloat;
 begin
   buf := aBuffer;
   if Assigned(buf) then
@@ -1741,7 +1611,7 @@ end;
 // SetXOffset
 //
 
-procedure TVKPlane.SetXOffset(const Value: TVKFloat);
+procedure TVKPlane.SetXOffset(const Value: TGLfloat);
 begin
   if Value <> FXOffset then
   begin
@@ -1754,7 +1624,7 @@ end;
 // SetXScope
 //
 
-procedure TVKPlane.SetXScope(const Value: TVKFloat);
+procedure TVKPlane.SetXScope(const Value: TGLfloat);
 begin
   if Value <> FXScope then
   begin
@@ -1790,7 +1660,7 @@ end;
 // SetYOffset
 //
 
-procedure TVKPlane.SetYOffset(const Value: TVKFloat);
+procedure TVKPlane.SetYOffset(const Value: TGLfloat);
 begin
   if Value <> FYOffset then
   begin
@@ -1803,7 +1673,7 @@ end;
 // SetYScope
 //
 
-procedure TVKPlane.SetYScope(const Value: TVKFloat);
+procedure TVKPlane.SetYScope(const Value: TGLfloat);
 begin
   if Value <> FYScope then
   begin
@@ -1957,7 +1827,7 @@ end;
 // SetWidth
 //
 
-procedure TVKSprite.SetWidth(const val: TVKFloat);
+procedure TVKSprite.SetWidth(const val: TGLfloat);
 begin
   if FWidth <> val then
   begin
@@ -1969,7 +1839,7 @@ end;
 // SetHeight
 //
 
-procedure TVKSprite.SetHeight(const val: TVKFloat);
+procedure TVKSprite.SetHeight(const val: TGLfloat);
 begin
   if FHeight <> val then
   begin
@@ -1981,7 +1851,7 @@ end;
 // SetRotation
 //
 
-procedure TVKSprite.SetRotation(const val: TVKFloat);
+procedure TVKSprite.SetRotation(const val: TGLfloat);
 begin
   if FRotation <> val then
   begin
@@ -2036,7 +1906,7 @@ end;
 // SetSize
 //
 
-procedure TVKSprite.SetSize(const Width, Height: TVKFloat);
+procedure TVKSprite.SetSize(const Width, Height: TGLfloat);
 begin
   FWidth := Width;
   FHeight := Height;
@@ -2046,7 +1916,7 @@ end;
 // SetSquareSize
 //
 
-procedure TVKSprite.SetSquareSize(const Size: TVKFloat);
+procedure TVKSprite.SetSquareSize(const Size: TGLfloat);
 begin
   FWidth := Size;
   FHeight := Size;
@@ -2493,7 +2363,7 @@ end;
 // SetLinePattern
 //
 
-procedure TVKLineBase.SetLinePattern(const Value: TVKushort);
+procedure TVKLineBase.SetLinePattern(const Value: TGLushort);
 begin
   if FLinePattern <> Value then
   begin
@@ -2849,7 +2719,7 @@ end;
 // AddNode (xyz)
 //
 
-procedure TVKNodedLines.AddNode(const X, Y, Z: TVKFloat);
+procedure TVKNodedLines.AddNode(const X, Y, Z: TGLfloat);
 var
   n: TVKNode;
 begin
@@ -2988,7 +2858,7 @@ end;
 procedure TVKLines.BuildList(var rci: TRenderContextInfo);
 var
   i, n: Integer;
-  A, B, C: TVKFloat;
+  A, B, C: TGLfloat;
   f: Single;
   Spline: TCubicSpline;
   vertexColor: TVector;
@@ -3164,7 +3034,7 @@ end;
 
 procedure TVKCube.BuildList(var rci: TRenderContextInfo);
 var
-  hw, hh, hd, nd: TVKFloat;
+  hw, hh, hd, nd: TGLfloat;
   TanLoc, BinLoc: Integer;
 begin
   if FNormalDirection = ndInside then
@@ -3313,7 +3183,7 @@ end;
 function TVKCube.GenerateSilhouette(const silhouetteParameters
   : TVKSilhouetteParameters): TVKSilhouette;
 var
-  hw, hh, hd: TVKFloat;
+  hw, hh, hd: TGLfloat;
   connectivity: TConnectivity;
   sil: TVKSilhouette;
 begin
@@ -3370,7 +3240,7 @@ end;
 
 // GetCubeWHD
 //
-function TVKCube.GetCubeWHD(const Index: Integer): TVKFloat;
+function TVKCube.GetCubeWHD(const Index: Integer): TGLfloat;
 begin
   Result := FCubeSize.V[index];
 end;
@@ -3378,7 +3248,7 @@ end;
 
 // SetCubeWHD
 //
-procedure TVKCube.SetCubeWHD(Index: Integer; AValue: TVKFloat);
+procedure TVKCube.SetCubeWHD(Index: Integer; AValue: TGLfloat);
 begin
   if AValue <> FCubeSize.V[index] then
   begin
@@ -3565,7 +3435,7 @@ end;
 
 procedure TVKQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
 const
-  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TVKEnum = (GLU_FLAT,
+  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLenum = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
 begin
   gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -3579,7 +3449,7 @@ end;
 
 procedure TVKQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TVKEnum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLenum =
     (GLU_INSIDE, GLU_OUTSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
@@ -3591,7 +3461,7 @@ end;
 procedure TVKQuadricObject.SetInvertedQuadricOrientation
   (quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TVKEnum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLenum =
     (GLU_OUTSIDE, GLU_INSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
@@ -3891,7 +3761,7 @@ end;
 // SetRadius
 //
 
-procedure TVKSphere.SetRadius(const aValue: TVKFloat);
+procedure TVKSphere.SetRadius(const aValue: TGLfloat);
 begin
   if aValue <> FRadius then
   begin
@@ -3918,7 +3788,7 @@ end;
 // SetStacks
 //
 
-procedure TVKSphere.SetStacks(aValue: TVKInt);
+procedure TVKSphere.SetStacks(aValue: TGLInt);
 begin
   if aValue <> FStacks then
   begin
@@ -4117,7 +3987,7 @@ end;
 // AddNode (xyz)
 //
 
-procedure TVKPolygonBase.AddNode(const X, Y, Z: TVKFloat);
+procedure TVKPolygonBase.AddNode(const X, Y, Z: TGLfloat);
 var
   n: TVKNode;
 begin
@@ -4547,7 +4417,7 @@ end;
 // SetRadius
 //
 
-procedure TVKSuperellipsoid.SetRadius(const aValue: TVKFloat);
+procedure TVKSuperellipsoid.SetRadius(const aValue: TGLfloat);
 begin
   if aValue <> FRadius then
   begin
@@ -4559,7 +4429,7 @@ end;
 // SetxyCurve
 //
 
-procedure TVKSuperellipsoid.SetxyCurve(const aValue: TVKFloat);
+procedure TVKSuperellipsoid.SetxyCurve(const aValue: TGLfloat);
 begin
   if aValue <> FxyCurve then
   begin
@@ -4571,7 +4441,7 @@ end;
 // SetzCurve
 //
 
-procedure TVKSuperellipsoid.SetzCurve(const aValue: TVKFloat);
+procedure TVKSuperellipsoid.SetzCurve(const aValue: TGLfloat);
 begin
   if aValue <> FzCurve then
   begin
@@ -4598,7 +4468,7 @@ end;
 // SetStacks
 //
 
-procedure TVKSuperellipsoid.SetStacks(aValue: TVKInt);
+procedure TVKSuperellipsoid.SetStacks(aValue: TGLInt);
 begin
   if aValue <> FStacks then
   begin

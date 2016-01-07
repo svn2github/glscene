@@ -1,28 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-// FRTextureEdit
-{ : Egg<p>
-
-  Basic editing frame for TVKTexture<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>19/12/14 - PW - Upgraded to support FMX
-  <li>05/10/08 - DanB - Removed Kylix support
-  <li>24/03/08 - DaStr - Moved TVKMinFilter and TVKMagFilter from VKS.Utils.pas
-                  to GLGraphics.pas (BugTracker ID = 1923844)
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>19/12/06 - DaStr - SBEditImageClick() now calls DoOnChange
-                 TRTextureEdit.CBImageClassChange - TVKTextureImageClass(tic).Create()
-                 now gets the correct variable as its owner (BugTracker ID = 1603743)
-                 All comboboxes get their Items using RTTI
-                (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-  <li>03/07/04 - LR  - Make change for Linux
-  <li>17/03/00 - Egg - Added ImageAlpha combo
-  <li>13/03/00 - Egg - Creation
-  </ul></font>
+{
+  Basic editing frame for TVKTexture 
 }
+
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
+
 unit FRTextureEdit;
 
 interface

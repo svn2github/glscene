@@ -1,16 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FileGRD<p>
+{ 
+  GRD (Grid Text Format) vector file format implementation.
 
-  GRD (Grid Text Format) vector file format implementation.<p>
-
-  <b>History :</b><font size=-1><ul>
-  <li>01/05/15 - PW - Fixed LoadFromStream procedure
-  <li>10/04/09 - PW - Separated from GLVectorFileObjects.pas
-  <li>10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
-  <li>26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
-  </ul></font>
 }
 unit VKS.FileGRD;
 
@@ -21,14 +14,14 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLS
+  //VKS
   VKS.VectorGeometry, VKS.VectorTypes, VKS.VectorFileObjects,
   VKS.ApplicationFileIO, VKS.Graph;
 
 type
   // TVKGRDVectorFile
   //
-  { : The GRD file represents ascii grid formats in 2D/3D.<p>
+  { The GRD file represents ascii grid formats in 2D/3D. 
     This is a format for storing regular grid values as a
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats}

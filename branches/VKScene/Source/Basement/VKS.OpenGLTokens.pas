@@ -1,19 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.OpenGLTokens<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
-      <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
-                           to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
-      <li>21/08/11 - Yar - Added OpenGL ES
-      <li>31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
-      <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
-      <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
-      <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
-   </ul></font>
-}
 unit VKS.OpenGLTokens;
 
 interface
@@ -36,93 +23,93 @@ const
 type
 
   PGLChar = PAnsiChar;
-  TVKString = AnsiString;
+  TGLString = AnsiString;
 
   GLenum = Cardinal;
  {$EXTERNALSYM GLenum}
-  TVKenum = Cardinal;
-  PGLenum = ^TVKenum;
+  TGLenum = Cardinal;
+  PGLenum = ^TGLenum;
 
   GLboolean = BYTEBOOL;
  {$EXTERNALSYM GLboolean}
-  TVKboolean = BYTEBOOL;
-  PGLboolean = ^TVKboolean;
+  TGLboolean = BYTEBOOL;
+  PGLboolean = ^TGLboolean;
 
   GLbitfield = UINT;
  {$EXTERNALSYM GLbitfield}
-  TVKbitfield = UINT;
-  PGLbitfield = ^TVKbitfield;
+  TGLbitfield = UINT;
+  PGLbitfield = ^TGLbitfield;
 
   GLbyte = ShortInt;
  {$EXTERNALSYM GLbyte}
-  TVKbyte = ShortInt;
-  PGLbyte = ^TVKbyte;
+  TGLbyte = ShortInt;
+  PGLbyte = ^TGLbyte;
 
   GLshort = SmallInt;
  {$EXTERNALSYM GLshort}
-  TVKshort = SmallInt;
-  PGLshort = ^TVKshort;
+  TGLshort = SmallInt;
+  PGLshort = ^TGLshort;
 
   GLint = Integer;
  {$EXTERNALSYM GLint}
-  TVKint = Integer;
+  TGLint = Integer;
   PGLint = ^Integer;
 
   GLsizei = Integer;
  {$EXTERNALSYM GLsizei}
-  TVKsizei = Integer;
-  PGLsizei = ^TVKsizei;
+  TGLsizei = Integer;
+  PGLsizei = ^TGLsizei;
 
   GLint64 = Int64;
  {$EXTERNALSYM GLint64}
-  TVKint64 = Int64;
-  PGLint64 = ^TVKInt64;
+  TGLint64 = Int64;
+  PGLint64 = ^TGLInt64;
 
   GLint64EXT = Int64;
-  TVKint64EXT = Int64;
-  PGLint64EXT = ^TVKint64EXT;
+  TGLint64EXT = Int64;
+  PGLint64EXT = ^TGLint64EXT;
 
   GLuint64 = UInt64;
-  TVKuint64 = UInt64;
-  PGLuint64 = ^TVKuint64;
+  TGLuint64 = UInt64;
+  PGLuint64 = ^TGLuint64;
 
   GLuint64EXT = UInt64;
-  TVKuint64EXT = UInt64;
-  PGLuint64EXT = ^TVKuint64EXT;
+  TGLuint64EXT = UInt64;
+  PGLuint64EXT = ^TGLuint64EXT;
 
   GLubyte = Byte;
  {$EXTERNALSYM GLubyte}
-  TVKubyte = Byte;
+  TGLubyte = Byte;
   PGLubyte = System.PByte;
 
   GLushort = Word;
  {$EXTERNALSYM GLushort}
-  TVKushort = Word;
+  TGLushort = Word;
   PGLushort = System.PWord;
 
   GLuint = UINT;
  {$EXTERNALSYM GLuint}
-  TVKuint = UINT;
-  PGLuint = ^TVKuint;
+  TGLuint = UINT;
+  PGLuint = ^TGLuint;
 
   GLfloat = Single;
  {$EXTERNALSYM GLfloat}
-  TVKfloat = Single;
+  TGLfloat = Single;
   PGLfloat = System.PSingle;
 
   GLclampf = Single;
  {$EXTERNALSYM GLclampf}
-  TVKclampf = Single;
-  PGLclampf = ^TVKclampf;
+  TGLclampf = Single;
+  PGLclampf = ^TGLclampf;
 
   GLdouble = Double;
  {$EXTERNALSYM GLdouble}
-  TVKdouble = Double;
+  TGLdouble = Double;
   PGLdouble = System.PDouble;
 
   GLclampd = Double;
-  TVKclampd = Double;
-  PGLclampd = ^TVKclampd;
+  TGLclampd = Double;
+  PGLclampd = ^TGLclampd;
 
   GLhandleARB = Cardinal;
   PGLhandleARB = ^GLhandleARB;
@@ -143,11 +130,11 @@ type
 
   // the size of these depend on platform (32bit or 64bit)
   GLintptr = NativeInt;
-  TVKintptr = NativeInt;
+  TGLintptr = NativeInt;
   GLsizeiptr = NativeInt;
-  TVKsizeiptr = NativeInt;
+  TGLsizeiptr = NativeInt;
   GLsync = NativeInt;
-  TVKsync = NativeInt;
+  TGLsync = NativeInt;
 
   // Windows types
 {$IFDEF MSWINDOWS}
@@ -183,7 +170,7 @@ type
   GLXFBConfigSGIX = Pointer;
   GLXFBConfigIDSGIX = TXID;
   GLXPbufferSGIX = TXID;
-  TVKXBufferClobberEventSGIX = record
+  TGLXBufferClobberEventSGIX = record
     count: GLint;
     display: PDisplay;
     draw_type: GLint;
@@ -196,7 +183,7 @@ type
     width, height: GLint;
     x, y: GLint;
   end;
-  GLXBufferClobberEventSGIX = ^TVKXBufferClobberEventSGIX;
+  GLXBufferClobberEventSGIX = ^TGLXBufferClobberEventSGIX;
   GLXVideoDeviceNV = PGLuint;
   GLXVideoCaptureDeviceNV = TXID;
 {$ENDIF}
@@ -227,7 +214,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TVKDEBUGPROCARB = TDebugProc;
+  TGLDEBUGPROCARB = TDebugProc;
 
   TDebugProcAMD = procedure(
     id: GLuint;
@@ -240,25 +227,25 @@ type
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
 
-  TVKvdpauSurfaceNV = GLintptr;
-  PGLvdpauSurfaceNV = ^TVKvdpauSurfaceNV;
+  TGLvdpauSurfaceNV = GLintptr;
+  PGLvdpauSurfaceNV = ^TGLvdpauSurfaceNV;
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) types'} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$REGION 'OpenGL Utility (GLU) types'} {$ENDIF}
 type
    // GLU types
-   TVKUNurbs = record end;
-   TVKUQuadric = record end;
-   TVKUTesselator = record end;
+   TGLUNurbs = record end;
+   TGLUQuadric = record end;
+   TGLUTesselator = record end;
 
-   PGLUNurbs = ^TVKUNurbs;
-   PGLUQuadric = ^TVKUQuadric;
-   PGLUTesselator=  ^TVKUTesselator;
+   PGLUNurbs = ^TGLUNurbs;
+   PGLUQuadric = ^TGLUQuadric;
+   PGLUTesselator=  ^TGLUTesselator;
 
    // backwards compatibility
-   TVKUNurbsObj = TVKUNurbs;
-   TVKUQuadricObj = TVKUQuadric;
-   TVKUTesselatorObj = TVKUTesselator;
-   TVKUTriangulatorObj = TVKUTesselator;
+   TGLUNurbsObj = TGLUNurbs;
+   TGLUQuadricObj = TGLUQuadric;
+   TGLUTesselatorObj = TGLUTesselator;
+   TGLUTriangulatorObj = TGLUTesselator;
 
    PGLUNurbsObj = PGLUNurbs;
    PGLUQuadricObj = PGLUQuadric;
@@ -267,26 +254,26 @@ type
 
    // Callback function prototypes
    // GLUQuadricCallback
-   TVKUQuadricErrorProc = procedure(errorCode: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUQuadricErrorProc = procedure(errorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GLUTessCallback
-   TVKUTessBeginProc = procedure(AType: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessEdgeFlagProc = procedure(Flag: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessVertexProc = procedure(VertexData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessEndProc = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessErrorProc = procedure(ErrNo: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessCombineProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessBeginDataProc = procedure(AType: TVKEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessEdgeFlagDataProc = procedure(Flag: TVKboolean; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessVertexDataProc = procedure(VertexData: Pointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessEndDataProc = procedure(UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessErrorDataProc = procedure(ErrNo: TVKEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-   TVKUTessCombineDataProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessBeginProc = procedure(AType: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEdgeFlagProc = procedure(Flag: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessVertexProc = procedure(VertexData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEndProc = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessErrorProc = procedure(ErrNo: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessCombineProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessBeginDataProc = procedure(AType: TGLEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEdgeFlagDataProc = procedure(Flag: TGLboolean; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessVertexDataProc = procedure(VertexData: Pointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEndDataProc = procedure(UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessErrorDataProc = procedure(ErrNo: TGLEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessCombineDataProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
    // GLUNurbsCallback
-   TVKUNurbsErrorProc = procedure(ErrorCode: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUNurbsErrorProc = procedure(ErrorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$ENDREGION} {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
 type
@@ -325,7 +312,7 @@ type
 
 const
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL v1.1 generic constants'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL v1.1 generic constants'}{$ENDIF}
   // ********** GL generic constants **********
 
   // attribute bits
@@ -592,7 +579,7 @@ const
   GL_RGBA12 = $805A;
   GL_RGBA16 = $805B;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
   // attribute bits
   GL_CURRENT_BIT = $00000001 {deprecated};
   GL_POINT_BIT = $00000002 {deprecated};
@@ -1008,11 +995,11 @@ const
   GL_LIGHT6 = $4006 {deprecated};
   GL_LIGHT7 = $4007 {deprecated};
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.2'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v1.2'}{$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_packed_pixels (EXT #23)
   GL_UNSIGNED_BYTE_3_3_2 = $8032;
@@ -1084,7 +1071,7 @@ const
   GL_FUNC_SUBTRACT = $800A;
   GL_FUNC_REVERSE_SUBTRACT = $800B;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.2 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 1.2 deprecated'}{$ENDIF}
   // {deprecated}
   // promoted to core v1.2 from GL_EXT_rescale_normal (EXT #27)
   GL_RESCALE_NORMAL = $803A {deprecated};
@@ -1176,11 +1163,11 @@ const
   GL_CONSTANT_BORDER = $8151 {deprecated};
   GL_REPLICATE_BORDER = $8153 {deprecated};
   GL_CONVOLUTION_BORDER_COLOR = $8154 {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.3'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v1.3'}{$ENDIF}
   // Multitexturing
   // promoted to core OpenGL v1.3 from GL_ARB_multitexture (ARB #1)
   GL_TEXTURE0 = $84C0;
@@ -1255,7 +1242,7 @@ const
   // promoted to core OpenGL v1.3 from GL_ARB_texture_border_clamp (ARB #13)
   GL_CLAMP_TO_BORDER = $812D;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.3 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 1.3 deprecated'}{$ENDIF}
   // promoted to core OpenGL v1.3 from GL_ARB_multitexture (ARB #1)
   GL_CLIENT_ACTIVE_TEXTURE = $84E1 {deprecated};
   GL_MAX_TEXTURE_UNITS = $84E2 {deprecated};
@@ -1309,11 +1296,11 @@ const
   // promoted to OpenGL v1.3 from GL_ARB_texture_env_dot3 (ARB #19)
   GL_DOT3_RGB = $86AE {deprecated};
   GL_DOT3_RGBA = $86AF {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.4'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v1.4'}{$ENDIF}
 
   // Separate Blend Functions
   // promoted to core OpenGL v1.4 from GL_EXT_blend_func_separate (EXT #173)
@@ -1355,7 +1342,7 @@ const
   GL_TEXTURE_COMPARE_MODE = $884C;
   GL_TEXTURE_COMPARE_FUNC = $884D;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.4 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 1.4 deprecated'}{$ENDIF}
   // from GL_ARB_point_parameters (ARB #14)
   GL_POINT_SIZE_MIN = $8126 {deprecated};
   GL_POINT_SIZE_MAX = $8127 {deprecated};
@@ -1395,11 +1382,11 @@ const
 
   // promoted to core OpenGL v1.4 from GL_ARB_shadow (ARB #23)
   GL_COMPARE_R_TO_TEXTURE = $884E {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v1.5'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v1.5'}{$ENDIF}
   // Buffer Objects
   // promoted to core OpenGL v1.5 from GL_ARB_vertex_buffer_object (ARB #28)
   GL_BUFFER_SIZE = $8764;
@@ -1442,7 +1429,7 @@ const
   // Changed Tokens
   GL_SRC1_ALPHA = GL_SOURCE1_ALPHA; // required for 3.3+
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.5 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 1.5 deprecated'}{$ENDIF}
   // from GL_ARB_vertex_buffer_object (ARB #28)
   GL_VERTEX_ARRAY_BUFFER_BINDING = $8896 {deprecated};
   GL_NORMAL_ARRAY_BUFFER_BINDING = $8897 {deprecated};
@@ -1470,11 +1457,11 @@ const
   GL_SRC2_RGB = GL_SOURCE2_RGB {deprecated};
   GL_SRC0_ALPHA = GL_SOURCE0_ALPHA {deprecated};
   GL_SRC2_ALPHA = GL_SOURCE2_ALPHA {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v2.0'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v2.0'}{$ENDIF}
   // OpenGL 2.0
 
   // Changed Tokens
@@ -1603,7 +1590,7 @@ const
   GL_STENCIL_BACK_VALUE_MASK = $8CA4;
   GL_STENCIL_BACK_WRITEMASK = $8CA5;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 2.0 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 2.0 deprecated'}{$ENDIF}
   // from GL_ARB_vertex_shader (ARB #31)
   GL_VERTEX_PROGRAM_TWO_SIDE = $8643 {deprecated};
 
@@ -1613,11 +1600,11 @@ const
 
   // from GL_ARB_vertex_shader (ARB #31) /GL_ARB_fragment_shader (ARB #32)
   GL_MAX_TEXTURE_COORDS = $8871 {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v2.1'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v2.1'}{$ENDIF}
 
   // OpenGL 2.1
 
@@ -1646,7 +1633,7 @@ const
   GL_COMPRESSED_SRGB = $8C48;
   GL_COMPRESSED_SRGB_ALPHA = $8C49;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 2.1 deprecated'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'OpenGL 2.1 deprecated'}{$ENDIF}
   // new
   GL_CURRENT_RASTER_SECONDARY_COLOR = $845F {deprecated};
   // from GL_EXT_texture_sRGB (EXT #315)
@@ -1656,11 +1643,11 @@ const
   GL_SLUMINANCE8 = $8C47 {deprecated};
   GL_COMPRESSED_SLUMINANCE = $8C4A {deprecated};
   GL_COMPRESSED_SLUMINANCE_ALPHA = $8C4B {deprecated};
-{$IFDEF GLS_REGIONS}{$ENDREGION'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.0'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v3.0'}{$ENDIF}
   // TODO: arrange these better, find where they came from
   GL_COMPARE_REF_TO_TEXTURE = $884E; //GL_COMPARE_R_TO_TEXTURE;
   GL_CLIP_DISTANCE0 = $3000; //GL_CLIP_PLANE0;
@@ -1784,9 +1771,9 @@ const
   GL_BUFFER_MAP_LENGTH = $9120;
   GL_BUFFER_MAP_OFFSET = $9121;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.1'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v3.1'}{$ENDIF}
   GL_SAMPLER_2D_RECT = $8B63;
   GL_SAMPLER_2D_RECT_SHADOW = $8B64;
   GL_SAMPLER_BUFFER = $8DC2;
@@ -1828,9 +1815,9 @@ const
   // ARB_draw_instanced (ARB #44)
   // ARB_uniform_buffer_object (ARB #57)
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.2'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v3.2'}{$ENDIF}
   GL_CONTEXT_CORE_PROFILE_BIT = $00000001;
   GL_CONTEXT_COMPATIBILITY_PROFILE_BIT = $00000002;
   GL_LINES_ADJACENCY = $000A;
@@ -1863,9 +1850,9 @@ const
   // ARB_seamless_cube_map (ARB #65)
   // ARB_sync (ARB #66)
   // ARB_texture_multisample (ARB #67)
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v3.3'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v3.3'}{$ENDIF}
   GL_VERTEX_ATTRIB_ARRAY_DIVISOR = $88FE;
   // re-use tokens from:
   // GL_ARB_blend_func_extended (ARB #78)
@@ -1877,9 +1864,9 @@ const
   // GL_ARB_texture_swizzle (ARB #84)
   // GL_ARB_timer_query (ARB #85)
   // GL_ARB_vertex_type_2_10_10_10_rev (ARB #86)
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.0'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v4.0'}{$ENDIF}
   GL_SAMPLE_SHADING = $8C36;
   GL_MIN_SAMPLE_SHADING_VALUE = $8C37;
   GL_MIN_PROGRAM_TEXTURE_GATHER_OFFSET = $8E5E;
@@ -1900,9 +1887,9 @@ const
   // GL_ARB_texture_buffer_object_rgb32 (ARB #92) (none)
   // GL_ARB_transform_feedback2 (ARB #93)
   // GL_ARB_transform_feedback3 (ARB # 94)
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'New core constants in OpenGL v4.1'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'New core constants in OpenGL v4.1'}{$ENDIF}
   // re-use tokens from:
   // GL_ARB_ES2_compatibility (ARB #95)
   // GL_ARB_get_program_binary (ARB #96)
@@ -1911,9 +1898,9 @@ const
   // GL_ARB_vertex_attrib_64bit (ARB #99)
   // GL_ARB_viewport_array (ARB #100)
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'ARB approved extensions constants, in extension number order'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'ARB approved extensions constants, in extension number order'}{$ENDIF}
   // ARB approved extensions enumerants, in number order
 
   // ARB Extension #1 - GL_ARB_multitexture
@@ -3503,9 +3490,9 @@ const
   GL_QUERY_RESULT_NO_WAIT           	= $9194;
   GL_MIRROR_CLAMP_TO_EDGE           	= $8743;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'Vendor/EXT extensions constants, in extension number order'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'Vendor/EXT extensions constants, in extension number order'}{$ENDIF}
 
   // ----- extensions enumerants -----
 
@@ -4898,9 +4885,9 @@ const
   WGL_ACCESS_READ_WRITE_NV                            = $0001;
   WGL_ACCESS_WRITE_DISCARD_NV                         = $0002;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$REGION 'OpenGL Extension to the X Window System (GLX) generic constants'} {$ENDIF}
 
    GLX_EXTENSION_NAME                               = 'GLX';
    GLX_USE_GL                                       = 1;
@@ -5105,34 +5092,34 @@ const
 
 {$IFDEF SUPPORT_GLX}
 type
-   TVKXHyperpipeNetworkSGIX = record
+   TGLXHyperpipeNetworkSGIX = record
       pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
-      networkId: TVKint;
+      networkId: TGLint;
    end;
-   PGLXHyperpipeNetworkSGIX = ^TVKXHyperpipeNetworkSGIX;
-   TVKXHyperpipeConfigSGIX = record
+   PGLXHyperpipeNetworkSGIX = ^TGLXHyperpipeNetworkSGIX;
+   TGLXHyperpipeConfigSGIX = record
       pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
-      channel: TVKInt;
-      participationType: TVKuInt;
-      timeSlice: TVKInt;
+      channel: TGLInt;
+      participationType: TGLuInt;
+      timeSlice: TGLInt;
    end;
-   PGLXHyperpipeConfigSGIX = ^TVKXHyperpipeConfigSGIX;
-   TVKXPipeRect = record
+   PGLXHyperpipeConfigSGIX = ^TGLXHyperpipeConfigSGIX;
+   TGLXPipeRect = record
       pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
-      srcXOrigin, srcYOrigin, srcWidth, srcHeight: TVKInt;
-      destXOrigin, destYOrigin, destWidth, destHeight: TVKInt;
+      srcXOrigin, srcYOrigin, srcWidth, srcHeight: TGLInt;
+      destXOrigin, destYOrigin, destWidth, destHeight: TGLInt;
    end;
-   PGLXPipeRect = ^TVKXPipeRect;
-   TVKXPipeRectLimits = record
+   PGLXPipeRect = ^TGLXPipeRect;
+   TGLXPipeRectLimits = record
       pipeName: array[0..GLX_HYPERPIPE_PIPE_NAME_LENGTH_SGIX-1] of AnsiChar;
-      XOrigin, YOrigin, maxHeight, maxWidth: TVKInt;
+      XOrigin, YOrigin, maxHeight, maxWidth: TGLInt;
    end;
-   PGLXPipeRectLimits = ^TVKXPipeRectLimits;
+   PGLXPipeRectLimits = ^TGLXPipeRectLimits;
 {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Extension OSX generic constants'} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$REGION 'OpenGL Extension OSX generic constants'} {$ENDIF}
 const
    AGL_NONE = 0;
 { choose from all available renderers           }
@@ -5420,9 +5407,9 @@ const
    AGL_BAD_ALLOC = 10016;
 { invalid CoreGraphics connection  }
    AGL_BAD_CONNECTION = 10017;
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$REGION 'OpenGL Utility (GLU) generic constants'} {$ENDIF}
    // ********** GLU generic constants **********
 const
    // Errors: (return value 0= no error)
@@ -5471,18 +5458,18 @@ const
    GLU_TESS_WINDING_ABS_GEQ_TWO                     = 100134;
 
    // TessCallback
-   GLU_TESS_BEGIN                                   = 100100; // TVKUTessBeginProc
-   GLU_TESS_VERTEX                                  = 100101; // TVKUTessVertexProc
-   GLU_TESS_END                                     = 100102; // TVKUTessEndProc
-   GLU_TESS_ERROR                                   = 100103; // TVKUTessErrorProc
-   GLU_TESS_EDGE_FLAG                               = 100104; // TVKUTessEdgeFlagProc
-   GLU_TESS_COMBINE                                 = 100105; // TVKUTessCombineProc
-   GLU_TESS_BEGIN_DATA                              = 100106; // TVKUTessBeginDataProc
-   GLU_TESS_VERTEX_DATA                             = 100107; // TVKUTessVertexDataProc
-   GLU_TESS_END_DATA                                = 100108; // TVKUTessEndDataProc
-   GLU_TESS_ERROR_DATA                              = 100109; // TVKUTessErrorDataProc
-   GLU_TESS_EDGE_FLAG_DATA                          = 100110; // TVKUTessEdgeFlagDataProc
-   GLU_TESS_COMBINE_DATA                            = 100111; // TVKUTessCombineDataProc
+   GLU_TESS_BEGIN                                   = 100100; // TGLUTessBeginProc
+   GLU_TESS_VERTEX                                  = 100101; // TGLUTessVertexProc
+   GLU_TESS_END                                     = 100102; // TGLUTessEndProc
+   GLU_TESS_ERROR                                   = 100103; // TGLUTessErrorProc
+   GLU_TESS_EDGE_FLAG                               = 100104; // TGLUTessEdgeFlagProc
+   GLU_TESS_COMBINE                                 = 100105; // TGLUTessCombineProc
+   GLU_TESS_BEGIN_DATA                              = 100106; // TGLUTessBeginDataProc
+   GLU_TESS_VERTEX_DATA                             = 100107; // TGLUTessVertexDataProc
+   GLU_TESS_END_DATA                                = 100108; // TGLUTessEndDataProc
+   GLU_TESS_ERROR_DATA                              = 100109; // TGLUTessErrorDataProc
+   GLU_TESS_EDGE_FLAG_DATA                          = 100110; // TGLUTessEdgeFlagDataProc
+   GLU_TESS_COMBINE_DATA                            = 100111; // TGLUTessCombineDataProc
 
    // TessError
    GLU_TESS_ERROR1                                  = 100151;
@@ -5579,9 +5566,9 @@ const
    GLU_ERROR                                        = GLU_TESS_ERROR;
    GLU_EDGE_FLAG                                    = GLU_TESS_EDGE_FLAG;
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$ENDREGION} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL ES constants'} {$ENDIF}
+{$IFDEF VKS_REGIONS} {$REGION 'OpenGL ES constants'} {$ENDIF}
 {$IFDEF EGL_SUPPORT}
   { EGL Versioning  }
 
@@ -5591,7 +5578,7 @@ const
    EGL_VERSION_1_2 = 1;
    EGL_VERSION_1_3 = 1;
    EGL_VERSION_1_4 = 1;
-{: EGL Enumerants. Bitmasks and other exceptional cases aside, most
+{ EGL Enumerants. Bitmasks and other exceptional cases aside, most
  * enums are assigned unique values starting at 0x3000. }
 { EGL aliases  }
    EGL_FALSE = 0;
@@ -5787,7 +5774,7 @@ const
    EGL_COLORSPACE_LINEAR = EGL_VG_COLORSPACE_LINEAR;
    EGL_ALPHA_FORMAT_NONPRE = EGL_VG_ALPHA_FORMAT_NONPRE;
    EGL_ALPHA_FORMAT_PRE = EGL_VG_ALPHA_FORMAT_PRE;
-{: EGL extensions must request enum blocks from the Khronos
+{ EGL extensions must request enum blocks from the Khronos
  * API Registrar, who maintains the enumerant registry. Submit
  * a bug in Khronos Bugzilla against task "Registry". }
 
@@ -5894,125 +5881,125 @@ const
    EGL_KHR_image_pixmap = 1;
 // Interfaces defined by EGL_KHR_image above
 {$ENDIF EGL_SUPPORT}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
   type
   // core 1.2
   // promoted to core v1.2 from GL_EXT_blend_color (#2)
-  PFNGLBLENDCOLORPROC = procedure(red, green, blue, alpha: TVKclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDCOLORPROC = procedure(red, green, blue, alpha: TGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_blend_minmax (#37)
-  PFNGLBLENDEQUATIONPROC = procedure(mode: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONPROC = procedure(mode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_draw_range_elements (#112)
-  PFNGLDRAWRANGEELEMENTSPROC = procedure(mode: TVKEnum; Astart, Aend: TVKuint; count: TVKsizei; Atype: TVKEnum;
+  PFNGLDRAWRANGEELEMENTSPROC = procedure(mode: TGLEnum; Astart, Aend: TGLuint; count: TGLsizei; Atype: TGLEnum;
                                 indices: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_texture3D (#6)
-  PFNGLTEXIMAGE3DPROC = procedure(target: TVKEnum; level: TVKint; internalformat: TVKEnum; width, height, depth: TVKsizei;
-                         border: TVKint; format: TVKEnum; Atype: TVKEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXSUBIMAGE3DPROC = procedure(target: TVKEnum; level, xoffset, yoffset, zoffset: TVKint;  width, height, depth: TVKsizei;
-                            format: TVKEnum; Atype: TVKEnum; pixels: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXIMAGE3DPROC = procedure(target: TGLEnum; level: TGLint; internalformat: TGLEnum; width, height, depth: TGLsizei;
+                         border: TGLint; format: TGLEnum; Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXSUBIMAGE3DPROC = procedure(target: TGLEnum; level, xoffset, yoffset, zoffset: TGLint;  width, height, depth: TGLsizei;
+                            format: TGLEnum; Atype: TGLEnum; pixels: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.2 from GL_EXT_copy_texture
-  PFNGLCOPYTEXSUBIMAGE3DPROC = procedure(target: TVKEnum; level, xoffset, yoffset, zoffset, x, y: TVKint; width, height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXSUBIMAGE3DPROC = procedure(target: TGLEnum; level, xoffset, yoffset, zoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // core 1.2 deprecated
   // promoted to core v1.2 from GL_SGI_color_table (#14)
-  PFNGLCOLORTABLEPROC = procedure(target, internalformat: TVKEnum; width: TVKsizei; format, Atype: TVKEnum;
+  PFNGLCOLORTABLEPROC = procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
                          table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOLORTABLEPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOLORTABLEPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOPYCOLORTABLEPROC = procedure(target, internalformat: TVKEnum; x, y: TVKint; width: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCOLORTABLEPROC = procedure(target, format, Atype: TVKEnum; table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCOLORTABLEPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCOLORTABLEPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOLORTABLEPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOLORTABLEPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOPYCOLORTABLEPROC = procedure(target, internalformat: TGLEnum; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCOLORTABLEPROC = procedure(target, format, Atype: TGLEnum; table: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCOLORTABLEPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCOLORTABLEPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.2 from GL_EXT_color_subtable (#74)
-  PFNGLCOLORSUBTABLEPROC = procedure(target: TVKEnum; start, count: TVKsizei; format, Atype: TVKEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOPYCOLORSUBTABLEPROC = procedure(target: TVKEnum; start: TVKsizei; x, y: TVKint; width: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOLORSUBTABLEPROC = procedure(target: TGLEnum; start, count: TGLsizei; format, Atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOPYCOLORSUBTABLEPROC = procedure(target: TGLEnum; start: TGLsizei; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.2 from GL_EXT_convolution (#12)
-  PFNGLCONVOLUTIONFILTER1DPROC = procedure(target, internalformat: TVKEnum; width: TVKsizei; format, Atype: TVKEnum;
+  PFNGLCONVOLUTIONFILTER1DPROC = procedure(target, internalformat: TGLEnum; width: TGLsizei; format, Atype: TGLEnum;
    image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCONVOLUTIONFILTER2DPROC = procedure(target, internalformat: TVKEnum; width, height: TVKsizei; format, Atype: TVKEnum;
+  PFNGLCONVOLUTIONFILTER2DPROC = procedure(target, internalformat: TGLEnum; width, height: TGLsizei; format, Atype: TGLEnum;
    image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCONVOLUTIONPARAMETERFPROC = procedure(target, pname: TVKEnum; param: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCONVOLUTIONPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCONVOLUTIONPARAMETERIPROC = procedure(target, pname: TVKEnum; param: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCONVOLUTIONPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOPYCONVOLUTIONFILTER1DPROC = procedure(target, internalformat: TVKEnum; x, y: TVKint; width: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLCOPYCONVOLUTIONFILTER2DPROC = procedure(target, internalformat: TVKEnum; x, y: TVKint; width, height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCONVOLUTIONFILTERPROC = procedure(target, internalformat, Atype: TVKEnum; image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCONVOLUTIONPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETCONVOLUTIONPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETSEPARABLEFILTERPROC = procedure(target, format, Atype: TVKEnum; row, column, span: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSEPARABLEFILTER2DPROC = procedure(target, internalformat: TVKEnum; width, height: TVKsizei; format, Atype: TVKEnum; row,
+  PFNGLCONVOLUTIONPARAMETERFPROC = procedure(target, pname: TGLEnum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCONVOLUTIONPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCONVOLUTIONPARAMETERIPROC = procedure(target, pname: TGLEnum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCONVOLUTIONPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOPYCONVOLUTIONFILTER1DPROC = procedure(target, internalformat: TGLEnum; x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCOPYCONVOLUTIONFILTER2DPROC = procedure(target, internalformat: TGLEnum; x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCONVOLUTIONFILTERPROC = procedure(target, internalformat, Atype: TGLEnum; image: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCONVOLUTIONPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETCONVOLUTIONPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETSEPARABLEFILTERPROC = procedure(target, format, Atype: TGLEnum; row, column, span: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSEPARABLEFILTER2DPROC = procedure(target, internalformat: TGLEnum; width, height: TGLsizei; format, Atype: TGLEnum; row,
    column: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.2 from GL_EXT_histogram (#11)
-  PFNGLGETHISTOGRAMPROC = procedure(target: TVKEnum; reset: TVKboolean; format, Atype: TVKEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETHISTOGRAMPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETHISTOGRAMPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETMINMAXPROC = procedure(target: TVKEnum; reset: TVKboolean; format, Atype: TVKEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETMINMAXPARAMETERFVPROC = procedure(target, pname: TVKEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLGETMINMAXPARAMETERIVPROC = procedure(target, pname: TVKEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLHISTOGRAMPROC = procedure(target: TVKEnum; width: TVKsizei; internalformat: TVKEnum; sink: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMINMAXPROC = procedure(target, internalformat: TVKEnum; sink: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLRESETHISTOGRAMPROC = procedure(target: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLRESETMINMAXPROC = procedure(target: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETHISTOGRAMPROC = procedure(target: TGLEnum; reset: TGLboolean; format, Atype: TGLEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETHISTOGRAMPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETHISTOGRAMPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETMINMAXPROC = procedure(target: TGLEnum; reset: TGLboolean; format, Atype: TGLEnum; values: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETMINMAXPARAMETERFVPROC = procedure(target, pname: TGLEnum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLGETMINMAXPARAMETERIVPROC = procedure(target, pname: TGLEnum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLHISTOGRAMPROC = procedure(target: TGLEnum; width: TGLsizei; internalformat: TGLEnum; sink: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMINMAXPROC = procedure(target, internalformat: TGLEnum; sink: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLRESETHISTOGRAMPROC = procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLRESETMINMAXPROC = procedure(target: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // core 1.3
   // promoted to core v1.3 from GL_ARB_multitexture (#1)
-  PFNGLACTIVETEXTUREPROC = procedure(texture: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVETEXTUREPROC = procedure(texture: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.3 from GL_ARB_multisample (#5)
-  PFNGLSAMPLECOVERAGEPROC = procedure(Value: TVKclampf; invert: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLECOVERAGEPROC = procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.3 from GL_ARB_texture_compression (#12)
-  PFNGLCOMPRESSEDTEXIMAGE3DPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width, Height, depth: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXIMAGE2DPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width, Height: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXIMAGE1DPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC = procedure(target: TVKenum; level: TVKint; xoffset, yoffset, zoffset: TVKint; width, height, depth: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC = procedure(target: TVKenum; level: TVKint; xoffset, yoffset: TVKint; width, height: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC = procedure(target: TVKenum; level: TVKint; xoffset: TVKint; width: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMPRESSEDTEXIMAGEPROC = procedure(target: TVKenum; level: TVKint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE3DPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height, depth: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE2DPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE1DPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC = procedure(target: TGLenum; level: TGLint; xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC = procedure(target: TGLenum; level: TGLint; xoffset, yoffset: TGLint; width, height: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC = procedure(target: TGLenum; level: TGLint; xoffset: TGLint; width: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMPRESSEDTEXIMAGEPROC = procedure(target: TGLenum; level: TGLint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // core 1.3 deprecated
   // promoted to core v1.3 from GL_ARB_multitexture (#1)
-  PFNGLCLIENTACTIVETEXTUREPROC = procedure(texture: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1DPROC = procedure(target: TVKenum; s: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1DVPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1FPROC = procedure(target: TVKenum; s: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1FVPROC = procedure(target: TVKenum; v: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1IPROC = procedure(target: TVKenum; s: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1IVPROC = procedure(target: TVKenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1SPROC = procedure(target: TVKenum; s: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD1SVPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2DPROC = procedure(target: TVKenum; s, t: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2DVPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2FPROC = procedure(target: TVKenum; s, t: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2FVPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2IPROC = procedure(target: TVKenum; s, t: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2IVPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2SPROC = procedure(target: TVKenum; s, t: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD2SVPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3DPROC = procedure(target: TVKenum; s, t, r: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3DVPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3FPROC = procedure(target: TVKenum; s, t, r: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3FVPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3IPROC = procedure(target: TVKenum; s, t, r: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3IVPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3SPROC = procedure(target: TVKenum; s, t, r: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD3SVPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4DPROC = procedure(target: TVKenum; s, t, r, q: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4DVPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4FPROC = procedure(target: TVKenum; s, t, r, q: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4FVPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4IPROC = procedure(target: TVKenum; s, t, r, q: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4IVPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4SPROC = procedure(target: TVKenum; s, t, r, q: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLMULTITEXCOORD4SVPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLCLIENTACTIVETEXTUREPROC = procedure(texture: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1DPROC = procedure(target: TGLenum; s: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1DVPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1FPROC = procedure(target: TGLenum; s: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1FVPROC = procedure(target: TGLenum; v: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1IPROC = procedure(target: TGLenum; s: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1IVPROC = procedure(target: TGLenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1SPROC = procedure(target: TGLenum; s: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD1SVPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2DPROC = procedure(target: TGLenum; s, t: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2DVPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2FPROC = procedure(target: TGLenum; s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2FVPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2IPROC = procedure(target: TGLenum; s, t: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2IVPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2SPROC = procedure(target: TGLenum; s, t: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD2SVPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3DPROC = procedure(target: TGLenum; s, t, r: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3DVPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3FPROC = procedure(target: TGLenum; s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3FVPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3IPROC = procedure(target: TGLenum; s, t, r: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3IVPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3SPROC = procedure(target: TGLenum; s, t, r: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD3SVPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4DPROC = procedure(target: TGLenum; s, t, r, q: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4DVPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4FPROC = procedure(target: TGLenum; s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4FVPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4IPROC = procedure(target: TGLenum; s, t, r, q: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4IVPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4SPROC = procedure(target: TGLenum; s, t, r, q: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLMULTITEXCOORD4SVPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.3 from GL_ARB_transpose_matrix
   PFNGLLOADTRANSPOSEMATRIXFPROC = procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
@@ -6022,73 +6009,73 @@ const
 
   // core 1.4
   // promoted to core v1.4 from GL_EXT_blend_func_separate (#173)
-  PFNGLBLENDFUNCSEPARATEPROC = procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEPROC = procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.4 from GL_EXT_multi_draw_arrays (#148)
-  PFNGLMULTIDRAWARRAYSPROC = procedure(mode: TVKenum; First: PGLint; Count: PGLsizei; primcount: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTIDRAWELEMENTSPROC = procedure(mode: TVKenum; Count: PGLsizei; AType: TVKenum; var indices; primcount: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTIDRAWARRAYSPROC = procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTIDRAWELEMENTSPROC = procedure(mode: TGLenum; Count: PGLsizei; AType: TGLenum; var indices; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.4 from GL_ARB_point_parameters (#14), GL_NV_point_sprite (#262)
-  PFNGLPOINTPARAMETERFPROC = procedure(pname: TVKenum; param: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPOINTPARAMETERFVPROC = procedure(pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPOINTPARAMETERIPROC = procedure(pname: TVKenum; param: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPOINTPARAMETERIVPROC = procedure(pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERFPROC = procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERFVPROC = procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERIPROC = procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERIVPROC = procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // core 1.4 deprecated
   // promoted to core v1.4 from GL_EXT_fog_coord (#149)
-  PFNGLFOGCOORDFPROC = procedure(coord: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLFOGCOORDFPROC = procedure(coord: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLFOGCOORDFVPROC = procedure(coord: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLFOGCOORDDPROC = procedure(coord: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLFOGCOORDDPROC = procedure(coord: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLFOGCOORDDVPROC = procedure(coord: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLFOGCOORDPOINTERPROC = procedure(AType: TVKenum; stride: TVKsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLFOGCOORDPOINTERPROC = procedure(AType: TGLenum; stride: TGLsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.4 from GL_EXT_secondary_color (#145)
-  PFNGLSECONDARYCOLOR3BPROC = procedure(red, green, blue: TVKbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3BPROC = procedure(red, green, blue: TGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3BVPROC = procedure(v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3DPROC = procedure(red, green, blue: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3DPROC = procedure(red, green, blue: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3DVPROC = procedure(v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3FPROC = procedure(red, green, blue: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3FPROC = procedure(red, green, blue: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3FVPROC = procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3IPROC = procedure(red, green, blue: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3IPROC = procedure(red, green, blue: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3IVPROC = procedure(v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3SPROC = procedure(red, green, blue: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3SPROC = procedure(red, green, blue: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3SVPROC = procedure(v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3UBPROC = procedure(red, green, blue: TVKubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3UBPROC = procedure(red, green, blue: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3UBVPROC = procedure(v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3UIPROC = procedure(red, green, blue: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3UIPROC = procedure(red, green, blue: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3UIVPROC = procedure(v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLOR3USPROC = procedure(red, green, blue: TVKushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLOR3USPROC = procedure(red, green, blue: TGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLSECONDARYCOLOR3USVPROC = procedure(v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLSECONDARYCOLORPOINTERPROC = procedure(Size: TVKint; Atype: TVKenum; stride: TVKsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLSECONDARYCOLORPOINTERPROC = procedure(Size: TGLint; Atype: TGLenum; stride: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // promoted to core v1.4 from GL_ARB_window_pos (#25)
-  PFNGLWINDOWPOS2DPROC = procedure(x,y : TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS2DPROC = procedure(x,y : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS2DVPROC = procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS2FPROC = procedure(x,y : TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS2FPROC = procedure(x,y : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS2FVPROC = procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS2IPROC = procedure(x,y : TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS2IPROC = procedure(x,y : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS2IVPROC = procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS2SPROC = procedure(x,y : TVKshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS2SPROC = procedure(x,y : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS2SVPROC = procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS3DPROC = procedure(x,y,z : TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS3DPROC = procedure(x,y,z : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS3DVPROC = procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS3FPROC = procedure(x,y,z : TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS3FPROC = procedure(x,y,z : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS3FVPROC = procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS3IPROC = procedure(x,y,z : TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS3IPROC = procedure(x,y,z : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS3IVPROC = procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
-  PFNGLWINDOWPOS3SPROC = procedure(x,y,z : TVKshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
+  PFNGLWINDOWPOS3SPROC = procedure(x,y,z : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
   PFNGLWINDOWPOS3SVPROC = procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} //deprecated;
 
   // core 1.5
   // promoted to core v1.5 from GL_ARB_occlusion_query (#29)
-  PFNGLGENQUERIESPROC = procedure(n: TVKsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEQUERIESPROC = procedure(n: TVKsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISQUERYPROC = function(id: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINQUERYPROC = procedure(target: TVKenum; id: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENDQUERYPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYIVPROC = procedure(target: TVKEnum; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTIVPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTUIVPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENQUERIESPROC = procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEQUERIESPROC = procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISQUERYPROC = function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINQUERYPROC = procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENDQUERYPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYIVPROC = procedure(target: TGLEnum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTIVPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTUIVPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v1.5 from GL_ARB_vertex_buffer_object (#28)
   PFNGLBINDBUFFERPROC = procedure(target: GLenum; buffer: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6105,48 +6092,48 @@ const
 
   // core 2.0
   // promoted to core v2.0 from GL_EXT_blend_equation_separate (#299)
-  PFNGLBLENDEQUATIONSEPARATEPROC = procedure(modeRGB: TVKenum; modeAlpha: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEPROC = procedure(modeRGB: TGLenum; modeAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v2.0 from GL_ARB_draw_buffers (#37)
   PFNGLDRAWBUFFERSPROC = procedure(n: GLSizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v2.0 from GL_ARB_stencil_two_side (no # found)
-  PFNGLSTENCILOPSEPARATEPROC = procedure(face, sfail, dpfail, dppass: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSTENCILFUNCSEPARATEPROC = procedure(face, func: TVKenum; ref: TVKint; mask: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSTENCILMASKSEPARATEPROC = procedure(face: TVKenum; mask: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILOPSEPARATEPROC = procedure(face, sfail, dpfail, dppass: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILFUNCSEPARATEPROC = procedure(face, func: TGLenum; ref: TGLint; mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILMASKSEPARATEPROC = procedure(face: TGLenum; mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v2.0 from GL_ARB_shader_objects (#30) / GL_ARB_vertex_shader (#31) / GL_ARB_fragment_shader (#32)
-  PFNGLATTACHSHADERPROC = procedure(_program: TVKuint; shader: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDATTRIBLOCATIONPROC = procedure(_program: TVKuint; index: TVKuint; const name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPILESHADERPROC = procedure(shader: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCREATEPROGRAMPROC = function(): TVKuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCREATESHADERPROC = function(_type: TVKenum): TVKuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEPROGRAMPROC = procedure(_program: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETESHADERPROC = procedure(shader: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDETACHSHADERPROC = procedure(_program: TVKuint; shader: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDISABLEVERTEXATTRIBARRAYPROC = procedure(index: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENABLEVERTEXATTRIBARRAYPROC = procedure(index: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEATTRIBPROC = procedure(_program: TVKuint; index: TVKuint; bufSize: TVKsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEUNIFORMPROC = procedure(_program: TVKuint; index: TVKuint; bufSize: TVKsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETATTACHEDSHADERSPROC = procedure(_program: TVKuint; maxCount: TVKsizei; count: PGLSizei; obj: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETATTRIBLOCATIONPROC = function(_program: TVKuint; const name: PGLChar): TVKint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMIVPROC = procedure(_program: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMINFOLOGPROC = procedure(_program: TVKuint; bufSize: TVKsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSHADERIVPROC = procedure(shader: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSHADERINFOLOGPROC = procedure(shader: TVKuint; bufSize: TVKsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSHADERSOURCEPROC = procedure(shader:TVKuint; bufSize: TVKsizei; length: PGLsizei; source: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMLOCATIONPROC = function(_program: TVKuint; const name: PGLChar): TVKint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMFVPROC = procedure(_program: TVKuint; location: TVKint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMIVPROC = procedure(_program: TVKuint; location: TVKint; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBDVPROC = procedure(index:TVKuint; pname: TVKenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBFVPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIVPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBPOINTERVPROC = procedure(index: TVKuint; pname: TVKenum; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISPROGRAMPROC = function(_program: TVKuint):TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISSHADERPROC = function(shader: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLLINKPROGRAMPROC = procedure(_program: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSHADERSOURCEPROC = procedure(shader: TVKuint; count: TVKsizei; const _string: PGLPCharArray; const length: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUSEPROGRAMPROC = procedure(_program: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLATTACHSHADERPROC = procedure(_program: TGLuint; shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDATTRIBLOCATIONPROC = procedure(_program: TGLuint; index: TGLuint; const name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPILESHADERPROC = procedure(shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCREATEPROGRAMPROC = function(): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCREATESHADERPROC = function(_type: TGLenum): TGLuint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEPROGRAMPROC = procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETESHADERPROC = procedure(shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDETACHSHADERPROC = procedure(_program: TGLuint; shader: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDISABLEVERTEXATTRIBARRAYPROC = procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENABLEVERTEXATTRIBARRAYPROC = procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEATTRIBPROC = procedure(_program: TGLuint; index: TGLuint; bufSize: TGLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEUNIFORMPROC = procedure(_program: TGLuint; index: TGLuint; bufSize: TGLsizei; length: PGLsizei; size: PGLint; _type: PGLenum; name: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETATTACHEDSHADERSPROC = procedure(_program: TGLuint; maxCount: TGLsizei; count: PGLSizei; obj: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETATTRIBLOCATIONPROC = function(_program: TGLuint; const name: PGLChar): TGLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMIVPROC = procedure(_program: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMINFOLOGPROC = procedure(_program: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSHADERIVPROC = procedure(shader: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSHADERINFOLOGPROC = procedure(shader: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSHADERSOURCEPROC = procedure(shader:TGLuint; bufSize: TGLsizei; length: PGLsizei; source: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMLOCATIONPROC = function(_program: TGLuint; const name: PGLChar): TGLint; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMFVPROC = procedure(_program: TGLuint; location: TGLint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMIVPROC = procedure(_program: TGLuint; location: TGLint; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBDVPROC = procedure(index:TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBFVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBPOINTERVPROC = procedure(index: TGLuint; pname: TGLenum; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPROGRAMPROC = function(_program: TGLuint):TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISSHADERPROC = function(shader: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLLINKPROGRAMPROC = procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSHADERSOURCEPROC = procedure(shader: TGLuint; count: TGLsizei; const _string: PGLPCharArray; const length: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUSEPROGRAMPROC = procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNIFORM1FPROC = procedure(location: GLint; v0: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNIFORM2FPROC = procedure(location: GLint; v0: GLfloat; v1: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNIFORM3FPROC = procedure(location: GLint; v0: GLfloat; v1: GLfloat; v2: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6166,157 +6153,157 @@ const
   PFNGLUNIFORMMATRIX2FVPROC = procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNIFORMMATRIX3FVPROC = procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNIFORMMATRIX4FVPROC = procedure(location: GLint; count: GLsizei; transpose: GLboolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVALIDATEPROGRAMPROC = procedure(_program: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1DPROC = procedure(index:TVKuint; x: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1DVPROC = procedure(index:TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1FPROC = procedure(index:TVKuint; x: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1FVPROC = procedure(index:TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1SPROC = procedure(index:TVKuint; x: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1SVPROC = procedure(index:TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2DPROC = procedure(index:TVKuint; x,y: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2DVPROC = procedure(index:TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2FPROC = procedure(index:TVKuint; x,y: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2FVPROC = procedure(index:TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2SPROC = procedure(index:TVKuint; x,y: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2SVPROC = procedure(index:TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3DPROC = procedure(index:TVKuint; x,y,z: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3DVPROC = procedure(index:TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3FPROC = procedure(index:TVKuint; x,y,z: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3FVPROC = procedure(index:TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3SPROC = procedure(index:TVKuint; x,y,z: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3SVPROC = procedure(index:TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NBVPROC = procedure(index:TVKuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NIVPROC = procedure(index:TVKuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NSVPROC = procedure(index:TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NUBPROC = procedure(index:TVKuint; x,y,z,w: TVKubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NUBVPROC = procedure(index:TVKuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NUIVPROC = procedure(index:TVKuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4NUSVPROC = procedure(index:TVKuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4BVPROC = procedure(index:TVKuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4DPROC = procedure(index:TVKuint; x,y,z,w: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4DVPROC = procedure(index:TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4FPROC = procedure(index:TVKuint; x,y,z,w: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4FVPROC = procedure(index:TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4IVPROC = procedure(index:TVKuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4SPROC = procedure(index:TVKuint; x,y,z,w: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4SVPROC = procedure(index:TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4UBVPROC = procedure(index:TVKuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4UIVPROC = procedure(index:TVKuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4USVPROC = procedure(index:TVKuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBPOINTERPROC = procedure(index:TVKuint; size: TVKint; _type: TVKenum; normalized: TVKboolean; stride:TVKsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVALIDATEPROGRAMPROC = procedure(_program: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1DPROC = procedure(index:TGLuint; x: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1DVPROC = procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1FPROC = procedure(index:TGLuint; x: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1FVPROC = procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1SPROC = procedure(index:TGLuint; x: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1SVPROC = procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2DPROC = procedure(index:TGLuint; x,y: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2DVPROC = procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2FPROC = procedure(index:TGLuint; x,y: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2FVPROC = procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2SPROC = procedure(index:TGLuint; x,y: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2SVPROC = procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3DPROC = procedure(index:TGLuint; x,y,z: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3DVPROC = procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3FPROC = procedure(index:TGLuint; x,y,z: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3FVPROC = procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3SPROC = procedure(index:TGLuint; x,y,z: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3SVPROC = procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NBVPROC = procedure(index:TGLuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NIVPROC = procedure(index:TGLuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NSVPROC = procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NUBPROC = procedure(index:TGLuint; x,y,z,w: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NUBVPROC = procedure(index:TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NUIVPROC = procedure(index:TGLuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4NUSVPROC = procedure(index:TGLuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4BVPROC = procedure(index:TGLuint; v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4DPROC = procedure(index:TGLuint; x,y,z,w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4DVPROC = procedure(index:TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4FPROC = procedure(index:TGLuint; x,y,z,w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4FVPROC = procedure(index:TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4IVPROC = procedure(index:TGLuint; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4SPROC = procedure(index:TGLuint; x,y,z,w: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4SVPROC = procedure(index:TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4UBVPROC = procedure(index:TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4UIVPROC = procedure(index:TGLuint; v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4USVPROC = procedure(index:TGLuint; v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBPOINTERPROC = procedure(index:TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride:TGLsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // core 2.1
   // new commands in OpenGL 2.1
-  PFNGLUNIFORMMATRIX2X3FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX3X2FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX2X4FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX4X2FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX3X4FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX4X3FVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX2X3FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX3X2FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX2X4FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX4X2FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX3X4FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX4X3FVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLBoolean; value: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 3.0
   // promoted to core v3.0 from GL_EXT_gpu_shader4
-  PFNGLVERTEXATTRIBI1IPROC = procedure(index: TVKuint; x: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2IPROC = procedure(index: TVKuint; x: TVKint; y: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3IPROC = procedure(index: TVKuint; x: TVKint; y: TVKint; z: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4IPROC = procedure(index: TVKuint; x: TVKint; y: TVKint; z: TVKint; w: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1UIPROC = procedure(index: TVKuint; x: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2UIPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3UIPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint; z: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UIPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint; z: TVKuint; w: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1IVPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2IVPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3IVPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4IVPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1UIVPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2UIVPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3UIVPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UIVPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4BVPROC = procedure(index: TVKuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4SVPROC = procedure(index: TVKuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UBVPROC = procedure(index: TVKuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4USVPROC = procedure(index: TVKuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBIPOINTERPROC = procedure(index: TVKuint; size: TVKint; _type: TVKenum;
-                              stride: TVKsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIIVPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIUIVPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM1UIPROC = procedure(location: TVKInt; v0: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2UIPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3UIPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint; v2: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4UIPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint; v2: TVKuint; v3: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM1UIVPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2UIVPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3UIVPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4UIVPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMUIVPROC = procedure(_program: TVKuint; location: TVKint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDFRAGDATALOCATIONPROC = procedure(_program: TVKuint; colorNumber: TVKuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFRAGDATALOCATIONPROC = function(_program: TVKuint; name: PGLChar): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1IPROC = procedure(index: TGLuint; x: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2IPROC = procedure(index: TGLuint; x: TGLint; y: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3IPROC = procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4IPROC = procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint; w: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1UIPROC = procedure(index: TGLuint; x: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2UIPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3UIPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UIPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint; w: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1IVPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2IVPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3IVPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4IVPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1UIVPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2UIVPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3UIVPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UIVPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4BVPROC = procedure(index: TGLuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4SVPROC = procedure(index: TGLuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UBVPROC = procedure(index: TGLuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4USVPROC = procedure(index: TGLuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBIPOINTERPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum;
+                              stride: TGLsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIIVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIUIVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1UIPROC = procedure(location: TGLInt; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2UIPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3UIPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4UIPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1UIVPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2UIVPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3UIVPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4UIVPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMUIVPROC = procedure(_program: TGLuint; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDFRAGDATALOCATIONPROC = procedure(_program: TGLuint; colorNumber: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFRAGDATALOCATIONPROC = function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v3.0 from GL_NV_conditional_render
-  PFNGLBEGINCONDITIONALRENDERPROC = procedure(id: TVKuint; mode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINCONDITIONALRENDERPROC = procedure(id: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDCONDITIONALRENDERPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v3.0 from GL_ARB_color_buffer_float
-  PFNGLCLAMPCOLORPROC = procedure (target: TVKenum; clamp: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLAMPCOLORPROC = procedure (target: TGLenum; clamp: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v3.0 from GL_EXT_texture_integer
-  PFNGLTEXPARAMETERIIVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXPARAMETERIUIVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTEXPARAMETERIIVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTEXPARAMETERIUIVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXPARAMETERIIVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXPARAMETERIUIVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTEXPARAMETERIIVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTEXPARAMETERIUIVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v3.0 from GL_EXT_draw_buffers2
-  PFNGLCOLORMASKIPROC = procedure(index: TVKuint; r: TVKboolean; g: TVKboolean;
-                          b: TVKboolean; a: TVKboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETBOOLEANI_VPROC = procedure(target: TVKenum; index: TVKuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETINTEGERI_VPROC = procedure(target: TVKenum; index: TVKuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENABLEIPROC = procedure(target: TVKenum; index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDISABLEIPROC = procedure(target: TVKenum; index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISENABLEDIPROC = function(target: TVKenum; index: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORMASKIPROC = procedure(index: TGLuint; r: TGLboolean; g: TGLboolean;
+                          b: TGLboolean; a: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETBOOLEANI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGERI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENABLEIPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDISABLEIPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISENABLEDIPROC = function(target: TGLenum; index: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   //promoted to core v3.0 from GL_EXT_transform_feedback
-  PFNGLBINDBUFFERRANGEPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint;
-                          offset:TVKintptr; size: TVKsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDBUFFERBASEPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINTRANSFORMFEEDBACKPROC = procedure(primitiveMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFERRANGEPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
+                          offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFERBASEPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINTRANSFORMFEEDBACKPROC = procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDTRANSFORMFEEDBACKPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTRANSFORMFEEDBACKVARYINGSPROC = procedure(_program: TVKuint; count: TVKsizei;
-                                    const varyings: PGLPCharArray; bufferMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTRANSFORMFEEDBACKVARYINGPROC = procedure(_program: TVKuint; index: TVKuint;
-   bufSize: TVKsizei; length: PGLsizei; size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTRANSFORMFEEDBACKVARYINGSPROC = procedure(_program: TGLuint; count: TGLsizei;
+                                    const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTRANSFORMFEEDBACKVARYINGPROC = procedure(_program: TGLuint; index: TGLuint;
+   bufSize: TGLsizei; length: PGLsizei; size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // New commands in OpenGL 3.0
-  PFNGLCLEARBUFFERIVPROC = procedure(buffer: TVKenum; drawbuffer: TVKint; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLEARBUFFERUIVPROC = procedure(buffer: TVKenum; drawbuffer: TVKint; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLEARBUFFERFVPROC = procedure(buffer: TVKenum; drawbuffer: TVKint; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLEARBUFFERFIPROC = procedure(buffer: TVKenum; drawbuffer: TVKint; depth: TVKfloat; stencil: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSTRINGIPROC = function(name: TVKenum; index: TVKuint): PGLChar;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARBUFFERIVPROC = procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARBUFFERUIVPROC = procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARBUFFERFVPROC = procedure(buffer: TGLenum; drawbuffer: TGLint; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARBUFFERFIPROC = procedure(buffer: TGLenum; drawbuffer: TGLint; depth: TGLfloat; stencil: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSTRINGIPROC = function(name: TGLenum; index: TGLuint): PGLChar;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 3.1
   // New commands in OpenGL 3.1
-  PFNGLDRAWARRAYSINSTANCEDPROC = procedure(mode: TVKenum; first: TVKint; count: TVKsizei; primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWELEMENTSINSTANCEDPROC = procedure(mode: TVKenum; count: TVKsizei; _type: TVKenum; indices: PGLvoid; primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXBUFFERPROC = procedure(target: TVKenum; internalformat: TVKenum; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPRIMITIVERESTARTINDEXPROC = procedure(index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWARRAYSINSTANCEDPROC = procedure(mode: TGLenum; first: TGLint; count: TGLsizei; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSINSTANCEDPROC = procedure(mode: TGLenum; count: TGLsizei; _type: TGLenum; indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXBUFFERPROC = procedure(target: TGLenum; internalformat: TGLenum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPRIMITIVERESTARTINDEXPROC = procedure(index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 3.2
-  PFNGLGETINTEGER64I_VPROC = procedure(target: TVKenum; index: TVKuint; data: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETBUFFERPARAMETERI64VPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTUREPROC = procedure(target: TVKenum; attachment: TVKenum; texture: TVKuint; level: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGER64I_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETBUFFERPARAMETERI64VPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTUREPROC = procedure(target: TGLenum; attachment: TGLenum; texture: TGLuint; level: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 3.3
-  PFNGLVERTEXATTRIBDIVISORPROC = procedure(index: TVKuint; divisor: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBDIVISORPROC = procedure(index: TGLuint; divisor: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // Core 4.0
   // promoted to core v4.0 from GL_ARB_draw_buffers_blend (ARB #69)
-  PFNGLBLENDEQUATIONIPROC = procedure(buf: TVKuint; mode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDEQUATIONSEPARATEIPROC = procedure(buf: TVKuint; modeRGB: TVKenum; modeAlpha: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCIPROC = procedure(buf: TVKuint; src: TVKenum; dst: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCSEPARATEIPROC = procedure(buf: TVKuint; srcRGB: TVKenum; dstRGB: TVKenum;
-                             srcAlpha: TVKenum; dstAlpha: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONIPROC = procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEIPROC = procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCIPROC = procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEIPROC = procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
+                             srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // promoted to core v4.0 from GL_ARB_sample_shading (ARB #70)
-  PFNGLMINSAMPLESHADINGPROC = procedure(value: TVKclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMINSAMPLESHADINGPROC = procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GLU extensions (might not be same naming as c versions?)
   PFNGLUNURBSCALLBACKDATAEXTPROC = procedure(nurb: PGLUnurbs; userData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6327,7 +6314,7 @@ const
   // WGL
   // WGL - ARB
   // WGL_buffer_region (ARB #4)
-  PFNWGLCREATEBUFFERREGIONARBPROC = function(DC: HDC; iLayerPlane: Integer; uType: TVKenum) : Integer; stdcall;
+  PFNWGLCREATEBUFFERREGIONARBPROC = function(DC: HDC; iLayerPlane: Integer; uType: TGLenum) : Integer; stdcall;
   PFNWGLDELETEBUFFERREGIONARBPROC = procedure(hRegion: Integer); stdcall;
   PFNWGLSAVEBUFFERREGIONARBPROC = function(hRegion: Integer; x, y, width, height: Integer): BOOL; stdcall;
   PFNWGLRESTOREBUFFERREGIONARBPROC = function(hRegion: Integer; x, y, width, height: Integer;
@@ -6337,9 +6324,9 @@ const
   PFNWGLGETEXTENSIONSSTRINGARBPROC = function(DC: HDC): PGLChar; stdcall;
 
   // WGL_ARB_pixel_format (ARB #9)
-  PFNWGLGETPIXELFORMATATTRIBIVARBPROC = function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TVKenum;
+  PFNWGLGETPIXELFORMATATTRIBIVARBPROC = function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TGLenum;
    const piAttributes: PGLint; piValues : PGLint) : BOOL; stdcall;
-  PFNWGLGETPIXELFORMATATTRIBFVARBPROC = function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TVKenum;
+  PFNWGLGETPIXELFORMATATTRIBFVARBPROC = function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: TGLenum;
    const piAttributes: PGLint; piValues: PGLFloat) : BOOL; stdcall;
   PFNWGLCHOOSEPIXELFORMATARBPROC = function(DC: HDC; const piAttribIList: PGLint; const pfAttribFList: PGLFloat;
    nMaxFormats: GLuint; piFormats: PGLint; nNumFormats: PGLenum) : BOOL; stdcall;
@@ -6393,9 +6380,9 @@ const
   {$IFDEF SUPPORT_GLX}
   // GLX
   // GLX 1.3+
-  PFNGLXCHOOSEFBCONFIGPROC = function(dpy: PDisplay; screen: TVKInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
-  PFNGLXGETFBCONFIGATTRIBPROC = function(dpy: PDisplay; config: GLXFBConfig; attribute: TVKInt; value: PGLInt): TVKInt; cdecl;
-  PFNGLXGETFBCONFIGSPROC = function(dpy: PDisplay; screen: TVKInt; nelements: PGLInt): GLXFBConfig; cdecl;
+  PFNGLXCHOOSEFBCONFIGPROC = function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfig; cdecl;
+  PFNGLXGETFBCONFIGATTRIBPROC = function(dpy: PDisplay; config: GLXFBConfig; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+  PFNGLXGETFBCONFIGSPROC = function(dpy: PDisplay; screen: TGLInt; nelements: PGLInt): GLXFBConfig; cdecl;
   PFNGLXGETVISUALFROMFBCONFIGPROC = function(dpy: PDisplay; config: GLXFBConfig): PXVisualInfo; cdecl;
   PFNGLXCREATEWINDOWPROC = function(dpy: PDisplay; config: GLXFBConfig; win: GLXWindow; const attribList: PGLInt): GLXWindow; cdecl;
   PFNGLXDESTROYWINDOWPROC = procedure(dpy: PDisplay; window: GLXWindow); cdecl;
@@ -6403,103 +6390,103 @@ const
   PFNGLXDESTROYPIXMAPPROC = procedure(dpy: PDisplay; pixmap: GLXPixmap); cdecl;
   PFNGLXCREATEPBUFFERPROC = function(dpy: PDisplay; config: GLXFBConfig; attribList: PGLInt): GLXPBuffer; cdecl;
   PFNGLXDESTROYPBUFFERPROC = procedure(dpy: PDisplay; pbuf: GLXPBuffer); cdecl;
-  PFNGLXQUERYDRAWABLEPROC = procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TVKInt; value: PGLuint); cdecl;
-  PFNGLXCREATENEWCONTEXTPROC = function(dpy: PDisplay; config: GLXFBConfig; renderType: TVKInt; shareList: GLXContext; direct: TVKboolean): GLXContext; cdecl;
-  PFNGLXMAKECONTEXTCURRENTPROC = function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TVKboolean; cdecl;
+  PFNGLXQUERYDRAWABLEPROC = procedure(dpy: PDisplay; draw: GLXDrawable; attribute: TGLInt; value: PGLuint); cdecl;
+  PFNGLXCREATENEWCONTEXTPROC = function(dpy: PDisplay; config: GLXFBConfig; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
+  PFNGLXMAKECONTEXTCURRENTPROC = function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
   PFNGLXGETCURRENTREADDRAWABLEPROC = function: GLXDrawable; cdecl;
-  PFNGLXQUERYCONTEXTPROC = function(dpy: PDisplay; ctx: GLXContext; attribute: TVKInt; value: PGLInt): TVKInt; cdecl;
-  PFNGLXSELECTEVENTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TVKsizei); cdecl;
-  PFNGLXGETSELECTEDEVENTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TVKsizei); cdecl;
-  PFNGLXBINDTEXIMAGEARBPROC = function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TVKInt): TVKboolean; cdecl;
-  PFNGLXRELEASETEXIMAGEARBPROC = function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TVKint): TVKboolean; cdecl;
-  PFNGLXDRAWABLEATTRIBARBPROC = function(dpy: PDisplay; draw: GLXDrawable; const attribList:PGLInt): TVKboolean; cdecl;
+  PFNGLXQUERYCONTEXTPROC = function(dpy: PDisplay; ctx: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+  PFNGLXSELECTEVENTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
+  PFNGLXGETSELECTEDEVENTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: TGLsizei); cdecl;
+  PFNGLXBINDTEXIMAGEARBPROC = function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLInt): TGLboolean; cdecl;
+  PFNGLXRELEASETEXIMAGEARBPROC = function(dpy: PDisplay; pbuffer: GLXPbuffer; buffer: TGLint): TGLboolean; cdecl;
+  PFNGLXDRAWABLEATTRIBARBPROC = function(dpy: PDisplay; draw: GLXDrawable; const attribList:PGLInt): TGLboolean; cdecl;
 
   // 1.4
   // GLX_ARB_create_context (EXT #56)
   PFNGLXCREATECONTEXTATTRIBSARBPROC = function(dpy: PDisplay; config: GLXFBConfig;
-      share_context: GLXContext; direct: TVKBoolean;
+      share_context: GLXContext; direct: TGLBoolean;
       attrib_list: PGLint): GLXContext; cdecl;
   PFNGLXGETPROCADDRESSPROC = function(const name: PAnsiChar): pointer; cdecl;
   PFNGLXGETPROCADDRESSARBPROC = function (const name: PAnsiChar): pointer; cdecl;
 
   // GLX_SGI_swap_control (EXT #40)
-  PFNGLXSWAPINTERVALSGIPROC = function(interval: TVKint): TVKint; cdecl;
-  PFNGLXGETVIDEOSYNCSGIPROC = function(count: PGLuint): TVKInt; cdecl;
-  PFNGLXWAITVIDEOSYNCSGIPROC = function(divisor: TVKInt; remainder: TVKInt; count: PGLuint): TVKInt; cdecl;
+  PFNGLXSWAPINTERVALSGIPROC = function(interval: TGLint): TGLint; cdecl;
+  PFNGLXGETVIDEOSYNCSGIPROC = function(count: PGLuint): TGLInt; cdecl;
+  PFNGLXWAITVIDEOSYNCSGIPROC = function(divisor: TGLInt; remainder: TGLInt; count: PGLuint): TGLInt; cdecl;
   PFNGLXFREECONTEXTEXTPROC = procedure(dpy: PDisplay; context: GLXContext); cdecl;
   PFNGLXGETCONTEXTIDEXTPROC = function(const context: GLXContext): GLXContextID; cdecl;
   PFNGLXGETCURRENTDISPLAYEXTPROC = function: PDisplay; cdecl;
   PFNGLXIMPORTCONTEXTEXTPROC = function(dpy: PDisplay; contextID: GLXContextID): GLXContext; cdecl;
-  PFNGLXQUERYCONTEXTINFOEXTPROC = function(dpy: PDisplay; context: GLXContext; attribute: TVKInt; value: PGLInt): TVKInt; cdecl;
-  PFNGLXCOPYSUBBUFFERMESAPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; x: TVKInt; y: TVKInt; width: TVKInt; height: TVKInt); cdecl;
+  PFNGLXQUERYCONTEXTINFOEXTPROC = function(dpy: PDisplay; context: GLXContext; attribute: TGLInt; value: PGLInt): TGLInt; cdecl;
+  PFNGLXCOPYSUBBUFFERMESAPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; x: TGLInt; y: TGLInt; width: TGLInt; height: TGLInt); cdecl;
   PFNGLXCREATEGLXPIXMAPMESAPROC = function(dpy: PDisplay; visual: PXVisualInfo; pixmap: XPixmap; cmap: XColormap): GLXPixmap; cdecl;
-  PFNGLXRELEASEBUFFERSMESAPROC = function(dpy: PDisplay; d: GLXDrawable): TVKboolean; cdecl;
-  PFNGLXSET3DFXMODEMESAPROC = function(mode: TVKint): TVKboolean; cdecl;
+  PFNGLXRELEASEBUFFERSMESAPROC = function(dpy: PDisplay; d: GLXDrawable): TGLboolean; cdecl;
+  PFNGLXSET3DFXMODEMESAPROC = function(mode: TGLint): TGLboolean; cdecl;
 
   PFNGLXBINDTEXIMAGEEXTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint; const attrib_list: PGLint); cdecl;
   PFNGLXRELEASETEXIMAGEEXTPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; buffer: GLint); cdecl;
 
   //GLX 1.4
-  PFNGLXMAKECURRENTREADSGIPROC = function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TVKboolean; cdecl;
+  PFNGLXMAKECURRENTREADSGIPROC = function(dpy: PDisplay; draw: GLXDrawable; read: GLXDrawable; ctx: GLXContext): TGLboolean; cdecl;
   PFNGLXGETCURRENTREADDRAWABLESGIPROC = function: GLXDrawable; cdecl;
-  PFNGLXGETFBCONFIGATTRIBSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX; attribute: TVKInt; value: PGLInt):TVKInt; cdecl;
-  PFNGLXCHOOSEFBCONFIGSGIXPROC = function(dpy: PDisplay; screen: TVKInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfigSGIX; cdecl;
+  PFNGLXGETFBCONFIGATTRIBSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX; attribute: TGLInt; value: PGLInt):TGLInt; cdecl;
+  PFNGLXCHOOSEFBCONFIGSGIXPROC = function(dpy: PDisplay; screen: TGLInt; attribList: PGLInt; nitems: PGLInt): GLXFBConfigSGIX; cdecl;
   PFNGLXCREATEGLXPIXMAPWITHCONFIGSGIXPROC = function(dpy: PDisplay; config:GLXFBConfigSGIX;  pixmap: GLXPixmap): GLXPixmap; cdecl;
-  PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX; renderType: TVKInt; shareList: GLXContext; direct: TVKboolean): GLXContext; cdecl;
+  PFNGLXCREATECONTEXTWITHCONFIGSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX; renderType: TGLInt; shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl;
   PFNGLXGETVISUALFROMFBCONFIGSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX): PXVisualInfo; cdecl;
   PFNGLXGETFBCONFIGFROMVISUALSGIXPROC = function(dpy: PDisplay; vis: PXVisualInfo): GLXFBConfigSGIX; cdecl;
   PFNGLXCREATEGLXPBUFFERSGIXPROC = function(dpy: PDisplay; config: GLXFBConfigSGIX; width:PGLuint;  height: PGLuint; attribList: PGLInt): GLXPBufferSGIX; cdecl;
   PFNGLXDESTROYGLXPBUFFERSGIXPROC = procedure(dpy: PDisplay; pbuf: GLXFBConfigSGIX); cdecl;
-  PFNGLXQUERYGLXPBUFFERSGIXPROC = function(dpy: PDisplay; pbuf: GLXFBConfigSGIX; attribute: PGLInt; value: PGLuint): TVKInt; cdecl;
+  PFNGLXQUERYGLXPBUFFERSGIXPROC = function(dpy: PDisplay; pbuf: GLXFBConfigSGIX; attribute: PGLInt; value: PGLuint): TGLInt; cdecl;
   PFNGLXSELECTEVENTSGIXPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
   PFNGLXGETSELECTEDEVENTSGIXPROC = procedure(dpy: PDisplay; drawable: GLXDrawable; mask: PGLuint64); cdecl;
-  PFNGLXCUSHIONSGIPROC = procedure(dpy: PDisplay; window: TWindow; cushion: TVKfloat); cdecl;
-  PFNGLXBINDCHANNELTOWINDOWSGIXPROC = function(dpy: PDisplay; screen: TVKInt; channel: TVKInt; window: TWindow): TVKInt; cdecl;
-  PFNGLXCHANNELRECTSGIXPROC = function (dpy: PDisplay; screen: TVKInt; channel:TVKInt; x, y, w, h: TVKInt): TVKInt; cdecl;
-  PFNGLXQUERYCHANNELRECTSGIXPROC = function (dpy: PDisplay; screen: TVKInt; channel:TVKInt; dx, dy, dw, dh: TVKInt): TVKInt; cdecl;
-  PFNGLXQUERYCHANNELDELTASSGIXPROC = function (dpy: PDisplay; screen: TVKInt; channel:TVKInt; x, y, w, h: TVKInt): TVKInt; cdecl;
-  PFNGLXCHANNELRECTSYNCSGIXPROC = function (dpy: PDisplay; screen: TVKInt; channel: TVKInt; synctype: TVKEnum): TVKInt; cdecl;
+  PFNGLXCUSHIONSGIPROC = procedure(dpy: PDisplay; window: TWindow; cushion: TGLfloat); cdecl;
+  PFNGLXBINDCHANNELTOWINDOWSGIXPROC = function(dpy: PDisplay; screen: TGLInt; channel: TGLInt; window: TWindow): TGLInt; cdecl;
+  PFNGLXCHANNELRECTSGIXPROC = function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
+  PFNGLXQUERYCHANNELRECTSGIXPROC = function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; dx, dy, dw, dh: TGLInt): TGLInt; cdecl;
+  PFNGLXQUERYCHANNELDELTASSGIXPROC = function (dpy: PDisplay; screen: TGLInt; channel:TGLInt; x, y, w, h: TGLInt): TGLInt; cdecl;
+  PFNGLXCHANNELRECTSYNCSGIXPROC = function (dpy: PDisplay; screen: TGLInt; channel: TGLInt; synctype: TGLEnum): TGLInt; cdecl;
   PFNGLXJOINSWAPGROUPSGIXPROC = procedure (dpy: PDisplay; drawable: GLXDrawable; member: GLXDrawable); cdecl;
-  PFNGLXBINDSWAPBARRIERSGIXPROC = procedure (dpy: PDisplay; drawable: GLXDrawable; barrier: TVKInt); cdecl;
-  PFNGLXQUERYMAXSWAPBARRIERSSGIXPROC = procedure (dpy: PDisplay; screen: TVKInt; max: TVKInt); cdecl;
+  PFNGLXBINDSWAPBARRIERSGIXPROC = procedure (dpy: PDisplay; drawable: GLXDrawable; barrier: TGLInt); cdecl;
+  PFNGLXQUERYMAXSWAPBARRIERSSGIXPROC = procedure (dpy: PDisplay; screen: TGLInt; max: TGLInt); cdecl;
   PFNGLXQUERYHYPERPIPENETWORKSGIXPROC = function (dpy: PDisplay; npipes:PGLint): PGLXHyperpipeNetworkSGIX; cdecl;
-  PFNGLXHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; networkId, npipes: PGLint; cfg: PGLXHyperpipeConfigSGIX; hpId: PGLInt): TVKint; cdecl;
-  PFNGLXQUERYHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; hpId: TVKInt; npipes: PGLInt): PGLXHyperpipeConfigSGIX; cdecl;
-  PFNGLXDESTROYHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; hpId:TVKint): PGLInt; cdecl;
+  PFNGLXHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; networkId, npipes: PGLint; cfg: PGLXHyperpipeConfigSGIX; hpId: PGLInt): TGLint; cdecl;
+  PFNGLXQUERYHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; hpId: TGLInt; npipes: PGLInt): PGLXHyperpipeConfigSGIX; cdecl;
+  PFNGLXDESTROYHYPERPIPECONFIGSGIXPROC = function(dpy: PDisplay; hpId:TGLint): PGLInt; cdecl;
   PFNGLXBINDHYPERPIPESGIXPROC = function(dpy: PDisplay; hpId: PGLint): PGLInt; cdecl;
-  PFNGLXQUERYHYPERPIPEBESTATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TVKint; attrib: TVKint; size: TVKint; attribList: TVKint; returnAttribList: TVKint): TVKint; cdecl;
-  PFNGLXHYPERPIPEATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TVKint; attrib: TVKint; size: TVKint; attribList: TVKint): TVKint; cdecl;
-  PFNGLXQUERYHYPERPIPEATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TVKint; attrib: TVKint; size: TVKint; returnAttribList: TVKint): TVKint; cdecl;
+  PFNGLXQUERYHYPERPIPEBESTATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint; returnAttribList: TGLint): TGLint; cdecl;
+  PFNGLXHYPERPIPEATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; attribList: TGLint): TGLint; cdecl;
+  PFNGLXQUERYHYPERPIPEATTRIBSGIXPROC = function(dpy: PDisplay; timeSlice: TGLint; attrib: TGLint; size: TGLint; returnAttribList: TGLint): TGLint; cdecl;
   PFNGLXGETAGPOFFSETMESAPROC = function(param: Pointer): PGLInt;cdecl;
-  PFNGLXENUMERATEVIDEODEVICESNVPROC = function(dpy: PDisplay; screen: TVKInt; nelements: PGLint): PGLuint; cdecl;
-  PFNGLXBINDVIDEODEVICENVPROC = function(dpy: PDisplay; video_slot: TVKInt; video_device: TVKInt; attrib_list: PGLint): TVKint; cdecl;
-  PFNGLXGETVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TVKInt; numVideoDevices: TVKInt; pVideoDevice: GLXVideoDeviceNV): TVKInt; cdecl;
+  PFNGLXENUMERATEVIDEODEVICESNVPROC = function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): PGLuint; cdecl;
+  PFNGLXBINDVIDEODEVICENVPROC = function(dpy: PDisplay; video_slot: TGLInt; video_device: TGLInt; attrib_list: PGLint): TGLint; cdecl;
+  PFNGLXGETVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TGLInt; numVideoDevices: TGLInt; pVideoDevice: GLXVideoDeviceNV): TGLInt; cdecl;
 
-  PFNGLXALLOCATEMEMORYNVPROC = function( size: TVKsizei; readFrequency: TVKfloat; writeFrequency: TVKfloat; priority: TVKfloat ): Pointer; cdecl;
+  PFNGLXALLOCATEMEMORYNVPROC = function( size: TGLsizei; readFrequency: TGLfloat; writeFrequency: TGLfloat; priority: TGLfloat ): Pointer; cdecl;
   PFNGLXFREEMEMORYNVPROC = procedure ( GLvoid: pointer ); cdecl;
 
-  PFNGLXRELEASEVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TVKInt; VideoDevice: GLXVideoDeviceNV): TVKuint; cdecl;
-  PFNGLXBINDVIDEOIMAGENVPROC = function(dpy: PDisplay; VideoDevice: GLXVideoDeviceNV; pbuf: GLXPbuffer; iVideoBuffer: TVKInt): TVKuint; cdecl;
-  PFNGLXRELEASEVIDEOIMAGENVPROC = function(dpy: PDisplay; pbuf: GLXPbuffer): TVKInt; cdecl;
-  PFNGLXSENDPBUFFERTOVIDEONVPROC = function(dpy: PDisplay; pbuf: GLXPbuffer; iBufferType: TVKInt; pulCounterPbuffer: TVKuint64; bBlock: TVKboolean): TVKInt; cdecl;
-  PFNGLXGETVIDEOINFONVPROC = function(dpy: PDisplay; screen: TVKInt; VideoDevice: GLXVideoDeviceNV; pulCounterOutputPbuffer: TVKuInt64; pulCounterOutputVideo: TVKuInt64): TVKInt; cdecl;
-  PFNGLXJOINSWAPGROUPNVPROC = function(dpy: PDisplay; drawable: GLXDrawable; group: TVKuint): TVKBoolean; cdecl;
-  PFNGLXBINDSWAPBARRIERNVPROC = function(dpy: PDisplay; group: TVKuint; barrier: TVKuint): TVKboolean; cdecl;
-  PFNGLXQUERYSWAPGROUPNVPROC = function(dpy: PDisplay; drawable: GLXDrawable; group: PGLuint; barrier: PGLuint): TVKBoolean; cdecl;
-  PFNGLXQUERYMAXSWAPGROUPSNVPROC = function(dpy: PDisplay; screen: TVKInt; maxGroups: TVKuInt; maxBarriers: TVKuInt): TVKBoolean; cdecl;
-  PFNGLXQUERYFRAMECOUNTNVPROC = function(dpy: PDisplay; screen: TVKInt; count: TVKuint): TVKBoolean; cdecl;
-  PFNGLXRESETFRAMECOUNTNVPROC = function(dpy: PDisplay; screen: TVKInt): TVKBoolean; cdecl;
-  PFNGLXBINDVIDEOCAPTUREDEVICENVPROC = function(dpy: PDisplay; video_capture_slot: TVKuint; device: GLXVideoCaptureDeviceNV): TVKint; cdecl;
-  PFNGLXENUMERATEVIDEOCAPTUREDEVICESNVPROC = function(dpy: PDisplay; screen: TVKInt; nelements: PGLint): GLXVideoCaptureDeviceNV; cdecl;
+  PFNGLXRELEASEVIDEODEVICENVPROC = function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV): TGLuint; cdecl;
+  PFNGLXBINDVIDEOIMAGENVPROC = function(dpy: PDisplay; VideoDevice: GLXVideoDeviceNV; pbuf: GLXPbuffer; iVideoBuffer: TGLInt): TGLuint; cdecl;
+  PFNGLXRELEASEVIDEOIMAGENVPROC = function(dpy: PDisplay; pbuf: GLXPbuffer): TGLInt; cdecl;
+  PFNGLXSENDPBUFFERTOVIDEONVPROC = function(dpy: PDisplay; pbuf: GLXPbuffer; iBufferType: TGLInt; pulCounterPbuffer: TGLuint64; bBlock: TGLboolean): TGLInt; cdecl;
+  PFNGLXGETVIDEOINFONVPROC = function(dpy: PDisplay; screen: TGLInt; VideoDevice: GLXVideoDeviceNV; pulCounterOutputPbuffer: TGLuInt64; pulCounterOutputVideo: TGLuInt64): TGLInt; cdecl;
+  PFNGLXJOINSWAPGROUPNVPROC = function(dpy: PDisplay; drawable: GLXDrawable; group: TGLuint): TGLBoolean; cdecl;
+  PFNGLXBINDSWAPBARRIERNVPROC = function(dpy: PDisplay; group: TGLuint; barrier: TGLuint): TGLboolean; cdecl;
+  PFNGLXQUERYSWAPGROUPNVPROC = function(dpy: PDisplay; drawable: GLXDrawable; group: PGLuint; barrier: PGLuint): TGLBoolean; cdecl;
+  PFNGLXQUERYMAXSWAPGROUPSNVPROC = function(dpy: PDisplay; screen: TGLInt; maxGroups: TGLuInt; maxBarriers: TGLuInt): TGLBoolean; cdecl;
+  PFNGLXQUERYFRAMECOUNTNVPROC = function(dpy: PDisplay; screen: TGLInt; count: TGLuint): TGLBoolean; cdecl;
+  PFNGLXRESETFRAMECOUNTNVPROC = function(dpy: PDisplay; screen: TGLInt): TGLBoolean; cdecl;
+  PFNGLXBINDVIDEOCAPTUREDEVICENVPROC = function(dpy: PDisplay; video_capture_slot: TGLuint; device: GLXVideoCaptureDeviceNV): TGLint; cdecl;
+  PFNGLXENUMERATEVIDEOCAPTUREDEVICESNVPROC = function(dpy: PDisplay; screen: TGLInt; nelements: PGLint): GLXVideoCaptureDeviceNV; cdecl;
   PFNGLXLOCKVIDEOCAPTUREDEVICENVPROC = procedure (dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
-  PFNGLXQUERYVIDEOCAPTUREDEVICENVPROC = function(dpy: PDisplay; device: GLXVideoCaptureDeviceNV; attribute:TVKint; value: PGLint): TVKint; cdecl;
+  PFNGLXQUERYVIDEOCAPTUREDEVICENVPROC = function(dpy: PDisplay; device: GLXVideoCaptureDeviceNV; attribute:TGLint; value: PGLint): TGLint; cdecl;
   PFNGLXRELEASEVIDEOCAPTUREDEVICENVPROC = procedure(dpy: PDisplay; device: GLXVideoCaptureDeviceNV); cdecl;
-  PFNGLXSWAPINTERVALEXTPROC = function(dpy: PDisplay; drawable: GLXDrawable; interval:TVKint): TVKint; cdecl;
-  PFNGLXCOPYIMAGESUBDATANVPROC = procedure(dpy: PDisplay; srcCtx: GLXContext; srcName: TVKuint; srcTarget: TVKenum;
-                       srcLevel: TVKuint; srcX: TVKuint;
-                       srcY: TVKuint; srcZ: TVKuint;
-                       dstCtx:GLXContext; dstName:TVKuint; dstTarget: TVKenum; dstLevel: TVKint;
-                       dstX: TVKint; dstY: TVKint; dstZ: TVKint; width: GLsizei; height: GLsizei;
+  PFNGLXSWAPINTERVALEXTPROC = function(dpy: PDisplay; drawable: GLXDrawable; interval:TGLint): TGLint; cdecl;
+  PFNGLXCOPYIMAGESUBDATANVPROC = procedure(dpy: PDisplay; srcCtx: GLXContext; srcName: TGLuint; srcTarget: TGLenum;
+                       srcLevel: TGLuint; srcX: TGLuint;
+                       srcY: TGLuint; srcZ: TGLuint;
+                       dstCtx:GLXContext; dstName:TGLuint; dstTarget: TGLenum; dstLevel: TGLint;
+                       dstX: TGLint; dstY: TGLint; dstZ: TGLint; width: GLsizei; height: GLsizei;
                        depth: GLsizei); cdecl;
 
   {$ENDIF}
@@ -6507,43 +6494,43 @@ const
   // ARB Extensions
 
   // unknown ARB extension
-  PFNGLSAMPLEPASSARBPROC = procedure(pass: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEPASSARBPROC = procedure(pass: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_multitexture (ARB #1)
-  PFNGLACTIVETEXTUREARBPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLIENTACTIVETEXTUREARBPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1DARBPROC = procedure(target: TVKenum; s: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1DVARBPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1FARBPROC = procedure(target: TVKenum; s: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1FVARBPROC = procedure(target: TVKenum; v: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1IARBPROC = procedure(target: TVKenum; s: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1IVARBPROC = procedure(target: TVKenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1SARBPROC = procedure(target: TVKenum; s: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD1SVARBPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2DARBPROC = procedure(target: TVKenum; s, t: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2DVARBPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2FARBPROC = procedure(target: TVKenum; s, t: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2FVARBPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2IARBPROC = procedure(target: TVKenum; s, t: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2IVARBPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2SARBPROC = procedure(target: TVKenum; s, t: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD2SVARBPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3DARBPROC = procedure(target: TVKenum; s, t, r: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3DVARBPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3FARBPROC = procedure(target: TVKenum; s, t, r: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3FVARBPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3IARBPROC = procedure(target: TVKenum; s, t, r: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3IVARBPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3SARBPROC = procedure(target: TVKenum; s, t, r: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD3SVARBPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4DARBPROC = procedure(target: TVKenum; s, t, r, q: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4DVARBPROC = procedure(target: TVKenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4FARBPROC = procedure(target: TVKenum; s, t, r, q: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4FVARBPROC = procedure(target: TVKenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4IARBPROC = procedure(target: TVKenum; s, t, r, q: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4IVARBPROC = procedure(target: TVKenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4SARBPROC = procedure(target: TVKenum; s, t, r, q: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORD4SVARBPROC = procedure(target: TVKenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVETEXTUREARBPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLIENTACTIVETEXTUREARBPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1DARBPROC = procedure(target: TGLenum; s: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1DVARBPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1FARBPROC = procedure(target: TGLenum; s: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1FVARBPROC = procedure(target: TGLenum; v: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1IARBPROC = procedure(target: TGLenum; s: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1IVARBPROC = procedure(target: TGLenum; v: PGLInt); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1SARBPROC = procedure(target: TGLenum; s: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD1SVARBPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2DARBPROC = procedure(target: TGLenum; s, t: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2DVARBPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2FARBPROC = procedure(target: TGLenum; s, t: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2FVARBPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2IARBPROC = procedure(target: TGLenum; s, t: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2IVARBPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2SARBPROC = procedure(target: TGLenum; s, t: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD2SVARBPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3DARBPROC = procedure(target: TGLenum; s, t, r: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3DVARBPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3FARBPROC = procedure(target: TGLenum; s, t, r: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3FVARBPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3IARBPROC = procedure(target: TGLenum; s, t, r: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3IVARBPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3SARBPROC = procedure(target: TGLenum; s, t, r: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD3SVARBPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4DARBPROC = procedure(target: TGLenum; s, t, r, q: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4DVARBPROC = procedure(target: TGLenum; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4FARBPROC = procedure(target: TGLenum; s, t, r, q: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4FVARBPROC = procedure(target: TGLenum; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4IARBPROC = procedure(target: TGLenum; s, t, r, q: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4IVARBPROC = procedure(target: TGLenum; v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4SARBPROC = procedure(target: TGLenum; s, t, r, q: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORD4SVARBPROC = procedure(target: TGLenum; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_transpose_matrix (ARB #3)
   PFNGLLOADTRANSPOSEMATRIXFARBPROC = procedure(m: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6552,57 +6539,57 @@ const
   PFNGLMULTTRANSPOSEMATRIXDARBPROC = procedure(m: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_multisample (ARB #5)
-  PFNGLSAMPLECOVERAGEARBPROC = procedure(Value: TVKclampf; invert: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLECOVERAGEARBPROC = procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_texture_compression (ARB #12)
-  PFNGLCOMPRESSEDTEXIMAGE3DARBPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width, Height, depth: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXIMAGE2DARBPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width, Height: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXIMAGE1DARBPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; Width: TVKsizei; border: TVKint; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC = procedure(target: TVKenum; level: TVKint; xoffset, yoffset, zoffset: TVKint; width, height, depth: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC = procedure(target: TVKenum; level: TVKint; xoffset, yoffset: TVKint; width, height: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC = procedure(target: TVKenum; level: TVKint; xoffset: TVKint; width: TVKsizei; Format: TVKenum; imageSize: TVKsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMPRESSEDTEXIMAGEARBPROC = procedure(target: TVKenum; level: TVKint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE3DARBPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height, depth: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE2DARBPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width, Height: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXIMAGE1DARBPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; Width: TGLsizei; border: TGLint; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE3DARBPROC = procedure(target: TGLenum; level: TGLint; xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE2DARBPROC = procedure(target: TGLenum; level: TGLint; xoffset, yoffset: TGLint; width, height: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMPRESSEDTEXSUBIMAGE1DARBPROC = procedure(target: TGLenum; level: TGLint; xoffset: TGLint; width: TGLsizei; Format: TGLenum; imageSize: TGLsizei; data: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMPRESSEDTEXIMAGEARBPROC = procedure(target: TGLenum; level: TGLint; img: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_point_parameter (ARB #14)
-  PFNGLPOINTPARAMETERFARBPROC = procedure(pname: TVKenum; param: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPOINTPARAMETERFVARBPROC = procedure(pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERFARBPROC = procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERFVARBPROC = procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_vertex_blend (ARB #15) {deprecated?}
-  PFNGLWEIGHTBVARBPROC = procedure(size: TVKint; weights: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTSVARBPROC = procedure(size: TVKint; weights: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTIVARBPROC = procedure(size: TVKint; weights: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTFVARBPROC = procedure(size: TVKint; weights: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTDVARBPROC = procedure(size: TVKint; weights: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTUBVARBPROC = procedure(size: TVKint; weights: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTUSVARBPROC = procedure(size: TVKint; weights: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTUIVARBPROC = procedure(size: TVKint; weights: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWEIGHTPOINTERARBPROC = procedure(size: TVKint; _type: TVKenum; stride:TVKsizei;
+  PFNGLWEIGHTBVARBPROC = procedure(size: TGLint; weights: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTSVARBPROC = procedure(size: TGLint; weights: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTIVARBPROC = procedure(size: TGLint; weights: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTFVARBPROC = procedure(size: TGLint; weights: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTDVARBPROC = procedure(size: TGLint; weights: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTUBVARBPROC = procedure(size: TGLint; weights: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTUSVARBPROC = procedure(size: TGLint; weights: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTUIVARBPROC = procedure(size: TGLint; weights: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWEIGHTPOINTERARBPROC = procedure(size: TGLint; _type: TGLenum; stride:TGLsizei;
                                _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXBLENDARBPROC = procedure(count: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXBLENDARBPROC = procedure(count: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_matrix_palette (ARB #16) {deprecated?}
-  PFNGLCURRENTPALETTEMATRIXARBPROC = procedure(index: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMATRIXINDEXUBVARBPROC = procedure(size: TVKint; indices: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMATRIXINDEXUSVARBPROC = procedure(size: TVKint; indices: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMATRIXINDEXUIVARBPROC = procedure(size: TVKint; indices: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMATRIXINDEXPOINTERARBPROC = procedure(size: TVKint; _type: TVKenum; stride: TVKsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCURRENTPALETTEMATRIXARBPROC = procedure(index: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMATRIXINDEXUBVARBPROC = procedure(size: TGLint; indices: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMATRIXINDEXUSVARBPROC = procedure(size: TGLint; indices: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMATRIXINDEXUIVARBPROC = procedure(size: TGLint; indices: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMATRIXINDEXPOINTERARBPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei; _pointer:pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_window_pos (ARB #25)
-  PFNGLWINDOWPOS2DARBPROC = procedure(x,y : TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS2DARBPROC = procedure(x,y : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS2DVARBPROC = procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS2FARBPROC = procedure(x,y : TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS2FARBPROC = procedure(x,y : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS2FVARBPROC = procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS2IARBPROC = procedure(x,y : TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS2IARBPROC = procedure(x,y : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS2IVARBPROC = procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS2SARBPROC = procedure(x,y : TVKshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS2SARBPROC = procedure(x,y : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS2SVARBPROC = procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS3DARBPROC = procedure(x,y,z : TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS3DARBPROC = procedure(x,y,z : TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS3DVARBPROC = procedure(v : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS3FARBPROC = procedure(x,y,z : TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS3FARBPROC = procedure(x,y,z : TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS3FVARBPROC = procedure(v : PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS3IARBPROC = procedure(x,y,z : TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS3IARBPROC = procedure(x,y,z : TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS3IVARBPROC = procedure(v : PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWINDOWPOS3SARBPROC = procedure(x,y,z : TVKshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWINDOWPOS3SARBPROC = procedure(x,y,z : TGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLWINDOWPOS3SVARBPROC = procedure(v : PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_vertex_program (ARB #26)
@@ -6683,14 +6670,14 @@ const
   PFNGLGETBUFFERPOINTERVARBPROC = procedure(target: GLenum; pname: GLenum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_occlusion_query (ARB #29)
-  PFNGLGENQUERIESARBPROC = procedure(n: TVKsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEQUERIESARBPROC = procedure(n: TVKsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISQUERYARBPROC = function(id: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINQUERYARBPROC = procedure(target: TVKenum; id: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENDQUERYARBPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYIVARBPROC = procedure(target: TVKEnum; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTIVARBPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTUIVARBPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENQUERIESARBPROC = procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEQUERIESARBPROC = procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISQUERYARBPROC = function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINQUERYARBPROC = procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENDQUERYARBPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYIVARBPROC = procedure(target: TGLEnum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTIVARBPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTUIVARBPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_shader_objects (ARB #30)
   PFNGLDELETEOBJECTARBPROC = procedure(obj: GLhandleARB); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -6742,214 +6729,214 @@ const
   PFNGLDRAWBUFFERSARBPROC = procedure (n: GLSizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_color_buffer_float (ARB #39)
-  PFNGLCLAMPCOLORARBPROC = procedure (target: TVKenum; clamp: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLAMPCOLORARBPROC = procedure (target: TGLenum; clamp: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_draw_instanced (ARB #44)
-  PFNGLDRAWARRAYSINSTANCEDARBPROC = procedure(mode: TVKenum; first: TVKint; count: TVKsizei;
-          primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWELEMENTSINSTANCEDARBPROC = procedure(mode: TVKenum; count: TVKSizei; _type: TVKenum;
-          indices: PGLvoid; primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWARRAYSINSTANCEDARBPROC = procedure(mode: TGLenum; first: TGLint; count: TGLsizei;
+          primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSINSTANCEDARBPROC = procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
+          indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_framebuffer_object (ARB #45)
-  PFNGLISRENDERBUFFERPROC = function(renderbuffer: TVKuint): TVKBoolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDRENDERBUFFERPROC = procedure(target: TVKenum; renderbuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETERENDERBUFFERSPROC = procedure(n: TVKsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENRENDERBUFFERSPROC = procedure(n: TVKSizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLRENDERBUFFERSTORAGEPROC = procedure(target: TVKenum; internalformat: TVKenum;
-          width: TVKsizei;  height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = procedure(target: TVKenum; samples: TVKsizei;
-        internalformat: TVKenum;
-        width: TVKsizei; height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETRENDERBUFFERPARAMETERIVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISFRAMEBUFFERPROC = function(framebuffer: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDFRAMEBUFFERPROC = procedure(target: TVKenum; framebuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEFRAMEBUFFERSPROC = procedure(n: TVKsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENFRAMEBUFFERSPROC = procedure(n: TVKsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCHECKFRAMEBUFFERSTATUSPROC = function(target: TVKenum): TVKenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE1DPROC = procedure(target: TVKenum; attachment: TVKenum;
-          textarget: TVKenum; texture: TVKuint; level: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE2DPROC = procedure(target: TVKenum; attachment: TVKenum;
-          textarget: TVKenum; texture: TVKuint; level: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE3DPROC = procedure(target: TVKenum; attachment: TVKenum;
-          textarget: TVKenum; texture: TVKuint;
-          level: TVKint; layer: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURELAYERPROC = procedure(target: TVKenum; attachment: TVKenum;
-       texture: TVKuint; level: TVKint; layer: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERRENDERBUFFERPROC = procedure(target: TVKenum; attachment: TVKenum;
-       renderbuffertarget: TVKenum; renderbuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC = procedure(target: TVKenum; attachment: TVKenum;
-             pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLITFRAMEBUFFERPROC = procedure(srcX0: TVKint; srcY0: TVKint; srcX1: TVKint; srcY1: TVKint;
-     dstX0: TVKint; dstY0: TVKint; dstX1: TVKint; dstY1: TVKint;
-     mask: TVKbitfield; filter: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENERATEMIPMAPPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISRENDERBUFFERPROC = function(renderbuffer: TGLuint): TGLBoolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDRENDERBUFFERPROC = procedure(target: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETERENDERBUFFERSPROC = procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENRENDERBUFFERSPROC = procedure(n: TGLSizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLRENDERBUFFERSTORAGEPROC = procedure(target: TGLenum; internalformat: TGLenum;
+          width: TGLsizei;  height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC = procedure(target: TGLenum; samples: TGLsizei;
+        internalformat: TGLenum;
+        width: TGLsizei; height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETRENDERBUFFERPARAMETERIVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISFRAMEBUFFERPROC = function(framebuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDFRAMEBUFFERPROC = procedure(target: TGLenum; framebuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEFRAMEBUFFERSPROC = procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENFRAMEBUFFERSPROC = procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCHECKFRAMEBUFFERSTATUSPROC = function(target: TGLenum): TGLenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE1DPROC = procedure(target: TGLenum; attachment: TGLenum;
+          textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE2DPROC = procedure(target: TGLenum; attachment: TGLenum;
+          textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE3DPROC = procedure(target: TGLenum; attachment: TGLenum;
+          textarget: TGLenum; texture: TGLuint;
+          level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURELAYERPROC = procedure(target: TGLenum; attachment: TGLenum;
+       texture: TGLuint; level: TGLint; layer: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERRENDERBUFFERPROC = procedure(target: TGLenum; attachment: TGLenum;
+       renderbuffertarget: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC = procedure(target: TGLenum; attachment: TGLenum;
+             pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLITFRAMEBUFFERPROC = procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
+     dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
+     mask: TGLbitfield; filter: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENERATEMIPMAPPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_geometry_shader4 (ARB #47)
-  PFNGLPROGRAMPARAMETERIARBPROC = procedure ( _program:TVKuint; pname:TVKenum; value: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTUREARBPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURELAYERARBPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint; layer:TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTUREFACEARBPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint; face:TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETERIARBPROC = procedure ( _program:TGLuint; pname:TGLenum; value: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTUREARBPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURELAYERARBPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; layer:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTUREFACEARBPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; face:TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_instanced_arrays (ARB #49)
-  PFNGLVERTEXATTRIBDIVISORARBPROC = procedure(index: TVKuint; divisor: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBDIVISORARBPROC = procedure(index: TGLuint; divisor: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_map_buffer_range (ARB #50)
-  PFNGLMAPBUFFERRANGEPROC = function(target: TVKenum; offset: TVKint{ptr}; length: TVKsizei{ptr};
-            access: TVKbitfield ): Pointer;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFLUSHMAPPEDBUFFERRANGEPROC = procedure( target: TVKenum; offset: TVKint{ptr}; length: TVKsizei{ptr} );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMAPBUFFERRANGEPROC = function(target: TGLenum; offset: TGLint{ptr}; length: TGLsizei{ptr};
+            access: TGLbitfield ): Pointer;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFLUSHMAPPEDBUFFERRANGEPROC = procedure( target: TGLenum; offset: TGLint{ptr}; length: TGLsizei{ptr} );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_texture_buffer_object (ARB #51)
-  PFNGLTEXBUFFERARBPROC = procedure(target: TVKenum; internalformat: TVKEnum; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXBUFFERARBPROC = procedure(target: TGLenum; internalformat: TGLEnum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_vertex_array_object (ARB #54)
-  PFNGLBINDVERTEXARRAYPROC = procedure(_array: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEVERTEXARRAYSPROC = procedure(n: TVKsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENVERTEXARRAYSPROC = procedure(n: TVKsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISVERTEXARRAYPROC = function(_array: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDVERTEXARRAYPROC = procedure(_array: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEVERTEXARRAYSPROC = procedure(n: TGLsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENVERTEXARRAYSPROC = procedure(n: TGLsizei; arrays: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISVERTEXARRAYPROC = function(_array: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_uniform_buffer_object (ARB #57)
-  PFNGLGETUNIFORMINDICESPROC = procedure(_program: TVKuint; uniformCount: TVKsizei; uniformNames: PGLPCharArray; uniformIndices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEUNIFORMSIVPROC = procedure(_program: TVKuint; uniformCount: TVKsizei; uniformIndices: PGLuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEUNIFORMNAMEPROC = procedure(_program: TVKuint; uniformIndex: TVKuint; bufSize: TVKsizei; length: PGLsizei; uniformName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMBLOCKINDEXPROC = function(_program: TVKuint; uniformBlockName: PGLchar): TVKuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEUNIFORMBLOCKIVPROC = procedure(_program: TVKuint; uniformBlockIndex: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC = procedure(_program: TVKuint; uniformBlockIndex: TVKuint; bufSize: TVKsizei; length: PGLsizei; uniformBlockName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMBLOCKBINDINGPROC = procedure(_program: TVKuint; uniformBlockIndex: TVKuint; uniformBlockBinding: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMINDICESPROC = procedure(_program: TGLuint; uniformCount: TGLsizei; uniformNames: PGLPCharArray; uniformIndices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEUNIFORMSIVPROC = procedure(_program: TGLuint; uniformCount: TGLsizei; uniformIndices: PGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEUNIFORMNAMEPROC = procedure(_program: TGLuint; uniformIndex: TGLuint; bufSize: TGLsizei; length: PGLsizei; uniformName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMBLOCKINDEXPROC = function(_program: TGLuint; uniformBlockName: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEUNIFORMBLOCKIVPROC = procedure(_program: TGLuint; uniformBlockIndex: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC = procedure(_program: TGLuint; uniformBlockIndex: TGLuint; bufSize: TGLsizei; length: PGLsizei; uniformBlockName: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMBLOCKBINDINGPROC = procedure(_program: TGLuint; uniformBlockIndex: TGLuint; uniformBlockBinding: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_copy_buffer (ARB #59)
-  PFNGLCOPYBUFFERSUBDATAPROC = procedure(readTarget: TVKenum; writeTarget: TVKenum;
-        readOffset: TVKintptr; writeOffset: TVKintptr; size: TVKsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYBUFFERSUBDATAPROC = procedure(readTarget: TGLenum; writeTarget: TGLenum;
+        readOffset: TGLintptr; writeOffset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_draw_elements_base_vertex (ARB #62)
-  PFNGLDRAWELEMENTSBASEVERTEXPROC = procedure(mode: TVKenum; count: TVKsizei;
-        _type: TVKenum; indices: PGLvoid; basevertex: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC = procedure(mode: TVKenum; start: TVKuint; _end: TVKuint;
-        count: TVKsizei; _type: TVKenum; indices: PGLvoid; basevertex: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC = procedure(mode: TVKenum; count: TVKsizei;
-        _type: TVKenum; indices: PGLvoid; primcount: TVKsizei; basevertex: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC = procedure(mode: TVKenum; count: PGLsizei;
-        _type: TVKenum; var indices; primcount: TVKsizei; basevertex: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSBASEVERTEXPROC = procedure(mode: TGLenum; count: TGLsizei;
+        _type: TGLenum; indices: PGLvoid; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC = procedure(mode: TGLenum; start: TGLuint; _end: TGLuint;
+        count: TGLsizei; _type: TGLenum; indices: PGLvoid; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC = procedure(mode: TGLenum; count: TGLsizei;
+        _type: TGLenum; indices: PGLvoid; primcount: TGLsizei; basevertex: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC = procedure(mode: TGLenum; count: PGLsizei;
+        _type: TGLenum; var indices; primcount: TGLsizei; basevertex: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_provoking_vertex (ARB #64)
-  PFNGLPROVOKINGVERTEXPROC = procedure(mode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROVOKINGVERTEXPROC = procedure(mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_sync (ARB #66)
-  PFNGLFENCESYNCPROC = function(condition: TVKenum; flags: TVKbitfield): TVKsync;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISSYNCPROC = function(sync: TVKsync): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETESYNCPROC = procedure(sync: TVKsync);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLIENTWAITSYNCPROC = function(sync: TVKsync; flags: TVKbitfield; timeout: TVKuint64): TVKenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLWAITSYNCPROC = procedure(sync: TVKsync; flags: TVKbitfield; timeout: TVKuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETINTEGER64VPROC = procedure(pname: TVKenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSYNCIVPROC = procedure(sync: TVKsync; pname: TVKenum; bufSize: TVKsizei; length: PGLsizei; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFENCESYNCPROC = function(condition: TGLenum; flags: TGLbitfield): TGLsync;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISSYNCPROC = function(sync: TGLsync): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETESYNCPROC = procedure(sync: TGLsync);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLIENTWAITSYNCPROC = function(sync: TGLsync; flags: TGLbitfield; timeout: TGLuint64): TGLenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLWAITSYNCPROC = procedure(sync: TGLsync; flags: TGLbitfield; timeout: TGLuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGER64VPROC = procedure(pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSYNCIVPROC = procedure(sync: TGLsync; pname: TGLenum; bufSize: TGLsizei; length: PGLsizei; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_texture_multisample (ARB #67)
-  PFNGLTEXIMAGE2DMULTISAMPLEPROC = procedure(target: TVKenum; samples: TVKsizei; internalformat: TVKint;
-                             width: TVKsizei; height: TVKsizei;
-                             fixedsamplelocations: TVKboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXIMAGE3DMULTISAMPLEPROC = procedure(target: TVKenum; samples: TVKsizei; internalformat: TVKint;
-                             width: TVKsizei; height: TVKsizei; depth: TVKsizei;
-                             fixedsamplelocations: TVKboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETMULTISAMPLEFVPROC = procedure(pname: TVKenum; index: TVKuint; val: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLEMASKIPROC = procedure(index: TVKuint; mask: TVKbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXIMAGE2DMULTISAMPLEPROC = procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
+                             width: TGLsizei; height: TGLsizei;
+                             fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXIMAGE3DMULTISAMPLEPROC = procedure(target: TGLenum; samples: TGLsizei; internalformat: TGLint;
+                             width: TGLsizei; height: TGLsizei; depth: TGLsizei;
+                             fixedsamplelocations: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETMULTISAMPLEFVPROC = procedure(pname: TGLenum; index: TGLuint; val: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEMASKIPROC = procedure(index: TGLuint; mask: TGLbitfield);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_draw_buffers_blend (ARB #69)
-  PFNGLBLENDEQUATIONIARBPROC = procedure(buf: TVKuint; mode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDEQUATIONSEPARATEIARBPROC = procedure(buf: TVKuint; modeRGB: TVKenum; modeAlpha: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCIARBPROC = procedure(buf: TVKuint; src: TVKenum; dst: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBLENDFUNCSEPARATEIARBPROC = procedure(buf: TVKuint; srcRGB: TVKenum; dstRGB: TVKenum;
-                             srcAlpha: TVKenum; dstAlpha: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONIARBPROC = procedure(buf: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEIARBPROC = procedure(buf: TGLuint; modeRGB: TGLenum; modeAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCIARBPROC = procedure(buf: TGLuint; src: TGLenum; dst: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEIARBPROC = procedure(buf: TGLuint; srcRGB: TGLenum; dstRGB: TGLenum;
+                             srcAlpha: TGLenum; dstAlpha: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_sample_shading (ARB #70)
-  PFNGLMINSAMPLESHADINGARBPROC = procedure(value: TVKclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMINSAMPLESHADINGARBPROC = procedure(value: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_blend_func_extended (ARB #78)
-  PFNGLBINDFRAGDATALOCATIONINDEXEDPROC = procedure (_program: TVKuint; colorNumber: TVKuint; index: TVKuint; const name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFRAGDATAINDEXPROC = function (_program: TVKuint; const name: PGLchar): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDFRAGDATALOCATIONINDEXEDPROC = procedure (_program: TGLuint; colorNumber: TGLuint; index: TGLuint; const name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFRAGDATAINDEXPROC = function (_program: TGLuint; const name: PGLchar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_sampler_objects (ARB #81)
-  PFNGLGENSAMPLERSPROC = procedure(count: TVKsizei; samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETESAMPLERSPROC = procedure(count: TVKsizei; const samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISSAMPLERPROC = function(sampler: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDSAMPLERPROC = procedure(_unit: TVKuint; sampler: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERIPROC = procedure(sampler: TVKuint; pname: TVKenum; param: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERIVPROC = procedure(sampler: TVKuint; pname: TVKenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERFPROC = procedure(sampler: TVKuint; pname: TVKenum; param: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERFVPROC = procedure(sampler: TVKuint; pname: TVKenum; const params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERIIVPROC = procedure(sampler: TVKuint; pname: TVKenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLERPARAMETERIUIVPROC = procedure(sampler: TVKuint; pname: TVKenum; const params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSAMPLERPARAMETERIVPROC = procedure(sampler: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSAMPLERPARAMETERIIVPROC = procedure(sampler: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSAMPLERPARAMETERFVPROC = procedure(sampler: TVKuint; pname: TVKenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSAMPLERPARAMETERIFVPROC = procedure(sampler: TVKuint; pname: TVKenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENSAMPLERSPROC = procedure(count: TGLsizei; samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETESAMPLERSPROC = procedure(count: TGLsizei; const samplers: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISSAMPLERPROC = function(sampler: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDSAMPLERPROC = procedure(_unit: TGLuint; sampler: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERIPROC = procedure(sampler: TGLuint; pname: TGLenum; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERIVPROC = procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERFPROC = procedure(sampler: TGLuint; pname: TGLenum; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERFVPROC = procedure(sampler: TGLuint; pname: TGLenum; const params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERIIVPROC = procedure(sampler: TGLuint; pname: TGLenum; const params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLERPARAMETERIUIVPROC = procedure(sampler: TGLuint; pname: TGLenum; const params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSAMPLERPARAMETERIVPROC = procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSAMPLERPARAMETERIIVPROC = procedure(sampler: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSAMPLERPARAMETERFVPROC = procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSAMPLERPARAMETERIFVPROC = procedure(sampler: TGLuint; pname: TGLenum; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_timer_query (ARB #85)
-  PFNGLQUERYCOUNTERPROC = procedure(id: TVKuint; target: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTI64VPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTUI64VPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLQUERYCOUNTERPROC = procedure(id: TGLuint; target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTI64VPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTUI64VPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint64);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_vertex_type_2_10_10_10_rev (ARB #86)
-  PFNGLVERTEXP2UIPROC = procedure(_type: TVKenum; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXP2UIVPROC = procedure(_type: TVKenum; const value: PGLuint );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXP3UIPROC = procedure(_type: TVKenum; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXP3UIVPROC = procedure(_type: TVKenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXP4UIPROC = procedure(_type: TVKenum; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXP4UIVPROC = procedure(_type: TVKenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP1UIPROC = procedure(_type: TVKenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP1UIVPROC = procedure(_type: TVKenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP2UIPROC = procedure(_type: TVKenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP2UIVPROC = procedure(_type: TVKenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP3UIPROC = procedure(_type: TVKenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP3UIVPROC = procedure(_type: TVKenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP4UIPROC = procedure(_type: TVKenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDP4UIVPROC = procedure(_type: TVKenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP1UIPROC = procedure(texture: TVKenum; _type: GLenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP1UIVPROC = procedure(texture: TVKenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP2UIPROC = procedure(texture: TVKenum; _type: GLenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP2UIVPROC = procedure(texture: TVKenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP3UIPROC = procedure(texture: TVKenum; _type: GLenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP3UIVPROC = procedure(texture: TVKenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP4UIPROC = procedure(texture: TVKenum; _type: GLenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTITEXCOORDP4UIVPROC = procedure(texture: TVKenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLNORMALP3UIPROC = procedure(_type: TVKenum; coords: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLNORMALP3UIVPROC = procedure(_type: TVKenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORP3UIPROC = procedure(_type: TVKenum; color: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORP3UIVPROC = procedure(_type: TVKenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORP4UIPROC = procedure(_type: TVKenum; color: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORP4UIVPROC = procedure(_type: TVKenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLORP3UIPROC = procedure(_type: TVKenum; color: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLORP3UIVPROC = procedure(_type: TVKenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP1UIPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP1UIVPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP2UIPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP2UIVPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP3UIPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP3UIVPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP4UIPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; value: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBP4UIVPROC = procedure(index: TVKuint; _type: TVKenum; normalized: TVKboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP2UIPROC = procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP2UIVPROC = procedure(_type: TGLenum; const value: PGLuint );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP3UIPROC = procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP3UIVPROC = procedure(_type: TGLenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP4UIPROC = procedure(_type: TGLenum; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXP4UIVPROC = procedure(_type: TGLenum; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP1UIPROC = procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP1UIVPROC = procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP2UIPROC = procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP2UIVPROC = procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP3UIPROC = procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP3UIVPROC = procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP4UIPROC = procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDP4UIVPROC = procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP1UIPROC = procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP1UIVPROC = procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP2UIPROC = procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP2UIVPROC = procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP3UIPROC = procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP3UIVPROC = procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP4UIPROC = procedure(texture: TGLenum; _type: GLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTITEXCOORDP4UIVPROC = procedure(texture: TGLenum; _type: GLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLNORMALP3UIPROC = procedure(_type: TGLenum; coords: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLNORMALP3UIVPROC = procedure(_type: TGLenum; const coords: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORP3UIPROC = procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORP3UIVPROC = procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORP4UIPROC = procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORP4UIVPROC = procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLORP3UIPROC = procedure(_type: TGLenum; color: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLORP3UIVPROC = procedure(_type: TGLenum; const color: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP1UIPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP1UIVPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP2UIPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP2UIVPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP3UIPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP3UIVPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP4UIPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; value: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBP4UIVPROC = procedure(index: TGLuint; _type: TGLenum; normalized: TGLboolean; const value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_draw_indirect (ARB #87)
-  PFNGLDRAWARRAYSINDIRECTPROC = procedure(mode: TVKenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWELEMENTSINDIRECTPROC = procedure(mode: TVKenum; _type: TVKenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWARRAYSINDIRECTPROC = procedure(mode: TGLenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSINDIRECTPROC = procedure(mode: TGLenum; _type: TGLenum; const indirect: PGLvoid);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_gpu_shader_fp64 (ARB #89)
-  PFNGLUNIFORM1DPROC = procedure(location: TVKint; x: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2DPROC = procedure(location: TVKint; x: TVKdouble; y: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3DPROC = procedure(location: TVKint; x: TVKdouble; y: TVKdouble; z: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4DPROC = procedure(location: TVKint; x: TVKdouble; y: TVKdouble; z: TVKdouble; w: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM1DVPROC = procedure(location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2DVPROC = procedure(location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3DVPROC = procedure(location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4DVPROC = procedure(location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX2DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX3DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX4DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX2X3DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX2X4DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX3X2DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX3X4DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX4X2DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMMATRIX4X3DVPROC = procedure(location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMDVPROC = procedure(_program: TVKuint; location: TVKint; params : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1DPROC = procedure(location: TGLint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2DPROC = procedure(location: TGLint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3DPROC = procedure(location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4DPROC = procedure(location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1DVPROC = procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2DVPROC = procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3DVPROC = procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4DVPROC = procedure(location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX2DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX3DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX4DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX2X3DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX2X4DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX3X2DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX3X4DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX4X2DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMMATRIX4X3DVPROC = procedure(location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMDVPROC = procedure(_program: TGLuint; location: TGLint; params : PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   // GL_EXT_direct_state_access
   PFNGLCLIENTATTRIBDEFAULTEXTPROC = procedure(mask: GLbitfield); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLPUSHCLIENTATTRIBDEFAULTEXTPROC = procedure(mask: GLbitfield); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
@@ -7107,187 +7094,187 @@ const
   PFNGLNAMEDFRAMEBUFFERTEXTUREFACEEXTPROC = procedure(framebuffer: GLuint; attachment: GLenum; texture: GLuint; level: GLint; face: GLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLTEXTURERENDERBUFFEREXTPROC = procedure(texture: GLuint; target: GLenum; renderbuffer: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLMULTITEXRENDERBUFFEREXTPROC = procedure(texunit: GLenum; target: GLenum; renderbuffer: GLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1DEXTPROC = procedure(_program: TVKuint; location: TVKint; x: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2DEXTPROC = procedure(_program: TVKuint; location: TVKint; x: TVKdouble; y: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3DEXTPROC = procedure(_program: TVKuint; location: TVKint; x: TVKdouble; y: TVKdouble; z: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4DEXTPROC = procedure(_program: TVKuint; location: TVKint; x: TVKdouble; y: TVKdouble; z: TVKdouble; w: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DEXTPROC = procedure(_program: TGLuint; location: TGLint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DEXTPROC = procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DEXTPROC = procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DEXTPROC = procedure(_program: TGLuint; location: TGLint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X3DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X4DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X2DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X4DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X2DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X3DVEXTPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; const value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_shader_subroutine (ARB #90)
-  PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC = function(_program: TVKuint; shadertype: TVKenum; const name: PGLchar): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSUBROUTINEINDEXPROC = function(_program: TVKuint; shadertype: TVKenum; const name: PGLchar): TVKuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC = procedure(_program: TVKuint; shadertype: TVKenum; index: TVKuint; pname: TVKenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC = procedure(_program: TVKuint; shadertype: TVKenum; index: TVKuint; bufsize: TVKsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVESUBROUTINENAMEPROC = procedure(_program: TVKuint; shadertype: TVKenum; index: TVKuint; bufsize: TVKsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMSUBROUTINESUIVPROC = procedure(shadertype: TVKenum; count: TVKsizei; const indices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMSUBROUTINEUIVPROC = procedure(shadertype: TVKenum; location: TVKint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMSTAGEIVPROC = procedure(_program: TVKuint; shadertype: TVKenum; pname: TVKenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC = function(_program: TGLuint; shadertype: TGLenum; const name: PGLchar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSUBROUTINEINDEXPROC = function(_program: TGLuint; shadertype: TGLenum; const name: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC = procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; pname: TGLenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC = procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; bufsize: TGLsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVESUBROUTINENAMEPROC = procedure(_program: TGLuint; shadertype: TGLenum; index: TGLuint; bufsize: TGLsizei; length: PGLsizei; name: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMSUBROUTINESUIVPROC = procedure(shadertype: TGLenum; count: TGLsizei; const indices: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMSUBROUTINEUIVPROC = procedure(shadertype: TGLenum; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMSTAGEIVPROC = procedure(_program: TGLuint; shadertype: TGLenum; pname: TGLenum; values: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_tessellation_shader (ARB #91)
-  PFNGLPATCHPARAMETERIPROC = procedure(pname: TVKenum; value: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPATCHPARAMETERFVPROC = procedure(pname: TVKenum; const values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATCHPARAMETERIPROC = procedure(pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPATCHPARAMETERFVPROC = procedure(pname: TGLenum; const values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_transform_feedback2 (ARB #93)
-  PFNGLBINDTRANSFORMFEEDBACKPROC = procedure(target: TVKenum; id: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETETRANSFORMFEEDBACKSPROC = procedure(n: TVKsizei; const ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENTRANSFORMFEEDBACKSPROC = procedure(n: TVKsizei; ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISTRANSFORMFEEDBACKPROC = function(id: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDTRANSFORMFEEDBACKPROC = procedure(target: TGLenum; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETETRANSFORMFEEDBACKSPROC = procedure(n: TGLsizei; const ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENTRANSFORMFEEDBACKSPROC = procedure(n: TGLsizei; ids: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISTRANSFORMFEEDBACKPROC = function(id: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLPAUSETRANSFORMFEEDBACKPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLRESUMETRANSFORMFEEDBACKPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWTRANSFORMFEEDBACKPROC = procedure(mode: TVKenum; id: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWTRANSFORMFEEDBACKPROC = procedure(mode: TGLenum; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_transform_feedback3 (ARB #94)
-  PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC = procedure(mode: TVKenum; id: TVKuint; stream: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINQUERYINDEXEDPROC = procedure(target: TVKenum; index: TVKuint; id: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENDQUERYINDEXEDPROC = procedure(target: TVKenum; index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYINDEXEDIVPROC = procedure(target: TVKenum; index: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC = procedure(mode: TGLenum; id: TGLuint; stream: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINQUERYINDEXEDPROC = procedure(target: TGLenum; index: TGLuint; id: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENDQUERYINDEXEDPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYINDEXEDIVPROC = procedure(target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_ES2_compatibility (ARB #95)
   PFNGLRELEASESHADERCOMPILERPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSHADERBINARYPROC = procedure(count: TVKsizei; shaders: PGLuint; binaryformat: TVKenum; binary: Pointer; length: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETSHADERPRECISIONFORMATPROC = procedure(shadertype: TVKenum; precisiontype: TVKenum; range: PGLint; precision: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDEPTHRANGEFPROC = procedure(n: TVKclampf; f: TVKclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLEARDEPTHFPROC = procedure(d: TVKclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSHADERBINARYPROC = procedure(count: TGLsizei; shaders: PGLuint; binaryformat: TGLenum; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETSHADERPRECISIONFORMATPROC = procedure(shadertype: TGLenum; precisiontype: TGLenum; range: PGLint; precision: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEFPROC = procedure(n: TGLclampf; f: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARDEPTHFPROC = procedure(d: TGLclampf);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_get_program_binary (ARB #96)
-  PFNGLGETPROGRAMBINARYPROC = procedure(_program: TVKuint; bufSize: TVKsizei; length: PGLsizei; binaryFormat: PGLenum; binary: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMBINARYPROC = procedure(_program: TVKuint; binaryFormat: TVKEnum; binary: Pointer; length: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETERIPROC = procedure(_program: TVKuint; pname: TVKenum; value: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMBINARYPROC = procedure(_program: TGLuint; bufSize: TGLsizei; length: PGLsizei; binaryFormat: PGLenum; binary: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMBINARYPROC = procedure(_program: TGLuint; binaryFormat: TGLEnum; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETERIPROC = procedure(_program: TGLuint; pname: TGLenum; value: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_separate_shader_objects (ARB #97)
-  PFNGLUSEPROGRAMSTAGESPROC = procedure(pipeline: TVKuint; stages: TVKbitfield; _program: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLACTIVESHADERPROGRAMPROC = procedure(pipeline: TVKuint; _program: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCREATESHADERPROGRAMVPROC = function(_type: TVKenum; count: TVKsizei; const strings: PGLPCharArray): TVKuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDPROGRAMPIPELINEPROC = procedure(pipeline: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEPROGRAMPIPELINESPROC = procedure(n: TVKsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENPROGRAMPIPELINESPROC = procedure(n: TVKsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISPROGRAMPIPELINEPROC = function(pipeline: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMPIPELINEIVPROC = procedure(pipeline: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1IPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1IVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1FPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1DPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1UIPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM1UIVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2IPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKint; v1: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2IVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2FPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKfloat; v1: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2DPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKdouble; v1: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2UIPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKuint; v1: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM2UIVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3IPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKint; v1: TVKint; v2: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3IVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3FPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKfloat; v1: TVKfloat; v2: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3DPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKdouble; v1: TVKdouble; v2: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3UIPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKuint; v1: TVKuint; v2: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM3UIVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4IPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKint; v1: TVKint; v2: TVKint; v3: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4IVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4FPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKfloat; v1: TVKfloat; v2: TVKfloat; v3: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4DPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKdouble; v1: TVKdouble; v2: TVKdouble; v3: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4UIPROC = procedure(_program: TVKuint; location: TVKint; v0: TVKuint; v1: TVKuint; v2: TVKuint; v3: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORM4UIVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; transpose: TVKboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVALIDATEPROGRAMPIPELINEPROC = procedure(pipeline: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMPIPELINEINFOLOGPROC = procedure(pipeline: TVKuint; bufSize: TVKsizei; length: PGLsizei; infoLog: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUSEPROGRAMSTAGESPROC = procedure(pipeline: TGLuint; stages: TGLbitfield; _program: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVESHADERPROGRAMPROC = procedure(pipeline: TGLuint; _program: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCREATESHADERPROGRAMVPROC = function(_type: TGLenum; count: TGLsizei; const strings: PGLPCharArray): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDPROGRAMPIPELINEPROC = procedure(pipeline: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEPROGRAMPIPELINESPROC = procedure(n: TGLsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENPROGRAMPIPELINESPROC = procedure(n: TGLsizei; pipelines: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPROGRAMPIPELINEPROC = function(pipeline: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPIPELINEIVPROC = procedure(pipeline: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM1UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM2UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint; v2: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat; v2: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble; v2: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM3UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4IPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLint; v1: TGLint; v2: TGLint; v3: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4IVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4FPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLfloat; v1: TGLfloat; v2: TGLfloat; v3: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLdouble; v1: TGLdouble; v2: TGLdouble; v3: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4UIPROC = procedure(_program: TGLuint; location: TGLint; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORM4UIVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; transpose: TGLboolean; value: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVALIDATEPROGRAMPIPELINEPROC = procedure(pipeline: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPIPELINEINFOLOGPROC = procedure(pipeline: TGLuint; bufSize: TGLsizei; length: PGLsizei; infoLog: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_shader_precision (ARB #98)
   // (no entry points)
 
   // GL_ARB_vertex_attrib_64bit (ARB #99)
-  PFNGLVERTEXATTRIBL1DPROC = procedure(index: TVKuint; x: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL2DPROC = procedure(index: TVKuint; x: TVKdouble; y: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL3DPROC = procedure(index: TVKuint; x: TVKdouble; y: TVKdouble; z: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL4DPROC = procedure(index: TVKuint; x: TVKdouble; y: TVKdouble; z: TVKdouble; w: TVKdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL1DVPROC = procedure(index: TVKuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL2DVPROC = procedure(index: TVKuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL3DVPROC = procedure(index: TVKuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBL4DVPROC = procedure(index: TVKuint; {const} v :PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBLPOINTERPROC = procedure(index: TVKuint; size: TVKint; _type: TVKenum; stride: TVKsizei; {const} ptr: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBLDVPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL1DPROC = procedure(index: TGLuint; x: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL2DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL3DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL4DPROC = procedure(index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL1DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL2DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL3DVPROC = procedure(index: TGLuint; {const} v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBL4DVPROC = procedure(index: TGLuint; {const} v :PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBLPOINTERPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei; {const} ptr: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBLDVPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   // VertexArrayVertexAttribLOffsetEXT only valid if EXT_direct_state_access is available
-  PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC = procedure (vaobj: TVKuint; buffer: TVKuint;
-                                           index: TVKuint; size: TVKint;
-                                           _type: TVKenum; stride: TVKsizei;
-                                           offset: TVKintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXARRAYVERTEXATTRIBLOFFSETEXTPROC = procedure (vaobj: TGLuint; buffer: TGLuint;
+                                           index: TGLuint; size: TGLint;
+                                           _type: TGLenum; stride: TGLsizei;
+                                           offset: TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 
   // GL_ARB_viewport_array (ARB #100)
-  PFNGLVIEWPORTARRAYVPROC = procedure(first: TVKuint; count: TVKsizei; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVIEWPORTINDEXEDFPROC = procedure(index: TVKuint; x: TVKfloat; y: TVKfloat; w: TVKfloat; h: TVKfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVIEWPORTINDEXEDFVPROC = procedure(index: TVKuint; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSCISSORARRAYVPROC = procedure(first: TVKuint; count: TVKsizei; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSCISSORINDEXEDPROC = procedure(index: TVKuint; left: TVKint; bottom: TVKint; width: TVKsizei; height: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSCISSORINDEXEDVPROC = procedure(index: TVKuint; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDEPTHRANGEARRAYVPROC = procedure(first: TVKuint; count: TVKsizei; {const} v: PGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDEPTHRANGEINDEXEDPROC = procedure(index: TVKuint; n: TVKclampd; f: TVKclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFLOATI_VPROC = procedure(target: TVKenum; index: TVKuint; data: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETDOUBLEI_VPROC = procedure(target: TVKenum; index: TVKuint; data: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVIEWPORTARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVIEWPORTINDEXEDFPROC = procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; w: TGLfloat; h: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVIEWPORTINDEXEDFVPROC = procedure(index: TGLuint; {const} v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORINDEXEDPROC = procedure(index: TGLuint; left: TGLint; bottom: TGLint; width: TGLsizei; height: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSCISSORINDEXEDVPROC = procedure(index: TGLuint; {const} v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEARRAYVPROC = procedure(first: TGLuint; count: TGLsizei; {const} v: PGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHRANGEINDEXEDPROC = procedure(index: TGLuint; n: TGLclampd; f: TGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFLOATI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETDOUBLEI_VPROC = procedure(target: TGLenum; index: TGLuint; data: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_debug_output (ARB #104)
-  PFNGLDEBUGMESSAGECONTROLARBPROC = procedure(source: TVKenum; _type: TVKenum; severity: TVKenum; count: TVKsizei; {const} ids: PGLuint; enabled: TVKboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDEBUGMESSAGEINSERTARBPROC = procedure(source: TVKenum; _type: TVKenum; id: TVKuint; severity: TVKenum; length: TVKsizei; {const} buf: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDEBUGMESSAGECALLBACKARBPROC = procedure(callback: TVKDEBUGPROCARB; {const} userParam: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETDEBUGMESSAGELOGARBPROC = function(count: TVKuint; bufsize: TVKsizei; sources: PGLenum; types: PGLenum; ids: PGLuint; severities: PGLenum; lengths: PGLsizei; messageLog: PGLchar): TVKuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEBUGMESSAGECONTROLARBPROC = procedure(source: TGLenum; _type: TGLenum; severity: TGLenum; count: TGLsizei; {const} ids: PGLuint; enabled: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEBUGMESSAGEINSERTARBPROC = procedure(source: TGLenum; _type: TGLenum; id: TGLuint; severity: TGLenum; length: TGLsizei; {const} buf: PGLchar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEBUGMESSAGECALLBACKARBPROC = procedure(callback: TGLDEBUGPROCARB; {const} userParam: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETDEBUGMESSAGELOGARBPROC = function(count: TGLuint; bufsize: TGLsizei; sources: PGLenum; types: PGLenum; ids: PGLuint; severities: PGLenum; lengths: PGLsizei; messageLog: PGLchar): TGLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_robustness (ARB #105)
-  PFNGLGETGRAPHICSRESETSTATUSARBPROC = function(): TVKenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNMAPDVARBPROC = procedure(target: TVKenum; query: TVKenum; bufSize: TVKsizei; v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNMAPFVARBPROC = procedure(target: TVKenum; query: TVKenum; bufSize: TVKsizei; v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNMAPIVARBPROC = procedure(target: TVKenum; query: TVKenum; bufSize: TVKsizei; v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNPIXELMAPFVARBPROC = procedure(map: TVKenum; bufSize: TVKsizei; values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNPIXELMAPUIVARBPROC = procedure(map: TVKenum; bufSize: TVKsizei; values: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNPIXELMAPUSVARBPROC = procedure(map: TVKenum; bufSize: TVKsizei; values: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNPOLYGONSTIPPLEARBPROC = procedure(bufSize: TVKsizei; pattern: PGLubyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNCOLORTABLEARBPROC = procedure(target: TVKenum; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; table: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNCONVOLUTIONFILTERARBPROC = procedure(target: TVKenum; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; image: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNSEPARABLEFILTERARBPROC = procedure(target: TVKenum; format: TVKenum; _type: TVKenum; rowBufSize: TVKsizei; row: Pointer; columnBufSize: TVKsizei; column: Pointer; span: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNHISTOGRAMARBPROC = procedure(target: TVKenum; reset: TVKboolean; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNMINMAXARBPROC = procedure(target: TVKenum; reset: TVKboolean; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNTEXIMAGEARBPROC = procedure(target: TVKenum; level: TVKint; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLREADNPIXELSARBPROC = procedure(x: TVKint; y: TVKint; width: TVKsizei; height: TVKsizei; format: TVKenum; _type: TVKenum; bufSize: TVKsizei; data: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC = procedure(target: TVKenum; lod: TVKint; bufSize: TVKsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNUNIFORMFVARBPROC = procedure(_program: TVKuint; location: TVKint; bufSize: TVKsizei; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNUNIFORMIVARBPROC = procedure(_program: TVKuint; location: TVKint; bufSize: TVKsizei; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNUNIFORMUIVARBPROC = procedure(_program: TVKuint; location: TVKint; bufSize: TVKsizei; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNUNIFORMDVARBPROC = procedure(_program: TVKuint; location: TVKint; bufSize: TVKsizei; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETGRAPHICSRESETSTATUSARBPROC = function(): TGLenum;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPDVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPFVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMAPIVARBPROC = procedure(target: TGLenum; query: TGLenum; bufSize: TGLsizei; v: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPFVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPUIVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPIXELMAPUSVARBPROC = procedure(map: TGLenum; bufSize: TGLsizei; values: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNPOLYGONSTIPPLEARBPROC = procedure(bufSize: TGLsizei; pattern: PGLubyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCOLORTABLEARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; table: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCONVOLUTIONFILTERARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; image: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNSEPARABLEFILTERARBPROC = procedure(target: TGLenum; format: TGLenum; _type: TGLenum; rowBufSize: TGLsizei; row: Pointer; columnBufSize: TGLsizei; column: Pointer; span: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNHISTOGRAMARBPROC = procedure(target: TGLenum; reset: TGLboolean; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNMINMAXARBPROC = procedure(target: TGLenum; reset: TGLboolean; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; values: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNTEXIMAGEARBPROC = procedure(target: TGLenum; level: TGLint; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLREADNPIXELSARBPROC = procedure(x: TGLint; y: TGLint; width: TGLsizei; height: TGLsizei; format: TGLenum; _type: TGLenum; bufSize: TGLsizei; data: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNCOMPRESSEDTEXIMAGEARBPROC = procedure(target: TGLenum; lod: TGLint; bufSize: TGLsizei; img: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMFVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMIVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMUIVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNUNIFORMDVARBPROC = procedure(_program: TGLuint; location: TGLint; bufSize: TGLsizei; params: PGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ARB_shader_stencil_export (ARB #106)
   // (no entry points)
@@ -7417,339 +7404,339 @@ const
   // EXT/Vendor extensions
 
   // Unknown Vendor/EXT functions
-  PFNGLARRAYELEMENTARRAYEXTPROC = procedure(mode: TVKEnum; count: TVKsizei; pi: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLARRAYELEMENTARRAYEXTPROC = procedure(mode: TGLEnum; count: TGLsizei; pi: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_WIN_swap_hint (extension # not found)
-  PFNGLADDSWAPHINTRECTWINPROC = procedure(x, y: TVKint; width, height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLADDSWAPHINTRECTWINPROC = procedure(x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_blend_color (EXT #2)
-  PFNGLBLENDCOLOREXTPROC = procedure(red, green, blue: TVKclampf; alpha: TVKclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDCOLOREXTPROC = procedure(red, green, blue: TGLclampf; alpha: TGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_polygon_offset (EXT #3)
-  PFNGLPOLYGONOFFSETEXTPROC = procedure(factor, bias: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOLYGONOFFSETEXTPROC = procedure(factor, bias: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_texture3D (EXT #6)
-  PFNGLTEXIMAGE3DEXTPROC = procedure(target: TVKenum; level: TVKint; internalformat: TVKenum; width, height, depth: TVKsizei; border: TVKint; Format, AType: TVKenum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXIMAGE3DEXTPROC = procedure(target: TGLenum; level: TGLint; internalformat: TGLenum; width, height, depth: TGLsizei; border: TGLint; Format, AType: TGLenum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_subtexture (EXT #9)
-  PFNGLTEXSUBIMAGE1DEXTPROC = procedure(target: TVKEnum; level, xoffset: TVKint; width: TVKsizei; format, Atype: TVKEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXSUBIMAGE2DEXTPROC = procedure(target: TVKEnum; level, xoffset, yoffset: TVKint; width, height: TVKsizei; format, Atype: TVKEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXSUBIMAGE3DEXTPROC = procedure(target: TVKEnum; level, xoffset, yoffset, zoffset: TVKint; width, height, depth: TVKsizei; format, Atype: TVKEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXSUBIMAGE1DEXTPROC = procedure(target: TGLEnum; level, xoffset: TGLint; width: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXSUBIMAGE2DEXTPROC = procedure(target: TGLEnum; level, xoffset, yoffset: TGLint; width, height: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXSUBIMAGE3DEXTPROC = procedure(target: TGLEnum; level, xoffset, yoffset, zoffset: TGLint; width, height, depth: TGLsizei; format, Atype: TGLEnum; pixels: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_copy_texture (EXT #10)
-  PFNGLCOPYTEXIMAGE1DEXTPROC = procedure(target: TVKEnum; level: TVKint; internalFormat: TVKEnum; x, y: TVKint; width: TVKsizei; border: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOPYTEXIMAGE2DEXTPROC = procedure(target: TVKEnum; level: TVKint; internalFormat: TVKEnum; x, y: TVKint; width, height: TVKsizei; border: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOPYTEXSUBIMAGE1DEXTPROC = procedure(target: TVKEnum; level, xoffset, x, y: TVKint; width: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOPYTEXSUBIMAGE2DEXTPROC = procedure(target: TVKEnum; level, xoffset, yoffset, x, y: TVKint; width, height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOPYTEXSUBIMAGE3DEXTPROC = procedure(target: TVKEnum; level, xoffset, yoffset, zoffset, x, y: TVKint; width, height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXIMAGE1DEXTPROC = procedure(target: TGLEnum; level: TGLint; internalFormat: TGLEnum; x, y: TGLint; width: TGLsizei; border: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXIMAGE2DEXTPROC = procedure(target: TGLEnum; level: TGLint; internalFormat: TGLEnum; x, y: TGLint; width, height: TGLsizei; border: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXSUBIMAGE1DEXTPROC = procedure(target: TGLEnum; level, xoffset, x, y: TGLint; width: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXSUBIMAGE2DEXTPROC = procedure(target: TGLEnum; level, xoffset, yoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOPYTEXSUBIMAGE3DEXTPROC = procedure(target: TGLEnum; level, xoffset, yoffset, zoffset, x, y: TGLint; width, height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_texture_object (EXT #20)
-  PFNGLGENTEXTURESEXTPROC = procedure(n: TVKsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETETEXTURESEXTPROC = procedure(n: TVKsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDTEXTUREEXTPROC = procedure(target: TVKEnum; texture: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPRIORITIZETEXTURESEXTPROC = procedure(n: TVKsizei; textures: PGLuint; priorities: PGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLARETEXTURESRESIDENTEXTPROC = function(n: TVKsizei; textures: PGLuint; residences: PGLBoolean): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISTEXTUREEXTPROC = function(texture: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENTEXTURESEXTPROC = procedure(n: TGLsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETETEXTURESEXTPROC = procedure(n: TGLsizei; textures: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDTEXTUREEXTPROC = procedure(target: TGLEnum; texture: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPRIORITIZETEXTURESEXTPROC = procedure(n: TGLsizei; textures: PGLuint; priorities: PGLclampf); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLARETEXTURESRESIDENTEXTPROC = function(n: TGLsizei; textures: PGLuint; residences: PGLBoolean): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISTEXTUREEXTPROC = function(texture: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_SGIS_multisample (EXT #25)
-  PFNGLSAMPLEMASKSGISPROC = procedure(Value: TVKclampf; invert: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLEPATTERNSGISPROC = procedure(pattern: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEMASKSGISPROC = procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEPATTERNSGISPROC = procedure(pattern: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_blend_minmax (EXT #37)
-  PFNGLBLENDEQUATIONEXTPROC = procedure(mode: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONEXTPROC = procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_paletted_texture (EXT #78)
-  PFNGLCOLORTABLEEXTPROC = procedure(target, internalFormat: TVKEnum; width: TVKsizei; format, atype: TVKEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORSUBTABLEEXTPROC = procedure(target: TVKEnum; start, count: TVKsizei; format, atype: TVKEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOLORTABLEEXTPROC = procedure(target, format, atype: TVKEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOLORTABLEPARAMETERFVEXTPROC = procedure(target, pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOLORTABLEPARAMETERIVEXTPROC = procedure(target, pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORTABLEEXTPROC = procedure(target, internalFormat: TGLEnum; width: TGLsizei; format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORSUBTABLEEXTPROC = procedure(target: TGLEnum; start, count: TGLsizei; format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOLORTABLEEXTPROC = procedure(target, format, atype: TGLEnum; data: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOLORTABLEPARAMETERFVEXTPROC = procedure(target, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOLORTABLEPARAMETERIVEXTPROC = procedure(target, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  //   glGetColorTableParameterfvEXT: procedure(target, pname: TVKEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  //   glGetColorTableParameterivEXT: procedure(target, pname: TVKEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  //   glGetColorTableParameterfvEXT: procedure(target, pname: TGLEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  //   glGetColorTableParameterivEXT: procedure(target, pname: TGLEnum; params: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_index_material (EXT #94)
-  PFNGLINDEXMATERIALEXTPROC = procedure(face: TVKEnum; mode: TVKEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLINDEXMATERIALEXTPROC = procedure(face: TGLEnum; mode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_index_func (EXT #95)
-  PFNGLINDEXFUNCEXTPROC = procedure(func: TVKEnum; ref: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLINDEXFUNCEXTPROC = procedure(func: TGLEnum; ref: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_compiled_vertex_array (EXT #97)
-  PFNGLLOCKARRAYSEXTPROC = procedure(first: TVKint; count: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLLOCKARRAYSEXTPROC = procedure(first: TGLint; count: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLUNLOCKARRAYSEXTPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_draw_range_elements (EXT #112)
-  PFNGLDRAWRANGEELEMENTSEXTPROC = procedure(mode: TVKenum; start, Aend: TVKuint; Count: TVKsizei; Atype: TVKenum; indices: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWRANGEELEMENTSEXTPROC = procedure(mode: TGLenum; start, Aend: TGLuint; Count: TGLsizei; Atype: TGLenum; indices: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_scene_marker (EXT #120)
   PFNGLBEGINSCENEEXTPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDSCENEEXTPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_secondary_color (EXT #145)
-  PFNGLSECONDARYCOLOR3BEXTPROC = procedure(red, green, blue: TVKbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3BEXTPROC = procedure(red, green, blue: TGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3BVEXTPROC = procedure(v: PGLbyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3DEXTPROC = procedure(red, green, blue: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3DEXTPROC = procedure(red, green, blue: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3DVEXTPROC = procedure(v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3FEXTPROC = procedure(red, green, blue: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3FEXTPROC = procedure(red, green, blue: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3FVEXTPROC = procedure(v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3IEXTPROC = procedure(red, green, blue: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3IEXTPROC = procedure(red, green, blue: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3IVEXTPROC = procedure(v: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3SEXTPROC = procedure(red, green, blue: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3SEXTPROC = procedure(red, green, blue: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3SVEXTPROC = procedure(v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3UBEXTPROC = procedure(red, green, blue: TVKubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3UBEXTPROC = procedure(red, green, blue: TGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3UBVEXTPROC = procedure(v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3UIEXTPROC = procedure(red, green, blue: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3UIEXTPROC = procedure(red, green, blue: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3UIVEXTPROC = procedure(v: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLOR3USEXTPROC = procedure(red, green, blue: TVKushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLOR3USEXTPROC = procedure(red, green, blue: TGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLSECONDARYCOLOR3USVEXTPROC = procedure(v: PGLushort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLORPOINTEREXTPROC = procedure(Size: TVKint; Atype: TVKenum; stride: TVKsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLORPOINTEREXTPROC = procedure(Size: TGLint; Atype: TGLenum; stride: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_multi_draw_arrays (EXT #148)
-  PFNGLMULTIDRAWARRAYSEXTPROC = procedure(mode: TVKenum; First: PGLint; Count: PGLsizei; primcount: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMULTIDRAWELEMENTSEXTPROC = procedure(mode: TVKenum; Count: PGLsizei; AType: TVKenum; var indices; primcount: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTIDRAWARRAYSEXTPROC = procedure(mode: TGLenum; First: PGLint; Count: PGLsizei; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMULTIDRAWELEMENTSEXTPROC = procedure(mode: TGLenum; Count: PGLsizei; AType: TGLenum; var indices; primcount: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_fog_coord (EXT #149)
-  PFNGLFOGCOORDFEXTPROC = procedure(coord: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFOGCOORDFEXTPROC = procedure(coord: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLFOGCOORDFVEXTPROC = procedure(coord: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFOGCOORDDEXTPROC = procedure(coord: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFOGCOORDDEXTPROC = procedure(coord: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLFOGCOORDDVEXTPROC = procedure(coord: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFOGCOORDPOINTEREXTPROC = procedure(AType: TVKenum; stride: TVKsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFOGCOORDPOINTEREXTPROC = procedure(AType: TGLenum; stride: TGLsizei; p: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_blend_func_separate (EXT #173)
-  PFNGLBLENDFUNCSEPARATEEXTPROC = procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDFUNCSEPARATEEXTPROC = procedure(sfactorRGB, dfactorRGB, sfactorAlpha, dfactorAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_vertex_array_range (EXT #190)
   PFNGLFLUSHVERTEXARRAYRANGENVPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXARRAYRANGENVPROC = procedure(Size: TVKsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNWGLALLOCATEMEMORYNVPROC = function(size: TVKsizei; readFrequency, writeFrequency, priority: Single): Pointer; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXARRAYRANGENVPROC = procedure(Size: TGLsizei; p: pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNWGLALLOCATEMEMORYNVPROC = function(size: TGLsizei; readFrequency, writeFrequency, priority: Single): Pointer; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNWGLFREEMEMORYNVPROC = procedure(ptr: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_register_combiners (EXT #191)
-  PFNGLCOMBINERPARAMETERFVNVPROC = procedure(pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMBINERPARAMETERFNVPROC = procedure(pname: TVKenum; param: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMBINERPARAMETERIVNVPROC = procedure(pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMBINERPARAMETERINVPROC = procedure(pname: TVKenum; param: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMBINERINPUTNVPROC = procedure(stage, portion, variable, input, mapping, componentUsage: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOMBINEROUTPUTNVPROC = procedure(stage, portion, abOutput, cdOutput, sumOutput, scale, bias: TVKenum; abDotProduct, cdDotProduct, muxSum: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFINALCOMBINERINPUTNVPROC = procedure(variable, input, mapping, componentUsage: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC = procedure(stage, portion, variable, pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC = procedure(stage, portion, variable, pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC = procedure(stage, portion, pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC = procedure(stage, portion, pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC = procedure(variable, pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC = procedure(variable, pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINERPARAMETERFVNVPROC = procedure(pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINERPARAMETERFNVPROC = procedure(pname: TGLenum; param: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINERPARAMETERIVNVPROC = procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINERPARAMETERINVPROC = procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINERINPUTNVPROC = procedure(stage, portion, variable, input, mapping, componentUsage: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOMBINEROUTPUTNVPROC = procedure(stage, portion, abOutput, cdOutput, sumOutput, scale, bias: TGLenum; abDotProduct, cdDotProduct, muxSum: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFINALCOMBINERINPUTNVPROC = procedure(variable, input, mapping, componentUsage: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC = procedure(stage, portion, variable, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC = procedure(stage, portion, variable, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC = procedure(stage, portion, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC = procedure(stage, portion, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC = procedure(variable, pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC = procedure(variable, pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_MESA_resize_buffers (EXT #196)
   PFNGLRESIZEBUFFERSMESAPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_3DFX_tbuffer (EXT #208)
-  PFNGLTBUFFERMASK3DFXPROC = procedure(mask: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTBUFFERMASK3DFXPROC = procedure(mask: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_multisample (EXT #209)
-  PFNGLSAMPLEMASKEXTPROC = procedure(Value: TVKclampf; invert: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSAMPLEPATTERNEXTPROC = procedure(pattern: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEMASKEXTPROC = procedure(Value: TGLclampf; invert: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSAMPLEPATTERNEXTPROC = procedure(pattern: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_SGIS_texture_color_mask (EXT #214)
-  PFNGLTEXTURECOLORMASKSGISPROC = procedure(red, green, blue, alpha: TVKboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXTURECOLORMASKSGISPROC = procedure(red, green, blue, alpha: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_fence (EXT #222)
-  PFNGLGENFENCESNVPROC = procedure(n: TVKsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEFENCESNVPROC = procedure(n: TVKsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSETFENCENVPROC = procedure(fence: TVKuint; condition: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTESTFENCENVPROC = function(fence: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFINISHFENCENVPROC = procedure(fence: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISFENCENVPROC = function(fence: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFENCEIVNVPROC = procedure(fence: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENFENCESNVPROC = procedure(n: TGLsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEFENCESNVPROC = procedure(n: TGLsizei; fences: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSETFENCENVPROC = procedure(fence: TGLuint; condition: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTESTFENCENVPROC = function(fence: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFINISHFENCENVPROC = procedure(fence: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISFENCENVPROC = function(fence: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFENCEIVNVPROC = procedure(fence: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_vertex_program (EXT #233)
-  PFNGLAREPROGRAMSRESIDENTNVPROC = procedure(n: TVKSizei; programs: PGLuint; residences: PGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDPROGRAMNVPROC = procedure(target: TVKenum; id: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEPROGRAMSNVPROC = procedure(n: TVKSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLEXECUTEPROGRAMNVPROC = procedure(target: TVKenum; id: TVKuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENPROGRAMSNVPROC = procedure(n: TVKSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMPARAMETERDVNVPROC = procedure (target: TVKenum; index: TVKuint; pname: TVKenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMPARAMETERFVNVPROC = procedure (target: TVKenum; index: TVKuint; pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMIVNVPROC = procedure (id: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETPROGRAMSTRINGNVPROC = procedure (id: TVKuint; pname: TVKenum; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTRACKMATRIXIVNVPROC = procedure (target: TVKenum; address: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBDVNVPROC = procedure (index: TVKuint; pname: TVKenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBFVNVPROC = procedure (index: TVKuint; pname: TVKenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIVNVPROC = procedure (index: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBPOINTERVNVPROC = procedure (index: TVKuint; pname: TVKenum; pointer: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISPROGRAMNVPROC = function (id: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLLOADPROGRAMNVPROC = procedure (target: TVKenum; id: TVKuint; len: TVKSizei; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETER4DNVPROC = procedure (target: TVKenum; index: TVKuint; x, y, z, w: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETER4DVNVPROC = procedure (target: TVKenum; index: TVKuint; v: PGLdouble ); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETER4FNVPROC = procedure (target: TVKenum; index: TVKuint; x, y, z, w: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETER4FVNVPROC = procedure (target: TVKenum; index: TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETERS4DVNVPROC = procedure (target: TVKenum; index: TVKuint; count: TVKSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMPARAMETERS4FVNVPROC = procedure (target: TVKenum; index: TVKuint; count: TVKSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLREQUESTRESIDENTPROGRAMSNVPROC = procedure (n: TVKSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTRACKMATRIXNVPROC = procedure (target: TVKenum; address: TVKuint; matrix: TVKenum; transform: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBPOINTERNVPROC = procedure (index: TVKuint; fsize: TVKint; vertextype: TVKenum; stride: TVKSizei; pointer: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1DNVPROC = procedure (index: TVKuint; x: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1DVNVPROC = procedure (index: TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1FNVPROC = procedure (index: TVKuint; x: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1FVNVPROC = procedure (index: TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1SNVPROC = procedure (index: TVKuint; x: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB1SVNVPROC = procedure (index: TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2DNVPROC = procedure (index: TVKuint; x: TVKdouble; y: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2DVNVPROC = procedure (index: TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2FNVPROC = procedure (index: TVKuint; x: TVKfloat; y: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2FVNVPROC = procedure (index: TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2SNVPROC = procedure (index: TVKuint; x: TVKshort; y: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB2SVNVPROC = procedure (index: TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3DNVPROC = procedure (index: TVKuint; x: TVKdouble; y: TVKdouble; z: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3DVNVPROC = procedure (index: TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3FNVPROC = procedure (index: TVKuint; x: TVKfloat; y: TVKfloat; z: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3FVNVPROC = procedure (index: TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3SNVPROC = procedure (index: TVKuint; x: TVKshort; y: TVKshort; z: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB3SVNVPROC = procedure (index: TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4DNVPROC = procedure (index: TVKuint; x: TVKdouble; y: TVKdouble; z: TVKdouble; w: TVKdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4DVNVPROC = procedure (index: TVKuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4FNVPROC = procedure(index: TVKuint; x: TVKfloat; y: TVKfloat; z: TVKfloat; w: TVKfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4FVNVPROC = procedure(index: TVKuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4SNVPROC = procedure (index: TVKuint; x: TVKshort; y: TVKshort; z: TVKdouble; w: TVKshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4SVNVPROC = procedure (index: TVKuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIB4UBVNVPROC = procedure (index: TVKuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS1DVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS1FVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS1SVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS2DVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS2FVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS2SVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS3DVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS3FVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS3SVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS4DVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS4FVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS4SVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBS4UBVNVPROC = procedure (index: TVKuint; count: TVKSizei; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLAREPROGRAMSRESIDENTNVPROC = procedure(n: TGLSizei; programs: PGLuint; residences: PGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDPROGRAMNVPROC = procedure(target: TGLenum; id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEPROGRAMSNVPROC = procedure(n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLEXECUTEPROGRAMNVPROC = procedure(target: TGLenum; id: TGLuint; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENPROGRAMSNVPROC = procedure(n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPARAMETERDVNVPROC = procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMPARAMETERFVNVPROC = procedure (target: TGLenum; index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMIVNVPROC = procedure (id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETPROGRAMSTRINGNVPROC = procedure (id: TGLuint; pname: TGLenum; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTRACKMATRIXIVNVPROC = procedure (target: TGLenum; address: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBDVNVPROC = procedure (index: TGLuint; pname: TGLenum; params: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBFVNVPROC = procedure (index: TGLuint; pname: TGLenum; params: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIVNVPROC = procedure (index: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBPOINTERVNVPROC = procedure (index: TGLuint; pname: TGLenum; pointer: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISPROGRAMNVPROC = function (id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLLOADPROGRAMNVPROC = procedure (target: TGLenum; id: TGLuint; len: TGLSizei; programIdx: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETER4DNVPROC = procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETER4DVNVPROC = procedure (target: TGLenum; index: TGLuint; v: PGLdouble ); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETER4FNVPROC = procedure (target: TGLenum; index: TGLuint; x, y, z, w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETER4FVNVPROC = procedure (target: TGLenum; index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETERS4DVNVPROC = procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETERS4FVNVPROC = procedure (target: TGLenum; index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLREQUESTRESIDENTPROGRAMSNVPROC = procedure (n: TGLSizei; programs: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTRACKMATRIXNVPROC = procedure (target: TGLenum; address: TGLuint; matrix: TGLenum; transform: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBPOINTERNVPROC = procedure (index: TGLuint; fsize: TGLint; vertextype: TGLenum; stride: TGLSizei; pointer: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1DNVPROC = procedure (index: TGLuint; x: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1DVNVPROC = procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1FNVPROC = procedure (index: TGLuint; x: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1FVNVPROC = procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1SNVPROC = procedure (index: TGLuint; x: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB1SVNVPROC = procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2DNVPROC = procedure (index: TGLuint; x: TGLdouble; y: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2DVNVPROC = procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2FNVPROC = procedure (index: TGLuint; x: TGLfloat; y: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2FVNVPROC = procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2SNVPROC = procedure (index: TGLuint; x: TGLshort; y: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB2SVNVPROC = procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3DNVPROC = procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3DVNVPROC = procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3FNVPROC = procedure (index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3FVNVPROC = procedure (index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3SNVPROC = procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB3SVNVPROC = procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4DNVPROC = procedure (index: TGLuint; x: TGLdouble; y: TGLdouble; z: TGLdouble; w: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4DVNVPROC = procedure (index: TGLuint; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4FNVPROC = procedure(index: TGLuint; x: TGLfloat; y: TGLfloat; z: TGLfloat; w: TGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4FVNVPROC = procedure(index: TGLuint; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4SNVPROC = procedure (index: TGLuint; x: TGLshort; y: TGLshort; z: TGLdouble; w: TGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4SVNVPROC = procedure (index: TGLuint; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIB4UBVNVPROC = procedure (index: TGLuint; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS1DVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS1FVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS1SVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS2DVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS2FVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS2SVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS3DVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS3FVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS3SVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS4DVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS4FVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS4SVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLshort); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBS4UBVNVPROC = procedure (index: TGLuint; count: TGLSizei; v: PGLubyte); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_occlusion_query (EXT #261)
-  PFNGLGENOCCLUSIONQUERIESNVPROC = procedure(n: TVKsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEOCCLUSIONQUERIESNVPROC = procedure(n: TVKsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISOCCLUSIONQUERYNVPROC = function(id: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINOCCLUSIONQUERYNVPROC = procedure(id: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENOCCLUSIONQUERIESNVPROC = procedure(n: TGLsizei; ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEOCCLUSIONQUERIESNVPROC = procedure(n: TGLsizei; const ids: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISOCCLUSIONQUERYNVPROC = function(id: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINOCCLUSIONQUERYNVPROC = procedure(id: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDOCCLUSIONQUERYNVPROC = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETOCCLUSIONQUERYIVNVPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETOCCLUSIONQUERYUIVNVPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETOCCLUSIONQUERYIVNVPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETOCCLUSIONQUERYUIVNVPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_point_sprite (EXT #262)
-  PFNGLPOINTPARAMETERINVPROC = procedure(pname: TVKenum; param: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPOINTPARAMETERIVNVPROC = procedure(pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERINVPROC = procedure(pname: TGLenum; param: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPOINTPARAMETERIVNVPROC = procedure(pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_stencil_two_side (EXT #268)
-  PFNGLACTIVESTENCILFACEEXTPROC = procedure(face: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVESTENCILFACEEXTPROC = procedure(face: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_ATI_draw_buffers (EXT #277)
   PFNGLDRAWBUFFERSATIPROC = procedure(n: GLsizei; const bufs: PGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_primitive_restart (EXT #285)
   PFNGLPRIMITIVERESTARTNVPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPRIMITIVERESTARTINDEXNVPROC = procedure(index: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPRIMITIVERESTARTINDEXNVPROC = procedure(index: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_depth_bounds_test (EXT #297)
-  PFNGLDEPTHBOUNDSEXTPROC = procedure(zmin: TVKclampd; zmax: TVKclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDEPTHBOUNDSEXTPROC = procedure(zmin: TGLclampd; zmax: TGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_blend_equation_separate (EXT #299)
-  PFNGLBLENDEQUATIONSEPARATEEXTPROC = procedure(modeRGB: TVKenum; modeAlpha: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLENDEQUATIONSEPARATEEXTPROC = procedure(modeRGB: TGLenum; modeAlpha: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_framebuffer_object (EXT #310)
-  PFNGLISRENDERBUFFEREXTPROC = function(renderbuffer: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDRENDERBUFFEREXTPROC = procedure(target: TVKenum; renderbuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETERENDERBUFFERSEXTPROC = procedure(n: TVKsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENRENDERBUFFERSEXTPROC = procedure(n: TVKsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLRENDERBUFFERSTORAGEEXTPROC = procedure(target: TVKenum; internalformat: TVKenum; width: TVKsizei; height: TVKsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISFRAMEBUFFEREXTPROC = function(framebuffer: TVKuint): TVKboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDFRAMEBUFFEREXTPROC = procedure(target: TVKenum; framebuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDELETEFRAMEBUFFERSEXTPROC = procedure(n: TVKsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENFRAMEBUFFERSEXTPROC = procedure(n: TVKsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC = function(target: TVKenum): TVKenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE1DEXTPROC = procedure(target: TVKenum; attachment: TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE2DEXTPROC = procedure(target: TVKenum; attachment: TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURE3DEXTPROC = procedure(target: TVKenum; attachment: TVKenum; textarget: TVKenum; texture: TVKuint; level: TVKint; zoffset: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC = procedure(target: TVKenum; attachment: TVKenum; renderbuffertarget: TVKenum; renderbuffer: TVKuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC = procedure(target: TVKenum; attachment: TVKenum; pname: TVKenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGENERATEMIPMAPEXTPROC = procedure(target: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISRENDERBUFFEREXTPROC = function(renderbuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDRENDERBUFFEREXTPROC = procedure(target: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETERENDERBUFFERSEXTPROC = procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENRENDERBUFFERSEXTPROC = procedure(n: TGLsizei; renderbuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLRENDERBUFFERSTORAGEEXTPROC = procedure(target: TGLenum; internalformat: TGLenum; width: TGLsizei; height: TGLsizei); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISFRAMEBUFFEREXTPROC = function(framebuffer: TGLuint): TGLboolean; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDFRAMEBUFFEREXTPROC = procedure(target: TGLenum; framebuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDELETEFRAMEBUFFERSEXTPROC = procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENFRAMEBUFFERSEXTPROC = procedure(n: TGLsizei; framebuffers: PGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC = function(target: TGLenum): TGLenum; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE1DEXTPROC = procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE2DEXTPROC = procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURE3DEXTPROC = procedure(target: TGLenum; attachment: TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; zoffset: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC = procedure(target: TGLenum; attachment: TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC = procedure(target: TGLenum; attachment: TGLenum; pname: TGLenum; params: PGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGENERATEMIPMAPEXTPROC = procedure(target: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_GREMEDY_string_marker (EXT #311)
   PFNGLSTRINGMARKERGREMEDYPROC = procedure(len: GLsizei; str: PGLChar); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_stencil_clear_tag (EXT #314)
-  PFNGLSTENCILCLEARTAGEXTPROC = procedure(stencilTagBits: TVKsizei; stencilClearTag: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSTENCILCLEARTAGEXTPROC = procedure(stencilTagBits: TGLsizei; stencilClearTag: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_framebuffer_blit (EXT #316)
-  PFNGLBLITFRAMEBUFFEREXTPROC = procedure(srcX0: TVKint; srcY0: TVKint; srcX1: TVKint; srcY1: TVKint;
-                          dstX0: TVKint; dstY0: TVKint; dstX1: TVKint; dstY1: TVKint;
-                          mask: TVKbitfield; filter: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBLITFRAMEBUFFEREXTPROC = procedure(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
+                          dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
+                          mask: TGLbitfield; filter: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_framebuffer_multisample (EXT #317)
-  PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC = procedure(target: TVKenum; samples: TVKsizei;
-          internalformat: TVKenum; width: TVKsizei; height: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC = procedure(target: TGLenum; samples: TGLsizei;
+          internalformat: TGLenum; width: TGLsizei; height: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_timer_query (EXT #319)
-  PFNGLGETQUERYOBJECTI64VEXTPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETQUERYOBJECTUI64VEXTPROC = procedure(id: TVKuint; pname: TVKenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTI64VEXTPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETQUERYOBJECTUI64VEXTPROC = procedure(id: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_gpu_program_parameters (EXT #320)
-  PFNGLPROGRAMENVPARAMETERS4FVEXTPROC = procedure(target:TVKenum; index:TVKuint; count:TVKsizei;
+  PFNGLPROGRAMENVPARAMETERS4FVEXTPROC = procedure(target:TGLenum; index:TGLuint; count:TGLsizei;
                                    const params:PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC = procedure(target:TVKenum; index:TVKuint; count:TVKsizei;
+  PFNGLPROGRAMLOCALPARAMETERS4FVEXTPROC = procedure(target:TGLenum; index:TGLuint; count:TGLsizei;
                                    const params:PGLFloat);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_geometry_program4 (EXT #323)
-  PFNGLPROGRAMVERTEXLIMITNVPROC = procedure (target: TVKenum; limit: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMVERTEXLIMITNVPROC = procedure (target: TGLenum; limit: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_geometry_shader4 (EXT #324)
-  PFNGLPROGRAMPARAMETERIEXTPROC = procedure ( _program:TVKuint; pname:TVKenum; value: TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTUREEXTPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint; layer:TVKint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC = procedure ( target:TVKenum;  attachment:TVKenum; texture:TVKuint;  level:TVKint; face:TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMPARAMETERIEXTPROC = procedure ( _program:TGLuint; pname:TGLenum; value: TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTUREEXTPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; layer:TGLint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFRAMEBUFFERTEXTUREFACEEXTPROC = procedure ( target:TGLenum;  attachment:TGLenum; texture:TGLuint;  level:TGLint; face:TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_gpu_shader4 (EXT #326)
-  PFNGLVERTEXATTRIBI1IEXTPROC = procedure(index: TVKuint; x: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2IEXTPROC = procedure(index: TVKuint; x: TVKint; y: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3IEXTPROC = procedure(index: TVKuint; x: TVKint; y: TVKint; z: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4IEXTPROC = procedure(index: TVKuint; x: TVKint; y: TVKint; z: TVKint; w: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1UIEXTPROC = procedure(index: TVKuint; x: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2UIEXTPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3UIEXTPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint; z: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UIEXTPROC = procedure(index: TVKuint; x: TVKuint; y: TVKuint; z: TVKuint; w: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1IVEXTPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2IVEXTPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3IVEXTPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4IVEXTPROC = procedure(index: TVKuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI1UIVEXTPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI2UIVEXTPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI3UIVEXTPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UIVEXTPROC = procedure(index: TVKuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4BVEXTPROC = procedure(index: TVKuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4SVEXTPROC = procedure(index: TVKuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4UBVEXTPROC = procedure(index: TVKuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBI4USVEXTPROC = procedure(index: TVKuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBIPOINTEREXTPROC = procedure(index: TVKuint; size: TVKint; _type: TVKenum;
-                              stride: TVKsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIIVEXTPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETVERTEXATTRIBIUIVEXTPROC = procedure(index: TVKuint; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM1UIEXTPROC = procedure(location: TVKInt; v0: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2UIEXTPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3UIEXTPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint; v2: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4UIEXTPROC = procedure(location: TVKInt; v0: TVKuint; v1: TVKuint; v2: TVKuint; v3: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM1UIVEXTPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM2UIVEXTPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM3UIVEXTPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORM4UIVEXTPROC = procedure(location: TVKInt; count: TVKsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMUIVEXTPROC = procedure(_program: TVKuint; location: TVKint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDFRAGDATALOCATIONEXTPROC = procedure(_program: TVKuint; colorNumber: TVKuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETFRAGDATALOCATIONEXTPROC = function(_program: TVKuint; name: PGLChar): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1IEXTPROC = procedure(index: TGLuint; x: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2IEXTPROC = procedure(index: TGLuint; x: TGLint; y: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3IEXTPROC = procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4IEXTPROC = procedure(index: TGLuint; x: TGLint; y: TGLint; z: TGLint; w: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1UIEXTPROC = procedure(index: TGLuint; x: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2UIEXTPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3UIEXTPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UIEXTPROC = procedure(index: TGLuint; x: TGLuint; y: TGLuint; z: TGLuint; w: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1IVEXTPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2IVEXTPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3IVEXTPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4IVEXTPROC = procedure(index: TGLuint; v:PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI1UIVEXTPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI2UIVEXTPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI3UIVEXTPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UIVEXTPROC = procedure(index: TGLuint; v:PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4BVEXTPROC = procedure(index: TGLuint; v:PGLbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4SVEXTPROC = procedure(index: TGLuint; v:PGLshort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4UBVEXTPROC = procedure(index: TGLuint; v: PGLUbyte);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBI4USVEXTPROC = procedure(index: TGLuint; v: PGLushort);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBIPOINTEREXTPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum;
+                              stride: TGLsizei; _pointer: pointer);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIIVEXTPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETVERTEXATTRIBIUIVEXTPROC = procedure(index: TGLuint; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1UIEXTPROC = procedure(location: TGLInt; v0: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2UIEXTPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3UIEXTPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4UIEXTPROC = procedure(location: TGLInt; v0: TGLuint; v1: TGLuint; v2: TGLuint; v3: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM1UIVEXTPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM2UIVEXTPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM3UIVEXTPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORM4UIVEXTPROC = procedure(location: TGLInt; count: TGLsizei; value: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMUIVEXTPROC = procedure(_program: TGLuint; location: TGLint; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDFRAGDATALOCATIONEXTPROC = procedure(_program: TGLuint; colorNumber: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETFRAGDATALOCATIONEXTPROC = function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_draw_instanced (EXT #327)
-  PFNGLDRAWARRAYSINSTANCEDEXTPROC = procedure(mode: TVKenum; first: TVKint; count: TVKsizei;
-          primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDRAWELEMENTSINSTANCEDEXTPROC = procedure(mode: TVKenum; count: TVKSizei; _type: TVKenum;
-          indices: PGLvoid; primcount: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWARRAYSINSTANCEDEXTPROC = procedure(mode: TGLenum; first: TGLint; count: TGLsizei;
+          primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDRAWELEMENTSINSTANCEDEXTPROC = procedure(mode: TGLenum; count: TGLSizei; _type: TGLenum;
+          indices: PGLvoid; primcount: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_packed_float (EXT #328)
   // WGL_EXT_pixel_format_packed_float
@@ -7757,82 +7744,82 @@ const
 
 
   // GL_EXT_texture_array (EXT #329)
-  //glFramebufferTextureLayerEXT: procedure(target: TVKenum; attachment: TVKenum;
-  //                                texture: TVKuint; level: TVKint; layer: TVKint);
+  //glFramebufferTextureLayerEXT: procedure(target: TGLenum; attachment: TGLenum;
+  //                                texture: TGLuint; level: TGLint; layer: TGLint);
 
 
   // GL_EXT_texture_buffer_object (EXT #330)
-  PFNGLTEXBUFFEREXTPROC = procedure(target: TVKenum; internalformat: TVKenum; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXBUFFEREXTPROC = procedure(target: TGLenum; internalformat: TGLenum; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_draw_buffers2 (EXT #340)
-  PFNGLCOLORMASKINDEXEDEXTPROC = procedure(buf: TVKuint; r: TVKboolean; g: TVKboolean;
-                          b: TVKboolean; a: TVKboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETBOOLEANINDEXEDVEXTPROC = procedure(value: TVKenum; index: TVKuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETINTEGERINDEXEDVEXTPROC = procedure(value: TVKenum; index: TVKuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLENABLEINDEXEDEXTPROC = procedure(target: TVKenum; index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLDISABLEINDEXEDEXTPROC = procedure(target: TVKenum; index: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISENABLEDINDEXEDEXTPROC = function(target: TVKenum; index: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORMASKINDEXEDEXTPROC = procedure(buf: TGLuint; r: TGLboolean; g: TGLboolean;
+                          b: TGLboolean; a: TGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETBOOLEANINDEXEDVEXTPROC = procedure(value: TGLenum; index: TGLuint; data: PGLboolean);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGERINDEXEDVEXTPROC = procedure(value: TGLenum; index: TGLuint; data: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLENABLEINDEXEDEXTPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLDISABLEINDEXEDEXTPROC = procedure(target: TGLenum; index: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISENABLEDINDEXEDEXTPROC = function(target: TGLenum; index: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_transform_feedback (EXT #341)
-  PFNGLBINDBUFFERRANGENVPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint;
-                                offset: TVKintptr; size: TVKsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDBUFFEROFFSETNVPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint;
-                                 offset: TVKintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDBUFFERBASENVPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC = procedure(count: TVKsizei; attribs: PGLint;
-                                         bufferMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC = procedure(_program: TVKuint; count: TVKsizei;
+  PFNGLBINDBUFFERRANGENVPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
+                                offset: TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFEROFFSETNVPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
+                                 offset: TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFERBASENVPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC = procedure(count: TGLsizei; attribs: PGLint;
+                                         bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC = procedure(_program: TGLuint; count: TGLsizei;
                                           locations: PGLint;
-                                          bufferMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINTRANSFORMFEEDBACKNVPROC = procedure(primitiveMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+                                          bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINTRANSFORMFEEDBACKNVPROC = procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDTRANSFORMFEEDBACKNVPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-  PFNGLGETVARYINGLOCATIONNVPROC = function(_program: TVKuint; name: PGLChar): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETACTIVEVARYINGNVPROC = procedure(_program: TVKuint; index: TVKuint;
-                                 bufSize: TVKsizei; length: PGLsizei; size: PGLsizei;
-                                 _type: TVKenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLACTIVEVARYINGNVPROC = procedure(_program: TVKuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC = procedure(_program: TVKuint; index: TVKuint;
+  PFNGLGETVARYINGLOCATIONNVPROC = function(_program: TGLuint; name: PGLChar): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETACTIVEVARYINGNVPROC = procedure(_program: TGLuint; index: TGLuint;
+                                 bufSize: TGLsizei; length: PGLsizei; size: PGLsizei;
+                                 _type: TGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLACTIVEVARYINGNVPROC = procedure(_program: TGLuint; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTRANSFORMFEEDBACKVARYINGNVPROC = procedure(_program: TGLuint; index: TGLuint;
                                             location: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
 
   // GL_EXT_bindable_uniform (EXT #342)
-  PFNGLUNIFORMBUFFEREXTPROC = procedure(_program: TVKUint; location: TVKint; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMBUFFERSIZEEXTPROC = function(_program: TVKuint; location: TVKint): TVKint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMOFFSETEXTPROC = function(_program: TVKuint; location: TVKint): PGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMBUFFEREXTPROC = procedure(_program: TGLUint; location: TGLint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMBUFFERSIZEEXTPROC = function(_program: TGLuint; location: TGLint): TGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMOFFSETEXTPROC = function(_program: TGLuint; location: TGLint): PGLint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_texture_integer (EXT #343)
-  PFNGLCLEARCOLORIIEXTPROC = procedure(r: TVKint; g: TVKint; b: TVKint; a: TVKint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCLEARCOLORIUIEXTPROC = procedure(r: TVKuint; g: TVKuint; b: TVKuint; a: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXPARAMETERIIVEXTPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXPARAMETERIUIVEXTPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTEXPARAMETERIIVEXTPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTEXPARAMETERIUIVEXTPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARCOLORIIEXTPROC = procedure(r: TGLint; g: TGLint; b: TGLint; a: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCLEARCOLORIUIEXTPROC = procedure(r: TGLuint; g: TGLuint; b: TGLuint; a: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXPARAMETERIIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXPARAMETERIUIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTEXPARAMETERIIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTEXPARAMETERIUIVEXTPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_GREMEDY_frame_terminator (EXT #345)
   PFNGLFRAMETERMINATORGREMEDYPROC = procedure(); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_conditional_render (EXT #346)
-  PFNGLBEGINCONDITIONALRENDERNVPROC = procedure(id: TVKuint; mode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINCONDITIONALRENDERNVPROC = procedure(id: TGLuint; mode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDCONDITIONALRENDERNVPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_EXT_transform_feedback (EXT #352)
-  PFNGLBINDBUFFERRANGEEXTPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint;
-                          offset:TVKintptr; size: TVKsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDBUFFEROFFSETEXTPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint;
-                          offset:TVKintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBINDBUFFERBASEEXTPROC = procedure(target: TVKenum; index: TVKuint; buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLBEGINTRANSFORMFEEDBACKEXTPROC = procedure(primitiveMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFERRANGEEXTPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
+                          offset:TGLintptr; size: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFEROFFSETEXTPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint;
+                          offset:TGLintptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBINDBUFFERBASEEXTPROC = procedure(target: TGLenum; index: TGLuint; buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBEGINTRANSFORMFEEDBACKEXTPROC = procedure(primitiveMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
   PFNGLENDTRANSFORMFEEDBACKEXTPROC = procedure();{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC = procedure(_program: TVKuint; count: TVKsizei;
-                                    const varyings: PGLPCharArray; bufferMode: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC = procedure(_program: TVKuint; index: TVKuint;
-                                      bufSize: TVKsizei; length: PGLsizei;
+  PFNGLTRANSFORMFEEDBACKVARYINGSEXTPROC = procedure(_program: TGLuint; count: TGLsizei;
+                                    const varyings: PGLPCharArray; bufferMode: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETTRANSFORMFEEDBACKVARYINGEXTPROC = procedure(_program: TGLuint; index: TGLuint;
+                                      bufSize: TGLsizei; length: PGLsizei;
                                       size: PGLsizei; _type: PGLenum; name: PGLChar);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_AMD_vertex_shader_tessellator (EXT #363)
   PFNGLTESSELLATIONFACTORAMDPROC = procedure(factor: GLfloat); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTESSELLATIONMODEAMDPROC = procedure(mode: TVKenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTESSELLATIONMODEAMDPROC = procedure(mode: TGLenum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_copy_image (EXT #376)
   PFNGLCOPYIMAGESUBDATANVPROC = procedure(
@@ -7843,35 +7830,35 @@ const
     width: GLsizei; height: GLsizei; depth: GLsizei);  {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_shader_buffer_load (EXT #379)
-  PFNGLMAKEBUFFERRESIDENTNVPROC = procedure(target: TVKenum; access: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMAKEBUFFERNONRESIDENTNVPROC = procedure(target: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISBUFFERRESIDENTNVPROC = function(target: TVKenum): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMAKENAMEDBUFFERRESIDENTNVPROC = procedure(buffer: TVKuint; access: TVKenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC = procedure(buffer: TVKuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLISNAMEDBUFFERRESIDENTNVPROC = function (buffer: TVKuint): TVKboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETBUFFERPARAMETERUI64VNVPROC = procedure(target: TVKenum; pname: TVKenum; params: PGLuint64EXT );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC = procedure(buffer: TVKuint; pname: TVKenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETINTEGERUI64VNVPROC = procedure(value: TVKenum; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMUI64NVPROC = procedure(location: TVKint; value: TVKuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLUNIFORMUI64VNVPROC = procedure(location: GLint; count: TVKsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETUNIFORMUI64VNVPROC = procedure(_program: TVKuint; location: TVKint; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMUI64NVPROC = procedure(_program: TVKuint; location: TVKint; value: TVKuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLPROGRAMUNIFORMUI64VNVPROC = procedure(_program: TVKuint; location: TVKint; count: TVKsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMAKEBUFFERRESIDENTNVPROC = procedure(target: TGLenum; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMAKEBUFFERNONRESIDENTNVPROC = procedure(target: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISBUFFERRESIDENTNVPROC = function(target: TGLenum): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMAKENAMEDBUFFERRESIDENTNVPROC = procedure(buffer: TGLuint; access: TGLenum);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLMAKENAMEDBUFFERNONRESIDENTNVPROC = procedure(buffer: TGLuint);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLISNAMEDBUFFERRESIDENTNVPROC = function (buffer: TGLuint): TGLboolean;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETBUFFERPARAMETERUI64VNVPROC = procedure(target: TGLenum; pname: TGLenum; params: PGLuint64EXT );{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETNAMEDBUFFERPARAMETERUI64VNVPROC = procedure(buffer: TGLuint; pname: TGLenum; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGERUI64VNVPROC = procedure(value: TGLenum; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMUI64NVPROC = procedure(location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLUNIFORMUI64VNVPROC = procedure(location: GLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETUNIFORMUI64VNVPROC = procedure(_program: TGLuint; location: TGLint; params: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMUI64NVPROC = procedure(_program: TGLuint; location: TGLint; value: TGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLPROGRAMUNIFORMUI64VNVPROC = procedure(_program: TGLuint; location: TGLint; count: TGLsizei; const value: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_vertex_buffer_unified_memory (EXT #380)
-  PFNGLBUFFERADDRESSRANGENVPROC = procedure(pname: TVKenum; index: TVKuint; address: TVKuint64EXT; length: TVKsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXFORMATNVPROC = procedure(size: TVKint; _type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLNORMALFORMATNVPROC = procedure(_type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLCOLORFORMATNVPROC = procedure(size: TVKint; _type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLINDEXFORMATNVPROC = procedure(_type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLTEXCOORDFORMATNVPROC = procedure(size: TVKint; _type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLEDGEFLAGFORMATNVPROC = procedure(stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLSECONDARYCOLORFORMATNVPROC = procedure(size: TVKint; _type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLFOGCOORDFORMATNVPROC = procedure(_type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBFORMATNVPROC = procedure(index: TVKuint; size: TVKint; _type: TVKenum; normalized: TVKboolean; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLVERTEXATTRIBIFORMATNVPROC = procedure(index: TVKuint; size: TVKint; _type: TVKenum; stride: TVKsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PFNGLGETINTEGERUI64I_VNVPROC = procedure(value: TVKenum; index: TVKuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
-  PGNGLGETBUFFERPARAMETERUI64VNV = procedure(value: TVKenum; index: TVKuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLBUFFERADDRESSRANGENVPROC = procedure(pname: TGLenum; index: TGLuint; address: TGLuint64EXT; length: TGLsizeiptr);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXFORMATNVPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLNORMALFORMATNVPROC = procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLCOLORFORMATNVPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLINDEXFORMATNVPROC = procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLTEXCOORDFORMATNVPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLEDGEFLAGFORMATNVPROC = procedure(stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLSECONDARYCOLORFORMATNVPROC = procedure(size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLFOGCOORDFORMATNVPROC = procedure(_type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; normalized: TGLboolean; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLVERTEXATTRIBIFORMATNVPROC = procedure(index: TGLuint; size: TGLint; _type: TGLenum; stride: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PFNGLGETINTEGERUI64I_VNVPROC = procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+  PGNGLGETBUFFERPARAMETERUI64VNV = procedure(value: TGLenum; index: TGLuint; result: PGLuint64EXT);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
   // GL_NV_path_rendering
   PFNGLGENPATHSNVPROC = function (range: GLsizei): GLuint;{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}

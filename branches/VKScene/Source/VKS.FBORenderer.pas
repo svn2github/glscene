@@ -1,29 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FBORenderer<p>
-
-  Implements FBO support for GLScene.
-
+{ 
+  Implements FBO support for VKScene. 
   Original author of the unit is Riz.
   Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
-
-  <b>History : </b><font size=-1><ul>
-  <li>30/08/13 - NelC - Added OnSetTextureTargets
-  <li>09/07/12 - Yar - Fixed DoPostInitialize and DoPreInitialize events (thanks to Gabriel Corneanu)
-  <li>22/04/11 - Yar - Bugfixed lighting state restoration
-  <li>13/02/11 - Yar - Added RenderContextInfo to BeforeRender and AfterRender event
-  <li>07/01/11 - Yar - Added properties Active and PickableTarget
-  <li>23/08/10 - Yar - Changes for forward core
-  <li>02/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>15/02/10 - Yar - Added notification of freeing RootObject
-  <li>22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
-  UseBufferBackground moved to coUseBufferBackground
-  <li>14/12/09 - DaStr - Fixed memory leak (thanks YarUnderoaker)
-  <li>11/11/09 - DaStr - Added $I GLScene.inc
-  <li>09/11/09 - DaStr - Initial version (contributed to GLScene)
-  </ul></font>
+ 
 }
 unit VKS.FBORenderer;
 
@@ -144,19 +126,19 @@ type
     procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf: Boolean;
       ARenderChildren: Boolean); override;
 
-    { : Layer (also cube map face) is activated only on
+    { Layer (also cube map face) is activated only on
       the volume textures, texture array and cube map.
       You can select the layer during the drawing to. }
     property Layer: Integer read GetLayer write SetLayer;
-    { : Mipmap Level where will be rendering }
+    { Mipmap Level where will be rendering }
     property Level: Integer read GetLevel write SetLevel;
 
   published
     property Active: Boolean read GetVisible write SetVisible default True;
     property PickableTarget: Boolean read GetPickable write SetPickable
       default False;
-    { : force texture dimensions when initializing
-      only works with TVKBlankImage and TVKFloatDataImage, otherwise does nothing }
+    { force texture dimensions when initializing
+      only works with TVKBlankImage and TGLfloatDataImage, otherwise does nothing }
     property ForceTextureDimensions: Boolean read FForceTextureDimensions
       write SetForceTextureDimentions default True;
 
@@ -178,47 +160,47 @@ type
     property ClearOptions: TVKFBOClearOptions read FClearOptions
       write FClearOptions;
 
-    { : camera used for rendering to the FBO
+    { camera used for rendering to the FBO
       if not assigned, use the active view's camera }
     property Camera: TVKCamera read FCamera write SetCamera;
 
-    { : adjust the scene scale of the camera so that the rendering
+    { adjust the scene scale of the camera so that the rendering
       becomes independent of the width of the fbo renderer
       0 = disabled }
     property SceneScaleFactor: Single read FSceneScaleFactor
       write FSceneScaleFactor stored StoreSceneScaleFactor;
 
-    { : root object used when rendering to the FBO
+    { root object used when rendering to the FBO
       if not assigned, uses itself as root and renders the child objects to the FBO }
     property RootObject: TVKBaseSceneObject read FRootObject
       write SetRootObject;
 
-    { : determines if target is rendered to FBO only or rendered normally
+    { determines if target is rendered to FBO only or rendered normally
       in FBO only mode, if RootObject is assigned, the RootObject's Visible flag is modified
       in default mode, if RootObject is not assigned, children are rendered normally after being
       rendered to the FBO }
     property TargetVisibility: TVKFBOTargetVisibility read FTargetVisibility
       write SetTargetVisibility default tvDefault;
 
-    { : Enables the use of a render buffer if a texture is not assigned }
+    { Enables the use of a render buffer if a texture is not assigned }
     property EnabledRenderBuffers: TVKEnabledRenderBuffers
       read FEnabledRenderBuffers write SetEnabledRenderBuffers;
 
-    { : use stencil buffer }
+    { use stencil buffer }
     property StencilPrecision: TVKStencilPrecision read FStencilPrecision
       write SetStencilPrecision default spDefault;
 
-    { : called before rendering to the FBO }
+    { called before rendering to the FBO }
     property BeforeRender: TDirectRenderEvent read FBeforeRender
       write FBeforeRender;
-    { : called after the rendering to the FBO }
+    { called after the rendering to the FBO }
     property AfterRender: TDirectRenderEvent read FAfterRender
       write FAfterRender;
-    { : Called before the FBO is initialized
+    { Called before the FBO is initialized
       the FBO is bound before calling this event }
     property PreInitialize: TNotifyEvent read FPreInitialize
       write FPreInitialize;
-    { : Called after the FBO is initialized, but before any rendering
+    { Called after the FBO is initialized, but before any rendering
       the FBO is bound before calling this event }
     property PostInitialize: TNotifyEvent read FPostInitialize
       write FPostInitialize;
@@ -226,12 +208,12 @@ type
     property UseLibraryAsMultiTarget: Boolean read FUseLibraryAsMultiTarget
       write SetUseLibraryAsMultiTarget default False;
 
-    { : Control mipmap generation after rendering
+    { Control mipmap generation after rendering
       texture must have MinFilter with mipmaping }
     property PostGenerateMipmap: Boolean read FPostGenerateMipmap
       write SetPostGenerateMipmap default True;
 
-    { : Allows multiTargeting to different texture sources instead of all coming
+    { Allows multiTargeting to different texture sources instead of all coming
       from one single MatLib with UseLibraryAsMultiTarget. OnSetTextureTargets
       overrides the other method of setting target textures via the MaterialLibrary,
       ColorTextureName and DepthTextureName propertes }

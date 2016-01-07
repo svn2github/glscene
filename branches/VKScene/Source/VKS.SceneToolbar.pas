@@ -1,13 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.SceneToolbar<p>
-
-  Added GLScene's toolbar to Delphi IDE.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>21/11/10 - Yar - Creation
-  </ul></font>
+{
+  Added VKScene's toolbar to Delphi IDE. 
+  
 }
 
 unit VKS.SceneToolbar;

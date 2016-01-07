@@ -1,17 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.ErosionShader <p>
-
-   Erosion shader Erode surface object and render with Anisotropic Specular Reflection<p>
-
+{
+   Erosion shader Erode surface object and render with Anisotropic Specular Reflection 
    At this time one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest CVS version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
 }
-unit GLSL.ErosionShader;
+unit VKS.GLSLErosionShader;
 
 interface
 
@@ -19,7 +13,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.Coordinates, VKS.VectorGeometry, VKS.VectorTypes,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material,
@@ -27,7 +21,7 @@ uses
 
 //TVKCustomGLSLSimpleErosionShader
 //
-{: Custom class for GLSLSimpleErosionShader.<p>
+{ Custom class for GLSLSimpleErosionShader. 
  A shader that Erode surface object }
 Type
   TVKCustomGLSLSimpleErosionShader = class(TVKCustomGLSLShader)

@@ -1,6 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
+
 unit TypesSTL;
 
 interface

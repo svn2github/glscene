@@ -1,25 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Particles<p>
-
-   Particle systems for VKS.Scene, based on replication of full-featured scene objects.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>27/07/04 - EG - Added KillParticles
-      <li>18/04/04 - EG - Added Before/After events
-      <li>12/07/01 - EG - Fixed FEdgeColor memory leak
-      <li>18/07/01 - EG - VisibilityCulling compatibility changes
-  <li>17/04/00 - EG - Added Assign, Removed ActivateParticle
-    <li>16/04/00 - EG - Creation
- </ul></font>
+{
+   Particle systems for VKS.Scene, based on replication of full-featured scene objects. 
+  
 }
 unit VKS.Particles;
 
@@ -44,15 +28,15 @@ type
 
   // TVKParticles
   //
-  {: Manager object of a particle system.<p>
+  { Manager object of a particle system. 
    Particles in a TVKParticles system are described as normal scene objects,
-   however their children are to be :<ul>
-   <li>"particle template" : the first object (index=0), this one will be
+   however their children are to be : 
+    "particle template" : the first object (index=0), this one will be
     duplicated to create new particles, it does not receive progression
     events and is visible at design-time only.
-   <li>"live particle" : the other objects (index>0), this ones are rendered
+    "live particle" : the other objects (index>0), this ones are rendered
     and receive progression events.
-   </ul><br>TVKParticles may also maintain an internal, non-persistent
+     TVKParticles may also maintain an internal, non-persistent
    ("freezed") set of objects : the allocated objects pool. Why ? Creating
    and freeing objects takes cpu-cycles, especially for the TComponent class,
    and GLScene objects are TComponent. To reduce this load (and at the expense
@@ -61,8 +45,8 @@ type
    new objects when new particles are requested. To take advantage of this
    behaviour, you should set the ParticlePoolSize property to a non-null
    value and use the KillParticle function instead of "Free" to kill a
-       particle.<br>
-       All direct access to a TVKParticles children should be avoided.<p>
+       particle. 
+       All direct access to a TVKParticles children should be avoided. 
        For high-performance particle systems of basic particles, you should
        look into VKS.ParticleFX instead, TVKParticles being rather focused on
        complex particles.
@@ -70,7 +54,7 @@ type
   TVKParticles = class(TVKImmaterialSceneObject)
   private
     { Private Declarations }
-    FCubeSize: TVKFloat;
+    FCubeSize: TGLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime: Boolean;
     particlePool: TList;
@@ -83,7 +67,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetCubeSize(const val: TVKFloat);
+    procedure SetCubeSize(const val: TGLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetParticlePoolSize(val: Integer);
@@ -101,45 +85,45 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Request creation of a new particle.<p>
+    { Request creation of a new particle. 
      Particle will be either created or retrieved from the particlePool. }
     function CreateParticle: TVKBaseSceneObject;
-    {: Kill given particle.<p>
+    { Kill given particle. 
      If particlePool is not full, particle will be sent to the pool,
      if not, it will be freed. }
     procedure KillParticle(aParticle: TVKBaseSceneObject);
-    {: Kill all particles. }
+    { Kill all particles. }
     procedure KillParticles;
 
   published
     { Published Declarations }
-    property CubeSize: TVKFloat read FCubeSize write SetCubeSize;
+    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
 
-    {: Size of the particle pool (for storing killed particles).<p>
+    { Size of the particle pool (for storing killed particles). 
              Default size is zero, meaning the particlePool is disabled. }
     property ParticlePoolSize: Integer read FParticlePoolSize write SetParticlePoolSize default 0;
 
-    {: Fired a particle has been created as a template duplicate.<p>
+    { Fired a particle has been created as a template duplicate. 
        When the event is triggered, the particle has yet been added  to
        the scene. }
     property OnCreateParticle: TVKParticleEvent read FOnCreateParticle write FOnCreateParticle;
-    {: Fired when a particle will get in the "live" list.<p>
+    { Fired when a particle will get in the "live" list. 
        The particle has just been "Assigned" with the template, may happen
        after a creation or a pick from the particle pool. }
     property OnActivateParticle: TVKParticleEvent read FOnActivateParticle write FOnActivateParticle;
-    {: Triggered when a particle is killed.<p>
+    { Triggered when a particle is killed. 
              When the event is fired, the particle is still parented, after this
              event, the particle will either go to the pool or be destroyed if
              the pool is full. }
     property OnKillParticle: TVKParticleEvent read FOnKillParticle write FOnKillParticle;
-    {: Triggered just before destroying a particle.<p>
+    { Triggered just before destroying a particle. 
        The particle can be in the pool (ie. not parented). }
     property OnDestroyParticle: TVKParticleEvent read FOnDestroyParticle write FOnDestroyParticle;
-    {: Fired before rendering the first of the particles. }
+    { Fired before rendering the first of the particles. }
     property OnBeforeRenderParticles: TDirectRenderEvent read FOnBeforeRenderParticles write FOnBeforeRenderParticles;
-    {: Fired after rendering the last of the particles. }
+    { Fired after rendering the last of the particles. }
     property OnAfterRenderParticles: TDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
   end;
 
@@ -308,7 +292,7 @@ end;
 // SetCubeSize
 //
 
-procedure TVKParticles.SetCubeSize(const val: TVKFloat);
+procedure TVKParticles.SetCubeSize(const val: TGLfloat);
 begin
   if val <> FCubeSize then
   begin

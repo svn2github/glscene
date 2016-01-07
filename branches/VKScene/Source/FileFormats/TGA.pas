@@ -1,28 +1,17 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: TGA<p>
-
-   Simple TGA formats supports for Delphi.<br>
+{
+   Simple TGA formats supports for Delphi. 
    Currently supports only 24 and 32 bits RGB formats (uncompressed
-   and RLE compressed).<p>
-
-   Based on David McDuffee's document from www.wotsit.org<p>
-
-	<b>History : </b><font size=-1><ul>
-           <li>07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
-           <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
-	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
-                              in Lazarus (thanks Predator)
-	   <li>08/07/04 - LR - Uses of Graphics replaced by VKS.CrossPlatform for Linux
-	   <li>21/11/02 - Egg - Creation
-	</ul></font>
+   and RLE compressed). 
+     
 }
 unit TGA;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
@@ -33,7 +22,7 @@ type
 
 	// TTGAImage
 	//
-   {: TGA image load/save capable class for Delphi.<p>
+   { TGA image load/save capable class for Delphi. 
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
         TTGAImage = class (TVKBitmap)

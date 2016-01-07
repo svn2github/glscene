@@ -1,14 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDARuntime<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>03/01/14 - PW - Upgraded to use with FMX
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
-}
-
 /// *
 // * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
 // *

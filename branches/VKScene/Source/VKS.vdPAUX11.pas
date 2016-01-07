@@ -1,13 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.vdPAU<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>23/10/10 - Yar - Creation
-  </ul></font>
-}
-
 //{
 //  * This copyright notice applies to this header file:
 //  *

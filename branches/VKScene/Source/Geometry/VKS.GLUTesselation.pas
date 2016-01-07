@@ -1,25 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.GLUTesselation<p>
-
+{
     Code to generate triangle strips and fans for polygons.
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
-      <li>10/03/09 - DanB - DoTesselate now accepts TVKBaseMesh instead of
-                            TVKFreeform, so can now use TVKActor with it too
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>08/09/03 - Jaj - Added single outline polygon support
-
-   </ul><p>
-
-  License:<br>
-
-    Contributed to GLScene.<p>
-}
+ }
 unit VKS.GLUTesselation;
 
 interface
@@ -28,7 +12,7 @@ interface
 
 uses
   System.SysUtils,
-
+  //VKS
   VKS.VectorFileObjects,
   VKS.VectorLists,
   VKS.VectorGeometry,
@@ -37,7 +21,7 @@ uses
   VKS.VectorTypes;
 
 
-{: Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
+{ Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TVKBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
 implementation
@@ -48,7 +32,7 @@ var
   TessExtraVertices: Integer;
   TessVertices: PAffineVectorArray;
 
-procedure DoTessBegin(mode: TVKEnum);
+procedure DoTessBegin(mode: TGLenum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -76,7 +60,7 @@ procedure DoTessEnd;
 begin
 end;
 
-procedure DoTessError(errno: TVKEnum);
+procedure DoTessError(errno: TGLenum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}

@@ -1,26 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FileMDC<p>
-
+{ 
   Code for loading animated MDC files into GLScene FreeForms
-  and Actors.<p>
-
+  and Actors.
   This file format uses in Return To Castle Wolfenstein instead
   of MD3 files. It has got all MD3 features (such as Tag frames)
-  plus very small data!<p>
+  plus very small data!
 
-  Original code by Osman Turan (osmanturancom@yahoo.com)<p>
-
-  <b>History :</b><font size=-1><ul>
-  <li>06/06/10 - Yar - Fixes for Linux x64
-  <li>08/11/09 - DaStr - Compatibility fix for FPC
-  (thanks Predator) (BugtrackerID = 2893580)
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>11/05/04 - SG - Added to CVS
-  <li>07/02/04 - OT - Creation (Osman Turan)
-  </ul></font>
 }
 unit VKS.FileMDC;
 

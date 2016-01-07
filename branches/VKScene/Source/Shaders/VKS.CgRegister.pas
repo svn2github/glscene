@@ -1,15 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CgRegister<p>
-
-   Registration unit for CG shader.<p>
-
-   <b>History :</b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>23/02/07 - DaStr - Initial version
-
+{
+   Registration unit for CG shader. 
 }
 unit VKS.CgRegister;
 

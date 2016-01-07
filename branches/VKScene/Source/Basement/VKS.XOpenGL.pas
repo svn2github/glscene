@@ -1,40 +1,14 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.XOpenGL<p>
-
-   "Alternate" OpenGL functions to handle multi-texturing.<p>
-
+{
+   "Alternate" OpenGL functions to handle multi-texturing.
    Using this functions allows specifying none/one/multiple ARB multi-texture
-   coordinates with standard texture specification call.<p>
-
+   coordinates with standard texture specification call.
    Before using any of the xglTexCoordXxxx fonctions, call one of the
-   xglMapTexCoordToXxxx functions to establish the redirectors.<p>
+   xglMapTexCoordToXxxx functions to establish the redirectors.
+   This unit is Open-Source under MPL 
 
-   This unit is Open-Source under MPL<br>
-   Copyright 2001 - Eric Grange (egrange@glscene.org)<br>
-   http://glscene.org<p>
-
-   <b>History :</b><ul>
-      <li>25/11/10 - Yar - Wrapped multitexturing in TVKMultitextureCoordinator class
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>29/03/10 - Yar - Replaced MULTITHREADOPENGL to GLS_MULTITHREAD (thanks Controler)
-      <li>16/03/07 - DaStr - Dropped Kylix support in favor of FPC
-                             (thanks Burkhard Carstens) (BugTracekrID=1681585)
-      <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-      <li>23/05/03 - EG - Support for arbitrary (complex) mappings
-      <li>01/02/03 - EG - Added State stack
-      <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
-      <li>03/01/02 - EG - Added xglDisableClientState
-      <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
-      <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
-      <li>18/12/01 - EG - Added xglEnableClientState
-      <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL1x)
-      <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall)
-      <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
-      <li>14/08/01 - EG - Added xglMapTexCoordToSecond
-      <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
-   </ul>
 }
 unit VKS.XOpenGL;
 
@@ -62,7 +36,7 @@ type
     FComplexMappingN: Integer;
   public
     // Explicit texture coordinates specification
-    TexCoord2f: procedure(s, t: TVKfloat);
+    TexCoord2f: procedure(s, t: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -70,7 +44,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    TexCoord3f: procedure(s, t, r: TVKfloat);
+    TexCoord3f: procedure(s, t, r: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -78,7 +52,7 @@ type
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    TexCoord4f: procedure(s, t, r, q: TVKfloat);
+    TexCoord4f: procedure(s, t, r, q: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -88,82 +62,82 @@ type
 {$ENDIF}
 
     // TexGen texture coordinates specification
-    TexGenf: procedure(coord, pname: TVKEnum; param: TVKfloat);
+    TexGenf: procedure(coord, pname: TGLenum; param: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    TexGenfv: procedure(coord, pname: TVKEnum; params: PGLfloat);
+    TexGenfv: procedure(coord, pname: TGLenum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    TexGeni: procedure(coord, pname: TVKEnum; param: TVKint);
+    TexGeni: procedure(coord, pname: TGLenum; param: TGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    TexGeniv: procedure(coord, pname: TVKEnum; params: PGLint);
+    TexGeniv: procedure(coord, pname: TGLenum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 
     // Vertex Arrays texture coordinates specification
-    TexCoordPointer: procedure(size: TVKint; atype: TVKEnum; stride: TVKsizei;
+    TexCoordPointer: procedure(size: TGLint; atype: TGLenum; stride: TGLsizei;
       data: pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    EnableClientState: procedure(aarray: TVKEnum);
+    EnableClientState: procedure(aarray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    DisableClientState: procedure(aarray: TVKEnum);
+    DisableClientState: procedure(aarray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 
     // Misc
-    Enable: procedure(cap: TVKEnum);
+    Enable: procedure(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
-    Disable: procedure(cap: TVKEnum);
+    Disable: procedure(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 
     constructor Create(AOwner: TVKContext); override;
 
-    {: TexCoord functions will be ignored. }
+    { TexCoord functions will be ignored. }
     procedure MapTexCoordToNull;
-    {: TexCoord functions will define the main texture coordinates. }
+    { TexCoord functions will define the main texture coordinates. }
     procedure MapTexCoordToMain;
-    {: TexCoord functions will define the second texture unit coordinates. }
+    { TexCoord functions will define the second texture unit coordinates. }
     procedure MapTexCoordToSecond;
-    {: TexCoord functions will define the two first texture units coordinates. }
+    { TexCoord functions will define the two first texture units coordinates. }
     procedure MapTexCoordToDual;
-    {: TexCoord functions will define the specified texture units coordinates. }
+    { TexCoord functions will define the specified texture units coordinates. }
     procedure MapTexCoordToArbitrary(const units: array of Cardinal); overload;
     procedure MapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
     procedure MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 
-    {: Defers Map calls execution until EndUpdate is met.<p>
+    { Defers Map calls execution until EndUpdate is met. 
        Calls to Begin/EndUpdate may be nested. }
     procedure BeginUpdate;
-    {: Applies Map calls if there were any since BeginUpdate was invoked.<p>
+    { Applies Map calls if there were any since BeginUpdate was invoked. 
        Calls to Begin/EndUpdate may be nested. }
     procedure EndUpdate;
 
-    {: Saves VKS.XOpenGL State on the stack. }
+    { Saves VKS.XOpenGL State on the stack. }
     procedure PushState;
-    {: Restores VKS.XOpenGL State from the stack. }
+    { Restores VKS.XOpenGL State from the stack. }
     procedure PopState;
 
-    {: Whenever called, 2nd texture units changes will be forbidden to .<p>
+    { Whenever called, 2nd texture units changes will be forbidden to . 
        Use this function when you're using the 2nd texture unit for your own
        purposes and don't want VKS.XOpenGL to alter it. }
     procedure ForbidSecondTextureUnit;
-    {: Allow VKS.XOpenGL to use the second texture unit again. }
+    { Allow VKS.XOpenGL to use the second texture unit again. }
     procedure AllowSecondTextureUnit;
-    {: Returns the complex mapping in bitwise form. }
+    { Returns the complex mapping in bitwise form. }
     function GetBitWiseMapping: Cardinal;
 
     property MapTexCoordMode: TMapTexCoordMode read FMapTexCoordMode write FMapTexCoordMode;
@@ -180,7 +154,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
 var
 {$ELSE}
 threadvar
@@ -205,7 +179,7 @@ end;
 
   // --------- Complex (arbitrary) mapping
 
-procedure TexCoord2f_Arbitrary(s, t: TVKfloat);
+procedure TexCoord2f_Arbitrary(s, t: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -227,7 +201,7 @@ begin
     GL.MultiTexCoord2fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexCoord3f_Arbitrary(s, t, r: TVKfloat);
+procedure TexCoord3f_Arbitrary(s, t, r: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -249,7 +223,7 @@ begin
     GL.MultiTexCoord3fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexCoord4f_Arbitrary(s, t, r, q: TVKfloat);
+procedure TexCoord4f_Arbitrary(s, t, r, q: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -271,7 +245,7 @@ begin
     GL.MultiTexCoord4fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexGenf_Arbitrary(coord, pname: TVKEnum; param: TVKfloat);
+procedure TexGenf_Arbitrary(coord, pname: TGLenum; param: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -285,7 +259,7 @@ begin
   end;
 end;
 
-procedure TexGenfv_Arbitrary(coord, pname: TVKEnum; params: PGLfloat);
+procedure TexGenfv_Arbitrary(coord, pname: TGLenum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -299,7 +273,7 @@ begin
   end;
 end;
 
-procedure TexGeni_Arbitrary(coord, pname: TVKEnum; param: TVKint);
+procedure TexGeni_Arbitrary(coord, pname: TGLenum; param: TGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -313,7 +287,7 @@ begin
   end;
 end;
 
-procedure TexGeniv_Arbitrary(coord, pname: TVKEnum; params: PGLint);
+procedure TexGeniv_Arbitrary(coord, pname: TGLenum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -327,7 +301,7 @@ begin
   end;
 end;
 
-procedure Enable_Arbitrary(cap: TVKEnum);
+procedure Enable_Arbitrary(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -341,7 +315,7 @@ begin
   end;
 end;
 
-procedure Disable_Arbitrary(cap: TVKEnum);
+procedure Disable_Arbitrary(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -355,8 +329,8 @@ begin
   end;
 end;
 
-procedure TexCoordPointer_Arbitrary(size: TVKint; atype: TVKEnum; stride:
-  TVKsizei; data: pointer);
+procedure TexCoordPointer_Arbitrary(size: TGLint; atype: TGLenum; stride:
+  TGLsizei; data: pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -370,7 +344,7 @@ begin
   end;
 end;
 
-procedure EnableClientState_Arbitrary(aArray: TVKEnum);
+procedure EnableClientState_Arbitrary(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -384,7 +358,7 @@ begin
   end;
 end;
 
-procedure DisableClientState_Arbitrary(aArray: TVKEnum);
+procedure DisableClientState_Arbitrary(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -400,7 +374,7 @@ end;
 
 // --------- Second unit Texturing
 
-procedure TexCoord2f_Second(s, t: TVKfloat);
+procedure TexCoord2f_Second(s, t: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -416,7 +390,7 @@ begin
   GL.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Second(s, t, r: TVKfloat);
+procedure TexCoord3f_Second(s, t, r: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -432,7 +406,7 @@ begin
   GL.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Second(s, t, r, q: TVKfloat);
+procedure TexCoord4f_Second(s, t, r, q: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -448,7 +422,7 @@ begin
   GL.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Second(coord, pname: TVKEnum; param: TVKfloat);
+procedure TexGenf_Second(coord, pname: TGLenum; param: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -457,7 +431,7 @@ begin
   GL.TexGenf(coord, pname, param);
 end;
 
-procedure TexGenfv_Second(coord, pname: TVKEnum; params: PGLfloat);
+procedure TexGenfv_Second(coord, pname: TGLenum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -466,7 +440,7 @@ begin
   GL.TexGenfv(coord, pname, params);
 end;
 
-procedure TexGeni_Second(coord, pname: TVKEnum; param: TVKint);
+procedure TexGeni_Second(coord, pname: TGLenum; param: TGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -475,7 +449,7 @@ begin
   GL.TexGeni(coord, pname, param);
 end;
 
-procedure TexGeniv_Second(coord, pname: TVKEnum; params: PGLint);
+procedure TexGeniv_Second(coord, pname: TGLenum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -484,7 +458,7 @@ begin
   GL.TexGeniv(coord, pname, params);
 end;
 
-procedure Enable_Second(cap: TVKEnum);
+procedure Enable_Second(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -493,7 +467,7 @@ begin
   GL.Enable(cap);
 end;
 
-procedure Disable_Second(cap: TVKEnum);
+procedure Disable_Second(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -502,8 +476,8 @@ begin
   GL.Disable(cap);
 end;
 
-procedure TexCoordPointer_Second(size: TVKint; atype: TVKEnum; stride:
-  TVKsizei; data: pointer);
+procedure TexCoordPointer_Second(size: TGLint; atype: TGLenum; stride:
+  TGLsizei; data: pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -513,7 +487,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Second(aArray: TVKEnum);
+procedure EnableClientState_Second(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -523,7 +497,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Second(aArray: TVKEnum);
+procedure DisableClientState_Second(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -535,7 +509,7 @@ end;
 
 // --------- Dual Texturing
 
-procedure TexCoord2f_Dual(s, t: TVKfloat);
+procedure TexCoord2f_Dual(s, t: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -553,7 +527,7 @@ begin
   GL.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Dual(s, t, r: TVKfloat);
+procedure TexCoord3f_Dual(s, t, r: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -571,7 +545,7 @@ begin
   GL.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Dual(s, t, r, q: TVKfloat);
+procedure TexCoord4f_Dual(s, t, r, q: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -589,7 +563,7 @@ begin
   GL.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Dual(coord, pname: TVKEnum; param: TVKfloat);
+procedure TexGenf_Dual(coord, pname: TGLenum; param: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -603,7 +577,7 @@ begin
   end;
 end;
 
-procedure TexGenfv_Dual(coord, pname: TVKEnum; params: PGLfloat);
+procedure TexGenfv_Dual(coord, pname: TGLenum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -617,7 +591,7 @@ begin
   end;
 end;
 
-procedure TexGeni_Dual(coord, pname: TVKEnum; param: TVKint);
+procedure TexGeni_Dual(coord, pname: TGLenum; param: TGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -631,7 +605,7 @@ begin
   end;
 end;
 
-procedure TexGeniv_Dual(coord, pname: TVKEnum; params: PGLint);
+procedure TexGeniv_Dual(coord, pname: TGLenum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -645,7 +619,7 @@ begin
   end;
 end;
 
-procedure Enable_Dual(cap: TVKEnum);
+procedure Enable_Dual(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -659,7 +633,7 @@ begin
   end;
 end;
 
-procedure Disable_Dual(cap: TVKEnum);
+procedure Disable_Dual(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -673,8 +647,8 @@ begin
   end;
 end;
 
-procedure TexCoordPointer_Dual(size: TVKint; atype: TVKEnum; stride:
-  TVKsizei; data: pointer);
+procedure TexCoordPointer_Dual(size: TGLint; atype: TGLenum; stride:
+  TGLsizei; data: pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -685,7 +659,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Dual(aArray: TVKEnum);
+procedure EnableClientState_Dual(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -696,7 +670,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Dual(aArray: TVKEnum);
+procedure DisableClientState_Dual(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -709,7 +683,7 @@ end;
 
 // --------- Null Texturing
 
-procedure TexCoord2f_Null(s, t: TVKfloat);
+procedure TexCoord2f_Null(s, t: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -723,7 +697,7 @@ procedure TexCoord2fv_Null(v: PGLfloat);
 begin
 end;
 
-procedure TexCoord3f_Null(s, t, r: TVKfloat);
+procedure TexCoord3f_Null(s, t, r: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -737,7 +711,7 @@ procedure TexCoord3fv_Null(v: PGLfloat);
 begin
 end;
 
-procedure TexCoord4f_Null(s, t, r, q: TVKfloat);
+procedure TexCoord4f_Null(s, t, r, q: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -751,64 +725,64 @@ procedure TexCoord4fv_Null(v: PGLfloat);
 begin
 end;
 
-procedure TexGenf_Null(coord, pname: TVKEnum; param: TVKfloat);
+procedure TexGenf_Null(coord, pname: TGLenum; param: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure TexGenfv_Null(coord, pname: TVKEnum; params: PGLfloat);
+procedure TexGenfv_Null(coord, pname: TGLenum; params: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure TexGeni_Null(coord, pname: TVKEnum; param: TVKint);
+procedure TexGeni_Null(coord, pname: TGLenum; param: TGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure TexGeniv_Null(coord, pname: TVKEnum; params: PGLint);
+procedure TexGeniv_Null(coord, pname: TGLenum; params: PGLint);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure Enable_Null(cap: TVKEnum);
+procedure Enable_Null(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure Disable_Null(cap: TVKEnum);
+procedure Disable_Null(cap: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure TexCoordPointer_Null(size: TVKint; atype: TVKEnum; stride:
-  TVKsizei; data: pointer);
+procedure TexCoordPointer_Null(size: TGLint; atype: TGLenum; stride:
+  TGLsizei; data: pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure EnableClientState_Null(aArray: TVKEnum);
+procedure EnableClientState_Null(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
 end;
 
-procedure DisableClientState_Null(aArray: TVKEnum);
+procedure DisableClientState_Null(aArray: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}

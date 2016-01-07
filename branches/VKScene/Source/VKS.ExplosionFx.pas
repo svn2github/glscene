@@ -1,16 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ExplosionFx<p>
-
-  TVKBExplosionFX Effect<p>
-
-	<b>History : </b><font size=-1><ul>
-    <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>23/02/07 - DaStr - Fixed TVKBExplosionFx.Create (TVKCoordinatesStyle stuff)
-    <li>23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
-    <li>07/03/04 - Matheus Degiovani - Creation
-  </ul></font>
+{
+  TVKBExplosionFX Effect 
 
   Description: this effect explodes a mesh object into triangles
   that fly over. You can define a default direction, in wich case
@@ -18,7 +10,7 @@
   or if you define a null vector as the direction, a vector will be
   calculated for each triangle, based on the normal vector of that
   triangle, with a little random addition so things look better.
-  Pretty neat :)<p>
+  Pretty neat :) 
 
   Note: the owner of this behaviour should be any class that derives
   from TVKBaseMesh class or any other class derived from TVKBaseMesh.
@@ -30,7 +22,7 @@ unit VKS.ExplosionFx;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   VKS.OpenGLTokens, VKS.VectorGeometry, VKS.Scene, VKS.VectorFileObjects,

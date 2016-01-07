@@ -1,48 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.LensFlare<p>
-
-   Lens flare object.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>13/03/09 - DanB - changed glReadPixels/glTexImage2D calls to glCopyTexImage2D
-      <li>10/10/08 - DanB - changed Lensflare buildlists to use rci.cameraPosition instead
-                            of Scene.CurrentGLCamera.DistanceTo
-      <li>08/08/07 - Lin - Bugfix for AutoZTest:
-                           Lensflare is no longer occluded by objects BEHIND the flare.
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
-      <li>25/03/07 - DaStr - UNSAFE_TYPE and UNSAFE_CODE warnings are now ignored
-      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>22/03/07 - DaStr - Cleanup after previous fix - now object does not
-                             igore its children in picking state
-                             Removed "unsafe type/unsafe code" warnings
-      <li>15/03/07 - DaStr - Removed flicker that occured when LensFlare was
-                             rendered in a picking state (BugTracker ID = 1681031)
-      <li>19/04/04 - EG - Fixed occlusion test and pojection matrix stack issues
-      <li>16/04/04 - EG - Added StreakAngle
-      <li>15/04/04 - EG - Texture-based Lens-flare moved to GLTexLensFlare,
-                          replaced gradient arrays with design-time editable colors
-      <li>25/09/03 - EG - Increased occlusion testing robustness
-      <li>20/09/03 - EG - Can now use occlusion testing/query for AutoZTest
-      <li>19/09/03 - EG - Misc. cleanup, added PreRender
-      <li>18/08/03 - SG - Added TVKTextureLensFlare (Tobias Peirick)
-      <li>26/03/03 - EG - Framerate independant glow transitions (Tobias Peirick)
-      <li>08/12/02 - EG - Added AutoZTest
-      <li>29/10/02 - EG - Initial, added defaults and encapsulation,
-                          fixed positionning, RandSeed now preserved,
-                          minor speedup
- </ul></font><p>
-
-   Author  : Tobias Peirick<br>
-   eMail   : peirick@onlinehome.de<br>
-   Homepage: http://www.TobSoft.de
+{
+   Lens flare object. 
+ 
 }
 unit VKS.LensFlare;
 
@@ -64,7 +25,7 @@ type
   TFlareElement = (feGlow, feRing, feStreaks, feRays, feSecondaries);
   TFlareElements = set of TFlareElement;
 
-  {: The actual gradients between two colors are, of course, calculated by OpenGL.<p>
+  { The actual gradients between two colors are, of course, calculated by OpenGL. 
      The start and end colors of a gradient are stored to represent the color of
      lens flare elements. }
   TVKFlareGradient = class(TVKUpdateAbleObject)
@@ -170,13 +131,13 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Prepares pre-rendered texture to speed up actual rendering.<p>
+    { Prepares pre-rendered texture to speed up actual rendering. 
        Will use the currently active context as scratch space, and will
        automatically do nothing if things have already been prepared,
        thus you can invoke it systematically in a Viewer.BeforeRender
        event f.i. }
     procedure PreRender(activeBuffer: TVKSceneBuffer);
-    {: Access to the Flare's current size.<p>
+    { Access to the Flare's current size. 
        Flares decay or grow back over several frames, depending on their
        occlusion status, and this property allows to track or manually
        alter this instantaneous size. }
@@ -209,11 +170,11 @@ type
     //: Number of segments used when rendering circles.
     property Resolution: Integer read FResolution write SetResolution default
       64;
-    {: Automatically computes FlareIsNotOccluded depending on ZBuffer test.<p>
+    { Automatically computes FlareIsNotOccluded depending on ZBuffer test. 
        Not that the automated test may use test result from the previous
        frame into the next (to avoid a rendering stall). }
     property AutoZTest: Boolean read FAutoZTest write SetAutoZTest default True;
-    {: Is the LensFlare not occluded?.<p>
+    { Is the LensFlare not occluded?. 
        If false the flare will fade away, if true, it will fade in and stay.
        This value is automatically updated if AutoZTest is set. }
     property FlareIsNotOccluded: Boolean read FFlareIsNotOccluded write
@@ -221,15 +182,15 @@ type
     //: Which elements should be rendered?
     property Elements: TFlareElements read FElements write SetElements default
       cDefaultFlareElements;
-    {: Is the flare size adjusted dynamically?<p>
+    { Is the flare size adjusted dynamically? 
        If true, the flare size will be grown and reduced over a few frames
        when it switches between occluded and non-occluded states. This
-       requires animation to be active, but results in a smoother appearance.<br>
-       When false, flare will either be at full size or hidden.<p>
+       requires animation to be active, but results in a smoother appearance. 
+       When false, flare will either be at full size or hidden. 
        The flare is always considered non-dynamic at design-time. }
     property Dynamic: Boolean read FDynamic write FDynamic default True;
 
-    {: PreRender point for pre-rendered flare textures.<p>
+    { PreRender point for pre-rendered flare textures. 
        See PreRender method for more details. }
     property PreRenderPoint: TVKRenderPoint read FPreRenderPoint write
       SetPreRenderPoint;
@@ -407,7 +368,7 @@ var
   i: Integer;
   rnd: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
@@ -442,7 +403,7 @@ var
   i: Integer;
   a, f, s, c: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
@@ -471,7 +432,7 @@ var
   i: Integer;
   rW, s0, c0, s, c: Single;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
@@ -516,7 +477,7 @@ var
   v: TAffineVector;
   grad: TVKFlareGradient;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
@@ -723,7 +684,7 @@ begin
       begin
         if FTexRays.Handle <> 0 then
         begin
-        {$IFDEF GLS_OPENGL_DEBUG}
+        {$IFDEF VKS_OPENGL_DEBUG}
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}

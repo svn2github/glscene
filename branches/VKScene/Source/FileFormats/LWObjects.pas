@@ -1,37 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-//  05/04/13 - Yar - Fixes TLWChunkList.Create for FPC (thanks to VIT)
-//  20/05/10 - Yar - Fixes for Linux x64
-//  16/10/08 - UweR - Compatibility fix for Delphi 2009
-//  30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
-//  29/03/07 - DaStr - Renamed parameters in some methods
-//                     Added more explicit pointer dereferencing
-//                     Initialized local string variables in two places
-//                     (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-//  25/03/07 - DaStr - Turned off UNSAFE_TYPE, UNSAFE_CODE warnings
-//  24/03/07 - DaStr - Added explicit pointer dereferencing
-//                     (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-// 08/03/06 - ur - Fixed warnings for Delphi 2006
-// 14/11/02 - EG - Fixed warnings
-// 16/11/02 - BJ - Replaced TLWChunkList.FindChunk search mechanism
-//          - BJ - Added v. method  TLWChunk.Loaded. Called on Loading complete.
-//          - BJ - Added surface smooth normal generation
-// 18/11/02 - BJ - Added surface param inheritance
-//          - BJ - Added Get and SetContentDir to unit
-// 20/11/02 - BJ - Moved ParamAddr from TLWSurf to TLWParentChunk as v. method
-{-------------------------------------------------------------------------------
- Unit Name:  Lightwave
- Author:     Brian Johns brianjohns1@hotmail.com
- Purpose:    Lightwave object support unit for Delphi.
 
- Notes:      For the Lightwave Object File Format documentation please refer to
-             http://www.lightwave3d.com/developer.
-
- License:    This unit is distributed under the Mozilla Public License.
-             For license details, refer to http://www.mozilla.org
-             Lightwave3D is a registered trademark of Newtek Incorporated.
--------------------------------------------------------------------------------}
 unit LWObjects;
 
 interface
@@ -942,7 +912,7 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   pB: PByte;
   Blo, Bhi: Byte;
 {$ENDIF}
@@ -959,7 +929,7 @@ begin
 
         W := PU2Array(ValueIn)^[i];
 
-{$IFNDEF GLS_NO_ASM}
+{$IFNDEF VKS_NO_ASM}
         asm
           mov ax,w;   { move w into ax register }
           xchg al,ah; { swap lo and hi byte of word }
@@ -989,7 +959,7 @@ begin
 
         L := PU4Array(ValueIn)^[i];
 
-{$IFNDEF GLS_NO_ASM}
+{$IFNDEF VKS_NO_ASM}
         asm
           mov ax,w;   { move w into ax register }
           xchg al,ah; { swap lo and hi byte of word }

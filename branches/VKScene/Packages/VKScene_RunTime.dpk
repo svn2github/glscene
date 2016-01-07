@@ -25,7 +25,7 @@ package VKScene_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene 3D library'}
+{$DESCRIPTION 'GLScene FMX OpenGL 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -260,12 +260,12 @@ contains
   VKS.XCollection in '..\Source\Basement\VKS.XCollection.pas',
   VKS.XOpenGL in '..\Source\Basement\VKS.XOpenGL.pas',
   VKS.zBuffer in '..\Source\Basement\VKS.zBuffer.pas',
-  GLSL.BumpShader in '..\Source\Shaders\GLSL.BumpShader.pas',
-  GLSL.DiffuseSpecularShader in '..\Source\Shaders\GLSL.DiffuseSpecularShader.pas',
-  GLSL.Parameter in '..\Source\Shaders\GLSL.Parameter.pas',
-  GLSL.PostShaders in '..\Source\Shaders\GLSL.PostShaders.pas',
-  GLSL.ProjectedTextures in '..\Source\Shaders\GLSL.ProjectedTextures.pas',
-  GLSL.Shader in '..\Source\Shaders\GLSL.Shader.pas',
+  VKS.GLSLBumpShader in '..\Source\Shaders\VKS.GLSLBumpShader.pas',
+  VKS.GLSLDiffuseSpecularShader in '..\Source\Shaders\VKS.GLSLDiffuseSpecularShader.pas',
+  VKS.GLSLParameter in '..\Source\Shaders\VKS.GLSLParameter.pas',
+  VKS.GLSLPostShaders in '..\Source\Shaders\VKS.GLSLPostShaders.pas',
+  VKS.GLSLProjectedTextures in '..\Source\Shaders\VKS.GLSLProjectedTextures.pas',
+  VKS.GLSLShader in '..\Source\Shaders\VKS.GLSLShader.pas',
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   LIBFREETYPE in '..\Source\FileFormats\LIBFREETYPE.pas',
   LWObjects in '..\Source\FileFormats\LWObjects.pas',

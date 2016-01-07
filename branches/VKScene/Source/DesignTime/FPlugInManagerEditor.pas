@@ -1,19 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : FPlugInManagerEditor<p>
-
-  Need a short description of what it does here.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>06/01/15 - PW - Converted to FMX
-  <li>17/11/14 - PW - Renamed from PlugInManagerPropEditor.pas to FPlugInManagerEditor.pas
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>02/04/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 - EG - Creation
-  </ul></font>
-
-}
+{
+   Need a short description of what it does here. 
+ }
 unit FPlugInManagerEditor;
 
 interface

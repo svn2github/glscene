@@ -1,17 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDAAPI<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
-  <li>07/02/11 - Yar - Added debug mode
-  <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
-  <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
-}
-
 /// *
 // * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
 // *
@@ -1567,7 +1556,7 @@ const
   cuGLMapBufferObjectAsyncName = 'cuGLMapBufferObjectAsync';
   cuGLUnmapBufferObjectAsyncName = 'cuGLUnmapBufferObjectAsync';
 
-{$IFDEF GLS_CUDA_DEBUG_MODE}
+{$IFDEF VKS_CUDA_DEBUG_MODE}
 
 var
   cuInit_: TcuInit;
@@ -3061,7 +3050,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-{$ENDIF GLS_CUDA_DEBUG_MODE}
+{$ENDIF VKS_CUDA_DEBUG_MODE}
 
 function CUDAGetProcAddress(ProcName: PAnsiChar): Pointer;
 var
@@ -3102,7 +3091,7 @@ begin
 
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
-{$IFNDEF GLS_CUDA_DEBUG_MODE}
+{$IFNDEF VKS_CUDA_DEBUG_MODE}
   cuInit := CUDAGetProcAddress(cuInitName);
   cuDriverGetVersion := CUDAGetProcAddress(cuDriverGetVersionName);
   cuDeviceGet := CUDAGetProcAddress(cuDeviceGet_Name);
@@ -3480,7 +3469,7 @@ begin
   cuGLUnmapBufferObjectAsync_ :=
     CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
   cuGLUnmapBufferObjectAsync := cuGLUnmapBufferObjectAsyncShell;
-{$ENDIF GLS_CUDA_DEBUG_MODE}
+{$ENDIF VKS_CUDA_DEBUG_MODE}
   cuDriverGetVersion(V);
   GLSLogger.LogInfoFmt('%s version %d is loaded', [CUDAAPIDLL, V]);
   Result := True;

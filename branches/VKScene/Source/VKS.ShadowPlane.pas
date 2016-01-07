@@ -1,32 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ShadowPlane<p>
-
-   Implements a basic shadow plane.<p>
+{
+   Implements a basic shadow plane. 
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/06/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/02/10 - Yar - Optimization of switching states
-      <li>12/03/09 - DanB - Bug-fix for scissor test on recent NVidia drivers
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-      <li>23/03/04 - EG - Added spoTransparent
-      <li>29/11/03 - EG - Scissors turned of if camera is withing bounding volume
-      <li>30/10/02 - EG - Added OnBegin/EndRenderingShadows
-      <li>25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
-      <li>02/10/02 - EG - Added spoScissor
-      <li>23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
-   </ul></font>
+   materials/mirror demo before using this component. 
+    
 }
 unit VKS.ShadowPlane;
 
@@ -59,14 +39,14 @@ type
 
   // TVKShadowPlane
   //
-  {: A simple shadow plane.<p>
-     This mirror requires a stencil buffer for optimal rendering!<p>
+  { A simple shadow plane. 
+     This mirror requires a stencil buffer for optimal rendering! 
      The object is a mix between a plane and a proxy object, in that the plane
      defines where the shadows are cast, while the proxy part is used to reference
      the objects that should be shadowing (it is legal to self-shadow, but no
-     self-shadow visuals will be rendered).<br>
+     self-shadow visuals will be rendered). 
      If stenciling isn't used, the shadow will 'paint' the ShadowColor instead
-     of blending it transparently.<p>
+     of blending it transparently. 
      You can have lower quality shadow geometry: add a dummycube, set it to
      invisible (so it won't be rendered in the "regular" pass), and under
      it place another visible dummycube under which you have all your
@@ -103,35 +83,35 @@ type
 
   published
     { Public Declarations }
-          {: Selects the object to mirror.<p>
+          { Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TVKBaseSceneObject read FShadowingObject write SetShadowingObject;
-    {: The light which casts shadows.<p>
+    { The light which casts shadows. 
        The light must be enabled otherwise shadows won't be cast. }
     property ShadowedLight: TVKLightSource read FShadowedLight write SetShadowedLight;
-    {: The shadow's color.<p>
+    { The shadow's color. 
        This color is transparently blended to make shadowed area darker. }
     property ShadowColor: TVKColor read FShadowColor write SetShadowColor;
 
-    {: Controls rendering options.<p>
-       <ul>
-       <li>spoUseStencil: plane area is stenciled, prevents shadowing
+    { Controls rendering options. 
+        
+        spoUseStencil: plane area is stenciled, prevents shadowing
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer too). It also allows shadows to
           be partial (blended).
-       <li>spoScissor: plane area is 'scissored', this should improve
+        spoScissor: plane area is 'scissored', this should improve
           rendering speed by limiting rendering operations and fill rate,
           may have adverse effects on old hardware in rare cases
-       <li>spoTransparent: does not render the plane's material, may help
+        spoTransparent: does not render the plane's material, may help
           improve performance if you're fillrate limited, are using the
           stencil, and your hardware has optimized stencil-only writes
-       </ul>
+        
     }
     property ShadowOptions: TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
 
-    {: Fired before the shadows are rendered. }
+    { Fired before the shadows are rendered. }
     property OnBeginRenderingShadows: TNotifyEvent read FOnBeginRenderingShadows write FOnBeginRenderingShadows;
-    {: Fired after the shadows are rendered. }
+    { Fired after the shadows are rendered. }
     property OnEndRenderingShadows: TNotifyEvent read FOnEndRenderingShadows write FOnEndRenderingShadows;
   end;
 

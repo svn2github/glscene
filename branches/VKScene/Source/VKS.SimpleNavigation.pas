@@ -1,45 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SimpleNavigation<p>
+{
+    A simple component written by request from someone at the www.glscene.ru forums. 
+    Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff  
+    that all demos usually have in themselves. All that is just by dropping  
+    this component on the form. 
 
-    A simple component written by request from someone at the www.glscene.ru forums.<p>
-    Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff <p>
-    that all demos usually have in themselves. All that is just by dropping <p>
-    this component on the form.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>14/12/10 - DaStr - Fixed compiler hint
-      <li>12/12/10 - Yar   - Adapted to using with TVKSceneForm
-      <li>01/07/10 - Yar   - Fixed zooming for FPC (by Rustam Asmandiarov aka Predator)
-      <li>17/06/10 - YP    - Fixed Zoom in/out inconsistence (mousewheel up/down inverted)
-      <li>11/06/10 - YP    - Fixed wheeldata can be equal to 0 in FormMouseWheel (div by 0 exception)
-      <li>21/01/10 - Yar   - Bugfixed zooming in design time (BugtrackerID = 2936266)
-      <li>25/12/09 - DaStr - Added OnMouseMove event (thanks YarUnderoaker)
-      <li>18/10/09 - DaStr - Added snoShowFPS option (thanks YarUnderoaker)
-                             Fixed a small bug with FPS string
-      <li>29/09/07 - DaStr - Component now automaticly detects Form Caption
-      <li>24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
-                             Got rid of Types dependancy
-      <li>20/03/07 - DaStr - Improved SceneViewer detection
-      <li>02/03/07 - DaStr - Added default values to all properties
-                             Added TVKSimpleNavigationOptions
-                             Added TVKSimpleNavigationKeyCombination
-                             Some renamings
-                             Added TVKSimpleNavigation.Assign
-                             MouseWheel is now handled by default
-      <li>06/02/07 - DaStr - Creation (donated to GLScene)
- </ul></font><p>
-
-   Previous version history:
-           v1.0   08 May        '2006  Creation
-           v1.1   04 September  '2006  FreeNotification fix
-                                       Automatic Form detection fix
-           v1.2   11 September  '2006  Automatic SceneViewer detection
-                                       FormCaption added
-           v1.3   06 February   '2007  FPS is only updated in Run-Time now
-                                       Donated to GLScene
 }
 
 unit VKS.SimpleNavigation;
@@ -349,7 +316,7 @@ begin
             snaRotateTarget: DoRotateTarget;
             snaCustom: FKeyCombinations[I].DoOnCustomAction(Shift, X, Y);
           else
-            Assert(False, glsErrorEx + glsUnknownType);
+            Assert(False, vksErrorEx + vksUnknownType);
           end;
 
           if FKeyCombinations[I].FExitOnMatch then
@@ -399,7 +366,7 @@ begin
     { TODO : E2009 Incompatible types: 'Parameter lists differ' }
     (*TForm(FForm).OnMouseWheel := ViewerMouseWheel;*)
     FForm.FreeNotification(Self);
-{$IFDEF GLS_MULTITHREAD}
+{$IFDEF VKS_MULTITHREAD}
     if FForm is TVKSceneForm then
     begin
       FSceneForm := True;

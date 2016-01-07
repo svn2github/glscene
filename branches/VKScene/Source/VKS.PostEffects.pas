@@ -1,42 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.PostEffects<p>
-
-  A collection of components that generate post effects.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>28/05/08 - DaStr - Fixed AV in TVKPostEffect.MakeDistortEffect()
-                             Got rid of all R- hacks
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TVKPostShaderCollectionItem.SetShader()
-                              (BugTracker ID = 1938988)
-      <li>16/08/07 - DaStr - Added pepBlur preset (by Paul van Dinther)
-      <li>25/03/07 - DaStr - Small fix for Delphi5 compatibility
-      <li>23/03/07 - DaStr - Added TVKPostShaderHolder.Assign
-      <li>20/03/07 - DaStr - Fixed TVKPostShaderHolder.DoRender
-      <li>09/03/07 - DaStr - Added pepNightVision preset (thanks Roman Ganz)
-                             Changed back all Trunc() calls to Round()
-      <li>07/03/07 - DaStr - Moved "Weird" effect to the demo
-                             Added "Distort" effect
-                             Modified "RedNoise" to simple monochrome noise
-                                                   (preset renamed to "Noise")
-                             Made "Negative" effect really negative,
-                                             instead swapping R and B channels
-                             Changed all Round() calls to Trunc()
-                             Removed all TVKPostEffectColor typecasts
-                             (All above changes were made by Michail Glukhov)
-                             TVKPostEffect and TVKPostShaderHolder are not
-                              rendered when DrawState=dsPicking (suggested by Riz)
-      <li>04/03/07 - DaStr - Added TVKPostShaderHolder
-      <li>02/03/07 - DaStr - TVKOnCustomPostEffectEvent now passes rci
-                             pepNone preset does not call gl[Read/Draw]Pixels
-      <li>23/02/07 - DaStr - Initial version of TVKPostEffect
-                                                (based on OldCity demo by FedeX)
-    </ul></font>
-
+{
+  A collection of components that generate post effects. 
+ 
 }
 unit VKS.PostEffects;
 
@@ -83,7 +50,7 @@ type
     property Items[const Index: Integer]: TVKPostShaderCollectionItem read GetItems write SetItems; default;
   end;
 
-  {: A class that allows several post-shaders to be applied to the scene,
+  { A class that allows several post-shaders to be applied to the scene,
     one after another. It does not provide any optimizations related to
     multi-shader rendering, just a convenient interface. }
   TVKPostShaderHolder = class(TVKBaseSCeneObject)
@@ -112,14 +79,14 @@ type
 
 
   TVKPostEffectColor = record
-    R, G, B, A: TVKubyte;
+    R, G, B, A: TGLubyte;
   end;
 
   TVKPostEffectBuffer = array of TVKPostEffectColor;
 
   TVKOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TRenderContextInfo; var Buffer: TVKPostEffectBuffer) of object;
 
-  {: Some presets for TVKPostEffect:
+  { Some presets for TVKPostEffect:
        pepNone - does nothing.
        pepGray - makes picture gray.
        pepNegative - inverts all colors.
@@ -132,7 +99,7 @@ type
   TVKPostEffectPreset = (pepNone, pepGray, pepNegative, pepDistort, pepNoise,
                          pepNightVision, pepBlur, pepCustom);
 
-  {: Provides a simple way to producing post-effects without shaders.<p>
+  { Provides a simple way to producing post-effects without shaders. 
      It is slow as hell, but it's worth it in some cases.}
   TVKPostEffect = class(TVKBaseSCeneObject)
   private
@@ -205,7 +172,7 @@ begin
       pepBlur:        MakeBlurEffect(rci);
       pepCustom:      DoOnCustomEffect(rci, FRenderBuffer);
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
     GL.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
@@ -218,7 +185,7 @@ end;
 procedure TVKPostEffect.MakeGrayEffect;
 var
   I:    Longword;
-  gray: TVKubyte;
+  gray: TGLubyte;
 begin
   for I := 0 to High(FRenderBuffer) do
   begin
@@ -371,7 +338,7 @@ begin
 
   if RealOwner <> nil then
     if FPostShaderInterface.GetTextureTarget <> RealOwner.TempTextureTarget then
-      raise EGLPostShaderHolderException.Create(glsErrorEx + 'TextureTarget is not compatible!');
+      raise EGLPostShaderHolderException.Create(vksErrorEx + 'TextureTarget is not compatible!');
   // If RealOwner = nil, we ignore this case and hope it will turn out ok...
 
   FShader := Value;

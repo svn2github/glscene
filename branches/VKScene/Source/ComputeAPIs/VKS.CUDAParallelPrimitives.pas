@@ -1,13 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CUDAParallelPrimitives<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>28/01/10 - Yar - Creation
-   </ul></font>
-}
-
 // -------------------------------------------------------------
 // cuDPP -- CUDA Data Parallel Primitives library
 // -------------------------------------------------------------

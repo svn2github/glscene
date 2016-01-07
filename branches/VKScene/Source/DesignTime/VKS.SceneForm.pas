@@ -1,13 +1,8 @@
 ﻿//
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.SceneForm<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
-  <li>08/12/10 - Yar - Added code for Lazarus (thanks Rustam Asmandiarov aka Predator)
-  <li>23/08/10 - Yar - Creation
-  </ul></font>
+{
+      
 }
 
 unit VKS.SceneForm;
@@ -24,7 +19,7 @@ uses
   FMX.Controls,
   FMX.Forms,
   FMX.Types,
-
+  //VKS
   VKS.Scene,
   VKS.Context,
   VKS.CrossPlatform,
@@ -42,7 +37,7 @@ type
 
   // TVKFullScreenResolution
   //
-  {: Defines how GLSceneForm will handle fullscreen request
+  { Defines how GLSceneForm will handle fullscreen request
      fcWindowMaximize: Use current resolution (just maximize form and hide OS bars)
      fcNearestResolution: Change to nearest valid resolution from current window size
      fcManualResolution: Use FFullScreenVideoMode settings }
@@ -53,7 +48,7 @@ type
 
   // TVKFullScreenVideoMode
   //
-  {: Screen mode settings }
+  { Screen mode settings }
   TVKFullScreenVideoMode = class(TPersistent)
   private
     FOwner: TVKSceneForm;
@@ -136,31 +131,31 @@ type
     property RenderDC: HDC read FOwnDC;
   published
     { Published Declarations }
-    { : Camera from which the scene is rendered. }
+    { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
 
-    { : Specifies if the refresh should be synchronized with the VSync signal.<p>
+    { Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
-    { : Triggered before the scene's objects get rendered.<p>
+    { Triggered before the scene's objects get rendered. 
       You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write
       SetBeforeRender;
-    { : Triggered just after all the scene's objects have been rendered.<p>
+    { Triggered just after all the scene's objects have been rendered. 
       The OpenGL context is still active in this event, and you may use it
-      to execute your own OpenGL rendering.<p> }
+      to execute your own OpenGL rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    { : Called after rendering.<p>
+    { Called after rendering. 
       You cannot issue OpenGL calls in this event, if you want to do your own
       OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    { : Access to buffer properties. }
+    { Access to buffer properties. }
     property Buffer: TVKSceneBuffer read FBuffer write SetBuffer;
 
-    { : Returns or sets the field of view for the viewer, in degrees.<p>
+    { Returns or sets the field of view for the viewer, in degrees. 
       This value depends on the camera and the width and height of the scene.
       The value isn't persisted, if the width/height or camera.focallength is
       changed, FieldOfView is changed also. }
@@ -359,7 +354,7 @@ begin
   FColorDepth := vVideoModes[0].ColorDepth;
   FFrequency := vVideoModes[0].MaxFrequency;
 {$ENDIF}
-{$IFDEF GLS_X11_SUPPORT}
+{$IFDEF VKS_X11_SUPPORT}
   FWidth := vVideoModes[0].vdisplay;
   FHeight := vVideoModes[0].hdisplay;
   FColorDepth := 32;

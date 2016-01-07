@@ -1,22 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FileMD2<p>
-
-	MD2 file loader<p>
-
-	<b>Historique : </b><font size=-1><ul>
-      <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
-      <li>04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>25/08/03 - Php - Added FreeLists & degibbered LoadFromStream
-      <li>21/07/00 - Egg - Added frame names (Roger Cao/Carlos A. Rivero)
-      <li>07/06/00 - Egg - Added Header, reduced dependencies,
-                           LoadFromFile replaced with LoadFromStream,
-                           some cleanup & optimizations
-	</ul></font>
+{
+  MD2 file loader 
+       
 }
 unit FileMD2;
 

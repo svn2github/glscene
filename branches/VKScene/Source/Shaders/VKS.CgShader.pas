@@ -1,70 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CgShader<p>
-
-   Base Cg shader classes.<p>
-
-   <b>History :</b><font size=-1><ul>
-      <li>19/12/12 - PW - Added CPPB compatibility:  changed cg.lib's name of function
-                          GetProfileString to GetProfileStringA
-      <li>26/03/11 - Yar - Added SetAsMatrix to TCgParameter
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>24/07/09 - DaStr - TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
-                                                      (BugTracker ID = 1914782)
-      <li>24/03/07 - DaStr - Improved Cross-Platform compatibility
-                                                      (BugTracker ID = 1684432)
-      <li>23/02/07 - DaStr- Added TCgProgram.ManualNotification
-      <li>23/02/07 - DaStr- Added TCadencableCustomCgShader
-                            Added EGLCGShaderException
-                            with TCustomCgShader:
-                              Added ShaderSupported,
-                              Moved all properties from "public" and "published"
-                              to the "protected" section.
-                              DoInitialize fixed to catch compilation errors
-                            Moved registration to GLCgRegister.pas
-                            Added more stuff to RegisterClasses()
-      <li>29/04/06 - PhP  - Fixed TCgProgram.Finalize (Achim Hannes)
-      <li>24/10/04 - NelC - Added SetAsScalar for boolean input, IncludeFilePath
-      <li>10/09/04 - NelC - Added global function IsCgProfileSupported
-      <li>07/09/04 - NelC - Added TCgProgram.Precision (Cg 1.3)
-      <li>07/09/04 - NelC - Added profiles VP40, FP40 (Cg 1.3 beta 2),
-                            Added option OutputCompilerWarnings
-      <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
-      <li>24/03/04 - NelC - Added GetLatestProfile
-      <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
-                            Added TCustomCgShader.IsProfileSupported
-      <li>16/02/04 - NelC - Added TCgParameter.SetParameterPointer
-      <li>13/02/04 - NelC - Replaced two overloaded TCgProgram.SetParam's with
-                            SetStateMatrix and SetTexture
-      <li>05/02/04 - NelC - Fixed type checking for Half and Fixed,
-                            Added TCgParameter.SetToTextureOf
-      <li>01/02/04 - NelC - Now reports source CgProgram or CgParameter of errors
-      <li>20/01/04 - NelC - Updated shader event handlers with Sender object,
-                            Fixed dynamic array passing bug in CheckValueType
-      <li>03/01/04 - NelC - Shortened event handler names using 'VP' and 'FP',
-                            Added TCustomCgShader.LoadShaderPrograms, TCgProgram.SetParam,
-                            Minor change in texture type checking
-      <li>01/08/03 - NelC - Simplified type checking in SetAsStateMatrix
-      <li>04/07/03 - NelC - Added TCustomCgShader.OnInitialize,
-                            Moved VertexProgram & FragmentProgram of TCustomCgShader
-                            to published for easy acccess from OnInitialize
-      <li>02/07/03 - NelC - Added more value-setting methods
-      <li>01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks
-      <li>27/06/03 - NelC - Added value-setting functions for TCgParameter,
-                            TCgProgram.DirectParamByName & DirectProfile, and
-                            Profile property for TCgVertexProgram & TCgFragmentProgram
-      <li>24/06/03 - NelC - Initial adoptation to Cg 1.1 Final. Now automatically
-                            uses latest hardware-supported profile and use callback
-                            to show error message
-      <li>29/05/03 - RoC - Cg 1.1 Depreciated_api compatible
-      <li>25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
-      <li>19/06/02 - EG - Improved OO wrapper
-      <li>18/06/02 - EG - Creation
-   </ul></font>
+{
+   Base Cg shader classes. 
+  
 }
 unit VKS.CgShader;
 
@@ -110,7 +49,7 @@ type
 
   // TCgProgram
   //
-  {: Wrapper around a Cg program. }
+  { Wrapper around a Cg program. }
   TCgProgram = class (TVKUpdateAbleObject)
   private
     { Private Declarations }
@@ -141,7 +80,7 @@ type
     function GetParam(index : String) : TCgParameter;
 
     procedure AddParamsItem(const Param : PCGParameter);
-    {: Build a list of parameters used in the shader code.<p>
+    { Build a list of parameters used in the shader code. 
        Iteratively queries all parameters so that we can manage and access them
        easily. Currently only collects leaf parameters i.e. data structure is
        not retrieved. }
@@ -160,9 +99,9 @@ type
     procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
     procedure UnApply(var rci : TRenderContextInfo);
 
-    {: ParamByName returns CgParameter; returns nil if not found. }
+    { ParamByName returns CgParameter; returns nil if not found. }
     function ParamByName(const name : String) : TCgParameter;
-    {: Use Param instead of ParamByName if you want implicit check for the
+    { Use Param instead of ParamByName if you want implicit check for the
        existence of your requested parameter. }
     property Param[index : String] : TCgParameter read GetParam;
     property Params : TList read FParams;
@@ -189,7 +128,7 @@ type
     // retruns ShaderName.[program type].ProgramName
     function LongName : string;
 
-    {: Direct access to the profile. <p>
+    { Direct access to the profile.  
        Set Profile of the sub-classes to any but DetectLatest if you want to
        specify the profile directly. }
     property DirectProfile : TcgProfile read FProfile write FProfile;
@@ -197,14 +136,14 @@ type
     { DaStr: Seams, that this event is never called. Probably should be deleted... }
     property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
 
-    {: If True, that shader is not reset when TCgProgram' parameters change. }
+    { If True, that shader is not reset when TCgProgram' parameters change. }
     property ManualNotification: Boolean read GetManualNotification write SetManualNotification default False;
   published
     { Published Declarations }
     property Code : TStrings read FCode write SetCode;
     property ProgramName : String read FProgramName write SetProgramName;
     property Enabled : boolean read FEnabled write FEnabled default True;
-    {: Precision controls data precision of GPU operation. <p>
+    { Precision controls data precision of GPU operation.  
        Possible options are 16-bit (psFast) or 32-bit (psFull). 16-bit operation
        is generally faster. }
     property Precision : TPrecisionSetting read FPrecision write SetPrecision default psFull;
@@ -214,7 +153,7 @@ type
 
   // TCgParameter
   //
-  {: Wrapper around a Cg parameter of the main program. }
+  { Wrapper around a Cg parameter of the main program. }
   TCgParameter = class (TObject)
   private
     { Private Declarations }
@@ -244,20 +183,20 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    {: Procedures for setting uniform pamareters.<p>
+    { Procedures for setting uniform pamareters. 
        Implicitly check for data type. }
     procedure SetAsScalar(const val : Single); overload;
     procedure SetAsScalar(const val : boolean); overload;
     procedure SetAsVector(const val : TVector2f); overload;
     procedure SetAsVector(const val : TVector3f); overload;
     procedure SetAsVector(const val : TVector4f); overload;
-    {: This overloaded SetAsVector accepts open array as input. e.g.
+    { This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVector([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVector(const val : array of single); overload;
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
     procedure SetAsMatrix(const val: TMatrix4f);
 
-    {: Procedures for dealing with texture pamareters.}
+    { Procedures for dealing with texture pamareters.}
     // SetAsTexture checks for all texture types
     procedure SetAsTexture(TextureID : Cardinal);
     // SetAsTexture* check for specific type
@@ -266,20 +205,20 @@ type
     procedure SetAsTexture3D(TextureID : Cardinal);
     procedure SetAsTextureCUBE(TextureID : Cardinal);
     procedure SetAsTextureRECT(TextureID : Cardinal);
-    {: SetToTextureOf determines texture type on-the-fly.}
+    { SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(LibMaterial  : TVKLibMaterial);
 
     procedure EnableTexture;
     procedure DisableTexture;
 
-    {: Procedures for setting varying parameters with an array of values.}
+    { Procedures for setting varying parameters with an array of values.}
     procedure SetParameterPointer(Values : TVectorList); overload;
     procedure SetParameterPointer(Values : TAffineVectorList); overload;
 
     procedure EnableClientState;
     procedure DisableClientState;
 
-    {: LongName retruns ShaderName.[program type].ProgramName.ParamName. }
+    { LongName retruns ShaderName.[program type].ProgramName.ParamName. }
     function LongName : string;
 
     property Owner : TCgProgram read FOwner;
@@ -289,7 +228,7 @@ type
     property Direction : TCGenum read FDirection write FDirection;
     property Variability : TCGenum read FVariability write FVariability;
 
-    // GLScene-friendly properties
+    //VKScene-friendly properties
     property AsVector : TVector write SetAsVector4f; // position f.i.
     property AsAffineVector : TAffineVector write SetAsVector3f; // normal f.i.
     property AsVector2f : TVector2f write SetAsVector2f; // texCoord f.i.
@@ -383,7 +322,7 @@ type
     property OnUnApplyVP : TCgUnApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
     property OnUnApplyFP : TCgUnApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
 
-    {: OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example. }
+    { OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example. }
     property OnInitialize : TCgShaderEvent read GetOnInitialize write SetOnInitialize;
 
     property DesignEnable : Boolean read FDesignEnable write FDesignEnable default False;
@@ -400,7 +339,7 @@ type
 
   end;
 
-  {: Allows to use a Cadencer, which is used for noise generation in many shaders. }
+  { Allows to use a Cadencer, which is used for noise generation in many shaders. }
   TCadencableCustomCgShader = class(TCustomCgShader)
   private
     FCadencer: TVKCadencer;
@@ -435,12 +374,12 @@ type
 
 // global variables/functions
 var
-  {: Set IncludeFilePath to indicate where to find your include file for your
+  { Set IncludeFilePath to indicate where to find your include file for your
      Cg source files. This avoids error from the Cg Compiler when the current
      directory is not the right path as the shader is being compiled. }
   IncludeFilePath : string;
 {$IFDEF OutputCompilerWarnings}
-  {: Edit the string WarningFilePath for the output filename. Default
+  { Edit the string WarningFilePath for the output filename. Default
      WarningFilePath is set to application path. }
   WarningFilePath : string;
 {$ENDIF}
@@ -1395,7 +1334,7 @@ begin
   if FCadencer = nil then
   begin
     Enabled := False;
-    raise EGLCGShaderException.CreateFmt(glsErrorEx + glsCadencerNotDefinedEx, [ClassName]);
+    raise EGLCGShaderException.CreateFmt(vksErrorEx + glsCadencerNotDefinedEx, [ClassName]);
   end
   else
     inherited;

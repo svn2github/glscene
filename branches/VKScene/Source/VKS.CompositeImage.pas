@@ -1,18 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CompositeImage<p>
-
+{
     This class is required for loading images such classes as in DDSImage,
     TVKO3TCImage, TVKHDRImage etc.
-
- <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>22/04/10 - Yar - Fixes after VKS.State revision
-        <li>22/02/10 - Yar - Added LoadFromStream (thanks to mif)
-        <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
+     
 }
 
 unit VKS.CompositeImage;

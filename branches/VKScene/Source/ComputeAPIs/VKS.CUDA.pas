@@ -1,19 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDA<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>26/03/12 - Maverick - Added vectors SetParam routines
-  <li>07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
-  <li>13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
-  <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
-  <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
-                       Changed TCUDAMemData data access, host memory can be mapped to device,
-                       device and array memory can be mapped to host
-  <li>07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
-  <li>01/04/10 - Yar - Creation
-  </ul></font><p>
+{
+      
 }
 unit VKS.CUDA;
 
@@ -88,7 +77,7 @@ type
     property Items[const i: Integer]: TCUDAComponent read GetItem;
     property ItemsCount: Integer read GetItemsCount;
     property Status: TCUresult read FStatus;
-    {: Return true if handle is allocated (i.e. component has device object) }
+    { Return true if handle is allocated (i.e. component has device object) }
     property IsAllocated: Boolean read GetIsAllocated;
   end;
 
@@ -147,7 +136,7 @@ type
 
   TVKResourceType = (rtTexture, rtBuffer);
 
-  { : Abstract class of graphic resources. }
+  { Abstract class of graphic resources. }
 
   // TCUDAGraphicResource
   //
@@ -225,24 +214,24 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure CuNotifyChange(AChange: TCUDAChange); override;
-    {: Map device and array memory to host or host memory to device.
+    { Map device and array memory to host or host memory to device.
        Mapping is necessary for modifying device data.
        When mapped host memory - it can be accessed in device side
        via MappedHostAddress. }
     procedure Map(const AFlags: TCUDAMemMapFlags = []);
-    {: Done mapping operation. }
+    { Done mapping operation. }
     procedure UnMap;
 
     function Data<EType>(X: Integer): GCUDAHostElementAccess<EType>; overload;
     function Data<EType>(X, Y: Integer): GCUDAHostElementAccess<EType>; overload;
     function Data<EType>(X, Y, Z: Integer): GCUDAHostElementAccess<EType>; overload;
 
-    { : Fill device data }
+    { Fill device data }
     procedure FillMem(const Value);
 
     procedure CopyTo(const ADstMemData: TCUDAMemData); overload;
     procedure CopyTo(const AGLImage: TVKImage); overload;
-    { : Copy data to Graphic resource. }
+    { Copy data to Graphic resource. }
     procedure CopyTo(const AGLGraphic: TCUDAGraphicResource;
       aAttr: string = ''); overload;
     procedure CopyFrom(const ASrcMemData: TCUDAMemData); overload;
@@ -606,7 +595,7 @@ end;
 // ------------------ TVKSCUDA ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TVKSCUDA'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSCUDA'}{$ENDIF}
 // Create
 //
 
@@ -701,12 +690,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAModule ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAmodule'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAmodule'}{$ENDIF}
 
 // Create
 //
@@ -1080,12 +1069,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAComponent ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAComponent'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAComponent'}{$ENDIF}
 
 destructor TCUDAComponent.Destroy;
 begin
@@ -1254,12 +1243,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAFunction ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAFunction'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAFunction'}{$ENDIF}
 // Create
 //
 
@@ -1685,12 +1674,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAMemData ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAMemData'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAMemData'}{$ENDIF}
 
 constructor TCUDAMemData.Create(AOwner: TComponent);
 begin
@@ -2529,7 +2518,7 @@ end;
 // ------------------ TCUDATexture ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDATexture'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDATexture'}{$ENDIF}
 // Create
 //
 
@@ -2791,12 +2780,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGraphicResource ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
 
 procedure TCUDAGraphicResource.SetMapping(const Value: TCUDAMapping);
 begin
@@ -2881,12 +2870,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAUniform ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAUniform'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAUniform'}{$ENDIF}
 
 constructor TCUDAUniform.Create(AOwner: TComponent);
 begin
@@ -2968,13 +2957,13 @@ begin
     CuNotifyChange(cuchSize);
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAConstant ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAConstant'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAConstant'}{$ENDIF}
 
 procedure TCUDAConstant.AllocateHandles;
 var
@@ -3023,13 +3012,13 @@ begin
   Result := FHandle;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TCUDAFuncParam ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAFuncParam'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAFuncParam'}{$ENDIF}
 
 procedure TCUDAFuncParam.AllocateHandles;
 begin
@@ -3057,7 +3046,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

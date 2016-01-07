@@ -1,28 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Gui<p>
-
-  In GL windows management classes and structures<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>15/04/11 - Yar - Added TVKGuiLayout.Assign
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>11/06/10 - YP - Link GUI elements to their parent
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>30/03/07 - DaStr - Added $I GLScene.inc, cosmetic changes
-      <li>17/02/07 - DaStr - TVKGuiElement.Create - vectors creation fixed
-                          Changed some types from TVKCoordinates to TVKCoordinates2
-                          Removed some empty lines
-      <li>16/12/05 - DK - Removed GuiSkinEditorFormUnit dependancy
-      <li>30/11/04 - DB - Fixed memory leaks (thanks dikoe Kenguru)
-      <li>16/07/03 - EG - TVKBaseGuiObject moved in along with RecursiveVisible mechanism
-      <li>25/11/02 - EG - TVKGuiLayout.Clear fix (Sternas Stefanos)
-      <li>06/09/02 - JAJ - Updated and added to CVS..
-      <li>01/06/02 - JAJ - Base Unit built..
- </ul></font>
+{
+  In GL windows management classes and structures 
+ 
 }
+
 unit VKS.Gui;
 
 interface
@@ -31,7 +14,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
+  //VKS   
   VKS.Scene, VKS.BitmapFont, VKS.Material, VKS.CrossPlatform, VKS.OpenGLTokens, VKS.Context,
   VKS.PersistentClasses, VKS.VectorGeometry, VKS.Coordinates, VKS.BaseClasses;
 
@@ -49,10 +32,10 @@ type
     //: child notification on show. Also notifies children.
     procedure NotifyShow; dynamic;
 
-    procedure SetLeft(const Value: TVKFloat);
-    function GetLeft: TVKFloat;
-    procedure SetTop(const Value: TVKFloat);
-    function GetTop: TVKFloat;
+    procedure SetLeft(const Value: TGLfloat);
+    function GetLeft: TGLfloat;
+    procedure SetTop(const Value: TGLfloat);
+    function GetTop: TGLfloat;
     procedure SetWidth(const val: Single);
     procedure SetHeight(const val: Single);
     procedure SetVisible(aValue: Boolean); override;
@@ -63,14 +46,14 @@ type
     procedure AddChild(AChild: TVKBaseSceneObject); override;
     procedure Insert(aIndex: Integer; aChild: TVKBaseSceneObject); override;
 
-    {: GuiComponent Width in 3D world units. }
+    { GuiComponent Width in 3D world units. }
     property Width: Single read FWidth write SetWidth;
-    {: GuiComponent Height in 3D world units. }
+    { GuiComponent Height in 3D world units. }
     property Height: Single read FHeight write SetHeight;
-    {: GuiComponent Left in 3D world units. }
-    property Left: TVKFloat read GetLeft write SetLeft;
-    {: GuiComponent Top in 3D world units. }
-    property Top: TVKFloat read GetTop write SetTop;
+    { GuiComponent Left in 3D world units. }
+    property Left: TGLfloat read GetLeft write SetLeft;
+    { GuiComponent Top in 3D world units. }
+    property Top: TGLfloat read GetTop write SetTop;
 
     property RecursiveVisible: Boolean read FRecursiveVisible;
   end;
@@ -78,12 +61,12 @@ type
   TGUIAlignments = (GLAlTopLeft, GLAlTop, GLAlTopRight, GLAlLeft, GLAlCenter,
     GLAlRight, GLAlBottomLeft, GLAlBottom, GLAlBottomRight, GLAlBorder);
   TGUIRect = record
-    X1: TVKFloat;
-    Y1: TVKFloat;
-    X2: TVKFloat;
-    Y2: TVKFloat;
-    XTiles: TVKFloat;
-    YTiles: TVKFloat;
+    X1: TGLfloat;
+    Y1: TGLfloat;
+    X2: TGLfloat;
+    Y2: TGLfloat;
+    XTiles: TGLfloat;
+    YTiles: TGLfloat;
   end;
   TGUIDrawResult = array[TGUIAlignments] of TGUIRect;
 
@@ -142,8 +125,8 @@ type
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure AssignTo(Dest: TPersistent); override;
-    procedure RenderToArea(X1, Y1, X2, Y2: TVKFloat; var Res: TGUIDrawResult;
-      Refresh: Boolean = True; Scale: TVKFloat = 1);
+    procedure RenderToArea(X1, Y1, X2, Y2: TGLfloat; var Res: TGUIDrawResult;
+      Refresh: Boolean = True; Scale: TGLfloat = 1);
     function GetOwnerList: TVKGuiComponentList;
     property Owner: TVKGuiComponentList read GetOwnerList;
   published
@@ -233,11 +216,11 @@ end;
 // SetLeft
 //
 
-procedure TVKBaseGuiObject.SetLeft(const Value: TVKFloat);
+procedure TVKBaseGuiObject.SetLeft(const Value: TGLfloat);
 var
-  NewPosX: TVKFloat;
+  NewPosX: TGLfloat;
   i: integer;
-  Diff: TVKFloat;
+  Diff: TGLfloat;
 begin
   if Assigned(Parent) and (Parent is TVKBaseGuiObject) then
     NewPosX := (Parent as TVKBaseGuiObject).Position.X + Value
@@ -261,7 +244,7 @@ end;
 // GetLeft
 //
 
-function TVKBaseGuiObject.GetLeft: TVKFloat;
+function TVKBaseGuiObject.GetLeft: TGLfloat;
 begin
   if Assigned(Parent) and (Parent is TVKBaseGuiObject) then
     Result := Position.X - (Parent as TVKBaseGuiObject).Position.X
@@ -272,11 +255,11 @@ end;
 // SetTop
 //
 
-procedure TVKBaseGuiObject.SetTop(const Value: TVKFloat);
+procedure TVKBaseGuiObject.SetTop(const Value: TGLfloat);
 var
-  NewPosY: TVKFloat;
+  NewPosY: TGLfloat;
   i: integer;
-  Diff: TVKFloat;
+  Diff: TGLfloat;
 begin
   if Assigned(Parent) and (Parent is TVKBaseGuiObject) then
     NewPosY := (Parent as TVKBaseGuiObject).Position.Y + Value
@@ -300,7 +283,7 @@ end;
 // GetTop
 //
 
-function TVKBaseGuiObject.GetTop: TVKFloat;
+function TVKBaseGuiObject.GetTop: TGLfloat;
 begin
   if Assigned(Parent) and (Parent is TVKBaseGuiObject) then
     Result := Position.Y - (Parent as TVKBaseGuiObject).Position.Y
@@ -311,7 +294,7 @@ end;
 // SetWidth
 //
 
-procedure TVKBaseGuiObject.SetWidth(const val: TVKFloat);
+procedure TVKBaseGuiObject.SetWidth(const val: TGLfloat);
 begin
   if FWidth <> val then
   begin
@@ -323,7 +306,7 @@ end;
 // SetHeight
 //
 
-procedure TVKBaseGuiObject.SetHeight(const val: TVKFloat);
+procedure TVKBaseGuiObject.SetHeight(const val: TGLfloat);
 begin
   if FHeight <> val then
   begin
@@ -711,18 +694,18 @@ begin
   Result := TVKGuiComponent(inherited Items[index]);
 end;
 
-procedure TVKGuiComponent.RenderToArea(X1, Y1, X2, Y2: TVKFloat; var Res:
-  TGUIDrawResult; Refresh: Boolean = True; Scale: TVKFloat = 1);
+procedure TVKGuiComponent.RenderToArea(X1, Y1, X2, Y2: TGLfloat; var Res:
+  TGUIDrawResult; Refresh: Boolean = True; Scale: TGLfloat = 1);
 var
   XC: Integer;
   ThisElement: TVKGuiElement;
-  W, H: TVKFloat;
-  Len1, Len2: TVKFloat;
+  W, H: TGLfloat;
+  Len1, Len2: TGLfloat;
   Layout: TVKGuiLayout;
   LibMaterial: TVKLibMaterial;
   Material: TVKMaterial;
   TexWidth,
-    TexHeight: TVKFloat;
+    TexHeight: TGLfloat;
   AlignCount: TGUIAlignments;
 
   procedure Prepare;
@@ -761,14 +744,14 @@ var
 
   procedure RenderIt(var ARect: TGuiRect; AElement: TVKGuiElement);
   var
-    XC: TVKFloat;
-    YC: TVKFloat;
-    XPos, X2Pos: TVKFloat;
-    YPos, y2Pos: TVKFloat;
-    tx1, ty1, tx2, ty2: TVKFloat;
-    XTileSize, YTileSize: TVKFloat;
-    tx3, ty3: TVKFloat;
-    tx, ty: TVKFloat;
+    XC: TGLfloat;
+    YC: TGLfloat;
+    XPos, X2Pos: TGLfloat;
+    YPos, y2Pos: TGLfloat;
+    tx1, ty1, tx2, ty2: TGLfloat;
+    XTileSize, YTileSize: TGLfloat;
+    tx3, ty3: TGLfloat;
+    tx, ty: TGLfloat;
 
   begin
     if (ARect.XTiles = 1) and (ARect.YTiles = 1) then

@@ -1,24 +1,20 @@
-// This unit is part of the GLScene Project   
 //
-{: GLSL.VertexDisplacementShader <p>
-
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
+{
    VertexDisplacement shader : Basic Vertex Displacement with Perlin Noise
    You can Improved it :
    The vertex displacement can be done by reading a 2D or 3D texture.
    It can be done along the normal or the tangent.
-   It can be scaled, twisted, modulated, inverted...<p>
-   <p>Converted from : https://www.clicktorelease.com/blog/vertex-displacement-noise-3d-webgl-glsl-three-js<p>
-
+   It can be scaled, twisted, modulated, inverted... 
+    Converted from : https://www.clicktorelease.com/blog/vertex-displacement-noise-3d-webgl-glsl-three-js 
 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>11/12/15 - J.Delauney - Creation
-
-}
+ }
 
 
-unit GLSL.VertexDisplacementShader;
+unit VKS.GLSLVertexDisplacementShader;
 
 interface
 
@@ -26,7 +22,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material,
@@ -34,7 +30,7 @@ uses
 
 //TVKCustomGLSLSimpleVertexDisplacementShader
 //
-{: Custom class for GLSLVertexDisplacementShader.<p>
+{ Custom class for GLSLVertexDisplacementShader. 
  VertexDisplacement Shader : Spherical Environment Mapping }
 Type
   TVKCustomGLSLVertexDisplacementShader = class(TVKCustomGLSLShader)
@@ -147,7 +143,7 @@ begin
     Add('varying float noise; ');
 
     //
-    // GLSL textureless classic 3D noise "cnoise",
+    //VKSL textureless classic 3D noise "cnoise",
     // with an RSL-style periodic variant "pnoise".
     // Author:  Stefan Gustavson (stefan.gustavson@liu.se)
     // Version: 2011-10-11

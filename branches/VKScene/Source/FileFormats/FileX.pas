@@ -1,21 +1,15 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FileX<p>
-
-   Simple X format support for Delphi (Microsoft's favorite format)<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>17/04/13 - YP - Warn user if file content unparsable (http://paulbourke.net/dataformats/directx/)
-      <li>04/10/10 - Yar - Fixed TDXFileHeader type (thanks JironBach)
-      <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-   </ul></font>
+{
+   Simple X format support for Delphi (Microsoft's favorite format) 
+ 
 }
 unit FileX;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,

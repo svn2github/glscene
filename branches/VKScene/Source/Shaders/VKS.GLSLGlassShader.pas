@@ -1,18 +1,14 @@
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.GlassShader <p>
-
+{
    Glass shader : Environment mapping with an
    equirectangular 2D texture and refraction mapping
-   with a background texture blended together using the fresnel terms<p>
+   with a background texture blended together using the fresnel terms 
 
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
+          
 
 }
-unit GLSL.GlassShader;
+unit VKS.GLSLGlassShader;
 
 interface
 
@@ -20,7 +16,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates, 
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, VKS.PersistentClasses, VKS.Graphics,
@@ -29,7 +25,7 @@ uses
 
 //TVKCustomGLSLSimpleGlassShader
 //
-{: Custom class for GLSLGlassShader.<p>
+{ Custom class for GLSLGlassShader. 
   Glass shader : Environment mapping and refraction mapping using the fresnel terms }
 Type
   TVKCustomGLSLGlassShader = class(TVKCustomGLSLShader)

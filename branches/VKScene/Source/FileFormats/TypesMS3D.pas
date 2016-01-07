@@ -1,21 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: TypesMS3D<p>
+{
+	Types and structures for the MS3D file format. 
 
-	Types and structures for the MS3D file format.<p>
-
-	<b>Historique : </b><font size=-1><ul>
-      <li>27/04/10 - Yar - Added more types (by TL)
-      <li>24/07/09 - DaStr - TMS3DGroup.MaterialIndex is now Shortint
-                              (BugtrackerID = 2353633)
-      <li>16/10/08 - UweR  - Compatibility fix for Delphi 2009
-      <li>06/06/07 - DaStr - Added $I GLScene.inc
-                             Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>31/08/03 - DanB  - Some code standardisation (by Philipp)
-      <li>16/06/03 -  EG   - Updated headers
-      <li>10/03/03 - Matt  - Creation
-	</ul></font>
 }
 unit TypesMS3D;
 

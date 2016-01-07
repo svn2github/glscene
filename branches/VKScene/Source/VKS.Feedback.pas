@@ -1,33 +1,20 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Feedback<p>
-
-   A scene object encapsulating the OpenGL feedback buffer.<p>
+{
+   A scene object encapsulating the OpenGL feedback buffer. 
 
    This object, when Active, will render it's children using
    the GL_FEEDBACK render mode. This will render the children
-   into the feedback Buffer rather than into the frame buffer.<p>
+   into the feedback Buffer rather than into the frame buffer. 
 
    Mesh data can be extracted from the buffer using the
    BuildMeshFromBuffer procedure. For custom parsing of the
    buffer use the Buffer SingleList. The Buffered property
-   will indicate if there is valid data in the buffer.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/07/04 - SG - Creation.
-   </ul></font>
+   will indicate if there is valid data in the buffer. 
 
 }
+
 unit VKS.Feedback;
 
 interface
@@ -45,7 +32,7 @@ type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
 
   // TVKFeedback
-  {: An object encapsulating the OpenGL feedback rendering mode. }
+  { An object encapsulating the OpenGL feedback rendering mode. }
   TVKFeedback = class(TVKBaseSceneObject)
   private
     { Private Declarations }
@@ -69,7 +56,7 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    {: Parse the the feedback buffer for polygon data and build
+    { Parse the the feedback buffer for polygon data and build
        a mesh into the assigned lists. }
     procedure BuildMeshFromBuffer(
       Vertices: TAffineVectorList = nil;
@@ -84,7 +71,7 @@ type
     //: The feedback buffer
     property Buffer: TSingleList read FBuffer;
 
-    {: Vertex positions in the buffer needs to be scaled by
+    { Vertex positions in the buffer needs to be scaled by
        CorrectionScaling to get correct coordinates. }
     property CorrectionScaling: Single read FCorrectionScaling;
 

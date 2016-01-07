@@ -1,24 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ODERagdoll<p>
-
-	TVKRagdoll extended using Open Dynamics Engine (ODE). <p>
-
-	<b>History :</b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
-    <li>13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
-                            global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"
-    <li>11/05/08 - Mrqzzz - replaced TVKCube with TODERagdollCube
-                            (contains reference to Bone and Ragdoll, useful in collision events)
-    <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
-                            in TODERagdollBone.Start.
-                            Fixed a memory leak in TODERagdollBone.Stop
-    <li>05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
-    <li>09/11/05 - LucasG - Fixed joints to be relative to the body
-    <li>07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
-    <li>02/11/05 - LucasG - First version created.
-  </ul></font>
+{
+  TVKRagdoll extended using Open Dynamics Engine (ODE).  
 }
 
 unit VKS.ODERagdoll;
@@ -57,7 +41,7 @@ type
 
   public
     constructor Create;
-    {: Create the world from any existing ODE world }
+    { Create the world from any existing ODE world }
     constructor CreateFrom(World: PdxWorld; Space: PdxSpace; ContactGroup: TdJointGroupID);
     destructor Destroy; override;
     procedure WorldUpdate;

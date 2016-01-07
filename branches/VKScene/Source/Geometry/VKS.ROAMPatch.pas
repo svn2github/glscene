@@ -1,31 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.ROAMPatch<p>
-
-  Class for managing a ROAM (square) patch.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
-  <li>22/08/10 - DaStr - Fixed compiler warning
-  <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
-  <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
-  <li>20/05/10 - Yar - Fixes for Linux x64
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
-  It will now increase the buffer instead of not splitting. Bugtracker ID=1574111
-  <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.
-  <li>09/06/06 - Lin - Bugfix: Stop splitting Triangles when MaxCLODTriangles is reached (prevents Access Violations)
-  <li>10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
-  but not GL_EXT_draw_range_elements
-  <li>25/04/04 - EG - Occlusion testing support
-  <li>06/02/03 - EG - Adaptative variance computation
-  <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
-  <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
-  <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
-  <li>10/09/01 - EG - Creation
-  </ul></font>
+{ 
+  Class for managing a ROAM (square) patch.
+ 
 }
 unit VKS.ROAMPatch;
 
@@ -108,29 +86,29 @@ type
     procedure ConnectToTheWest(westPatch: TVKROAMPatch);
     procedure ConnectToTheNorth(northPatch: TVKROAMPatch);
 
-    { : AV free version of Tesselate.<p>
+    { AV free version of Tesselate. 
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
     function SafeTesselate: boolean;
 
-    { : Render the patch in high-resolution.<p>
+    { Render the patch in high-resolution. 
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). High-resolution renders use
       display lists, and are assumed to be made together. }
     procedure RenderHighRes(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList;
       forceROAM: Boolean);
-    { : Render the patch by accumulating triangles.<p>
+    { Render the patch by accumulating triangles. 
       The lists are assumed to have enough capacity to allow AddNC calls
-      (additions without capacity check).<br>
+      (additions without capacity check). 
       Once at least autoFlushVertexCount vertices have been accumulated,
       perform a FlushAccum }
     procedure RenderAccum(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList;
       autoFlushVertexCount: Integer);
-    { : Render all vertices accumulated in the arrays and set their count
+    { Render all vertices accumulated in the arrays and set their count
       back to zero. }
     class procedure FlushAccum(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList);
@@ -148,12 +126,12 @@ type
 
     property HighRes: Boolean read FHighRes write FHighRes;
 
-    { : Number of frames to skip after an occlusion test returned zero pixels. }
+    { Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
-    { : Number of frames remaining to next occlusion test. }
+    { Number of frames remaining to next occlusion test. }
     property OcclusionCounter: Integer read FOcclusionCounter
       write FOcclusionCounter;
-    { : Result for the last occlusion test.<p>
+    { Result for the last occlusion test. 
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
     property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;
@@ -163,7 +141,7 @@ type
     property Tag: Integer read FTag write FTag;
   end;
 
-  { : Specifies the maximum number of ROAM triangles that may be allocated. }
+  { Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
 
@@ -720,7 +698,7 @@ end;
 procedure TVKROAMPatch.RenderHighRes(vertices: TAffineVectorList;
   vertexIndices: TIntegerList; texCoords: TTexPointList; forceROAM: Boolean);
 var
-  primitive: TVKEnum;
+  primitive: TGLenum;
 begin
   // Prepare display list if needed
   if FListHandle.Handle = 0 then

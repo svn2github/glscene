@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TextureCombiners<p>
-
-   Texture combiners setup utility functions.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Added combiner's commands cache   
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses
-      <li>18/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
-      <li>02/04/07 - DaStr - Added $I GLScene.inc
-      <li>17/12/03 - EG - Alpha and RGB channels separate combination now supported
-      <li>23/05/03 - EG - All tex units now accepted as target
-      <li>22/05/03 - EG - Fixed GL_ADD_SIGNED_ARB parsing, better error reporting
-      <li>16/05/03 - EG - Creation
-   </ul></font>
+{
+   Texture combiners setup utility functions. 
+    
 }
 unit VKS.TextureCombiners;
 
@@ -43,26 +32,26 @@ type
   ETextureCombinerError = class(Exception)
     ;
 
-  {: Parses a TC text description and setups combiners accordingly.<p>
-     *experimental*<br>
-     Knowledge of texture combiners is a requirement<br>
-     Syntax: pascal-like, one instruction per line, use '//' for comment.<p>
+  { Parses a TC text description and setups combiners accordingly. 
+     *experimental* 
+     Knowledge of texture combiners is a requirement 
+     Syntax: pascal-like, one instruction per line, use '//' for comment. 
 
-     Examples:<ul>
-     <li>Tex1:=Tex0;   // replace texture 1 with texture 0
-     <li>Tex1:=Tex0+Tex1; // additive blending between textures 0 and 1
-     <li>Tex1:=Tex0-Tex1; // subtractive blending between textures 0 and 1
-     <li>Tex1:=Tex0*Tex1; // modulation between textures 0 and 1
-     <li>Tex1:=Tex0+Tex1-0.5; // signed additive blending between textures 0 and 1
-     <li>Tex1:=Interpolate(Tex0, Tex1, PrimaryColor); // interpolation between textures 0 and 1 using primary color as factor
-     <li>Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
-     </ul><p>
+     Examples: 
+      Tex1:=Tex0;   // replace texture 1 with texture 0
+      Tex1:=Tex0+Tex1; // additive blending between textures 0 and 1
+      Tex1:=Tex0-Tex1; // subtractive blending between textures 0 and 1
+      Tex1:=Tex0*Tex1; // modulation between textures 0 and 1
+      Tex1:=Tex0+Tex1-0.5; // signed additive blending between textures 0 and 1
+      Tex1:=Interpolate(Tex0, Tex1, PrimaryColor); // interpolation between textures 0 and 1 using primary color as factor
+      Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
+       
 
-     Accepted tokens:<ul>
-     <li>Tex0, Tex1, etc. : texture unit
-     <li>PrimaryColor, Col : the primary color
-     <li>ConstantColor, EnvCol : texture environment constant color
-     </ul><br>
+     Accepted tokens: 
+      Tex0, Tex1, etc. : texture unit
+      PrimaryColor, Col : the primary color
+      ConstantColor, EnvCol : texture environment constant color
+       
      Tokens can be qualified with '.a' or '.alpha' to specify the alpha channel
      explicitly, and '.rgb' to specify color channels (default). You cannot mix
      alpha and rgb tokens in the same line.

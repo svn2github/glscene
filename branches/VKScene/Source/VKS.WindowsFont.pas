@@ -1,30 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.WindowsFont<p>
-
-  TFont Import into a BitmapFont using variable width...<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
-       <li>29/05/11 - Yar - Unicode support for Unix OSes (by Gabriel Corneanu)
-      <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
-      <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Added "VectorTypes.pas" unit to uses
-      <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
-                          (thanks olkondr)
-                          Replace Char to AnsiChar
-      <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>12/15/04 - Eugene Kryukov - Added TVKStoredBitmapFont
-      <li>03/07/04 - LR - Added ifdef for Graphics uses
-      <li>29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
-                          dropped interface dependency, texture size auto computed,
-                          fixed italics spacing, uses LUM+ALPHA texture
-      <li>06/09/02 - JAJ - Fixed alot of bugs... Expecially designtime updating bugs..
-      <li>12/08/02 - JAJ - Made into a standalone unit...
- </ul></font>
+{
+  TFont Import into a BitmapFont using variable width... 
+  
 }
 unit VKS.WindowsFont;
 
@@ -59,12 +38,12 @@ type
 
   // TVKWindowsBitmapFont
   //
-  {: A bitmap font automatically built from a TFont.<p>
+  { A bitmap font automatically built from a TFont. 
      It works like a TVKBitmapfont, you set ranges and which chars are assigned
      to which indexes, however here you also set the Font property to any TFont
      available to the system and it renders in GLScene as close to that font
      as posible, on some font types this is 100% on some a slight difference
-     in spacing can occur at most 1 pixel per char on some char combinations.<p>
+     in spacing can occur at most 1 pixel per char on some char combinations. 
      Ranges must be sorted in ascending ASCII order and should not overlap.
      As the font texture is automatically layed out, the Ranges StartGlyphIdx
      property is ignored and replaced appropriately. }
@@ -99,7 +78,7 @@ type
 
   published
     { Published Declarations }
-      {: The font used to prepare the texture.<p>
+      { The font used to prepare the texture. 
          Note: the font color is ignored. }
     property Font: TFont read FFont write SetFont;
 

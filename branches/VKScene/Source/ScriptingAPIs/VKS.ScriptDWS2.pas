@@ -1,12 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ScriptDWS2.<p>
+{
    DelphiWebScriptII implementation for the GLScene scripting layer
-
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/2004 - SG - Creation
-   </ul></font>
+    
 }
 unit VKS.ScriptDWS2;
 
@@ -21,7 +18,7 @@ uses
 type
   // TVKDelphiWebScriptII
   //
-  {: This class only adds manager registration logic to the TDelphiWebScriptII
+  { This class only adds manager registration logic to the TDelphiWebScriptII
      class to enable the XCollection items (ie. TVKScriptDWS2) retain it's
      assigned compiler from design to run -time. }
   TVKDelphiWebScriptII = class(TDelphiWebScriptII)
@@ -32,7 +29,7 @@ type
 
   // VKS.ScriptDWS2
   //
-  {: Implements DelphiWebScriptII scripting functionality through the
+  { Implements DelphiWebScriptII scripting functionality through the
      abstracted VKS.ScriptBase . }
   TVKScriptDWS2 = class(TVKScriptBase)
     private

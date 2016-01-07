@@ -1,8 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : File3DS<p>
-
+{
   Implementation of an universal 3DS file reader (and writer). This is the main file of the
   3DS import library. Currently only loading of 3DS files (Mesh files  * .3ds, Project files  * .prj
   and Material files  * .mli) is supported.
@@ -14,17 +13,8 @@
   which must stay valid either during the entire lifetime of TFile3DS or at least
   'til all chunks have been read (by accessing them all once).
 
-  <b>History :</b><font size=-1><ul>
-  <li>01/11/07 - DaStr - Fixed memory leaks when using the TKeyFramer class
-  (BugTracker ID = 1823781)
-  Added a standard GLScene header
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>08/06/00 -  Egg  - LoadFromStream no longer free the stream it was passed,
-  </ul></font>                further fixing of the streaming mechanism is needed
-
-  (c) Copyright 1999, 2000
-  Dipl. Ing. Mike Lischke (public@lischke-online.de)
-  Igor T. (GWin), (georgwin@chat.ru)
+   
+     
 }
 unit File3DS;
 

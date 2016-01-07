@@ -1,9 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MeshCSG<p>
-
-   Constructive Solid Geometry in GLScene.
+{
+   Constructive Solid Geometry in VKScene. 
 
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,
@@ -14,12 +13,6 @@
 
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
- <b>History : </b><font size=-1><ul>
-      <li>06/06/10 - Yar - Added VKS.VectorTypes to uses
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
-      <li>29/11/03 - JAJ - Created and Submitted to GLScene.
- </ul></font>
 }
 unit VKS.MeshCSG;
 
@@ -29,7 +22,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-
+  //VKS
   VKS.Scene, VKS.VectorTypes, VKS.VectorFileObjects,
   VKS.VectorGeometry, VKS.BSP, VKS.VectorLists;
 

@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TexCombineShader<p>
-
-   A shader that allows texture combiner setup.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Added combiner's commands cache
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>24/07/09 - DaStr - TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-      <li>03/04/07 - DaStr - Added $I GLScene.inc
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>23/05/03 - EG - Added support for binding two extra texture units
-      <li>16/05/03 - EG - Creation
-   </ul></font>
+{
+   A shader that allows texture combiner setup. 
+               
 }
 unit VKS.TexCombineShader;
 
@@ -39,7 +28,7 @@ type
 
   // TVKTexCombineShader
   //
-  {: A shader that can setup the texture combiner.<p> }
+  { A shader that can setup the texture combiner.  }
   TVKTexCombineShader = class(TVKShader)
   private
     { Protected Declarations }

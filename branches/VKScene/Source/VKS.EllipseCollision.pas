@@ -1,17 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.EllipseCollision<p>
-
+{
   Ellipsoid collision functions (mainly used by DCE).
-
-  <b>History : </b><font size=-1><ul>
-    <li>30/03/07 - DaStr - Added $I GLScene.inc
-    <li>09/05/05 - Mathx - Protection agains float error on getLowestRoot
-    <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features 
-    <li>03/09/04 - LucasG - First release
-    <li>29/07/04 - LucasG - Creation
-  </ul></font>
+   
 }
 unit VKS.EllipseCollision;
 

@@ -1,16 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ScriptBase.<p>
+{
    An abstract scripting interface for GLScene
-
    This unit provides the base methods for compiling and executing scripts as
    well as calling scripted functions. No scripting APIs are implemented here,
-   only abstracted functions.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/2004 - SG - Creation
-   </ul></font>
+   only abstracted functions. 
+     
 }
 unit VKS.ScriptBase;
 
@@ -31,7 +27,7 @@ type
 
   // TVKScriptBase
   //
-  {: The base script class that defines the abstract functions and properties. 
+  { The base script class that defines the abstract functions and properties. 
      Don't use this class directly, use the script classes descended from this 
      base class.  }
   TVKScriptBase = class(TXCollectionItem)
@@ -77,7 +73,7 @@ type
 
   // TVKScripts
   //
-  {: XCollection descendant for storing and handling scripts. }
+  { XCollection descendant for storing and handling scripts. }
   TVKScripts = class(TXCollection)
 		private
 			{ Private Declarations }
@@ -99,7 +95,7 @@ type
 
   // TVKScriptLibrary
   //
-  {: Encapsulation of the scripts XCollection to help with script handling at
+  { Encapsulation of the scripts XCollection to help with script handling at
      design-time. Links the scripts to Delphi's persistence model. }
   TVKScriptLibrary = class (TComponent)
     private

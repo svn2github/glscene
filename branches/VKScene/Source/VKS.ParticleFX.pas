@@ -1,70 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ParticleFX<p>
-
-   Base classes for scene-wide blended particles FX.<p>
+{
+   Base classes for scene-wide blended particles FX. 
 
    These provide a mechanism to render heterogenous particles systems with per
    particle depth-sorting (allowing correct rendering of interwoven separate
-   fire and smoke particle systems for instance).<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>21/01/01 - DanB - Added "inherited" call to TVKParticleFXEffect.WriteToFiler
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
-                            and fix RegisterAsOpenGLTexture
-      <li>12/10/08 - DanB - fix to TVKLifeColoredPFXManager.ComputeRotateAngle (it used lck.FDoScale
-                            instead of lck.FDoRotate), made more use of RCI instead of accessing via global variables.
-                            Changed order of transformations when rendering particles, now does rotation+scaling before translation.
-                            Disabled FRotationCenter,
-      <li>15/02/08 - Mrqzzz - Fixed SizeScale in Lifetimes of TVKBaseSpritePFXManager (was ignored)
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>02/04/07 - DaStr - TPFXLifeColors now inherits from TOwnedCollection
-                             (thanks Burkhard Carstens)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>24/01/07 - DaStr - TVKSourcePFXEffect.Burst and TVKBaseSpritePFXManager.RenderParticle bugfixed
-                             TVKLifeColoredPFXManager.RotateVertexBuf bugfixed (all based on old code)
-      <li>28/10/06 - LC - Fixed access violation in TVKParticleFXRenderer. Bugtracker ID=1585907 (thanks Da Stranger)
-      <li>19/10/06 - LC - Fixed memory leak in TVKParticleFXManager. Bugtracker ID=1551866 (thanks Dave Gravel)
-      <li>08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
-                             form but a particleFX still had a reference to it (added
-                             the FUsers property). Butracker ID=783625.
-      <li>17/02/05 - EG - Restored correct PFXSource.Burst relative/absolute behaviour,
-                          EffectsScale support not added back (no clue what it does... Mrqz?)
-      <li>23/11/04 - SG - Fixed memory leak in TVKLifeColoredPFXManager (kenguru)
-      <li>03/10/04 - Mrqzzz - added property TVKParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
-      <li>25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
-      <li>09/09/04 - Mrqzzz - added property TVKParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TVKParticleFXEffect.ArchiveVersion updated to 4
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-                               Replace direct access of some properties by
-                               a getter and a setter.
-                               fixed undefined TPFXRegion error in BCB
-      <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
-      <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
-      <li>09/07/04 - Mrqzzz - small fixup (TVKSourcePFXEffect.WriteToFiler Archive V.4)
-      <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
-                                      LifeColor. And added AbsoluteRotation for TVKDynamicPFXManager
-      <li>25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
-                          and sprites sharing
-      <li>24/04/04 - Mrqzzz - Added property "enabled" to TVKSourcePFXEffect
-      <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
-                          improved texturing mode switches
-      <li>26/05/03 - EG - Improved TVKParticleFXRenderer.BuildList
-      <li>05/11/02 - EG - Enable per-manager blending mode control
-      <li>27/01/02 - EG - Added TVKLifeColoredPFXManager, TVKBaseSpritePFXManager
-                          and TVKPointLightPFXManager.
-      <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
-                          minor sort and render optims
-      <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
-      <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
-      <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
-      <li>08/09/01 - EG - Creation (VKS.ParticleFX.omm)
-   </ul></font>
+   fire and smoke particle systems for instance). 
+    
 }
 unit VKS.ParticleFX;
 
@@ -93,7 +36,7 @@ type
 
   // TVKParticle
   //
-  {: Base class for particles.<p>
+  { Base class for particles. 
      The class implements properties for position, velocity and time, whatever
      you need in excess of that will have to be placed in subclasses (this
      class should remain as compact as possible). }
@@ -124,19 +67,19 @@ type
 
     property Manager: TVKParticleFXManager read FManager write FManager;
 
-    {: Particle's ID, given at birth.<p>
+    { Particle's ID, given at birth. 
        ID is a value unique per manager. }
     property ID: Integer read FID;
-    {: Particle's absolute position.<p>
+    { Particle's absolute position. 
        Note that this property is read-accessed directly at rendering time
        in the innards of the depth-sorting code. }
     property Position: TAffineVector read FPosition write FPosition;
-    {: Particle's velocity.<p>
+    { Particle's velocity. 
        This velocity is indicative and is NOT automatically applied
        to the position during progression events by this class (subclasses
        may implement that). }
     property Velocity: TAffineVector read FVelocity write FVelocity;
-    {: Time at which particle was created }
+    { Time at which particle was created }
     property CreationTime: Double read FCreationTime write FCreationTime;
 
     property PosX : Single index 0 read GetPosition write WritePosition;
@@ -155,7 +98,7 @@ type
 
   // TVKParticleList
   //
-  {: List of particles.<p>
+  { List of particles. 
      This list is managed with particles and performance in mind, make sure to
      check methods doc. }
   TVKParticleList = class(TPersistentObject)
@@ -178,23 +121,23 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    {: Refers owner manager }
+    { Refers owner manager }
     property Owner: TVKParticleFXManager read FOwner write FOwner;
     property Items[index: Integer]: TVKParticle read GetItems write SetItems; default;
 
     function ItemCount: Integer;
-    {: Adds a particle to the list.<p>
+    { Adds a particle to the list. 
        Particle owneship is defined blindly, if the particle was previously
        in another list, it won't be automatically removed from that list. }
     function AddItem(aItem: TVKParticle): Integer;
-    {: Removes and frees a particular item for the list.<p>
-       If the item is not part of the list, nothing is done.<br>
+    { Removes and frees a particular item for the list. 
+       If the item is not part of the list, nothing is done. 
        If found in the list, the item's "slot" is set to nil and item is
        freed (after setting its ownership to nil). The nils can be removed
        with a call to Pack. }
     procedure RemoveAndFreeItem(aItem: TVKParticle);
     function IndexOfItem(aItem: TVKParticle): Integer;
-    {: Packs the list by removing all "nil" items.<p>
+    { Packs the list by removing all "nil" items. 
        Note: this functions is orders of magnitude faster than the TList
        version. }
     procedure Pack;
@@ -207,10 +150,10 @@ type
 
   // TVKParticleFXManager
   //
-  {: Base class for particle FX managers.<p>
+  { Base class for particle FX managers. 
      Managers take care of life and death of particles for a particular
      particles FX system. You can have multiple scene-wide particle
-     FX managers in a scene, handled by the same ParticleFxRenderer.<p>
+     FX managers in a scene, handled by the same ParticleFxRenderer. 
      Before subclassing, make sure you understood how the Initialize/Finalize
      Rendering, Begin/End Particles and RenderParticles methods (and also
      understood that rendering of manager's particles may be interwoven). }
@@ -231,47 +174,47 @@ type
     procedure SetRenderer(const val: TVKParticleFXRenderer);
     procedure SetParticles(const aParticles: TVKParticleList);
 
-    {: Texturing mode for the particles.<p>
+    { Texturing mode for the particles. 
        Subclasses should return GL_TEXTURE_1D, 2D or 3D depending on their
        needs, and zero if they don't use texturing. This method is used
        to reduce the number of texturing activations/deactivations. }
     function TexturingMode: Cardinal; virtual; abstract;
 
-    {: Invoked when the particles of the manager will be rendered.<p>
+    { Invoked when the particles of the manager will be rendered. 
        This method is fired with the "base" OpenGL states and matrices
        that will be used throughout the whole rendering, per-frame
-       initialization should take place here.<br>
+       initialization should take place here. 
        OpenGL states/matrices should not be altered in any way here. }
     procedure InitializeRendering(var rci: TRenderContextInfo); dynamic; abstract;
-    {: Triggered just before rendering a set of particles.<p>
+    { Triggered just before rendering a set of particles. 
        The current OpenGL state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
-       be established here.<br>
+       be established here. 
        Multiple BeginParticles can occur during a render (but all will be
        between InitializeRendering and Finalizerendering, and at least one
        particle will be rendered before EndParticles is invoked). }
     procedure BeginParticles(var rci: TRenderContextInfo); virtual; abstract;
-    {: Request to render a particular particle.<p>
+    { Request to render a particular particle. 
        Due to the nature of the rendering, no particular order should be
        assumed. If possible, no OpenGL state changes should be made in this
        method, but should be placed in Begin/EndParticles. }
     procedure RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle); virtual; abstract;
-    {: Triggered after a set of particles as been rendered.<p>
+    { Triggered after a set of particles as been rendered. 
        If OpenGL state were altered directly (ie. not through the states
        caches of GLMisc), it should be restored back to the "base" state. }
     procedure EndParticles(var rci: TRenderContextInfo); virtual; abstract;
-    {: Invoked when rendering of particles for this manager is done. }
+    { Invoked when rendering of particles for this manager is done. }
     procedure FinalizeRendering(var rci: TRenderContextInfo); dynamic; abstract;
 
-    {: ID for the next created particle. }
+    { ID for the next created particle. }
     property NextID: Integer read FNextID write FNextID;
 
-    {: Blending mode for the particles.<p>
+    { Blending mode for the particles. 
        Protected and unused in the base class. }
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode;
-    {: Apply BlendingMode relatively to the renderer's blending mode. }
+    { Apply BlendingMode relatively to the renderer's blending mode. }
     procedure ApplyBlendingMode(var rci: TRenderContextInfo);
-    {: Unapply BlendingMode relatively by restoring the renderer's blending mode. }
+    { Unapply BlendingMode relatively by restoring the renderer's blending mode. }
     procedure UnapplyBlendingMode(var rci: TRenderContextInfo);
 
     procedure registerUser(obj: TVKParticleFXEffect);
@@ -287,31 +230,31 @@ type
 
     //: Class of particles created by this manager. }
     class function ParticlesClass: TVKParticleClass; virtual;
-    {: Creates a new particle controled by the manager. }
+    { Creates a new particle controled by the manager. }
     function CreateParticle: TVKParticle; virtual;
-    {: Create several particles at once. }
+    { Create several particles at once. }
     procedure CreateParticles(nbParticles: Integer);
 
-    {: A TVKParticleList property. }
+    { A TVKParticleList property. }
     property Particles: TVKParticleList read FParticles write SetParticles;
-    {: Return the number of particles.<p>
+    { Return the number of particles. 
        Note that subclasses may decide to return a particle count inferior
        to Particles.ItemCount, and the value returned by this method will
        be the one honoured at render time. }
     function ParticleCount: Integer; virtual;
 
-    {: If True the manager will free itself when its particle count reaches zero.<p>
+    { If True the manager will free itself when its particle count reaches zero. 
        Check happens in the progression event, use with caution and only
        if you know what you're doing! }
     property AutoFreeWhenEmpty: Boolean read FAutoFreeWhenEmpty write FAutoFreeWhenEmpty;
 
   published
     { Published Declarations }
-          {: References the renderer.<p>
+          { References the renderer. 
              The renderer takes care of ordering the particles of the manager
              (and other managers linked to it) and rendering them all depth-sorted. }
     property Renderer: TVKParticleFXRenderer read FRenderer write SetRenderer;
-    {: Event triggered after standard particle creation and initialization. }
+    { Event triggered after standard particle creation and initialization. }
     property OnCreateParticle: TPFXCreateParticleEvent read FOnCreateParticle write FOnCreateParticle;
 
     property Cadencer;
@@ -319,7 +262,7 @@ type
 
   // TVKParticleFXEffect
   //
-  {: Base class for linking scene objects to a particle FX manager.<p> }
+  { Base class for linking scene objects to a particle FX manager.  }
   TVKParticleFXEffect = class(TVKObjectPostEffect)
   private
     { Private Declarations }
@@ -346,7 +289,7 @@ type
 
   published
     { Published Declarations }
-          {: Reference to the Particle FX manager }
+          { Reference to the Particle FX manager }
     property Manager: TVKParticleFXManager read FManager write SetManager;
     property EffectScale: single read FEffectScale write SetEffectScale;
 
@@ -376,10 +319,10 @@ type
 
   // TVKParticleFXRenderer
   //
-  {: Rendering interface for scene-wide particle FX.<p>
+  { Rendering interface for scene-wide particle FX. 
      A renderer can take care of rendering any number of particle systems,
      its main task being to depth-sort the particles so that they are blended
-     appropriately.<br>
+     appropriately. 
      This object will usually be placed at the end of the scene hierarchy,
      just before the HUD overlays, its position, rotation etc. is of no
      importance and has no effect on the rendering of the particles. }
@@ -399,9 +342,9 @@ type
     { Protected Declarations }
     function StoreZMaxDistance: Boolean;
 
-    {: Register a manager }
+    { Register a manager }
     procedure RegisterManager(aManager: TVKParticleFXManager);
-    {: UnRegister a manager }
+    { UnRegister a manager }
     procedure UnRegisterManager(aManager: TVKParticleFXManager);
 
     procedure UnRegisterAll;
@@ -413,33 +356,33 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo); override;
 
-    {: Time (in msec) spent sorting the particles for last render. }
+    { Time (in msec) spent sorting the particles for last render. }
     property LastSortTime: Double read FLastSortTime;
-    {: Amount of particles during the last render. }
+    { Amount of particles during the last render. }
     property LastParticleCount: Integer read FLastParticleCount;
 
   published
     { Published Declarations }
-        {: Specifies if particles should write to ZBuffer.<p>
+        { Specifies if particles should write to ZBuffer. 
            If the PFXRenderer is the last object to be rendered in the scene,
            it is not necessary to write to the ZBuffer since the particles
            are depth-sorted. Writing to the ZBuffer has a performance penalty. }
     property ZWrite: Boolean read FZWrite write FZWrite default False;
-    {: Specifies if particles should write to test ZBuffer.<p> }
+    { Specifies if particles should write to test ZBuffer.  }
     property ZTest: Boolean read FZTest write FZTest default True;
-    {: If true the renderer will cull particles that are behind the camera. }
+    { If true the renderer will cull particles that are behind the camera. }
     property ZCull: Boolean read FZCull write FZCull default True;
-    {: If true particles will be accurately sorted back to front.<p>
+    { If true particles will be accurately sorted back to front. 
        When false, only a rough ordering is used, which can result in
        visual glitches but may be faster. }
     property ZSortAccuracy: TPFXSortAccuracy read FZSortAccuracy write FZSortAccuracy default saHigh;
-    {: Maximum distance for rendering PFX particles.<p>
+    { Maximum distance for rendering PFX particles. 
        If zero, camera's DepthOfView is used. }
     property ZMaxDistance: Single read FZMaxDistance write FZMaxDistance stored StoreZMaxDistance;
-    {: Default blending mode for particles.<p>
+    { Default blending mode for particles. 
        "Additive" blending is the usual mode (increases brightness and
        saturates), "transparency" may be used for smoke or systems that
-       opacify view, "opaque" is more rarely used.<p>
+       opacify view, "opaque" is more rarely used. 
        Note: specific PFX managers may override/ignore this setting. }
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode default bmAdditive;
 
@@ -460,7 +403,7 @@ type
 
   // TVKSourcePFXEffect
   //
-  {: Simple Particles Source.<p> }
+  { Simple Particles Source.  }
   TVKSourcePFXEffect = class(TVKParticleFXEffect)
   private
     { Private Declarations }
@@ -523,7 +466,7 @@ type
 
   // TVKDynamicPFXManager
   //
-  {: An abstract PFX manager for simple dynamic particles.<p>
+  { An abstract PFX manager for simple dynamic particles. 
      Adds properties and progress implementation for handling moving particles
      (simple velocity and const acceleration integration). }
   TVKDynamicPFXManager = class(TVKParticleFXManager)
@@ -539,7 +482,7 @@ type
     { Protected Declarations }
     procedure SetAcceleration(const val: TVKCoordinates);
 
-    {: Returns the maximum age for a particle.<p>
+    { Returns the maximum age for a particle. 
        Particles older than that will be killed by DoProgress. }
     function MaxParticleAge: Single; dynamic; abstract;
 
@@ -554,9 +497,9 @@ type
 
   published
     { Published Declarations }
-      {: Oriented acceleration applied to the particles. }
+      { Oriented acceleration applied to the particles. }
     property Acceleration: TVKCoordinates read FAcceleration write SetAcceleration;
-    {: Friction applied to the particles.<p>
+    { Friction applied to the particles. 
        Friction is applied as a speed scaling factor over 1 second, ie.
        a friction of 0.5 will half speed over 1 second, a friction of 3
        will triple speed over 1 second, and a friction of 1 (default
@@ -595,9 +538,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Stores 1/LifeTime }
+    { Stores 1/LifeTime }
     property InvLifeTime: Single read FInvLifeTime;
-    {: Stores 1/(LifeTime[Next]-LifeTime[Self]) }
+    { Stores 1/(LifeTime[Next]-LifeTime[Self]) }
     property InvIntervalRatio: Single read FIntervalRatio;
 
   published
@@ -635,7 +578,7 @@ type
 
   // TVKLifeColoredPFXManager
   //
-  {: Base PFX manager for particles with life colors.<p>
+  { Base PFX manager for particles with life colors. 
      Particles have a core and edge color, for subclassing. }
   TVKLifeColoredPFXManager = class(TVKDynamicPFXManager)
   private
@@ -693,11 +636,11 @@ type
 
   // TVKCustomPFXManager
   //
-  {: A particles FX manager offering events for customization/experimentation.<p>
+  { A particles FX manager offering events for customization/experimentation. 
      This manager essentially surfaces the PFX methods as events, and is best
      suited when you have specific particles that don't fall into any existing
      category, or when you want to experiment with particles and later plan to
-     wrap things up in a full-blown manager.<br>
+     wrap things up in a full-blown manager. 
      If the events aren't handled, nothing will be rendered. }
   TVKCustomPFXManager = class(TVKLifeColoredPFXManager)
   private
@@ -744,9 +687,9 @@ type
 
   // TVKPolygonPFXManager
   //
-  {: Polygonal particles FX manager.<p>
+  { Polygonal particles FX manager. 
      The particles of this manager are made of N-face regular polygon with
-     a core and edge color. No texturing is available.<br>
+     a core and edge color. No texturing is available. 
      If you render large particles and don't have T&L acceleration, consider
      using TVKPointLightPFXManager. }
   TVKPolygonPFXManager = class(TVKLifeColoredPFXManager)
@@ -785,23 +728,23 @@ type
 
   // TSpriteColorMode
   //
-  {: Sprite color modes.<p>
-     <ul>
-     <li>scmFade: vertex coloring is used to fade inner-outer
-     <li>scmInner: vertex coloring uses inner color only
-     <li>scmOuter: vertex coloring uses outer color only
-     <li>scmNone: vertex coloring is NOT used (colors are ignored).
-     </ul> }
+  { Sprite color modes. 
+      
+      scmFade: vertex coloring is used to fade inner-outer
+      scmInner: vertex coloring uses inner color only
+      scmOuter: vertex coloring uses outer color only
+      scmNone: vertex coloring is NOT used (colors are ignored).
+       }
   TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
 
   // TSpritesPerTexture
   //
-  {: Sprites per sprite texture for the SpritePFX. }
+  { Sprites per sprite texture for the SpritePFX. }
   TSpritesPerTexture = (sptOne, sptFour);
 
   // TVKBaseSpritePFXManager
   //
-  {: Base class for sprite-based particles FX managers.<p>
+  { Base class for sprite-based particles FX managers. 
      The particles are made of optionally centered single-textured quads. }
   TVKBaseSpritePFXManager = class(TVKLifeColoredPFXManager)
   private
@@ -819,7 +762,7 @@ type
 
   protected
     { Protected Declarations }
-    {: Subclasses should draw their stuff in this bmp32. }
+    { Subclasses should draw their stuff in this bmp32. }
     procedure PrepareImage(bmp32: TVKBitmap32; var texFormat: Integer); virtual; abstract;
 
     procedure BindTexture(var rci: TRenderContextInfo);
@@ -848,19 +791,19 @@ type
 
   published
     { Published Declarations }
-      {: Ratio between width and height.<p>
+      { Ratio between width and height. 
          An AspectRatio of 1 (default) will result in square sprite particles,
          values higher than one will result in horizontally stretched sprites,
          values below one will stretch vertically (assuming no rotation is applied). }
     property AspectRatio: Single read FAspectRatio write SetAspectRatio stored StoreAspectRatio;
-    {: Particle sprites rotation (in degrees).<p>
+    { Particle sprites rotation (in degrees). 
        All particles of the PFX manager share this rotation. }
     property Rotation: Single read FRotation write SetRotation;
-    {: If specified the manager will reuse the other manager's sprites.<p>
+    { If specified the manager will reuse the other manager's sprites. 
        Sharing sprites between PFX managers can help at the rendering stage
        if particles of the managers are mixed by helping reduce the number
        of texture switches. Note that only the texture is shared, not the
-       colors, sizes or other dynamic parameters.<br> }
+       colors, sizes or other dynamic parameters.  }
     property ShareSprites: TVKBaseSpritePFXManager read FShareSprites write FShareSprites;
   end;
 
@@ -870,7 +813,7 @@ type
 
   // TVKPointLightPFXManager
   //
-  {: A sprite-based particles FX managers using user-specified code to prepare the texture.<p> }
+  { A sprite-based particles FX managers using user-specified code to prepare the texture.  }
   TVKCustomSpritePFXManager = class(TVKBaseSpritePFXManager)
   private
     { Private Declarations }
@@ -887,7 +830,7 @@ type
 
   published
     { Published Declarations }
-      {: Place your texture rendering code in this event.<p> }
+      { Place your texture rendering code in this event.  }
     property OnPrepareTextureImage: TPFXPrepareTextureImageEvent read FOnPrepareTextureImage write FOnPrepareTextureImage;
 
     property ColorMode default scmInner;
@@ -900,10 +843,10 @@ type
 
   // TVKPointLightPFXManager
   //
-  {: A sprite-based particles FX managers using point light maps.<p>
+  { A sprite-based particles FX managers using point light maps. 
      The texture map is a round, distance-based transparency map (center "opaque"),
      you can adjust the quality (size) of the underlying texture map with the
-     TexMapSize property.<p>
+     TexMapSize property. 
      This PFX manager renders particles similar to what you can get with
      TVKPolygonPFXManager but stresses fillrate more than T&L rate (and will
      usually be slower than the PolygonPFX when nbSides is low or T&L acceleration
@@ -927,7 +870,7 @@ type
 
   published
     { Published Declarations }
-      {: Underlying texture map size, as a power of two.<p>
+      { Underlying texture map size, as a power of two. 
          Min value is 3 (size=8), max value is 9 (size=512). }
     property TexMapSize: Integer read FTexMapSize write SetTexMapSize default 5;
 
@@ -938,7 +881,7 @@ type
     property LifeColors;
   end;
 
-  {: Returns or creates the TVKBInertia within the given object's behaviours.<p> }
+  { Returns or creates the TVKBInertia within the given object's behaviours.  }
 function GetOrCreateSourcePFX(obj: TVKBaseSceneObject; const name: string = ''): TVKSourcePFXEffect;
 
 // ------------------------------------------------------------------

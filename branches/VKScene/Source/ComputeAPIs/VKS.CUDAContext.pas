@@ -1,13 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : GLSCUDAContext <p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>03/01/15 - PW - Upgraded to use with FMX
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
-}
 
 unit VKS.CUDAContext;
 
@@ -85,7 +78,7 @@ type
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    { : Returns in bytes the total amount of memory
+    { Returns in bytes the total amount of memory
       available on the device dev in bytes. }
     function TotalMemory: Cardinal;
   published
@@ -152,11 +145,11 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    { : Destroy all handles based of this context. }
+    { Destroy all handles based of this context. }
     procedure DestroyAllHandles;
-    { : Pushes context onto CPU thread’s stack of current contexts. }
+    { Pushes context onto CPU thread’s stack of current contexts. }
     procedure Requires;
-    { : Pops context from current CPU thread. }
+    { Pops context from current CPU thread. }
     procedure Release;
 
     function IsValid: Boolean; inline;
@@ -171,7 +164,7 @@ type
   // CUDAContextManager
   //
 
-  { : Static class of CUDA contexts manager. }
+  { Static class of CUDA contexts manager. }
 
   CUDAContextManager = class
   private
@@ -191,7 +184,7 @@ type
     class function GetContext(i: Integer): TCUDAContext;
   public
     { Public declarations }
-    { : Managment. }
+    { Managment. }
     class procedure Init;
     class procedure Done;
     class procedure CreateContext(aContext: TCUDAContext);
@@ -200,21 +193,21 @@ type
     class procedure DestroyContextOf(ADevice: TCUDADevice);
     class procedure PushContext(aContext: TCUDAContext);
     class function PopContext: TCUDAContext;
-    { : Fill unused device list to show its in property. }
+    { Fill unused device list to show its in property. }
     class procedure FillUnusedDeviceList(var AList: TStringList);
-    { : Return device by name. }
+    { Return device by name. }
     class function GetDeviceByName(const AName: string): TCUDADevice;
-    { : Returns the number of CUDA compatiable devices. }
+    { Returns the number of CUDA compatiable devices. }
     class function DeviceCount: Integer;
-    { : Access to devices list. }
+    { Access to devices list. }
     property Devices[i: Integer]: TCUDADevice read GetDevice;
-    { : Returns a device that has a maximum Giga flops. }
+    { Returns a device that has a maximum Giga flops. }
     class function GetMaxGflopsDevice: TCUDADevice;
-    { : Returns the number of TCUDAcontext object. }
+    { Returns the number of TCUDAcontext object. }
     class function ContextCount: Integer;
-    { : Return CUDA context of current thread. }
+    { Return CUDA context of current thread. }
     class function GetCurrentThreadContext: TCUDAContext;
-    { : Access to contexts list. }
+    { Access to contexts list. }
     property Contexts[i: Integer]: TCUDAContext read GetContext;
   end;
 
@@ -238,7 +231,7 @@ threadvar
 // ------------------ TCUDADimensions ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
 
 constructor TCUDADimensions.Create(AOwner: TPersistent);
 const
@@ -306,12 +299,12 @@ begin
     end;
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDADevice ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAdevice'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAdevice'}{$ENDIF}
 // Create
 //
 
@@ -409,12 +402,12 @@ begin
   Result := fDeviceProperties.TotalGlobalMem;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TVKSCUDADevice ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TVKSCUDADevice'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKSCUDADevice'}{$ENDIF}
 // Create
 //
 
@@ -473,12 +466,12 @@ begin
     CUDAContextManager.CreateContextOf(Self.Device);
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAContextManager ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAcontextManager'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAcontextManager'}{$ENDIF}
 // Init
 //
 
@@ -873,12 +866,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAHandlesMaster ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAHandlesMaster'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAHandlesMaster'}{$ENDIF}
 // AllocateHandles
 //
 
@@ -900,12 +893,12 @@ begin
   GetContext.FHandleList.Remove(Self);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAContext ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAcontext'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAcontext'}{$ENDIF}
 // Create
 //
 
@@ -973,7 +966,7 @@ function TCUDAContext.IsValid: Boolean;
 begin
   Result := Assigned(fHandle);
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

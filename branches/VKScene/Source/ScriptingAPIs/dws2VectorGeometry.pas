@@ -1,10 +1,11 @@
-// dws2VectorGeometry
-{: DelphiWebScriptII symbol creation for VKS.VectorGeometry types
-   and functions.<p>
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+{
+  DelphiWebScriptII symbol creation for VKS.VectorGeometry types
+  and functions. 
+    
 }
 unit dws2VectorGeometry;
 

@@ -1,32 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.XCollection<p>
-
-  A polymorphism-enabled TCollection-like set of classes<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead abstract
-  definition in class function FriendlyName for GLS_CPPB
-  <li>20/01/11 - DanB - TXCollectionItem no longer sets initial Name = FriendlyName
-  <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  <li>31/08/10 - Yar - Bugfixed TXCollectionItem.ReadFromFiler when Assertion off
-  <li>07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
-  <li>10/04/08 - DaStr - TXCollectionItem now descends from
-  TVKInterfacedPersistent (BugTracker ID = 1938988)
-  <li>08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  Add dummy method for the abstract problem
-  <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
-  <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
-  <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
-  <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
-  <li>02/02/01 - EG - CanAdd now virtual
-  <li>09/06/00 - EG - Added GetByClass
-  <li>23/05/00 - EG - Added "Loaded" mechanism
-  <li>17/04/00 - EG - Optimized TXCollection.Assign
-  <li>16/04/00 - EG - Creation from GLScene split
-  </ul></font>
+{
+  A polymorphism-enabled TCollection-like set of classes
+ 
+     
 }
 unit VKS.XCollection;
 
@@ -51,15 +29,15 @@ type
 
   // TXCollectionItem
 
-  { : Base class for implementing a XCollection item.<p>
-    NOTES :<ul>
-    <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+  { Base class for implementing a XCollection item. 
+    NOTES : 
+     Don't forget to override the ReadFromFiler/WriteToFiler persistence
     methods if you add data in a subclass !
-    <li>Subclasses must be registered using the RegisterXCollectionItemClass
+     Subclasses must be registered using the RegisterXCollectionItemClass
     function for proper operation
-    </ul> }
+      }
 
-  TXCollectionItem = class(TVKInterfacedPersistent)
+  TXCollectionItem = class(TGLInterfacedPersistent)
   private
     { Private Declarations }
     FOwner: TXCollection;
@@ -71,14 +49,14 @@ type
     procedure SetName(const val: string); virtual;
     function GetOwner: TPersistent; override;
 
-    { : Override this function to write subclass data. }
+    { Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); virtual;
-    { : Override this function to read subclass data. }
+    { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); virtual;
-    { : Override to perform things when owner form has been loaded. }
+    { Override to perform things when owner form has been loaded. }
     procedure Loaded; dynamic;
 
-    { : Triggers an EFilerException with appropriate version message. }
+    { Triggers an EFilerException with appropriate version message. }
     procedure RaiseFilerException(const archiveVersion: integer);
 
   public
@@ -89,36 +67,36 @@ type
     function GetNamePath: string; override;
     property Owner: TXCollection read FOwner;
 
-    { : Default implementation uses WriteToFiler/ReadFromFiler.<p> }
+    { Default implementation uses WriteToFiler/ReadFromFiler.  }
     procedure Assign(Source: TPersistent); override;
 
     procedure MoveUp;
     procedure MoveDown;
     function Index: integer;
 
-    { : Returns a user-friendly denomination for the class.<p>
+    { Returns a user-friendly denomination for the class. 
       This denomination is used for picking a texture image class
       in the IDE expert. }
-    class function FriendlyName: String; virtual; {$IFNDEF GLS_CPPB}abstract;
+    class function FriendlyName: String; virtual; {$IFNDEF VKS_CPPB}abstract;
     {$ENDIF}
-    { : Returns a user-friendly description for the class.<p>
+    { Returns a user-friendly description for the class. 
       This denomination is used for helping the user when picking a
       texture image class in the IDE expert. If it's not overriden,
       takes its value from FriendlyName. }
     class function FriendlyDescription: String; virtual;
-    { : Category of the item class.<p>
+    { Category of the item class. 
       This is a free string, it will used by the XCollectionEditor to
       regroup collectionitems and menu items }
     class function ItemCategory: string; virtual;
-    { : If true only one such XCollectionItem is allowed per BaseSceneObject.<p>
+    { If true only one such XCollectionItem is allowed per BaseSceneObject. 
       Inheritance is accounted for UniqueXCollectionItem resolution, ie.
       if TClassA is unique, and TClassB is a subclass of TClassA,
       whatever the unicity of TClassB, TClassA and TClassB won't be allowed
-      to mix (since TClassB is a TClassA, and TClassA is unique).<br>
+      to mix (since TClassB is a TClassA, and TClassA is unique). 
       Attempting to break the unicity rules will not be possible at
       design-time (in Delphi IDE) and will trigger an exception at run-time. }
     class function UniqueItem: Boolean; virtual;
-    { : Allows the XCollectionItem class to determine if it should be allowed
+    { Allows the XCollectionItem class to determine if it should be allowed
       to be added to the given collection. }
     class function CanAddTo(collection: TXCollection): Boolean; virtual;
 
@@ -131,7 +109,7 @@ type
 
   // TXCollection
 
-  { : Holds a list of TXCollectionItem objects.<p>
+  { Holds a list of TXCollectionItem objects. 
     This class looks a lot like a polymorphic-enabled TCollection, it is
     a much stripped down version of a proprietary TObjectList and persistence
     classes (XClasses & XLists), if the copyrights are ever partially lifted
@@ -145,7 +123,7 @@ type
     FList: TList;
     FCount: integer;
 
-    { : Archive Version is used to update the way data items is loaded. }
+    { Archive Version is used to update the way data items is loaded. }
     FArchiveVersion: integer;
   protected
     { Protected Declarations }
@@ -166,7 +144,7 @@ type
     property Owner: TPersistent read FOwner write FOwner;
     function GetNamePath: string; override;
 
-    { : Class of the items.<p>
+    { Class of the items.
       Unlike TCollection, items can be of ItemsClass OR ANY of its
       subclasses, ie. this function is used only for asserting your adding
       objects of the right class, and not for persistence. }
@@ -186,7 +164,7 @@ type
     function GetByClass(aClass: TXCollectionItemClass): TXCollectionItem;
     // : Returns the index of the first XCollectionItem of the given name (or -1)
     function IndexOfName(const aName: string): integer;
-    { : Indicates if an object of the given class can be added.<p>
+    { Indicates if an object of the given class can be added. 
       This function is used to enforce Unique XCollection. }
     function CanAdd(aClass: TXCollectionItemClass): Boolean; virtual;
 
@@ -196,19 +174,19 @@ type
 resourcestring
   cUnknownArchiveVersion = 'Unknown archive version : ';
 
-  { : Registers an event to be called when an XCollection is destroyed. }
+  { Registers an event to be called when an XCollection is destroyed. }
 procedure RegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
-{ : DeRegisters event. }
+{ DeRegisters event. }
 procedure DeRegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
 
-{ : Registers a TXCollectionItem subclass for persistence requirements. }
+{ Registers a TXCollectionItem subclass for persistence requirements. }
 procedure RegisterXCollectionItemClass(aClass: TXCollectionItemClass);
-{ : Removes a TXCollectionItem subclass from the list. }
+{ Removes a TXCollectionItem subclass from the list. }
 procedure UnregisterXCollectionItemClass(aClass: TXCollectionItemClass);
-{ : Retrieves a registered TXCollectionItemClass from its classname. }
+{ Retrieves a registered TXCollectionItemClass from its classname. }
 function FindXCollectionItemClass(const ClassName: string)
   : TXCollectionItemClass;
-{ : Creates and returns a copy of internal list of TXCollectionItem classes.<p>
+{ Creates and returns a copy of internal list of TXCollectionItem classes. 
   Returned list should be freed by caller, the parameter defines an ancestor
   class filter. If baseClass is left nil, TXCollectionItem is used as ancestor. }
 function GetXCollectionItemClassesList(baseClass
@@ -225,7 +203,7 @@ implementation
 // ------------------------------------------------------------------
 
 const
-  { : Magic is a workaround that will allow us to know when the archive
+  { Magic is a workaround that will allow us to know when the archive
     version is 0 (equivalent to : there is no ArchiveVersion stored in
     the DFM file) }
   MAGIC: array [0 .. 3] of AnsiChar = 'XCOL';
@@ -235,7 +213,7 @@ var
   vXCollectionDestroyEvent: TNotifyEvent;
 
   // Dummy method for CPP
-{$IFDEF GLS_CPPB}
+{$IFDEF VKS_CPPB}
 
 class function TXCollectionItem.FriendlyName: String;
 begin
@@ -326,7 +304,7 @@ end;
 // ------------------
 
 // Create
-
+//
 constructor TXCollectionItem.Create(aOwner: TXCollection);
 begin
   inherited Create;
@@ -354,7 +332,7 @@ begin
 end;
 
 // Assign
-
+//
 procedure TXCollectionItem.Assign(Source: TPersistent);
 begin
   if Source is TXCollectionItem then
@@ -366,7 +344,7 @@ begin
 end;
 
 // SetName
-
+//
 procedure TXCollectionItem.SetName(const val: string);
 begin
   FName := val;
@@ -391,7 +369,7 @@ begin
 end;
 
 // ReadFromFiler
-
+//
 procedure TXCollectionItem.ReadFromFiler(reader: TReader);
 var
   ver: integer;

@@ -1,13 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FShaderUniformEditor<p>
-
-	<b>History : </b><font size=-1><ul>
-    <li>06/01/15 - PW - Converted to FMX
-    <li>23/03/11 - Yar - Creation
-  </ul>
-}
 
 unit FShaderUniformEditor;
 

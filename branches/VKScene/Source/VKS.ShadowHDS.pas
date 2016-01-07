@@ -1,22 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLShadowHDS.<p>
-     Implements an HDS that automatically generates a terrain lightmap texture
-	<b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/01/10 - Yar - Added VKS.TextureFormat to uses
-      <li>13/11/07 - LIN - Added SkipGenerate flag. Set to true in "OnSourceDataFetched"
-                           to generate a blank shadow map. Then load your cached Shadowmap during OnThreadBmp32 event.
-      <li>17/07/07 - LIN - Added OnThreadBmp32 event. This event can be used to
-                           modify the lightmap, before it is sent to texture memory.
-                           When used with TAsyncHDS, this event runs in the HeightData thread,
-                           and NOT in the main thread, so make sure code in this event is thread-safe.
-      <li>22/03/07 - LIN - Thread-safe. (Now works with TVKAsyncHDS)
-      <li>02/03/07 - LIN - Now works with InfiniteWrap terrain
-      <li>14/02/07 - LIN - Creation
-	</ul></font>
+{
+   Implements an HDS that automatically generates a terrain lightmap texture
 
  Issues:1:Ambient and Diffuse light properties can not be set to 0, to avoid what
           seems to be a Delphi bug: If a property of type 'Single' is set to 0,
@@ -51,7 +37,7 @@ type
 
 	// TVKShadowHDS
 	//
-   {: An Height Data Source that generates terrain shadow maps automatically.<p>
+   { An Height Data Source that generates terrain shadow maps automatically. 
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TVKShadowHDS = class (THeightDataSourceFilter)

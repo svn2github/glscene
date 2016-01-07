@@ -1,10 +1,11 @@
-// dws2HelperFunc
-{: Helper functions for creating class, properties and 
-   method symbols in DelphiWebScriptII.<p>
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+{
+  Helper functions for creating class, properties and 
+  method symbols in DelphiWebScriptII. 
+    
 }
 unit dws2HelperFunc;
 

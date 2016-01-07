@@ -1,17 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.File3DSSceneObjects<p>
-
-  3ds-specific scene objects.<p>
-
-  <b>History :</b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
-      <li>06/04/08 - DaStr - Initial version (by Lexer)
-  </ul></font>
+{
+  3ds-specific scene objects.
 }
 unit VKS.File3DSSceneObjects;
 
@@ -23,8 +14,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-
-   
+  //GLS
   VKS.VectorGeometry, VKS.OpenGLTokens, VKS.OpenGLAdapter, VKS.Context, VKS.Scene,
   VKS.VectorFileObjects, VKS.VectorTypes, VKS.PersistentClasses,
   VKS.CrossPlatform, VKS.Coordinates, VKS.RenderContextInfo, VKS.State;

@@ -1,14 +1,10 @@
 ﻿//
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CLPlatform<p>
-
+{ 
   Conversion of OpenCL header file: cl_platform.h to Delphi,
-  from http://www.khronos.org/registry/cl/.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>01/11/09 - DanB - Creation
-  </ul></font>
+  from http://www.khronos.org/registry/cl/. 
+   
 }
 // *****************************************************************************
 // * Copyright (c) 2008-2009 The Khronos Group Inc.

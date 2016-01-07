@@ -1,17 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: HDRImage<p>
+{
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
-
-      <li>23/10/10 - Yar - Removed PBuffer    
-      <li>23/08/10 - Yar - Changes after PBuffer upgrade
-      <li>21/03/10 - Yar - Added Linux support
-                           (thanks to Rustam Asmandiarov aka Predator)
-      <li>24/01/10 - Yar - Improved FPC compatibility
-      <li>21/01/10 - Yar - Creation
-   </ul></font>
+      
 }
 
 unit HDRImage;

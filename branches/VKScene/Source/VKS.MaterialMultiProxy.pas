@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MaterialMultiProxy<p>
-
-   Implements a multi-proxy object, useful for discreet LOD.<p>
-   Allows assign a unique material for each proxy master.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>30/08/10 - Yar - Fixed transformation in TVKMaterialMultiProxy.DoRender
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TVKMaterialMultiProxyMaster (BugTracker ID = 1938988)
-      <li>25/03/07 - Added VKS.CrossPlatform to uses for Delphi5 compatibility
-      <li>17/02/07 - DaStr - Initial version (contributed to GLScene)
-    </ul></font>     
+{
+   Implements a multi-proxy object, useful for discreet LOD. 
+   Allows assign a unique material for each proxy master. 
 
   What changed compared to GLMultiProxy:
     1) Allows assign a unique material for each proxy master
@@ -27,14 +16,8 @@
     8) Implemented a new mechanizm of connecting TVKLibMaterial and TVKLibMaterialName
       (they are connected on assigning, not while rendering; full persistency support;
        allows to assign directly to TVKLibMaterial)
-    9) VCL-style code formating
+    9) FMX-style code formating
 
-
-  Previous version history:
-          v1.0    12 December  '2005  Creation (based on MultiProxy.pas)
-          v1.0.1  18 June      '2006  Some IFDEFs added
-          v1.0.2  20 December  '2006  STRANGE_GLSCENE_VERSION checks removed
-          v1.1    17 February  '2007  Made design-time compatible
 }
 
 unit VKS.MaterialMultiProxy;
@@ -56,8 +39,8 @@ type
 
   // TVKMaterialMultiProxyMaster
   //
-  {: MasterObject description for a MultiProxy object. }
-  TVKMaterialMultiProxyMaster = class(TVKInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  { MasterObject description for a MultiProxy object. }
+  TVKMaterialMultiProxyMaster = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FMasterObject: TVKBaseSceneObject;
@@ -88,25 +71,25 @@ type
     function OwnerObject: TVKMaterialMultiProxy;
     procedure NotifyChange;
 
-    {: Specifies the Material, that current master object will use.
+    { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TVKLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
     { Published Declarations }
-    {: Specifies the Master object which will be proxy'ed. }
+    { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TVKBaseSceneObject read FMasterObject write SetMasterObject;
-    {: Specifies the Material, that current master object will use. }
+    { Specifies the Material, that current master object will use. }
     property MasterLibMaterialName: TVKLibMaterialName read GetMasterLibMaterialName write SetMasterLibMaterialName;
-    {: Minimum visibility Distance (inclusive). }
+    { Minimum visibility Distance (inclusive). }
     property DistanceMin: Single read GetDistanceMin write SetDistanceMin;
-    {: Maximum visibility Distance (exclusive). }
+    { Maximum visibility Distance (exclusive). }
     property DistanceMax: Single read GetDistanceMax write SetDistanceMax;
   end;
 
   // TVKMaterialMultiProxyMasters
   //
-  {: Collection of TVKMaterialMultiProxyMaster. }
+  { Collection of TVKMaterialMultiProxyMaster. }
   TVKMaterialMultiProxyMasters = class(TOwnedCollection)
   private
     { Private Declarations }
@@ -132,11 +115,11 @@ type
 
   // TVKMaterialMultiProxy
   //
-   {: Multiple Proxy object.<p>
+   { Multiple Proxy object. 
       This proxy has multiple Master objects, which are individually made visible
       depending on a Distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation.<p>
+      go through cyclic animation. 
       For dimensionsn raycasting and silhouette purposes, the first Master is used
       (item zero in the MasterObjects collection). }
   TVKMaterialMultiProxy = class(TVKBaseSceneObject)
@@ -333,7 +316,7 @@ begin
   begin
     FTempLibMaterialName := Value;
     if not (csLoading in OwnerObject.ComponentState) then
-      raise ETexture.Create(glsErrorEx + glsMatLibNotDefined);
+      raise ETexture.Create(vksErrorEx + vksMatLibNotDefined);
   end
   else
   begin

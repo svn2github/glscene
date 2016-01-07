@@ -1,70 +1,16 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.GizmoEx<p>
-
+{
    Invisible component for helping to Move, Rotate and Scale an Object
-   under GLScene (usefull for an Editor).<p>
+   under GLScene (usefull for an Editor).
 
    This is an enhanced version of TVKGizmo, which was originally created and
    modified by Adirex, J.Delauney, Degiovani, Marcus Oblak and Da Stranger
-
-   Rustam Asmandiarov (aka Predator) re-wrote TVKGizmo from scratch and 
+   Rustam Asmandiarov (aka Predator) re-wrote TVKGizmo from scratch and
    contributed to GLScene. This is how TVKGizmoEx was born.
-
-   <b>History : </b><font size=-1><ul>
-      <li>28/01/13 - PW - Added CPP compatibility, moved function
-                          IsPointInPolygon to VKS.VectorGeometry unit;
-      <li>24/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>31/05/10 - Yar - Fixed warnings
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>17/13/2009 - DaStr - Small bugfixes (by Predator)   
-      <li>11/13/2009 - DaStr - Initial version (contributed by Predator)
-   </ul></font>
-
-   
-   Note: A very nice manual for TVKGizmoEx is inclued in this download:
-         http://glscene.ru/request.php?490 (in Russian language only)
+     
 }
-//
-//
-// Original Header:
-//
-//------------------------------------------------------------------------------
-// Unit : GLGizmoEx  RC 1.0
-//------------------------------------------------------------------------------
-// Original Author : ???????  (GLGizmoEx In an ODEEditor)
-//------------------------------------------------------------------------------
-// Modified by     : J.Delauney
-// Web Site        : http://KheopsInteractive.cjb.net
-// EMail           : wmkheops@free.fr
-// Date            : 08/05/2005
-//------------------------------------------------------------------------------
-// Modified by     : Marcus Oblak (8/3/2007)
-// - Corrected moving/rotating for children objects
-// - Better quantization for mouse operations (MoveCoef,RotationCoef)
-// - Added ScaleCoef
-// - Added GizmoThickness
-//------------------------------------------------------------------------------
-// Unit : GLGizmoEx  RC 2.0
-//------------------------------------------------------------------------------
-// Modified by     : Rustam Asmandiarov aka Predator
-//   Web Site        : http://GLScene.ru
-//   EMail           : Predator_Rust@_#_antispam_#_@mail.ru
-//   Date            : 07/10/2009
-// - The code fully new made for convenience to work with objects
-// - So the code less compatible but more functional
-// Knowing bugs
-//  1) GLLines
-//   to use alpha it's need to activate property lineColor.Alpha
-//   (см VKS.Objects->procedure TVKLineBase.SetupLineStyle)
-//  2) In raycast mode multiple selections will slow down execution
-//  of scan rays, whereas in GetPickedObj it's possible to define
-//  rectangle framework
-//  3) Does not work in lazarus
-//------------------------------------------------------------------------------
-
 unit VKS.GizmoEx;
 
 interface
@@ -72,10 +18,10 @@ interface
 {$I VKScene.inc}
 
 uses
-  {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF}
+  Winapi.Windows,
   System.Classes, System.SysUtils, System.Math,
 
-  //OpenGL1x,
+  //VKS
   VKS.Scene, VKS.Color, VKS.Objects, VKS.VectorGeometry, VKS.Material,
   VKS.Strings, VKS.SceneViewer, VKS.GeomObjects, VKS.BitmapFont,
   VKS.VectorFileObjects, VKS.CrossPlatform,  VKS.Coordinates,
@@ -404,7 +350,7 @@ type
     function CheckObjectInExcludeList(const Obj: TVKBaseSceneObject): Boolean;
     function CheckClassNameInExcludeList(const Obj: TVKBaseSceneObject): Boolean;
     procedure UpdateVisibleInfoLabels;
-    procedure SetGLGizmoExThickness(const Value: Single);
+    procedure SetVKGizmoExThickness(const Value: Single);
 
     procedure ActivatingElements(PickList: TVKPickList);
     procedure InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
@@ -503,9 +449,9 @@ type
     property ScaleCoef: Single read FScaleCoef write FScaleCoef;
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite default True;
 
-    property GizmoThickness: Single read FGizmoThickness write SeTVKGizmoExThickness;
+    property GizmoThickness: Single read FGizmoThickness write SetVKGizmoExThickness;
 
-    {: Indicates whether the gizmo is enabled or not.
+    { Indicates whether the gizmo is enabled or not.
        WARNING: When loading/editing (possibly whenever a structureChanged
        call is made) a model, sometimes the gizmo will trigger a
        bug if the mouse is inside the glscene Viewer. To prevent that,
@@ -513,11 +459,11 @@ type
        messages (i.e. application.processMessage) and then enable the gizmo
        again. }
 
-    {: Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
+    { Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
 
-    {: Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
+    { Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
     property Enabled: Boolean read FEnabled write FEnabled default True;
 
     property LabelFont: TVKCustomBitmapFont read FLabelFont write SetLabelFont default nil;
@@ -2914,7 +2860,7 @@ begin
   FExcludeClassNameList.AddStrings(AValue);
 end;
 
-procedure TVKGizmoEx.SetGLGizmoExThickness(const Value: Single);
+procedure TVKGizmoEx.SetVKGizmoExThickness(const Value: Single);
 begin
   if (FGizmoThickness <> Value) and (Value > 0.2) then
   begin
@@ -3023,7 +2969,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, glsUnknownType);
+      Assert(False, vksUnknownType);
     end;
   end;
 end;

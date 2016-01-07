@@ -1,8 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TextureSharingShader (originally GlProxMultiMatShader)<p>
-    <p>
+{
     This shader allows to apply multiple textures, gathering them from existing materials.
     This allows saving resources, since you can reference the textures of any material in
     any materialLibrary.
@@ -10,24 +9,8 @@
     it uses that material's texture. The referenced material settings will be ignored,
     but the texture's settings (like TextureMode, ImageGamma, ImageBrightness) will be used.
     Instead the local material settings (listed in the collection) will be used.
-    </p>
-
-  <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/08/10 - Yar - Fixed light state changes
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
-                              (BugTracker ID = 1938988).
-                             TVKTextureSharingShaderMaterial.GetTextureSharingShader()
-                              is now more safe
-      <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
-                               Delphi 5 compatibility (thanks Pascal)
-      <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
-      <li>17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
-      <li>14/03/08 - Pascal - Initial version (contributed to GLScene)
-
-}
+            
+ }
 
 unit VKS.TextureSharingShader;
 
@@ -43,7 +26,7 @@ uses
 type
   TVKTextureSharingShader = class;
 
-  TVKTextureSharingShaderMaterial = class(TVKInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVKTextureSharingShaderMaterial = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;

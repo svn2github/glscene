@@ -1,42 +1,19 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Tree<p>
-
-   Dynamic tree generation in GLScene<p>
-
+{
+   Dynamic tree generation
+ 
    This code was adapted from the nVidia Tree Demo:
-   http://developer.nvidia.com/object/Procedural_Tree.html<p>
-
-   History:<ul>
-     <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-     <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-     <li>30/03/07 - DaStr - Added $I GLScene.inc
-     <li>28/03/07 - DaStr - Renamed parameters in some methods
-                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-     <li>13/01/07 - DaStr - Added changes proposed by Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
-                         Modified the code to create much more realistic trees -
-                          added third branch for every node and modified constants
-                          to make the tree look more "alive".
-                         Also removed the "fractal effect" that ocurred, when
-                          rendering with the older engine - the leaves and
-                          branches were much more "in order".
-                         Added Center* declarations, CenterBranchConstant,
-                         Added AutoRebuild flag.
-     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-     <li>14/04/04 - SG - Added AutoCenter property.
-     <li>03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
-     <li>24/11/03 - SG - Creation.
-   </ul>
-
+   http://developer.nvidia.com/object/Procedural_Tree.html
    Some info:
-  <ul>CenterBranchConstant</ul> -
+   CenterBranchConstant  -
     Defines, how big the central branch is. When around 50%
     it makes a small branch inside the tree, for higher values
     much more branches and leaves are created, so either use it
     with low depth, or set it to zero, and have two-branched tree.
     Default : 0.5
-  <ul>"AutoRebuild" flag</ul> -
+   "AutoRebuild" flag  -
     Rebuild tree after property change.
     Default: True
 }
@@ -270,38 +247,38 @@ type
 
       published
          { Published Declarations }
-         {: The depth of tree branch recursion. }
+         { The depth of tree branch recursion. }
          property Depth : Integer read FDepth write SetDepth;
-         {: The number of facets for each branch in the tree. }
+         { The number of facets for each branch in the tree. }
          property BranchFacets : Integer read FBranchFacets write SetBranchFacets;
-         {: Leaf size modifier. Leaf size is also influenced by branch recursion
+         { Leaf size modifier. Leaf size is also influenced by branch recursion
             scale. }
          property LeafSize : Single read FLeafSize write SetLeafSize;
-         {: Branch length modifier. }
+         { Branch length modifier. }
          property BranchSize : Single read FBranchSize write SetBranchSize;
-         {: Overall branch noise influence. Relates to the 'fullness' of the tree. }
+         { Overall branch noise influence. Relates to the 'fullness' of the tree. }
          property BranchNoise : Single read FBranchNoise write SetBranchNoise;
-         {: Effects the habit of the tree. Values from 0 to 1 refer to Upright to
+         { Effects the habit of the tree. Values from 0 to 1 refer to Upright to
             Spreading respectively. }
          property BranchAngleBias : Single read FBranchAngleBias write SetBranchAngleBias;
-         {: Effects the balance of the tree. }
+         { Effects the balance of the tree. }
          property BranchAngle : Single read FBranchAngle write SetBranchAngle;
-         {: Effects the rotation of each sub branch in recursion. }
+         { Effects the rotation of each sub branch in recursion. }
          property BranchTwist : Single read FBranchTwist write SetBranchTwist;
-         {: Effects the thickness of the branches. }
+         { Effects the thickness of the branches. }
          property BranchRadius : Single read FBranchRadius write SetBranchRadius;
-         {: Determines how thin a branch can get before a leaf is substituted. }
+         { Determines how thin a branch can get before a leaf is substituted. }
          property LeafThreshold : Single read FLeafThreshold write SetLeafThreshold;
-         {: Determines how BranchAngle effects the central leader (CentralLeader must = True). }
+         { Determines how BranchAngle effects the central leader (CentralLeader must = True). }
          property CentralLeaderBias : Single read FCentralLeaderBias write SetCentralLeaderBias;
-         {: Does this tree have a central leader? }
+         { Does this tree have a central leader? }
          property CentralLeader : Boolean read FCentralLeader write SetCentralLeader;
          property Seed : Integer read FSeed write SetSeed;
-         {: Automatically center the tree's vertices after building them. }
+         { Automatically center the tree's vertices after building them. }
          property AutoCenter : Boolean read FAutoCenter write SetAutoCenter;
-         {: Automatically rebuild the tree after changing the settings }
+         { Automatically rebuild the tree after changing the settings }
          property AutoRebuild : Boolean read FAutoRebuild write SetAutoRebuild;
-         {: Central branch can be thinner(lower values)/thicker(->1) depending on this constant.
+         { Central branch can be thinner(lower values)/thicker(->1) depending on this constant.
             The effect also depends on the BranchAngle variable. }
          property CenterBranchConstant : Single read FCenterBranchConstant write SetCenterBranchConstant;
 

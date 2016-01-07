@@ -1,48 +1,20 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SmoothNavigator<p>
-
-     An extention of TVKNavigator, which allows to move objects with inertia
+{
+   An extention of TVKNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
    MoveAroundTarget, Turn[Vertical/Horizontal] and AdjustDistanceTo[..] is not.
 
-     Don't know why, but when I make their code identical, these function stop
+   Don't know why, but when I make their code identical, these function stop
    working completely. So you probably have to call the AutoScaleParameters
    procedure once in a while for it to adjust to the current framerate.
-   If someone knows a better way to solve this issue, please contact me via
-   glscene newsgroups.<p>
-
-
-   <b>History : </b><font size=-1><ul>
-      <li>30/06/11 - DaStr - Converted many procedures to functions
-                             Bugfixed Assign() in some places
-                             Added "Cutoff" property instead of fixed EPS values
-      <li>02/06/11 - DaStr - DeltaTime is now Double, like in Cadencer
-                             Added CustomAnimatedItems
-      <li>28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
-      <li>25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
-      <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
-
 
     TODO:
       1) Scale "Old values" too, when callin the Scale parameter procedure to
          avoid the temporary "freeze" of controls.
       2) AddImpulse procedures.
 
-
-
-    Previous version history:
-        v1.0    10 December  '2005  Creation
-        v1.0.2  11 December  '2005  TurnMaxAngle added
-        v1.1    04 March     '2006  Inertia became FPS-independant
-                                    TVKSmoothNavigatorParameters added
-        v1.1.6  18 February  '2007  Merged with GLInertedUserInterface.pas
-                                    All parameters moved into separate classes
-                                    Added MoveAroudTargetWithInertia
-        v1.2    23 February  '2007  Finally made it trully FPS-independant
-                                    Added default values to every property
-                                    Contributed to GLScene
 }
 
 unit VKS.SmoothNavigator;
@@ -59,8 +31,8 @@ uses
 
 type
 
-  {: TVKNavigatorAdjustDistanceParameters includes a basic set of parameters
-     that control the smoothness of movement.<p>
+  { TVKNavigatorAdjustDistanceParameters includes a basic set of parameters
+     that control the smoothness of movement. 
   }
   TVKNavigatorAbstractParameters = class(TPersistent)
   private
@@ -86,8 +58,8 @@ type
 
   TVKSmoothNavigator = class;
 
-  {: TVKNavigatorSmoothChangeItem includes a basic set of parameters
-     that control the smoothness of movement.<p>
+  { TVKNavigatorSmoothChangeItem includes a basic set of parameters
+     that control the smoothness of movement. 
   }
   TVKNavigatorSmoothChangeItem = class(TXCollectionItem)
   private
@@ -103,7 +75,7 @@ type
   protected
     function GetNavigator: TVKSmoothNavigator;
   public
-    {: Returns False if there was no change. }
+    { Returns False if there was no change. }
     function Proceed(ADeltaTime: Double): Boolean; virtual; abstract;
     constructor Create(aOwner: TXCollection); override;
     procedure Assign(Source: TPersistent); override;
@@ -121,7 +93,7 @@ type
   TVKNavigatorSmoothChangeSingleGetEvent = function(const ASender: TVKNavigatorSmoothChangeSingle): Single of object;
   TVKNavigatorSmoothChangeSingleSetEvent = procedure(const ASender: TVKNavigatorSmoothChangeSingle; const AValue: Single) of object;
 
-  {: Smoothly change any Single value, so it will become TargetValue in the end.<p> }
+  { Smoothly change any Single value, so it will become TargetValue in the end.  }
   TVKNavigatorSmoothChangeSingle = class(TVKNavigatorSmoothChangeItem)
   private
     FTargetValue: Single;
@@ -142,7 +114,7 @@ type
   TVKNavigatorSmoothChangeVectorGetEvent = function(const ASender: TVKNavigatorSmoothChangeVector): TVector of object;
   TVKNavigatorSmoothChangeVectorSetEvent = procedure(const ASender: TVKNavigatorSmoothChangeVector; const AValue: TVector) of object;
 
-  {: Smoothly change any Vector4f value, so it will become TargetValue in the end.<p> }
+  { Smoothly change any Vector4f value, so it will become TargetValue in the end.  }
   TVKNavigatorSmoothChangeVector = class(TVKNavigatorSmoothChangeItem)
   private
     FTargetValue: TVKCoordinates;
@@ -164,7 +136,7 @@ type
 
   TVKNavigatorSmoothChangeItemClass = class of TVKNavigatorSmoothChangeItem;
 
-  {: XCollection of TVKNavigatorSmoothChangeItem. }
+  { XCollection of TVKNavigatorSmoothChangeItem. }
   TVKNavigatorSmoothChangeItems = class(TXCollection)
   private
     function GetItems(const Index : Integer): TVKNavigatorSmoothChangeItem;
@@ -179,8 +151,8 @@ type
             SetItems; default;
   end;
 
-  {: TVKNavigatorAdjustDistanceParameters is wrapper for all parameters that
-       affect how the AdjustDisanceTo[...] methods work<p>
+  { TVKNavigatorAdjustDistanceParameters is wrapper for all parameters that
+       affect how the AdjustDisanceTo[...] methods work 
   }
   TVKNavigatorAdjustDistanceParameters = class(TVKNavigatorAbstractParameters)
   private
@@ -197,8 +169,8 @@ type
     property ImpulseSpeed: Single read FImpulseSpeed write FImpulseSpeed stored StoreImpulseSpeed;
   end;
 
-  {: TVKNavigatorAdjustDistanceParameters is wrapper for all parameters that
-       affect how the AdjustDisanceTo[...]Ex methods work<p>
+  { TVKNavigatorAdjustDistanceParameters is wrapper for all parameters that
+       affect how the AdjustDisanceTo[...]Ex methods work 
 
      You need to set the TargetObject and desired distance to it,
      then call AdjustDisanceTo[...]Ex() in your Cadencer.OnProgress code.
@@ -220,8 +192,8 @@ type
     property SpeedLimit: Single read FSpeedLimit write FSpeedLimit stored StoreSpeedLimit;
   end;
 
-  {: TVKNavigatorInertiaParameters is wrapper for all parameters that affect the
-       smoothness of movement<p>
+  { TVKNavigatorInertiaParameters is wrapper for all parameters that affect the
+       smoothness of movement 
   }
   TVKNavigatorInertiaParameters = class(TPersistent)
   private
@@ -264,7 +236,7 @@ type
   end;
 
 
-  {: TVKNavigatorGeneralParameters is a wrapper for all general inertia parameters.
+  { TVKNavigatorGeneralParameters is a wrapper for all general inertia parameters.
 
      These properties mean that if ExpectedMaxFPS is 100, FAutoScaleMin is 0.1,
      FAutoScaleMax is 0.75 then the "safe range" for it to change is [10..75].
@@ -293,7 +265,7 @@ type
   end;
 
 
-  {: TVKNavigatorMoveAroundParameters is a wrapper for all parameters that
+  { TVKNavigatorMoveAroundParameters is a wrapper for all parameters that
       effect how the TVKBaseSceneObject.MoveObjectAround() procedure works
   }
   TVKNavigatorMoveAroundParameters = class(TPersistent)
@@ -334,8 +306,8 @@ type
 
   // TVKSmoothNavigator
   //
-  {: TVKSmoothNavigator is the component for moving a TVKBaseSceneObject, and all
-       classes based on it, this includes all the objects from the Scene Editor.<p>
+  { TVKSmoothNavigator is the component for moving a TVKBaseSceneObject, and all
+       classes based on it, this includes all the objects from the Scene Editor. 
 
      It uses complex smoothing algorithms, most of which are FPS-dependant.
      Make sure your limit your FPS and set MaxExpectedDeltaTime to a value
@@ -393,7 +365,7 @@ type
     procedure AnimateCustomItems(const ADeltaTime: Double); virtual;
 
     //: Uses GeneralParams.
-      {: In ScaleParameters, Value should be around 1. }
+      { In ScaleParameters, Value should be around 1. }
     procedure ScaleParameters(const Value: Single); virtual;
     procedure AutoScaleParameters(const FPS: Single); virtual;
     procedure AutoScaleParametersUp(const FPS: Single); virtual;
@@ -410,19 +382,19 @@ type
 
   // TVKSmoothUserInterface
   //
-  {: TVKSmoothUserInterface is the component which reads the userinput and transform it into action.<p>
-      <ul>
-	   <li>Mouselook(ADeltaTime: double) : handles mouse look... Should be called
+  { TVKSmoothUserInterface is the component which reads the userinput and transform it into action. 
+       
+	    Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
-      </ul>
+       
 	   The four properties to get you started are:
-      <ul>
-	   <li>InvertMouse     : Inverts the mouse Y axis.
-	   <li>AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
-	   <li>GLNavigator     : The Navigator which receives the user movement.
-	   <li>GLVertNavigator : The Navigator which if set receives the vertical user
+       
+	    InvertMouse     : Inverts the mouse Y axis.
+	    AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
+	    GLNavigator     : The Navigator which receives the user movement.
+	    GLVertNavigator : The Navigator which if set receives the vertical user
                            movement. Used mostly for cameras....
-      </ul>
+       
    }
   TVKSmoothUserInterface = class(TComponent)
   private

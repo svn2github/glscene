@@ -1,26 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FBO<p>
-
-   Implements FBO support for GLScene.
-
+{
+   Implements FBO support for VKScene. 
    Original author of the unit is Riz.
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
-
-   <b>History : </b><font size=-1><ul>
-      <li>16/10/11 - Yar - Fixes for depth-stencil texture
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>16/05/10 - Yar - Added multisampling support (thanks C4)
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
-      <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
-      <li>22/01/10 - Yar   - Adapted to Handles of VKS.Context,
-                             texture target unification, level and layer control
-      <li>11/11/09 - DaStr - Added $I GLScene.inc
-      <li>09/11/09 - DaStr - Initial version (contributed to GLScene)
-   </ul></font>
+ 
 }
+
 unit VKS.FBO;
 
 interface
@@ -53,7 +40,7 @@ type
     FWidth: Integer;
     FHeight: Integer;
     FStorageValid: Boolean;
-    function GetHandle: TVKuint;
+    function GetHandle: TGLuint;
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
   protected
@@ -67,10 +54,10 @@ type
 
     procedure Bind;
     procedure Unbind;
-    {: Handle to the OpenGL render buffer object.<p>
+    { Handle to the OpenGL render buffer object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
-    property Handle: TVKuint read GetHandle;
+    property Handle: TGLuint read GetHandle;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
   end;
@@ -106,7 +93,7 @@ type
   TVKFrameBuffer = class
   private
     FFrameBufferHandle: TVKFramebufferHandle;
-    FTarget: TVKEnum;
+    FTarget: TGLenum;
     FWidth: Integer;
     FHeight: Integer;
     FLayer: Integer;
@@ -124,11 +111,11 @@ type
     procedure SetLevel(const Value: Integer);
   protected
     procedure AttachTexture(
-      const attachment: TVKenum;
-      const textarget: TVKenum;
-      const texture: TVKuint;
-      const level: TVKint;
-      const layer: TVKint); overload;
+      const attachment: TGLenum;
+      const textarget: TGLenum;
+      const texture: TGLuint;
+      const level: TGLint;
+      const layer: TGLint); overload;
     procedure ReattachTextures;
   public
     constructor Create;
@@ -501,13 +488,13 @@ begin
 end;
 
 procedure TVKFrameBuffer.AttachTexture(
-  const attachment: TVKenum;
-  const textarget: TVKenum;
-  const texture: TVKuint;
-  const level: TVKint;
-  const layer: TVKint);
+  const attachment: TGLenum;
+  const textarget: TGLenum;
+  const texture: TGLuint;
+  const level: TGLint;
+  const layer: TGLint);
 var
-  storeDFB: TVKuint;
+  storeDFB: TGLuint;
   RC: TVKContext;
 begin
   RC := SafeCurrentGLContext;

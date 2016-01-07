@@ -1,15 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FilePLY<p>
-
-	PLY (Stanford Triangle Format) vector file format implementation.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from VKS.VectorFileObjects.pas
-	</ul></font>
+{
+	PLY (Stanford Triangle Format) vector file format implementation. 
+  
 }
 unit VKS.FilePLY;
 
@@ -24,7 +18,7 @@ uses
 type
    // TVKPLYVectorFile
    //
-   {: The PLY vector file aka Stanford Triangle Format.<p>
+   { The PLY vector file aka Stanford Triangle Format. 
       This is a format for storing graphical objects that are described as a
       collection of polygons. The format is extensible, supports variations and
       subformats. This importer only works for the simplest variant (triangles

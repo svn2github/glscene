@@ -1,14 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.StarRecord<p>
-
-   Unit to interface with simple star records aimed for background skies.<p>
-
-	<b>History : </b><font size=-1><ul>
-	   <li>05/07/03 - EG - Creation
-	</ul></font>
+{
+   Unit to interface with simple star records aimed for background skies. 
 }
+
 unit VKS.StarRecord;
 
 interface
@@ -25,11 +21,11 @@ type
    end;
    PGLStarRecord = ^TVKStarRecord;
 
-{: Computes position on the unit sphere of a star record (Z=up). }
+{ Computes position on the unit sphere of a star record (Z=up). }
 function StarRecordPositionZUp(const starRecord : TVKStarRecord) : TAffineVector;
-{: Computes position on the unit sphere of a star record (Y=up). }
+{ Computes position on the unit sphere of a star record (Y=up). }
 function StarRecordPositionYUp(const starRecord : TVKStarRecord) : TAffineVector;
-{: Computes star color from BV index (RGB) and magnitude (alpha). }
+{ Computes star color from BV index (RGB) and magnitude (alpha). }
 function StarRecordColor(const starRecord : TVKStarRecord; bias : Single) : TVector;
 
 // ------------------------------------------------------------------

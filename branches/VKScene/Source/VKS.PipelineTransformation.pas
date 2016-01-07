@@ -1,15 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.PipelineTransformation<p>
-
-   <b>History : </b><font size=-1><ul>
-    <li>13/12/13 - PW - Added GLSLog unit
-    <li>11/05/11 - Yar - Ranamed TVKPipelineTransformation to TVKTransformation
-    <li>16/11/10 - Yar - Added NormalModelMatrix
-    <li>23/08/10 - Yar - Creation
- </ul></font>
-}
 
 unit VKS.PipelineTransformation;
 
@@ -86,9 +77,9 @@ type
     procedure SetViewMatrix(const AMatrix: TMatrix);
     procedure SetProjectionMatrix(const AMatrix: TMatrix);
   protected
-    procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
-    procedure DoMatrcesLoaded; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    procedure LoadModelViewMatrix; {$IFDEF VKS_INLINE} inline; {$ENDIF}
+    procedure LoadProjectionMatrix; {$IFDEF VKS_INLINE} inline; {$ENDIF}
+    procedure DoMatrcesLoaded; {$IFDEF VKS_INLINE} inline; {$ENDIF}
     property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;
@@ -115,7 +106,7 @@ type
 
 // Prevent Lazaruses issue with checksumm chenging!
 type
-  TVKCall = function(): TVKExtensionsAndEntryPoints;
+  TVKCall = function(): TGLExtensionsAndEntryPoints;
 var
   vLocalGL: TVKCall;
 //-------------------------------------------------------------------------

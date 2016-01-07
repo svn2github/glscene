@@ -1,41 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SceneViewer<p>
-
-  GLScene cross-platform viewer.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>22/12/14 - PW - Removed SetupVSync from GLViewer.pas to VKS.SceneViewer.pas
-      <li>22/12/14 - PW - Upgraded  "GLWin32Viewer.pas" to "VKS.SceneViewer.pas"
-      <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
-      <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
-      <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
-      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
-                              properties (thanks Yury Plashenkov)
-      <li>10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
-      <li>13/03/09 - DanB - Removed OpenGL dependencies
-      <li>10/04/08 - DaStr - Bugfixed TVKSceneViewer.Notification()
-                              (thanks z80maniac) (Bugtracker ID = 1936108)
-      <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
-                              to GLViewer.pas (Bugtracker ID = 1786279)
-      <li>04/12/04 - DaStr - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
-                              are now published in TVKSceneViewer
-      <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
-      <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
-      <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
-      <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
-      <li>27/09/02 - EG - Added Ability to set display frequency
-      <li>22/08/02 - EG - Added TVKSceneViewer.RecreateWnd
-      <li>19/08/02 - EG - Added GetHandle
-      <li>14/03/02 - EG - No longer invalidates while rendering
-      <li>11/02/02 - EG - Fixed BeforeRender
-      <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
-      <li>22/01/02 - EG - Added TVKFullScreenViewer
-      <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
-     <li>12/12/01 - EG - Creation (split from GLScene.pas)
- </ul></font>
+{
+   VKScene cross-platform viewer. 
 }
+
 unit VKS.SceneViewer;
 
 interface
@@ -66,15 +35,15 @@ type
 
   // TVKSceneViewer
   //
-  {: Component where the GLScene objects get rendered.<p>
+  { Component where the GLScene objects get rendered. 
      This component delimits the area where OpenGL renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
-     camera property). This component can also render to a file or to a bitmap.<p>
+     camera property). This component can also render to a file or to a bitmap. 
      It is primarily a windowed component, but it can handle full-screen
      operations : simply make this component fit the whole screen (use a
-     borderless form).<p>
+     borderless form). 
      This viewer also allows to define rendering options such a fog, face culling,
-     depth testing, etc. and can take care of framerate calculation.<p> }
+     depth testing, etc. and can take care of framerate calculation.  }
   TVKSceneViewer = class(TViewPort3D)
   private
     { Private Declarations }
@@ -131,7 +100,7 @@ type
     destructor Destroy; override;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    {: Makes TWinControl's RecreateWnd public.<p>
+    { Makes TWinControl's RecreateWnd public. 
        This procedure allows to work around limitations in some OpenGL
        drivers (like MS Software OpenGL) that are not able to share lists
        between RCs that already have display lists. }
@@ -154,30 +123,30 @@ type
 
   published
     { Published Declarations }
-    {: Camera from which the scene is rendered. }
+    { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
 
-    {: Specifies if the refresh should be synchronized with the VSync signal.<p>
+    { Specifies if the refresh should be synchronized with the VSync signal. 
        If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
-    {: Triggered before the scene's objects get rendered.<p>
+    { Triggered before the scene's objects get rendered. 
        You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
-    {: Triggered just after all the scene's objects have been rendered.<p>
+    { Triggered just after all the scene's objects have been rendered. 
        The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering.<p> }
+       to execute your own OpenGL rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    {: Called after rendering.<p>
+    { Called after rendering. 
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    {: Access to buffer properties. }
+    { Access to buffer properties. }
     property Buffer: TVKSceneBuffer read FBuffer write SetBuffer;
 
-    {: Returns or sets the field of view for the viewer, in degrees.<p>
+    { Returns or sets the field of view for the viewer, in degrees. 
     This value depends on the camera and the width and height of the scene.
     The value isn't persisted, if the width/height or camera.focallength is
     changed, FieldOfView is changed also. }

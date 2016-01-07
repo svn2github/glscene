@@ -1,348 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Scene<p>
-
-   Base classes and structures for GLScene.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>20/11/14 - PW - Added FreeAndNull(FBuffers) in TVKScene.Destroy to prevent memory leaks (by Nelson Chu)
-      <li>03/02/13 - Yar - Added master's scale transformation to TVKProxyObject (thanks to Dmitriy aka buh)
-      <li>20/11/12 - PW - Added CPP compatibility: changed arrays of vectors to records with arrays
-      <li>15/10/11 - YP - Don't set GLSelection buffer size, it's automatically done in the repeat until loop
-      <li>02/09/11 - Yar - Added csPerspectiveKeepFOV to TVKCamera.CameraStyle (thanks benok1)
-      <li>30/06/11 - DaStr - Bugfixed VisibilityCulling in vcObjectBased mode
-      <li>04/05/11 - Vince - Fix picking problems with Ortho2D Camera
-      <li>21/11/10 - Yar - Added design time navigation
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
-      <li>25/10/10 - Yar - Bugfixed TVKSceneBuffer.CopyToTexture
-      <li>08/09/10 - Yar - Added gloabal var vCurrentRenderingObject (Thanks Controller)
-      <li>02/09/10 - Yar - Added GLSelection to uses. Improved TVKSceneBuffer.PickObjects for 64-bit OSes
-      <li>29/08/10 - Yar - Bugfixed TVKSceneBuffer.DoStructuralChange when component loading causing excessive context recreation
-      <li>23/08/10 - Yar - Removed all critical deprecated OpenGL function from rendering cycle. 
-                           Now TVKSceneBuffer can work with forward core context.
-                           Pipeline transformation and lighting becomes abststract.
-      <li>18/06/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter. Changed AddBuffer to improved GLX context sharing.
-      <li>31/05/10 - Yar - Fixes for Linux x64
-      <li>31/05/10 - Yar - Added roSoftwareMode Buffer.ContextOptions
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TVKBaseSceneObject.GetHandle
-      <li>06/04/10 - Yar - Removed double camera freeing in TVKSceneBuffer.Destroy (thanks to Rustam Asmandiarov aka Predator)
-      <li>06/03/10 - Yar - Renamed ModelViewMatrix to ViewMatrix, added ModelMatrix
-                           All function working with ModelViewMatrix now deprecated
-                           Added roForwardContext to buffer options
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/02/10 - DanB - Moved TVKSceneBuffer.GLStates to TVKContext.GLStates
-      <li>22/02/10 - Yar - Added Push/PopProjectionMatrix to TVKSceneBuffer
-                           Optimization of switching states
-      <li>14/03/09 - DanB - Moved RenderScene from TVKScene to TVKSceneBuffer, removed
-                            TVKScene.Cameras, place cameras inside scene instead.
-                            TVKObjectEffect no longer has "buffer" parameter in render events.
-      <li>24/11/08 - DanB - TVKBaseSceneObject.Assign no longer changes scene of
-                            destination object (thanks Alan G.)
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-                            changed PChar to Pointer where possible
-      <li>12/10/08 - DanB - added nearClippingDistance to RCI
-      <li>09/10/08 - DanB - removed TVKScene.RenderedObject, moved TVKProgressEvent
-                            to GLBaseClasses
-      <li>20/04/08 - DaStr - Added a AABB cauching mechanism to TVKBaseSceneObject
-                             TVKDirectOpenGL's dimentions are now all all zeros
-                             (all above changes were made by Pascal)
-      <li>15/03/08 - DaStr - Implemented TVKProxyObject.BarycenterAbsolutePosition()
-      <li>16/02/08 - Mrqzzz - Other fix to ResetAndPitchTurnRoll by Pete,Dan Bartlett
-      <li>12/02/08 - Mrqzzz - Dave Gravel fixed ResetAndPitchTurnRoll
-      <li>20/01/08 - DaStr - Bugfixed TVKBaseSceneObject.MoveChild[First/Last]()
-                              (thanks "_") (BugTracker ID = 1857974)
-                             Converted the TVKBaseSceneObject.AbsoluteMatrix()
-                              function into a property (and added a Set method)
-                             Added TVKBaseSceneObject.AbsoluteLeft()
-      <li>19/09/07 - DaStr - Made some changes to TVKBaseSceneObject Bounding Box
-                              calculations (BugTracker ID = 1797491)
-      <li>17/09/07 - DaStr - Fixed TVKScene.RenderScene
-                              (InitializableObjects stuff) (BugTracker ID = 1796358)
-                             Moved TVKBaseSceneObject.SetScene to the protected section
-      <li>10/09/07 - DaStr - TVKBaseSceneObject:
-                               Added AxisAlignedBoundingBoxAbsolute
-                               Bugfixed GetAbsoluteScale
-      <li>08/09/07 - DaStr - Added TVKBaseSceneObject.Absolute[Affine]Scale
-      <li>18/06/07 - DaStr - Fixed bug which caused objects' order to get inverted
-                             (BugtrackerID = 1739180) (thanks Burkhard Carstens)
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>03/04/07 - DaStr - GLS_DELPHI_5_UP renamed to GLS_DELPHI_4_DOWN for
-                             FPC compatibility (thanks Burkhard Carstens)
-      <li>29/03/07 - DaStr - GLS_WANT_DATA removed
-                             Added IGLInitializable, TVKInitializableObjectList
-                             Added TVKScene.InitializableObjects
-      <li>28/03/07 - DaStr - Added more explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-                             Fixed TVKBaseSceneObject.Destroy (potential AV)
-      <li>26/03/07 - aidave - Added MoveFirst, MoveLast
-      <li>26/03/07 - aidave - Added MoveChildFirst, MoveChildLast
-      <li>25/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>10/03/07 - DaStr - TVKSceneBuffer's Events are not stored now
-                              (thanks Burkhard Carstens) (BugtrackerID = 1678654)
-      <li>15/02/07 - DaStr - TVKBaseSceneObject.GetChildren bugfixed (subcomponent support)
-      <li>09/02/07 - DaStr - TVKBaseSceneObject.ExchangeChildren(Safe) added (thanks apo_pq)
-                             Global $R- removed
-      <li>07/02/07 - DaStr - TVKBaseSceneObject.Remove bugfixed (subcomponent support)
-                             TVKBaseSceneObject.HasSubChildren added
-      <li>20/12/06 - DaStr - TVKBaseSceneObject:
-                                AbsoluteAffine[Position/Direction/up] added
-                                Affine[Right/LeftVector] added
-                                OnAddedToParent Event and DoOnAddedToParent() procedure added
-                                DistanceTo() and SqrDistanceTo() overloaded
-                                Support for GLS_OPTIMIZATIONS added
-      <li>19/10/06 - LC - Fixed TVKSceneBuffer.OrthoScreenToWorld. Bugtracker ID=1537765 (thanks dikoe)
-      <li>19/10/06 - LC - Removed unused assignment in TVKSceneBuffer.SaveAsFloatToFile
-      <li>13/09/06 - NelC - Added TVKSceneBuffer.SaveAsFloatToFile
-      <li>12/09/06 - NelC -  Added roNoDepthBufferClear, support for Multiple-Render-Target
-      <li>17/07/06 - PvD - Fixed TVKSceneBuffer.OrthoScreenToWorld sometimes translates screen coordinates incorrectly
-      <li>08/03/06 - ur - added global OptSaveGLStack variable for "arbitrary"
-                          deep scene trees
-      <li>06/03/06 - Mathx - Fixed Freeze/Melt (thanks Fig)
-      <li>04/12/04 - MF - Changed FieldOfView to work with degrees (not radians)
-      <li>04/12/04 - MF - Added GLCamera.SetFieldOfView and GLCamera.GetFieldOfView,
-                          formula by Ivan Sivak Jr.
-      <li>04/10/04 - NelC - Added support for 64bit and 128bit color depth (float pbuffer)
-      <li>07/07/04 - Mrqzzz - TVKbaseSceneObject.Remove checks if removed object is actually a child (Uffe Hammer)
-      <li>25/02/04 - Mrqzzz - Added TVKSCene.RenderedObject
-      <li>25/02/04 - EG - Children no longer owned
-      <li>13/02/04 - NelC - Added option Modal for ShowInfo
-      <li>04/02/04 - SG - Added roNoSwapBuffers option to TContextOptions (Juergen Abel)
-      <li>09/01/04 - EG - Added TVKCameraInvariantObject
-      <li>06/12/03 - EG - TVKColorProxy moved to new GLProxyObjects unit,
-                          GLVectorFileObjects dependency cut.
-      <li>06/12/03 - EG - New FramesPerSecond logic
-      <li>04/12/03 - Dave - Added ProxyObject.OctreeRayCastIntersect
-      <li>26/12/03 - EG - Removed last TList dependencies
-      <li>05/12/03 - Dave - Added GLCamera.PointInFront
-                   - Dave - Remade Data property to use Tag
-      <li>05/11/03 - EG - Data pointer made optional (GLS_WANT_DATA define),
-                          applications should use VCL's standard (ie. "Tag")
-      <li>04/11/03 - Dave - Added Data pointer to GLSceneBaseObject
-      <li>24/10/03 - NelC - Fixed texture-flipped bug in cubemap generation
-      <li>21/08/03 - EG - Added osRenderNearestFirst
-      <li>28/07/03 - aidave - Added TVKColorProxyObject
-      <li>22/07/03 - EG - LocalMatrix now a PMatrix, FListHandle and FChildren
-                          are now autocreating
-      <li>17/07/03 - EG - Removed TTransformationMode and related code
-      <li>16/07/03 - EG - TVKBaseGuiObject moved to GLGui along with RecursiveVisible mechanism
-      <li>19/06/03 - DanB - Added TVKBaseSceneObject.GetOrCreateBehaviour/Effect
-      <li>11/06/03 - Egg - Added CopyToTexture for buffer
-      <li>10/06/03 - Egg - Fixed issue with SetXxxxAngle (Domin)
-      <li>07/06/03 - Egg - Added Buffer.AmbientColor
-      <li>06/06/03 - Egg - Added roNoColorBufferClear
-      <li>21/05/03 - Egg - RenderToBitmap RC setup fixes (Yurik)
-      <li>07/05/03 - Egg - TVKSceneBuffer now invokes BeforeRender and PostRender
-                           events even when no camera has been specified
-      <li>13/02/03 - DanB - added unscaled Dimensions and Bounding Box methods
-      <li>03/01/03 - JAJ - Added TVKBaseGuiObject as minimal base GUI class.
-      <li>31/12/02 - JAJ - NotifyHide/NotifyShow implemented. Crucial for the Gui system.
-      <li>14/10/02 - Egg - Camera.TargetObject explicitly registered for notifications
-      <li>07/10/02 - Egg - Fixed Remove/Add/Insert (sublights registration bug)
-      <li>04/09/02 - Egg - BoundingBox computation now based on AABB code,
-                           Fixed TVKSceneBuffer.PixelRayToWorld
-      <li>27/08/02 - Egg - Added TVKProxyObject.RayCastIntersect (Matheus Degiovani),
-                           Fixed PixelRayToWorld
-      <li>22/08/02 - Egg - Fixed src LocalMatrix computation on Assign
-      <li>12/08/02 - Egg - Fixed Effects persistence 'Assert' issue (David Alcelay),
-                           TVKSceneBuffer.PickObjects now preserves ProjMatrix
-      <li>13/07/02 - Egg - Fixed CurrentStates computation
-      <li>01/07/02 - Egg - Fixed XOpenGL picking state
-      <li>03/06/02 - Egg - TVKSceneBuffer.DestroyRC now removes buffer from scene's list
-      <li>30/05/02 - Egg - Fixed light movements not triggering viewer redraw issue,
-                           lights no longer 'invisible' (sub objects get rendered)
-      <li>05/04/02 - Egg - Fixed XOpenGL initialization/reinitialization
-      <li>13/03/02 - Egg - Fixed camera-switch loss of "reactivity"
-      <li>08/03/02 - Egg - Fixed InvAbsoluteMatrix/AbsoluteMatrix decoupling
-      <li>05/03/02 - Egg - Added MoveObjectAround
-      <li>04/03/02 - Egg - CoordinateChanged default rightVector based on X, then Y
-      <li>27/02/02 - Egg - Added DepthPrecision and ColorDepth to buffer,
-                           ResetAndPitchTurnRoll, ShadeModel (Chris Strahm)
-      <li>26/02/02 - Egg - DestroyHandle/DestroyHandles split,
-                           Fixed PickObjects guess count (Steffen Xonna)
-      <li>22/02/02 - Egg - Push/pop ModelView matrix for buffer
-      <li>07/02/02 - Egg - Faster InvAbsoluteMatrix computation
-      <li>06/02/02 - Egg - ValidateTransformations phased out
-      <li>05/02/02 - Egg - Added roNoColorBuffer
-      <li>03/02/02 - Egg - InfoForm registration mechanism,
-                           AbsolutePosition promoted to read/write property
-      <li>27/01/02 - Egg - Added TVKCamera.RotateObject, fixed SetMatrix,
-                           added RotateAbsolute, ResetRotations
-      <li>21/01/02 - Egg - More graceful recovery for ICDs without pbuffer support
-      <li>10/01/02 - Egg - Fixed init of stCullFace in SetupRenderingContext,
-                           MoveAroundTarget/AdjustDistanceToTarget absolute pos fix
-      <li>07/01/02 - Egg - Added some doc, reduced dependencies, RenderToBitmap fixes
-      <li>28/12/01 - Egg - Event persistence change (GliGli / Dephi bug),
-                           LoadFromStream fix (noeska)
-      <li>16/12/01 - Egg - Cube maps support (textures and dynamic rendering)
-      <li>15/12/01 - Egg - Added support for AlphaBits
-      <li>12/12/01 - Egg - Introduced TVKNonVisualViewer,
-                           TVKSceneViewer moved to GLWin32Viewer
-      <li>07/12/01 - Egg - Added TVKBaseSceneObject.PointTo
-      <li>06/12/01 - Egg - Published OnDblClik and misc. events (Chris S),
-                           Some cross-platform cleanups
-      <li>05/12/01 - Egg - MoveAroundTarget fix (Phil Scadden)
-      <li>30/11/01 - Egg - Hardware acceleration detection support,
-                           Added Camera.SceneScale (based on code by Chris S)
-      <li>24/09/01 - Egg - TVKProxyObject loop rendering protection
-      <li>14/09/01 - Egg - Use of vFileStreamClass
-      <li>04/09/01 - Egg - Texture binding cache
-      <li>25/08/01 - Egg - Support for WGL_EXT_swap_control (VSync control),
-                           Added TVKMemoryViewer
-      <li>24/08/01 - Egg - TVKSceneViewer broken, TVKSceneBuffer born
-      <li>23/08/01 - Lin - Added PixelDepthToDistance function (Rene Lindsay)
-      <li>23/08/01 - Lin - Added ScreenToVector function (Rene Lindsay)
-      <li>23/08/01 - Lin - Fixed PixelRayToWorld no longer requires the camera
-                           to have a TargetObject set. (Rene Lindsay)
-      <li>22/08/01 - Egg - Fixed ocStructure not being reset for osDirectDraw objects,
-                           Added Absolute-Local conversion helpers,
-                           glPopName fix (Puthoon)
-      <li>20/08/01 - Egg - SetParentComponent now accepts 'nil' (Uwe Raabe)
-      <li>19/08/01 - Egg - Default RayCastIntersect is now Sphere
-      <li>16/08/01 - Egg - Dropped Prepare/FinishObject (became obsolete),
-                           new CameraStyle (Ortho2D)
-      <li>12/08/01 - Egg - Completely rewritten handles management,
-                           Faster camera switching
-      <li>29/07/01 - Egg - Added pooTransformation
-      <li>19/07/01 - Egg - Focal lengths in the ]0; 1[ range are now allowed (beware!)
-      <li>18/07/01 - Egg - Added VisibilityCulling
-      <li>09/07/01 - Egg - Added BoundingBox methods based on code from Jacques Tur
-      <li>08/07/01 - Egg - Fixes from Simon George added in (HDC, contexts and
-                           leaks related in TVKSceneViewer), dropped the TCanvas,
-                           Added PixelRayToWorld (by Rene Lindsay)
-      <li>06/07/01 - Egg - Fixed Turn/Roll/Pitch Angle Normalization issue
-      <li>04/07/01 - Egg - Minor GLVectorTypes related changes
-      <li>25/06/01 - Egg - Added osIgnoreDepthBuffer to TObjectStyles
-      <li>20/03/01 - Egg - LoadFromFile & LoadFromStream fixes by Uwe Raabe
-      <li>16/03/01 - Egg - SaveToFile/LoadFromFile additions/fixes by Uwe Raabe
-      <li>14/03/01 - Egg - Streaming fixes by Uwe Raabe
-      <li>03/03/01 - Egg - Added Stencil buffer support
-      <li>02/03/01 - Egg - Added TVKSceneViewer.CreateSnapShot
-      <li>01/03/01 - Egg - Fixed initialization of rci.proxySubObject (broke picking)
-      <li>26/02/01 - Egg - Added support for GL_NV_fog_distance
-      <li>25/02/01 - Egg - Proxy's subobjects are now pushed onto the picking stack
-      <li>22/02/01 - Egg - Changed to InvAbsoluteMatrix code by Uwe Raabe
-      <li>15/02/01 - Egg - Added SubObjects picking code by Alan Ferguson
-      <li>31/01/01 - Egg - Fixed Delphi4 issue in TVKProxyObject.Notification,
-                           Invisible objects are no longer depth-sorted
-      <li>21/01/01 - Egg - Simplified TVKBaseSceneObject.SetName
-      <li>17/01/01 - Egg - New TVKCamera.MoveAroundTarget code by Alan Ferguson,
-                           Fixed TVKBaseSceneObject.SetName (thx Jacques Tur),
-                           Fixed AbsolutePosition/AbsoluteMatrix
-      <li>13/01/01 - Egg - All transformations are now always relative,
-                           GlobalMatrix removed/merged with AbsoluteMatrix
-      <li>10/01/01 - Egg - If OpenGL is unavailable, TVKSceneViewer will now
-                           work as a regular (blank) WinControl
-      <li>08/01/01 - Egg - Added DoRender for TVKLightSource & TVKCamera
-      <li>04/01/01 - Egg - Fixed Picking (broken by Camera-Sprite fix)
-      <li>22/12/00 - Egg - Fixed error detection in DoDestroyList
-      <li>20/12/00 - Egg - Fixed bug with deleting/freeing a branch with cameras
-      <li>18/12/00 - Egg - Fixed deactivation of Fog (wouldn't deactivate)
-      <li>11/12/00 - Egg - Changed ConstAttenuation default to 0 (VCL persistence bug)
-      <li>05/11/00 - Egg - Completed Screen->World function set,
-                           finalized rendering logic change,
-                           added orthogonal projection
-      <li>03/11/00 - Egg - Fixed sorting pb with osRenderBlendedLast,
-                           Changed camera/world matrix logic,
-                           WorldToScreen/WorldToScreen now working
-      <li>30/10/00 - Egg - Fixes for FindChild (thx Steven Cao)
-      <li>12/10/00 - Egg - Added some doc
-      <li>08/10/00 - Egg - Fixed assignment HDC/display list quirk
-      <li>08/10/00 - Egg - Based on work by Roger Cao :
-                           Rotation property in TVKBaseSceneObject,
-                           Fix in LoadFromfile to avoid name changing and lighting error,
-                           Added LoadFromTextFile and SaveToTextFile,
-                           Added FindSceneObject
-      <li>25/09/00 - Egg - Added Null checks for SetDirection and SetUp
-      <li>13/08/00 - Egg - Fixed TVKCamera.Apply when camera is not targeting,
-                           Added clipping support stuff
-      <li>06/08/00 - Egg - TVKCoordinates moved to GLMisc
-      <li>23/07/00 - Egg - Added GetPixelColor/Depth
-      <li>19/07/00 - Egg - Fixed OpenGL states messup introduces with new logic,
-                           Fixed StructureChanged clear flag bug (thanks Roger Cao)
-      <li>15/07/00 - Egg - Altered "Render" logic to allow relative rendering,
-                           TProxyObject now renders children too
-      <li>13/07/00 - Egg - Completed (?) memory-leak fixes
-      <li>12/07/00 - Egg - Added 'Hint' property to TVKCustomSceneObject,
-                           Completed TVKBaseSceneObject.Assign,
-                           Fixed memory loss in TVKBaseSceneObject (Scaling),
-                           Many changes to list destruction scheme
-      <li>11/07/00 - Egg - Eased up propagation in Structure/TransformationChanged
-      <li>28/06/00 - Egg - Added ObjectStyle to TVKBaseSceneObject, various
-                           changes to the list/handle mechanism
-      <li>22/06/00 - Egg - Added TLightStyle (suggestion by Roger Cao)
-      <li>19/06/00 - Egg - Optimized SetXxxAngle
-      <li>09/06/00 - Egg - First row of Geometry-related upgrades
-      <li>07/06/00 - Egg - Removed dependency to 'Math',
-                           RenderToFile <-> Bitmap Overload (Aaron Hochwimmer)
-      <li>28/05/00 - Egg - AxesBuildList now available as a procedure,
-                           Un-re-fixed TVKLightSource.DestroyList,
-                           Fixed RenderToBitmap
-      <li>26/05/00 - Egg - Slightly changed DrawAxes to avoid a bug in nVidia OpenGL
-      <li>23/05/00 - Egg - Added first set of collision-detection methods
-      <li>22/05/00 - Egg - SetXxxxAngle now properly assigns to FXxxxAngle
-      <li>08/05/00 - Egg - Added Absolute?Vector funcs to TVKBaseSceneObject
-      <li>08/05/00 - RoC - Fixes in TVKScene.LoadFromFile, TVKLightSource.DestroyList
-      <li>26/04/00 - Egg - TagFloat now available in TVKBaseSceneObject,
-                           Added TVKProxyObject
-      <li>18/04/00 - Egg - Added TVKObjectEffect structures,
-                           TVKCoordinates.CreateInitialized
-      <li>17/04/00 - Egg - Fixed BaseSceneObject.Assign (wasn't duping children),
-                           Removed CreateSceneObject,
-                           Optimized TVKSceneViewer.Invalidate
-      <li>16/04/00 - Egg - Splitted Render to Render + RenderChildren
-      <li>11/04/00 - Egg - Added TVKBaseSceneObject.SetScene (thanks Uwe)
-                           and fixed various funcs accordingly
-      <li>10/04/00 - Egg - Improved persistence logic for behaviours,
-                           Added RegisterGLBehaviourNameChangeEvent
-      <li>06/04/00 - Egg - RebuildMatrix should be slightly faster now
-      <li>05/04/00 - Egg - Added TVKBehaviour stuff,
-                           Angles are now public stuff in TVKBaseSceneObject
-      <li>26/03/00 - Egg - Added TagFloat to TVKCustomSceneObject,
-                           Parent is now longer copied in "Assign"
-      <li>22/03/00 - Egg - TVKStates moved to GLMisc,
-                           Removed TVKCamera.FModified stuff,
-                           Fixed position bug in TVKScene.SetupLights
-      <li>20/03/00 - Egg - PickObjects now uses "const" and has helper funcs,
-                           Dissolved TVKRenderOptions into material and face props (RIP),
-                           Joystick stuff moved to a separate unit and component
-      <li>19/03/00 - Egg - Added DoProgress method and event
-      <li>18/03/00 - Egg - Fixed a few "Assign" I forgot to update after adding props,
-                           Added bmAdditive blending mode
-      <li>14/03/00 - Egg - Added RegisterGLBaseSceneObjectNameChangeEvent,
-                           Added BarycenterXxx and SqrDistance funcs,
-                           Fixed (?) AbsolutePosition,
-                           Added ResetPerformanceMonitor
-      <li>14/03/00 - Egg - Added SaveToFile, LoadFromFile to GLScene,
-      <li>03/03/00 - Egg - Disabled woTransparent handling
-      <li>12/02/00 - Egg - Added Material Library
-      <li>10/02/00 - Egg - Added Initialize to TVKCoordinates
-      <li>09/02/00 - Egg - All GLScene objects now begin with 'TVK',
-                           OpenGL now initialized upon first create of a TVKSceneViewer
-      <li>07/02/00 - Egg - Added ImmaterialSceneObject,
-                           Added Camera handling funcs : MoveAroundTarget,
-                           AdjustDistanceToTarget, DistanceToTarget,
-                           ScreenDeltaToVector, TVKCoordinates.Translate,
-                           Deactivated "specials" (ain't working yet),
-                           Scaling now a TVKCoordinates
-      <li>06/02/00 - Egg - balanced & secured all context activations,
-                           added Assert & try..finally & default galore,
-                           OpenGLError renamed to EOpenGLError,
-                           ShowErrorXxx funcs renamed to RaiseOpenGLError,
-                           fixed CreateSceneObject (was wrongly requiring a TCustomForm),
-                           fixed DoJoystickCapture error handling,
-                           added TVKUpdateAbleObject
-      <li>05/02/00 - Egg - Javadocisation, fixes and enhancements :<br>
-                           TVKSceneViewer.SetContextOptions,
-                           TActiveMode -> TJoystickDesignMode,
-                           TVKCamera.TargetObject and TVKCamera.AutoLeveling,
-                           TVKBaseSceneObject.CoordinateChanged
-   </ul></font>
+{
+   Base classes and structures for VKScene.  
 }
+
 unit VKS.Scene;
 
 interface
@@ -367,7 +29,7 @@ type
 
   // TVKProxyObjectOption
   //
-  {: Defines which features are taken from the master object. }
+  { Defines which features are taken from the master object. }
   TVKProxyObjectOption = (pooEffects, pooObjects, pooTransformation);
   TVKProxyObjectOptions = set of TVKProxyObjectOption;
 
@@ -403,20 +65,20 @@ type
 
   // TContextOption
   //
-  {: Options for the rendering context.<p>
+  { Options for the rendering context. 
      roSoftwareMode: force software rendering.
-     roDoubleBuffer: enables double-buffering.<br>
-     roRenderToWindows: ignored (legacy).<br>
-     roTwoSideLighting: enables two-side lighting model.<br>
+     roDoubleBuffer: enables double-buffering. 
+     roRenderToWindows: ignored (legacy). 
+     roTwoSideLighting: enables two-side lighting model. 
      roStereo: enables stereo support in the driver (dunno if it works,
-         I don't have a stereo device to test...)<br>
-     roDestinationAlpha: request an Alpha channel for the rendered output<br>
-     roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
+         I don't have a stereo device to test...) 
+     roDestinationAlpha: request an Alpha channel for the rendered output 
+     roNoColorBuffer: don't request a color buffer (color depth setting ignored)
      roNoColorBufferClear: do not clear the color buffer automatically, if the
-         whole viewer is fully repainted each frame, this can improve framerate<br>
+         whole viewer is fully repainted each frame, this can improve framerate 
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
-         early-z culling.<br>
+         early-z culling. 
      roForwardContext: force OpenGL forward context }
   TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
@@ -448,15 +110,15 @@ type
 
   // TVKObjectStyle
   //
-  {: Possible styles/options for a GLScene object.<p>
-     Allowed styles are:<ul>
-     <li>osDirectDraw : object shall not make use of compiled call lists, but issue
+  { Possible styles/options for a GLScene object. 
+     Allowed styles are: 
+      osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
-     <li>osIgnoreDepthBuffer : object is rendered with depth test disabled,
+      osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
-     <li>osNoVisibilityCulling : whatever the VisibilityCulling setting,
+      osNoVisibilityCulling : whatever the VisibilityCulling setting,
         it will be ignored and the object rendered
-     </ul> }
+       }
   TVKObjectStyle = (
     osDirectDraw,
     osIgnoreDepthBuffer,
@@ -465,7 +127,7 @@ type
 
   // IGLInitializable
   //
-  {: Interface to objects that need initialization<p> }
+  { Interface to objects that need initialization  }
   IGLInitializable = interface
     ['{EA40AE8E-79B3-42F5-ADF1-7A901B665E12}']
     procedure InitializeObject(ASender: TObject; const ARci:
@@ -474,7 +136,7 @@ type
 
   // TVKInitializableObjectList
   //
-  {: Just a list of objects that support IGLInitializable.<p> }
+  { Just a list of objects that support IGLInitializable.  }
   TVKInitializableObjectList = class(TList)
   private
     function GetItems(const Index: Integer): IGLInitializable;
@@ -487,15 +149,15 @@ type
 
   // TVKBaseSceneObject
   //
-  {: Base class for all scene objects.<p>
+  { Base class for all scene objects. 
      A scene object is part of scene hierarchy (each scene object can have
      multiple children), this hierarchy primarily defines transformations
      (each child coordinates are relative to its parent), but is also used
-     for depth-sorting, bounding and visibility culling purposes.<p>
+     for depth-sorting, bounding and visibility culling purposes. 
      Subclasses implement either visual scene objects (that are made to be
      visible at runtime, like a Cube) or structural objects (that influence
      rendering or are used for varied structural manipulations,
-     like the ProxyObject).<p>
+     like the ProxyObject). 
      To add children at runtime, use the AddNewChild method of TVKBaseSceneObject;
      other children manipulations methods and properties are provided (to browse,
      move and delete them). Using the regular TComponent methods is not
@@ -624,7 +286,7 @@ type
     procedure DeleteChildCameras;
     procedure DoOnAddedToParent; virtual;
 
-    {: Used to re-calculate BoundingBoxes every time we need it.
+    { Used to re-calculate BoundingBoxes every time we need it.
        GetLocalUnscaleBB() must return the local BB, not the axis-aligned one.
 
        By default it is calculated from AxisAlignedBoundingBoxUnscaled and
@@ -639,143 +301,143 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    {: Controls and adjusts internal optimizations based on object's style.<p>
+    { Controls and adjusts internal optimizations based on object's style. 
        Advanced user only. }
     property ObjectStyle: TVKObjectStyles read FObjectStyle write FObjectStyle;
 
-    {: Returns the handle to the object's build list.<p>
+    { Returns the handle to the object's build list. 
        Use with caution! Some objects don't support buildlists! }
     function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
     function ListHandleAllocated: Boolean;
 
-    {: The local transformation (relative to parent).<p>
+    { The local transformation (relative to parent). 
        If you're *sure* the local matrix is up-to-date, you may use LocalMatrix
        for quicker access. }
     property Matrix: TMatrix read GetMatrix write SetMatrix;
-    {: See Matrix. }
+    { See Matrix. }
     function MatrixAsAddress: PMatrix;
-    {: Holds the local transformation (relative to parent).<p>
+    { Holds the local transformation (relative to parent). 
        If you're not *sure* the local matrix is up-to-date, use Matrix property. }
     property LocalMatrix: PMatrix read FLocalMatrix;
-    {: Forces the local matrix to the specified value.<p>
+    { Forces the local matrix to the specified value. 
        AbsoluteMatrix, InverseMatrix, etc. will honour that change, but
        may become invalid if the specified matrix isn't orthonormal (can
-       be used for specific rendering or projection effects).<br>
+       be used for specific rendering or projection effects). 
        The local matrix will be reset by the next TransformationChanged,
        position or attitude change. }
     procedure ForceLocalMatrix(const aMatrix: TMatrix);
 
-    {: See AbsoluteMatrix. }
+    { See AbsoluteMatrix. }
     function AbsoluteMatrixAsAddress: PMatrix;
-    {: Holds the absolute transformation matrix.<p>
+    { Holds the absolute transformation matrix. 
        If you're not *sure* the absolute matrix is up-to-date,
        use the AbsoluteMatrix property, this one may be nil... }
     property DirectAbsoluteMatrix: PMatrix read FAbsoluteMatrix;
 
-    {: Calculates the object's absolute inverse matrix.<p>
-       Multiplying an absolute coordinate with this matrix gives a local coordinate.<p>
+    { Calculates the object's absolute inverse matrix. 
+       Multiplying an absolute coordinate with this matrix gives a local coordinate. 
        The current implem uses transposition(AbsoluteMatrix), which is true
        unless you're using some scaling... }
     function InvAbsoluteMatrix: TMatrix;
-    {: See InvAbsoluteMatrix. }
+    { See InvAbsoluteMatrix. }
     function InvAbsoluteMatrixAsAddress: PMatrix;
 
-    {: The object's absolute matrix by composing all local matrices.<p>
+    { The object's absolute matrix by composing all local matrices. 
        Multiplying a local coordinate with this matrix gives an absolute coordinate. }
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix write
       SetAbsoluteMatrix;
 
-    {: Direction vector in absolute coordinates. }
+    { Direction vector in absolute coordinates. }
     property AbsoluteDirection: TVector read GetAbsoluteDirection write
       SetAbsoluteDirection;
     property AbsoluteAffineDirection: TAffineVector read
       GetAbsoluteAffineDirection write SetAbsoluteAffineDirection;
 
-    {: Scale vector in absolute coordinates.
+    { Scale vector in absolute coordinates.
        Warning: SetAbsoluteScale() does not work correctly at the moment. }
     property AbsoluteScale: TVector read GetAbsoluteScale write
       SetAbsoluteScale;
     property AbsoluteAffineScale: TAffineVector read GetAbsoluteAffineScale write
       SetAbsoluteAffineScale;
 
-    {: Up vector in absolute coordinates. }
+    { Up vector in absolute coordinates. }
     property AbsoluteUp: TVector read GetAbsoluteUp write SetAbsoluteUp;
     property AbsoluteAffineUp: TAffineVector read GetAbsoluteAffineUp write
       SetAbsoluteAffineUp;
 
-    {: Calculate the right vector in absolute coordinates. }
+    { Calculate the right vector in absolute coordinates. }
     function AbsoluteRight: TVector;
 
-    {: Calculate the left vector in absolute coordinates. }
+    { Calculate the left vector in absolute coordinates. }
     function AbsoluteLeft: TVector;
 
-    {: Computes and allows to set the object's absolute coordinates.<p> }
+    { Computes and allows to set the object's absolute coordinates.  }
     property AbsolutePosition: TVector read GetAbsolutePosition write
       SetAbsolutePosition;
     property AbsoluteAffinePosition: TAffineVector read GetAbsoluteAffinePosition
       write SetAbsoluteAffinePosition;
     function AbsolutePositionAsAddress: PVector;
 
-    {: Returns the Absolute X Vector expressed in local coordinates. }
+    { Returns the Absolute X Vector expressed in local coordinates. }
     function AbsoluteXVector: TVector;
-    {: Returns the Absolute Y Vector expressed in local coordinates. }
+    { Returns the Absolute Y Vector expressed in local coordinates. }
     function AbsoluteYVector: TVector;
-    {: Returns the Absolute Z Vector expressed in local coordinates. }
+    { Returns the Absolute Z Vector expressed in local coordinates. }
     function AbsoluteZVector: TVector;
 
-    {: Converts a vector/point from absolute coordinates to local coordinates.<p> }
+    { Converts a vector/point from absolute coordinates to local coordinates.  }
     function AbsoluteToLocal(const v: TVector): TVector; overload;
-    {: Converts a vector from absolute coordinates to local coordinates.<p> }
+    { Converts a vector from absolute coordinates to local coordinates.  }
     function AbsoluteToLocal(const v: TAffineVector): TAffineVector; overload;
-    {: Converts a vector/point from local coordinates to absolute coordinates.<p> }
+    { Converts a vector/point from local coordinates to absolute coordinates.  }
     function LocalToAbsolute(const v: TVector): TVector; overload;
-    {: Converts a vector from local coordinates to absolute coordinates.<p> }
+    { Converts a vector from local coordinates to absolute coordinates.  }
     function LocalToAbsolute(const v: TAffineVector): TAffineVector; overload;
 
-    {: Returns the Right vector (based on Up and Direction) }
+    { Returns the Right vector (based on Up and Direction) }
     function Right: TVector;
-    {: Returns the Left vector (based on Up and Direction) }
+    { Returns the Left vector (based on Up and Direction) }
     function LeftVector: TVector;
 
-    {: Returns the Right vector (based on Up and Direction) }
+    { Returns the Right vector (based on Up and Direction) }
     function AffineRight: TAffineVector;
-    {: Returns the Left vector (based on Up and Direction) }
+    { Returns the Left vector (based on Up and Direction) }
     function AffineLeftVector: TAffineVector;
 
-    {: Calculates the object's square distance to a point/object.<p>
+    { Calculates the object's square distance to a point/object. 
        pt is assumed to be in absolute coordinates,
        AbsolutePosition is considered as being the object position. }
     function SqrDistanceTo(anObject: TVKBaseSceneObject): Single; overload;
     function SqrDistanceTo(const pt: TVector): Single; overload;
     function SqrDistanceTo(const pt: TAffineVector): Single; overload;
 
-    {: Computes the object's distance to a point/object.<p>
+    { Computes the object's distance to a point/object. 
        Only objects AbsolutePositions are considered. }
     function DistanceTo(anObject: TVKBaseSceneObject): Single; overload;
     function DistanceTo(const pt: TAffineVector): Single; overload;
     function DistanceTo(const pt: TVector): Single; overload;
 
-    {: Calculates the object's barycenter in absolute coordinates.<p>
+    { Calculates the object's barycenter in absolute coordinates. 
        Default behaviour is to consider Barycenter=AbsolutePosition
-       (whatever the number of children).<br>
+       (whatever the number of children). 
        SubClasses where AbsolutePosition is not the barycenter should
        override this method as it is used for distance calculation, during
        rendering for instance, and may lead to visual inconsistencies. }
     function BarycenterAbsolutePosition: TVector; virtual;
-    {: Calculates the object's barycenter distance to a point.<p> }
+    { Calculates the object's barycenter distance to a point.  }
     function BarycenterSqrDistanceTo(const pt: TVector): Single;
 
-    {: Shall returns the object's axis aligned extensions.<p>
+    { Shall returns the object's axis aligned extensions. 
        The dimensions are measured from object center and are expressed
        <i>with</i> scale accounted for, in the object's coordinates
-       (not in absolute coordinates).<p>
-       Default value is half the object's Scale.<br> }
+       (not in absolute coordinates). 
+       Default value is half the object's Scale.  }
     function AxisAlignedDimensions: TVector; virtual;
     function AxisAlignedDimensionsUnscaled: TVector; virtual;
 
-    {: Calculates and return the AABB for the object.<p>
+    { Calculates and return the AABB for the object. 
        The AABB is currently calculated from the BB.
-       There is <b>no</b> caching scheme for them. }
+       There is  no  caching scheme for them. }
     function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True):
       TAABB;
     function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean =
@@ -783,16 +445,16 @@ type
     function AxisAlignedBoundingBoxAbsolute(const AIncludeChilden: Boolean =
       True; const AUseBaryCenter: Boolean = False): TAABB;
 
-    {: Advanced AABB functions that use a caching scheme.
+    { Advanced AABB functions that use a caching scheme.
        Also they include children and use BaryCenter. }
     function AxisAlignedBoundingBoxEx: TAABB;
     function AxisAlignedBoundingBoxAbsoluteEx: TAABB;
 
-    {: Calculates and return the Bounding Box for the object.<p>
-       The BB is calculated <b>each</b> time this method is invoked,
+    { Calculates and return the Bounding Box for the object. 
+       The BB is calculated  each  time this method is invoked,
        based on the AxisAlignedDimensions of the object and that of its
        children.
-       There is <b>no</b> caching scheme for them. }
+       There is  no  caching scheme for them. }
     function BoundingBox(const AIncludeChilden: Boolean = True; const
       AUseBaryCenter: Boolean = False): THmgBoundingBox;
     function BoundingBoxUnscaled(const AIncludeChilden: Boolean = True; const
@@ -800,36 +462,36 @@ type
     function BoundingBoxAbsolute(const AIncludeChilden: Boolean = True; const
       AUseBaryCenter: Boolean = False): THmgBoundingBox;
 
-    {: Advanced BB functions that use a caching scheme.
+    { Advanced BB functions that use a caching scheme.
        Also they include children and use BaryCenter. }
     function BoundingBoxPersonalUnscaledEx: THmgBoundingBox;
     function BoundingBoxOfChildrenEx: THmgBoundingBox;
     function BoundingBoxIncludingChildrenEx: THmgBoundingBox;
 
-    {: Max distance of corners of the BoundingBox. }
+    { Max distance of corners of the BoundingBox. }
     function BoundingSphereRadius: Single;
     function BoundingSphereRadiusUnscaled: Single;
 
-    {: Indicates if a point is within an object.<p>
-       Given coordinate is an absolute coordinate.<br>
-       Linear or surfacic objects shall always return False.<p>
+    { Indicates if a point is within an object. 
+       Given coordinate is an absolute coordinate. 
+       Linear or surfacic objects shall always return False. 
        Default value is based on AxisAlignedDimension and a cube bounding. }
     function PointInObject(const point: TVector): Boolean; virtual;
-    {: Request to determine an intersection with a casted ray.<p>
+    { Request to determine an intersection with a casted ray. 
        Given coordinates & vector are in absolute coordinates, rayVector
-       must be normalized.<br>
+       must be normalized. 
        rayStart may be a point inside the object, allowing retrieval of
-       the multiple intersects of the ray.<p>
+       the multiple intersects of the ray. 
        When intersectXXX parameters are nil (default) implementation should
        take advantage of this to optimize calculus, if not, and an intersect
-       is found, non nil parameters should be defined.<p>
-       The intersectNormal needs NOT be normalized by the implementations.<p>
+       is found, non nil parameters should be defined. 
+       The intersectNormal needs NOT be normalized by the implementations. 
        Default value is based on bounding sphere. }
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; virtual;
 
-    {: Request to generate silhouette outlines.<p>
+    { Request to generate silhouette outlines. 
        Default implementation assumes the objects is a sphere of
        AxisAlignedDimensionUnscaled size. Subclasses may choose to return
        nil instead, which will be understood as an empty silhouette. }
@@ -856,7 +518,7 @@ type
     function HasSubChildren: Boolean;
     procedure DeleteChildren; dynamic;
     procedure Insert(AIndex: Integer; AChild: TVKBaseSceneObject); dynamic;
-    {: Takes a scene object out of the child list, but doesn't destroy it.<p>
+    { Takes a scene object out of the child list, but doesn't destroy it. 
        If 'KeepChildren' is true its children will be kept as new children
        in this scene object. }
     procedure Remove(aChild: TVKBaseSceneObject; keepChildren: Boolean);
@@ -864,14 +526,14 @@ type
     function IndexOfChild(aChild: TVKBaseSceneObject): Integer;
     function FindChild(const aName: string; ownChildrenOnly: Boolean):
       TVKBaseSceneObject;
-    {: The "safe" version of this procedure checks if indexes are inside
+    { The "safe" version of this procedure checks if indexes are inside
        the list. If not, no exception if raised. }
     procedure ExchangeChildrenSafe(anIndex1, anIndex2: Integer);
-    {: The "regular" version of this procedure does not perform any checks
+    { The "regular" version of this procedure does not perform any checks
        and calls FChildren.Exchange directly. User should/can perform range
        checks manualy. }
     procedure ExchangeChildren(anIndex1, anIndex2: Integer);
-    {: These procedures are safe. }
+    { These procedures are safe. }
     procedure MoveChildUp(anIndex: Integer);
     procedure MoveChildDown(anIndex: Integer);
     procedure MoveChildFirst(anIndex: Integer);
@@ -885,7 +547,7 @@ type
     procedure MoveLast;
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
-    {: Make object-specific geometry description here.<p>
+    { Make object-specific geometry description here. 
        Subclasses should MAINTAIN OpenGL states (restore the states if
        they were altered). }
     procedure BuildList(var rci: TRenderContextInfo); virtual;
@@ -906,18 +568,18 @@ type
     procedure Roll(angle: Single);
     procedure Turn(angle: Single);
 
-    {: Sets all rotations to zero and restores default Direction/Up.<p>
+    { Sets all rotations to zero and restores default Direction/Up. 
        Using this function then applying roll/pitch/turn in the order that
        suits you, you can give an "absolute" meaning to rotation angles
-       (they are still applied locally though).<br>
+       (they are still applied locally though). 
        Scale and Position are not affected. }
     procedure ResetRotations;
-    {: Reset rotations and applies them back in the specified order. }
+    { Reset rotations and applies them back in the specified order. }
     procedure ResetAndPitchTurnRoll(const degX, degY, degZ: Single);
 
-    {: Applies rotations around absolute X, Y and Z axis.<p> }
+    { Applies rotations around absolute X, Y and Z axis.  }
     procedure RotateAbsolute(const rx, ry, rz: Single); overload;
-    {: Applies rotations around the absolute given vector (angle in degrees).<p> }
+    { Applies rotations around the absolute given vector (angle in degrees).  }
     procedure RotateAbsolute(const axis: TAffineVector; angle: Single);
       overload;
     //: Moves camera along the right vector (move left and right)
@@ -983,37 +645,37 @@ type
 
   // TVKBaseBehaviour
   //
-  {: Base class for implementing behaviours in TVKScene.<p>
+  { Base class for implementing behaviours in TVKScene. 
      Behaviours are regrouped in a collection attached to a TVKBaseSceneObject,
      and are part of the "Progress" chain of events. Behaviours allows clean
      application of time-based alterations to objects (movements, shape or
-     texture changes...).<p>
+     texture changes...). 
      Since behaviours are implemented as classes, there are basicly two kinds
-     of strategies for subclasses :<ul>
-     <li>stand-alone : the subclass does it all, and holds all necessary data
+     of strategies for subclasses : 
+      stand-alone : the subclass does it all, and holds all necessary data
         (covers animation, inertia etc.)
-     <li>proxy : the subclass is an interface to and external, shared operator
+      proxy : the subclass is an interface to and external, shared operator
         (like gravity, force-field effects etc.)
-     </ul><br>
+       
      Some behaviours may be cooperative (like force-fields affects inertia)
-     or unique (e.g. only one inertia behaviour per object).<p>
-     NOTES :<ul>
-     <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+     or unique (e.g. only one inertia behaviour per object). 
+     NOTES : 
+      Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
-     <li>Subclasses must be registered using the RegisterXCollectionItemClass
+      Subclasses must be registered using the RegisterXCollectionItemClass
         function
-     </ul> }
+       }
   TVKBaseBehaviour = class(TXCollectionItem)
   protected
     { Protected Declarations }
     procedure SetName(const val: string); override;
 
-    {: Override this function to write subclass data. }
+    { Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
-    {: Override this function to read subclass data. }
+    { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
-    {: Returns the TVKBaseSceneObject on which the behaviour should be applied.<p>
+    { Returns the TVKBaseSceneObject on which the behaviour should be applied. 
        Does NOT check for nil owners. }
     function OwnerBaseSceneObject: TVKBaseSceneObject;
 
@@ -1027,7 +689,7 @@ type
 
   // TVKBehaviour
   //
-  {: Ancestor for non-rendering behaviours.<p>
+  { Ancestor for non-rendering behaviours. 
      This class shall never receive any properties, it's just here to differentiate
      rendereing and non-rendering behaviours. Rendereing behaviours are named
      "TVKObjectEffect", non-rendering effects (like inertia) are simply named
@@ -1038,8 +700,8 @@ type
 
   // TVKBehaviours
   //
-  {: Holds a list of TVKBehaviour objects.<p>
-     This object expects itself to be owned by a TVKBaseSceneObject.<p>
+  { Holds a list of TVKBehaviour objects. 
+     This object expects itself to be owned by a TVKBaseSceneObject. 
      As a TXCollection (and contrary to a TCollection), this list can contain
      objects of varying class, the only constraint being that they should all
      be TVKBehaviour subclasses. }
@@ -1065,28 +727,28 @@ type
 
   // TVKObjectEffect
   //
-  {: A rendering effect that can be applied to SceneObjects.<p>
+  { A rendering effect that can be applied to SceneObjects. 
      ObjectEffect is a subclass of behaviour that gets a chance to Render
-     an object-related special effect.<p>
+     an object-related special effect. 
      TVKObjectEffect should not be used as base class for custom effects,
-     instead you should use the following base classes :<ul>
-     <li>TVKObjectPreEffect is rendered before owner object render
-     <li>TVKObjectPostEffect is rendered after the owner object render
-     <li>TVKObjectAfterEffect is rendered at the end of the scene rendering
-     </ul><br>NOTES :<ul>
-     <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+     instead you should use the following base classes : 
+      TVKObjectPreEffect is rendered before owner object render
+      TVKObjectPostEffect is rendered after the owner object render
+      TVKObjectAfterEffect is rendered at the end of the scene rendering
+       NOTES : 
+      Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
-     <li>Subclasses must be registered using the RegisterXCollectionItemClass
+      Subclasses must be registered using the RegisterXCollectionItemClass
         function
-     </ul> }
+       }
 //   TVKObjectEffectClass = class of TVKObjectEffect;
 
   TVKObjectEffect = class(TVKBaseBehaviour)
   protected
     { Protected Declarations }
-    {: Override this function to write subclass data. }
+    { Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
-    {: Override this function to read subclass data. }
+    { Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
   public
@@ -1096,29 +758,29 @@ type
 
   // TVKObjectPreEffect
   //
-  {: An object effect that gets rendered before owner object's render.<p>
+  { An object effect that gets rendered before owner object's render. 
      The current OpenGL matrices and material are that of the owner object. }
   TVKObjectPreEffect = class(TVKObjectEffect)
   end;
 
   // TVKObjectPostEffect
   //
-  {: An object effect that gets rendered after owner object's render.<p>
+  { An object effect that gets rendered after owner object's render. 
      The current OpenGL matrices and material are that of the owner object. }
   TVKObjectPostEffect = class(TVKObjectEffect)
   end;
 
   // TVKObjectAfterEffect
   //
-  {: An object effect that gets rendered at scene's end.<p>
+  { An object effect that gets rendered at scene's end. 
      No particular OpenGL matrices or material should be assumed. }
   TVKObjectAfterEffect = class(TVKObjectEffect)
   end;
 
   // TVKObjectEffects
   //
-  {: Holds a list of object effects.<p>
-     This object expects itself to be owned by a TVKBaseSceneObject.<p> }
+  { Holds a list of object effects. 
+     This object expects itself to be owned by a TVKBaseSceneObject.  }
   TVKObjectEffects = class(TXCollection)
   protected
     { Protected Declarations }
@@ -1139,13 +801,13 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes);
     procedure RenderPreEffects(var rci: TRenderContextInfo);
-    {: Also take care of registering after effects with the GLSceneViewer. }
+    { Also take care of registering after effects with the GLSceneViewer. }
     procedure RenderPostEffects(var rci: TRenderContextInfo);
   end;
 
   // TVKCustomSceneObject
   //
-  {: Extended base scene object class with a material property.<p>
+  { Extended base scene object class with a material property. 
      The material allows defining a color and texture for the object,
      see TVKMaterial. }
   TVKCustomSceneObject = class(TVKBaseSceneObject)
@@ -1158,7 +820,7 @@ type
     { Protected Declarations }
     function Blended: Boolean; override;
 
-    procedure SetGLMaterial(AValue: TVKMaterial);
+    procedure SetVKMaterial(AValue: TVKMaterial);
     procedure DestroyHandle; override;
     procedure Loaded; override;
 
@@ -1171,15 +833,15 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    property Material: TVKMaterial read FMaterial write SeTVKMaterial;
+    property Material: TVKMaterial read FMaterial write SetVKMaterial;
     property Hint: string read FHint write FHint;
   end;
 
   // TVKSceneRootObject
   //
-  {: This class shall be used only as a hierarchy root.<p>
+  { This class shall be used only as a hierarchy root. 
      It exists only as a container and shall never be rotated/scaled etc. as
-     the class type is used in parenting optimizations.<p>
+     the class type is used in parenting optimizations. 
      Shall never implement or add any functionality, the "Create" override
      only take cares of disabling the build list. }
   TVKSceneRootObject = class(TVKBaseSceneObject)
@@ -1190,9 +852,9 @@ type
 
   // TVKImmaterialSceneObject
   //
-  {: Base class for objects that do not have a published "material".<p>
+  { Base class for objects that do not have a published "material". 
      Note that the material is available in public properties, but isn't
-     applied automatically before invoking BuildList.<br>
+     applied automatically before invoking BuildList. 
      Subclassing should be reserved to structural objects and objects that
      have no material of their own. }
   TVKImmaterialSceneObject = class(TVKCustomSceneObject)
@@ -1224,7 +886,7 @@ type
 
   // TVKCameraInvariantObject
   //
-  {: Base class for camera invariant objects.<p>
+  { Base class for camera invariant objects. 
      Camera invariant objects bypass camera settings, such as camera
      position (object is always centered on camera) or camera orientation
      (object always has same orientation as camera). }
@@ -1251,7 +913,7 @@ type
 
   // TVKSceneObject
   //
-  {: Base class for standard scene objects.<p>
+  { Base class for standard scene objects. 
      Publishes the Material property. }
   TVKSceneObject = class(TVKCustomSceneObject)
   published
@@ -1278,17 +940,17 @@ type
 
   // TDirectRenderEvent
   //
-  {: Event for user-specific rendering in a TVKDirectOpenGL object. }
+  { Event for user-specific rendering in a TVKDirectOpenGL object. }
   TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo)
     of object;
 
   // TVKDirectOpenGL
   //
-  {: Provides a way to issue direct OpenGL calls during the rendering.<p>
+  { Provides a way to issue direct OpenGL calls during the rendering. 
      You can use this object to do your specific rendering task in its OnRender
      event. The OpenGL calls shall restore the OpenGL states they found when
      entering, or exclusively use the GLMisc utility functions to alter the
-     states.<br> }
+     states.  }
   TVKDirectOpenGL = class(TVKImmaterialSceneObject)
   private
     { Private Declarations }
@@ -1311,32 +973,32 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    {: Specifies if a build list be made.<p>
+    { Specifies if a build list be made. 
        If True, GLScene will generate a build list (OpenGL-side cache),
        ie. OnRender will only be invoked once for the first render, or after
        a StructureChanged call. This is suitable for "static" geometry and
-       will usually speed up rendering of things that don't change.<br>
+       will usually speed up rendering of things that don't change. 
        If false, OnRender will be invoked for each render. This is suitable
        for dynamic geometry (things that change often or constantly). }
     property UseBuildList: Boolean read FUseBuildList write SetUseBuildList;
-    {: Place your specific OpenGL code here.<p>
+    { Place your specific OpenGL code here. 
        The OpenGL calls shall restore the OpenGL states they found when
        entering, or exclusively use the GLMisc utility functions to alter
-       the states.<br> }
+       the states.  }
     property OnRender: TDirectRenderEvent read FOnRender write FOnRender;
-    {: Defines if the object uses blending.<p>
+    { Defines if the object uses blending. 
        This property will allow direct opengl objects to be flagged as
-       blended for object sorting purposes.<br> }
+       blended for object sorting purposes.  }
     property Blend: Boolean read FBlend write SetBlend;
   end;
 
   // TVKRenderPoint
   //
-  {: Scene object that allows other objects to issue rendering at some point.<p>
+  { Scene object that allows other objects to issue rendering at some point. 
      This object is used to specify a render point for which other components
      have (rendering) tasks to perform. It doesn't render anything itself
      and is invisible, but other components can register and be notified
-     when the point is reached in the rendering phase.<br>
+     when the point is reached in the rendering phase. 
      Callbacks must be explicitly unregistered. }
   TVKRenderPoint = class(TVKImmaterialSceneObject)
   private
@@ -1364,9 +1026,9 @@ type
 
   // TVKProxyObject
   //
-  {: A full proxy object.<p>
+  { A full proxy object. 
      This object literally uses another object's Render method to do its own
-     rendering, however, it has a coordinate system and a life of its own.<br>
+     rendering, however, it has a coordinate system and a life of its own. 
      Use it for duplicates of an object. }
   TVKProxyObject = class(TVKBaseSceneObject)
   private
@@ -1403,10 +1065,10 @@ type
 
   published
     { Published Declarations }
-    {: Specifies the Master object which will be proxy'ed. }
+    { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TVKBaseSceneObject read FMasterObject write
       SetMasterObject;
-    {: Specifies how and what is proxy'ed. }
+    { Specifies how and what is proxy'ed. }
     property ProxyOptions: TVKProxyObjectOptions read FProxyOptions write
       SetProxyOptions default cDefaultProxyOptions;
 
@@ -1430,24 +1092,24 @@ type
 
   // TLightStyle
   //
-  {: Defines the various styles for lightsources.<p>
-     <ul>
-     <li>lsSpot : a spot light, oriented and with a cutoff zone (note that if
+  { Defines the various styles for lightsources. 
+      
+      lsSpot : a spot light, oriented and with a cutoff zone (note that if
         cutoff is 180, the spot is rendered as an omni source)
-     <li>lsOmni : an omnidirectionnal source, punctual and sending light in
+      lsOmni : an omnidirectionnal source, punctual and sending light in
         all directions uniformously
-     <li>lsParallel : a parallel light, oriented as the light source is (this
+      lsParallel : a parallel light, oriented as the light source is (this
         type of light can help speed up rendering)
-      </ul> }
+        }
   TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   // TVKLightSource
   //
-  {: Standard light source.<p>
+  { Standard light source. 
      The standard GLScene light source covers spotlights, omnidirectionnal and
-     parallel sources (see TLightStyle).<br>
+     parallel sources (see TLightStyle). 
      Lights are colored, have distance attenuation parameters and are turned
-     on/off through their Shining property.<p>
+     on/off through their Shining property. 
      Lightsources are managed in a specific object by the TVKScene for rendering
      purposes. The maximum number of light source in a scene is limited by the
      OpenGL implementation (8 lights are supported under most ICDs), though the
@@ -1535,7 +1197,7 @@ type
 
   // TVKCamera
   //
-  {: Camera object.<p>
+  { Camera object. 
      This object is commonly referred by TVKSceneViewer and defines a position,
      direction, focal length, depth of view... all the properties needed for
      defining a point of view and optical characteristics. }
@@ -1577,7 +1239,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    {: Nearest clipping plane for the frustum.<p>
+    { Nearest clipping plane for the frustum. 
        This value depends on the FocalLength and DepthOfView fields and
        is calculated to minimize Z-Buffer crawling as suggested by the
        OpenGL documentation. }
@@ -1604,126 +1266,126 @@ type
     procedure RotateTarget(pitchDelta, turnDelta: Single; rollDelta: Single =
       0);
 
-    {: Change camera's position to make it move around its target.<p>
+    { Change camera's position to make it move around its target. 
        If TargetObject is nil, nothing happens. This method helps in quickly
        implementing camera controls. Camera's Up and Direction properties
-       are unchanged.<br>
-       Angle deltas are in degrees, camera parent's coordinates should be identity.<p>
+       are unchanged. 
+       Angle deltas are in degrees, camera parent's coordinates should be identity. 
        Tip : make the camera a child of a "target" dummycube and make
        it a target the dummycube. Now, to pan across the scene, just move
        the dummycube, to change viewing angle, use this method. }
     procedure MoveAroundTarget(pitchDelta, turnDelta: Single);
-    {: Change camera's position to make it move all around its target.<p>
+    { Change camera's position to make it move all around its target. 
        If TargetObject is nil, nothing happens. This method helps in quickly
        implementing camera controls. Camera's Up and Direction properties
-       are changed.<br>
-       Angle deltas are in degrees.<p>}
+       are changed. 
+       Angle deltas are in degrees. }
     procedure MoveAllAroundTarget(pitchDelta, turnDelta :Single);
-    {: Moves the camera in eye space coordinates. }
+    { Moves the camera in eye space coordinates. }
     procedure MoveInEyeSpace(forwardDistance, rightDistance, upDistance:
       Single);
-    {: Moves the target in eye space coordinates. }
+    { Moves the target in eye space coordinates. }
     procedure MoveTargetInEyeSpace(forwardDistance, rightDistance, upDistance:
       Single);
-    {: Computes the absolute vector corresponding to the eye-space translations. }
+    { Computes the absolute vector corresponding to the eye-space translations. }
     function AbsoluteEyeSpaceVector(forwardDistance, rightDistance, upDistance:
       Single): TVector;
-    {: Adjusts distance from camera to target by applying a ratio.<p>
+    { Adjusts distance from camera to target by applying a ratio. 
        If TargetObject is nil, nothing happens. This method helps in quickly
        implementing camera controls. Only the camera's position is changed. }
     procedure AdjustDistanceToTarget(distanceRatio: Single);
-    {: Returns the distance from camera to target.<p>
+    { Returns the distance from camera to target. 
        If TargetObject is nil, returns 1. }
     function DistanceToTarget: Single;
-    {: Computes the absolute normalized vector to the camera target.<p>
+    { Computes the absolute normalized vector to the camera target. 
        If no target is defined, AbsoluteDirection is returned. }
     function AbsoluteVectorToTarget: TVector;
-    {: Computes the absolute normalized right vector to the camera target.<p>
+    { Computes the absolute normalized right vector to the camera target. 
        If no target is defined, AbsoluteRight is returned. }
     function AbsoluteRightVectorToTarget: TVector;
-    {: Computes the absolute normalized up vector to the camera target.<p>
+    { Computes the absolute normalized up vector to the camera target. 
        If no target is defined, AbsoluteUpt is returned. }
     function AbsoluteUpVectorToTarget: TVector;
-    {: Calculate an absolute translation vector from a screen vector.<p>
+    { Calculate an absolute translation vector from a screen vector. 
        Ratio is applied to both screen delta, planeNormal should be the
        translation plane's normal. }
     function ScreenDeltaToVector(deltaX, deltaY: Integer; ratio: Single;
       const planeNormal: TVector): TVector;
-    {: Same as ScreenDeltaToVector but optimized for XY plane. }
+    { Same as ScreenDeltaToVector but optimized for XY plane. }
     function ScreenDeltaToVectorXY(deltaX, deltaY: Integer; ratio: Single):
       TVector;
-    {: Same as ScreenDeltaToVector but optimized for XZ plane. }
+    { Same as ScreenDeltaToVector but optimized for XZ plane. }
     function ScreenDeltaToVectorXZ(deltaX, deltaY: Integer; ratio: Single):
       TVector;
-    {: Same as ScreenDeltaToVector but optimized for YZ plane. }
+    { Same as ScreenDeltaToVector but optimized for YZ plane. }
     function ScreenDeltaToVectorYZ(deltaX, deltaY: Integer; ratio: Single):
       TVector;
-    {: Returns true if a point is in front of the camera. }
+    { Returns true if a point is in front of the camera. }
     function PointInFront(const point: TVector): boolean; overload;
-    {: Calculates the field of view in degrees, given a viewport dimension
+    { Calculates the field of view in degrees, given a viewport dimension
     (width or height). F.i. you may wish to use the minimum of the two. }
     function GetFieldOfView(const AViewportDimension: single): single;
-    {: Sets the FocalLength in degrees, given a field of view and a viewport
+    { Sets the FocalLength in degrees, given a field of view and a viewport
     dimension (width or height). }
     procedure SetFieldOfView(const AFieldOfView, AViewportDimension: single);
   published
     { Published Declarations }
-    {: Depth of field/view.<p>
+    { Depth of field/view. 
        Adjusts the maximum distance, beyond which objects will be clipped
-       (ie. not visisble).<p>
+       (ie. not visisble). 
        You must adjust this value if you are experiencing disappearing
        objects (increase the value) of Z-Buffer crawling (decrease the
        value). Z-Buffer crawling happens when depth of view is too large
        and the Z-Buffer precision cannot account for all that depth
-       accurately : objects farther overlap closer objects and vice-versa.<p>
+       accurately : objects farther overlap closer objects and vice-versa. 
        Note that this value is ignored in cSOrtho2D mode. }
     property DepthOfView: Single read FDepthOfView write SetDepthOfView;
-    {: Focal Length of the camera.<p>
+    { Focal Length of the camera. 
        Adjusting this value allows for lens zooming effects (use SceneScale
        for linear zooming). This property affects near/far planes clipping. }
     property FocalLength: Single read FFocalLength write SetFocalLength;
-    {: Scene scaling for camera point.<p>
+    { Scene scaling for camera point. 
        This is a linear 2D scaling of the camera's output, allows for
        linear zooming (use FocalLength for lens zooming). }
     property SceneScale: Single read FSceneScale write SetSceneScale stored
       StoreSceneScale;
-    {: Scaling bias applied to near-plane calculation.<p>
+    { Scaling bias applied to near-plane calculation. 
        Values inferior to one will move the nearplane nearer, and also
        reduce medium/long range Z-Buffer precision, values superior
        to one will move the nearplane farther, and also improve medium/long
        range Z-Buffer precision. }
     property NearPlaneBias: Single read FNearPlaneBias write SetNearPlaneBias
       stored StoreNearPlaneBias;
-    {: If set, camera will point to this object.<p>
+    { If set, camera will point to this object. 
        When camera is pointing an object, the Direction vector is ignored
        and the Up vector is used as an absolute vector to the up. }
     property TargetObject: TVKBaseSceneObject read FTargetObject write
       SetTargetObject;
-    {: Adjust the camera style.<p>
-       Three styles are available :<ul>
-       <li>csPerspective, the default value for perspective projection
-       <li>csOrthogonal, for orthogonal (or isometric) projection.
-       <li>csOrtho2D, setups orthogonal 2D projection in which 1 unit
+    { Adjust the camera style. 
+       Three styles are available : 
+        csPerspective, the default value for perspective projection
+        csOrthogonal, for orthogonal (or isometric) projection.
+        csOrtho2D, setups orthogonal 2D projection in which 1 unit
           (in x or y) represents 1 pixel.
-       <li>csInfinitePerspective, for perspective view without depth limit.
-       <li>csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
-       <li>csCustom, setup is deferred to the OnCustomPerspective event.
-       </ul> }
+        csInfinitePerspective, for perspective view without depth limit.
+        csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
+        csCustom, setup is deferred to the OnCustomPerspective event.
+         }
     property CameraStyle: TVKCameraStyle read FCameraStyle write SetCameraStyle
       default csPerspective;
 
-    {: Keep camera angle mode. <p>
+    { Keep camera angle mode.  
        When CameraStyle is csKeepCamAnglePerspective, select which camera angle you want to keep.
-       <li>kaHeight, for Keep Height oriented camera angle
-       <li>kaWidth,  for Keep Width oriented camera angle
+        kaHeight, for Keep Height oriented camera angle
+        kaWidth,  for Keep Width oriented camera angle
        }
     property KeepFOVMode: TVKCameraKeepFOVMode read FKeepFOVMode
       write SetKeepFOVMode default ckmHorizontalFOV;
 
-    {: Custom perspective event.<p>
+    { Custom perspective event. 
        This event allows you to specify your custom perpective, either
-       with a glFrustrum, a glOrtho or whatever method suits you.<br>
-       You must compute viewPortRadius for culling to work.<br>
+       with a glFrustrum, a glOrtho or whatever method suits you. 
+       You must compute viewPortRadius for culling to work. 
        This event is only called if CameraStyle is csCustom. }
     property OnCustomPerspective: TOnCustomPerspective read FOnCustomPerspective
       write FOnCustomPerspective;
@@ -1736,11 +1398,11 @@ type
 
   // TVKScene
   //
-  {: Scene object.<p>
+  { Scene object. 
      The scene contains the scene description (lights, geometry...), which is
      basicly a hierarchical scene graph made of TVKBaseSceneObject. It will
      usually contain one or more TVKCamera object, which can be referred by
-     a Viewer component for rendering purposes.<p>
+     a Viewer component for rendering purposes. 
      The scene's objects can be accessed directly from Delphi code (as regular
      components), but those are edited with a specific editor (double-click
      on the TVKScene component at design-time to invoke it). To add objects
@@ -1792,7 +1454,7 @@ type
     procedure Progress(const deltaTime, newTime: Double);
 
     function FindSceneObject(const AName: string): TVKBaseSceneObject;
-    {: Calculates, finds and returns the first object intercepted by the ray.<p>
+    { Calculates, finds and returns the first object intercepted by the ray. 
        Returns nil if no intersection was found. This function will be
        accurate only for objects that overrided their RayCastIntersect
        method with accurate code, otherwise, bounding sphere intersections
@@ -1803,10 +1465,10 @@ type
 
     procedure ShutdownAllLights;
 
-    {: Saves the scene to a file (recommended extension : .GLS) }
+    { Saves the scene to a file (recommended extension : .GLS) }
     procedure SaveToFile(const fileName: string);
-    {: Load the scene from a file.<p>
-       Existing objects/lights/cameras are freed, then the file is loaded.<br>
+    { Load the scene from a file. 
+       Existing objects/lights/cameras are freed, then the file is loaded. 
        Delphi's IDE is not handling this behaviour properly yet, ie. if
        you load a scene in the IDE, objects will be properly loaded, but
        no declare will be placed in the code. }
@@ -1815,9 +1477,9 @@ type
     procedure SaveToStream(aStream: TStream);
     procedure LoadFromStream(aStream: TStream);
 
-    {: Saves the scene to a text file }
+    { Saves the scene to a text file }
     procedure SaveToTextFile(const fileName: string);
-    {: Load the scene from a text files.<p>
+    { Load the scene from a text files. 
        See LoadFromFile for details. }
     procedure LoadFromTextFile(const fileName: string);
 
@@ -1826,17 +1488,17 @@ type
     property Objects: TVKSceneRootObject read FObjects;
     property CurrentBuffer: TVKSceneBuffer read FCurrentBuffer;
 
-    {: List of objects that request to be initialized when rendering context is active.<p>
+    { List of objects that request to be initialized when rendering context is active. 
       They are removed automaticly from this list once initialized. }
     property InitializableObjects: TVKInitializableObjectList read
       FInitializableObjects;
     property CurrentDeltaTime: Double read FCurrentDeltaTime;
   published
     { Published Declarations }
-    {: Defines default ObjectSorting option for scene objects. }
+    { Defines default ObjectSorting option for scene objects. }
     property ObjectsSorting: TVKObjectsSorting read FObjectsSorting write
       SetObjectsSorting default osRenderBlendedLast;
-    {: Defines default VisibilityCulling option for scene objects. }
+    { Defines default VisibilityCulling option for scene objects. }
     property VisibilityCulling: TVKVisibilityCulling read FVisibilityCulling
       write SetVisibilityCulling default vcNone;
     property OnBeforeProgress: TVKProgressEvent read FOnBeforeProgress write FOnBeforeProgress;
@@ -1849,19 +1511,19 @@ type
 
   // TFogDistance
   //
-  {: Fog distance calculation mode.<p>
-     <ul>
-     <li>fdDefault: let OpenGL use its default formula
-     <li>fdEyeRadial: uses radial "true" distance (best quality)
-     <li>fdEyePlane: uses the distance to the projection plane
+  { Fog distance calculation mode. 
+      
+      fdDefault: let OpenGL use its default formula
+      fdEyeRadial: uses radial "true" distance (best quality)
+      fdEyePlane: uses the distance to the projection plane
                  (same as Z-Buffer, faster)
-     </ul>Requires support of GL_NV_fog_distance extension, otherwise,
+      Requires support of GL_NV_fog_distance extension, otherwise,
      it is ignored. }
   TFogDistance = (fdDefault, fdEyeRadial, fdEyePlane);
 
   // TVKFogEnvironment
   //
-  {: Parameters for fog environment in a scene.<p>
+  { Parameters for fog environment in a scene. 
      The fog descibed by this object is a distance-based fog, ie. the "intensity"
      of the fog is given by a formula depending solely on the distance, this
      intensity is used for blending to a fixed color. }
@@ -1894,22 +1556,22 @@ type
 
   published
     { Published Declarations }
-    {: Color of the fog when it is at 100% intensity. }
+    { Color of the fog when it is at 100% intensity. }
     property FogColor: TVKColor read FFogColor write SetFogColor;
-    {: Minimum distance for fog, what is closer is not affected. }
+    { Minimum distance for fog, what is closer is not affected. }
     property FogStart: Single read FFogStart write SetFogStart;
-    {: Maximum distance for fog, what is farther is at 100% fog intensity. }
+    { Maximum distance for fog, what is farther is at 100% fog intensity. }
     property FogEnd: Single read FFogEnd write SetFogEnd;
-    {: The formula used for converting distance to fog intensity. }
+    { The formula used for converting distance to fog intensity. }
     property FogMode: TFogMode read FFogMode write SetFogMode default fmLinear;
-    {: Adjusts the formula used for calculating fog distances.<p>
+    { Adjusts the formula used for calculating fog distances. 
        This option is honoured if and only if the OpenGL ICD supports the
-       GL_NV_fog_distance extension, otherwise, it is ignored.<ul>
-          <li>fdDefault: let OpenGL use its default formula
-          <li>fdEyeRadial: uses radial "true" distance (best quality)
-          <li>fdEyePlane: uses the distance to the projection plane
+       GL_NV_fog_distance extension, otherwise, it is ignored. 
+           fdDefault: let OpenGL use its default formula
+           fdEyeRadial: uses radial "true" distance (best quality)
+           fdEyePlane: uses the distance to the projection plane
              (same as Z-Buffer, faster)
-       </ul> }
+         }
     property FogDistance: TFogDistance read FFogDistance write SetFogDistance
       default fdDefault;
   end;
@@ -1929,7 +1591,7 @@ type
 
   // TVKSceneBuffer
   //
-  {: Encapsulates an OpenGL frame/rendering buffer.<p> }
+  { Encapsulates an OpenGL frame/rendering buffer.  }
   TVKSceneBuffer = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
@@ -2047,8 +1709,8 @@ type
     //: Fills the PickList with objects in Rect area
     procedure PickObjects(const rect: TVKRect; pickList: TVKPickList;
       objectCountGuess: Integer);
-    {: Returns a PickList with objects in Rect area.<p>
-       Returned list should be freed by caller.<br>
+    { Returns a PickList with objects in Rect area. 
+       Returned list should be freed by caller. 
        Objects are sorted by depth (nearest objects first). }
     function GetPickedObjects(const rect: TVKRect; objectCountGuess: Integer =
       64): TVKPickList;
@@ -2057,23 +1719,23 @@ type
 
     //: Returns the color of the pixel at x, y in the frame buffer
     function GetPixelColor(x, y: Integer): TColor;
-    {: Returns the raw depth (Z buffer) of the pixel at x, y in the frame buffer.<p>
+    { Returns the raw depth (Z buffer) of the pixel at x, y in the frame buffer. 
        This value does not map to the actual eye-object distance, but to
        a depth buffer value in the [0; 1] range. }
     function GetPixelDepth(x, y: Integer): Single;
-    {: Converts a raw depth (Z buffer value) to frustrum distance.
+    { Converts a raw depth (Z buffer value) to frustrum distance.
        This calculation is only accurate for the pixel at the centre of the viewer,
        because it does not take into account that the corners of the frustrum
        are further from the eye than its centre. }
     function PixelDepthToDistance(aDepth: Single): Single;
-    {: Converts a raw depth (Z buffer value) to world distance.
+    { Converts a raw depth (Z buffer value) to world distance.
        It also compensates for the fact that the corners of the frustrum
        are further from the eye, than its centre.}
     function PixelToDistance(x, y: integer): Single;
-    {: Design time notification }
+    { Design time notification }
     procedure NotifyMouseMove(Shift: TShiftState; X, Y: Single);
 
-    {: Renders the scene on the viewer.<p>
+    { Renders the scene on the viewer. 
        You do not need to call this method, unless you explicitly want a
        render at a specific time. If you just want the control to get
        refreshed, use Invalidate instead. }
@@ -2083,269 +1745,269 @@ type
       const viewPortSizeX, viewPortSizeY: Integer;
       drawState: TDrawState;
       baseObject: TVKBaseSceneObject);
-    {: Render the scene to a bitmap at given DPI.<p>
-      DPI = "dots per inch".<p>
+    { Render the scene to a bitmap at given DPI. 
+      DPI = "dots per inch". 
       The "magic" DPI of the screen is 96 under Windows. }
     procedure RenderToBitmap(ABitmap: TVKBitmap; DPI: Integer = 0);
-    {: Render the scene to a bitmap at given DPI and saves it to a file.<p>
-       DPI = "dots per inch".<p>
+    { Render the scene to a bitmap at given DPI and saves it to a file. 
+       DPI = "dots per inch". 
        The "magic" DPI of the screen is 96 under Windows. }
     procedure RenderToFile(const AFile: string; DPI: Integer = 0); overload;
-    {: Renders to bitmap of given size, then saves it to a file.<p>
+    { Renders to bitmap of given size, then saves it to a file. 
        DPI is adjusted to make the bitmap similar to the viewer. }
     procedure RenderToFile(const AFile: string; bmpWidth, bmpHeight: Integer);
       overload;
-    {: Creates a TVKBitmap32 that is a snapshot of current OpenGL content.<p>
+    { Creates a TVKBitmap32 that is a snapshot of current OpenGL content. 
        When possible, use this function instead of RenderToBitmap, it won't
-       request a redraw and will be significantly faster.<p>
+       request a redraw and will be significantly faster. 
        The returned TVKBitmap32 should be freed by calling code. }
     function CreateSnapShot: TVKImage;
-    {: Creates a VCL bitmap that is a snapshot of current OpenGL content.<p> }
+    { Creates a VCL bitmap that is a snapshot of current OpenGL content.  }
     function CreateSnapShotBitmap: TVKBitmap;
     procedure CopyToTexture(aTexture: TVKTexture); overload;
     procedure CopyToTexture(aTexture: TVKTexture; xSrc, ySrc, AWidth, AHeight:
       Integer;
-      xDest, yDest: Integer; glCubeFace: TVKEnum = 0); overload;
-    {: Save as raw float data to a file }
+      xDest, yDest: Integer; glCubeFace: TGLenum = 0); overload;
+    { Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
-    {: Event reserved for viewer-specific uses.<br> }
+    { Event reserved for viewer-specific uses.  }
     property ViewerBeforeRender: TNotifyEvent read FViewerBeforeRender write
       FViewerBeforeRender stored False;
     procedure SetViewPort(X, Y, W, H: Integer);
     function Width: Integer;
     function Height: Integer;
 
-    {: Indicates if the Viewer is "frozen". }
+    { Indicates if the Viewer is "frozen". }
     property Freezed: Boolean read FFreezed;
-    {: Freezes rendering leaving the last rendered scene on the buffer. This
+    { Freezes rendering leaving the last rendered scene on the buffer. This
        is usefull in windowed applications for temporarily stoping rendering
        (when moving the window, for example). }
     procedure Freeze;
-    {: Restarts rendering after it was freezed. }
+    { Restarts rendering after it was freezed. }
     procedure Melt;
 
-    {: Displays a window with info on current OpenGL ICD and context. }
+    { Displays a window with info on current OpenGL ICD and context. }
     procedure ShowInfo(Modal: boolean = false);
 
-    {: Currently Rendering? }
+    { Currently Rendering? }
     property Rendering: Boolean read FRendering;
 
-    {: Adjusts background alpha channel. }
+    { Adjusts background alpha channel. }
     property BackgroundAlpha: Single read FBackgroundAlpha write
       SetBackgroundAlpha;
-    {: Returns the projection matrix in use or used for the last rendering. }
+    { Returns the projection matrix in use or used for the last rendering. }
     function ProjectionMatrix: TMatrix; deprecated;
-    {: Returns the view matrix in use or used for the last rendering. }
+    { Returns the view matrix in use or used for the last rendering. }
     function ViewMatrix: TMatrix; deprecated;
     function ModelMatrix: TMatrix; deprecated;
 
-    {: Returns the base projection matrix in use or used for the last rendering.<p>
+    { Returns the base projection matrix in use or used for the last rendering. 
        The "base" projection is (as of now) either identity or the pick
        matrix, ie. it is the matrix on which the perspective or orthogonal
        matrix gets applied. }
     property BaseProjectionMatrix: TMatrix read FBaseProjectionMatrix;
 
-    {: Back up current View matrix and replace it with newMatrix.<p>
+    { Back up current View matrix and replace it with newMatrix. 
        This method has no effect on the OpenGL matrix, only on the Buffer's
        matrix, and is intended for special effects rendering. }
     procedure PushViewMatrix(const newMatrix: TMatrix); deprecated;
-    {: Restore a View matrix previously pushed. }
+    { Restore a View matrix previously pushed. }
     procedure PopViewMatrix; deprecated;
 
     procedure PushProjectionMatrix(const newMatrix: TMatrix); deprecated;
     procedure PopProjectionMatrix;  deprecated;
 
-    {: Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.<p>
+    { Converts a screen pixel coordinate into 3D coordinates for orthogonal projection. 
        This function accepts standard canvas coordinates, with (0,0) being
        the top left corner, and returns, when the camera is in orthogonal
        mode, the corresponding 3D world point that is in the camera's plane. }
     function OrthoScreenToWorld(screenX, screenY: Integer): TAffineVector;
       overload;
-    {: Converts a screen coordinate into world (3D) coordinates.<p>
-       This methods wraps a call to gluUnProject.<p>
+    { Converts a screen coordinate into world (3D) coordinates. 
+       This methods wraps a call to gluUnProject. 
        Note that screen coord (0,0) is the lower left corner. }
     function ScreenToWorld(const aPoint: TAffineVector): TAffineVector;
       overload;
     function ScreenToWorld(const aPoint: TVector): TVector; overload;
-    {: Converts a screen pixel coordinate into 3D world coordinates.<p>
+    { Converts a screen pixel coordinate into 3D world coordinates. 
        This function accepts standard canvas coordinates, with (0,0) being
        the top left corner. }
     function ScreenToWorld(screenX, screenY: Integer): TAffineVector; overload;
-    {: Converts an absolute world coordinate into screen coordinate.<p>
-       This methods wraps a call to gluProject.<p>
+    { Converts an absolute world coordinate into screen coordinate. 
+       This methods wraps a call to gluProject. 
        Note that screen coord (0,0) is the lower left corner. }
     function WorldToScreen(const aPoint: TAffineVector): TAffineVector;
       overload;
     function WorldToScreen(const aPoint: TVector): TVector; overload;
-    {: Converts a set of point absolute world coordinates into screen coordinates.<p> }
+    { Converts a set of point absolute world coordinates into screen coordinates.  }
     procedure WorldToScreen(points: PVector; nbPoints: Integer); overload;
-    {: Calculates the 3D vector corresponding to a 2D screen coordinate.<p>
+    { Calculates the 3D vector corresponding to a 2D screen coordinate. 
        The vector originates from the camera's absolute position and is
-       expressed in absolute coordinates.<p>
+       expressed in absolute coordinates. 
        Note that screen coord (0,0) is the lower left corner. }
     function ScreenToVector(const aPoint: TAffineVector): TAffineVector;
       overload;
     function ScreenToVector(const aPoint: TVector): TVector; overload;
     function ScreenToVector(const x, y: Integer): TVector; overload;
-    {: Calculates the 2D screen coordinate of a vector from the camera's
-       absolute position and is expressed in absolute coordinates.<p>
+    { Calculates the 2D screen coordinate of a vector from the camera's
+       absolute position and is expressed in absolute coordinates. 
        Note that screen coord (0,0) is the lower left corner. }
     function VectorToScreen(const VectToCam: TAffineVector): TAffineVector;
-    {: Calculates intersection between a plane and screen vector.<p>
+    { Calculates intersection between a plane and screen vector. 
        If an intersection is found, returns True and places result in
        intersectPoint. }
     function ScreenVectorIntersectWithPlane(
       const aScreenPoint: TVector;
       const planePoint, planeNormal: TVector;
       var intersectPoint: TVector): Boolean;
-    {: Calculates intersection between plane XY and screen vector.<p>
+    { Calculates intersection between plane XY and screen vector. 
        If an intersection is found, returns True and places result in
        intersectPoint. }
     function ScreenVectorIntersectWithPlaneXY(
       const aScreenPoint: TVector; const z: Single;
       var intersectPoint: TVector): Boolean;
-    {: Calculates intersection between plane YZ and screen vector.<p>
+    { Calculates intersection between plane YZ and screen vector. 
        If an intersection is found, returns True and places result in
        intersectPoint. }
     function ScreenVectorIntersectWithPlaneYZ(
       const aScreenPoint: TVector; const x: Single;
       var intersectPoint: TVector): Boolean;
-    {: Calculates intersection between plane XZ and screen vector.<p>
+    { Calculates intersection between plane XZ and screen vector. 
        If an intersection is found, returns True and places result in
        intersectPoint. }
     function ScreenVectorIntersectWithPlaneXZ(
       const aScreenPoint: TVector; const y: Single;
       var intersectPoint: TVector): Boolean;
-    {: Calculates a 3D coordinate from screen position and ZBuffer.<p>
+    { Calculates a 3D coordinate from screen position and ZBuffer. 
        This function returns a world absolute coordinate from a 2D point
        in the viewer, the depth being extracted from the ZBuffer data
-       (DepthTesting and ZBuffer must be enabled for this function to work).<br>
+       (DepthTesting and ZBuffer must be enabled for this function to work). 
        Note that ZBuffer precision is not linear and can be quite low on
        some boards (either from compression or resolution approximations). }
     function PixelRayToWorld(x, y: Integer): TAffineVector;
-    {: Time (in second) spent to issue rendering order for the last frame.<p>
+    { Time (in second) spent to issue rendering order for the last frame. 
        Be aware that since execution by the hardware isn't synchronous,
        this value may not be an accurate measurement of the time it took
        to render the last frame, it's a measurement of only the time it
        took to issue rendering orders. }
     property LastFrameTime: Single read FLastFrameTime;
-    {: Current FramesPerSecond rendering speed.<p>
+    { Current FramesPerSecond rendering speed. 
        You must keep the renderer busy to get accurate figures from this
-       property.<br>
+       property. 
        This is an average value, to reset the counter, call
        ResetPerfomanceMonitor. }
     property FramesPerSecond: Single read FFramesPerSecond;
-    {: Resets the perfomance monitor and begin a new statistics set.<p>
+    { Resets the perfomance monitor and begin a new statistics set. 
        See FramesPerSecond. }
     procedure ResetPerformanceMonitor;
 
-    {: Retrieve one of the OpenGL limits for the current viewer.<p>
+    { Retrieve one of the OpenGL limits for the current viewer. 
        Limits include max texture size, OpenGL stack depth, etc. }
     property LimitOf[Which: TLimitType]: Integer read GetLimit;
-    {: Current rendering context.<p>
+    { Current rendering context. 
        The context is a wrapper around platform-specific contexts
        (see TVKContext) and takes care of context activation and handle
        management. }
     property RenderingContext: TVKContext read FRenderingContext;
-    {: The camera from which the scene is rendered.<p>
+    { The camera from which the scene is rendered. 
        A camera is an object you can add and define in a TVKScene component. }
     property Camera: TVKCamera read FCamera write SetCamera;
-    {: Specifies the layer plane that the rendering context is bound to. }
+    { Specifies the layer plane that the rendering context is bound to. }
     property Layer: TVKContextLayer read FLayer write SetLayer
       default clMainPlane;
   published
     { Published Declarations }
-    {: Fog environment options.<p>
+    { Fog environment options. 
        See TVKFogEnvironment. }
     property FogEnvironment: TVKFogEnvironment read FFogEnvironment write
       SetGLFogEnvironment stored StoreFog;
-    {: Color used for filling the background prior to any rendering. }
+    { Color used for filling the background prior to any rendering. }
     property BackgroundColor: TColor read FBackgroundColor write
       SetBackgroundColor default TColors.SysBtnFace;
-    {: Scene ambient color vector.<p>
+    { Scene ambient color vector. 
        This ambient color is defined independantly from all lightsources,
        which can have their own ambient components. }
     property AmbientColor: TVKColor read FAmbientColor write SetAmbientColor;
 
-    {: Context options allows to setup specifics of the rendering context.<p>
+    { Context options allows to setup specifics of the rendering context. 
        Not all contexts support all options. }
     property ContextOptions: TContextOptions read FContextOptions write
       SetContextOptions default [roDoubleBuffer, roRenderToWindow, roDebugContext];
-    {: Number of precision bits for the accumulation buffer. }
+    { Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
       SetAccumBufferBits default 0;
-    {: DepthTest enabling.<p>
+    { DepthTest enabling. 
        When DepthTest is enabled, objects closer to the camera will hide
-       farther ones (via use of Z-Buffering).<br>
+       farther ones (via use of Z-Buffering). 
        When DepthTest is disabled, the latest objects drawn/rendered overlap
-       all previous objects, whatever their distance to the camera.<br>
+       all previous objects, whatever their distance to the camera. 
        Even when DepthTest is enabled, objects may chose to ignore depth
        testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: Boolean read FDepthTest write SetDepthTest default True;
-    {: Enable or disable face culling in the renderer.<p>
+    { Enable or disable face culling in the renderer. 
        Face culling is used in hidden faces removal algorithms : each face
        is given a normal or 'outside' direction. When face culling is enabled,
        only faces whose normal points towards the observer are rendered. }
     property FaceCulling: Boolean read FFaceCulling write SetFaceCulling default
       True;
-    {: Toggle to enable or disable the fog settings. }
+    { Toggle to enable or disable the fog settings. }
     property FogEnable: Boolean read FFogEnable write SetFogEnable default
       False;
-    {: Toggle to enable or disable lighting calculations.<p>
+    { Toggle to enable or disable lighting calculations. 
        When lighting is enabled, objects will be lit according to lightsources,
        when lighting is disabled, objects are rendered in their own colors,
-       without any shading.<p>
+       without any shading. 
        Lighting does NOT generate shadows in OpenGL. }
     property Lighting: Boolean read FLighting write SetLighting default True;
-    {: AntiAliasing option.<p>
+    { AntiAliasing option. 
        Ignored if not hardware supported, currently based on ARB_multisample. }
     property AntiAliasing: TVKAntiAliasing read FAntiAliasing write
       SetAntiAliasing default aaDefault;
-    {: Depth buffer precision.<p>
+    { Depth buffer precision. 
        Default is highest available (below and including 24 bits) }
     property DepthPrecision: TVKDepthPrecision read FDepthPrecision write
       SetDepthPrecision default dpDefault;
-    {: Color buffer depth.<p>
+    { Color buffer depth. 
        Default depth buffer is highest available (below and including 24 bits) }
     property ColorDepth: TVKColorDepth read FColorDepth write SetColorDepth
       default cdDefault;
-    {: Shade model.<p>
-       Default is "Smooth".<p> }
+    { Shade model. 
+       Default is "Smooth".  }
     property ShadeModel: TVKShadeModel read FShadeModel write SetShadeModel
       default smDefault;
 
-    {: Indicates a change in the scene or buffer options.<p>
+    { Indicates a change in the scene or buffer options. 
        A simple re-render is enough to take into account the changes. }
     property OnChange: TNotifyEvent read FOnChange write FOnChange stored False;
-    {: Indicates a structural change in the scene or buffer options.<p>
+    { Indicates a structural change in the scene or buffer options. 
        A reconstruction of the RC is necessary to take into account the
        changes (this may lead to a driver switch or lengthy operations). }
     property OnStructuralChange: TNotifyEvent read FOnStructuralChange write
       FOnStructuralChange stored False;
 
-    {: Triggered before the scene's objects get rendered.<p>
+    { Triggered before the scene's objects get rendered. 
        You may use this event to execute your own OpenGL rendering
        (usually background stuff). }
     property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender
       stored False;
-    {: Triggered after BeforeRender, before rendering objects.<p>
+    { Triggered after BeforeRender, before rendering objects. 
        This one is fired after the rci has been initialized and can be used
        to alter it or perform early renderings that require an rci,
        the Sender is the buffer. }
     property InitiateRendering: TDirectRenderEvent read FInitiateRendering write
       FInitiateRendering stored False;
-    {: Triggered after rendering all scene objects, before PostRender.<p>
+    { Triggered after rendering all scene objects, before PostRender. 
        This is the last point after which the rci becomes unavailable,
        the Sender is the buffer. }
     property WrapUpRendering: TDirectRenderEvent read FWrapUpRendering write
       FWrapUpRendering stored False;
-    {: Triggered just after all the scene's objects have been rendered.<p>
+    { Triggered just after all the scene's objects have been rendered. 
        The OpenGL context is still active in this event, and you may use it
        to execute your own OpenGL rendering (usually for HUD, 2D overlays
-       or after effects).<p> }
+       or after effects).  }
     property PostRender: TNotifyEvent read FPostRender write FPostRender stored
       False;
-    {: Called after rendering.<p>
+    { Called after rendering. 
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read FAfterRender write FAfterRender
@@ -2354,7 +2016,7 @@ type
 
   // TVKNonVisualViewer
   //
-  {: Base class for non-visual viewer.<p>
+  { Base class for non-visual viewer. 
      Non-visual viewer may actually render visuals, but they are non-visual
      (ie. non interactive) at design time. Such viewers include memory
      or full-screen viewers. }
@@ -2401,15 +2063,15 @@ type
     procedure CopyToTexture(aTexture: TVKTexture; xSrc, ySrc, width, height:
       Integer;
       xDest, yDest: Integer); overload;
-    {: CopyToTexture for Multiple-Render-Target }
+    { CopyToTexture for Multiple-Render-Target }
     procedure CopyToTextureMRT(aTexture: TVKTexture; BufferIndex: integer);
       overload; virtual;
     procedure CopyToTextureMRT(aTexture: TVKTexture; xSrc, ySrc, width, height:
       Integer;
       xDest, yDest: Integer; BufferIndex: integer); overload;
-    {: Renders the 6 texture maps from a scene.<p>
+    { Renders the 6 texture maps from a scene. 
        The viewer is used to render the 6 images, one for each face
-       of the cube, from the absolute position of the camera.<p>
+       of the cube, from the absolute position of the camera. 
        This does NOT alter the content of the Pictures in the image,
        and will only change or define the content of textures as
        registered by OpenGL. }
@@ -2418,32 +2080,32 @@ type
       zFar: Single = 0);
   published
     { Public Declarations }
-    {: Camera from which the scene is rendered. }
+    { Camera from which the scene is rendered. }
     property Camera: TVKCamera read GetCamera write SetCamera;
 
     property Width: Integer read FWidth write SetWidth default 256;
     property Height: Integer read FHeight write SetHeight default 256;
 
-    {: Triggered before the scene's objects get rendered.<p>
+    { Triggered before the scene's objects get rendered. 
        You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write
       SetBeforeRender;
-    {: Triggered just after all the scene's objects have been rendered.<p>
+    { Triggered just after all the scene's objects have been rendered. 
        The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering.<p> }
+       to execute your own OpenGL rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    {: Called after rendering.<p>
+    { Called after rendering. 
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    {: Access to buffer properties. }
+    { Access to buffer properties. }
     property Buffer: TVKSceneBuffer read FBuffer write SetBuffer;
   end;
 
   // TVKMemoryViewer
   //
-  {: Component to render a scene to memory only.<p>
+  { Component to render a scene to memory only. 
      This component curently requires that the OpenGL ICD supports the
      WGL_ARB_pbuffer extension (indirectly). }
   TVKMemoryViewer = class(TVKNonVisualViewer)
@@ -2465,7 +2127,7 @@ type
 
   published
     { Public Declarations }
-    {: Set BufferCount > 1 for multiple render targets. <p>
+    { Set BufferCount > 1 for multiple render targets.  
        Users should check if the corresponding extension (GL_ATI_draw_buffers)
        is supported. Current hardware limit is BufferCount = 4. }
     property BufferCount: integer read FBufferCount write SetBufferCount default
@@ -2474,26 +2136,26 @@ type
 
   TInvokeInfoForm = procedure(aSceneBuffer: TVKSceneBuffer; Modal: boolean);
 
-  {: Register an event handler triggered by any TVKBaseSceneObject Name change.<p>
+  { Register an event handler triggered by any TVKBaseSceneObject Name change. 
      *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
      GLSceneEdit in the IDE. }
 procedure RegisterGLBaseSceneObjectNameChangeEvent(notifyEvent: TNotifyEvent);
-{: Deregister an event handler triggered by any TVKBaseSceneObject Name change.<p>
+{ Deregister an event handler triggered by any TVKBaseSceneObject Name change. 
    See RegisterGLBaseSceneObjectNameChangeEvent. }
 procedure DeRegisterGLBaseSceneObjectNameChangeEvent(notifyEvent: TNotifyEvent);
-{: Register an event handler triggered by any TVKBehaviour Name change.<p>
+{ Register an event handler triggered by any TVKBehaviour Name change. 
    *INCOMPLETE*, currently allows for only 1 (one) event, and is used by
    FBehavioursEditor in the IDE. }
 procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
-{: Deregister an event handler triggered by any TVKBaseSceneObject Name change.<p>
+{ Deregister an event handler triggered by any TVKBaseSceneObject Name change. 
    See RegisterGLBaseSceneObjectNameChangeEvent. }
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
-{: Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
+{ Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
   Single);
 
-{: Registers the procedure call used to invoke the info form. }
+{ Registers the procedure call used to invoke the info form. }
 procedure RegisterInfoForm(infoForm: TInvokeInfoForm);
 procedure InvokeInfoForm(aSceneBuffer: TVKSceneBuffer; Modal: boolean);
 
@@ -2509,7 +2171,7 @@ implementation
 
 var
   vCounterFrequency: Int64;
-{$IFNDEF GLS_MULTITHREAD}
+{$IFNDEF VKS_MULTITHREAD}
 var
 {$ELSE}
 threadvar
@@ -2527,7 +2189,7 @@ end;
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(13, 'AxesBuildList');
 {$ENDIF}
@@ -2800,7 +2462,7 @@ begin
       NotifyChange(Self);
   end
   else
-    Assert(False, glsUnBalancedBeginEndUpdate);
+    Assert(False, vksUnBalancedBeginEndUpdate);
 end;
 
 // BuildList
@@ -2968,7 +2630,7 @@ end;
 
 procedure TVKBaseSceneObject.WriteRotations(stream: TStream);
 begin
-  stream.Write(FRotation.AsAddress^, 3 * SizeOf(TVKFloat));
+  stream.Write(FRotation.AsAddress^, 3 * SizeOf(TGLfloat));
 end;
 
 // ReadRotations
@@ -2976,7 +2638,7 @@ end;
 
 procedure TVKBaseSceneObject.ReadRotations(stream: TStream);
 begin
-  stream.Read(FRotation.AsAddress^, 3 * SizeOf(TVKFloat));
+  stream.Read(FRotation.AsAddress^, 3 * SizeOf(TGLfloat));
 end;
 
 // DrawAxes
@@ -4848,10 +4510,10 @@ var
   aabb: TAABB;
   master: TObject;
 begin
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
-      Length(Name) + Length('.Render'), PGLChar(TVKString(Name + '.Render')));
+      Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
 {$ENDIF}
   if (ARci.drawState = dsPicking) and not FPickable then
     exit;
@@ -4907,7 +4569,7 @@ begin
   if shouldRenderSelf then
   begin
     vCurrentRenderingObject := Self;
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
     if FShowAxes then
       DrawAxes(ARci, $CCCC);
 {$ENDIF}
@@ -5730,7 +5392,7 @@ end;
 // SetGLMaterial
 //
 
-procedure TVKCustomSceneObject.SetGLMaterial(AValue: TVKMaterial);
+procedure TVKCustomSceneObject.SetVKMaterial(AValue: TVKMaterial);
 begin
   FMaterial.Assign(AValue);
   NotifyChange(Self);
@@ -8176,7 +7838,7 @@ begin
       // this one should NOT be replaced with an assert
       if not GL.VERSION_1_1 then
       begin
-        GLSLogger.LogFatalError(glsWrongVersion);
+        GLSLogger.LogFatalError(vksWrongVersion);
         Abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
@@ -8287,7 +7949,7 @@ begin
       smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
       smFlat: GL.ShadeModel(GL_FLAT);
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
   end;
 
@@ -8394,7 +8056,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), vksAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := FViewPort.Width;
@@ -8429,7 +8091,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), vksAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := bmpWidth;
@@ -8504,7 +8166,7 @@ end;
 procedure TVKSceneBuffer.CopyToTexture(aTexture: TVKTexture;
   xSrc, ySrc, AWidth, AHeight: Integer;
   xDest, yDest: Integer;
-  glCubeFace: TVKEnum = 0);
+  glCubeFace: TGLenum = 0);
 var
   bindTarget: TVKTextureTarget;
 begin
@@ -8641,7 +8303,7 @@ var
   nativeContext: TVKContext;
   aColorBits: Integer;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), vksAlreadyRendering);
   FRendering := True;
   nativeContext := RenderingContext;
   try
@@ -9058,7 +8720,7 @@ end;
 
 procedure TVKSceneBuffer.ClearBuffers;
 var
-  bufferBits: TVKBitfield;
+  bufferBits: TGLBitfield;
 begin
   if roNoDepthBufferClear in ContextOptions then
     bufferBits := 0
@@ -9098,7 +8760,7 @@ var
 begin
   if not Assigned(FCamera) then
     Exit;
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), vksAlreadyRendering);
   Assert(Assigned(PickList));
   FRenderingContext.Activate;
   FRendering := True;

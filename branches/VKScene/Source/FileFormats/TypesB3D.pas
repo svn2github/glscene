@@ -1,13 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: TypesB3D<p>
+{
+	Types used on the B3D file loader 
 
-	Types used on the B3D file loader<p>
-
-	<b>History :</b><font size=-1><ul>
-	   <li>22/12/05 - Mathx - Added to the GLScene Project.
-	</ul></font>
 }
 unit TypesB3D;
 

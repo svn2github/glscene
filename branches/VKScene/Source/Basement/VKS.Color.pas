@@ -1,28 +1,15 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Color<p>
-
-   All color types, constants and utilities should go here<p>
-
-  <b>History : </b><font size=-1><ul>
-    <li>12/01/15 - PW - Converted to use with FMX platform
-    <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
-    <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
-    <li>24/10/10 - DaStr - Removed dependancy from OpenGL
-    <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses
-    <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
-    <li>04/03/10 - DanB - TVKColorManager.GetColor now uses CharInSet
-    <li>05/10/08 - DanB - Moved TVKColor/ TVKColorManager in from VKS.Texture.pas
-    <li>06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
-                          (separated from VKS.Texture.pas and VKS.CrossPlatform.pas)
-  </ul>
+{
+   All color types, constants and utilities should go here 
+  
 }
 unit VKS.Color;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.SysUtils, System.Classes, System.Types, System.UITypes,
@@ -41,7 +28,7 @@ type
 
    // TVKColor
 	//
-   {: Wraps an OpenGL color. }
+   { Wraps an OpenGL color. }
    TVKColor = class(TVKUpdateAbleObject)
       private
          { Private Properties }
@@ -113,7 +100,7 @@ type
          procedure EnumColors(AValues: TStrings); overload;
 
          function  FindColor(const aName: String): TColorVector;
-         {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
+         { Convert a clrXxxx or a '<red green blue alpha> to a color vector }
          function  GetColor(const aName: String): TColorVector;
          function  GetColorName(const aColor: TColorVector): String;
          procedure RegisterDefaultColors;
@@ -131,12 +118,12 @@ function GetGValue(RGB: DWORD): Byte;  {$NODEFINE GetGValue}
 function GetBValue(RGB: DWORD): Byte;  {$NODEFINE GetBValue}
 
 procedure InitGLSceneColors;
-{: Converts a delphi color into its RGB fragments and correct range. }
+{ Converts a delphi color into its RGB fragments and correct range. }
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
 
-//: Converts a color vector (containing float values)
+// Converts a color vector (containing float values)
 function ConvertColorVector(const AColor: TColorVector): TColor; overload;
-{: Converts a color vector (containing float values) and alter intensity.<p>
+{ Converts a color vector (containing float values) and alter intensity. 
    intensity is in [0..1] }
 function ConvertColorVector(const AColor: TColorVector; intensity: Single): TColor; overload;
 //: Converts RGB components into a color vector with correct range

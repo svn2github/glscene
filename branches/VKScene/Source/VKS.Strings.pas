@@ -1,13 +1,11 @@
 //
-// This unit is part of the VKScene Project
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.Strings<p>
-      String constants that are used in many VKScene units<p>
-
-   <b>History :</b><font size=-1><ul>
-      <li>02/01/16 - PW - Converted from GLScene
-   </ul></font>
+{
+   String constants that are used in many VKScene units
+     
 }
+
 unit VKS.Strings;
 
 interface

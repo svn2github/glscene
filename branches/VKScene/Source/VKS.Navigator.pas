@@ -1,34 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Navigator<p>
-
-  Unit for navigating TVKBaseObjects.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),
-                             SetVirtualUp(), CalcRight() to the "protected" section
-                             Private "point1" renamed to FPrevPoint
-                             Updated comments
-                             TVKNavigator.SetObject made virtual
-      <li>19/02/07 - DaStr - TVKNavigator.Create - FVirtualUp creation fixed
-                             Added default values to TVKNavigator and TVKUserInterface
-      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
-      <li>31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on
-                             the TVKUserInterface component.
-      <li>18/12/04 - PhP - Added FlyForward
-      <li>03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
-                          GLGetScreenWidth, GLGetScreenHeight for Linux compatibility
-      <li>11/05/04 - JAJ - Added some features and fixed a bug.
-      <li>01/06/03 - JAJ - Added notification to movingobject...
-      <li>01/06/03 - fig - CurrentHangle implementet...
-      <li>14/07/02 - EG - InvertMouse (Joen A. Joensen)
-      <li>18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
-      <li>15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TVKUserInterface.
-      <li>15/03/02 - RMCH - Added Mouselook capability.
-      <li>09/11/00 - JAJ - First submitted. Base Class TVKNavigator included.
-	</ul></font>
+{
+  Unit for navigating TVKBaseObjects. 
+	 
 }
 unit VKS.Navigator;
 
@@ -46,29 +21,29 @@ type
 
 	// TVKNavigator
 	//
-	{: TVKNavigator is the component for moving a TVKBaseSceneObject, and all Classes based on it,
-      this includes all the objects from the Scene Editor.<p>
+	{ TVKNavigator is the component for moving a TVKBaseSceneObject, and all Classes based on it,
+      this includes all the objects from the Scene Editor. 
 
 	   The four calls to get you started is
-      <ul>
-  	   <li>TurnHorisontal : it turns left and right.
-	   <li>TurnVertical : it turns up and down.
-	   <li>MoveForward :	moves back and forth.
-     <li>FlyForward : moves back and forth in the movingobject's direction
-      </ul>
+       
+  	    TurnHorisontal : it turns left and right.
+	    TurnVertical : it turns up and down.
+	    MoveForward :	moves back and forth.
+      FlyForward : moves back and forth in the movingobject's direction
+       
 	   The three properties to get you started is
-      <ul>
-	   <li>MovingObject : The Object that you are moving.
-	   <li>UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
+       
+	    MovingObject : The Object that you are moving.
+	    UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
    		it's more like Descent.
-	   <li>AngleLock : Allows you to block the Vertical angles. Should only be used in
+	    AngleLock : Allows you to block the Vertical angles. Should only be used in
 			conjunction with UseVirtualUp.
-	   <li>MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
+	    MoveUpWhenMovingForward : Changes movement from Quake to Arcade Airplane...
       (no tilt and flying)
-	   <li>InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
+	    InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
       rotating beyond 90 degrees, will make steering seem inverted, so we "invert" back
       to normal.
-      </ul>
+       
    }
   TVKNavigator = class(TComponent)
   private
@@ -121,22 +96,22 @@ type
 
 	// TVKUserInterface
 	//
-	{: TVKUserInterface is the component which reads the userinput and transform it into action.<p>
+	{ TVKUserInterface is the component which reads the userinput and transform it into action. 
 
 	   The four calls to get you started is
-      <ul>
- 	   <li>MouseLookActivate : set us up the bomb.
- 	   <li>MouseLookDeActivate : defuses it.
-	   <li>Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
-	   <li>MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
-      </ul>
+       
+ 	    MouseLookActivate : set us up the bomb.
+ 	    MouseLookDeActivate : defuses it.
+	    Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
+	    MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
+       
 	   The four properties to get you started are:
-      <ul>
-	   <li>InvertMouse     : Inverts the mouse Y axis.
-	   <li>MouseSpeed      : Also known as mouse sensitivity.
-	   <li>GLNavigator     : The Navigator which receives the user movement.
-	   <li>GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
-      </ul>
+       
+	    InvertMouse     : Inverts the mouse Y axis.
+	    MouseSpeed      : Also known as mouse sensitivity.
+	    GLNavigator     : The Navigator which receives the user movement.
+	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
+       
    }
 
   TVKUserInterface = class(TComponent)

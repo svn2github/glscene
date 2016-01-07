@@ -1,42 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Movement<p>
-
-   Movement path behaviour by Roger Cao<p>
+{
+   Movement path behaviour by Roger Cao 
 
    Note: It is recommended to set TVKMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
-
-   <b>Historique : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-                          Replaced direct access to properties by methods
-                          GetPositionCoordinate, GetRotationCoordinate, GetScaleCoordinate,
-                          GetDirectionCoordinate and GetUpCoordinate
-      <li>21/01/01 - DanB - Added "inherited" call to TVKMovement.WriteToFiler
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>12/11/09 - DaStr - Bugfix after previous commit
-      <li>25/10/09 - DaStr - Bugfixed TVKMovementPath.StartTime (thanks Zsolt Laky)
-      <li>14/03/09 - DanB - Changes to Start/StopAllMovements due to TVKScene.Cameras removal
-      <li>05/10/08 - DaStr - Added Delphi5 compatibility
-      <li>21/06/08 - DaStr - A lot of cosmetic fixes
-                             Bugfixed same position rotation / scale interpolation
-                               in TVKMovementPath.CalculateState()
-                             Bugfixed destroying TVKMovement with multiple paths.
-                             Added TVKMovementPath.RotationMode
-                            (Bugtracker ID = 1999464) (thanks VirusX)
-      <li>02/04/07 - DaStr - All cross-version stuff abstracted into VKS.CrossPlatform
-      <li>25/03/07 - DaStr - Small fix for Delphi5 compatibility
-      <li>15/02/07 - DaStr - Fixed TVKMovementPath.SetShowPath - SubComponent support
-      <li>27/10/06 - LC - Fixed memory leak in TVKMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
-      <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)
-      <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
-      <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
-      <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
-                           use of standard classes and documentation
-      <li>22/09/00 - RoC - Added StartAllPathTravel and StopAllPathTravel methods
-      <li>24/08/00 - RoC - TVKMovement and relative class added
-   </ul></font>
+    
 }
 unit VKS.Movement;
 
@@ -69,19 +39,19 @@ type
     procedure SetRotationAsVector(const Value: TVector);
     procedure SetScaleAsVector(const Value: TVector);
 
-    function GetPositionCoordinate(const Index: Integer): TVKFloat;
-    procedure SetPositionCoordinate(const Index: integer; const AValue: TVKFloat);
-    function GetRotationCoordinate(const Index: Integer): TVKFloat;
-    procedure SetRotationCoordinate(const Index: integer; const AValue: TVKFloat);
-    function GetScaleCoordinate(const Index: Integer): TVKFloat;
-    procedure SetScaleCoordinate(const Index: integer; const AValue: TVKFloat);
+    function GetPositionCoordinate(const Index: Integer): TGLfloat;
+    procedure SetPositionCoordinate(const Index: integer; const AValue: TGLfloat);
+    function GetRotationCoordinate(const Index: Integer): TGLfloat;
+    procedure SetRotationCoordinate(const Index: integer; const AValue: TGLfloat);
+    function GetScaleCoordinate(const Index: Integer): TGLfloat;
+    procedure SetScaleCoordinate(const Index: integer; const AValue: TGLfloat);
 
     procedure SetSpeed(const Value: single);
 
-    function GetDirectionCoordinate(const Index: Integer): TVKFloat;
-    procedure SetDirectionCoordinate(const Index: integer; const AValue: TVKFloat);
-    function GetUpCoordinate(const Index: Integer): TVKFloat;
-    procedure SetUpCoordinate(const Index: integer; const AValue: TVKFloat);
+    function GetDirectionCoordinate(const Index: Integer): TGLfloat;
+    procedure SetDirectionCoordinate(const Index: integer; const AValue: TGLfloat);
+    function GetUpCoordinate(const Index: Integer): TGLfloat;
+    procedure SetUpCoordinate(const Index: integer; const AValue: TGLfloat);
   protected
     function GetDisplayName: string; override;
     procedure WriteToFiler(writer : TWriter);
@@ -98,10 +68,10 @@ type
 
     procedure InitializeByObject(const Obj: TVKBaseSceneObject);
 
-    {: Warning: does not take speed into account. }
+    { Warning: does not take speed into account. }
     function EqualNode(const aNode: TVKPathNode): boolean;
 
-    {: Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
+    { Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
     property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
@@ -109,28 +79,28 @@ type
     property DirectionAsVector: TVector read FDirection write FDirection;
 
   published
-    property X: TVKFloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
-    property Y: TVKFloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
-    property Z: TVKFloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property X: TGLfloat index 0 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Y: TGLfloat index 1 Read GetPositionCoordinate Write SetPositionCoordinate;
+    property Z: TGLfloat index 2 Read GetPositionCoordinate Write SetPositionCoordinate;
 
     //Rotation.X means PitchAngle;
     //Rotation.Y means TurnAngle;
     //Rotation.Z means RollAngle;
-    property PitchAngle: TVKFloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
-    property TurnAngle: TVKFloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
-    property RollAngle: TVKFloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property PitchAngle: TGLfloat index 0 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property TurnAngle: TGLfloat index 1 Read GetRotationCoordinate Write SetRotationCoordinate;
+    property RollAngle: TGLfloat index 2 Read GetRotationCoordinate Write SetRotationCoordinate;
 
-    property ScaleX: TVKFloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
-    property ScaleY: TVKFloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
-    property ScaleZ: TVKFloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleX: TGLfloat index 0 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleY: TGLfloat index 1 Read GetScaleCoordinate Write SetScaleCoordinate;
+    property ScaleZ: TGLfloat index 2 Read GetScaleCoordinate Write SetScaleCoordinate;
 
-    property DirectionX: TVKFloat index 0 Read GetDirectionCoordinate Write SetDirectionCoordinate;
-    property DirectionY: TVKFloat index 1 Read GetDirectionCoordinate Write SetDirectionCoordinate;
-    property DirectionZ: TVKFloat index 2 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+    property DirectionX: TGLfloat index 0 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+    property DirectionY: TGLfloat index 1 Read GetDirectionCoordinate Write SetDirectionCoordinate;
+    property DirectionZ: TGLfloat index 2 Read GetDirectionCoordinate Write SetDirectionCoordinate;
 
-    property UpX: TVKFloat index 0 Read GetUpCoordinate Write SetUpCoordinate;
-    property UpY: TVKFloat index 1 Read GetUpCoordinate Write SetUpCoordinate;
-    property UpZ: TVKFloat index 2 Read GetUpCoordinate Write SetUpCoordinate;
+    property UpX: TGLfloat index 0 Read GetUpCoordinate Write SetUpCoordinate;
+    property UpY: TGLfloat index 1 Read GetUpCoordinate Write SetUpCoordinate;
+    property UpZ: TGLfloat index 2 Read GetUpCoordinate Write SetUpCoordinate;
 
     property Speed: single Read FSpeed Write SetSpeed;
   end;
@@ -244,7 +214,7 @@ type
   published
     property Name: string Read FName Write FName;
 
-    {: This property is currently ignored. }
+    { This property is currently ignored. }
     property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TVKMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
 
@@ -522,36 +492,36 @@ begin
   Result := 'PathNode';
 end;
 
-function TVKPathNode.GetPositionCoordinate(const Index: Integer): TVKFloat;
+function TVKPathNode.GetPositionCoordinate(const Index: Integer): TGLfloat;
 begin
   result := FPosition.V[Index];
 end;
 
-procedure TVKPathNode.SetPositionCoordinate(const Index: integer; const AValue: TVKFloat);
+procedure TVKPathNode.SetPositionCoordinate(const Index: integer; const AValue: TGLfloat);
 begin
   FPosition.V[Index] := AValue;
   if Collection <> nil then
     (Collection as TVKPathNodes).NotifyChange;
 end;
 
-function TVKPathNode.GetRotationCoordinate(const Index: Integer): TVKFloat;
+function TVKPathNode.GetRotationCoordinate(const Index: Integer): TGLfloat;
 begin
   result := FRotation.V[Index];
 end;
 
-procedure TVKPathNode.SetRotationCoordinate(const Index: integer; const AValue: TVKFloat);
+procedure TVKPathNode.SetRotationCoordinate(const Index: integer; const AValue: TGLfloat);
 begin
   FRotation.V[Index] := AValue;
   if Collection <> nil then
     (Collection as TVKPathNodes).NotifyChange;
 end;
 
-function TVKPathNode.GetScaleCoordinate(const Index: Integer): TVKFloat;
+function TVKPathNode.GetScaleCoordinate(const Index: Integer): TGLfloat;
 begin
   result := FScale.V[Index];
 end;
 
-procedure TVKPathNode.SetScaleCoordinate(const Index: integer; const AValue: TVKFloat);
+procedure TVKPathNode.SetScaleCoordinate(const Index: integer; const AValue: TGLfloat);
 begin
   FScale.V[Index] := AValue;
   if Collection <> nil then
@@ -559,26 +529,26 @@ begin
 end;
 
 
-function TVKPathNode.GetDirectionCoordinate(const Index: Integer): TVKFloat;
+function TVKPathNode.GetDirectionCoordinate(const Index: Integer): TGLfloat;
 begin
   result := FDirection.V[Index];
 end;
 
 
 procedure TVKPathNode.SetDirectionCoordinate(const Index: integer;
-  const AValue: TVKFloat);
+  const AValue: TGLfloat);
 begin
   FDirection.V[Index] := AValue;
   if Collection <> nil then
     (Collection as TVKPathNodes).NotifyChange;
 end;
 
-function TVKPathNode.GetUpCoordinate(const Index: Integer): TVKFloat;
+function TVKPathNode.GetUpCoordinate(const Index: Integer): TGLfloat;
 begin
   result := FUp.V[Index];
 end;
 
-procedure TVKPathNode.SetUpCoordinate(const Index: integer; const AValue: TVKFloat);
+procedure TVKPathNode.SetUpCoordinate(const Index: integer; const AValue: TGLfloat);
 begin
   FUp.V[Index] := AValue;
   if Collection <> nil then
@@ -1623,7 +1593,7 @@ begin
                 Up.AsVector := Path.CurrentNode.FUp;
               end;
             else
-              Assert(False, glsErrorEx + glsUnknownType);
+              Assert(False, vksErrorEx + vksUnknownType);
             end
           end;
       end;

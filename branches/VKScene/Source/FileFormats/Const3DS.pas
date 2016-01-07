@@ -1,14 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
+{
+    
+}
 unit Const3DS;
-
-// All 3DS constant definitions used by the various routines (mainly in Utils3DS.pas). About one thousand
-// defined constants herein. The guys at Autodesk must be crazy...
-//
-// Last Change - 03. October 1999
-//
-// (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
 interface
 
@@ -183,7 +179,7 @@ const // Flags used by the flag field of the Mesh3DS structure
       HiShadowBiasMin3DS    = 0;                 // noninclusive minimum value for high shadow bias setting 
 
       // SHADOW_MAP_SIZE chunk 
-      ShadowMapSizeMin3DS   = 0;                 // noninclusive minimum value for shadow map size 
+      ShadowMapSizeMin3DS   = 0;                 // noninclusive minimum value for shadow map size
 
       // SHADOW_SAMPLES chunk
       ShadowSamplesMin3DS   = 0;                 // noninclusive minimum value for shadow samples
@@ -204,7 +200,7 @@ const // Flags used by the flag field of the Mesh3DS structure
 
       // FOG chunk 
       FogMin3DS             = 0;                 // minimum value for fogging plane density
-      FogMax3DS             = 1;                 // maximum value for fogging plane density 
+      FogMax3DS             = 1;                 // maximum value for fogging plane density
 
       // DISTANCE_CUE 
       DistanceCueMin3DS     = 0;                 // minimum value for dimming factor
@@ -233,7 +229,7 @@ const // Flags used by the flag field of the Mesh3DS structure
       PointArrayMin3DS      = 3;                 // minimum number of vertices
 
       // FACE_ARRAY
-      FaceArrayMin3DS       = 1;                 // minimum number of faces 
+      FaceArrayMin3DS       = 1;                 // minimum number of faces
 
       // MshMatGroup3DS 
       MshMatGroupMin3DS     = 1;                 // minimum number of faces per material

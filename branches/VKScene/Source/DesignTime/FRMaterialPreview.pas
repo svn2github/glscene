@@ -1,20 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FRMaterialPreview<p>
-
-   Material Preview frame.<p>
-
-   <b>Historique : </b><font size=-1><ul>
-      <li>05/01/14 - PW - Converted to FMX
-      <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
-                             (Bugtracker ID = 1684432)
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>16/12/06 - DaStr - Editor enhanced
-      <li>03/07/04 - LR  - Make change for Linux
-      <li>06/02/00 - Egg - Creation
-   </ul></font>
+{
+   Material Preview frame. 
 }
 
 unit FRMaterialPreview;

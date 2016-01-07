@@ -1,16 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FileB3D<p>
+{ 
+  B3D VectorFile class to load Blitz 3D model files 
 
-  B3D VectorFile class to load Blitz 3D model files<p>
-
-  <b>History :</b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>22/01/10 - Yar - Added VKS.VectorTypes to uses
-  <li>22/01/10 - Yar - Added VKS.TextureFormat to uses
-  <li>22/12/05 - Mathx - Added to the GLScene Project.
-  </ul></font>
 }
 unit VKS.FileB3D;
 

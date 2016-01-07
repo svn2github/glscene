@@ -1,19 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileHDR<p>
-
-   HDR File support for GLScene.
-
- <b>History : </b><font size=-1><ul>
-        <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility  
-        <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after VKS.State revision
-        <li>23/11/10 - DaStr - Added $I GLScene.inc
-        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
+{
+   HDR File support for VKScene. 
 }
 unit VKS.FileHDR;
 
@@ -51,10 +40,10 @@ type
     procedure LoadFromStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKuint;
+      const textureHandle: TGLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TVKInternalFormat); reintroduce;
+      const intFormat: TGLInternalFormat); reintroduce;
 
     property Gamma: Single read fGamma;
     property Exposure: Single read fExposure;
@@ -249,16 +238,16 @@ end;
 //
 
 procedure TVKHDRImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKuint;
+  const textureHandle: TGLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TVKInternalFormat);
+  const intFormat: TGLInternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat: TVKInternalFormat;
-  glTarget: TVKEnum;
+  residentFormat: TGLInternalFormat;
+  glTarget: TGLenum;
 begin
   glTarget := DecodeGLTextureTarget(textureTarget);
   if not ((glTarget = GL_TEXTURE_2D)

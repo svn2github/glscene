@@ -1,32 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Mirror<p>
-
-   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
+{
+   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo). 
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>15/12/08- Paul Robello - corrected call to  FOnEndRenderingMirrors
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>18/07/04 - Orlando - added custom shapes
-      <li>13/02/03 - DanB - added TVKMirror.AxisAlignedDimensionsUnscaled
-      <li>13/11/02 - EG - Fixed TVKMirror.DoRender transform
-      <li>06/11/02 - EG - Fixed Stencil setup
-      <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
-      <li>25/10/02 - EG - Fixed Stencil cleanup
-      <li>22/02/01 - EG - Fixed change notification,
-                          Fixed special effects support (PFX, etc.)
-      <li>07/12/01 - EG - Creation
-   </ul></font>
+   materials/mirror demo before using this component. 
+   
 }
 unit VKS.Mirror;
 
@@ -58,12 +38,12 @@ type
 
   // TVKMirror
   //
-  {: A simple plane mirror.<p>
-     This mirror requires a stencil buffer for optimal rendering!<p>
+  { A simple plane mirror. 
+     This mirror requires a stencil buffer for optimal rendering! 
      The object is a mix between a plane and a proxy object, in that the plane
      defines the mirror's surface, while the proxy part is used to reference
      the objects that should be mirrored (it is legal to self-mirror, but no
-     self-mirror visuals will be rendered).<p>
+     self-mirror visuals will be rendered). 
      It is strongly recommended to read and understand the explanations in the
      materials/mirror demo before using this component. }
   TVKMirror = class(TVKSceneObject)
@@ -71,13 +51,13 @@ type
     { Private Declarations }
     FRendering: Boolean;
     FMirrorObject: TVKBaseSceneObject;
-    FWidth, FHeight: TVKFloat;
+    FWidth, FHeight: TGLfloat;
     FMirrorOptions: TMirrorOptions;
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
 
     FShape: TMirrorShapes; //ORL
-    FRadius: TVKFloat; //ORL
-    FSlices: TVKInt; //ORL
+    FRadius: TGLfloat; //ORL
+    FSlices: TGLInt; //ORL
 
   protected
     { Protected Declarations }
@@ -87,14 +67,14 @@ type
     procedure SetMirrorOptions(const val: TMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TVKSceneBuffer);
 
-    procedure SetHeight(AValue: TVKFloat);
-    procedure SetWidth(AValue: TVKFloat);
+    procedure SetHeight(AValue: TGLfloat);
+    procedure SetWidth(AValue: TGLfloat);
 
     procedure SetRadius(const aValue: Single); //ORL
-    procedure SetSlices(const aValue: TVKInt); //ORL
+    procedure SetSlices(const aValue: TGLInt); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
     function GetRadius: single; //ORL
-    function GetSlices: TVKInt; //ORL
+    function GetSlices: TGLInt; //ORL
 
   public
     { Public Declarations }
@@ -109,39 +89,39 @@ type
 
   published
     { Public Declarations }
-          {: Selects the object to mirror.<p>
+          { Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property MirrorObject: TVKBaseSceneObject read FMirrorObject write
       SetMirrorObject;
-    {: Controls rendering options.<p>
-       <ul>
-       <li>moUseStencil: mirror area is stenciled, prevents reflected
+    { Controls rendering options. 
+        
+        moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer)
-       <li>moOpaque: mirror is opaque (ie. painted with background color)
-       <li>moMirrorPlaneClip: a ClipPlane is defined to prevent reflections
+        moOpaque: mirror is opaque (ie. painted with background color)
+        moMirrorPlaneClip: a ClipPlane is defined to prevent reflections
           from popping out of the mirror (for objects behind or halfway through)
-       <li>moClearZBuffer: mirror area's ZBuffer is cleared so that background
+        moClearZBuffer: mirror area's ZBuffer is cleared so that background
           objects don't interfere with reflected objects (reflected objects
           must be rendered AFTER the mirror in the hierarchy). Works only
           along with stenciling.
-       </ul>
+        
     }
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
 
-    property Height: TVKFloat read FHeight write SetHeight;
-    property Width: TVKFloat read FWidth write SetWidth;
+    property Height: TGLfloat read FHeight write SetHeight;
+    property Width: TGLfloat read FWidth write SetWidth;
 
-    {: Fired before the object's mirror images are rendered. }
+    { Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
       write FOnBeginRenderingMirrors;
-    {: Fired after the object's mirror images are rendered. }
+    { Fired after the object's mirror images are rendered. }
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
 
-    property Radius: TVKFloat read FRadius write SetRadius; //ORL
-    property Slices: TVKInt read FSlices write SetSlices default 16; //ORL
+    property Radius: TGLfloat read FRadius write SetRadius; //ORL
+    property Slices: TGLInt read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
     //ORL
   end;
@@ -324,7 +304,7 @@ end;
 
 procedure TVKMirror.BuildList(var ARci: TRenderContextInfo);
 var
-  hw, hh: TVKFloat;
+  hw, hh: TGLfloat;
   quadric: PGLUquadricObj;
 begin
   if msRect = FShape then
@@ -428,7 +408,7 @@ end;
 // SetWidth
 //
 
-procedure TVKMirror.SetWidth(AValue: TVKFloat);
+procedure TVKMirror.SetWidth(AValue: TGLfloat);
 begin
   if AValue <> FWidth then
   begin
@@ -440,7 +420,7 @@ end;
 // SetHeight
 //
 
-procedure TVKMirror.SetHeight(AValue: TVKFloat);
+procedure TVKMirror.SetHeight(AValue: TGLfloat);
 begin
   if AValue <> FHeight then
   begin
@@ -510,7 +490,7 @@ end;
 // SetSlices
 //
 
-procedure TVKMirror.SetSlices(const aValue: TVKInt);
+procedure TVKMirror.SetSlices(const aValue: TGLInt);
 begin
   if aValue <> FSlices then
   begin
@@ -526,7 +506,7 @@ end;
 // GetSlices
 //
 
-function TVKMirror.GetSlices: TVKInt;
+function TVKMirror.GetSlices: TGLInt;
 begin
   result := FSlices;
 end;

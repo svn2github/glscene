@@ -1,18 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TextureFormat<p>
 
- <b>History : </b><font size=-1><ul>
-        <li>10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
-        <li>03/08/10 - Yar - Added SNORM texture format
-        <li>15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
-        <li>22/04/10 - Yar - Moved TVKTextureTarget
-        <li>23/01/10 - Yar - Separated VKS.TextureFormat and GLInternalFormat
-                             VKS.TextureFormat moved to VKS.Texture
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
-}
 unit VKS.TextureFormat;
 
 interface
@@ -46,9 +35,9 @@ type
   TVKTextureSwizzle = (tswRed, tswGreen, tswBlue, tswAlpha, tswZero, tswOne);
   TSwizzleVector = array[0..3] of TVKTextureSwizzle;
 
-  // TVKInternalFormat
+  // TGLInternalFormat
   //
-  TVKInternalFormat = (
+  TGLInternalFormat = (
     tfALPHA4,
     tfALPHA8,
     tfALPHA12,
@@ -210,68 +199,68 @@ type
     tfRGBA16_SNORM
     );
 
-  // TVKInternalCompression
+  // TGLInternalCompression
   //
-  {: Texture compression option.<p>
-     If OpenGL supports it, this will activate a compressed texture format:<ul>
-     <li>tcDefault : uses global default compression option
-     <li>tcNone : do not use compression
-     <li>tcStandard : use standard compression, average quality, average rate
-     <li>tcHighQuality : choose a high-quality, low-speed compression
-     <li>tcHighSpeed : choose a high-speed, low-quality compression
-     </ul>. }
-  TVKInternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
+  { Texture compression option. 
+     If OpenGL supports it, this will activate a compressed texture format: 
+      tcDefault : uses global default compression option
+      tcNone : do not use compression
+      tcStandard : use standard compression, average quality, average rate
+      tcHighQuality : choose a high-quality, low-speed compression
+      tcHighSpeed : choose a high-speed, low-quality compression
+      . }
+  TGLInternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
     tcHighSpeed);
 
   // Global texturing defaults
   //
 var
-  vDefaultTextureFormat: TVKInternalFormat = tfRGBA8;
-  vDefaultTextureCompression: TVKInternalCompression = tcNone;
+  vDefaultTextureFormat: TGLInternalFormat = tfRGBA8;
+  vDefaultTextureCompression: TGLInternalCompression = tcNone;
 
 const
   cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
 
-{: Give a openGL texture format from GLScene texture format. }
-function InternalFormatToOpenGLFormat(intFormat: TVKInternalFormat): TVKEnum;
-{: Give a GLScene texture format from openGL texture format. }
-function OpenGLFormatToInternalFormat(glFormat: TVKEnum): TVKInternalFormat;
-{: Give a pixel size in bytes from texture format or data format. }
-function GetTextureElementSize(intFormat: TVKInternalFormat): Integer; overload;
-function GetTextureElementSize(colorFormat: TVKEnum; dataType: TVKEnum):
+{ Give a openGL texture format from GLScene texture format. }
+function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLEnum;
+{ Give a GLScene texture format from openGL texture format. }
+function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TGLInternalFormat;
+{ Give a pixel size in bytes from texture format or data format. }
+function GetTextureElementSize(intFormat: TGLInternalFormat): Integer; overload;
+function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
   Integer; overload;
-{: Give compatible openGL image format and data type. }
-procedure FindCompatibleDataFormat(intFormat: TVKInternalFormat; out dFormat:
+{ Give compatible openGL image format and data type. }
+procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
   GLenum; out dType: GLenum);
-{: Give a compressed openGL texture format from GLScene texture format
+{ Give a compressed openGL texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
-function CompressedInternalFormatToOpenGL(intFormat: TVKInternalFormat):
+function CompressedInternalFormatToOpenGL(intFormat: TGLInternalFormat):
   Integer;
-{: True if texture target supported. }
-function IsTargetSupported(glTarget: TVKEnum): Boolean; overload;
+{ True if texture target supported. }
+function IsTargetSupported(glTarget: TGLEnum): Boolean; overload;
 function IsTargetSupported(target: TVKTextureTarget): Boolean; overload;
-{: True if texture format is supported by hardware or software. }
-function IsFormatSupported(intFormat: TVKInternalFormat): Boolean;
-{: True if texture format is float. }
-function IsFloatFormat(intFormat: TVKInternalFormat): Boolean; overload;
-function IsFloatFormat(glFormat: TVKEnum): Boolean; overload;
-{: True if depth texture. }
-function IsDepthFormat(intFormat: TVKInternalFormat): boolean; overload;
-function IsDepthFormat(glFormat: TVKEnum): Boolean; overload;
-{: True if texture compressed. }
-function IsCompressedFormat(intFormat: TVKInternalFormat): Boolean; overload;
-function IsCompressedFormat(glFormat: TVKEnum): Boolean; overload;
-{: Give generic compressed OpenGL texture format. }
-function GetGenericCompressedFormat(const intFormat: TVKInternalFormat;
-  const colorFormat: TVKEnum; out internalFormat: TVKEnum): Boolean;
-{: Give uncompressed texture format and OpenGL color format. }
-function GetUncompressedFormat(const intFormat: TVKInternalFormat;
-  out internalFormat: TVKInternalFormat; out colorFormat: TVKEnum): Boolean;
+{ True if texture format is supported by hardware or software. }
+function IsFormatSupported(intFormat: TGLInternalFormat): Boolean;
+{ True if texture format is float. }
+function IsFloatFormat(intFormat: TGLInternalFormat): Boolean; overload;
+function IsFloatFormat(glFormat: TGLEnum): Boolean; overload;
+{ True if depth texture. }
+function IsDepthFormat(intFormat: TGLInternalFormat): boolean; overload;
+function IsDepthFormat(glFormat: TGLEnum): Boolean; overload;
+{ True if texture compressed. }
+function IsCompressedFormat(intFormat: TGLInternalFormat): Boolean; overload;
+function IsCompressedFormat(glFormat: TGLEnum): Boolean; overload;
+{ Give generic compressed OpenGL texture format. }
+function GetGenericCompressedFormat(const intFormat: TGLInternalFormat;
+  const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
+{ Give uncompressed texture format and OpenGL color format. }
+function GetUncompressedFormat(const intFormat: TGLInternalFormat;
+  out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
 
-function DecodeGLTextureTarget(const TextureTarget: TVKTextureTarget): TVKEnum;
-function EncodeGLTextureTarget(const glTarget: TVKEnum): TVKTextureTarget;
+function DecodeGLTextureTarget(const TextureTarget: TVKTextureTarget): TGLEnum;
+function EncodeGLTextureTarget(const glTarget: TGLEnum): TVKTextureTarget;
 function IsTargetSupportMipmap(const TextureTarget: TVKTextureTarget): Boolean; overload;
-function IsTargetSupportMipmap(const glTarget: TVKEnum): Boolean; overload;
+function IsTargetSupportMipmap(const glTarget: TGLEnum): Boolean; overload;
 
 //-------------------------------------------------------------------------
 implementation
@@ -283,9 +272,9 @@ uses
 type
 
   TFormatDesc = record
-    IntFmt: TVKEnum;
-    ClrFmt: TVKEnum;
-    DataFmt: TVKEnum;
+    IntFmt: TGLEnum;
+    ClrFmt: TGLEnum;
+    DataFmt: TGLEnum;
     RBit: Byte;
     GBit: Byte;
     BBit: Byte;
@@ -300,7 +289,7 @@ type
 
 const
   //: InternalFormat, ColorFormat, DataType
-  cTextureFormatToOpenGL: array[low(TVKInternalFormat)..high(TVKInternalFormat)] of TFormatDesc =
+  cTextureFormatToOpenGL: array[low(TGLInternalFormat)..high(TGLInternalFormat)] of TFormatDesc =
   (
     (IntFmt: GL_ALPHA4; ClrFmt: GL_ALPHA; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 4; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False),
     (IntFmt: GL_ALPHA8; ClrFmt: GL_ALPHA; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 8; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False),
@@ -463,14 +452,14 @@ const
     (IntFmt: GL_RGBA16_SNORM; ClrFmt: GL_RGBA; DataFmt: GL_SHORT; RBit: 16; GBit: 16; BBit: 16; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False)
     );
 
-function InternalFormatToOpenGLFormat(intFormat: TVKInternalFormat): TVKEnum;
+function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLenum;
 begin
   Result := cTextureFormatToOpenGL[intFormat].IntFmt;
 end;
 
-function OpenGLFormatToInternalFormat(glFormat: TVKEnum): TVKInternalFormat;
+function OpenGLFormatToInternalFormat(glFormat: TGLenum): TGLInternalFormat;
 var
-  i: TVKInternalFormat;
+  i: TGLInternalFormat;
 begin
   Result := tfRGBA8;
   for i := Low(cTextureFormatToOpenGL) to High(cTextureFormatToOpenGL) do
@@ -482,14 +471,14 @@ begin
   Assert(false);
 end;
 
-function GetTextureElementSize(intFormat: TVKInternalFormat): Integer;
+function GetTextureElementSize(intFormat: TGLInternalFormat): Integer;
 begin
   Result := GetTextureElementSize(
     cTextureFormatToOpenGL[intFormat].ClrFmt,
     cTextureFormatToOpenGL[intFormat].DataFmt);
 end;
 
-function GetTextureElementSize(colorFormat: TVKEnum; dataType: TVKEnum):
+function GetTextureElementSize(colorFormat: TGLenum; dataType: TGLenum):
   Integer;
 var
   components: Byte;
@@ -564,7 +553,7 @@ begin
   end;
 end;
 
-function CompressedInternalFormatToOpenGL(intFormat: TVKInternalFormat):
+function CompressedInternalFormatToOpenGL(intFormat: TGLInternalFormat):
   Integer;
 begin
   Result := GL_COMPRESSED_RGBA;
@@ -582,8 +571,8 @@ begin
   end;
 end;
 
-procedure FindCompatibleDataFormat(intFormat: TVKInternalFormat; out dFormat:
-  TVKEnum; out dType: GLenum);
+procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
+  TGLenum; out dType: GLenum);
 begin
   dFormat := cTextureFormatToOpenGL[intFormat].ClrFmt;
   dType := cTextureFormatToOpenGL[intFormat].DataFmt;
@@ -594,7 +583,7 @@ begin
   Result := IsTargetSupported(DecodeGLTextureTarget(target));
 end;
 
-function IsTargetSupported(glTarget: TVKEnum): Boolean;
+function IsTargetSupported(glTarget: TGLenum): Boolean;
 begin
   case glTarget of
     GL_TEXTURE_1D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
@@ -617,12 +606,12 @@ begin
   else
     begin
       Result := false;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
   end;
 end;
 
-function IsFormatSupported(intFormat: TVKInternalFormat): Boolean;
+function IsFormatSupported(intFormat: TGLInternalFormat): Boolean;
 begin
   Result := false;
 
@@ -739,38 +728,38 @@ begin
   end
 end;
 
-function IsFloatFormat(intFormat: TVKInternalFormat): boolean;
+function IsFloatFormat(intFormat: TGLInternalFormat): boolean;
 begin
   Result := cTextureFormatToOpenGL[intFormat].Flt;
 end;
 
-function IsFloatFormat(glFormat: TVKEnum): boolean;
+function IsFloatFormat(glFormat: TGLenum): boolean;
 begin
   Result := IsFloatFormat(OpenGLFormatToInternalFormat(glFormat));
 end;
 
-function IsDepthFormat(intFormat: TVKInternalFormat): boolean;
+function IsDepthFormat(intFormat: TGLInternalFormat): boolean;
 begin
   Result := cTextureFormatToOpenGL[intFormat].DBit > 0;
 end;
 
-function IsDepthFormat(glFormat: TVKEnum): boolean;
+function IsDepthFormat(glFormat: TGLenum): boolean;
 begin
   Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].DBit > 0;
 end;
 
-function IsCompressedFormat(intFormat: TVKInternalFormat): boolean;
+function IsCompressedFormat(intFormat: TGLInternalFormat): boolean;
 begin
   Result := cTextureFormatToOpenGL[intFormat].Comp;
 end;
 
-function IsCompressedFormat(glFormat: TVKEnum): boolean;
+function IsCompressedFormat(glFormat: TGLenum): boolean;
 begin
   Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].Comp;
 end;
 
-function GetGenericCompressedFormat(const intFormat: TVKInternalFormat;
-  const colorFormat: TVKEnum; out internalFormat: TVKEnum): Boolean;
+function GetGenericCompressedFormat(const intFormat: TGLInternalFormat;
+  const colorFormat: TGLenum; out internalFormat: TGLenum): Boolean;
 
 begin
   Result := false;
@@ -805,8 +794,8 @@ begin
   Result := true;
 end;
 
-function GetUncompressedFormat(const intFormat: TVKInternalFormat;
-  out internalFormat: TVKInternalFormat; out colorFormat: TVKEnum): Boolean;
+function GetUncompressedFormat(const intFormat: TGLInternalFormat;
+  out internalFormat: TGLInternalFormat; out colorFormat: TGLenum): Boolean;
 begin
   Result := false;
   if not IsCompressedFormat(intFormat) then
@@ -906,7 +895,7 @@ end;
 
 function DecodeGLTextureTarget(const TextureTarget: TVKTextureTarget): Cardinal;
 const
-  cTargetToEnum: array[TVKTextureTarget] of TVKEnum =
+  cTargetToEnum: array[TVKTextureTarget] of TGLenum =
   (
     0,
     GL_TEXTURE_1D,
@@ -926,7 +915,7 @@ begin
   Result := cTargetToEnum[TextureTarget];
 end;
 
-function EncodeGLTextureTarget(const glTarget: TVKEnum): TVKTextureTarget;
+function EncodeGLTextureTarget(const glTarget: TGLenum): TVKTextureTarget;
 begin
   case glTarget of
     GL_TEXTURE_1D: Result := ttTexture1d;
@@ -942,7 +931,7 @@ begin
   else
     begin
       Result := ttTexture2d;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
   end;
 end;
@@ -954,7 +943,7 @@ begin
     and (TextureTarget <> ttTexture2DMultisampleArray);
 end;
 
-function IsTargetSupportMipmap(const glTarget: TVKEnum): Boolean;
+function IsTargetSupportMipmap(const glTarget: TGLenum): Boolean;
 begin
   Result := (glTarget <> GL_TEXTURE_RECTANGLE)
     and (glTarget <> GL_TEXTURE_2D_MULTISAMPLE)

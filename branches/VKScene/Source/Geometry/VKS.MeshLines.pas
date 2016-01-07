@@ -1,12 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MeshLines<p>
-
-   Line implementation by means of a Triangle strip.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>05/14/07 - PVD - initial unit proposal (thanks Lord CRC for help)
+{
+   Line implementation by means of a Triangle strip. 
 }
 
 unit VKS.MeshLines;
@@ -23,7 +19,7 @@ uses
 type
    // TLineNode
    //
-   {: Specialized Node for use in a TVKLines objects.<p>
+   { Specialized Node for use in a TVKLines objects. 
       Adds a Width property }
    TLineNode = class(TVKNode)
    private
@@ -39,7 +35,7 @@ type
 
    // TLineNodes
    //
-   {: Specialized collection for Nodes in TVKMeshLines objects.<p>
+   { Specialized collection for Nodes in TVKMeshLines objects. 
       Stores TLineNode items. }
    TLineNodes = class(TVKNodes)
    public
@@ -102,23 +98,23 @@ type
 
   TLightmapBounds = class(TVKCustomCoordinates)
   private
-    function GetLeft: TVKFloat;
-    function GetTop: TVKFloat;
-    function GetRight: TVKFloat;
-    function GetBottom: TVKFloat;
-    function GetWidth: TVKFloat;
-    function GetHeight: TVKFloat;
-    procedure SetLeft(const value: TVKFloat);
-    procedure SetTop(const value: TVKFloat);
-    procedure SetRight(const value: TVKFloat);
-    procedure SetBottom(const value: TVKFloat);
+    function GetLeft: TGLfloat;
+    function GetTop: TGLfloat;
+    function GetRight: TGLfloat;
+    function GetBottom: TGLfloat;
+    function GetWidth: TGLfloat;
+    function GetHeight: TGLfloat;
+    procedure SetLeft(const value: TGLfloat);
+    procedure SetTop(const value: TGLfloat);
+    procedure SetRight(const value: TGLfloat);
+    procedure SetBottom(const value: TGLfloat);
   published
-    property Left: TVKFloat read GetLeft write SetLeft stored False;
-    property Top: TVKFloat read GetTop write SetTop stored False;
-    property Right: TVKFloat read GetRight write SetRight stored False;
-    property Bottom: TVKFloat read GetBottom write SetBottom stored False;
-    property Width: TVKFloat read GetWidth;
-    property Height: TVKFloat read GetHeight;
+    property Left: TGLfloat read GetLeft write SetLeft stored False;
+    property Top: TGLfloat read GetTop write SetTop stored False;
+    property Right: TGLfloat read GetRight write SetRight stored False;
+    property Bottom: TGLfloat read GetBottom write SetBottom stored False;
+    property Width: TGLfloat read GetWidth;
+    property Height: TGLfloat read GetHeight;
   end;
 
   TVKMeshLines = class(TVKFreeForm)
@@ -356,52 +352,52 @@ end;
 
 { TLightmapBounds }
 
-function TLightmapBounds.GetLeft: TVKFloat;
+function TLightmapBounds.GetLeft: TGLfloat;
 begin
   Result := X;
 end;
 
-function TLightmapBounds.GetTop: TVKFloat;
+function TLightmapBounds.GetTop: TGLfloat;
 begin
   Result := Y;
 end;
 
-function TLightmapBounds.GetRight: TVKFloat;
+function TLightmapBounds.GetRight: TGLfloat;
 begin
   Result := Z;
 end;
 
-function TLightmapBounds.GetBottom: TVKFloat;
+function TLightmapBounds.GetBottom: TGLfloat;
 begin
   Result := W;
 end;
 
-function TLightmapBounds.GetWidth: TVKFloat;
+function TLightmapBounds.GetWidth: TGLfloat;
 begin
   Result := Z - X;
 end;
 
-function TLightmapBounds.GetHeight: TVKFloat;
+function TLightmapBounds.GetHeight: TGLfloat;
 begin
   Result := W - Y;
 end;
 
-procedure TLightmapBounds.SetLeft(const value: TVKFloat);
+procedure TLightmapBounds.SetLeft(const value: TGLfloat);
 begin
   X := Value;
 end;
 
-procedure TLightmapBounds.SetTop(const value: TVKFloat);
+procedure TLightmapBounds.SetTop(const value: TGLfloat);
 begin
   Y := Value;
 end;
 
-procedure TLightmapBounds.SetRight(const value: TVKFloat);
+procedure TLightmapBounds.SetRight(const value: TGLfloat);
 begin
   Z := Value;
 end;
 
-procedure TLightmapBounds.SetBottom(const value: TVKFloat);
+procedure TLightmapBounds.SetBottom(const value: TGLfloat);
 begin
   W := Value;
 end;

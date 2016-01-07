@@ -1,21 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.AsyncTimer - asynchronous timer component (actual 1 ms resolution).<p>
-
-  This component is based on ThreadedTimer by Carlos Barbosa.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Refactored TAsyncTimer to TVKAsyncTimer
-  <li>15/11/14 - PW - Renamed AsynchTimer.pas unit to VKS.AsyncTimer.pas
-  <li>06/05/09 - DanB - removed TThreadPriority, was needed for Kylix, but not FPC
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>28/06/04 - LR - Added TThreadPriority for Linux
-  <li>24/09/02 - EG - Fixed ThreadPriority default value (Nelson Chu)
-  <li>20/01/02 - EG - Simplifications, dropped Win32 dependencies
-  <li>05/04/00 - GrC - Enabled checks to prevent events after destroy
-  <li>01/04/00 - EG - Re-Creation, minor changes over Carlos's code
-  </ul></font>
+{
+  Asynchronous timer component (actual 1 ms resolution). 
+  This component is based on ThreadedTimer by Carlos Barbosa. 
+   
 }
 unit VKS.AsyncTimer;
 
@@ -35,11 +24,11 @@ type
 
   // TVKAsyncTimer
   //
-  { : Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).<p>
+  { Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
     Keep in mind timer resolution is obtained <i>in-between</i> events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
-    be triggered every 5+1=6 ms (that's why it's "asynchronous").<p>
+    be triggered every 5+1=6 ms (that's why it's "asynchronous"). 
     This component is based on ThreadedTimer by Carlos Barbosa. }
   TVKAsyncTimer = class(TComponent)
   private

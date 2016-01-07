@@ -1,104 +1,12 @@
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CustomShader<p>
-
+{
     A collection of pure abstract classes - descendants of TVKShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.
-    It also contains a procedures and function that can be used in all shaders.<p>
+    It also contains a procedures and function that can be used in all shaders. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
-      <li>04/06/10 - Yar - Added unsigned integer uniforms
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>22/01/10 - Yar - Added to TVKCustomShaderParameter property AsTexture
-      <li>25/10/09 - DaStr - Updated TVKGeometryProgram (thanks YarUnderoaker)
-      <li>24/08/09 - DaStr - Separated TVKShaderProgram into TVKVertexProgram,
-                              TVKFragmentProgram and TVKGeometryProgram
-                             Added TVKCustomShaderParameter.AsUniformBuffer
-                              (thanks YarUnderoaker)
-      <li>28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
-                             Fixed TVKCustomShader.[...]Program serialization
-      <li>24/07/09 - DaStr - Added TVKCustomShader.DebugMode
-                             Fixed spelling mistake in TVKShaderUnAplyEvent
-                             Added TVKShaderFogSupport, IsFogEnabled()
-      <li>03/04/07 - DaStr - Added TVKCustomShaderParameter.AsFloat and AsInteger
-      <li>25/03/07 - DaStr - Added TVKCustomShaderParameter.SetToTextureOf
-      <li>20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
-                             "TextureType" parameter renamed to "TextureTarget"
-                             Finished working on TVKCustomShaderParameter
-      <li>04/03/07 - DaStr - Added IGLPostShader
-      <li>03/03/07 - DaStr - Added TVKCustomShaderParameter (beta state)
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-    What different shader prefixes might mean:
-
-      ML - Multi Light      -    Shader supports up to 8 lights.
-                                 Attributes such as [Ambient/Diffuse/Specular]
-                                 Colors are taken from the current OpenGL
-                                 state (that means from TVKLightSource too)
-                                 In all other cases shader supports only
-                                 one light, position of which is taken
-                                 from the first registered OpenGL light.
-
-
-
-      What different shader suffixes might mean:
-
-       MP - Manual Parameters    - [Ambient/Diffuse/Specular] Colors have
-                                   to be set manualy as shader's properties.
-                                   In all other cases they are taken from
-                                   the current OpenGL  state
-                                   (that means from TVKLightSource too)
-
-       MT - Manual Main Texture  - Main Texture is taken not from the
-                                   current texture, that is applied to the
-                                   rendered object, but has to be set manualy
-                                   as shader's property
-                                   In all other cases it is taken from
-                                   the current texture, that is applied to
-                                   the rendered object
-
-       AM - All Manual           - MP + MMT
-
-       AST - Auto Secondary Textures - All other textures are taken from the
-                                       textures, that are applied to the
-                                       rendered object after the main one
-                                       (like the one in TVKLIbMaterial.Texture2Name,
-                                       or any other textures that are applied to the
-                                       object manualy using TVKMaterial.Apply
-                                       or Direct OpenGL API)
-                                       In all other cases they are taken from
-                                       the shader's properties
-
-
-    Previous version history:
-      v1.0    11 March     '2006  Creation, separated from GLSLShader
-      v1.1    06 August    '2006  TVKCustomShader.HandleShaderNotSupportedException added
-                                  TVKCustomShader.ShaderNotSupportedExceptionMessage added
-      v1.2    14 August    '2006  IGLShaderSupported separated
-                                  TVKShaderTextureSource added
-      v1.2.2  19 August    '2006  IMultiShaderCompatible added
-      v1.2.4  24 August    '2006  TVKCustomShader.ParameterTexture[1-3]D added
-      v1.2.6  04 September '2006  Minor fixes
-      v1.3    04 November  '2006  TVKShaderUnUplyEvent added
-                                  OnApply, OnUnApply, OnInitialize moved to
-                                   the protected section
-                                  (Un)ApplyBlendingMode added
-                                  (Get/Set)ParameterTexture[1/2/3]DHandle added
-                                  InitTexture(), DrawTexturedScreenQuad() added
-                                  (Get/Set)ParameterCustomTextureHandle support added
-      v1.3.2  16 December  '2006  Added shader Naming convention in the comments
-                                  STR_SHADER_NEEDS_AT_LEAST_ONE_LIGHT_SOURCE
-                                   moved here from StrangeGLSLBumpShader
-                                  vStrangeShaderClassList and all shader
-                                   registration utility functions added
-      v1.3.4  18 February  '2007  StrangeTextureUtilities dependancy removed
-                                  Updated to the latest CVS version of GLScene
-
-
+      
 }
 unit VKS.CustomShader;
 
@@ -111,7 +19,7 @@ uses
   //VKS
   VKS.VectorGeometry, VKS.VectorTypes, VKS.Texture, VKS.Cadencer, VKS.OpenGLTokens, VKS.Scene,
   VKS.Strings, VKS.CrossPlatform, VKS.Context, VKS.RenderContextInfo, VKS.Material,
-  VKS.VectorLists, VKS.TextureFormat, GLSL.Parameter;
+  VKS.VectorLists, VKS.TextureFormat, VKS.GLSLParameter;
 
 const
   glsShaderMaxLightSources = 8;
@@ -133,7 +41,7 @@ type
   TVKLightSourceEnum = 1..glsShaderMaxLightSources;
   TVKLightSourceSet = set of TVKLightSourceEnum;
 
-  {: This interface describes user shaders, in order to be able to access them
+  { This interface describes user shaders, in order to be able to access them
     via a unified interface. If user shader does not support some option, don't
     raise an axception, just ignore it.
   }
@@ -154,17 +62,17 @@ type
     function GetShaderDescription: string;
   end;
 
-  {: Used in the TVKPostShaderHolder component. }
+  { Used in the TVKPostShaderHolder component. }
   IGLPostShader = interface
   ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
-    {: Called on every pass. }
+    { Called on every pass. }
     procedure DoUseTempTexture(const TempTexture: TVKTextureHandle;
       TextureTarget: TVKTextureTarget);
-    {: Called to determine if it is compatible. }
+    { Called to determine if it is compatible. }
     function GetTextureTarget: TVKTextureTarget;
   end;
 
-  {: A pure abstract class, must be overriden. }
+  { A pure abstract class, must be overriden. }
   TVKCustomShader = class(TVKShader)
   private
     FFragmentProgram: TVKFragmentProgram;
@@ -186,7 +94,7 @@ type
     property VertexProgram: TVKVertexProgram read FVertexProgram write SetVertexProgram stored StoreVertexProgram;
     property GeometryProgram: TVKGeometryProgram read FGeometryProgram write SetGeometryProgram stored StoreGeometryProgram;
 
-    {: Treats warnings as errors and displays this error,
+    { Treats warnings as errors and displays this error,
        instead of a general shader-not-supported message. }
     property DebugMode: Boolean read FDebugMode write SetDebugMode default False;
     property TagObject: TObject read FTagObject write FTagObject default nil;
@@ -198,7 +106,7 @@ type
     procedure LoadShaderPrograms(const VPFilename, FPFilename: string; GPFilename: string = '');
   end;
 
-  {: A custom shader program. }
+  { A custom shader program. }
   TVKShaderProgram = class(TPersistent)
   private
     FParent: TVKCustomShader;
@@ -236,10 +144,10 @@ type
   private
     FInputPrimitiveType: TVKgsInTypes;
     FOutputPrimitiveType: TVKgsOutTypes;
-    FVerticesOut: TVKint;
+    FVerticesOut: TGLint;
     procedure SetInputPrimitiveType(const Value: TVKgsInTypes);
     procedure SetOutputPrimitiveType(const Value: TVKgsOutTypes);
-    procedure SetVerticesOut(const Value: TVKint);
+    procedure SetVerticesOut(const Value: TGLint);
   public
     constructor Create(const AParent: TVKCustomShader); override;
   published
@@ -248,10 +156,10 @@ type
 
     property InputPrimitiveType: TVKgsInTypes read FInputPrimitiveType write SetInputPrimitiveType default gsInPoints;
     property OutputPrimitiveType: TVKgsOutTypes read FOutputPrimitiveType write SetOutputPrimitiveType default gsOutPoints;
-    property VerticesOut: TVKint read FVerticesOut write SetVerticesOut default 0;
+    property VerticesOut: TGLint read FVerticesOut write SetVerticesOut default 0;
   end;
 
-  {: Wrapper around a parameter of the main program. }
+  { Wrapper around a parameter of the main program. }
   TVKCustomShaderParameter = class(TObject)
   private
     { Private Declarations }
@@ -317,12 +225,12 @@ type
   public
     { Public Declarations }
 
-    {: This overloaded SetAsVector accepts open array as input. e.g.
+    { This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVectorF([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVectorF(const Values: array of Single); overload;
     procedure SetAsVectorI(const Values: array of Integer); overload;
 
-    {: SetToTextureOf determines texture type on-the-fly.}
+    { SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(const LibMaterial: TVKLibMaterial; const TextureIndex: Integer); overload;
     procedure SetToTextureOf(const Texture: TVKTexture; const TextureIndex: Integer); overload;
 
@@ -371,7 +279,7 @@ type
   end;
 
 
-  {: Adds two more blending modes to standard ones.
+  { Adds two more blending modes to standard ones.
     Not sure how to name them or if they should be included in TBlending mode,
     so I created a new type here. }
   TVKBlendingModeEx = (bmxOpaque, bmxTransparency, bmxAdditive,
@@ -427,7 +335,7 @@ begin
     sfsAuto:     Result := TVKSceneBuffer(rci.buffer).FogEnable;
   else
     Result := False;
-    Assert(False, glsUnknownType);
+    Assert(False, vksUnknownType);
   end;
 end;
 
@@ -457,7 +365,7 @@ begin
       bmxDestColorOne: SetBlendFunc(bfDSTCOLOR, bfONE);
       bmxDestAlphaOne: SetBlendFunc(bfDSTALPHA, bfONE);
       else
-        Assert(False, glsErrorEx + glsUnknownType);
+        Assert(False, vksErrorEx + vksUnknownType);
     end;
   end;
 end;
@@ -573,7 +481,7 @@ procedure InitTexture(
   const TextureSize: TVKSize;
   const TextureTarget: TVKTextureTarget = ttTexture2D);
 var
-  glTarget: TVKEnum;
+  glTarget: TGLenum;
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -846,7 +754,7 @@ begin
   end;
 end;
 
-procedure TVKGeometryProgram.SetVerticesOut(const Value: TVKint);
+procedure TVKGeometryProgram.SetVerticesOut(const Value: TGLint);
 begin
   if Value<>FVerticesOut then
   begin

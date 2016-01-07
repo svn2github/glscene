@@ -1,18 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: TypesMDC<p>
-
-    Types for Return to Castle Wolfenstein's MDC file format.<p>
-
-    Original code by Osman Turan (osmanturancom@yahoo.com)<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>18/12/04 - PhP - fixed constants, improve performance
-      <li>11/05/04 - SG - Added to CVS
-      <li>07/02/04 - OT - Creation (Osman Turan)
-	</ul></font>
+{
+    Types for Return to Castle Wolfenstein's MDC file format.
 }
 unit TypesMDC;
 

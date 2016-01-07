@@ -1,50 +1,14 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ODECustomColliders<p>
+{
+   Custom ODE collider implementations. 
 
-  Custom ODE collider implementations.<p>
-
-  <b>Credits : </b><font size=-1><ul>
-     <li>Heightfield collider code originally adapted from Mattias Fagerlund's
-         DelphiODE terrain collision demo.
-         Website: http://www.cambrianlabs.com/Mattias/DelphiODE
-  </ul>
-
-  <b>History : </b><font size=-1><ul>
-    <li>19/06/14 - PW - Changed some types from Single to TdReal to permit ODE be double based in ODEImport.pas
-    <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
-    <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>22/04/10 - Yar - Fixes after VKS.State revision
-    <li>05/03/10 - DanB - More state added to TVKStateCache
-    <li>17/11/09 - DaStr - Improved Unix compatibility
-                           (thanks Predator) (BugtrackerID = 2893580)
-    <li>08/11/09 - DaStr - Improved FPC compatibility
-                            (thanks Predator) (BugtrackerID = 2893580)
-    <li>12/04/08 - DaStr - Cleaned up uses section
-                            (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (by Paul Robello)
-                            Fixed reference to odeimport
-    <li>25/12/07 - DaStr  - Fixed memory leak in TVKODECustomCollider.Destroy()
-                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>10/10/07 - Mrqzzz - Fixed reference ODEGL.ODERToGLSceneMatrix
-    <li>07/10/07 - Mrqzzz - Added reference to ODEGL
-    <li>11/09/07 - Mrqzzz - Added reference to ODEImport
-    <li>07/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-                           Added $I GLScene.inc
-    <li>08/12/04 - SG - Added contact point rendering to TVKODECustomCollider.
-    <li>07/12/04 - SG - Added new TVKODECustomCollider class,
-                        Geom collide code now uses Resolution to determine the
-                        number of contact points to generate.
-    <li>19/11/04 - SG - Changed TVKODETerrainCollider to TVKODEHeightField
-                        which now inherits from TVKODEBehaviour and works for
-                        both TVKTerrainRenderer and TVKHeightField objects.
-                        Added Capsule, Cylinder and Cone collider code for
-                        the heightfield collider.
-    <li>23/04/04 - SG - Removed freeform static collider
-    <li>29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
-    <li>30/07/03 - SG - Creation.
-  </ul>
+   Credits :  
+      Heightfield collider code originally adapted from Mattias Fagerlund's
+      DelphiODE terrain collision demo.
+      Website: http://www.cambrianlabs.com/Mattias/DelphiODE
+   
 }
 unit VKS.ODECustomColliders;
 
@@ -82,9 +46,9 @@ type
 
   // TVKODECustomCollider
   //
-  {: The custom collider is designed for generic contact handling. There is a
+  { The custom collider is designed for generic contact handling. There is a
      contact point generator for sphere, box, capped cylinder, cylinder and
-     cone geoms.<p>
+     cone geoms. 
 
      Once the contact points for a collision are generated the abstract Collide
      function is called to generate the depth and the contact position and
@@ -126,7 +90,7 @@ type
     function ApplyContacts(o1, o2: PdxGeom; flags: Integer;
       contact: PdContactGeom; skip: Integer): Integer;
 
-    {: Set the transform used that transforms contact points generated with
+    { Set the transform used that transforms contact points generated with
        AddContact. }
     procedure SetTransform(ATransform: TMatrix);
 
@@ -145,12 +109,12 @@ type
     property Geom: PdxGeom read FGeom;
 
   published
-    {: Defines the resolution of the contact points created for the colliding
+    { Defines the resolution of the contact points created for the colliding
        Geom. The number of contact points generated change base don the size
        of the object and the ContactResolution. Lower values generate higher
        resolution contact boundaries, and thus smoother but slower collisions. }
     property ContactResolution: Single read FContactResolution write SetContactResolution;
-    {: Toggle contact point rendering on and off. (Rendered through the assigned
+    { Toggle contact point rendering on and off. (Rendered through the assigned
        Manager.RenderPoint. }
     property RenderContacts: Boolean read FRenderContacts write SetRenderContacts;
     //: Contact point rendering size (in pixels).
@@ -162,7 +126,7 @@ type
 
   // TVKODEHeightField
   //
-  {: Add this behaviour to a TVKHeightField or TVKTerrainRenderer to enable
+  { Add this behaviour to a TVKHeightField or TVKTerrainRenderer to enable
      height based collisions for spheres, boxes, capped cylinders, cylinders
      and cones. }
   TVKODEHeightField = class(TVKODECustomCollider)

@@ -1,17 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.EParticleMasksManager<p>
-
-   A pretty particle mask effect manager.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
-                     Got rid of Types dependancy
-      <li>29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
-
-Original Header:
+{
+   A pretty particle mask effect manager. 
+   Original Header:
 
    GLEParticleMasksManager.pas
    This unit is part of GLE - GLScene Game Utilities Engine set by Kenneth Poulter difacane@telkomsa.net
@@ -28,17 +20,8 @@ Original Header:
 
                 The images should be
 
-   Licenses: Removed. Donated to GLScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
+   Licenses: Removed. Donated to VKScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
              Theft of code also is not allowed, although alterations are allowed.
-
-   History:
-   28/12/2005 - Added - LX,LY,LZ for correct positioning;
-                        Rotating;
-                        GenerateParticleMaskFromProjection;
-                        Targeting Objects (scales, positions and rotation of object applies)
-   27/12/2005 - Added - Scale and Positioning
-   27/12/2005 - Improved code speed significantly (could do better)
-   26/12/2005 - Creation of base code from experimentation
 
 }
 

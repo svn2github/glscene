@@ -1,17 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileWAV<p>
-
-	Support for Windows WAV format.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+{
+	Support for Windows WAV format. 
+   
 }
 unit VKS.FileWAV;
 
@@ -26,7 +18,7 @@ type
 
    // TVKWAVFile
    //
-   {: Support for Windows WAV format. }
+   { Support for Windows WAV format. }
    TVKWAVFile = class (TVKSoundFile)
       private
          { Public Declarations }

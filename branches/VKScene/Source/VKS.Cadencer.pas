@@ -1,44 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Cadencer<p>
-
- Cadencing composant for GLScene (ease Progress processing)<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: restored GetCurrenttime instead of GetCurrentTime
-      <li>07/08/11 - Yar - Added OnTotalProgress event, which happens after all iterations with fixed delta time (thanks Controller)
-      <li>06/02/11 - Predator - Improved TVKCadencer for Lazarus
-      <li>29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
-      <li>21/11/09 - DaStr - Bugfixed FSubscribedCadenceableComponents
-                             (thanks Roshal Sasha)
-      <li>09/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>21/09/07 - DaStr - Added TVKCadencer.SetCurrentTime()
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>02/08/04 - LR, YHC - BCB corrections: changed GetCurrentTime to GetCurrenttime
-      <li>28/06/04 - LR - Added some ifdef Win32 for Linux
-      <li>20/10/03 - EG - Fixed issues about cadencer destruction
-      <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
-      <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
-      <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
-      <li>06/06/03 - EG - Added cmApplicationIdle Mode
-      <li>19/05/03 - EG - Added Reset (Roberto Bussola)
-      <li>04/03/02 - EG - Added SetTimeMultiplier
-      <li>01/07/02 - EG - Added TVKCadencedComponent
-      <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
-      <li>30/11/01 - EG - Added IsBusy (thx Chris S)
-      <li>08/09/01 - EG - Added MaxDeltaTime limiter
-      <li>23/08/01 - EG - No more "deprecated" warning for Delphi6
-      <li>12/08/01 - EG - Protection against "timer flood"
-      <li>19/07/01 - EG - Fixed Memory Leak in RegisterASAPCadencer,
-                          Added speed limiter TASAPHandler.WndProc
-      <li>01/02/01 - EG - Fixed "Freezing" when Enabled set to False
-      <li>08/10/00 - EG - Added TASAPHandler to support multiple ASAP cadencers
-      <li>19/06/00 - EG - Fixed TVKCadencer.Notification
-      <li>14/04/00 - EG - Minor fixes
-      <li>13/04/00 - EG - Creation
- </ul></font>
+{
+   Cadencing composant for GLScene (ease Progress processing) 
+          
 }
 unit VKS.Cadencer;
 
@@ -58,8 +23,8 @@ type
 
   // TVKCadencerMode
   //
-  {: Determines how the TVKCadencer operates.<p>
-   - cmManual : you must trigger progress manually (in your code)<br>
+  { Determines how the TVKCadencer operates. 
+   - cmManual : you must trigger progress manually (in your code) 
    - cmASAP : progress is triggered As Soon As Possible after a previous
     progress (uses windows messages).
        - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
@@ -68,22 +33,22 @@ type
 
   // TVKCadencerTimeReference
   //
-  {: Determines which time reference the TVKCadencer should use.<p>
+  { Determines which time reference the TVKCadencer should use. 
    - cmRTC : the Real Time Clock is used (precise over long periods, but
     not accurate to the millisecond, may limit your effective framerate
-          to less than 50 FPS on some systems)<br>
+          to less than 50 FPS on some systems) 
    - cmPerformanceCounter : the windows performance counter is used (nice
     precision, may derive over long periods, this is the default option
-    as it allows the smoothest animation on fast systems)<br>
+    as it allows the smoothest animation on fast systems) 
    - cmExternal : the CurrentTime property is used }
   TVKCadencerTimeReference = (cmRTC, cmPerformanceCounter, cmExternal);
 
   // TVKCadencer
   //
-  {: This component allows auto-progression of animation.<p>
+  { This component allows auto-progression of animation. 
    Basicly dropping this component and linking it to your TVKScene will send
    it real-time progression events (time will be measured in seconds) while
-   keeping the CPU 100% busy if possible (ie. if things change in your scene).<p>
+   keeping the CPU 100% busy if possible (ie. if things change in your scene). 
    The progression time (the one you'll see in you progression events)
    is calculated using  (CurrentTime-OriginTime)*TimeMultiplier,
    CurrentTime being either manually or automatically updated using
@@ -116,7 +81,7 @@ type
     procedure SetMode(const val: TVKCadencerMode);
     procedure SetTimeReference(const val: TVKCadencerTimeReference);
     procedure SetTimeMultiplier(const val: Double);
-    {: Returns raw ref time (no multiplier, no offset) }
+    { Returns raw ref time (no multiplier, no offset) }
     function GetRawReferenceTime: Double;
     procedure RestartASAP;
     procedure Loaded; override;
@@ -131,96 +96,96 @@ type
     procedure Subscribe(aComponent: TVKCadenceAbleComponent);
     procedure UnSubscribe(aComponent: TVKCadenceAbleComponent);
 
-    {: Allows to manually trigger a progression.<p>
-     Time stuff is handled automatically.<br>
+    { Allows to manually trigger a progression. 
+     Time stuff is handled automatically. 
      If cadencer is disabled, this functions does nothing. }
     procedure Progress;
 
-    {: Adjusts CurrentTime if necessary, then returns its value. }
+    { Adjusts CurrentTime if necessary, then returns its value. }
     function GetCurrenttime: Double;
 
-    {: Returns True if a "Progress" is underway.<p>
+    { Returns True if a "Progress" is underway. 
        Be aware that as long as IsBusy is True, the Cadencer may be
        sending messages and progression calls to cadenceable components
        and scenes. }
     function IsBusy: Boolean;
 
-    {: Reset the time parameters and returns to zero.<p>}
+    { Reset the time parameters and returns to zero. }
     procedure Reset;
 
-    {: Value soustracted to current time to obtain progression time. }
+    { Value soustracted to current time to obtain progression time. }
     property OriginTime: Double read FOriginTime write FOriginTime;
-    {: Current time (manually or automatically set, see TimeReference). }
+    { Current time (manually or automatically set, see TimeReference). }
     property CurrentTime: Double read FCurrentTime write SetCurrentTime;
 
   published
     { Published Declarations }
-    {: The TVKScene that will be cadenced (progressed). }
+    { The TVKScene that will be cadenced (progressed). }
     property Scene: TVKScene read FScene write SetScene;
-    {: Enables/Disables cadencing.<p>
+    { Enables/Disables cadencing. 
      Disabling won't cause a jump when restarting, it is working like
      a play/pause (ie. may modify OriginTime to keep things smooth). }
     property Enabled: Boolean read FEnabled write SetEnabled default True;
 
-    {: Defines how CurrentTime is updated.<p>
-     See TVKCadencerTimeReference.<br>
+    { Defines how CurrentTime is updated. 
+     See TVKCadencerTimeReference. 
      Dynamically changeing the TimeReference may cause a "jump".  }
     property TimeReference: TVKCadencerTimeReference read FTimeReference write
       SetTimeReference default cmPerformanceCounter;
 
-    {: Multiplier applied to the time reference.<p>
+    { Multiplier applied to the time reference. 
       Zero isn't an allowed value, and be aware that if negative values
-      are accepted, they may not be supported by other GLScene objects.<br>
+      are accepted, they may not be supported by other GLScene objects. 
      Changing the TimeMultiplier will alter OriginTime. }
     property TimeMultiplier: Double read FTimeMultiplier write SetTimeMultiplier
       stored StoreTimeMultiplier;
 
-    {: Maximum value for deltaTime in progression events.<p>
+    { Maximum value for deltaTime in progression events. 
        If null or negative, no max deltaTime is defined, otherwise, whenever
        an event whose actual deltaTime would be superior to MaxDeltaTime
        occurs, deltaTime is clamped to this max, and the extra time is hidden
-       by the cadencer (it isn't visible in CurrentTime either).<br>
+       by the cadencer (it isn't visible in CurrentTime either). 
        This option allows to limit progression rate in simulations where
        high values would result in errors/random behaviour. }
     property MaxDeltaTime: Double read FMaxDeltaTime write FMaxDeltaTime;
 
-    {: Minimum value for deltaTime in progression events.<p>
+    { Minimum value for deltaTime in progression events. 
        If superior to zero, this value specifies the minimum time step
-       between two progression events.<br>
+       between two progression events. 
        This option allows to limit progression rate in simulations where
        low values would result in errors/random behaviour. }
     property MinDeltaTime: Double read FMinDeltaTime write FMinDeltaTime;
 
-    {: Fixed time-step value for progression events.<p>
+    { Fixed time-step value for progression events. 
        If superior to zero, progression steps will happen with that fixed
        delta time. The progression remains time based, so zero to N events
        may be fired depending on the actual deltaTime (if deltaTime is
        inferior to FixedDeltaTime, no event will be fired, if it is superior
-       to two times FixedDeltaTime, two events will be fired, etc.).<br>
+       to two times FixedDeltaTime, two events will be fired, etc.). 
        This option allows to use fixed time steps in simulations (while the
        animation and rendering itself may happen at a lower or higher
        framerate). }
     property FixedDeltaTime: Double read FFixedDeltaTime write FFixedDeltaTime;
 
-    {: Adjusts how progression events are triggered.<p>
+    { Adjusts how progression events are triggered. 
      See TVKCadencerMode. }
     property Mode: TVKCadencerMode read FMode write SetMode default cmASAP;
 
-    {: Allows relinquishing time to other threads/processes.<p>
+    { Allows relinquishing time to other threads/processes. 
      A "sleep" is issued BEFORE each progress if SleepLength>=0 (see
      help for the "sleep" procedure in delphi for details). }
     property SleepLength: Integer read FSleepLength write FSleepLength default
       -1;
 
-    {: Happens AFTER scene was progressed. }
+    { Happens AFTER scene was progressed. }
     property OnProgress: TVKProgressEvent read FOnProgress write FOnProgress;
-    {: Happens AFTER all iterations with fixed delta time. }
+    { Happens AFTER all iterations with fixed delta time. }
     property OnTotalProgress : TVKProgressEvent read FOnTotalProgress write FOnTotalProgress;
   end;
 
   // TVKCustomCadencedComponent
   //
-  {: Adds a property to connect/subscribe to a cadencer.<p> }
+  { Adds a property to connect/subscribe to a cadencer.  }
   TVKCustomCadencedComponent = class(TVKUpdateAbleComponent)
   private
     { Private Declarations }

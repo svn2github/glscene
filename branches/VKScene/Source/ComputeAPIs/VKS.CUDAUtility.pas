@@ -1,13 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CUDAUtility<p>
-
-    Wraper of cutil.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>02/03/10 - Yar - Creation
-   </ul></font>
+{
+   Wraper of cutil. 
+   
 }
 unit VKS.CUDAUtility;
 

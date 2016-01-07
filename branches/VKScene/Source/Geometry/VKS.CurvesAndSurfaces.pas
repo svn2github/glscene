@@ -1,24 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CurvesAndSurfaces<p>
-
-   Bezier and B-Spline Curve and Surface Routines.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>11/05/04 - SG - Some fixes for BSpline calculations (rational BSplines
-                          are still still broken). Minor knot vector changes.
-      <li>20/08/03 - SG - Removed weights realizing it's an inefficient way
-                          to do things, control points should be weighted
-                          before being used to calculate a surface or curve.
-      <li>18/08/03 - SG - Added weights to calculations.
-      <li>17/07/03 - SG - Added surface routines. 
-                          Minor changes to procedure parameters.
-      <li>10/07/03 - SG - Creation
-   </ul></font>
-}
+{
+   Bezier and B-Spline Curve and Surface Routines. 
+ }
 unit VKS.CurvesAndSurfaces;
 
 interface

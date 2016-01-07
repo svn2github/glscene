@@ -1,18 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.PlugInIntf<p>
-
-  An interface unit to GLScene plug-ins.<p>
-  For more information see help file for writing plug-ins.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Renamed from PlugInIntf.pas to GLPlugInIntf.pas
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  PlugIn interface stays at PAnsiChar
-  <li>02/04/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 - EG - Creation
-  </ul></font>
+{
+  An interface unit to GLScene plug-ins. 
+  For more information see help file for writing plug-ins. 
+  
 }
 
 unit VKS.PlugInIntf;

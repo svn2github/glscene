@@ -1,16 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDAFourierTransform<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>03/01/14 - PW - Upgraded to use with FMX
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
-  <li>14/02/11 - Yar - Added debug mode
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
-}
-
 /// *
 // * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
 // *
@@ -280,7 +270,7 @@ var
 {$IFDEF LINUX}
   CUFFTHandle: TLibHandle = INVALID_MODULEHANDLE;
 {$ENDIF}
-{$IFDEF GLS_CUDA_DEBUG_MODE}
+{$IFDEF VKS_CUDA_DEBUG_MODE}
 
 var
   cufftPlan1d_: TcufftPlan1d;
@@ -454,7 +444,7 @@ begin
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
-{$ENDIF GLS_CUDA_DEBUG_MODE}
+{$ENDIF VKS_CUDA_DEBUG_MODE}
 
 function CUFFTGetProcAddress(ProcName: PAnsiChar): Pointer;
 begin
@@ -494,7 +484,7 @@ begin
     CUFFTHandle := LoadLibraryW(PWideChar(LibName));
   if CUFFTHandle = INVALID_MODULEHANDLE then
     Exit(False);
-{$IFNDEF GLS_CUDA_DEBUG_MODE}
+{$IFNDEF VKS_CUDA_DEBUG_MODE}
   cufftPlan1d := CUFFTGetProcAddress(cufftPlan1dName);
   cufftPlan2d := CUFFTGetProcAddress(cufftPlan2dName);
   cufftPlan3d := CUFFTGetProcAddress(cufftPlan3dName);

@@ -1,23 +1,15 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TextureImageEditors<p>
-
-	Standard texture image editors for standard texture image classes.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead
-                          abstract class function Edit for GLS_CPPB
-      <li>22/01/10 - Yar - Added to TVKBlankImage property editor ability to set the depth
-      <li>03/07/04 - LR - Make change for Linux
-      <li>24/07/03 - EG - Creation
-   </ul></font>
+{
+  Standard texture image editors for standard texture image classes. 
+    
 }
 unit VKS.TextureImageEditors;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
@@ -32,10 +24,10 @@ type
    TVKTextureImageEditor = class(TObject)
 		public
          { Public Properties }
-			{: Request to edit a textureImage.<p>
-				Returns True if changes have been made.<br>
+			{ Request to edit a textureImage. 
+				Returns True if changes have been made. 
 				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TVKTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+			class function Edit(aTexImage : TVKTextureImage) : Boolean; virtual;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
    end;
 
    TVKTextureImageEditorClass = class of TVKTextureImageEditor;
@@ -93,7 +85,7 @@ var
 
   // Dummy method for CPP
   //
-{$IFDEF GLS_CPPB}
+{$IFDEF VKS_CPPB}
 class function TVKTextureImageEditor.Edit(ATexImage: TVKTextureImage): Boolean;
 begin
   Result := True;

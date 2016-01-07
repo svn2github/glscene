@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.LinePFX<p>
-
-   A PFX whose particles are lines
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>12/10/08 - DanB - updated to use RCI
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>20/02/05 - EG - Creation
-   </ul></font>
+{
+  A PFX whose particles are lines
+    
 }
 unit VKS.LinePFX;
 
@@ -33,7 +22,7 @@ type
 
    // TVKLineParticle
    //
-   {: Linear particle.<p> }
+   { Linear particle.  }
    TVKLineParticle = class (TVKParticle)
       private
          { Private Declarations }
@@ -48,17 +37,17 @@ type
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         {: Direction of the line. }
+         { Direction of the line. }
          property Direction : TAffineVector read FDirection write FDirection;
-         {: Length of the line }
+         { Length of the line }
          property Length : Single read FLength write FLength;
    end;
 
    // TVKLinePFXManager
    //
-   {: Polygonal particles FX manager.<p>
+   { Polygonal particles FX manager. 
       The particles of this manager are made of N-face regular polygon with
-      a core and edge color. No texturing is available.<br>
+      a core and edge color. No texturing is available. 
       If you render large particles and don't have T&L acceleration, consider
       using TVKPointLightPFXManager. }
    TVKLinePFXManager = class (TVKLifeColoredPFXManager)

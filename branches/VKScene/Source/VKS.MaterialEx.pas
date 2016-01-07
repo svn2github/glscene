@@ -1,23 +1,17 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MaterialEx<p>
-
- Handles extended material and it components:
+{
+  Handles extended material and it components:
   textures, samplers, combiners, shaders and etc.
 
- Features:
+  Features:
    - material can contain different level of applying accordingly to hardware i.e. Feateres scaling.
    - if automatically or by user selected level failed, material down to lower level.
    - direct state access can be used for uniforms setting.
    - economy mode for texture bindig to active units,
      i.e. if textures less than maximum units may be not one binding occur per frame.
-
- <b>History : </b><font size=-1><ul>
-      <li>13/04/11 - Yar - Added TVKASMVertexProgram, fixed multitexturing
-      <li>11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
-      <li>11/03/11 - Yar - Created
-   </ul></font>
+     
 }
 
 unit VKS.MaterialEx;
@@ -28,12 +22,12 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //VKS
   VKS.RenderContextInfo, VKS.BaseClasses, VKS.Context, VKS.VectorTypes,
   VKS.Material, VKS.Texture, VKS.Color, VKS.Coordinates, VKS.VectorGeometry,
   VKS.Graphics, VKS.PersistentClasses, VKS.CrossPlatform, VKS.State,
   VKS.TextureFormat, VKS.XCollection, VKS.TextureCombiners, VKS.OpenGLTokens,
-  GLSL.Parameter, VKS.ApplicationFileIO, VKS.Strings, VKS.ImageUtils,
+  VKS.GLSLParameter, VKS.ApplicationFileIO, VKS.Strings, VKS.ImageUtils,
   VKS.Utils, VKS.XOpenGL, VKS.Log;
 
 
@@ -87,7 +81,7 @@ type
   published
     { Published Declarations }
     property Name: TVKMaterialComponentName read GetName write SetName;
-    {: Run-time flag, indicate that resource
+    { Run-time flag, indicate that resource
        should initialize in case of failure material's level. }
     property DefferedInit: Boolean read FDefferedInit write FDefferedInit
       default False;
@@ -171,32 +165,32 @@ type
   published
     { Published Declarations }
 
-    {: Texture magnification filter. }
+    { Texture magnification filter. }
     property MagFilter: TVKMagFilter read FMagFilter write SetMagFilter
       default maLinear;
-    {: Texture minification filter. }
+    { Texture minification filter. }
     property MinFilter: TVKMinFilter read FMinFilter write SetMinFilter
       default miLinearMipMapLinear;
     property FilteringQuality: TVKTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfAnisotropic;
-    { : Texture LOD bias. }
+    { Texture LOD bias. }
     property LodBias: Integer read FLODBias write SetLODBias default 0;
-    { : Address mode for the texture. }
+    { Address mode for the texture. }
     property WrapX: TVKSeparateTextureWrap index 0 read GetWrap write SetWrap
       default twRepeat;
     property WrapY: TVKSeparateTextureWrap index 1 read GetWrap write SetWrap
       default twRepeat;
     property WrapZ: TVKSeparateTextureWrap index 2 read GetWrap write SetWrap
       default twRepeat;
-    { : Texture border color. }
+    { Texture border color. }
     property BorderColor: TVKColor read FBorderColor
       write SetBorderColor;
-    { : Compare mode and function for depth texture. }
+    { Compare mode and function for depth texture. }
     property CompareMode: TVKTextureCompareMode read FCompareMode
       write SetCompareMode default tcmNone;
     property CompareFunc: TDepthFunction read FCompareFunc
       write SetCompareFunc default cfLEqual;
-    {: Force retrieving the undecoded sRGB data from the
+    { Force retrieving the undecoded sRGB data from the
        texture and manipulate that directly. }
     property sRGB_Encode: Boolean read FDecodeSRGB write SetDecodeSRGB
       default True;
@@ -209,7 +203,7 @@ type
   protected
     { Protected Declarations }
     FHandle: TVKTextureHandle;
-    FInternalFormat: TVKInternalFormat;
+    FInternalFormat: TGLInternalFormat;
     FWidth: Integer;
     FHeight: Integer;
     FDepth: Integer;
@@ -265,7 +259,7 @@ type
     FBaseLevel: Integer;
     FMaxLevel: Integer;
     FLastTime: Double;
-    procedure SetInternalFormat(const AValue: TVKInternalFormat);
+    procedure SetInternalFormat(const AValue: TGLInternalFormat);
     procedure SetImageAlpha(const AValue: TVKTextureImageAlpha);
     procedure SetImageBrightness(const AValue: Single);
     function StoreBrightness: Boolean;
@@ -302,46 +296,46 @@ type
     property InternalWidth: Integer read FWidth;
     property InternalHeight: Integer read FHeight;
     property InternalDepth: Integer read FDepth;
-    property InternalFormat: TVKInternalFormat read FInternalFormat
+    property InternalFormat: TGLInternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
 
-    {: Automatic Image Alpha setting.<p>
+    { Automatic Image Alpha setting. 
       Allows to control how and if the image's Alpha channel (transparency)
       is computed. }
     property ImageAlpha: TVKTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {: Texture brightness correction.<p>
+    { Texture brightness correction. 
       This correction is applied upon loading a TVKTextureImage, it's a
       simple saturating scaling applied to the RGB components of
       the 32 bits image, before it is passed to OpenGL, and before
       gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
-    {: Texture gamma correction.<p>
+    { Texture gamma correction. 
       The gamma correction is applied upon loading a TVKTextureImage,
       applied to the RGB components of the 32 bits image, before it is
       passed to OpenGL, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
-    {: Texture compression control.<p>
+    { Texture compression control. 
       If True the compressed TextureFormat variant (the OpenGL ICD must
       support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TVKTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {: Normal Map scaling.<p>
+    { Normal Map scaling. 
       Force normal map generation from height map and controls
       the intensity of the bumps. }
     property HeightToNormalScale: Single read FHeightToNormalScale
       write SetNormalMapScale stored StoreNormalMapScale;
-    {: Source file path and name. }
+    { Source file path and name. }
     property SourceFile: string read FSourceFile write SetSourceFile;
-    {: Force to store image levels in separate files in ready to transfer format. }
+    { Force to store image levels in separate files in ready to transfer format. }
     property InternallyStored: Boolean read FInternallyStored
       write SetInternallyStored default False;
-    {: Mipmap generation mode. }
+    { Mipmap generation mode. }
     property MipGenMode: TMipmapGenerationMode read FMipGenMode
       write SetMipGenMode default mgmOnFly;
-    {: Enable streaming loading. }
+    { Enable streaming loading. }
     property UseStreaming: Boolean read FUseStreaming
       write SetUseStreaming default False;
   end;
@@ -365,7 +359,7 @@ type
     procedure SetWidth(AValue: Integer);
     procedure SetHeight(AValue: Integer);
     procedure SetDepth(AValue: Integer);
-    procedure SetInternalFormat(const AValue: TVKInternalFormat);
+    procedure SetInternalFormat(const AValue: TGLInternalFormat);
     procedure SetOnlyWrite(AValue: Boolean);
     procedure SetLayered(AValue: Boolean);
     procedure SetCubeMap(AValue: Boolean);
@@ -392,22 +386,22 @@ type
       write SetHeight default 256;
     property InternalDepth: Integer read FDepth
       write SetDepth default 0;
-    property InternalFormat: TVKInternalFormat read FInternalFormat
+    property InternalFormat: TGLInternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
-    {: This flag makes use render buffer as target which makes
+    { This flag makes use render buffer as target which makes
         it impossible to read it as texture, but improves efficiency. }
     property OnlyWrite: Boolean read FOnlyWrite
       write SetOnlyWrite default False;
-    {: Force targe be texture array. }
+    { Force targe be texture array. }
     property Layered: Boolean read FLayered
       write SetLayered default False;
-    {: Force target be cube map. }
+    { Force target be cube map. }
     property CubeMap: Boolean read FCubeMap
       write SetCubeMap default False;
-    {: Number of samples. Positive value makes texture be multisample. }
+    { Number of samples. Positive value makes texture be multisample. }
     property Samples: Integer read FSamples
       write SetSamples default -1;
-    {: FixedSamplesLocation flag makes image will use identical
+    { FixedSamplesLocation flag makes image will use identical
       sample locations and the same number of samples for all texels in
       the image, and the sample locations will not depend on the
       internalformat or size of the image. }
@@ -417,7 +411,7 @@ type
 
   // TVKTextureSwizzling
   //
-    {: Swizzle the components of a texture fetches in
+    { Swizzle the components of a texture fetches in
         shader or fixed-function pipeline. }
   TVKTextureSwizzling = class(TVKUpdateAbleObject)
   private
@@ -523,24 +517,24 @@ type
       write SetLibSamplerName;
     property TextureOffset: TVKCoordinates read GetTextureOffset write
       SetTextureOffset stored StoreTextureOffset;
-    {: Texture coordinates scaling.<p>
+    { Texture coordinates scaling. 
        Scaling is applied before applying the offset, and is applied
        to the texture coordinates, meaning that a scale factor of (2, 2, 2)
        will make your texture look twice <i>smaller</i>. }
     property TextureScale: TVKCoordinates read GetTextureScale write
       SetTextureScale stored StoreTextureScale;
-    {: Texture coordinates rotating.<p>
+    { Texture coordinates rotating. 
        Rotating is applied after applying offset and scale,
        and rotate ST direction around R axis. }
     property TextureRotate: Single read FTextureRotate write
       SetTextureRotate stored StoreTextureRotate;
-    {: Texture Environment color. }
+    { Texture Environment color. }
     property EnvColor: TVKColor read FEnvColor write SetEnvColor;
-    {: Texture coordinates mapping mode.<p>
+    { Texture coordinates mapping mode. 
     This property controls automatic texture coordinates generation. }
     property MappingMode: TVKTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {: Texture mapping coordinates mode for S, T, R and Q axis.<p>
+    { Texture mapping coordinates mode for S, T, R and Q axis. 
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TVKCoordinates4 read GetMappingSCoordinates
@@ -551,7 +545,7 @@ type
       write SetMappingRCoordinates stored StoreMappingRCoordinates;
     property MappingQCoordinates: TVKCoordinates4 read GetMappingQCoordinates
       write SetMappingQCoordinates stored StoreMappingQCoordinates;
-    {: Texture color fetching parameters. }
+    { Texture color fetching parameters. }
     property Swizzling: TVKTextureSwizzling read FSwizzling write
       SetSwizzling stored StoreSwizzling;
   end;
@@ -590,7 +584,7 @@ type
 
     procedure Apply(var ARci: TRenderContextInfo);
     procedure UnApply(var ARci: TRenderContextInfo);
-    {: Returns True if the material is blended.<p> }
+    { Returns True if the material is blended.  }
     function Blended: Boolean;
 
   published
@@ -614,10 +608,10 @@ type
     property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode
       default pmFill;
     property Texture: TVKTextureProperties read FTexProp write SetTexProp;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TVKTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Next pass of FFP. }
+    { Next pass of FFP. }
     property NextPass;
   end;
 
@@ -635,8 +629,8 @@ type
     FScript: TStringList;
     FCommandCache: TCombinerCache;
     procedure SetScript(AValue: TStringList);
-    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TVKUint);
-    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TVKUint);
+    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TGLuint);
+    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TGLuint);
   public
     { Public Declarations }
     constructor Create(AOwner: TXCollection); override;
@@ -744,17 +738,17 @@ type
       SetTexProps;
     property Texture3: TVKTextureProperties index 3 read GetTexProps write
       SetTexProps;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TVKTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Pass light source direction to enviroment color of choosen texture.
+    { Pass light source direction to enviroment color of choosen texture.
        Vector in model space. }
     property LightDirTo: TLightDir2TexEnvColor read FLightDir
       write FLightDir default l2eNone;
-    {: Specify index of light source for LightDirTo. }
+    { Specify index of light source for LightDirTo. }
     property LightSourceIndex: Integer read FLightSourceIndex
       write SetLightSourceIndex default 0;
-    {: Next pass of combiner. }
+    { Next pass of combiner. }
     property NextPass;
   end;
 
@@ -784,13 +778,13 @@ type
     FInfoLog: string;
     FGeometryInput: TVKgsInTypes;
     FGeometryOutput: TVKgsOutTypes;
-    FGeometryVerticesOut: TVKint;
+    FGeometryVerticesOut: TGLint;
     procedure SetSource(AValue: TStringList);
     procedure SetSourceFile(AValue: string);
     procedure SetShaderType(AValue: TVKShaderType);
     procedure SetGeometryInput(AValue: TVKgsInTypes);
     procedure SetGeometryOutput(AValue: TVKgsOutTypes);
-    procedure SetGeometryVerticesOut(AValue: TVKint);
+    procedure SetGeometryVerticesOut(AValue: TGLint);
     function GetHandle: TVKShaderHandle;
   public
     { Public Declarations }
@@ -815,7 +809,7 @@ type
       write SetGeometryInput default gsInPoints;
     property GeometryOutput: TVKgsOutTypes read FGeometryOutput
       write SetGeometryOutput default gsOutPoints;
-    property GeometryVerticesOut: TVKint read FGeometryVerticesOut
+    property GeometryVerticesOut: TGLint read FGeometryVerticesOut
       write SetGeometryVerticesOut default 1;
   end;
 
@@ -848,17 +842,17 @@ type
     function GetVec3: TVector3f; virtual;
     function GetVec4: TVector; virtual;
 
-    function GetInt: TVKint; virtual;
+    function GetInt: TGLint; virtual;
     function GetIVec2: TVector2i; virtual;
     function GetIVec3: TVector3i; virtual;
     function GetIVec4: TVector4i; virtual;
 
-    function GetUInt: TVKuint; virtual;
+    function GetUInt: TGLuint; virtual;
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
 
-    procedure SetFloat(const Value: TVKFloat); virtual;
+    procedure SetFloat(const Value: TGLfloat); virtual;
     procedure SetVec2(const Value: TVector2f); virtual;
     procedure SetVec3(const Value: TVector3f); virtual;
     procedure SetVec4(const Value: TVector4f); virtual;
@@ -897,17 +891,17 @@ type
   TVKShaderUniform = class(TVKAbstractShaderUniform, IShaderParameter)
   protected
     { Protected Declarations }
-    FLocation: TVKint;
-    FStoreProgram: TVKuint;
+    FLocation: TGLint;
+    FStoreProgram: TGLuint;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: TVKuint;
-{$IFDEF GLS_INLINE} inline;
+    function GetProgram: TGLuint;
+{$IFDEF VKS_INLINE} inline;
 {$ENDIF}
     procedure PushProgram;
-{$IFDEF GLS_INLINE} inline;
+{$IFDEF VKS_INLINE} inline;
 {$ENDIF}
     procedure PopProgram;
-{$IFDEF GLS_INLINE} inline;
+{$IFDEF VKS_INLINE} inline;
 {$ENDIF}
 
     function GetFloat: Single; override;
@@ -915,17 +909,17 @@ type
     function GetVec3: TVector3f; override;
     function GetVec4: TVector; override;
 
-    function GetInt: TVKint; override;
+    function GetInt: TGLint; override;
     function GetIVec2: TVector2i; override;
     function GetIVec3: TVector3i; override;
     function GetIVec4: TVector4i; override;
 
-    function GetUInt: TVKuint; override;
+    function GetUInt: TGLuint; override;
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
 
-    procedure SetFloat(const Value: TVKFloat); override;
+    procedure SetFloat(const Value: TGLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -962,7 +956,7 @@ type
     procedure Apply(var ARci: TRenderContextInfo); override;
 
     property Name: string read GetName;
-    property Location: TVKint read FLocation;
+    property Location: TGLint read FLocation;
     property GLSLType: TVKSLDataType read GetGLSLType;
   end;
 
@@ -972,7 +966,7 @@ type
   TVKShaderUniformDSA = class(TVKShaderUniform)
   protected
     { Protected Declarations }
-    procedure SetFloat(const Value: TVKFloat); override;
+    procedure SetFloat(const Value: TGLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -1169,8 +1163,8 @@ type
     procedure SetSM3(AValue: TVKShaderModel3);
     procedure SetSM4(AValue: TVKShaderModel4);
     procedure SetSM5(AValue: TVKShaderModel5);
-    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TVKUint);
-    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TVKUint);
+    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TGLuint);
+    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TGLuint);
   protected
     procedure Loaded; override;
     procedure RemoveDefferedInit;
@@ -1316,7 +1310,7 @@ type
     procedure SetLevelForAll(const ALevel: TVKMaterialLevel);
   published
     { Published Declarations }
-      {: The materials collection. }
+      { The materials collection. }
     property Materials: TVKLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
     property Components: TVKMatLibComponents read FComponents
@@ -1330,17 +1324,17 @@ procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 implementation
 
 const
-  cTextureMagFilter: array[maNearest..maLinear] of TVKEnum =
+  cTextureMagFilter: array[maNearest..maLinear] of TGLenum =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TVKEnum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLenum =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
-  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of TVKenum =
+  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of TGLenum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI,
       GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TVKenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
   cSamplerToTexture: array[TVKSLSamplerType] of TVKTextureTarget =
     (
@@ -1383,7 +1377,7 @@ const
     ttTexture2DMultisample
     );
 
-  cTextureSwizzle: array[TVKTextureSwizzle] of TVKEnum =
+  cTextureSwizzle: array[TVKTextureSwizzle] of TGLenum =
     (
     GL_RED,
     GL_GREEN,
@@ -1394,7 +1388,7 @@ const
     );
 
 const
-  cTextureMode: array[TVKTextureMode] of TVKEnum =
+  cTextureMode: array[TVKTextureMode] of TGLenum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
 const
@@ -1456,7 +1450,7 @@ type
 var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-  vStoreBegin: procedure(mode: TVKEnum);
+  vStoreBegin: procedure(mode: TGLenum);
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1483,7 +1477,7 @@ begin
 end;
 
 procedure Div2(var Value: Integer);
-{$IFDEF GLS_INLINE} inline;
+{$IFDEF VKS_INLINE} inline;
 {$ENDIF}
 begin
   Value := Value div 2;
@@ -1527,7 +1521,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$REGION 'TVKBaseMaterialCollectionItem'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKBaseMaterialCollectionItem'}{$ENDIF}
 
 destructor TVKBaseMaterialCollectionItem.Destroy;
 var
@@ -1628,9 +1622,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKFixedFunctionProperties'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKFixedFunctionProperties'}{$ENDIF}
 
 procedure TVKFixedFunctionProperties.Apply(var ARci: TRenderContextInfo);
 begin
@@ -1896,18 +1890,18 @@ begin
     FTexProp.UnApply(ARci);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKAbstractTexture'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKAbstractTexture'}{$ENDIF}
 
 function TVKAbstractTexture.GetTextureTarget: TVKTextureTarget;
 begin
   Result := FHandle.Target;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureImageEx'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureImageEx'}{$ENDIF}
 
 procedure TVKTextureImageEx.Apply(var ARci: TRenderContextInfo);
 begin
@@ -2076,7 +2070,7 @@ end;
 procedure TVKTextureImageEx.FullTransfer;
 var
   LCompression: TVKTextureCompression;
-  glFormat: TVKEnum;
+  glFormat: TGLenum;
 begin
   with GL do
   begin
@@ -2101,7 +2095,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, glsErrorEx + glsUnknownType);
+          Assert(False, vksErrorEx + vksUnknownType);
         end;
         if not GetGenericCompressedFormat(
           FInternalFormat,
@@ -2197,7 +2191,7 @@ var
   bContinueStreaming: Boolean;
   OldBaseLevel, level: Integer;
   newTime: Double;
-  glInternalFormat: TVKEnum;
+  glInternalFormat: TGLenum;
   transferMethod: 0..3;
 begin
   LImage := TFriendlyImage(FImage);
@@ -2322,7 +2316,7 @@ var
   LGraphic: TVKGraphic;
   LImage: TVKImage;
   level: Integer;
-  glColorFormat, glDataType: TVKEnum;
+  glColorFormat, glDataType: TGLenum;
   bReadFromSource: Boolean;
   LStream: TStream;
   ptr: PByte;
@@ -2523,7 +2517,7 @@ begin
     begin
       Name := ReadString;
       FDefferedInit := ReadBoolean;
-      FInternalFormat := TVKInternalFormat(ReadInteger);
+      FInternalFormat := TGLInternalFormat(ReadInteger);
       FCompression := TVKTextureCompression(ReadInteger);
       FImageAlpha := TVKTextureImageAlpha(ReadInteger);
       FImageBrightness := ReadFloat;
@@ -2579,7 +2573,7 @@ begin
   end;
 end;
 
-procedure TVKTextureImageEx.SetInternalFormat(const AValue: TVKInternalFormat);
+procedure TVKTextureImageEx.SetInternalFormat(const AValue: TGLInternalFormat);
 begin
   if AValue <> FInternalFormat then
   begin
@@ -2695,9 +2689,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureSampler'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureSampler'}{$ENDIF}
 
 procedure TVKTextureSampler.Apply(var ARci: TRenderContextInfo);
 begin
@@ -2768,7 +2762,7 @@ end;
 
 procedure TVKTextureSampler.DoOnPrepare(Sender: TVKContext);
 var
-  ID: TVKUint;
+  ID: TGLuint;
 begin
   if IsDesignTime and FDefferedInit then
     exit;
@@ -2813,7 +2807,7 @@ begin
               SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
-{$IFDEF GLS_OPENGL_DEBUG}
+{$IFDEF VKS_OPENGL_DEBUG}
           CheckError;
 {$ENDIF}
 
@@ -2970,9 +2964,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureCombiner'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureCombiner'}{$ENDIF}
 
 procedure TVKTextureCombiner.Assign(Source: TPersistent);
 var
@@ -3014,13 +3008,13 @@ begin
 end;
 
 procedure TVKTextureCombiner.DoAllocate(Sender: TVKVirtualHandle;
-  var handle: TVKUint);
+  var handle: TGLuint);
 begin
   handle := 1;
 end;
 
 procedure TVKTextureCombiner.DoDeallocate(Sender: TVKVirtualHandle;
-  var handle: TVKUint);
+  var handle: TGLuint);
 begin
   handle := 0;
 end;
@@ -3094,9 +3088,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialEx'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialEx'}{$ENDIF}
 
 procedure TVKLibMaterialEx.Apply(var ARci: TRenderContextInfo);
 var
@@ -3245,13 +3239,13 @@ begin
 end;
 
 procedure TVKLibMaterialEx.DoAllocate(Sender: TVKVirtualHandle;
-  var handle: TVKUint);
+  var handle: TGLuint);
 begin
   handle := 1;
 end;
 
 procedure TVKLibMaterialEx.DoDeallocate(Sender: TVKVirtualHandle;
-  var handle: TVKUint);
+  var handle: TGLuint);
 begin
   handle := 0;
 end;
@@ -3443,9 +3437,9 @@ begin
     FNextPass.Apply(ARCi);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKMultitexturingProperties'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMultitexturingProperties'}{$ENDIF}
 
 procedure TVKMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
 var
@@ -3700,13 +3694,13 @@ begin
     GL.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureProperties'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureProperties'}{$ENDIF}
 
 procedure TVKTextureProperties.Apply(var ARci: TRenderContextInfo);
 var
-  glTarget: TVKEnum;
+  glTarget: TGLenum;
 begin
   if Assigned(FLibTexture) then
     with GL do
@@ -4300,9 +4294,9 @@ begin
     end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKShaderEx'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKShaderEx'}{$ENDIF}
 
 procedure TVKShaderEx.Assign(Source: TPersistent);
 var
@@ -4469,7 +4463,7 @@ begin
   end;
 end;
 
-procedure TVKShaderEx.SetGeometryVerticesOut(AValue: TVKint);
+procedure TVKShaderEx.SetGeometryVerticesOut(AValue: TGLint);
 begin
   if AValue < 1 then
     AValue := 1
@@ -4526,9 +4520,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialProperty'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialProperty'}{$ENDIF}
 
 function TVKLibMaterialProperty.GetMaterial: TVKLibMaterialEx;
 begin
@@ -4592,9 +4586,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialsEx'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialsEx'}{$ENDIF}
 
 function TVKLibMaterialsEx.Add: TVKLibMaterialEx;
 begin
@@ -4653,9 +4647,9 @@ begin
   inherited Items[AIndex] := AValue;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKBaseShaderModel'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKBaseShaderModel'}{$ENDIF}
 
 procedure TVKBaseShaderModel.Apply(var ARci: TRenderContextInfo);
 var
@@ -4736,12 +4730,12 @@ var
   T: TVKShaderType;
   LUniforms: TPersistentObjectList;
   LUniform, LUniform2: TVKShaderUniform;
-  ID: TVKuint;
+  ID: TGLuint;
   I, J, C: Integer;
   buff: array[0..255] of AnsiChar;
-  Size: TVKInt;
+  Size: TGLInt;
   Len: GLsizei;
-  Loc: TVKint;
+  Loc: TGLint;
   AType: GLenum;
   UName: string;
   GLSLData: TVKSLDataType;
@@ -4832,7 +4826,7 @@ begin
               begin
                 GetActiveUniform(
                   ID,
-                  TVKuint(I),
+                  TGLuint(I),
                   Length(buff),
                   @Len,
                   @Size,
@@ -5256,7 +5250,7 @@ begin
   Result := GL.ARB_gpu_shader5;
 end;
 
-procedure BeginPatch(mode: TVKEnum);
+procedure BeginPatch(mode: TGLenum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -5301,9 +5295,9 @@ begin
   ARci.amalgamating := False;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKMatLibComponents'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMatLibComponents'}{$ENDIF}
 
 function TVKMatLibComponents.GetAttachmentByName(
   const AName: TVKMaterialComponentName): TVKFrameBufferAttachment;
@@ -5481,9 +5475,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKMaterialLibraryEx'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKMaterialLibraryEx'}{$ENDIF}
 
 function TVKMaterialLibraryEx.AddAttachment(
   const AName: TVKMaterialComponentName): TVKFrameBufferAttachment;
@@ -5624,15 +5618,15 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformTexture'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniformTexture'}{$ENDIF}
 
 procedure TVKShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
 
   function FindHotActiveUnit: Boolean;
   var
-    ID: TVKuint;
+    ID: TGLuint;
     I, J: Integer;
     bindTime, minTime: Double;
     LTex: TVKTextureImageEx;
@@ -5700,7 +5694,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
   end;
 
 var
-  glTarget: TVKEnum;
+  glTarget: TGLenum;
 begin
   if FLocation > -1 then
   begin
@@ -5963,9 +5957,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKAbstractShaderUniform'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKAbstractShaderUniform'}{$ENDIF}
 
 function TVKAbstractShaderUniform.GetFloat: Single;
 begin
@@ -5982,7 +5976,7 @@ begin
   Result := FType;
 end;
 
-function TVKAbstractShaderUniform.GetInt: TVKint;
+function TVKAbstractShaderUniform.GetInt: TGLint;
 begin
   FillChar(Result, SizeOf(Result), $00);
 end;
@@ -6046,7 +6040,7 @@ begin
   Result := cDefaultSwizzleVector;
 end;
 
-function TVKAbstractShaderUniform.GetUInt: TVKuint;
+function TVKAbstractShaderUniform.GetUInt: TGLuint;
 begin
   FillChar(Result, SizeOf(Result), $00);
 end;
@@ -6085,7 +6079,7 @@ procedure TVKAbstractShaderUniform.ReadFromFiler(AReader: TReader);
 begin
 end;
 
-procedure TVKAbstractShaderUniform.SetFloat(const Value: TVKFloat);
+procedure TVKAbstractShaderUniform.SetFloat(const Value: TGLfloat);
 begin
 end;
 
@@ -6181,9 +6175,9 @@ procedure TVKAbstractShaderUniform.WriteToFiler(AWriter: TWriter);
 begin
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniform'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniform'}{$ENDIF}
 
 function TVKShaderUniform.GetFloat: Single;
 begin
@@ -6191,7 +6185,7 @@ begin
   GL.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
-function TVKShaderUniform.GetInt: TVKint;
+function TVKShaderUniform.GetInt: TGLint;
 begin
   GL.GetUniformiv(GetProgram, FLocation, @Result);
 end;
@@ -6226,7 +6220,7 @@ begin
   GL.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
-function TVKShaderUniform.GetProgram: TVKuint;
+function TVKShaderUniform.GetProgram: TGLuint;
 begin
   Result := TVKBaseShaderModel(Owner).FHandle.Handle;
 end;
@@ -6258,7 +6252,7 @@ begin
   Result := GetUniformAutoSetMethodName(FAutoSet);
 end;
 
-function TVKShaderUniform.GetUInt: TVKuint;
+function TVKShaderUniform.GetUInt: TGLuint;
 begin
   GL.GetUniformuiv(GetProgram, FLocation, @Result);
 end;
@@ -6319,7 +6313,7 @@ begin
   end;
 end;
 
-procedure TVKShaderUniform.SetFloat(const Value: TVKFloat);
+procedure TVKShaderUniform.SetFloat(const Value: TGLfloat);
 begin
   PushProgram;
   GL.Uniform1f(FLocation, Value);
@@ -6462,11 +6456,11 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformDSA'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniformDSA'}{$ENDIF}
 
-procedure TVKShaderUniformDSA.SetFloat(const Value: TVKFloat);
+procedure TVKShaderUniformDSA.SetFloat(const Value: TGLfloat);
 begin
   GL.ProgramUniform1f(GetProgram, FLocation, Value);
 end;
@@ -6561,9 +6555,9 @@ begin
     Value.V[3]);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKTextureSwizzling'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKTextureSwizzling'}{$ENDIF}
 
 procedure TVKTextureSwizzling.Assign(Source: TPersistent);
 var
@@ -6630,9 +6624,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKFrameBufferAttachment'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKFrameBufferAttachment'}{$ENDIF}
 
 procedure TVKFrameBufferAttachment.Apply(var ARci: TRenderContextInfo);
 begin
@@ -6702,7 +6696,7 @@ procedure TVKFrameBufferAttachment.DoOnPrepare(Sender: TVKContext);
 var
   LTarget: TVKTextureTarget;
   w, h, d, s, Level, MaxLevel: Integer;
-  glTarget, glFormat, glFace: TVKEnum;
+  glTarget, glFormat, glFace: TGLenum;
 begin
   if IsDesignTime and FDefferedInit then
     exit;
@@ -6934,7 +6928,7 @@ begin
       FWidth := ReadInteger;
       FHeight := ReadInteger;
       FDepth := ReadInteger;
-      FInternalFormat := TVKInternalFormat(ReadInteger);
+      FInternalFormat := TGLInternalFormat(ReadInteger);
     end
     else
       RaiseFilerException(archiveVersion);
@@ -6986,7 +6980,7 @@ begin
 end;
 
 procedure TVKFrameBufferAttachment.SetInternalFormat(
-  const AValue: TVKInternalFormat);
+  const AValue: TGLInternalFormat);
 begin
   if FInternalFormat <> AValue then
   begin
@@ -7064,9 +7058,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
 
 constructor TStandartUniformAutoSetExecutor.Create;
 begin
@@ -7241,9 +7235,9 @@ begin
     ARci.PipelineTransformation.ProjectionMatrix);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TVKASMVertexProgram'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKASMVertexProgram'}{$ENDIF}
 
 procedure TVKASMVertexProgram.Assign(Source: TPersistent);
 var
@@ -7398,7 +7392,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

@@ -1,16 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Polyhedron<p>
-
+{
    Standard polyhedrons
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/03/13 - PW - Added TVKTetrahedron and TVKOctahedron classes
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses
-      <li>20/01/04 - SG - Added TVKIcosahedron
-      <li>21/07/03 - EG - Creation from VKS.Objects split
-   </ul></font>
+   
 }
 unit VKS.Polyhedron;
 
@@ -25,7 +18,7 @@ type
 
   // TVKDodecahedron
   //
-  {: A Dodecahedron.<p>
+  { A Dodecahedron. 
      The dodecahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TVKDodecahedron = class(TVKSceneObject)
@@ -36,7 +29,7 @@ type
 
   // TVKIcosahedron
   //
-  {: A Icosahedron.<p>
+  { A Icosahedron. 
      The icosahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TVKIcosahedron = class(TVKSceneObject)
@@ -47,7 +40,7 @@ type
 
   // TVKOctahedron
   //
-  {: A Octahedron.<p>
+  { A Octahedron. 
      The octahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TVKOctahedron = class(TVKSceneObject)
@@ -58,7 +51,7 @@ type
 
   // TVKTetrahedron
   //
-  {: A Tetrahedron.<p>
+  { A Tetrahedron. 
      The tetrahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TVKTetrahedron = class(TVKSceneObject)

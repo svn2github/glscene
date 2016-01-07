@@ -1,38 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.MultiPolygon<p>
-
-   Object with support for complex polygons.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
-      <li>04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
-                            TMultiPolygonBase
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>18/11/04 - SG - Fixed TVKMultiPolygonBase.Destroy memory leak (Neil)
-      <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
-      <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
-      <li>28/12/01 - EG - Added registration (Philipp Pammler)
-      <li>19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
-                           TObjectList replaced with TPersistentObjectList)
-      <li>29/03/01 - Uwe - Fixes and improvements to TVKMultiPolygon
-      <li>21/02/01 - EG - Now VKS.XOpenGL based (multitexture)
-      <li>08/01/01 - EG - Compatibility fix (TVKLineNodes change),
-                           Delphi 4 compatibility (removed TVectorPool) and
-                           added/renamed some properties, various fixes
-      <li>08/10/00 - EG - Added header, code contributed by Uwe Raabe
-   </ul>
+{
+   Object with support for complex polygons. 
+ 
 }
 { TODO
-
-  ur:
 
   And I reactivated the TVectorPool object. The VKS.VectorLists are not suitable for this job.
   When the tesselator finds an intersection of edges it wants us to give him some storage
@@ -60,7 +33,6 @@ uses
   VKS.Coordinates, VKS.RenderContextInfo;
 
 type
-
   // TVKContourNodes
   //
   TVKContourNodes = class(TVKNodes)
@@ -95,12 +67,12 @@ type
   published
     { Published Declarations }
     property Description: string read FDescription write SetDescription;
-    {: The nodes list.<p> }
+    { The nodes list.  }
     property Nodes: TVKContourNodes read FNodes write SetNodes;
-    {: Number of divisions for each segment in spline modes.<p>
+    { Number of divisions for each segment in spline modes. 
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    {: Default spline drawing mode.<p>
+    { Default spline drawing mode. 
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
   end;
@@ -139,15 +111,15 @@ type
 
   // TMultiPolygonBase
   //
-  {: Multipolygon is defined with multiple contours.<p>
+  { Multipolygon is defined with multiple contours. 
      The contours have to be in the X-Y plane, otherwise they are projected
-     to it (this is done automatically by the tesselator).<br>
+     to it (this is done automatically by the tesselator). 
      The plane normal is pointing in +Z. All contours are automatically closed,
-     so there is no need to specify the last node equal to the first one.<br>
+     so there is no need to specify the last node equal to the first one. 
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the
-     following contours in clockwise order, the first contour is extended.<p>
+     following contours in clockwise order, the first contour is extended. 
 
      TMultiPolygonBase will take the input contours and let the tesselator
      make an outline from it (this is done in RetreiveOutline). This outline is
@@ -181,7 +153,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure AddNode(const i: Integer; const coords: TVKCoordinates); overload;
-    procedure AddNode(const i: Integer; const X, Y, Z: TVKfloat); overload;
+    procedure AddNode(const i: Integer; const X, Y, Z: TGLfloat); overload;
     procedure AddNode(const i: Integer; const value: TVector); overload;
     procedure AddNode(const i: Integer; const value: TAffineVector); overload;
 
@@ -199,7 +171,7 @@ type
 
   // TVKMultiPolygon
   //
-  {: A polygon that can have holes and multiple contours.<p>
+  { A polygon that can have holes and multiple contours. 
      Use the Path property to access a contour or one of the AddNode methods
      to add a node to a contour (contours are allocated automatically). }
   TVKMultiPolygon = class(TMultiPolygonBase)
@@ -214,7 +186,6 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
 
@@ -299,7 +270,6 @@ end;
 
 // Add
 //
-
 procedure TPolygonList.Add;
 begin
   FAktList := TAffineVectorList.Create;
@@ -511,7 +481,7 @@ end;
 // AddNode (float)
 //
 
-procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: TVKfloat);
+procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: TGLfloat);
 begin
   Path[i].AddNode(x, y, z);
 end;
@@ -582,7 +552,7 @@ end;
 var
   vVertexPool: TVectorPool;
 
-procedure tessError(errno: TVKEnum);
+procedure tessError(errno: TGLenum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -609,7 +579,7 @@ begin
   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
-procedure tessBeginList(typ: TVKEnum; polygonData: Pointer);
+procedure tessBeginList(typ: TGLenum; polygonData: Pointer);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}

@@ -1,19 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDACompiler <p>
-
-  Component allows to compile the CUDA-source (*.cu) file.<p>
-  in design- and runtime.<p>
-  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
-  <li>10/02/11 - Yar - Added capturing message from NVCC
-  <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-  <li>08/06/10 - Yar - Added ProjectModule property
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
+{
+  Component allows to compile the CUDA-source (*.cu) file. 
+  in design- and runtime. 
+  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++. 
 }
 unit VKS.CUDACompiler;
 
@@ -33,7 +24,7 @@ type
   // TVKSCUDAVirtArch
   //
 
-  {:
+  {
     compute_10 Basic features
     compute_11 + atomic memory operations on global memory
     compute_12 + atomic memory operations on shared memory
@@ -47,7 +38,7 @@ type
   // TVKSCUDAGPUGeneration
   //
 
-  {:
+  {
     sm_10 ISA_1 Basic features
     sm_11 + atomic memory operations on global memory
     sm_12 + atomic memory operations on shared memory
@@ -92,40 +83,40 @@ type
     procedure SetSourceCodeFile(const AFileName: string);
 
     function Compile: Boolean;
-    { : Product of compilation. }
+    { Product of compilation. }
     property Product: TStringList read FProduct write FProduct;
 
     property ModuleInfo: TCUDAModuleInfo read FModuleInfo;
     property ConsoleContent: string read FConsoleContent;
   published
     { Published declarations }
-    { : NVidia CUDA Compiler. }
+    { NVidia CUDA Compiler. }
     property NVCCPath: string read FNVCCPath write SetNVCCPath;
-    { : Microsoft Visual Studio Compiler.
+    { Microsoft Visual Studio Compiler.
       Pascal compiler is still not done. }
     property CppCompilerPath: string read FCppCompilerPath
       write SetCppCompilerPath;
-    { : Full file name of source code file. }
+    { Full file name of source code file. }
     property SourceCodeFile: string read FSourceCodeFile;
-    { : Disign-time only property.
+    { Disign-time only property.
       Make choose of one of the Project module as CUDA kernel source }
     property ProjectModule: string read FProjectModule write FProjectModule
       stored StoreProjectModule;
-    { : Output code type for module kernel
+    { Output code type for module kernel
       - Ptx - Parallel Thread Execution
       - Cubin - CUDA Binary }
     property OutputCodeType: TVKSCUDACompilerOutput read FOutputCodeType
       write setOutputCodeType default codePtx;
-    { : In the CUDA naming scheme,
+    { In the CUDA naming scheme,
         GPUs are named sm_xy,
         where x denotes the GPU generation number,
         and y the version in that generation. }
     property RealArchitecture: TVKSCUDARealArchs read FRealArch
       write SetRealArch default [sm_13];
-    { : Virtual architecture. }
+    { Virtual architecture. }
     property VirtualArchitecture: TVKSCUDAVirtArch read FVirtualArch
       write FVirtualArch default compute_13;
-    { : Maximum registers that kernel can use. }
+    { Maximum registers that kernel can use. }
     property MaxRegisterCount: Integer read FMaxRegisterCount
       write SetMaxRegisterCount default 32;
   end;

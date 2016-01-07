@@ -1,36 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.BumpShader<p>
+{
+   A GLSL shader that applies bump mapping. 
 
-   A GLSL shader that applies bump mapping.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>20/10/10 - Yar - Bugfixed memory leak
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
-                              (thanks YarUnderoaker)
-      <li>24/07/09 - DaStr - TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-                              Fixed a bug with "fRDotV" clamping, which occured
-                              on all GeForce 8x and later graphic cards
-      <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
-      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
-                              a single Str procedure (thanks Uwe Raabe)
-      <li>03/03/07 - DaStr - Made compatible with Delphi6
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-    This is a collection of GLSL Bump shaders, comes in these variaties
-         (to know what these abriviations mean, see VKS.CustomShader.pas):
-
-      - TVKSLBumpShader
-      - TVKSLBumpShaderMT
-      - TVKSLBumpShaderAM
-
-      - TVKSLMLBumpShader
-      - TVKSLMLBumpShaderMT
 
     Notes:
      1) Alpha is a synthetic property, in real life your should set each
@@ -41,40 +14,8 @@
 
     TODO:
       1) Implement IGLShaderDescription in all shaders.
-
-
-    Previous version history:
-      v1.0    03 September '2006  Creation
-      v1.1    09 September '2006  Camera Positioning bugfix
-                                  Artefacts on the non-lit side removed
-      v1.2    16 September '2006  Shader made ATI-compatible
-      v1.2.2  02 November  '2006  Small optimization if Do(Un)Apply
-      v1.3    27 November  '2006  TVKCustomGLSLMLBumpShaderMT added
-      v1.3.2  30 November  '2006  LightCompensation added
-                                  gl_FragColor() calculation optimized a bit
-      v1.4    16 December  '2006  All Shaders renamed according to the new
-                                    naming convention
-                                  SCS_SHADER_NEEDS_AT_LEAST_ONE_LIGHT_SOURCE
-                                    moved to VKS.CustomShader
-                                  TVKBaseCustomGLSLBumpShader,
-                                    TVKBaseMatlibGLSLBumpShader(MT) abstracted
-                                  7 diferent versions of this shader added
-                                  All shaders made design-time compatible
-      v1.4.2  18 December  '2006  MultiLight versions of this shader bugfixed
-                                    (the specular light was sometimes "cut")
-                                  The use of SpecularMap made optional
-      v1.4.6  20 December  '2006  TVKBaseMatlibGLSLBumpShader and
-                                    TVKBaseCustomGLSLBumpShader merged
-                                  The use of NormalMap is optional
-                                  MultiLight shaders optimized a bit
-      v1.4.8  06 February  '2007  IGLMaterialLibrarySupported renamed to
-                                    IGLMaterialLibrarySupported
-      v1.5    16 February  '2007  Updated to the latest CVS version of GLscene
-      v1.5.2  18 February  '2007  Removed the StrangeTextureUtilities dependancy
-
-
 }
-unit GLSL.BumpShader;
+unit VKS.GLSLBumpShader;
 
 interface
 
@@ -85,7 +26,7 @@ uses
   //VKS
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, VKS.VectorTypes,
   VKS.Cadencer, VKS.Strings, VKS.OpenGLTokens, VKS.CustomShader, VKS.Color,
-  VKS.RenderContextInfo, VKS.Material, GLSL.Shader;
+  VKS.RenderContextInfo, VKS.Material, VKS.GLSLShader;
 
 type
   EGLSLBumpShaderException = class(EGLSLShaderException);
@@ -233,7 +174,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TVKLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    { Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
@@ -250,7 +191,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TVKLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    { Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
@@ -641,7 +582,7 @@ begin
   if FSpecularTexture <> nil then
     Param['specMap'].AsTexture2D[2] := FSpecularTexture;
 
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if FNormalTexture <> nil then
 {$ENDIF}
   begin
@@ -743,7 +684,7 @@ begin
   begin
     FNormalTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(vksErrorEx + vksMatLibNotDefined);
   end
   else
   begin
@@ -766,7 +707,7 @@ begin
   begin
     FSpecularTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(vksErrorEx + vksMatLibNotDefined);
   end
   else
   begin
@@ -810,7 +751,7 @@ begin
   begin
     FMainTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(vksErrorEx + vksMatLibNotDefined);
   end
   else
   begin
@@ -944,7 +885,7 @@ end;
 procedure TVKCustomGLSLMLBumpShaderMT.SetLightSources(
   const Value: TVKLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], vksErrorEx + vksShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;
@@ -1100,7 +1041,7 @@ end;
 procedure TVKCustomGLSLMLBumpShader.SetLightSources(
   const Value: TVKLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], vksErrorEx + vksShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;

@@ -1,31 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.ProjectedTextures<p>
-
+{
    Implements projected textures through a GLScene object via GLSL.
-
-   <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
-                                Fixed AllowReverseProjection attenuation bug.
-                                  (Bugtracker ID=1710974)
-                                Added try-finally block in SetupShader
-        <li>13/04/07 - LC -     Fixed bug that caused Attenuation to fail. (Bugtracker ID=1699882)
-                                Also added Quadratic attenuation
-        <li>02/04/07 - DaStr -  Added $I GLScene.inc
-        <li>25/03/07 - fig -    Only The texMatrix is passed to the shader now,
-                                  no need for the InvModelViewMatrix
-                                Changed Emitter color, brightness and Attenuation
-                                  properties to use Uniforms in the shader, so
-                                  they're now dynamic.
-        <li>23/03/07 - fig -    Fixed reverse projection bug and added Quick
-                                  Decimal Separator fix.
-                                Finished Design time support.
-                                Now checks for GLSL support and just renders the children as normal,
-                                  if not supported.
-        <li>22/03/07 - fig -    Initial version.
-   </ul></font>
 }
 
 {; Known bugs/limitations
@@ -41,7 +18,7 @@
    The shader can't be changed between rendering each seperate object..
 }
 
-unit GLSL.ProjectedTextures;
+unit VKS.GLSLProjectedTextures;
 
 interface
 
@@ -60,7 +37,7 @@ type
 
   // TVKSLTextureEmmiter
   //
-  {: A projected texture emmiter.<p>
+  { A projected texture emitter. 
      Can be places anywhere in the scene.
      Used to generate a modelview and texture matrix for the shader}
   TVKSLTextureEmitter = class(TVKBaseSceneObject)
@@ -84,12 +61,12 @@ type
     destructor Destroy; override;
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: boolean); override;
   published
-    {: Indicates the field-of-view of the projection frustum.}
+    { Indicates the field-of-view of the projection frustum.}
     property FOV: single read FFOV write FFOV;
-    {: x/y ratio. For no distortion, this should be set to
+    { x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
-    {: Indicates the style of the projected textures.}
+    { Indicates the style of the projected textures.}
     property Style: TVKSLProjectedTexturesStyle read FStyle write SetStyle;
     {:Fall off/ attenuation of the projected texture}
     property Attenuation: single read FAttenuation write FAttenuation;
@@ -117,7 +94,7 @@ type
 
   // TVKSLTextureEmitterItem
   //
-  {: Specifies an item on the TVKSLTextureEmitters collection. }
+  { Specifies an item on the TVKSLTextureEmitters collection. }
   TVKSLTextureEmitterItem = class(TCollectionItem)
   private
     FEmitter: TVKSLTextureEmitter;
@@ -134,7 +111,7 @@ type
 
   // TVKSLTextureEmitters
   //
-  {: Collection of TVKSLTextureEmitter. }
+  { Collection of TVKSLTextureEmitter. }
   TVKSLTextureEmitters = class(TCollection)
   private
     FOwner: TVKSLProjectedTextures;
@@ -149,7 +126,7 @@ type
 
   // TVKSLProjectedTextures
   //
-  {: Projected Texture Manager.<p>
+  { Projected Texture Manager. 
      Specifies active Emitters and receivers (children of this object).
      At the moment, only 1 texture can be used.}
   TVKSLProjectedTextures = class(TVKSceneObject)
@@ -170,7 +147,7 @@ type
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
   published
-    {: List of emitters. }
+    { List of emitters. }
     property Emitters: TVKSLTextureEmitters read FEmitters write FEmitters;
 
     //Ambient is use if no lightmap..

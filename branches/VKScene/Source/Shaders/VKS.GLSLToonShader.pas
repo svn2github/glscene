@@ -1,32 +1,27 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.ToonShader <p>
-
-   Toon shader : Toon shading also called Cell Shading<p>
-
+{
+   Toon shader : Toon shading also called Cell Shading 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>13/12/15 - J.Delauney - Creation
-
-}
-unit GLSLToonShader;
+ }
+unit VKS.GLSLToonShader;
 
 interface
 
-//{$I GLScene.inc}
+//{$i VKScene.inc}
 
 uses
   System.Classes,
-  // GLScene
+  //VKScene
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, GLSL.Shader, VKS.CustomShader;
 
 //TVKCustomGLSLToonShader
 //
-{: Custom class for GLSLToonShader.<p>}
+{ Custom class for GLSLToonShader. }
 type
   TVKCustomGLSLToonShader = class(TVKCustomGLSLShader)
   private

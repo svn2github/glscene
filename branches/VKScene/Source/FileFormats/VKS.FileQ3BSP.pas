@@ -1,20 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileQ3BSP<p>
-
-    Support-code to load Q3BSP Files into TVKFreeForm-Components in GLScene.<p>
+{
+    Support-code to load Q3BSP Files into TVKFreeForm-Components in VKScene.  
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time.<p>
+    to enable support for OBJ & OBJF at run-time. 
 
- <b>History : </b><font size=-1><ul>
-      <li>19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-      <li>06/06/10 - Yar - Added VKS.VectorTypes to uses
-      <li>22/01/10 - Yar - Added VKS.TextureFormat to uses
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>31/01/03 - EG - Materials support
-      <li>30/01/03 - EG - Creation
-   </ul><p>
 }
 unit VKS.FileQ3BSP;
 
@@ -34,7 +25,7 @@ type
 
   // TVKQ3BSPVectorFile
   //
-  {: The Q3BSP vector file (Quake III BSP).<p> }
+  { The Q3BSP vector file (Quake III BSP).  }
   TVKQ3BSPVectorFile = class(TVectorFile)
   public
     { Public Declarations }
@@ -70,7 +61,6 @@ end;
 
 // LoadFromStream
 //
-
 procedure TVKQ3BSPVectorFile.LoadFromStream(aStream: TStream);
 
   function LocateTextureFile(const texName: string): string;

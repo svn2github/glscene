@@ -1,14 +1,6 @@
 ﻿//
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CUDAGraphics<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Moved and remake TVKFeedBackMesh from experimental to GLSCUDAGraphics, removed TVKFactory mediator component
-                           Added to TVKFeedBackMesh vertex attribute collection
-      <li>01/04/10 - Yar - Creation
-   </ul></font><p>
-}
 
 unit VKS.CUDAGraphics;
 
@@ -48,18 +40,18 @@ type
     FName: string;
     FType: TVKSLDataType;
     FFunc: TCUDAFunction;
-    FLocation: TVKint;
+    FLocation: TGLint;
     FOnBeforeKernelLaunch: TOnBeforeKernelLaunch;
     procedure SetName(const AName: string);
     procedure SetType(AType: TVKSLDataType);
     procedure SetFunc(AFunc: TCUDAFunction);
-    function GetLocation: TVKint;
+    function GetLocation: TGLint;
     function GetOwner: TVKVertexAttributes; reintroduce;
   public
     { Public Declarations }
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
-    property Location: TVKint read GetLocation;
+    property Location: TGLint read GetLocation;
   published
     { Published Declarations }
     property Name: string read FName write SetName;
@@ -136,18 +128,18 @@ type
     { Number of indexes in element buffer. Zero to disable. }
     property ElementNumber: Integer read FElementNumber
       write SetElementNumber default 0;
-    {: Used for all attributes and elements if Launching = fblCommon
+    { Used for all attributes and elements if Launching = fblCommon
        otherwise used own attribute function and this for elements. }
     property CommonKernelFunction: TCUDAFunction read FCommonFunc
       write SetCommonFunc;
-    {: Define mode of manufacturer launching:
+    { Define mode of manufacturer launching:
       fblCommon - single launch for all,
       flOnePerAtttribute - one launch per attribute and elements }
     property Launching: TFeedBackMeshLaunching read FLaunching
       write FLaunching default fblCommon;
-    {: Defines if the object uses blending for object
+    { Defines if the object uses blending for object
        sorting purposes. }
-    {: Defines if the object uses blending for object
+    { Defines if the object uses blending for object
        sorting purposes. }
     property Blend: Boolean read FBlend write FBlend default False;
   public
@@ -267,7 +259,7 @@ uses
   System.SysUtils,
   VKS.Strings,
   VKS.TextureFormat
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  {$IFDEF VKS_LOGGING}, GLSLog {$ENDIF};
 
 resourcestring
   cudasFailToBindArrayToTex = 'Unable to bind CUDA array to OpenGL unmaped t' +
@@ -277,7 +269,7 @@ resourcestring
   cudasOutOfElementSize = 'The amount of device''s data less then size of in' +
   'dexes data.';
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLImageResource ------------------
 // ------------------
@@ -453,9 +445,9 @@ begin
   SetArray(cudaArray, newArray, True, LTexture.TexDepth > 0);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLGeometryResource ------------------
 // ------------------
@@ -651,7 +643,7 @@ begin
     GLSLTypeMat4F: typeSize := 16 * SizeOf(GLFloat);
   else
     begin
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
       typeSize := 0;
     end;
   end;
@@ -739,13 +731,13 @@ begin
   Inc(Pbyte(Result), PtrUInt(MapPtr));
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // -----------------------
 // ----------------------- TVKVertexAttribute -------------------
 // -----------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TVKVertexAttribute'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKVertexAttribute'}{$ENDIF}
 
 constructor TVKVertexAttribute.Create(ACollection: TCollection);
 begin
@@ -786,12 +778,12 @@ begin
   end;
 end;
 
-function TVKVertexAttribute.GetLocation: TVKint;
+function TVKVertexAttribute.GetLocation: TGLint;
 begin
   if FLocation < 0 then
     FLocation := GL.GetAttribLocation(
       CurrentGLContext.GLStates.CurrentProgram,
-      PGLChar(TVKString(FName)));
+      PGLChar(TGLString(FName)));
   Result := FLocation;
 end;
 
@@ -804,13 +796,13 @@ procedure TVKVertexAttribute.NotifyChange(Sender: TObject);
 begin
   GetOwner.NotifyChange(Self);
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // -----------------------
 // ----------------------- TVKVertexAttributes -------------------
 // -----------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TVKVertexAttributes'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKVertexAttributes'}{$ENDIF}
 
 function TVKVertexAttributes.Add: TVKVertexAttribute;
 begin
@@ -867,13 +859,13 @@ begin
   inherited Items[index] := AValue;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 // -----------------------
 // ----------------------- TVKCustomFeedBackMesh -------------------
 // -----------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TVKCustomFeedBackMesh'}{$ENDIF}
+{$IFDEF VKS_REGION}{$REGION 'TVKCustomFeedBackMesh'}{$ENDIF}
 
 // AllocateHandles
 //
@@ -883,7 +875,7 @@ var
   I, L: Integer;
   Size, Offset: Cardinal;
   GR: TCUDAGLGeometryResource;
-  EnabledLocations: array[0..GLS_VERTEX_ATTR_NUM - 1] of Boolean;
+  EnabledLocations: array[0..VKS_VERTEX_ATTR_NUM - 1] of Boolean;
 begin
   FVAO.AllocateHandle;
   FVBO.AllocateHandle;
@@ -904,7 +896,7 @@ begin
       FEBO.UnBind; // Just in case
 
     // Predisable attributes
-    for I := 0 to GLS_VERTEX_ATTR_NUM - 1 do
+    for I := 0 to VKS_VERTEX_ATTR_NUM - 1 do
       EnabledLocations[I] := false;
 
     Offset := 0;
@@ -969,7 +961,7 @@ begin
     // Enable engagement attributes array
     with GL do
     begin
-      for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
+      for I := VKS_VERTEX_ATTR_NUM - 1 downto 0 do
         if EnabledLocations[I] then
           EnableVertexAttribArray(I)
         else
@@ -1050,7 +1042,7 @@ begin
             end;
         end;
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
     // Produce indexes
     if (GR.GetElementArrayDataSize > 0)
@@ -1075,7 +1067,7 @@ end;
 procedure TVKCustomFeedBackMesh.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 const
-  cPrimitives: array[TFeedBackMeshPrimitive] of TVKEnum =
+  cPrimitives: array[TFeedBackMeshPrimitive] of TGLenum =
     (GL_POINTS, GL_LINES, GL_TRIANGLES);
 begin
   if ARenderSelf
@@ -1223,7 +1215,7 @@ begin
   FVAO.NotifyChangesOfData;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

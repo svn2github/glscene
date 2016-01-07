@@ -1,19 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : FRFaceEditor<p>
-
-  Editor frame for a TVKFaceProperties.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>06/01/15 - PW - Converted to FMX
-  <li>05/09/08 - DanB - Removed Kylix support
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
-  PoligonMode are now updated when FaceProperties are assigned
-  <li>03/07/04 - LR  - Make change for Linux
-  <li>06/02/00 - Egg - Creation
-  </ul></font>
+{
+  Editor frame for a TVKFaceProperties. 
 }
 unit FRFaceEditor;
 

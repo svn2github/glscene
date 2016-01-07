@@ -1,29 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.VfsPAK<p>
-
-	 Support-code for loading files from Quake II PAK Files.<p>
+{
+   Support-code for loading files from Quake II PAK Files.
    When instance is created all LoadFromFile methods using
-   VKS.ApplicationFileIO mechanism will be pointed into PAK file.<p>
-   You can change current PAK file by ActivePak variable.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/2008 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/2007 - DaStr - Added $I GLScene.inc
-      <li>29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>26/10/2006 - LC - Fixed memory leak in TVKVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
-      <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk.
-      <li>14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
-      <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
-      <li>04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
-      <li>03/08/2004 - Orchestraman - Add LZRW1 compression.
-      <li>19/04/04 - PSz - Creation
-	</ul></font>
-
-	<b>Notes on Compression feature :</b><font size=-1><ul>
-
-	</ul></font>
+   VKS.ApplicationFileIO mechanism will be pointed into PAK file.
+   You can change current PAK file by ActivePak variable.
 
 }
 unit VKS.VfsPAK;
@@ -31,13 +13,13 @@ unit VKS.VfsPAK;
 {$I VKScene.inc}
 // Activate support for LZRW1 compression. This line could be moved to GLScene.inc file.
 // Remove the "." characted in order to activate compression features.
-{.$DEFINE GLS_LZRW_SUPPORT}
+{.$DEFINE VKS_LZRW_SUPPORT}
 
 interface
 
 uses
-  System.Classes, System.Contnrs, System.SysUtils, VKS.ApplicationFileIO
- {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
+  System.Classes, System.Contnrs, System.SysUtils,
+  VKS.ApplicationFileIO;
 
 const
    SIGN = 'PACK'; //Signature for uncompressed - raw pak.
@@ -51,9 +33,6 @@ type
       Signature: array[0..3] of AnsiChar;
       DirOffset: integer;
       DirLength: integer;
-{$IFDEF GLS_LZRW_SUPPORT}
-      CbrMode: TZCompressedMode;
-{$ENDIF}
    end;
 
    TFileSection = record
@@ -76,9 +55,6 @@ type
       FFilesLists: TObjectList;
 
       FFileName: string;
-{$IFDEF GLS_LZRW_SUPPORT}
-      FCompressor: Tlzrw1;
-{$ENDIF}
       FCompressionLevel: TZCompressedMode;
       FCompressed: Boolean;
 
@@ -232,14 +208,7 @@ end;
 constructor TVKVfsPAK.Create(AOwner : TComponent; const CbrMode: TZCompressedMode);
 begin
    Self.Create(AOwner);
-{$IFDEF GLS_LZRW_SUPPORT}
-   FCompressor := Tlzrw1.Create(nil);
-   FCompressor.UseStream := True;
-   FCompressor.Visible := False; //DONT remove this, it will cause probs!!!!
-   FCompressionLevel := CbrMode;
-{$ELSE}
    FCompressionLevel := None;
-{$ENDIF}
    FCompressed := FCompressionLevel <> None;
 end;
 
@@ -255,10 +224,6 @@ begin
    FStreamList.Free;
    FFilesLists.Free;
    ActiveVfsPAK := nil;
-{$IFDEF GLS_LZRW_SUPPORT}
-   FCompressor.Free;
-   FCompressor := nil; //I'm not surre if FreeAndNil function exists in Delphi version<7
-{$ENDIF}
    inherited Destroy;
 end;
 
@@ -297,16 +262,11 @@ begin
       FHeader.Signature := SIGN;
     FHeader.DirOffset := SizeOf(TPakHeader);
     FHeader.DirLength := 0;
-{$IFDEF GLS_LZRW_SUPPORT}
-    if FHeader.Signature = SIGN_COMPRESSED then
-      FHeader.CbrMode := FCompressionLevel;
-{$ELSE}
     if FHeader.Signature = SIGN_COMPRESSED then begin
      FStream.Free;
      raise Exception.Create(FileName + ' - This is a compressed PAK file. This version of software does not support Compressed Pak files.');
      Exit;
     end;
-{$ENDIF}
     FStream.WriteBuffer(FHeader, SizeOf(TPakHeader));
     FStream.Position := 0;
    end;
@@ -320,22 +280,11 @@ begin
 
    //Set the compression flag property.
    FCompressed := FHeader.Signature = SIGN_COMPRESSED;
-{$IFDEF GLS_LZRW_SUPPORT}
-   FCompressionLevel := FHeader.CbrMode;
-   if FCompressed then
-    if not Assigned(FCompressor) then begin
-      FCompressor := Tlzrw1.Create(nil);
-      FCompressor.UseStream := True;
-      FCompressor.Visible := False; //DONT remove this, it will cause probs!!!!
-      FCompressionLevel := FCompressionLevel;
-    end;
-{$ELSE}
    if FCompressed then begin
     FStream.Free;
     raise Exception.Create(FileName + ' - This is a compressed PAK file. This version of software does not support Compressed Pak files.');
     Exit;
    end;
-{$ENDIF}
 
    if FileCount <> 0 then
       MakeFileList;
@@ -357,34 +306,13 @@ begin
 end;
 
 function TVKVfsPAK.GetFile(index: integer): TStream;
-{$IFDEF GLS_LZRW_SUPPORT}var tempStream: TMemoryStream;{$ENDIF}
 begin
    FStream.Seek(FHeader.DirOffset + SizeOf(TFileSection) * index, soFromBeginning);
    FStream.Read(Dir, SizeOf(TFileSection));
    FStream.Seek(Dir.FilePos, soFromBeginning);
-{$IFDEF GLS_LZRW_SUPPORT}
-   if FHeader.Signature = SIGN_COMPRESSED then begin //Compressed stream.
-     tempStream := TMemoryStream.Create;
-     tempStream.CopyFrom(FStream, Dir.FileLength);
-     tempStream.Position := 0;
-     Result := TMemoryStream.Create;
-     FCompressor.InputStream := tempStream;
-     FCompressor.OutputStream := Result;
-     FCompressor.Decompress;
-     FHeader.CbrMode := TZCompressedMode(FCompressor.CompressMode);
-     Result.Position := 0;
-     tempStream.Free;
-   end
-   else begin //Uncompressed stream.
-     Result := TMemoryStream.Create;
-     Result.CopyFrom(FStream, Dir.FileLength);
-     Result.Position := 0;
-   end;
-{$ELSE}
    Result := TMemoryStream.Create;
    Result.CopyFrom(FStream, Dir.FileLength);
    Result.Position := 0;
-{$ENDIF}
 end;
 
 function TVKVfsPAK.FileExists(FileName: string): boolean;
@@ -416,7 +344,7 @@ end;
 {$WARNINGS OFF}
 procedure TVKVfsPAK.AddFromStream(FileName, Path: string; F: TStream);
 var
-   Temp{$IFDEF GLS_LZRW_SUPPORT}, compressed{$ENDIF}: TMemoryStream;
+   Temp: TMemoryStream;
 begin
    FStream.Position := FHeader.DirOffset;
    if FHeader.DirLength > 0 then
@@ -428,25 +356,8 @@ begin
    end;
    Dir.FilePos    := FHeader.DirOffset;
 
-{$IFDEF GLS_LZRW_SUPPORT}
-   if (FHeader.Signature = SIGN_COMPRESSED) and (FCompressionLevel <> None)then begin
-     compressed := TMemoryStream.Create;
-     FCompressor.InputStream := F;
-     FCompressor.OutputStream := compressed;
-     FCompressor.CompressMode := TCompressMode(FCompressionLevel);
-     Dir.FileLength := FCompressor.Compress;
-     FStream.CopyFrom(compressed, 0);
-     Dir.FileLength := compressed.Size;
-     compressed.Free;
-   end
-   else begin
-     Dir.FileLength := F.Size;
-     FStream.CopyFrom(F, 0);
-   end;
-{$ELSE}
    Dir.FileLength := F.Size;
    FStream.CopyFrom(F, 0);
-{$ENDIF}
 
    FHeader.DirOffset := FStream.Position;
    if FHeader.DirLength > 0 then

@@ -1,24 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.PostShaders <p>
-
-   Post shaders that simulate shader visions for a mask or the entire scene.<p>
-
-   <b>History : </b><font size=-1><ul>
-    <li>04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit
-    <li>01/11/15 - J.Delauney - Initial versions for
-                                GLSLPostThermalVisionShader
-                                GLSLPostDreamVisionShader
-                                GLSLPostNightVisionShader
-                                GLSLPostPixelateShader
-                                GLSLPostPosterizeShader
-                                GLSLPostFrostShader
-                                GLSLPostTroubleShader
-    <li>05/04/07 - DaStr - Initial version for GLSLPostBlurShader
-                           based on RenderMonkey demo
+{ 
+   Post shaders that simulate shader visions for a mask or the entire scene. 
 }
-unit GLSL.PostShaders;
+unit VKS.GLSLPostShaders;
 
 interface
 
@@ -26,14 +12,14 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, VKS.Context, VKS.Material,
-  GLSL.Shader, VKS.CustomShader, VKS.RenderContextInfo, VKS.TextureFormat,
+  VKS.GLSLShader, VKS.CustomShader, VKS.RenderContextInfo, VKS.TextureFormat,
   VKS.VectorTypes;
 
   //TVKCustomGLSLPostBlurShader
   //
-  {: Custom class for GLSLPostBlurShader.<p>
+  { Custom class for GLSLPostBlurShader. 
    A shader that blurs the entire scene }
 type
   TVKCustomGLSLPostBlurShader = class(TVKCustomGLSLShader, IGLPostShader)
@@ -62,11 +48,11 @@ type
 
   //TVKCustomGLSLPostThermalVisionShader
   //
-  {: Custom class for GLSLPostThermalVisionShader.<p>
+  { Custom class for GLSLPostThermalVisionShader. 
    A Shader that simulate a thermal vision of the entire scene }
 
 type
-  {: A shader that simulate a Thermal Vision of the entire scene}
+  { A shader that simulate a Thermal Vision of the entire scene}
   TVKCustomGLSLPostThermalVisionShader = class(TVKCustomGLSLShader, IGLPostShader)
   private
 
@@ -99,7 +85,7 @@ type
 
   //TVKCustomGLSLPostDreamVisionShader
   //
-  {: Custom class for GLSLPostDreamVisionShader.<p>
+  { Custom class for GLSLPostDreamVisionShader. 
    A shader that simulate a grayscale threshold vision (aka dream) of the entire scene}
 type
   TVKCustomGLSLPostDreamVisionShader = class(TVKCustomGLSLShader, IGLPostShader)
@@ -130,7 +116,7 @@ type
 
   //TVKCustomGLSLPostNightVisionShader
   //
-  {: Custom class for GLSLPostNightVisionShader.<p>
+  { Custom class for GLSLPostNightVisionShader. 
    A shader that simulate a Night Vision of the scene throw a mask if enabled,
    or of the entire scene}
 
@@ -200,7 +186,7 @@ type
 
   //TVKCustomGLSLPostPixelateShader
   //
-  {: Custom class for GLSLPostPixelateShader.<p>
+  { Custom class for GLSLPostPixelateShader. 
    A shader that pixelate of the entire scene}
 type
   TVKCustomGLSLPostPixelateShader = class(TVKCustomGLSLShader, IGLPostShader)
@@ -234,7 +220,7 @@ type
 
   //TVKCustomGLSLPostPosterizeShader
   //
-  {: Custom class for GLSLPostPosterizeShader.<p>
+  { Custom class for GLSLPostPosterizeShader. 
    A shader that posterize of the entire scene}
 type
   TVKCustomGLSLPostPosterizeShader = class(TVKCustomGLSLShader, IGLPostShader)
@@ -268,7 +254,7 @@ type
 
   //TVKCustomGLSLPostFrostShader
   //
-  {: Custom class for GLSLPostFrostShader.<p>
+  { Custom class for GLSLPostFrostShader. 
    A shader that frost of the entire scene}
 type
   TVKCustomGLSLPostFrostShader = class(TVKCustomGLSLShader, IGLPostShader)
@@ -302,8 +288,8 @@ type
 
   //TVKCustomGLSLPostTroubleShader
   //
-  {: Custom class for GLSLPostTroubleShader.<p>
-   A shader that trouble of the entire scene. v2 <p>
+  { Custom class for GLSLPostTroubleShader. 
+   A shader that trouble of the entire scene. v2  
    This Shader is experimental it can do smooth the scene or double the scene and it's
    depends of PixelX, PixelY and Freq values if they are less than 1 or greater
    the effects will be very different}

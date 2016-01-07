@@ -1,36 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Graph<p>
-
-  Graph plotting objects for GLScene<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>25/01/13 - PW - Added compatibility with Cppb, changed 
-                      properties with characters in lowercase to uppercase
-  <li>07/01/10 - Yar - Fixed TVKHeightField.Assign (thanks mobilus)
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>05/03/10 - DanB - More state added to TVKStateCache
-  <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>12/09/03 - EG - DefaultHeightField now defines color
-  <li>16/07/02 - EG - Fixed TVKHeightField backface polygon mode
-  <li>29/01/02 - EG - Fixed TVKHeightField.BuildList when field is empty
-  <li>10/01/02 - EG - Added OnGetHeight2
-  <li>30/11/01 - EG - Color fix in TVKHeightField.BuildList (thx Marc Hull)
-  <li>19/07/01 - EG - TVKHeightField no longer calls OnGetHeight in design mode
-  <li>06/03/01 - EG - Fix in TVKHeightField.BuildList (thx Rene Lindsay)
-  <li>25/02/01 - EG - Minor T&L improvement for TVKHeightField
-  <li>21/02/01 - EG - Now VKS.XOpenGL based (multitexture)
-  <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
-                 to workaround the float property default value bug.
-  <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
-  <li>15/07/00 - EG - Added TXYGrid
-  <li>06/07/00 - EG - Creation (TVKSamplingScale & TVKHeightField)
-  </ul></font>
+{
+  Graph plotting objects for GLScene 
 }
 unit VKS.Graph;
 
@@ -71,11 +43,11 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    { : Returns the Base value for Step browsing.<p>
+    { Returns the Base value for Step browsing. 
       ie. the lowest value (superior to Min) that verifies
       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
-    { : Maximum number of steps that can occur between Min and Max. }
+    { Maximum number of steps that can occur between Min and Max. }
     function MaxStepCount: Integer;
 
     function IsValid: Boolean;
@@ -108,11 +80,11 @@ type
 
   // TVKHeightField
   //
-  { : Renders a sampled height-field.<p>
+  { Renders a sampled height-field. 
     HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
     render anything from math formulas to statistics. Most important properties
     of an height field are its sampling scales (X & Y) that determine the extents
-    and the resolution of the base grid.<p>
+    and the resolution of the base grid. 
 
     The component will then invoke it OnGetHeight event to retrieve Z values for
     all of the grid points (values are retrieved only once for each point). Each
@@ -159,16 +131,16 @@ type
       write SetXSamplingScale;
     property YSamplingScale: TVKSamplingScale read FYSamplingScale
       write SetYSamplingScale;
-    { : Define if and how per vertex color is used. }
+    { Define if and how per vertex color is used. }
     property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode
       default hfcmNone;
     property Options: THeightFieldOptions read FOptions write SetOptions
       default [hfoTwoSided];
 
-    { : Primary event to return heights. }
+    { Primary event to return heights. }
     property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
-    { : Alternate this event to return heights.<p>
+    { Alternate this event to return heights. 
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
     property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
@@ -182,9 +154,9 @@ type
 
   // TXYZGridLinesStyle
   //
-  { : Rendering Style for grid lines.<p>
+  { Rendering Style for grid lines. 
     - glsLine : a single line is used for each grid line (from Min to Max),
-    this provides the fastest rendering<br>
+    this provides the fastest rendering 
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
@@ -192,7 +164,7 @@ type
 
   // TVKXYZGrid
   //
-  { : An XYZ Grid object.<p>
+  { An XYZ Grid object. 
     Renders an XYZ grid using lines. }
   TVKXYZGrid = class(TVKLineBase)
   private
@@ -232,7 +204,7 @@ type
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
     property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    { : Adjusts lines smoothing (or antialiasing).<p>
+    { Adjusts lines smoothing (or antialiasing). 
       Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;
@@ -438,7 +410,7 @@ type
   TRowDataArray = array [0 .. Maxint shr 6] of TRowData;
   PRowData = ^TRowDataArray;
 const
-  cHFCMtoEnum: array [hfcmEmission .. hfcmAmbientAndDiffuse] of TVKEnum =
+  cHFCMtoEnum: array [hfcmEmission .. hfcmAmbientAndDiffuse] of TGLenum =
     (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
 var

@@ -1,47 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Windows<p>
-
-  OpenGL windows management classes and structures<p>
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,
-                          renamed lowercase sender and accept to uppercase Sender and Accept
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>11/06/10 - YP - Link GUI elements to their parent
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>17/10/08 - DanB - reversed order of vertices in TVKCustomControl.InternalRender,
-                            which fixes the GUIPaint demo
-      <li>27/04/08 - DaStr - Fixed bug in TVKButton.InternalRender()
-                             (thanks Nicoara Adrian) (BugtrackerID = 1952711)
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>20/12/06 - DaStr - Added: TVKEdit.ReadOnly, TVKScrollbar.Locked,
-                             TVKStringGrid.ColSelect
-      <li>10/11/05 - Mathx - Fixed TVKPopupMenu stack overflow on method internalRender.
-                             Related to bug 1193909.
-      <li>05/02/05 - AX - TVKLabel correct layout depending on Aligment and TextLayout.
-      <li>25/01/05 - AX - Corrected AlphaChannel default value, must be 1
-                          TVKButton, TVKForm - AlphaChannel behaviour text.
-                          Added events OnMouseEnter/OnMouseLeave for all controls
-      <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
-                          Added function GLOKMessageBox to avoid the uses of Forms
-                          Replace TColor, TBitmap, TMouseEvent, TKeyEvent, ...
-                          by TVKColor, TVKBitmap, TVKMouseEvent, TVKKeyEvent, ...
-      <li>08/08/03 - PS  - Added Horizontal to GLScrollbar...
-      <li>14/08/03 - SG  - Fixed TVKBaseComponent.SetGuiLayout (Joen Joensen)
-      <li>08/08/03 - JAJ - Merged PS's and SG's update... Added TitleOffset...
-      <li>05/01/03 - JAJ - Cleaned up the DesignTime AccessViolations...
-      <li>07/01/03 - JAJ - Jeremy Darling modified the TVKEdit's Render, more
-                            updates on TVKEdit expected...
-      <li>18/01/03 - JAJ - Added TVKStringList, TVKScrollbar, TVKPopupMenu...
-      <li>01/01/03 - JAJ - Updated so that focused controls pass focus on hide...
-      <li>01/06/02 - JAJ - After not having received Jan Horn's blessing, the
-                            system have been revised all parts have been rewritten.
-      <li>24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at
-                            (http://www.sulaco.co.za/opengl/windows.zip)
- </ul></font>
+{
+  OpenGL windows management classes and structures 
 }
 
 unit VKS.Windows;
@@ -68,11 +29,11 @@ type
     FGuiComponent: TVKGuiComponent;
     FReBuildGui: Boolean;
     FRedrawAtOnce: Boolean;
-    MoveX, MoveY: TVKFloat;
+    MoveX, MoveY: TGLfloat;
     FRenderStatus: TGUIDrawResult;
 
     FAlphaChannel: Single;
-    FRotation: TVKFloat;
+    FRotation: TGLfloat;
     FNoZWrite: Boolean;
 
     BlockRendering: Boolean;
@@ -97,7 +58,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
-    procedure SetRotation(const val: TVKFloat);
+    procedure SetRotation(const val: TGLfloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetNoZWrite(const val: Boolean);
@@ -129,13 +90,13 @@ type
     property GuiLayoutName: TVKGuiComponentName read FGuiLayoutName write
       SetGuiLayoutName;
 
-    {: This the ON-SCREEN rotation of the GuiComponent.<p>
+    { This the ON-SCREEN rotation of the GuiComponent. 
        Rotatation=0 is handled faster. }
-    property Rotation: TVKFloat read FRotation write SetRotation;
-    {: If different from 1, this value will replace that of Diffuse.Alpha }
+    property Rotation: TGLfloat read FRotation write SetRotation;
+    { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
       StoreAlphaChannel;
-    {: If True, GuiComponent will not write to Z-Buffer.<p>
+    { If True, GuiComponent will not write to Z-Buffer. 
        GuiComponent will STILL be maskable by ZBuffer test. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
 
@@ -221,10 +182,10 @@ type
     procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
     procedure SetBitmapFont(NewFont: TVKCustomBitmapFont);
     function GetBitmapFont: TVKCustomBitmapFont;
-    procedure WriteTextAt(var rci: TRenderContextInfo; const X, Y: TVKFloat;
+    procedure WriteTextAt(var rci: TRenderContextInfo; const X, Y: TGLfloat;
       const Data: UnicodeString; const Color: TColorVector); overload;
     procedure WriteTextAt(var rci: TRenderContextInfo; const X1, Y1, X2, Y2:
-      TVKFloat; const Data: UnicodeString; const Color: TColorVector); overload;
+      TGLfloat; const Data: UnicodeString; const Color: TColorVector); overload;
     function GetFontHeight: Integer;
   public
     constructor Create(AOwner: TComponent); override;
@@ -611,7 +572,7 @@ type
     property Locked: Boolean read FLocked write FLocked default False;
   end;
 
-  TVKStringGrid = class(TVKFocusControl)
+  TGLStringGrid = class(TVKFocusControl)
   private
     FSelCol, FSelRow: Integer;
     FRowSelect: Boolean;
@@ -853,7 +814,7 @@ end;
 // SetRotation
 //
 
-procedure TVKBaseComponent.SetRotation(const val: TVKFloat);
+procedure TVKBaseComponent.SetRotation(const val: TGLfloat);
 begin
   if FRotation <> val then
   begin
@@ -881,10 +842,10 @@ end;
 
 procedure TVKBaseComponent.SetAutosize(const Value: Boolean);
 var
-  MarginLeft, MarginCenter, MarginRight: TVKFloat;
-  MarginTop, MarginMiddle, MarginBottom: TVKFloat;
-  MaxWidth: TVKFloat;
-  MaxHeight: TVKFloat;
+  MarginLeft, MarginCenter, MarginRight: TGLfloat;
+  MarginTop, MarginMiddle, MarginBottom: TGLfloat;
+  MaxWidth: TGLfloat;
+  MaxHeight: TGLfloat;
   i: integer;
 begin
   if FAutosize <> Value then
@@ -1809,7 +1770,7 @@ begin
 end;
 
 procedure TVKBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X,
-  Y: TVKFloat; const Data: UnicodeString; const Color: TColorVector);
+  Y: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -1824,7 +1785,7 @@ begin
 end;
 
 procedure TVKBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X1,
-  Y1, X2, Y2: TVKFloat; const Data: UnicodeString; const Color: TColorVector);
+  Y1, X2, Y2: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -2204,7 +2165,7 @@ procedure TVKForm.InternalMouseDown(Shift: TShiftState; Button: TVKMouseButton;
 
 var
   CanMove: Boolean;
-  YHere: TVKFloat;
+  YHere: TGLfloat;
 
 begin
   YHere := Y - Position.Y;
@@ -3440,7 +3401,7 @@ begin
   end;
 end;
 
-function TVKStringGrid.GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
+function TGLStringGrid.GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
 
 var
   ClientRect: TRectangle;
@@ -3505,7 +3466,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.InternalMouseDown(Shift: TShiftState; Button:
+procedure TGLStringGrid.InternalMouseDown(Shift: TShiftState; Button:
   TVKMouseButton; X, Y: Integer);
 
 var
@@ -3520,7 +3481,7 @@ begin
   inherited;
 end;
 
-procedure TVKStringGrid.SetColumns(const val: TStrings);
+procedure TGLStringGrid.SetColumns(const val: TStrings);
 var
   XC: Integer;
 begin
@@ -3529,13 +3490,13 @@ begin
     Columns.Objects[XC] := TObject(ColumnSize);
 end;
 
-procedure TVKStringGrid.SetColSelect(const val: Boolean);
+procedure TGLStringGrid.SetColSelect(const val: Boolean);
 begin
   FColSelect := Val;
   NotifyChange(Self);
 end;
 
-function TVKStringGrid.GetRow(index: Integer): TStringList;
+function TGLStringGrid.GetRow(index: Integer): TStringList;
 
 begin
   if (index >= 0) and (index < FRows.Count) then
@@ -3544,7 +3505,7 @@ begin
     Result := nil;
 end;
 
-procedure TVKStringGrid.SetRow(index: Integer; const val: TStringList);
+procedure TGLStringGrid.SetRow(index: Integer; const val: TStringList);
 
 begin
   if (index >= 0) then
@@ -3556,13 +3517,13 @@ begin
   end;
 end;
 
-function TVKStringGrid.GetRowCount: Integer;
+function TGLStringGrid.GetRowCount: Integer;
 
 begin
   Result := FRows.count;
 end;
 
-procedure TVKStringGrid.SetRowCount(const val: Integer);
+procedure TGLStringGrid.SetRowCount(const val: Integer);
 
 var
   XC: Integer;
@@ -3594,7 +3555,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetSelCol(const val: Integer);
+procedure TGLStringGrid.SetSelCol(const val: Integer);
 begin
   if FSelCol <> Val then
   begin
@@ -3603,7 +3564,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetSelRow(const val: Integer);
+procedure TGLStringGrid.SetSelRow(const val: Integer);
 begin
   if FSelRow <> Val then
   begin
@@ -3612,33 +3573,33 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetRowSelect(const val: Boolean);
+procedure TGLStringGrid.SetRowSelect(const val: Boolean);
 begin
   FRowSelect := Val;
   NotifyChange(Self);
 end;
 
-procedure TVKStringGrid.SetDrawHeader(const val: Boolean);
+procedure TGLStringGrid.SetDrawHeader(const val: Boolean);
 
 begin
   FDrawHeader := Val;
   NotifyChange(Self);
 end;
 
-function TVKStringGrid.GetHeaderColor: TColor;
+function TGLStringGrid.GetHeaderColor: TColor;
 
 begin
   Result := ConvertColorVector(FHeaderColor);
 end;
 
-procedure TVKStringGrid.SetHeaderColor(const val: TColor);
+procedure TGLStringGrid.SetHeaderColor(const val: TColor);
 
 begin
   FHeaderColor := ConvertWinColor(val);
   GUIRedraw := True;
 end;
 
-procedure TVKStringGrid.SetMarginSize(const val: Integer);
+procedure TGLStringGrid.SetMarginSize(const val: Integer);
 
 begin
   if FMarginSize <> val then
@@ -3648,7 +3609,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetColumnSize(const val: Integer);
+procedure TGLStringGrid.SetColumnSize(const val: Integer);
 
 var
   XC: Integer;
@@ -3663,7 +3624,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetRowHeight(const val: Integer);
+procedure TGLStringGrid.SetRowHeight(const val: Integer);
 
 begin
   if FRowHeight <> val then
@@ -3673,7 +3634,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetScrollbar(const val: TVKScrollbar);
+procedure TGLStringGrid.SetScrollbar(const val: TVKScrollbar);
 
 begin
   if FScrollbar <> Val then
@@ -3686,7 +3647,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetGuiLayout(NewGui: TVKGuiLayout);
+procedure TGLStringGrid.SetGuiLayout(NewGui: TVKGuiLayout);
 
 begin
   inherited;
@@ -3695,7 +3656,7 @@ begin
       Scrollbar.GuiLayout := NewGui;
 end;
 
-constructor TVKStringGrid.Create(AOwner: TComponent);
+constructor TGLStringGrid.Create(AOwner: TComponent);
 
 begin
   inherited;
@@ -3709,7 +3670,7 @@ begin
   FDrawHeader := True;
 end;
 
-destructor TVKStringGrid.Destroy;
+destructor TGLStringGrid.Destroy;
 
 begin
   Scrollbar := nil;
@@ -3719,13 +3680,13 @@ begin
   FColumns.Free;
 end;
 
-procedure TVKStringGrid.Clear;
+procedure TGLStringGrid.Clear;
 
 begin
   RowCount := 0;
 end;
 
-procedure TVKStringGrid.Notification(AComponent: TComponent; Operation:
+procedure TGLStringGrid.Notification(AComponent: TComponent; Operation:
   TOperation);
 
 begin
@@ -3736,7 +3697,7 @@ begin
   inherited;
 end;
 
-procedure TVKStringGrid.NotifyChange(Sender: TObject);
+procedure TGLStringGrid.NotifyChange(Sender: TObject);
 
 begin
   if Sender = Scrollbar then
@@ -3747,7 +3708,7 @@ begin
   inherited;
 end;
 
-procedure TVKStringGrid.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TGLStringGrid.InternalRender(var rci: TRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
   function CellSelected(X, Y: Integer): Boolean;
@@ -3853,13 +3814,13 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.OnStringListChange(Sender: TObject);
+procedure TGLStringGrid.OnStringListChange(Sender: TObject);
 
 begin
   NotifyChange(Self);
 end;
 
-function TVKStringGrid.Add(Data: array of string): Integer;
+function TGLStringGrid.Add(Data: array of string): Integer;
 var
   XC: Integer;
 begin
@@ -3869,7 +3830,7 @@ begin
     Row[Result].Add(Data[XC]);
 end;
 
-function TVKStringGrid.Add(const Data: string): Integer;
+function TGLStringGrid.Add(const Data: string): Integer;
 begin
   Result := Add([Data]);
   if Assigned(Scrollbar) then
@@ -3879,7 +3840,7 @@ begin
   end;
 end;
 
-procedure TVKStringGrid.SetText(Data: string);
+procedure TGLStringGrid.SetText(Data: string);
 
 var
   Posi: Integer;
@@ -3929,7 +3890,7 @@ end;
 
 initialization
   RegisterClasses([TVKBaseControl, TVKPopupMenu, TVKForm, TVKPanel, TVKButton,
-    TVKCheckBox, TVKEdit, TVKLabel, TVKAdvancedLabel, TVKScrollbar, TVKStringGrid,
+    TVKCheckBox, TVKEdit, TVKLabel, TVKAdvancedLabel, TVKScrollbar, TGLStringGrid,
     TVKCustomControl]);
 end.
 

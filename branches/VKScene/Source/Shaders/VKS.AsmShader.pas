@@ -1,27 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.AsmShader<p>
-
-    TVKAsmShader is a wrapper for all ARB shaders<p>
+{
+    TVKAsmShader is a wrapper for all ARB shaders 
     This component is only a template and has to be replaced with a
     proper version by someone who uses ARB shaders more then me.
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Upgraded program hadles
-      <li>04/06/10 - Yar - Replace OpenGL functons to OpenGLAdapter
-      <li>28/07/09 - DaStr - Added GeomertyShader support (thanks YarUnderoaker)
-      <li>24/07/09 - DaStr - TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-      <li>20/03/07 - DaStr - TVKCustomAsmShader now generates its own events
-                             All outside stuff moved back to TVKPhongShader
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-    Previous version history:
-      v1.0    12 March     '2005  Creation
-      v1.1    31 October   '2006  TVKCustomAsmShader.DoUnApply() Fix
-                                  TVKAsmShader has more stuff in the published section
 }
+ 
 unit VKS.AsmShader;
 
 interface

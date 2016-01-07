@@ -1,41 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.BumpmapHDS.<p>
-  
+{  
   Implements a HDS that automatically generates an elevation bumpmap.
-
-  The object-space elevation bumpmap can be used for dynamic terrain lighting.<p>
+  The object-space elevation bumpmap can be used for dynamic terrain lighting. 
   A bumpmap texture is generated for each terrain tile, and placed into a TVKMaterialLibrary.
-
-  <b>History : </b><font size=-1><ul>
-  <li>08/01/15 - PW - Fixed a striping effect in PreparingData (thanks to Vu and lnebel)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>22/01/10 - Yar - Added GLTextureFormat to uses
-  <li>13/02/07 - LIN- Thread-safe, for use with TVKAsyncHDS
-  Also takes advantage of texture-coodrinates, calculated by HeightDataSource
-  <li>02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
-  HeightDataSource replaces ElevationHDS.
-  (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
-  <li>01/02/07 - LIN- Added 'MaxTextures' property.
-  if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
-  Set MaxTextures=0 to disable Auto-deletes, and manage your normal-map textures manually.
-
-  WARNING: If you use THeightData.MaterialName, instead of THeightData.LibMaterial,
-  then HeightData does NOT register the texture as being used.
-  So make sure MaxTextures=0 if you use MaterialName.
-
-  <li>25/01/07 - LIN- Replaced 'StartPreparingData' and 'GenerateBumpmap' functions.
-  Now supports a TVKBitmap with multiple tiles.
-  Now works with HeightTileFileHDS.
-  World texture coordinates for individual textures are now calculated,
-  (TVKLibMaterial.TextureOffset and TVKLibMaterial.TextureScale)
-  Bugfix: Terrain position no longer jumps when InfiniteWrap is turned off.
-  <li>15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
-  <li>20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
-  <li>20/02/04 - EG - Creation
-  </ul></font>
+      
+       
+   
 }
 unit VKS.BumpmapHDS;
 
@@ -45,7 +17,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.SyncObjs,
-
+  //VKS
   VKS.HeightData, VKS.Graphics, VKS.VectorGeometry,
   VKS.Texture, VKS.Material, VKS.OpenGLTokens, VKS.Utils, VKS.VectorTypes;
 
@@ -59,7 +31,7 @@ type
 
   // TVKBumpmapHDS
   //
-  { : An Height Data Source that generates elevation bumpmaps automatically.<p>
+  { An Height Data Source that generates elevation bumpmaps automatically. 
     The HDS must be connected to another HDS, which will provide the elevation
     data, and to a MaterialLibrary where bumpmaps will be placed. }
   TVKBumpmapHDS = class(THeightDataSourceFilter)
@@ -99,7 +71,7 @@ type
       write FOnNewTilePrepared;
     property BumpScale: Single read FBumpScale write SetBumpScale
       stored StoreBumpScale;
-    { : Specifies the amount of subsampling for the bump texture.<p>
+    { Specifies the amount of subsampling for the bump texture. 
       This value must be a power of 2, and is used to divide the height
       tile resolution to determine the bump texture resolution (f.i.
       a tile size of 128 with a subsampling of 4 will result in textures
@@ -108,7 +80,7 @@ type
     property SubSampling: Integer read FSubSampling write SetSubSampling
       default 1;
     property MaxPoolSize;
-    { : If MaxTextures>0 then the Bumpmap library is trimmed down to size whenever
+    { If MaxTextures>0 then the Bumpmap library is trimmed down to size whenever
       the texture count is larger than MaxTextures. The oldest, unused texture is trimmed first.
       However, if you used THeightData.MaterialName, instead of THeightData.LibMaterial,
       then the THeightData component does not register the texture as being used.

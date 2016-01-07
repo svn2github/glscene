@@ -1,12 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: LIBFREETYPE<p>
-
-  <b>Historique : </b><font size=-1><ul>
-      <li>21/01/11 - Yar - Creation
-  </ul></font>
-}
 
 unit LIBFREETYPE;
 

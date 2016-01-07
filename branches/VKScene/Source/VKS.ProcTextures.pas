@@ -1,35 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ProcTextures<p>
-
-  Procedural textures.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>22/01/10 - Yar - Added bmp32.Blank:=false for memory allocation,
-                           Depth dimension, NativeTextureTarget becomes property
-      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>01/10/04 - ilh - Added SetPermFromData and SetPermToDefault
-                            moved PERM array to protected from inside Noise procedure
-                            so it can be changed by SetPermFromData and SetPermToDefault
-                           Added FNoiseRandSeed property so a Seed can be set
-                            Starts with a random Generated Seed...
-                            One must be set to BE Seeded
-      <li>11/12/02 - ??? - Initial, procedural perlin noise texture
-                           code by Tobias Peirick
- </ul></font><p>
-
-  I used the following references for my implementation:<p>
-
-  http://freespace.virgin.net/hugo.elias/models/m_perlin.htm<br>
-  http://freespace.virgin.net/hugo.elias/models/m_clouds.htm<br>
-  http://www.delphi3d.net<p>
-
-  Tobias Peirick
+{
+  Procedural textures. 
 }
+
 unit VKS.ProcTextures;
 
 interface

@@ -50,6 +50,12 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win64' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win64)'!=''">
+        <Cfg_2_Win64>true</Cfg_2_Win64>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <VerInfo_Locale>1049</VerInfo_Locale>
         <DCC_Description>GLScene FMX OpenGL 3D library</DCC_Description>
@@ -109,6 +115,11 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <DCC_ObjOutput>..\include\</DCC_ObjOutput>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -342,12 +353,12 @@
         <DCCReference Include="..\Source\Basement\VKS.XCollection.pas"/>
         <DCCReference Include="..\Source\Basement\VKS.XOpenGL.pas"/>
         <DCCReference Include="..\Source\Basement\VKS.zBuffer.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.BumpShader.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.DiffuseSpecularShader.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.Parameter.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.PostShaders.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.ProjectedTextures.pas"/>
-        <DCCReference Include="..\Source\Shaders\GLSL.Shader.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLBumpShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLDiffuseSpecularShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLParameter.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLPostShaders.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLProjectedTextures.pas"/>
+        <DCCReference Include="..\Source\Shaders\VKS.GLSLShader.pas"/>
         <DCCReference Include="..\Source\FileFormats\HDRImage.pas"/>
         <DCCReference Include="..\Source\FileFormats\LIBFREETYPE.pas"/>
         <DCCReference Include="..\Source\FileFormats\LWObjects.pas"/>
@@ -420,16 +431,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -743,7 +745,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

@@ -1,9 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-unit TypesMD2;
 
-{ 25.08.2003 - PhP - dropped TTrivert_t & TDalias_t, cleaned code & degibbered declarations }
+unit TypesMD2;
 
 interface
 

@@ -1,9 +1,9 @@
-// dws2Classes
-{: DelphiWebScriptII symbol creation for base Delphi classes.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+//
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
+{
+   DelphiWebScriptII symbol creation for base Delphi classes. 
+  
 }
 unit dws2Classes;
 

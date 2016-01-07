@@ -1,15 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FileB3D<p>
-
-	File streaming class for the B3D loader<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>24/07/09 - DaStr - Got rid of compiler hints
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>22/12/05 - Mathx - Added to the GLScene Project.
-	</ul></font>
+{
+  File streaming class for the B3D loader 
+  	  
+     
 }
 unit FileB3D;
 

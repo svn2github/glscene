@@ -1,24 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.VerletClothify<p>
-
-   Methods for turning a TVKBaseMesh into a Verlet cloth / jelly<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/02/10 - Yar - Optimization of switching states
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Added explicit pointer dereferencing (even more)
-      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>27/05/04 - MF - Added some length information to edges
-      <li>24/06/03 - MF - Removed several embarrassing warnings
-      <li>17/06/03 - MF - Creation
-   </ul>
+{ 
+   Methods for turning a TVKBaseMesh into a Verlet cloth / jelly 
+    
 }
 
 unit VKS.VerletClothify;
@@ -36,7 +21,7 @@ uses
 
 
 type
-  {: Class that represents a face. This structure is not used for rendering, but
+  { Class that represents a face. This structure is not used for rendering, but
   for extracting info from meshes }
   TFace = class
   public
@@ -50,7 +35,7 @@ type
     constructor Create(aMeshObject : TMeshObject);
   end;
 
-  {: List of faces }
+  { List of faces }
   TFaceList = class(TList)
   private
     function GetItems(i: integer): TFace;
@@ -59,7 +44,7 @@ type
     property Items[i : integer] : TFace read GetItems write SetItems; default;
   end;
 
-  {: Class that extracts faces from a GLBaseMesh}
+  { Class that extracts faces from a GLBaseMesh}
   TFaceExtractor = class
   private
     FFaceList : TFaceList;

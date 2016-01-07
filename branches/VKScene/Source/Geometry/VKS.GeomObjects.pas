@@ -1,37 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.GeomObjects<p>
-
-  Geometric objects.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>13/05/11 - Vince - Add ArrowArc object
-  <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
-                 to display a slice of TVKTorus between start and stop angles
-  <li>24/03/11 - Yar - Replaced TVKTorus primitives to triangles, added tangent and binormal attributes
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>15/03/08 - DaStr - Deleted TVKFrustrum.AxisAlignedBoundingBox(),
-                 now this function references the inherited function
-  <li>20/01/08 - DaStr - Corrected object centering in TVKFrustrum.BuildList()
-                 (thanks Sandor Domokos) (BugTrackerID = 1864314)
-  Added a TVKCapsule object (thanks Dave Gravel)
-  <li>18/11/07 - DaStr - Got rid of compiler warning in TVKCone.RayCastIntersect
-  <li>07/05/07 - DanB - Added TVKCone.RayCastIntersect
-  Improved TVKDisk.RayCastIntersect
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
-                 AxisAlignedBoundingBoxUnscaled,
-                 AxisAlignedDimensionsUnscaled
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>29/11/03 - MF - Added shadow silhouette code for TVKCylinderBase et al.
-  Added GetTopRadius to facilitate silhouette.
-  <li>24/10/03 - NelC - Fixed TVKTorus texture coord. bug
-  <li>21/07/03 - EG - Creation from VKS.Objects split
-  </ul></font>
-}
+{ 
+  Geometric objects.
+ }
 unit VKS.GeomObjects;
 
 {$I VKScene.inc}
@@ -59,19 +31,19 @@ type
 
   // TVKDisk
   //
-  { : A Disk object.<p>
+  { A Disk object. 
     The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
   TVKDisk = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TVKFloat;
-    FSlices, FLoops: TVKInt;
+    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TGLfloat;
+    FSlices, FLoops: TGLInt;
     procedure SetOuterRadius(const aValue: Single);
     procedure SetInnerRadius(const aValue: Single);
-    procedure SetSlices(aValue: TVKInt);
-    procedure SetLoops(aValue: TVKInt);
+    procedure SetSlices(aValue: TGLInt);
+    procedure SetLoops(aValue: TGLInt);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
 
@@ -88,41 +60,41 @@ type
 
   published
     { Published Declarations }
-    { : Allows defining a "hole" in the disk. }
-    property InnerRadius: TVKFloat read FInnerRadius write SetInnerRadius;
-    { : Number of radial mesh subdivisions. }
-    property Loops: TVKInt read FLoops write SetLoops default 2;
-    { : Outer radius for the disk.<p>
+    { Allows defining a "hole" in the disk. }
+    property InnerRadius: TGLfloat read FInnerRadius write SetInnerRadius;
+    { Number of radial mesh subdivisions. }
+    property Loops: TGLInt read FLoops write SetLoops default 2;
+    { Outer radius for the disk. 
       If you leave InnerRadius at 0, this is the disk radius. }
-    property OuterRadius: TVKFloat read FOuterRadius write SetOuterRadius;
-    { : Number of mesh slices.<p>
+    property OuterRadius: TGLfloat read FOuterRadius write SetOuterRadius;
+    { Number of mesh slices. 
       For instance, if Slices=6, your disk will look like an hexagon. }
-    property Slices: TVKInt read FSlices write SetSlices default 16;
-    property StartAngle: TVKFloat read FStartAngle write SetStartAngle;
-    property SweepAngle: TVKFloat read FSweepAngle write SetSweepAngle;
+    property Slices: TGLInt read FSlices write SetSlices default 16;
+    property StartAngle: TGLfloat read FStartAngle write SetStartAngle;
+    property SweepAngle: TGLfloat read FSweepAngle write SetSweepAngle;
   end;
 
   // TVKCylinderBase
   //
-  { : Base class to cylinder-like objects.<p>
-    Introduces the basic cylinder description properties.<p>
+  { Base class to cylinder-like objects. 
+    Introduces the basic cylinder description properties. 
     Be aware teh default slices and stacks make up for a high-poly cylinder,
     unless you're after high-quality lighting it is recommended to reduce the
     Stacks property to 1. }
   TVKCylinderBase = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FBottomRadius: TVKFloat;
-    FSlices, FStacks, FLoops: TVKInt;
-    FHeight: TVKFloat;
+    FBottomRadius: TGLfloat;
+    FSlices, FStacks, FLoops: TGLInt;
+    FHeight: TGLfloat;
 
   protected
     { Protected Declarations }
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
-    procedure SetSlices(aValue: TVKInt);
-    procedure SetStacks(aValue: TVKInt);
-    procedure SetLoops(aValue: TVKInt);
+    procedure SetSlices(aValue: TGLInt);
+    procedure SetStacks(aValue: TGLInt);
+    procedure SetLoops(aValue: TGLInt);
     function GetTopRadius: Single; virtual;
   public
     { Public Declarations }
@@ -134,12 +106,12 @@ type
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
     { Published Declarations }
-    property BottomRadius: TVKFloat read FBottomRadius write SetBottomRadius;
-    property Height: TVKFloat read FHeight write SetHeight;
-    property Slices: TVKInt read FSlices write SetSlices default 16;
-    property Stacks: TVKInt read FStacks write SetStacks default 4;
-    { : Number of concentric rings for top/bottom disk(s). }
-    property Loops: TVKInt read FLoops write SetLoops default 1;
+    property BottomRadius: TGLfloat read FBottomRadius write SetBottomRadius;
+    property Height: TGLfloat read FHeight write SetHeight;
+    property Slices: TGLInt read FSlices write SetSlices default 16;
+    property Stacks: TGLInt read FStacks write SetStacks default 4;
+    { Number of concentric rings for top/bottom disk(s). }
+    property Loops: TGLInt read FLoops write SetLoops default 1;
   end;
 
   // TConePart
@@ -149,7 +121,7 @@ type
 
   // TVKCone
   //
-  { : A cone object. }
+  { A cone object. }
   TVKCone = class(TVKCylinderBase)
   private
     { Private Declarations }
@@ -188,12 +160,12 @@ type
 
   // TVKCylinder
   //
-  { : Cylinder object, can also be used to make truncated cones }
+  { Cylinder object, can also be used to make truncated cones }
   TVKCylinder = class(TVKCylinderBase)
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FTopRadius: TVKFloat;
+    FTopRadius: TGLfloat;
     FAlignment: TCylinderAlignment;
 
   protected
@@ -220,22 +192,22 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TVKFloat read FTopRadius write SetTopRadius;
+    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
       default caCenter;
   end;
 
-  { : Capsule object, can also be used to make truncated cones }
+  { Capsule object, can also be used to make truncated cones }
   TVKCapsule = class(TVKSceneObject)
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FRadius: TVKFloat;
-    FSlices: TVKInt;
-    FStacks: TVKInt;
-    FHeight: TVKFloat;
+    FRadius: TGLfloat;
+    FSlices: TGLInt;
+    FStacks: TGLInt;
+    FHeight: TGLfloat;
     FAlignment: TCylinderAlignment;
   protected
     { Protected Declarations }
@@ -259,10 +231,10 @@ type
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
     { Published Declarations }
-    property Height: TVKFloat read FHeight write SetHeight;
-    property Slices: TVKInt read FSlices write SetSlices;
-    property Stacks: TVKInt read FStacks write SetStacks;
-    property Radius: TVKFloat read FRadius write SetRadius;
+    property Height: TGLfloat read FHeight write SetHeight;
+    property Slices: TGLInt read FSlices write SetSlices;
+    property Stacks: TGLInt read FStacks write SetStacks;
+    property Radius: TGLfloat read FRadius write SetRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
@@ -276,14 +248,14 @@ type
 
   // TVKAnnulus
   //
-  { : An annulus is a cylinder that can be made hollow (pipe-like). }
+  { An annulus is a cylinder that can be made hollow (pipe-like). }
   TVKAnnulus = class(TVKCylinderBase)
   private
     { Private Declarations }
     FParts: TAnnulusParts;
-    FBottomInnerRadius: TVKFloat;
-    FTopInnerRadius: TVKFloat;
-    FTopRadius: TVKFloat;
+    FBottomInnerRadius: TGLfloat;
+    FTopInnerRadius: TGLfloat;
+    FTopRadius: TGLfloat;
 
   protected
     { Protected Declarations }
@@ -305,11 +277,11 @@ type
 
   published
     { Published Declarations }
-    property BottomInnerRadius: TVKFloat read FBottomInnerRadius
+    property BottomInnerRadius: TGLfloat read FBottomInnerRadius
       write SetBottomInnerRadius;
-    property TopInnerRadius: TVKFloat read FTopInnerRadius
+    property TopInnerRadius: TGLfloat read FTopInnerRadius
       write SetTopInnerRadius;
-    property TopRadius: TVKFloat read FTopRadius write SetTopRadius;
+    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
     property Parts: TAnnulusParts read FParts write SetParts
       default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
@@ -321,7 +293,7 @@ type
 
   // TVKTorus
   //
-  { : A Torus object. }
+  { A Torus object. }
   TVKTorus = class(TVKSceneObject)
   private
     { Private Declarations }
@@ -372,11 +344,11 @@ type
 
   // TVKArrowLine
   //
-  { : Draws an arrowhead (cylinder + cone).<p>
+  { Draws an arrowhead (cylinder + cone). 
     The arrow head is a cone that shares the attributes of the cylinder
-    (ie stacks/slices, materials etc). Seems to work ok.<br>
+    (ie stacks/slices, materials etc). Seems to work ok. 
     This is useful for displaying a vector based field (eg velocity) or
-    other arrows that might be required.<br>
+    other arrows that might be required. 
     By default the bottom arrow is off }
   TVKArrowLine = class(TVKCylinderBase)
   private
@@ -407,18 +379,18 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TVKFloat read FTopRadius write SetTopRadius;
+    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowLineParts read FParts write SetParts
       default [alLine, alTopArrow];
-    property TopArrowHeadHeight: TVKFloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: TGLfloat read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TVKFloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: TGLfloat read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TVKFloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: TGLfloat read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TVKFloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: TGLfloat read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -429,11 +401,11 @@ type
 
   // TVKArrowArc
   //
-  { : Draws an arrowhead (Sliced Torus + cone).<p>
+  { Draws an arrowhead (Sliced Torus + cone). 
     The arrow head is a cone that shares the attributes of the Torus
-    (ie stacks/slices, materials etc).<br>
+    (ie stacks/slices, materials etc). 
     This is useful for displaying a movement (eg twist) or
-    other arc arrows that might be required.<br>
+    other arc arrows that might be required. 
     By default the bottom arrow is off }
   TVKArrowArc = class(TVKCylinderBase)
   private
@@ -471,21 +443,21 @@ type
 
   published
     { Published Declarations }
-    property ArcRadius: TVKFloat read fArcRadius write SetArcRadius;
-    property StartAngle: TVKFloat read FStartAngle write SetStartAngle;
-    property StopAngle: TVKFloat read FStopAngle write SetStopAngle;
-    property TopRadius: TVKFloat read FTopRadius write SetTopRadius;
+    property ArcRadius: TGLfloat read fArcRadius write SetArcRadius;
+    property StartAngle: TGLfloat read FStartAngle write SetStartAngle;
+    property StopAngle: TGLfloat read FStopAngle write SetStopAngle;
+    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowArcParts read FParts write SetParts
       default [aaArc, aaTopArrow];
-    property TopArrowHeadHeight: TVKFloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: TGLfloat read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TVKFloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: TGLfloat read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TVKFloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: TGLfloat read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TVKFloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: TGLfloat read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -496,10 +468,10 @@ type
 
   // TVKPolygon
   //
-  { : A basic polygon object.<p>
+  { A basic polygon object. 
     The curve is described by the Nodes and SplineMode properties, should be
-    planar and is automatically tessellated.<p>
-    Texture coordinates are deduced from X and Y coordinates only.<p>
+    planar and is automatically tessellated. 
+    Texture coordinates are deduced from X and Y coordinates only. 
     This object allows only for polygons described by a single curve, if you
     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
   TVKPolygon = class(TVKPolygonBase)
@@ -520,7 +492,7 @@ type
 
   published
     { Published Declarations }
-    { : Parts of polygon.<p>
+    { Parts of polygon. 
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
     property Parts: TPolygonParts read FParts write SetParts
@@ -538,15 +510,15 @@ const
 type
   // TVKFrustrum
   //
-  { A frustrum is a pyramid with the top chopped off.<p>
+  { A frustrum is a pyramid with the top chopped off. 
     The height of the imaginary pyramid is ApexHeight, the height of the
     frustrum is Height. If ApexHeight and Height are the same, the frustrum
-    degenerates into a pyramid.<br>
+    degenerates into a pyramid. 
     Height cannot be greater than ApexHeight. }
   TVKFrustrum = class(TVKSceneObject)
   private
     { Private Declarations }
-    FApexHeight, FBaseDepth, FBaseWidth, FHeight: TVKFloat;
+    FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLfloat;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
     procedure SetApexHeight(const aValue: Single);
@@ -567,19 +539,19 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-    function TopDepth: TVKFloat;
-    function TopWidth: TVKFloat;
+    function TopDepth: TGLfloat;
+    function TopWidth: TGLfloat;
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: TVKFloat read FApexHeight write SetApexHeight
+    property ApexHeight: TGLfloat read FApexHeight write SetApexHeight
       stored False;
-    property BaseDepth: TVKFloat read FBaseDepth write SetBaseDepth
+    property BaseDepth: TGLfloat read FBaseDepth write SetBaseDepth
       stored False;
-    property BaseWidth: TVKFloat read FBaseWidth write SetBaseWidth
+    property BaseWidth: TGLfloat read FBaseWidth write SetBaseWidth
       stored False;
-    property Height: TVKFloat read FHeight write SetHeight stored False;
+    property Height: TGLfloat read FHeight write SetHeight stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
     property Parts: TFrustrumParts read FParts write SetParts
@@ -717,7 +689,7 @@ end;
 
 function TVKDisk.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TVKFloat;
+  r: TGLfloat;
 begin
   r := Abs(FOuterRadius);
   Result := VectorMake(r, r, 0);
@@ -827,7 +799,7 @@ end;
 // SetSlices
 //
 
-procedure TVKCylinderBase.SetSlices(aValue: TVKInt);
+procedure TVKCylinderBase.SetSlices(aValue: TGLInt);
 begin
   if aValue <> FSlices then
   begin
@@ -839,7 +811,7 @@ end;
 // SetStack
 //
 
-procedure TVKCylinderBase.SetStacks(aValue: TVKInt);
+procedure TVKCylinderBase.SetStacks(aValue: TGLInt);
 begin
   if aValue <> FStacks then
   begin
@@ -851,7 +823,7 @@ end;
 // SetLoops
 //
 
-procedure TVKCylinderBase.SetLoops(aValue: TVKInt);
+procedure TVKCylinderBase.SetLoops(aValue: TGLInt);
 begin
   if (aValue >= 1) and (aValue <> FLoops) then
   begin
@@ -1023,7 +995,7 @@ end;
 
 function TVKCone.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TVKFloat;
+  r: TGLfloat;
 begin
   r := Abs(FBottomRadius);
   Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
@@ -1226,7 +1198,7 @@ end;
 
 function TVKCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TVKFloat;
+  r, r1: TGLfloat;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -1629,7 +1601,7 @@ end;
 
 function TVKCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TVKFloat;
+  r, r1: TGLfloat;
 begin
   r := Abs(FRadius);
   r1 := Abs(FRadius);
@@ -1917,7 +1889,7 @@ end;
 
 function TVKAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TVKFloat;
+  r, r1: TGLfloat;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -2148,13 +2120,13 @@ procedure TVKTorus.BuildList(var rci: TRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TVKFloat;
-  cosTheta1, sinTheta1: TVKFloat;
-  ringDelta, sideDelta: TVKFloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLfloat;
+  cosTheta1, sinTheta1: TGLfloat;
+  ringDelta, sideDelta: TGLfloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TVKInt;
+  TanLoc, BinLoc: TGLInt;
   MeshSize: integer;
   MeshIndex: integer;
   Vertex: TVertexRec;
@@ -2467,7 +2439,7 @@ end;
 
 function TVKTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TVKFloat;
+  r, r1: TGLfloat;
 begin
   r := Abs(FMajorRadius);
   r1 := Abs(FMinorRadius);
@@ -2906,7 +2878,7 @@ end;
 
 procedure TVKArrowArc.BuildList(var rci: TRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
-  // {$IFDEF GLS_INLINE}inline;{$ENDIF}
+  // {$IFDEF VKS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     with GL do
@@ -2922,13 +2894,13 @@ procedure TVKArrowArc.BuildList(var rci: TRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TVKFloat;
-  cosTheta1, sinTheta1: TVKFloat;
-  ringDelta, sideDelta: TVKFloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLfloat;
+  cosTheta1, sinTheta1: TGLfloat;
+  ringDelta, sideDelta: TGLfloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TVKInt;
+  TanLoc, BinLoc: TGLInt;
   MeshSize: integer;
   MeshIndex: integer;
   ConeCenter: TVertexRec;
@@ -3434,12 +3406,12 @@ end;
 
 procedure TVKFrustrum.BuildList(var rci: TRenderContextInfo);
 var
-  HBW, HBD: TVKFloat; // half of width, half of depth at base
-  HTW, HTD: TVKFloat; // half of width, half of depth at top of frustrum
-  HFH: TVKFloat; // half of height, for align to center
-  Sign: TVKFloat; // +1 or -1
-  angle: TVKFloat; // in radians
-  ASin, ACos: TVKFloat;
+  HBW, HBD: TGLfloat; // half of width, half of depth at base
+  HTW, HTD: TGLfloat; // half of width, half of depth at top of frustrum
+  HFH: TGLfloat; // half of height, for align to center
+  Sign: TGLfloat; // +1 or -1
+  angle: TGLfloat; // in radians
+  ASin, ACos: TGLfloat;
 begin
   if FNormalDirection = ndInside then
     Sign := -1
@@ -3614,12 +3586,12 @@ begin
   inherited Assign(Source);
 end;
 
-function TVKFrustrum.TopDepth: TVKFloat;
+function TVKFrustrum.TopDepth: TGLfloat;
 begin
   Result := FBaseDepth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-function TVKFrustrum.TopWidth: TVKFloat;
+function TVKFrustrum.TopWidth: TGLfloat;
 begin
   Result := FBaseWidth * (FApexHeight - FHeight) / FApexHeight;
 end;

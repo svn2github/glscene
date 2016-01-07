@@ -1,8 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.RedBlackTree <p>
-
+{
   USAGE
   The TRedBlackTree generic class behaves somewhat like a TList:
   it stores _Value_ by _Key_
@@ -29,12 +28,6 @@
   is larger than _Key_, PrevKey returns the largest key that is
   smaller than _Key_. For Last and First key result not returned.
 
-   <b>History : </b><font size=-1><ul>
-      <li>05/05/11 - Yar - Fugfixed method Add for Lazarus (unclear node's fields)
-      <li>04/12/10 - Yar - Improved duplicate keys storing
-      <li>04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
-      <li>19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
-   </ul></font><p>
 }
 
 unit VKS.RedBlackTree;
@@ -52,7 +45,7 @@ type
 
   // TRedBlackTree
   //
-{$IFDEF GLS_GENERIC_PREFIX}
+{$IFDEF VKS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GRedBlackTree < TKey, TValue > = class
@@ -97,7 +90,7 @@ type
     destructor Destroy; override;
 
     procedure Clear;
-    {: Find value by key. }
+    { Find value by key. }
     function Find(const key: TKey; out Value: TValue): Boolean;
     function NextKey(var key: TKey; out Value: TValue): Boolean;
     function PrevKey(var key: TKey; out Value: TValue): Boolean;
@@ -326,7 +319,7 @@ begin
     FRightmost := z;
   end;
 
-  {: Insert node z }
+  { Insert node z }
   y := nil;
   x := FRoot;
   while (x <> nil) do
@@ -339,10 +332,10 @@ begin
       x := x.right
     else
     begin
-      {: Key already exists in tree. }
+      { Key already exists in tree. }
       if FDuplicateKeys then
       begin
-        {: Check twins chain for value dublicate. }
+        { Check twins chain for value dublicate. }
         repeat
           if FValueCompareFunc(Value, x.Value) then
           begin
@@ -354,14 +347,14 @@ begin
         until x = nil;
         if Assigned(y) then
         begin
-          {: Add dublicate key to end of twins chain. }
+          { Add dublicate key to end of twins chain. }
           y.Twin := z;
           Inc(FCount);
           if Assigned(FOnChange) then
             FOnChange(Self);
           exit;
         end;
-        {: Value already exists in tree. }
+        { Value already exists in tree. }
       end;
       z.Destroy;
       //a jzombi: memory leak: if we don't put it in the tree, we shouldn't hold it in the memory

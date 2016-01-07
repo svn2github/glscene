@@ -1,30 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.GameMenu<p>
-
-   Manages a basic game menu UI<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>31/05/10 - Yar - Fixed for Linux x64
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>04/09/07 - DaStr - Fixed memory leak in TVKGameMenu
-                              (BugtrackerID = 1787617) (thanks Pierre Lemerle)
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>26/03/07 - DaveK - back to TVKSceneObject for Material support
-      <li>16/02/07 - DaStr & DaveK - TVKGameMenu.MouseMenuSelect bugfixed (again)
-                             Component made descendant of TVKBaseSceneObject
-                             IGLMaterialLibrarySupported added
-      <li>20/12/06 - DaStr - TVKGameMenu.MouseMenuSelect bugfixed (thanks to Predator)
-      <li>03/27/06 - DaveK - added mouse selection support
-      <li>03/03/05 - EG - Creation
-   </ul></font>
+{
+   Manages a basic game menu UI 
+  
 }
 unit VKS.GameMenu;
 
@@ -46,7 +25,7 @@ type
 
   // TVKGameMenu
   //
-  {: Classic game menu interface made of several lines.<p> }
+  { Classic game menu interface made of several lines.  }
   TVKGameMenu = class(TVKSceneObject, IGLMaterialLibrarySupported)
   private
     { Private Properties }

@@ -1,13 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FilePGM<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-  <li>04/02/10 - Yar - Creation
-  </ul><p>
-}
 unit VKS.FilePGM;
 
 {$I VKScene.inc}
@@ -32,8 +26,8 @@ type
     procedure SaveToStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKenum; textureTarget: TVKTextureTarget;
-      const CurrentFormat: Boolean; const intFormat: TVKInternalFormat);
+      const textureHandle: TGLenum; textureTarget: TVKTextureTarget;
+      const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
       reintroduce;
   end;
 
@@ -115,14 +109,14 @@ end;
 // AssignFromTexture
 //
 procedure TVKPGMImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKenum; textureTarget: TVKTextureTarget;
-  const CurrentFormat: Boolean; const intFormat: TVKInternalFormat);
+  const textureHandle: TGLenum; textureTarget: TVKTextureTarget;
+  const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat: TVKInternalFormat;
-  glTarget: TVKenum;
+  residentFormat: TGLInternalFormat;
+  glTarget: TGLenum;
 begin
   if not((textureTarget = ttTexture2D) or (textureTarget = ttTextureRect)) then
     exit;

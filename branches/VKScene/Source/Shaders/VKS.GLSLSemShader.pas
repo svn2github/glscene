@@ -1,24 +1,21 @@
-// This unit is part of the GLScene Project   
 //
-{: GLSL.SemShader <p>
-
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
+//
+{
    SEM shader : Spherical Environment Mapping
    The main idea of SEM is to get the UV coordinates (which are used to lookup the matCap texture)
-   from the normal vector on the fragment instead of the original texture coordinates from the object.<p>
-   <p>
+   from the normal vector on the fragment instead of the original texture coordinates from the object. 
+    
    A material using SEM is very useful to highlight variations in the mesh: creases, bumps, even slow ondulations.
    It doesn't work that well on a cube, for instance. And does absolutely nothing on a sphere:
-   SEM on a sphere is exactly the same as a planar projection of the matCap texture.<p>
+   SEM on a sphere is exactly the same as a planar projection of the matCap texture. 
 
    At this time only one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>11/12/15 - J.Delauney - Creation
-
+               
 }
 
 
-unit GLSL.SemShader;
+unit VKS.GLSLSemShader;
 
 interface
 
@@ -26,14 +23,14 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates, VKS.TextureFormat, 
   VKS.Color, VKS.Texture, VKS.Material, GLSL.Shader, VKS.CustomShader;
 
 //TVKCustomGLSLSimpleSemShader
 //
-{: Custom class for GLSLSEMShader.<p>
+{ Custom class for GLSLSEMShader. 
  SEM Shader : Spherical Environment Mapping }
 Type
 TVKCustomGLSLSemShader = class(TVKCustomGLSLShader)

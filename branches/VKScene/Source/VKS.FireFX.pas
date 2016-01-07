@@ -1,35 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FireFX<p>
-
- Fire special effect<p>
-
- <b>Historique : </b><font size=-1><ul>
-      <li>21/01/01 - DanB - Added "inherited" call to TVKBFireFX.WriteToFiler
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>14/06/10 - Yar - Bugfixed in TVKBFireFX.ReadFromFiler when assertion off (thanks olkondr)
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>11/04/10 - Yar -  Replaced glNewList to VKS.State.NewList in TVKBFireFX.Render
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>23/02/07 - DaStr - Fixed TVKFireFXManager.Create (TVKCoordinatesStyle stuff)
-      <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
-      <li>09/12/01 - EG - Added NoZWrite property
-      <li>12/08/01 - EG - Fixed leak (color objects)
-      <li>09/03/01 - EG - Fixed MaxParticles change, added RingExplosion
-      <li>08/03/01 - EG - Revisited the effect and added new parameters,
-                          dropped/renamed some, started documentation (just started)
-      <li>13/01/01 - EG - Another matrix compatibility update
-      <li>22/12/00 - EG - Compatibility for new Matrix rules, and sometime
-                          ago, added in all new props from Danjel Grosar
-      <li>11/08/00 - EG - A few speedups/enhancements
-    <li>08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
- </ul></font>
+{
+ Fire special effect 
 }
+
 unit VKS.FireFX;
 
 interface
@@ -60,7 +35,7 @@ type
 
   // TVKFireFXManager
   //
-    {: Fire special effect manager.<p>
+    { Fire special effect manager. 
        Defines the looks and behaviour of a particle system that can be made
        to look fire-like. }
   TVKFireFXManager = class(TVKCadenceAbleComponent)
@@ -106,15 +81,15 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    {: Reinitializes the fire. }
+    { Reinitializes the fire. }
     procedure FireInit;
 
-    {: Spawns a large quantity of particles to simulate an isotropic explosion.<p>
+    { Spawns a large quantity of particles to simulate an isotropic explosion. 
        This method generates an isotropic explosion, i.e. there is no
        privilegied direction in the initial vector. }
     procedure IsotropicExplosion(minInitialSpeed, maxInitialSpeed, lifeBoostFactor: Single;
       nbParticles: Integer = -1);
-    {: Spawns a large quantity of particles to simulate a ring explosion.<p>
+    { Spawns a large quantity of particles to simulate a ring explosion. 
        This method generates a ring explosion. The plane of the ring is described
        by ringVectorX/Y, which should be of unit length (but you may not
        make them of unit length if you want "elliptic" rings). }
@@ -122,58 +97,58 @@ type
       const ringVectorX, ringVectorY: TAffineVector;
       nbParticles: Integer = -1);
 
-    {: Current Nb of particles. }
+    { Current Nb of particles. }
     property ParticleCount: Integer read NP;
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
   published
     { Published Declarations }
-          {: Adjusts the acceleration direction (abs coordinates). }
+          { Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TVKCoordinates read FFireDir write SetFireDir;
-    {: Adjusts the initial direction (abs coordinates). }
+    { Adjusts the initial direction (abs coordinates). }
     property InitialDir: TVKCoordinates read FInitialDir write SetInitialDir;
-    {: The cadencer that will "drive" the animation of the system. }
+    { The cadencer that will "drive" the animation of the system. }
     property Cadencer: TVKCadencer read FCadencer write SetCadencer;
-    {: Maximum number of simultaneous particles in the system. }
+    { Maximum number of simultaneous particles in the system. }
     property MaxParticles: Integer read FMaxParticles write SetMaxParticles default 256;
-    {: Size of the particle, in absolute units. }
+    { Size of the particle, in absolute units. }
     property ParticleSize: Single read FParticleSize write FParticleSize stored StoreParticleSize;
-    {: Inner color of a particle. }
+    { Inner color of a particle. }
     property InnerColor: TVKcolor read FInnerColor write SetInnerColor;
-    {: Outer color of a particle. }
+    { Outer color of a particle. }
     property OuterColor: TVKcolor read FOuterColor write SetOuterColor; // default clrWhite;
     property FireDensity: Single read FFireDensity write FFireDensity;
     property FireEvaporation: Single read FFireEvaporation write FFireEvaporation;
-    {: Adjust a crown (circular) radius on which particles are spawned.<p>
+    { Adjust a crown (circular) radius on which particles are spawned. 
        With a value of zero, the particles are spawned in the FireRadius
        cube around the origin, with a non zero value, they appear in
        a torus of major radius FireCrown, and minor radius FireRadius*1.73. }
     property FireCrown: Single read FFireCrown write FFireCrown;
-    {: Life length of particle. }
+    { Life length of particle. }
     property ParticleLife: Integer read FParticleLife write FParticleLife default 3;
     property FireBurst: Single read FFireBurst write FFireBurst;
-    {: Adjusts the random birth radius for particles (actually a birth cube). }
+    { Adjusts the random birth radius for particles (actually a birth cube). }
     property FireRadius: Single read FFireRadius write FFireRadius;
-    {: If true, no new particles are spawn.<p>
+    { If true, no new particles are spawn. 
        But current ones continue to live and die. }
     property Disabled: Boolean read FDisabled write FDisabled;
-    {: When paused, the fire animation is freezed. }
+    { When paused, the fire animation is freezed. }
     property Paused: Boolean read FPaused write FPaused;
-    {: Interval between particles births (in sec).<p>
+    { Interval between particles births (in sec). 
        The interval may not be honoured if MawParticles is reached. }
     property ParticleInterval: Single read FParticleInterval write FParticleInterval;
-    {: Enable/disable use of ParticleInterval.<p>
+    { Enable/disable use of ParticleInterval. 
        If true ParticleInterval is used, if False, the system will attempt
        to maintain a particle count of MaxParticles, by spawning new
        particles to replace the dead ones ASAP. }
     property UseInterval: Boolean read FUseInterval write FUseInterval;
-    {: Particle's render won't write to Z-Buffer }
+    { Particle's render won't write to Z-Buffer }
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite default True;
 
-    {: Specifies an optional object whose position to use as reference.<p>
+    { Specifies an optional object whose position to use as reference. 
        This property allows switching between static/shared fires (for
-       fireplaces or static torches) and dynamic fire trails.<br>
+       fireplaces or static torches) and dynamic fire trails. 
        The absolute position of the reference object is 'central' spawning
        point for new particles, usually, the object will be the one and only
        one on which the effect is applied. }
@@ -182,7 +157,7 @@ type
 
   // TVKBFireFX
 //
-{: Fire special effect.<p>
+{ Fire special effect. 
      This effect works as a client of TFireFXManager }
   TVKBFireFX = class(TVKObjectPostEffect)
   private
@@ -212,14 +187,14 @@ type
 
   published
     { Published Declarations }
-          {: Refers the collision manager. }
+          { Refers the collision manager. }
     property Manager: TVKFireFXManager read FManager write SetManager;
   end;
 
-  {: Returns or creates the TVKBFireFX within the given behaviours.<p>
+  { Returns or creates the TVKBFireFX within the given behaviours. 
    This helper function is convenient way to access a TVKBFireFX. }
 function GetOrCreateFireFX(effects: TVKObjectEffects): TVKBFireFX; overload;
-{: Returns or creates the TVKBFireFX within the given object's behaviours.<p>
+{ Returns or creates the TVKBFireFX within the given object's behaviours. 
  This helper function is convenient way to access a TVKBFireFX. }
 function GetOrCreateFireFX(obj: TVKBaseSceneObject): TVKBFireFX; overload;
 

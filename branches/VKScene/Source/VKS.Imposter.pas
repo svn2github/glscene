@@ -1,30 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Imposter<p>
-
-   Imposter building and rendering implementation for GLScene.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: used direct HPPEMIT for
-                          TLoadingImposterEvent as procedure instead of function in Delphi
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/02/07 - DaStr - Fixed TVKFireFXManager.Create (TVKCoordinatesStyle stuff)
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-                               fixed BCB Compiler error "E2370 Simple type name expected"
-      <li>07/05/04 - EG - Perspective distortion properly applied
-      <li>06/05/04 - EG - Fixes, improvements, clean ups
-      <li>04/05/04 - EG - Reworked architecture
-      <li>14/04/04 - SG - Fixed texture clamping for old cards and
-                          switched to GL_NEAREST texture sampling.
-      <li>24/03/04 - SG - Initial.
-   </ul></font><p>
+{
+   Imposter building and rendering implementation for VKScene.  
 }
 unit VKS.Imposter;
 
@@ -34,7 +12,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //VKS
   VKS.Scene, VKS.Context, VKS.VectorTypes, VKS.VectorGeometry,
   VKS.PersistentClasses, VKS.CrossPlatform, VKS.Graphics, VKS.Color,
   VKS.RenderContextInfo, VKS.Coordinates, VKS.BaseClasses, VKS.State, VKS.TextureFormat,
@@ -43,20 +21,20 @@ uses
 type
   // TImposterOptions
   //
-  {: Imposter rendering options.<p>
-     Following options are supported:<ul>
-     <li>impoBlended : the imposters are transparently blended during renders,
+  { Imposter rendering options. 
+     Following options are supported: 
+      impoBlended : the imposters are transparently blended during renders,
      this will smooth their edges but requires them to be rendered sorted
      from back to front
-     <li>impoAlphaTest : alpha test is used to eliminate transparent pixels,
+      impoAlphaTest : alpha test is used to eliminate transparent pixels,
      the alpha treshold is adjusted by the AlphaTreshold property
-     <li>impoNearestFiltering : use nearest texture filtering (the alternative
+      impoNearestFiltering : use nearest texture filtering (the alternative
      is linear filtering)
-     <li>impoPerspectiveCorrection : activates a special imposter rendering
+      impoPerspectiveCorrection : activates a special imposter rendering
      projection suitable for distorting the sprites when seen from a level
      angle of view with a wide focal camera (think trees/grass when walking
      in a forest), if not active, the imposter sprites are camera-facing
-     </ul>
+      
   }
   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering,
     impoPerspectiveCorrection);
@@ -70,7 +48,7 @@ type
 
   // TImposter
   //
-  {: Base class for imposters manipulation and handling.<br>
+  { Base class for imposters manipulation and handling. 
      Rendering imposters is performed by three methods, BeginRender must
      be invoked first, then Render for each of the impostr
      This class assumes a single impostor per texture.
@@ -138,7 +116,7 @@ type
 
   // TVKImposterBuilder
   //
-  {: Abstract ImposterBuilder class. }
+  { Abstract ImposterBuilder class. }
   TVKImposterBuilder = class(TVKUpdateAbleComponent)
   private
     { Private Declarations }
@@ -184,48 +162,48 @@ type
       override;
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Returns a valid imposter for the specified object.<p>
+    { Returns a valid imposter for the specified object. 
        Imposter must have been requested first, and the builder given
        an opportunity to prepare it before it can be available. }
     function ImposterFor(impostoredObject: TVKBaseSceneObject): TImposter;
-    {: Request an imposter to be prepared for the specified object. }
+    { Request an imposter to be prepared for the specified object. }
     procedure RequestImposterFor(impostoredObject: TVKBaseSceneObject);
-    {: Tells the imposter for the specified object is no longer needed. }
+    { Tells the imposter for the specified object is no longer needed. }
     procedure UnRequestImposterFor(impostoredObject: TVKBaseSceneObject);
 
   published
     { Published Declarations }
-      {: Specifies the render point at which the impostor texture(s) can be prepared.<p>
+      { Specifies the render point at which the impostor texture(s) can be prepared. 
          For best result, the render point should happen in viewer that has
          a destination alpha (otherwise, impostors will be opaque). }
     property RenderPoint: TVKRenderPoint read FRenderPoint write SetRenderPoint;
-    {: Background color for impostor rendering.<p>
+    { Background color for impostor rendering. 
        Typically, you'll want to leave the alpha channel to zero, and pick
        as RGB as color that matches the impostor'ed objects edge colors most.}
     property BackColor: TVKColor read FBackColor write SetBackColor;
-    {: Offset applied to the impostor'ed object during imposter construction.<p>
+    { Offset applied to the impostor'ed object during imposter construction. 
        Can be used to manually tune the centering of objects. }
     property BuildOffset: TVKCoordinates read FBuildOffset write SetBuildOffset;
-    {: Imposter rendering options. }
+    { Imposter rendering options. }
     property ImposterOptions: TImposterOptions read FImposterOptions write
       FImposterOptions default cDefaultImposterOptions;
-    {: Determines how the imposter are handled.<p>
+    { Determines how the imposter are handled. 
        This is the reference point for imposters, impostor'ed objects that
        are centered should use irCenter, those whose bottom is the origin
        should use irBottom, etc. }
     property ImposterReference: TImposterReference read FImposterReference write
       SetImposterReference default irCenter;
-    {: Alpha testing teshold.<p> }
+    { Alpha testing teshold.  }
     property AlphaTreshold: Single read FAlphaTreshold write FAlphaTreshold;
 
-    {: Event fired before preparing/loading an imposter.<p>
+    { Event fired before preparing/loading an imposter. 
        If an already prepared version of the importer is available, place
        it in the TVKBitmap32 the event shall return (the bitmap will be
        freed by the imposter builder). If a bitmap is specified, it will
        be used in place of what automatic generation could have generated. }
     property OnLoadingImposter: TLoadingImposterEvent read FOnLoadingImposter
       write FOnLoadingImposter;
-    {: Event fired after preparing/loading an imposter.<p>
+    { Event fired after preparing/loading an imposter. 
        This events gives an opportunity to save the imposter after it has
        been loaded or prepared. }
     property OnImposterLoaded: TImposterLoadedEvent read FOnImposterLoaded write
@@ -234,7 +212,7 @@ type
 
   // TVKStaticImposterBuilderCorona
   //
-    {: Describes a set of orientation in a corona fashion. }
+    { Describes a set of orientation in a corona fashion. }
   TVKStaticImposterBuilderCorona = class(TCollectionItem)
   private
     { Private Declarations }
@@ -301,7 +279,7 @@ type
 
   // TStaticImposter
   //
-  {: Imposter class whose texture contains several views from different angles. }
+  { Imposter class whose texture contains several views from different angles. }
   TStaticImposter = class(TImposter)
   private
     { Private Declarations }
@@ -322,7 +300,7 @@ type
 
   // TVKStaticImposterBuilder
   //
-  {: Builds imposters whose texture is a catalog of prerendered views. }
+  { Builds imposters whose texture is a catalog of prerendered views. }
   TVKStaticImposterBuilder = class(TVKImposterBuilder)
   private
     { Private Declarations }
@@ -348,7 +326,7 @@ type
     function GetTextureSizeInfo: string;
     procedure SetTextureSizeInfo(const texSize: string);
 
-    {: Computes the optimal texture size that would be able to hold all samples. }
+    { Computes the optimal texture size that would be able to hold all samples. }
     function ComputeOptimalTextureSize: TVKPoint;
 
     function CreateNewImposter: TImposter; override;
@@ -366,45 +344,45 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    {: Render imposter texture.<p>
+    { Render imposter texture. 
        Buffer and object must be compatible, RC must have been activated. }
     procedure Render(var rci: TRenderContextInfo;
       impostoredObject: TVKBaseSceneObject;
       destImposter: TImposter);
-    {: Ratio (0..1) of the texture that will be used by samples.<p>
+    { Ratio (0..1) of the texture that will be used by samples. 
        If this value is below 1, you're wasting texture space and may
        as well increase the number of samples. }
     function TextureFillRatio: Single;
 
-    {: Meaningful only after imposter texture has been prepared. }
+    { Meaningful only after imposter texture has been prepared. }
     property TextureSize: TVKPoint read FTextureSize;
     property SamplesPerAxis: TVKPoint read FSamplesPerAxis;
 
   published
     { Published Declarations }
-      {: Description of the samples looking orientations. }
+      { Description of the samples looking orientations. }
     property Coronas: TVKStaticImposterBuilderCoronas read FCoronas write
       SetCoronas;
-    {: Size of the imposter samples (square). }
+    { Size of the imposter samples (square). }
     property SampleSize: Integer read FSampleSize write SetSampleSize default
       32;
-    {: Size ratio applied to the impostor'ed objects during sampling.<p>
+    { Size ratio applied to the impostor'ed objects during sampling. 
        Values greater than one can be used to "fill" the samples more
        by scaling up the object. This is especially useful when the impostor'ed
        object doesn't fill its bounding sphere, and/or if the outer details
        are not relevant for impostoring. }
     property SamplingRatioBias: Single read FSamplingRatioBias write
       SetSamplingRatioBias stored StoreSamplingRatioBias;
-    {: Scale factor apply to the sample alpha channel.<p>
+    { Scale factor apply to the sample alpha channel. 
        Main use is to saturate the samples alpha channel, and make fully
        opaque what would have been partially transparent, while leaving
        fully transparent what was fully transparent. }
     property SamplesAlphaScale: Single read FSamplesAlphaScale write
       SetSamplesAlphaScale stored StoreSamplesAlphaScale;
-    {: Lighting mode to apply during samples construction. }
+    { Lighting mode to apply during samples construction. }
     property Lighting: TSIBLigthing read FLighting write FLighting default
       siblStaticLighting;
-    {: Dummy property that returns the size of the imposter texture.<p>
+    { Dummy property that returns the size of the imposter texture. 
        This property is essentially here as a helper at design time,
        to give you the requirements your coronas and samplesize parameters
        imply. }
@@ -543,7 +521,7 @@ end;
 procedure TImposter.BeginRender(var rci: TRenderContextInfo);
 var
   mat: TMatrix;
-  filter: TVKEnum;
+  filter: TGLenum;
   fx, fy, yOffset, cosAlpha, dynScale: Single;
 begin
   with rci.GLStates do
@@ -1451,7 +1429,7 @@ begin
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
   begin
-    {$IFDEF GLS_OPENGL_DEBUG}
+    {$IFDEF VKS_OPENGL_DEBUG}
       if GL.GREMEDY_string_marker then
         GL.StringMarkerGREMEDY(22, 'Imposter texture setup');
     {$ENDIF}

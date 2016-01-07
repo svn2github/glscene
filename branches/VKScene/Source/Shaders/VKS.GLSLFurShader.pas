@@ -1,16 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.FurShader <p>
-
-   Fur shader that simulate Fur / Hair / Grass.<p>
+{
+   Fur shader that simulate Fur / Hair / Grass. 
    At this time only one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Initial
-
 }
-unit GLSL.FurShader;
+unit VKS.GLSLFurShader;
 
 interface
 
@@ -18,7 +13,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.Coordinates, VKS.VectorGeometry, VKS.VectorTypes,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material, GLSLS.Shader, VKS.CustomShader;

@@ -1,15 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
 {
-  VKS.FileNMF - NormalMapper loading into GLScene FreeForms/Actors
-  
-  Notes:
-    NormalMapper can be found at http://www.ati.com/developer/tools.html
-
-  History:
-    20/05/2003 - SG - Fixed SaveToStream to use ExtractTriangles
-    16/05/2003 - SG - Creation
+  VKS.FileNMF - NormalMapper loading into VKScene FreeForms/Actors
+    .
 }
 unit VKS.FileNMF;
 
@@ -17,7 +11,9 @@ interface
 
 uses
   System.Classes,
-  VKS.VectorFileObjects, VKS.VectorGeometry, VKS.VectorLists, VKS.ApplicationFileIO,
+  //VKS
+  VKS.VectorFileObjects, VKS.VectorGeometry,
+  VKS.VectorLists, VKS.ApplicationFileIO,
   FileNMF;
 
 type

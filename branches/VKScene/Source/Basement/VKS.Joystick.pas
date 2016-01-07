@@ -1,19 +1,14 @@
 //
-// This unit is part of the GLScene Project
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.Joystick<p>
-
-	Component for handling joystick messages<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>17/03/07 - PW - Converted from GLScene
-	</ul></font>
+{
+   Component for handling joystick messages 
 }
 unit VKS.Joystick;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
@@ -35,7 +30,7 @@ type
 
 	// TJoystick
 	//
-   {: A component interfacing the Joystick via the (regular) windows API. }
+   { A component interfacing the Joystick via the (regular) windows API. }
 	TVKJoystick = class (TComponent)
 	   private
 	      { Private Declarations }
@@ -78,14 +73,14 @@ type
          property YPosition : Integer read FYPosition;
 
 	   published
-	      { Published Declarations }
-         {: When set to True, the component attempts to capture the joystick.<p>
+	     { Published Declarations }
+         { When set to True, the component attempts to capture the joystick. 
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }
          property Capture : Boolean read FCapture write SetCapture default False;
-         {: If true joystick capture errors do not result in exceptions. }
+         { If true joystick capture errors do not result in exceptions. }
          property NoCaptureErrors : Boolean read FNoCaptureErrors write FNoCaptureErrors default True;
-         {: Polling frequency (milliseconds) }
+         { Polling frequency (milliseconds) }
          property Interval : Cardinal read FInterval write SetInterval default 100;
          property JoystickID: TJoystickID read FJoystickID write SetJoystickID default jidNoJoystick;
          property Threshold: Cardinal read FThreshold write SetThreshold default 1000;

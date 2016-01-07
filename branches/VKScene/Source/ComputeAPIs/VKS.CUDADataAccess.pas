@@ -1,14 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.CUDADataAccess<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>03/01/15 - PW - Updated to use with FMX
-  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
-  <li>24/02/11 - Yar - Creation
-  </ul></font><p>
-}
 unit VKS.CUDADataAccess;
 
 interface

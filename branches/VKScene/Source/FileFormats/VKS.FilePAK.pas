@@ -1,13 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FilePAK<p>
-
-  <b>History : </b><font size=-1><ul>
-      <li>04/06/10 - Yar - Added to GLScene
-                           (Created by Rustam Asmandiarov aka Predator)
-  </ul><p>
-}
 
 unit VKS.FilePAK;
 
@@ -16,7 +9,9 @@ unit VKS.FilePAK;
 interface
 
 uses
-  System.Classes, System.SysUtils, VKS.ArchiveManager;
+  System.Classes, System.SysUtils,
+  //VKS
+  VKS.ArchiveManager;
 
 const
    SIGN = 'PACK';

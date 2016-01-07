@@ -1,62 +1,29 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.BumpShader<p>
-
-   A shader that applies bump mapping.<p>
+{
+   A shader that applies bump mapping. 
 
    Notes:
-   The normal map is expected to be the primary texture.<p>
+   The normal map is expected to be the primary texture. 
 
    The secondary texture is used for the diffuse texture,
-   to enable set boDiffuseTexture2 in the BumpOptions property.<p>
+   to enable set boDiffuseTexture2 in the BumpOptions property. 
 
    The tertiary texture is used for the specular texture,
    to enable set boSpecularTexture3 in the BumpOptions property.
    The SpecularMode determines the specular highlight calculation
    (Blinn or Phong), smOff disables specular highlights in the
-   shader.<p>
+   shader. 
 
    External tangent bump space expects tangent data under
-   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
+   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB. 
 
    The boUseSecondaryTexCoords bump option tells the shader to use
    the secondary texture coordinates for the diffuse and specular
-   texture lookups.<p>
+   texture lookups. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Upgraded program hadles
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>15/04/05 - SG - Added parallax offset mapping for the BasicARBfp bump method (experimental)
-                          Height data is expected in the normal map alpha channel.
-      <li>21/12/04 - SG - Added light attenutation support through the
-                          boLightAttenutation option in the BumpOptions property.
-      <li>27/10/04 - SG - Added boUseSecondaryTexCoords option to BumpOptions
-      <li>11/10/04 - SG - Added SpecularMode to define the specular highlight equation,
-                          Removed the boDisableSpecular bump option (depricated).
-      <li>06/10/04 - SG - Added special functions for generating the ARB programs
-                          which replace the string constants.
-      <li>02/10/04 - SG - Changed render order a little, minimum texture units
-                          is now 2 for dot3 texcombiner bump method.
-                          Changed vertex programs to accept local program
-                          params, now only 1 vertex and 1 fragment program is
-                          required for all lights.
-                          Vertex programs now apply the primary texture matrix.
-      <li>30/09/04 - SG - Added fragment program logic,
-                          Added bmBasicARBFP bump method, bsTangentExternal
-                          bump space and associated ARB programs,
-                          Various name changes and fixes
-      <li>28/09/04 - SG - Vertex programs now use ARB_position_invariant option.
-      <li>29/06/04 - SG - Quaternion tangent space fix in tangent bump vertex
-                          program.
-      <li>23/06/04 - SG - Added bsTangent option to TBumpSpace,
-                          Added tangent space light vector vertex program.
-      <li>22/06/04 - SG - Creation.
-   </ul></font>
+    
 }
 unit VKS.BumpShader;
 
@@ -88,7 +55,7 @@ type
 
   // TVKBumpShader
   //
-  {: A generic bump shader.<p> }
+  { A generic bump shader.  }
   TVKBumpShader = class(TVKShader)
   private
     FVertexProgramHandle: TVKARBVertexProgramHandle;

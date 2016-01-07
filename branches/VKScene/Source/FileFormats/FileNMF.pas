@@ -1,15 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
 {
   FileNMF - NormalMapper vector file format loading/saving structures
-  
   Notes:
     NormalMapper can be found at http://www.ati.com/developer/tools.html
-    
-  History:
-    16/10/08 - UweR - Compatibility fix for Delphi 2009
-    14/05/2003 - SG - Creation
+      
 }
 unit FileNMF;
 

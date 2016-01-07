@@ -1,17 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileNurbs<p>
-
-	Nurbs surfaces vector file loading.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>11/08/03 - SG - Some minor changes
-      <li>05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
-                          with GLNurbsSurface (depricated), originally coded
-                          by Eric Grange.
-	</ul></font>
-}
+{
+	Nurbs surfaces vector file loading. 
+ }
 unit VKS.FileNurbs;
 
 interface

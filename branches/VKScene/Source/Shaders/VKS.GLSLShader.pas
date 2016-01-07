@@ -1,71 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.Shader<p>
-
-    TVKSLShader is a wrapper for GLS shaders.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TVKLibMaterial as Sender (thanks to Dmitriy Buharin)
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>18/02/11 - Yar - Fixed transform feedback varyings activation
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
-                           Added unsigned integer uniforms
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>02/04/10 - Yar -  Added GetActiveAttribs to TVKCustomGLSLShader
-      <li>04/11/09 - DaStr - Added default value to TVKCustomGLSLShader.TransformFeedBackMode
-      <li>26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
-      <li>24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
-      <li>24/07/09 - DaStr - Added support for TVKCustomShader.DebugMode
-                             Fixed spelling mistake in TVKShaderUnAplyEvent
-                             TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-                             Bugfixed TVKCustomGLSLShader.DoInitialize() - now
-                              shader cleanes up correctly if failed to initialize
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
-                                                      (BugTracker ID = 1914782)
-      <li>25/12/07 - DaStr - Fix-up for previous update (BugtrackerID = 1772477)
-      <li>12/08/07 - LC -    TVKSLShaderParameter.SetAsCustomTexture now restores
-                              the active texture unit (BugtrackerID = 1772477)
-      <li>12/07/07 - DaStr - TVKSLInitializedShaderParameters removed because
-                              even if implemented, it could not give
-                              a significant performance increase
-      <li>30/03/07 - fig -   Changed OnInitialize event to be fired after
-                              linking, but before validation. This can now be
-                              used to set texture units for different sampler
-                              types (1D/2D/3D) before validation, which fixes
-                              a bug (or complies to strict validation) with ATI
-                              drivers
-      <li>30/03/07 - DaStr - Bugfixed TVKCustomGLSLShader.DoUnApply
-                              (Result was not initialized)
-      <li>20/03/07 - DaStr - TVKCustomGLSLShader now generates its own events
-                             Added TVKSLShaderParameter
-                             Added TVKCustomGLSLShader.DoInitialPass
-                             Added TVKCustomGLSLShader.Param[]
-      <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-
-    Previous version history:
-      v1.0    11 March     '2006  Creation
-      v1.1    06 August    '2006  TVKCustomGLSLShader.DoInitialize bugfixed
-      v1.1.2  24 August    '2006  TVKCustomShader.SetParameterTexture[1-3]D added
-      v1.1.4  09 September '2006  Fixed a memory leak which occured when
-                                   enabling / disabling the shader several times
-      v1.1.6  22 September '2006  DoUnApply fixed (suggested by Nelsol Chu)
-      v1.2    04 November  '2006  function GetGLSLProg added (just in case)
-                                  TVKSLShader has more published properties
-                                  Bugfix in DoInitialize (when no shader is active)
-                                  (Get/Set)ParameterTexture[1/2/3]DHandle added
-                                  (Get/Set)ParameterCustomTextureHandle support added
-      v1.2.4  22 November  '2006  TVKProgramHandle.Name is now used
-                                  Assign() bugfixed
-                                  Fixed a possible bug in DoInitialize
-                                    (Handle was freed, but not nil'ed)
-
-}
-unit GLSL.Shader;
+{
+   TVKSLShader is a wrapper for GLS shaders. 
+     
+ }
+unit VKS.GLSLShader;
 
 interface
 
@@ -75,7 +15,7 @@ uses
   System.Classes, System.SysUtils,
   //VKS
   VKS.VectorGeometry, VKS.VectorTypes, VKS.Texture, VKS.OpenGLTokens, VKS.Context, 
-  VKS.CustomShader, VKS.RenderContextInfo, VKS.TextureFormat, GLSL.Parameter;
+  VKS.CustomShader, VKS.RenderContextInfo, VKS.TextureFormat, VKS.GLSLParameter;
 
 type
   TVKSLShaderParameter = class;
@@ -142,7 +82,7 @@ type
   end;
 
 
-  {: Wrapper around a parameter of a GLSL program. }
+  { Wrapper around a parameter of a GLSL program. }
   TVKSLShaderParameter = class(TVKCustomShaderParameter)
   private
     { Private Declarations }

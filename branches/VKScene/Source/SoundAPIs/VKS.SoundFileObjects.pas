@@ -1,25 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SoundFileFormat<p>
+{
+   Support classes for loading various fileformats. 
+   These classes work together like vector file formats or Delphi's TGraphic classes. 
 
-	Support classes for loading various fileformats.<p>
-   These classes work together like vector file formats or Delphi's TGraphic classes.<p>
-
-	<b>Historique : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
-      <li>30/05/09 - DanB - TVKSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>07/06/07 - DaStr - Added $I GLScene.inc
-      <li>26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
-                            Reported by Dikoe Kenguru.
-      <li>16/03/01 - Egg - TVKWAVFile.Capabilities
-      <li>16/07/00 - Egg - Made use of new TDataFile class
-      <li>09/06/00 - Egg - Added WAVDataSize
-      <li>04/06/00 - Egg - Creation
-	</ul></font>
 }
 unit VKS.SoundFileObjects;
 
@@ -35,7 +20,7 @@ type
 
 	// TVKSoundSampling
 	//
-   {: Defines a sound sampling quality. }
+   { Defines a sound sampling quality. }
 	TVKSoundSampling = class (TPersistent)
 	   private
 	      { Private Declarations }
@@ -62,22 +47,22 @@ type
         {$ENDIF}
 	   published
 	      { Published Declarations }
-         {: Sampling frequency in Hz (= samples per sec) }
+         { Sampling frequency in Hz (= samples per sec) }
          property Frequency : Integer read FFrequency write FFrequency default 22050;
-         {: Nb of sampling channels.<p>
+         { Nb of sampling channels. 
             1 = mono, 2 = stereo, etc. }
          property NbChannels : Integer read FNbChannels write FNbChannels default 1;
-         {: Nb of bits per sample.<p>
+         { Nb of bits per sample. 
             Common values are 8 and 16 bits. }
          property BitsPerSample : Integer read FBitsPerSample write FBitsPerSample default 8;
 	end;
 
    // TVKSoundFile
    //
-   {: Abstract base class for different Sound file formats.<p>
+   { Abstract base class for different Sound file formats. 
       The actual implementation for these files (WAV, RAW...) must be done
       seperately. The concept for TVKSoundFile is very similar to TGraphic
-      (see Delphi Help).<p>
+      (see Delphi Help). 
       Default implementation for LoadFromFile/SaveToFile are to directly call the
       relevent stream-based methods, ie. you will just have to override the stream
       methods in most cases. }
@@ -97,17 +82,17 @@ type
 
          procedure PlayOnWaveOut; dynamic;
 
-         {: Returns a pointer to the sample data viewed as an in-memory WAV File. }
+         { Returns a pointer to the sample data viewed as an in-memory WAV File. }
 	      function WAVData : Pointer; virtual; abstract;
-         {: Returns the size (in bytes) of the WAVData. }
+         { Returns the size (in bytes) of the WAVData. }
          function WAVDataSize : Integer; virtual; abstract;
-         {: Returns a pointer to the sample data viewed as an in-memory PCM buffer. }
+         { Returns a pointer to the sample data viewed as an in-memory PCM buffer. }
 	      function PCMData : Pointer; virtual; abstract;
-         {: Length of PCM data, in bytes. }
+         { Length of PCM data, in bytes. }
 	      function LengthInBytes : Integer; virtual; abstract;
-         {: Nb of intensity samples in the sample. }
+         { Nb of intensity samples in the sample. }
 	      function LengthInSamples : Integer;
-         {: Length of play of the sample at nominal speed in seconds. }
+         { Length of play of the sample at nominal speed in seconds. }
 	      function LengthInSec : Single;
 
          property Sampling : TVKSoundSampling read FSampling write SetSampling;

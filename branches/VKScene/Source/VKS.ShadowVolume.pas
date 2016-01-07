@@ -1,35 +1,13 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ShadowVolumes<p>
-
-   Implements basic shadow volumes support.<p>
+{
+   Implements basic shadow volumes support. 
 
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
-   or the casters will be rendered incorrectly.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>31/05/10 - Yar - Fixes forLinux x64
-      <li>01/05/10 - Yar - Moved ignoreBlendingRequests and ignoreDepthRequests behind RenderChildren
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>31/03/07 - DaStr - Fixed issue with invalid typecasting
-                            (thanks Burkhard Carstens) (Bugtracker ID = 1692016)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>08/12/04 - DB - Fixed bug in TVKShadowVolumeCaster.SetCaster
-      <li>02/12/04 - MF - Added some documentation
-      <li>23/03/04 - EG - Added Active property
-      <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
-                          (hierarchially) invisible objects
-      <li>27/11/03 - MF - TVKShadowVolumeCaster now registers with the FCaster
-                          for delete notification
-      <li>11/06/03 - EG - Added silhouette cache
-      <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-  </ul></font>
+   or the casters will be rendered incorrectly. 
+  
 }
 unit VKS.ShadowVolume;
 
@@ -48,39 +26,39 @@ type
 
   TVKShadowVolume = class;
 
-  {: Determines when a shadow volume should generate a cap at the beginning and
+  { Determines when a shadow volume should generate a cap at the beginning and
    end of the volume. This is ONLY necessary when there's a chance that the
    camera could end up inside the shadow _or_ between the light source and
    the camera. If those two situations can't occur then not using capping is
-   the best option.<br>
+   the best option. 
    Note that if you use the capping, you must either set the depth of view of
    your camera to something very large (f.i. 1e9), or you could use the infinite
    mode (csInfinitePerspective) of your camera.
-   <ul>
-     <li>svcDefault : Default behaviour
-     <li>svcAlways : Always generates caps
-     <li>svcNever : Never generates caps
-   </ul>
+    
+      svcDefault : Default behaviour
+      svcAlways : Always generates caps
+      svcNever : Never generates caps
+    
    }
   TVKShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
-  {: Determines when a caster should actually produce a shadow;
-  <ul>
-   <li>scmAlways : Caster always produces a shadow, ignoring visibility
-   <li>scmVisible : Caster casts shadow if the object has visible=true
-   <li>scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
+  { Determines when a caster should actually produce a shadow;
+   
+    scmAlways : Caster always produces a shadow, ignoring visibility
+    scmVisible : Caster casts shadow if the object has visible=true
+    scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
      all have visible=true
-   <li>scmParentVisible : Caster produces shadow if parent has visible=true
-   <li>scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
+    scmParentVisible : Caster produces shadow if parent has visible=true
+    scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
      all have visible=true, starting from the parent (ignoring own visible setting)
-  </ul> }
+    }
 
   TVKShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
 
   // TVKShadowVolumeCaster
   //
-  {: Specifies an individual shadow caster.<p>
+  { Specifies an individual shadow caster. 
      Can be a light or an opaque object. }
   TVKShadowVolumeCaster = class(TCollectionItem)
   private
@@ -105,7 +83,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Shadow casting object.<p>
+    { Shadow casting object. 
        Can be an opaque object or a lightsource. }
     property Caster: TVKBaseSceneObject read FCaster write SetCaster;
 
@@ -114,15 +92,15 @@ type
   published
     { Published Declarations }
 
-          {: Radius beyond which the caster can be ignored.<p>
+          { Radius beyond which the caster can be ignored. 
              Zero (default value) means the caster can never be ignored. }
     property EffectiveRadius: Single read FEffectiveRadius write
       FEffectiveRadius;
-    {: Specifies if the shadow volume should be capped.<p>
+    { Specifies if the shadow volume should be capped. 
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TVKShadowVolumeCapping read FCapping write FCapping default
       svcDefault;
-    {: Determines when an object should cast a shadow or not. Typically, objects
+    { Determines when an object should cast a shadow or not. Typically, objects
     should only cast shadows when recursively visible. But if you're using
     dummy shadow casters which are less complex than their parent objects,
     you should use scmParentRecursivelyVisible.}
@@ -132,7 +110,7 @@ type
 
   // TVKShadowVolumeOccluder
   //
-  {: Specifies an individual shadow casting occluder.<p> }
+  { Specifies an individual shadow casting occluder.  }
   TVKShadowVolumeOccluder = class(TVKShadowVolumeCaster)
   published
     { Published Declarations }
@@ -141,7 +119,7 @@ type
 
   // TVKShadowVolumeLight
   //
-  {: Specifies an individual shadow casting light.<p> }
+  { Specifies an individual shadow casting light.  }
   TVKShadowVolumeLight = class(TVKShadowVolumeCaster)
   private
     { Private Declarations }
@@ -155,7 +133,7 @@ type
     function GetCachedSilhouette(AIndex: Integer): TVKSilhouette;
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TVKSilhouette);
 
-    {: Compute and setup scissor clipping rect for the light.<p>
+    { Compute and setup scissor clipping rect for the light. 
        Returns true if a scissor rect was setup }
     function SetupScissorRect(worldAABB: PAABB; var rci: TRenderContextInfo):
       Boolean;
@@ -169,7 +147,7 @@ type
 
   published
     { Published Declarations }
-          {: Shadow casting lightsource.<p> }
+          { Shadow casting lightsource.  }
     property LightSource: TVKLightSource read GetLightSource write
       SetLightSource;
 
@@ -177,7 +155,7 @@ type
 
   // TVKShadowVolumeCasters
   //
-  {: Collection of TVKShadowVolumeCaster. }
+  { Collection of TVKShadowVolumeCaster. }
   TVKShadowVolumeCasters = class(TOwnedCollection)
   private
     { Private Declarations }
@@ -201,43 +179,43 @@ type
 
   // TVKShadowVolumeOption
   //
-  {: Shadow volume rendering options/optimizations.<p>
-     <ul>
-     <li>svoShowVolumes : make the shadow volumes visible
-     <li>svoDesignVisible : the shadow are visible at design-time
-     <li>svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
+  { Shadow volume rendering options/optimizations. 
+      
+      svoShowVolumes : make the shadow volumes visible
+      svoDesignVisible : the shadow are visible at design-time
+      svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
         some objects are static relatively to their light(s)
-     <li>svoScissorClips : use scissor clipping per light, beneficial when
+      svoScissorClips : use scissor clipping per light, beneficial when
         lights are attenuated and don't illuminate the whole scene
-     <li>svoWorldScissorClip : use scissor clipping for the world, beneficial
+      svoWorldScissorClip : use scissor clipping for the world, beneficial
         when shadow receivers don't cover the whole viewer surface
-     </ul> }
+       }
   TVKShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
     svoWorldScissorClip, svoDesignVisible);
   TVKShadowVolumeOptions = set of TVKShadowVolumeOption;
 
   // TVKShadowVolumeMode
   //
-  {: Shadow rendering modes.<p>
-     <ul>
-     <li>svmAccurate : will render the scene with ambient lighting only, then
+  { Shadow rendering modes. 
+      
+      svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
-     <li>svmDarkening : renders the scene with lighting on as usual, then darkens
+      svmDarkening : renders the scene with lighting on as usual, then darkens
         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
         that don't honour to diffuse or specular lighting)
-     <li>svmOff : no shadowing will take place
-     </ul> }
+      svmOff : no shadowing will take place
+       }
   TVKShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
   // TVKShadowVolume
   //
-  {: Simple shadow volumes.<p>
+  { Simple shadow volumes. 
      Shadow receiving objects are the ShadowVolume's children, shadow casters
      (opaque objects or lights) must be explicitly specified in the Casters
-     collection.<p>
+     collection. 
      Shadow volumes require that the buffer allows stencil buffers,
      GLSceneViewer.Buffer.ContextOptions contain roStencinBuffer. Without stencil
-     buffers, shadow volumes will not work properly.<p>
+     buffers, shadow volumes will not work properly. 
      Another issue to look out for is the fact that shadow volume capping requires
      that the camera depth of view is either very high (fi 1e9) or that the
      camera style is csInfinitePerspective.
@@ -280,27 +258,27 @@ type
 
   published
     { Public Declarations }
-          {: Determines if shadow volume rendering is active.<p>
+          { Determines if shadow volume rendering is active. 
              When set to false, children will be rendered without any shadowing
              or multipass lighting. }
     property Active: Boolean read FActive write SetActive default True;
-    {: Lights that cast shadow volumes. }
+    { Lights that cast shadow volumes. }
     property Lights: TVKShadowVolumeCasters read FLights write SetLights;
-    {: Occluders that cast shadow volumes. }
+    { Occluders that cast shadow volumes. }
     property Occluders: TVKShadowVolumeCasters read FOccluders write
       SetOccluders;
 
-    {: Specifies if the shadow volume should be capped.<p>
+    { Specifies if the shadow volume should be capped. 
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TVKShadowVolumeCapping read FCapping write FCapping default
       svcAlways;
-    {: Shadow volume rendering options. }
+    { Shadow volume rendering options. }
     property Options: TVKShadowVolumeOptions read FOptions write SetOptions
       default [svoCacheSilhouettes, svoScissorClips];
-    {: Shadow rendering mode. }
+    { Shadow rendering mode. }
     property Mode: TVKShadowVolumeMode read FMode write SetMode default
       svmAccurate;
-    {: Darkening color used in svmDarkening mode. }
+    { Darkening color used in svmDarkening mode. }
     property DarkeningColor: TVKColor read FDarkeningColor write
       SetDarkeningColor;
   end;

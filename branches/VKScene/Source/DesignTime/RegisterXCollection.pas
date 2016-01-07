@@ -1,23 +1,15 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: RegisterXCollection<p>
-
-	Register TXCollection property editor<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>11/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-      <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
-      <li>16/04/00 - Egg - Creation
-	</ul></font>
+{
+  Register TXCollection property editor 
+ 
 }
 unit RegisterXCollection;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.Classes, System.TypInfo,

@@ -1,14 +1,10 @@
 //
-// This unit is part of the GLScene Project
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.ApplicationFileIO<p>
-
-   Components and functions that abstract file I/O access for an application.<br>
-   Allows re-routing file reads to reads from a single archive file f.i.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>02/01/16 - PW - Converted from GLScene
- </ul></font>
+{
+   Components and functions that abstract file I/O access for an application. 
+   Allows re-routing file reads to reads from a single archive file f.i. 
+   
 }
 unit VKS.ApplicationFileIO;
 
@@ -22,10 +18,10 @@ uses
 
 
 const
-  GLS_RC_DDS_Type = RT_RCDATA;
-  GLS_RC_JPG_Type = RT_RCDATA;
-  GLS_RC_XML_Type = RT_RCDATA;
-  GLS_RC_String_Type = RT_RCDATA;
+  VKS_RC_DDS_Type = RT_RCDATA;
+  VKS_RC_JPG_Type = RT_RCDATA;
+  VKS_RC_XML_Type = RT_RCDATA;
+  VKS_RC_String_Type = RT_RCDATA;
 
 type
 
@@ -56,9 +52,9 @@ type
 
   // TVKApplicationFileIO
   //
-    {: Allows specifying a custom behaviour for VKS.ApplicationFileIO's CreateFileStream.<p>
+    { Allows specifying a custom behaviour for VKS.ApplicationFileIO's CreateFileStream. 
        The component should be considered a helper only, you can directly specify
-       a function via the vAFIOCreateFileStream variable.<br>
+       a function via the vAFIOCreateFileStream variable. 
        If multiple TVKApplicationFileIO components exist in the application,
        the last one created will be the active one. }
   TVKApplicationFileIO = class(TComponent)
@@ -77,12 +73,12 @@ type
 
   published
     { Published declarations }
-      {: Event that allows you to specify a stream for the file.<p>
+      { Event that allows you to specify a stream for the file. 
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
          take place (ie. attempt a regular file system access). }
     property OnFileStream: TAFIOFileStreamEvent read FOnFileStream write FOnFileStream;
-    {: Event that allows you to specify if a stream for the file exists.<p> }
+    { Event that allows you to specify if a stream for the file exists.  }
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
@@ -93,9 +89,9 @@ type
 
   // TDataFile
   //
-  {: Abstract base class for data file formats interfaces.<p>
+  { Abstract base class for data file formats interfaces. 
      This class declares base file-related behaviours, ie. ability to load/save
-     from a file or a stream.<p>
+     from a file or a stream. 
      It is highly recommended to overload ONLY the stream based methods, as the
      file-based one just call these, and stream-based behaviours allow for more
      enhancement (such as other I/O abilities, compression, cacheing, etc.)
@@ -108,11 +104,11 @@ type
   public
     { Public Declarations }
 
-    {: Describes what the TDataFile is capable of.<p>
+    { Describes what the TDataFile is capable of. 
        Default value is [dfcRead]. }
     class function Capabilities: TDataFileCapabilities; virtual;
 
-    {: Duplicates Self and returns a copy.<p>
+    { Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
     function CreateCopy(AOwner: TPersistent): TDataFile; dynamic;
 
@@ -121,7 +117,7 @@ type
     procedure LoadFromStream(stream: TStream); dynamic;
     procedure SaveToStream(stream: TStream); dynamic;
     procedure Initialize; dynamic;
-    {: Optionnal resource name.<p>
+    { Optionnal resource name. 
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
        name in it for parser use. }
@@ -134,16 +130,16 @@ type
   //: Returns true if an VKS.ApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
-{: Creates a file stream corresponding to the fileName.<p>
-   If the file does not exists, an exception will be triggered.<br>
+{ Creates a file stream corresponding to the fileName. 
+   If the file does not exists, an exception will be triggered. 
    Default mechanism creates a regular TFileStream, the 'mode' parameter
    is similar to the one for TFileStream. }
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
-{: Queries is a file stream corresponding to the fileName exists.<p> }
+{ Queries is a file stream corresponding to the fileName exists.  }
 function FileStreamExists(const fileName: string): Boolean;
 
-{: Create a resource stream. }
+{ Create a resource stream. }
 function CreateResourceStream(const ResName: string; ResType: PChar): TVKSResourceStream;
 
 function StrToGLSResType(const AStrRes: string): TVKSApplicationResource;

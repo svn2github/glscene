@@ -1,18 +1,14 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.LatticeShader <p>
-
-   Lattice shader that simulate Lattice.<p>
+{
+   Lattice shader that simulate Lattice. 
    At this time only one light source is supported
-
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Made compatible with the latest CVS version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
+           
 }
 
 
-unit GLSL.LatticeShader;
+unit VKS.GLSLLatticeShader;
 
 interface
 
@@ -20,7 +16,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  //VKS
   VKS.Scene, VKS.CrossPlatform, VKS.BaseClasses, VKS.State, VKS.OpenGLTokens, VKS.OpenGL1x, 
   VKS.Context, VKS.RenderContextInfo, VKS.VectorGeometry, VKS.Coordinates,
   VKS.TextureFormat, VKS.Color, VKS.Texture, VKS.Material,
@@ -28,7 +24,7 @@ uses
 
 //TVKCustomGLSLSimpleLatticeShader
 //
-{: Custom class for GLSLSimpleLatticeShader.<p>
+{ Custom class for GLSLSimpleLatticeShader. 
  A shader that simulate Lattice }
 type
   TVKCustomGLSLSimpleLatticeShader = class(TVKCustomGLSLShader)
@@ -50,7 +46,7 @@ type
 
 //TVKCustomGLSLLatticeShader
 //
-{: Custom class for GLSLLatticeShader.<p>
+{ Custom class for GLSLLatticeShader. 
  A shader that simulate Lattice with Diffuse/Specular and support Texture }
   TVKCustomGLSLLatticeShader = class(TVKCustomGLSLSimpleLatticeShader)
   private

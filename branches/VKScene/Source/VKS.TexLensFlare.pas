@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.TexLensFlare<p>
-
-   Texture-based Lens flare object.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>25/09/03 - EG - Creation from GLLensFlare split
- </ul></font><p>
+{
+   Texture-based Lens flare object. 
+   
 }
 unit VKS.TexLensFlare;
 

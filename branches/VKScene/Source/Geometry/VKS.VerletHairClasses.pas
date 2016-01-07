@@ -1,15 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.VerletHairClasses<p>
-
+{ 
    Creates a single strand of hair using verlet classes. Can be used to simulate
-   ropes, fur or hair.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>06/03/04 - MF - Creation
-   </ul>
+   ropes, fur or hair. 
+     
 }
 unit VKS.VerletHairClasses;
 
@@ -69,10 +64,10 @@ type
 
     property Data : pointer read FData write FData;
 
-    {: Anchor should be nailed down to give the hair stability }
+    { Anchor should be nailed down to give the hair stability }
     property Anchor : TVerletNode read GetAnchor;
 
-    {: Root should be nailed down to give the hair stability }
+    { Root should be nailed down to give the hair stability }
     property Root : TVerletNode read GetRoot;
   end;
 //---------------------------------------------------------------------------

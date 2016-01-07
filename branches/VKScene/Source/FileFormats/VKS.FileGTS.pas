@@ -1,16 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileGTS<p>
-
-	GTS (GNU Triangulated Surface) vector file format implementation.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from VKS.VectorFileObjects.pas
-	</ul></font>
-}
+{
+	GTS (GNU Triangulated Surface) vector file format implementation.
+ }
 unit VKS.FileGTS;
 
 interface
@@ -23,12 +16,12 @@ uses
 type
    // TVKGTSVectorFile
    //
-   {: The GTS vector file (GNU Triangulated Surface library).<p>
+   { The GTS vector file (GNU Triangulated Surface library). 
       It is a simple text format, with indexed vertices. The first line contains
       the number of vertices, the number of edges and the number of faces separated
-      by spaces.<br>
+      by spaces. 
       Following lines contain the x/y/z coordinates of vertices, then the edges
-      (two indices) and the faces (three indices).<br>
+      (two indices) and the faces (three indices). 
       http://gts.sourceforge.net/ }
    TVKGTSVectorFile = class(TVectorFile)
       public

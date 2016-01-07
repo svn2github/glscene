@@ -1,14 +1,6 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileZLIB<p>
-
-  <b>History : </b><font size=-1><ul>
-      <li>22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII  
-      <li>04/06/10 - Yar - Added to GLScene
-                           (Created by Rustam Asmandiarov aka Predator)
-  </ul><p>
-}
 
 unit VKS.FileZLIB;
 

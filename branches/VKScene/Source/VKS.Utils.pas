@@ -1,32 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Utils<p>
-
-   Miscellaneous support utilities & classes.<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>12/01/15 - PW - Converted to use under FMX platform
-      <li>02/01/13 - Yar - Added SetGLSceneMediaDir
-      <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
-      <li>24/03/09 - DanB - removed TryStrToFloat (exists in SysUtils or VKS.CrossPlatform already)
-                            changed StrToFloatDef to accept only 1 param + now overloaded
-      <li>24/03/09 - DanB - Moved Dialog utilities here from VKS.CrossPlatform, because
-                            they work on all platforms (with FPC)
-      <li>16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
-      <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
-      <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
-                             Moved TVKMinFilter and TVKMagFilter from VKS.Utils.pas
-                              to VKS.Graphics.pas (BugTracker ID = 1923844)
-      <li>25/03/07 - DaStr - Replaced StrUtils with VKS.CrossPlatform
-      <li>23/03/07 - DaStr - Removed compiler warnings caused by
-                               SaveComponentToFile and LoadComponentFromFile
-      <li>22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
-      <li>07/02/07 - DaStr - Added StringToColorAdvanced() functions
-      <li>05/09/03 - EG - Creation from GLMisc split
-   </ul></font>
+{
+   Miscellaneous support utilities & classes. 
+   
 }
 unit VKS.Utils;
 
@@ -54,7 +31,7 @@ function RoundUpToPowerOf2(value: Integer): Integer;
 function RoundDownToPowerOf2(value: Integer): Integer;
 //: Returns True if value is a true power of two
 function IsPowerOf2(value: Integer): Boolean;
-{: Read a CRLF terminated string from a stream.<p>
+{ Read a CRLF terminated string from a stream. 
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream: TStream): AnsiString;
 //: Write the string and a CRLF in the stream
@@ -71,43 +48,43 @@ function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Bool
 //: Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
-{: Parses the next integer in the string.<p>
+{ Parses the next integer in the string. 
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p: PChar): Integer;
-{: Parses the next integer in the string.<p>
+{ Parses the next integer in the string. 
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
 
-{: Saves "data" to "filename". }
+{ Saves "data" to "filename". }
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
-{: Returns the content of "filename". }
+{ Returns the content of "filename". }
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 
-{: Saves component to a file. }
+{ Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
-{: Loads component from a file. }
+{ Loads component from a file. }
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 
-{: Returns the size of "filename".<p>
+{ Returns the size of "filename". 
    Returns 0 (zero) is file does not exists. }
 function SizeOfFile(const fileName: string): Int64;
 
-{: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
+{ Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array: PSqrt255Array;
 
-{: Pops up a simple dialog with msg and an Ok button. }
+{ Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg: string);
-{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+{ Pops up a simple question dialog with msg and yes/no buttons. 
    Returns True if answer was "yes". }
 function QuestionDlg(const msg: string): Boolean;
-{: Posp a simple dialog with a string input. }
+{ Posp a simple dialog with a string input. }
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 
-{: Pops up a simple save picture dialog. }
+{ Pops up a simple save picture dialog. }
 function SavePictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
-{: Pops up a simple open picture dialog. }
+{ Pops up a simple open picture dialog. }
 function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 
 procedure SetGLSceneMediaDir();

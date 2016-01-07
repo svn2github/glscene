@@ -1,16 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSCUDAEditor<p>
-
-   Editor of TVKSCUDA.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>06/01/15 - PW - Updated to use with FMX
-      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-      <li>19/03/10 - Yar - Creation
-	</ul></font>
+{
+   Editor of TVKSCUDA
 }
+
 unit FCUDAEditor;
 
 interface

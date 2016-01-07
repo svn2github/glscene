@@ -1,24 +1,18 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileGL2<p>
-
-	Vector file object loading of Ghoul2 model and animation 
-	files into GLScene.<p>
-
-	<b>History :</b><font size=-1><ul>
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-	   <li>22/10/03 - SG - Animation fixes, removed skeletal reconstruction
-	   <li>25/03/03 - SG - Creation.
-	</ul></font>
+{
+	Vector file object loading of Ghoul2 model and animation
+	files into GLScene.
 }
 unit VKS.FileGL2;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.Material,
+  System.Classes, System.SysUtils,
+  //VKS
+  VKS.VectorFileObjects, VKS.ApplicationFileIO, VKS.Material,
   VKS.VectorGeometry, FileGL2, VKS.VectorTypes, VKS.VectorLists;
 
 type

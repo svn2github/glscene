@@ -1,14 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.PlugInManager<p>
-
-  An old PlugIn Manager unit. Don't know if if ever wa used...<p>
-
-  <b>Historique : </b><font size=-1><ul>
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 -  EG   - Initial version
-  </ul></font>
+{
+  An old PlugIn Manager unit. Don't know if if ever wa used... 
+  
 }
 unit VKS.PlugInManager;
 

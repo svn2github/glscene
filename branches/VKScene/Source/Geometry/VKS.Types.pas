@@ -1,16 +1,11 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Types<p>
+{
    Defines vector types for geometry only aiming to imply
-   compatibility of GLScene for Delphi with C+Builder.
-   Do not include any other units in uses clause <p>
-
-	<b>History : </b><font size=-1><ul>
-    <li>01/11/13 - PW - Fixed XE5 error: E2376 static can only be used on non-virtual class methods
-    <li>12/12/12 - PW - Added TVKVector's and TVKMatrix's types
-    <li>11/11/11 - PW - Creation. Defined TVKPoint, TVKPolygon and TVKPolyhedron types
-  </ul>
+   compatibility of VKScene for Delphi with C+Builder.
+   Do not include any other units in uses clause
+    
 }
 unit VKS.Types;
 

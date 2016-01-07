@@ -1,20 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.PerlinPFX<p>
-
-   PFX particle effects revolving around the use of Perlin noise.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
-      <li>15/04/04 - EG - Creation
-   </ul></font>
+{
+   PFX particle effects revolving around the use of Perlin noise. 
+    
 }
 unit VKS.PerlinPFX;
 
@@ -32,10 +21,10 @@ type
 
    // TVKPerlinPFXManager
    //
-   {: A sprite-based particles FX manager using perlin-based sprites.<p>
+   { A sprite-based particles FX manager using perlin-based sprites. 
       This PFX manager is more suited for smoke or fire effects, and with proper
       tweaking of the texture and perlin parameters, may help render a convincing
-      effect with less particles.<p>
+      effect with less particles. 
       The sprite generate by this manager is the composition of a distance-based
       intensity and a perlin noise. }
    TVKPerlinPFXManager = class (TVKBaseSpritePFXManager)
@@ -67,30 +56,30 @@ type
 
 	   published
 	      { Published Declarations }
-         {: Underlying texture map size, as a power of two.<p>
+         { Underlying texture map size, as a power of two. 
             Min value is 3 (size=8), max value is 9 (size=512). }
          property TexMapSize : Integer read FTexMapSize write SetTexMapSize default 6;
-         {: Smoothness of the distance-based intensity.<p>
+         { Smoothness of the distance-based intensity. 
             This value is the exponent applied to the intensity in the texture,
             basically with a value of 1 (default) the intensity decreases linearly,
             with higher values, it will remain 'constant' in the center then
             fade-off more abruptly, and with values below 1, there will be a
             sharp spike in the center. }
          property Smoothness : Single read FSmoothness write SetSmoothness;
-         {: Brightness factor applied to the perlin texture intensity.<p>
-            Brightness acts as a scaling, non-saturating factor. Examples:<ul>
-            <li>Brightness = 1 : intensities in the [0; 1] range
-            <li>Brightness = 2 : intensities in the [0.5; 1] range
-            <li>Brightness = 0.5 : intensities in the [0; 0.5] range
-            </ul>Brightness is applied to the final texture (and thus affects
+         { Brightness factor applied to the perlin texture intensity. 
+            Brightness acts as a scaling, non-saturating factor. Examples: 
+             Brightness = 1 : intensities in the [0; 1] range
+             Brightness = 2 : intensities in the [0.5; 1] range
+             Brightness = 0.5 : intensities in the [0; 0.5] range
+             Brightness is applied to the final texture (and thus affects
             the distance based intensity). }
          property Brightness : Single read FBrightness write SetBrightness;
          property Gamma : Single read FGamma write SetGamma;
-         {: Random seed to use for the perlin noise. }
+         { Random seed to use for the perlin noise. }
          property NoiseSeed : Integer read FNoiseSeed write SetNoiseSeed default 0;
-         {: Scale applied to the perlin noise (stretching). }
+         { Scale applied to the perlin noise (stretching). }
          property NoiseScale : Integer read FNoiseScale write SetNoiseScale default 100;
-         {: Amplitude applied to the perlin noise (intensity).<p>
+         { Amplitude applied to the perlin noise (intensity). 
             This value represent the percentage of the sprite luminance affected by
             the perlin texture. }
          property NoiseAmplitude : Integer read FNoiseAmplitude write SetNoiseAmplitude default 50;

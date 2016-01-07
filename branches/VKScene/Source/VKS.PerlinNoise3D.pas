@@ -1,21 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.PerlinNoise.<p>
-
-   Classes and function for generation of PerlinNoise.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Refactored TPerlin3DNoise to TVKPerlin3DNoise, renamed unit
-      <li>31/08/10 - Bugfixed range error in TPerlin3DNoise.Initialize
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/04/04 - EG - Creation
-   </ul></font>
-
-   Loosely based on Tom Nuydens's (www.delphi3d.com) Noise.pas unit, itself based on
-   http://students.vassar.edu/mazucker/code/perlin-noise-math-faq.html
-   Darwin Peachey's chapter in "Texturing & Modeling: A Procedural Approach"
-   Further bugs are mine :)
+{
+   Classes and function for generation of PerlinNoise. 
+ 
 }
 unit VKS.PerlinNoise3D;
 
@@ -33,7 +21,7 @@ type
 
    // TVKPerlin3DNoise
    //
-   {: Generates Perlin Noise in the [-1; 1] range.<p>
+   { Generates Perlin Noise in the [-1; 1] range. 
       2D noise requests are taken in the Z=0 slice }
    TVKPerlin3DNoise = class (TObject)
       protected

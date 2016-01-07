@@ -1,25 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FPSMovement<p>
-
-  FPS-like movement behaviour and manager.<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after VKS.State revision
-  <li>05/03/10 - DanB - More state added to TVKStateCache
-  <li>03/04/07 - DaStr - Added "public" to TCollisionState for FPC compatibility
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-  <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
-  <li>02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
-  <li>03/07/04 - LR - Corrections for Linux compatibility
-  Replace GetTickCount by GLGetTickCount
-  <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
-  <li>14/06/04 - Mathx - Preventing repeated maps when adding through maps.addMap
-  <li>09/06/04 - Mathx - Creation
-  </ul></font>
+{
+   FPS-like movement behaviour and manager. 
+  
 }
 unit VKS.FPSMovement;
 
@@ -71,7 +55,7 @@ type
 
     property Map: TVKFreeForm read FMap write setMap;
 
-    { : Indicates the collision group of this map. A Collision Group
+    { Indicates the collision group of this map. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
       maps that are also on group 1).
@@ -130,7 +114,7 @@ type
     property Navigator: TVKNavigator read FNavigator write SetNavigator;
     property Scene: TVKScene read FScene write setScene;
 
-    { : Display Time for the arrow lines. }
+    { Display Time for the arrow lines. }
     property DisplayTime: integer read FDisplayTime write FDisplayTime;
     property MovementScale: single read FMovementScale write FMovementScale;
   end;
@@ -184,10 +168,10 @@ type
     }
     property sphereRadius: single read FSphereRadius write FSphereRadius;
 
-    { : Show Arrows and trailing for debuging. }
+    { Show Arrows and trailing for debuging. }
     property ShowArrows: boolean read FShowArrows write setShowArrows;
 
-    { : Indicates the collision group of this behaviour. A Collision Group
+    { Indicates the collision group of this behaviour. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
       maps that are also on group 1).
@@ -922,11 +906,11 @@ begin
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0],
       CollisionState.Contact.intPoint.V[1], CollisionState.Contact.intPoint.V[2]);
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0] +
-      CollisionState.Contact.intNormal.V[0], // GLSphere4.Radius,
+      CollisionState.Contact.intNormal.V[0], //VKSphere4.Radius,
       CollisionState.Contact.intPoint.V[1] + CollisionState.Contact.intNormal.V[1],
-      // GLSphere4.Radius,
+      //VKSphere4.Radius,
       CollisionState.Contact.intPoint.V[2] + CollisionState.Contact.intNormal.V[2]);
-    // GLSphere4.Radius);
+    //VKSphere4.Radius);
   end;
   GL.End_();
 end;

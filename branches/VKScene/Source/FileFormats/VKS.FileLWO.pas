@@ -1,22 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileLWO<p>
-
-    Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>30/03/07 - DaStr - Added $I GLScene.inc$I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>14/11/02 - EG - Added header, fixed warnings
-      <li>16/11/02 - BJ - Added smooth normals with crease angle
-      <li>17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
-      <li>17/11/02 - BJ - Added Enviroment Map Image -> Cubic Projection Map
-   </ul><p>
-
-   Original code: "Brian Johns" <brianjohns1@hotmail.com>
+{
+   Support-code to load Lightwave LWO Files (v6.0+, partial support).
 }
 unit VKS.FileLWO;
 

@@ -1,49 +1,8 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.File3DS<p>
-
-  3DStudio 3DS vector file format implementation.<p>
-
-  <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>30/06/11 - DaStr - Properly fixed range check bug  
-      <li>15/12/10 - YP - Disable and re-enable range-check only if needed
-      <li>14/12/10 - DaStr - Added a work-around for a range-check bug
-                             Bugfixed a case when material texture was turned on
-                             when it should not be enabled
-      <li>14/10/10 - YP - Fixed rotate only vertices of TVKFile3DSMeshObject
-      <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
-                          Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
-                          Fixed GetExtents when vGLFile3DS_LoadedStaticFrame is ON
-      <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
-                          Fixed first frame index (it's 0 not 1)
-      <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
-                          SetFrameOffset in Lerp and MorphTo, wrong Frame test
-                          in InterpolateValue
-      <li>24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>xx/xx/xx - xxx - Fixes for Linux x64
-      <li>08/11/09 - DaStr - Improved FPC compatibility
-                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
-                             Implemented TVKFile3DSDummyObject.ExtractTriangles()
-      <li>29/04/08 - DaStr - Fixed memory leak in TVKFile3DSCameraObject
-      <li>27/04/08 - DaStr - TVK3DSVectorFile.UseTextureEx converted into a
-                             global variable and disabled by default
-      <li>12/04/08 - DaStr - Added TVK3DSVectorFile.UseTextureEx option
-                             (Bugtracker ID = 1940451)
-      <li>06/04/08 - DaStr - Added animation support (by Lexer, Luca Burlizzi,
-                              Dave Gravel, mif, Oxygen and a bit myself)
-      <li>05/11/07 - DaStr - Fixed transparency issue.
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>28/01/07 - DaStr - Added transparency and opacity texture support (thanks DIVON)
-      <li>09/12/04 - LR - Add Integer cast line 94 for Linux
-      <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
-      <li>05/06/03 - SG - Separated from VKS.VectorFileObjects.pas
-  </ul></font>
+{
+  3DStudio 3DS vector file format implementation.
 }
 unit VKS.File3DS;
 
@@ -52,10 +11,8 @@ interface
 {$I VKScene.inc}
 
 uses
-   
   System.Classes, System.SysUtils, System.Math,
-
-   
+  //VKS
   VKS.Scene, VKS.Objects, VKS.VectorFileObjects, VKS.Texture, VKS.ApplicationFileIO,
   VKS.VectorGeometry, File3DS, Types3DS, VKS.OpenGLTokens, VKS.Context, VKS.PersistentClasses,
   VKS.Strings, VKS.File3DSSceneObjects, VKS.CrossPlatform, VKS.VectorTypes, VKS.VectorLists,
@@ -65,7 +22,7 @@ type
 
   EGLFile3DS = class(Exception);
 
-  {: TVKFile3DSAnimationData.
+  { TVKFile3DSAnimationData.
      A record that holds all the information that is used during 3ds animation. }
   TVKFile3DSAnimationData = packed record
     ModelMatrix: TMatrix;
@@ -76,7 +33,7 @@ type
     Roll: single;
   end;
 
-  {: TVKFile3DSAnimationKeys.
+  { TVKFile3DSAnimationKeys.
 
      An abstract class that describes how to interpolate animation keys. }
   TVKFile3DSAnimationKeys = class(TPersistentObject)
@@ -221,11 +178,11 @@ type
     destructor Destroy; override;
   end;
 
-  {: Used only for serialization. There probably is a more efficient way to do it. }
+  { Used only for serialization. There probably is a more efficient way to do it. }
   TVKFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
     ctFall, ctHot, ctRoll);
 
-  {: TVKFile3DSDummyObject. A 3ds-specific TMorphableMeshObject. }
+  { TVKFile3DSDummyObject. A 3ds-specific TMorphableMeshObject. }
   TVKFile3DSDummyObject = class(TMorphableMeshObject)
   private
     FAnimList: TVKFile3DSAnimationKeyList;
@@ -257,14 +214,14 @@ type
     property RefrenceTransf: TVKFile3DSAnimationData read FRefTranf write FRefTranf;
   end;
 
-  {: TVKFile3DSDummyObject. A 3ds-specific mesh object. }
+  { TVKFile3DSDummyObject. A 3ds-specific mesh object. }
   TVKFile3DSMeshObject = class(TVKFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
     procedure BuildList(var ARci: TRenderContextInfo); override;
   end;
 
-  {: TVKFile3DSDummyObject. A 3ds-specific omni light. }
+  { TVKFile3DSDummyObject. A 3ds-specific omni light. }
   TVKFile3DSOmniLightObject = class(TVKFile3DSDummyObject)
   private
     FLightSrc: TVKFile3DSLight;
@@ -280,7 +237,7 @@ type
     destructor Destroy; override;
   end;
 
-  {: TVKFile3DSSpotLightObject. A 3ds-specific spot light. }
+  { TVKFile3DSSpotLightObject. A 3ds-specific spot light. }
   TVKFile3DSSpotLightObject = class(TVKFile3DSOmniLightObject)
   public
     procedure LoadData(const AOwner: TVKBaseMesh; const AData: PLight3DS); override;
@@ -288,7 +245,7 @@ type
     procedure SetFrame(const AFrame: real); override;
   end;
 
-  {: TVKFile3DSCameraObject. A 3ds-specific camera. }
+  { TVKFile3DSCameraObject. A 3ds-specific camera. }
   TVKFile3DSCameraObject = class(TVKFile3DSDummyObject)
   private
     FTargetObj: TVKDummyCube;
@@ -306,8 +263,8 @@ type
 
   // TVK3DSVectorFile
 
-  {: The 3DStudio vector file.<p>
-     Uses an upgraded version if a 3DS import library by Mike Lischke.<p>
+  { The 3DStudio vector file. 
+     Uses an upgraded version if a 3DS import library by Mike Lischke. 
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
   TVK3DSVectorFile = class(TVectorFile)
@@ -318,7 +275,7 @@ type
   end;
 
 var
-  {: If enabled, advanced parameters will be loaded from a 3ds file
+  { If enabled, advanced parameters will be loaded from a 3ds file
      (TextureScale, TextureOffset), but it might break backwards compatibility.
      If disabled, it won't break anything, but some parameters will not be
      loaded correctly from a 3ds file.
@@ -326,7 +283,7 @@ var
      (for unknown reasons), so it is off by default. }
   vGLFile3DS_UseTextureEx: boolean = False;
 
-  {: If enabled, allows 3ds animation and fixes loading of some 3ds models,
+  { If enabled, allows 3ds animation and fixes loading of some 3ds models,
      but has a few bugs:
      - TVKFreeForm.AutoCentering does now work correctly.
      - TMeshObject.vertices return values different from
@@ -334,14 +291,14 @@ var
      }
   vGLFile3DS_EnableAnimation: boolean = False;
 
-  {: If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
+  { If enabled, a -90 degrees (-PI/2) rotation will occured on X Axis.
      By design 3dsmax has a Z Up-Axis, after the rotation the Up axis will
      be Y. (Note: you need vGLFile3DS_EnableAnimation = true)
   }
   vGLFile3DS_FixDefaultUpAxisY: boolean = False;
 
 
-  {: If >= 0, then the vertices list will be updated with selected frame
+  { If >= 0, then the vertices list will be updated with selected frame
      animation data. (Note: you need vGLFile3DS_EnableAnimation = true).
      Be aware that in that case animation will not be usable, it is made
      to be used with a static mesh like GLFreeForm.
@@ -362,7 +319,7 @@ const
 resourcestring
   gls3DSMapNotFound = 'Loading %s map texture failed: %s in %s';
 
-{$IFDEF GLS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
 
 // AnimKeysClassTypeToClass
 
@@ -381,7 +338,7 @@ begin
     else
     begin
       Result := nil;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, vksErrorEx + vksUnknownType);
     end;
   end;
 end;
@@ -411,7 +368,7 @@ begin
   else
   begin
     Result := ctScale;
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, vksErrorEx + vksUnknownType);
   end;
 end;
 
@@ -483,9 +440,9 @@ end;
 // ------------------ Support classes ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSAnimationKeys.InterpolateFrame(var I: integer;
   var w: real; const AFrame: real);
@@ -620,9 +577,9 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSScaleAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSScaleAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -694,9 +651,9 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSRotationAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSRotationAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -779,9 +736,9 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSPositionAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -837,9 +794,9 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSColorAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSColorAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -889,9 +846,9 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TTVKFile3DSPositionAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TTVKFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TTVKFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -948,9 +905,9 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1000,9 +957,9 @@ begin
     Reader.Read(FFall[0], FNumKeys * SizeOf(single));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1051,9 +1008,9 @@ begin
     Reader.Read(FHot[0], FNumKeys * SizeOf(single));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSRollAnimationKeys'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSRollAnimationKeys'}{$ENDIF}
 
 procedure TVKFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1113,9 +1070,9 @@ begin
   FAnimKeysList[ind] := AItem;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSAnimationKeyList'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSAnimationKeyList'}{$ENDIF}
 
 procedure TVKFile3DSAnimationKeyList.ApplyAnimKeys(
   var DataTransf: TVKFile3DSAnimationData; const AFrame: real);
@@ -1191,9 +1148,9 @@ begin
   inherited Destroy;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSDummyObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSDummyObject'}{$ENDIF}
 
 constructor TVKFile3DSDummyObject.Create;
 begin
@@ -1321,9 +1278,9 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSMeshObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSMeshObject'}{$ENDIF}
 
 procedure TVKFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1397,9 +1354,9 @@ begin
   GL.PopMatrix;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSOmniLightObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSOmniLightObject'}{$ENDIF}
 
 constructor TVKFile3DSOmniLightObject.Create;
 begin
@@ -1510,9 +1467,9 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSSpotLightObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSSpotLightObject'}{$ENDIF}
 
 procedure TVKFile3DSSpotLightObject.LoadData(const AOwner: TVKBaseMesh;
   const AData: PLight3DS);
@@ -1566,9 +1523,9 @@ begin
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKFile3DSCameraObject'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKFile3DSCameraObject'}{$ENDIF}
 
 constructor TVKFile3DSCameraObject.Create;
 begin
@@ -1672,9 +1629,9 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVK3DSVectorFile'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVK3DSVectorFile'}{$ENDIF}
 
 // Capabilities
 
@@ -1698,7 +1655,7 @@ var
   hasLightmap: boolean;
 
 
-  {$IFDEF GLS_REGIONS}{$REGION 'TVK3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
+  {$IFDEF VKS_REGIONS}{$REGION 'TVK3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
   //--------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
@@ -1979,7 +1936,7 @@ var
 
   //----------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   function IsVertexMarked(P: PByteArray; Index: word): boolean; inline;
     // tests the Index-th bit, returns True if set else False
   var
@@ -2000,7 +1957,7 @@ var
 
   //---------------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   function MarkVertex(P: PByteArray; Index: word): boolean; inline;
     // sets the Index-th bit and return True if it was already set else False
   var
@@ -2034,7 +1991,7 @@ var
   //       have more than one group assigned to a face. To make the code fail safe the group ID
   //       is scanned for the lowest bit set.
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal;
     P: PSmoothIndexArray);
   var
@@ -2064,7 +2021,7 @@ var
 
   //---------------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal;
     P: PSmoothIndexArray): integer; inline;
     // Retrieves the vertex index for the given index and smoothing group.
@@ -2137,7 +2094,7 @@ var
         end;
   end;
 
-  {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+  {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 var
   CurrentMotionIndex, iMaterial, i, j, x: integer;
@@ -2462,7 +2419,7 @@ begin
     end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

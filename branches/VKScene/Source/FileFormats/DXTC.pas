@@ -1,21 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: DXTC<p>
+{
+   DXTC (also S3TC) decoding. 
+   Adapted from DevIL image library (http://openil.sourceforge.net) 
 
-   DXTC (also S3TC) decoding.<br>
-   Adapted from DevIL image library (http://openil.sourceforge.net)<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>05/03/10 - Yar - Added float types in GLEnumToDDSHeader
-      <li>23/01/10 - Yar - Added more support DX9 DDS color formats
-                           and DX11 DXGI constants to future
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
-      <li>01/09/04 - SG - Creation
-   </ul></font>
 }
 unit DXTC;
 
@@ -77,7 +66,7 @@ type
       dwFlags,
       dwHeight,
       dwWidth,
-      dwPitchOrLinearSize, {: The number of bytes per scan line in an
+      dwPitchOrLinearSize, { The number of bytes per scan line in an
                               uncompressed texture; the total number of bytes
                               in the top level texture for a compressed texture.}
       dwDepth,
@@ -301,7 +290,7 @@ type
     ColorFlag: Cardinal;
     RBits, GBits, BBits, ABits: Cardinal;
     colorFormat: GLEnum;
-    TexFormat: TVKInternalFormat;
+    TexFormat: TGLInternalFormat;
     dType: GLenum;
   end;
 
@@ -480,7 +469,7 @@ procedure flip_dxt5_alpha  ( block : PDXT5AlphaBlock);
 function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
-                           out iFormat: TVKInternalFormat;
+                           out iFormat: TGLInternalFormat;
                            out colorFormat: GLEnum;
                            out dataType: GLenum;
                            out bpe: Integer): Boolean;
@@ -488,14 +477,14 @@ function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
 function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
-                           const iFormat: TVKInternalFormat;
+                           const iFormat: TGLInternalFormat;
                            const colorFormat: GLEnum;
                            const dataType: GLenum;
                            const bpe: Integer): Boolean;
 
-function FindDDSCompatibleDataFormat(const iFormat: TVKInternalFormat;
-                                     out colorFormat: TVKEnum;
-                                     out dataType: TVKEnum): Boolean;
+function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
+                                     out colorFormat: TGLenum;
+                                     out dataType: TGLenum): Boolean;
 
 implementation
 
@@ -912,7 +901,7 @@ end;
 function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
-                           out iFormat: TVKInternalFormat;
+                           out iFormat: TGLInternalFormat;
                            out colorFormat: GLEnum;
                            out dataType: GLenum;
                            out bpe: Integer): Boolean;
@@ -1189,7 +1178,7 @@ end;
 function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
-                           const iFormat: TVKInternalFormat;
+                           const iFormat: TGLInternalFormat;
                            const colorFormat: GLEnum;
                            const dataType: GLenum;
                            const bpe: Integer): Boolean;
@@ -1311,9 +1300,9 @@ begin
 
 end;
 
-function FindDDSCompatibleDataFormat(const iFormat: TVKInternalFormat;
-                                     out colorFormat: TVKEnum;
-                                     out dataType: TVKEnum): Boolean;
+function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
+                                     out colorFormat: TGLenum;
+                                     out dataType: TGLenum): Boolean;
 var
   i: Integer;
 begin

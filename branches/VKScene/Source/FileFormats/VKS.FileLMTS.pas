@@ -1,35 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ : VKS.FileLMTS<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>31/05/10 - Yar - Fixes for Linux x64
-  <li>22/01/10 - Yar - Added VKS.TextureFormat to uses
-  <li>25/07/07 - DaStr - Replaced some types to get rid of compiler warnings
-  <li>08/10/08 - DanB - fix for different Char size in Delphi 2009+
-  <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
-  to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
-  <li>29/05/08 - DaStr - Replaced VKS.Utils with VKS.Graphics (BugTracker ID = 1923844)
-  Added $I GLScene.inc
-  <li>13/08/07 - fig -  Added checks for DDS textures in LoadFromStream()
-  <li>23/03/07 - fig -  Fixed exception when material properties were loaded without a material library being assigned.
-  <li>15/01/07 - fig -  If available, material data is now imported/exported.
-  <li>15/01/07 - fig -  Added checks in the loader for invalid material indices.  LMTools can return meshes like this for some reason.
-  <li>14/01/07 - fig -  Material/facegroup name is now changed to the available filename instead of stripping the extention.
-  <li>12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
-  <li>07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
-  <li>06/01/07 - fig -  Strip all texture file extentions on load/save
-  <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
-  missing texture exception handling, normals are built on load,
-  support for more facegroup types added.
-  <li>02/01/07 - fig - Added SavetoStream() and Capabilities function.
-  <li>02/01/07 - PvD - Dealing with non empty material libraries.
-  <li>02/01/07 - PvD - Mirrored mesh in X to original orientation.
-  <li>01/01/07 - Dave Gravel - Modification to make it work.
-  <li>10/09/03 - Domin - Creation
-  </ul><p>
-}
 unit VKS.FileLMTS;
 
 interface

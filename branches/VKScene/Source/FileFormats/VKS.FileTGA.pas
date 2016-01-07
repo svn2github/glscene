@@ -1,13 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.FileTGA<p>
-
+{
    Graphic engine friendly loading of TGA image.
-
- <b>History : </b><font size=-1><ul>
-        <li>04/04/11 - Yar - Creation
-   </ul><p>
+   
 }
 
 unit VKS.FileTGA;
@@ -41,10 +37,10 @@ type
     class function Capabilities: TDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TVKuint;
+      const textureHandle: TGLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: boolean;
-      const intFormat: TVKInternalFormat); reintroduce;
+      const intFormat: TGLInternalFormat); reintroduce;
   end;
 
 implementation
@@ -298,8 +294,8 @@ end;
 //
 
 procedure TVKTGAImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TVKuint; textureTarget: TVKTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TVKInternalFormat);
+  const textureHandle: TGLuint; textureTarget: TVKTextureTarget;
+  const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
 begin
 {$MESSAGE Hint 'TVKTGAImage.AssignFromTexture not yet implemented' }
 end;

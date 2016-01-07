@@ -1,25 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CelShader<p>
-
+{
    A shader that applies cel shading through a vertex program
-   and shade definition texture.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Upgraded program hadles
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>22/01/10 - Yar   - Added bmp32.Blank:=false for memory allocation
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>21/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>28/09/04 - SG - Vertex program now uses ARB_position_invariant option.
-      <li>09/06/04 - SG - Added OutlineColor, vertex programs now use GL state.
-      <li>28/05/04 - SG - Creation.
-   </ul></font>
+   and shade definition texture. 
+    
 }
 unit VKS.CelShader;
 
@@ -37,7 +22,7 @@ uses
 type
   // TVKCelShaderOption
   //
-  {: Cel shading options.<p>
+  { Cel shading options. 
      csoOutlines: Render a second outline pass.
      csoTextured: Allows for a primary texture that the cel shading
                   is modulated with and forces the shade definition
@@ -53,7 +38,7 @@ type
 
   // TVKCelShader
   //
-  {: A generic cel shader.<p> }
+  { A generic cel shader.  }
   TVKCelShader = class(TVKShader)
   private
     FOutlineWidth: Single;

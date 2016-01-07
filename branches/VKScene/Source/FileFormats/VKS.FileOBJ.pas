@@ -1,77 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{: VKS.FileOBJ<p>
-
+{
     Support-Code to load Wavefront OBJ Files into TVKFreeForm-Components
-    in GLScene.<p>
+    in VKScene.  
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time.<p>
-
- <b>History : </b><font size=-1><ul>
-
-      <li>17/09/13 - YP - Added support for self-illumination (using Texture2Name)
-      <li>28/06/13 - YP - Added support for vector color
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-
-      <li>26/06/12 - YP - Split groups in their own mesh instead of a new facegroup
-                          (see globale var vGLFileOBJ_SplitMesh, enabled by default)
-      <li>20/06/12 - YP - Get TexturePaths from MaterialLibrary when loading materials
-
-      <li>30/06/11 - DaStr - Added ability to assign meshes
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>20/05/08 - mrqzzz - Added RegisterClass(TOBJFGVertexNormalTexIndexList)
-      <li>06/06/07 - DaStr - Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>11/07/05 - DaStr - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
-      <li>11/07/05 - Wet - Added multi meshobject support
-      <li>09/09/03 - Jaj - Added TriangleStrip and TriangleFan support to save..
-      <li>10/07/03 - Egg - Improved robustness of material loading
-      <li>02/06/03 - Egg - Undone Jaj changes, they broke standard OBJ support
-      <li>30/01/03 - Egg - Normals extraction
-      <li>29/01/03 - Jaj - Fixed to allow load of simple triangle meshes... ('V','VN','VT')
-      <li>23/01/03 - Egg - Can now export TFGIndexTexCoordList (untextured)
-      <li>25/11/02 - Egg - Improved mtl import (d and illum commands)
-      <li>22/11/02 - Egg - Supports OBJ files using #9 in place of #32,
-                           fixed leak, some code cleanup/rearrangements,
-                           support for mtllib and usemtl commands
-      <li>18/08/01 - Egg - '$' now allowed as alternate comment,
-                           AddToTriangles override
-      <li>03/10/00 - Egg - Fixed TVKOBJVectorFile.LoadFromStream.ReadFace
-      <li>08/10/00 - Egg - Added standard header, basic htmlification of old header,
-                           removed specific trim funcs,
-                           renamed TMBAGLOBJVectorFile to TVKOBJVectorFile
-   </ul><p>
-
-   (c) 2000 Marian Aldenhövel<br>
-       Hainstraße 8<br>
-       53121 Bonn<br>
-       info@MBA-Software.de<p>
-
-  License:<br>
-
-    Contributed to Eric Grange and VKS.Scene,
-    same licensing, batteries not included.<p>
-
-  History:<p>
-
-    26.9.2000:  - OBJF-Support (t- and q-lines) see
-                  http://www.cs.sunysb.edu/~stripe/<br>
-    18.9.2000:  - Bugfixing.
-                - SaveTo-Methods.<br>
-    14.9.2000:  - Calculate normals where missing in the file.
-                - Collect Facegroups by Name and do not start a new
-            one for every 'g'-line in the file.
-                - Relative indexing in 'f'-lines.<br>
-    13.9.2000:  - Start of this project as an exercise to get familiar with<br>
-                    a) the OBJ-Format and<br>
-                    b) GLScene internals<br>
-                  Midterm-goal: Import what Poser 4 exports and display it
-                                correctly in an GLScene.<br>
+    to enable support for OBJ & OBJF at run-time.
+    
 }
 unit VKS.FileOBJ;
 
@@ -135,24 +70,24 @@ type
 
   // TVKMTLFile
   //
-  {: A simple class that know how to extract infos from a mtl file.<p>
+  { A simple class that know how to extract infos from a mtl file. 
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
-     please help if you know more):<ul>
-     <li>materials begin with a 'newmtl' command followed by material name
-     <li>*Kd command defines the diffuse color
-     <li>*map_Kd command defines the diffuse texture image
-     <li>*Ka/map_Ka define the ambient color and texmap
-     <li>*Ks/map_Ks define the specular color and texmap
-     <li>*Ke/map_Ke define the self-illumination/lightmap texmap
-     <li>map_Bump specifies the bump map
-     <li>*d specifies transparency (alpha-channel, range [0; 1])
-     <li>map_d specifies the opcaity texture map
-     <li>Ns defines the specular exponent or shininess or phong specular (?)
-     <li>Ni is the refraction index (greater than 1)
-     <li>*illum defines the illumination model (0 for no lighting, 1 for
+     please help if you know more): 
+      materials begin with a 'newmtl' command followed by material name
+      *Kd command defines the diffuse color
+      *map_Kd command defines the diffuse texture image
+      *Ka/map_Ka define the ambient color and texmap
+      *Ks/map_Ks define the specular color and texmap
+      *Ke/map_Ke define the self-illumination/lightmap texmap
+      map_Bump specifies the bump map
+      *d specifies transparency (alpha-channel, range [0; 1])
+      map_d specifies the opcaity texture map
+      Ns defines the specular exponent or shininess or phong specular (?)
+      Ni is the refraction index (greater than 1)
+      *illum defines the illumination model (0 for no lighting, 1 for
           ambient and diffuse, 2 for full lighting)
-     </ul> }
+       }
   TVKMTLFile = class(TStringList)
   public
     procedure Prepare;
@@ -163,7 +98,7 @@ type
   end;
 
 var
-  {: If enabled, main mesh will be splitted into multiple mesh from facegroup
+  { If enabled, main mesh will be splitted into multiple mesh from facegroup
      data.}
 
   vGLFileOBJ_SplitMesh: boolean = False;

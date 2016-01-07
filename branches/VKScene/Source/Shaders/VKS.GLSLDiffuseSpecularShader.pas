@@ -1,35 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.DiffuseSpecularShader<p>
-
-    This is a collection of GLSL diffuse-specular shaders.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TVKSLMLDiffuseSpecularShader
-                           Deleted TVKSLDiffuseSpecularShaderAM, TVKSLDiffuseSpecularShaderAM
-      <li>17/02/13 - Yar - Added fog support to TVKSLMLDiffuseSpecularShader
-      <li>16/03/11 - Yar - Fixes after emergence of VKS.MaterialEx
-      <li>23/10/10 - Yar - Bugfixed memory leak
-      <li>23/08/10 - Yar - Replaced OpenGL1x to VKS.OpenGLTokens
-      <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
-                              (thanks YarUnderoaker)  
-      <li>25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
-                              which occured on all GeForce 8x and later graphic cards
-      <li>24/07/09 - DaStr - Added Fog support for single-light shaders and fixed
-                              a bug with material Alpha (thanks Controller)
-      <li>02/09/07 - LC - Fixed texture bug in TVKSLMLDiffuseSpecularShader.
-                          (Bugtracker ID = 1786286)
-      <li>03/04/07 - LC - Shader didn't respect the texture matrix. Changed
-                          vertex shader to fix this. (Bugtracker ID = 1693389)
-      <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
-      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
-                              a single Str procedure (thanks Uwe Raabe)
-      <li>03/03/07 - DaStr - Made compatible with Delphi6
-                             Added more stuff to RegisterClasses()
-      <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
+{
     This is a collection of GLSL Diffuse Specular shaders, comes in these variaties
               (to know what these suffixes and prefixes mean see VKS.CustomShader.pas):
       - TVKSLDiffuseSpecularShader
@@ -43,18 +15,9 @@
       from OpenGL (that includes TVKMaterial's)
      2) TVKSLDiffuseSpecularShader takes all Light parameters directly
       from OpenGL (that includes TVKLightSource's)
-
-
-    Previous version history:
-      v1.0    01 November  '2006  Creation
-      v1.1    19 December  '2006  TVKBaseCustomGLSLDiffuseSpecular[MT] abstracted
-                                  5 different versions of this shader added
-      v1.1.2  06 February  '2007  IGLMaterialLibrarySupported renamed to
-                                   IGLMaterialLibrarySupported
-      v1.2    16 February  '2007  Updated to the latest CVS version of GLScene
-
 }
-unit GLSL.DiffuseSpecularShader;
+
+unit VKS.GLSLDiffuseSpecularShader;
 
 interface
 
@@ -64,7 +27,7 @@ uses
   System.Classes, System.SysUtils,
   //VKS
   VKS.Texture, VKS.Scene, VKS.VectorGeometry, VKS.OpenGLTokens, VKS.Strings,
-  VKS.CustomShader, GLSL.Shader, VKS.Color, VKS.RenderContextInfo, VKS.Material;
+  VKS.CustomShader, VKS.GLSLShader, VKS.Color, VKS.RenderContextInfo, VKS.Material;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
@@ -125,7 +88,7 @@ type
 
                      {********  Multi Light  ************}
 
-  {: Note: probably LightCount should be replaced by LightSources, like in
+  { Note: probably LightCount should be replaced by LightSources, like in
      GLSLBumpShader.pas }
 
   TLightRecord = record
@@ -231,7 +194,7 @@ begin
         Add('  				   LOG2 ); ');
       end;
     else
-      Assert(False, glsUnknownType);
+      Assert(False, vksUnknownType);
     end;
 
       Add('  fogFactor = clamp(fogFactor, 0.0, 1.0); ');
@@ -618,7 +581,7 @@ begin
   begin
     FMainTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLDiffuseSpecularShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLDiffuseSpecularShaderException.Create(vksErrorEx + vksMatLibNotDefined);
   end
   else
   begin

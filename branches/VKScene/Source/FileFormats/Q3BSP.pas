@@ -1,15 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: Q3BSP<p>
-
-	Simple Quake III BSP file loader.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-	   <li>30/01/03 - Egg - Creation, based on Philip Stefou's document and
-                           bits from Jan Horn's loader
-	</ul></font>
+{
+	Simple Quake III BSP file loader. 
+ 
 }
 unit Q3BSP;
 

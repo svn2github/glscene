@@ -1,13 +1,7 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.Selection<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
-  <li>02/09/10 - Yar - Creation
-  </ul></font>
-}
 unit VKS.Selection;
 
 interface
@@ -38,7 +32,7 @@ type
 
   // TVKPickList
   //
-  {: List class for object picking.<p>
+  { List class for object picking. 
      This list is used to store the results of a PickObjects call. }
   TVKPickList = class(TPersistentObjectList)
   private
@@ -69,8 +63,8 @@ type
   TVKBaseSelectTechnique = class
   protected
     FObjectStack: array of TObject;
-    FNameStack: array[0..255] of TVKuint;
-    FCurrentName: TVKuint;
+    FNameStack: array[0..255] of TGLuint;
+    FCurrentName: TGLuint;
     FStackPosition: Integer;
     FObjectCountGuess: Integer;
     FHits: Integer;
@@ -130,7 +124,7 @@ begin
     Result := TVKSelectRenderModeTechnique;
 end;
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKPickList'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKPickList'}{$ENDIF}
 // ------------------
 // ------------------ TVKPickList ------------------
 // ------------------
@@ -259,9 +253,9 @@ function TVKPickList.GetSubObjects(aValue: Integer): TPickSubobjects;
 begin
   Result := TPickRecord(Items[AValue]).SubObjects;
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TVKSelectRenderModeTechnique'}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$REGION 'TVKSelectRenderModeTechnique'}{$ENDIF}
 // ------------------
 // ------------------ TVKSelectRenderModeTechnique ------------------
 // ------------------
@@ -291,7 +285,7 @@ end;
 procedure TVKSelectRenderModeTechnique.Start;
 begin
   SetLength(FBuffer, FObjectCountGuess * 4 + 32);
-  GL.SelectBuffer(FObjectCountGuess * SizeOf(TVKuint), @FBuffer[0]);
+  GL.SelectBuffer(FObjectCountGuess * SizeOf(TGLuint), @FBuffer[0]);
   GL.RenderMode(GL_SELECT);
   GL.InitNames;
   FCurrentName := 0;
@@ -363,6 +357,6 @@ begin
   Inc(FCurrentName);
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 end.

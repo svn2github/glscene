@@ -1,22 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.ProjectedTextures<p>
-
+{
    Implements projected textures through a GLScene object.
-
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>15/06/05 - Mathx - Added the Style property and inverse rendering
-      <li>07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
-      <li>01/10/04 - SG - Initial (by Matheus Degiovani)
-   </ul></font>
+    
 }
 unit VKS.ProjectedTextures;
 
@@ -37,24 +24,24 @@ uses
   VKS.Context;
 
 type
-  {: Possible styles of texture projection. Possible values:<ul>
-     <li>ptsOriginal: Original projection method (first pass,
+  { Possible styles of texture projection. Possible values: 
+      ptsOriginal: Original projection method (first pass,
          is default scene render, second pass is texture
          projection).
-     <li>ptsInverse: Inverse projection method (first pass
+      ptsInverse: Inverse projection method (first pass
          is texture projection, sencond pass is regular scene
          render). This method is useful if you want to simulate
          lighting only through projected textures (the textures
          of the scene are "masked" into the white areas of
          the projection textures).
-     </ul> }
+       }
   TVKProjectedTexturesStyle = (ptsOriginal, ptsInverse);
 
   TVKProjectedTextures = class;
 
   // TVKTextureEmmiter
   //
-  {: A projected texture emmiter.<p>
+  { A projected texture emmiter. 
      It's material property will be used as the projected texture.
      Can be places anywhere in the scene. }
   TVKTextureEmitter = class(TVKSceneObject)
@@ -65,7 +52,7 @@ type
 
   protected
     { Protected Declarations }
-    {: Sets up the base texture matrix for this emitter<p>
+    { Sets up the base texture matrix for this emitter 
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TRenderContextInfo);
 
@@ -75,17 +62,17 @@ type
 
   published
     { Published Declarations }
-    {: Indicates the field-of-view of the projection frustum.}
+    { Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
 
-    {: x/y ratio. For no distortion, this should be set to
+    { x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
   end;
 
   // TVKTextureEmitterItem
   //
-  {: Specifies an item on the TVKTextureEmitters collection. }
+  { Specifies an item on the TVKTextureEmitters collection. }
   TVKTextureEmitterItem = class(TCollectionItem)
   private
     { Private Declarations }
@@ -110,7 +97,7 @@ type
 
   // TVKTextureEmitters
   //
-  {: Collection of TVKTextureEmitter. }
+  { Collection of TVKTextureEmitter. }
   TVKTextureEmitters = class(TCollection)
   private
     { Private Declarations }
@@ -132,7 +119,7 @@ type
 
   // TVKProjectedTexture
   //
-  {: Projected Textures Manager.<p>
+  { Projected Textures Manager. 
      Specifies active texture Emitters (whose texture will be projected)
      and receivers (children of this object). }
   TVKProjectedTextures = class(TVKImmaterialSceneObject)
@@ -151,10 +138,10 @@ type
   published
     { Published Declarations }
 
-    {: List of texture emitters. }
+    { List of texture emitters. }
     property Emitters: TVKTextureEmitters read FEmitters write FEmitters;
 
-    {: Indicates the style of the projected textures. }
+    { Indicates the style of the projected textures. }
     property Style: TVKProjectedTexturesStyle read FStyle write FStyle;
   end;
 

@@ -1,16 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: FileOCT<p>
-
-	Loader for FSRad OCT files.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>02/04/07 - DaStr - Added $I GLScene.inc
-      <li>30/01/03 - Egg - Creation
-	</ul></font>
-}
+{
+	Loader for FSRad OCT files. 
+} 
 unit FileOCT;
 
 interface
@@ -79,7 +72,7 @@ type
          constructor Create; overload;
          constructor Create(octStream : TStream); overload;
 
-         {: Saves content to stream in OCT format.<p>
+         { Saves content to stream in OCT format. 
             The Header is automatically prepared before streaming. }
          procedure SaveToStream(aStream : TStream);
 

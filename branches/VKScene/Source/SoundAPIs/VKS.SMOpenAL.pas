@@ -1,30 +1,21 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.SMOpenAL<p>
-
-	OpenAL based sound-manager (http://www.openal.org).<p>
+{
+   OpenAL based sound-manager (http://www.openal.org). 
    OpenAL drivers can be download from the OpenAL site or your soundcard
-   manufacturer's website.<p>
+   manufacturer's website. 
 
-   Unsupported feature(s) :<ul>
-      <li>Accepts only simple *uncompressed* WAV files (8/16 bits, mono/stereo)
-      <li>Dynamic loading/unloading
-      <li>Global 3D parameters
-      <li>Environments
-      <li>CPUUsagePercent
-      <li>No system in place to limit number of sources playing simultaneously,
+   Unsupported feature(s) : 
+       Accepts only simple *uncompressed* WAV files (8/16 bits, mono/stereo)
+       Dynamic loading/unloading
+       Global 3D parameters
+       Environments
+       CPUUsagePercent
+       No system in place to limit number of sources playing simultaneously,
           can crash if too playing at once.
-      <li>???
-   </ul><p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Added $I GLScene.inc
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>25/03/08 - DanB - Added design-time support, linked to new OpenAL headers
-                            (see OpenAL.pas).
-      <li>??/??/03 - Mrqzz - Creation
-	</ul></font>
+       ???
+	 
 }
 unit VKS.SMOpenAL;
 

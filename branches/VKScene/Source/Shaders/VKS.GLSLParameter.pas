@@ -1,17 +1,12 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: GLSL.Parameter<p>
 
-	<b>History : </b><font size=-1><ul>
-    <li>14/03/11 - Yar - Creation
-  </ul>
-}
-unit GLSL.Parameter;
+unit VKS.GLSLParameter;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 {$M-}
 
 uses
@@ -114,17 +109,17 @@ type
     function GetVec3: TVector3f;
     function GetVec4: TVector4f;
 
-    function GetInt: TVKint;
+    function GetInt: TGLint;
     function GetIVec2: TVector2i;
     function GetIVec3: TVector3i;
     function GetIVec4: TVector4i;
 
-    function GetUInt: TVKuint;
+    function GetUInt: TGLuint;
     function GetUVec2: TVector2ui;
     function GetUVec3: TVector3ui;
     function GetUVec4: TVector4ui;
 
-    procedure SetFloat(const Value: TVKFloat);
+    procedure SetFloat(const Value: TGLfloat);
     procedure SetVec2(const Value: TVector2f);
     procedure SetVec3(const Value: TVector3f);
     procedure SetVec4(const Value: TVector4f);
@@ -153,31 +148,31 @@ type
     property Name: string read GetName;
     property GLSLType: TVKSLDataType read GetGLSLType;
     property GLSLSamplerType: TVKSLSamplerType read GetGLSLSamplerType;
-    {: Scalar types.<p>}
-    property float: TVKFloat read GetFloat write SetFloat;
-    property int: TVKint read GetInt write SetInt;
-    property uint: TVKUint read GetUInt write SetUInt;
+    { Scalar types. }
+    property float: TGLfloat read GetFloat write SetFloat;
+    property int: TGLint read GetInt write SetInt;
+    property uint: TGLuint read GetUInt write SetUInt;
 
-    {: Float vector types.<p>}
+    { Float vector types. }
     property vec2: TVector2f read GetVec2 write SetVec2;
     property vec3: TVector3f read GetVec3 write SetVec3;
     property vec4: TVector4f read GetVec4 write SetVec4;
 
-    {: Integer vector  types.<p>}
+    { Integer vector  types. }
     property ivec2: TVector2i read GetIVec2 write SetIVec2;
     property ivec3: TVector3i read GetIVec3 write SetIVec3;
     property ivec4: TVector4i read GetIVec4 write SetIVec4;
 
-    {: Unsigned integer vector  types.<p>}
+    { Unsigned integer vector  types. }
     property uvec2: TVector2ui read GetUVec2 write SetUVec2;
     property uvec3: TVector3ui read GetUVec3 write SetUVec3;
     property uvec4: TVector4ui read GetUVec4 write SetUVec4;
 
-    {: Matrix Types.<p>}
+    { Matrix Types. }
     property mat2: TMatrix2f read GetMat2 write SetMat2;
     property mat3: TMatrix3f read GetMat3 write SetMat3;
     property mat4: TMatrix4f read GetMat4 write SetMat4;
-    {: Bindings.<p>}
+    { Bindings. }
     property AutoSetMethod: string read GetAutoSetMethod write SetAutoSetMethod;
     property TextureName: string read GetTextureName write SetTextureName;
     property SamplerName: string read GetSamplerName write SetSamplerName;
@@ -256,7 +251,7 @@ resourcestring
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
 
-function GLSLTypeEnum(AType: TVKSLDataType): TVKEnum;
+function GLSLTypeEnum(AType: TVKSLDataType): TGLenum;
 function GLSLTypeComponentCount(AType: TVKSLDataType): Integer;
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TVKSLDataType; AMethod: TUniformAutoSetMethod);
@@ -329,7 +324,7 @@ type
 var
   vMethods: array of TAutoSetMethodRec;
 
-function GLSLTypeEnum(AType: TVKSLDataType): TVKEnum;
+function GLSLTypeEnum(AType: TVKSLDataType): TGLenum;
 begin
   Result := cGLSLTypeEnum[AType];
 end;

@@ -1,22 +1,10 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Trail<p>
-
-	Creates a trail-like mesh.
-  Based on Jason Lanford's demo. <p>
-
-	<b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>03/04/07 - DaStr - Added default values to some properties
-                               Added TVKTrail.AntiZFightOffset
-                               Subscribed for Notification in TVKTrail.SetTrailObject
-        <li>28/03/07 - DaStr - Renamed parameters in some methods
-                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-        <li>19/12/06 - DaS - msRight (TMarkStyle) support added
-        <li>09/12/04 - LR  - Suppress windows uses
-        <li>12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
-   </ul></font>
+{ 
+  Creates a trail-like mesh.
+  Based on Jason Lanford's demo.  
+   
 }
 
 unit VKS.Trail;
@@ -38,7 +26,7 @@ type
 
   TMarkStyle = (msUp, msDirection, msFaceCamera, msRight);
 
-  TVKTrail = class(TGlMesh)
+  TVKTrail = class(TVKMesh)
   private
 
     fVertLimit: integer;
@@ -85,21 +73,21 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure CreateMark(obj: TGlBaseSceneObject; width: single;CurrentTime : Double); overload;
+    procedure CreateMark(obj: TVKBaseSceneObject; width: single;CurrentTime : Double); overload;
     procedure CreateMark(APos,ADir,AUp: TVector3f; AWidth: single;ACurrentTime : Double); overload;
     function CreateMark(p1,p2: TVector3f;CurrentTime : Double):boolean; overload;
 
     procedure ClearMarks;
 
   published
-    {: Add a tiny bit of offset to help prevent z-fighting..
+    { Add a tiny bit of offset to help prevent z-fighting..
        Need a better solution here as this will get out of whack on really
        long trails and is dependant on scene scale. }
      property AntiZFightOffset: Single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
 
      property VertLimit: integer  read FVertLimit write SetVertLimit default 150;
      property TimeLimit: single  read FTimeLimit write SetTimeLimit;
-     {: Don't create mark unless moved at least this distance. }
+     { Don't create mark unless moved at least this distance. }
      property MinDistance: single  read FMinDistance write SetMinDistance;
      property Alpha: single  read FAlpha write SetAlpha;
      property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade default True;
@@ -161,7 +149,7 @@ begin
  fVertStart := 1;
 end;
 
-procedure TVKTrail.CreateMark(obj: TGlBaseSceneObject; width: single;CurrentTime : Double);
+procedure TVKTrail.CreateMark(obj: TVKBaseSceneObject; width: single;CurrentTime : Double);
 var
    v0,dv,p1,p2 : TVector3f;
    v: TVector3f;
@@ -188,7 +176,7 @@ begin
 
                          end;
                     end;
-     else Assert(False, glsErrorEx + glsUnknownType);
+     else Assert(False, vksErrorEx + vksUnknownType);
      end;
      v0 := AffinevectorMake(Obj.AbsolutePosition);
      VectorScale(v,width,v);

@@ -1,28 +1,14 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{ : VKS.FileDXF<p>
-
+{
   Support-Code to load DXF (Drawing eXchange Files) TVKFreeForm or
-  TVKActor Components in GLScene.<p>
+  TVKActor Components in VKScene.  
 
   Note that you must manually add this unit to one of your project's uses
-  to enable support for DXF at run-time.<p>
-
+  to enable support for DXF at run-time. 
   Turn on TwoSideLighting in your Buffer! DXF-Faces have no defined winding order
 
-  <b>History : </b><font size=-1><ul>
-  <li>05/12/14 - PW - Added to GLScene_Runtime.dpk
-  <li>08/01/06 - JCD - Now works with MaterialLibrary=NIL. (will not load any material, still assigns materialnames to meshobj)
-  <li>04/01/06 - JCD - Layer conversion code, material creation, code cleanup</li>
-  <li>24/04/04 - JCD - some basic stream code copied from GLScene Wavefront OBJ-Importer (09/09/03)</li>
-  </ul><p>
-
-  (c) 2004-2006 Jörn Daub http://www.daubnet.com<p>
-
-  surrendered to Mozilla Public License for use in GLScene.
-  Original author (Jörn Daub) retains the right to make changes without
-  surrendering  the modified code.
 }
 
 unit VKS.FileDXF;
@@ -31,7 +17,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  
+  //VKS
   VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.VectorLists, VKS.Scene, VKS.Texture,
   VKS.VectorFileObjects, VKS.Material;
 

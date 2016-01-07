@@ -1,36 +1,9 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.CgBombShader<p>
-
-   Just a good looking shader. And my first one;) <p>
-
-   <b>History :</b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>24/07/09 - DaStr - TVKShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-      <li>14/03/07 - DaStr - Bugfixed TVKCustomCGBombShader.DoInitialize
-                             (Shader is disabled if GradientTexture is not assigned)
-      <li>14/03/07 - DaStr - Bugfixed TVKCustomCGBombShader.SetMaterialLibrary
-                             Alpha is not stored now
-                             Added design-time checks
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-
-    Previous version history:
-     v1.0   08 March     '2006  Creation (based on NVIdia's FXComposer demo shader)
-     v1.1   04 April     '2006  I found a way to use the Current Texture!
-                                  See the TextureSource property for details...
-     v1.2   14 August    '2006  TVKCgBombShader became child of
-                                  TVKCgShader to support IShaderSuppoted
-                                TShaderTextureSource added
-     v1.3   19 August    '2006  TVKCustomCGBombShader added
-                                GLS_OPTIMIZATIONS support added
-                                TVKCustomCGBombShader.Set[Main/Gradient]Texture() updated
-                                Cadencer stuff abstracted into TCadencableCustomCgShader
-
-}
+{
+   Just a good looking shader. And my first one;)  
+ }
 
 unit VKS.CgBombShader;
 
@@ -53,7 +26,7 @@ type
   TVKCgBombShaderTextureSource = (stsPrimaryTexture, stsSecondadyTexture,
                                   stsThirdTexture, stsUserSelectedTexture);
 
-  {: Just a good-looking shader. }
+  { Just a good-looking shader. }
   TVKCustomCGBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TVKAbstractMaterialLibrary;
@@ -73,7 +46,7 @@ type
     FGradientTextureShare: Single;
     FMainTextureShare: Single;
 
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
     FMainTextureSource: TVKCgBombShaderTextureSource;
 {$ENDIF}
     procedure SetGradientTexture(const Value: TVKTexture);
@@ -124,7 +97,7 @@ type
     property Speed: Single read FSpeed write FSpeed stored StoreSpeed;
     property TurbDensity: Single read FTurbDensity write FTurbDensity stored StoreTurbDensity;
     property ColorRange: Single read FColorRange write FColorRange stored StoreColorRange;
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
     property MainTextureSource: TVKCgBombShaderTextureSource read FMainTextureSource write FMainTextureSource;
 {$ENDIF}
     property MaterialLibrary: TVKAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
@@ -181,7 +154,7 @@ begin
   FColorRange := 0.24;
   FGradientTextureShare := 0.7;
   FMainTextureShare := 0.7;
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   FMainTextureSource := stsUserSelectedTexture;
 {$ENDIF}
 end;
@@ -191,7 +164,7 @@ procedure TVKCustomCGBombShader.DoApply(var rci: TRenderContextInfo; Sender: TOb
 begin
   VertexProgram.Apply(rci, Sender);
   FragmentProgram.Apply(rci, Sender);
-{$IFDEF GLS_OPTIMIZATIONS}
+{$IFDEF VKS_OPTIMIZATIONS}
   if FMainTexture <> nil then
     FragmentProgram.ParamByName('MainTextureSampler').SetAsTexture2D(FMainTexture.Handle);
 {$ELSE}
@@ -486,7 +459,7 @@ end;
 procedure TVKCgBombShader.DoApply(var rci: TRenderContextInfo;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -494,7 +467,7 @@ end;
 
 procedure TVKCgBombShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -503,7 +476,7 @@ end;
 procedure TVKCgBombShader.OnApplyFP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -512,7 +485,7 @@ end;
 procedure TVKCgBombShader.OnApplyVP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}
@@ -520,7 +493,7 @@ end;
 
 procedure TVKCgBombShader.OnUnApplyFP(CgProgram: TCgProgram);
 begin
-{$IFNDEF GLS_OPTIMIZATIONS}
+{$IFNDEF VKS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
     inherited;
 {$ENDIF}

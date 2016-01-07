@@ -1,22 +1,18 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.Manager<p>
-
-   Managers are used to manage many different kinds of clients in GLScene.
+{
+   Managers are used to manage many different kinds of clients in VKScene. 
    They are registered so that when clients are loaded, the client can
-   look up the manager + register themselves with it.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Added $I GLScene.inc
-      <li>05/10/08 - DanB - Created from VKS.Texture.pas split
-   </ul></font>
+   look up the manager + register themselves with it. 
+   
 }
+
 unit VKS.Manager;
 
 interface
 
-{$i GLScene.inc}
+{$i VKScene.inc}
 
 uses
   System.Classes, System.Types;

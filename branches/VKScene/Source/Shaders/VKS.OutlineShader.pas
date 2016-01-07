@@ -1,32 +1,16 @@
 //
-// This unit is part of the GLScene Project   
+// VKScene project based on GLScene library, http://glscene.sourceforge.net 
 //
-{: VKS.OutlineShader<p>
+{
+   A simple shader that adds an outline to an object.  
 
-   A simple shader that adds an outline to an object. <p>
-
-   Limitations: <br>
-     <li> 1. Object can be transparent (color alpha < 1) if it doesn't
+   Limitations:  
+       1. Object can be transparent (color alpha < 1) if it doesn't
                    overlap itself. Texture transparency doesn't work.
-     <li> 2. Doesn't work with objects (e.g. TVKFreeForm) having it's own
+       2. Doesn't work with objects (e.g. TVKFreeForm) having it's own
                    color array.
-     <li> 3. Doesn't Works with visible backfaces.<p>
-
-   <b>History : </b><font size=-1><ul>
-      <li>12/02/11 - Yar - Added skipping shader when enabled stencil test to avvoid conflict with shadow volume
-      <li>23/08/10 - Yar - Added VKS.OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after VKS.State revision
-      <li>05/03/10 - DanB - More state added to TVKStateCache
-      <li>06/06/07 - DaStr - Added $I GLScene.inc
-                             Added VKS.Color to uses (BugtrackerID = 1732211)
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>05/06/04 - NelC - Fixed bug with textured object
-      <li>14/12/03 - NelC - Removed BlendLine, automatically determine if blend
-      <li>20/10/03 - NelC - Removed unnecessary properties. Shader now honors
-                            rci.ignoreMaterials.
-      <li>04/09/03 - NelC - Converted into a component from the TOutlineShader
-                            in the multipass demo.
-   </ul></font>
+       3. Doesn't Works with visible backfaces. 
+   
 }
 unit VKS.OutlineShader;
 
@@ -68,7 +52,7 @@ type
   published
     { Published Declarations }
     property LineColor: TVKColor read FLineColor write FLineColor;
-    {: Line smoothing control }
+    { Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth
       default false;
     property LineWidth: Single read FOutlineWidth write SetOutlineWidth;
