@@ -9,7 +9,7 @@ unit GLS.PhongShader;
 
 interface
 
-{$I VKScene.inc }
+{$I GLScene.inc}
 
 uses
   System.Classes, System.SysUtils,
