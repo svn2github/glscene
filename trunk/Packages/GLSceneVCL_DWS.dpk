@@ -1,11 +1,12 @@
-package GLS_Python_VCL;
+package GLSceneVCL_DWS;
 
 {$R *.res}
+{$R '..\Resources\GLSceneVCLDWS2.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
 {$BOOLEVAL OFF}
-{$DEBUGINFO ON}
+{$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
 {$IOCHECKS ON}
@@ -25,17 +26,22 @@ package GLS_Python_VCL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL Python'}
-{$DESIGNONLY}
+{$DESCRIPTION 'GLSceneVCL DWS Scripting'}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   vcl,
   GLScene_RunTime_VCL,
-  Python_d7;
+  dws2Runtime;
 
 contains
-  GLScriptPython in '..\Source\GLScriptPython.pas';
+  GLScriptDWS2 in '..\Source\GLScriptDWS2.pas',
+  GLDWS2Objects in '..\Source\GLDWS2Objects.pas',
+  dws2HelperFunc in '..\Source\dws2HelperFunc.pas',
+  dws2Classes in '..\Source\dws2Classes.pas',
+  dws2VectorGeometry in '..\Source\dws2VectorGeometry.pas',
+  dws2GLScene in '..\Source\dws2GLScene.pas',
+  dws2OpenGLAdapter in '..\Source\dws2OpenGLAdapter.pas';
 
 end.

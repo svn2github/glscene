@@ -1,0 +1,156 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{123CBCAE-CC52-4C17-8A81-AC17BBE87A57}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="GLSceneVCL_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_BASS.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_FMOD.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_OpenAL.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_ODE.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_NGD.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_Cg_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_Cg_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_CUDA_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_CUDA_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="GLSceneVCL_RunTime">
+        <MSBuild Projects="GLSceneVCL_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_DesignTime">
+        <MSBuild Projects="GLSceneVCL_DesignTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_BASS">
+        <MSBuild Projects="GLSceneVCL_BASS.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_BASS:Clean">
+        <MSBuild Projects="GLSceneVCL_BASS.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_BASS:Make">
+        <MSBuild Projects="GLSceneVCL_BASS.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_FMOD">
+        <MSBuild Projects="GLSceneVCL_FMOD.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_FMOD:Clean">
+        <MSBuild Projects="GLSceneVCL_FMOD.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_FMOD:Make">
+        <MSBuild Projects="GLSceneVCL_FMOD.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_OpenAL">
+        <MSBuild Projects="GLSceneVCL_OpenAL.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_OpenAL:Clean">
+        <MSBuild Projects="GLSceneVCL_OpenAL.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_OpenAL:Make">
+        <MSBuild Projects="GLSceneVCL_OpenAL.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_ODE">
+        <MSBuild Projects="GLSceneVCL_ODE.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_ODE:Clean">
+        <MSBuild Projects="GLSceneVCL_ODE.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_ODE:Make">
+        <MSBuild Projects="GLSceneVCL_ODE.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_NGD">
+        <MSBuild Projects="GLSceneVCL_NGD.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_NGD:Clean">
+        <MSBuild Projects="GLSceneVCL_NGD.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_NGD:Make">
+        <MSBuild Projects="GLSceneVCL_NGD.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_RunTime">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_RunTime">
+        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_DesignTime">
+        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_CUDA_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="GLSceneVCL_RunTime;GLSceneVCL_DesignTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_OpenAL;GLSceneVCL_ODE;GLSceneVCL_NGD;GLSceneVCL_Cg_RunTime;GLSceneVCL_Cg_DesignTime;GLSceneVCL_CUDA_RunTime;GLSceneVCL_CUDA_DesignTime"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="GLSceneVCL_RunTime:Clean;GLSceneVCL_DesignTime:Clean;GLSceneVCL_BASS:Clean;GLSceneVCL_FMOD:Clean;GLSceneVCL_OpenAL:Clean;GLSceneVCL_ODE:Clean;GLSceneVCL_NGD:Clean;GLSceneVCL_Cg_RunTime:Clean;GLSceneVCL_Cg_DesignTime:Clean;GLSceneVCL_CUDA_RunTime:Clean;GLSceneVCL_CUDA_DesignTime:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="GLSceneVCL_RunTime:Make;GLSceneVCL_DesignTime:Make;GLSceneVCL_BASS:Make;GLSceneVCL_FMOD:Make;GLSceneVCL_OpenAL:Make;GLSceneVCL_ODE:Make;GLSceneVCL_NGD:Make;GLSceneVCL_Cg_RunTime:Make;GLSceneVCL_Cg_DesignTime:Make;GLSceneVCL_CUDA_RunTime:Make;GLSceneVCL_CUDA_DesignTime:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

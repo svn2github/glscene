@@ -1,0 +1,66 @@
+package GLSceneVCL_DesignTime;
+
+{$R *.res}
+{$R '..\Resources\GLSceneObjects.dcr'}
+{$R '..\Resources\GLSceneVCL.dcr'}
+{$R '..\Resources\nonGLSceneVCL.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLScene VCL OpenGL 3D library'}
+{$DESIGNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  designide,
+  vclimg,
+  vcl,
+  VclSmp,
+  GLSceneVCL_RunTime;
+
+contains
+  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
+  GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
+  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas' {MaterialEditorForm},
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {Layouts_form},
+  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
+  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
+  FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
+  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FShaderMemo in '..\Source\FShaderMemo.pas',
+  FInfo in '..\Source\FInfo.pas' {InfoForm},
+  GLSceneRegister in '..\Source\GLSceneRegister.pas',
+  FRFaceEditor in '..\Source\FRFaceEditor.pas',
+  RegisterXCollection in '..\Source\RegisterXCollection.pas',
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor};
+
+end.
+
+

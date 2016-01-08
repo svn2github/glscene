@@ -1,7 +1,7 @@
-package GLSS_FMOD_VCL;
+package GLSceneVCL_OpenAL;
 
 {$R *.res}
-{$R '..\Source\SoundAPIs\GLSceneVCLFMod.dcr'}
+{$R '..\Resources\GLSceneVCLOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,19 +26,16 @@ package GLSS_FMOD_VCL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL FMOD Manager'}
+{$DESCRIPTION 'GLSceneVCL OpenAL Manager'}
 {$IMPLICITBUILD ON}
 
 requires
   vcl,
-  GLScene_RunTime_VCL,
-  rtl;
+  rtl,
+  GLSceneVCL_RunTime;
 
 contains
-  fmod in '..\Source\SoundAPIs\fmod.pas',
-  GLSMFMOD in '..\Source\SoundAPIs\GLSMFMOD.pas',
-  fmodpresets in '..\Source\SoundAPIs\fmodpresets.pas',
-  fmodtypes in '..\Source\SoundAPIs\fmodtypes.pas',
-  fmoderrors in '..\Source\SoundAPIs\fmoderrors.pas';
+  GLSMOpenAL in '..\Source\GLSMOpenAL.pas',
+  openal in '..\Source\openal.pas';
 
 end.

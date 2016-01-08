@@ -1,7 +1,7 @@
-package GLS_NGD_VCL;
+package GLSceneVCL_BASS;
 
 {$R *.res}
-{$R '..\Source\PhysicsAPIs\GLSceneVCLNGD.dcr'}
+{$R '..\Resources\GLSceneVCLBass.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,19 +26,15 @@ package GLS_NGD_VCL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL NGD Manager'}
+{$DESCRIPTION 'GLSceneVCL BASS Manager'}
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
   vcl,
-  GLScene_RunTime_VCL;
+  GLSceneVCL_RunTime;
 
 contains
-  GLNGDManager in '..\Source\PhysicsAPIs\GLNGDManager.pas',
-  GLNewtonRegister in '..\Source\PhysicsAPIs\GLNewtonRegister.pas',
-  NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
-  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
+  Bass in '..\Source\Bass.pas',
+  GLSMBASS in '..\Source\GLSMBASS.pas';
 
 end.
-

@@ -1,6 +1,7 @@
-package GLCg_RunTime_VCL;
+package GLSceneVCL_NGD;
 
 {$R *.res}
+{$R '..\Resources\GLSceneVCLNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,22 +26,19 @@ package GLCg_RunTime_VCL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL Cg Shaders'}
-{$RUNONLY}
+{$DESCRIPTION 'GLSceneVCL NGD Manager'}
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
-  vclimg,
-  xmlrtl,
-  GLScene_RunTime_VCL;
+  vcl,
+  GLSceneVCL_RunTime;
 
 contains
-  cgGL in '..\Source\Shaders\cgGL.pas',
-  cg in '..\Source\Shaders\cg.pas',
-  GLCgShader in '..\Source\Shaders\GLCgShader.pas',
-  GLCgBombShader in '..\Source\Shaders\GLCgBombShader.pas',
-  GLcgPostTransformationShader in '..\Source\Shaders\GLcgPostTransformationShader.pas';
+  GLNGDManager in '..\Source\GLNGDManager.pas',
+  GLNewtonRegister in '..\Source\GLNewtonRegister.pas',
+  NewtonImport in '..\Source\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\Source\NewtonImport_JointLibrary.pas';
 
 end.
+

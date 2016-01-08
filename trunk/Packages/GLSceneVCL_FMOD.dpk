@@ -1,7 +1,7 @@
-package GLS_SDL_VCL;
+package GLSceneVCL_FMOD;
 
 {$R *.res}
-{$R '..\Source\GameAPIs\GLSceneVCLSDL.dcr'}
+{$R '..\Resources\GLSceneVCLFMod.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,18 +26,19 @@ package GLS_SDL_VCL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene VCL SDL Driver'}
+{$DESCRIPTION 'GLSceneVCL FMOD Manager'}
 {$IMPLICITBUILD ON}
 
 requires
-  rtl,
   vcl,
-  vclimg,
-  GLScene_RunTime_VCL;
+  rtl,
+  GLSceneVCL_RunTime;
 
 contains
-  GLSDL in '..\Source\GameAPIs\GLSDL.pas',
-  GLSDLContext in '..\Source\GameAPIs\GLSDLContext.pas',
-  GLSDLWindow in '..\Source\GameAPIs\GLSDLWindow.pas';
+  fmod in '..\Source\fmod.pas',
+  GLSMFMOD in '..\Source\GLSMFMOD.pas',
+  fmodpresets in '..\Source\fmodpresets.pas',
+  fmodtypes in '..\Source\fmodtypes.pas',
+  fmoderrors in '..\Source\fmoderrors.pas';
 
 end.
