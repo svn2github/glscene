@@ -740,7 +740,7 @@ type
     Version: Word;                              // BWF version (little-endian)
     UMID: Array[0..63] of Byte;                 // SMPTE UMID
     Reserved: Array[0..189] of Byte;
-    Coding   Array of AnsiChar;           // history
+    Coding: Array of AnsiChar;           // history
   end;
 
   BASS_DX8_CHORUS = record

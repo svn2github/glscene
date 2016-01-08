@@ -1,0 +1,47 @@
+package GLSceneVKS_ODE;
+
+{$R *.res}
+{$R '..\Resources\GLSceneODE.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLSceneVKS ODE Manager'}
+{$IMPLICITBUILD ON}
+
+requires
+  fmx,
+  rtl,
+  GLSceneVKS_RunTime;
+
+contains
+  GLS.ModuleLoader in '..\Source\GLS.ModuleLoader.pas',
+  GLS.ODEManager in '..\Source\GLS.ODEManager.pas',
+  GLS.ODERegister in '..\Source\GLS.ODERegister.pas',
+  GLS.ODECustomColliders in '..\Source\GLS.ODECustomColliders.pas',
+  GLS.ODESkeletonColliders in '..\Source\GLS.ODESkeletonColliders.pas',
+  ODEImport in '..\Source\ODEImport.pas',
+  GLS.ODERagdoll in '..\Source\GLS.ODERagdoll.pas',
+  ODEGL in '..\Source\ODEGL.pas';
+
+end.

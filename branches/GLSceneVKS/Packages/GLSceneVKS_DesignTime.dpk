@@ -1,0 +1,60 @@
+package GLSceneVKS_DesignTime;
+
+{$R *.res}
+{$R '..\Resources\GLSceneObjects.dcr'}
+{$R '..\Resources\GLScene.dcr'}
+{$R '..\Resources\nonGLScene.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLSceneVKS Vulkan 3D library'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  GLSceneVKS_RunTime;
+
+contains
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {Layouts_Form},
+  FInfo in '..\Source\FInfo.pas' {InfoForm},
+  FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
+  FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
+  FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor},
+  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
+  FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
+  FRFaceEditor in '..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
+  FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
+  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas',
+  FShaderMemo in '..\Source\FShaderMemo.pas' {ShaderMemoForm},
+  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
+  GLS.RegisterXCollection in '..\Source\GLS.RegisterXCollection.pas',
+  GLS.SceneEdit in '..\Source\GLS.SceneEdit.pas' {GLSceneEditorForm},
+  GLS.SceneRegister in '..\Source\GLS.SceneRegister.pas';
+
+end.
