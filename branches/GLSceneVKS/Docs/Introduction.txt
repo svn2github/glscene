@@ -32,7 +32,7 @@ The code is still copyrighted (in that it isn't public domain), but you can use 
 The only requirements are:
 •  Acknowledge GLSceneVKS is used somewhere in your application (in an about box, credits page or printed manual, etc. 
    with at least a link to http://www.sourceforge.projects/glscene
-•  Modifications made to GLSceneVKSunits must be made public (no need to publish the full code, only to state which parts were altered, and how), 
+•  Modifications made to GLSceneVKS units must be made public (no need to publish the full code, only to state which parts were altered, and how), 
    but feel welcome to open-source your code if you so wish.
 
 Some API headers, units and DLLs are included in the GLSceneVKS package for convenience but are not a part of VKScene, 
