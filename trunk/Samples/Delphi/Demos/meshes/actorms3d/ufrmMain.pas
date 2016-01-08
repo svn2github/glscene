@@ -9,7 +9,7 @@ uses
   //GLS
   GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene,
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,
-  GLFileMS3D, GLMaterial, GLCameraController, GLGraphics, TGA,
+  GLFileMS3D, GLMaterial, GLCameraController, GLGraphics, TGA, GLVectorTypes,
   GLRenderContextInfo,  GLCustomShader, GLSLShader, GLFBORenderer, GLShadowPlane,
   GLVectorGeometry,  GLSimpleNavigation, GLMesh, GLGui, GLWindows, GLState,
   GLSArchiveManager, OpenGLTokens, GLContext, GLFileZLIB, GLCompositeImage,

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileB3D<p>
-
+{
   B3D VectorFile class to load Blitz 3D model files<p>
 
   <b>History :</b><font size=-1><ul>
@@ -21,8 +20,7 @@ uses
   //GLS
   GLVectorFileObjects, GLApplicationFileIO, GLTexture, GLTextureFormat,
   GLMaterial, GLVectorTypes, GLVectorGeometry, GLVectorLists,
-
-  FileB3D, TypesB3D;
+  FileB3D;
 
 type
   TGLB3DVectorFile = class(TVectorFile)
@@ -31,7 +29,14 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 // ------------------------------ TGLB3DVectorFile ------------------------------
 // Capabilities

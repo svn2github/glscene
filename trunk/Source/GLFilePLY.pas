@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFilePLY<p>
+{
+ 	PLY (Stanford Triangle Format) vector file format implementation.<p>
 
-	PLY (Stanford Triangle Format) vector file format implementation.<p>
+	History :
+  16/10/08 - UweR - Compatibility fix for Delphi 2009
+  31/03/07 - DaStr - Added $I GLScene.inc
+  05/06/03 - SG - Separated from GLVectorFileObjects.pas
 
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	</ul></font>
 }
 unit GLFilePLY;
 
@@ -20,7 +19,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLVectorFileObjects, GLApplicationFileIO, FileMD2, TypesMD2;
+  GLVectorFileObjects, GLApplicationFileIO;
 
 type
    // TGLPLYVectorFile
