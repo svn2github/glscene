@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
-    <Name Value="GLScene_DesignTime"/>
+    <Name Value="GLSceneLCL_DesignTime"/>
     <Type Value="DesignTime"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
@@ -133,7 +133,7 @@
         <PackageName Value="IDEIntf"/>
       </Item3>
       <Item4>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value="GLSceneLCL_RunTime"/>
         <MaxVersion Major="1" Valid="True"/>
         <MinVersion Major="1"/>
       </Item4>

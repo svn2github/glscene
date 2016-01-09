@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="GLS_WinOnly"/>
+    <Name Value="GLSceneLCL_WinOnly"/>
     <CompilerOptions>
       <Version Value="9"/>
       <SearchPaths>
@@ -19,7 +19,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="GLScene support for Windows Only components"/>
+    <Description Value="GLScene Windows Only support"/>
     <Version Major="1" Build="3"/>
     <Files Count="7">
       <Item1>
@@ -55,7 +55,7 @@
     <Type Value="RunAndDesignTime"/>
     <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value="GLSceneLCL_DesignTime"/>
       </Item1>
       <Item2>
         <PackageName Value="FCL"/>

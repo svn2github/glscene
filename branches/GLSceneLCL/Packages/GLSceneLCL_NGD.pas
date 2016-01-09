@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit GLS_NGD; 
+unit GLSceneLCL_NGD; 
 
 interface
 
@@ -18,5 +18,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('GLS_NGD', @Register); 
+  RegisterPackage('GLSceneLCL_NGD', @Register); 
 end.

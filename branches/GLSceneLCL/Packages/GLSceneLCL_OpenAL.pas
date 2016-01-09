@@ -1,4 +1,4 @@
-unit GLSS_OpenAL; 
+unit GLSceneLCL_OpenAL; 
 
 interface
 
@@ -13,5 +13,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('GLSS_OpenAL', @Register); 
+  RegisterPackage('GLSceneLCL_OpenAL', @Register); 
 end.

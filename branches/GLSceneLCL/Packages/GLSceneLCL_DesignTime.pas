@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit GLScene_DesignTime;
+unit GLSceneLCL_DesignTime;
 
 interface
 
@@ -24,5 +24,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('GLScene_DesignTime', @Register);
+  RegisterPackage('GLSceneLCL_DesignTime', @Register);
 end.

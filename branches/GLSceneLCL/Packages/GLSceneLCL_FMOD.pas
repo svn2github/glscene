@@ -2,21 +2,20 @@
   This source is only used to compile and install the package.
  }
 
-unit GLS_SDL;
+unit GLSceneLCL_FMOD;
 
 interface
 
 uses
-  GLSDLWindow, GLSDLContext, LazarusPackageIntf;
+  GLSMFMOD, fmodpresets, fmodtypes, fmoderrors, fmoddyn, LazarusPackageIntf;
 
 implementation
 
 procedure Register;
 begin
-  RegisterUnit('GLSDLWindow', @GLSDLWindow.Register);
-  RegisterUnit('GLSDLContext', @GLSDLContext.Register);
+  RegisterUnit('GLSMFMOD', @GLSMFMOD.Register);
 end;
 
 initialization
-  RegisterPackage('GLS_SDL', @Register);
+  RegisterPackage('GLSceneLCL_FMOD', @Register);
 end.

@@ -1,4 +1,4 @@
-unit GLSS_BASS; 
+unit GLSceneLCL_BASS; 
 
 interface
 
@@ -13,5 +13,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('GLSS_BASS', @Register); 
+  RegisterPackage('GLSceneLCL_BASS', @Register); 
 end.

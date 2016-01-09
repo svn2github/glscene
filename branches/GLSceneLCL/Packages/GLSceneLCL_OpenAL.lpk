@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
-    <Name Value="GLSS_OpenAL"/>
+    <Name Value="GLSceneLCL_OpenAL"/>
     <Type Value="RunAndDesignTime"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
@@ -26,7 +26,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Description Value="GLScene FMOD support"/>
+    <Description Value="GLScene OpenAL support"/>
     <Version Major="1" Build="3"/>
     <Files Count="1">
       <Item1>
@@ -37,7 +37,7 @@
     </Files>
     <RequiredPkgs Count="2">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value="GLSceneLCL_DesignTime"/>
       </Item1>
       <Item2>
         <PackageName Value="FCL"/>

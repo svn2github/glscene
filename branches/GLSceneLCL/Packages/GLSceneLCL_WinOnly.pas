@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit GLS_WinOnly; 
+unit GLSceneLCL_WinOnly; 
 
 interface
 
@@ -19,5 +19,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('GLS_WinOnly', @Register); 
+  RegisterPackage('GLSceneLCL_WinOnly', @Register); 
 end.

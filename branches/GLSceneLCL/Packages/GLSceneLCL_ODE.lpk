@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
-    <Name Value="GLScene_ODE"/>
+    <Name Value="GLSceneLCL_ODE"/>
     <Type Value="DesignTime"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
@@ -68,7 +68,7 @@
         <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value="GLSceneLCL_DesignTime"/>
       </Item2>
     </RequiredPkgs>
     <UsageOptions>

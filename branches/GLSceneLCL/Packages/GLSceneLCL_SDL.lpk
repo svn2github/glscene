@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <Package Version="3">
-    <Name Value="GLS_SDL"/>
+    <Name Value="GLSceneLCL_SDL"/>
     <CompilerOptions>
       <Version Value="8"/>
       <SearchPaths>
@@ -18,7 +18,7 @@
         <CompilerPath Value="$(CompPath)"/>
       </Other>
     </CompilerOptions>
-    <Description Value="GLScene support for Windows Only components"/>
+    <Description Value="GLScene SDL support"/>
     <Version Major="1" Build="3"/>
     <Files Count="2">
       <Item1>
@@ -39,7 +39,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="glscene_designtime"/>
+        <PackageName Value="GLSceneLCL_DesignTime"/>
         <MinVersion Major="1" Valid="True"/>
       </Item2>
     </RequiredPkgs>

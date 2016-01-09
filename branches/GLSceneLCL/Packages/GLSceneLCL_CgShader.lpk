@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <Package Version="4">
-    <Name Value="GLScene_CgShader"/>
+    <Name Value="GLSceneLCL_CgShader"/>
     <Type Value="DesignTime"/>
     <AddToProjectUsesSection Value="True"/>
     <CompilerOptions>
@@ -27,7 +27,7 @@
         </Debugging>
       </Linking>
     </CompilerOptions>
-    <Description Value="glscene cg shader support package"/>
+    <Description Value="GLScene CG Shader support"/>
     <Version Major="1" Build="3"/>
     <Files Count="6">
       <Item1>
@@ -61,7 +61,7 @@
         <PackageName Value="LCL"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value="GLSceneLCL_DesignTime"/>
       </Item2>
     </RequiredPkgs>
     <UsageOptions>

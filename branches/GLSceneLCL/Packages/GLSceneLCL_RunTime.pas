@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit GLScene_RunTime;
+unit GLSceneLCL_RunTime;
 
 interface
 
@@ -15,14 +15,13 @@ uses
   GLPolynomials, GLSpacePartition, GLSpline, GLVectorGeometry, GLVectorLists, 
   GLVectorTypes, GLVerletTypes, GLVerletHairClasses, XCollection, XOpenGL, 
   Const3DS, DDSImage, DXTC, File3DS, FileB3D, FileGL2, FileMD2, FileMD3, 
-  FileNMF, FileOCT, FileX, GLFile3DS, GLFile3DSSceneObjects, GLFileASE, 
-  GLFileB3D, GLFileDDS, GLFileGL2, GLFileGTS, GLFileHDR, GLFileJPEG, 
-  GLFileLMTS, GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, 
-  GLFileMP3, GLFileMS3D, GLFileNMF, GLFileNurbs, GLFileO3TC, GLFileOBJ, 
-  GLFilePAK, GLFilePLY, GLFilePNG, GLFileSMD, GLFileSTL, GLFileTIN, 
-  GLFileVRML, GLFileWAV, GlFileX, GLFileZLIB, GLStarRecord, GLVfsPAK, 
-  HDRImage, LWObjects, O3TCImage, Q3BSP, Q3MD3, GLSRGBE, TGA, Types3DS, 
-  TypesB3D, TypesMD2, TypesMDC, TypesMS3D, TypesSTL, Utils3DS, VRMLParser, 
+  FileOCT, FileX, GLFile3DS, GLFile3DSSceneObjects, GLFileASE, GLFileB3D, 
+  GLFileDDS, GLFileGL2, GLFileGTS, GLFileHDR, GLFileJPEG, GLFileLMTS, 
+  GLFileLWO, GLFileMD2, GLFileMD3, GLFileMD5, GLFileMDC, GLFileMP3, 
+  GLFileMS3D, GLFileNMF, GLFileNurbs, GLFileO3TC, GLFileOBJ, GLFilePAK, 
+  GLFilePLY, GLFilePNG, GLFileSMD, GLFileSTL, GLFileTIN, GLFileVRML, 
+  GLFileWAV, GLFileX, GLFileZLIB, GLStarRecord, GLVfsPAK, HDRImage, LWObjects, 
+  O3TCImage, Q3BSP, Q3MD3, GLSRGBE, TGA, Types3DS, Utils3DS, VRMLParser, 
   GLSZLibEx, GLSZLibExApi, GLAnimatedSprite, GLAsyncHDS, GLAtmosphere, 
   GLBaseMeshSilhouette, GLBehaviours, GLBitmapFont, GLBlur, GLBSP, 
   GLBumpmapHDS, GLCadencer, GLCameraController, GLCollision, GLCompositeImage, 
@@ -41,17 +40,19 @@ uses
   GLSceneForm, GLScriptBase, GLSelection, GLShadowHDS, GLShadowPlane, 
   GLShadowVolume, GLSilhouette, GLSimpleNavigation, GLSkyBox, GLSkydome, 
   GLSLanguage, GLSLProjectedTextures, GLSLBumpShader, 
-  GLSLDiffuseSpecularShader, GLSLParameter, GLSLPostBlurShader, GLSLShader, 
-  GLSmoothNavigator, GLSound, GLSoundFileObjects, GLSpatialPartitioning, 
-  GLState, GLStrings, GLTeapot, GLTerrainRenderer, GLTexLensFlare, GLTexture, 
-  GLTexturedHDS, GLTextureFormat, GLThorFX, GLTilePlane, GLTimeEventsMgr, 
-  GLTrail, GLTree, GLUtils, GLVectorFileObjects, GLVerletClasses, 
-  GLVerletClothify, GLVerletSkeletonColliders, GLWaterPlane, GLWindows, 
-  GLWindowsFont, GLzBuffer, GLCrossPlatform, GLFullScreenViewer, GLKeyboard, 
-  GLScreen, GLViewer, GLWidgetContext, GLAsmShader, GLBumpShader, GLCelShader, 
+  GLSLDiffuseSpecularShader, GLSLParameter, GLSLShader, GLSmoothNavigator, 
+  GLSound, GLSoundFileObjects, GLSpatialPartitioning, GLState, GLStrings, 
+  GLTeapot, GLTerrainRenderer, GLTexLensFlare, GLTexture, GLTexturedHDS, 
+  GLTextureFormat, GLThorFX, GLTilePlane, GLTimeEventsMgr, GLTrail, GLTree, 
+  GLUtils, GLVectorFileObjects, GLVerletClasses, GLVerletClothify, 
+  GLVerletSkeletonColliders, GLWaterPlane, GLWindows, GLWindowsFont, 
+  GLzBuffer, GLCrossPlatform, GLFullScreenViewer, GLKeyboard, GLScreen, 
+  GLViewer, GLWidgetContext, GLAsmShader, GLBumpShader, GLCelShader, 
   GLCustomShader, GLHiddenLineShader, GLMultiMaterialShader, GLOutlineShader, 
   GLPhongShader, GLShaderCombiner, GLTexCombineShader, GLTextureSharingShader, 
-  GLUserShader, GLFileBMP, GLFileTGA;
+  GLUserShader, GLFileBMP, GLFileTGA, GLSLPostShaders, GLSLErosionShader, 
+  GLSLFurShader, GLSLGlassShader, GLSLGoochShader, GLSLIvoryShader, 
+  GLSLSemShader, GLSLToonShader, GLSLVertexDisplacementShader;
 
 implementation
 

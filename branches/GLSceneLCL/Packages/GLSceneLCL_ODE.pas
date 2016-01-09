@@ -2,7 +2,7 @@
   This source is only used to compile and install the package.
  }
 
-unit GLScene_ODE;
+unit GLSceneLCL_ODE;
 
 interface
 
@@ -18,5 +18,5 @@ begin
 end;
 
 initialization
-  RegisterPackage('GLScene_ODE', @Register);
+  RegisterPackage('GLSceneLCL_ODE', @Register);
 end.

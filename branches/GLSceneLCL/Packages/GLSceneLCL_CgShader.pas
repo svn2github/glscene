@@ -2,13 +2,13 @@
   This source is only used to compile and install the package.
  }
 
-unit GLScene_CgShader; 
+unit GLSceneLCL_CgShader; 
 
 interface
 
 uses
-    GLCgRegister, GLCgShader, cg, cgGL, GLCgBombShader, 
-  cgPostTransformationShader, LazarusPackageIntf;
+   GLCgRegister, GLCgShader, cg, cgGL, GLCgBombShader, 
+   cgPostTransformationShader, LazarusPackageIntf;
 
 implementation
 
@@ -18,5 +18,5 @@ begin
 end; 
 
 initialization
-  RegisterPackage('GLScene_CgShader', @Register); 
+  RegisterPackage('GLSceneLCL_CgShader', @Register); 
 end.
