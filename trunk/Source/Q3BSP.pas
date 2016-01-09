@@ -1,15 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Q3BSP<p>
-
-	Simple Quake III BSP file loader.<p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-	   <li>30/01/03 - Egg - Creation, based on Philip Stefou's document and
+{
+	Simple Quake III BSP file loader. 
+    History :  
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+	    30/01/03 - Egg - Creation, based on Philip Stefou's document and
                            bits from Jan Horn's loader 
-	</ul></font>
+	 
 }
 unit Q3BSP;
 
@@ -17,6 +15,7 @@ interface
 
 uses 
   System.Classes, 
+  System.SysUtils,
   GLVectorTypes;
 
 const FACE_POLYGON = 1;
@@ -154,8 +153,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils;
 
 // ------------------
 // ------------------ TQ3BSP ------------------

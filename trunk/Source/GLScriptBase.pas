@@ -1,13 +1,13 @@
 // GLScriptBase
-{: An abstract scripting interface for GLScene<p>
+{An abstract scripting interface for GLScene 
 
    This unit provides the base methods for compiling and executing scripts as
    well as calling scripted functions. No scripting APIs are implemented here,
-   only abstracted functions.<p>
+   only abstracted functions. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/2004 - SG - Creation
-   </ul></font>
+    History :  
+       04/11/2004 - SG - Creation
+    
 }
 unit GLScriptBase;
 
@@ -30,7 +30,7 @@ type
 
   // TGLScriptBase
   //
-  {: The base script class that defines the abstract functions and properties. 
+  {The base script class that defines the abstract functions and properties. 
      Don't use this class directly, use the script classes descended from this 
      base class.  }
   TGLScriptBase = class(TXCollectionItem)
@@ -76,7 +76,7 @@ type
 
   // TGLScripts
   //
-  {: XCollection descendant for storing and handling scripts. }
+  {XCollection descendant for storing and handling scripts. }
   TGLScripts = class(TXCollection)
 		private
 			{ Private Declarations }
@@ -98,7 +98,7 @@ type
 
   // TGLScriptLibrary
   //
-  {: Encapsulation of the scripts XCollection to help with script handling at
+  {Encapsulation of the scripts XCollection to help with script handling at
      design-time. Links the scripts to Delphi's persistence model. }
   TGLScriptLibrary = class (TComponent)
     private

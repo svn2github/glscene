@@ -1,53 +1,53 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCrossPlatform<p>
+{GLCrossPlatform 
 
-   Cross platform support functions and types for GLScene.<p>
+   Cross platform support functions and types for GLScene. 
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and have all moved here instead.<p>
+   in the core GLScene units, and have all moved here instead. 
 
- <b>Historique : </b><font size=-1><ul>
-      <li>20/01/15 - PW -  Dropped support for GLS_DELPHI_XE2_DOWN compilers
-      <li>10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
+  Historique :  
+       20/01/15 - PW -  Dropped support for GLS_DELPHI_XE2_DOWN compilers
+       10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
-      <li>30/06/11 - DaStr - Added CharToWideChar()
-      <li>19/06/11 - Yar - Added IsDirectoryWriteable
-      <li>15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
-      <li>19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
-      <li>04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
+       30/06/11 - DaStr - Added CharToWideChar()
+       19/06/11 - Yar - Added IsDirectoryWriteable
+       15/04/11 - AsmRu - Added GetPlatformInfo, GetPlatformVersion
+       19/03/11 - Yar - Added procedure FixPathDelimiter, RelativePath
+       04/11/10 - DaStr - Added functions missing in Delphi5 and Delphi6:
                              TAssertErrorProc, GetValueFromStringsIndex and some types
-      <li>31/10/10 - Yar - Added GLSTime
-      <li>18/10/10 - Yar - Added functions FloatToHalf, HalfToFloat (Thanks to Fantom)
-      <li>04/09/10 - Yar - Added IsDesignTime variable, SetExeDirectory
-      <li>15/06/10 - Yar - Replace Shell to fpSystem
-      <li>04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
-      <li>07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
+       31/10/10 - Yar - Added GLSTime
+       18/10/10 - Yar - Added functions FloatToHalf, HalfToFloat (Thanks to Fantom)
+       04/09/10 - Yar - Added IsDesignTime variable, SetExeDirectory
+       15/06/10 - Yar - Replace Shell to fpSystem
+       04/03/10 - DanB - Added CharInSet, for Delphi versions < 2009
+       07/01/10 - DaStr - Bugfixed GetDeviceCapabilities() for Unix
                              (thanks Predator)
-      <li>17/12/09 - DaStr - Moved screen utility functions to GLScreen.pas
+       17/12/09 - DaStr - Moved screen utility functions to GLScreen.pas
                              (thanks Predator)
-      <li>11/11/09 - DaStr - Added GLS_FONT_CHARS_COUNT constant
-      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+       11/11/09 - DaStr - Added GLS_FONT_CHARS_COUNT constant
+       07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
                              (thanks Predator)
-      <li>24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
-      <li>03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
-      <li>07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
+       24/08/09 - DaStr - Added IncludeTrailingPathDelimiter for Delphi 5
+       03/06/09 - DanB - Re-added Sleep procedure, for Delphi 5
+       07/05/09 - DanB - Added FindUnitName (to provide functionality of TObject.UnitName,
                             on prior versions of Delphi)
-      <li>24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
-      <li>19/03/09 - DanB - Removed some Kylix IFDEFs, and other changes mostly affecting D5/FPC
-      <li>29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
-      <li>10/04/08 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
-      <li>07/04/08 - DaStr - Added IsInfinite, IsNan
-      <li>18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
+       24/03/09 - DanB - Moved Dialog utility functions to GLUtils.pas, new ShowHTMLUrl procedure
+       19/03/09 - DanB - Removed some Kylix IFDEFs, and other changes mostly affecting D5/FPC
+       29/05/08 - DaStr - Added StrToFloatDef(), TryStrToFloat()
+       10/04/08 - DaStr - Added TGLComponent (BugTracker ID = 1938988)
+       07/04/08 - DaStr - Added IsInfinite, IsNan
+       18/11/07 - DaStr - Added ptrInt and PtrUInt types (BugtrackerID = 1833830)
                               (thanks Dje and Burkhard Carstens)
-      <li>06/06/07 - DaStr - Added WORD type
+       06/06/07 - DaStr - Added WORD type
                              Got rid of GLTexture.pas dependancy
                              Moved GetRValue, GetGValue, GetBValue, InitWinColors
                                to GLColor.pas (BugtrackerID = 1732211)
-      <li>02/04/07 - DaStr - Added MakeSubComponent
+       02/04/07 - DaStr - Added MakeSubComponent
                              Fixed some IFDEFs to separate FPC from Kylix
-      <li>25/03/07 - DaStr - Replaced some UNIX IFDEFs with KYLIX
+       25/03/07 - DaStr - Replaced some UNIX IFDEFs with KYLIX
                              Added IdentToColor, ColorToIdent, ColorToString,
                                    AnsiStartsText, IsSubComponent
                              Added TPoint, PPoint, TRect, PRect, TPicture, TGraphic,
@@ -55,28 +55,28 @@
                                    TKeyEvent, TKeyPressEvent
                              Added IInterface, S_OK, E_NOINTERFACE,
                                    glKey_PRIOR, glKey_NEXT, glKey_CONTROL
-      <li>24/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
+       24/03/07 - DaStr - Added TPenStyle, TPenMode, TBrushStyle, more color constants,
                              Added "Application" function
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>02/08/04 - LR, YHC - BCB corrections: Added namespace 'Graphics' to TGLBitmap
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       02/08/04 - LR, YHC - BCB corrections: Added namespace 'Graphics' to TGLBitmap
                                use $NODEFINE to remove declarations of duplicate variables
-      <li>08/07/04 - LR - Added clBlack
-      <li>03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
+       08/07/04 - LR - Added clBlack
+       03/07/04 - LR - Added constant for Keyboard (glKey_TAB, ...)
                           Added function GLOKMessageBox to avoid the uses of Forms
                           Added other abstraction calls
                           Added procedure ShowHTMLUrl for unit Info.pas
                           Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
                           GLGetScreenWidth, GLGetScreenHeight for GLNavigation
                           Added GLGetTickCount for GLFPSMovement
-      <li>28/06/04 - LR - Added TGLTextLayout, GLLoadBitmapFromInstance
+       28/06/04 - LR - Added TGLTextLayout, GLLoadBitmapFromInstance
                           Added GetDeviceCapabilities to replace the old function
-      <li>30/05/03 - EG - Added RDTSC and RDTSC-based precision timing for non-WIN32
-      <li>22/01/02 - EG - Added OpenPictureDialog, ApplicationTerminated
-      <li>07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
+       30/05/03 - EG - Added RDTSC and RDTSC-based precision timing for non-WIN32
+       22/01/02 - EG - Added OpenPictureDialog, ApplicationTerminated
+       07/01/02 - EG - Added QuestionDialog and SavePictureDialog,
                           Added PrecisionTimer funcs
-      <li>06/12/01 - EG - Added several abstraction calls
-      <li>31/08/01 - EG - Creation
- </ul></font>
+       06/12/01 - EG - Added several abstraction calls
+       31/08/01 - EG - Creation
+  
 }
 unit GLCrossPlatform;
 
@@ -237,10 +237,10 @@ var
   vProjectTargetName: TProjectTargetNameFunc;
 
 function GLPoint(const x, y: Integer): TGLPoint;
-{: Builds a TColor from Red Green Blue components. }
+{Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
 function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;{$NODEFINE GLRect}
-{: Increases or decreases the width and height of the specified rectangle.<p>
+{Increases or decreases the width and height of the specified rectangle. 
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
@@ -249,49 +249,49 @@ function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
 
 procedure RaiseLastOSError;
 
-{: Number of pixels per logical inch along the screen width for the device.<p>
+{Number of pixels per logical inch along the screen width for the device. 
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
-{: Number of bits per pixel for the current desktop resolution. }
+{Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth: Integer;
-{: Returns the number of color bits associated to the given pixel format. }
+{Returns the number of color bits associated to the given pixel format. }
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 
-{: Returns the bitmap's scanline for the specified row. }
+{Returns the bitmap's scanline for the specified row. }
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 
-{: Replace path delimiter to delimiter of the current platform. }
+{Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
-{: Remove if possible part of path witch leads to project executable. }
+{Remove if possible part of path witch leads to project executable. }
 function RelativePath(const S: string): string;
-{: Returns the current value of the highest-resolution counter.<p>
+{Returns the current value of the highest-resolution counter. 
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
 procedure QueryPerformanceCounter(var val: Int64);
-{: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
+{Returns the frequency of the counter used by QueryPerformanceCounter. 
    Return value is in ticks per second (Hz), returns False if no precision
    counter is available. }
 function QueryPerformanceFrequency(var val: Int64): Boolean;
 
-{: Starts a precision timer.<p>
+{Starts a precision timer. 
    Returned value should just be considered as 'handle', even if it ain't so.
    Default platform implementation is to use QueryPerformanceCounter and
    QueryPerformanceFrequency, if higher precision references are available,
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
 function StartPrecisionTimer: Int64;
-{: Computes time elapsed since timer start.<p>
+{Computes time elapsed since timer start. 
    Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
-{: Computes time elapsed since timer start and stop timer.<p>
+{Computes time elapsed since timer start and stop timer. 
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
-{: Returns time in milisecond from application start.<p>}
+{Returns time in milisecond from application start. }
 function GLSTime: Double;
 
-{: Returns the number of CPU cycles since startup.<p>
+{Returns the number of CPU cycles since startup. 
    Use the similarly named CPU instruction. }
 function RDTSC: Int64;
 
@@ -322,7 +322,7 @@ function GetPlatformInfo: TPlatformInfo;
 function GetPlatformVersion : TPlatformVersion;
 function GetPlatformVersionStr : string;
 
-{: Determine if the directory is writable.<p> }
+{Determine if the directory is writable.  }
 function IsDirectoryWriteable(const AName: string): Boolean;
 
 function CharToWideChar(const AChar: AnsiChar): WideChar;

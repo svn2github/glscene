@@ -1,19 +1,19 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLSemShader <p>
+{GLSLSemShader  
 
    SEM shader : Spherical Environment Mapping
    The main idea of SEM is to get the UV coordinates (which are used to lookup the matCap texture)
-   from the normal vector on the fragment instead of the original texture coordinates from the object.<p>
-   <p>
+   from the normal vector on the fragment instead of the original texture coordinates from the object. 
+    
    A material using SEM is very useful to highlight variations in the mesh: creases, bumps, even slow ondulations.
    It doesn't work that well on a cube, for instance. And does absolutely nothing on a sphere:
-   SEM on a sphere is exactly the same as a planar projection of the matCap texture.<p>
+   SEM on a sphere is exactly the same as a planar projection of the matCap texture. 
 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>11/12/15 - J.Delauney - Creation
+    History :  
+     11/12/15 - J.Delauney - Creation
 
 }
 
@@ -34,7 +34,7 @@ uses
 
 //TGLCustomGLSLSimpleSemShader
 //
-{: Custom class for GLSLSEMShader.<p>
+{Custom class for GLSLSEMShader. 
  SEM Shader : Spherical Environment Mapping }
 Type
 TGLCustomGLSLSemShader = class(TGLCustomGLSLShader)

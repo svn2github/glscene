@@ -1,9 +1,9 @@
 // GLScriptDWS2
-{: DelphiWebScriptII implementation for the GLScene scripting layer.<p>
+{DelphiWebScriptII implementation for the GLScene scripting layer. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/2004 - SG - Creation
-   </ul></font>
+    History :  
+       04/11/2004 - SG - Creation
+    
 }
 unit GLScriptDWS2;
 
@@ -17,7 +17,7 @@ uses
 type
   // TGLDelphiWebScriptII
   //
-  {: This class only adds manager registration logic to the TDelphiWebScriptII
+  {This class only adds manager registration logic to the TDelphiWebScriptII
      class to enable the XCollection items (ie. TGLScriptDWS2) retain it's
      assigned compiler from design to run -time. }
   TGLDelphiWebScriptII = class(TDelphiWebScriptII)
@@ -28,7 +28,7 @@ type
 
   // GLScriptDWS2
   //
-  {: Implements DelphiWebScriptII scripting functionality through the
+  {Implements DelphiWebScriptII scripting functionality through the
      abstracted GLScriptBase . }
   TGLScriptDWS2 = class(TGLScriptBase)
     private

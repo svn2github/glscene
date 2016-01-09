@@ -1,13 +1,13 @@
 // GLMultiProxy
-{: Implements a multi-proxy objects, useful for discreet LOD.<p>
+{Implements a multi-proxy objects, useful for discreet LOD. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
-      <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
-      <li>25/11/03 - EG - Added per-master visibility boolean
-      <li>24/11/03 - EG - Creation
-   </ul></font>
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
+       26/11/03 - EG - Added bounding, raycast and silhouette proxying
+       25/11/03 - EG - Added per-master visibility boolean
+       24/11/03 - EG - Creation
+    
 }
 unit GLMultiProxy;
 
@@ -25,7 +25,7 @@ type
 
 	// TGLMultiProxyMaster
 	//
-   {: MasterObject description for a MultiProxy object. }
+   {MasterObject description for a MultiProxy object. }
 	TGLMultiProxyMaster = class (TCollectionItem)
 	   private
 	      { Private Declarations }
@@ -53,13 +53,13 @@ type
 
       published
          { Published Declarations }
-         {: Specifies the Master object which will be proxy'ed. }
+         {Specifies the Master object which will be proxy'ed. }
          property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
-         {: Minimum visibility distance (inclusive). }
+         {Minimum visibility distance (inclusive). }
          property DistanceMin : Single read FDistanceMin write SetDistanceMin;
-         {: Maximum visibility distance (exclusive). }
+         {Maximum visibility distance (exclusive). }
          property DistanceMax : Single read FDistanceMax write SetDistanceMax;
-         {: Determines if the master object can be visible (proxy'ed).<p>
+         {Determines if the master object can be visible (proxy'ed). 
             Note: the master object's distance also has to be within DistanceMin
             and DistanceMax.}
          property Visible : Boolean read FVisible write SetVisible default True;
@@ -67,7 +67,7 @@ type
 
 	// TGLMultiProxyMasters
 	//
-   {: Collection of TGLMultiProxyMaster. }
+   {Collection of TGLMultiProxyMaster. }
 	TGLMultiProxyMasters = class (TOwnedCollection)
 	   private
 	      { Private Declarations }
@@ -94,11 +94,11 @@ type
 
    // TGLMultiProxy
    //
-   {: Multiple Proxy object.<p>
+   {Multiple Proxy object. 
       This proxy has multiple master objects, which are individually made visible
       depending on a distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation.<p>
+      go through cyclic animation. 
       For dimensionsn raycasting and silhouette purposes, the first master is used
       (item zero in the MasterObjects collection). }
    TGLMultiProxy = class (TGLSceneObject)

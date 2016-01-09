@@ -1,29 +1,28 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLKeyboard<p>
-
-	Provides on demand state of any key on the keyboard as well as a set of
-   utility functions for working with virtual keycodes.<p>
+{
+   Provides on demand state of any key on the keyboard as well as a set of
+   utility functions for working with virtual keycodes. 
 
    Note that windows maps the mouse buttons to virtual key codes too, and you
    can use the functions/classes in this unit to check mouse buttons too.<br>
    See "Virtual-Key Codes" in the Win32 programmers réferences for a list of
-   key code constants (VK_* constants are declared in the "Windows" unit).<p>
+   key code constants (VK_* constants are declared in the "Windows" unit). 
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
+	 Historique :  
+       07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
                              directory (BugtrackerID = 2893580) (thanks Predator)
-      <li>28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
-      <li>19/12/06 - DaS - Added additional string constants and made all
+       28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
+       19/12/06 - DaS - Added additional string constants and made all
                              existing 'Mixed Case', not 'UPPERCASE'
                            KeyNameToVirtualKeyCode optimized,
                            Fixed comments to KeyNameToVirtualKeyCode() function
-      <li>17/11/03 - Egg - Fixed IsKeyDown (VK) (A. P. Mohrenweiser)
-      <li>09/10/00 - Egg - Fixed VirtualKeyCodeToKeyName
-      <li>03/08/00 - Egg - Creation, partly based Silicon Commander code
-	</ul></font>
+       17/11/03 - Egg - Fixed IsKeyDown (VK) (A. P. Mohrenweiser)
+       09/10/00 - Egg - Fixed VirtualKeyCodeToKeyName
+       03/08/00 - Egg - Creation, partly based Silicon Commander code
+	 
 }
 unit GLKeyboard;
 
@@ -32,7 +31,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  Windows;
+  Winapi.Windows,
+  System.SysUtils;
 
 type
    TVirtualKeyCode = Integer;
@@ -42,37 +42,37 @@ const
    VK_MOUSEWHEELUP   = VK_F23;
    VK_MOUSEWHEELDOWN = VK_F24;
 
-{: Check if the key corresponding to the given Char is down.<p>
+{Check if the key corresponding to the given Char is down. 
    The character is mapped to the <i>main keyboard</i> only, and not to the
    numeric keypad.<br>
    The Shift/Ctrl/Alt state combinations that may be required to type the
    character are ignored (ie. 'a' is equivalent to 'A', and on my french
    keyboard, '5' = '(' = '[' since they all share the same physical key). }
 function IsKeyDown(c : Char) : Boolean; overload;
-{: Check if the given virtual key is down.<p>
+{Check if the given virtual key is down. 
    This function is just a wrapper for GetAsyncKeyState. }
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean; overload;
-{: Returns the first pressed key whose virtual key code is >= to minVkCode.<p>
+{Returns the first pressed key whose virtual key code is >= to minVkCode. 
    If no key is pressed, the return value is -1, this function does NOT
    wait for user input.<br>
    If you don't care about multiple key presses, just don't use the parameter. }
 function KeyPressed(minVkCode : TVirtualKeyCode = 0) : TVirtualKeyCode;
 
-{: Converts a virtual key code to its name.<p>
+{Converts a virtual key code to its name. 
    The name is expressed using the locale windows options. }
 function VirtualKeyCodeToKeyName(vk : TVirtualKeyCode) : String;
-{: Converts a key name to its virtual key code.<p>
-   The comparison is **NOT** case-sensitive, if no match is found, returns -1.<p>
+{Converts a key name to its virtual key code. 
+   The comparison is **NOT** case-sensitive, if no match is found, returns -1. 
    The name is expressed using the locale windows options, except for mouse
    buttons which are translated to 'LBUTTON', 'MBUTTON' and 'RBUTTON'. }
 function KeyNameToVirtualKeyCode(const keyName : String) : TVirtualKeyCode;
-{: Returns the virtual keycode corresponding to the given char.<p>
+{Returns the virtual keycode corresponding to the given char. 
    The returned code is untranslated, f.i. 'a' and 'A' will give the same
    result. A return value of -1 means that the characted cannot be entered
    using the keyboard. }
 function CharToVirtualKeyCode(c : Char) : TVirtualKeyCode;
 
-{: Use this procedure to notify a wheel movement and have it resurfaced as key stroke.<p>
+{Use this procedure to notify a wheel movement and have it resurfaced as key stroke. 
    Honoured by IsKeyDown and KeyPressed }
 procedure KeyboardNotifyWheelMoved(wheelDelta : Integer);
 
@@ -86,8 +86,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
-uses SysUtils;
 
 const
    cLBUTTON = 'Left Mouse Button';

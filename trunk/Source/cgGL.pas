@@ -119,7 +119,7 @@ interface
 
 uses
   OpenGLTokens, cg
-  {$IFDEF MSWINDOWS} ,Windows{$ENDIF};
+  {$IFDEF MSWINDOWS}, Winapi.Windows{$ENDIF};
 
 const
   {$IFDEF MSWINDOWS}

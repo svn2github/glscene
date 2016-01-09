@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSpline<p>
+{GLSpline 
 
-   Cubic spline interpolation functions<p>
+   Cubic spline interpolation functions 
 
-	<b>History : </b><font size=-1><ul>
-     <li>10/12/14 - PW - Renamed Spline unit to GLSpline
-     <li>30/12/12 - PW - Restored CPP compatibility with record arrays
-     <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-     <li>16/07/02 - Egg - Added methods to access slope per axis
-	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
+	 History :  
+      10/12/14 - PW - Renamed Spline unit to GLSpline
+      30/12/12 - PW - Restored CPP compatibility with record arrays
+      08/07/04 - LR - Removed ../ from the GLScene.inc
+      16/07/02 - Egg - Added methods to access slope per axis
+	    28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component
                            and a bunch of helper methods
-	   <li>20/05/00 - RoC - Created, based on the C source code from Eric
-	</ul></font>
+	    20/05/00 - RoC - Created, based on the C source code from Eric
+	 
 }
 unit GLSpline;
 
@@ -31,11 +31,11 @@ type
 
    // TCubicSpline
    //
-   {: 3D cubic spline handler class.<p>
+   {3D cubic spline handler class. 
       This class allows to describe and calculate values of a time-based,
-      three-dimensionnal cubic spline.<p>
+      three-dimensionnal cubic spline. 
       Cubic spline pass through all given points and tangent on point N is
-      given by the (N-1) to (N+1) vector.<p>
+      given by the (N-1) to (N+1) vector. 
       Note : X, Y & Z are actually interpolated independently. }
    TCubicSpline = class (TObject)
       private
@@ -45,58 +45,58 @@ type
 
       public
          { Public Declarations }
-         {: Creates the spline and declares interpolation points.<p>
+         {Creates the spline and declares interpolation points. 
             Time references go from 0 (first point) to nb-1 (last point), the
             first and last reference matrices respectively are used when T is
-            used beyond this range.<p>
+            used beyond this range. 
             Note : "nil" single arrays are accepted, in this case the axis is
             disabled and calculus will return 0 (zero) for this component. }
          constructor Create(const X, Y, Z, W : PFloatArray; const nb : Integer); {$ifdef CLR}unsafe;{$endif}
          destructor Destroy; override;
 
-         {: Calculates X component at time t.<p> }
+         {Calculates X component at time t.  }
          function SplineX(const t : Single): Single;
-         {: Calculates Y component at time t.<p> }
+         {Calculates Y component at time t.  }
          function SplineY(const t : single): Single;
-         {: Calculates Z component at time t.<p> }
+         {Calculates Z component at time t.  }
          function SplineZ(const t : single): Single;
-         {: Calculates W component at time t.<p> }
+         {Calculates W component at time t.  }
          function SplineW(const t : single): Single;
 
-         {: Calculates X and Y components at time t.<p> }
+         {Calculates X and Y components at time t.  }
          procedure SplineXY(const t : single; var X, Y : Single);
-         {: Calculates X, Y and Z components at time t.<p> }
+         {Calculates X, Y and Z components at time t.  }
          procedure SplineXYZ(const t : single; var X, Y, Z : Single);
-         {: Calculates X, Y, Z and W components at time t.<p> }
+         {Calculates X, Y, Z and W components at time t.  }
          procedure SplineXYZW(const t : single; var X, Y, Z, W : Single);
 
-         {: Calculates affine vector at time t.<p> }
+         {Calculates affine vector at time t.  }
          function SplineAffineVector(const t : single) : TAffineVector; overload;
-         {: Calculates affine vector at time t.<p> }
+         {Calculates affine vector at time t.  }
          procedure SplineAffineVector(const t : single; var vector : TAffineVector); overload;
-         {: Calculates vector at time t.<p> }
+         {Calculates vector at time t.  }
          function SplineVector(const t : single) : TVector; overload;
-         {: Calculates vector at time t.<p> }
+         {Calculates vector at time t.  }
          procedure SplineVector(const t : single; var vector : TVector); overload;
 
-         {: Calculates X component slope at time t.<p> }
+         {Calculates X component slope at time t.  }
          function SplineSlopeX(const t : Single): Single;
-         {: Calculates Y component slope at time t.<p> }
+         {Calculates Y component slope at time t.  }
          function SplineSlopeY(const t : single): Single;
-         {: Calculates Z component slope at time t.<p> }
+         {Calculates Z component slope at time t.  }
          function SplineSlopeZ(const t : single): Single;
-         {: Calculates W component slope at time t.<p> }
+         {Calculates W component slope at time t.  }
          function SplineSlopeW(const t : single): Single;
-         {: Calculates the spline slope at time t. }
+         {Calculates the spline slope at time t. }
          function SplineSlopeVector(const t : single) : TAffineVector; overload;
 
-         {: Calculates the intersection of the spline with the YZ plane.<p>
+         {Calculates the intersection of the spline with the YZ plane. 
             Returns True if an intersection was found. }
          function SplineIntersecYZ(X: Single; var Y, Z: Single): Boolean;
-         {: Calculates the intersection of the spline with the XZ plane.<p>
+         {Calculates the intersection of the spline with the XZ plane. 
             Returns True if an intersection was found. }
          function SplineIntersecXZ(Y: Single; var X, Z: Single): Boolean;
-         {: Calculates the intersection of the spline with the XY plane.<p>
+         {Calculates the intersection of the spline with the XY plane. 
             Returns True if an intersection was found. }
          function SplineIntersecXY(Z: Single; var X, Y: Single): Boolean;
    end;

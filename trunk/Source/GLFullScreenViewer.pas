@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFullscreenViewer<p>
+{ : GLFullscreenViewer 
 
-  A Platform specific full-screen viewer.<p>
+  A Platform specific full-screen viewer. 
 
   Note: Eng: Lazarus has problems with minimizing and normalizing windows.
   See code DoAvtivate DoDeactivate. Tests were conducted on
@@ -18,18 +18,18 @@
   ¬ случае устранени€ проблем в лазарусе,
   удалите код лазаруса оставив тот который дл€ делфи.
   ћодуль еще не закончен! ¬ линуксе есть проблемы перехвата мыши
-  и проблемы с DoActivate DoDeactivate.<p>
+  и проблемы с DoActivate DoDeactivate. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>22/08/10 - DaStr - Restored backward-compatibility after previous changes
-  <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
-  <li>28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
+   History :  
+   22/08/10 - DaStr - Restored backward-compatibility after previous changes
+   11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
+   28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
   (by Rustam Asmandiarov aka Predator)
-  <li>08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
-  <li>07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
-  <li>07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
-  <li>24/07/03 - EG - Creation from GLWin32Viewer split
-  </ul></font>
+   08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
+   07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
+   07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
+   24/07/03 - EG - Creation from GLWin32Viewer split
+   
 }
 unit GLFullScreenViewer;
 
@@ -53,7 +53,7 @@ type
 
   // TGLFullScreenViewer
   //
-  { : A FullScreen viewer.<p>
+  { : A FullScreen viewer. 
     This non visual viewer will, when activated, use the full screen as rendering
     surface. It will also switch/restore videomode depending on the required
     width/height.<br>
@@ -134,18 +134,18 @@ type
 
     procedure Render(baseObject: TGLBaseSceneObject = nil); override;
 
-    { : Adjusts property so that current resolution will be used.<p>
+    { : Adjusts property so that current resolution will be used. 
       Call this method if you want to make sure video mode isn't switched. }
     procedure UseCurrentResolution;
 
     procedure BeginUpdate;
     procedure EndUpdate;
 
-    { : Activates/deactivates full screen mode.<p> }
+    { : Activates/deactivates full screen mode.  }
     property Active: Boolean read FActive write SetActive;
 
     procedure ReActivate;
-    { : Read access to the underlying form handle.<p>
+    { : Read access to the underlying form handle. 
       Returns 0 (zero) if the viewer is not active or has not yet
       instantiated its form. }
     property Handle: HWND read GetHandle;
@@ -171,25 +171,25 @@ type
     property ScreenDepth: TGLScreenDepth read FScreenDepth write SetScreenDepth
       default sd32bits;
 
-    { : Specifies if the underlying form is "fsStayOnTop".<p>
+    { : Specifies if the underlying form is "fsStayOnTop". 
       The benefit of StayOnTop is that it hides the windows bar and
       other background windows. The "fsStayOnTop" is automatically
-      switched off/on when the underlying form loses/gains focus.<p>
+      switched off/on when the underlying form loses/gains focus. 
       It is recommended not to use StayOnTop while running in the IDE
-      or during the debugging phase.<p> }
+      or during the debugging phase.  }
     property StayOnTop: Boolean read FStayOnTop write SetStayOnTop
       default False;
 
-    { : Specifies if the refresh should be synchronized with the VSync signal.<p>
+    { : Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
     property VSync: TVSyncMode read FVSync write FVSync default vsmSync;
-    { : Screen refresh rate.<p>
+    { : Screen refresh rate. 
       Use zero for system default. This property allows you to work around
       the winxp bug that limits uses a refresh rate of 60hz when changeing
       resolution. it is however suggested to give the user the opportunity
       to adjust it instead of having a fixed value (expecially beyond
-      75hz or for resolutions beyond 1024x768).<p>
+      75hz or for resolutions beyond 1024x768). 
       the value will be automatically clamped to the highest value
       *reported* compatible with the monitor. }
     property RefreshRate: Integer read FRefreshRate write FRefreshRate;

@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMemo<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>30/03/11 - Yar - Initial version (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
- </ul></font>
+{
+  History :
+       30/03/11 - Yar - Initial version (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
 }
 
 unit GLSMemo;
@@ -650,9 +648,9 @@ type
   TGLSMemo = class(TGLSCustomMemo)
   published
     { Published Declarations }
-    {: TControl }
+    {TControl }
     property PopupMenu;
-    {: TCustomControl }
+    {TCustomControl }
     property Align;
     property Enabled;
     property ShowHint;
@@ -660,7 +658,7 @@ type
     property TabStop;
     property Visible;
     property ReadOnly;
-    {: TGLSCustomMemo }
+    {TGLSCustomMemo }
     property AutoIndent;
     property GutterColor;
     property GutterWidth;
@@ -676,7 +674,7 @@ type
     property ScrollMode;
     property UndoLimit;
     property DelErase;
-    {: Inherited events }
+    {Inherited events }
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -691,7 +689,7 @@ type
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
-    {: Events }
+    {Events }
     property OnGutterDraw;
     property OnGutterClick;
     property OnChange;
@@ -779,9 +777,9 @@ type
   published
     { Published declarations }
 
-    {: TControl}
+    {TControl}
     property PopupMenu;
-    {: TCustomControl}
+    {TCustomControl}
     property Align;
     property Enabled;
     property ShowHint;
@@ -789,7 +787,7 @@ type
     property TabStop;
     property Visible;
     property ReadOnly;
-    {: TGLSCustomMemo}
+    {TGLSCustomMemo}
     property AutoIndent;
     property GutterColor;
     property GutterWidth;
@@ -804,7 +802,7 @@ type
     property ScrollMode;
     property UndoLimit;
     property DelErase;
-    {: Inherited events }
+    {Inherited events }
     property OnClick;
     property OnDblClick;
     property OnDragDrop;
@@ -819,7 +817,7 @@ type
     property OnKeyDown;
     property OnKeyPress;
     property OnKeyUp;
-    {: Events }
+    {Events }
     property OnGutterClick;
     property OnGutterDraw;
     property OnChange;
@@ -827,7 +825,7 @@ type
     property OnSelectionChange;
     property OnStatusChange;
     property OnUndoChange;
-    {: TGLSSyntaxMemo }
+    {TGLSSyntaxMemo }
     property LineComment: string read FLineComment write FLineComment;
     property MultiCommentLeft: string read FMultiCommentLeft write
       FMultiCommentLeft;

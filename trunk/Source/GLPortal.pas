@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPortal<p>
+{GLPortal 
 
-	Portal Rendering support for GLScene.<p>
+	Portal Rendering support for GLScene. 
 
    The portal structures are subclasses of the Mesh structures, with a "sector"
-   being assimilated to a "MeshObject" and sector polygons to facegroups.<p>
+   being assimilated to a "MeshObject" and sector polygons to facegroups. 
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>30/01/03 - Egg - Completed class registration
-      <li>13/08/00 - Egg - Creation
-	</ul></font>
+	 Historique :  
+       30/03/07 - DaStr - Added $I GLScene.inc
+       30/01/03 - Egg - Completed class registration
+       13/08/00 - Egg - Creation
+	 
 }
 unit GLPortal;
 
@@ -31,7 +31,7 @@ type
 
    // TPortalMeshObjectList
    //
-   {: A mesh object list that handles portal rendering.<p>
+   {A mesh object list that handles portal rendering. 
       The items are treated as being sectors. } 
    TPortalMeshObjectList = class (TMeshObjectList)
       private
@@ -51,7 +51,7 @@ type
 
    // TSectorMeshObject
    //
-   {: A portal renderer sector.<p> }
+   {A portal renderer sector.  }
    TSectorMeshObject = class (TMorphableMeshObject)
       private
          { Private Declarations }
@@ -73,7 +73,7 @@ type
 
 	// TFGPolygon
 	//
-   {: A portal polygon.<p>
+   {A portal polygon. 
       This is the base class for portal polygons, the TFGPortalPolygon class
       implements the portal. }
 	TFGPolygon = class (TFGVertexNormalTexIndexList)
@@ -93,7 +93,7 @@ type
 
 	// TFGPolygon
 	//
-   {: A portal polygon.<p>
+   {A portal polygon. 
       This is the base class for portal polygons, the TFGPortalPolygon class
       implements the portal. }
 	TFGPortalPolygon = class (TFGPolygon)
@@ -120,7 +120,7 @@ type
 
    // TGLPortal
    //
-   {: Portal Renderer class. }
+   {Portal Renderer class. }
    TGLPortal = class(TGLBaseMesh)
       private
          { Private Declarations }

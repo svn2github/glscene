@@ -1,19 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRMaterialPreview<p>
+{FRMaterialPreview 
 
-   Material Preview frame.<p>
+   Material Preview frame. 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
+    Historique :  
+       12/07/07 - DaStr - Improved Cross-Platform compatibility
                              (Bugtracker ID = 1684432)
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>16/12/06 - DaStr - Editor enhanced
-      <li>03/07/04 - LR  - Make change for Linux
-      <li>06/02/00 - Egg - Creation
-   </ul></font>
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       16/12/06 - DaStr - Editor enhanced
+       03/07/04 - LR  - Make change for Linux
+       06/02/00 - Egg - Creation
+    
 }
 unit FRMaterialPreview;
 

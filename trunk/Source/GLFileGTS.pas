@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileGTS<p>
+{GLFileGTS 
 
-	GTS (GNU Triangulated Surface) vector file format implementation.<p>
+	GTS (GNU Triangulated Surface) vector file format implementation. 
 
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	</ul></font>
+	 History : 
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       31/03/07 - DaStr - Added $I GLScene.inc
+       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+	 
 }
 unit GLFileGTS;
 
@@ -25,7 +25,7 @@ uses
 type
    // TGLGTSVectorFile
    //
-   {: The GTS vector file (GNU Triangulated Surface library).<p>
+   {The GTS vector file (GNU Triangulated Surface library). 
       It is a simple text format, with indexed vertices. The first line contains
       the number of vertices, the number of edges and the number of faces separated
       by spaces.<br>

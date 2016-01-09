@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTeapot<p>
+{GLTeapot 
 
-   Implements the standard Teapot, build from evaluators.<p>
+   Implements the standard Teapot, build from evaluators. 
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>21/07/03 - EG - Creation from GLObjects split
-   </ul></font>
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       30/03/07 - DaStr - Added $I GLScene.inc
+       21/07/03 - EG - Creation from GLObjects split
+    
 }
 unit GLTeapot;
 
@@ -29,7 +29,7 @@ type
 
   // TGLTeapot
   //
-  {: The classic teapot.<p>
+  {The classic teapot. 
      The only use of this object is as placeholder for testing... }
   TGLTeapot = class(TGLSceneObject)
   private

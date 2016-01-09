@@ -1,22 +1,22 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTimeEventsMgr<p>
+{GLTimeEventsMgr 
      by GliGli
 
-   Time based events mannager using the Cadencer<p>
-   can be useful to make animations with GlScene<p>
+   Time based events mannager using the Cadencer 
+   can be useful to make animations with GlScene 
 
-	<b>History : </b><font size=-1><ul>
-      <li>07/01/10 - DaStr - Added TGLTimeEventsMGR.Reset()
+	 History :  
+       07/01/10 - DaStr - Added TGLTimeEventsMGR.Reset()
                              Fixed code formating
-      <li>25/11/09 - DanB - Changed TTimeEvent.Name from ShortString to String
-      <li>11/10/07 - DaStr - TTimeEvent.SetEnabled now updates StartTime to
+       25/11/09 - DanB - Changed TTimeEvent.Name from ShortString to String
+       11/10/07 - DaStr - TTimeEvent.SetEnabled now updates StartTime to
                              Cadencers's current time.
                              (Thanks Lukasz Sokol) (BugTracker ID = 1811141)
-      <li>28/03/07 - DaStr - Cosmetic fix for FPC compatibility
-      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
+       28/03/07 - DaStr - Cosmetic fix for FPC compatibility
+       29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+       07/02/02 - EG - Added Notification, DoEvent, ElapsedTime and changed Event type
 }
 
 unit GLTimeEventsMgr;

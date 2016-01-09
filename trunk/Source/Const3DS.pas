@@ -12,7 +12,8 @@ unit Const3DS;
 
 interface
 
-uses Types3DS;
+uses 
+  Types3DS;
 
 resourcestring
   // error messages

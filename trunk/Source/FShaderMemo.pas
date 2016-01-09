@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FShaderMemo<p>
-   Shader code editor.<p>
+{FShaderMemo 
+   Shader code editor. 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>31/03/11 - Yar - Creation
-   </ul></font>
+    Historique :  
+       31/03/11 - Yar - Creation
+    
 }
 
 // TODO: decide how to load templates from external file,

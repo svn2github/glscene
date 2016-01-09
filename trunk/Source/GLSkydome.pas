@@ -1,43 +1,43 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSkydome<p>
+{GLSkydome 
 
-   Skydome object<p>
+   Skydome object 
 
- <b>History : </b><font size=-1><ul>
-      <li>17/02/13 - Yar - Added SetSunAtTime method (thanks to Dimitriy) 
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>24/03/11 - Yar - Added esoDepthTest to TEarthSkydomeOption
+  History :  
+       17/02/13 - Yar - Added SetSunAtTime method (thanks to Dimitriy) 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       24/03/11 - Yar - Added esoDepthTest to TEarthSkydomeOption
                            (Drawing sky dome latest with depth test reduce pixels overdraw)
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>10/10/08 - DanB - changed Skydome buildlists to use rci instead
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       10/10/08 - DanB - changed Skydome buildlists to use rci instead
                             of Scene.CurrentGLCamera
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
-      <li>25/03/07 - DaStr - Fixed compiler directives for Delphi5 compatibility
-      <li>22/03/07 - DaStr - Removed "unsafe type/unsafe code" warnings
-      <li>19/12/06 - DaStr - TSkyDomeStars.AddRandomStars() overloaded
-      <li>29/06/06 - PvD - Fixed small bug to properly deal with polygon fill
-      <li>20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-      <li>09/01/04 - EG - Now based on TGLCameraInvariantObject
-      <li>04/08/03 - SG - Fixed small bug with random star creation
-      <li>17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
-      <li>26/02/02 - EG - Enhanced star support (generation and twinkle),
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       30/03/07 - DaStr - Moved all UNSAFE_TYPE, UNSAFE_CODE checks to GLSCene.inc
+       25/03/07 - DaStr - Fixed compiler directives for Delphi5 compatibility
+       22/03/07 - DaStr - Removed "unsafe type/unsafe code" warnings
+       19/12/06 - DaStr - TSkyDomeStars.AddRandomStars() overloaded
+       29/06/06 - PvD - Fixed small bug to properly deal with polygon fill
+       20/01/05 - Mathx - Added the ExtendedOptions of the EarthSkyDome
+       02/08/04 - LR, YHC - BCB corrections: use record instead array
+       09/01/04 - EG - Now based on TGLCameraInvariantObject
+       04/08/03 - SG - Fixed small bug with random star creation
+       17/06/03 - EG - Fixed PolygonMode (Carlos Ferreira)
+       26/02/02 - EG - Enhanced star support (generation and twinkle),
                           Skydome now 'exports' its coordinate system to children
-      <li>21/01/02 - EG - Skydome position now properly ignored
-      <li>23/09/01 - EG - Fixed and improved TGLEarthSkyDome
-      <li>26/08/01 - EG - Added SkyDomeStars
-      <li>12/08/01 - EG - DepthMask no set to False during rendering
-      <li>18/07/01 - EG - VisibilityCulling compatibility changes
-      <li>12/03/01 - EG - Reversed polar caps orientation
-      <li>28/01/01 - EG - Fixed TSkyDomeBand rendering (vertex coordinates)
-      <li>18/01/01 - EG - First working version of TGLEarthSkyDome
-      <li>14/01/01 - EG - Creation
- </ul></font>
+       21/01/02 - EG - Skydome position now properly ignored
+       23/09/01 - EG - Fixed and improved TGLEarthSkyDome
+       26/08/01 - EG - Added SkyDomeStars
+       12/08/01 - EG - DepthMask no set to False during rendering
+       18/07/01 - EG - VisibilityCulling compatibility changes
+       12/03/01 - EG - Reversed polar caps orientation
+       28/01/01 - EG - Fixed TSkyDomeBand rendering (vertex coordinates)
+       18/01/01 - EG - First working version of TGLEarthSkyDome
+       14/01/01 - EG - Creation
+  
 }
 unit GLSkydome;
 
@@ -141,13 +141,13 @@ type
 
   published
     { Published Declarations }
-      {: Right Ascension, in degrees. }
+      {Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
-    {: Declination, in degrees. }
+    {Declination, in degrees. }
     property Dec: Single read FDec write FDec;
-    {: Absolute magnitude. }
+    {Absolute magnitude. }
     property Magnitude: Single read FMagnitude write FMagnitude;
-    {: Color of the star. }
+    {Color of the star. }
     property Color: TColor read FColor write FColor;
 
   end;
@@ -175,12 +175,12 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
 
-    {: Adds nb random stars of the given color.<p>
+    {Adds nb random stars of the given color. 
        Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
     procedure AddRandomStars(const nb: Integer; const color: TColor; const limitToTopDome: Boolean = False); overload;
     procedure AddRandomStars(const nb: Integer; const ColorMin, ColorMax:TVector3b; const Magnitude_min, Magnitude_max: Single;const limitToTopDome: Boolean = False); overload;
 
-    {: Load a 'stars' file, which is made of TGLStarRecord.<p>
+    {Load a 'stars' file, which is made of TGLStarRecord. 
        Not that '.stars' files should already be sorted by magnitude and color. }
     procedure LoadStarsFile(const starsFileName: string);
   end;
@@ -192,15 +192,15 @@ type
 
   // TGLSkyDome
   //
-    {: Renders a sky dome always centered on the camera.<p>
+    {Renders a sky dome always centered on the camera. 
        If you use this object make sure it is rendered *first*, as it ignores
        depth buffering and overwrites everything. All children of a skydome
-       are rendered in the skydome's coordinate system.<p>
+       are rendered in the skydome's coordinate system. 
        The skydome is described by "bands", each "band" is an horizontal cut
-       of a sphere, and you can have as many bands as you wish.<p>
+       of a sphere, and you can have as many bands as you wish. 
        Estimated CPU cost (K7-500, GeForce SDR, default bands):<ul>
-       <li>800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
-       <li>Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
+        800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
+        Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
        </ul> }
   TGLSkyDome = class(TGLCameraInvariantObject)
   private
@@ -235,10 +235,10 @@ type
 
   // TGLEarthSkyDome
   //
-  {: Render a skydome like what can be seen on earth.<p>
+  {Render a skydome like what can be seen on earth. 
      Color is based on sun position and turbidity, to "mimic" atmospheric
      Rayleigh and Mie scatterings. The colors can be adjusted to render
-     weird/extra-terrestrial atmospheres too.<p>
+     weird/extra-terrestrial atmospheres too. 
      The default slices/stacks values make for an average quality rendering,
      for a very clean rendering, use 64/64 (more is overkill in most cases).
      The complexity is quite high though, making a T&L 3D board a necessity
@@ -291,9 +291,9 @@ type
 
   published
     { Published Declarations }
-      {: Elevation of the sun, measured in degrees. }
+      {Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
-    {: Expresses the purity of air.<p> Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
+    {Expresses the purity of air.  Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
     property Turbidity: Single read FTurbidity write SetTurbidity;
 
     property SunZenithColor: TGLColor read FSunZenithColor write SetSunZenithColor;

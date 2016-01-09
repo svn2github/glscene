@@ -1,19 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileVRML<p>
+{GLFileVRML 
 
-   Preliminary VRML vector file support for GLScene.<p>
-   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-   <b>History :</b><font size=-1><ul>
-      <li>29/03/07 - DaStr - RecursNodes bugfixed (thanks Burkhard Carstens)
-      <li>25/01/05 - SG - Improved auto-normal generation using creaseAngle,
+   Preliminary VRML vector file support for GLScene. 
+    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+    History : 
+       29/03/07 - DaStr - RecursNodes bugfixed (thanks Burkhard Carstens)
+       25/01/05 - SG - Improved auto-normal generation using creaseAngle,
                           Added Normal and TexCoord reading,
                           Fixes for the polygon tessellation routine (Carsten Pohl)
-      <li>18/01/05 - SG - Added polygon tessellation routine to decompose 
+       18/01/05 - SG - Added polygon tessellation routine to decompose 
                           a polygon mesh to a triangle mesh
-      <li>14/01/05 - SG - Added to CVS
-   </ul></font>
+       14/01/05 - SG - Added to CVS
+    
 }
 unit GLFileVRML;
 

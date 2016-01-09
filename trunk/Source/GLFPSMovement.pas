@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFPSMovement<p>
+{ : GLFPSMovement 
 
-  FPS-like movement behaviour and manager.<p>
+  FPS-like movement behaviour and manager. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>03/04/07 - DaStr - Added "public" to TCollisionState for FPC compatibility
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-  <li>08/03/06 - ur - Fixed warnigs for Delphi 2006
-  <li>02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
-  <li>03/07/04 - LR - Corrections for Linux compatibility
+   History :  
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   03/04/07 - DaStr - Added "public" to TCollisionState for FPC compatibility
+   30/03/07 - DaStr - Added $I GLScene.inc
+   29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+   08/03/06 - ur - Fixed warnigs for Delphi 2006
+   02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
+   03/07/04 - LR - Corrections for Linux compatibility
   Replace GetTickCount by GLGetTickCount
-  <li>19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
-  <li>14/06/04 - Mathx - Preventing repeated maps when adding through maps.addMap
-  <li>09/06/04 - Mathx - Creation
-  </ul></font>
+   19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
+   14/06/04 - Mathx - Preventing repeated maps when adding through maps.addMap
+   09/06/04 - Mathx - Creation
+   
 }
 unit GLFPSMovement;
 

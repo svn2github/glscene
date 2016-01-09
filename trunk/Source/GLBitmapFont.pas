@@ -1,53 +1,53 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBitmapFont<p>
+{ : GLBitmapFont 
 
-  Bitmap Fonts management classes for GLScene<p>
+  Bitmap Fonts management classes for GLScene 
 
-  <b>History : </b><font size=-1><ul>
-  <li>04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
-  <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with records
-  <li>01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
-  <li>30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
-  <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
-  <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>24/02/10 - Yar - Bugfix in TGLCustomBitmapFont.PrepareImage when image is not RGBA8
-  <li>25/01/10 - Yar - Replace Char to AnsiChar
-  <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
-  <li>16/10/08 - UweR - Removed unneeded typecast in TBitmapFontRange.SetStartGlyphIdx
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>22/12/06 - LC - Fixed TGLCustomBitmapFont.RenderString, it now unbinds the texture.
+   History :  
+   04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
+   20/11/12 - PW - CPP compatibility: replaced direct access to some properties with records
+   01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
+   30/06/11 - DaStr - Bugfixed TBitmapFontRanges.Add(for AnsiChar)
+   16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
+   13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   24/02/10 - Yar - Bugfix in TGLCustomBitmapFont.PrepareImage when image is not RGBA8
+   25/01/10 - Yar - Replace Char to AnsiChar
+   11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
+   16/10/08 - UweR - Removed unneeded typecast in TBitmapFontRange.SetStartGlyphIdx
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   22/12/06 - LC - Fixed TGLCustomBitmapFont.RenderString, it now unbinds the texture.
   Bugtracker ID=1619243 (thanks Da Stranger)
-  <li>09/03/05 - EG - Fixed space width during rendering
-  <li>12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
-  <li>18/10/04 - NelC - Fixed a texture reset bug in RenderString
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
-  <li>27/06/04 - NelC - Added TGLFlatText.Assign
-  <li>01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
-  <li>01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state
-  <li>07/05/03 - EG - TGLFlatText Notification fix, added Options
-  <li>30/10/02 - EG - Added TGLFlatText
-  <li>29/09/02 - EG - Added TexCoords LUT, faster RenderString,
+   09/03/05 - EG - Fixed space width during rendering
+   12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
+   18/10/04 - NelC - Fixed a texture reset bug in RenderString
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
+   27/06/04 - NelC - Added TGLFlatText.Assign
+   01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
+   01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state
+   07/05/03 - EG - TGLFlatText Notification fix, added Options
+   30/10/02 - EG - Added TGLFlatText
+   29/09/02 - EG - Added TexCoords LUT, faster RenderString,
   removed TBitmapFontRange.Widths
-  <li>28/09/02 - EG - Introduced TGLCustomBitmapFont
-  <li>06/09/02 - JAJ - Prepared for TGLWindowsBitmapFont
-  <li>28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
-  <li>12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
-  <li>UNKNOWN  - EG - Added Alpha Channel.
-  <li>02/06/02 - JAJ - Modified to flexible character width
-  <li>20/01/02 - EG - Dropped 'Graphics' dependency
-  <li>10/09/01 - EG - Fixed visibility of tile 0
-  <li>12/08/01 - EG - Completely rewritten handles management
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-  <li>15/01/01 - EG - Creation
-  </ul></font>
+   28/09/02 - EG - Introduced TGLCustomBitmapFont
+   06/09/02 - JAJ - Prepared for TGLWindowsBitmapFont
+   28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
+   12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
+   UNKNOWN  - EG - Added Alpha Channel.
+   02/06/02 - JAJ - Modified to flexible character width
+   20/01/02 - EG - Dropped 'Graphics' dependency
+   10/09/01 - EG - Fixed visibility of tile 0
+   12/08/01 - EG - Completely rewritten handles management
+   21/02/01 - EG - Now XOpenGL based (multitexture)
+   15/01/01 - EG - Creation
+   
 }
 unit GLBitmapFont;
 
@@ -68,7 +68,7 @@ type
 
   // TBitmapFontRange
   //
-  { : An individual character range in a bitmap font.<p>
+  { : An individual character range in a bitmap font. 
     A range allows mapping ASCII characters to character tiles in a font
     bitmap, tiles are enumerated line then column (raster). }
   TBitmapFontRange = class(TCollectionItem)
@@ -128,7 +128,7 @@ type
     property Items[index: Integer]: TBitmapFontRange read GetItems
       write SetItems; default;
 
-    { : Converts an ASCII character into a tile index.<p>
+    { : Converts an ASCII character into a tile index. 
       Return -1 if character cannot be rendered. }
     function CharacterToTileIndex(aChar: WideChar): Integer;
     function TileIndexToChar(aIndex: Integer): WideChar;
@@ -146,11 +146,11 @@ type
 
   // TGLCustomBitmapFont
   //
-  { : Provides access to individual characters in a BitmapFont.<p>
+  { : Provides access to individual characters in a BitmapFont. 
     Only fixed-width bitmap fonts are supported, the characters are enumerated
     in a raster fashion (line then column).<br>
     Transparency is all or nothing, the transparent color being that of the
-    top left pixel of the Glyphs bitmap.<p>
+    top left pixel of the Glyphs bitmap. 
     Performance note: as usual, for best performance, you base font bitmap
     dimensions should be close to a power of two, and have at least 1 pixel
     spacing between characters (horizontally and vertically) to avoid artefacts
@@ -205,7 +205,7 @@ type
     procedure PrepareImage(var ARci: TRenderContextInfo); virtual;
     procedure PrepareParams(var ARci: TRenderContextInfo);
 
-    { : A single bitmap containing all the characters.<p>
+    { : A single bitmap containing all the characters. 
       The transparent color is that of the top left pixel. }
     property Glyphs: TGLPicture read FGlyphs write SetGlyphs;
     { : Nb of horizontal pixels between two columns in the Glyphs. }
@@ -214,7 +214,7 @@ type
     { : Nb of vertical pixels between two rows in the Glyphs. }
     property GlyphsIntervalY: Integer read FGlyphsIntervalY
       write SetGlyphsIntervalY;
-    { : Ranges allow converting between ASCII and tile indexes.<p>
+    { : Ranges allow converting between ASCII and tile indexes. 
       See TGLCustomBitmapFontRange. }
     property Ranges: TBitmapFontRanges read FRanges write SetRanges;
 
@@ -224,7 +224,7 @@ type
     property HSpace: Integer read FHSpace write SetHSpace default 1;
     { : Pixels in between rendered lines (vertically). }
     property VSpace: Integer read FVSpace write SetVSpace default 1;
-    { : Horizontal spacing fix offset.<p>
+    { : Horizontal spacing fix offset. 
       This property is for internal use, and is added to the hspacing
       of each character when rendering, typically to fix extra spacing. }
     property HSpaceFix: Integer read FHSpaceFix write FHSpaceFix;
@@ -244,7 +244,7 @@ type
     procedure RegisterUser(anObject: TGLBaseSceneObject); virtual;
     procedure UnRegisterUser(anObject: TGLBaseSceneObject); virtual;
 
-    { : Renders the given string at current position or at position given by the optional position variable.<p>
+    { : Renders the given string at current position or at position given by the optional position variable. 
       The current matrix is blindly used, meaning you can render all kinds
       of rotated and linear distorted text with this method, OpenGL
       Enable states are also possibly altered. }
@@ -253,7 +253,7 @@ type
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
 
-    { : A simpler canvas-style TextOut helper for RenderString.<p>
+    { : A simpler canvas-style TextOut helper for RenderString. 
       The rendering is reversed along Y by default, to allow direct use
       with TGLCanvas }
     procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
@@ -285,7 +285,7 @@ type
 
   // TGLBitmapFont
   //
-  { : See TGLCustomBitmapFont.<p>
+  { : See TGLCustomBitmapFont. 
     This class only publuishes some of the properties. }
   TGLBitmapFont = class(TGLCustomBitmapFont)
   published
@@ -310,7 +310,7 @@ type
 
   // TGLFlatText
   //
-  { : A 2D text displayed and positionned in 3D coordinates.<p>
+  { : A 2D text displayed and positionned in 3D coordinates. 
     The FlatText uses a character font defined and stored by a TGLBitmapFont
     component. Default character scale is 1 font pixel = 1 space unit. }
   TGLFlatText = class(TGLImmaterialSceneObject)
@@ -347,25 +347,25 @@ type
 
   published
     { Published Declarations }
-    { : Refers the bitmap font to use.<p>
+    { : Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render.<p>
+    { : Text to render. 
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
-    { : Controls the text alignment (horizontal).<p>
+    { : Controls the text alignment (horizontal). 
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment;
-    { : Controls the text layout (vertical).<p>
+    { : Controls the text layout (vertical). 
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout;
     { : Color modulation, can be used for fade in/out too. }
     property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
-    { : Flat text options.<p>
-      <ul><li>ftoTwoSided : when set the text will be visible from its two
+    { : Flat text options. 
+      <ul> ftoTwoSided : when set the text will be visible from its two
       sides even if faceculling is on (at the scene-level).
       </ul> }
     property Options: TGLFlatTextOptions read FOptions write SetOptions;

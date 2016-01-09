@@ -1,11 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAParallelPrimitives<p>
+{GLSCUDAParallelPrimitives 
 
-   <b>History : </b><font size=-1><ul>
-      <li>28/01/10 - Yar - Creation
-   </ul></font>
+    History :  
+       28/01/10 - Yar - Creation
+    
 }
 
 // -------------------------------------------------------------

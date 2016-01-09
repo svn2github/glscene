@@ -4,7 +4,7 @@
 {
  	Quake2 MD2 vector file format implementation.
 
-	History :</b><font size=-1><ul>
+	History : 
       28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
       31/03/07 - DaStr - Added $I GLScene.inc
       05/06/03 - SG - Separated from GLVectorFileObjects.pas
@@ -24,10 +24,10 @@ uses
 type
    // TGLMD2VectorFile
    //
-   {: The MD2 vector file (Quake2 actor file).<p>
+   {The MD2 vector file (Quake2 actor file). 
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap).<p>
+      (the whole mesh uses a single texture bitmap). 
       Based on code by Roger Cao. }
    TGLMD2VectorFile = class(TVectorFile)
       public

@@ -1,13 +1,11 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneFormDesign<p>
-
-   <b>History : </b><font size=-1><ul>
-    <li>03/04/11 - Yar - Added three project wizard for Delphi
-    <li>05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
-    <li>23/08/10 - Yar - Creation
- </ul></font>
+{
+    History :  
+     03/04/11 - Yar - Added three project wizard for Delphi
+     05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
+     23/08/10 - Yar - Creation
 }
 
 unit GLSceneFormDesign;
@@ -19,8 +17,8 @@ interface
 uses
   Winapi.Windows,
   System.Classes,
+  System.SysUtils,
   VCL.Forms,
-
   ToolsAPI;
 
 type
@@ -241,7 +239,6 @@ implementation
 {$R *.res}
 
 uses
-  SysUtils,
   GLCrossPlatform,
   GLSceneForm,
   GLScene,
@@ -1190,7 +1187,7 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-{: This line inserted automatically by IDE
+{This line inserted automatically by IDE
     '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;

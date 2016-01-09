@@ -1,9 +1,9 @@
 // dws2Classes
-{: DelphiWebScriptII symbol creation for base Delphi classes.<p>
+{DelphiWebScriptII symbol creation for base Delphi classes. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+    History :  
+       27/04/2004 - SG - Creation
+    
 }
 unit dws2Classes;
 

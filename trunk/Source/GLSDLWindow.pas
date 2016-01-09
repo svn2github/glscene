@@ -1,30 +1,30 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSDLWindow<p>
+{ : GLSDLWindow 
 
-  Non visual wrapper around basic SDL window features.<p>
+  Non visual wrapper around basic SDL window features. 
 
   <u>Notes to Self:</u><br>
   Unit must ultimately *NOT* make use of any platform specific stuff,
   *EVEN* through the use of conditionnals.<br>
-  SDL-specifics should also be avoided in the "interface" section.<p>
+  SDL-specifics should also be avoided in the "interface" section. 
 
   Written and maintained by Eric Grange (http://glscene.org),
   this component uses JEDI-SDL conversion (http://delphi-jedi.org),
-  which is a Delphi header conversion for SDL (http://libsdl.org)<p>
+  which is a Delphi header conversion for SDL (http://libsdl.org) 
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/09 - DaStr - Improved Unix compatibility
+   History :  
+   17/11/09 - DaStr - Improved Unix compatibility
   (thanks Predator) (BugtrackerID = 2893580)
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>07/06/07 - DaStr - Added $I GLScene.inc
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
-  <li>12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
+   16/10/08 - UweR - Compatibility fix for Delphi 2009
+   07/06/07 - DaStr - Added $I GLScene.inc
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+   16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
+   12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
   Added doc tags, Stencil buffer and others.
-  <li>11/12/01 - Egg - Creation
-  </ul></font>
+   11/12/01 - Egg - Creation
+   
 }
 unit GLSDLWindow;
 
@@ -40,25 +40,25 @@ uses
 type
   // TSDLWindowPixelDepth
   //
-  { : Pixel Depth options.<p>
+  { : Pixel Depth options. 
     <ul>
-    <li>vpd16bits: 16bpp graphics (565) (and 16 bits depth buffer for OpenGL)
-    <li>vpd24bits: 24bpp graphics (565) (and 24 bits depth buffer for OpenGL)
+     vpd16bits: 16bpp graphics (565) (and 16 bits depth buffer for OpenGL)
+     vpd24bits: 24bpp graphics (565) (and 24 bits depth buffer for OpenGL)
     </ul> }
   TSDLWindowPixelDepth = (vpd16bits, vpd24bits);
 
   // TSDLWindowOptions
   //
-  { : Specifies optional settings for the SDL window.<p>
+  { : Specifies optional settings for the SDL window. 
     Those options are a simplified subset of the SDL options:<ul>
-    <li>voDoubleBuffer: create a double-buffered window
-    <li>voHardwareAccel: enables all hardware acceleration options (software
+     voDoubleBuffer: create a double-buffered window
+     voHardwareAccel: enables all hardware acceleration options (software
     only if not defined).
-    <li>voOpenGL: requires OpenGL capability for the window
-    <li>voResizable: window should be resizable
-    <li>voFullScreen: requires a fullscreen "window" (screen resolution may
+     voOpenGL: requires OpenGL capability for the window
+     voResizable: window should be resizable
+     voFullScreen: requires a fullscreen "window" (screen resolution may
     be changed)
-    <li>voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)
+     voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)
     </ul> }
   TSDLWindowOption = (voDoubleBuffer, voHardwareAccel, voOpenGL, voResizable,
     voFullScreen, voStencilBuffer);
@@ -73,9 +73,9 @@ const
 type
   // TSDLWindow
   //
-  { : A basic SDL-based window (non-visual component).<p>
+  { : A basic SDL-based window (non-visual component). 
     Only a limited subset of SDL's features are available, and this window
-    is heavily oriented toward using it for OpenGL rendering.<p>
+    is heavily oriented toward using it for OpenGL rendering. 
     Be aware SDL is currently limited to a single window at any time...
     so you may have multiple components, but only one can be used. }
   TSDLWindow = class(TComponent)
@@ -127,24 +127,24 @@ type
 
     { : Initializes and Opens an SDL window }
     procedure Open;
-    { : Closes an already opened SDL Window.<p>
+    { : Closes an already opened SDL Window. 
       NOTE: will also kill the app due to an SDL limitation... }
     procedure Close;
     { : Applies changes (size, pixeldepth...) to the opened window. }
     procedure UpdateWindow;
 
-    { : Swap front and back buffer.<p> }
+    { : Swap front and back buffer.  }
     procedure SwapBuffers;
 
-    { : Polls SDL events.<p>
+    { : Polls SDL events. 
       SDL events can be either polled "manually", through a call to this
       method, or automatically via ThreadEventPolling. }
     procedure PollEvents;
 
-    { : Is the SDL window active (opened)?<p>
+    { : Is the SDL window active (opened)? 
       Adjusting this value as the same effect as invoking Open/Close. }
     property Active: Boolean read FActive write SetActive;
-    { : Presents the SDL surface of the window.<p>
+    { : Presents the SDL surface of the window. 
       If Active is False, this value is undefined. }
     property Surface: PSDL_Surface read FSDLSurface;
 
@@ -153,17 +153,17 @@ type
 
   published
     { Published Declarations }
-    { : Width of the SDL window.<p>
+    { : Width of the SDL window. 
       To apply changes to an active window, call UpdateWindow. }
     property Width: Integer read FWidth write SetWidth default 640;
-    { : Height of the SDL window.<p>
+    { : Height of the SDL window. 
       To apply changes to an active window, call UpdateWindow. }
     property Height: Integer read FHeight write SetHeight default 480;
-    { : PixelDepth of the SDL window.<p>
+    { : PixelDepth of the SDL window. 
       To apply changes to an active window, call UpdateWindow. }
     property PixelDepth: TSDLWindowPixelDepth read FPixelDepth
       write SetPixelDepth default vpd24bits;
-    { : Options for the SDL window.<p>
+    { : Options for the SDL window. 
       To apply changes to an active window, call UpdateWindow. }
     property Options: TSDLWindowOptions read FOptions write SetOptions
       default cDefaultSDLWindowOptions;
@@ -180,16 +180,16 @@ type
     property ThreadPriority: TThreadPriority read FThreadPriority
       write SetThreadPriority default tpLower;
 
-    { : Fired whenever Open succeeds.<p>
+    { : Fired whenever Open succeeds. 
       The SDL surface is defined and usable when the event happens. }
     property OnOpen: TNotifyEvent read FOnOpen write FOnOpen;
-    { : Fired whenever closing the window.<p>
+    { : Fired whenever closing the window. 
       The SDL surface is still defined and usable when the event happens. }
     property OnClose: TNotifyEvent read FOnClose write FOnClose;
-    { : Fired whenever the window is resized.<p>
+    { : Fired whenever the window is resized. 
       Note: glViewPort call is handled automatically for OpenGL windows }
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
-    { : Fired whenever an SDL Event is polled.<p>
+    { : Fired whenever an SDL Event is polled. 
       SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
       they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TSDLEvent read FOnSDLEvent write FOnSDLEvent;

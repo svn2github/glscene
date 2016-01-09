@@ -1,23 +1,23 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileDDS<p>
+{GLFileDDS 
 
    DDS File support for GLScene.
 
- <b>History : </b><font size=-1><ul>
-        <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility 
-        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-        <li>06/06/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>01/03/10 - Yar - Added control of texture detail level
-        <li>27/01/10 - Yar - Bugfix in BlockOffset with negative result
-        <li>23/11/10 - DaStr - Added $I GLScene.inc
-        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
+  History :  
+         04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility 
+         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+         06/06/10 - Yar - Fixes for Linux x64
+         08/05/10 - Yar - Removed check for residency in AssignFromTexture
+         22/04/10 - Yar - Fixes after GLState revision
+         01/03/10 - Yar - Added control of texture detail level
+         27/01/10 - Yar - Bugfix in BlockOffset with negative result
+         23/11/10 - DaStr - Added $I GLScene.inc
+         23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map saving bug
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
+         20/01/10 - Yar - Creation
+   </ul> 
 }
 unit GLFileDDS;
 
@@ -52,7 +52,7 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
       textureTarget: TGLTextureTarget;
@@ -61,7 +61,7 @@ type
   end;
 
 var
-  {: Variable determines which resolution to use textures,
+  {Variable determines which resolution to use textures,
      high - it loads all levels,
      midle - skipped the first level,
      low - skipped the first two levels. }
@@ -163,7 +163,7 @@ begin
 
   with header.SurfaceFormat do
   begin
-    {: There are flags that are supposed to mark these fields as valid,
+    {There are flags that are supposed to mark these fields as valid,
        but some dds files don't set them properly }
     UnMipmap;
     FLOD[0].Width := dwWidth;

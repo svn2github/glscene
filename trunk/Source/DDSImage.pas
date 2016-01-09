@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: DDSImage<p>
+{DDSImage 
     Alternative for DDS unit with more supported formats of flat image:
     Alpha8, Luminance8, R3G3B2, RGB5A1, RGBA4, Alpha8Luminance8, Luminance16, R5G6B5,
     RGB8, R10G10B10A2, RGBA8, RGBA16, R16F, RGBA16F, R32F, RGBA32F, GR16, GR16F, GR32F,
@@ -11,15 +11,15 @@
     Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
- <b>History : </b><font size=-1><ul>
-        <li>23/10/10 - Yar - Removed PBuffer
-        <li>23/08/10 - Yar - Changes after PBuffer upgrade
-        <li>20/05/10 - Yar - Fixes for Linux x64
-        <li>21/03/10 - Yar - Added Linux support
+  History :  
+         23/10/10 - Yar - Removed PBuffer
+         23/08/10 - Yar - Changes after PBuffer upgrade
+         20/05/10 - Yar - Fixes for Linux x64
+         21/03/10 - Yar - Added Linux support
                              (thanks to Rustam Asmandiarov aka Predator)
-        <li>24/01/10 - Yar - Improved FPC compatibility
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
+         24/01/10 - Yar - Improved FPC compatibility
+         21/01/10 - Yar - Creation
+   </ul> 
 }
 
 unit DDSImage;

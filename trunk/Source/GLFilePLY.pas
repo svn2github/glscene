@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
- 	PLY (Stanford Triangle Format) vector file format implementation.<p>
+ 	PLY (Stanford Triangle Format) vector file format implementation. 
 
 	History :
   16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -24,7 +24,7 @@ uses
 type
    // TGLPLYVectorFile
    //
-   {: The PLY vector file aka Stanford Triangle Format.<p>
+   {The PLY vector file aka Stanford Triangle Format. 
       This is a format for storing graphical objects that are described as a
       collection of polygons. The format is extensible, supports variations and
       subformats. This importer only works for the simplest variant (triangles

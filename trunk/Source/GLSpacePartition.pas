@@ -1,10 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpacePartition<p>
+{ : GLSpacePartition 
 
   Space Partition speeds up geometrical queries, like what objects does A
-  overlap.<p>
+  overlap. 
 
   Nota that the class TOctreeSpacePartition is optimized for dynamic scenes with
   objects that are small in relation to the size of the Octree space. This from
@@ -13,25 +13,25 @@
   <i>The non-duplicating octree shouldn't really be used if  you have big objects,
   and this especially if you have lots of big objects (the more objects you have
   the less efficient the partitionning, due to the "magnifying glass" effect of
-  the non-discriminating volume).</i><p>
+  the non-discriminating volume).</i> 
 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/12/14 - PW - Renamed SpatialPartitioning unit to GLSpacePartition
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
-  <li>08/12/04 - MF - Fixed AV error reported by DanB
-  <li>03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
-  <li>02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
+   History :  
+   10/12/14 - PW - Renamed SpatialPartitioning unit to GLSpacePartition
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
+   08/12/04 - MF - Fixed AV error reported by DanB
+   03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
+   02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
                       streamlined frustum culling.
-  <li>01/12/04 - HRLI - Added rcci/frustum culling
-  <li>23/06/03 - MF - Separated functionality for Octrees and general
+   01/12/04 - HRLI - Added rcci/frustum culling
+   23/06/03 - MF - Separated functionality for Octrees and general
   sectored space partitions so Quadtrees will be easy
   to add.
-  <li>20/06/03 - MF - Created
-  </ul></font>
+   20/06/03 - MF - Created
+   
 }
 
 unit GLSpacePartition;
@@ -562,9 +562,9 @@ type
     function GetChildForAABB(AABB: TAABB): TSectorNode; override;
   end;
 
-  { : Implements quadtrees.<p>
+  { : Implements quadtrees. 
     Quadtrees are hardcoded to completely ignore the Y axis, only using X and Z
-    to determine positioning.<p>
+    to determine positioning. 
     This means that they're well suited for 2d-ish situations (landscapes with
     trees for instance) but not for fully 3d situations (space fighting). }
   TQuadtreeSpacePartition = class(TSectoredSpacePartition)

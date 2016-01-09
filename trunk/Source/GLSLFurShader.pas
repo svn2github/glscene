@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLFurShader <p>
+{GLSLFurShader  
 
-   Fur shader that simulate Fur / Hair / Grass.<p>
+   Fur shader that simulate Fur / Hair / Grass. 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Initial
+    History :  
+     08/12/15 - J.Delauney - Initial
 
 }
 unit GLSLFurShader;

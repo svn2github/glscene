@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileJPEG<p>
+{GLFileJPEG 
 
-  <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>29/06/10 - Yar - Improved FPC compatibility
-      <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
-      <li>27/02/10 - Yar - Creation
-  </ul><p>
+   History :  
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       29/06/10 - Yar - Improved FPC compatibility
+       29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
+       27/02/10 - Yar - Creation
+  </ul> 
 }
 unit GLFileJPEG;
 
@@ -47,7 +47,7 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
       textureTarget: TGLTextureTarget;

@@ -1,11 +1,11 @@
 // GLScriptPython
-{: Python implementation for the GLScene scripting layer.<p>
+{Python implementation for the GLScene scripting layer. 
 
-   This unit is experimental.<p>
+   This unit is experimental. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>11/11/2004 - SG - Creation
-   </ul></font>
+    History :  
+       11/11/2004 - SG - Creation
+    
 }
 unit GLScriptPython;
 
@@ -21,7 +21,7 @@ uses
 type
   // TGLPythonEngine
   //
-  {: This class only adds manager registration logic to the TPythonEngine
+  {This class only adds manager registration logic to the TPythonEngine
      class to enable the XCollection items (ie. TGLScriptPython) retain it's
      assigned compiler from design to run -time. }
   TGLPythonEngine = class(TPythonEngine)
@@ -32,7 +32,7 @@ type
 
   // GLScriptPython
   //
-  {: Implements Python scripting functionality through the
+  {Implements Python scripting functionality through the
      abstracted GLScriptBase. }
   TGLScriptPython = class(TGLScriptBase)
     private

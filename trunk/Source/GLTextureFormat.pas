@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTextureFormat<p>
+{GLTextureFormat 
 
- <b>History : </b><font size=-1><ul>
-        <li>10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
-        <li>03/08/10 - Yar - Added SNORM texture format
-        <li>15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
-        <li>22/04/10 - Yar - Moved TGLTextureTarget
-        <li>23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
+  History :  
+         10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
+         03/08/10 - Yar - Added SNORM texture format
+         15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
+         22/04/10 - Yar - Moved TGLTextureTarget
+         23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
                              GLTextureFormat moved to GLTexture
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
+         21/01/10 - Yar - Creation
+   </ul> 
 }
 unit GLTextureFormat;
 
@@ -212,13 +212,13 @@ type
 
   // TGLInternalCompression
   //
-  {: Texture compression option.<p>
+  {Texture compression option. 
      If OpenGL supports it, this will activate a compressed texture format:<ul>
-     <li>tcDefault : uses global default compression option
-     <li>tcNone : do not use compression
-     <li>tcStandard : use standard compression, average quality, average rate
-     <li>tcHighQuality : choose a high-quality, low-speed compression
-     <li>tcHighSpeed : choose a high-speed, low-quality compression
+      tcDefault : uses global default compression option
+      tcNone : do not use compression
+      tcStandard : use standard compression, average quality, average rate
+      tcHighQuality : choose a high-quality, low-speed compression
+      tcHighSpeed : choose a high-speed, low-quality compression
      </ul>. }
   TGLInternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
     tcHighSpeed);
@@ -232,39 +232,39 @@ var
 const
   cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
 
-{: Give a openGL texture format from GLScene texture format. }
+{Give a openGL texture format from GLScene texture format. }
 function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLEnum;
-{: Give a GLScene texture format from openGL texture format. }
+{Give a GLScene texture format from openGL texture format. }
 function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TGLInternalFormat;
-{: Give a pixel size in bytes from texture format or data format. }
+{Give a pixel size in bytes from texture format or data format. }
 function GetTextureElementSize(intFormat: TGLInternalFormat): Integer; overload;
 function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
   Integer; overload;
-{: Give compatible openGL image format and data type. }
+{Give compatible openGL image format and data type. }
 procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
   GLenum; out dType: GLenum);
-{: Give a compressed openGL texture format from GLScene texture format
+{Give a compressed openGL texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
 function CompressedInternalFormatToOpenGL(intFormat: TGLInternalFormat):
   Integer;
-{: True if texture target supported. }
+{True if texture target supported. }
 function IsTargetSupported(glTarget: TGLEnum): Boolean; overload;
 function IsTargetSupported(target: TGLTextureTarget): Boolean; overload;
-{: True if texture format is supported by hardware or software. }
+{True if texture format is supported by hardware or software. }
 function IsFormatSupported(intFormat: TGLInternalFormat): Boolean;
-{: True if texture format is float. }
+{True if texture format is float. }
 function IsFloatFormat(intFormat: TGLInternalFormat): Boolean; overload;
 function IsFloatFormat(glFormat: TGLEnum): Boolean; overload;
-{: True if depth texture. }
+{True if depth texture. }
 function IsDepthFormat(intFormat: TGLInternalFormat): boolean; overload;
 function IsDepthFormat(glFormat: TGLEnum): Boolean; overload;
-{: True if texture compressed. }
+{True if texture compressed. }
 function IsCompressedFormat(intFormat: TGLInternalFormat): Boolean; overload;
 function IsCompressedFormat(glFormat: TGLEnum): Boolean; overload;
-{: Give generic compressed OpenGL texture format. }
+{Give generic compressed OpenGL texture format. }
 function GetGenericCompressedFormat(const intFormat: TGLInternalFormat;
   const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
-{: Give uncompressed texture format and OpenGL color format. }
+{Give uncompressed texture format and OpenGL color format. }
 function GetUncompressedFormat(const intFormat: TGLInternalFormat;
   out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
 

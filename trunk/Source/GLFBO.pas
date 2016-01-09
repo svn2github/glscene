@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFBO<p>
+{GLFBO 
 
    Implements FBO support for GLScene.
 
    Original author of the unit is Riz.
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/10/11 - Yar - Fixes for depth-stencil texture
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>16/05/10 - Yar - Added multisampling support (thanks C4)
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
-      <li>23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
-      <li>22/01/10 - Yar   - Adapted to Handles of GLContext,
+    History :  
+       16/10/11 - Yar - Fixes for depth-stencil texture
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       16/05/10 - Yar - Added multisampling support (thanks C4)
+       22/04/10 - Yar - Fixes after GLState revision
+       15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
+       23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
+       22/01/10 - Yar   - Adapted to Handles of GLContext,
                              texture target unification, level and layer control
-      <li>11/11/09 - DaStr - Added $I GLScene.inc
-      <li>09/11/09 - DaStr - Initial version (contributed to GLScene)
-   </ul></font>
+       11/11/09 - DaStr - Added $I GLScene.inc
+       09/11/09 - DaStr - Initial version (contributed to GLScene)
+    
 }
 unit GLFBO;
 
@@ -68,7 +68,7 @@ type
 
     procedure Bind;
     procedure Unbind;
-    {: Handle to the OpenGL render buffer object.<p>
+    {Handle to the OpenGL render buffer object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: TGLuint read GetHandle;

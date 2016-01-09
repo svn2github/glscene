@@ -1,58 +1,58 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: OpenGL1x<p>
+{OpenGL1x 
 
 	OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
-   a more "pragmatic" approach :)<p>
+   a more "pragmatic" approach :) 
 
    This unit is based on OpenGL12.pas orginally written by Mike Lischke,
-   please refer to OpenGL12.pas header.<p>
+   please refer to OpenGL12.pas header. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/01/11 - DanB - Entry points now use procedural types from GLS.OpenGLTokens.pas
+	 History :  
+       23/01/11 - DanB - Entry points now use procedural types from GLS.OpenGLTokens.pas
                             Added OpenGL 4.1 + ARB extensions
                             Switched to use GLS_REGIONS define
-      <li>23/08/10 - Yar - Moved tokens part to GLS.OpenGLTokens.pas
-      <li>22/07/10 - Yar - Added GL_ARB_debug_output constant
-      <li>01/06/10 - Yar - Fixes for Linux x64
-      <li>31/05/10 - Yar - Added WGL_NV_gpu_affinity
-      <li>12/05/10 - Yar - Added GL_ARB_texture_compression_bptc
-      <li>04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
-      <li>01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
-      <li>16/04/10 - Yar - Added Graphics Remedy's Extensions
-      <li>28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
+       23/08/10 - Yar - Moved tokens part to GLS.OpenGLTokens.pas
+       22/07/10 - Yar - Added GL_ARB_debug_output constant
+       01/06/10 - Yar - Fixes for Linux x64
+       31/05/10 - Yar - Added WGL_NV_gpu_affinity
+       12/05/10 - Yar - Added GL_ARB_texture_compression_bptc
+       04/05/10 - Yar - Added GL_S3_s3tc extension (thanks to Rustam Asmandiarov aka Predator)
+       01/05/10 - DanB - Fixed glGetTransformFeedbackVarying params
+       16/04/10 - Yar - Added Graphics Remedy's Extensions
+       28/03/10 - DanB - Added missing OpenGL 3.1/3.2 function lookups +
                             added bindless graphics extensions
-      <li>18/03/10 - Yar - Added more GLX extensions
+       18/03/10 - Yar - Added more GLX extensions
                           (thanks to Rustam Asmandiarov aka Predator)
-      <li>12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
+       12/03/10 - DanB - OpenGL 3.3/4.0 support (new ARB extensions), removed
                             _ARB suffix from functions/procedures in
                             GL_ARB_draw_buffers_blend + GL_ARB_sample_shading
-      <li>04/03/10 - DanB - Organised core into relevant + deprecated sections,
+       04/03/10 - DanB - Organised core into relevant + deprecated sections,
                             fixed a couple of function params + misc changes.
-      <li>12/02/10 - Yar -  Added GL_AMD_vertex_shader_tessellator
-      <li>07/02/10 - Yar -  Added GL_NV_primitive_restart
-      <li>21/01/10 - DaStr - Bugfixed wglChoosePixelFormatARB() and
+       12/02/10 - Yar -  Added GL_AMD_vertex_shader_tessellator
+       07/02/10 - Yar -  Added GL_NV_primitive_restart
+       21/01/10 - DaStr - Bugfixed wglChoosePixelFormatARB() and
                               wglCreatePbufferARB() parameters
-      <li>07/01/10 - DaStr - Added WGL_COLOR_SAMPLES_NV (thanks YarUndeoaker)
-      <li>25/12/09 - DaStr - Added GL_NV_copy_image, GL_LUMINANCE_INTEGER,
+       07/01/10 - DaStr - Added WGL_COLOR_SAMPLES_NV (thanks YarUndeoaker)
+       25/12/09 - DaStr - Added GL_NV_copy_image, GL_LUMINANCE_INTEGER,
                               GL_LUMINANCE_ALPHA_INTEGER extentions and constants
                              Re-added $region declarations (thanks YarUndeoaker)
-      <li>13/12/09 - DaStr - Added missing stdcall/cdecl modifiers
-      <li>25/10/09 - DaStr - Added some texture compression extensions and updated
+       13/12/09 - DaStr - Added missing stdcall/cdecl modifiers
+       25/10/09 - DaStr - Added some texture compression extensions and updated
                               glTransformFeedbackVaryings()(thanks YarUndeoaker)
-      <li>28/09/09 - DaStr - Added some NVidia-specific extensions (thanks YarUndeoaker)
-      <li>30/08/09 - DanB - GLsync changed to NativeInt, fixes to glBindBufferRange calls
-      <li>14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
-      <li>04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
-      <li>28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
-      <li>20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
-      <li>05/10/08 - DanB - Moved error handling code here from GLS.Context.pas
+       28/09/09 - DaStr - Added some NVidia-specific extensions (thanks YarUndeoaker)
+       30/08/09 - DanB - GLsync changed to NativeInt, fixes to glBindBufferRange calls
+       14/08/09 - DanB - Added missing GL_ARB_framebuffer_object extension check + fixed typo
+       04/08/09 - DanB - OpenGL 3.1/3.2 support + new ARB extensions added
+       28/07/09 - DaStr - Added GL_GEOMETRY_PROGRAM_NV and related extensions
+       20/01/08 - DanB - Fix due to Delphi6 not containing UInt64
+       05/10/08 - DanB - Moved error handling code here from GLS.Context.pas
                             OpenGL 3.0 support, new core features + ARB extensions
-      <li>23/03/08 - DanB - Added more Vendor/EXT extensions
-      <li>17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..."
+       23/03/08 - DanB - Added more Vendor/EXT extensions
+       17/03/08 - mrqzzz - uncommented some constants "GL_NORMAL_MAP_EXT,..."
                               to keep compatibility with dws2OpenGL1x.
-      <li>16/03/08 - DanB - Major rewrite of unit, including:
+       16/03/08 - DanB - Major rewrite of unit, including:
                             OpenGL 1.3, 1.4, 1.5, 2.0, 2.1 support.
                             removed TRCOptions (not used).
                             moved MRT_BUFFERS constant to GLS.Context.pas (isn't core openGL).
@@ -60,41 +60,41 @@
                             several new Vendor/EXT exensions added.
                             new function IsOpenGLVersionMet added.
                             restructured unit so extensions are in numerical order.
-      <li>17/06/07 - LC - Added GL_ARB_pixel_buffer_object, GL_EXT_pixel_buffer_object
-      <li>22/03/07 - DaStr - Removed GetTextureRectangle (had many useless checks)
-      <li>16/03/07 - DaStr - Dropped Kylix support in favor of FPC
+       17/06/07 - LC - Added GL_ARB_pixel_buffer_object, GL_EXT_pixel_buffer_object
+       22/03/07 - DaStr - Removed GetTextureRectangle (had many useless checks)
+       16/03/07 - DaStr - Dropped Kylix support in favor of FPC
                              (thanks Burkhard Carstens) (BugTracekrID=1681585)
-      <li>09/03/07 - DaStr - Added GL_ARB_draw_buffers (thanks riz)
-      <li>03/03/07 - DaStr - Added GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
-      <li>02/03/07 - DaStr - Added GL_[ARB/EXT]_texture_rectangle
+       09/03/07 - DaStr - Added GL_ARB_draw_buffers (thanks riz)
+       03/03/07 - DaStr - Added GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
+       02/03/07 - DaStr - Added GL_[ARB/EXT]_texture_rectangle
                              Added GetTextureRectangle
-      <li>10/01/07 - LC - Added GL_EXT_framebuffer_object
-      <li>11/09/06 - NC - Added GL_ARB_texture_float, GL_ARB_texture_non_power_of_two
-      <li>13/10/04 - NC - Added GL_ATI_draw_buffers
-      <li>08/10/04 - LR - Added const in the prototype of the following function for compatibility :
+       10/01/07 - LC - Added GL_EXT_framebuffer_object
+       11/09/06 - NC - Added GL_ARB_texture_float, GL_ARB_texture_non_power_of_two
+       13/10/04 - NC - Added GL_ATI_draw_buffers
+       08/10/04 - LR - Added const in the prototype of the following function for compatibility :
                               TGLUTessCombineProc, TGLUTessCombineDataProc, gluPickMatrix
       gluProject, gluUnProject, gluTessVertex, gluLoadSamplingMatrices
-      <li>04/10/04 - NC - Added GL_ATI_texture_float, WGL_ATI_pixel_format_float,
+       04/10/04 - NC - Added GL_ATI_texture_float, WGL_ATI_pixel_format_float,
                           WGL_NV_float_buffer, GL_NV_float_buffer
-      <li>08/07/04 - LR - Change case for Linux
-      <li>05/07/04 - LR - Corrections for Linux. Now glX function are directly load
+       08/07/04 - LR - Change case for Linux
+       05/07/04 - LR - Corrections for Linux. Now glX function are directly load
                           by external action (like for Windows). So i suppress
                           the function LoadLinuxOpenGL.
-      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-      <li>24/06/04 - SG - Added GL_ARB_fragment_program
-      <li>17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
-      <li>06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
+       28/06/04 - LR - Removed ..\ from the GLScene.inc
+       24/06/04 - SG - Added GL_ARB_fragment_program
+       17/05/04 - EG - Dropped EXT_vertex_array (assumed as standard)
+       06/04/04 - EG - Added GL_ARB_shader_objects, GL_ARB_vertex_shader
                           and GL_ARB_fragment_shader, dropped a few oldies
-      <li>13/02/04 - EG - Added GL_NV_texture_rectangle
-      <li>18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
+       13/02/04 - EG - Added GL_NV_texture_rectangle
+       18/11/03 - EG - Fixed binding of core extensions, added GL_ARB_depth_texture
                           and GL_ARB_shadow support
-      <li>20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
-      <li>09/09/03 - EG - Added GL_ARB_vertex_buffer_object, dropped some oldies
-      <li>04/09/03 - EG - Added GL_ARB_vertex_program
-      <li>23/07/03 - EG - Creation from OpenGL12.pas "morph": classic OpenGL
+       20/09/03 - EG - Added GL_NV_occlusion_query, dropped some more oldies
+       09/09/03 - EG - Added GL_ARB_vertex_buffer_object, dropped some oldies
+       04/09/03 - EG - Added GL_ARB_vertex_program
+       23/07/03 - EG - Creation from OpenGL12.pas "morph": classic OpenGL
                           calls made static, obsolete/rare extensions support
                           dropped
-   </ul></font>
+    
 }
 unit OpenGL1x;
 
@@ -109,9 +109,9 @@ interface
 {.$define MULTITHREADOPENGL}
 
 uses
-  SysUtils,
+  System.SysUtils,
   {$IFDEF MSWINDOWS}
-    Windows,
+   Winapi.Windows,
   {$ENDIF}
   {$IFDEF GLS_X11_SUPPORT}
      X, Xlib, XUtil,
@@ -2777,11 +2777,11 @@ function IsOpenGLVersionMet(MajorVersion,MinorVersion: Integer): boolean;
 type
   EOpenGLError = class(Exception);
 
-{: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
+{Gets the oldest error from OpenGL engine and tries to clear the error queue.  }
 procedure CheckOpenGLError;
-{: Clears all pending OpenGL errors. }
+{Clears all pending OpenGL errors. }
 procedure ClearGLError;
-{: Raises an EOpenGLError with 'msg' error string. }
+{Raises an EOpenGLError with 'msg' error string. }
 procedure RaiseOpenGLError(const msg : String);
 
 var

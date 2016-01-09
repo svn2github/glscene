@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FMaterialEditorForm<p>
+{FMaterialEditorForm 
 
-   Editor window for a material (with preview).<p>
+   Editor window for a material (with preview). 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
-      <li>05/10/08 - DanB - Removed Kylix support
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>19/12/06 - DaStr - All comboboxes get their Items using RTTI
+    Historique :  
+       07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
+       05/10/08 - DanB - Removed Kylix support
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       19/12/06 - DaStr - All comboboxes get their Items using RTTI
                              (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-      <li>03/07/04 - LR  - Make change for Linux
-      <li>24/03/00 - Egg - Added Blending
-      <li>06/02/00 - Egg - Creation
-   </ul></font>
+       03/07/04 - LR  - Make change for Linux
+       24/03/00 - Egg - Added Blending
+       06/02/00 - Egg - Creation
+    
 }
 unit FMaterialEditorForm;
 

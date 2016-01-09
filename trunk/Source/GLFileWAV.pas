@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileWAV<p>
+{GLFileWAV 
 
-	Support for Windows WAV format.<p>
+	Support for Windows WAV format. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+	 History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+       25/07/09 - DaStr - Added $I GLScene.inc
+       26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
+       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
+	 
 }
 unit GLFileWAV;
 
@@ -28,7 +28,7 @@ type
 
    // TGLWAVFile
    //
-   {: Support for Windows WAV format. }
+   {Support for Windows WAV format. }
    TGLWAVFile = class (TGLSoundFile)
       private
          { Public Declarations }

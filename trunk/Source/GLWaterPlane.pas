@@ -1,24 +1,24 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWaterPlane<p>
+{GLWaterPlane 
 
-   A plane simulating animated water<p>
+   A plane simulating animated water 
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling
-      <li>02/04/03 - EG - More optimizations, mask support
-      <li>01/04/03 - EG - Cleanup and optimizations
-      <li>14/11/03 - Mrqzzz - Tried "CreateRippleAtWorldPos" to work at any position/rotation, but need expert's help.. :(
-      <li>13/11/03 - Mrqzzz - Tried to add timing indipendence (quite not precise yet)
-      <li>12/11/03 - Mrqzzz - Added some properties & small optims added
-      <li>01/01/03 - Sternas Stefanos - Original code
-   </ul></font>
+	 History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       30/03/07 - DaStr - Added $I GLScene.inc
+       22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling
+       02/04/03 - EG - More optimizations, mask support
+       01/04/03 - EG - Cleanup and optimizations
+       14/11/03 - Mrqzzz - Tried "CreateRippleAtWorldPos" to work at any position/rotation, but need expert's help.. :(
+       13/11/03 - Mrqzzz - Tried to add timing indipendence (quite not precise yet)
+       12/11/03 - Mrqzzz - Added some properties & small optims added
+       01/01/03 - Sternas Stefanos - Original code
+    
 
-   <p>The Original Code is part of Cosmos4D<br>
+    The Original Code is part of Cosmos4D<br>
    http://users.hol.gr/~sternas/<br>
    Sternas Stefanos 2003
 }
@@ -107,7 +107,7 @@ type
          procedure CreateRippleRandom;
          procedure Reset;
 
-         {: CPU time (in seconds) taken by the last iteration step. }
+         {CPU time (in seconds) taken by the last iteration step. }
          property LastIterationStepTime : Single read FLastIterationStepTime;
 
       published
@@ -115,7 +115,7 @@ type
          
          property Active : Boolean read FActive write FActive default True;
 
-         {: Delay between raindrops in milliseconds (0 = no rain) }
+         {Delay between raindrops in milliseconds (0 = no rain) }
          property RainTimeInterval : Integer read FRainTimeInterval write SetRainTimeInterval default 500;
          property RainForce : Single read FRainForce write SetRainForce;
 
@@ -124,15 +124,15 @@ type
          property Resolution : Integer read FResolution write SetResolution default 64;
          property Options : TGLWaterPlaneOptions read FOptions write SetOptions default cDefaultWaterPlaneOptions;
 
-         {: A picture whose pixels determine what part of the waterplane is active.<p>
+         {A picture whose pixels determine what part of the waterplane is active. 
             Pixels with a green/gray component beyond 128 are active, the others
-            are not (in short, white = active, black = inactive).<p>
+            are not (in short, white = active, black = inactive). 
             The picture will automatically be stretched to match the resolution. }
          property Mask : TGLPicture read FMask write SetMask;
 
-         {: Maximum frequency (in Hz) at which simulation iterations happen. }
+         {Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
-         {: Maximum number of simulation iterations during catchups.<p>
+         {Maximum number of simulation iterations during catchups. 
             Catchups happen when for a reason or another, the DoProgress doesn't
             happen as fast SimulationFrequency. }
          property MaximumCatchupIterations : Integer read FMaximumCatchupIterations write FMaximumCatchupIterations default 1;

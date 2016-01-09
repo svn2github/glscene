@@ -1,21 +1,21 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTilePlane<p>
+{GLTilePlane 
 
-   Implements a tiled texture plane.<p>
+   Implements a tiled texture plane. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+       23/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
-      <li>23/03/04 - EG - Added NoZWrite
-      <li>09/01/04 - EG - Creation
-   </ul></font>
+       19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
+       23/03/04 - EG - Added NoZWrite
+       09/01/04 - EG - Creation
+    
 }
 unit GLTilePlane;
 
@@ -34,7 +34,7 @@ type
 
    // TGLTiledAreaRow
    //
-   {: Stores row information for a tiled area.<p> }
+   {Stores row information for a tiled area.  }
    TGLTiledAreaRow = class (TPersistentObject)
 	   private
 			{ Private Declarations }
@@ -70,7 +70,7 @@ type
 
    // TGLTiledArea
    //
-   {: Stores tile information in a tiled area.<p>
+   {Stores tile information in a tiled area. 
       Each tile stores an integer value with zero the default value,
       assumed as "empty". }
    TGLTiledArea = class (TPersistentObject)
@@ -111,7 +111,7 @@ type
 
    // TGLTilePlane
    //
-   {: A tiled textured plane.<p>
+   {A tiled textured plane. 
       This plane object stores and displays texture tiles that composes it,
       and is optimized to minimize texture switches when rendering.<br>
       Its bounding dimensions are determined by its painted tile. }
@@ -143,7 +143,7 @@ type
 
          //: Access to the TiledArea data
          property Tiles : TGLTiledArea read FTiles write SetTiles;
-         {: Controls the sorting of tiles by material.<p>
+         {Controls the sorting of tiles by material. 
             This property should ideally be left always at its default, True,
             except for debugging and performance measurement, which is why
             it's only public and not published. }
@@ -152,9 +152,9 @@ type
 		published
 			{ Public Declarations }
 
-         {: If True the tiles are rendered without writing to the ZBuffer. }
+         {If True the tiles are rendered without writing to the ZBuffer. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
-         {: Material library where tiles materials will be stored/retrieved.<p>
+         {Material library where tiles materials will be stored/retrieved. 
             The lower 16 bits of the tile integer value is understood as being
             the index of the tile's material in the library (material of
             index zero is thus unused). }

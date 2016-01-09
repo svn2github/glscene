@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTextureSharingShader (originally GlProxMultiMatShader)<p>
-    <p>
+{GLTextureSharingShader (originally GlProxMultiMatShader) 
+     
     This shader allows to apply multiple textures, gathering them from existing materials.
     This allows saving resources, since you can reference the textures of any material in
     any materialLibrary.
@@ -12,20 +12,20 @@
     Instead the local material settings (listed in the collection) will be used.
     </p>
 
-  <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Fixed light state changes
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
+   History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       23/08/10 - Yar - Fixed light state changes
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
                               (BugTracker ID = 1938988).
                              TGLTextureSharingShaderMaterial.GetTextureSharingShader()
                               is now more safe
-      <li>24/03/08 - DaStr - Small fixups with setting LibMaterial and for
+       24/03/08 - DaStr - Small fixups with setting LibMaterial and for
                                Delphi 5 compatibility (thanks Pascal)
-      <li>21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
-      <li>17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
-      <li>14/03/08 - Pascal - Initial version (contributed to GLScene)
+       21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
+       17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
+       14/03/08 - Pascal - Initial version (contributed to GLScene)
 
 }
 

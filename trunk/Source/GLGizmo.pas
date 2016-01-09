@@ -1,21 +1,21 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGizmo<p>
+{ : GLGizmo 
 
   Invisible component for helping to Move, Rotate and Scale an Object
-  under GLScene (usefull for an Editor).<p>
+  under GLScene (usefull for an Editor). 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;
+   History :  
+   10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;
                  replaced uppercase characters in prefixes for enum types to lower case
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
-  <li>20/01/08 - DaStr - Cleaned up uses section for proper FPC support
+   22/04/10 - Yar - Fixes after GLState revision
+   14/07/09 - DaStr - Bugfixed object selection from code (thanks Predator)
+   20/01/08 - DaStr - Cleaned up uses section for proper FPC support
                 (thanks Lukasz Sokol)
-  <li>18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
+   18/09/07 - DaStr - Initial version (based on GLGizmo.pas by Adirex,
                  J.Delauney, Degiovani, Marcus Oblak and a bit myself)
-  </ul></font>
+   
 }
 //
 // Original Header:

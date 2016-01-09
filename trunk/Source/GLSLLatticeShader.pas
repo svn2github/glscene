@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLLatticeShader <p>
+{GLSLLatticeShader  
 
-   Lattice shader that simulate Lattice.<p>
+   Lattice shader that simulate Lattice. 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Made compatible with the latest SVN version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
+    History :  
+     08/12/15 - J.Delauney - Made compatible with the latest SVN version of GLScene
+     02/11/06 - Da Stranger - Creation
 }
 
 
@@ -28,7 +28,7 @@ uses
 
 //TGLCustomGLSLSimpleLatticeShader
 //
-{: Custom class for GLSLSimpleLatticeShader.<p>
+{Custom class for GLSLSimpleLatticeShader. 
  A shader that simulate Lattice }
 type
   TGLCustomGLSLSimpleLatticeShader = class(TGLCustomGLSLShader)
@@ -50,7 +50,7 @@ type
 
 //TGLCustomGLSLLatticeShader
 //
-{: Custom class for GLSLLatticeShader.<p>
+{Custom class for GLSLLatticeShader. 
  A shader that simulate Lattice with Diffuse/Specular and support Texture }
   TGLCustomGLSLLatticeShader = class(TGLCustomGLSLSimpleLatticeShader)
   private

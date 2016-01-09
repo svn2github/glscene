@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexCombineShader<p>
+{GLTexCombineShader 
 
-   A shader that allows texture combiner setup.<p>
+   A shader that allows texture combiner setup. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Added combiner's commands cache
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+    History :  
+       05/03/11 - Yar - Added combiner's commands cache
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)
-      <li>03/04/07 - DaStr - Added $I GLScene.inc
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>23/05/03 - EG - Added support for binding two extra texture units
-      <li>16/05/03 - EG - Creation
-   </ul></font>
+       03/04/07 - DaStr - Added $I GLScene.inc
+       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
+       23/05/03 - EG - Added support for binding two extra texture units
+       16/05/03 - EG - Creation
+    
 }
 unit GLTexCombineShader;
 
@@ -41,7 +41,7 @@ type
 
   // TGLTexCombineShader
   //
-  {: A shader that can setup the texture combiner.<p> }
+  {A shader that can setup the texture combiner.  }
   TGLTexCombineShader = class(TGLShader)
   private
     { Protected Declarations }

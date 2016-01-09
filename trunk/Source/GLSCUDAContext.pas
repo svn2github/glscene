@@ -1,11 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAContext <p>
+{ : GLSCUDAContext  
 
-  <b>History : </b><font size=-1><ul>
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
+   History :  
+   19/03/10 - Yar - Creation
+    
 }
 
 unit GLSCUDAContext;

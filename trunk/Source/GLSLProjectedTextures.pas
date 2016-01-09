@@ -1,31 +1,31 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLProjectedTextures<p>
+{GLSLProjectedTextures 
 
    Implements projected textures through a GLScene object via GLSL.
 
-   <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
+    History :  
+         23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+         02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
                                 Fixed AllowReverseProjection attenuation bug.
                                   (Bugtracker ID=1710974)
                                 Added try-finally block in SetupShader
-        <li>13/04/07 - LC -     Fixed bug that caused Attenuation to fail. (Bugtracker ID=1699882)
+         13/04/07 - LC -     Fixed bug that caused Attenuation to fail. (Bugtracker ID=1699882)
                                 Also added Quadratic attenuation
-        <li>02/04/07 - DaStr -  Added $I GLScene.inc
-        <li>25/03/07 - fig -    Only The texMatrix is passed to the shader now,
+         02/04/07 - DaStr -  Added $I GLScene.inc
+         25/03/07 - fig -    Only The texMatrix is passed to the shader now,
                                   no need for the InvModelViewMatrix
                                 Changed Emitter color, brightness and Attenuation
                                   properties to use Uniforms in the shader, so
                                   they're now dynamic.
-        <li>23/03/07 - fig -    Fixed reverse projection bug and added Quick
+         23/03/07 - fig -    Fixed reverse projection bug and added Quick
                                   Decimal Separator fix.
                                 Finished Design time support.
                                 Now checks for GLSL support and just renders the children as normal,
                                   if not supported.
-        <li>22/03/07 - fig -    Initial version.
-   </ul></font>
+         22/03/07 - fig -    Initial version.
+    
 }
 
 {; Known bugs/limitations
@@ -60,7 +60,7 @@ type
 
   // TGLSLTextureEmmiter
   //
-  {: A projected texture emmiter.<p>
+  {A projected texture emmiter. 
      Can be places anywhere in the scene.
      Used to generate a modelview and texture matrix for the shader}
   TGLSLTextureEmitter = class(TGLBaseSceneObject)
@@ -84,12 +84,12 @@ type
     destructor Destroy; override;
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: boolean); override;
   published
-    {: Indicates the field-of-view of the projection frustum.}
+    {Indicates the field-of-view of the projection frustum.}
     property FOV: single read FFOV write FFOV;
-    {: x/y ratio. For no distortion, this should be set to
+    {x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
-    {: Indicates the style of the projected textures.}
+    {Indicates the style of the projected textures.}
     property Style: TGLSLProjectedTexturesStyle read FStyle write SetStyle;
     {:Fall off/ attenuation of the projected texture}
     property Attenuation: single read FAttenuation write FAttenuation;
@@ -117,7 +117,7 @@ type
 
   // TGLSLTextureEmitterItem
   //
-  {: Specifies an item on the TGLSLTextureEmitters collection. }
+  {Specifies an item on the TGLSLTextureEmitters collection. }
   TGLSLTextureEmitterItem = class(TCollectionItem)
   private
     FEmitter: TGLSLTextureEmitter;
@@ -134,7 +134,7 @@ type
 
   // TGLSLTextureEmitters
   //
-  {: Collection of TGLSLTextureEmitter. }
+  {Collection of TGLSLTextureEmitter. }
   TGLSLTextureEmitters = class(TCollection)
   private
     FOwner: TGLSLProjectedTextures;
@@ -149,7 +149,7 @@ type
 
   // TGLSLProjectedTextures
   //
-  {: Projected Texture Manager.<p>
+  {Projected Texture Manager. 
      Specifies active Emitters and receivers (children of this object).
      At the moment, only 1 texture can be used.}
   TGLSLProjectedTextures = class(TGLSceneObject)
@@ -170,7 +170,7 @@ type
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
   published
-    {: List of emitters. }
+    {List of emitters. }
     property Emitters: TGLSLTextureEmitters read FEmitters write FEmitters;
 
     //Ambient is use if no lightmap..

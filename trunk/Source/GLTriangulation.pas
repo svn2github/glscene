@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTriangulation<p>
+{GLTriangulation 
 
-	Classes and methods for 2D triangulation of scatter points.<p>
- 	<b>History : </b><font size=-1><ul>
-     <li>17/05/15 - PW - Created, based on code from Paul Bourke (http://paulbourke.net/)
+	Classes and methods for 2D triangulation of scatter points. 
+ 	 History :  
+      17/05/15 - PW - Created, based on code from Paul Bourke (http://paulbourke.net/)
          and conversion from VB to Delphi by Dr Steve Evans (steve@lociuk.com)
-	</ul></font>
+	 
 }
 
 unit GLTriangulation;

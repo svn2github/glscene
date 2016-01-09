@@ -1,12 +1,10 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{:
-  <b>History : </b><font size=-1><ul>
-   <li>30/12/15 - PW - Changed SysUtils unit to System.SysUtils
-   <li>04/06/10 - Yar - Added to GLScene
-                        (Created by Rustam Asmandiarov aka Predator)
-  </ul></font>
+{
+   History :  
+     04/06/10 - Yar - Added to GLScene
+                     (Created by Rustam Asmandiarov aka Predator)
 }
 
 unit GLSArchiveManager;
@@ -40,7 +38,7 @@ Type
 
   //****************************************************************************
 
-  //Базовый класс для архиваторов
+  //Base class for archivers
 
   { TBaseArchive }
 
@@ -85,8 +83,8 @@ Type
 
   //****************************************************************************
 
-  //Классы регистрации архивов, для того что бы по расширениям архива можно было
-  //использовать соответсвующий архиватор. Например: GLFilePak,GLFileZLib
+  //Классы регистрации архивов, для того, чтобы по расширениям архива можно было
+  //использовать соответсвующий архиватор. Например: GLFilePak, GLFileZLib
 
   {TArchiveFileFormat}
   {Запись для зарегестрированного класса}

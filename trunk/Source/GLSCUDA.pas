@@ -1,19 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDA<p>
+{ : GLSCUDA 
 
-  <b>History : </b><font size=-1><ul>
-  <li>26/03/12 - Maverick - Added vectors SetParam routines
-  <li>07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
-  <li>13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
-  <li>12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
-  <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
+   History :  
+   26/03/12 - Maverick - Added vectors SetParam routines
+   07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
+   13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
+   12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
+   05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
                        Changed TCUDAMemData data access, host memory can be mapped to device,
                        device and array memory can be mapped to host
-  <li>07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
-  <li>01/04/10 - Yar - Creation
-  </ul></font><p>
+   07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
+   01/04/10 - Yar - Creation
+    
 }
 unit GLSCUDA;
 
@@ -89,7 +89,7 @@ type
     property Items[const i: Integer]: TCUDAComponent read GetItem;
     property ItemsCount: Integer read GetItemsCount;
     property Status: TCUresult read FStatus;
-    {: Return true if handle is allocated (i.e. component has device object) }
+    {Return true if handle is allocated (i.e. component has device object) }
     property IsAllocated: Boolean read GetIsAllocated;
   end;
 
@@ -226,12 +226,12 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure CuNotifyChange(AChange: TCUDAChange); override;
-    {: Map device and array memory to host or host memory to device.
+    {Map device and array memory to host or host memory to device.
        Mapping is necessary for modifying device data.
        When mapped host memory - it can be accessed in device side
        via MappedHostAddress. }
     procedure Map(const AFlags: TCUDAMemMapFlags = []);
-    {: Done mapping operation. }
+    {Done mapping operation. }
     procedure UnMap;
 
     function Data<EType>(X: Integer): GCUDAHostElementAccess<EType>; overload;

@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLSimpleGoochShader <p>
+{GLSLSimpleGoochShader  
 
    Gooch shader : Gooch shading is used to substitute photorealistic
    rendering by rendering that focuses on structore and shape of the object.
    Instead of usage of light and shadow, Gooch shading uses concept of warm and cool colors.
    Standard Blinn-Phong shading only modulates base color of the object.
-   In Gooch shading intensity of diffuse lighting is used to determine how to blend warm and cold colors together.<p>
+   In Gooch shading intensity of diffuse lighting is used to determine how to blend warm and cold colors together. 
 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Creation
+    History :  
+     08/12/15 - J.Delauney - Creation
 
 }
 unit GLSLGoochShader;
@@ -31,7 +31,7 @@ uses
 
 //TGLCustomGLSLSimpleGoochShader
 //
-{: Custom class for GLSLSimpleGoochShader.<p>}
+{Custom class for GLSLSimpleGoochShader. }
 type
   TGLCustomGLSLSimpleGoochShader = class(TGLCustomGLSLShader)
   private

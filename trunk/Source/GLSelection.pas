@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects<p>
+{ : GLGeomObjects 
 
-  Geometric objects.<p>
+  Geometric objects. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
-  <li>02/09/10 - Yar - Creation
-  </ul></font>
+   History :  
+   03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
+   02/09/10 - Yar - Creation
+   
 }
 unit GLSelection;
 
@@ -40,7 +40,7 @@ type
 
   // TGLPickList
   //
-  {: List class for object picking.<p>
+  {List class for object picking. 
      This list is used to store the results of a PickObjects call. }
   TGLPickList = class(TPersistentObjectList)
   private

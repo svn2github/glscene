@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCgBombShader<p>
+{GLCgBombShader 
 
-   Just a good looking shader. And my first one;) <p>
+   Just a good looking shader. And my first one;)  
 
-   <b>History :</b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+    History : 
+       22/04/10 - Yar - Fixes after GLState revision
+       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)   
-      <li>14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.DoInitialize
+       14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.DoInitialize
                              (Shader is disabled if GradientTexture is not assigned)
-      <li>14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.SetMaterialLibrary
+       14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.SetMaterialLibrary
                              Alpha is not stored now
                              Added design-time checks
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
+       22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
 
@@ -53,7 +53,7 @@ type
   TGLCgBombShaderTextureSource = (stsPrimaryTexture, stsSecondadyTexture,
                                   stsThirdTexture, stsUserSelectedTexture);
 
-  {: Just a good-looking shader. }
+  {Just a good-looking shader. }
   TGLCustomCGBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLAbstractMaterialLibrary;

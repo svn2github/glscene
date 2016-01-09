@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialMultiProxy<p>
+{GLMaterialMultiProxy 
 
-   Implements a multi-proxy object, useful for discreet LOD.<p>
-   Allows assign a unique material for each proxy master.<p>
+   Implements a multi-proxy object, useful for discreet LOD. 
+   Allows assign a unique material for each proxy master. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
+    History :  
+       30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
                               TGLMaterialMultiProxyMaster (BugTracker ID = 1938988)
-      <li>25/03/07 - Added GLCrossPlatform to uses for Delphi5 compatibility
-      <li>17/02/07 - DaStr - Initial version (contributed to GLScene)
-    </ul></font>     
+       25/03/07 - Added GLCrossPlatform to uses for Delphi5 compatibility
+       17/02/07 - DaStr - Initial version (contributed to GLScene)
+          
 
   What changed compared to GLMultiProxy:
     1) Allows assign a unique material for each proxy master
@@ -57,7 +57,7 @@ type
 
   // TGLMaterialMultiProxyMaster
   //
-  {: MasterObject description for a MultiProxy object. }
+  {MasterObject description for a MultiProxy object. }
   TGLMaterialMultiProxyMaster = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
@@ -89,25 +89,25 @@ type
     function OwnerObject: TGLMaterialMultiProxy;
     procedure NotifyChange;
 
-    {: Specifies the Material, that current master object will use.
+    {Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
     { Published Declarations }
-    {: Specifies the Master object which will be proxy'ed. }
+    {Specifies the Master object which will be proxy'ed. }
     property MasterObject: TGLBaseSceneObject read FMasterObject write SetMasterObject;
-    {: Specifies the Material, that current master object will use. }
+    {Specifies the Material, that current master object will use. }
     property MasterLibMaterialName: TGLLibMaterialName read GetMasterLibMaterialName write SetMasterLibMaterialName;
-    {: Minimum visibility Distance (inclusive). }
+    {Minimum visibility Distance (inclusive). }
     property DistanceMin: Single read GetDistanceMin write SetDistanceMin;
-    {: Maximum visibility Distance (exclusive). }
+    {Maximum visibility Distance (exclusive). }
     property DistanceMax: Single read GetDistanceMax write SetDistanceMax;
   end;
 
   // TGLMaterialMultiProxyMasters
   //
-  {: Collection of TGLMaterialMultiProxyMaster. }
+  {Collection of TGLMaterialMultiProxyMaster. }
   TGLMaterialMultiProxyMasters = class(TOwnedCollection)
   private
     { Private Declarations }
@@ -133,11 +133,11 @@ type
 
   // TGLMaterialMultiProxy
   //
-   {: Multiple Proxy object.<p>
+   {Multiple Proxy object. 
       This proxy has multiple Master objects, which are individually made visible
       depending on a Distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation.<p>
+      go through cyclic animation. 
       For dimensionsn raycasting and silhouette purposes, the first Master is used
       (item zero in the MasterObjects collection). }
   TGLMaterialMultiProxy = class(TGLBaseSceneObject)

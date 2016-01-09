@@ -1,39 +1,39 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: XOpenGL<p>
+{XOpenGL 
 
-   "Alternate" OpenGL functions to handle multi-texturing.<p>
+   "Alternate" OpenGL functions to handle multi-texturing. 
 
    Using this functions allows specifying none/one/multiple ARB multi-texture
-   coordinates with standard texture specification call.<p>
+   coordinates with standard texture specification call. 
 
    Before using any of the xglTexCoordXxxx fonctions, call one of the
-   xglMapTexCoordToXxxx functions to establish the redirectors.<p>
+   xglMapTexCoordToXxxx functions to establish the redirectors. 
 
    This unit is Open-Source under MPL<br>
    Copyright 2001 - Eric Grange (egrange@glscene.org)<br>
-   http://glscene.org<p>
+   http://glscene.org 
 
-   <b>History :</b><ul>
-      <li>25/11/10 - Yar - Wrapped multitexturing in TGLMultitextureCoordinator class
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>29/03/10 - Yar - Replaced MULTITHREADOPENGL to GLS_MULTITHREAD (thanks Controler)
-      <li>16/03/07 - DaStr - Dropped Kylix support in favor of FPC
+    History :</b><ul>
+       25/11/10 - Yar - Wrapped multitexturing in TGLMultitextureCoordinator class
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       29/03/10 - Yar - Replaced MULTITHREADOPENGL to GLS_MULTITHREAD (thanks Controler)
+       16/03/07 - DaStr - Dropped Kylix support in favor of FPC
                              (thanks Burkhard Carstens) (BugTracekrID=1681585)
-      <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-      <li>23/05/03 - EG - Support for arbitrary (complex) mappings
-      <li>01/02/03 - EG - Added State stack
-      <li>01/07/02 - EG - Added mtcmUndefined, fixed initial state
-      <li>03/01/02 - EG - Added xglDisableClientState
-      <li>26/01/02 - EG - Added xglBegin/EndUpdate mechanism
-      <li>21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
-      <li>18/12/01 - EG - Added xglEnableClientState
-      <li>24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL1x)
-      <li>17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall)
-      <li>16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
-      <li>14/08/01 - EG - Added xglMapTexCoordToSecond
-      <li>21/02/01 - EG - Added TexGen and vertex arrays mappings
+       08/07/04 - LR - Removed ../ from the GLScene.inc
+       23/05/03 - EG - Support for arbitrary (complex) mappings
+       01/02/03 - EG - Added State stack
+       01/07/02 - EG - Added mtcmUndefined, fixed initial state
+       03/01/02 - EG - Added xglDisableClientState
+       26/01/02 - EG - Added xglBegin/EndUpdate mechanism
+       21/12/01 - EG - Fixed xglTexCoordPointer and xglEnableClientState
+       18/12/01 - EG - Added xglEnableClientState
+       24/08/01 - EG - Now supports MULTITHREADOPENGL (same as OpenGL1x)
+       17/08/01 - EG - Made declarations Kylix compatible (cdecl vs stdcall)
+       16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
+       14/08/01 - EG - Added xglMapTexCoordToSecond
+       21/02/01 - EG - Added TexGen and vertex arrays mappings
    </ul>
 }
 unit XOpenGL;
@@ -132,38 +132,38 @@ type
 
     constructor Create(AOwner: TGLContext); override;
 
-    {: TexCoord functions will be ignored. }
+    {TexCoord functions will be ignored. }
     procedure MapTexCoordToNull;
-    {: TexCoord functions will define the main texture coordinates. }
+    {TexCoord functions will define the main texture coordinates. }
     procedure MapTexCoordToMain;
-    {: TexCoord functions will define the second texture unit coordinates. }
+    {TexCoord functions will define the second texture unit coordinates. }
     procedure MapTexCoordToSecond;
-    {: TexCoord functions will define the two first texture units coordinates. }
+    {TexCoord functions will define the two first texture units coordinates. }
     procedure MapTexCoordToDual;
-    {: TexCoord functions will define the specified texture units coordinates. }
+    {TexCoord functions will define the specified texture units coordinates. }
     procedure MapTexCoordToArbitrary(const units: array of Cardinal); overload;
     procedure MapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
     procedure MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 
-    {: Defers Map calls execution until EndUpdate is met.<p>
+    {Defers Map calls execution until EndUpdate is met. 
        Calls to Begin/EndUpdate may be nested. }
     procedure BeginUpdate;
-    {: Applies Map calls if there were any since BeginUpdate was invoked.<p>
+    {Applies Map calls if there were any since BeginUpdate was invoked. 
        Calls to Begin/EndUpdate may be nested. }
     procedure EndUpdate;
 
-    {: Saves XOpenGL State on the stack. }
+    {Saves XOpenGL State on the stack. }
     procedure PushState;
-    {: Restores XOpenGL State from the stack. }
+    {Restores XOpenGL State from the stack. }
     procedure PopState;
 
-    {: Whenever called, 2nd texture units changes will be forbidden to .<p>
+    {Whenever called, 2nd texture units changes will be forbidden to . 
        Use this function when you're using the 2nd texture unit for your own
        purposes and don't want XOpenGL to alter it. }
     procedure ForbidSecondTextureUnit;
-    {: Allow XOpenGL to use the second texture unit again. }
+    {Allow XOpenGL to use the second texture unit again. }
     procedure AllowSecondTextureUnit;
-    {: Returns the complex mapping in bitwise form. }
+    {Returns the complex mapping in bitwise form. }
     function GetBitWiseMapping: Cardinal;
 
     property MapTexCoordMode: TMapTexCoordMode read FMapTexCoordMode write FMapTexCoordMode;

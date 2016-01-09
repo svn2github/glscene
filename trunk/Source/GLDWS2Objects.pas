@@ -1,11 +1,11 @@
 // GLDWS2Objects
-{: Base classes and logic for DelphiWebScriptII enabled
-   objects in GLScene<p>
+{Base classes and logic for DelphiWebScriptII enabled
+   objects in GLScene 
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/2004 - SG - Moved TGLDelphiWebScriptII to GLScriptDWS2 unit. 
-      <li>06/04/2004 - SG - Creation
-   </ul></font>
+    History :  
+       04/11/2004 - SG - Moved TGLDelphiWebScriptII to GLScriptDWS2 unit. 
+       06/04/2004 - SG - Creation
+    
 }
 unit GLDWS2Objects;
 

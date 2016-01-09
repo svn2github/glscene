@@ -1,63 +1,63 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLHeightData<p>
+{ : GLHeightData 
 
-  Classes for height data access.<p>
+  Classes for height data access. 
 
   The components and classes in the unit are the core data providers for
   height-based objects (terrain rendering mainly), they are independant
-  from the rendering stage.<p>
+  from the rendering stage. 
 
   In short: access to raw height data is performed by a THeightDataSource
   subclass, that must take care of performing all necessary data access,
   cacheing and manipulation to provide THeightData objects. A THeightData
   is basicly a square, power of two dimensionned raster heightfield, and
-  holds the data a renderer needs.<p>
+  holds the data a renderer needs. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
-  <li>18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
-  <li>17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
-  <li>17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
-  <li>03/04/07 - DaStr - Commented out lines that caused compiler hints
+   History :  
+   10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
+   18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
+   17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
+   17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
+   03/04/07 - DaStr - Commented out lines that caused compiler hints
       Added more explicit pointer dereferencing
       Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
       FPC compatibility (thanks Burkhard Carstens)
-  <li>27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
+   27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
      -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
      -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
      -AfterPreparingData  : (Main Thread) - Perform any cleanup, which cant be done from a sub-thread
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing (thanks Burkhard Carstens)
-  <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+   14/03/07 - DaStr - Added explicit pointer dereferencing (thanks Burkhard Carstens)
+   13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
      Called from TGLBitmapHDS and TGLHeightTileFileHDS
      Many tweaks and changes to threading. (I hope I havent broken anything)
-  <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
-  <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
+   02/02/07 - LIN- Added TGLHeightDataSourceFilter
+   30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
      GLHeightData is now derived from TGLUpdateAbleObject
      GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
-  <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
-  <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
-  <li>03/07/04 - LR - Corrections for Linux compatibility
+   19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
+   10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
+   03/07/04 - LR - Corrections for Linux compatibility
      CreateMonochromeBitmap NOT implemented for Linux
-  <li>12/07/03 - EG - Further InterpolatedHeight fixes
-  <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
-  <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
-  <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
-  <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
-  <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
-  <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
-  <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
-  <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
+   12/07/03 - EG - Further InterpolatedHeight fixes
+   26/06/03 - EG - Fixed InterpolatedHeight HDS selection
+   06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
+   24/01/03 - EG - Fixed ByteHeight normalization scaling
+   07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
+   03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
+   25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
+   10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
+   16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
      THeightData now has a MaterialName property
-  <li>24/02/02 - EG - Faster Cleanup & cache management
-  <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
-  <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
-  <li>10/09/01 - EG - Added TGLTerrainBaseHDS
-  <li>04/03/01 - EG - Added InterpolatedHeight
-  <li>11/02/01 - EG - Creation
-  </ul></font>
+   24/02/02 - EG - Faster Cleanup & cache management
+   21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
+   04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
+   10/09/01 - EG - Added TGLTerrainBaseHDS
+   04/03/01 - EG - Added InterpolatedHeight
+   11/02/01 - EG - Creation
+   
 }
 unit GLHeightData;
 
@@ -91,24 +91,24 @@ type
 
   // THeightDataType
   //
-  { : Determines the type of data stored in a THeightData.<p>
-    There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits).<p>
-    Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue).<p>
+  { : Determines the type of data stored in a THeightData. 
+    There are 3 data types (8 bits unsigned, signed 16 bits and 32 bits). 
+    Conversions: (128*(ByteValue-128)) = SmallIntValue = Round(SingleValue). 
     The 'hdtDefault' type is used for request only, and specifies that the
     default type for the source should be used. }
   THeightDataType = (hdtByte, hdtSmallInt, hdtSingle, hdtDefault);
 
   // THeightDataSource
   //
-  { : Base class for height datasources.<p>
+  { : Base class for height datasources. 
     This class is abstract and presents the standard interfaces for height
     data retrieval (THeightData objects). The class offers the following
     features (that a subclass may decide to implement or not, what follow
     is the complete feature set, check subclass doc to see what is actually
     supported):<ul>
-    <li>Pooling / Cacheing (return a THeightData with its "Release" method)
-    <li>Pre-loading : specify a list of THeightData you want to preload
-    <li>Multi-threaded preload/queueing : specified list can be loaded in
+     Pooling / Cacheing (return a THeightData with its "Release" method)
+     Pre-loading : specify a list of THeightData you want to preload
+     Multi-threaded preload/queueing : specified list can be loaded in
     a background task.
     </p> }
 
@@ -145,24 +145,24 @@ type
     { : Access to currently pooled THeightData objects, and Thread locking }
     property Data: TThreadList read FData;
 
-    { : Empties the Data list, terminating thread if necessary.<p>
+    { : Empties the Data list, terminating thread if necessary. 
       If some THeightData are hdsInUse, triggers an exception and does
       nothing. }
     procedure Clear;
-    { : Removes less used TDataHeight objects from the pool.<p>
+    { : Removes less used TDataHeight objects from the pool. 
       Only removes objects whose state is hdsReady and UseCounter is zero,
       starting from the end of the list until total data size gets below
       MaxPoolSize (or nothing can be removed). }
     procedure CleanUp;
 
-    { : Base THeightData requester method.<p>
+    { : Base THeightData requester method. 
       Returns (by rebuilding it or from the cache) a THeightData
-      corresponding to the given area. Size must be a power of two.<p>
+      corresponding to the given area. Size must be a power of two. 
       Subclasses may choose to publish it or just publish datasource-
       specific requester method using specific parameters. }
     function GetData(XLeft, YTop, size: Integer; DataType: THeightDataType)
       : THeightData; virtual;
-    { : Preloading request.<p>
+    { : Preloading request. 
       See GetData for details. }
     function PreLoad(XLeft, YTop, size: Integer; DataType: THeightDataType)
       : THeightData; virtual;
@@ -170,35 +170,35 @@ type
     { : Replacing dirty tiles. }
     procedure PreloadReplacement(aHeightData: THeightData);
 
-    { : Notification that the data is no longer used by the renderer.<p>
+    { : Notification that the data is no longer used by the renderer. 
       Default behaviour is just to change DataState to hdsReady (ie. return
       the data to the pool) }
     procedure Release(aHeightData: THeightData); virtual;
-    { : Marks the given area as "dirty" (ie source data changed).<p>
+    { : Marks the given area as "dirty" (ie source data changed). 
       All loaded and in-cache tiles overlapping the area are flushed. }
     procedure MarkDirty(const Area: TGLRect); overload; virtual;
     procedure MarkDirty(XLeft, YTop, xRight, yBottom: Integer); overload;
     procedure MarkDirty; overload;
 
-    { : Maximum number of background threads.<p>
+    { : Maximum number of background threads. 
       If 0 (zero), multithreading is disabled and StartPreparingData
       will be called from the mainthread, and all preload requirements
       (queued THeightData objects) will be loaded in sequence from
-      the main thread.<p>
+      the main thread. 
       If 1, basic multithreading and queueing gets enabled,
       ie. StartPreparingData will be called from a thread, but from one
       thread only (ie. there is no need to implement a THeightDataThread,
-      just make sure StartPreparingData code is thread-safe).<p>
+      just make sure StartPreparingData code is thread-safe). 
       Other values (2 and more) are relevant only if you implement
       a THeightDataThread subclass and fire it in StartPreparingData. }
     property MaxThreads: Integer read FMaxThreads write SetMaxThreads;
-    { : Maximum Size of TDataHeight pool in bytes.<p>
+    { : Maximum Size of TDataHeight pool in bytes. 
       The pool (cache) can actually get larger if more data than the pool
       can accomodate is used, but as soon as data gets released and returns
       to the pool, TDataHeight will be freed until total pool Size gets
       below this figure.<br>
       The pool manager frees TDataHeight objects who haven't been requested
-      for the longest time first.<p>
+      for the longest time first. 
       The default value of zero effectively disables pooling. }
     property MaxPoolSize: Integer read FMaxPoolSize write FMaxPoolSize;
     { : Height to return for undefined tiles. }
@@ -215,7 +215,7 @@ type
     { : This is called BEFORE StartPreparing Data, but always from the main thread. }
     procedure BeforePreparingData(HeightData: THeightData); virtual;
 
-    { : Request to start preparing data.<p>
+    { : Request to start preparing data. 
       If your subclass is thread-enabled, this is here that you'll create
       your thread and fire it (don't forget the requirements), if not,
       that'll be here you'll be doing your work.<br>
@@ -237,12 +237,12 @@ type
 
   // THeightDataState
   //
-  { : Possible states for a THeightData.<p>
+  { : Possible states for a THeightData. 
     <ul>
-    <li>hdsQueued : the data has been queued for loading
-    <li>hdsPreparing : the data is currently loading or being prepared for use
-    <li>hdsReady : the data is fully loaded and ready for use
-    <li>hdsNone : the height data does not exist for this tile
+     hdsQueued : the data has been queued for loading
+     hdsPreparing : the data is currently loading or being prepared for use
+     hdsReady : the data is fully loaded and ready for use
+     hdsNone : the height data does not exist for this tile
     </ul> }
   THeightDataState = (hdsQueued, hdsPreparing, hdsReady, hdsNone);
 
@@ -256,17 +256,17 @@ type
 
   // THeightData
   //
-  { : Base class for height data, stores a height-field raster.<p>
+  { : Base class for height data, stores a height-field raster. 
     The raster is a square, whose Size must be a power of two. Data can be
     accessed through a base pointer ("ByteData[n]" f.i.), or through pointer
     indirections ("ByteRaster[y][x]" f.i.), this are the fastest way to access
     height data (and the most unsecure).<br>
     Secure (with range checking) data access is provided by specialized
     methods (f.i. "ByteHeight"), in which coordinates (x & y) are always
-    considered relative (like in raster access).<p>
+    considered relative (like in raster access). 
     The class offers conversion facility between the types (as a whole data
     conversion), but in any case, the THeightData should be directly requested
-    from the THeightDataSource with the appropriate format.<p>
+    from the THeightDataSource with the appropriate format. 
     Though this class can be instantiated, you will usually prefer to subclass
     it in real-world cases, f.i. to add texturing data. }
   // THeightData = class (TObject)
@@ -338,25 +338,25 @@ type
     { : Fired when the object is destroyed. }
     property OnDestroy: TNotifyEvent read FOnDestroy write FOnDestroy;
 
-    { : Counter for use registration.<p>
+    { : Counter for use registration. 
       A THeightData is not returned to the pool until this counter reaches
       a value of zero. }
     property UseCounter: Integer read FUseCounter;
-    { : Increments UseCounter.<p>
+    { : Increments UseCounter. 
       User objects should implement a method that will be notified when
       the data becomes dirty, when invoked they should release the heightdata
       immediately after performing their own cleanups. }
     procedure RegisterUse;
-    { : Allocate memory and prepare lookup tables for current datatype.<p>
+    { : Allocate memory and prepare lookup tables for current datatype. 
       Fails if already allocated. Made Dynamic to allow descendants }
     procedure Allocate(const Val: THeightDataType); dynamic;
-    { : Decrements UseCounter.<p>
+    { : Decrements UseCounter. 
       When the counter reaches zero, notifies the Owner THeightDataSource
-      that the data is no longer used.<p>
+      that the data is no longer used. 
       The renderer should call Release when it no longer needs a THeighData,
       and never free/destroy the object directly. }
     procedure Release;
-    { : Marks the tile as dirty.<p>
+    { : Marks the tile as dirty. 
       The immediate effect is currently the destruction of the tile. }
     procedure MarkDirty;
 
@@ -364,7 +364,7 @@ type
     property XLeft: Integer read FXLeft;
     { : World Y coordinate of top left point. }
     property YTop: Integer read FYTop;
-    { : Type of the data.<p>
+    { : Type of the data. 
       Assigning a new datatype will result in the data being converted. }
     property DataType: THeightDataType read FDataType write SetDataType;
     { : Current state of the data. }
@@ -377,22 +377,22 @@ type
     { : Memory Size of the raw data in bytes. }
     property DataSize: Integer read FDataSize;
 
-    { : Access to data as a byte array (n = y*Size+x).<p>
+    { : Access to data as a byte array (n = y*Size+x). 
       If THeightData is not of type hdtByte, this value is nil. }
     property ByteData: PByteArray read FByteData;
-    { : Access to data as a byte raster (y, x).<p>
+    { : Access to data as a byte raster (y, x). 
       If THeightData is not of type hdtByte, this value is nil. }
     property ByteRaster: PByteRaster read FByteRaster;
-    { : Access to data as a SmallInt array (n = y*Size+x).<p>
+    { : Access to data as a SmallInt array (n = y*Size+x). 
       If THeightData is not of type hdtSmallInt, this value is nil. }
     property SmallIntData: PSmallIntArray read FSmallIntData;
-    { : Access to data as a SmallInt raster (y, x).<p>
+    { : Access to data as a SmallInt raster (y, x). 
       If THeightData is not of type hdtSmallInt, this value is nil. }
     property SmallIntRaster: PSmallIntRaster read FSmallIntRaster;
-    { : Access to data as a Single array (n = y*Size+x).<p>
+    { : Access to data as a Single array (n = y*Size+x). 
       If THeightData is not of type hdtSingle, this value is nil. }
     property SingleData: PSingleArray read FSingleData;
-    { : Access to data as a Single raster (y, x).<p>
+    { : Access to data as a Single raster (y, x). 
       If THeightData is not of type hdtSingle, this value is nil. }
     property SingleRaster: PSingleRaster read FSingleRaster;
 
@@ -407,26 +407,26 @@ type
     // used texture by mistake and causing Access Violations.
     // Use this instead of the old MaterialName property, to prevent AV's.
     property LibMaterial: TGLLibMaterial read FLibMaterial write SetLibMaterial;
-    { : Texture coordinates generation mode.<p>
+    { : Texture coordinates generation mode. 
       Default is tcmWorld coordinates. }
     property TextureCoordinatesMode: THDTextureCoordinatesMode
       read FTextureCoordinatesMode write FTextureCoordinatesMode;
     property TextureCoordinatesOffset: TTexPoint read FTCOffset write FTCOffset;
     property TextureCoordinatesScale: TTexPoint read FTCScale write FTCScale;
-    { : Height of point x, y as a Byte.<p> }
+    { : Height of point x, y as a Byte.  }
     function ByteHeight(x, y: Integer): Byte;
-    { : Height of point x, y as a SmallInt.<p> }
+    { : Height of point x, y as a SmallInt.  }
     function SmallIntHeight(x, y: Integer): SmallInt;
-    { : Height of point x, y as a Single.<p> }
+    { : Height of point x, y as a Single.  }
     function SingleHeight(x, y: Integer): Single;
-    { : Interopolated height of point x, y as a Single.<p> }
+    { : Interopolated height of point x, y as a Single.  }
     function InterpolatedHeight(x, y: Single): Single;
 
-    { : Minimum height in the tile.<p>
+    { : Minimum height in the tile. 
       DataSources may assign a value to prevent automatic computation
       if they have a faster/already computed value. }
     property HeightMin: Single read GetHeightMin write FHeightMin;
-    { : Maximum height in the tile.<p>
+    { : Maximum height in the tile. 
       DataSources may assign a value to prevent automatic computation
       if they have a faster/already computed value. }
     property HeightMax: Single read GetHeightMax write FHeightMax;
@@ -434,13 +434,13 @@ type
     { : Returns the height as a single, whatever the DataType (slow). }
     function Height(x, y: Integer): Single;
 
-    { : Calculates and returns the normal for vertex point x, y.<p>
+    { : Calculates and returns the normal for vertex point x, y. 
       Sub classes may provide normal cacheing, the default implementation
       being rather blunt. }
     function Normal(x, y: Integer; const scale: TAffineVector)
       : TAffineVector; virtual;
 
-    { : Calculates and returns the normal for cell x, y.(between vertexes) <p> }
+    { : Calculates and returns the normal for cell x, y.(between vertexes)   }
     function NormalAtNode(x, y: Integer; const scale: TAffineVector)
       : TAffineVector; virtual;
 
@@ -459,10 +459,10 @@ type
 
   // THeightDataThread
   //
-  { : A thread specialized for processing THeightData in background.<p>
+  { : A thread specialized for processing THeightData in background. 
     Requirements:<ul>
-    <li>must have FreeOnTerminate set to true,
-    <li>must check and honour Terminated swiftly
+     must have FreeOnTerminate set to true,
+     must check and honour Terminated swiftly
     </ul> }
   THeightDataThread = class(TThread)
   protected
@@ -472,16 +472,16 @@ type
   public
     { Public Declarations }
     destructor Destroy; override;
-    { : The Height Data the thread is to prepare.<p> }
+    { : The Height Data the thread is to prepare.  }
     property HeightData: THeightData read FHeightData write FHeightData;
 
   end;
 
   // TGLBitmapHDS
   //
-  { : Bitmap-based Height Data Source.<p>
+  { : Bitmap-based Height Data Source. 
     The image is automatically wrapped if requested data is out of picture Size,
-    or if requested data is larger than the picture.<p>
+    or if requested data is larger than the picture. 
     The internal format is an 8 bit bitmap whose dimensions are a power of two,
     if the original image does not comply, it is StretchDraw'ed on a monochrome
     (gray) bitmap. }
@@ -516,7 +516,7 @@ type
 
   published
     { Published Declarations }
-    { : The picture serving as Height field data reference.<p>
+    { : The picture serving as Height field data reference. 
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
       feed it this format! }
@@ -537,7 +537,7 @@ type
 
   // TGLCustomHDS
   //
-  { : An Height Data Source for custom use.<p>
+  { : An Height Data Source for custom use. 
     Provides event handlers for the various requests to be implemented
     application-side (for application-specific needs). }
   TGLCustomHDS = class(THeightDataSource)
@@ -569,13 +569,13 @@ type
 
   // TGLTerrainBaseHDS
   //
-  { : TerrainBase-based Height Data Source.<p>
+  { : TerrainBase-based Height Data Source. 
     This component takes its data from the TerrainBase Gobal Terrain Model.<br>
     Though it can be used directly, the resolution of the TerrainBase dataset
     isn't high enough for accurate short-range representation and the data
-    should rather be used as basis for further (fractal) refinement.<p>
+    should rather be used as basis for further (fractal) refinement. 
     TerrainBase is freely available from the National Geophysical Data Center
-    and World Data Center web site (http://ngdc.noaa.com).<p>
+    and World Data Center web site (http://ngdc.noaa.com). 
     (this component expects to find "tbase.bin" in the current directory). }
   TGLTerrainBaseHDS = class(THeightDataSource)
   private
@@ -601,7 +601,7 @@ type
 
   // THeightDataSourceFilter
   //
-  { : Height Data Source Filter.<p>
+  { : Height Data Source Filter. 
     This component sits between the TGLTerrainRenderer, and a real THeightDataSource.
     i.e. TGLTerrainRenderer links to this. This links to the real THeightDataSource.
     Use the 'HeightDataSource' property, to link to a source HDS.
@@ -621,7 +621,7 @@ type
     FActive: boolean;
   protected
     { Protected Declarations }
-    { : PreparingData:  <p>
+    { : PreparingData:   
       Override this function in your filter subclasses, to make any
       updates/changes to HeightData, before it goes into the cache.
       Make sure any code in this function is thread-safe, in case TAsyncHDS was used. }

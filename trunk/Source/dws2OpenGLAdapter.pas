@@ -1,15 +1,15 @@
 // dws2OpenGL1x
-{: DelphiWebScriptII symbol creation for OpenGL procedures
-   and functions.<p>
+{DelphiWebScriptII symbol creation for OpenGL procedures
+   and functions. 
 
-   This unit is still under development.<p>
+   This unit is still under development. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/01/2011 - Yar - Rename to dws2OpenGLAdapter, update to current main package
-      <li>08/10/2008 - DanB - Split AddUnitSymbols into two procedures, to prevent error
-      <li>23/09/2004 - SG - Added main GL constants and a few procedures
-      <li>21/09/2004 - SG - Creation
-   </ul></font>
+    History :  
+       16/01/2011 - Yar - Rename to dws2OpenGLAdapter, update to current main package
+       08/10/2008 - DanB - Split AddUnitSymbols into two procedures, to prevent error
+       23/09/2004 - SG - Added main GL constants and a few procedures
+       21/09/2004 - SG - Creation
+    
 }
 unit dws2OpenGLAdapter;
 

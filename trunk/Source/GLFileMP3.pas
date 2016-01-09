@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMP3<p>
+{GLFileMP3 
 
-	Support for MP3 format.<p>
+	Support for MP3 format. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>25/07/09 - DaStr - Added $I GLScene.inc  
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+	 History :  
+       25/07/09 - DaStr - Added $I GLScene.inc  
+       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
+	 
 }
 unit GLFileMP3;
 
@@ -25,7 +25,7 @@ type
 
    // TGLMP3File
    //
-   {: Support for MP3 format.<p>
+   {Support for MP3 format. 
       *Partial* support only, access to PCMData is NOT supported. }
    TGLMP3File = class (TGLSoundFile)
       private

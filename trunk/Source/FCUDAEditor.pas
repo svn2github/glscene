@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAEditor<p>
+{GLSCUDAEditor 
 
-   Editor of TGLSCUDA.<p>
+   Editor of TGLSCUDA. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-      <li>19/03/10 - Yar - Creation
-	</ul></font>
+	 History :  
+       22/08/10 - Yar - Some improvements for FPC (thanks Predator)
+       19/03/10 - Yar - Creation
+	 
 }
 unit FCUDAEditor;
 

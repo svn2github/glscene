@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileASE<p>
+{GLFileASE 
 
-	 ASE (ASCI Scene Export) file format support for GLScene<p>
+	 ASE (ASCI Scene Export) file format support for GLScene 
 
-	<b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
-      <li>21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
-      <li>29/05/08 - DaStr - Made compatible with Delphi 5
-      <li>27/12/07 - DaStr - Added skipping unknown file sections
+	 History : 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
+       21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
+       29/05/08 - DaStr - Made compatible with Delphi 5
+       27/12/07 - DaStr - Added skipping unknown file sections
                              Improved ASE material objects structure:
                                Material can keep up to 12 texture maps
                                SubMaterial can keep up to 12 texture maps
@@ -17,7 +17,7 @@
                               ASE material/submaterial maps
                              Bugfixed parsing failures on unknown section found
                               (all above changes were made by MaX)
-      <li>19/05/07 - DaStr - Initial version (contributed by MaX)
+       19/05/07 - DaStr - Initial version (contributed by MaX)
 
 
   Parser supported features list:

@@ -1,12 +1,12 @@
-{: GLVerletSkeletonColliders<p>
+{GLVerletSkeletonColliders 
 
    Skeleton colliders for defining and controlling verlet
-   constraints.<p>
+   constraints. 
 
-   <b>History :</b><font size=-1><ul>
-     <li>11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
-     <li>08/10/03 - SG - Creation.
-   </ul></font>
+    History : 
+      11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
+      08/10/03 - SG - Creation.
+    
 }
 unit GLVerletSkeletonColliders;
 
@@ -22,7 +22,7 @@ type
   
   // TSCVerletBase
   //
-  {: Base verlet skeleton collider class. }
+  {Base verlet skeleton collider class. }
   TSCVerletBase = class(TSkeletonCollider)
     private
       FVerletConstraint : TVerletConstraint;
@@ -32,14 +32,14 @@ type
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToVerletWorld(VerletWorld : TVerletWorld); virtual;
 
-      {: The verlet constraint is created through the AddToVerletWorld
+      {The verlet constraint is created through the AddToVerletWorld
          procedure. }
       property VerletConstraint : TVerletConstraint read FVerletConstraint;
   end;
 
   // TSCVerletSphere
   //
-  {: Sphere shaped verlet constraint in a skeleton collider. }
+  {Sphere shaped verlet constraint in a skeleton collider. }
   TSCVerletSphere = class(TSCVerletBase)
     private
       FRadius : Single;
@@ -59,7 +59,7 @@ type
 
   // TSCVerletCapsule
   //
-  {: Capsule shaped verlet constraint in a skeleton collider. }
+  {Capsule shaped verlet constraint in a skeleton collider. }
   TSCVerletCapsule = class(TSCVerletBase)
     private
       FRadius,
@@ -80,7 +80,7 @@ type
       property Length : Single read FLength write SetLength;
   end;
 
-{: After loading call this function to add all the constraints in a
+{After loading call this function to add all the constraints in a
    skeleton collider list to a given verlet world. }
 procedure AddSCVerletConstriantsToVerletWorld(
   colliders : TSkeletonColliderList; world : TVerletWorld);

@@ -1,11 +1,11 @@
 // GLMeshOptimizer
-{: Mesh optimization for GLScene.<p>
+{Mesh optimization for GLScene. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
-      <li>21/08/03 - EG - Added basic mooStandardize support
-      <li>03/06/03 - EG - Creation
-	</ul></font>
+	 History :  
+       27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.
+       21/08/03 - EG - Added basic mooStandardize support
+       03/06/03 - EG - Creation
+	 
 }
 unit GLMeshOptimizer;
 

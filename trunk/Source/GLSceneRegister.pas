@@ -1,97 +1,97 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneRegister<p>
+{ : GLSceneRegister 
 
   Registration unit for GLScene library components, property editors and
-  IDE experts.<p>
+  IDE experts. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>09/12/15 - PW - Registered TGLSLPostThermalVisionShader, TGLSLPostDreamVisionShader,
+   History :  
+   09/12/15 - PW - Registered TGLSLPostThermalVisionShader, TGLSLPostDreamVisionShader,
                       TGLSLPostNightVisionShader, TGLSLPostPixelateShader, TGLSLPostPosterizeShader,
                       TGLSLPostFrostShader, TGLSLPostTroubleShader (by J.Delauney)
-  <li>10/03/13 - PW - Added TGLOctahedron and TGLTetrahedron registration
-  <li>15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
-  <li>04/06/10 - Yar - Added GLSArchiveManager
-  <li>20/04/10 - Yar - Added GLSLanguage
-  <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
-  <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
-  <li>07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
-  <li>14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
+   10/03/13 - PW - Added TGLOctahedron and TGLTetrahedron registration
+   15/06/11 - Yar - Improved GetGLSceneVersion (by lolo)
+   04/06/10 - Yar - Added GLSArchiveManager
+   20/04/10 - Yar - Added GLSLanguage
+   08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
+   22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
+   07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
+   14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
                         editors to interface section, and made their methods public.
-  <li>08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
+   08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
                         + register TGLSLPostBlurShader
-  <li>05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
+   05/10/08 - DanB - Change required due Texture/TextureImageEditor separation
                        + GLMisc split, tidied up some old ifdefs
-  <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+   24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                         to GLGraphics.pas (BugTracker ID = 1923844)
-  <li>21/03/08 - DaStr - Renamed TMMat to TGLTextureSharingShaderMaterial
-  <li>17/03/08 - mrqzzz - Registered TGLTextureSharingShader
-  <li>20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
+   21/03/08 - DaStr - Renamed TMMat to TGLTextureSharingShaderMaterial
+   17/03/08 - mrqzzz - Registered TGLTextureSharingShader
+   20/01/08 - DaStr - Registered TGLCapsule (thanks Dave Gravel)
                          Registered TGLGizmo
-  <li>06/11/07 - mrqzzz - Registered material picker for TGLActorProxy
-  <li>18/09/07 - DaStr - Added TGLMaterialProxy, TGLAbsoluteHUDText,
+   06/11/07 - mrqzzz - Registered material picker for TGLActorProxy
+   18/09/07 - DaStr - Added TGLMaterialProxy, TGLAbsoluteHUDText,
                          TGLResolutionIndependantHUDText
-  <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
+   12/07/07 - DaStr - Improved Cross-Platform compatibility
                          (Bugtracker ID = 1684432)
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>23/03/07 - fig - Added TGLSLProjectedTextures
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
-  <li>14/03/07 - DaStr - SpriteAnimation now makes use of
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+   23/03/07 - fig - Added TGLSLProjectedTextures
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
+   14/03/07 - DaStr - SpriteAnimation now makes use of
                          TGLLibMaterialName's property editor
-  <li>04/03/07 - DaStr - Added TGLPostShaderHolder
-  <li>28/02/07 - LIN   - Added GLShadowHDS
-  <li>25/02/07 - DaStr - Added TGLPostEffect
+   04/03/07 - DaStr - Added TGLPostShaderHolder
+   28/02/07 - LIN   - Added GLShadowHDS
+   25/02/07 - DaStr - Added TGLPostEffect
                          Moved all terrain components to a separate tab
                          Moved all shader components registration here
-  <li>23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
+   23/02/07 - DaStr - Added TGLSLShader, TGLSLDiffuseSpecularShader,
                         TGLSLBumpShader, TGLAsmShader, TGLShaderCombiner
                         TGLSmoothNavigator, TGLSmoothUserInterface
                         Moved TGLLibMaterialNameProperty to the interface section
-  <li>21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
-  <li>16/02/07 - DaStr - Added GLMaterialMultiProxy
-  <li>15/02/07 - DaStr - Added GLConsole and GLAtmosphere
-  <li>13/02/07 - LIN   - Added GLAsyncHDS and GLTexturedHDS
-  <li>06/02/07 - DaStr - Added GLSimpleNavigation
-  <li>29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
+   21/02/07 - DaStr - Added TGLActorProxy and TGLMotionBlur
+   16/02/07 - DaStr - Added GLMaterialMultiProxy
+   15/02/07 - DaStr - Added GLConsole and GLAtmosphere
+   13/02/07 - LIN   - Added GLAsyncHDS and GLTexturedHDS
+   06/02/07 - DaStr - Added GLSimpleNavigation
+   29/01/07 - DaStr - Added GLEParticleMasksManager, moved registration
                           procedures from other units to this one
-  <li>21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
+   21/01/07 - DaStr - TGLLibMaterialNameProperty.Edit fixed
                          (to support IGLMaterialLibrarySupported)
-  <li>23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
-  <li>13/10/04 - MRQZZZ - Added GLTrail
-  <li>03/07/04 - LR - Completly review to take account designtime for Linux
+   23/12/04 - PhP - "Animated Sprite" moved to advanced objects category
+   13/10/04 - MRQZZZ - Added GLTrail
+   03/07/04 - LR - Completly review to take account designtime for Linux
                       Note a problem with TGLColorProperty
-  <li>28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
-  <li>12/04/04 - EG - LibMaterialName property editor for SkyBox
-  <li>22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
-  <li>08/04/02 - EG - Added verb to TGLSceneEditor
-  <li>26/01/02 - EG - Color property drawing in D6 too now
-  <li>22/08/01 - EG - D6 related changes
-  <li>08/07/01 - EG - Register for TGLExtrusionSolid (Uwe Raabe)
-  <li>18/02/01 - EG - Added Terrain/HeightData objects
-  <li>21/01/01 - EG - Enhanced GetAttributes for some property editors
-  <li>09/10/00 - EG - Added registration for TGLMultiPolygon
-  <li>09/06/00 - EG - Added TSoundFileProperty & TSoundNameProperty
-  <li>23/05/00 - EG - Added GLCollision
-  <li>16/05/00 - EG - Delphi 4 Compatibility
-  <li>28/04/00 - EG - Removed ObjectStock in TObjectManager (was useless)
-  <li>26/04/00 - EG - Added Categories in ObjectManager,
+   28/06/04 - LR - Changed LoadBitmap to GLLoadBitmapFromInstance
+   12/04/04 - EG - LibMaterialName property editor for SkyBox
+   22/08/02 - EG - RegisterPropertiesInCategory (Robin Gerrets)
+   08/04/02 - EG - Added verb to TGLSceneEditor
+   26/01/02 - EG - Color property drawing in D6 too now
+   22/08/01 - EG - D6 related changes
+   08/07/01 - EG - Register for TGLExtrusionSolid (Uwe Raabe)
+   18/02/01 - EG - Added Terrain/HeightData objects
+   21/01/01 - EG - Enhanced GetAttributes for some property editors
+   09/10/00 - EG - Added registration for TGLMultiPolygon
+   09/06/00 - EG - Added TSoundFileProperty & TSoundNameProperty
+   23/05/00 - EG - Added GLCollision
+   16/05/00 - EG - Delphi 4 Compatibility
+   28/04/00 - EG - Removed ObjectStock in TObjectManager (was useless)
+   26/04/00 - EG - Added Categories in ObjectManager,
                       enhanced GetRegisteredSceneObjects
-  <li>16/04/00 - EG - Objects icons are now loaded from ressources using
+   16/04/00 - EG - Objects icons are now loaded from ressources using
                       ClassName (more VCL-like)
-  <li>11/04/00 - EG - Components now install under 'GLScene',
+   11/04/00 - EG - Components now install under 'GLScene',
                       Fixed DestroySceneObjectList (thanks Uwe Raabe)
-  <li>06/04/00 - EG - Added TGLBehavioursProperty
-  <li>18/03/00 - EG - Added TGLImageClassProperty
-  <li>13/03/00 - EG - Updated TGLTextureImageProperty
-  <li>14/02/00 - EG - Added MaterialLibrary editor and picker
-  <li>09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
+   06/04/00 - EG - Added TGLBehavioursProperty
+   18/03/00 - EG - Added TGLImageClassProperty
+   13/03/00 - EG - Updated TGLTextureImageProperty
+   14/02/00 - EG - Added MaterialLibrary editor and picker
+   09/02/00 - EG - ObjectManager moved in, ObjectManager is now fully
                       object-oriented and encapsulated
-  <li>06/02/00 - EG - Fixed TGLScenedEditor logic
+   06/02/00 - EG - Fixed TGLScenedEditor logic
                       (was causing Delphi IDE crashes on package unload)
-  <li>05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
-  </ul></font>
+   05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
+   
 }
 unit GLSceneRegister;
 
@@ -280,7 +280,7 @@ type
 
   // TReuseableDefaultEditor
   //
-  { : Editor copied from DsgnIntf.<p>
+  { : Editor copied from DsgnIntf. 
     Could have been avoided, if only that guy at Borland didn't chose to
     publish only half of the stuff (and that's not the only class with
     that problem, most of the subitems handling code in TGLSceneBaseObject is
@@ -304,7 +304,7 @@ type
 
   // TGLMaterialLibraryEditor
   //
-  { : Editor for material library.<p> }
+  { : Editor for material library.  }
   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
@@ -324,7 +324,7 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TGLSoundLibrary.<p>
+  { : Selection editor for TGLSoundLibrary. 
     Allows units to be added to the uses clause automatically when
     sound files are loaded into a TGLSoundLibrary at design-time. }
   TGLSoundLibrarySelectionEditor = class(TSelectionEditor)
@@ -332,7 +332,7 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TGLBaseSceneObject.<p>
+  { : Selection editor for TGLBaseSceneObject. 
     Allows units to be added to the uses clause automatically when
     behaviours/effects are added to a TGLBaseSceneObject at design-time. }
   TGLBaseSceneObjectSelectionEditor = class(TSelectionEditor)
@@ -342,7 +342,7 @@ type
 
   // TGLSArchiveManagerEditor
   //
-  { : Editor for GLScene Archive Manager.<p> }
+  { : Editor for GLScene Archive Manager.  }
   TGLSArchiveManagerEditor = class
     (TReuseableDefaultEditor, IDefaultEditor)
   protected

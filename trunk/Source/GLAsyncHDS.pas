@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLAsyncHDS<p>
-
-   Implements a HDS Filter that generates HeightData tiles in a seperate thread.<p>
+{
+   Implements a HDS Filter that generates HeightData tiles in a seperate thread. 
 
    This component is a THeightDataSourceFilter, which uses a THeightDataSourceThread,
    to asyncronously search the HeightData cache for any queued tiles.
@@ -13,20 +12,20 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-   <p>
+    
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>11/10/07 - DaStr - Added $I GLScene.inc, removed unused dependancy
-      <li>25/03/07 - DaStr - Replaced Dialogs with GLCrossPlatform for Delphi5 compatibility
-      <li>22/03/07 - LIN - Added UseDirtyTiles property - Specifies how dirty tiles are replaced.
-      <li>22/03/07 - LIN - Data is now prepared in 3 stages:
+	 History :  
+       22/04/10 - Yar - Fixes after GLState revision
+       11/10/07 - DaStr - Added $I GLScene.inc, removed unused dependancy
+       25/03/07 - DaStr - Replaced Dialogs with GLCrossPlatform for Delphi5 compatibility
+       22/03/07 - LIN - Added UseDirtyTiles property - Specifies how dirty tiles are replaced.
+       22/03/07 - LIN - Data is now prepared in 3 stages:
                             BeforePreparingData : (Main Thread)
                             PreparingData       : (Sub-Thread)   (Main Thread if MaxThreads=0)
                             AfterPreparingData  : (Main Thread)
-      <li>05/03/07 - LIN - Added ThreadCount and WaitFor
-      <li>12/02/07 - LIN - Creation
-	</ul></font>
+       05/03/07 - LIN - Added ThreadCount and WaitFor
+       12/02/07 - LIN - Creation
+	 
 }
 
 unit GLAsyncHDS;
@@ -37,6 +36,7 @@ interface
 
 uses 
   System.Classes, 
+  System.SysUtils,
   //GLS
   GLHeightData, GLCrossPlatform;
 
@@ -47,20 +47,20 @@ type
 
   // TUseDirtyTiles
   //
-  {:  TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
+  { TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
      <ul>
-     <li>TUseDirtyTiles
-     <li>
-     <li> When a tile is maked as dirty, a replacement is queued immediately.
-     <li> However, the replacement cant be used until the HDThread has finished preparing it.
-     <li> Dirty tiles can be deleted as soon as they are no longer used/displayed.
+      TUseDirtyTiles
+      
+       When a tile is maked as dirty, a replacement is queued immediately.
+       However, the replacement cant be used until the HDThread has finished preparing it.
+       Dirty tiles can be deleted as soon as they are no longer used/displayed.
 
-     Possible states for a TUseDirtyTiles.<p>
-      <li>hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
-      <li>hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
-      <li>hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
-      <li>                      before allowing the renderer to switch over to the new set of tiles.
-      <li>                      (This prevents a fading checkerbox effect.)
+     Possible states for a TUseDirtyTiles. 
+       hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
+       hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
+       hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
+                             before allowing the renderer to switch over to the new set of tiles.
+                             (This prevents a fading checkerbox effect.)
       </ul> }
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
@@ -113,9 +113,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils;
-
 // ------------------
 // ------------------ TGLAsyncHDS ------------------
 // ------------------

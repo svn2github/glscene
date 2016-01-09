@@ -1,16 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FVectorEditor<p>
+{FVectorEditor 
 
-   Editor for a vector.<p>
+   Editor for a vector. 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>05/10/08 - DanB - Removed Kylix support
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>03/07/04 - LR - Make change for Linux
-      <li>?/?/? -  - Creation
-   </ul></font>
+    Historique :  
+       05/10/08 - DanB - Removed Kylix support
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       03/07/04 - LR - Make change for Linux
+       ?/?/? -  - Creation
+    
 }
 unit FVectorEditor;
 

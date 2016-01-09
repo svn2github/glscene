@@ -1,15 +1,15 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCLGL<p>
+{GLSCLGL 
 
    Conversion of OpenCL header file: cl_gl.h to Delphi,
-   from http://www.khronos.org/registry/cl/.<p>
+   from http://www.khronos.org/registry/cl/. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Rename size_t to TSize_t
-      <li>01/11/09 - DanB - Creation
-   </ul></font>
+    History :  
+       05/03/11 - Yar - Rename size_t to TSize_t
+       01/11/09 - DanB - Creation
+    
 }
 ///*****************************************************************************
 // * Copyright (c) 2008-2009 The Khronos Group Inc.

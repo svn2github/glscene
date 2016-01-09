@@ -1,28 +1,28 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMeshUtils.<p>
+{GLMeshUtils. 
 
-   General utilities for mesh manipulations.<p>
+   General utilities for mesh manipulations. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>26/02/10 - Yar - Added functions to work with adjacent triangles
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
-      <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
-      <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
-      <li>20/01/03 - EG - Added UnifyTrianglesWinding
-      <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
-      <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
+	 History :  
+       10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
+       20/05/10 - Yar - Fixes for Linux x64
+       26/02/10 - Yar - Added functions to work with adjacent triangles
+       30/03/07 - DaStr - Added $I GLScene.inc
+       29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
+       29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
+       05/03/03 - EG - Added RemapIndicesToIndicesMap
+       20/01/03 - EG - Added UnifyTrianglesWinding
+       15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
+       13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
                           SubdivideTriangles 
-      <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
-      <li>04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
-      <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
+       10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
+       04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
+       02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
                           StripifyMesh slightly faster
-	   <li>18/08/01 - EG - Creation
-	</ul></font>
+	    18/08/01 - EG - Creation
+	 
 }
 unit GLMeshUtils;
 
@@ -35,7 +35,7 @@ uses
   //GLS
   GLPersistentClasses, GLVectorLists, GLVectorGeometry, GLVectorTypes;
 
-{: Converts a triangle strips into a triangle list.<p>
+{Converts a triangle strips into a triangle list. 
    Vertices are added to list, based on the content of strip. Both non-indexed
    and indexed variants are available, the output is *always* non indexed. }
 procedure ConvertStripToList(const strip : TAffineVectorList;
@@ -56,12 +56,12 @@ function ConvertFansToList(
   Count: LongWord;
   RestartIndex: LongWord): TLongWordList;
 
-{: Expands an indexed structure into a non-indexed structure. }
+{Expands an indexed structure into a non-indexed structure. }
 procedure ConvertIndexedListToList(const data : TAffineVectorList;
                                    const  indices : TIntegerList;
                                    list : TAffineVectorList);
 
-{: Builds a vector-count optimized indices list.<p>
+{Builds a vector-count optimized indices list. 
    The returned list (to be freed by caller) contains an "optimized" indices
    list in which duplicates coordinates in the original vertices list are used
    only once (the first available duplicate in the list is used).<br>
@@ -71,20 +71,20 @@ function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
                                           const normals : TAffineVectorList = nil;
                                           const texCoords : TAffineVectorList = nil) : TIntegerList;
 
-{: Alters a reference array and removes unused reference values.<p>
+{Alters a reference array and removes unused reference values. 
    This functions scans the reference list and removes all values that aren't
    referred in the indices list, the indices list is *not* remapped. }
 procedure RemapReferences(reference : TAffineVectorList;
                           const indices : TIntegerList); overload;
 procedure RemapReferences(reference : TIntegerList;
                           const indices : TIntegerList); overload;
-{: Alters a reference/indice pair and removes unused reference values.<p>
+{Alters a reference/indice pair and removes unused reference values. 
    This functions scans the reference list and removes all values that aren't
    referred in the indices list, and the indices list is remapped so as to remain
    coherent. }
 procedure RemapAndCleanupReferences(reference : TAffineVectorList;
                                     indices : TIntegerList);
-{: Creates an indices map from a remap list.<p>
+{Creates an indices map from a remap list. 
    The remap list is what BuildVectorCountOptimizedIndices, a list of indices
    to distinct/unique items, the indices map contains the indices of these items
    after a remap and cleanup of the set referred by remapIndices... Clear?<br>
@@ -93,30 +93,30 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
    Any simpler documentation of this function welcome ;) }
 function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 
-{: Remaps a list of triangles vertex indices and remove degenerate triangles.<p>
+{Remaps a list of triangles vertex indices and remove degenerate triangles. 
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapTrianglesIndices(indices, indicesMap : TIntegerList);
-{: Remaps a list of indices.<p>
+{Remaps a list of indices. 
    The indicesMap provides newVertexIndex:=indicesMap[oldVertexIndex] }
 procedure RemapIndices(indices, indicesMap : TIntegerList);
 
-{: Attempts to unify triangle winding.<p>
+{Attempts to unify triangle winding. 
    Depending on topology, this may or may not be successful (some topologies
    can't be unified, f.i. those that have duplicate triangles, those that
    have edges shared by more than two triangles, those that have unconnected
    submeshes etc.) }
 procedure UnifyTrianglesWinding(indices : TIntegerList);
-{: Inverts the triangles winding (vertex order). }
+{Inverts the triangles winding (vertex order). }
 procedure InvertTrianglesWinding(indices : TIntegerList);
 
-{: Builds normals for a triangles list.<p>
+{Builds normals for a triangles list. 
    Builds one normal per reference vertex (may be NullVector is reference isn't
-   used), which is the averaged for normals of all adjacent triangles.<p>
+   used), which is the averaged for normals of all adjacent triangles. 
    Returned list must be freed by caller. }
 function BuildNormals(reference : TAffineVectorList;
                       indices : TIntegerList) : TAffineVectorList;
 
-{: Builds a list of non-oriented (non duplicated) edges list.<p>
+{Builds a list of non-oriented (non duplicated) edges list. 
    Each edge is represented by the two integers of its vertices,
    sorted in ascending order.<br>
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
@@ -126,13 +126,13 @@ function BuildNonOrientedEdgesList(triangleIndices : TIntegerList;
                                    triangleEdges : TIntegerList = nil;
                                    edgesTriangles : TIntegerList = nil) : TIntegerList;
 
-{: Welds all vertices separated by a distance inferior to weldRadius.<p>
+{Welds all vertices separated by a distance inferior to weldRadius. 
    Any two vertices whose distance is inferior to weldRadius will be merged
-   (ie. one of them will be removed, and the other replaced by the barycenter).<p>
+   (ie. one of them will be removed, and the other replaced by the barycenter). 
    The indicesMap is constructed to allow remapping of indices lists with the
-   simple rule: newVertexIndex:=indicesMap[oldVertexIndex].<p>
+   simple rule: newVertexIndex:=indicesMap[oldVertexIndex]. 
    The logic is protected from chain welding, and only vertices that were
-   initially closer than weldRadius will be welded in the same resulting vertex.<p>
+   initially closer than weldRadius will be welded in the same resulting vertex. 
    This procedure can be used for mesh simplification, but preferably at design-time
    for it is not optimized for speed. This is more a "fixing" utility for meshes
    exported from high-polycount CAD tools (to remove duplicate vertices,
@@ -141,7 +141,7 @@ procedure WeldVertices(vertices : TAffineVectorList;
                        indicesMap : TIntegerList;
                        weldRadius : Single);
 
-{: Attempts to create as few as possible triangle strips to cover the mesh.<p>
+{Attempts to create as few as possible triangle strips to cover the mesh. 
    The indices parameters define a set of triangles as a set of indices to
    vertices in a vertex pool, free of duplicate vertices (or resulting
    stripification will be of lower quality).<br>
@@ -151,13 +151,13 @@ procedure WeldVertices(vertices : TAffineVectorList;
    the agglomerated list of the triangles that couldn't be stripified. }
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;
                       agglomerateLoneTriangles : Boolean = False) : TPersistentObjectList;
-{: Increases indices coherency wrt vertex caches.<p>
+{Increases indices coherency wrt vertex caches. 
    The indices parameters is understood as vertex indices of a triangles set,
    the triangles are reordered to maximize coherency (vertex reuse) over the
    cacheSize latest indices. This allows higher rendering performance from
    hardware renderers that implement vertex cache (nVidia GeForce family f.i.),
    allowing reuse of T&amp;L performance (similar to stripification without
-   the normals issues of strips).<p>
+   the normals issues of strips). 
    This procedure performs a coherency optimization via a greedy hill-climber
    algorithm (ie. not optimal but fast). }
 procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
@@ -165,12 +165,12 @@ procedure IncreaseCoherency(indices : TIntegerList; cacheSize : Integer);
 type
    TSubdivideEdgeEvent = procedure (const idxA, idxB, newIdx : Integer); register;
 
-{: Subdivides mesh triangles.<p>
+{Subdivides mesh triangles. 
    Splits along edges, each triangle becomes four. The smoothFactor can be
    used to control subdivision smoothing, zero means no smoothing (tesselation
    only), while 1 means "sphere" subdivision (a low res sphere will be subdivided
    in a higher-res sphere), values outside of the [0..1] range are for, er,
-   artistic purposes.<p>
+   artistic purposes. 
    The procedure is not intended for real-time use. }
 procedure SubdivideTriangles(smoothFactor : Single;
                              vertices : TAffineVectorList;
@@ -178,7 +178,7 @@ procedure SubdivideTriangles(smoothFactor : Single;
                              normals : TAffineVectorList = nil;
                              onSubdivideEdge : TSubdivideEdgeEvent = nil);
 
-{: Create list of indices of triangles with adjacency from triangle list }
+{Create list of indices of triangles with adjacency from triangle list }
 function MakeTriangleAdjacencyList(
   const AindicesList: PLongWordArray; Count: LongWord;
   const AVerticesList: PAffineVectorArray): TLongWordList;
@@ -708,12 +708,12 @@ begin
       ScaleVector(resultList[i], reciproquals[normalsCount[i]]);
 end;
 
-{: Builds a list of non-oriented (non duplicated) edges list.<p>
+{Builds a list of non-oriented (non duplicated) edges list. 
    Each edge is represented by the two integers of its vertices,
-   sorted in ascending order.<p>
+   sorted in ascending order. 
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
-   orientation.<p>
+   orientation. 
    If not nil, edgesTriangles is filled with the indices of the first index
    of the triangle in triangleIndices that have this edge. A maximum of two
    triangles can be referred by this list, and its final size will be that
@@ -1538,7 +1538,7 @@ var
   min: Single;
 begin
   if Count = 1 then
-    {: Ugh, a degenerate triangle with two (or perhaps three)
+    {Ugh, a degenerate triangle with two (or perhaps three)
        identical vertices tricking us into thinking that there
        is an open edge.  Hopefully these should be eliminated
        by an earlier "eliminate" pass, but such triangles are
@@ -1549,7 +1549,7 @@ begin
 
   if count = 3 then
   begin
-    {: Often a common case.  Save bookkeeping and close the triangle
+    {Often a common case.  Save bookkeeping and close the triangle
        boundary immediately. }
     b0 := 0;
     b1 := 1;
@@ -1593,7 +1593,7 @@ begin
         maxMaxSqArea := boundaryList[i].maxSqArea;
     end;
 
-    {: If triangles are formed from adjacent edges along the
+    {If triangles are formed from adjacent edges along the
        boundary, at least front-facing such triangle should
        be front-facing (ie, have a non-negative area). }
 
@@ -1616,7 +1616,7 @@ begin
       Assert(min < maxMaxSqArea);
       fixOpenTriangle(minIndex);
 
-      {: Newly created triangle formed from adjacent edges
+      {Newly created triangle formed from adjacent edges
          along the boundary could be larger than the
          previous largest triangle. }
       if (boundaryList[minIndex].maxSqArea > maxMaxSqArea) then
@@ -1647,7 +1647,7 @@ begin
     Assert(boundaryList[b2].next[1] = b1);
   end;
 
-  {: Place final "keystone" triangle to fill completely
+  {Place final "keystone" triangle to fill completely
      the open boundary. }
 
   if LongWord(Length(edgeInfo)) < (PrimitiveNum + 1) then
@@ -1781,7 +1781,7 @@ begin
   assert(goodTri < PrimitiveNum);
 
   otherGoodTri := 0;
-  {: The other good triangle is the triangle adjacent to the other
+  {The other good triangle is the triangle adjacent to the other
      bad triangle but which is not the bad triangle. }
   for i :=0 to 3 do
     if edgeInfo[otherBadTri].adjacentTriangle[i] <> badTri then
@@ -1792,21 +1792,21 @@ begin
 
   assert(i < 3);
 
-  {: Fix the good triangle so that both edges adjacent to the
+  {Fix the good triangle so that both edges adjacent to the
      bad triangle are now adjacent to the other good triangle. }
   for i :=0 to 3 do
     if edgeInfo[goodTri].adjacentTriangle[i] = badTri then
       edgeInfo[goodTri].adjacentTriangle[i] := otherGoodTri;
 
 
-  {: Fix the other good triangle so that both edges adjacent to the
+  {Fix the other good triangle so that both edges adjacent to the
      other bad triangle are now adjacent to the good triangle. }
 
   for i :=0 to 3 do
     if edgeInfo[otherGoodTri].adjacentTriangle[i] = otherBadTri then
       edgeInfo[otherGoodTri].adjacentTriangle[i] := goodTri;
 
-  {: Decrement the object's triangle count by 2. Then copy
+  {Decrement the object's triangle count by 2. Then copy
      non-degenerate triangles from the end of the triangle
      list to the slots once used by the eliminated triangles.
      Be sure to copy the edgeInfo data structure too.  Also
@@ -1825,7 +1825,7 @@ begin
     edgeInfo[otherBadTri]  := edgeInfo[PrimitiveNum];
     reconnectSharedEdges(badTri, PrimitiveNum+1);
     reconnectSharedEdges(otherBadTri, PrimitiveNum);
-    {: We are moving two triangles and they each might be
+    {We are moving two triangles and they each might be
        connected to each other.  Possibly reconnect the
        edges appropriately if so. }
     possiblyReconnectTriangle(badTri, otherBadTri, PrimitiveNum);
@@ -1916,12 +1916,12 @@ begin
 
   assert(goodTri < PrimitiveNum);
 
-  {: Patch up the edge info for the two relocated triangles. }
+  {Patch up the edge info for the two relocated triangles. }
   for i := PrimitiveNum-1 downto 0 do
     for j := 0 to 3 do
       assert(edgeInfo[i].adjacentTriangle[j] < PrimitiveNum);
 
-  {: Two degenerate triangles eliminated. }
+  {Two degenerate triangles eliminated. }
   Result := 2;
 end;
 
@@ -1934,7 +1934,7 @@ begin
   t1 := edgeInfo[tri].adjacentTriangle[1];
   t2 := edgeInfo[tri].adjacentTriangle[2];
 
-  {: Trivially degnerate triangles should have already been eliminated. }
+  {Trivially degnerate triangles should have already been eliminated. }
   assert(t0 <> tri);
   assert(t1 <> tri);
   assert(t2 <> tri);
@@ -1981,7 +1981,7 @@ var
   loopCount: Integer;
   i: Integer;
 begin
-  {: Eliminating two degenerate triangle pairs may
+  {Eliminating two degenerate triangle pairs may
      not be the end of the story if the two "good" triangles
      that get connected are also degenerate.  Loop to
      handle this unlikely event. }

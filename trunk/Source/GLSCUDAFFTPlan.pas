@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAFFTPlan <p>
+{ : GLSCUDAFFTPlan  
 
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
-  <li>04/05/11 - Yar - Fixed Source/Destination size checking
-  <li>05/03/11 - Yar - Refactored
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
+   History :  
+   13/12/13 - PW - Added GLScene.inc and GLSLog
+   04/05/11 - Yar - Fixed Source/Destination size checking
+   05/03/11 - Yar - Refactored
+   19/03/10 - Yar - Creation
+    
 }
 
 unit GLSCUDAFFTPlan;

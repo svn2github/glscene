@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLLinePFX<p>
+{GLLinePFX 
 
    A PFX whose particles are lines
 
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>12/10/08 - DanB - updated to use RCI
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>20/02/05 - EG - Creation
-   </ul></font>
+    History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       12/10/08 - DanB - updated to use RCI
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       30/03/07 - DaStr - Added $I GLScene.inc
+       20/02/05 - EG - Creation
+    
 }
 unit GLLinePFX;
 
@@ -33,7 +33,7 @@ type
 
    // TGLLineParticle
    //
-   {: Linear particle.<p> }
+   {Linear particle.  }
    TGLLineParticle = class (TGLParticle)
       private
          { Private Declarations }
@@ -48,15 +48,15 @@ type
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         {: Direction of the line. }
+         {Direction of the line. }
          property Direction : TAffineVector read FDirection write FDirection;
-         {: Length of the line }
+         {Length of the line }
          property Length : Single read FLength write FLength;
    end;
 
    // TGLLinePFXManager
    //
-   {: Polygonal particles FX manager.<p>
+   {Polygonal particles FX manager. 
       The particles of this manager are made of N-face regular polygon with
       a core and edge color. No texturing is available.<br>
       If you render large particles and don't have T&L acceleration, consider

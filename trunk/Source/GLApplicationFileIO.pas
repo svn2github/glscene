@@ -1,23 +1,23 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLApplicationFileIO<p>
+{GLApplicationFileIO 
 
    Components and fonction that abstract file I/O access for an application.<br>
-   Allows re-routing file reads to reads from a single archive file f.i.<p>
+   Allows re-routing file reads to reads from a single archive file f.i. 
 
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPPB compatibility: used TAFIOFileStreamEvent as procedure
+  History :  
+       10/11/12 - PW - Added CPPB compatibility: used TAFIOFileStreamEvent as procedure
                      instead of function using GLS_CPPB define
-      <li>25/08/10 - DaStr - Fixed compiler warnings
-      <li>25/07/10 - Yar - Added TGLSResourceStream class and CreateResourceStream string
-      <li>23/01/10 - Yar - Change LoadFromStream to dynamic
-      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>02/08/04 - LR, YHC - BCB corrections: fixed BCB Compiler error "E2370 Simple type name expected"
-      <li>05/06/03 - EG - TDataFile moved in from GLMisc
-      <li>31/01/03 - EG - Added FileExists mechanism
-      <li>21/11/02 - EG - Creation
- </ul></font>
+       25/08/10 - DaStr - Fixed compiler warnings
+       25/07/10 - Yar - Added TGLSResourceStream class and CreateResourceStream string
+       23/01/10 - Yar - Change LoadFromStream to dynamic
+       29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+       02/08/04 - LR, YHC - BCB corrections: fixed BCB Compiler error "E2370 Simple type name expected"
+       05/06/03 - EG - TDataFile moved in from GLMisc
+       31/01/03 - EG - Added FileExists mechanism
+       21/11/02 - EG - Creation
+  
 }
 unit GLApplicationFileIO;
 
@@ -69,7 +69,7 @@ type
 
   // TGLApplicationFileIO
   //
-    {: Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream.<p>
+    {Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream. 
        The component should be considered a helper only, you can directly specify
        a function via the vAFIOCreateFileStream variable.<br>
        If multiple TGLApplicationFileIO components exist in the application,
@@ -90,12 +90,12 @@ type
 
   published
     { Published declarations }
-      {: Event that allows you to specify a stream for the file.<p>
+      {Event that allows you to specify a stream for the file. 
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
          take place (ie. attempt a regular file system access). }
     property OnFileStream: TAFIOFileStreamEvent read FOnFileStream write FOnFileStream;
-    {: Event that allows you to specify if a stream for the file exists.<p> }
+    {Event that allows you to specify if a stream for the file exists.  }
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
@@ -106,9 +106,9 @@ type
 
   // TDataFile
   //
-  {: Abstract base class for data file formats interfaces.<p>
+  {Abstract base class for data file formats interfaces. 
      This class declares base file-related behaviours, ie. ability to load/save
-     from a file or a stream.<p>
+     from a file or a stream. 
      It is highly recommended to overload ONLY the stream based methods, as the
      file-based one just call these, and stream-based behaviours allow for more
      enhancement (such as other I/O abilities, compression, cacheing, etc.)
@@ -121,11 +121,11 @@ type
   public
     { Public Declarations }
 
-    {: Describes what the TDataFile is capable of.<p>
+    {Describes what the TDataFile is capable of. 
        Default value is [dfcRead]. }
     class function Capabilities: TDataFileCapabilities; virtual;
 
-    {: Duplicates Self and returns a copy.<p>
+    {Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
     function CreateCopy(AOwner: TPersistent): TDataFile; dynamic;
 
@@ -134,7 +134,7 @@ type
     procedure LoadFromStream(stream: TStream); dynamic;
     procedure SaveToStream(stream: TStream); dynamic;
     procedure Initialize; dynamic;
-    {: Optionnal resource name.<p>
+    {Optionnal resource name. 
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
        name in it for parser use. }
@@ -147,16 +147,16 @@ type
   //: Returns true if an GLApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
-{: Creates a file stream corresponding to the fileName.<p>
+{Creates a file stream corresponding to the fileName. 
    If the file does not exists, an exception will be triggered.<br>
    Default mechanism creates a regular TFileStream, the 'mode' parameter
    is similar to the one for TFileStream. }
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
-{: Queries is a file stream corresponding to the fileName exists.<p> }
+{Queries is a file stream corresponding to the fileName exists.  }
 function FileStreamExists(const fileName: string): Boolean;
 
-{: Create a resource stream. }
+{Create a resource stream. }
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
 
 function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;

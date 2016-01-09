@@ -1,19 +1,22 @@
-// GLShadowHDS
-{: Implements an HDS that automatically generates a terrain lightmap texture.<p>
-	<b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses
-      <li>13/11/07 - LIN - Added SkipGenerate flag. Set to true in "OnSourceDataFetched"
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+    Implements an HDS that automatically generates a terrain lightmap texture. 
+	History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/01/10 - Yar - Added GLTextureFormat to uses
+       13/11/07 - LIN - Added SkipGenerate flag. Set to true in "OnSourceDataFetched"
                            to generate a blank shadow map. Then load your cached Shadowmap during OnThreadBmp32 event.
-      <li>17/07/07 - LIN - Added OnThreadBmp32 event. This event can be used to
+       17/07/07 - LIN - Added OnThreadBmp32 event. This event can be used to
                            modify the lightmap, before it is sent to texture memory.
                            When used with TAsyncHDS, this event runs in the HeightData thread,
                            and NOT in the main thread, so make sure code in this event is thread-safe.
-      <li>22/03/07 - LIN - Thread-safe. (Now works with TGLAsyncHDS)
-      <li>02/03/07 - LIN - Now works with InfiniteWrap terrain
-      <li>14/02/07 - LIN - Creation
-	</ul></font>
+       22/03/07 - LIN - Thread-safe. (Now works with TGLAsyncHDS)
+       02/03/07 - LIN - Now works with InfiniteWrap terrain
+       14/02/07 - LIN - Creation
+	 
 
  Issues:1:Ambient and Diffuse light properties can not be set to 0, to avoid what
           seems to be a Delphi bug: If a property of type 'Single' is set to 0,
@@ -27,8 +30,8 @@
          (Black tile edges / slight mis-alignments /etc.)
         6:Applying materials ocasionally causes AV's
 
-PS. The RayCastShadowHeight function returns the height of the shadow at a point
-on the terrain. This, and the LightVector may come in handy for implementing shadow volumes?
+  PS. The RayCastShadowHeight function returns the height of the shadow at a point
+  on the terrain. This, and the LightVector may come in handy for implementing shadow volumes?
 }
 
 unit GLShadowHDS;
@@ -37,6 +40,7 @@ interface
 
 uses
   System.Classes, 
+  System.SysUtils,
   //GLS
   GLHeightData, GLGraphics, GLVectorGeometry, GLTexture,
   GLVectorTypes, GLCoordinates, GLMaterial;
@@ -50,7 +54,7 @@ type
 
 	// TGLShadowHDS
 	//
-   {: An Height Data Source that generates terrain shadow maps automatically.<p>
+   {An Height Data Source that generates terrain shadow maps automatically. 
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TGLShadowHDS = class (THeightDataSourceFilter)
@@ -133,7 +137,6 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  SysUtils,
   OpenGLTokens, GLVectorLists;
 
 // Create

@@ -1,16 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileX<p>
+{GLFileX 
 
-   Simple X format support for Delphi (Microsoft's favorite format)<p>
+   Simple X format support for Delphi (Microsoft's favorite format) 
    
-   <b>History : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-   </ul></font>
+    History :  
+       07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
+    
 
 
-   <b>Previous version history : </b><font size=-1><ul>
+    Previous version history :  
       $Log$
       Revision 1.1  2009/11/07 22:12:25  da_stranger
       Initial version (Added from the GLScene-Lazarus SVN)
@@ -26,7 +26,7 @@
 
       Revision 1.2  2005/08/03 00:41:38  z0m3ie
       - added automatical generated History from CVS
-   </ul></font>
+    
 }
 
 unit GLFileX;

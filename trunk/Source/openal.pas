@@ -45,7 +45,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils{$IFDEF MSWINDOWS},  Winapi.Windows{$ENDIF};
+  System.SysUtils {$IFDEF MSWINDOWS},  Winapi.Windows{$ENDIF};
 
 { $ DEFINE ALUT} //define ALUT to use alut.dll
 

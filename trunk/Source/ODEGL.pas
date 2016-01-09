@@ -1,21 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : ODEGL<p>
+{
+   History :  
 
-  <b>History : </b><font size=-1><ul>
-
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>10/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-  <li>05/04/10 - Yar - Added GLSceneMatrixToODER (thanks Vovik)
-  <li>22/11/09 - DaStr - Improved Unix compatibility (thanks Predator)
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   10/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+   05/04/10 - Yar - Added GLSceneMatrixToODER (thanks Vovik)
+   22/11/09 - DaStr - Improved Unix compatibility (thanks Predator)
                  (BugtrackerID = 2893580)
-  <li>08/12/08 - PR dBodySetMass no longer accepts zero mass. check added
-  <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
-  <li>11/09/07 - Mrqzzz - added reference to odeimport
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>03/02/03 - EG - Fixed CopyPosFromGeomToGL
-  <li>11/02/03 - MF - Added a couple of vector functions for copying between
+   08/12/08 - PR dBodySetMass no longer accepts zero mass. check added
+   06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
+   11/09/07 - Mrqzzz - added reference to odeimport
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   03/02/03 - EG - Fixed CopyPosFromGeomToGL
+   11/02/03 - MF - Added a couple of vector functions for copying between
     ODE formats and GLScene formats
 }
 
@@ -90,7 +89,7 @@ procedure CopyBodyFromCube(Body: PdxBody; var Geom: PdxGeom; Cube: TGLCube;  Spa
 function CreateGeomFromCube(Cube: TGLCube; Space: PdxSpace): PdxGeom;
 function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;  Space: PdxSpace): PdxBody;
 
-{: Note that this method requires you to manually deallocate vertices and
+{Note that this method requires you to manually deallocate vertices and
   indices when you're done with the trimesh }
 function CreateTriMeshFromBaseMesh(
   GLBaseMesh: TGLBaseMesh;

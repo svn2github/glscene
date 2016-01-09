@@ -1,52 +1,52 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProxyObjects<p>
+{GLProxyObjects 
 
-   Implements specific proxying classes.<p>
+   Implements specific proxying classes. 
 
- <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>25/12/09 - DaStr - Bugfixed TGLActorProxy.RayCastIntersect()
+  History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       25/12/09 - DaStr - Bugfixed TGLActorProxy.RayCastIntersect()
                                in aarMorph mode (thanks Vovik)
-      <li>22/12/09 - DaStr - Added TGLActorProxy.AnimationMode (thanks Vovik)
+       22/12/09 - DaStr - Added TGLActorProxy.AnimationMode (thanks Vovik)
                              Removed TGLActorProxy.Interval (was not used)
-      <li>18/06/08 - mrqzzz - Don't raise error when setting animation to an
+       18/06/08 - mrqzzz - Don't raise error when setting animation to an
                                ActorProxy and no MasterObject is defined
-      <li>15/03/08 - DaStr - Fixup after previous update: removed all hints and
+       15/03/08 - DaStr - Fixup after previous update: removed all hints and
                               warnings, TGLActorProxy now has two versions of
                               RayCastIntersect()
-      <li>06/02/08 - mrqzzz - Added a "RayCastIntersect" overload for Actorproxy
-      <li>07/11/07 - mrqzzz - Added "OnBeforeRender" event to Actorproxy
+       06/02/08 - mrqzzz - Added a "RayCastIntersect" overload for Actorproxy
+       07/11/07 - mrqzzz - Added "OnBeforeRender" event to Actorproxy
                               allowing to apply extra transformations (f.ex: bone rotations)
                               to the referenced Actor in order to have the proxy render these changes.
-      <li>07/11/07 - mrqzzz - Added "StoredBoneNames" property
-      <li>07/11/07 - mrqzzz - Added "BoneMatrix(Boneidndex|boneName)" function and
+       07/11/07 - mrqzzz - Added "StoredBoneNames" property
+       07/11/07 - mrqzzz - Added "BoneMatrix(Boneidndex|boneName)" function and
                                StoreBonesMatrix property for TGLActorProxy
                               (To read each ActorProxy's individual Bone matrices,
                               f.ex to align a weapon in it's hand)
-      <li>06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
+       06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
                               (allows different materials on proxy actors sharing same master)
-      <li>06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
+       06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
                               (CurrentFrame,StartFrame,Endframe,etc..)
-      <li>05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
+       05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
                               (Bugtracker ID = 1808666)
-      <li>04/09/07 - DaStr - Added TGLMaterialProxy
+       04/09/07 - DaStr - Added TGLMaterialProxy
                              Cleaned up this unit a bit
-      <li>10/05/07 - DaStr - Bugfixed TGLColorProxy.DoRender
+       10/05/07 - DaStr - Bugfixed TGLColorProxy.DoRender
                               (thanks Paul Robello) (Bugtracker ID = 1716692)
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>25/02/07 - Made TGLActorProxy.SetAnimation a bit safer
-      <li>20/02/07 - DaStr - Redeclared MasterObject of TGLColorProxy and TGLFreeFormProxy
+       25/02/07 - Made TGLActorProxy.SetAnimation a bit safer
+       20/02/07 - DaStr - Redeclared MasterObject of TGLColorProxy and TGLFreeFormProxy
                              Added TGLActorProxy (based on a demo published
                              on the newsgroup by don't know who...)
-      <li>18/12/03 - Dave - Dropped "Object" from "ProxyObject" class names
-      <li>17/12/03 - Dave - Changed class check in Octree code to Assert
-      <li>17/12/03 - Dave+Dan - Added OctreeSphereSweep
-      <li>06/12/03 - EG - Creation from GLScene.pas split
-   </ul></font>
+       18/12/03 - Dave - Dropped "Object" from "ProxyObject" class names
+       17/12/03 - Dave - Changed class check in Octree code to Assert
+       17/12/03 - Dave+Dan - Added OctreeSphereSweep
+       06/12/03 - EG - Creation from GLScene.pas split
+    
 }
 unit GLProxyObjects;
 
@@ -67,7 +67,7 @@ type
 
   // TGLColorProxy
   //
-  {: A proxy object with its own color.<p>
+  {A proxy object with its own color. 
      This proxy object can have a unique color. Note that multi-material
      objects (Freeforms linked to a material library f.i.) won't honour
      the color. }
@@ -96,7 +96,7 @@ type
 
   // TGLMaterialProxy
   //
-  {: A proxy object with its own material.<p>
+  {A proxy object with its own material. 
      This proxy object can take a mesh from one master and a materia from
      a material library. }
   TGLMaterialProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
@@ -121,7 +121,7 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    {: Specifies the Material, that current master object will use.
+    {Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write
@@ -130,17 +130,17 @@ type
     { Published Declarations }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    {: Specifies the Material, that current master object will use. }
+    {Specifies the Material, that current master object will use. }
     property MasterLibMaterialName: TGLLibMaterialName read
       GetMasterLibMaterialName write SetMasterLibMaterialName;
-    {: Redeclare as TGLCustomSceneObject. }
+    {Redeclare as TGLCustomSceneObject. }
     property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject
       write SetMasterMaterialObject;
   end;
 
   // TGLFreeFormProxy
   //
-  {: A proxy object specialized for FreeForms.<p> }
+  {A proxy object specialized for FreeForms.  }
   TGLFreeFormProxy = class(TGLProxyObject)
   private
     function GetMasterFreeFormObject: TGLFreeForm;
@@ -151,12 +151,12 @@ type
   public
     { Public Declarations }
 
-    {: If the MasterObject is a FreeForm, you can raycast against the Octree,
+    {If the MasterObject is a FreeForm, you can raycast against the Octree,
        which is alot faster.  You must build the octree before using. }
     function OctreeRayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
-    {: WARNING: This function is not yet 100% reliable with scale+rotation. }
+    {WARNING: This function is not yet 100% reliable with scale+rotation. }
     function OctreeSphereSweepIntersect(const rayStart, rayVector: TVector;
       const velocity, radius, modelscale: Single;
       intersectPoint: PVector = nil;
@@ -170,7 +170,7 @@ type
 
   // TBoneMatrixObj
   //
-  {: An object containing the bone matrix for TGLActorProxy.<p> }
+  {An object containing the bone matrix for TGLActorProxy.  }
   TBoneMatrixObj = class
   public
     Matrix: TMatrix;
@@ -184,7 +184,7 @@ type
 
   // TGLActorProxy
   //
-  {: A proxy object specialized for Actors.<p> }
+  {A proxy object specialized for Actors.  }
   TGLActorProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
@@ -235,18 +235,18 @@ type
     property EndFrame: Integer read FEndFrame;
     property CurrentFrameDelta: Single read FCurrentFrameDelta;
     property CurrentTime: TProgressTimes read FCurrentTime;
-    {: Gets the Bones Matrix in the current animation frame.
+    {Gets the Bones Matrix in the current animation frame.
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     function BoneMatrix(BoneIndex: integer): TMatrix; overload;
     function BoneMatrix(BoneName: string): TMatrix; overload;
     procedure BoneMatricesClear;
 
-    {: A standard version of the RayCastIntersect function. }
+    {A standard version of the RayCastIntersect function. }
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
 
-    {: Raycasts on self, but actually on the "RefActor" Actor.
+    {Raycasts on self, but actually on the "RefActor" Actor.
        Note that the "RefActor" parameter does not necessarily have to be
        the same Actor refernced by the MasterObject property:
        This allows to pass a low-low-low-poly Actor to raycast in the "RefActor" parameter,
@@ -269,21 +269,21 @@ type
     // Redeclare without pooTransformation
     // (Don't know why it causes the object to be oriented incorrecly.)
     property ProxyOptions default [pooEffects, pooObjects];
-    {: Specifies the MaterialLibrary, that current proxy will use. }
+    {Specifies the MaterialLibrary, that current proxy will use. }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    {: Specifies the Material, that current proxy will use. }
+    {Specifies the Material, that current proxy will use. }
     property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write
       SetLibMaterialName;
-    {: Specifies if it will store the Bones Matrices, accessible via the BoneMatrix function
+    {Specifies if it will store the Bones Matrices, accessible via the BoneMatrix function
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     property StoreBonesMatrix: boolean read FStoreBonesMatrix write
       SetStoreBonesMatrix;
-    {: Specifies the names of the bones we want the matrices to be stored. If empty, all bones will be stored
+    {Specifies the names of the bones we want the matrices to be stored. If empty, all bones will be stored
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     property StoredBoneNames: TStrings read FStoredBoneNames write
       SetStoredBoneNames;
-    {: Event allowing to apply extra transformations (f.ex: bone rotations) to the referenced
+    {Event allowing to apply extra transformations (f.ex: bone rotations) to the referenced
        Actor on order to have the proxy render these changes.  }
     property OnBeforeRender: TGLProgressEvent read FOnBeforeRender write
       SetOnBeforeRender;

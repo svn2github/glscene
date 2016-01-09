@@ -23,10 +23,10 @@ unit SDL2;
 interface
 
 uses
-    System.Classes
-    ,System.SysUtils
+    System.Classes,
+    System.SysUtils
     {$IFDEF WINDOWS}
-       ,Winapi.Windows;
+     ,Winapi.Windows;
     {$ELSE}
        {$IFDEF LINUX}
           ,X

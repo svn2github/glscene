@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSpatialPartitioning<p>
+{GLSpatialPartitioning 
 
-  <p>Spatial partitioning related code that also uses GLScene objects
+   Spatial partitioning related code that also uses GLScene objects
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Added GLVectorTypes to uses
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       06/06/10 - Yar - Added GLVectorTypes to uses
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
-      <li>06/03/07 - DaStr - Removed obsolete FPC IFDEF's
-      <li>19/12/06 - DaStr - Old version of ExtendedFrustumMakeFromSceneViewer function
+       06/03/07 - DaStr - Removed obsolete FPC IFDEF's
+       19/12/06 - DaStr - Old version of ExtendedFrustumMakeFromSceneViewer function
                               restored as an overloaded version of the new one
-      <li>04/11/05 - Mathx - Corrections related to bug 1335349
+       04/11/05 - Mathx - Corrections related to bug 1335349
                              (ExtendedFrustumMakeFromSceneViewer supporting more
                              than just regular TGLSceneViewer).
-      <li>03/12/04 - MF - Created
-  </ul></font>
+       03/12/04 - MF - Created
+   
 }
 
 unit GLSpatialPartitioning;
@@ -39,7 +39,7 @@ uses
   GLState;
 
 type
-  {: Object for holding glscene objects in a spatial partitioning }
+  {Object for holding glscene objects in a spatial partitioning }
   TSceneObj = class(TSpacePartitionLeaf)
   public
     Obj: TGLBaseSceneObject;
@@ -48,12 +48,12 @@ type
     destructor Destroy; override;
   end;
 
-  {: Render a spacial partitioning descending from TSectoredSpacePartition
+  {Render a spacial partitioning descending from TSectoredSpacePartition
   (octree and quadtree) as a grid - great for debugging and visualisation }
 procedure RenderSpatialPartitioning(var rci: TRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
-{: Create an extended frustum from a GLSceneViewer - this makes the unit
+{Create an extended frustum from a GLSceneViewer - this makes the unit
 specific to the windows platform!}
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
   const vWidth, vHeight: integer; AGLCamera: TGLCamera): TExtendedFrustum; overload;
@@ -61,7 +61,7 @@ function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
   const AGLSceneViewer: TGLSceneViewer): TExtendedFrustum; overload;
 
-{: Renders an AABB as a line }
+{Renders an AABB as a line }
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
 

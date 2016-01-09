@@ -2,19 +2,19 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 // GLBumpMapping
-{: Some useful methods for setting up bump maps.<p>
+{Some useful methods for setting up bump maps. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Removed function RGB that is included in GLCrossPlatform.pas
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records with arrays
-      <li>08/07/04 - LR - Replace Graphics by GLCrossPlatform for Linux
-      <li>30/03/04 - SG - Minor optimizations
-      <li>22/09/03 - SG - Partially fixed tangent space normal map creation,
+    History :  
+       17/11/14 - PW - Removed function RGB that is included in GLCrossPlatform.pas
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records with arrays
+       08/07/04 - LR - Replace Graphics by GLCrossPlatform for Linux
+       30/03/04 - SG - Minor optimizations
+       22/09/03 - SG - Partially fixed tangent space normal map creation,
                           Fixed normal blending coefficients
-      <li>18/09/03 - SG - Added methods for creating normal maps,
+       18/09/03 - SG - Added methods for creating normal maps,
                           CreateTangentSpaceNormalMap is a little buggy
-      <li>28/07/03 - SG - Creation
-   </ul></font>
+       28/07/03 - SG - Creation
+    
 }
 unit GLBumpMapping;
 

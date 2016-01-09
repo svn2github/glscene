@@ -1,219 +1,219 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexture<p>
+{GLTexture 
 
- Handles all the color and texture stuff.<p>
+ Handles all the color and texture stuff. 
 
- <b>History : </b><font size=-1><ul>
-       <li>04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove
+  History :  
+        04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove
                            a memory leak (thanks to Lars Nebel)
-       <li>04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from GLColor unit to here
-       <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
+        04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from GLColor unit to here
+        10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods,
                            restored definition of TGLCubeMapTarget as integer type
-       <li>12/05/11 - Yar - Added KeepImageAfterTransfer for TGLTexture
-       <li>04/10/10 - Yar - Improved multycontext features for TGLTexture
-       <li>23/08/10 - Yar - Added OpenGLTokens to uses
-       <li>21/05/10 - Yar - Removed TGLFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
-       <li>16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TGLTextureImage
-       <li>14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
-       <li>09/05/10 - Yar - Fixed texture compression (thanks Hacker)
-       <li>22/04/10 - Yar - Fixes after GLState revision
-       <li>05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
+        12/05/11 - Yar - Added KeepImageAfterTransfer for TGLTexture
+        04/10/10 - Yar - Improved multycontext features for TGLTexture
+        23/08/10 - Yar - Added OpenGLTokens to uses
+        21/05/10 - Yar - Removed TGLFloatDataImage, replace OpenGL1x functions to OpenGLAdapter
+        16/05/10 - Yar - Added protected method IsSelfLoading and LoadTexture to TGLTextureImage
+        14/05/10 - Yar - Fixed UnpackAlignment in PrepareParams
+        09/05/10 - Yar - Fixed texture compression (thanks Hacker)
+        22/04/10 - Yar - Fixes after GLState revision
+        05/03/10 - DanB - Removed disabling Texture Rect/CubeMap/3D, since disabling will
                              cause errors on hardware that doesn't support them
-       <li>05/03/10 - DanB - More state added to TGLStateCache
-       <li>23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
+        05/03/10 - DanB - More state added to TGLStateCache
+        23/01/10 - Yar  - Added TextureFormatEx to TGLTexture
                              and tfExtended to TGLTextureFormat (thanks mif for idea)
-       <li>22/01/10 - Yar  - Added GLTextureFormat to uses,
+        22/01/10 - Yar  - Added GLTextureFormat to uses,
                              1D, 3D, array, cube map array target support,
                              texture error indication,
                              TGLTextureImage ResorceName property,
                              Depth property,
                              NativeTextureTarget becomes property
-      <li>07/01/10 - DaStr - Added tmAdd TextureMode and enhanced documentation
+       07/01/10 - DaStr - Added tmAdd TextureMode and enhanced documentation
                              (thanks DungeonLords)
                              Removed IncludeTrailingBackslash function
-      <li>10/11/09 - DaStr - Added more texture formats (thanks YarUnderoaker)
-      <li>04/06/09 - DanB - Delphi 5 fix
-      <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
-      <li>08/10/08 - DanB - split materials related stuff into GLMaterial.pas
-      <li>06/10/08 - DanB - added Assert check for trying to create texture images
-      <li>05/10/08 - DanB - separated texture image editor from texture unit
+       10/11/09 - DaStr - Added more texture formats (thanks YarUnderoaker)
+       04/06/09 - DanB - Delphi 5 fix
+       17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
+       08/10/08 - DanB - split materials related stuff into GLMaterial.pas
+       06/10/08 - DanB - added Assert check for trying to create texture images
+       05/10/08 - DanB - separated texture image editor from texture unit
                             moved color related stuff to GLColor.pas
                             moved TRenderContextInfo into separate unit
-      <li>12/04/08 - DaStr - Bugfixed TGLTextureExItem.Create()
+       12/04/08 - DaStr - Bugfixed TGLTextureExItem.Create()
                               (thanks dAlex) (BugTracker ID = 1940451)
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
+       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
                               TGLMaterial (BugTracker ID = 1938988)
-      <li>08/02/08 - Mrqzzz - Added tiaBottomRightPointColorTransparent
-      <li>29/07/07 - LC - Modified how tmmEyeLinear is applied, see
+       08/02/08 - Mrqzzz - Added tiaBottomRightPointColorTransparent
+       29/07/07 - LC - Modified how tmmEyeLinear is applied, see
                           Bugtracker ID = 1762966.
-      <li>06/06/07 - DaStr - Moved all color types, constants and functions
+       06/06/07 - DaStr - Moved all color types, constants and functions
                               to GLColor.pas (Bugtracker ID = 1732211)
-      <li>31/03/07 - DaStr - Bugfixed TGLTexture.Assign (missed some properties)
+       31/03/07 - DaStr - Bugfixed TGLTexture.Assign (missed some properties)
                               (Bugtracker ID = 1692012) (thanks Zapology)
-      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
+       28/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
+       23/03/07 - DaStr - Added missing parameters in procedure's implementation
                               (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>06/03/07 - DaStr - Removed obsolete FPC IFDEF's
+       06/03/07 - DaStr - Removed obsolete FPC IFDEF's
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678642)
-      <li>14/03/07 - DaStr - TGLPicFileImage now provides correct Width and Height
+       14/03/07 - DaStr - TGLPicFileImage now provides correct Width and Height
                                                         (BugtrackerID = 1680742)
-      <li>09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
+       09/03/07 - DaStr - Added TGLMaterial.GetActualPrimaryMaterial, GetLibMaterial
                              Bugfixed TGLColor.Initialize and TGLColor.Destroy
                               (thanks Burkhard Carstens) (BugtrackerID = 1678650)
-      <li>04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
-      <li>23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
+       04/03/07 - DaStr - Added TGLTextureTarget, [Encode/Decode]GLTextureTarget
+       23/02/07 - DaStr - Added TGLShaderClass, TGLShaderFailedInitAction,
                               EGLShaderException
                              Added TGLShader.HandleFailedInitialization, ShaderSupported,
                               GetStardardNotSupportedMessage, FailedInitAction
                              Added default value for TGLShader.ShaderStyle
                              Fixed TGLShader.InitializeShader
                              Fixed TGLTextureExItem.Create (TGLCoordinatesStyle stuff)
-      <li>16/02/07 - DaStr - Global $Q- removed
+       16/02/07 - DaStr - Global $Q- removed
                              Added TGLLibMaterials.GetTextureIndex, GetMaterialIndex,
                                GetNameOfTexture, GetNameOfLibMaterial
                              Added TGLMaterialLibrary.TextureByName,
                                GetNameOfTexture, GetNameOfLibMaterial
-      <li>01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users
-      <li>23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
-      <li>23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
-      <li>22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
+       01/02/07 - LIN - Added TGLLibMaterial.IsUsed : true if texture has registered users
+       23/01/07 - LIN - Added TGLTextureImage.AssignToBitmap : Converts the TextureImage to a TBitmap
+       23/01/07 - LIN - Added TGLTextureImage.AsBitmap : Returns the TextureImage as a TBitmap
+       22/01/07 - DaStr - IGLMaterialLibrarySupported abstracted
                              TGLLibMaterial.TextureOffset/TextureScale.FStyle bugfxed (thanks Ian Mac)
-      <li>20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
+       20/12/06 - DaStr - TGLColorManager.Enumcolors overloaded
                              TGLShader.Apply bugfixed, TGLShader.Assign added
-      <li>19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
+       19/10/06 - LC - Fixed TGLLibMaterial.UnApply so it doesn't unapply a 2nd
                           texture that was never applied. Bugtracker ID=1234085
-      <li>19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843 (thanks Zapology)
-      <li>15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
-      <li>12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
-      <li>06/03/05 - EG - FTextureEx now autocreated (like FTexture)
-      <li>30/11/04 - EG - No longer stores TextureEx if empty
-      <li>06/10/04 - NC - Corrected filtering param. setting for float texture,
+       19/10/06 - LC - Fixed TGLLibMaterial.Assign. Bugtracker ID=1549843 (thanks Zapology)
+       15/09/06 - NC - TGLShader.handle as Integer -> Cardinal
+       12/09/06 - NC - Added GetFloatTexImage and SetFloatTexImage
+       06/03/05 - EG - FTextureEx now autocreated (like FTexture)
+       30/11/04 - EG - No longer stores TextureEx if empty
+       06/10/04 - NC - Corrected filtering param. setting for float texture,
                           Now keep using GL_TEXTURE_RECTANGLE_NV for TGLFloatDataImage
-      <li>05/10/04 - SG - Added Material.TextureEx (texture extension)
-      <li>04/10/04 - NC - Added TGLFloatDataImage
-      <li>02/08/04 - LR, YHC - BCB corrections: Added dummy method for the abstract problem
+       05/10/04 - SG - Added Material.TextureEx (texture extension)
+       04/10/04 - NC - Added TGLFloatDataImage
+       02/08/04 - LR, YHC - BCB corrections: Added dummy method for the abstract problem
                           Changed type of TGLCubeMapTarget to integer
-      <li>03/07/04 - LR - Move InitWinColors to GLCrossPlatform
+       03/07/04 - LR - Move InitWinColors to GLCrossPlatform
                           Replace TGraphics, TBitmap by TGLGraphics, TGLBitmap
-      <li>29/06/04 - SG - Added bmModulate blending mode
-      <li>08/04/04 - EG - Added AddMaterialsFromXxxx logic
-      <li>04/09/03 - EG - Added TGLShader.Enabled
-      <li>02/09/03 - EG - Added TGLColor.HSVA
-      <li>28/07/03 - aidave - Added TGLColor.RandomColor
-      <li>24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
-      <li>04/07/03 - EG - Material.Texture now autocreating,
+       29/06/04 - SG - Added bmModulate blending mode
+       08/04/04 - EG - Added AddMaterialsFromXxxx logic
+       04/09/03 - EG - Added TGLShader.Enabled
+       02/09/03 - EG - Added TGLColor.HSVA
+       28/07/03 - aidave - Added TGLColor.RandomColor
+       24/07/03 - EG - Introduced TGLTextureImageEditor mechanism
+       04/07/03 - EG - Material.Texture now autocreating,
                           added per-texture brightness and gamma correction
-      <li>13/06/03 - EG - cubemap images can now be saved/restored as a whole
-      <li>05/06/03 - EG - Assign fixes (Andrzej Kaluza)
-      <li>23/05/03 - EG - More generic libmaterial registration
-      <li>08/12/02 - EG - Added tiaInverseLuminance
-      <li>13/11/02 - EG - Added tmmCubeMapLight0
-      <li>18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
-      <li>24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
-      <li>13/07/02 - EG - Improved materials when lighting is off
-      <li>10/07/02 - EG - Added basic protection against cyclic material refs
-      <li>08/07/02 - EG - Multipass support
-      <li>18/06/02 - EG - Added TGLShader
-      <li>26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
-      <li>24/01/02 - EG - Added vUseDefaultSets mechanism,
+       13/06/03 - EG - cubemap images can now be saved/restored as a whole
+       05/06/03 - EG - Assign fixes (Andrzej Kaluza)
+       23/05/03 - EG - More generic libmaterial registration
+       08/12/02 - EG - Added tiaInverseLuminance
+       13/11/02 - EG - Added tmmCubeMapLight0
+       18/10/02 - EG - CubeMap texture matrix now setup for 2nd texture unit too
+       24/07/02 - EG - Added TGLLibMaterials.DeleteUnusedMaterials
+       13/07/02 - EG - Improved materials when lighting is off
+       10/07/02 - EG - Added basic protection against cyclic material refs
+       08/07/02 - EG - Multipass support
+       18/06/02 - EG - Added TGLShader
+       26/01/02 - EG - Makes use of new xglBegin/EndUpdate mechanism
+       24/01/02 - EG - Added vUseDefaultSets mechanism,
                           TGLPictureImage no longer systematically creates a TPicture
-      <li>21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
-      <li>20/01/02 - EG - Fixed texture memory use report error
-      <li>10/01/02 - EG - Added Material.FaceCulling, default texture filters
+       21/01/02 - EG - Fixed OnTextureNeeded calls (Leonel)
+       20/01/02 - EG - Fixed texture memory use report error
+       10/01/02 - EG - Added Material.FaceCulling, default texture filters
                           are now Linear/MipMap
-      <li>07/01/02 - EG - Added renderDPI to rci
-      <li>16/12/01 - EG - Added support for cube maps (texture and mappings)
-      <li>30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
-      <li>14/09/01 - EG - Use of vFileStreamClass
-      <li>06/09/01 - EG - No longers depends on 'Windows'
-      <li>04/09/01 - EG - Texture binding cache
-      <li>31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
-      <li>25/08/01 - EG - Added TGLBlankImage
-      <li>16/08/01 - EG - drawState now part of TRenderContextInfo
-      <li>15/08/01 - EG - TexGen support (object_linear, eye_linear and sphere_map)
-      <li>13/08/01 - EG - Fixed OnTextureNeeded handling (paths for mat lib)
-      <li>12/08/01 - EG - Completely rewritten handles management
-      <li>27/07/01 - EG - TGLLibMaterials now a TOwnedCollection
-      <li>19/07/01 - EG - Added "Enabled" to TGLTexture
-      <li>28/06/01 - EG - Added AddTextureMaterial TGraphic variant
-      <li>14/03/01 - EG - Streaming fixes by Uwe Raabe
-      <li>08/03/01 - EG - TGLPicFileImage.GetBitmap32 now resets filename if not found
-      <li>01/03/01 - EG - Fixed TGLMaterial.DestroyHandle,
+       07/01/02 - EG - Added renderDPI to rci
+       16/12/01 - EG - Added support for cube maps (texture and mappings)
+       30/11/01 - EG - Texture-compression related errors now ignored (unsupported formats)
+       14/09/01 - EG - Use of vFileStreamClass
+       06/09/01 - EG - No longers depends on 'Windows'
+       04/09/01 - EG - Texture binding cache
+       31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
+       25/08/01 - EG - Added TGLBlankImage
+       16/08/01 - EG - drawState now part of TRenderContextInfo
+       15/08/01 - EG - TexGen support (object_linear, eye_linear and sphere_map)
+       13/08/01 - EG - Fixed OnTextureNeeded handling (paths for mat lib)
+       12/08/01 - EG - Completely rewritten handles management
+       27/07/01 - EG - TGLLibMaterials now a TOwnedCollection
+       19/07/01 - EG - Added "Enabled" to TGLTexture
+       28/06/01 - EG - Added AddTextureMaterial TGraphic variant
+       14/03/01 - EG - Streaming fixes by Uwe Raabe
+       08/03/01 - EG - TGLPicFileImage.GetBitmap32 now resets filename if not found
+       01/03/01 - EG - Fixed TGLMaterial.DestroyHandle,
                           Added Texture2 notifications and material cacheing
-      <li>26/02/01 - EG - Added support for GL_EXT_texture_filter_anisotropic
-      <li>23/02/01 - EG - Fixed texture matrix messup (second was using first)
-      <li>21/02/01 - EG - Minor fix for TextureImageRequiredMemory,
+       26/02/01 - EG - Added support for GL_EXT_texture_filter_anisotropic
+       23/02/01 - EG - Fixed texture matrix messup (second was using first)
+       21/02/01 - EG - Minor fix for TextureImageRequiredMemory,
                           TexGen calls now based on XOpenGL
-      <li>14/02/01 - EG - Added support for texture format & texture compression
-      <li>31/01/01 - EG - Added Multitexture support
-      <li>28/01/01 - EG - Added MaterialOptions
-      <li>15/01/01 - EG - Enhanced TGLPicFileImage.LoadFromFile
-      <li>13/01/01 - EG - New helper functions for TGLMaterialLibrary
-      <li>08/01/01 - EG - Not-so-clean fix for TGLTexture.Destroy... better fix
+       14/02/01 - EG - Added support for texture format & texture compression
+       31/01/01 - EG - Added Multitexture support
+       28/01/01 - EG - Added MaterialOptions
+       15/01/01 - EG - Enhanced TGLPicFileImage.LoadFromFile
+       13/01/01 - EG - New helper functions for TGLMaterialLibrary
+       08/01/01 - EG - Not-so-clean fix for TGLTexture.Destroy... better fix
                           will require awareness of rendering contexts...
-      <li>06/12/00 - EG - Added PrepareBuildList mechanism
-      <li>16/10/00 - EG - Fix in TGLPictureImage.Assign
-      <li>25/09/00 - EG - New texture management implemented
-      <li>13/08/00 - EG - Added AddTextureMaterial
-      <li>06/08/00 - EG - File not found error now happens only once per texture,
+       06/12/00 - EG - Added PrepareBuildList mechanism
+       16/10/00 - EG - Fix in TGLPictureImage.Assign
+       25/09/00 - EG - New texture management implemented
+       13/08/00 - EG - Added AddTextureMaterial
+       06/08/00 - EG - File not found error now happens only once per texture,
                           also added some more doc and texture transforms support
                           to TGLLibMaterial
-      <li>27/07/00 - EG - TGLPictureImage.Assign now accepts TGraphic & TPicture,
+       27/07/00 - EG - TGLPictureImage.Assign now accepts TGraphic & TPicture,
                           Added max texture size clamping
-      <li>15/07/00 - EG - Upgrade for new list/handle destruction scheme
-      <li>05/07/00 - EG - Added tiaTopLeftPointColorTransparent
-      <li>28/06/00 - EG - Added asserts for missing texture files
-      <li>01/06/00 - EG - Added ReloadTexture (support for texture library),
+       15/07/00 - EG - Upgrade for new list/handle destruction scheme
+       05/07/00 - EG - Added tiaTopLeftPointColorTransparent
+       28/06/00 - EG - Added asserts for missing texture files
+       01/06/00 - EG - Added ReloadTexture (support for texture library),
                           Fixed persistence of material names in a texture library
-      <li>28/05/00 - EG - TGLColor now has NotifyChange support for TGLBaseSceneObject
-      <li>23/04/00 - EG - Fixed bugs with TGLPicFileImage & TGLPersistentImage,
+       28/05/00 - EG - TGLColor now has NotifyChange support for TGLBaseSceneObject
+       23/04/00 - EG - Fixed bugs with TGLPicFileImage & TGLPersistentImage,
                           Added tiaOpaque
-      <li>17/04/00 - EG - Added Assign to DummyCube and Sprite
-      <li>16/04/00 - EG - Added TGLPicFileImage.Assign
-      <li>26/03/00 - EG - Finally fixed nasty bug in TGLMaterial.Free
-      <li>22/03/00 - EG - Added BeginUpdate/EndUpdate to TGLPictureImage,
+       17/04/00 - EG - Added Assign to DummyCube and Sprite
+       16/04/00 - EG - Added TGLPicFileImage.Assign
+       26/03/00 - EG - Finally fixed nasty bug in TGLMaterial.Free
+       22/03/00 - EG - Added BeginUpdate/EndUpdate to TGLPictureImage,
           Made use of [Un]SetGLState in TGLMaterial
           (gain = 7-10% on T&L intensive rendering),
                           TGLTexBaseClass is no more (RIP)
-      <li>21/03/00 - EG - TGLMaterial props are now longer stored when it is
+       21/03/00 - EG - TGLMaterial props are now longer stored when it is
                           linked to a material library entry,
                           Added TGLPictureImage (split from TGLPersistentImage),
                           TGLPicFileImage has been updated and reactivated,
                           ColorManager is now autocreated and non longer force-linked.
-      <li>19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
-      <li>18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
+       19/03/00 - EG - Added SaveToXxxx & LoadFromXxxx to TGLMaterialLibrary
+       18/03/00 - EG - Added GetGLTextureImageClassesAsStrings,
                           Added FindGLTextureImageClassByFriendlyName,
                           FChanges states now ignored in TGLTexture.GetHandle,
                           Added SaveToFile/LoadFromFile to TextureImage
-      <li>17/03/00 - EG - Added tiaLuminance
-      <li>14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
+       17/03/00 - EG - Added tiaLuminance
+       14/03/00 - EG - Added RegisterGLTextureImageClass stuff,
                           Added ImageAlpha
-      <li>13/03/00 - EG - Changed TGLTextureImage image persistence again,
+       13/03/00 - EG - Changed TGLTextureImage image persistence again,
                           Added "Edit" method for texture image classes,
                           TMagFilter/TMinFilter -> TGLMagFilter/TGLMinFilter
-      <li>03/03/00 - EG - Removed TImagePath,
+       03/03/00 - EG - Removed TImagePath,
                           Started major rework of the whole TGLTextureImage stuff,
                           Fixed and optimized TGLTexture.PrepareImage
-      <li>12/02/00 - EG - Added Material Library
-      <li>10/02/00 - EG - Fixed crash when texture is empty
-      <li>08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
+       12/02/00 - EG - Added Material Library
+       10/02/00 - EG - Fixed crash when texture is empty
+       08/02/00 - EG - Added AsWinColor & DeclareCurrentAsDefault to TGLColor,
                           fixed notification on material property setXxx methods,
                           Objects now begin with 'TGL'
-      <li>07/02/00 - EG - "Update"s renamed to "NotifyChange"s
-      <li>06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
+       07/02/00 - EG - "Update"s renamed to "NotifyChange"s
+       06/02/00 - EG - RoundUpToPowerOf2, RoundDownToPowerOf2 and
                           IsPowerOf2 moved to GLMisc, added TGLPersistentImage.Assign,
                           fixed TGLMaterial.Assign,
                           disable inheritance stuff in TGLFaceProperties.Apply (needs fixing),
                           Diffuse & ambient color now default to openGL values
-      <li>05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
+       05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
                           TGLColor.Update, ConvertWinColor, TPicImage,
           TGLMaterial.Apply
-   </ul></font>
+    
 }
 unit GLTexture;
 
@@ -274,7 +274,7 @@ type
   // Specifies the depth comparison function.
   TGLDepthCompareFunc = TDepthFunction;
 
-  {: Texture format for OpenGL (rendering) use.<p>
+  {Texture format for OpenGL (rendering) use. 
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
   specify a generic format to reduce OpenGL texture memory use:<ul>}
   TGLTextureFormat = (
@@ -311,17 +311,17 @@ type
   TGLTextureChange = (tcImage, tcParams);
   TGLTextureChanges = set of TGLTextureChange;
 
-  {: Defines how and if Alpha channel is defined for a texture image.<ul>
-   <li>tiaDefault : uses the alpha channel in the image if any
-   <li>tiaAlphaFromIntensity : the alpha channel value is deduced from other
+  {Defines how and if Alpha channel is defined for a texture image.<ul>
+    tiaDefault : uses the alpha channel in the image if any
+    tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
-   <li>tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
+    tiaSuperBlackTransparent : pixels with a RGB color of (0, 0, 0) are
     completely transparent, others are completely opaque
-   <li>tiaLuminance : the luminance value is calculated for each pixel
+    tiaLuminance : the luminance value is calculated for each pixel
     and used for RGB and Alpha values
-   <li>tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
-       <li>tiaOpaque : alpha channel is uniformously set to 1.0
-       <li>tiaTopLeftPointColorTransparent : points of the same color as the
+    tiaLuminanceSqrt : same as tiaLuminance but with an Sqrt(Luminance)
+        tiaOpaque : alpha channel is uniformously set to 1.0
+        tiaTopLeftPointColorTransparent : points of the same color as the
           top left point of the bitmap are transparent, others are opaque.
        </ul>
     }
@@ -341,7 +341,7 @@ type
 
   // TGLTextureImage
   //
-  {: Base class for texture image data.<p>
+  {Base class for texture image data. 
    Basicly, subclasses are to be considered as different ways of getting
    a HBitmap (interfacing the actual source).<br>
    SubClasses should be registered using RegisterGLTextureImageClass to allow
@@ -370,47 +370,47 @@ type
     property OwnerTexture: TGLTexture read FOwnerTexture write FOwnerTexture;
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Save textureImage to file.<p>
+    {Save textureImage to file. 
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
     procedure SaveToFile(const fileName: string); dynamic;
-    {: Load textureImage from a file.<p>
+    {Load textureImage from a file. 
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture.<br>
              Subclasses should invoke inherited which will take care of the
              "OnTextureNeeded" stuff. }
     procedure LoadFromFile(const fileName: string); dynamic;
-    {: Returns a user-friendly denomination for the class.<p>
+    {Returns a user-friendly denomination for the class. 
      This denomination is used for picking a texture image class
      in the IDE expert. }
     class function FriendlyName: string; virtual;
-    {: Returns a user-friendly description for the class.<p>
+    {Returns a user-friendly description for the class. 
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
      takes its value from FriendlyName. }
     class function FriendlyDescription: string; virtual;
 
-    {: Request reload/refresh of data upon next use. }
+    {Request reload/refresh of data upon next use. }
     procedure Invalidate; dynamic;
 
-    {: Returns image's bitmap handle.<p>
+    {Returns image's bitmap handle. 
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
     function GetBitmap32: TGLImage; virtual;
-    {: Request for unloading bitmapData, to free some memory.<p>
+    {Request for unloading bitmapData, to free some memory. 
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap.<br>
      Subclasses may ignore this call if the HBitmap was obtained at
      no particular memory cost. }
     procedure ReleaseBitmap32; virtual;
-    //{: AsBitmap : Returns the TextureImage as a TBitmap }
+    //{AsBitmap : Returns the TextureImage as a TBitmap }
     function AsBitmap: TGLBitmap;
     procedure AssignToBitmap(aBitmap: TGLBitmap);
 
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
     property Depth: Integer read GetDepth;
-    {: Native opengl texture target.<p> }
+    {Native opengl texture target.  }
     property NativeTextureTarget: TGLTextureTarget read GetTextureTarget;
     property ResourceName: string read GetResourceName;
   end;
@@ -419,7 +419,7 @@ type
 
   // TGLBlankImage
   //
-  {: A texture image with no specified content, only a size.<p>
+  {A texture image with no specified content, only a size. 
        This texture image type is of use if the context of your texture is
        calculated at run-time (with a TGLMemoryViewer for instance). }
   TGLBlankImage = class(TGLTextureImage)
@@ -435,11 +435,11 @@ type
     fBitmap: TGLImage;
 
     fWidth, fHeight, fDepth: Integer;
-    {: Store a icolor format, because fBitmap is not always defined}
+    {Store a icolor format, because fBitmap is not always defined}
     fColorFormat: GLenum;
-    {: Blank Cube Map }
+    {Blank Cube Map }
     fCubeMap: Boolean;
-    {: Flag to interparate depth as layer }
+    {Flag to interparate depth as layer }
     fArray: Boolean;
 
     function GetWidth: Integer; override;
@@ -463,7 +463,7 @@ type
 
   published
     { Published Declarations }
-    {: Width, heigth and depth of the blank image (for memory allocation). }
+    {Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
     property Depth: Integer read GetDepth write SetDepth default 0;
@@ -474,7 +474,7 @@ type
 
   // TGLPictureImage
   //
-  {: Base class for image data classes internally based on a TPicture. }
+  {Base class for image data classes internally based on a TPicture. }
   TGLPictureImage = class(TGLTextureImage)
   private
     { Private Declarations }
@@ -500,25 +500,25 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    {Use this function if you are going to modify the Picture directly. 
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
-    {: Ends a direct picture modification session.<p>
+    {Ends a direct picture modification session. 
        Follows a BeginUpdate. }
     procedure EndUpdate;
     function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Holds the image content. }
+    {Holds the image content. }
     property Picture: TGLPicture read GetPicture write SetPicture;
   end;
 
   // TGLPersistentImage
   //
-  {: Stores any image compatible with Delphi's TPicture mechanism.<p>
+  {Stores any image compatible with Delphi's TPicture mechanism. 
    The picture's data is actually stored into the DFM, the original
    picture name or path is not remembered. It is similar in behaviour
-   to Delphi's TImage.<p>
+   to Delphi's TImage. 
    Note that if original image is for instance JPEG format, only the JPEG
    data will be stored in the DFM (compact) }
   TGLPersistentImage = class(TGLPictureImage)
@@ -541,7 +541,7 @@ type
 
   // TGLPicFileImage
   //
-  {: Uses a picture whose data is found in a file (only filename is stored).<p>
+  {Uses a picture whose data is found in a file (only filename is stored). 
        The image is unloaded after upload to OpenGL. }
   TGLPicFileImage = class(TGLPictureImage)
   private
@@ -565,7 +565,7 @@ type
 
     //: Only picture file name is saved
     procedure SaveToFile(const fileName: string); override;
-    {: Load picture file name or use fileName as picture filename.<p>
+    {Load picture file name or use fileName as picture filename. 
        The autodetection is based on the filelength and presence of zeros. }
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;
@@ -576,7 +576,7 @@ type
     procedure Invalidate; override;
 
   published
-    {: Filename of the picture to use. }
+    {Filename of the picture to use. }
     property PictureFileName: string read FPictureFileName write
       SetPictureFileName;
   end;
@@ -588,7 +588,7 @@ type
 
   // TGLCubeMapImage
   //
-  {: A texture image used for specifying and stroing a cube map.<p>
+  {A texture image used for specifying and stroing a cube map. 
        Not unlike TGLPictureImage, but storing 6 of them instead of just one.<br>
        Saving & loading as a whole currently not supported. }
   TGLCubeMapImage = class(TGLTextureImage)
@@ -618,7 +618,7 @@ type
     function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    {Use this function if you are going to modify the Picture directly. 
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -629,7 +629,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
 
-    {: Indexed access to the cube map's sub pictures. }
+    {Indexed access to the cube map's sub pictures. }
     property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write
     SetPicture;
 
@@ -651,9 +651,9 @@ type
 
   // TGLTexture
   //
-    {: Defines basic texturing properties.<p>
+    {Defines basic texturing properties. 
        You can control texture wrapping, smoothing/filtering and of course define
-       the texture map (note that texturing is disabled by default).<p>
+       the texture map (note that texturing is disabled by default). 
        A built-in mechanism (through ImageAlpha) allows auto-generation of an
        Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
   TGLTexture = class(TGLUpdateAbleObject)
@@ -764,12 +764,12 @@ type
     procedure UnApplyMappingMode;
     procedure Apply(var rci: TRenderContextInfo);
     procedure UnApply(var rci: TRenderContextInfo);
-    {: Applies to TEXTURE1 }
+    {Applies to TEXTURE1 }
     procedure ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix: PMatrix
       = nil);
     procedure UnApplyAsTexture2(var rci: TRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
-    {: N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
+    {N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
     procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
       textureMatrix: PMatrix = nil);
     procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
@@ -785,40 +785,40 @@ type
     procedure SetImageClassName(const val: string);
     function GetImageClassName: string;
 
-    {: Returns the OpenGL memory used by the texture.<p>
+    {Returns the OpenGL memory used by the texture. 
       The compressed size is returned if, and only if texture compression
       if active and possible, and the texture has been allocated (Handle
       is defined), otherwise the estimated size (from TextureFormat
       specification) is returned. }
     function TextureImageRequiredMemory: Integer;
-    {: Allocates the texture handle if not already allocated.<p>
+    {Allocates the texture handle if not already allocated. 
       The texture is binded and parameters are setup, but no image data
       is initialized by this call - for expert use only. }
     function AllocateHandle: TGLuint;
     function IsHandleAllocated: Boolean;
-    {: Returns OpenGL texture format corresponding to current options. }
+    {Returns OpenGL texture format corresponding to current options. }
     function OpenGLTextureFormat: Integer;
-    {: Returns if of float data type}
+    {Returns if of float data type}
     function IsFloatType: Boolean;
-    {: Is the texture enabled?.<p>
+    {Is the texture enabled?. 
       Always equals to 'not Disabled'. }
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    {: Handle to the OpenGL texture object.<p>
+    {Handle to the OpenGL texture object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: TGLuint read GetHandle;
     property TextureHandle: TGLTextureHandle read FTextureHandle;
 
-    {: Actual width, height and depth used for last texture
+    {Actual width, height and depth used for last texture
       specification binding. }
     property TexWidth: Integer read FTexWidth;
     property TexHeight: Integer read FTexHeight;
     property TexDepth: Integer read FTexDepth;
-    {: Give texture rendering context }
+    {Give texture rendering context }
   published
     { Published Declarations }
 
-    {: Image ClassName for enabling True polymorphism.<p>
+    {Image ClassName for enabling True polymorphism. 
     This is ugly, but since the default streaming mechanism does a
     really bad job at storing	polymorphic owned-object properties,
     and neither TFiler nor TPicture allow proper use of the built-in
@@ -826,41 +826,41 @@ type
     mechanism. }
     property ImageClassName: string read GetImageClassName write
       SetImageClassName stored StoreImageClassName;
-    {: Image data for the texture.<p> }
+    {Image data for the texture.  }
     property Image: TGLTextureImage read FImage write SetImage;
 
-    {: Automatic Image Alpha setting.<p>
+    {Automatic Image Alpha setting. 
     Allows to control how and if the image's Alpha channel (transparency)
     is computed. }
     property ImageAlpha: TGLTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {: Texture brightness correction.<p>
+    {Texture brightness correction. 
     This correction is applied upon loading a TGLTextureImage, it's a
     simple saturating scaling applied to the RGB components of
     the 32 bits image, before it is passed to OpenGL, and before
     gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
-    {: Texture gamma correction.<p>
+    {Texture gamma correction. 
     The gamma correction is applied upon loading a TGLTextureImage,
     applied to the RGB components of the 32 bits image, before it is
     passed to OpenGL, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
 
-    {: Texture magnification filter. }
+    {Texture magnification filter. }
     property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default
       maLinear;
-    {: Texture minification filter. }
+    {Texture minification filter. }
     property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default
       miLinearMipMapLinear;
-    {: Texture application mode. }
+    {Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Wrapping mode for the texture. }
+    {Wrapping mode for the texture. }
     property TextureWrap: TGLTextureWrap read FTextureWrap write SetTextureWrap
       default twBoth;
-    {: Wrapping mode for the texture when TextureWrap=twSeparate. }
+    {Wrapping mode for the texture when TextureWrap=twSeparate. }
     property TextureWrapS: TGLSeparateTextureWrap read FTextureWrapS write
       SetTextureWrapS default twRepeat;
     property TextureWrapT: TGLSeparateTextureWrap read FTextureWrapT write
@@ -868,30 +868,30 @@ type
     property TextureWrapR: TGLSeparateTextureWrap read FTextureWrapR write
       SetTextureWrapR default twRepeat;
 
-    {: Texture format for use by the renderer.<p>
+    {Texture format for use by the renderer. 
     See TGLTextureFormat for details. }
     property TextureFormat: TGLTextureFormat read GetTextureFormat write
       SetTextureFormat default tfDefault;
     property TextureFormatEx: TGLInternalFormat read FTextureFormat write
       SetTextureFormatEx stored StoreTextureFormatEx;
 
-    {: Texture compression control.<p>
+    {Texture compression control. 
     If True the compressed TextureFormat variant (the OpenGL ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TGLTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {: Specifies texture filtering quality.<p>
-    You can choose between bilinear and trilinear filetring (anisotropic).<p>
+    {Specifies texture filtering quality. 
+    You can choose between bilinear and trilinear filetring (anisotropic). 
     The OpenGL ICD must support GL_EXT_texture_filter_anisotropic or
     this property is ignored. }
     property FilteringQuality: TGLTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfIsotropic;
 
-    {: Texture coordinates mapping mode.<p>
+    {Texture coordinates mapping mode. 
     This property controls automatic texture coordinates generation. }
     property MappingMode: TGLTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {: Texture mapping coordinates mode for S, T, R and Q axis.<p>
+    {Texture mapping coordinates mode for S, T, R and Q axis. 
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TGLCoordinates4 read GetMappingSCoordinates
@@ -903,14 +903,14 @@ type
     property MappingQCoordinates: TGLCoordinates4 read GetMappingQCoordinates
       write SetMappingQCoordinates stored StoreMappingQCoordinates;
 
-    {: Texture Environment color. }
+    {Texture Environment color. }
     property EnvColor: TGLColor read FEnvColor write SetEnvColor;
-    {: Texture Border color. }
+    {Texture Border color. }
     property BorderColor: TGLColor read FBorderColor write SetBorderColor;
-    {: If true, the texture is disabled (not used). }
+    {If true, the texture is disabled (not used). }
     property Disabled: Boolean read FDisabled write SetDisabled default True;
 
-    {: Normal Map scaling.<p>
+    {Normal Map scaling. 
     Only applies when TextureFormat is tfNormalMap, this property defines
     the scaling that is applied during normal map generation (ie. controls
     the intensity of the bumps). }
@@ -924,7 +924,7 @@ type
     property DepthTextureMode: TGLDepthTextureMode read fDepthTextureMode write
       SetDepthTextureMode default dtmLuminance;
 
-    {: Disable image release after transfering it to VGA. }
+    {Disable image release after transfering it to VGA. }
     property KeepImageAfterTransfer: Boolean read FKeepImageAfterTransfer
       write FKeepImageAfterTransfer default False;
   end;
@@ -1020,7 +1020,7 @@ function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
   TGLTextureImageClass;
 //: Defines a TStrings with the list of registered TGLTextureImageClass.
 procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
-{: Creates a TStrings with the list of registered TGLTextureImageClass.<p>
+{Creates a TStrings with the list of registered TGLTextureImageClass. 
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings: TStrings;
 

@@ -1,13 +1,13 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAGraphics<p>
+{GLSCUDAGraphics 
 
-   <b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component 
+    History :  
+       05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component 
                            Added to TGLFeedBackMesh vertex attribute collection 
-      <li>01/04/10 - Yar - Creation
-   </ul></font><p>
+       01/04/10 - Yar - Creation
+     
 }
 
 unit GLSCUDAGraphics;
@@ -18,6 +18,7 @@ interface
 
 uses
   System.Classes,
+  System.SysUtils,
   //GLS
   GLCrossPlatform,
   GLSCUDAApi,
@@ -137,18 +138,18 @@ type
     { Number of indexes in element buffer. Zero to disable. }
     property ElementNumber: Integer read FElementNumber
       write SetElementNumber default 0;
-    {: Used for all attributes and elements if Launching = fblCommon
+    {Used for all attributes and elements if Launching = fblCommon
        otherwise used own attribute function and this for elements. }
     property CommonKernelFunction: TCUDAFunction read FCommonFunc
       write SetCommonFunc;
-    {: Define mode of manufacturer launching:
+    {Define mode of manufacturer launching:
       fblCommon - single launch for all,
       flOnePerAtttribute - one launch per attribute and elements }
     property Launching: TFeedBackMeshLaunching read FLaunching
       write FLaunching default fblCommon;
-    {: Defines if the object uses blending for object
+    {Defines if the object uses blending for object
        sorting purposes. }
-    {: Defines if the object uses blending for object
+    {Defines if the object uses blending for object
        sorting purposes. }
     property Blend: Boolean read FBlend write FBlend default False;
   public
@@ -265,7 +266,6 @@ type
 implementation
 
 uses
-  SysUtils,
   GLStrings,
   GLTextureFormat
   {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};

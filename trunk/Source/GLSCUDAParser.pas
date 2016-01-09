@@ -1,16 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCUDAParser <p>
+{
+   Helper unit for parsing CU modules and get information about. 
+   kernel's functions, textures, shared and constants memory. 
 
-   Helper unit for parsing CU modules and get information about.<p>
-   kernel's functions, textures, shared and constants memory.<p>
+    History :  
+       13/04/11 - Yar - Added Ptx parsing to get real function's KernelName
+       17/02/11 - Yar - Now parse module instead of compiler product
+       19/03/10 - Yar - Creation
 
-   <b>History : </b><font size=-1><ul>
-      <li>13/04/11 - Yar - Added Ptx parsing to get real function's KernelName
-      <li>17/02/11 - Yar - Now parse module instead of compiler product
-      <li>19/03/10 - Yar - Creation
-   </ul></font><p>
 }
 unit GLSCUDAParser;
 
@@ -18,6 +17,7 @@ interface
 
 uses
   System.Classes,
+  System.SysUtils,
   GLSCUDARunTime;
 
 type
@@ -138,7 +138,7 @@ type
 implementation
 
 uses
-  GLStrings, SysUtils;
+  GLStrings;
 
 const
   WordDelimiters: set of AnsiChar = [#0..#255] - ['a'..'z','A'..'Z','1'..'9','0','_'];

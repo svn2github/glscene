@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFile3DSSceneObjects<p>
+{GLFile3DSSceneObjects 
 
-  3ds-specific scene objects.<p>
+  3ds-specific scene objects. 
 
-  <b>History :</b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
-      <li>06/04/08 - DaStr - Initial version (by Lexer)
-  </ul></font>
+   History : 
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       17/05/08 - DaStr - Added vGLFile3DSSceneObjects_RenderCameraAndLights
+       06/04/08 - DaStr - Initial version (by Lexer)
+   
 }
 unit GLFile3DSSceneObjects;
 

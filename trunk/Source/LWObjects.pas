@@ -39,7 +39,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.Math,
+  System.Classes, System.SysUtils, System.Math,
   GLVectorGeometry;
 
 type
@@ -296,7 +296,6 @@ type
     pols: TU2DynArray;
   end;
   TLWPntsInfoDynArray = array of TLWPntsInfo;
-
 
   TLWPolsDynArray = TU2DynArray;
 
@@ -628,12 +627,15 @@ type
   procedure FindClipByClipIndex(AChunk: TLWChunk; AIndex: Pointer; var Found: boolean);
 
   function GetContentDir: TLWContentDir;
-
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 implementation
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 uses
-  SysUtils, GLApplicationFileIO;
+  GLApplicationFileIO;
 
 type
   PWord = ^Word;

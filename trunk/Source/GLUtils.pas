@@ -1,32 +1,32 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLUtils<p>
+{GLUtils 
 
-   Miscellaneous support utilities & classes.<p>
+   Miscellaneous support utilities & classes. 
 
- <b>History : </b><font size=-1><ul>
-      <li>26/02/15 - PW - Added SaveStringToFile and LoadStringFromFile
-      <li>02/01/13 - Yar - Added SetGLSceneMediaDir
-      <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>27/05/09 - DanB - Re-added TryStrToFloat, since it ignores user's locale.
-      <li>24/03/09 - DanB - Removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
+  History :  
+       26/02/15 - PW - Added SaveStringToFile and LoadStringFromFile
+       02/01/13 - Yar - Added SetGLSceneMediaDir
+       07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
+       04/03/10 - DanB - Now uses CharInSet
+       27/05/09 - DanB - Re-added TryStrToFloat, since it ignores user's locale.
+       24/03/09 - DanB - Removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
                             changed StrToFloatDef to accept only 1 param + now overloaded
-      <li>24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
+       24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
                             they work on all platforms (with FPC)
-      <li>16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
-      <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
-      <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
+       16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
+       16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
+       24/03/08 - DaStr - Removed OpenGL1x dependancy
                              Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
-      <li>25/03/07 - DaStr - Replaced StrUtils with GLCrossPlatform
-      <li>23/03/07 - DaStr - Removed compiler warnings caused by
+       25/03/07 - DaStr - Replaced StrUtils with GLCrossPlatform
+       23/03/07 - DaStr - Removed compiler warnings caused by
                                SaveComponentToFile and LoadComponentFromFile
-      <li>22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
-      <li>07/02/07 - DaStr - Added StringToColorAdvanced() functions
-      <li>05/09/03 - EG - Creation from GLMisc split
-   </ul></font>
+       22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
+       07/02/07 - DaStr - Added StringToColorAdvanced() functions
+       05/09/03 - EG - Creation from GLMisc split
+    
 }
 unit GLUtils;
 
@@ -55,7 +55,7 @@ function RoundUpToPowerOf2(value: Integer): Integer;
 function RoundDownToPowerOf2(value: Integer): Integer;
 //: Returns True if value is a true power of two
 function IsPowerOf2(value: Integer): Boolean;
-{: Read a CRLF terminated string from a stream.<p>
+{Read a CRLF terminated string from a stream. 
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream: TStream): AnsiString;
 //: Write the string and a CRLF in the stream
@@ -72,48 +72,48 @@ function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Bool
 //: Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
-{: Parses the next integer in the string.<p>
+{Parses the next integer in the string. 
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p: PChar): Integer;
-{: Parses the next integer in the string.<p>
+{Parses the next integer in the string. 
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
 
-{: Saves ansistring "data" to "filename". }
+{Saves ansistring "data" to "filename". }
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
-{: Returns the ansistring content of "filename". }
+{Returns the ansistring content of "filename". }
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 
-{: Saves string "data" to "filename". }
+{Saves string "data" to "filename". }
 procedure SaveStringToFile(const fileName: string; const data: String);
-{: Returns the string content of "filename". }
+{Returns the string content of "filename". }
 function LoadStringFromFile(const fileName: string): String;
 
-{: Saves component to a file. }
+{Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
-{: Loads component from a file. }
+{Loads component from a file. }
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 
-{: Returns the size of "filename".<p>
+{Returns the size of "filename". 
    Returns 0 (zero) is file does not exists. }
 function SizeOfFile(const fileName: string): Int64;
 
-{: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
+{Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array: PSqrt255Array;
 
-{: Pops up a simple dialog with msg and an Ok button. }
+{Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg: string);
-{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+{Pops up a simple question dialog with msg and yes/no buttons. 
    Returns True if answer was "yes". }
 function QuestionDlg(const msg: string): Boolean;
-{: Posp a simple dialog with a string input. }
+{Posp a simple dialog with a string input. }
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 
-{: Pops up a simple save picture dialog. }
+{Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{: Pops up a simple open picture dialog. }
+{Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 
 procedure SetGLSceneMediaDir();

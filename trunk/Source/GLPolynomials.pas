@@ -1,35 +1,35 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPolynomials.<p>
+{GLPolynomials. 
 
    ********* IN PROGRESS - LIMITED PRECISION **********
 
-   Utility functions for manipulationg and solving polynomials.<p>
+   Utility functions for manipulationg and solving polynomials. 
 
-   Direct solving is supported for polynoms up to the 4th degree.<p>
+   Direct solving is supported for polynoms up to the 4th degree. 
 
    Polynom solving code based on Jochen Schwarze (schwarze@isa.de) solver
-   published in Graphics Gem (1990).<p>
+   published in Graphics Gem (1990). 
 
    Adapted to pascal by Eric Grange (egrange@glscene.org), if you find
    errors, they are probably mine. Note that contrary to the original code,
    the functions accept 'zero' values for any of the parameters.<br>
    I also made some changes for certain limit cases that (seemingly) weren't
-   properly handled, these are marked by comments in the code.<p>
+   properly handled, these are marked by comments in the code. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed Polynomials to GLPolynomials
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+	 History :  
+       10/12/14 - PW - Renamed Polynomials to GLPolynomials
+       30/03/07 - DaStr - Added $I GLScene.inc
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>21/07/02 - EG - Added MinPositiveCoef
-      <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
+       21/07/02 - EG - Added MinPositiveCoef
+       14/01/02 - EG - Switched to Jochen Schwarze's solver,
                           droped complex stuff,
                           added utility funcs 
-      <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
-	   <li>21/08/01 - EG - Creation
-	</ul></font>
+       22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
+	    21/08/01 - EG - Creation
+	 
 
 }
 unit GLPolynomials;
@@ -44,31 +44,31 @@ uses
 type
    TDoubleArray = array of Double;
 
-{: Computes polynom's value for given x. }
+{Computes polynom's value for given x. }
 function EvalPolynom(const poly : TDoubleArray; const x : Double) : Double;
-{: Calculates the polynom's derivative. }
+{Calculates the polynom's derivative. }
 function DerivatedPolynom(const poly : TDoubleArray) : TDoubleArray;
-{: Finds a root between min and max with a precision of epsilon.<p>
+{Finds a root between min and max with a precision of epsilon. 
    The evaluation of min/max must be of opposit sign } 
 function FindRoot(const poly : TDoubleArray; min, max, epsilon : Double) : Double;
-{: Finds the minimum positive coef in the array in aMin.<p>
+{Finds the minimum positive coef in the array in aMin. 
    Returns true if such an item was found. }
 function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolean;
 
-{: Calculates the cube root of its parameter. }
+{Calculates the cube root of its parameter. }
 function cbrt(const x : Double) : Double;
 
-{: Computes the real roots of a real polynomial of the 2nd degree.<p>
+{Computes the real roots of a real polynomial of the 2nd degree. 
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + A(2)*Z**2 }
 function SolveQuadric(const c : PDoubleArray) : TDoubleArray;
 
-{: Computes the real roots of a real polynomial of the 3rd degree.<p>
+{Computes the real roots of a real polynomial of the 3rd degree. 
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + A(2)*Z**2 + A(3)*Z**3 }
 function SolveCubic(const c : PDoubleArray) : TDoubleArray;
 
-{: Computes the real roots of a real polynomial of the 4th degree.<p>
+{Computes the real roots of a real polynomial of the 4th degree. 
    The polynomial is of the form:<br>
    A(0) + A(1)*Z + ... + A(4)*Z**4 }
 function SolveQuartic(const c : PDoubleArray) : TDoubleArray;

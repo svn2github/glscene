@@ -1,21 +1,21 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: DXTC<p>
+{DXTC 
 
    DXTC (also S3TC) decoding.<br>
-   Adapted from DevIL image library (http://openil.sourceforge.net)<p>
+   Adapted from DevIL image library (http://openil.sourceforge.net) 
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>05/03/10 - Yar - Added float types in GLEnumToDDSHeader
-      <li>23/01/10 - Yar - Added more support DX9 DDS color formats
+    History :  
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       05/03/10 - Yar - Added float types in GLEnumToDDSHeader
+       23/01/10 - Yar - Added more support DX9 DDS color formats
                            and DX11 DXGI constants to future
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
-      <li>01/09/04 - SG - Creation
-   </ul></font>
+       31/03/07 - DaStr - Added $I GLScene.inc
+       03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
+       01/09/04 - SG - Creation
+    
 }
 unit DXTC;
 
@@ -78,7 +78,7 @@ type
       dwFlags,
       dwHeight,
       dwWidth,
-      dwPitchOrLinearSize, {: The number of bytes per scan line in an
+      dwPitchOrLinearSize, {The number of bytes per scan line in an
                               uncompressed texture; the total number of bytes
                               in the top level texture for a compressed texture.}
       dwDepth,

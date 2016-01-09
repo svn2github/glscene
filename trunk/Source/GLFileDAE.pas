@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileDAE<p>
+{GLFileDAE 
 
-	COLLADA DAE file format implementation.<p>
+	COLLADA DAE file format implementation. 
 
-	<b>History :</b><font size=-1><ul>
-      <li>17/01/14 - PW - Bugfixed for XE5
-      <li>16/01/14 - PW - Added $I GLScene.inc
-      <li>15/01/14 - PW - Creation
-	</ul></font>
+	 History : 
+       17/01/14 - PW - Bugfixed for XE5
+       16/01/14 - PW - Added $I GLScene.inc
+       15/01/14 - PW - Creation
+	 
 }
 unit GLFileDAE;
 
@@ -24,10 +24,10 @@ uses
 type
    // TGLDAEVectorFile
    //
-   {: The DAE vector file (COLLADA actor file).<p>
+   {The DAE vector file (COLLADA actor file). 
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap).<p>}
+      (the whole mesh uses a single texture bitmap). }
    TGLDAEVectorFile = class(TVectorFile)
       public
          { Public Declarations }

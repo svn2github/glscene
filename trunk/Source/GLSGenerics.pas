@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSGenerics<p>
+{ : GLSGenerics 
 
-  GLScene cross IDE generic classes collection.<p>
+  GLScene cross IDE generic classes collection. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: redeclared FOnChange: TNotifyEvent;
-  <li>06/10/10 - Yar - Creation
-  </ul></font>
+   History :  
+   10/11/12 - PW - Added CPP compatibility: redeclared FOnChange: TNotifyEvent;
+   06/10/10 - Yar - Creation
+   
 }
 
 unit GLSGenerics;

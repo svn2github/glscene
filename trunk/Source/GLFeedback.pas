@@ -1,31 +1,31 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFeedback<p>
+{GLFeedback 
 
-   A scene object encapsulating the OpenGL feedback buffer.<p>
+   A scene object encapsulating the OpenGL feedback buffer. 
 
    This object, when Active, will render it's children using
    the GL_FEEDBACK render mode. This will render the children
-   into the feedback Buffer rather than into the frame buffer.<p>
+   into the feedback Buffer rather than into the frame buffer. 
 
    Mesh data can be extracted from the buffer using the
    BuildMeshFromBuffer procedure. For custom parsing of the
    buffer use the Buffer SingleList. The Buffered property
-   will indicate if there is valid data in the buffer.<p>
+   will indicate if there is valid data in the buffer. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+    History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/07/04 - SG - Creation.
-   </ul></font>
+       23/07/04 - SG - Creation.
+    
 
 }
 unit GLFeedback;
@@ -46,7 +46,7 @@ type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
 
   // TGLFeedback
-  {: An object encapsulating the OpenGL feedback rendering mode. }
+  {An object encapsulating the OpenGL feedback rendering mode. }
   TGLFeedback = class(TGLBaseSceneObject)
   private
     { Private Declarations }
@@ -70,7 +70,7 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    {: Parse the the feedback buffer for polygon data and build
+    {Parse the the feedback buffer for polygon data and build
        a mesh into the assigned lists. }
     procedure BuildMeshFromBuffer(
       Vertices: TAffineVectorList = nil;
@@ -85,7 +85,7 @@ type
     //: The feedback buffer
     property Buffer: TSingleList read FBuffer;
 
-    {: Vertex positions in the buffer needs to be scaled by
+    {Vertex positions in the buffer needs to be scaled by
        CorrectionScaling to get correct coordinates. }
     property CorrectionScaling: Single read FCorrectionScaling;
 

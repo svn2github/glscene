@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLPlugInManager<p>
+{ : GLPlugInManager 
 
-  An old PlugIn Manager unit. Don't know if if ever wa used...<p>
+  An old PlugIn Manager unit. Don't know if if ever wa used... 
 
-  <b>Historique : </b><font size=-1><ul>
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 -  EG   - Initial version
-  </ul></font>
+   Historique :  
+   31/03/07 - DaStr - Added $I GLScene.inc
+   28/07/01 -  EG   - Initial version
+   
 }
 unit GLPlugInManager;
 

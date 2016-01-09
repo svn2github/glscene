@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : FRFaceEditor<p>
+{ : FRFaceEditor 
 
-  Editor frame for a TGLFaceProperties.<p>
+  Editor frame for a TGLFaceProperties. 
 
-  <b>Historique : </b><font size=-1><ul>
-  <li>05/09/08 - DanB - Removed Kylix support
-  <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-  <li>19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
+   Historique :  
+   05/09/08 - DanB - Removed Kylix support
+   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+   19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and
   PoligonMode are now updated when FaceProperties are assigned
-  <li>03/07/04 - LR  - Make change for Linux
-  <li>06/02/00 - Egg - Creation
-  </ul></font>
+   03/07/04 - LR  - Make change for Linux
+   06/02/00 - Egg - Creation
+   
 }
 unit FRFaceEditor;
 

@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRColorEditor<p>
+{FRColorEditor 
 
-   RGB+Alpha color editor.<p>
+   RGB+Alpha color editor. 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>24/04/09 - DanB - removed some ifdef MSWINDOWS, which were actually for Kylix
-      <li>05/09/08 - DanB - Removed Kylix support
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>03/07/04 - LR - Make change for Linux
-      <li>06/02/00 - Egg - Creation
-   </ul></font>
+    Historique :  
+       24/04/09 - DanB - removed some ifdef MSWINDOWS, which were actually for Kylix
+       05/09/08 - DanB - Removed Kylix support
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       03/07/04 - LR - Make change for Linux
+       06/02/00 - Egg - Creation
+    
 }
 unit FRColorEditor;
 

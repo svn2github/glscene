@@ -1,39 +1,39 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLHUDObjects<p>
+{ : GLHUDObjects 
 
-  GLScene objects that get rendered in 2D coordinates<p>
+  GLScene objects that get rendered in 2D coordinates 
 
-  <b>History : </b><font size=-1><ul>
-  <li>27/01/12 - Yar - Added texture coordinates mirroring for HUDSprite (thanks Tamahome)
-  <li>15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   History :  
+   27/01/12 - Yar - Added texture coordinates mirroring for HUDSprite (thanks Tamahome)
+   15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
   Fixed light state changing
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>15/03/08 - DaStr - Bugfixed TGLAbsoluteHUDText.DoRender()
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   15/03/08 - DaStr - Bugfixed TGLAbsoluteHUDText.DoRender()
   (thanks Nicoara Adrian) (BugtrackerID = 1914823)
-  <li>18/09/07 - DaStr - Added TGLResolutionIndependantHUDText and
+   18/09/07 - DaStr - Added TGLResolutionIndependantHUDText and
   TGLAbsoluteHUDText to the list of registered classes
   Cleaned up "uses" section
-  <li>07/09/07 - DaStr - AlphaChannel is now applied to ActualPrimaryMaterial
+   07/09/07 - DaStr - AlphaChannel is now applied to ActualPrimaryMaterial
   Added TGLResolutionIndependantHUDText,
   TGLAbsoluteHUDText
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>23/02/07 - DaStr - Added default values to TGLHUDSprite.Width & Height
-  <li>15/02/07 - DaStr - Added default values to TGLHUDText.Alignment & Layout
-  <li>28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
-  <li>27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
-  <li>23/11/02 - EG - Added X/YTiles to HUDSprite
-  <li>12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
-  <li>20/12/01 - EG - PolygonMode properly adjusted for HUDText
-  <li>18/07/01 - EG - VisibilityCulling compatibility changes
-  <li>20/06/01 - EG - Default hud sprite size is now 16x16
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-  <li>15/01/01 - EG - Creation
-  </ul></font>
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   23/02/07 - DaStr - Added default values to TGLHUDSprite.Width & Height
+   15/02/07 - DaStr - Added default values to TGLHUDText.Alignment & Layout
+   28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
+   27/11/02 - EG - HUDSprite and HUDText now honour renderDPI
+   23/11/02 - EG - Added X/YTiles to HUDSprite
+   12/05/02 - EG - ModulateColor for HUDText (Nelson Chu)
+   20/12/01 - EG - PolygonMode properly adjusted for HUDText
+   18/07/01 - EG - VisibilityCulling compatibility changes
+   20/06/01 - EG - Default hud sprite size is now 16x16
+   21/02/01 - EG - Now XOpenGL based (multitexture)
+   15/01/01 - EG - Creation
+   
 }
 unit GLHUDObjects;
 
@@ -56,13 +56,13 @@ type
 
   // TGLHUDSprite
   //
-  { : A rectangular area, NOT perspective projected.<p>
+  { : A rectangular area, NOT perspective projected. 
     (x, y) coordinates map directly to the viewport (in pixels) and refer
     the center of the area.<br>
     The coordinate system is that of an equivalent TCanvas, ie. top-left
-    point is the origin (0, 0).<p>
-    The z component is ignored and Z-Buffer is disabled when rendering.<p>
-    <b>Using TGLHUDSprite in 2D only scenes :</b><br>
+    point is the origin (0, 0). 
+    The z component is ignored and Z-Buffer is disabled when rendering. 
+     Using TGLHUDSprite in 2D only scenes :</b><br>
     The most convenient way to use a TGLHUDSprite as a simple 2D sprite with
     blending capabilities (transparency or additive), is to set the texture
     mode to tmModulate, in FrontProperties, to use the Emission color to
@@ -70,7 +70,7 @@ type
     to control transparency (while setting the other RGB components to 0).<br>
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
-    alpha-blended blitting.<p>
+    alpha-blended blitting. 
     Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
     can't be used to duplicate an hud sprite. }
   TGLHUDSprite = class(TGLSprite)
@@ -102,7 +102,7 @@ type
 
   // TGLHUDText
   //
-  { : A 2D text displayed and positionned in 2D coordinates.<p>
+  { : A 2D text displayed and positionned in 2D coordinates. 
     The HUDText uses a character font defined and stored by a TGLBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
@@ -140,22 +140,22 @@ type
 
   published
     { Published Declarations }
-    { : Refers the bitmap font to use.<p>
+    { : Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render.<p>
+    { : Text to render. 
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
     { : Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    { : Controls the text alignment (horizontal).<p>
+    { : Controls the text alignment (horizontal). 
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    { : Controls the text layout (vertical).<p>
+    { : Controls the text layout (vertical). 
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
     { : Color modulation, can be used for fade in/out too. }

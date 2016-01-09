@@ -1,26 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBSP<p>
+{
+  Binary Space Partion mesh support for GLScene. 
 
-  Binary Space Partion mesh support for GLScene.<p>
+  The classes of this unit are designed to operate within a TGLBaseMesh. 
 
-  The classes of this unit are designed to operate within a TGLBaseMesh.<p>
-
-  <b>Historique : </b><font size=-1><ul>
-  <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
+   Historique :  
+   04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+   22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   31/03/07 - DaStr - Added $I GLScene.inc
+   14/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>07/03/03 - EG - T-junctions now properly supported and repaired
-  <li>05/03/03 - EG - Preliminary BSP splitting support
-  <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
+   07/03/03 - EG - T-junctions now properly supported and repaired
+   05/03/03 - EG - Preliminary BSP splitting support
+   31/01/03 - EG - Materials support, added CleanupUnusedNodes,
   MaterialCache support
-  <li>30/01/03 - EG - Creation
-  </ul></font>
+   30/01/03 - EG - Creation
+   
 }
 unit GLBSP;
 
@@ -29,8 +28,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorFileObjects, GLMaterial, GLCrossPlatform, GLVectorGeometry,
-  GLVectorLists, GLColor, GLRenderContextInfo;
+  System.Classes,
+  System.SysUtils,
+  GLVectorFileObjects, GLMaterial, GLCrossPlatform, GLVectorGeometry,
+  GLVectorLists, GLColor, GLRenderContextInfo, GLVectorTypes;
 
 type
 
@@ -84,7 +85,7 @@ type
 
   // TBSPMeshObject
   //
-  { : A BSP mesh object.<p>
+  { A BSP mesh object. 
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
@@ -105,7 +106,7 @@ type
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
 
-    { : Drops all unused nodes from the facegroups list.<p>
+    { : Drops all unused nodes from the facegroups list. 
       An unused node is a node that renders nothing and whose children
       render nothing. Indices are remapped in the process. }
     procedure CleanupUnusedNodes;
@@ -118,18 +119,18 @@ type
     { : Traverses the tree to the given point and returns the node index. }
     function FindNodeByPoint(aPoint: TVector): TFGBSPNode;
 
-    { : Rendering sort mode.<p>
+    { : Rendering sort mode. 
       This sort mode can currently *not* blend with the sort by materials
       flag, default mode is rsBackToFront.<br>
       Note that in rsNone mode, the hierarchical nature of the tree is
       still honoured (positive subnode, self, then negative subnode). }
     property RenderSort: TBSPRenderSort read FRenderSort write FRenderSort;
 
-    { : Cluster visibility.<p>
+    { : Cluster visibility. 
       A property for defining node cluster-cluster visibility potential. }
     property ClusterVisibility: TBSPClusterVisibility read FClusterVisibility;
 
-    { : Use cluster visibility.<p>
+    { : Use cluster visibility. 
       Toggles the use of the visibility set for culling clusters of nodes
       when rendering. }
     property UseClusterVisibility: Boolean read FUseClusterVisibility
@@ -138,7 +139,7 @@ type
 
   // TFGBSPNode
   //
-  { : A node in the BSP tree.<p>
+  { : A node in the BSP tree. 
     The description does not explicitly differentiates nodes and leafs,
     nodes are referred by their index. }
   TFGBSPNode = class(TFGVertexIndexList)
@@ -165,38 +166,38 @@ type
     procedure CollectFrontToBack(var bsprci: TBSPRenderContextInfo);
     procedure CollectBackToFront(var bsprci: TBSPRenderContextInfo);
 
-    { : Try to find a 'decent' split plane for the node.<p>
+    { : Try to find a 'decent' split plane for the node. 
       Use this function to build a BSP tree, on leafy nodes. The split
       plane is chosen among the polygon planes, the coefficient are used
       to determine what a 'good' split plane is by assigning a cost
       to splitted triangles (cut by the split plane) and tree imbalance. }
     function FindSplitPlane(triangleSplitCost: Single = 1;
       triangleImbalanceCost: Single = 0.5): THmgPlane;
-    { : Evaluates a split plane.<p>
+    { : Evaluates a split plane. 
       Used by FindSplitPlane. For splitted triangles, the extra spawned
       triangles required are accounted for in the nbXxxTriangles values. }
     procedure EvaluateSplitPlane(const splitPlane: THmgPlane;
       var nbTriangleSplit: Integer; var nbPositiveTriangles: Integer;
       var nbNegativeTriangles: Integer);
-    { : Splits a leafy node along the specified plane.<p>
+    { : Splits a leafy node along the specified plane. 
       Will trigger an exception if the node already has subnodes. Currently
       also changes the mode from strips/fan to list. }
     procedure PerformSplit(const splitPlane: THmgPlane;
       const maxTrianglesPerLeaf: Integer = MaxInt);
-    { : Goes through all triangle edges, looking for tjunctions.<p>
+    { : Goes through all triangle edges, looking for tjunctions. 
       The candidates are indices of points to lookup a tjunction vertices. }
     procedure FixTJunctions(const tJunctionsCandidates: TIntegerList);
 
-    { : BSP node split plane.<p>
+    { : BSP node split plane. 
       Divides space between positive and negative half-space, positive
       half-space being the one were the evaluation of an homogeneous
       vector against the plane is positive. }
     property splitPlane: THmgPlane read FSplitPlane write FSplitPlane;
-    { : Index of the positive sub-node index in the list.<p>
+    { : Index of the positive sub-node index in the list. 
       Zero if empty. }
     property PositiveSubNodeIndex: Integer read FPositiveSubNodeIndex
       write FPositiveSubNodeIndex;
-    { : Index of the negative sub-node index in the list.<p>
+    { : Index of the negative sub-node index in the list. 
       Zero if empty. }
     property NegativeSubNodeIndex: Integer read FNegativeSubNodeIndex
       write FNegativeSubNodeIndex;
@@ -213,8 +214,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils, GLVectorTypes;
 
 const
   cOwnTriangleEpsilon = 1E-5;

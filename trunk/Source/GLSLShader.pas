@@ -2,48 +2,48 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-     TGLSLShader is a wrapper for GLS shaders.<p>
+     TGLSLShader is a wrapper for GLS shaders. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>27/01/15 - NelC - Added TGLCustomGLSLShader.SetTex()
-      <li>09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>18/02/11 - Yar - Fixed transform feedback varyings activation
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
+	 History :  
+       27/01/15 - NelC - Added TGLCustomGLSLShader.SetTex()
+       09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       18/02/11 - Yar - Fixed transform feedback varyings activation
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
                            Added unsigned integer uniforms
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>02/04/10 - Yar -  Added GetActiveAttribs to TGLCustomGLSLShader
-      <li>04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
-      <li>26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
-      <li>24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
-      <li>24/07/09 - DaStr - Added support for TGLCustomShader.DebugMode
+       22/04/10 - Yar - Fixes after GLState revision
+       02/04/10 - Yar -  Added GetActiveAttribs to TGLCustomGLSLShader
+       04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
+       26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
+       24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
+       24/07/09 - DaStr - Added support for TGLCustomShader.DebugMode
                              Fixed spelling mistake in TGLShaderUnAplyEvent
                              TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)
                              Bugfixed TGLCustomGLSLShader.DoInitialize() - now
                               shader cleanes up correctly if failed to initialize
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
+       15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
                                                       (BugTracker ID = 1914782)
-      <li>25/12/07 - DaStr - Fix-up for previous update (BugtrackerID = 1772477)
-      <li>12/08/07 - LC -    TGLSLShaderParameter.SetAsCustomTexture now restores
+       25/12/07 - DaStr - Fix-up for previous update (BugtrackerID = 1772477)
+       12/08/07 - LC -    TGLSLShaderParameter.SetAsCustomTexture now restores
                               the active texture unit (BugtrackerID = 1772477)
-      <li>12/07/07 - DaStr - TGLSLInitializedShaderParameters removed because
+       12/07/07 - DaStr - TGLSLInitializedShaderParameters removed because
                               even if implemented, it could not give
                               a significant performance increase
-      <li>30/03/07 - fig -   Changed OnInitialize event to be fired after
+       30/03/07 - fig -   Changed OnInitialize event to be fired after
                               linking, but before validation. This can now be
                               used to set texture units for different sampler
                               types (1D/2D/3D) before validation, which fixes
                               a bug (or complies to strict validation) with ATI
                               drivers
-      <li>30/03/07 - DaStr - Bugfixed TGLCustomGLSLShader.DoUnApply
+       30/03/07 - DaStr - Bugfixed TGLCustomGLSLShader.DoUnApply
                               (Result was not initialized)
-      <li>20/03/07 - DaStr - TGLCustomGLSLShader now generates its own events
+       20/03/07 - DaStr - TGLCustomGLSLShader now generates its own events
                              Added TGLSLShaderParameter
                              Added TGLCustomGLSLShader.DoInitialPass
                              Added TGLCustomGLSLShader.Param[]
-      <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
+       21/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
 
@@ -152,7 +152,7 @@ type
   end;
 
 
-  {: Wrapper around a parameter of a GLSL program. }
+  {Wrapper around a parameter of a GLSL program. }
   TGLSLShaderParameter = class(TGLCustomShaderParameter)
   private
     { Private Declarations }

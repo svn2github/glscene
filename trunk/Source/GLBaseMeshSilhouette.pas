@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBaseMeshSilhouette<p>
+{ : GLBaseMeshSilhouette 
 
-  Silhouette classes for GLBaseMesh and FaceGroups.<p>
+  Silhouette classes for GLBaseMesh and FaceGroups. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>16/11/10 - Yar - Added mesh visibility checking in TGLBaseMeshConnectivity.SetGLBaseMesh (thanks to dalex65)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>25/03/07 - DaStr - Renamed parameters in some methods
+   History :  
+   16/11/10 - Yar - Added mesh visibility checking in TGLBaseMeshConnectivity.SetGLBaseMesh (thanks to dalex65)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   25/03/07 - DaStr - Renamed parameters in some methods
   (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-  <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+   23/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>09/02/04 - MF - Fixed bug where vertices weren't freed when owned
-  <li>24/06/03 - MF - Created file from parts of GLShilouette
-  </ul></font>
+   09/02/04 - MF - Fixed bug where vertices weren't freed when owned
+   24/06/03 - MF - Created file from parts of GLShilouette
+   
 }
 
 unit GLBaseMeshSilhouette;

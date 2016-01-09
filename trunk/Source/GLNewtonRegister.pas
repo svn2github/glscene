@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLNewtonRegister<p>
+{ : GLNewtonRegister 
 
-  Design time registration code for the Newton Manager.<p>
+  Design time registration code for the Newton Manager. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>04/01/11 - FP - Removed Joint
-  <li>15/07/10 - FP - Creation by Franck Papouin
-  </ul></font>
+   History :  
+   04/01/11 - FP - Removed Joint
+   15/07/10 - FP - Creation by Franck Papouin
+   
 }
 
 unit GLNewtonRegister;

@@ -1,11 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: LIBFREETYPE<p>
+{LIBFREETYPE 
 
-  <b>Historique : </b><font size=-1><ul>
-      <li>21/01/11 - Yar - Creation
-  </ul></font>
+   Historique :  
+       21/01/11 - Yar - Creation
+   
 }
 
 unit LIBFREETYPE;

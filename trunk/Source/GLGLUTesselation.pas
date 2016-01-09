@@ -1,24 +1,24 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGLUTesselation<p>
+{GLGLUTesselation 
 
     Code to generate triangle strips and fans for polygons.
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
-      <li>10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       06/06/10 - Yar - Fixed warnings
+       26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
+       10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
                             TGLFreeform, so can now use TGLActor with it too
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>08/09/03 - Jaj - Added single outline polygon support
+       29/05/08 - DaStr - Added $I GLScene.inc
+       08/09/03 - Jaj - Added single outline polygon support
 
-   </ul><p>
+   </ul> 
 
   License:<br>
 
-    Contributed to GLScene.<p>
+    Contributed to GLScene. 
 }
 unit GLGLUTesselation;
 
@@ -27,17 +27,17 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.SysUtils,
   GLVectorFileObjects,
   GLVectorLists,
   GLVectorGeometry;
 
-{: Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
+{Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TGLBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
 implementation
 
 uses
-  SysUtils,
   OpenGLAdapter,
   OpenGLTokens,
   GLVectorTypes;

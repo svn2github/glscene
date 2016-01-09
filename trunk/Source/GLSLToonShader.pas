@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLToonShader <p>
+{GLSLToonShader  
 
-   Toon shader : Toon shading also called Cell Shading<p>
+   Toon shader : Toon shading also called Cell Shading 
 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>13/12/15 - J.Delauney - Creation
+    History :  
+     13/12/15 - J.Delauney - Creation
 
 }
 unit GLSLToonShader;
@@ -26,7 +26,7 @@ uses
 
 //TGLCustomGLSLToonShader
 //
-{: Custom class for GLSLToonShader.<p>}
+{Custom class for GLSLToonShader. }
 type
   TGLCustomGLSLToonShader = class(TGLCustomGLSLShader)
   private

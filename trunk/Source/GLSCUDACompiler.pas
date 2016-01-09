@@ -1,19 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDACompiler <p>
+{ : GLSCUDACompiler  
 
-  Component allows to compile the CUDA-source (*.cu) file.<p>
-  in design- and runtime.<p>
-  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.<p>
+  Component allows to compile the CUDA-source (*.cu) file. 
+  in design- and runtime. 
+  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
-  <li>10/02/11 - Yar - Added capturing message from NVCC
-  <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-  <li>08/06/10 - Yar - Added ProjectModule property
-  <li>19/03/10 - Yar - Creation
-  </ul></font><p>
+   History :  
+   22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
+   10/02/11 - Yar - Added capturing message from NVCC
+   22/08/10 - Yar - Some improvements for FPC (thanks Predator)
+   08/06/10 - Yar - Added ProjectModule property
+   19/03/10 - Yar - Creation
+    
 }
 unit GLSCUDACompiler;
 
@@ -139,8 +139,9 @@ var
 implementation
 
 uses
-{$IFDEF MSWINDOWS}Windows, {$ENDIF}
-  SysUtils, Dialogs, GLApplicationFileIO,
+{$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
+  System.SysUtils, VCL.Dialogs, 
+  GLApplicationFileIO,
   ShellAPI,
   TlHelp32;
 

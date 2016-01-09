@@ -117,7 +117,7 @@ unit cg;
 interface
 
 {$IFDEF MSWINDOWS}
-uses Windows;
+uses Winapi.Windows;
 {$ENDIF}
 
 {$Include GLScene.inc}

@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShaderCombiner<p>
+{GLShaderCombiner 
 
     Allows to combine shaders in different sequences.
     Note, that can't just take 2 random shaders and combine them, because
     shaders often override the objects material and vertex data with a total
     disregard to what existed before it. But in some cases, especially with
     multipass shaders, this unit does magic and allows to reuse and upgrade
-    previously written shaders.<p>
+    previously written shaders. 
 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
+	 History :  
+       23/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     Previous version history:
@@ -30,7 +30,7 @@ uses
   GLMaterial, GLScene, GLVectorGeometry, GLStrings, GLRenderContextInfo;
 
 type
-  {: MP - multipass, SP-singlepass, AP - anypass (single or multi)
+  {MP - multipass, SP-singlepass, AP - anypass (single or multi)
      One-Two or Two-One determines the order of how the shaders should be applied
      For example, sctTwoMPOneSP means that first one will be applied Shader Two,
      which can be a multipass shader, then Shader One is applied, which should be

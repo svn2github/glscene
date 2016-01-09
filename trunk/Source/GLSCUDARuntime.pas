@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_Runtime<p>
+{ : GLS_CUDA_Runtime 
 
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
+   History :  
+   13/12/13 - PW - Added GLScene.inc
+   28/01/10 - Yar - Creation
+   
 }
 
 /// *

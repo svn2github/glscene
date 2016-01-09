@@ -1,12 +1,12 @@
 // GLPolyhedron
-{: Standard polyhedrons.<p>
+{Standard polyhedrons. 
 
- <b>History : </b><font size=-1><ul>
-      <li>10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses
-      <li>20/01/04 - SG - Added TGLIcosahedron
-      <li>21/07/03 - EG - Creation from GLObjects split
-   </ul></font>
+  History :  
+       10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes
+       23/08/10 - Yar - Added OpenGLTokens to uses
+       20/01/04 - SG - Added TGLIcosahedron
+       21/07/03 - EG - Creation from GLObjects split
+    
 }
 unit GLPolyhedron;
 
@@ -21,7 +21,7 @@ type
 
   // TGLDodecahedron
   //
-  {: A Dodecahedron.<p>
+  {A Dodecahedron. 
      The dodecahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLDodecahedron = class(TGLSceneObject)
@@ -32,7 +32,7 @@ type
 
   // TGLIcosahedron
   //
-  {: A Icosahedron.<p>
+  {A Icosahedron. 
      The icosahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLIcosahedron = class(TGLSceneObject)
@@ -43,7 +43,7 @@ type
 
   // TGLOctahedron
   //
-  {: A Octahedron.<p>
+  {A Octahedron. 
      The octahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLOctahedron = class(TGLSceneObject)
@@ -54,7 +54,7 @@ type
 
   // TGLTetrahedron
   //
-  {: A Tetrahedron.<p>
+  {A Tetrahedron. 
      The tetrahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLTetrahedron = class(TGLSceneObject)

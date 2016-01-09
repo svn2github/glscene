@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLConsole <p>
+{GLConsole  
 
-   The console is a popdown window that appears on a game for text output/input.<p>
+   The console is a popdown window that appears on a game for text output/input. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
-      <li>30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
-      <li>25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
-      <li>23/02/07 - DaStr - Cosmetic changes, replaced some strings with
+    History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
+       30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
+       25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
+       23/02/07 - DaStr - Cosmetic changes, replaced some strings with
                               resource strings from GLStrings.pas
-      <li>15/02/07 - DaStr - Some properties are not stored now, because they are
+       15/02/07 - DaStr - Some properties are not stored now, because they are
                               read directly from HUDSprite and HUDText
-      <li>07/02/07 - DaStr - Initial version (donated to GLScene)
+       07/02/07 - DaStr - Initial version (donated to GLScene)
 
    What is different compared to the original component?
      1) Can be aded to any object, not just the root one
@@ -99,7 +99,7 @@ type
   TGLConsoleCommandList = class;
   TGLConsoleCommand = class;
 
-  {: Stores info on a command. A command is a parsed input line.
+  {Stores info on a command. A command is a parsed input line.
     Should be transformed into a class, I think...}
   TGLUserInputCommand = record
     CommandCount: Integer;
@@ -108,7 +108,7 @@ type
       //if user identifies a command, he must set this to  "True"
   end;
 
-  {: Event called when used presses the "Enter"}
+  {Event called when used presses the "Enter"}
   TGLlConsoleEvent = procedure(const ConsoleCommand: TGLConsoleCommand;
     const Console: TGLCustomConsole;
     var Command: TGLUserInputCommand) of object;
@@ -165,11 +165,11 @@ type
 
     //: Disabled commands won't execute
     property Enabled: Boolean read FEnabled write FEnabled default True;
-    {: If command is disabled and user calls it, no error report will be
+    {If command is disabled and user calls it, no error report will be
        generated if SilentDisabled is enabled }
     property SilentDisabled: Boolean read FSilentDisabled write FSilentDisabled
       default False;
-    {: Hidden commands won't show when user requests command list
+    {Hidden commands won't show when user requests command list
       or uses auto-complete }
     property Visible: Boolean read FVisible write FVisible default True;
   end;
@@ -233,7 +233,7 @@ type
       default 300;
   end;
 
-  {: TGLCustomConsole }
+  {TGLCustomConsole }
   TGLCustomConsole = class(TGLBaseSceneObject)
   private
     FHudSprite: TGLHudSprite;
@@ -262,7 +262,7 @@ type
     function GetFont: TGLCustomBitmapFont;
     procedure SetFont(const Value: TGLCustomBitmapFont);
   protected
-    {: Misc }
+    {Misc }
     procedure DoOnCommandIssued(var UserInputCommand: TGLUserInputCommand);
       virtual;
     procedure SetFontColor(const Color: TColor); virtual;
@@ -273,19 +273,19 @@ type
     procedure ShowConsoleHelp; virtual;
     procedure HandleUnknownCommand(const Command: string); virtual;
 
-    {: Auto Complete Command }
+    {Auto Complete Command }
     procedure AutoCompleteCommand; overload; virtual;
     procedure AutoCompleteCommand(var MatchCount: Integer; var
       AdditionalCommandsMatchList: TGLConsoleMatchList; var CommandsMatchList:
       TGLConsoleMatchList); overload;
 
-    {: Command interpreters }
+    {Command interpreters }
     procedure CommandIssued(var UserInputCommand: TGLUserInputCommand); virtual;
     procedure FixCommand(var UserInputCommand: TGLUserInputCommand); virtual;
     function ParseString(str, caract: string): TGLUserInputCommand; virtual;
     procedure ProcessInput; virtual;
 
-    {: Refreshes the Hud (clip lines outside the visible console). }
+    {Refreshes the Hud (clip lines outside the visible console). }
     procedure RefreshHud; virtual;
 
     //: Register built-in commands (onCreate)
@@ -351,12 +351,12 @@ type
     procedure NavigatePageUp;
     procedure NavigatePageDown;
 
-    {: Refreshes the size of the hud to reflect changes on the viewer.
+    {Refreshes the size of the hud to reflect changes on the viewer.
        Should be called whenever the viewer's size changes. }
     procedure RefreshHudSize; virtual;
-    {: Adds a line (which is not treated as a command). }
+    {Adds a line (which is not treated as a command). }
     procedure AddLine(const str: string);
-    {: TypedCommands are cleared and current command index is reset. }
+    {TypedCommands are cleared and current command index is reset. }
     procedure ClearTypedCommands;
 
     procedure ExecuteCommand(const Command: string);
@@ -364,8 +364,8 @@ type
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {: Properties. }
-    {: Changes the console font color. }
+    {Properties. }
+    {Changes the console font color. }
     property FontColor: TColor read GetFontColor write SetFontColor stored
       False;
     property HUDSpriteColor: TColor read GetHUDSpriteColor write
@@ -379,17 +379,17 @@ type
 
     //: Commands have events that are called when user types a sertauin command
     property Commands: TGLConsoleCommandList read FCommands;
-    {: Aditional commands can be registered to participate in command auto-completion.
+    {Aditional commands can be registered to participate in command auto-completion.
      They can be interpreted in the global OnCommandIssued event handler. }
     property AdditionalCommands: TGLConsoleStringList read FAdditionalCommands;
-    {: User controls. }
+    {User controls. }
     property Controls: TGLConsoleControls read FControls;
-    {: list of commands that user typed and console's responces. }
+    {list of commands that user typed and console's responces. }
     property ColsoleLog: TStringList read FColsoleLog;
 
-    {: Allows to change consol's height from 0 to 1. }
+    {Allows to change consol's height from 0 to 1. }
     property Size: Single read FSize write SetSize;
-    {: Visual stuff. }
+    {Visual stuff. }
     property SceneViewer: TGLSceneViewer read FSceneViewer write SetSceneViewer;
     property HudSprite: TGLHudSprite read FHudSprite;
     property HudText: TGLHudText read FHudText;
@@ -400,11 +400,11 @@ type
     { Main event of the console. Happens whenever the enter key is pressed.
       First the input line is compared to all registered commands, then everything
       is parsed into a TGLUserInputCommand record and  sent to the event.
-      Empty lines are <b>not</b> ignored (i.e. they also trigger events)}
+      Empty lines are  not</b> ignored (i.e. they also trigger events)}
     property OnCommandIssued: TGLlConsoleEvent read FOnCommandIssued write
       FOnCommandIssued;
 
-    {: Standard stuff }
+    {Standard stuff }
     property Hint: string read FHint write FHint;
     property Visible default False;
   end;

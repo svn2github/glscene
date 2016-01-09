@@ -1,16 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : FPlugInManagerEditor<p>
+{ : FPlugInManagerEditor 
 
-  Need a short description of what it does here.<p>
+  Need a short description of what it does here. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Renamed from PlugInManagerPropEditor.pas to FPlugInManagerEditor.pas
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>02/04/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 - EG - Creation
-  </ul></font>
+   History :  
+   17/11/14 - PW - Renamed from PlugInManagerPropEditor.pas to FPlugInManagerEditor.pas
+   16/10/08 - UweR - Compatibility fix for Delphi 2009
+   02/04/07 - DaStr - Added $I GLScene.inc
+   28/07/01 - EG - Creation
+   
 
 }
 unit FPlugInManagerEditor;

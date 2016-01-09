@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLImageUtils<p>
+{ : GLImageUtils 
 
-  Main purpose is as a fallback in cases where there is no other way to process images.<p>
+  Main purpose is as a fallback in cases where there is no other way to process images. 
 
-  <b>Historique : </b><font size=-1><ul>
-  <li>07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)
-  <li>09/04/11 - Yar - Added AlphaGammaBrightCorrection
-  <li>08/04/11 - Yar - Complete Build2DMipmap
-  <li>07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
-  <li>04/11/10 - DaStr - Added $I GLScene.inc
-  <li>22/10/10 - Yar - Created
-  </ul></font>
+   Historique :  
+   07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)
+   09/04/11 - Yar - Added AlphaGammaBrightCorrection
+   08/04/11 - Yar - Complete Build2DMipmap
+   07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
+   04/11/10 - DaStr - Added $I GLScene.inc
+   22/10/10 - Yar - Created
+   
 }
 
 unit GLImageUtils;

@@ -1,14 +1,14 @@
-{: GLRagdoll<p>
+{GLRagdoll 
 
-	Base abstract ragdoll class. Should be extended to use any physics system. <p>
+	Base abstract ragdoll class. Should be extended to use any physics system.  
 
-	<b>History :</b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
-    <li>23/08/10 - Yar - Added GLVectorTypes to uses
-    <li>09/11/05 - LucasG - Fixed joint and few small things
-    <li>07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
-    <li>02/11/05 - LucasG - First version created.
-  </ul></font>
+	 History : 
+     10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
+     23/08/10 - Yar - Added GLVectorTypes to uses
+     09/11/05 - LucasG - Fixed joint and few small things
+     07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
+     02/11/05 - LucasG - First version created.
+   
 }
 
 unit GLRagdoll;
@@ -114,9 +114,9 @@ type
     procedure WriteToFiler(writer : TVirtualWriter); override;
     procedure ReadFromFiler(reader : TVirtualReader); override;
 
-    {: Must be set before build the ragdoll }
+    {Must be set before build the ragdoll }
     procedure SetRootBone(RootBone: TRagdollBone);
-    {: Create the bounding box and setup the ragdoll do be started later }
+    {Create the bounding box and setup the ragdoll do be started later }
     procedure BuildRagdoll;
 
     procedure Start;

@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Joystick<p>
+{Joystick 
 
-	Component for handling joystick messages<p>
+	Component for handling joystick messages 
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>29/01/02 - Egg - Added NoCaptureErrors
-      <li>18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
-      <li>14/04/00 - Egg - Various minor to major fixes, the component should
+	 Historique :  
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       29/01/02 - Egg - Added NoCaptureErrors
+       18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
+       14/04/00 - Egg - Various minor to major fixes, the component should
                            now work properly for the 4 first buttons and XY axis
-	   <li>20/03/00 - Egg - Creation from GLScene's TGLJoystick
-	</ul></font>
+	    20/03/00 - Egg - Creation from GLScene's TGLJoystick
+	 
 }
 unit GLJoystick;
 
@@ -41,7 +41,7 @@ type
 
 	// TJoystick
 	//
-   {: A component interfacing the Joystick via the (regular) windows API. }
+   {A component interfacing the Joystick via the (regular) windows API. }
 	TGLJoystick = class (TComponent)
 	   private
 	      { Private Declarations }
@@ -85,13 +85,13 @@ type
 
 	   published
 	      { Published Declarations }
-         {: When set to True, the component attempts to capture the joystick.<p>
+         {When set to True, the component attempts to capture the joystick. 
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }
          property Capture : Boolean read FCapture write SetCapture default False;
-         {: If true joystick capture errors do not result in exceptions. }
+         {If true joystick capture errors do not result in exceptions. }
          property NoCaptureErrors : Boolean read FNoCaptureErrors write FNoCaptureErrors default True;
-         {: Polling frequency (milliseconds) }
+         {Polling frequency (milliseconds) }
          property Interval : Cardinal read FInterval write SetInterval default 100;
          property JoystickID: TJoystickID read FJoystickID write SetJoystickID default jidNoJoystick;
          property Threshold: Cardinal read FThreshold write SetThreshold default 1000;

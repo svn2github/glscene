@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLBumpShader<p>
+{GLSLBumpShader 
 
-   A GLSL shader that applies bump mapping.<p>
+   A GLSL shader that applies bump mapping. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>20/10/10 - Yar - Bugfixed memory leak
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
+	 History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       20/10/10 - Yar - Bugfixed memory leak
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)
-      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)
                               Fixed a bug with "fRDotV" clamping, which occured
                               on all GeForce 8x and later graphic cards
-      <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
-      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
+       20/03/07 - DaStr - Made changes related to the new parameter passing model
+       06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
                               a single Str procedure (thanks Uwe Raabe)
-      <li>03/03/07 - DaStr - Made compatible with Delphi6
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
+       03/03/07 - DaStr - Made compatible with Delphi6
+       22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     This is a collection of GLSL Bump shaders, comes in these variaties
@@ -233,7 +233,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    {Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
@@ -250,7 +250,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    {Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;

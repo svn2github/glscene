@@ -1,12 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDADataAccess<p>
-
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and GLSLog
-  <li>24/02/11 - Yar - Creation
-  </ul></font><p>
+{
+   History :  
+   13/12/13 - PW - Added GLScene.inc and GLSLog
+   24/02/11 - Yar - Creation
 }
 unit GLSCUDADataAccess;
 
@@ -15,7 +13,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils,
+  System.SysUtils,
   GLCrossPlatform,
   GLSLog;
 

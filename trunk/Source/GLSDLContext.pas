@@ -1,23 +1,23 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSDLContext<p>
+{GLSDLContext 
 
-   SDL specific Context and Viewer.<p>
+   SDL specific Context and Viewer. 
 
    NOTA: SDL notifies use of context destruction *after* it happened, this prevents
          clean release of allocated stuff and requires a temporary switch to
          "ignore OpenGL errors" mode during destruction, thus potentially
          leaking memory (depending on hardware drivers willingness to perform
-         automatic releases)<p>
+         automatic releases) 
 
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>06/06/10 - Yar - Make outputDevice HWND type
-      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-      <li>11/09/06 - NC - Changes for Multiple-Render-Target
-      <li>12/12/01 - EG - Creation
-   </ul></font>
+    History :  
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       06/06/10 - Yar - Make outputDevice HWND type
+       15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
+       11/09/06 - NC - Changes for Multiple-Render-Target
+       12/12/01 - EG - Creation
+    
 }
 unit GLSDLContext;
 
@@ -38,7 +38,7 @@ type
 
   // TGLSDLViewer
   //
-  {: A viewer using SDL.<p>
+  {A viewer using SDL. 
      Beware: only one at a time, no other viewers allowed!<br>
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
@@ -77,21 +77,21 @@ type
 
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
 
-    {: Fired whenever an SDL Event is polled.<p>
+    {Fired whenever an SDL Event is polled. 
        SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
        they are passed via OnClose and OnResize respectively. }
     property OnSDLEvent: TSDLEvent read FOnSDLEvent write FOnSDLEvent;
-    {: Fired whenever an event polling completes with no events left to poll. }
+    {Fired whenever an event polling completes with no events left to poll. }
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
 
   // TGLSDLContext
   //
-  {: A context driver for OpenGL via SDL (libsdl.org).<p>
+  {A context driver for OpenGL via SDL (libsdl.org). 
      Due to limitations of SDL:<ul>
-     <li>you may have only one SDL window opened at any time (you cannot
+      you may have only one SDL window opened at any time (you cannot
         have memory viewers)
-     <li>closing the SDL window will terminate the application
+      closing the SDL window will terminate the application
      </ul> }
   TGLSDLContext = class(TGLScreenControlingContext)
   private

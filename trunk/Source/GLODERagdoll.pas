@@ -1,24 +1,24 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODERagdoll<p>
+{GLODERagdoll 
 
-	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
+	TGLRagdoll extended using Open Dynamics Engine (ODE).  
 
-	<b>History :</b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
-    <li>13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
+	 History : 
+     10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
+     13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
                             global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"
-    <li>11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
+     11/05/08 - Mrqzzz - replaced TGLCube with TODERagdollCube
                             (contains reference to Bone and Ragdoll, useful in collision events)
-    <li>28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
+     28/02/08 - Mrqzzz - prevent ODE 0.9 "bNormalizationResult failed" error
                             in TODERagdollBone.Start.
                             Fixed a memory leak in TODERagdollBone.Stop
-    <li>05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
-    <li>09/11/05 - LucasG - Fixed joints to be relative to the body
-    <li>07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
-    <li>02/11/05 - LucasG - First version created.
-  </ul></font>
+     05/02/08 - Mrqzzz - upgrade to ODE 0.9 (by paul Robello)
+     09/11/05 - LucasG - Fixed joints to be relative to the body
+     07/11/05 - LucasG - Alignment (Using Stuart's AlignToMatrix function)
+     02/11/05 - LucasG - First version created.
+   
 }
 
 unit GLODERagdoll;
@@ -56,7 +56,7 @@ type
 
   public
     constructor Create;
-    {: Create the world from any existing ODE world }
+    {Create the world from any existing ODE world }
     constructor CreateFrom(World: PdxWorld; Space: PdxSpace; ContactGroup: TdJointGroupID);
     destructor Destroy; override;
     procedure WorldUpdate;

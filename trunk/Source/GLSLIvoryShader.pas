@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLIvoryShader <p>
+{GLSLIvoryShader  
 
-   Ivory shader simulate Ivory material.<p>
+   Ivory shader simulate Ivory material. 
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Creation
+    History :  
+     08/12/15 - J.Delauney - Creation
 
 }
 
@@ -27,7 +27,7 @@ uses
 
 //TGLCustomGLSLIvoryShader
 //
-{: Custom class for GLSLIvoryShader.<p>
+{Custom class for GLSLIvoryShader. 
  A shader that simulate Ivory Material }
 type
   TGLCustomGLSLIvoryShader = class(TGLCustomGLSLShader)

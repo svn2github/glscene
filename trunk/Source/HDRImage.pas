@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: HDRImage<p>
+{
     Good for preview picture in OpenDialog,
     so you may include both HDRImage (preview) and GLFileHDR (loading)
 
-      <li>23/10/10 - Yar - Removed PBuffer    
-      <li>23/08/10 - Yar - Changes after PBuffer upgrade
-      <li>21/03/10 - Yar - Added Linux support
+       23/10/10 - Yar - Removed PBuffer    
+       23/08/10 - Yar - Changes after PBuffer upgrade
+       21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
-      <li>24/01/10 - Yar - Improved FPC compatibility
-      <li>21/01/10 - Yar - Creation
-   </ul></font>
+       24/01/10 - Yar - Improved FPC compatibility
+       21/01/10 - Yar - Creation
+    
 }
 
 unit HDRImage;
@@ -21,9 +21,9 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}Windows,
-{$ENDIF}Classes,
-  SysUtils,
+{$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF}
+  System.Classes,
+  System.SysUtils,
   GLCrossPlatform,
   GLVectorGeometry,
   GLGraphics,
@@ -37,9 +37,13 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------  
 implementation
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 uses
   GLFileHDR,
   GLTextureFormat;
@@ -98,8 +102,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  TGLPicture.RegisterFileFormat(
-    'HDR', 'High Dynamic Range Image', THDRImage);
+  TGLPicture.RegisterFileFormat('HDR', 'High Dynamic Range Image', THDRImage);
 
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------

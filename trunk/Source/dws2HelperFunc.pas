@@ -1,17 +1,18 @@
 // dws2HelperFunc
-{: Helper functions for creating class, properties and 
-   method symbols in DelphiWebScriptII.<p>
+{Helper functions for creating class, properties and 
+   method symbols in DelphiWebScriptII. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+    History :  
+       27/04/2004 - SG - Creation
+    
 }
 unit dws2HelperFunc;
 
 interface
 
 uses
-  Classes, SysUtils, dws2Symbols, dws2CompStrings;
+  System.Classes, System.SysUtils, 
+  dws2Symbols, dws2CompStrings;
 
 procedure AddForwardDeclaration(ClassName: String; SymbolTable : TSymbolTable);
 function AddClassSymbol(SymbolTable : TSymbolTable; Name, Ancestor : String) : TSymbol;
@@ -21,7 +22,13 @@ procedure AddPropertyToClass(Name, DataType, ReadAccess,
 
 procedure ValidateExternalObject(ExtObject : TObject; ObjClass : TClass);
 
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
+//-------------------------------------------------------------------
 
 // AddForwardDeclaration
 //

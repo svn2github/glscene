@@ -1,46 +1,46 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPersistentClasses<p>
+{GLPersistentClasses 
 
-   Base persistence classes.<p>
+   Base persistence classes. 
 
    These classes are used in GLScene, but are designed for generic purpose.<br>
    They implement a slightly different persistence mechanism than that of the VCL,
    allowing for object-level versioning (100% backward compatibility) and full
-   polymorphic persistence.<p>
+   polymorphic persistence. 
 
-   Internal Note: stripped down versions of XClasses & XLists.<p>
+   Internal Note: stripped down versions of XClasses & XLists. 
 
- <b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed PersistentClasses to GLPersistentClasses
-      <li>10/05/12 - Yar - Patched TBinaryReader.ReadFloat/WriteFloat for Win64 (thanks Massimo Zanoletti)
+  History :  
+       10/12/14 - PW - Renamed PersistentClasses to GLPersistentClasses
+       10/05/12 - Yar - Patched TBinaryReader.ReadFloat/WriteFloat for Win64 (thanks Massimo Zanoletti)
                            In future need to replase extended floating point type! 
-      <li>06/12/10 - DaStr - Added GUID to IPersistentObject
-      <li>19/08/10 - Yar - Fixed WriteWideString for empty strings
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
-      <li>16/10/08 - UweR - Delphi 2009 compatibility fix for TPersistentObject, TTextReader and TTextWriter
-      <li>16/10/08 - DanB - Delphi 2009 compatibility fix for TBinaryReader.ReadString / WriteString
-      <li>10/04/08 - DaStr - Added classes TGLInterfacedPersistent and
+       06/12/10 - DaStr - Added GUID to IPersistentObject
+       19/08/10 - Yar - Fixed WriteWideString for empty strings
+       20/05/10 - Yar - Fixes for Linux x64
+       07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+       16/10/08 - UweR - Delphi 2009 compatibility fix for TPersistentObject, TTextReader and TTextWriter
+       16/10/08 - DanB - Delphi 2009 compatibility fix for TBinaryReader.ReadString / WriteString
+       10/04/08 - DaStr - Added classes TGLInterfacedPersistent and
                               TGLInterfacedCollectionItem (BugTracker ID = 1938988)
-      <li>11/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() once again
+       11/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() once again
                              (BugTracker ID = 1857974)
                              (thanks Yann PAPOUIN and Burkhard Carstens)
-      <li>04/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() (BugTracker ID = 1857974)
-      <li>06/03/07 - DaStr - Added TGLOwnedPersistent
-      <li>04/01/04 - EG - Fixed ReadString & ReadWideString for empty strings (thx Kenguru)
-      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-      <li>08/12/03 - EG - TBinaryReader/Writer no longer rely on VCL TReader/TWriter
-      <li>26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
-      <li>04/09/03 - EG - Improved some TPersistentObjectList methods
-      <li>12/02/03 - EG - Added IPersistentObject
-      <li>09/09/01 - EG - Optimized Pack (x2.5)
-      <li>14/08/01 - EG - Added AfterObjectCreatedByReader
-      <li>03/08/01 - EG - Big update with addition of Virtual filers
-      <li>24/07/01 - EG - D6-related changes
-      <li>15/03/01 - EG - Creation
- </ul></font><p>
+       04/02/08 - DaStr - Bugfixed TPersistentObjectList.Move() (BugTracker ID = 1857974)
+       06/03/07 - DaStr - Added TGLOwnedPersistent
+       04/01/04 - EG - Fixed ReadString & ReadWideString for empty strings (thx Kenguru)
+       28/06/04 - LR - Removed ..\ from the GLScene.inc
+       08/12/03 - EG - TBinaryReader/Writer no longer rely on VCL TReader/TWriter
+       26/12/03 - EG - Added sorting support to TPersistentObjectList + misc. changes
+       04/09/03 - EG - Improved some TPersistentObjectList methods
+       12/02/03 - EG - Added IPersistentObject
+       09/09/01 - EG - Optimized Pack (x2.5)
+       14/08/01 - EG - Added AfterObjectCreatedByReader
+       03/08/01 - EG - Big update with addition of Virtual filers
+       24/07/01 - EG - D6-related changes
+       15/03/01 - EG - Creation
+   
 }
 unit GLPersistentClasses;
 
@@ -58,7 +58,7 @@ type
 
   // TVirtualReader
   //
-  {: Virtual layer similar to VCL's TReader (but reusable) }
+  {Virtual layer similar to VCL's TReader (but reusable) }
   TVirtualReader = class
   private
     { Private Declarations }
@@ -89,7 +89,7 @@ type
 
   // TVirtualWriter
   //
-  {: Virtual layer similar to VCL's TWriter (but reusable) }
+  {Virtual layer similar to VCL's TWriter (but reusable) }
   TVirtualWriter = class
   private
     { Private Declarations }
@@ -118,7 +118,7 @@ type
 
   // IPersistentObject
   //
-  {: Interface for persistent objects.<p>
+  {Interface for persistent objects. 
      This interface does not really allow polymorphic persistence,
      but is rather intended as a way to unify persistence calls
      for iterators. }
@@ -130,12 +130,12 @@ type
 
   // TPersistentObject
   //
-    {: Base class for persistent objects.<p>
+    {Base class for persistent objects. 
        The base requirement is implementation of ReadFromFiler & WriteToFiler
        in sub-classes, the immediate benefits are support of streaming (to stream,
        file or string), assignment and cloning.<br>
        The other requirement being the use of a virtual constructor, which allows
-       polymorphic construction (don't forget to register your subclasses).<p>
+       polymorphic construction (don't forget to register your subclasses). 
        Note that TPersistentObject implements IUnknown, but does *not* implement
        reference counting. }
   TPersistentObject = class(TPersistent, IPersistentObject)
@@ -182,14 +182,14 @@ type
 
   // TPersistentObjectList
   //
-  {: A persistent Object list.<p>
+  {A persistent Object list. 
      Similar to TList but works on TObject items and has facilities for
      persistence of contained data. Unlike the VCL's TObjectList, this one
      does NOT free its objects upon destruction or Clear, use Clean and CleanFree
      for that, and as such can be used for object referral lists too.<br>
-     But only TPersistentObject items will be streamed appropriately.<p>
+     But only TPersistentObject items will be streamed appropriately. 
      The list can be used in a stack-like fashion with Push & Pop, and can
-     perform basic boolean set operations.<p>
+     perform basic boolean set operations. 
      Note: the IndexOf implementation is up to 3 times faster than that of TList }
   TPersistentObjectList = class(TPersistentObject)
   private
@@ -246,19 +246,19 @@ type
     property List: PPointerObjectList read FList;
 
     property Capacity: Integer read FCapacity write SetCapacity;
-    {: Makes sure capacity is at least aCapacity. }
+    {Makes sure capacity is at least aCapacity. }
     procedure RequiredCapacity(aCapacity: Integer);
 
-    {: Removes all "nil" from the list.<p>
+    {Removes all "nil" from the list. 
        Note: Capacity is unchanged, no memory us freed, the list is just
        made shorter. This functions is orders of magnitude faster than
        its TList eponymous. }
     procedure Pack;
-    {: Empty the list without freeing the objects. }
+    {Empty the list without freeing the objects. }
     procedure Clear; dynamic;
-    {: Empty the list and free the objects. }
+    {Empty the list and free the objects. }
     procedure Clean; dynamic;
-    {: Empty the list, free the objects and Free self. }
+    {Empty the list, free the objects and Free self. }
     procedure CleanFree;
 
     function IndexOf(Item: TObject): Integer;
@@ -276,7 +276,7 @@ type
 
   // TBinaryReader
   //
-  {: Wraps a TReader-compatible reader. }
+  {Wraps a TReader-compatible reader. }
   TBinaryReader = class(TVirtualReader)
   private
     { Private Declarations }
@@ -303,7 +303,7 @@ type
 
   // TBinaryWriter
   //
-  {: Wraps a TWriter-compatible writer. }
+  {Wraps a TWriter-compatible writer. }
   TBinaryWriter = class(TVirtualWriter)
   private
     { Private Declarations }
@@ -327,7 +327,7 @@ type
 
   // TTextReader
   //
-  {: Reads object persistence in Text format. }
+  {Reads object persistence in Text format. }
   TTextReader = class(TVirtualReader)
   private
     { Private Declarations }
@@ -355,7 +355,7 @@ type
 
   // TTextWriter
   //
-  {: Writes object persistence in Text format. }
+  {Writes object persistence in Text format. }
   TTextWriter = class(TVirtualWriter)
   private
     { Private Declarations }
@@ -382,7 +382,7 @@ type
 
   // TGLOwnedPersistent
   //
-  {: TPersistent which has knowledge of its owner. }
+  {TPersistent which has knowledge of its owner. }
   TGLOwnedPersistent = class(TPersistent)
   private
     FOwner: TPersistent;
@@ -394,7 +394,7 @@ type
 
   // TGLInterfacedPersistent
   //
-  {: TPersistent thet inplements IInterface. }
+  {TPersistent thet inplements IInterface. }
   TGLInterfacedPersistent = class(TPersistent, IInterface)
   protected
     // Implementing IInterface.
@@ -405,7 +405,7 @@ type
 
   // TGLInterfacedCollectionItem
   //
-  {: TCollectionItem thet inplements IInterface. }
+  {TCollectionItem thet inplements IInterface. }
   TGLInterfacedCollectionItem = class(TCollectionItem, IInterface)
   protected
     // Implementing IInterface.
@@ -416,13 +416,13 @@ type
 
   // EInvalidFileSignature
   //
-  {: Triggered when file signature does not match. }
+  {Triggered when file signature does not match. }
   EInvalidFileSignature = class(Exception)
   end;
 
   // EFilerException
   //
-  {: Usually triggered when a filing error is detected. }
+  {Usually triggered when a filing error is detected. }
   EFilerException = class(Exception)
   end;
 

@@ -1,36 +1,36 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCustomShader<p>
+{GLCustomShader 
 
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.
-    It also contains a procedures and function that can be used in all shaders.<p>
+    It also contains a procedures and function that can be used in all shaders. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
-      <li>04/06/10 - Yar - Added unsigned integer uniforms
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
-      <li>25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
-      <li>24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
+       04/06/10 - Yar - Added unsigned integer uniforms
+       22/04/10 - Yar - Fixes after GLState revision
+       22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
+       25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
+       24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
                               TGLFragmentProgram and TGLGeometryProgram
                              Added TGLCustomShaderParameter.AsUniformBuffer
                               (thanks YarUnderoaker)
-      <li>28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
+       28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
                              Fixed TGLCustomShader.[...]Program serialization
-      <li>24/07/09 - DaStr - Added TGLCustomShader.DebugMode
+       24/07/09 - DaStr - Added TGLCustomShader.DebugMode
                              Fixed spelling mistake in TGLShaderUnAplyEvent
                              Added TGLShaderFogSupport, IsFogEnabled()
-      <li>03/04/07 - DaStr - Added TGLCustomShaderParameter.AsFloat and AsInteger
-      <li>25/03/07 - DaStr - Added TGLCustomShaderParameter.SetToTextureOf
-      <li>20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
+       03/04/07 - DaStr - Added TGLCustomShaderParameter.AsFloat and AsInteger
+       25/03/07 - DaStr - Added TGLCustomShaderParameter.SetToTextureOf
+       20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
                              "TextureType" parameter renamed to "TextureTarget"
                              Finished working on TGLCustomShaderParameter
-      <li>04/03/07 - DaStr - Added IGLPostShader
-      <li>03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
+       04/03/07 - DaStr - Added IGLPostShader
+       03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
+       22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     What different shader prefixes might mean:
@@ -133,7 +133,7 @@ type
   TGLLightSourceEnum = 1..glsShaderMaxLightSources;
   TGLLightSourceSet = set of TGLLightSourceEnum;
 
-  {: This interface describes user shaders, in order to be able to access them
+  {This interface describes user shaders, in order to be able to access them
     via a unified interface. If user shader does not support some option, don't
     raise an axception, just ignore it.
   }
@@ -154,17 +154,17 @@ type
     function GetShaderDescription: string;
   end;
 
-  {: Used in the TGLPostShaderHolder component. }
+  {Used in the TGLPostShaderHolder component. }
   IGLPostShader = interface
   ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
-    {: Called on every pass. }
+    {Called on every pass. }
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;
       TextureTarget: TGLTextureTarget);
-    {: Called to determine if it is compatible. }
+    {Called to determine if it is compatible. }
     function GetTextureTarget: TGLTextureTarget;
   end;
 
-  {: A pure abstract class, must be overriden. }
+  {A pure abstract class, must be overriden. }
   TGLCustomShader = class(TGLShader)
   private
     FFragmentProgram: TGLFragmentProgram;
@@ -186,7 +186,7 @@ type
     property VertexProgram: TGLVertexProgram read FVertexProgram write SetVertexProgram stored StoreVertexProgram;
     property GeometryProgram: TGLGeometryProgram read FGeometryProgram write SetGeometryProgram stored StoreGeometryProgram;
 
-    {: Treats warnings as errors and displays this error,
+    {Treats warnings as errors and displays this error,
        instead of a general shader-not-supported message. }
     property DebugMode: Boolean read FDebugMode write SetDebugMode default False;
     property TagObject: TObject read FTagObject write FTagObject default nil;
@@ -198,7 +198,7 @@ type
     procedure LoadShaderPrograms(const VPFilename, FPFilename: string; GPFilename: string = '');
   end;
 
-  {: A custom shader program. }
+  {A custom shader program. }
   TGLShaderProgram = class(TPersistent)
   private
     FParent: TGLCustomShader;
@@ -251,7 +251,7 @@ type
     property VerticesOut: TGLint read FVerticesOut write SetVerticesOut default 0;
   end;
 
-  {: Wrapper around a parameter of the main program. }
+  {Wrapper around a parameter of the main program. }
   TGLCustomShaderParameter = class(TObject)
   private
     { Private Declarations }
@@ -317,12 +317,12 @@ type
   public
     { Public Declarations }
 
-    {: This overloaded SetAsVector accepts open array as input. e.g.
+    {This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVectorF([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVectorF(const Values: array of Single); overload;
     procedure SetAsVectorI(const Values: array of Integer); overload;
 
-    {: SetToTextureOf determines texture type on-the-fly.}
+    {SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(const LibMaterial: TGLLibMaterial; const TextureIndex: Integer); overload;
     procedure SetToTextureOf(const Texture: TGLTexture; const TextureIndex: Integer); overload;
 
@@ -371,7 +371,7 @@ type
   end;
 
 
-  {: Adds two more blending modes to standard ones.
+  {Adds two more blending modes to standard ones.
     Not sure how to name them or if they should be included in TBlending mode,
     so I created a new type here. }
   TGLBlendingModeEx = (bmxOpaque, bmxTransparency, bmxAdditive,

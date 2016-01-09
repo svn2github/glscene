@@ -1,18 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// FLibMaterialPicker
-{: Egg<p>
+{
+ Allows choosing a material in a material library 
 
- Allows choosing a material in a material library<p>
-
-    <b>Historique : </b><font size=-1><ul>
-      <li>05/09/08 - DanB - Removed Kylix support
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>19/12/06 - DaStr - LBMaterials.OnDblClick now handled
-      <li>03/07/04 - LR  - Make change for Linux
-      <li>14/02/00 - Egg - Creation
-    </ul></font>
+     Historique :  
+       05/09/08 - DanB - Removed Kylix support
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       19/12/06 - DaStr - LBMaterials.OnDblClick now handled
+       03/07/04 - LR  - Make change for Linux
+       14/02/00 - Egg - Creation
+     
 }
 unit FLibMaterialPicker;
 
@@ -21,8 +19,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
-
+  System.Classes, 
+  VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
+  //GLS
   FRMaterialPreview,  GLViewer,
   GLMaterial;
 

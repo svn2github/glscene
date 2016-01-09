@@ -1,16 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLExplosionFx<p>
+{GLExplosionFx 
 
-  TGLBExplosionFX Effect<p>
+  TGLBExplosionFX Effect 
 
-	<b>History : </b><font size=-1><ul>
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
-    <li>23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
-    <li>07/03/04 - Matheus Degiovani - Creation
-  </ul></font>
+	 History :  
+     23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+     23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
+     23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
+     07/03/04 - Matheus Degiovani - Creation
+   
 
   Description: this effect explodes a mesh object into triangles
   that fly over. You can define a default direction, in wich case
@@ -18,7 +18,7 @@
   or if you define a null vector as the direction, a vector will be
   calculated for each triangle, based on the normal vector of that
   triangle, with a little random addition so things look better.
-  Pretty neat :)<p>
+  Pretty neat :) 
 
   Note: the owner of this behaviour should be any class that derives
   from TGLBaseMesh class or any other class derived from TGLBaseMesh.

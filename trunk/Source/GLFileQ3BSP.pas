@@ -1,20 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileQ3BSP<p>
+{GLFileQ3BSP 
 
-    Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene.<p>
+    Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene. 
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time.<p>
+    to enable support for OBJ & OBJF at run-time. 
 
- <b>History : </b><font size=-1><ul>
-      <li>19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-      <li>06/06/10 - Yar - Added GLVectorTypes to uses
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>31/01/03 - EG - Materials support
-      <li>30/01/03 - EG - Creation
-   </ul><p>
+  History :  
+       19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
+       06/06/10 - Yar - Added GLVectorTypes to uses
+       22/01/10 - Yar - Added GLTextureFormat to uses
+       31/03/07 - DaStr - Added $I GLScene.inc
+       31/01/03 - EG - Materials support
+       30/01/03 - EG - Creation
+   </ul> 
 }
 unit GLFileQ3BSP;
 
@@ -34,7 +34,7 @@ type
 
   // TGLQ3BSPVectorFile
   //
-  {: The Q3BSP vector file (Quake III BSP).<p> }
+  {The Q3BSP vector file (Quake III BSP).  }
   TGLQ3BSPVectorFile = class(TVectorFile)
   public
     { Public Declarations }

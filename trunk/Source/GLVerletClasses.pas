@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletClasses<p>
+{GLVerletClasses 
 
    Classes and functions that make integration between verlets and glscene
    objects easy.
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
-      <li>13/04/04 - MF - Verlet call now uses TVerletProgressTimes
-      <li>06/03/04 - MF - Creation
+	 History :  
+       23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
+       13/04/04 - MF - Verlet call now uses TVerletProgressTimes
+       06/03/04 - MF - Creation
    </ul>
 }
 unit GLVerletClasses;
@@ -22,7 +22,7 @@ uses
 type
   // TGLVerletNode
   //
-  {: Specialized verlet node that can be anchored to a GLScene object. If it's
+  {Specialized verlet node that can be anchored to a GLScene object. If it's
      anchored and has the property "NailedDown" set, it will remain in the same
      relative position to the GLScene object.}
   TGLVerletNode = class(TVerletNode)

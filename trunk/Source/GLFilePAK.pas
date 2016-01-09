@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFilePAK<p>
+{GLFilePAK 
 
-  <b>History : </b><font size=-1><ul>
-      <li>04/06/10 - Yar - Added to GLScene
+   History :  
+       04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-  </ul><p>
+  </ul> 
 }
 
 unit GLFilePAK;

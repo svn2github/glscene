@@ -1,10 +1,10 @@
 // dws2VectorGeometry
-{: DelphiWebScriptII symbol creation for GLVectorGeometry types
-   and functions.<p>
+{DelphiWebScriptII symbol creation for GLVectorGeometry types
+   and functions. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+    History :  
+       27/04/2004 - SG - Creation
+    
 }
 unit dws2VectorGeometry;
 

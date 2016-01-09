@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAFourierTransform<p>
+{ : GLSCUDAFourierTransform 
 
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
-  <li>14/02/11 - Yar - Added debug mode
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
+   History :  
+   13/12/13 - PW - Added GLScene.inc and IFDEF GLS_LOGGING
+   14/02/11 - Yar - Added debug mode
+   28/01/10 - Yar - Creation
+   
 }
 
 /// *

@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileTGA<p>
+{GLFileTGA 
 
    Graphic engine friendly loading of TGA image.
 
- <b>History : </b><font size=-1><ul>
-        <li>04/04/11 - Yar - Creation
-   </ul><p>
+  History :  
+         04/04/11 - Yar - Creation
+   </ul> 
 }
 
 unit GLFileTGA;

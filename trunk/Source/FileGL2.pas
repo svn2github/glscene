@@ -1,15 +1,15 @@
-{: FileGL2<p>
+{FileGL2 
 
-	Ghoul2 (GLM/GLA) file format loading structures<p>
+	Ghoul2 (GLM/GLA) file format loading structures 
 
 	Note:
-	Also referred to as MDX (MDXM/MDXA) format in C source.<p>
+	Also referred to as MDX (MDXM/MDXA) format in C source. 
 
-	<b>History :</b><font size=-1><ul>
-	   <li>09/05/03 - SG - Fixed compressed bone pool
-	   <li>01/04/03 - SG - Finished GLM/GLA loading procedures
-	   <li>25/03/03 - SG - Creation
-	</ul></font>
+	 History : 
+	    09/05/03 - SG - Fixed compressed bone pool
+	    01/04/03 - SG - Finished GLM/GLA loading procedures
+	    25/03/03 - SG - Creation
+	 
 }
 unit FileGL2;
 

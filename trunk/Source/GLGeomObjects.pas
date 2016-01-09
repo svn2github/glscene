@@ -1,36 +1,36 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects<p>
+{ : GLGeomObjects 
 
-  Geometric objects.<p>
+  Geometric objects. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>13/05/11 - Vince - Add ArrowArc object
-  <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
+   History :  
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   13/05/11 - Vince - Add ArrowArc object
+   13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
                  to display a slice of TGLTorus between start and stop angles
-  <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
+   24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
                  now this function references the inherited function
-  <li>20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
+   20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
                  (thanks Sandor Domokos) (BugTrackerID = 1864314)
   Added a TGLCapsule object (thanks Dave Gravel)
-  <li>18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
-  <li>07/05/07 - DanB - Added TGLCone.RayCastIntersect
+   18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
+   07/05/07 - DanB - Added TGLCone.RayCastIntersect
   Improved TGLDisk.RayCastIntersect
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
+   30/03/07 - DaStr - Added $I GLScene.inc
+   25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
                  AxisAlignedBoundingBoxUnscaled,
                  AxisAlignedDimensionsUnscaled
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
   Added GetTopRadius to facilitate silhouette.
-  <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
-  <li>21/07/03 - EG - Creation from GLObjects split
-  </ul></font>
+   24/10/03 - NelC - Fixed TGLTorus texture coord. bug
+   21/07/03 - EG - Creation from GLObjects split
+   
 }
 unit GLGeomObjects;
 
@@ -48,7 +48,7 @@ type
 
   // TGLDisk
   //
-  { : A Disk object.<p>
+  { : A Disk object. 
     The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
@@ -81,10 +81,10 @@ type
     property InnerRadius: TGLFloat read FInnerRadius write SetInnerRadius;
     { : Number of radial mesh subdivisions. }
     property Loops: TGLInt read FLoops write SetLoops default 2;
-    { : Outer radius for the disk.<p>
+    { : Outer radius for the disk. 
       If you leave InnerRadius at 0, this is the disk radius. }
     property OuterRadius: TGLFloat read FOuterRadius write SetOuterRadius;
-    { : Number of mesh slices.<p>
+    { : Number of mesh slices. 
       For instance, if Slices=6, your disk will look like an hexagon. }
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
@@ -93,8 +93,8 @@ type
 
   // TGLCylinderBase
   //
-  { : Base class to cylinder-like objects.<p>
-    Introduces the basic cylinder description properties.<p>
+  { : Base class to cylinder-like objects. 
+    Introduces the basic cylinder description properties. 
     Be aware teh default slices and stacks make up for a high-poly cylinder,
     unless you're after high-quality lighting it is recommended to reduce the
     Stacks property to 1. }
@@ -361,7 +361,7 @@ type
 
   // TGLArrowLine
   //
-  { : Draws an arrowhead (cylinder + cone).<p>
+  { : Draws an arrowhead (cylinder + cone). 
     The arrow head is a cone that shares the attributes of the cylinder
     (ie stacks/slices, materials etc). Seems to work ok.<br>
     This is useful for displaying a vector based field (eg velocity) or
@@ -418,7 +418,7 @@ type
 
   // TGLArrowArc
   //
-  { : Draws an arrowhead (Sliced Torus + cone).<p>
+  { : Draws an arrowhead (Sliced Torus + cone). 
     The arrow head is a cone that shares the attributes of the Torus
     (ie stacks/slices, materials etc).<br>
     This is useful for displaying a movement (eg twist) or
@@ -485,10 +485,10 @@ type
 
   // TGLPolygon
   //
-  { : A basic polygon object.<p>
+  { : A basic polygon object. 
     The curve is described by the Nodes and SplineMode properties, should be
-    planar and is automatically tessellated.<p>
-    Texture coordinates are deduced from X and Y coordinates only.<p>
+    planar and is automatically tessellated. 
+    Texture coordinates are deduced from X and Y coordinates only. 
     This object allows only for polygons described by a single curve, if you
     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
   TGLPolygon = class(TGLPolygonBase)
@@ -509,7 +509,7 @@ type
 
   published
     { Published Declarations }
-    { : Parts of polygon.<p>
+    { : Parts of polygon. 
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
     property Parts: TPolygonParts read FParts write SetParts
@@ -527,7 +527,7 @@ const
 type
   // TGLFrustrum
   //
-  { A frustrum is a pyramid with the top chopped off.<p>
+  { A frustrum is a pyramid with the top chopped off. 
     The height of the imaginary pyramid is ApexHeight, the height of the
     frustrum is Height. If ApexHeight and Height are the same, the frustrum
     degenerates into a pyramid.<br>

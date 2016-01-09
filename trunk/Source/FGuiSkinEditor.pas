@@ -1,27 +1,27 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FGuiSkinEditor<p>
+{FGuiSkinEditor 
 
-   Editor for Gui skin.<p>
+   Editor for Gui skin. 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to FGuiSkinEditor
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>05/10/08 - DanB - removed Kylix support, changed uses clause
-      <li>07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
+    Historique :  
+       17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to FGuiSkinEditor
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       04/03/10 - DanB - Now uses CharInSet
+       05/10/08 - DanB - removed Kylix support, changed uses clause
+       07/06/08 - DaStr - Updated TGUISkinEditor.AddElement() to use SetPoint2D()
                               (thanks Nicoara Adrian)
-      <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-      <li>18/02/07 - DaStr - Fixed range check error.
-      <li>22/02/05 - Mathx - Fixed Delphi 5 support.
-      <li>16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
-      <li>03/10/05 - adirex - XP styles and panels problem<br>
-      <li>24/01/05 - adirex - Focus rect for selection<br>
+       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
+       18/02/07 - DaStr - Fixed range check error.
+       22/02/05 - Mathx - Fixed Delphi 5 support.
+       16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
+       03/10/05 - adirex - XP styles and panels problem<br>
+       24/01/05 - adirex - Focus rect for selection<br>
                      Huge editor enchancements. Too many to write them all :)
-      <li>03/07/04 - LR - Make change for Linux
-      <li>?/?/? -  - Creation
-   </ul></font>
+       03/07/04 - LR - Make change for Linux
+       ?/?/? -  - Creation
+    
 }
 unit FGuiSkinEditor;
 

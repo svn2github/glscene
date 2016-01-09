@@ -1,22 +1,22 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTrail<p>
+{GLTrail 
 
 	Creates a trail-like mesh.
-  Based on Jason Lanford's demo. <p>
+  Based on Jason Lanford's demo.  
 
-	<b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>03/04/07 - DaStr - Added default values to some properties
+	 History :  
+         23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+         03/04/07 - DaStr - Added default values to some properties
                                Added TGLTrail.AntiZFightOffset
                                Subscribed for Notification in TGLTrail.SetTrailObject
-        <li>28/03/07 - DaStr - Renamed parameters in some methods
+         28/03/07 - DaStr - Renamed parameters in some methods
                               (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-        <li>19/12/06 - DaS - msRight (TMarkStyle) support added
-        <li>09/12/04 - LR  - Suppress windows uses
-        <li>12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
-   </ul></font>
+         19/12/06 - DaS - msRight (TMarkStyle) support added
+         09/12/04 - LR  - Suppress windows uses
+         12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
+    
 }
 
 unit GLTrail;
@@ -93,14 +93,14 @@ type
     procedure ClearMarks;
 
   published
-    {: Add a tiny bit of offset to help prevent z-fighting..
+    {Add a tiny bit of offset to help prevent z-fighting..
        Need a better solution here as this will get out of whack on really
        long trails and is dependant on scene scale. }
      property AntiZFightOffset: Single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
 
      property VertLimit: integer  read FVertLimit write SetVertLimit default 150;
      property TimeLimit: single  read FTimeLimit write SetTimeLimit;
-     {: Don't create mark unless moved at least this distance. }
+     {Don't create mark unless moved at least this distance. }
      property MinDistance: single  read FMinDistance write SetMinDistance;
      property Alpha: single  read FAlpha write SetAlpha;
      property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade default True;

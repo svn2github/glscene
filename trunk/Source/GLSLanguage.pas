@@ -10,12 +10,12 @@
   В Delphi текст имеет кодировку Ansi cp1251 и не подлежит кодировке\декодировке.
   В Lazarus можно загружать текст любой кодировки
 
-  <b>History : </b><font size=-1><ul>
-  <li>25/01/15 - PW - Fixed usage of String instead of AnsiString types
-  <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
-  <li>20/04/10 - Yar - Added to GLScene
+   History :  
+   25/01/15 - PW - Fixed usage of String instead of AnsiString types
+   04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
+   20/04/10 - Yar - Added to GLScene
   (Created by Rustam Asmandiarov aka Predator)
-  </ul></font>
+   
 }
 unit GLSLanguage;
 
@@ -77,8 +77,8 @@ type
 
   { TGLSLanguage }
 
-  { : Abstract class for control Language.<p> }
-  { : Абстрактный класс,  для палитры компонентов<p> }
+  { : Abstract class for control Language.  }
+  { : Абстрактный класс,  для палитры компонентов  }
   TGLSLanguage = class(TComponent)
   private
     FLanguage: TLanguageExt;

@@ -1,4 +1,3 @@
-UNIT ODEImport;
 {*************************************************************************
  *                                                                       *
  * Open Dynamics Engine, Copyright (C) 2001,2002 Russell L. Smith.       *
@@ -39,6 +38,7 @@ UNIT ODEImport;
  *  for information http://opende.sourceforge.net/ode-docs.html          *
  *                                                                       *
  *************************************************************************}
+unit ODEImport;
 
  {CommentMarker}
 

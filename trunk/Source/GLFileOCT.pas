@@ -1,19 +1,19 @@
 
 // This unit is part of the GLScene Project, http://glscene.org
 
-{: GLFileOCT<p>
+{GLFileOCT 
 
     Support-code to load OCT Files into TGLFreeForm-Components in GLScene.<br>
-    (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
+    (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html). 
 
-  <b>History : </b><font size=-1><ul>
-      <li>19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
-      <li>06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
-      <li>02/02/03 - EG     - Creation
-   </ul><p>
+   History :  
+       19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
+       22/01/10 - Yar - Added GLTextureFormat to uses
+       31/03/07 - DaStr - Added $I GLScene.inc
+       19/09/03 - EG - "Lighmap" -&gt; "LightMap"
+       06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
+       02/02/03 - EG     - Creation
+   </ul> 
 }
 unit GLFileOCT;
 
@@ -31,7 +31,7 @@ type
 
   // TGLOCTVectorFile
 
-  {: The OCT vector file (FSRad output).<p> }
+  {The OCT vector file (FSRad output).  }
   TGLOCTVectorFile = class(TVectorFile)
   public
     { Public Declarations }

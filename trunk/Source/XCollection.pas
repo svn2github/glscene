@@ -1,32 +1,32 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : XCollection<p>
+{ : XCollection 
 
-  A polymorphism-enabled TCollection-like set of classes<p>
+  A polymorphism-enabled TCollection-like set of classes 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead abstract
+   History :  
+   10/11/12 - PW - Added CPPB compatibility: used dummy method instead abstract
   definition in class function FriendlyName for GLS_CPPB
-  <li>20/01/11 - DanB - TXCollectionItem no longer sets initial Name = FriendlyName
-  <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  <li>31/08/10 - Yar - Bugfixed TXCollectionItem.ReadFromFiler when Assertion off
-  <li>07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
-  <li>10/04/08 - DaStr - TXCollectionItem now descends from
+   20/01/11 - DanB - TXCollectionItem no longer sets initial Name = FriendlyName
+   04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+   31/08/10 - Yar - Bugfixed TXCollectionItem.ReadFromFiler when Assertion off
+   07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
+   10/04/08 - DaStr - TXCollectionItem now descends from
   TGLInterfacedPersistent (BugTracker ID = 1938988)
-  <li>08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+   08/12/04 - SG - Added TXCollectionItem.CanAddTo class function
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
   Add dummy method for the abstract problem
-  <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
-  <li>12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
-  <li>19/06/03 - DanB - Added TXCollection.GetOrCreate
-  <li>18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
-  <li>02/02/01 - EG - CanAdd now virtual
-  <li>09/06/00 - EG - Added GetByClass
-  <li>23/05/00 - EG - Added "Loaded" mechanism
-  <li>17/04/00 - EG - Optimized TXCollection.Assign
-  <li>16/04/00 - EG - Creation from GLScene split
-  </ul></font>
+   03/07/04 - LR - Removed ..\ from the GLScene.inc
+   12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
+   19/06/03 - DanB - Added TXCollection.GetOrCreate
+   18/02/01 - EG - Fixed TXCollectionItem.Destroy (count decrementation)
+   02/02/01 - EG - CanAdd now virtual
+   09/06/00 - EG - Added GetByClass
+   23/05/00 - EG - Added "Loaded" mechanism
+   17/04/00 - EG - Optimized TXCollection.Assign
+   16/04/00 - EG - Creation from GLScene split
+   
 }
 unit XCollection;
 
@@ -53,11 +53,11 @@ type
 
   // TXCollectionItem
 
-  { : Base class for implementing a XCollection item.<p>
+  { : Base class for implementing a XCollection item. 
     NOTES :<ul>
-    <li>Don't forget to override the ReadFromFiler/WriteToFiler persistence
+     Don't forget to override the ReadFromFiler/WriteToFiler persistence
     methods if you add data in a subclass !
-    <li>Subclasses must be registered using the RegisterXCollectionItemClass
+     Subclasses must be registered using the RegisterXCollectionItemClass
     function for proper operation
     </ul> }
   TXCollectionItem = class(TGLInterfacedPersistent)
@@ -90,27 +90,27 @@ type
     function GetNamePath: string; override;
     property Owner: TXCollection read FOwner;
 
-    { : Default implementation uses WriteToFiler/ReadFromFiler.<p> }
+    { : Default implementation uses WriteToFiler/ReadFromFiler.  }
     procedure Assign(Source: TPersistent); override;
 
     procedure MoveUp;
     procedure MoveDown;
     function Index: integer;
 
-    { : Returns a user-friendly denomination for the class.<p>
+    { : Returns a user-friendly denomination for the class. 
       This denomination is used for picking a texture image class
       in the IDE expert. }
     class function FriendlyName: String; virtual;
-    { : Returns a user-friendly description for the class.<p>
+    { : Returns a user-friendly description for the class. 
       This denomination is used for helping the user when picking a
       texture image class in the IDE expert. If it's not overriden,
       takes its value from FriendlyName. }
     class function FriendlyDescription: String; virtual;
-    { : Category of the item class.<p>
+    { : Category of the item class. 
       This is a free string, it will used by the XCollectionEditor to
       regroup collectionitems and menu items }
     class function ItemCategory: string; virtual;
-    { : If true only one such XCollectionItem is allowed per BaseSceneObject.<p>
+    { : If true only one such XCollectionItem is allowed per BaseSceneObject. 
       Inheritance is accounted for UniqueXCollectionItem resolution, ie.
       if TClassA is unique, and TClassB is a subclass of TClassA,
       whatever the unicity of TClassB, TClassA and TClassB won't be allowed
@@ -131,7 +131,7 @@ type
 
   // TXCollection
 
-  { : Holds a list of TXCollectionItem objects.<p>
+  { : Holds a list of TXCollectionItem objects. 
     This class looks a lot like a polymorphic-enabled TCollection, it is
     a much stripped down version of a proprietary TObjectList and persistence
     classes (XClasses & XLists), if the copyrights are ever partially lifted
@@ -166,7 +166,7 @@ type
     property Owner: TPersistent read FOwner write FOwner;
     function GetNamePath: string; override;
 
-    { : Class of the items.<p>
+    { : Class of the items. 
       Unlike TCollection, items can be of ItemsClass OR ANY of its
       subclasses, ie. this function is used only for asserting your adding
       objects of the right class, and not for persistence. }
@@ -186,7 +186,7 @@ type
     function GetByClass(aClass: TXCollectionItemClass): TXCollectionItem;
     // : Returns the index of the first XCollectionItem of the given name (or -1)
     function IndexOfName(const aName: string): integer;
-    { : Indicates if an object of the given class can be added.<p>
+    { : Indicates if an object of the given class can be added. 
       This function is used to enforce Unique XCollection. }
     function CanAdd(aClass: TXCollectionItemClass): Boolean; virtual;
 
@@ -208,7 +208,7 @@ procedure UnregisterXCollectionItemClass(aClass: TXCollectionItemClass);
 { : Retrieves a registered TXCollectionItemClass from its classname. }
 function FindXCollectionItemClass(const ClassName: string)
   : TXCollectionItemClass;
-{ : Creates and returns a copy of internal list of TXCollectionItem classes.<p>
+{ : Creates and returns a copy of internal list of TXCollectionItem classes. 
   Returned list should be freed by caller, the parameter defines an ancestor
   class filter. If baseClass is left nil, TXCollectionItem is used as ancestor. }
 function GetXCollectionItemClassesList(baseClass

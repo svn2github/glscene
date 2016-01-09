@@ -1,24 +1,24 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialScript<p>
+{GLMaterialScript 
 
-   Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
+   Material Script Batch loader for TGLMaterialLibrary for runtime. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>22/01/10 - Yar   - Added GLTextureFormat to uses
-      <li>24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+	 History :  
+       22/04/10 - Yar - Fixes after GLState revision
+       22/01/10 - Yar   - Added GLTextureFormat to uses
+       24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
-      <li>02/04/07 - DaStr - TGLMaterialScripter is now notified of
+       02/04/07 - DaStr - TGLMaterialScripter is now notified of
                                DebugMemo's and MaterialLibrary's destruction
                              TGLShaderItems and TGLMaterialLibraryItems now
                                descent from TOwnedCollection
                              Removed unused stuff from "uses" section
                              Alligned and formated the "interface" section
-      <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
-	</ul></font>
+       29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+       09/06/04 - Mathx - Addition to GLScene (created by Kenneth Poulter)
+	 
 }
 {
    Author : Kenneth Poulter (aka SpiriT aka Difacane)

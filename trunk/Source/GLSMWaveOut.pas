@@ -1,17 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMWaveOut<p>
+{
+	Basic sound manager based on WinMM  
 
-	Basic sound manager based on WinMM <p>
-
-	<b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+	 History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
-      <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
-	</ul></font>
+       25/07/09 - DaStr - Added $I GLScene.inc
+       30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
+       24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
+	 
 }
 unit GLSMWaveOut;
 
@@ -23,6 +22,7 @@ interface
 uses
   Winapi.MMSystem,
   System.Classes,
+  System.SysUtils,
   //GLS
   GLSound, GLSoundFileObjects;
 
@@ -30,10 +30,10 @@ type
 
 	// TGLSMWaveOut
 	//
-   {: Basic sound manager based on WinMM <i>waveOut</i> function.<p>
+   {Basic sound manager based on WinMM <i>waveOut</i> function. 
       This manager has NO 3D miximing capacity, this is merely a default manager
       that should work on any windows based system, and help showcasing/testing
-      basic GLSS core functionality.<p>
+      basic GLSS core functionality. 
       Apart from 3D, mute, pause, priority and volume are ignored too, and only
       sampling conversions supported by the windows ACM driver are supported
       (ie. no 4bits samples playback etc.). }
@@ -64,9 +64,13 @@ procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
 function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
                         waveFormat : TWaveFormatEx) : HWaveOut; overload;
 
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
-
-uses SysUtils;
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
 type
   TSoundState = (ssPlaying, ssFinished);

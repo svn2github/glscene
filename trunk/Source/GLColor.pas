@@ -1,19 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLColor<p>
+{GLColor 
 
-   All color types, constants and utilities should go here<p>
+   All color types, constants and utilities should go here 
 
-  <b>History : </b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
-    <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
-    <li>24/10/10 - DaStr - Removed dependancy from OpenGL
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses
-    <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
-    <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
-    <li>05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
-    <li>06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
+   History :  
+     10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
+     04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
+     24/10/10 - DaStr - Removed dependancy from OpenGL
+     23/08/10 - Yar - Added OpenGLTokens to uses
+     31/05/10 - Yar - Fixed warnings for Delhi2009/2010
+     04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
+     05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
+     06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
                           (separated from GLTexture.pas and GLCrossPlatform.pas)
   </ul>
 }
@@ -38,7 +38,7 @@ type
 
    // TGLColor
    //
-   {: Wraps an OpenGL color. }
+   {Wraps an OpenGL color. }
    TGLColor = class(TGLUpdateAbleObject)
       private
          { Private Properties }
@@ -110,7 +110,7 @@ type
          procedure EnumColors(AValues: TStrings); overload;
 
          function  FindColor(const aName: String): TColorVector;
-         {: Convert a clrXxxx or a '<red green blue alpha> to a color vector }
+         {Convert a clrXxxx or a '<red green blue alpha> to a color vector }
          function  GetColor(const aName: String): TColorVector;
          function  GetColorName(const aColor: TColorVector): String;
          procedure RegisterDefaultColors;
@@ -128,12 +128,12 @@ function GetGValue(rgb: DWORD): Byte;  {$NODEFINE GetGValue}
 function GetBValue(rgb: DWORD): Byte;  {$NODEFINE GetBValue}
 
 procedure InitGLSceneColors;
-{: Converts a delphi color into its RGB fragments and correct range. }
+{Converts a delphi color into its RGB fragments and correct range. }
 function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
 
 //: Converts a color vector (containing float values)
 function ConvertColorVector(const AColor: TColorVector): TColor; overload;
-{: Converts a color vector (containing float values) and alter intensity.<p>
+{Converts a color vector (containing float values) and alter intensity. 
    intensity is in [0..1] }
 function ConvertColorVector(const AColor: TColorVector; intensity: Single): TColor; overload;
 //: Converts RGB components into a color vector with correct range

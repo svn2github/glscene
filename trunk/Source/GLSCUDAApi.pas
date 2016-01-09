@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAApi<p>
+{ : GLSCUDAApi 
 
-  <b>History : </b><font size=-1><ul>
-  <li>13/12/13 - PW - Added IFDEF GLS_LOGGING
-  <li>07/02/11 - Yar - Added debug mode
-  <li>08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
-  <li>02/03/10 - Yar - Added missing constants, correct parameters of some functions
-  <li>28/01/10 - Yar - Creation
-  </ul></font>
+   History :  
+   13/12/13 - PW - Added IFDEF GLS_LOGGING
+   07/02/11 - Yar - Added debug mode
+   08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
+   02/03/10 - Yar - Added missing constants, correct parameters of some functions
+   28/01/10 - Yar - Creation
+   
 }
 
 /// *

@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLCoordinates<p>
+{ : GLCoordinates 
 
-  Coordinate related classes.<p>
+  Coordinate related classes. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
-  <li>30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
-  <li>05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thanks C4)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses
-  <li>05/10/08 - DanB - Created, from GLMisc.pas
-  </ul></font>
+   History :  
+   20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
+   30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
+   05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thanks C4)
+   23/08/10 - Yar - Added OpenGLTokens to uses
+   05/10/08 - DanB - Created, from GLMisc.pas
+   
 }
 unit GLCoordinates;
 
@@ -30,21 +30,21 @@ type
 
   // TGLCoordinatesStyle
   //
-  { : Identifie le type de données stockées au sein d'un TGLCustomCoordinates.<p>
-    <ul><li>csPoint2D : a simple 2D point (Z=0, W=0)
-    <ul><li>csPoint : un point (W=1)
-    <li>csVector : un vecteur (W=0)
-    <li>csUnknown : aucune contrainte
+  { : Identifie le type de données stockées au sein d'un TGLCustomCoordinates. 
+    <ul> csPoint2D : a simple 2D point (Z=0, W=0)
+    <ul> csPoint : un point (W=1)
+     csVector : un vecteur (W=0)
+     csUnknown : aucune contrainte
     </ul> }
   TGLCoordinatesStyle = (CsPoint2D, CsPoint, CsVector, CsUnknown);
 
   // TGLCustomCoordinates
   //
-  { : Stores and homogenous vector.<p>
+  { : Stores and homogenous vector. 
     This class is basicly a container for a TVector, allowing proper use of
     delphi property editors and editing in the IDE. Vector/Coordinates
     manipulation methods are only minimal.<br>
-    Handles dynamic default values to save resource file space.<p> }
+    Handles dynamic default values to save resource file space.  }
   TGLCustomCoordinates = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
@@ -82,9 +82,9 @@ type
     procedure Initialize(const Value: TVector);
     procedure NotifyChange(Sender: TObject); override;
 
-    { : Identifies the coordinates styles.<p>
+    { : Identifies the coordinates styles. 
       The property is NOT persistent, csUnknown by default, and should be
-      managed by owner object only (internally).<p>
+      managed by owner object only (internally). 
       It is used by the TGLCustomCoordinates for internal "assertion" checks
       to detect "misuses" or "misunderstandings" of what the homogeneous
       coordinates system implies. }
@@ -123,19 +123,19 @@ type
     procedure SetToZero;
     function AsAddress: PGLFloat;
 
-    { : The coordinates viewed as a vector.<p>
+    { : The coordinates viewed as a vector. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
 
-    { : The coordinates viewed as an affine vector.<p>
+    { : The coordinates viewed as an affine vector. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead.<br>
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;
 
-    { : The coordinates viewed as a 2D point.<p>
+    { : The coordinates viewed as a 2D point. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;

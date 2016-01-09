@@ -1,16 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSComputingRegister<p>
+{GLSComputingRegister 
 
-   Registration unit for GLScene Computing package.<p>
+   Registration unit for GLScene Computing package. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
-      <li>22/08/10 - Yar - Some improvements for FPC (thanks Predator)
-      <li>09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
-      <li>19/03/10 - Yar - Creation
-	</ul></font>
+	 History :  
+       05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
+       22/08/10 - Yar - Some improvements for FPC (thanks Predator)
+       09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler
+       19/03/10 - Yar - Creation
+	 
 }
 unit GLSComputingRegister;
 

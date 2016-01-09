@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMultisampleImage<p>
+{GLMultisampleImage 
 
     This unit provides support for two new types of "multisample
     textures" - two-dimensional and two-dimensional array - as well as
     mechanisms to fetch a specific sample from such a texture in a shader,
     and to attach such textures to FBOs for rendering.
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10- DaStr - Added $I GLScene.inc   
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>16/05/10 - Yar - Creation (thanks to C4)
-   </ul></font>
+    History :  
+       04/11/10- DaStr - Added $I GLScene.inc   
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       16/05/10 - Yar - Creation (thanks to C4)
+    
 }
 unit GLMultisampleImage;
 
@@ -72,9 +72,9 @@ type
 
   published
     { Published Declarations }
-    {: Width of the blank image (for memory allocation). }
+    {Width of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
-    {: Width of the blank image (for memory allocation). }
+    {Width of the blank image (for memory allocation). }
     property Height: Integer read GetHeight write SetHeight default 256;
     property Depth: Integer read GetDepth write SetDepth default 0;
     property SamplesCount: Integer read FSamplesCount write SetSamplesCount

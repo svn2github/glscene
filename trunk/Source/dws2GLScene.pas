@@ -1,13 +1,13 @@
 // dws2GLScene
-{: DelphiWebScriptII symbol creation for base GLScene classes.<p>
+{DelphiWebScriptII symbol creation for base GLScene classes. 
 
    This unit is dependent on dws2Classes and dws2VectorGeometry.
    These components must be associated with the same compiler
-   for the GLScene classes to inherit from.<p>
+   for the GLScene classes to inherit from. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>27/04/2004 - SG - Creation
-   </ul></font>
+    History :  
+       27/04/2004 - SG - Creation
+    
 }
 unit dws2GLScene;
 

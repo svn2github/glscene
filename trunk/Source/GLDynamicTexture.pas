@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDynamicTexture<p>
+{GLDynamicTexture 
 
   Adds a dynamic texture image, which allows for easy updating of
-  texture data.<p>
+  texture data. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
-      <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
+       23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
                            simplify GetBitsPerPixel and GetDataFormat
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses 
-      <li>08/10/08 - DanB - added FriendlyName/FriendlyDescription
-      <li>16/10/07 - LC - Added DirtyRectangle to allow partial updates.
-      <li>12/07/07 - DaStr - Added $I GLScene.inc
-      <li>25/06/07 - LC - Added SysUtils (needed for AllocMem on D7 and down).
-      <li>25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
+       22/01/10 - Yar - Added GLTextureFormat to uses 
+       08/10/08 - DanB - added FriendlyName/FriendlyDescription
+       16/10/07 - LC - Added DirtyRectangle to allow partial updates.
+       12/07/07 - DaStr - Added $I GLScene.inc
+       25/06/07 - LC - Added SysUtils (needed for AllocMem on D7 and down).
+       25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
                           new methods for freeing PBO and buffer.
-      <li>24/06/07 - LC - Creation
-   </ul></font>
+       24/06/07 - LC - Creation
+    
 }
 
 unit GLDynamicTexture;
@@ -37,7 +37,7 @@ uses
 type
   // TGLDynamicTextureImage
   //
-  {: Allows for fast updating of the texture at runtime. }
+  {Allows for fast updating of the texture at runtime. }
   TGLDynamicTextureImage = class(TGLBlankImage)
   private
     FUpdating: integer;
@@ -70,30 +70,30 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Must be called before using the Data pointer.<p>
+    {Must be called before using the Data pointer. 
       Rendering context must be active! }
     procedure BeginUpdate;
 
-    {: Must be called after data is changed.<p>
+    {Must be called after data is changed. 
        This will upload the new data. }
     procedure EndUpdate;
 
-    {: Pointer to buffer data.<p> Will be nil
+    {Pointer to buffer data.  Will be nil
        outside a BeginUpdate / EndUpdate block. }
     property Data: pointer read FData;
 
-    {: Marks the dirty rectangle inside the texture.<p> BeginUpdate sets
+    {Marks the dirty rectangle inside the texture.  BeginUpdate sets
        it to ((0, 0), (Width, Height)), ie the entire texture.
        Override it if you're only changing a small piece of the texture.
        Note that the Data pointer is relative to the DirtyRectangle,
        NOT the entire texture. }
     property DirtyRectangle: TGLRect read FDirtyRect write SetDirtyRectangle;
 
-    {: Indicates that the data is stored as BGR(A) instead of
-       RGB(A).<p> The default is to use BGR(A). }
+    {Indicates that the data is stored as BGR(A) instead of
+       RGB(A).  The default is to use BGR(A). }
     property UseBGR: boolean read FUseBGR write FUseBGR;
 
-    {: Enables or disables use of a PBO. Default is true. }
+    {Enables or disables use of a PBO. Default is true. }
     property UsePBO: boolean read FUsePBO write SetUsePBO;
   end;
 

@@ -1,25 +1,25 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLObjectManager<p>
+{GLObjectManager 
 
    The object manager is used for registering classes together with a category,
    description + icon, so that they can be displayed visually.  This can then
    be used by run-time or design-time scene editors for choosing which
-   scene objects to place into a scene.<p>
+   scene objects to place into a scene. 
 
    TODO: add some notification code, so that when a scene object is registered/
    unregistered, any editor that is using the object manager can be notified.
 
- <b>History : </b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Improved FPC compatibility
+  History :  
+       11/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
-      <li>14/03/09 - DanB - Created by moving TObjectManager in from GLSceneRegister.pas,
+       25/07/09 - DaStr - Added $I GLScene.inc
+       26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
+       14/03/09 - DanB - Created by moving TObjectManager in from GLSceneRegister.pas,
                             made some slight adjustments to allow resources being loaded
                             from separate packages.
- </ul></font>
+  
 }
 
 unit GLObjectManager;

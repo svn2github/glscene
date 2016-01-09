@@ -1,18 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: OpenGLTokens<p>
-
- <b>History : </b><font size=-1><ul>
-      <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
-      <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
+{
+   History :
+       24/10/13 - Yar - Added OpenGL 4.3, 4.4
+       17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
                            to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
-      <li>21/08/11 - Yar - Added OpenGL ES
-      <li>31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
-      <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
-      <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
-      <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
-   </ul></font>
+       21/08/11 - Yar - Added OpenGL ES
+       31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
+       23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
+       14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
+       03/08/10 - Yar - Moved from OpenGL1x types and constants
+    
 }
 unit OpenGLTokens;
 
@@ -21,10 +20,10 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.SysUtils,
   GLVectorTypes,
-  SysUtils,
 {$IFDEF MSWINDOWS}
-  Windows
+  Winapi.Windows
 {$ENDIF }
 
 {$IFDEF UNIX}
@@ -5654,7 +5653,7 @@ const
    EGL_VERSION_1_2 = 1;
    EGL_VERSION_1_3 = 1;
    EGL_VERSION_1_4 = 1;
-{: EGL Enumerants. Bitmasks and other exceptional cases aside, most
+{EGL Enumerants. Bitmasks and other exceptional cases aside, most
  * enums are assigned unique values starting at 0x3000. }
 { EGL aliases  }
    EGL_FALSE = 0;
@@ -5850,7 +5849,7 @@ const
    EGL_COLORSPACE_LINEAR = EGL_VG_COLORSPACE_LINEAR;
    EGL_ALPHA_FORMAT_NONPRE = EGL_VG_ALPHA_FORMAT_NONPRE;
    EGL_ALPHA_FORMAT_PRE = EGL_VG_ALPHA_FORMAT_PRE;
-{: EGL extensions must request enum blocks from the Khronos
+{EGL extensions must request enum blocks from the Khronos
  * API Registrar, who maintains the enumerant registry. Submit
  * a bug in Khronos Bugzilla against task "Registry". }
 

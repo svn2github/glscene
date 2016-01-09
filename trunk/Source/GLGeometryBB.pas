@@ -1,35 +1,35 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeometryBB<p>
+{ : GLGeometryBB 
 
-  Calculations and manipulations on Bounding Boxes.<p>
+  Calculations and manipulations on Bounding Boxes. 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/12/14 - PW - Renamed GeometryBB unit to GLGeometryBB
-  <li>20/11/12 - PW - CPP compatibility: back changed type THmgBoundingBox to record
+   History :  
+   10/12/14 - PW - Renamed GeometryBB unit to GLGeometryBB
+   20/11/12 - PW - CPP compatibility: back changed type THmgBoundingBox to record
                  Changed THmgBoundingBox = array [0..7] of TVector
                  to THmgBoundingBox = record BBox : array [0..7] of TVector;
-  <li>05/06/12 - Maverick - Added PlaneAABBIntersection routine
-  <li>02/07/11 - DaStr - Removed TAABB.Revision
-  <li>20/04/08 - DaStr - Added a NullBoundingBox constant and
+   05/06/12 - Maverick - Added PlaneAABBIntersection routine
+   02/07/11 - DaStr - Removed TAABB.Revision
+   20/04/08 - DaStr - Added a NullBoundingBox constant and
                  BoundingBoxesAreEqual() function (thanks Pascal)
-  <li>19/09/07 - DaStr - Added OffsetBB(Point) procedures
-  <li>31/08/07 - LC - Replaced TriangleIntersectAABB with a working (and faster) version
-  <li>23/08/07 - LC - Added RayCastAABBIntersect
-  <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+   19/09/07 - DaStr - Added OffsetBB(Point) procedures
+   31/08/07 - LC - Replaced TriangleIntersectAABB with a working (and faster) version
+   23/08/07 - LC - Added RayCastAABBIntersect
+   24/03/07 - DaStr - Added explicit pointer dereferencing
                  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>22/06/03 - MF - Added TBSphere for bounding spheres and classes to
+   22/06/03 - MF - Added TBSphere for bounding spheres and classes to
                  determine whether one aabb/bsphere contains another aabb/bsphere
-  <li>21/06/03 - MF - Added IntersectAABBsAbsolute
-  <li>08/05/03 - DanB - Added Plane/Triangle-AABB collisions (Matheus Degiovani)
-  <li>07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett)
-  <li>22/01/03 - EG - IntersectAABBs moved in (Bernd Klaiber)
-  <li>04/09/03 - EG - New AABB functions
-  <li>17/08/01 - EG - Removed "math" dependency
-  <li>09/07/01 - EG - Added AABB types and functions
-  <li>31/03/01 - EG - Original Unit by Jacques Tur
-  </ul></font>
+   21/06/03 - MF - Added IntersectAABBsAbsolute
+   08/05/03 - DanB - Added Plane/Triangle-AABB collisions (Matheus Degiovani)
+   07/02/03 - EG - Added IntersectAABBsAbsoluteXY (Dan Bartlett)
+   22/01/03 - EG - IntersectAABBs moved in (Bernd Klaiber)
+   04/09/03 - EG - New AABB functions
+   17/08/01 - EG - Removed "math" dependency
+   09/07/01 - EG - Added AABB types and functions
+   31/03/01 - EG - Original Unit by Jacques Tur
+   
 
 }
 unit GLGeometryBB;
@@ -100,7 +100,7 @@ function BoundingBoxesAreEqual(const ABoundingBox1, ABoundingBox2
 function BoundingBoxesAreEqual(const ABoundingBox1, ABoundingBox2
   : PHmgBoundingBox): Boolean; overload;
 
-{ : Adds a BB into another BB.<p>
+{ : Adds a BB into another BB. 
   The original BB (c1) is extended if necessary to contain c2. }
 function AddBB(var C1: THmgBoundingBox; const C2: THmgBoundingBox)
   : THmgBoundingBox;
@@ -125,7 +125,7 @@ procedure AABBInclude(var Bb: TAABB; const P: TAffineVector);
 { : Make an AABB that is formed by sweeping a sphere (or AABB) from Start to Dest }
 procedure AABBFromSweep(var SweepAABB: TAABB; const Start, Dest: TVector;
   const Radius: Single);
-{ : Returns the intersection AABB of two AABBs.<p>
+{ : Returns the intersection AABB of two AABBs. 
   If the AABBs don't intersect, will return a degenerated AABB (plane, line or point). }
 function AABBIntersection(const Aabb1, Aabb2: TAABB): TAABB;
 
@@ -149,18 +149,18 @@ procedure OffsetBB(var Bb: THmgBoundingBox; const Delta: TVector); overload;
 procedure OffsetBBPoint(var Bb: THmgBoundingBox; const Delta: TVector);
   overload;
 
-{ : Determines if two AxisAlignedBoundingBoxes intersect.<p>
+{ : Determines if two AxisAlignedBoundingBoxes intersect. 
   The matrices are the ones that convert one point to the other's AABB system }
 function IntersectAABBs(const Aabb1, Aabb2: TAABB; const M1To2, M2To1: TMatrix)
   : Boolean; overload;
-{ : Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.<p> }
+{ : Checks whether two Bounding boxes aligned with the world axes collide in the XY plane.  }
 function IntersectAABBsAbsoluteXY(const Aabb1, Aabb2: TAABB): Boolean;
-{ : Checks whether two Bounding boxes aligned with the world axes collide in the XZ plane.<p> }
+{ : Checks whether two Bounding boxes aligned with the world axes collide in the XZ plane.  }
 function IntersectAABBsAbsoluteXZ(const Aabb1, Aabb2: TAABB): Boolean;
-{ : Checks whether two Bounding boxes aligned with the world axes collide.<p> }
+{ : Checks whether two Bounding boxes aligned with the world axes collide.  }
 function IntersectAABBsAbsolute(const Aabb1, Aabb2: TAABB): Boolean;
 { : Checks whether one Bounding box aligned with the world axes fits within
-  another Bounding box.<p> }
+  another Bounding box.  }
 function AABBFitsInAABBAbsolute(const Aabb1, Aabb2: TAABB): Boolean;
 
 { : Checks if a point "p" is inside an AABB }
@@ -171,7 +171,7 @@ function PointInAABB(const P: TVector; const Aabb: TAABB): Boolean; overload;
 { : Checks if a plane (given by the normal+d) intersects the AABB }
 function PlaneIntersectAABB(Normal: TAffineVector; D: Single;
   Aabb: TAABB): Boolean;
-{: Compute the intersection between a plane and the AABB}
+{Compute the intersection between a plane and the AABB}
 function PlaneAABBIntersection(const plane : THmgPlane; const AABB : TAABB) : TAffineVectorList;
 { : Checks if a triangle (given by vertices v1, v2 and v3) intersects an AABB }
 function TriangleIntersectAABB(const Aabb: TAABB;

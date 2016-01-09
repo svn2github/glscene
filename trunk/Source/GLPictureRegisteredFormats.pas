@@ -1,30 +1,30 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: PictureRegisteredFormats<p>
+{PictureRegisteredFormats 
 
-   Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
+   Hacks into the VCL to access the list of TPicture registered TGraphic formats 
 
-   <b>History : </b><font size=-1><ul>
-      <li>19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats
-      <li>31/05/10 - Yar - Fixes for Linux x64
-      <li>25/01/10 - DaStr - Updated warning about a possible crash while using the
+    History :  
+       19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+       19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats
+       31/05/10 - Yar - Fixes for Linux x64
+       25/01/10 - DaStr - Updated warning about a possible crash while using the
                               'Use Debug DCUs' compiler option (BugTrackerID=1586936)
-      <li>10/11/09 - DaStr - Replaced all Delphi2005+ IFDEFs with a single one
-      <li>07/11/09 - DaStr - Improved FPC compatibility
+       10/11/09 - DaStr - Replaced all Delphi2005+ IFDEFs with a single one
+       07/11/09 - DaStr - Improved FPC compatibility
                               (BugtrackerID = 2893580) (thanks Predator)
-      <li>16/10/08 - UweR - Added IFDEF for Delphi 2009
-      <li>06/04/08 - DanB - Change to HackTPictureRegisteredFormats due to Char changing
+       16/10/08 - UweR - Added IFDEF for Delphi 2009
+       06/04/08 - DanB - Change to HackTPictureRegisteredFormats due to Char changing
                             size in Delphi 2009
-      <li>06/04/08 - DaStr - Added IFDEFs for Delphi 5 compatibility
-      <li>20/12/06 - DaStr - Added a warning about optimization turned off
+       06/04/08 - DaStr - Added IFDEFs for Delphi 5 compatibility
+       20/12/06 - DaStr - Added a warning about optimization turned off
                              in HackTPictureRegisteredFormats (BugTrackerID=1586936)
-      <li>08/03/06 - ur - Added Delphi 2006 support
-      <li>28/02/05 - EG - Added BPL support
-      <li>24/02/05 - EG - Creation
-   </ul></font>
+       08/03/06 - ur - Added Delphi 2006 support
+       28/02/05 - EG - Added BPL support
+       24/02/05 - EG - Creation
+    
 }
 unit GLPictureRegisteredFormats;
 
@@ -39,11 +39,11 @@ uses
 
 {$DEFINE PRF_HACK_PASSES}
 
-{: Returns the TGraphicClass associated to the extension, if any.<p>
+{Returns the TGraphicClass associated to the extension, if any. 
    Accepts anExtension with or without the '.' }
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 
-{: Adds to the passed TStrings the list of registered formats.<p>
+{Adds to the passed TStrings the list of registered formats. 
    Convention is "extension=description" for the string, the Objects hold
    the corresponding TGraphicClass (extensions do not include the '.'). }
 procedure HackTPictureRegisteredFormats(destList: TStrings);

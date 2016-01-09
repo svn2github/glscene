@@ -1,15 +1,15 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLGlassShader <p>
+{GLSLGlassShader  
 
    Glass shader : Environment mapping with an
    equirectangular 2D texture and refraction mapping
-   with a background texture blended together using the Fresnel terms<p>
+   with a background texture blended together using the Fresnel terms 
 
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
+    History :  
+     08/12/15 - J.Delauney - Improved and Made compatible with the latest SVN version of GLScene
+     02/11/06 - Da Stranger - Creation
 
 }
 unit GLSLGlassShader;
@@ -28,7 +28,7 @@ uses
 
 //TGLCustomGLSLSimpleGlassShader
 //
-{: Custom class for GLSLGlassShader.<p>
+{Custom class for GLSLGlassShader. 
   Glass shader : Environment mapping and refraction mapping using the fresnel terms }
 Type
   TGLCustomGLSLGlassShader = class(TGLCustomGLSLShader)

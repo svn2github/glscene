@@ -1,24 +1,24 @@
 
 // This unit is part of the GLScene Project, http://glscene.org
 
-{: GLBehaviours<p>
+{GLBehaviours 
 
-  Standard TGLBehaviour subclasses for GLScene<p>
+  Standard TGLBehaviour subclasses for GLScene 
 
-  <b>History : </b><font size=-1><ul>
-    <li>08/05/08 - DaStr - Added a global GetInertia() function
-    <li>19/12/06 - DaStr - TGLBAcceleration.Create - creates Inertia right away,
+   History :  
+     08/05/08 - DaStr - Added a global GetInertia() function
+     19/12/06 - DaStr - TGLBAcceleration.Create - creates Inertia right away,
                          thus displaying it in the XCollection Editor
                          TGLBAcceleration.DoProgress - raises an exception
                          when required Inertia component is deleted by user
-    <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
-    <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug)
-    <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
-    <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
-    <li>10/04/00 - Egg - Improved persistence logic
-    <li>06/04/00 - Egg - Added Damping stuff to inertia
-    <li>05/04/00 - Egg - Creation
-  </ul></font>
+     24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
+     02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug)
+     09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
+     11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
+     10/04/00 - Egg - Improved persistence logic
+     06/04/00 - Egg - Added Damping stuff to inertia
+     05/04/00 - Egg - Creation
+   
 }
 unit GLBehaviours;
 
@@ -41,17 +41,17 @@ type
 
   // TGLDamping
 
-  {: Holds parameters for TGLScene basic damping model.<p>
+  {Holds parameters for TGLScene basic damping model. 
     Damping is modeled by calculating a force from the speed, this force
     can then be transformed to an acceleration is you know the object's mass.<br>
     Formulas :<ul>
-    <li>damping = constant + linear * Speed + quadratic * Speed^2
-    <li>accel = damping / Mass
+     damping = constant + linear * Speed + quadratic * Speed^2
+     accel = damping / Mass
     </ul> That's just basic physics :). A note on the components :<ul>
-    <li>constant : use it for solid friction (will stop abruptly an object after
+     constant : use it for solid friction (will stop abruptly an object after
       decreasing its speed.
-    <li>linear : linear friction damping.
-    <li>quadratic : expresses viscosity.
+     linear : linear friction damping.
+     quadratic : expresses viscosity.
     </ul>  }
   TGLDamping = class(TGLUpdateAbleObject)
   private
@@ -72,13 +72,13 @@ type
     procedure ReadFromFiler(reader: TReader);
 
     procedure Assign(Source: TPersistent); override;
-      {: Calculates attenuated speed over deltaTime.<p>
+      {Calculates attenuated speed over deltaTime. 
             Integration step is 0.01 sec, and the following formula is applied
             at each step: constant+linear*speed+quadratic*speed^2 }
     function Calculate(speed, deltaTime: double): double;
     //: Returns a "[constant; linear; quadractic]" string
     function AsString(const damping: TGLDamping): string;
-    {: Sets all damping parameters in a single call. }
+    {Sets all damping parameters in a single call. }
     procedure SetDamping(const constant: single = 0; const linear: single = 0;
       const quadratic: single = 0);
 
@@ -91,9 +91,9 @@ type
 
   // TGLBInertia
 
-  {: Simple translation and rotation Inertia behaviour.<p>
+  {Simple translation and rotation Inertia behaviour. 
     Stores translation and rotation speeds, to which you can apply
-    accelerations.<p>
+    accelerations. 
     Note that the rotation model is not physical, so feel free to contribute
     a "realworld" inertia class with realistic, axis-free, rotation inertia
     if this approximation does not suits your needs :). }
@@ -128,20 +128,20 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Adds time-proportionned acceleration to the speed. }
+    {Adds time-proportionned acceleration to the speed. }
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
-      {: Applies a timed force to the inertia.<p>
+      {Applies a timed force to the inertia. 
         If Mass is null, nothing is done. }
     procedure ApplyForce(const deltaTime: double; const force: TVector);
-      {: Applies a timed torque to the inertia (yuck!).<p>
+      {Applies a timed torque to the inertia (yuck!). 
         This gets a "yuck!" because it is as false as the rest of the
         rotation  model. }
     procedure ApplyTorque(const deltaTime: double;
       const turnTorque, rollTorque, pitchTorque: single);
-    {: Inverts the translation vector.<p> }
+    {Inverts the translation vector.  }
     procedure MirrorTranslation;
-         {: Bounce speed as if hitting a surface.<p>
+         {Bounce speed as if hitting a surface. 
             restitution is the coefficient of restituted energy (1=no energy loss,
             0=no bounce). The normal is NOT assumed to be normalized. }
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
@@ -155,16 +155,16 @@ type
     property RollSpeed: single read FRollSpeed write FRollSpeed;
     property PitchSpeed: single read FPitchSpeed write FPitchSpeed;
 
-      {: Enable/Disable damping (damping has a high cpu-cycle cost).<p>
+      {Enable/Disable damping (damping has a high cpu-cycle cost). 
         Damping is enabled by default. }
     property DampingEnabled: boolean read FDampingEnabled write FDampingEnabled;
-      {: Damping applied to translation speed.<br>
+      {Damping applied to translation speed.<br>
         Note that it is not "exactly" applied, ie. if damping would stop
         your object after 0.5 time unit, and your progression steps are
         of 1 time unit, there will be an integration error of 0.5 time unit. }
     property TranslationDamping: TGLDamping read FTranslationDamping
       write SetTranslationDamping;
-      {: Damping applied to rotation speed (yuck!).<br>
+      {Damping applied to rotation speed (yuck!).<br>
         Well, this one is not "exact", like TranslationDamping, and neither
         it is "physical" since I'm reusing the mass and... and... well don't
         show this to your science teacher 8).<br>
@@ -175,7 +175,7 @@ type
 
   // TGLBAcceleration
 
-  {: Applies a constant acceleration to a TGLBInertia.<p> }
+  {Applies a constant acceleration to a TGLBInertia.  }
   TGLBAcceleration = class(TGLBehaviour)
   private
     { Private Declarations }
@@ -206,13 +206,13 @@ type
     property Acceleration: TGLCoordinates read FAcceleration write FAcceleration;
   end;
 
-{: Returns or creates the TGLBInertia within the given behaviours.<p>
+{Returns or creates the TGLBInertia within the given behaviours. 
   This helper function is convenient way to access a TGLBInertia. }
 function GetInertia(const AGLSceneObject: TGLBaseSceneObject): TGLBInertia;
 function GetOrCreateInertia(behaviours: TGLBehaviours): TGLBInertia; overload;
 function GetOrCreateInertia(obj: TGLBaseSceneObject): TGLBInertia; overload;
 
-{: Returns or creates the TGLBAcceleration within the given behaviours.<p>
+{Returns or creates the TGLBAcceleration within the given behaviours. 
   This helper function is convenient way to access a TGLBAcceleration. }
 function GetOrCreateAcceleration(behaviours: TGLBehaviours): TGLBAcceleration;
   overload;

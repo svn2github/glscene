@@ -1,27 +1,27 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLHeightTileFile<p>
+{GLHeightTileFile 
 
-   Access to large tiled height data files.<p>
+   Access to large tiled height data files. 
 
    Performance vs Raw file accesses (for perfect tile match):<ul>
-   <li>Cached data:<ul>
-      <li>"Smooth" terrain   1:2 to 1:10
-      <li>Random terrain     1:1
+    Cached data:<ul>
+       "Smooth" terrain   1:2 to 1:10
+       Random terrain     1:1
       </ul>
-   <li>Non-cached data:<ul>
-      <li>"Smooth" terrain   1:100 to 1:1000
-      <li>Random terrain     1:100
+    Non-cached data:<ul>
+       "Smooth" terrain   1:100 to 1:1000
+       Random terrain     1:100
       </ul>
-   </ul><p>
+   </ul> 
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>21/12/01 - Egg - Creation
-   </ul></font>
+    Historique :  
+       17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
+       20/05/10 - Yar - Fixes for Linux x64
+       30/03/07 - DaStr - Added $I GLScene.inc
+       21/12/01 - Egg - Creation
+    
 }
 unit GLHeightTileFile;
 
@@ -86,7 +86,7 @@ type
 
    // THeightTileFile
    //
-   {: Interfaces a Tiled file }
+   {Interfaces a Tiled file }
    THeightTileFile = class (TObject)
       private
          { Private Declarations }
@@ -114,38 +114,38 @@ type
 
       public
          { Public Declarations }
-         {: Creates a new HTF file.<p>
+         {Creates a new HTF file. 
             Read and data access methods are not available when creating. }
          constructor CreateNew(const fileName : String;
                                aSizeX, aSizeY, aTileSize : Integer);
          constructor Create(const fileName : String);
          destructor Destroy; override;
 
-         {: Returns tile index for corresponding left/top. }
+         {Returns tile index for corresponding left/top. }
          function GetTileIndex(aLeft, aTop : Integer) : Integer;
-         {: Returns tile of corresponding left/top.<p> }
+         {Returns tile of corresponding left/top.  }
          function GetTile(aLeft, aTop : Integer;
                           pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 
-         {: Stores and compresses give tile data.<p>
+         {Stores and compresses give tile data. 
             aLeft and top MUST be a multiple of TileSize, aWidth and aHeight
             MUST be lower or equal to TileSize. }
          procedure CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
                                 aData : PSmallIntArray);
 
-         {: Extract a single row from the HTF file.<p>
+         {Extract a single row from the HTF file. 
             This is NOT the fastest way to access HTF data.<br>
             All of the row must be contained in the world, otherwise result
             is undefined. }
          procedure ExtractRow(x, y, len : Integer; dest : PSmallIntArray);
-         {: Returns the tile that contains x and y. }
+         {Returns the tile that contains x and y. }
          function XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
-         {: Returns the height at given coordinates.<p>
+         {Returns the height at given coordinates. 
             This is definetely NOT the fastest way to access HTF data and should
             only be used as utility function. }
          function XYHeight(anX, anY : Integer) : SmallInt;
 
-         {: Clears the list then add all tiles that overlap the rectangular area. }
+         {Clears the list then add all tiles that overlap the rectangular area. }
          procedure TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
                                destList : TList);
 
@@ -156,7 +156,7 @@ type
 
          property SizeX : Integer read FHeader.SizeX;
          property SizeY : Integer read FHeader.SizeY;
-         {: Maximum width and height for a tile.<p>
+         {Maximum width and height for a tile. 
             Actual tiles may not be square, can assume random layouts, and may
             overlap. }
          property TileSize : Integer read FHeader.TileSize;

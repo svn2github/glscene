@@ -1,34 +1,34 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLMesh<p>
+{ : GLMesh 
 
-  Raw Mesh support in GLScene.<p>
+  Raw Mesh support in GLScene. 
 
   This unit is for simple meshes and legacy support, GLVectorFileObjects
-  implements more efficient (though more complex) mesh tools.<p>
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed some vector arrays to records
-  <li>26/04/11 - Yar - Added VertexColor property (thanks to Filippo Forlani)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for TGLMesh
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+  implements more efficient (though more complex) mesh tools. 
+   History :  
+   10/11/12 - PW - Added CPP compatibility: changed some vector arrays to records
+   26/04/11 - Yar - Added VertexColor property (thanks to Filippo Forlani)
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for TGLMesh
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   14/03/07 - DaStr - Added explicit pointer dereferencing
                   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>06/07/02 - EG - Mesh vertex lock only performed if context is active
-  <li>18/03/02 - EG - Color "leak" fix (Nelson Chu)
-  <li>21/01/02 - EG - TVertexList.OnNotifyChange now handled
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-  <li>30/01/01 - EG - Added VertexList locking
-  <li>19/07/00 - EG - Introduced enhanced mesh structure
-  <li>11/07/00 - EG - Just discovered and made use of "fclex" :)
-  <li>18/06/00 - EG - Creation from split of GLObjects,
+   06/07/02 - EG - Mesh vertex lock only performed if context is active
+   18/03/02 - EG - Color "leak" fix (Nelson Chu)
+   21/01/02 - EG - TVertexList.OnNotifyChange now handled
+   21/02/01 - EG - Now XOpenGL based (multitexture)
+   30/01/01 - EG - Added VertexList locking
+   19/07/00 - EG - Introduced enhanced mesh structure
+   11/07/00 - EG - Just discovered and made use of "fclex" :)
+   18/06/00 - EG - Creation from split of GLObjects,
                     TVertexList now uses TVertexData,
                     Rewrite of TGLMesh.CalcNormals (smaller & faster)
-  </ul></font>
+   
 }
 unit GLMesh;
 
@@ -72,7 +72,7 @@ type
 
   // TVertexList
   //
-  { : Stores an interlaced vertex list for direct use in OpenGL.<p>
+  { : Stores an interlaced vertex list for direct use in OpenGL. 
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TVertexList = class(TGLUpdateAbleObject)
   private
@@ -119,15 +119,15 @@ type
     procedure AddVertex(const vertexData: TVertexData); overload;
     { : Adds a vertex to the list, fastest method for adding a triangle. }
     procedure AddVertex3(const vd1, vd2, vd3: TVertexData); overload;
-    { : Adds a vertex to the list.<p>
+    { : Adds a vertex to the list. 
       Use the NullVector, NullHmgVector or NullTexPoint constants for
       params you don't want to set. }
     procedure AddVertex(const aVertex: TVertex; const aNormal: TAffineVector;
       const aColor: TColorVector; const aTexPoint: TTexPoint); overload;
-    { : Adds a vertex to the list, no texturing version.<p> }
+    { : Adds a vertex to the list, no texturing version.  }
     procedure AddVertex(const vertex: TVertex; const normal: TAffineVector;
       const color: TColorVector); overload;
-    { : Adds a vertex to the list, no texturing, not color version.<p> }
+    { : Adds a vertex to the list, no texturing, not color version.  }
     procedure AddVertex(const vertex: TVertex;
       const normal: TAffineVector); overload;
     { : Duplicates the vertex of given index and adds it at the end of the list. }
@@ -147,10 +147,10 @@ type
     property VertexColor[index: Integer]: TVector4f read GetVertexColor
     write SetVertexColor;
     property Count: Integer read FCount;
-    { : Capacity of the list (nb of vertex).<p>
+    { : Capacity of the list (nb of vertex). 
       Use this to allocate memory quickly before calling AddVertex. }
     property Capacity: Integer read FCapacity write SetCapacity;
-    { : Vertex capacity that will be added each time the list needs to grow.<p>
+    { : Vertex capacity that will be added each time the list needs to grow. 
       default value is 256 (chunks of approx 13 kb). }
     property Growth: Integer read FGrowth write SetGrowth;
 
@@ -171,7 +171,7 @@ type
     property FirstVertex: PGLFloat read GetFirstVertex;
     property FirstTexPoint: PGLFloat read GetFirstTexPoint;
 
-    { : Locking state of the vertex list.<p>
+    { : Locking state of the vertex list. 
       You can "Lock" a list to increase rendering performance on some
       OpenGL implementations (NVidia's). A Locked list size shouldn't be
       changed and calculations should be avoided.<br>
@@ -188,7 +188,7 @@ type
 
   // TGLMesh
   //
-  { : Basic mesh object.<p>
+  { : Basic mesh object. 
     Each mesh holds a set of vertices and a Mode value defines how they make
     up the mesh (triangles, strips...) }
   TGLMesh = class(TGLSceneObject)

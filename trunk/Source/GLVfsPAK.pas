@@ -1,29 +1,29 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVfsPAK<p>
+{GLVfsPAK 
 
-	Support-code for loading files from Quake II PAK Files.<p>
+	Support-code for loading files from Quake II PAK Files. 
    When instance is created all LoadFromFile methods using
-   GLApplicationFileIO mechanism will be pointed into PAK file.<p>
-   You can change current PAK file by ActivePak variable.<p>
+   GLApplicationFileIO mechanism will be pointed into PAK file. 
+   You can change current PAK file by ActivePak variable. 
 
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/2008 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/2007 - DaStr - Added $I GLScene.inc
-      <li>29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>26/10/2006 - LC - Fixed memory leak in TGLVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
-      <li>18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
-      <li>14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
-      <li>04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
-      <li>04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
-      <li>03/08/2004 - Orchestraman - Add LZRW1 compression.
-      <li>19/04/04 - PSz - Creation
-	</ul></font>
+	 History : 
+       16/10/2008 - UweR - Compatibility fix for Delphi 2009
+       31/03/2007 - DaStr - Added $I GLScene.inc
+       29/01/2007 - DaStr - Moved registration to GLSceneRegister.pas
+       26/10/2006 - LC - Fixed memory leak in TGLVfsPAK.LoadFromFile. Bugtracker ID=1585215 (thanks Da Stranger)
+       18/10/2004 - Orchestraman - PAKCreateFileStream, Fixed an error when trying to load an image file in material editor during design time. It Loads the file from the Hard Disk. 
+       14/10/2004 - Orchestraman - PAKCreateFileStream, PAKFileStreamExists procedures redirect the streaming to hard disk if pack file does not exist.
+       04/10/2004 - Orchestraman - Fixed bug in LoadFromFile. The compressor object is created when the file is signed as compressed.
+       04/10/2004 - Orchestraman - Fixed bug in Constructor. The inherited constructor of TComponent didn't run when the component was created by the component pallete.
+       03/08/2004 - Orchestraman - Add LZRW1 compression.
+       19/04/04 - PSz - Creation
+	 
 
-	<b>Notes on Compression feature :</b><font size=-1><ul>
+	 Notes on Compression feature : 
 
-	</ul></font>
+	 
 
 }
 unit GLVfsPAK;

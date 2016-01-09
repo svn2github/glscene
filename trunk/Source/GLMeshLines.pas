@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMeshLines<p>
+{GLMeshLines 
 
-   Line implementation by means of a Triangle strip.<p>
+   Line implementation by means of a Triangle strip. 
 
-	<b>History : </b><font size=-1><ul>
-      <li>05/14/07 - PVD - initial unit proposal (thanks Lord CRC for help)
+	 History :  
+       05/14/07 - PVD - initial unit proposal (thanks Lord CRC for help)
 }
 
 unit GLMeshLines;
@@ -23,7 +23,7 @@ uses
 type
    // TLineNode
    //
-   {: Specialized Node for use in a TGLLines objects.<p>
+   {Specialized Node for use in a TGLLines objects. 
       Adds a Width property }
    TLineNode = class(TGLNode)
    private
@@ -39,7 +39,7 @@ type
 
    // TLineNodes
    //
-   {: Specialized collection for Nodes in TGLMeshLines objects.<p>
+   {Specialized collection for Nodes in TGLMeshLines objects. 
       Stores TLineNode items. }
    TLineNodes = class(TGLNodes)
    public

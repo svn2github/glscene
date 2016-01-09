@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLS_CUDA_Utility<p>
+{GLS_CUDA_Utility 
 
-    Wraper of cutil.<p>
+    Wraper of cutil. 
 
-   <b>History : </b><font size=-1><ul>
-      <li>02/03/10 - Yar - Creation
-   </ul></font>
+    History :  
+       02/03/10 - Yar - Creation
+    
 }
 unit GLSCUDAUtility;
 
