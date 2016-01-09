@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexCombineShader<p>
-
+{
    A shader that allows texture combiner setup.<p>
 
    <b>History : </b><font size=-1><ul>
@@ -14,7 +13,6 @@
       <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>23/05/03 - EG - Added support for binding two extra texture units
       <li>16/05/03 - EG - Creation
-   </ul></font>
 }
 unit GLTexCombineShader;
 

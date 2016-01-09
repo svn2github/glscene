@@ -1,8 +1,7 @@
 
 // This unit is part of the GLScene Project, http://glscene.org
 
-{: GLSceneRegisterLCL<p>
-
+{
    Registration unit for GLScene library components, property editors and
       IDE experts for Lazarus.<p>
 
@@ -19,7 +18,6 @@
       <li>17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
       <li>24/03/08 - DaStr - Initial version
-   </ul></font>
 }
 unit GLSceneRegisterLCL;
 
@@ -89,7 +87,7 @@ uses
   // GLScene - shaders
   GLTexCombineShader, GLPhongShader, GLUserShader, GLSLShader,
   GLHiddenLineShader, GLCelShader, GLOutlineShader, GLMultiMaterialShader,
-  GLBumpShader, GLSLDiffuseSpecularShader, GLSLBumpShader, GLSLPostBlurShader,
+  GLBumpShader, GLSLDiffuseSpecularShader, GLSLBumpShader,
   GLAsmShader, GLShaderCombiner, GLTextureSharingShader,
   // GLScene - other
   GLImposter, GLFeedback, GLCollision, GLScriptBase, GLAsyncTimer, GLDCE,
@@ -1212,7 +1210,7 @@ begin
     [TGLTexCombineShader, TGLPhongShader, TGLUserShader, TGLHiddenLineShader,
     TGLCelShader, TGLOutlineShader, TGLMultiMaterialShader, TGLBumpShader,
     TGLSLShader, TGLSLDiffuseSpecularShader, TGLSLBumpShader, TGLAsmShader,
-    TGLShaderCombiner, TGLTextureSharingShader, TGLSLPostBlurShader]);
+    TGLShaderCombiner, TGLTextureSharingShader]);
 
   RegisterComponentEditor(TGLSceneViewer, TGLSceneViewerEditor);
   RegisterComponentEditor(TGLScene, TGLSceneEditor);

@@ -1,18 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileMDC<p>
+{
 
   Code for loading animated MDC files into GLScene FreeForms
-  and Actors.<p>
+  and Actors.
 
   This file format uses in Return To Castle Wolfenstein instead
   of MD3 files. It has got all MD3 features (such as Tag frames)
-  plus very small data!<p>
+  plus very small data!
 
   Original code by Osman Turan (osmanturancom@yahoo.com)<p>
 
-  <b>History :</b><font size=-1><ul>
+  <b>History :
   <li>06/06/10 - Yar - Fixes for Linux x64
   <li>08/11/09 - DaStr - Compatibility fix for FPC
   (thanks Predator) (BugtrackerID = 2893580)
@@ -20,7 +20,7 @@
   <li>31/03/07 - DaStr - Added $I GLScene.inc
   <li>11/05/04 - SG - Added to CVS
   <li>07/02/04 - OT - Creation (Osman Turan)
-  </ul></font>
+
 }
 unit GLFileMDC;
 
@@ -29,11 +29,104 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, GLVectorFileObjects, GLMaterial, GLApplicationFileIO,
-  GLVectorGeometry, TypesMDC;
+  Classes, SysUtils,
+  //GLS
+  GLVectorFileObjects, GLMaterial, GLApplicationFileIO,
+  GLVectorGeometry;
+
+const
+  MDCFILE_IDENTITY = 'IDPC';
+  MDCFILE_VERSION = 2;
+
+  MDC_BASEVERTEX_FACTOR = 0.015625; // 1/64;
+  MDC_COMPVERTEX_FACTOR = 0.046875; // 3/64;
 
 type
+  TMDCPoint = array [0 .. 2] of Single;
+  TMDCAngle = TMDCPoint;
 
+  TMDCFileHeader = packed record
+    Ident: array [0 .. 3] of AnsiChar;
+    Version: Cardinal;
+    Name: array [0 .. 63] of AnsiChar;
+    Flags: Cardinal;
+    NumFrames: Cardinal;
+    NumTags: Cardinal;
+    NumSurfaces: Cardinal;
+    NumSkins: Cardinal;
+    OffsetBorderFrames: Cardinal;
+    OffsetTagNames: Cardinal;
+    OffsetTagFrames: Cardinal;
+    OffsetSurfaces: Cardinal;
+    OffsetEnd: Cardinal;
+  end;
+
+  TMDCBorderFrame = packed record
+    BBMin, BBMax: TMDCPoint;
+    LocalOrigin: TMDCPoint;
+    Radius: Single;
+    Name: array [0 .. 15] of AnsiChar;
+  end;
+
+  PMDCTagName = ^TMDCTagName;
+
+  TMDCTagName = packed record
+    Name: array [0 .. 63] of AnsiChar;
+  end;
+
+  PMDCTagFrame = ^TMDCTagFrame;
+
+  TMDCTagFrame = packed record
+    TagPosition: array [0 .. 2] of Word; // or ShortInt?
+    TagAngle: array [0 .. 2] of Word; // or ShortInt?
+  end;
+
+  TMDCTag = packed record
+    TagName: PMDCTagName;
+    TagFrame: PMDCTagFrame;
+  end;
+
+  TMDCSurfaceHeader = packed record
+    Ident: array [0 .. 3] of AnsiChar;
+    Name: array [0 .. 63] of AnsiChar;
+    Flags: Cardinal;
+    NumCompFrames: Cardinal;
+    NumBaseFrames: Cardinal;
+    NumSkins: Cardinal;
+    NumVertices: Cardinal;
+    NumTriangles: Cardinal;
+    OffsetTriangles: Cardinal;
+    OffsetSkins: Cardinal;
+    OffsetTexCoords: Cardinal;
+    OffsetBaseVerts: Cardinal;
+    OffsetCompVerts: Cardinal;
+    OffsetFrameBaseFrames: Cardinal;
+    OffsetFrameCompFrames: Cardinal;
+    OffsetEnd: Cardinal;
+  end;
+
+  TMDCTriangle = array [0 .. 2] of Cardinal;
+
+  TMDCSkin = packed record
+    Shader: array [0 .. 63] of AnsiChar;
+    Flags: Cardinal;
+  end;
+
+  TMDCTexCoord = array [0 .. 1] of Single;
+
+  TMDCBaseVertex = array [0 .. 3] of SmallInt;
+
+  TMDCCompVertex = array [0 .. 3] of Byte;
+
+  TMDCBaseFrame = packed record
+    BaseVertices: array of TMDCBaseVertex;
+  end;
+
+  TMDCCompFrame = packed record
+    CompVertices: array of TMDCCompVertex;
+  end;
+
+type
   TGLMDCVectorFile = class(TVectorFile)
   public
     class function Capabilities: TDataFileCapabilities; override;

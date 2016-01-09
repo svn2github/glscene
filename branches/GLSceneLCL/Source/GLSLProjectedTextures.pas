@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLProjectedTextures<p>
+{
 
    Implements projected textures through a GLScene object via GLSL.
 
@@ -25,7 +25,7 @@
                                 Now checks for GLSL support and just renders the children as normal,
                                   if not supported.
         <li>22/03/07 - fig -    Initial version.
-   </ul></font>
+ 
 }
 
 {; Known bugs/limitations

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSDLContext<p>
-
+{
    SDL specific Context and Viewer.<p>
 
    NOTA: SDL notifies use of context destruction *after* it happened, this prevents
@@ -17,7 +16,6 @@
       <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
       <li>11/09/06 - NC - Changes for Multiple-Render-Target
       <li>12/12/01 - EG - Creation
-   </ul></font>
 }
 unit GLSDLContext;
 
@@ -35,7 +33,7 @@ uses
   GLContext,
   GLSDLWindow,
   GLScene,
-  GLSDL;
+  SDL;
 
 type
 

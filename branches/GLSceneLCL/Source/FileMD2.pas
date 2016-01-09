@@ -1,11 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FileMD2<p>
+{
 
-	MD2 file loader<p>
+	MD2 file loader
 
-	<b>Historique : </b><font size=-1><ul>
+	<b>Historique :
       <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
       <li>04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
       <li>31/03/07 - DaStr - Added $I GLScene.inc
@@ -16,7 +16,7 @@
       <li>07/06/00 - Egg - Added Header, reduced dependencies,
                            LoadFromFile replaced with LoadFromStream,
                            some cleanup & optimizations
-	</ul></font>
+
 }
 unit FileMD2;
 
@@ -25,7 +25,72 @@ interface
 {$R-}
 {$I GLScene.inc}
 
-uses Classes, TypesMD2, GLCrossPlatform;
+uses 
+  Classes, 
+  SysUtils,
+  //GLS
+  GLVectorGeometry, GLVectorTypes, GLCrossPlatform;
+
+const
+  MAX_MD2_TRIANGLES = 4096;
+  MAX_MD2_VERTICES = 2048;
+  MAX_MD2_FRAMES = 512;
+  MAX_MD2_SKINS = 32;
+  MAX_MD2_SKINNAME = 64;
+
+type
+  PMD2VertexIndex = ^TMD2VertexIndex;
+  TMD2VertexIndex = record
+    A, B, C: integer;
+    A_S, A_T,
+    B_S, B_T,
+    C_S, C_T: single;
+  end;
+
+  TMD2Triangle = record
+    VertexIndex: TVector3s;
+    TextureCoordIndex: TVector3s;
+  end;
+
+  TMD2TriangleVertex = record
+    V: array[0..2] of byte;
+    LightnormalIndex: byte;
+  end;
+
+  PMD2AliasFrame = ^TMD2AliasFrame;
+  TMD2AliasFrame = record
+    Scale: TVector3f;
+    Translate: TVector3f;
+    Name: array[0..15] of AnsiChar;
+    Vertices: array[0..0] of TMD2TriangleVertex;
+  end;
+
+  TMD2Header = record
+    Ident: integer;
+    Version: integer;
+
+    SkinWidth: integer;
+    SkinHeight: integer;
+    FrameSize: integer;
+
+    Num_Skins: integer;
+    Num_Vertices: integer;
+    Num_TextureCoords: integer;
+    Num_VertexIndices: integer;
+    Num_GLCommdands: integer;
+    Num_Frames: integer;
+
+    Offset_skins: integer;
+    Offset_st: integer;
+    Offset_tris: integer;
+    Offset_frames: integer;
+    Offset_glcmds: integer;
+    Offset_end: integer;
+  end;
+
+  TIndexList = array of TMD2VertexIndex;
+  TVertexList = array of array of TVector3f;
+
 
 type
   // TFileMD2
@@ -58,10 +123,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  SysUtils,
-  GLVectorGeometry, GLVectorTypes;
 
 // ------------------
 // ------------------ TFileMD2 ------------------
@@ -148,9 +209,9 @@ begin
       FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
     // fill the vertices list
      for J := 0 to FiVertices - 1 do begin
-       fVertexList[i][J].V[0] := Frame^.Vertices[J].V[0] * Frame^.Scale.V[0] + Frame^.Translate.V[0];
-       fVertexList[i][J].V[1] := Frame^.Vertices[J].V[1] * Frame^.Scale.V[1] + Frame^.Translate.V[1];
-       fVertexList[i][J].V[2] := Frame^.Vertices[J].V[2] * Frame^.Scale.V[2] + Frame^.Translate.V[2];
+       fVertexList[i][J].X := Frame^.Vertices[J].V[0] * Frame^.Scale.V[0] + Frame^.Translate.V[0];
+       fVertexList[i][J].Y := Frame^.Vertices[J].V[1] * Frame^.Scale.V[1] + Frame^.Translate.V[1];
+       fVertexList[i][J].Z := Frame^.Vertices[J].V[2] * Frame^.Scale.V[2] + Frame^.Translate.V[2];
      end;
   end;
 end;

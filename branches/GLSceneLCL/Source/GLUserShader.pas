@@ -1,5 +1,7 @@
-{: GLUserShader<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    A shader that passes control of the DoApply and DoUnApply
    methods through published events. This component is 
    designed to make it a little easier to implement a 
@@ -9,7 +11,6 @@
    <b>History : </b><font size=-1><ul>
       <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
       <li>05/08/03 - SG - Creation
-   </ul></font>
 }
 unit GLUserShader;
 

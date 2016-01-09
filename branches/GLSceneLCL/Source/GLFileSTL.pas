@@ -1,28 +1,53 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileSTL<p>
+{
 
     Support-code to load STL Files into TGLFreeForm-Components in GLScene.<p>
     Note that you must manually add this unit to one of your project's uses
     to enable support for STL files at run-time.<p>
 
-	<b>History : </b><font size=-1><ul>
+	History : 
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
       <li>22/11/02 - EG - Write capability now properly declared
       <li>17/10/02 - EG - Created from split of GLVectorFileObjects,
                           ASCII STL support (Adem)
-   </ul><p>
+
 }
 unit GLFileSTL;
 
 interface
 
 uses
-  Classes, GLVectorFileObjects, GLApplicationFileIO, GLCrossPlatform;
+  Classes,
+  SysUtils,
+  //GLS
+   GLVectorGeometry, GLVectorLists,  
+   GLVectorFileObjects, GLApplicationFileIO, 
+   GLUtils, GLCrossPlatform;
 
 type
+  TSTLHeader = packed record
+    dummy: array [0 .. 79] of byte;
+    nbFaces: Longint;
+  end;
 
+  TSTLVertex = TAffineVector;
+  { Original specs : = packed record
+    x : single;
+    y : single;
+    z : single;
+    end; }
+
+  TSTLFace = packed record
+    normal: TSTLVertex; // facet surface normal
+    v1: TSTLVertex; // vertex 1
+    v2: TSTLVertex; // vertex 2
+    v3: TSTLVertex; // vertex 3
+    padding: array [0 .. 1] of byte;
+  end;
+
+type
    // TGLSTLVectorFile
    //
    {: The STL vector file (stereolithography format).<p>
@@ -44,13 +69,11 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
+
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses
-  SysUtils,
-  TypesSTL, GLVectorGeometry, GLVectorLists,  GLUtils;
 
 const
   cSOLID_LABEL       = 'SOLID';
@@ -79,29 +102,31 @@ procedure TGLSTLVectorFile.LoadFromStream(aStream : TStream);
 var
    sl : TStringList;
 
-   procedure DecodeSTLNormals(const aString : String; var aNormal : TSTLVertex);
-   begin
-      sl.CommaText:=aString;
-      if sl.Count<>5 then
-         raise Exception.Create('Invalid Normal')
-      else begin
-         aNormal.V[0]:=GLUtils.StrToFloatDef(sl[2], 0);
-         aNormal.V[1]:=GLUtils.StrToFloatDef(sl[3], 0);
-         aNormal.V[2]:=GLUtils.StrToFloatDef(sl[4], 0);
-      end;
-   end;
+  procedure DecodeSTLNormals(const aString: String; var aNormal: TSTLVertex);
+  begin
+    sl.CommaText := aString;
+    if sl.Count <> 5 then
+      raise Exception.Create('Invalid Normal')
+    else
+    begin
+      aNormal.X := GLUtils.StrToFloatDef(sl[2], 0);
+      aNormal.Y := GLUtils.StrToFloatDef(sl[3], 0);
+      aNormal.Z := GLUtils.StrToFloatDef(sl[4], 0);
+    end;
+  end;
 
-   procedure DecodeSTLVertex(const aString : String; var aVertex : TSTLVertex);
-   begin
-      sl.CommaText:=aString;
-      if (sl.Count<>4) or (CompareText(sl[0], cVERTEX_LABEL)<>0) then
-         raise Exception.Create('Invalid Vertex')
-      else begin
-         aVertex.V[0]:=GLUtils.StrToFloatDef(sl[1], 0);
-         aVertex.V[1]:=GLUtils.StrToFloatDef(sl[2], 0);
-         aVertex.V[2]:=GLUtils.StrToFloatDef(sl[3], 0);
-      end;
-   end;
+  procedure DecodeSTLVertex(const aString: String; var aVertex: TSTLVertex);
+  begin
+    sl.CommaText := aString;
+    if (sl.Count <> 4) or (CompareText(sl[0], cVERTEX_LABEL) <> 0) then
+      raise Exception.Create('Invalid Vertex')
+    else
+    begin
+      aVertex.X := GLUtils.StrToFloatDef(sl[1], 0);
+      aVertex.Y := GLUtils.StrToFloatDef(sl[2], 0);
+      aVertex.Z := GLUtils.StrToFloatDef(sl[3], 0);
+    end;
+  end;
 
 var
    isBinary : Boolean;

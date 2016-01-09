@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSDLWindow<p>
-
+{
   Non visual wrapper around basic SDL window features.<p>
 
   <u>Notes to Self:</u><br>
@@ -24,7 +23,6 @@
   <li>12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
   Added doc tags, Stencil buffer and others.
   <li>11/12/01 - Egg - Creation
-  </ul></font>
 }
 unit GLSDLWindow;
 
@@ -35,7 +33,7 @@ interface
 uses
   Classes, SysUtils, SyncObjs,
   // GLS
-  GLSDL;
+  SDL;
 
 type
   // TSDLWindowPixelDepth
