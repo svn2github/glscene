@@ -3,7 +3,6 @@
 //
 { 
   B3D VectorFile class to load Blitz 3D model files 
-
 }
 unit GLS.FileB3D;
 
@@ -15,7 +14,7 @@ uses
   GLS.VectorFileObjects, GLS.ApplicationFileIO, GLS.Texture, GLS.TextureFormat,
   GLS.Material, GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists,
 
-  FileB3D, TypesB3D;
+  FileB3D;
 
 type
   TVKB3DVectorFile = class(TVectorFile)
@@ -24,7 +23,14 @@ type
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 // ------------------------------ TVKB3DVectorFile ------------------------------
 // Capabilities

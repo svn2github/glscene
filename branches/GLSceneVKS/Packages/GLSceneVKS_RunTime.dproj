@@ -58,7 +58,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <VerInfo_Locale>1049</VerInfo_Locale>
-        <DCC_Description>GLScene FMX OpenGL 3D library</DCC_Description>
+        <DCC_Description>GLSceneVKS Vulkan 3D library</DCC_Description>
         <DCC_E>false</DCC_E>
         <DCC_K>false</DCC_K>
         <DCC_F>false</DCC_F>
@@ -136,7 +136,6 @@
         <DCCReference Include="..\Source\FileGL2.pas"/>
         <DCCReference Include="..\Source\FileMD2.pas"/>
         <DCCReference Include="..\Source\FileMD3.pas"/>
-        <DCCReference Include="..\Source\FileNMF.pas"/>
         <DCCReference Include="..\Source\FileOCT.pas"/>
         <DCCReference Include="..\Source\FileX.pas"/>
         <DCCReference Include="..\Source\GLS.AVIRecorder.pas"/>
@@ -367,11 +366,6 @@
         <DCCReference Include="..\Source\TGA.pas"/>
         <DCCReference Include="..\Source\Types3DS.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
-        <DCCReference Include="..\Source\TypesB3D.pas"/>
-        <DCCReference Include="..\Source\TypesMD2.pas"/>
-        <DCCReference Include="..\Source\TypesMDC.pas"/>
-        <DCCReference Include="..\Source\TypesMS3D.pas"/>
-        <DCCReference Include="..\Source\TypesSTL.pas"/>
         <DCCReference Include="..\Source\VRMLParser.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -394,6 +388,7 @@
                     <Source Name="MainSource">GLSceneVKS_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -410,6 +405,12 @@
                 <Platform value="Win64">True</Platform>
             </Platforms>
             <Deployment Version="2">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\GLSceneVKS_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>GLSceneVKS_RunTime.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -425,22 +426,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\GLSceneVKS_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win64">
-                        <RemoteName>GLSceneVKS_RunTime.bpl</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -754,7 +740,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

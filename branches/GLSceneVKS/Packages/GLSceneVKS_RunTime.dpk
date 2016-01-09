@@ -43,7 +43,6 @@ contains
   FileGL2 in '..\Source\FileGL2.pas',
   FileMD2 in '..\Source\FileMD2.pas',
   FileMD3 in '..\Source\FileMD3.pas',
-  FileNMF in '..\Source\FileNMF.pas',
   FileOCT in '..\Source\FileOCT.pas',
   FileX in '..\Source\FileX.pas',
   GLS.AVIRecorder in '..\Source\GLS.AVIRecorder.pas',
@@ -274,11 +273,6 @@ contains
   TGA in '..\Source\TGA.pas',
   Types3DS in '..\Source\Types3DS.pas',
   Utils3DS in '..\Source\Utils3DS.pas',
-  TypesB3D in '..\Source\TypesB3D.pas',
-  TypesMD2 in '..\Source\TypesMD2.pas',
-  TypesMDC in '..\Source\TypesMDC.pas',
-  TypesMS3D in '..\Source\TypesMS3D.pas',
-  TypesSTL in '..\Source\TypesSTL.pas',
   VRMLParser in '..\Source\VRMLParser.pas';
 
 end.

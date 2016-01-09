@@ -13,7 +13,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorFileObjects, GLS.ApplicationFileIO, FileMD2, TypesMD2;
+  GLS.VectorFileObjects, GLS.ApplicationFileIO;
 
 type
    // TVKPLYVectorFile
