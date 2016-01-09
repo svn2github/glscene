@@ -1,15 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FileB3D<p>
+{
 
-	File streaming class for the B3D loader<p>
+	File streaming class for the B3D loader
 
-	<b>History :</b><font size=-1><ul>
-      <li>24/07/09 - DaStr - Got rid of compiler hints
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>22/12/05 - Mathx - Added to the GLScene Project.
-	</ul></font>
+	History :
+      24/07/09 - DaStr - Got rid of compiler hints
+      29/05/08 - DaStr - Added $I GLScene.inc
+      22/12/05 - Mathx - Added to the GLScene Project.
+
 }
 unit FileB3D;
 
@@ -19,7 +19,7 @@ interface
 {$R-}
 
 uses
-  System.Classes,
+  System.Classes, System.SysUtils,
   //GLS
   GLVectorGeometry, GLVectorTypes, GLVectorLists;
 
@@ -188,10 +188,13 @@ type
     property Nodes: TB3DNode read fNodes;
   end;
 
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 implementation
-
-uses
-  SysUtils{, Windows};
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
+//-----------------------------------------------------------------------
 
 constructor TB3DMaterial.Create;
 begin

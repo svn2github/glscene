@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLShader<p>
-
-    TGLSLShader is a wrapper for GLS shaders.<p>
+{
+     TGLSLShader is a wrapper for GLS shaders.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>27/01/15 - NelC - Added TGLCustomGLSLShader.SetTex()

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMS3D<p>
-
+{
  Support for MS3D file format.<p>
 
-  <b>History :</b><font size=-1><ul>
+  <b>History :
     <li>24/11/10 - Yar - Foxed range check error
     <li>22/06/10 - Yar - Added checking of existing material in material library
     <li>31/05/10 - Yar - Fixes for Linux x64
@@ -27,7 +26,7 @@
                         asynchronous animations will fail however.
     <li>31/08/03 - DanB  - Some code standardisation (by Philipp)
     <li>03/06/03 - EG - Added header, now self-registers
- </ul></font>
+
 }
 unit GLFileMS3D;
 
@@ -41,6 +40,7 @@ uses
   GLCrossPlatform, GLVectorFileObjects,
   GLVectorTypes, GLMaterial, GLColor, GLTexture,
   GLVectorGeometry, GLVectorLists, GLApplicationFileIO;
+  
 
 const
   MAX_MS3D_VERTICES  = 8192;
@@ -260,7 +260,7 @@ type
 type
   // TGLMS3DVectorFile
   //
-  {: The MilkShape vector file.<p>
+  { The MilkShape vector file.
      By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
 
   TGLMS3DVectorFile = class(TVectorFile)

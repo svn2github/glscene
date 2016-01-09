@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSLPostShaders <p>
+{
 
    Post shaders that simulate shader visions for a mask or the entire scene.<p>
 
