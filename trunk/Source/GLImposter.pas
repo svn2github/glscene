@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLImposter 
-
+{
    Imposter building and rendering implementation for GLScene. 
 
     History :  
@@ -44,7 +43,7 @@ type
   // TImposterOptions
   //
   {Imposter rendering options. 
-     Following options are supported:<ul>
+     Following options are supported: 
       impoBlended : the imposters are transparently blended during renders,
      this will smooth their edges but requires them to be rendered sorted
      from back to front
@@ -56,7 +55,7 @@ type
      projection suitable for distorting the sprites when seen from a level
      angle of view with a wide focal camera (think trees/grass when walking
      in a forest), if not active, the imposter sprites are camera-facing
-     </ul>
+     
   }
   TImposterOption = (impoBlended, impoAlphaTest, impoNearestFiltering,
     impoPerspectiveCorrection);
@@ -70,7 +69,7 @@ type
 
   // TImposter
   //
-  {Base class for imposters manipulation and handling.<br>
+  {Base class for imposters manipulation and handling.
      Rendering imposters is performed by three methods, BeginRender must
      be invoked first, then Render for each of the impostr
      This class assumes a single impostor per texture.

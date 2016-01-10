@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLScreen 
-
+{
   Routines to interact with the screen/desktop. 
 
-   Historique :  
+   History :  
    04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility
    06/06/10 - Yar - Fixed warnings
    13/04/10 - Yar - Fixed conditional for delphi (thanks mif)

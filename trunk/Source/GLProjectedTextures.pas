@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLProjectedTextures 
-
+{
    Implements projected textures through a GLScene object.
 
     History :  
@@ -36,7 +35,7 @@ uses
   GLState;
 
 type
-  {Possible styles of texture projection. Possible values:<ul>
+  {Possible styles of texture projection. Possible values: 
       ptsOriginal: Original projection method (first pass,
          is default scene render, second pass is texture
          projection).
@@ -46,7 +45,7 @@ type
          lighting only through projected textures (the textures
          of the scene are "masked" into the white areas of
          the projection textures).
-     </ul> }
+      }
   TGLProjectedTexturesStyle = (ptsOriginal, ptsInverse);
 
   TGLProjectedTextures = class;

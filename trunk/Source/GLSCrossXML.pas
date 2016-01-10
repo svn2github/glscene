@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSCrossXML 
-
-    History :  
+{
+  Cross XML routines
+  History :  
      23/08/10 - Yar - Creation
   
 }

@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 { History:
      DaStr - 07/11/09 - Added $I GLScene.inc for Delhi 5 compatibility
                         Improved FPC compatibility (thanks Predator) (BugtrackerID = 2893580)
@@ -9,6 +12,7 @@
                         Merged FModTypes and FModPresets content in
                         8087 stuff commented out
 }
+unit fmod;
 { =============================================================================================== }
 { FMOD Main header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.               }
 { =============================================================================================== }
@@ -29,8 +33,6 @@
   ln -s libfmod-3.75.so libfmod.so.
 }
 { =============================================================================================== }
-
-unit fmod;
 
 interface
 

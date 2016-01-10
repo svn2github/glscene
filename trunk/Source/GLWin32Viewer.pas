@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLWin32Viewer 
-
+{
    Win32 specific Scene viewer. 
 
-  History :  
+   History :  
        03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
        28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
        23/08/10 - Yar - Moved TVSyncMode to GLContext

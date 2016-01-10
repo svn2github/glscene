@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMeshUtils. 
-
+{
    General utilities for mesh manipulations. 
 
-	 History :  
+   History :  
        10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
        20/05/10 - Yar - Fixes for Linux x64
        26/02/10 - Yar - Added functions to work with adjacent triangles
@@ -64,7 +63,7 @@ procedure ConvertIndexedListToList(const data : TAffineVectorList;
 {Builds a vector-count optimized indices list. 
    The returned list (to be freed by caller) contains an "optimized" indices
    list in which duplicates coordinates in the original vertices list are used
-   only once (the first available duplicate in the list is used).<br>
+   only once (the first available duplicate in the list is used).
    The vertices list is left untouched, to remap/cleanup, you may use the
    RemapAndCleanupReferences function. }
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
@@ -87,9 +86,9 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
 {Creates an indices map from a remap list. 
    The remap list is what BuildVectorCountOptimizedIndices, a list of indices
    to distinct/unique items, the indices map contains the indices of these items
-   after a remap and cleanup of the set referred by remapIndices... Clear?<br>
+   after a remap and cleanup of the set referred by remapIndices... Clear?
    In short it takes the output of BuildVectorCountOptimizedIndices and can change
-   it to something suitable for RemapTrianglesIndices.<br>
+   it to something suitable for RemapTrianglesIndices.
    Any simpler documentation of this function welcome ;) }
 function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 
@@ -118,7 +117,7 @@ function BuildNormals(reference : TAffineVectorList;
 
 {Builds a list of non-oriented (non duplicated) edges list. 
    Each edge is represented by the two integers of its vertices,
-   sorted in ascending order.<br>
+   sorted in ascending order.
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
    orientation. }
@@ -144,9 +143,9 @@ procedure WeldVertices(vertices : TAffineVectorList;
 {Attempts to create as few as possible triangle strips to cover the mesh. 
    The indices parameters define a set of triangles as a set of indices to
    vertices in a vertex pool, free of duplicate vertices (or resulting
-   stripification will be of lower quality).<br>
+   stripification will be of lower quality).
    The function returns a list of TIntegerList, each of these lists hosting
-   a triangle strip, returned objects must be freed by caller.<br>
+   a triangle strip, returned objects must be freed by caller.
    If agglomerateLoneTriangles is True, the first of the lists actually contains
    the agglomerated list of the triangles that couldn't be stripified. }
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;

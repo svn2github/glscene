@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLGui 
-
+{
   In GL windows management classes and structures 
 
   History :  
@@ -21,7 +20,7 @@
        25/11/02 - EG - TGLGuiLayout.Clear fix (Sternas Stefanos)
        06/09/02 - JAJ - Updated and added to CVS..
        01/06/02 - JAJ - Base Unit built..
-  
+ 
 }
 unit GLGui;
 

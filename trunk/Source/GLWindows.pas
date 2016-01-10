@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLWindows 
-
+{
   OpenGL windows management classes and structures 
 
   History :  

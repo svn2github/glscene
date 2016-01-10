@@ -3,7 +3,8 @@
 //
 {
     Implements an HDS that automatically generates a terrain lightmap texture. 
-	History :  
+    
+    History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        22/01/10 - Yar - Added GLTextureFormat to uses

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVectorLists 
-
+{
    Misc. lists of vectors and entities 
 
-    History :  
+   History :  
        10/12/14 - PW - Renamed VectorList unit to GLVectorList
        23/02/11 - Yar - Added Revision mechanism to TAffineVectorList
        15/12/10 - DaStr - Added Min() and Max() for TSingleList and TDoubleList
@@ -464,7 +463,7 @@ type
     procedure Offset(delta: Single); overload;
 
     {Adds to each item the corresponding item in the delta list. 
-       Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+       Performs 'Items[i]:=Items[i]+delta[i]'.
        If both lists don't have the same item count, an exception is raised. }
     procedure Offset(const delta: TSingleList); overload;
 
@@ -519,7 +518,7 @@ type
     {Adds delta to all items in the list. }
     procedure Offset(delta: Double); overload;
         {Adds to each item the corresponding item in the delta list. 
-           Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+           Performs 'Items[i]:=Items[i]+delta[i]'.
            If both lists don't have the same item count, an exception is raised. }
     procedure Offset(const delta: TDoubleList); overload;
     {Multiplies all items by factor. }

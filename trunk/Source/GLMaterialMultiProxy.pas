@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMaterialMultiProxy 
-
+{
    Implements a multi-proxy object, useful for discreet LOD. 
    Allows assign a unique material for each proxy master. 
 

@@ -1,14 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileOBJ 
-
+{
     Support-Code to load Wavefront OBJ Files into TGLFreeForm-Components
     in GLScene. 
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time. 
 
-  History :  
+    History :  
 
        17/09/13 - YP - Added support for self-illumination (using Texture2Name)
        28/06/13 - YP - Added support for vector color
@@ -45,14 +44,14 @@
        08/10/00 - Egg - Added standard header, basic htmlification of old header,
                            removed specific trim funcs,
                            renamed TMBAGLOBJVectorFile to TGLOBJVectorFile
-   </ul> 
+    
 
-   (c) 2000 Marian Aldenhövel<br>
-       Hainstraße 8<br>
-       53121 Bonn<br>
+   (c) 2000 Marian Aldenhövel
+       Hainstraße 8
+       53121 Bonn
        info@MBA-Software.de 
 
-  License:<br>
+  License:
 
     Contributed to Eric Grange and GLScene,
     same licensing, batteries not included. 
@@ -60,18 +59,18 @@
   History: 
 
     26.9.2000:  - OBJF-Support (t- and q-lines) see
-                  http://www.cs.sunysb.edu/~stripe/<br>
+                  http://www.cs.sunysb.edu/~stripe/
     18.9.2000:  - Bugfixing.
-                - SaveTo-Methods.<br>
+                - SaveTo-Methods.
     14.9.2000:  - Calculate normals where missing in the file.
                 - Collect Facegroups by Name and do not start a new
             one for every 'g'-line in the file.
-                - Relative indexing in 'f'-lines.<br>
-    13.9.2000:  - Start of this project as an exercise to get familiar with<br>
-                    a) the OBJ-Format and<br>
-                    b) GLScene internals<br>
+                - Relative indexing in 'f'-lines.
+    13.9.2000:  - Start of this project as an exercise to get familiar with
+                    a) the OBJ-Format and
+                    b) GLScene internals
                   Midterm-goal: Import what Poser 4 exports and display it
-                                correctly in an GLScene.<br>
+                                correctly in an GLScene.
 }
 unit GLFileOBJ;
 
@@ -138,7 +137,7 @@ type
   {A simple class that know how to extract infos from a mtl file. 
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
-     please help if you know more):<ul>
+     please help if you know more): 
       materials begin with a 'newmtl' command followed by material name
       *Kd command defines the diffuse color
       *map_Kd command defines the diffuse texture image
@@ -152,7 +151,7 @@ type
       Ni is the refraction index (greater than 1)
       *illum defines the illumination model (0 for no lighting, 1 for
           ambient and diffuse, 2 for full lighting)
-     </ul> }
+      }
   TGLMTLFile = class(TStringList)
   public
     procedure Prepare;

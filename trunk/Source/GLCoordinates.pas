@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLCoordinates 
+{
+  Coordinate related classes.
 
-  Coordinate related classes. 
-
-   History :  
+  History :  
    20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
    30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
    05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thanks C4)
@@ -30,20 +29,20 @@ type
 
   // TGLCoordinatesStyle
   //
-  { : Identifie le type de données stockées au sein d'un TGLCustomCoordinates. 
-    <ul> csPoint2D : a simple 2D point (Z=0, W=0)
-    <ul> csPoint : un point (W=1)
+  {: Identifie le type de données stockées au sein d'un TGLCustomCoordinates.
+     csPoint2D : a simple 2D point (Z=0, W=0)
+     csPoint : un point (W=1)
      csVector : un vecteur (W=0)
      csUnknown : aucune contrainte
-    </ul> }
+     }
   TGLCoordinatesStyle = (CsPoint2D, CsPoint, CsVector, CsUnknown);
 
   // TGLCustomCoordinates
   //
-  { : Stores and homogenous vector. 
+  {  Stores and homogenous vector. 
     This class is basicly a container for a TVector, allowing proper use of
     delphi property editors and editing in the IDE. Vector/Coordinates
-    manipulation methods are only minimal.<br>
+    manipulation methods are only minimal.
     Handles dynamic default values to save resource file space.  }
   TGLCustomCoordinates = class(TGLUpdateAbleObject)
   private
@@ -82,7 +81,7 @@ type
     procedure Initialize(const Value: TVector);
     procedure NotifyChange(Sender: TObject); override;
 
-    { : Identifies the coordinates styles. 
+    { Identifies the coordinates styles.
       The property is NOT persistent, csUnknown by default, and should be
       managed by owner object only (internally). 
       It is used by the TGLCustomCoordinates for internal "assertion" checks
@@ -123,19 +122,19 @@ type
     procedure SetToZero;
     function AsAddress: PGLFloat;
 
-    { : The coordinates viewed as a vector. 
+    {  The coordinates viewed as a vector. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
 
-    { : The coordinates viewed as an affine vector. 
+    { The coordinates viewed as an affine vector.
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead.<br>
+      if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;
 
-    { : The coordinates viewed as a 2D point. 
+    {  The coordinates viewed as a 2D point. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;
@@ -148,7 +147,7 @@ type
     property Coordinate[const AIndex: Integer]: TGLFloat read GetCoordinate
       write SetCoordinate; default;
 
-    { : The coordinates, in-between brackets, separated by semi-colons. }
+    {  The coordinates, in-between brackets, separated by semi-colons. }
     property AsString: String read GetAsString;
 
     // : Similar to AsVector but does not trigger notification events
@@ -163,14 +162,14 @@ type
       write SetDirectCoordinate;
   end;
 
-  { : A TGLCustomCoordinates that publishes X, Y properties. }
+  {  A TGLCustomCoordinates that publishes X, Y properties. }
   TGLCoordinates2 = class(TGLCustomCoordinates)
   published
     property X stored False;
     property Y stored False;
   end;
 
-  { : A TGLCustomCoordinates that publishes X, Y, Z properties. }
+  {  A TGLCustomCoordinates that publishes X, Y, Z properties. }
   TGLCoordinates3 = class(TGLCustomCoordinates)
   published
     property X stored False;
@@ -180,7 +179,7 @@ type
 
   // TGLCoordinates4
   //
-  { : A TGLCustomCoordinates that publishes X, Y, Z, W properties. }
+  {  A TGLCustomCoordinates that publishes X, Y, Z, W properties. }
   TGLCoordinates4 = class(TGLCustomCoordinates)
   published
     property X stored False;

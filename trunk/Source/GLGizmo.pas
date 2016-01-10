@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGizmo 
-
+{
   Invisible component for helping to Move, Rotate and Scale an Object
   under GLScene (usefull for an Editor). 
 
-   History :  
+  History :  
    10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;
                  replaced uppercase characters in prefixes for enum types to lower case
    22/04/10 - Yar - Fixes after GLState revision
@@ -323,7 +322,7 @@ type
     property GizmoThickness: Single read FGizmoThickness
       write SeTGLGizmoThickness;
 
-    { : Indicates whether the gizmo is enabled or not.
+    {  Indicates whether the gizmo is enabled or not.
       WARNING: When loading/editing (possibly whenever a structureChanged
       call is made) a model, sometimes the gizmo will trigger a
       bug if the mouse is inside the glscene Viewer. To prevent that,
@@ -331,7 +330,7 @@ type
       messages (i.e. application.processMessage) and then enable the gizmo
       again. }
 
-    { : Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
+    {  Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
     property Enabled: Boolean read FEnabled write FEnabled default False;
@@ -344,7 +343,7 @@ type
     property OnSelectionLost: TNotifyEvent read FOnSelectionLost
       write FOnSelectionLost;
 
-    { : Called before an Update is applied. The "vector" parameter is the difference
+    {  Called before an Update is applied. The "vector" parameter is the difference
       that will be applied to the object, according to the axis and
       operation selected. }
     property OnBeforeUpdate: TGLGizmoUpdateEvent read FOnBeforeUpdate

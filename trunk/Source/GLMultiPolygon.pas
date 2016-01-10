@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMultiPolygon 
-
-   Object with support for complex polygons. 
+{
+  Object with support for complex polygons. 
 
   History :  
        14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
@@ -28,7 +27,7 @@
                            Delphi 4 compatibility (removed TVectorPool) and
                            added/renamed some properties, various fixes
        08/10/00 - EG - Added header, code contributed by Uwe Raabe
-   </ul>
+   
 }
 { TODO
 
@@ -139,9 +138,9 @@ type
   //
   {Multipolygon is defined with multiple contours. 
      The contours have to be in the X-Y plane, otherwise they are projected
-     to it (this is done automatically by the tesselator).<br>
+     to it (this is done automatically by the tesselator).
      The plane normal is pointing in +Z. All contours are automatically closed,
-     so there is no need to specify the last node equal to the first one.<br>
+     so there is no need to specify the last node equal to the first one.
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the

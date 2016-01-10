@@ -1,9 +1,8 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSkydome 
-
-   Skydome object 
+{
+  Skydome object 
 
   History :  
        17/02/13 - Yar - Added SetSunAtTime method (thanks to Dimitriy) 
@@ -198,10 +197,10 @@ type
        are rendered in the skydome's coordinate system. 
        The skydome is described by "bands", each "band" is an horizontal cut
        of a sphere, and you can have as many bands as you wish. 
-       Estimated CPU cost (K7-500, GeForce SDR, default bands):<ul>
+       Estimated CPU cost (K7-500, GeForce SDR, default bands): 
         800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
         Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
-       </ul> }
+        }
   TGLSkyDome = class(TGLCameraInvariantObject)
   private
     { Private Declarations }

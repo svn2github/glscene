@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLEllipseCollision 
-
+{
   Ellipsoid collision functions (mainly used by DCE).
 
    History :  

@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileJPEG 
-
+{
+   Methods for loading Jpeg images
    History :  
        23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
        29/06/10 - Yar - Improved FPC compatibility
        29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
        27/02/10 - Yar - Creation
-  </ul> 
+   
 }
 unit GLFileJPEG;
 

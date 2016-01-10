@@ -1,15 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{TGA 
-
-   Simple TGA formats supports for Delphi.<br>
+{
+   Simple TGA formats supports for Delphi.
    Currently supports only 24 and 32 bits RGB formats (uncompressed
    and RLE compressed). 
-
    Based on David McDuffee's document from www.wotsit.org 
 
-	 History :  
+   History :  
             07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
             20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
 	    07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage

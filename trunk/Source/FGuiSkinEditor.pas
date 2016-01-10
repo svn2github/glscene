@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FGuiSkinEditor 
-
+{
    Editor for Gui skin. 
 
     Historique :  
@@ -15,9 +14,9 @@
        29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
        18/02/07 - DaStr - Fixed range check error.
        22/02/05 - Mathx - Fixed Delphi 5 support.
-       16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas<br>
-       03/10/05 - adirex - XP styles and panels problem<br>
-       24/01/05 - adirex - Focus rect for selection<br>
+       16/12/05 - aidave - moved GUIComponentDialog in from GLGui.pas
+       03/10/05 - adirex - XP styles and panels problem
+       24/01/05 - adirex - Focus rect for selection
                      Huge editor enchancements. Too many to write them all :)
        03/07/04 - LR - Make change for Linux
        ?/?/? -  - Creation

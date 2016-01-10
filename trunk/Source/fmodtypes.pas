@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {================================================================================================ }
 { FMOD Types header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.              }
 { =============================================================================================== }
@@ -17,8 +20,6 @@
   the following command (assuming you are in /usr/lib/)...
   ln -s libfmod-3.75.so libfmod.so.
 }
-{ =============================================================================================== }
-
 unit fmodtypes;
 
 interface

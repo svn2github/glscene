@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects 
-
+{
   Geometric objects. 
-
-   History :  
+  History :  
    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
    13/05/11 - Vince - Add ArrowArc object
    13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
@@ -48,7 +46,7 @@ type
 
   // TGLDisk
   //
-  { : A Disk object. 
+  {  A Disk object. 
     The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
@@ -77,14 +75,14 @@ type
 
   published
     { Published Declarations }
-    { : Allows defining a "hole" in the disk. }
+    {  Allows defining a "hole" in the disk. }
     property InnerRadius: TGLFloat read FInnerRadius write SetInnerRadius;
-    { : Number of radial mesh subdivisions. }
+    {  Number of radial mesh subdivisions. }
     property Loops: TGLInt read FLoops write SetLoops default 2;
-    { : Outer radius for the disk. 
+    {  Outer radius for the disk. 
       If you leave InnerRadius at 0, this is the disk radius. }
     property OuterRadius: TGLFloat read FOuterRadius write SetOuterRadius;
-    { : Number of mesh slices. 
+    {  Number of mesh slices. 
       For instance, if Slices=6, your disk will look like an hexagon. }
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
@@ -93,7 +91,7 @@ type
 
   // TGLCylinderBase
   //
-  { : Base class to cylinder-like objects. 
+  {  Base class to cylinder-like objects. 
     Introduces the basic cylinder description properties. 
     Be aware teh default slices and stacks make up for a high-poly cylinder,
     unless you're after high-quality lighting it is recommended to reduce the
@@ -127,7 +125,7 @@ type
     property Height: TGLFloat read FHeight write SetHeight;
     property Slices: TGLInt read FSlices write SetSlices default 16;
     property Stacks: TGLInt read FStacks write SetStacks default 4;
-    { : Number of concentric rings for top/bottom disk(s). }
+    {  Number of concentric rings for top/bottom disk(s). }
     property Loops: TGLInt read FLoops write SetLoops default 1;
   end;
 
@@ -138,7 +136,7 @@ type
 
   // TGLCone
   //
-  { : A cone object. }
+  {  A cone object. }
   TGLCone = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -177,7 +175,7 @@ type
 
   // TGLCylinder
   //
-  { : Cylinder object, can also be used to make truncated cones }
+  {  Cylinder object, can also be used to make truncated cones }
   TGLCylinder = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -216,7 +214,7 @@ type
       default caCenter;
   end;
 
-  { : Capsule object, can also be used to make truncated cones }
+  {  Capsule object, can also be used to make truncated cones }
   TGLCapsule = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -265,7 +263,7 @@ type
 
   // TGLAnnulus
   //
-  { : An annulus is a cylinder that can be made hollow (pipe-like). }
+  {  An annulus is a cylinder that can be made hollow (pipe-like). }
   TGLAnnulus = class(TGLCylinderBase)
   private
     { Private Declarations }
@@ -310,7 +308,7 @@ type
 
   // TGLTorus
   //
-  { : A Torus object. }
+  {  A Torus object. }
   TGLTorus = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -361,11 +359,11 @@ type
 
   // TGLArrowLine
   //
-  { : Draws an arrowhead (cylinder + cone). 
+  {  Draws an arrowhead (cylinder + cone). 
     The arrow head is a cone that shares the attributes of the cylinder
-    (ie stacks/slices, materials etc). Seems to work ok.<br>
+    (ie stacks/slices, materials etc). Seems to work ok.
     This is useful for displaying a vector based field (eg velocity) or
-    other arrows that might be required.<br>
+    other arrows that might be required.
     By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
@@ -418,11 +416,11 @@ type
 
   // TGLArrowArc
   //
-  { : Draws an arrowhead (Sliced Torus + cone). 
+  {  Draws an arrowhead (Sliced Torus + cone). 
     The arrow head is a cone that shares the attributes of the Torus
-    (ie stacks/slices, materials etc).<br>
+    (ie stacks/slices, materials etc).
     This is useful for displaying a movement (eg twist) or
-    other arc arrows that might be required.<br>
+    other arc arrows that might be required.
     By default the bottom arrow is off }
   TGLArrowArc = class(TGLCylinderBase)
   private
@@ -485,7 +483,7 @@ type
 
   // TGLPolygon
   //
-  { : A basic polygon object. 
+  {  A basic polygon object. 
     The curve is described by the Nodes and SplineMode properties, should be
     planar and is automatically tessellated. 
     Texture coordinates are deduced from X and Y coordinates only. 
@@ -509,7 +507,7 @@ type
 
   published
     { Published Declarations }
-    { : Parts of polygon. 
+    {  Parts of polygon. 
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
     property Parts: TPolygonParts read FParts write SetParts
@@ -530,7 +528,7 @@ type
   { A frustrum is a pyramid with the top chopped off. 
     The height of the imaginary pyramid is ApexHeight, the height of the
     frustrum is Height. If ApexHeight and Height are the same, the frustrum
-    degenerates into a pyramid.<br>
+    degenerates into a pyramid.
     Height cannot be greater than ApexHeight. }
   TGLFrustrum = class(TGLSceneObject)
   private

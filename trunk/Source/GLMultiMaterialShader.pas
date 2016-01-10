@@ -1,5 +1,7 @@
-{GLMultiMaterialShader 
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    A shader that applies a render pass for each material in
    its assigned MaterialLibrary. 
 

@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFilePAK 
-
+{
+   Methods for PAK Archiving
    History :  
        04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-  </ul> 
+   
 }
 
 unit GLFilePAK;

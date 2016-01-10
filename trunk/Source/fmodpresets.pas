@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 { =============================================================================================== }
 { FMOD presets header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2004.            }
 { =============================================================================================== }
@@ -17,7 +20,6 @@
   the following command (assuming you are in /usr/lib/)...
   ln -s libfmod-3.75.so libfmod.so.
 }
-
 unit fmodpresets;
 
 interface

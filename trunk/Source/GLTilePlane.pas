@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTilePlane 
-
+{
    Implements a tiled texture plane. 
 
-	 History :  
+   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        30/03/07 - DaStr - Added $I GLScene.inc
        28/03/07 - DaStr - Renamed parameters in some methods
@@ -113,7 +112,7 @@ type
    //
    {A tiled textured plane. 
       This plane object stores and displays texture tiles that composes it,
-      and is optimized to minimize texture switches when rendering.<br>
+      and is optimized to minimize texture switches when rendering.
       Its bounding dimensions are determined by its painted tile. }
 	TGLTilePlane = class (TGLImmaterialSceneObject)
 	   private

@@ -1,13 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSLog 
-
+{ 
   Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger. 
   You may have only one instance of TGLSLogger 
   To obtain it, call UserLog() function from any unit. 
 
-   Historique :  
+   History :  
    25/03/13 - DaStr - Added WriteInternalMessages and DisplayErrorDialogs options
    30/01/13 - DaStr - Added "save-old-logs" option
    09/01/13 - DaStr - Added Log buffering and auto-splitting options
@@ -28,9 +27,9 @@
    
 
   (C) 2004-2007 George "Mirage" Bakhtadze.
-  <a href="http://www.casteng.com">www.casteng.com</a> <br>
+  <a href="http://www.casteng.com">www.casteng.com</a> 
   The source code may be used under either MPL 1.1 or LGPL 2.1 license.
-  See included license.txt file <br>
+  See included license.txt file 
   Unit contains some text file related utilities and logging class
 }
 
@@ -49,9 +48,9 @@ uses
   GLCrossPlatform;
 
 type
-  { : Levels of importance of log messages }
+  {  Levels of importance of log messages }
   TLogLevel = (lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError);
-  { : Log level setting type }
+  {  Log level setting type }
   TLogLevels = set of TLogLevel;
 
   {What to do when number of messages exceeds message limit. }
@@ -70,19 +69,19 @@ const
   llMin: TLogLevels = [lkError, lkFatalError];
 
 type
-  { : Log date and time setting type }
+  {  Log date and time setting type }
   TLogTimeFormat = (
-    { : doesn't output any time information }
+    {  doesn't output any time information }
     lfNone,
-    { : include date in the log }
+    {  include date in the log }
     lfDate,
-    { : include time in the log }
+    {  include time in the log }
     lfTime,
-    { : include time in the log, including milliseconds }
+    {  include time in the log, including milliseconds }
     lfTimeExact,
-    { : include date and time in the log }
+    {  include date and time in the log }
     lfDateTime,
-    { : include time elapsed since startup in the log }
+    {  include time elapsed since startup in the log }
     lfElapsed);
   {How log is buffered. }
   TLogBufferingMode =
@@ -92,7 +91,7 @@ type
    lbmWriteInTheEnd
   );
 
-  { : Class reference to log session class }
+  {  Class reference to log session class }
   CLogSession = class of TLogSession;
   TLogSession = class;
 
@@ -139,9 +138,9 @@ type
     FLogKindCount: array [TLogLevel] of Integer;
     FLogThreadId: Boolean;
     FMessageLimitAction: TLogMessageLimitAction;
-    { : Determines which date or time to include in the log }
+    {  Determines which date or time to include in the log }
     FTimeFormat: TLogTimeFormat;
-    { : Startup timestamp in milliseconds }
+    {  Startup timestamp in milliseconds }
     FStartedMs: Cardinal;
     FLogFileMaxSize: Integer;
     FCheckFileSizePeriod: Integer;
@@ -164,7 +163,7 @@ type
     procedure BackUpOldLogs(const ACurrentLogFileName: string);
     procedure CreateNewLogFileIfNeeded();
 
-    { : Appends a string to log. Thread-safe. }
+    {  Appends a string to log. Thread-safe. }
     procedure AppendLog(const AString: string; const ALevel: TLogLevel; const ALogTime: Boolean = True);
 
     {Writes string to log. Returns True if everything went ok.}
@@ -183,16 +182,16 @@ type
       const AMaxSize: Integer = 0; const ABackUpOldLogs: Boolean = False;
       const AClearOldLogs: Boolean = True; const AWriteInternalMessages: Boolean = True); virtual;
 
-    { : Destructor }
+    {  Destructor }
     destructor Destroy; override;
 
-    { : General Logging procedures }
+    {  General Logging procedures }
     procedure Log(const Desc: string; const Level: TLogLevel = lkInfo);
     procedure LogAdv(const args: array of const; const ALevel: TLogLevel = lkError);
     procedure LogException(const E: Exception; const aFunctionName: string;
       const args: array of const; const ALevel: TLogLevel = lkError);
 
-    { : Logs a string  Desc</b> if  Level</b>
+    {  Logs a string  Desc  if  Level 
       matches current GLS_LOGGING level (see @Link(LogLevels)) }
     procedure LogDebug(const Desc: string);
     procedure LogInfo(const Desc: string);
@@ -202,7 +201,7 @@ type
     procedure LogFatalError(const Desc: string);
     procedure LogEmtryLine();
 
-    { : Logs a formatted string assembled from a format string and an array of arguments. }
+    {  Logs a formatted string assembled from a format string and an array of arguments. }
     procedure LogDebugFmt(const Desc: string; const Args: array of const );
     procedure LogInfoFmt(const Desc: string; const Args: array of const );
     procedure LogNoticeFmt(const Desc: string; const Args: array of const );
@@ -210,11 +209,11 @@ type
     procedure LogErrorFmt(const Desc: string; const Args: array of const );
     procedure LogFatalErrorFmt(const Desc: string; const Args: array of const );
 
-    { : Mics procedures. }
+    {  Mics procedures. }
     procedure DisplayLog();
     procedure FlushBuffer(); // If log is buffered, calling this will flush the buffer.
 
-    { : Set of levels which to include in the log }
+    {  Set of levels which to include in the log }
     property LogLevels: TLogLevels read FLogLevels write SetMode
       default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
     property Enabled: Boolean read FEnabled write SetEnabled default True;
@@ -242,7 +241,7 @@ type
   // TGLSLoger
   //
 
-  { : Abstract class for control loging.  }
+  {  Abstract class for control loging.  }
 
   TGLSLogger = class(TComponent)
   private
@@ -260,14 +259,14 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    { : Set component primary and then UserLog return it's log }
+    {  Set component primary and then UserLog return it's log }
     procedure DoPrimary;
     property Log: TLogSession read GetLog;
   published
     { Published Declarations }
     property ReplaceAssertion: Boolean read FReplaceAssertion
       write SetReplaceAssertion default False;
-    { : Only design time sets. Define Log initial properties }
+    {  Only design time sets. Define Log initial properties }
     property TimeFormat: TLogTimeFormat read FTimeFormat write FTimeFormat
       default lfElapsed;
     property LogLevels: TLogLevels read FLogLevels write FLogLevels
@@ -276,12 +275,12 @@ type
 
   TIDELogProc = procedure(const AMsg: string);
 
-  { : Return logger wich created by TGLSLogger component }
+  {  Return logger wich created by TGLSLogger component }
 function UserLog: TLogSession;
 function SkipBeforeSTR(var TextFile: Text; SkipSTR: string): Boolean;
 function ReadLine(var TextFile: Text): string;
 
-{ : GLScene inner logger.
+{  GLScene inner logger.
     DaStr: Converted to a function, because in case of a DLL and main app using this module,
     log is written to the same file on initialization and finalization,
     which is not what one might want. This also allows to create a GLSLogger with
@@ -309,7 +308,7 @@ var
   vAssertErrorHandler: TAssertErrorProc;
   vCurrentLogger: TGLSLogger;
 
-{ : GLScene inner logger. Create on first use, not in unit initialization. }
+{  GLScene inner logger. Create on first use, not in unit initialization. }
 function GLSLogger(): TLogSession;
 begin
   if v_GLSLogger = nil then

@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : Informations on OpenGL driver. 
+{  
+  Informations on OpenGL driver. 
 
    History :  
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

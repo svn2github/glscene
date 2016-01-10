@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLShadowPlane 
-
+{
    Implements a basic shadow plane. 
 
    It is strongly recommended to read and understand the explanations in the
@@ -65,7 +64,7 @@ type
      The object is a mix between a plane and a proxy object, in that the plane
      defines where the shadows are cast, while the proxy part is used to reference
      the objects that should be shadowing (it is legal to self-shadow, but no
-     self-shadow visuals will be rendered).<br>
+     self-shadow visuals will be rendered).
      If stenciling isn't used, the shadow will 'paint' the ShadowColor instead
      of blending it transparently. 
      You can have lower quality shadow geometry: add a dummycube, set it to
@@ -115,7 +114,7 @@ type
     property ShadowColor: TGLColor read FShadowColor write SetShadowColor;
 
     {Controls rendering options. 
-       <ul>
+       
         spoUseStencil: plane area is stenciled, prevents shadowing
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer too). It also allows shadows to
@@ -126,7 +125,7 @@ type
         spoTransparent: does not render the plane's material, may help
           improve performance if you're fillrate limited, are using the
           stencil, and your hardware has optimized stencil-only writes
-       </ul>
+       
     }
     property ShadowOptions: TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
 

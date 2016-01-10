@@ -1,7 +1,8 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneForm 
+{
+   GLScene form loader
 
    History :  
    05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
@@ -130,31 +131,31 @@ type
     property RenderDC: HDC read FOwnDC;
   published
     { Published Declarations }
-    { : Camera from which the scene is rendered. }
+    {  Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
 
-    { : Specifies if the refresh should be synchronized with the VSync signal. 
+    {  Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
-    { : Triggered before the scene's objects get rendered. 
+    {  Triggered before the scene's objects get rendered. 
       You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write
       SetBeforeRender;
-    { : Triggered just after all the scene's objects have been rendered. 
+    {  Triggered just after all the scene's objects have been rendered. 
       The OpenGL context is still active in this event, and you may use it
       to execute your own OpenGL rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-    { : Called after rendering. 
+    {  Called after rendering. 
       You cannot issue OpenGL calls in this event, if you want to do your own
       OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    { : Access to buffer properties. }
+    {  Access to buffer properties. }
     property Buffer: TGLSceneBuffer read FBuffer write SetBuffer;
 
-    { : Returns or sets the field of view for the viewer, in degrees. 
+    {  Returns or sets the field of view for the viewer, in degrees. 
       This value depends on the camera and the width and height of the scene.
       The value isn't persisted, if the width/height or camera.focallength is
       changed, FieldOfView is changed also. }

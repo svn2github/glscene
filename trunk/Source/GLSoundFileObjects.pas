@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-	Support classes for loading various fileformats. 
+   Support classes for loading various fileformats. 
    These classes work together like vector file formats or Delphi's TGraphic classes. 
 
-	 History :  
+   History :  
        17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
        13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)

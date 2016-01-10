@@ -1,12 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVectorFileObjects 
+{
+   Vector File related objects for GLScene 
 
- Vector File related objects for GLScene 
-
-  History : 
-
+   History : 
        28/06/13 - YP - Added support for vector color
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        11/07/12 - YP - Added BarycenterPosition and BarycenterOffset
@@ -272,7 +270,7 @@ type
       normalIndices: TIntegerList = nil);
     {Extracts all mesh triangles as a triangles list. 
        The resulting list size is a multiple of 3, each group of 3 vertices
-       making up and independant triangle.<br>
+       making up and independant triangle.
        The returned list can be used independantly from the mesh object
        (all data is duplicated) and should be freed by caller. 
        If texCoords is specified, per vertex texture coordinates will be
@@ -591,7 +589,7 @@ type
   // TSkeleton
   //
     {Main skeleton object. 
-       This class stores the bones hierarchy and animation frames.<br>
+       This class stores the bones hierarchy and animation frames.
        It is also responsible for maintaining the "CurrentFrame" and allowing
        various frame blending operations. }
   TSkeleton = class(TPersistentObject)
@@ -651,7 +649,7 @@ type
     procedure MakeSkeletalTranslationStatic(startFrame, endFrame: Integer);
     {Removes the absolute rotation component of the skeletal frames. 
        Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation.<br>
+       if this correct if the animation is the "main" animation.
        This function removes that absolute information, making the animation
        frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta(startFrame, endFrame: Integer);
@@ -678,12 +676,12 @@ type
   // TMeshObjectRenderingOption
   //
   {Rendering options per TMeshObject. 
-  <ul>
+  
    moroGroupByMaterial : if set, the facegroups will be rendered by material
      in batchs, this will optimize rendering by reducing material switches, but
      also implies that facegroups will not be rendered in the order they are in
      the list.
-  </ul> }
+   }
   TMeshObjectRenderingOption = (moroGroupByMaterial);
   TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
 
@@ -1017,7 +1015,7 @@ type
   // TSkeletonMeshObject
   //
     {A mesh object with vertice bone attachments. 
-       The class adds per vertex bone weights to the standard morphable mesh.<br>
+       The class adds per vertex bone weights to the standard morphable mesh.
        The TVertexBoneWeight structures are accessed via VerticesBonesWeights,
        they must be initialized by adjusting the BonesPerVertex and
        VerticeBoneWeightCount properties, you can also add vertex by vertex
@@ -1134,11 +1132,11 @@ type
   // TFaceGroupMeshMode
   //
   {Known descriptions for face group mesh modes. 
-     - fgmmTriangles : issue all vertices with GL_TRIANGLES.<br>
-     - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.<br>
+     - fgmmTriangles : issue all vertices with GL_TRIANGLES.
+     - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.
      - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
-        the same normal for all vertices of a triangle.<br>
-     - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.<br>
+        the same normal for all vertices of a triangle.
+     - fgmmTriangleFan : issue all vertices with GL_TRIANGLE_FAN.
      - fgmmQuads : issue all vertices with GL_QUADS. }
   TFaceGroupMeshMode = (fgmmTriangles, fgmmTriangleStrip, fgmmFlatTriangles,
     fgmmTriangleFan, fgmmQuads);
@@ -1304,10 +1302,10 @@ type
   // TMeshNormalsOrientation
   //
   {Determines how normals orientation is defined in a mesh. 
-     - mnoDefault : uses default orientation<br>
-     - mnoInvert : inverse of default orientation<br>
-     - mnoAutoSolid : autocalculate to make the mesh globally solid<br>
-     - mnoAutoHollow : autocalculate to make the mesh globally hollow<br> }
+     - mnoDefault : uses default orientation
+     - mnoInvert : inverse of default orientation
+     - mnoAutoSolid : autocalculate to make the mesh globally solid
+     - mnoAutoHollow : autocalculate to make the mesh globally hollow }
   TMeshNormalsOrientation = (mnoDefault, mnoInvert);
     //, mnoAutoSolid, mnoAutoHollow);
 
@@ -1388,12 +1386,12 @@ type
     procedure DestroyHandle; override;
 
     {Invoked after creating a TVectorFile and before loading. 
-       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
+       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TVectorFile); dynamic;
 
     {Invoked after a mesh has been loaded/added. 
-       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.<br>
+       Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareMesh; dynamic;
 
@@ -1465,7 +1463,7 @@ type
        Loading a file replaces the current one (if any). }
     procedure LoadFromFile(const filename: string); dynamic;
     {Loads a vector file from a stream. 
-       See LoadFromFile.<br>
+       See LoadFromFile.
        The filename attribute is required to identify the type data you're
        streaming (3DS, OBJ, etc.) }
     procedure LoadFromStream(const filename: string; aStream: TStream); dynamic;
@@ -1479,7 +1477,7 @@ type
     procedure SaveToStream(const fileName: string; aStream: TStream); dynamic;
 
     {Loads additionnal data from a file. 
-       Additionnal data could be more animation frames or morph target.<br>
+       Additionnal data could be more animation frames or morph target.
        The VectorFile importer must be able to handle addition of data
        flawlessly. }
     procedure AddDataFromFile(const filename: string); dynamic;
@@ -1495,16 +1493,16 @@ type
     function LastLoadedFilename: string;
 
     {Determines if a mesh should be centered and how. 
-       AutoCentering is performed  only</b> after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream.<br>
+       AutoCentering is performed  only  after loading a mesh, it has
+       no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
        (on the TMeshObjects). }
     property AutoCentering: TMeshAutoCenterings read FAutoCentering write
       FAutoCentering default [];
 
     {Scales vertices to a AutoScaling. 
-       AutoScaling is performed  only</b> after loading a mesh, it has
-       no effect on already loaded mesh data or when adding from a file/stream.<br>
+       AutoScaling is performed  only  after loading a mesh, it has
+       no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
        (on the TMeshObjects). }
     property AutoScaling: TGLCoordinates read FAutoScaling write FAutoScaling;
@@ -1596,11 +1594,11 @@ type
   // TGLActorOption
   //
   {Miscellanious actor options. 
-     <ul>
+     
       aoSkeletonNormalizeNormals : if set the normals of a skeleton-animated
          mesh will be normalized, this is not required if no normals-based texture
          coordinates generation occurs, and thus may be unset to improve performance.
-     </ul> }
+      }
   TGLActorOption = (aoSkeletonNormalizeNormals);
   TGLActorOptions = set of TGLActorOption;
 
@@ -1659,7 +1657,7 @@ type
     procedure MakeSkeletalTranslationStatic;
     {Removes the absolute rotation component of the skeletal frames. 
        Some formats will store frames with absolute rotation information,
-       if this correct if the animation is the "main" animation.<br>
+       if this correct if the animation is the "main" animation.
        This function removes that absolute information, making the animation
        frames suitable for blending purposes. }
     procedure MakeSkeletalRotationDelta;
@@ -1773,14 +1771,14 @@ type
   // TActorFrameInterpolation
   //
   {Actor frame-interpolation mode. 
-     - afpNone : no interpolation, display CurrentFrame only<br>
+     - afpNone : no interpolation, display CurrentFrame only
      - afpLinear : perform linear interpolation between current and next frame }
   TActorFrameInterpolation = (afpNone, afpLinear);
 
   // TActorActionMode
   //
   {Defines how an actor plays between its StartFrame and EndFrame. 
-     <ul>
+     
       aamNone : no animation is performed
       aamPlayOnce : play from current frame to EndFrame, once end frame has
         been reached, switches to aamNone
@@ -1791,7 +1789,7 @@ type
       aamBounceBackward : play from current frame to StartFrame, once start
         frame has been reached, switches to aamBounceForward
       aamExternal : Allows for external animation control
-     </ul> }
+      }
   TActorAnimationMode = (aamNone, aamPlayOnce, aamLoop, aamBounceForward,
     aamBounceBackward, aamLoopBackward, aamExternal);
 

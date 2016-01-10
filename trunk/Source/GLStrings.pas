@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLStrings 
+{
+   String constants that are used in many GLScene units 
 
-	String constants that are used in many GLScene units 
-
-	 History : 
+   History : 
        16/09/10 - YP - Added glsUnknownParam
        23/02/07 - DaStr - Added glsDot, glsUnsupportedType, glsUncompatibleTypes,
                          glsUnknownType, glsShaderNeedsAtLeastOneLightSource(Ex),

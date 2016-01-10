@@ -1,14 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPortal 
-
-	Portal Rendering support for GLScene. 
-
+{
+   Portal Rendering support for GLScene.
    The portal structures are subclasses of the Mesh structures, with a "sector"
-   being assimilated to a "MeshObject" and sector polygons to facegroups. 
+   being assimilated to a "MeshObject" and sector polygons to facegroups.
 
-	 Historique :  
+   History :
        30/03/07 - DaStr - Added $I GLScene.inc
        30/01/03 - Egg - Completed class registration
        13/08/00 - Egg - Creation

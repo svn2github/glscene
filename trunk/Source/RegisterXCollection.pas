@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{RegisterXCollection 
-
-	Register TXCollection property editor 
-
-	 History :  
+{
+   Register TXCollection property editor 
+  
+   History :  
        20/05/10 - Yar - Fixes for Linux x64
        11/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)

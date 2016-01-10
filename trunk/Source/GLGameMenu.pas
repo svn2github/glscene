@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLGameMenu 
-
-   Manages a basic game menu UI 
-
+{
+  Manages a basic game menu UI
   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -24,7 +22,7 @@
        20/12/06 - DaStr - TGLGameMenu.MouseMenuSelect bugfixed (thanks to Predator)
        03/27/06 - DaveK - added mouse selection support
        03/03/05 - EG - Creation
-    
+
 }
 unit GLGameMenu;
 

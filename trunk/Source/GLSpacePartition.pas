@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpacePartition 
-
+{
   Space Partition speeds up geometrical queries, like what objects does A
   overlap. 
 
@@ -10,10 +9,10 @@
   objects that are small in relation to the size of the Octree space. This from
   Eric;
 
-  <i>The non-duplicating octree shouldn't really be used if  you have big objects,
+  The non-duplicating octree shouldn't really be used if  you have big objects,
   and this especially if you have lots of big objects (the more objects you have
   the less efficient the partitionning, due to the "magnifying glass" effect of
-  the non-discriminating volume).</i> 
+  the non-discriminating volume).
 
 
    History :  
@@ -53,44 +52,44 @@ const
 type
   TBaseSpacePartition = class;
 
-  { : Describes a cone, and is used for cone collision }
+  {  Describes a cone, and is used for cone collision }
   TSPCone = record
-    { : The base of the cone }
+    {  The base of the cone }
     Base: TAffineVector;
 
-    { : The axis of the cone }
+    {  The axis of the cone }
     Axis: TAffineVector;
 
-    { : Angle of the cone }
+    {  Angle of the cone }
     Angle: Single;
 
-    { : Length of the cone }
+    {  Length of the cone }
     Length: Single;
   end;
 
-  { : Extended frustum, used for fast intersection testing }
+  {  Extended frustum, used for fast intersection testing }
   TExtendedFrustum = record
     Frustum: TFrustum;
     BSphere: TBSphere;
     // SPCone : TSPCone;
   end;
 
-  { : Used to store the actual objects in the SpacePartition }
+  {  Used to store the actual objects in the SpacePartition }
   TSpacePartitionLeaf = class(TPersistentObject)
   private
     FSpacePartition: TBaseSpacePartition;
     procedure SetSpacePartition(const Value: TBaseSpacePartition);
   public
-    { : This can be used by the space partitioner as it sees fit }
+    {  This can be used by the space partitioner as it sees fit }
     FPartitionTag: Pointer;
-    { : Leaves cache their AABBs so they can easily be accessed when needed by
+    {  Leaves cache their AABBs so they can easily be accessed when needed by
       the space partitioner }
     FCachedAABB: TAABB;
-    { : Leaves cache their BoundingSpheres so they can easily be accessed when
+    {  Leaves cache their BoundingSpheres so they can easily be accessed when
       needed by the space partitioner }
     FCachedBSphere: TBSphere;
 
-    { : Whenever the size or location of the leaf changes, the space partitioner
+    {  Whenever the size or location of the leaf changes, the space partitioner
       should be notified through a call to Changed. In the basic version, all it
       does is update the cached AABB and BSphere. You do not need to override this
       method. }
@@ -98,16 +97,16 @@ type
 
     // *******************
     // *** Override this!
-    { : AABBs and BSpheres are cached for leafs, and this function should be
+    {  AABBs and BSpheres are cached for leafs, and this function should be
       overriden to update the cache from the structure that the leaf stores. This
       is the only function you MUST override to use space partitions. }
     procedure UpdateCachedAABBAndBSphere; virtual;
 
-    { : The TBaseSpacePartition that owns this leaf }
+    {  The TBaseSpacePartition that owns this leaf }
     property SpacePartition: TBaseSpacePartition read FSpacePartition
       write SetSpacePartition;
 
-    { : This tag can be used by the space partition to store vital information
+    {  This tag can be used by the space partition to store vital information
       in the leaf }
     property PartitionTag: Pointer read FPartitionTag;
 
@@ -116,7 +115,7 @@ type
   published
   end;
 
-  { : List for storing space partition leaves }
+  {  List for storing space partition leaves }
   TSpacePartitionLeafList = class(TPersistentObjectList)
   private
     function GetItems(I: Integer): TSpacePartitionLeaf;
@@ -129,68 +128,68 @@ type
 
   TCullingMode = (CmFineCulling, CmGrossCulling);
 
-  { : Basic space partition, does not implement any actual space partitioning }
+  {  Basic space partition, does not implement any actual space partitioning }
   TBaseSpacePartition = class(TPersistentObject)
   private
     FCullingMode: TCullingMode;
-    { : Query space for Leaves that intersect a cone, result is returned through
+    {  Query space for Leaves that intersect a cone, result is returned through
       QueryResult }
     function QueryCone(const ACone: TSPCone): Integer; virtual;
   protected
     FQueryResult: TSpacePartitionLeafList;
     FQueryInterObjectTests: Integer;
 
-    { : Empties the search result and resetting all search statistics }
+    {  Empties the search result and resetting all search statistics }
     procedure FlushQueryResult; virtual;
   public
-    { : The results from the last query }
+    {  The results from the last query }
     property QueryResult: TSpacePartitionLeafList read FQueryResult;
 
-    { : Clear all internal storage Leaves }
+    {  Clear all internal storage Leaves }
     procedure Clear; virtual;
 
     // ** Update space partition
-    { : Add a leaf }
+    {  Add a leaf }
     procedure AddLeaf(ALeaf: TSpacePartitionLeaf); virtual;
-    { : Remove a leaf }
+    {  Remove a leaf }
     procedure RemoveLeaf(ALeaf: TSpacePartitionLeaf); virtual;
-    { : Called by leaf when it has changed }
+    {  Called by leaf when it has changed }
     procedure LeafChanged(ALeaf: TSpacePartitionLeaf); virtual;
 
     // ** Query space partition
-    { : Query space for Leaves that intersect the axis aligned bounding box,
+    {  Query space for Leaves that intersect the axis aligned bounding box,
       result is returned through QueryResult }
     function QueryAABB(const AAABB: TAABB): Integer; virtual;
-    { : Query space for Leaves that intersect the bounding sphere, result is
+    {  Query space for Leaves that intersect the bounding sphere, result is
       returned through QueryResult }
     function QueryBSphere(const ABSphere: TBSphere): Integer; virtual;
-    { : Query space for Leaves that intersect the bounding sphere or box
+    {  Query space for Leaves that intersect the bounding sphere or box
       of a leaf. Result is returned through QueryResult }
     function QueryLeaf(const ALeaf: TSpacePartitionLeaf): Integer; virtual;
-    { : Query space for Leaves that intersect a plane. Result is returned through
+    {  Query space for Leaves that intersect a plane. Result is returned through
       QueryResult }
     function QueryPlane(const Location, Normal: TAffineVector)
       : Integer; virtual;
-    { : Query space for Leaves that intersect a Frustum. Result is returned through
+    {  Query space for Leaves that intersect a Frustum. Result is returned through
       QueryResult }
     function QueryFrustum(const Frustum: TFrustum): Integer; virtual;
-    { : Query space for Leaves that intersect an extended frustum. Result is
+    {  Query space for Leaves that intersect an extended frustum. Result is
       returned through QueryResult. Extended frustum is slightly faster than the
       regular frustum because it uses a bounding sphere for the frustum }
     function QueryFrustumEx(const ExtendedFrustum: TExtendedFrustum)
       : Integer; virtual;
 
-    { : Once a query has been run, this number tells of how many inter object
+    {  Once a query has been run, this number tells of how many inter object
       tests that were run. This value must be set by all that override the
       queries. }
     property QueryInterObjectTests: Integer read FQueryInterObjectTests;
 
-    { : Some space partitioners delay processing changes until all changes have
+    {  Some space partitioners delay processing changes until all changes have
       been made. ProcessUpdated should be called when all changes have been
       performed. }
     procedure ProcessUpdated; virtual;
 
-    { : Determines if the spatial structure should do very simple preliminary
+    {  Determines if the spatial structure should do very simple preliminary
       culling (gross culling) or a more detailed form of culling (fine culling) }
     property CullingMode: TCullingMode read FCullingMode write FCullingMode;
 
@@ -198,35 +197,35 @@ type
     destructor Destroy; override;
   end;
 
-  { : Implements a list of all leaves added to the space partition, _not_ a
+  {  Implements a list of all leaves added to the space partition, _not_ a
     good solution, but it can be used as a benchmark against more complex methods }
   TLeavedSpacePartition = class(TBaseSpacePartition)
   private
     FLeaves: TSpacePartitionLeafList;
 
-    { : Query space for Leaves that intersect a cone, result is returned through
+    {  Query space for Leaves that intersect a cone, result is returned through
       QueryResult }
     function QueryCone(const ACone: TSPCone): Integer; override;
   public
-    { : Clear all internal storage Leaves }
+    {  Clear all internal storage Leaves }
     procedure Clear; override;
 
     // ** Update space partition
-    { : Add a leaf }
+    {  Add a leaf }
     procedure AddLeaf(ALeaf: TSpacePartitionLeaf); override;
-    { : Remove a leaf }
+    {  Remove a leaf }
     procedure RemoveLeaf(ALeaf: TSpacePartitionLeaf); override;
 
     // ** Query space partition
-    { : Query space for Leaves that intersect the axis aligned bounding box,
+    {  Query space for Leaves that intersect the axis aligned bounding box,
       result is returned through QueryResult. This override scans _all_ leaves
       in the list, so it's far from optimal. }
     function QueryAABB(const AAABB: TAABB): Integer; override;
-    { : Query space for Leaves that intersect the bounding sphere, result is
+    {  Query space for Leaves that intersect the bounding sphere, result is
       returned through QueryResult. This override scans _all_ leaves
       in the list, so it's far from optimal. }
     function QueryBSphere(const ABSphere: TBSphere): Integer; override;
-    { : Query space for Leaves that intersect a plane. Result is returned through
+    {  Query space for Leaves that intersect a plane. Result is returned through
       QueryResult }
     function QueryPlane(const FLocation, FNormal: TAffineVector)
       : Integer; override;
@@ -241,7 +240,7 @@ type
   TSectorNode = class;
   TSectorNodeArray = array [0 .. 7] of TSectorNode;
 
-  { : Implements a SectorNode node. Each node can have 0 or 8 children, each child
+  {  Implements a SectorNode node. Each node can have 0 or 8 children, each child
     being a portion of the size of the parent. For quadtrees, that's 1/4, for
     octrees, it's 1/8 }
   TSectorNode = class
@@ -259,135 +258,135 @@ type
     procedure SetAABB(const Value: TAABB);
     function GetCenter: TAffineVector;
   protected
-    { : Recursively counts the RecursiveLeafCount, this should only be used in
+    {  Recursively counts the RecursiveLeafCount, this should only be used in
       debugging purposes, because the proprtyu RecursiveLeafCount is always up to
       date. }
     function CalcRecursiveLeafCount: Integer;
 
-    { : Places a leaf in one of the children of this node, or in the node itself
+    {  Places a leaf in one of the children of this node, or in the node itself
       if it doesn't fit in any of the children }
     function PlaceLeafInChild(ALeaf: TSpacePartitionLeaf): TSectorNode;
 
-    { : Debug method that checks that FRecursiveLeafCount and
+    {  Debug method that checks that FRecursiveLeafCount and
       CalcRecursiveLeafCount actually agree }
     function VerifyRecursiveLeafCount: string;
 
-    { : Executed whenever the children of the node has changed }
+    {  Executed whenever the children of the node has changed }
     procedure ChildrenChanged; virtual;
   public
-    { : Clear deletes all children and empties the leaves. It doesn't destroy
+    {  Clear deletes all children and empties the leaves. It doesn't destroy
       the leaves, as they belong to the SpacePartition }
     procedure Clear;
 
-    { : The Axis Aligned Bounding Box for this node. All leaves MUST fit inside
+    {  The Axis Aligned Bounding Box for this node. All leaves MUST fit inside
       this box. }
     property AABB: TAABB read FAABB write SetAABB;
-    { : BSphere for this node }
+    {  BSphere for this node }
     property BSphere: TBSphere read FBSphere;
-    { : Center of the AABB for this node. }
+    {  Center of the AABB for this node. }
     property Center: TAffineVector read GetCenter;
-    { : NoChildren is true if the node has no children. }
+    {  NoChildren is true if the node has no children. }
     property NoChildren: Boolean read GetNoChildren;
-    { : A list of the children for this node, only ChildCount children are none
+    {  A list of the children for this node, only ChildCount children are none
       nil }
     property Children: TSectorNodeArray read FChildren;
-    { : The number of child sectors that have been created }
+    {  The number of child sectors that have been created }
     property ChildCount: Integer read FChildCount;
 
-    { : Computes which child the AABB should go in. Returns nil if no such child
+    {  Computes which child the AABB should go in. Returns nil if no such child
       exists }
     function GetChildForAABB(AABB: TAABB): TSectorNode; virtual;
 
-    { : The leaves that are stored in this node }
+    {  The leaves that are stored in this node }
     property Leaves: TSpacePartitionLeafList read FLeaves;
 
-    { : The Structure that owns this node }
+    {  The Structure that owns this node }
     property SectoredSpacePartition: TSectoredSpacePartition
       read FSectoredSpacePartition;
 
-    { : The parent node of this node. If parent is nil, that means that this
+    {  The parent node of this node. If parent is nil, that means that this
       node is the root node }
     property Parent: TSectorNode read FParent;
 
-    { : The number of leaves stored in this node and all it's children. }
+    {  The number of leaves stored in this node and all it's children. }
     property RecursiveLeafCount: Integer read FRecursiveLeafCount;
 
-    { : The tree depth at which this node is located. For the root, this value
+    {  The tree depth at which this node is located. For the root, this value
       is 0, for the roots children, it is 1 and so on }
     property NodeDepth: Integer read FNodeDepth;
 
-    { : Checks if an AABB fits completely inside this node }
+    {  Checks if an AABB fits completely inside this node }
     function AABBFitsInNode(const AAABB: TAABB): Boolean; virtual;
 
-    { : Checks if an AABB intersects this node }
+    {  Checks if an AABB intersects this node }
     function AABBIntersectsNode(const AAABB: TAABB): Boolean; virtual;
 
-    { : Checks if a BSphere fits completely inside this node }
+    {  Checks if a BSphere fits completely inside this node }
     function BSphereFitsInNode(const BSphere: TBSphere): Boolean; virtual;
 
-    { : Checks if a BSphere intersects this node }
+    {  Checks if a BSphere intersects this node }
     function BSphereIntersectsNode(const BSphere: TBSphere): Boolean; virtual;
 
-    { : Checks if a AABB partially or completely contains this sector }
+    {  Checks if a AABB partially or completely contains this sector }
     function AABBContainsSector(const AABB: TAABB): TSpaceContains; virtual;
 
-    { : Checks if a BSphere partially or completely contains this sector }
+    {  Checks if a BSphere partially or completely contains this sector }
     function BSphereContainsSector(const BSphere: TBSphere)
       : TSpaceContains; virtual;
 
-    { : Checks if this node partially or completely contains a BSphere }
+    {  Checks if this node partially or completely contains a BSphere }
     function ContainsBSphere(const ABSphere: TBSphere): TSpaceContains; virtual;
 
-    { : Checks if this node partially or completely contains an AABB }
+    {  Checks if this node partially or completely contains an AABB }
     function ContainsAABB(const AAABB: TAABB): TSpaceContains; virtual;
 
-    { : Adds leaf to this node - or one of it's children. If the node has enough
+    {  Adds leaf to this node - or one of it's children. If the node has enough
       leaves and has no children, children will be created and all leaves will be
       spread among the children. }
     function AddLeaf(ALeaf: TSpacePartitionLeaf): TSectorNode;
 
-    { : Remove leaf will remove a leaf from this node. If it is determined that
+    {  Remove leaf will remove a leaf from this node. If it is determined that
       this node has too few leaves after the delete, it may be collapsed. Returns
       true if the node was actually collapsed }
     function RemoveLeaf(ALeaf: TSpacePartitionLeaf;
       OwnerByThis: Boolean): Boolean;
 
-    { : Query the node and its children for leaves that match the AABB }
+    {  Query the node and its children for leaves that match the AABB }
     procedure QueryAABB(const AAABB: TAABB;
       const QueryResult: TSpacePartitionLeafList);
 
-    { : Query the node and its children for leaves that match the BSphere }
+    {  Query the node and its children for leaves that match the BSphere }
     procedure QueryBSphere(const ABSphere: TBSphere;
       const QueryResult: TSpacePartitionLeafList);
 
-    { : Query the node and its children for leaves that match the plane }
+    {  Query the node and its children for leaves that match the plane }
     procedure QueryPlane(const Location, Normal: TAffineVector;
       const QueryResult: TSpacePartitionLeafList);
 
-    { : Query the node and its children for leaves that match the Frustum. }
+    {  Query the node and its children for leaves that match the Frustum. }
     procedure QueryFrustum(const Frustum: TFrustum;
       const QueryResult: TSpacePartitionLeafList);
 
-    { : Query the node and its children for leaves that match the extended
+    {  Query the node and its children for leaves that match the extended
       frustum. }
     procedure QueryFrustumEx(const ExtendedFrustum: TExtendedFrustum;
       const QueryResult: TSpacePartitionLeafList);
 
-    { : Adds all leaves to query result without testing if they intersect, and
+    {  Adds all leaves to query result without testing if they intersect, and
       then do the same for all children. This is used when QueryAABB or
       QueryBSphere determines that a node fits completely in the searched space }
     procedure AddAllLeavesRecursive(const QueryResult: TSpacePartitionLeafList);
 
-    { : Add children to this node and spread the leaves among it's children }
+    {  Add children to this node and spread the leaves among it's children }
     procedure ExpandNode;
 
-    { : Create the number of children this node type needs }
+    {  Create the number of children this node type needs }
     procedure CreateChildren; virtual;
 
-    { : Delete all children for this node, adding their leaves to this node }
+    {  Delete all children for this node, adding their leaves to this node }
     procedure CollapseNode;
 
-    { : Returns the number of nodes in the Octree }
+    {  Returns the number of nodes in the Octree }
     function GetNodeCount: Integer;
 
     constructor Create(ASectoredSpacePartition: TSectoredSpacePartition;
@@ -396,7 +395,7 @@ type
     destructor Destroy; override;
   end;
 
-  { : Implements sectored space partitioning, sectored space partitions include
+  {  Implements sectored space partitioning, sectored space partitions include
     Octrees, Quadtrees and  BSP-trees }
   TGrowMethod = (gmNever, gmBestFit, gmIncreaseToFitAll);
 
@@ -412,70 +411,70 @@ type
   protected
     FQueryNodeTests: Integer;
 
-    { : Empties the search result and resetting all search statistics }
+    {  Empties the search result and resetting all search statistics }
     procedure FlushQueryResult; override;
   public
     // ** Update space partition
-    { : Add a leaf to the structure. If the leaf doesn't fit in the structure, the
+    {  Add a leaf to the structure. If the leaf doesn't fit in the structure, the
       structure is either grown or an exception is raised. If GrowMethod is set to
       gmBestFit or gmIncreaseToFitAll, the octree will be grown. }
     procedure AddLeaf(ALeaf: TSpacePartitionLeaf); override;
 
-    { : Remove a leaf from the structure. }
+    {  Remove a leaf from the structure. }
     procedure RemoveLeaf(ALeaf: TSpacePartitionLeaf); override;
 
-    { : Called by leaf when it has changed, the leaf will be moved to an
+    {  Called by leaf when it has changed, the leaf will be moved to an
       apropriate node }
     procedure LeafChanged(ALeaf: TSpacePartitionLeaf); override;
 
     // ** Query space partition
-    { : Query space for Leaves that intersect the axis aligned bounding box,
+    {  Query space for Leaves that intersect the axis aligned bounding box,
       result is returned through QueryResult. This method simply defers to the
       QueryAABB method of the root node. }
     function QueryAABB(const AAABB: TAABB): Integer; override;
 
-    { : Query space for Leaves that intersect the bounding sphere, result is
+    {  Query space for Leaves that intersect the bounding sphere, result is
       returned through QueryResult. This method simply defers to the
       QueryBSphere method of the root node. }
     function QueryBSphere(const ABSphere: TBSphere): Integer; override;
 
-    { : Query space for Leaves that intersect the bounding sphere or box
+    {  Query space for Leaves that intersect the bounding sphere or box
       of a leaf. Result is returned through QueryResult }
     function QueryLeaf(const ALeaf: TSpacePartitionLeaf): Integer; override;
 
-    { : Query space for Leaves that intersect a plane. Result is returned through
+    {  Query space for Leaves that intersect a plane. Result is returned through
       QueryResult }
     function QueryPlane(const Location, Normal: TAffineVector)
       : Integer; override;
 
-    { : Query space for Leaves that intersect a Frustum. Result is returned through
+    {  Query space for Leaves that intersect a Frustum. Result is returned through
       QueryResult }
     function QueryFrustum(const Frustum: TFrustum): Integer; override;
 
-    { : Query space for Leaves that intersect an extended frustum. Result is
+    {  Query space for Leaves that intersect an extended frustum. Result is
       returned through QueryResult }
     function QueryFrustumEx(const ExtendedFrustum: TExtendedFrustum)
       : Integer; override;
 
-    { : After a query has been run, this value will contain the number of nodes
+    {  After a query has been run, this value will contain the number of nodes
       that were checked during the query }
     property QueryNodeTests: Integer read FQueryNodeTests;
 
-    { : Returns the number of nodes in the structure }
+    {  Returns the number of nodes in the structure }
     function GetNodeCount: Integer;
 
-    { : UpdateOctreeSize will grow and / or shrink the structure to fit the
+    {  UpdateOctreeSize will grow and / or shrink the structure to fit the
       current leaves +-gravy }
     procedure UpdateStructureSize(Gravy: Single);
 
-    { : Rebuild tree will change the tree to the newAABB size, and completely
+    {  Rebuild tree will change the tree to the newAABB size, and completely
       rebuild it }
     procedure RebuildTree(const NewAABB: TAABB);
 
-    { : Returns the _total_ AABB in structure }
+    {  Returns the _total_ AABB in structure }
     function GetAABB: TAABB;
 
-    { : CreateNewNode creates a new node of the TSectorNode subclass that this
+    {  CreateNewNode creates a new node of the TSectorNode subclass that this
       structure requires }
     function CreateNewNode(AParent: TSectorNode): TSectorNode; virtual;
 
@@ -484,107 +483,107 @@ type
     constructor Create; override;
     destructor Destroy; override;
   published
-    { : Root TSectorNode that all others stem from }
+    {  Root TSectorNode that all others stem from }
     property RootNode: TSectorNode read FRootNode;
 
-    { : Determines how deep a tree should be allowed to grow. }
+    {  Determines how deep a tree should be allowed to grow. }
     property MaxTreeDepth: Integer read FMaxTreeDepth write SetMaxTreeDepth;
 
-    { : Determines when a node should be split up to form children. }
+    {  Determines when a node should be split up to form children. }
     property LeafThreshold: Integer read FLeafThreshold write SetLeafThreshold;
 
-    { : Determines if the structure should grow with new leaves, or if an exception
+    {  Determines if the structure should grow with new leaves, or if an exception
       should be raised }
     property GrowMethod: TGrowMethod read FGrowMethod write FGrowMethod;
 
-    { : When the structure is recreated because it's no longer large enough to fit
+    {  When the structure is recreated because it's no longer large enough to fit
       all leafs, it will become large enough to safely fit all leafs, plus
       GrowGravy. This is to prevent too many grows }
     property GrowGravy: Single read FGrowGravy write FGrowGravy;
   end;
 
   // ** OCTTREE
-  { : Implements sector node that handles octrees }
+  {  Implements sector node that handles octrees }
   TSPOctreeNode = class(TSectorNode)
   public
-    { : Create 8 TSPOctreeNode children }
+    {  Create 8 TSPOctreeNode children }
     procedure CreateChildren; override;
 
-    { : Checks if an AABB fits completely inside this node }
+    {  Checks if an AABB fits completely inside this node }
     function AABBFitsInNode(const AAABB: TAABB): Boolean; override;
 
-    { : Checks if an AABB intersects this node }
+    {  Checks if an AABB intersects this node }
     function AABBIntersectsNode(const AAABB: TAABB): Boolean; override;
 
-    { : Checks if a BSphere fits completely inside this node }
+    {  Checks if a BSphere fits completely inside this node }
     function BSphereFitsInNode(const BSphere: TBSphere): Boolean; override;
 
-    { : Checks if a BSphere intersects this node }
+    {  Checks if a BSphere intersects this node }
     function BSphereIntersectsNode(const BSphere: TBSphere): Boolean; override;
   end;
 
-  { : Implements octrees }
+  {  Implements octrees }
   TOctreeSpacePartition = class(TSectoredSpacePartition)
   public
-    { : Set size updates the size of the Octree }
+    {  Set size updates the size of the Octree }
     procedure SetSize(const Min, Max: TAffineVector);
 
-    { : CreateNewNode creates a new TSPOctreeNode }
+    {  CreateNewNode creates a new TSPOctreeNode }
     function CreateNewNode(AParent: TSectorNode): TSectorNode; override;
   end;
 
   // ** QUADTREE
-  { : Implements sector node that handles quadtrees. }
+  {  Implements sector node that handles quadtrees. }
   TSPQuadtreeNode = class(TSPOctreeNode)
   protected
-    { : Executed whenever the children of the node has changed. In the quadtree,
+    {  Executed whenever the children of the node has changed. In the quadtree,
       we want to make sure the Y value of the AABB is correct up and down and that
       the bounding sphere is correct }
     procedure ChildrenChanged; override;
   public
-    { : Create 4 TSPQuadtreeNode children }
+    {  Create 4 TSPQuadtreeNode children }
     procedure CreateChildren; override;
 
-    { : Checks if an AABB fits completely inside this node }
+    {  Checks if an AABB fits completely inside this node }
     function AABBFitsInNode(const AAABB: TAABB): Boolean; override;
 
-    { : Checks if an AABB intersects this node }
+    {  Checks if an AABB intersects this node }
     function AABBIntersectsNode(const AAABB: TAABB): Boolean; override;
 
-    { : Checks if a BSphere fits completely inside this node }
+    {  Checks if a BSphere fits completely inside this node }
     function BSphereFitsInNode(const BSphere: TBSphere): Boolean; override;
 
-    { : Checks if a BSphere intersects this node }
+    {  Checks if a BSphere intersects this node }
     function BSphereIntersectsNode(const BSphere: TBSphere): Boolean; override;
 
-    { : Computes which child the AABB should go in. Returns nil if no such child
+    {  Computes which child the AABB should go in. Returns nil if no such child
       exists }
     function GetChildForAABB(AABB: TAABB): TSectorNode; override;
   end;
 
-  { : Implements quadtrees. 
+  {  Implements quadtrees. 
     Quadtrees are hardcoded to completely ignore the Y axis, only using X and Z
     to determine positioning. 
     This means that they're well suited for 2d-ish situations (landscapes with
     trees for instance) but not for fully 3d situations (space fighting). }
   TQuadtreeSpacePartition = class(TSectoredSpacePartition)
   public
-    { : Set size updates the size of the Octree }
+    {  Set size updates the size of the Octree }
     procedure SetSize(const Min, Max: TAffineVector);
 
-    { : CreateNewNode creates a new TSPOctreeNode }
+    {  CreateNewNode creates a new TSPOctreeNode }
     function CreateNewNode(AParent: TSectorNode): TSectorNode; override;
   end;
 
-  { : Determines to which extent one Cone contains an BSphere }
+  {  Determines to which extent one Cone contains an BSphere }
 function ConeContainsBSphere(const Cone: TSPCone; BSphere: TBSphere)
   : TSpaceContains;
 
-{ : Determines if a extended frustum intersects an BSphere }
+{  Determines if a extended frustum intersects an BSphere }
 function ExtendedFrustumIntersectsBSphere(const AExtendedFrustum
   : TExtendedFrustum; ABSphere: TBSphere): Boolean;
 
-{ : Create an extended frustum from a number of values }
+{  Create an extended frustum from a number of values }
 function ExtendedFrustumMake(const AFrustum: TFrustum;
   const ANearDist, AFarDist, AFieldOfViewRadians: Single;
   const ACameraPosition, ALookVector: TAffineVector { ;

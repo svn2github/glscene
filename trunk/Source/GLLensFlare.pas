@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLLensFlare 
-
-   Lens flare object. 
+{
+  Lens flare object. 
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -40,8 +39,8 @@
                           minor speedup
    
 
-   Author  : Tobias Peirick<br>
-   eMail   : peirick@onlinehome.de<br>
+   Author  : Tobias Peirick
+   eMail   : peirick@onlinehome.de
    Homepage: http://www.TobSoft.de
 }
 unit GLLensFlare;
@@ -225,7 +224,7 @@ type
     {Is the flare size adjusted dynamically? 
        If true, the flare size will be grown and reduced over a few frames
        when it switches between occluded and non-occluded states. This
-       requires animation to be active, but results in a smoother appearance.<br>
+       requires animation to be active, but results in a smoother appearance.
        When false, flare will either be at full size or hidden. 
        The flare is always considered non-dynamic at design-time. }
     property Dynamic: Boolean read FDynamic write FDynamic default True;

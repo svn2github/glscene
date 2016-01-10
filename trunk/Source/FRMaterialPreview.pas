@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FRMaterialPreview 
-
+{
    Material Preview frame. 
 
-    Historique :  
+    History :  
        12/07/07 - DaStr - Improved Cross-Platform compatibility
                              (Bugtracker ID = 1684432)
        06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)

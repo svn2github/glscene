@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileMD5 
-
+{
    Doom3 MD5 mesh and animation vector file format implementation. 
-
-    History : 
+   History : 
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)

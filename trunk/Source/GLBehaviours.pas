@@ -1,10 +1,8 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{GLBehaviours 
-
-  Standard TGLBehaviour subclasses for GLScene 
-
+//
+{
+   Standard TGLBehaviour subclasses for GLScene 
    History :  
      08/05/08 - DaStr - Added a global GetInertia() function
      19/12/06 - DaStr - TGLBAcceleration.Create - creates Inertia right away,
@@ -43,16 +41,16 @@ type
 
   {Holds parameters for TGLScene basic damping model. 
     Damping is modeled by calculating a force from the speed, this force
-    can then be transformed to an acceleration is you know the object's mass.<br>
-    Formulas :<ul>
+    can then be transformed to an acceleration is you know the object's mass.
+    Formulas : 
      damping = constant + linear * Speed + quadratic * Speed^2
      accel = damping / Mass
-    </ul> That's just basic physics :). A note on the components :<ul>
+     That's just basic physics :). A note on the components : 
      constant : use it for solid friction (will stop abruptly an object after
       decreasing its speed.
      linear : linear friction damping.
      quadratic : expresses viscosity.
-    </ul>  }
+      }
   TGLDamping = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
@@ -158,16 +156,16 @@ type
       {Enable/Disable damping (damping has a high cpu-cycle cost). 
         Damping is enabled by default. }
     property DampingEnabled: boolean read FDampingEnabled write FDampingEnabled;
-      {Damping applied to translation speed.<br>
+      {Damping applied to translation speed.
         Note that it is not "exactly" applied, ie. if damping would stop
         your object after 0.5 time unit, and your progression steps are
         of 1 time unit, there will be an integration error of 0.5 time unit. }
     property TranslationDamping: TGLDamping read FTranslationDamping
       write SetTranslationDamping;
-      {Damping applied to rotation speed (yuck!).<br>
+      {Damping applied to rotation speed (yuck!).
         Well, this one is not "exact", like TranslationDamping, and neither
         it is "physical" since I'm reusing the mass and... and... well don't
-        show this to your science teacher 8).<br>
+        show this to your science teacher 8).
         Anyway that's easier to use than the realworld formulas, calculated
         faster, and properly used can give a good illusion of reality. }
     property RotationDamping: TGLDamping read FRotationDamping write SetRotationDamping;

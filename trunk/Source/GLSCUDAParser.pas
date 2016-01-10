@@ -5,7 +5,7 @@
    Helper unit for parsing CU modules and get information about. 
    kernel's functions, textures, shared and constants memory. 
 
-    History :  
+   History :  
        13/04/11 - Yar - Added Ptx parsing to get real function's KernelName
        17/02/11 - Yar - Now parse module instead of compiler product
        19/03/10 - Yar - Creation

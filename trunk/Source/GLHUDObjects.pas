@@ -1,25 +1,23 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLHUDObjects 
-
+{ 
   GLScene objects that get rendered in 2D coordinates 
 
-   History :  
+  History :  
    27/01/12 - Yar - Added texture coordinates mirroring for HUDSprite (thanks Tamahome)
    15/11/10 - FP - Restore DepthTest at the end of RenderTextAtPosition
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  Fixed light state changing
+                    Fixed light state changing
    22/04/10 - Yar - Fixes after GLState revision
    05/03/10 - DanB - More state added to TGLStateCache
    15/03/08 - DaStr - Bugfixed TGLAbsoluteHUDText.DoRender()
-  (thanks Nicoara Adrian) (BugtrackerID = 1914823)
+                      (thanks Nicoara Adrian) (BugtrackerID = 1914823)
    18/09/07 - DaStr - Added TGLResolutionIndependantHUDText and
-  TGLAbsoluteHUDText to the list of registered classes
-  Cleaned up "uses" section
+                    TGLAbsoluteHUDText to the list of registered classes
+                    Cleaned up "uses" section
    07/09/07 - DaStr - AlphaChannel is now applied to ActualPrimaryMaterial
-  Added TGLResolutionIndependantHUDText,
-  TGLAbsoluteHUDText
+                     Added TGLResolutionIndependantHUDText, TGLAbsoluteHUDText
    06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
    30/03/07 - DaStr - Added $I GLScene.inc
    23/02/07 - DaStr - Added default values to TGLHUDSprite.Width & Height
@@ -56,18 +54,18 @@ type
 
   // TGLHUDSprite
   //
-  { : A rectangular area, NOT perspective projected. 
+  {  A rectangular area, NOT perspective projected. 
     (x, y) coordinates map directly to the viewport (in pixels) and refer
-    the center of the area.<br>
+    the center of the area.
     The coordinate system is that of an equivalent TCanvas, ie. top-left
     point is the origin (0, 0). 
     The z component is ignored and Z-Buffer is disabled when rendering. 
-     Using TGLHUDSprite in 2D only scenes :</b><br>
+     Using TGLHUDSprite in 2D only scenes : 
     The most convenient way to use a TGLHUDSprite as a simple 2D sprite with
     blending capabilities (transparency or additive), is to set the texture
     mode to tmModulate, in FrontProperties, to use the Emission color to
     control coloring/intensity, and finally use the Diffuse color's alpha
-    to control transparency (while setting the other RGB components to 0).<br>
+    to control transparency (while setting the other RGB components to 0).
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
     alpha-blended blitting. 
@@ -102,7 +100,7 @@ type
 
   // TGLHUDText
   //
-  { : A 2D text displayed and positionned in 2D coordinates. 
+  {  A 2D text displayed and positionned in 2D coordinates. 
     The HUDText uses a character font defined and stored by a TGLBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
@@ -140,29 +138,29 @@ type
 
   published
     { Published Declarations }
-    { : Refers the bitmap font to use. 
+    {  Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render. 
+    {  Text to render. 
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
-    { : Rotation angle in degrees (2d). }
+    {  Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    { : Controls the text alignment (horizontal). 
+    {  Controls the text alignment (horizontal). 
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    { : Controls the text layout (vertical). 
+    {  Controls the text layout (vertical). 
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
-    { : Color modulation, can be used for fade in/out too. }
+    {  Color modulation, can be used for fade in/out too. }
     property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
   end;
 
-  { : Position (X, Y and X) is in absolute coordinates. This component converts
+  {  Position (X, Y and X) is in absolute coordinates. This component converts
     them to screen coordinates and renderes text there. }
   TGLAbsoluteHUDText = class(TGLHUDText)
   public
@@ -170,7 +168,7 @@ type
       renderSelf, renderChildren: Boolean); override;
   end;
 
-  { : Position (X and Y) is expected in a [0..1] range (from Screen size)
+  {  Position (X and Y) is expected in a [0..1] range (from Screen size)
     This component converts this position to the actual screen position and
     renders the text there. This way a HUD text always appears to be in the
     the same place, regardless of the currect screen resolution.

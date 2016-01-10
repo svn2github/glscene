@@ -48,7 +48,7 @@ type
   // TUseDirtyTiles
   //
   { TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
-     <ul>
+     
       TUseDirtyTiles
       
        When a tile is maked as dirty, a replacement is queued immediately.
@@ -61,7 +61,7 @@ type
        hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,
                              before allowing the renderer to switch over to the new set of tiles.
                              (This prevents a fading checkerbox effect.)
-      </ul> }
+       }
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
 

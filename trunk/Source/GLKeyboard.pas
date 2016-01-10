@@ -6,11 +6,11 @@
    utility functions for working with virtual keycodes. 
 
    Note that windows maps the mouse buttons to virtual key codes too, and you
-   can use the functions/classes in this unit to check mouse buttons too.<br>
+   can use the functions/classes in this unit to check mouse buttons too.
    See "Virtual-Key Codes" in the Win32 programmers réferences for a list of
    key code constants (VK_* constants are declared in the "Windows" unit). 
 
-	 Historique :  
+   History :  
        07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
                              directory (BugtrackerID = 2893580) (thanks Predator)
        28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
@@ -44,7 +44,7 @@ const
 
 {Check if the key corresponding to the given Char is down. 
    The character is mapped to the <i>main keyboard</i> only, and not to the
-   numeric keypad.<br>
+   numeric keypad.
    The Shift/Ctrl/Alt state combinations that may be required to type the
    character are ignored (ie. 'a' is equivalent to 'A', and on my french
    keyboard, '5' = '(' = '[' since they all share the same physical key). }
@@ -54,7 +54,7 @@ function IsKeyDown(c : Char) : Boolean; overload;
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean; overload;
 {Returns the first pressed key whose virtual key code is >= to minVkCode. 
    If no key is pressed, the return value is -1, this function does NOT
-   wait for user input.<br>
+   wait for user input.
    If you don't care about multiple key presses, just don't use the parameter. }
 function KeyPressed(minVkCode : TVirtualKeyCode = 0) : TVirtualKeyCode;
 

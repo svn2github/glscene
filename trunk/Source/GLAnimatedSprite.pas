@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLAnimatedSprite 
-
+{
   A sprite that uses a scrolling texture for animation. 
 
    History :  
@@ -211,7 +210,7 @@ type
   end;
 
   // TSpriteAnimationMode
-  {Sets the current animation playback mode: <ul>
+  {Sets the current animation playback mode: 
       samNone - No playback, the animation does not progress.
       samPlayOnce - Plays the animation once then switches to samNone.
       samLoop - Play the animation forward in a continuous loop.
@@ -220,7 +219,7 @@ type
         when EndFrame is reached.
       samBounceBackward - Plays backward and switches to samBounceForward
         when StartFrame is reached.
-     </ul>. }
+       }
   TSpriteAnimationMode = (samNone, samPlayOnce, samLoop, samBounceForward,
     samBounceBackward, samLoopBackward);
 

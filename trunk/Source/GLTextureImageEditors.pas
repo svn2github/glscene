@@ -1,8 +1,10 @@
-{GLTextureImageEditors 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Standard texture image editors for standard texture image classes. 
 
-	Standard texture image editors for standard texture image classes. 
-
-	 History :  
+   History :  
        10/11/12 - PW - Added CPPB compatibility: used dummy method instead
                           abstract class function Edit for GLS_CPPB
        22/01/10 - Yar - Added to TGLBlankImage property editor ability to set the depth
@@ -30,7 +32,7 @@ type
 		public
          { Public Properties }
 			{Request to edit a textureImage. 
-				Returns True if changes have been made.<br>
+				Returns True if changes have been made.
 				This method may be invoked from the IDE or at run-time. }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;
    end;

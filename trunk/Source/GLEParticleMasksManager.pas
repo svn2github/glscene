@@ -1,17 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLEParticleMasksManager 
-
+{
    A pretty particle mask effect manager. 
-
-    History :  
+   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
        24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
                      Got rid of Types dependancy
        29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
 
-Original Header:
+   Original Header:
 
    GLEParticleMasksManager.pas
    This unit is part of GLE - GLScene Game Utilities Engine set by Kenneth Poulter difacane@telkomsa.net

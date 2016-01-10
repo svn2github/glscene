@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFPSMovement 
-
+{
   FPS-like movement behaviour and manager. 
 
-   History :  
+  History :  
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
    22/04/10 - Yar - Fixes after GLState revision
    05/03/10 - DanB - More state added to TGLStateCache
@@ -15,7 +14,7 @@
    08/03/06 - ur - Fixed warnigs for Delphi 2006
    02/12/04 - DB - Fixed memory leak, spotted by dikoe Kenguru
    03/07/04 - LR - Corrections for Linux compatibility
-  Replace GetTickCount by GLGetTickCount
+                   Replace GetTickCount by GLGetTickCount
    19/06/2004 -Mrqzzz - fixed SphereSweepAndSlide to work for scaled freeforms (SphereRadiusRel)
    14/06/04 - Mathx - Preventing repeated maps when adding through maps.addMap
    09/06/04 - Mathx - Creation
@@ -71,7 +70,7 @@ type
 
     property Map: TGLFreeForm read FMap write setMap;
 
-    { : Indicates the collision group of this map. A Collision Group
+    {  Indicates the collision group of this map. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
       maps that are also on group 1).
@@ -130,7 +129,7 @@ type
     property Navigator: TGLNavigator read FNavigator write SetNavigator;
     property Scene: TGLScene read FScene write setScene;
 
-    { : Display Time for the arrow lines. }
+    {  Display Time for the arrow lines. }
     property DisplayTime: integer read FDisplayTime write FDisplayTime;
     property MovementScale: single read FMovementScale write FMovementScale;
   end;
@@ -178,16 +177,16 @@ type
   published
     property Manager: TGLFPSMovementManager read FManager write FManager;
 
-    { :
+    { 
       Radius to execute the testing with. A value < 0 indicates to use
       the boundingSphereRadius of the object.
     }
     property sphereRadius: single read FSphereRadius write FSphereRadius;
 
-    { : Show Arrows and trailing for debuging. }
+    {  Show Arrows and trailing for debuging. }
     property ShowArrows: boolean read FShowArrows write setShowArrows;
 
-    { : Indicates the collision group of this behaviour. A Collision Group
+    {  Indicates the collision group of this behaviour. A Collision Group
       is a set of logical maps and movers that can collide between
       themselves (i.e. a Behaviour with group 1 can only collide with
       maps that are also on group 1).

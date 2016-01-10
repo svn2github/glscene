@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{Joystick 
+{
+   Component for handling joystick messages 
 
-	Component for handling joystick messages 
-
-	 Historique :  
+   History :  
        17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
        29/01/02 - Egg - Added NoCaptureErrors
        18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously

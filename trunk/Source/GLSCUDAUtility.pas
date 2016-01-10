@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLS_CUDA_Utility 
-
+{ 
+    GLScene CUDA Utility 
     Wraper of cutil. 
 
     History :  

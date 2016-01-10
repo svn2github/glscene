@@ -1,14 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMirror 
-
+{
    Implements a basic, stencil-based mirror (as in Mark Kilgard's demo). 
-
    It is strongly recommended to read and understand the explanations in the
    materials/mirror demo before using this component. 
 
-  History :  
+   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        22/04/10 - Yar - Fixes after GLState revision
        05/03/10 - DanB - More state added to TGLStateCache
@@ -114,7 +112,7 @@ type
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;
     {Controls rendering options. 
-       <ul>
+       
         moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer)
@@ -125,7 +123,7 @@ type
           objects don't interfere with reflected objects (reflected objects
           must be rendered AFTER the mirror in the hierarchy). Works only
           along with stenciling.
-       </ul>
+       
     }
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;

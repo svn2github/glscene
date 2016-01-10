@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FileX 
-
-   Simple X format support for Delphi (Microsoft's favorite format) 
+{
+    Simple X format support for Delphi (Microsoft's favorite format) 
 
     History :  
        17/04/13 - YP - Warn user if file content unparsable (http://paulbourke.net/dataformats/directx/)

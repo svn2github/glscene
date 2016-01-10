@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLLatticeShader  
-
+{
    Lattice shader that simulate Lattice. 
    At this time only one light source is supported
 

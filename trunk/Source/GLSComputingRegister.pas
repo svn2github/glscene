@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSComputingRegister 
-
+{
    Registration unit for GLScene Computing package. 
 
-	 History :  
+   History :  
        05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
        22/08/10 - Yar - Some improvements for FPC (thanks Predator)
        09/06/10 - Yar - Added dropdown list ProjectModule for TGLSCUDACompiler

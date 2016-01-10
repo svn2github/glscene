@@ -2,8 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
-   Post shaders that simulate shader visions for a mask or the entire scene. 
+    Post shaders that simulate shader visions for a mask or the entire scene. 
 
     History :  
      04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit

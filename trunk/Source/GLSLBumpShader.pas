@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLBumpShader 
-
+{
    A GLSL shader that applies bump mapping. 
 
-	 History :  
+   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
        20/10/10 - Yar - Bugfixed memory leak
        23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens

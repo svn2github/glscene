@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLODERagdoll 
+{
+   TGLRagdoll extended using Open Dynamics Engine (ODE).  
 
-	TGLRagdoll extended using Open Dynamics Engine (ODE).  
-
-	 History : 
+   History : 
      10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
      13/07/08 - Mrqzzz - replaced constants "cDensity" and "cMass" with
                             global vars "vGLODERagdoll_cDensity" and "vGLODERagdoll_cMass"

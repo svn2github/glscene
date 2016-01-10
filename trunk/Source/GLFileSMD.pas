@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileSMD 
+{
+   SMD vector file format implementation. 
 
-	SMD vector file format implementation. 
-
-	 History : 
+   History : 
        24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
        28/01/07 - DaStr - Optimized bone weights loading a bit

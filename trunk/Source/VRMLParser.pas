@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{VRMLParser 
-
+{
    VRML file format parser. 
 
-    History : 
+   History : 
        02/04/07 - DaStr - Added $I GLScene.inc
        29/03/07 - DaStr - Added missing parameters in procedure's implementation
                               (thanks Burkhard Carstens) (Bugtracker ID = 1681409)

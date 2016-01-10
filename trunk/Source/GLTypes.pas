@@ -1,17 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTypes 
+{
    Defines vector types for geometry only aiming to imply
    compatibility of GLScene for Delphi with C+Builder.
    Do not include any other units in uses clause  
 
-	 History :  
+   History :  
      25/04/15 - PW - Added 2D/3D vector and matrix arrays
      01/11/13 - PW - Fixed XE5 error: E2376 static can only be used on non-virtual class methods
      12/12/12 - PW - Added TGLVector's and TGLMatrix's types
      11/11/11 - PW - Creation. Defined TGLPoint, TGLPolygon and TGLPolyhedron types
-  </ul>
+  
 }
 unit GLTypes;
 

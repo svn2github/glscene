@@ -1,13 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileBMP 
-
-   Graphic engine friendly loading of BMP image.
-
+{
+  Graphic engine friendly loading of BMP image.
   History :  
          04/04/11 - Yar - Creation
-   </ul> 
+    
 }
 
 unit GLFileBMP;

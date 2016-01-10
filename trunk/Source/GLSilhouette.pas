@@ -52,7 +52,7 @@ type
    {Base class storing a volume silhouette. 
       Made of a set of indexed vertices defining an outline, and another set
       of indexed vertices defining a capping volume. Coordinates system
-      is the object's unscaled local coordinates system.<br>
+      is the object's unscaled local coordinates system.
       This is the base class, you can use the TGLSilhouette subclass if you
       need some helper methods for generating the indexed sets. }
    TGLSilhouette = class

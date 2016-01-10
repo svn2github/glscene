@@ -2,6 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
+   CUDA data access implementation
    History :  
    13/12/13 - PW - Added GLScene.inc and GLSLog
    24/02/11 - Yar - Creation
@@ -66,7 +67,14 @@ function GetElementAccessSize: Cardinal;
 resourcestring
   cudasSizeMismatch = 'Element size mismatch';
 
+//-----------------------------------------------
+//-----------------------------------------------
+//-----------------------------------------------
+
 implementation
+//-----------------------------------------------
+//-----------------------------------------------
+//-----------------------------------------------
 
 threadvar
   vElementAccessAddress: PByte;

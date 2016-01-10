@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLBumpShader 
-
+{
    A shader that applies bump mapping. 
-
    Notes:
    The normal map is expected to be the primary texture. 
 

@@ -1,9 +1,11 @@
-{GLVerletSkeletonColliders 
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Skeleton colliders for defining and controlling verlet
    constraints. 
 
-    History : 
+   History : 
       11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
       08/10/03 - SG - Creation.
     

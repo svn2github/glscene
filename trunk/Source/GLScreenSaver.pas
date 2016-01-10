@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ScreenSaver 
+{
+   Component for making screen-savers an easy task 
 
-	Component for making screen-savers an easy task 
-
-	 History :  
+   History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009
        17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
        09/07/01 - Egg - Fix in PreviewSaver (from Marco Dissel)
@@ -37,7 +36,7 @@ type
    // TScreenSaverOptions
    //
    {Options d'automatisation du screen-saver. 
-      <ul>
+      
        ssoAutoAdjustFormProperties : all relevant properties of main form
 			will be auto-adjusted (form style, border style, form size and for
 			preview, ParentWindow).
@@ -48,7 +47,7 @@ type
          move events manually if you have placed components on the form)
        ssoEnhancedMouseMoveDetection : gets the mouse position every half-second
          and closes the saver if position changed (uses GetCursorPos and a TTimer)
-      </ul> }
+       }
    TScreenSaverOption = (ssoAutoAdjustFormProperties, ssoAutoHookKeyboardEvents,
                          ssoAutoHookMouseEvents, ssoEnhancedMouseMoveDetection);
 	TScreenSaverOptions = set of TScreenSaverOption;
@@ -72,7 +71,7 @@ type
 	{Drop this component on your main form to make it a screensaver. 
 		You'll also need to change the extension from ".exe" to ".scr" (in the
 		project options / application tab). 
-		How this component works :<ul>
+		How this component works : 
 		 At design-time, the only event you may want to hook is
 			OnPropertiesRequested (to diplay your screen-saver's config dialog,
 			if you don't have one, at least fill in the AboutString property
@@ -81,7 +80,7 @@ type
 			command line and trigger relevant events
 		 Basicly, you only need to care about drawing in your main form's
 			client area (in a resolution/size independant way if possible)
-		</ul><br>
+		 
 		There is no real difference between execution and preview modes, except
 		for the events fired... and the size of the form :). }
 	TGLScreenSaver = class (TComponent)
@@ -123,7 +122,7 @@ type
             Returns True if the Close request wasn't canceled (by event or
             password fail) and will actually happen.
 				Use this if you implemented specific screen-saver exiting in your
-				main form.<br>
+				main form.
 				It first triggers the OnCloseQuery, where the close request can be
 				canceled, if this passed, the password is checked if there is any,
 				then sends a WM_CLOSE to the saver windows. }

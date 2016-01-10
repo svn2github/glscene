@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTexLensFlare 
-
-   Texture-based Lens flare object. 
+{
+  Texture-based Lens flare object. 
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records

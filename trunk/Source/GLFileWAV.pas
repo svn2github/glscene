@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileWAV 
-
-	Support for Windows WAV format. 
-
-	 History :  
+{
+   Support for Windows WAV format. 
+   History :  
        17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
        25/07/09 - DaStr - Added $I GLScene.inc

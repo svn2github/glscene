@@ -3,7 +3,7 @@
 //
 {GLApplicationFileIO 
 
-   Components and fonction that abstract file I/O access for an application.<br>
+   Components and fonction that abstract file I/O access for an application.
    Allows re-routing file reads to reads from a single archive file f.i. 
 
   History :  
@@ -71,7 +71,7 @@ type
   //
     {Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream. 
        The component should be considered a helper only, you can directly specify
-       a function via the vAFIOCreateFileStream variable.<br>
+       a function via the vAFIOCreateFileStream variable.
        If multiple TGLApplicationFileIO components exist in the application,
        the last one created will be the active one. }
   TGLApplicationFileIO = class(TComponent)
@@ -148,7 +148,7 @@ type
 function ApplicationFileIODefined: Boolean;
 
 {Creates a file stream corresponding to the fileName. 
-   If the file does not exists, an exception will be triggered.<br>
+   If the file does not exists, an exception will be triggered.
    Default mechanism creates a regular TFileStream, the 'mode' parameter
    is similar to the one for TFileStream. }
 function CreateFileStream(const fileName: string;

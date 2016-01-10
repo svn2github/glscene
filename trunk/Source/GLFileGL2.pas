@@ -1,16 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileGL2 
+{
+   Vector file object loading of Ghoul2 model and animation 
+   files into GLScene. 
 
-	Vector file object loading of Ghoul2 model and animation 
-	files into GLScene. 
-
-	 History : 
+   History : 
        24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-	    22/10/03 - SG - Animation fixes, removed skeletal reconstruction
-	    25/03/03 - SG - Creation.
+       22/10/03 - SG - Animation fixes, removed skeletal reconstruction
+       25/03/03 - SG - Creation.
 	 
 }
 unit GLFileGL2;

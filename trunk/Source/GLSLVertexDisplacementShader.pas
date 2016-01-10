@@ -1,7 +1,7 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLVertexDisplacementShader  
-
+{
    VertexDisplacement shader : Basic Vertex Displacement with Perlin Noise
    You can Improved it :
    The vertex displacement can be done by reading a 2D or 3D texture.

@@ -1,12 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneViewerToolbar 
-
-  Added GLScene's toolbar to Delphi IDE. 
-
+{
+   Added GLScene's toolbar to Delphi IDE. 
    History :  
-   21/11/10 - Yar - Creation
+     21/11/10 - Yar - Creation
    
 }
 

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileQ3BSP 
-
+{
     Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene. 
     Note that you must manually add this unit to one of your project's uses
     to enable support for OBJ & OBJF at run-time. 
@@ -14,7 +13,7 @@
        31/03/07 - DaStr - Added $I GLScene.inc
        31/01/03 - EG - Materials support
        30/01/03 - EG - Creation
-   </ul> 
+    
 }
 unit GLFileQ3BSP;
 

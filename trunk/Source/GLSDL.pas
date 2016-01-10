@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSDL 
+{ 
+   Access to SDL for GLScene 
 
-	 History :  
+   History :  
        22/01/13 - PW - Supplied with CPPB compatibility by suppressing
                      $EXTERNALSYM ... directives
        17/11/09 - DaStr - Improved Unix compatibility

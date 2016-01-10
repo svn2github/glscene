@@ -1,6 +1,8 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{ : OpenGLAdapter 
+//
+{  
+   OpenGL adapter 
 
    History :  
    24/10/13 - Yar - Added OpenGL 4.3, 4.4

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPostEffects 
-
+{
   A collection of components that generate post effects. 
 
-	 History :  
+  History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        22/04/10 - Yar - Fixes after GLState revision
        28/05/08 - DaStr - Fixed AV in TGLPostEffect.MakeDistortEffect()

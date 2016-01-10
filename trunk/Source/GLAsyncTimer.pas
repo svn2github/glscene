@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLAsyncTimer - asynchronous timer component (actual 1 ms resolution). 
-
-  This component is based on ThreadedTimer by Carlos Barbosa. 
+{  
+   Asynchronous timer component (actual 1 ms resolution). 
+   This component is based on ThreadedTimer by Carlos Barbosa. 
 
    History :  
    17/11/14 - PW - Refactored TAsyncTimer to TGLAsyncTimer
@@ -36,7 +36,7 @@ type
 
   // TGLAsyncTimer
   //
-  { : Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
+  {  Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
     Keep in mind timer resolution is obtained <i>in-between</i> events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually

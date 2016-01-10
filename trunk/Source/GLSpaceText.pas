@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpaceText 
-
+{
   3D Text component. 
 
   Note: You can get valid extents (including AABB's) of this component only
@@ -115,7 +114,7 @@ type
 
   // TGLSpaceText
   //
-  { : Renders a text in 3D. }
+  {  Renders a text in 3D. }
   TGLSpaceText = class(TGLSceneObject)
   private
     { Private Declarations }
@@ -162,7 +161,7 @@ type
     function TextMaxHeight(const str: WideString = ''): Single;
     function TextMaxUnder(const str: WideString = ''): Single;
 
-    { : Note: this fuction is valid only after text has been rendered
+    {  Note: this fuction is valid only after text has been rendered
       the first time. Before that it returns zeros. }
     procedure TextMetrics(const str: WideString;
       out width, maxHeight, maxUnder: Single);
@@ -173,17 +172,17 @@ type
     function BarycenterAbsolutePosition: TVector; override;
   published
     { Published Declarations }
-    { : Adjusts the 3D font extrusion. 
+    {  Adjusts the 3D font extrusion. 
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
     property Extrusion: Single read FExtrusion write SetExtrusion;
     property Font: TFont read FFont write SetFont;
     property Text: WideString read GetText write SetText stored False;
     property Lines: TStringList read FLines write SetLines;
-    { : Quality related, see Win32 help for wglUseFontOutlines }
+    {  Quality related, see Win32 help for wglUseFontOutlines }
     property allowedDeviation: Single read FAllowedDeviation
       write SetAllowedDeviation;
-    { : Character range to convert. 
+    {  Character range to convert. 
       Converting less characters saves time and memory... }
     property CharacterRange: TSpaceTextCharRange read FCharacterRange
       write SetCharacterRange default stcrDefault;
@@ -195,7 +194,7 @@ type
 
   // TFontManager
   //
-  { : Manages a list of fonts for which display lists were created. }
+  {  Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
     { Private Declarations }

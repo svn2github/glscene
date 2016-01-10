@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLContouring 
+{
+  Class and routines to output isolines.
 
-  Class and routines to output isolines. 
-
-   History :  
+  History :  
   25/04/15 - PW - Fixed TriangleElevationSegments procedure
   06/07/02 - Phil Scadden - Added TGLIsoline class and Initialise_Isolining procedure
   15/08/01 - Alexander Weidauer - Added CONREC Delphi implementation
@@ -63,7 +62,7 @@ type
     constructor Create(AOwner: TComponent); virtual;
     destructor Destroy; override;
 
-  { : CONREC is a contouring routine for rectangular spaced data or regular 2D grids
+  {  CONREC is a contouring routine for rectangular spaced data or regular 2D grids
     It takes each rectangle of adjacent data points and splits it
     into 4 triangles after choosing the height at the centre of the rectangle.
     For each of the triangles the line segment resulting from the intersection
@@ -97,7 +96,7 @@ procedure Initialize_Contouring(var DataGrid: TGLMatrix;
 procedure Release_Memory_Isoline;
 function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 
-{ : Defines contouring segments inside a triangle using elevations }
+{  Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 

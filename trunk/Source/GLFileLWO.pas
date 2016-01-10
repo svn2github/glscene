@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileLWO 
-
+{
     Support-code to load Lightwave LWO Files (v6.0+, partial support). 
-
-  History :  
+    History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009
        30/03/07 - DaStr - Added $I GLScene.inc$I GLScene.inc
        24/03/07 - DaStr - Added explicit pointer dereferencing
@@ -14,7 +12,7 @@
        16/11/02 - BJ - Added smooth normals with crease angle
        17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
        17/11/02 - BJ - Added Enviroment Map Image -> Cubic Projection Map
-   </ul> 
+    
 
    Original code: "Brian Johns" <brianjohns1@hotmail.com>
 }

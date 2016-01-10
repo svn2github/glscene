@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSCUDAParallelPrimitives 
+{
+   CUDA Parallel Primitives 
 
-    History :  
+   History :  
        28/01/10 - Yar - Creation
     
 }

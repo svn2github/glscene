@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDACompiler  
-
-  Component allows to compile the CUDA-source (*.cu) file. 
+{
+  Component allows to compile the CUDA-source (*.cu) file.
   in design- and runtime. 
   To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++. 
 
@@ -34,7 +33,7 @@ type
   // TGLSCUDAVirtArch
   //
 
-  {:
+  {
     compute_10 Basic features
     compute_11 + atomic memory operations on global memory
     compute_12 + atomic memory operations on shared memory
@@ -48,7 +47,7 @@ type
   // TGLSCUDAGPUGeneration
   //
 
-  {:
+  (*
     sm_10 ISA_1 Basic features
     sm_11 + atomic memory operations on global memory
     sm_12 + atomic memory operations on shared memory
@@ -56,7 +55,7 @@ type
     sm_13 + double precision floating point support
     sm_20 + FERMI support.
     sm_21 + Unknown
-  }
+  *)
 
   TGLSCUDARealArch = (sm_10, sm_11, sm_12, sm_13, sm_20, sm_21);
   TGLSCUDARealArchs = set of TGLSCUDARealArch;
@@ -93,40 +92,40 @@ type
     procedure SetSourceCodeFile(const AFileName: string);
 
     function Compile: Boolean;
-    { : Product of compilation. }
+    {  Product of compilation. }
     property Product: TStringList read FProduct write FProduct;
 
     property ModuleInfo: TCUDAModuleInfo read FModuleInfo;
     property ConsoleContent: string read FConsoleContent;
   published
     { Published declarations }
-    { : NVidia CUDA Compiler. }
+    {  NVidia CUDA Compiler. }
     property NVCCPath: string read FNVCCPath write SetNVCCPath;
-    { : Microsoft Visual Studio Compiler.
+    {  Microsoft Visual Studio Compiler.
       Pascal compiler is still not done. }
     property CppCompilerPath: string read FCppCompilerPath
       write SetCppCompilerPath;
-    { : Full file name of source code file. }
+    {  Full file name of source code file. }
     property SourceCodeFile: string read FSourceCodeFile;
-    { : Disign-time only property.
+    {  Disign-time only property.
       Make choose of one of the Project module as CUDA kernel source }
     property ProjectModule: string read FProjectModule write FProjectModule
       stored StoreProjectModule;
-    { : Output code type for module kernel
+    {  Output code type for module kernel
       - Ptx - Parallel Thread Execution
       - Cubin - CUDA Binary }
     property OutputCodeType: TGLSCUDACompilerOutput read FOutputCodeType
       write setOutputCodeType default codePtx;
-    { : In the CUDA naming scheme,
+    {  In the CUDA naming scheme,
         GPUs are named sm_xy,
         where x denotes the GPU generation number,
         and y the version in that generation. }
     property RealArchitecture: TGLSCUDARealArchs read FRealArch
       write SetRealArch default [sm_13];
-    { : Virtual architecture. }
+    {  Virtual architecture. }
     property VirtualArchitecture: TGLSCUDAVirtArch read FVirtualArch
       write FVirtualArch default compute_13;
-    { : Maximum registers that kernel can use. }
+    {  Maximum registers that kernel can use. }
     property MaxRegisterCount: Integer read FMaxRegisterCount
       write SetMaxRegisterCount default 32;
   end;
@@ -404,7 +403,7 @@ begin
 
         if csDesigning in ComponentState then
           FProduct.OnChange(Self);
-        SysUtils.DeleteFile(pathfile);
+        DeleteFile(pathfile);
         Result := true;
         FConsoleContent := string(StrPas(Buffer));
         msg := Format(cudasSuccessCompilation, [FConsoleContent]);
@@ -436,7 +435,7 @@ begin
     end;
 
     pathfile := tempFile + '.cu';
-    SysUtils.DeleteFile(pathfile);
+    DeleteFile(pathfile);
   end;
   CodeSource.Free;
 end;

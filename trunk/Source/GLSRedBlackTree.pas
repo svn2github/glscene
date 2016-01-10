@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSRedBlackTree  
-
+{
+  Black tree routines
   USAGE
   The TRedBlackTree generic class behaves somewhat like a TList:
   it stores _Value_ by _Key_

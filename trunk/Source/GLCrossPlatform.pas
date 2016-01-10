@@ -1,14 +1,12 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCrossPlatform 
-
-   Cross platform support functions and types for GLScene. 
-
+{
+   Cross platform support functions and types for GLScene.
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and have all moved here instead. 
+   in the core GLScene units, and have all moved here instead.
 
-  Historique :  
+  History :
        20/01/15 - PW -  Dropped support for GLS_DELPHI_XE2_DOWN compilers
        10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
@@ -82,7 +80,7 @@ unit GLCrossPlatform;
 
 interface
 
-{$INCLUDE GLScene.inc}
+{$I GLScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -327,7 +325,13 @@ function IsDirectoryWriteable(const AName: string): Boolean;
 
 function CharToWideChar(const AChar: AnsiChar): WideChar;
 
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
 implementation
+//-----------------------------------------------------------
+//-----------------------------------------------------------
+//-----------------------------------------------------------
 
 uses
 {$IFDEF MSWINDOWS}ShellApi{$ENDIF}

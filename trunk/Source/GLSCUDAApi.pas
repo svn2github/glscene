@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAApi 
+{ 
+  CUDA api implementation for GLScene
 
    History :  
    13/12/13 - PW - Added IFDEF GLS_LOGGING

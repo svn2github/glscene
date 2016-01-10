@@ -1,13 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSvdPAUAPI 
+{  
+  GLScene vdPAUAPI 
 
-   History :  
+  History :  
    23/10/10 - Yar - Creation
    
 }
-
 // {
 // * This copyright notice applies to this header file:
 // *

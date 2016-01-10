@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : JPG 
-
-   Historique :  
+{
+   Jpg  routines
+   History :  
    27/02/10 - Yar - Added to GLScene from Mike Lischke GraphicEx package
    
 }

@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLParticles 
-
-   Particle systems for GLScene, based on replication of full-featured scene objects. 
+{
+  Particle systems for GLScene, based on replication of full-featured scene objects. 
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -29,7 +28,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //GLS 
   GLScene,
   GLVectorGeometry,
   OpenGLTokens,
@@ -46,13 +45,13 @@ type
   //
   {Manager object of a particle system. 
    Particles in a TGLParticles system are described as normal scene objects,
-   however their children are to be :<ul>
+   however their children are to be : 
     "particle template" : the first object (index=0), this one will be
     duplicated to create new particles, it does not receive progression
     events and is visible at design-time only.
     "live particle" : the other objects (index>0), this ones are rendered
     and receive progression events.
-   </ul><br>TGLParticles may also maintain an internal, non-persistent
+    TGLParticles may also maintain an internal, non-persistent
    ("freezed") set of objects : the allocated objects pool. Why ? Creating
    and freeing objects takes cpu-cycles, especially for the TComponent class,
    and GLScene objects are TComponent. To reduce this load (and at the expense
@@ -61,7 +60,7 @@ type
    new objects when new particles are requested. To take advantage of this
    behaviour, you should set the ParticlePoolSize property to a non-null
    value and use the KillParticle function instead of "Free" to kill a
-       particle.<br>
+       particle.
        All direct access to a TGLParticles children should be avoided. 
        For high-performance particle systems of basic particles, you should
        look into GLParticleFX instead, TGLParticles being rather focused on

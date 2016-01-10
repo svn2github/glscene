@@ -1,7 +1,7 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCustomShader 
-
+{
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.
@@ -378,14 +378,14 @@ type
     bmxAlphaTest50, bmxAlphaTest100, bmxModulate,
     bmxDestColorOne, bmxDestAlphaOne);
 
-// Exported procedures.
+//: Exported procedures.
 procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
 procedure UnApplyBlendingModeEx;
 procedure InitTexture(
   const TextureHandle: Cardinal;
   const TextureSize: TGLSize;
   const TextureTarget: TGLTextureTarget = ttTexture2D);
-// Probably need to give them proper names, instead of numbers... 
+//: Probably need to give them proper names, instead of numbers...
 procedure DrawTexturedScreenQuad;
 procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
 procedure DrawTexturedScreenQuad3;

@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLToonShader  
-
+{
    Toon shader : Toon shading also called Cell Shading 
-
    At this time only one light source is supported
 
     History :  

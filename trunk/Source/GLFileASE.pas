@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileASE 
+{
+   ASE (ASCI Scene Export) file format support for GLScene 
 
-	 ASE (ASCI Scene Export) file format support for GLScene 
-
-	 History : 
+   History : 
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
        21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
        29/05/08 - DaStr - Made compatible with Delphi 5
@@ -18,12 +17,8 @@
                              Bugfixed parsing failures on unknown section found
                               (all above changes were made by MaX)
        19/05/07 - DaStr - Initial version (contributed by MaX)
-
-
   Parser supported features list:
     blablabla :)
-
-
 }
 unit GLFileASE;
 

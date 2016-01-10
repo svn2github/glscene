@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLWaterPlane 
-
+{
    A plane simulating animated water 
 
-	 History :  
+   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        30/03/07 - DaStr - Added $I GLScene.inc
@@ -18,8 +17,8 @@
        01/01/03 - Sternas Stefanos - Original code
     
 
-    The Original Code is part of Cosmos4D<br>
-   http://users.hol.gr/~sternas/<br>
+    The Original Code is part of Cosmos4D
+   http://users.hol.gr/~sternas/
    Sternas Stefanos 2003
 }
 unit GLWaterPlane;

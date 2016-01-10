@@ -58,7 +58,7 @@ type
   // TGLCadencerMode
   //
   {Determines how the TGLCadencer operates. 
-   - cmManual : you must trigger progress manually (in your code)<br>
+   - cmManual : you must trigger progress manually (in your code)
    - cmASAP : progress is triggered As Soon As Possible after a previous
     progress (uses windows messages).
        - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
@@ -70,10 +70,10 @@ type
   {Determines which time reference the TGLCadencer should use. 
    - cmRTC : the Real Time Clock is used (precise over long periods, but
     not accurate to the millisecond, may limit your effective framerate
-          to less than 50 FPS on some systems)<br>
+          to less than 50 FPS on some systems)
    - cmPerformanceCounter : the windows performance counter is used (nice
     precision, may derive over long periods, this is the default option
-    as it allows the smoothest animation on fast systems)<br>
+    as it allows the smoothest animation on fast systems)
    - cmExternal : the CurrentTime property is used }
   TGLCadencerTimeReference = (cmRTC, cmPerformanceCounter, cmExternal);
 
@@ -131,7 +131,7 @@ type
     procedure UnSubscribe(aComponent: TGLCadenceAbleComponent);
 
     {Allows to manually trigger a progression. 
-     Time stuff is handled automatically.<br>
+     Time stuff is handled automatically.
      If cadencer is disabled, this functions does nothing. }
     procedure Progress;
 
@@ -162,14 +162,14 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default True;
 
     {Defines how CurrentTime is updated. 
-     See TGLCadencerTimeReference.<br>
+     See TGLCadencerTimeReference.
      Dynamically changeing the TimeReference may cause a "jump".  }
     property TimeReference: TGLCadencerTimeReference read FTimeReference write
       SetTimeReference default cmPerformanceCounter;
 
     {Multiplier applied to the time reference. 
       Zero isn't an allowed value, and be aware that if negative values
-      are accepted, they may not be supported by other GLScene objects.<br>
+      are accepted, they may not be supported by other GLScene objects.
      Changing the TimeMultiplier will alter OriginTime. }
     property TimeMultiplier: Double read FTimeMultiplier write SetTimeMultiplier
       stored StoreTimeMultiplier;
@@ -178,14 +178,14 @@ type
        If null or negative, no max deltaTime is defined, otherwise, whenever
        an event whose actual deltaTime would be superior to MaxDeltaTime
        occurs, deltaTime is clamped to this max, and the extra time is hidden
-       by the cadencer (it isn't visible in CurrentTime either).<br>
+       by the cadencer (it isn't visible in CurrentTime either).
        This option allows to limit progression rate in simulations where
        high values would result in errors/random behaviour. }
     property MaxDeltaTime: Double read FMaxDeltaTime write FMaxDeltaTime;
 
     {Minimum value for deltaTime in progression events. 
        If superior to zero, this value specifies the minimum time step
-       between two progression events.<br>
+       between two progression events.
        This option allows to limit progression rate in simulations where
        low values would result in errors/random behaviour. }
     property MinDeltaTime: Double read FMinDeltaTime write FMinDeltaTime;
@@ -195,7 +195,7 @@ type
        delta time. The progression remains time based, so zero to N events
        may be fired depending on the actual deltaTime (if deltaTime is
        inferior to FixedDeltaTime, no event will be fired, if it is superior
-       to two times FixedDeltaTime, two events will be fired, etc.).<br>
+       to two times FixedDeltaTime, two events will be fired, etc.).
        This option allows to use fixed time steps in simulations (while the
        animation and rendering itself may happen at a lower or higher
        framerate). }

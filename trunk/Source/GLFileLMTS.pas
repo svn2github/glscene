@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileLMTS 
-
+{
+   File loader for MTS 
    History :  
    31/05/10 - Yar - Fixes for Linux x64
    22/01/10 - Yar - Added GLTextureFormat to uses
@@ -28,7 +28,7 @@
    02/01/07 - PvD - Mirrored mesh in X to original orientation.
    01/01/07 - Dave Gravel - Modification to make it work.
    10/09/03 - Domin - Creation
-  </ul> 
+   
 }
 unit GLFileLMTS;
 

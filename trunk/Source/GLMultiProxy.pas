@@ -1,7 +1,9 @@
-// GLMultiProxy
-{Implements a multi-proxy objects, useful for discreet LOD. 
-
-	 History :  
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Implements a multi-proxy objects, useful for discreet LOD. 
+   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
        26/11/03 - EG - Added bounding, raycast and silhouette proxying

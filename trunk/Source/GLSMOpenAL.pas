@@ -1,10 +1,12 @@
-{GLSMOpenAL 
-
-	OpenAL based sound-manager (http://www.openal.org). 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   OpenAL based sound-manager (http://www.openal.org). 
    OpenAL drivers can be download from the OpenAL site or your soundcard
    manufacturer's website. 
 
-   Unsupported feature(s) :<ul>
+   Unsupported feature(s) : 
        Accepts only simple *uncompressed* WAV files (8/16 bits, mono/stereo)
        Dynamic loading/unloading
        Global 3D parameters
@@ -13,9 +15,9 @@
        No system in place to limit number of sources playing simultaneously,
           can crash if too playing at once.
        ???
-   </ul> 
+    
 
-	 History :  
+    History :  
        11/11/09 - DaStr - Added $I GLScene.inc
        16/10/08 - UweR - Compatibility fix for Delphi 2009
        25/03/08 - DanB - Added design-time support, linked to new OpenAL headers

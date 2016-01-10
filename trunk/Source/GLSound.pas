@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSound 
+{
+   Base classes and interface for GLScene Sound System 
 
- Base classes and interface for GLScene Sound System 
-
-  History :  
+   History :  
        24/04/11 - Yar - Bugfixed TGLSoundSample.Assign (thanks to Anonymous)
        06/06/10 - Yar - Fixed warnings
        06/05/09 - DanB - Split TGLSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
@@ -192,7 +191,7 @@ type
        Absolute object position/orientation are taken into account, the
        object's TGLBInertia is considered if any. 
        If origin is nil, the source is assumed to be static at the origin. 
-        Note :</b> since TCollectionItem do not support the "Notification"
+        Note :  since TCollectionItem do not support the "Notification"
        scheme, it is up to the Origin object to take care of updating this
        property prior to release/destruction. }
     property Origin: TGLBaseSceneObject read FOrigin write SetOrigin;
@@ -464,7 +463,7 @@ type
     {Sets the global attenuation rolloff factor. 
        Normally volume for a sample will scale at 1 / distance.
        This gives a logarithmic attenuation of volume as the source gets
-       further away (or closer).<br>
+       further away (or closer).
        Setting this value makes the sound drop off faster or slower.
        The higher the value, the faster volume will fall off. }
     property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor

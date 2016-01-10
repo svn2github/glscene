@@ -1,14 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTree 
-
+{
    Dynamic tree generation in GLScene 
-
    This code was adapted from the nVidia Tree Demo:
    http://developer.nvidia.com/object/Procedural_Tree.html 
 
-   History:<ul>
+   History: 
       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
       30/03/07 - DaStr - Added $I GLScene.inc
@@ -27,16 +25,16 @@
       14/04/04 - SG - Added AutoCenter property.
       03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
       24/11/03 - SG - Creation.
-   </ul>
+   
 
    Some info:
-  <ul>CenterBranchConstant</ul> -
+  CenterBranchConstant -
     Defines, how big the central branch is. When around 50%
     it makes a small branch inside the tree, for higher values
     much more branches and leaves are created, so either use it
     with low depth, or set it to zero, and have two-branched tree.
     Default : 0.5
-  <ul>"AutoRebuild" flag</ul> -
+   "AutoRebuild" flag -
     Rebuild tree after property change.
     Default: True
 }

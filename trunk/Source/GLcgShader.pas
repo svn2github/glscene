@@ -77,7 +77,7 @@ uses
   // CG
   Cg, CgGL;
 
-{$Include GLScene.inc}
+{$I GLScene.inc}
 
 {.$DEFINE OutputCompilerWarnings}
 

@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLRenderContextInfo 
-
-   Stores contextual info useful during rendering methods. 
+{
+  Stores contextual info useful during rendering methods. 
 
   History :  
        23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
@@ -37,7 +36,7 @@ type
   // TGLObjectsSorting
   //
   {Determines if objects are sorted, and how. 
-     Sorting is done level by level (and not for all entities), values are :<ul>
+     Sorting is done level by level (and not for all entities), values are : 
       osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
       osNone : do not sort objects.
   osRenderFarthestFirst : render objects whose Position is the farthest from
@@ -46,7 +45,7 @@ type
         first, blended ones are rendered afterwards and depth sorted.
   osRenderNearestFirst : render objects whose Position is the nearest to
   the camera first.
-      </ul> }
+       }
   TGLObjectsSorting = (osInherited, osNone,
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);
@@ -54,7 +53,7 @@ type
   // TGLVisibilityCulling
   //
   {Determines the visibility culling mode.
-     Culling is done level by level, allowed values are:<ul>
+     Culling is done level by level, allowed values are: 
       vcInherited : use inherited culling value, if selected for the root
         level, defaults to vcNone
       vcNone : no visibility culling is performed
@@ -64,7 +63,7 @@ type
       vcHierarchical : culling is performed hierarchically, using hierarchical
         bounding boxes, if a parent is culled, all of its children, whatever their
         culling options are invisible.
-      <br>Depending on the structure of your scene the most efficient culling
+      Depending on the structure of your scene the most efficient culling
      method will be either vcObjectBased or vcHierarchical. Also note that if
      you use many objects with "static" geometry and have a T&amp;L graphics
      board, it may be faster not to cull at all (ie. leave this to the hardware). }

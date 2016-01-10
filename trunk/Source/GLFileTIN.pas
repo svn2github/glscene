@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileTIN 
-
-	TIN (Triangular Irregular Network) vector file format implementation. 
+{
+   TIN (Triangular Irregular Network) vector file format implementation. 
    History : 
        08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
        17/11/05 - PW - Added support for ascii TIN files with materials

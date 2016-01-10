@@ -1,6 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
+{
+   Video for windows
+}
 unit GLSVfw;
 
 interface

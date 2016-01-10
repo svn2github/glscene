@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSkyBox 
-
+{
    A TGLImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)
    for use as a skybox always centered on the camera. 
 
-  History :  
+   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        22/04/10 - Yar - Fixes after GLState revision

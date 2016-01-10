@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-	MD2 file loader
+      Loading methods for MD2 file format
 
-	History :
+      History :
       28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
       04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
       31/03/07 - DaStr - Added $I GLScene.inc

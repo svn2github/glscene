@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSpline 
-
+{
    Cubic spline interpolation functions 
-
-	 History :  
+  
+   History :  
       10/12/14 - PW - Renamed Spline unit to GLSpline
       30/12/12 - PW - Restored CPP compatibility with record arrays
       08/07/04 - LR - Removed ../ from the GLScene.inc

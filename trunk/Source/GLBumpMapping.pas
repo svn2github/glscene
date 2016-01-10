@@ -1,10 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// GLBumpMapping
-{Some useful methods for setting up bump maps. 
-
-    History :  
+{
+   Some useful methods for setting up bump maps. 
+   History :  
        17/11/14 - PW - Removed function RGB that is included in GLCrossPlatform.pas
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records with arrays
        08/07/04 - LR - Replace Graphics by GLCrossPlatform for Linux

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVerletClothify 
-
+{
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly 
 
-	 History :  
+   History :  
        16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        06/06/10 - Yar - Fixed warnings
@@ -18,7 +17,7 @@
        27/05/04 - MF - Added some length information to edges
        24/06/03 - MF - Removed several embarrassing warnings
        17/06/03 - MF - Creation
-   </ul>
+   
 }
 
 unit GLVerletClothify;

@@ -1,16 +1,15 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVerletClasses 
-
+{
    Classes and functions that make integration between verlets and glscene
    objects easy.
 
-	 History :  
+   History :  
        23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
        13/04/04 - MF - Verlet call now uses TVerletProgressTimes
        06/03/04 - MF - Creation
-   </ul>
+   
 }
 unit GLVerletClasses;
 

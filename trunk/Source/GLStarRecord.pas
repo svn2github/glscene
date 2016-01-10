@@ -1,8 +1,10 @@
-{GLStarRecord 
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Unit to interface with simple star records aimed for background skies. 
-
-	 History :  
+  
+   History :  
 	    05/07/03 - EG - Creation
 	 
 }

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLColor 
-
+{
    All color types, constants and utilities should go here 
 
    History :  
@@ -15,7 +14,7 @@
      05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
      06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
                           (separated from GLTexture.pas and GLCrossPlatform.pas)
-  </ul>
+  
 }
 unit GLColor;
 

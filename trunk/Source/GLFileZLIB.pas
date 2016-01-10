@@ -1,14 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileZLIB 
-
+{
+   Methods for archiving using ZLib 
    History :  
        04/02/15 - PW - Changed using GLSZLibEx to System.ZLib
        22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII
        04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-  </ul> 
+   
 }
 
 unit GLFileZLIB;

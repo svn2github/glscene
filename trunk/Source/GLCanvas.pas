@@ -1,13 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCanvas 
-
- Implements a basic Canvas-like interface over for OpenGL. 
+{
+   Implements a basic Canvas-like interface over for OpenGL. 
    This class can be used for generic OpenGL applications and has no dependencies
    to the GLScene core units (only to base units). 
 
-  History :  
+   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,
                           Replaced direct access to PenAlpha property with GetPenAlpha method
        05/02/11 - Yar - Now PenColor setter always direct set color
@@ -62,9 +61,9 @@ type
     {A simple Canvas-like interface for OpenGL. 
        This class implements a small "shell" for 2D operations in OpenGL,
        it operates over the current OpenGL context and provides methods
-       for drawing lines, ellipses and points.<br>
+       for drawing lines, ellipses and points.
        This class is typically used by creating an instance, using it for drawing,
-       and freeing the instance. When drawing (0, 0) is the top left corner.<br>
+       and freeing the instance. When drawing (0, 0) is the top left corner.
        All coordinates are internally maintained with floating point precision. 
        Several states are cached and it is of primary importance not to invoke
        OpenGL directly throughout the life of an instance (at the cost of
@@ -158,7 +157,7 @@ type
     procedure Polygon(const points: array of TGLPoint);
 
     {Plots a pixel at given coordinate. 
-       PenWidth affects pixel size.<br>
+       PenWidth affects pixel size.
        The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
     procedure PlotPixel(const x, y: Single); overload;

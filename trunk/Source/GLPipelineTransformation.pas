@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPipelineTransformation 
-
-    History :  
+{
+   Pipeline transformations
+   History :  
      13/12/13 - PW - Added GLSLog unit
      11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
      16/11/10 - Yar - Added NormalModelMatrix

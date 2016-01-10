@@ -1,22 +1,20 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPolynomials. 
-
-   ********* IN PROGRESS - LIMITED PRECISION **********
-
+{
    Utility functions for manipulationg and solving polynomials. 
 
    Direct solving is supported for polynoms up to the 4th degree. 
 
    Polynom solving code based on Jochen Schwarze (schwarze@isa.de) solver
-   published in Graphics Gem (1990). 
+   published in Graphics Gem (1990).
 
    Adapted to pascal by Eric Grange (egrange@glscene.org), if you find
    errors, they are probably mine. Note that contrary to the original code,
-   the functions accept 'zero' values for any of the parameters.<br>
+   the functions accept 'zero' values for any of the parameters.
    I also made some changes for certain limit cases that (seemingly) weren't
    properly handled, these are marked by comments in the code. 
+   Note: in progress - limited precision.
 
 	 History :  
        10/12/14 - PW - Renamed Polynomials to GLPolynomials
@@ -29,7 +27,6 @@
                           added utility funcs 
        22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
 	    21/08/01 - EG - Creation
-	 
 
 }
 unit GLPolynomials;
@@ -59,17 +56,17 @@ function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolea
 function cbrt(const x : Double) : Double;
 
 {Computes the real roots of a real polynomial of the 2nd degree. 
-   The polynomial is of the form:<br>
+   The polynomial is of the form:
    A(0) + A(1)*Z + A(2)*Z**2 }
 function SolveQuadric(const c : PDoubleArray) : TDoubleArray;
 
 {Computes the real roots of a real polynomial of the 3rd degree. 
-   The polynomial is of the form:<br>
+   The polynomial is of the form:
    A(0) + A(1)*Z + A(2)*Z**2 + A(3)*Z**3 }
 function SolveCubic(const c : PDoubleArray) : TDoubleArray;
 
 {Computes the real roots of a real polynomial of the 4th degree. 
-   The polynomial is of the form:<br>
+   The polynomial is of the form:
    A(0) + A(1)*Z + ... + A(4)*Z**4 }
 function SolveQuartic(const c : PDoubleArray) : TDoubleArray;
 

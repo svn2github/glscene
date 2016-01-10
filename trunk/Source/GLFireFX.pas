@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFireFX 
+{
+   Fire special effect 
 
- Fire special effect 
-
-  Historique :  
+   History :  
        21/01/01 - DanB - Added "inherited" call to TGLBFireFX.WriteToFiler
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        14/06/10 - Yar - Bugfixed in TGLBFireFX.ReadFromFiler when assertion off (thanks olkondr)
@@ -173,7 +172,7 @@ type
 
     {Specifies an optional object whose position to use as reference. 
        This property allows switching between static/shared fires (for
-       fireplaces or static torches) and dynamic fire trails.<br>
+       fireplaces or static torches) and dynamic fire trails.
        The absolute position of the reference object is 'central' spawning
        point for new particles, usually, the object will be the one and only
        one on which the effect is applied. }

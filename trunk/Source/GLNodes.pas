@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLNodes 
-
+{
   Nodes are used to describe lines, polygons + more. 
 
    History :  
@@ -10,9 +9,9 @@
    17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
    26/11/09 - DaStr - Improved Lazarus compatibility
-  (thanks Predator) (BugtrackerID = 2893580)
+                    (thanks Predator) (BugtrackerID = 2893580)
    22/11/09 - DaStr - Improved Unix compatibility
-  (thanks Predator) (BugtrackerID = 2893580)
+                    (thanks Predator) (BugtrackerID = 2893580)
    14/07/09 - DaStr - Added $I GLScene.inc
    05/10/08 - DanB - Created from GLMisc.pas split
    
@@ -57,13 +56,13 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AsAddress: PGLFloat;
-    { : The coordinates viewed as a vector. 
+    {  The coordinates viewed as a vector. 
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
-    { : The coordinates viewed as an affine vector. 
+    {  The coordinates viewed as an affine vector. 
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead.<br>
+      if you don't want so, use DirectVector instead.
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;
@@ -119,13 +118,13 @@ type
 
     // : Calculates and returns the barycenter of the nodes
     function Barycenter: TAffineVector;
-    { : Computes normal based on the 1st three nodes. 
+    {  Computes normal based on the 1st three nodes. 
       Returns NullVector if there are less than 3 nodes. }
     function Normal: TAffineVector;
     // : Returns normalized vector Nodes[i+1]-Nodes[i]
     function Vector(I: Integer): TAffineVector;
 
-    { : Calculates the extents of the nodes (min-max for all coordinates). 
+    {  Calculates the extents of the nodes (min-max for all coordinates). 
       The returned values are also the two corners of the axis-aligned
       bounding box. }
     procedure GetExtents(var Min, Max: TAffineVector);

@@ -1,8 +1,9 @@
-{GLOutlineShader 
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    A simple shader that adds an outline to an object.  
-
-   Limitations: <br>
+   Limitations: 
        1. Object can be transparent (color alpha < 1) if it doesn't
                    overlap itself. Texture transparency doesn't work.
        2. Doesn't work with objects (e.g. TGLFreeForm) having it's own

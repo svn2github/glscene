@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLIsosurface 
+{
   Polygonising a scalar field by construction of isosurfaces  
-
   Algorithms
   ----------
   Marching Cubes
@@ -46,7 +45,7 @@ type
 
   // TIsoSurfaceExtractor
   //
-  { : 3D isosurface extractor class. 
+  {  3D isosurface extractor class. 
     This class allows to calculate and exctract isosurfaces from scalar field
     voxel models using a given isovalue. 
   }

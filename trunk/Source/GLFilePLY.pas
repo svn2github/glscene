@@ -2,12 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
- 	PLY (Stanford Triangle Format) vector file format implementation. 
-
-	History :
-  16/10/08 - UweR - Compatibility fix for Delphi 2009
-  31/03/07 - DaStr - Added $I GLScene.inc
-  05/06/03 - SG - Separated from GLVectorFileObjects.pas
+  PLY (Stanford Triangle Format) vector file format implementation. 
+  History :
+    16/10/08 - UweR - Compatibility fix for Delphi 2009
+    31/03/07 - DaStr - Added $I GLScene.inc
+    05/06/03 - SG - Separated from GLVectorFileObjects.pas
 
 }
 unit GLFilePLY;

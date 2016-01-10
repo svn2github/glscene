@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPerlinPFX 
-
+{
    PFX particle effects revolving around the use of Perlin noise. 
 
     History :  
@@ -78,11 +77,11 @@ type
             sharp spike in the center. }
          property Smoothness : Single read FSmoothness write SetSmoothness;
          {Brightness factor applied to the perlin texture intensity. 
-            Brightness acts as a scaling, non-saturating factor. Examples:<ul>
+            Brightness acts as a scaling, non-saturating factor. Examples: 
              Brightness = 1 : intensities in the [0; 1] range
              Brightness = 2 : intensities in the [0.5; 1] range
              Brightness = 0.5 : intensities in the [0; 0.5] range
-            </ul>Brightness is applied to the final texture (and thus affects
+            Brightness is applied to the final texture (and thus affects
             the distance based intensity). }
          property Brightness : Single read FBrightness write SetBrightness;
          property Gamma : Single read FGamma write SetGamma;

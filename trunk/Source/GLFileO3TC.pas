@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileO3TC 
+{ 
+  O3TC file loading
 
   History :  
          23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -13,7 +14,7 @@
          23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map loading bug
          20/01/10 - Yar - Creation
-   </ul> 
+    
 }
 unit GLFileO3TC;
 
@@ -50,7 +51,13 @@ type
       const intFormat: TGLInternalFormat); reintroduce;
   end;
 
+//----------------------------------------------------------
+//----------------------------------------------------------
+//----------------------------------------------------------
 implementation
+//----------------------------------------------------------
+//----------------------------------------------------------
+//----------------------------------------------------------
 
 uses
   GLVectorGeometry;

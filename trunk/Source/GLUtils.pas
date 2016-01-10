@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLUtils 
-
-   Miscellaneous support utilities & classes. 
+{
+  Miscellaneous support utilities & classes. 
 
   History :  
        26/02/15 - PW - Added SaveStringToFile and LoadStringFromFile

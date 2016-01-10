@@ -2,10 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-	Simple Quake III BSP file loader. 
-    History :  
+  Simple Quake III BSP file loader. 
+
+  History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009
-	    30/01/03 - Egg - Creation, based on Philip Stefou's document and
+       30/01/03 - Egg - Creation, based on Philip Stefou's document and
                            bits from Jan Horn's loader 
 	 
 }

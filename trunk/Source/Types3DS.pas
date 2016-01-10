@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{Types3DS 
-
+{
    Implements the standard Teapot, build from evaluators. 
 
-	 History :  
+   History :  
        06/04/08 - DaStr - Fixed sizes of some array pointer types.
                              Now $R- is not required for units that use them.
        30/03/07 - DaStr - Added $I GLScene.inc

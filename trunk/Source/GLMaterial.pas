@@ -2,8 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
- Handles all the material + material library stuff. 
+  Handles all the material + material library stuff. 
 
   History :  
        10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
@@ -75,19 +74,19 @@ type
 
   // TGLShaderStyle
   //
-  {Define GLShader style application relatively to a material.<ul>
+  {Define GLShader style application relatively to a material. 
       ssHighLevel: shader is applied before material application, and unapplied
            after material unapplication
       ssLowLevel: shader is applied after material application, and unapplied
            before material unapplication
       ssReplace: shader is applied in place of the material (and material
            is completely ignored)
-     </ul> }
+      }
   TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
   // TGLShaderFailedInitAction
   //
-  {Defines what to do if for some reason shader failed to initialize.<ul>
+  {Defines what to do if for some reason shader failed to initialize. 
       fiaSilentdisable:          just disable it
       fiaRaiseHandledException:  raise an exception, and handle it right away
                                     (usefull, when debigging within Delphi)
@@ -104,7 +103,7 @@ type
                                     Commented out, because not sure if this
                                     option should exist, let other generations of
                                     developers decide ;)
-     </ul> }
+      }
   TGLShaderFailedInitAction = (
     fiaSilentDisable, fiaRaiseStandardException,
     fiaRaiseHandledException, fiaReRaiseException
@@ -115,7 +114,7 @@ type
   {Generic, abstract shader class. 
      Shaders are modeled here as an abstract material-altering entity with
      transaction-like behaviour. The base class provides basic context and user
-     tracking, as well as setup/application facilities.<br>
+     tracking, as well as setup/application facilities.
      Subclasses are expected to provide implementation for DoInitialize,
      DoApply, DoUnApply and DoFinalize. }
   TGLShader = class(TGLUpdateAbleComponent)
@@ -139,7 +138,7 @@ type
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
     {Request to un-apply the shader. 
-       Subclasses can assume the shader has been applied previously.<br>
+       Subclasses can assume the shader has been applied previously.
        Return True to request a multipass. }
     function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
     {Invoked once, before the destruction of context or release of shader. 
@@ -223,7 +222,7 @@ type
   //
   {Stores basic face lighting properties. 
      The lighting is described with the standard ambient/diffuse/emission/specular
-     properties that behave like those of most rendering tools.<br>
+     properties that behave like those of most rendering tools.
      You also have control over shininess (governs specular lighting) and
      polygon mode (lines / fill). }
   TGLFaceProperties = class(TGLUpdateAbleObject)
@@ -300,9 +299,9 @@ type
       read FCompareFunc write SetCompareFunc default cfLequal;
     {DepthTest enabling. 
        When DepthTest is enabled, objects closer to the camera will hide
-       farther ones (via use of Z-Buffering).<br>
+       farther ones (via use of Z-Buffering).
        When DepthTest is disabled, the latest objects drawn/rendered overlap
-       all previous objects, whatever their distance to the camera.<br>
+       all previous objects, whatever their distance to the camera.
        Even when DepthTest is enabled, objects may chose to ignore depth
        testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: boolean read FDepthTest write SetDepthTest default True;
@@ -374,13 +373,13 @@ type
   // TBlendingMode
   //
   {Simplified blending options. 
-     bmOpaque : disable blending<br>
-     bmTransparency : uses standard alpha blending<br>
-     bmAdditive : activates additive blending (with saturation)<br>
+     bmOpaque : disable blending
+     bmTransparency : uses standard alpha blending
+     bmAdditive : activates additive blending (with saturation)
      bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
-        transparency if alpha is below 0.5, full opacity otherwise)<br>
-     bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%<br>
-     bmModulate : uses modulation blending<br>
+        transparency if alpha is below 0.5, full opacity otherwise)
+     bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%
+     bmModulate : uses modulation blending
      bmCustom : uses TGLBlendingParameters options
      }
   TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
@@ -402,7 +401,7 @@ type
    {Describes a rendering material. 
       A material is basicly a set of face properties (front and back) that take
       care of standard material rendering parameters (diffuse, ambient, emission
-      and specular) and texture mapping.<br>
+      and specular) and texture mapping.
       An instance of this class is available for almost all objects in GLScene
       to allow quick definition of material properties. It can link to a
       TGLLibMaterial (taken for a material library). 
@@ -733,13 +732,13 @@ type
     {Applies the material of given name. 
        Returns False if the material could not be found. ake sure this
        call is balanced with a corresponding UnApplyMaterial (or an
-       assertion will be triggered in the destructor).<br>
+       assertion will be triggered in the destructor).
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
       var ARci: TRenderContextInfo): Boolean; virtual;
     {Un-applies the last applied material. 
-       Use this function in conjunction with ApplyMaterial.<br>
+       Use this function in conjunction with ApplyMaterial.
        If no material was applied, an assertion will be triggered. }
     function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
   end;
@@ -775,7 +774,7 @@ type
     procedure AddMaterialsFromStream(aStream: TStream);
 
     {Save library content to a file. 
-       Recommended extension : .GLML<br>
+       Recommended extension : .GLML
        Currently saves only texture, ambient, diffuse, emission
        and specular colors. }
     procedure SaveToFile(const fileName: string);
@@ -784,7 +783,7 @@ type
 
     {Add a "standard" texture material. 
        "standard" means linear texturing mode with mipmaps and texture
-       modulation mode with default-strength color components.<br>
+       modulation mode with default-strength color components.
        If persistent is True, the image will be loaded persistently in memory
        (via a TGLPersistentImage), if false, it will be unloaded after upload
        to OpenGL (via TGLPicFileImage). }
@@ -821,7 +820,7 @@ type
     {Paths to lookup when attempting to load a texture. 
        You can specify multiple paths when loading a texture, the separator
        being the semi-colon ';' character. Directories are looked up from
-       first to last, the first file name match is used.<br>
+       first to last, the first file name match is used.
        The current directory is always implicit and checked last. 
        Note that you can also use the OnTextureNeeded event to provide a
        filename. }

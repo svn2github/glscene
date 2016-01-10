@@ -1,15 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLODECustomColliders 
-
-  Custom ODE collider implementations. 
-
+{
+   Custom ODE collider implementations. 
    Credits :  
       Heightfield collider code originally adapted from Mattias Fagerlund's
          DelphiODE terrain collision demo.
          Website: http://www.cambrianlabs.com/Mattias/DelphiODE
-  </ul>
+  
 
    History :  
      19/06/14 - PW - Changed some types from Single to TdReal to permit ODE be double based in ODEImport.pas
@@ -44,7 +42,7 @@
      23/04/04 - SG - Removed freeform static collider
      29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
      30/07/03 - SG - Creation.
-  </ul>
+  
 }
 unit GLODECustomColliders;
 

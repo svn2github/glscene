@@ -1,21 +1,19 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{XOpenGL 
-
+{
    "Alternate" OpenGL functions to handle multi-texturing. 
 
    Using this functions allows specifying none/one/multiple ARB multi-texture
    coordinates with standard texture specification call. 
-
    Before using any of the xglTexCoordXxxx fonctions, call one of the
    xglMapTexCoordToXxxx functions to establish the redirectors. 
 
-   This unit is Open-Source under MPL<br>
-   Copyright 2001 - Eric Grange (egrange@glscene.org)<br>
+   This unit is Open-Source under MPL
+   Copyright 2001 - Eric Grange (egrange@glscene.org)
    http://glscene.org 
 
-    History :</b><ul>
+    History :  
        25/11/10 - Yar - Wrapped multitexturing in TGLMultitextureCoordinator class
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        29/03/10 - Yar - Replaced MULTITHREADOPENGL to GLS_MULTITHREAD (thanks Controler)
@@ -34,7 +32,7 @@
        16/08/01 - EG - Renamed xglMapTextCoordMode to xglMapTexCoordMode
        14/08/01 - EG - Added xglMapTexCoordToSecond
        21/02/01 - EG - Added TexGen and vertex arrays mappings
-   </ul>
+   
 }
 unit XOpenGL;
 

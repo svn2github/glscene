@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLODESkeletonColliders 
-
+{
    Skeleton colliders for defining and controlling ODE geoms. 
 
     History : 

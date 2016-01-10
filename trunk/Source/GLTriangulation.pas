@@ -1,10 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTriangulation 
-
-	Classes and methods for 2D triangulation of scatter points. 
- 	 History :  
+{
+   Classes and methods for 2D triangulation of scatter points. 
+  
+   History :  
       17/05/15 - PW - Created, based on code from Paul Bourke (http://paulbourke.net/)
          and conversion from VB to Delphi by Dr Steve Evans (steve@lociuk.com)
 	 
@@ -63,7 +63,7 @@ type
   TDComplete = array of Boolean;
   TDEdges = array of array of LongInt;
 
-{ : TDelaunay2D is a class for Delaunay triangulation of arbitrary points
+{  TDelaunay2D is a class for Delaunay triangulation of arbitrary points
   Credit to Paul Bourke (http://paulbourke.net/) for the original Fortran 77 Program :))
   Conversion to Visual Basic by EluZioN (EluZioN@casesladder.com)
   Conversion from VB to Delphi6 by Dr Steve Evans (steve@lociuk.com)

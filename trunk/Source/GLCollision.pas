@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCollision 
+{
+   Collision-detection management for GLScene 
 
-	Collision-detection management for GLScene 
-
-	 Historique :  
+   History :  
        17/11/14 - PW - Refactored TCollisionManager to TGLCollisionManager
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        21/01/11 - DanB - Added "inherited" call to TGLBCollision.WriteToFiler
@@ -45,7 +44,7 @@ type
    // TCollisionBoundingMode
    //
    {Defines how fine collision bounding is for a particular object. 
-      Possible values are :<ul>
+      Possible values are : 
        cbmPoint : the object is punctual and may only collide with volumes
        cbmSphere : the object is defined by its bounding sphere (sphere radius
          is the max of axis-aligned dimensions)
@@ -53,7 +52,7 @@ type
        cbmCube : the object is defined by a bounding axis-aligned "cube"
        cbmFaces : the object is defined by its faces (needs object-level support,
          if unavalaible, uses cbmCube code)
-      </ul> }
+       }
    TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube, cbmFaces);
 
    TFastCollisionChecker = function (obj1, obj2 : TGLBaseSceneObject) : Boolean;

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : FPlugInManagerEditor 
-
+{
   Need a short description of what it does here. 
 
    History :  
@@ -10,8 +9,6 @@
    16/10/08 - UweR - Compatibility fix for Delphi 2009
    02/04/07 - DaStr - Added $I GLScene.inc
    28/07/01 - EG - Creation
-   
-
 }
 unit FPlugInManagerEditor;
 

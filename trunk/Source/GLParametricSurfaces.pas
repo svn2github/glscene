@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLParametricSurfaces 
-
+{
    Parametric surface implementation (like Bezier and BSpline surfaces)
    for GLScene. 
 

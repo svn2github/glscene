@@ -1,12 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : File3DS 
-
+{
   Implementation of an universal 3DS file reader (and writer). This is the main file of the
   3DS import library. Currently only loading of 3DS files (Mesh files  * .3ds, Project files  * .prj
   and Material files  * .mli) is supported.
-
   Note: Be careful when using LoadFromStream, because chunk data (in opposition to the
   chunk structure) will be loaded on demand, i.e. when it is needed. Therefore the
   passed stream must be available during load.
@@ -16,8 +14,8 @@
 
    History : 
    01/11/07 - DaStr - Fixed memory leaks when using the TKeyFramer class
-  (BugTracker ID = 1823781)
-  Added a standard GLScene header
+                      (BugTracker ID = 1823781)
+                      Added a standard GLScene header
    30/03/07 - DaStr - Added $I GLScene.inc
    08/06/00 -  Egg  - LoadFromStream no longer free the stream it was passed,
                    further fixing of the streaming mechanism is needed

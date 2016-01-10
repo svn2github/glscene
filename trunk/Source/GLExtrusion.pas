@@ -2,15 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
- Extrusion objects for GLScene. Extrusion objects are solids defined by the
+   Extrusion objects for GLScene. Extrusion objects are solids defined by the
    surface described by a moving curve. 
 
-  History :  
-
+   History :  
        10/11/12 - PW - Added CPP compatibility: again changed vector arrays to records
        15/11/11 - Vince - Fixes pipe texture coordinates missing initialisation
-
        15/11/11 - Vince - Bugfixed issue with YOffsetPerTurn
        07/05/11 - Yar - Fixed stColorMaterial state switching accordingly NodesColorMode
        28/03/11 - Vince - Improve Normals generation on Pipes
@@ -41,8 +38,7 @@
                            now XOpenGL based (multitexture)
        10/01/01 - Egg - Better aspect when nodeN = NodeN-2 in lines mode
                            (should have only beend encountered when editing)
-     06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
-  
+       06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
 }
 {  TODO
 
@@ -154,7 +150,7 @@ type
   // TGLExtrusionSolid
   //
   { Extrudes a complex Polygon into Z direction. 
-    For contour description see TMultiPolygonBase.<br>
+    For contour description see TMultiPolygonBase.
     properties Parts, Height (or should we better cal it Depth, because its in Z?),
     Stacks, Normals and NormalDirection are equivalent to TGLRevolutionSolid. 
 

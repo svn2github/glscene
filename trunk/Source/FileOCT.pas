@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FileOCT 
-
+{
 	Loader for FSRad OCT files. 
 
 	 History :  

@@ -1,14 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileX 
-
+{
    Simple X format support for Delphi (Microsoft's favorite format) 
-   
-    History :  
+   History :  
        07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-    
-
 
     Previous version history :  
       $Log$

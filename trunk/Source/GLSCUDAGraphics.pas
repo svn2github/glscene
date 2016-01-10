@@ -1,9 +1,9 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSCUDAGraphics 
-
-    History :  
+{ 
+   CUDA Graphics for GLScene
+   History :  
        05/03/11 - Yar - Moved and remake TGLFeedBackMesh from experimental to GLSCUDAGraphics, removed TGLFactory mediator component 
                            Added to TGLFeedBackMesh vertex attribute collection 
        01/04/10 - Yar - Creation

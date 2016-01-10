@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  FileMD3 - File loading methods for the MD3 file format
+  File loading methods for the MD3 file format
 
   History :
     16/10/08 - UweR - Compatibility fix for Delphi 2009

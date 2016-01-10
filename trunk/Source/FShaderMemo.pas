@@ -1,10 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FShaderMemo 
+{
    Shader code editor. 
-
-    Historique :  
+   History:  
        31/03/11 - Yar - Creation
     
 }

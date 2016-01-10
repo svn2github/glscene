@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLAtmosphere  
-
+{
    This unit contains classes that imitate an atmosphere around a planet. 
 
     History :  
@@ -77,7 +76,7 @@ uses
 type
    EGLAtmosphereException = class(Exception);
 
-   {:
+   {
    With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
    but has problems, which are best seen when the Atmosphere radius is big.
 

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLScene 
-
+{
    Base classes and structures for GLScene. 
 
     History :  
@@ -336,7 +335,7 @@
                            fixed CreateSceneObject (was wrongly requiring a TCustomForm),
                            fixed DoJoystickCapture error handling,
                            added TGLUpdateAbleObject
-       05/02/00 - Egg - Javadocisation, fixes and enhancements :<br>
+       05/02/00 - Egg - Javadocisation, fixes and enhancements :
                            TGLSceneViewer.SetContextOptions,
                            TActiveMode -> TJoystickDesignMode,
                            TGLCamera.TargetObject and TGLCamera.AutoLeveling,
@@ -404,18 +403,18 @@ type
   //
   {Options for the rendering context. 
      roSoftwareMode: force software rendering.
-     roDoubleBuffer: enables double-buffering.<br>
-     roRenderToWindows: ignored (legacy).<br>
-     roTwoSideLighting: enables two-side lighting model.<br>
+     roDoubleBuffer: enables double-buffering.
+     roRenderToWindows: ignored (legacy).
+     roTwoSideLighting: enables two-side lighting model.
      roStereo: enables stereo support in the driver (dunno if it works,
-         I don't have a stereo device to test...)<br>
-     roDestinationAlpha: request an Alpha channel for the rendered output<br>
-     roNoColorBuffer: don't request a color buffer (color depth setting ignored)<br>
+         I don't have a stereo device to test...)
+     roDestinationAlpha: request an Alpha channel for the rendered output
+     roNoColorBuffer: don't request a color buffer (color depth setting ignored)
      roNoColorBufferClear: do not clear the color buffer automatically, if the
-         whole viewer is fully repainted each frame, this can improve framerate<br>
+         whole viewer is fully repainted each frame, this can improve framerate
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
-         early-z culling.<br>
+         early-z culling.
      roForwardContext: force OpenGL forward context }
   TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
@@ -448,14 +447,14 @@ type
   // TGLObjectStyle
   //
   {Possible styles/options for a GLScene object. 
-     Allowed styles are:<ul>
+     Allowed styles are: 
       osDirectDraw : object shall not make use of compiled call lists, but issue
         direct calls each time a render should be performed.
       osIgnoreDepthBuffer : object is rendered with depth test disabled,
         this is true for its children too.
       osNoVisibilityCulling : whatever the VisibilityCulling setting,
         it will be ignored and the object rendered
-     </ul> }
+      }
   TGLObjectStyle = (
     osDirectDraw,
     osIgnoreDepthBuffer,
@@ -659,7 +658,7 @@ type
     {Forces the local matrix to the specified value. 
        AbsoluteMatrix, InverseMatrix, etc. will honour that change, but
        may become invalid if the specified matrix isn't orthonormal (can
-       be used for specific rendering or projection effects).<br>
+       be used for specific rendering or projection effects).
        The local matrix will be reset by the next TransformationChanged,
        position or attitude change. }
     procedure ForceLocalMatrix(const aMatrix: TMatrix);
@@ -756,7 +755,7 @@ type
 
     {Calculates the object's barycenter in absolute coordinates. 
        Default behaviour is to consider Barycenter=AbsolutePosition
-       (whatever the number of children).<br>
+       (whatever the number of children).
        SubClasses where AbsolutePosition is not the barycenter should
        override this method as it is used for distance calculation, during
        rendering for instance, and may lead to visual inconsistencies. }
@@ -768,13 +767,13 @@ type
        The dimensions are measured from object center and are expressed
        <i>with</i> scale accounted for, in the object's coordinates
        (not in absolute coordinates). 
-       Default value is half the object's Scale.<br> }
+       Default value is half the object's Scale. }
     function AxisAlignedDimensions: TVector; virtual;
     function AxisAlignedDimensionsUnscaled: TVector; virtual;
 
     {Calculates and return the AABB for the object. 
        The AABB is currently calculated from the BB.
-       There is  no</b> caching scheme for them. }
+       There is  no  caching scheme for them. }
     function AxisAlignedBoundingBox(const AIncludeChilden: Boolean = True):
       TAABB;
     function AxisAlignedBoundingBoxUnscaled(const AIncludeChilden: Boolean =
@@ -788,10 +787,10 @@ type
     function AxisAlignedBoundingBoxAbsoluteEx: TAABB;
 
     {Calculates and return the Bounding Box for the object. 
-       The BB is calculated  each</b> time this method is invoked,
+       The BB is calculated  each  time this method is invoked,
        based on the AxisAlignedDimensions of the object and that of its
        children.
-       There is  no</b> caching scheme for them. }
+       There is  no  caching scheme for them. }
     function BoundingBox(const AIncludeChilden: Boolean = True; const
       AUseBaryCenter: Boolean = False): THmgBoundingBox;
     function BoundingBoxUnscaled(const AIncludeChilden: Boolean = True; const
@@ -810,13 +809,13 @@ type
     function BoundingSphereRadiusUnscaled: Single;
 
     {Indicates if a point is within an object. 
-       Given coordinate is an absolute coordinate.<br>
+       Given coordinate is an absolute coordinate.
        Linear or surfacic objects shall always return False. 
        Default value is based on AxisAlignedDimension and a cube bounding. }
     function PointInObject(const point: TVector): Boolean; virtual;
     {Request to determine an intersection with a casted ray. 
        Given coordinates & vector are in absolute coordinates, rayVector
-       must be normalized.<br>
+       must be normalized.
        rayStart may be a point inside the object, allowing retrieval of
        the multiple intersects of the ray. 
        When intersectXXX parameters are nil (default) implementation should
@@ -908,7 +907,7 @@ type
     {Sets all rotations to zero and restores default Direction/Up. 
        Using this function then applying roll/pitch/turn in the order that
        suits you, you can give an "absolute" meaning to rotation angles
-       (they are still applied locally though).<br>
+       (they are still applied locally though).
        Scale and Position are not affected. }
     procedure ResetRotations;
     {Reset rotations and applies them back in the specified order. }
@@ -988,20 +987,20 @@ type
      application of time-based alterations to objects (movements, shape or
      texture changes...). 
      Since behaviours are implemented as classes, there are basicly two kinds
-     of strategies for subclasses :<ul>
+     of strategies for subclasses : 
       stand-alone : the subclass does it all, and holds all necessary data
         (covers animation, inertia etc.)
       proxy : the subclass is an interface to and external, shared operator
         (like gravity, force-field effects etc.)
-     </ul><br>
+      
      Some behaviours may be cooperative (like force-fields affects inertia)
      or unique (e.g. only one inertia behaviour per object). 
-     NOTES :<ul>
+     NOTES : 
       Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
       Subclasses must be registered using the RegisterXCollectionItemClass
         function
-     </ul> }
+      }
   TGLBaseBehaviour = class(TXCollectionItem)
   protected
     { Protected Declarations }
@@ -1068,16 +1067,16 @@ type
      ObjectEffect is a subclass of behaviour that gets a chance to Render
      an object-related special effect. 
      TGLObjectEffect should not be used as base class for custom effects,
-     instead you should use the following base classes :<ul>
+     instead you should use the following base classes : 
       TGLObjectPreEffect is rendered before owner object render
       TGLObjectPostEffect is rendered after the owner object render
       TGLObjectAfterEffect is rendered at the end of the scene rendering
-     </ul><br>NOTES :<ul>
+      NOTES : 
       Don't forget to override the ReadFromFiler/WriteToFiler persistence
         methods if you add data in a subclass !
       Subclasses must be registered using the RegisterXCollectionItemClass
         function
-     </ul> }
+      }
 //   TGLObjectEffectClass = class of TGLObjectEffect;
 
   TGLObjectEffect = class(TGLBaseBehaviour)
@@ -1191,7 +1190,7 @@ type
   //
   {Base class for objects that do not have a published "material". 
      Note that the material is available in public properties, but isn't
-     applied automatically before invoking BuildList.<br>
+     applied automatically before invoking BuildList.
      Subclassing should be reserved to structural objects and objects that
      have no material of their own. }
   TGLImmaterialSceneObject = class(TGLCustomSceneObject)
@@ -1287,7 +1286,7 @@ type
      You can use this object to do your specific rendering task in its OnRender
      event. The OpenGL calls shall restore the OpenGL states they found when
      entering, or exclusively use the GLMisc utility functions to alter the
-     states.<br> }
+     states. }
   TGLDirectOpenGL = class(TGLImmaterialSceneObject)
   private
     { Private Declarations }
@@ -1314,18 +1313,18 @@ type
        If True, GLScene will generate a build list (OpenGL-side cache),
        ie. OnRender will only be invoked once for the first render, or after
        a StructureChanged call. This is suitable for "static" geometry and
-       will usually speed up rendering of things that don't change.<br>
+       will usually speed up rendering of things that don't change.
        If false, OnRender will be invoked for each render. This is suitable
        for dynamic geometry (things that change often or constantly). }
     property UseBuildList: Boolean read FUseBuildList write SetUseBuildList;
     {Place your specific OpenGL code here. 
        The OpenGL calls shall restore the OpenGL states they found when
        entering, or exclusively use the GLMisc utility functions to alter
-       the states.<br> }
+       the states. }
     property OnRender: TDirectRenderEvent read FOnRender write FOnRender;
     {Defines if the object uses blending. 
        This property will allow direct opengl objects to be flagged as
-       blended for object sorting purposes.<br> }
+       blended for object sorting purposes. }
     property Blend: Boolean read FBlend write SetBlend;
   end;
 
@@ -1335,7 +1334,7 @@ type
      This object is used to specify a render point for which other components
      have (rendering) tasks to perform. It doesn't render anything itself
      and is invisible, but other components can register and be notified
-     when the point is reached in the rendering phase.<br>
+     when the point is reached in the rendering phase.
      Callbacks must be explicitly unregistered. }
   TGLRenderPoint = class(TGLImmaterialSceneObject)
   private
@@ -1365,7 +1364,7 @@ type
   //
   {A full proxy object. 
      This object literally uses another object's Render method to do its own
-     rendering, however, it has a coordinate system and a life of its own.<br>
+     rendering, however, it has a coordinate system and a life of its own.
      Use it for duplicates of an object. }
   TGLProxyObject = class(TGLBaseSceneObject)
   private
@@ -1430,21 +1429,21 @@ type
   // TLightStyle
   //
   {Defines the various styles for lightsources. 
-     <ul>
+     
       lsSpot : a spot light, oriented and with a cutoff zone (note that if
         cutoff is 180, the spot is rendered as an omni source)
       lsOmni : an omnidirectionnal source, punctual and sending light in
         all directions uniformously
       lsParallel : a parallel light, oriented as the light source is (this
         type of light can help speed up rendering)
-      </ul> }
+       }
   TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   // TGLLightSource
   //
   {Standard light source. 
      The standard GLScene light source covers spotlights, omnidirectionnal and
-     parallel sources (see TLightStyle).<br>
+     parallel sources (see TLightStyle).
      Lights are colored, have distance attenuation parameters and are turned
      on/off through their Shining property. 
      Lightsources are managed in a specific object by the TGLScene for rendering
@@ -1606,7 +1605,7 @@ type
     {Change camera's position to make it move around its target. 
        If TargetObject is nil, nothing happens. This method helps in quickly
        implementing camera controls. Camera's Up and Direction properties
-       are unchanged.<br>
+       are unchanged.
        Angle deltas are in degrees, camera parent's coordinates should be identity. 
        Tip : make the camera a child of a "target" dummycube and make
        it a target the dummycube. Now, to pan across the scene, just move
@@ -1615,7 +1614,7 @@ type
     {Change camera's position to make it move all around its target. 
        If TargetObject is nil, nothing happens. This method helps in quickly
        implementing camera controls. Camera's Up and Direction properties
-       are changed.<br>
+       are changed.
        Angle deltas are in degrees. }
     procedure MoveAllAroundTarget(pitchDelta, turnDelta :Single);
     {Moves the camera in eye space coordinates. }
@@ -1699,7 +1698,7 @@ type
     property TargetObject: TGLBaseSceneObject read FTargetObject write
       SetTargetObject;
     {Adjust the camera style. 
-       Three styles are available :<ul>
+       Three styles are available : 
         csPerspective, the default value for perspective projection
         csOrthogonal, for orthogonal (or isometric) projection.
         csOrtho2D, setups orthogonal 2D projection in which 1 unit
@@ -1707,7 +1706,7 @@ type
         csInfinitePerspective, for perspective view without depth limit.
         csKeepCamAnglePerspective, for perspective view with keeping aspect on view resize.
         csCustom, setup is deferred to the OnCustomPerspective event.
-       </ul> }
+        }
     property CameraStyle: TGLCameraStyle read FCameraStyle write SetCameraStyle
       default csPerspective;
 
@@ -1721,8 +1720,8 @@ type
 
     {Custom perspective event. 
        This event allows you to specify your custom perpective, either
-       with a glFrustrum, a glOrtho or whatever method suits you.<br>
-       You must compute viewPortRadius for culling to work.<br>
+       with a glFrustrum, a glOrtho or whatever method suits you.
+       You must compute viewPortRadius for culling to work.
        This event is only called if CameraStyle is csCustom. }
     property OnCustomPerspective: TOnCustomPerspective read FOnCustomPerspective
       write FOnCustomPerspective;
@@ -1805,7 +1804,7 @@ type
     {Saves the scene to a file (recommended extension : .GLS) }
     procedure SaveToFile(const fileName: string);
     {Load the scene from a file. 
-       Existing objects/lights/cameras are freed, then the file is loaded.<br>
+       Existing objects/lights/cameras are freed, then the file is loaded.
        Delphi's IDE is not handling this behaviour properly yet, ie. if
        you load a scene in the IDE, objects will be properly loaded, but
        no declare will be placed in the code. }
@@ -1849,12 +1848,12 @@ type
   // TFogDistance
   //
   {Fog distance calculation mode. 
-     <ul>
+     
       fdDefault: let OpenGL use its default formula
       fdEyeRadial: uses radial "true" distance (best quality)
       fdEyePlane: uses the distance to the projection plane
                  (same as Z-Buffer, faster)
-     </ul>Requires support of GL_NV_fog_distance extension, otherwise,
+     Requires support of GL_NV_fog_distance extension, otherwise,
      it is ignored. }
   TFogDistance = (fdDefault, fdEyeRadial, fdEyePlane);
 
@@ -1903,12 +1902,12 @@ type
     property FogMode: TFogMode read FFogMode write SetFogMode default fmLinear;
     {Adjusts the formula used for calculating fog distances. 
        This option is honoured if and only if the OpenGL ICD supports the
-       GL_NV_fog_distance extension, otherwise, it is ignored.<ul>
+       GL_NV_fog_distance extension, otherwise, it is ignored. 
            fdDefault: let OpenGL use its default formula
            fdEyeRadial: uses radial "true" distance (best quality)
            fdEyePlane: uses the distance to the projection plane
              (same as Z-Buffer, faster)
-       </ul> }
+        }
     property FogDistance: TFogDistance read FFogDistance write SetFogDistance
       default fdDefault;
   end;
@@ -2047,7 +2046,7 @@ type
     procedure PickObjects(const rect: TGLRect; pickList: TGLPickList;
       objectCountGuess: Integer);
     {Returns a PickList with objects in Rect area. 
-       Returned list should be freed by caller.<br>
+       Returned list should be freed by caller.
        Objects are sorted by depth (nearest objects first). }
     function GetPickedObjects(const rect: TGLRect; objectCountGuess: Integer =
       64): TGLPickList;
@@ -2107,7 +2106,7 @@ type
       xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
     {Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
-    {Event reserved for viewer-specific uses.<br> }
+    {Event reserved for viewer-specific uses. }
     property ViewerBeforeRender: TNotifyEvent read FViewerBeforeRender write
       FViewerBeforeRender stored False;
     procedure SetViewPort(X, Y, W, H: Integer);
@@ -2218,7 +2217,7 @@ type
     {Calculates a 3D coordinate from screen position and ZBuffer. 
        This function returns a world absolute coordinate from a 2D point
        in the viewer, the depth being extracted from the ZBuffer data
-       (DepthTesting and ZBuffer must be enabled for this function to work).<br>
+       (DepthTesting and ZBuffer must be enabled for this function to work).
        Note that ZBuffer precision is not linear and can be quite low on
        some boards (either from compression or resolution approximations). }
     function PixelRayToWorld(x, y: Integer): TAffineVector;
@@ -2230,7 +2229,7 @@ type
     property LastFrameTime: Single read FLastFrameTime;
     {Current FramesPerSecond rendering speed. 
        You must keep the renderer busy to get accurate figures from this
-       property.<br>
+       property.
        This is an average value, to reset the counter, call
        ResetPerfomanceMonitor. }
     property FramesPerSecond: Single read FFramesPerSecond;
@@ -2275,9 +2274,9 @@ type
       SetAccumBufferBits default 0;
     {DepthTest enabling. 
        When DepthTest is enabled, objects closer to the camera will hide
-       farther ones (via use of Z-Buffering).<br>
+       farther ones (via use of Z-Buffering).
        When DepthTest is disabled, the latest objects drawn/rendered overlap
-       all previous objects, whatever their distance to the camera.<br>
+       all previous objects, whatever their distance to the camera.
        Even when DepthTest is enabled, objects may chose to ignore depth
        testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: Boolean read FDepthTest write SetDepthTest default True;

@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLGeometryCoordinates 
-
-	Helper functions to convert between different three dimensional coordinate
+{
+   Helper functions to convert between different three dimensional coordinate
    systems. Room for optimisations. 
 
-	 History :  
+   History :  
        10/12/14 - PW - Renamed GeometryCoordinates unit into GLGeometryCoordinates
        30/04/03 - EG - Hyperbolic functions moved to GLVectorGeometry.pas
        30/04/03 - ARH - Remove math.pas dependency
@@ -14,7 +13,7 @@
        10/04/03 - ARH - Added ProlateSpheroidal,OblateSpheroidal,
                            BiPolarCylindrical
        09/04/03 - ARH - Initial Version (Cylindrical,Spherical)
-   </ul>
+   
 }
 unit GLGeometryCoordinates;
 

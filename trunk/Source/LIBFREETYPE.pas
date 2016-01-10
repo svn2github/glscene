@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{LIBFREETYPE 
+{
+   LIBFREETYPE 
 
-   Historique :  
+   History :  
        21/01/11 - Yar - Creation
    
 }

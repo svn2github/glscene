@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTexture 
+{
+   Handles all the color and texture stuff. 
 
- Handles all the color and texture stuff. 
-
-  History :  
+   History :  
         04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove
                            a memory leak (thanks to Lars Nebel)
         04/01/13 - PW - Moved cubic map texture consts CmtPX..CmtNZ from GLColor unit to here
@@ -210,7 +209,7 @@
                           fixed TGLMaterial.Assign,
                           disable inheritance stuff in TGLFaceProperties.Apply (needs fixing),
                           Diffuse & ambient color now default to openGL values
-       05/02/00 - EG - Javadocisation, fixes and enhancements :<br>
+       05/02/00 - EG - Javadocisation, fixes and enhancements :
                           TGLColor.Update, ConvertWinColor, TPicImage,
           TGLMaterial.Apply
     
@@ -276,7 +275,7 @@ type
 
   {Texture format for OpenGL (rendering) use. 
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
-  specify a generic format to reduce OpenGL texture memory use:<ul>}
+  specify a generic format to reduce OpenGL texture memory use: }
   TGLTextureFormat = (
     tfDefault,
     tfRGB, // = tfRGB8
@@ -311,7 +310,7 @@ type
   TGLTextureChange = (tcImage, tcParams);
   TGLTextureChanges = set of TGLTextureChange;
 
-  {Defines how and if Alpha channel is defined for a texture image.<ul>
+  {Defines how and if Alpha channel is defined for a texture image. 
     tiaDefault : uses the alpha channel in the image if any
     tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
@@ -323,7 +322,7 @@ type
         tiaOpaque : alpha channel is uniformously set to 1.0
         tiaTopLeftPointColorTransparent : points of the same color as the
           top left point of the bitmap are transparent, others are opaque.
-       </ul>
+       
     }
   TGLTextureImageAlpha =
   (
@@ -343,7 +342,7 @@ type
   //
   {Base class for texture image data. 
    Basicly, subclasses are to be considered as different ways of getting
-   a HBitmap (interfacing the actual source).<br>
+   a HBitmap (interfacing the actual source).
    SubClasses should be registered using RegisterGLTextureImageClass to allow
    proper persistence and editability in the IDE experts. }
   TGLTextureImage = class(TGLUpdateAbleObject)
@@ -376,7 +375,7 @@ type
     procedure SaveToFile(const fileName: string); dynamic;
     {Load textureImage from a file. 
      This may not load a picture, but for instance, parameters, if the
-     textureImage is a procedural texture.<br>
+     textureImage is a procedural texture.
              Subclasses should invoke inherited which will take care of the
              "OnTextureNeeded" stuff. }
     procedure LoadFromFile(const fileName: string); dynamic;
@@ -399,7 +398,7 @@ type
     function GetBitmap32: TGLImage; virtual;
     {Request for unloading bitmapData, to free some memory. 
      This one is invoked when GLScene no longer needs the Bitmap data
-     it got through a call to GetHBitmap.<br>
+     it got through a call to GetHBitmap.
      Subclasses may ignore this call if the HBitmap was obtained at
      no particular memory cost. }
     procedure ReleaseBitmap32; virtual;
@@ -589,7 +588,7 @@ type
   // TGLCubeMapImage
   //
   {A texture image used for specifying and stroing a cube map. 
-       Not unlike TGLPictureImage, but storing 6 of them instead of just one.<br>
+       Not unlike TGLPictureImage, but storing 6 of them instead of just one.
        Saving & loading as a whole currently not supported. }
   TGLCubeMapImage = class(TGLTextureImage)
   private

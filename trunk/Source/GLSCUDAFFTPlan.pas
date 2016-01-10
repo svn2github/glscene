@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAFFTPlan  
+{  
+   Fast Fourier Transform for CUDA  
 
    History :  
    13/12/13 - PW - Added GLScene.inc and GLSLog

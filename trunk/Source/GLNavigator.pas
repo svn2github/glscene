@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Unit for navigating TGLBaseObjects. 
+    Unit for navigating TGLBaseObjects. 
 
-	 History :  
+    History :  
        20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),
                              SetVirtualUp(), CalcRight() to the "protected" section
                              Private "point1" renamed to FPrevPoint
@@ -48,14 +48,14 @@ type
       this includes all the objects from the Scene Editor. 
 
 	   The four calls to get you started is
-      <ul>
+      
   	    TurnHorisontal : it turns left and right.
 	    TurnVertical : it turns up and down.
 	    MoveForward :	moves back and forth.
       FlyForward : moves back and forth in the movingobject's direction
-      </ul>
+      
 	   The three properties to get you started is
-      <ul>
+      
 	    MovingObject : The Object that you are moving.
 	    UseVirtualUp : When UseVirtualUp is set you navigate Quake style. If it isn't
    		it's more like Descent.
@@ -66,7 +66,7 @@ type
 	    InvertHorizontalSteeringWhenUpsideDown : When using virtual up, and vertically
       rotating beyond 90 degrees, will make steering seem inverted, so we "invert" back
       to normal.
-      </ul>
+      
    }
   TGLNavigator = class(TComponent)
   private
@@ -122,19 +122,19 @@ type
 	{TGLUserInterface is the component which reads the userinput and transform it into action. 
 
 	   The four calls to get you started is
-      <ul>
+      
  	    MouseLookActivate : set us up the bomb.
  	    MouseLookDeActivate : defuses it.
 	    Mouselook(deltaTime: double) : handles mouse look... Should be called in the Cadencer event. (Though it works every where!)
 	    MouseUpdate : Resets mouse position so that you don't notice that the mouse is limited to the screen should be called after Mouselook.
-      </ul>
+      
 	   The four properties to get you started are:
-      <ul>
+      
 	    InvertMouse     : Inverts the mouse Y axis.
 	    MouseSpeed      : Also known as mouse sensitivity.
 	    GLNavigator     : The Navigator which receives the user movement.
 	    GLVertNavigator : The Navigator which if set receives the vertical user movement. Used mostly for cameras....
-      </ul>
+      
    }
 
   TGLUserInterface = class(TComponent)

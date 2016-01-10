@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPersistentClasses 
-
+{
    Base persistence classes. 
 
-   These classes are used in GLScene, but are designed for generic purpose.<br>
+   These classes are used in GLScene, but are designed for generic purpose.
    They implement a slightly different persistence mechanism than that of the VCL,
    allowing for object-level versioning (100% backward compatibility) and full
    polymorphic persistence. 
@@ -133,7 +132,7 @@ type
     {Base class for persistent objects. 
        The base requirement is implementation of ReadFromFiler & WriteToFiler
        in sub-classes, the immediate benefits are support of streaming (to stream,
-       file or string), assignment and cloning.<br>
+       file or string), assignment and cloning.
        The other requirement being the use of a virtual constructor, which allows
        polymorphic construction (don't forget to register your subclasses). 
        Note that TPersistentObject implements IUnknown, but does *not* implement
@@ -186,7 +185,7 @@ type
      Similar to TList but works on TObject items and has facilities for
      persistence of contained data. Unlike the VCL's TObjectList, this one
      does NOT free its objects upon destruction or Clear, use Clean and CleanFree
-     for that, and as such can be used for object referral lists too.<br>
+     for that, and as such can be used for object referral lists too.
      But only TPersistentObject items will be streamed appropriately. 
      The list can be used in a stack-like fashion with Push & Pop, and can
      perform basic boolean set operations. 

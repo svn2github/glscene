@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDAContext  
+{  
+   CUDA context  
 
    History :  
    19/03/10 - Yar - Creation
@@ -84,7 +85,7 @@ type
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    { : Returns in bytes the total amount of memory
+    {  Returns in bytes the total amount of memory
       available on the device dev in bytes. }
     function TotalMemory: Cardinal;
   published
@@ -151,11 +152,11 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    { : Destroy all handles based of this context. }
+    {  Destroy all handles based of this context. }
     procedure DestroyAllHandles;
-    { : Pushes context onto CPU thread’s stack of current contexts. }
+    {  Pushes context onto CPU thread’s stack of current contexts. }
     procedure Requires;
-    { : Pops context from current CPU thread. }
+    {  Pops context from current CPU thread. }
     procedure Release;
 
     function IsValid: Boolean; inline;
@@ -170,7 +171,7 @@ type
   // CUDAContextManager
   //
 
-  { : Static class of CUDA contexts manager. }
+  {  Static class of CUDA contexts manager. }
 
   CUDAContextManager = class
   private
@@ -190,7 +191,7 @@ type
     class function GetContext(i: Integer): TCUDAContext;
   public
     { Public declarations }
-    { : Managment. }
+    {  Managment. }
     class procedure Init;
     class procedure Done;
     class procedure CreateContext(aContext: TCUDAContext);
@@ -199,21 +200,21 @@ type
     class procedure DestroyContextOf(ADevice: TCUDADevice);
     class procedure PushContext(aContext: TCUDAContext);
     class function PopContext: TCUDAContext;
-    { : Fill unused device list to show its in property. }
+    {  Fill unused device list to show its in property. }
     class procedure FillUnusedDeviceList(var AList: TStringList);
-    { : Return device by name. }
+    {  Return device by name. }
     class function GetDeviceByName(const AName: string): TCUDADevice;
-    { : Returns the number of CUDA compatiable devices. }
+    {  Returns the number of CUDA compatiable devices. }
     class function DeviceCount: Integer;
-    { : Access to devices list. }
+    {  Access to devices list. }
     property Devices[i: Integer]: TCUDADevice read GetDevice;
-    { : Returns a device that has a maximum Giga flops. }
+    {  Returns a device that has a maximum Giga flops. }
     class function GetMaxGflopsDevice: TCUDADevice;
-    { : Returns the number of TCUDAcontext object. }
+    {  Returns the number of TCUDAcontext object. }
     class function ContextCount: Integer;
-    { : Return CUDA context of current thread. }
+    {  Return CUDA context of current thread. }
     class function GetCurrentThreadContext: TCUDAContext;
-    { : Access to contexts list. }
+    {  Access to contexts list. }
     property Contexts[i: Integer]: TCUDAContext read GetContext;
   end;
 

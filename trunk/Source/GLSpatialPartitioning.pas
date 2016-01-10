@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSpatialPartitioning 
-
-   Spatial partitioning related code that also uses GLScene objects
+{
+  Spatial partitioning related code that also uses GLScene objects
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

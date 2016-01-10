@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTrail 
-
-	Creates a trail-like mesh.
+{
+  Creates a trail-like mesh.
   Based on Jason Lanford's demo.  
 
-	 History :  
+  History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
          03/04/07 - DaStr - Added default values to some properties
                                Added TGLTrail.AntiZFightOffset

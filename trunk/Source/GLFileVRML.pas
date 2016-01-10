@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileVRML 
-
+{
    Preliminary VRML vector file support for GLScene. 
-    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-    History : 
+   History : 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        29/03/07 - DaStr - RecursNodes bugfixed (thanks Burkhard Carstens)
        25/01/05 - SG - Improved auto-normal generation using creaseAngle,
                           Added Normal and TexCoord reading,

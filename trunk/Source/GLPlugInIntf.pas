@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : PlugInIntf 
-
+{
   An interface unit to GLScene plug-ins. 
   For more information see help file for writing plug-ins. 
 
    History :  
    17/11/14 - PW - Renamed from PlugInIntf.pas to GLPlugInIntf.pas
    16/10/08 - UweR - Compatibility fix for Delphi 2009
-  PlugIn interface stays at PAnsiChar
+                     PlugIn interface stays at PAnsiChar
    02/04/07 - DaStr - Added $I GLScene.inc
    28/07/01 - EG - Creation
    

@@ -1,11 +1,9 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{GLFile3DS 
-
+//
+{
   3DStudio 3DS vector file format implementation. 
-
-   History : 
+  History : 
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        30/06/11 - DaStr - Properly fixed range check bug  
        15/12/10 - YP - Disable and re-enable range-check only if needed

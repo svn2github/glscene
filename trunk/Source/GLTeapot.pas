@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTeapot 
-
-   Implements the standard Teapot, build from evaluators. 
+{
+  Implements the standard Teapot, build from evaluators. 
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

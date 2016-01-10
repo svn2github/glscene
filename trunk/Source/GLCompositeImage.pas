@@ -1,10 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCompositeImage 
-
-    This class is required for loading images such classes as TGLDDSImage,
-    TGLO3TCImage, TGLHDRImage etc.
+{
+  This class is required for loading images such classes as TGLDDSImage,
+  TGLO3TCImage, TGLHDRImage etc.
 
   History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -12,7 +11,7 @@
          22/02/10 - Yar - Added LoadFromStream (thanks to mif)
          23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
          21/01/10 - Yar - Creation
-   </ul> 
+    
 }
 
 unit GLCompositeImage;

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVerletTypes 
-
+{
    Base Verlet modelling/simulation classes. 
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses. 
 
@@ -45,7 +44,7 @@
        23/06/02 - EG - Stricter encapsulation, fixed some leaks,
                           Various optimizations (+25%)
        21/06/02 - EG - Creation (original code by Mattias Fagerlund)
-   </ul>
+   
 }
 unit GLVerletTypes;
 

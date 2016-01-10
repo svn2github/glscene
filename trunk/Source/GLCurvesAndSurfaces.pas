@@ -2,10 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
-   Bezier and B-Spline Curve and Surface Routines. 
-
-    History :  
+   Bezier and B-Spline Curve and Surface Routines.
+   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        31/03/07 - DaStr - Added $I GLScene.inc
        11/05/04 - SG - Some fixes for BSpline calculations (rational BSplines

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileDAE 
+{
+   COLLADA DAE file format implementation. 
 
-	COLLADA DAE file format implementation. 
-
-	 History : 
+    History : 
        17/01/14 - PW - Bugfixed for XE5
        16/01/14 - PW - Added $I GLScene.inc
        15/01/14 - PW - Creation

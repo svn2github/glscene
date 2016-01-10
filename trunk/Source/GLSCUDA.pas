@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSCUDA 
+{
+   CUDA routines implementation 
 
    History :  
    26/03/12 - Maverick - Added vectors SetParam routines
@@ -148,7 +149,7 @@ type
 
   TGLResourceType = (rtTexture, rtBuffer);
 
-  { : Abstract class of graphic resources. }
+  {  Abstract class of graphic resources. }
 
   // TCUDAGraphicResource
   //
@@ -238,12 +239,12 @@ type
     function Data<EType>(X, Y: Integer): GCUDAHostElementAccess<EType>; overload;
     function Data<EType>(X, Y, Z: Integer): GCUDAHostElementAccess<EType>; overload;
 
-    { : Fill device data }
+    {  Fill device data }
     procedure FillMem(const Value);
 
     procedure CopyTo(const ADstMemData: TCUDAMemData); overload;
     procedure CopyTo(const AGLImage: TGLImage); overload;
-    { : Copy data to Graphic resource. }
+    {  Copy data to Graphic resource. }
     procedure CopyTo(const AGLGraphic: TCUDAGraphicResource;
       aAttr: string = ''); overload;
     procedure CopyFrom(const ASrcMemData: TCUDAMemData); overload;

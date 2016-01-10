@@ -1,14 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMovement 
-
+{
    Movement path behaviour by Roger Cao 
-
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
 
-    Historique :  
+   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
                           Replaced direct access to properties by methods
                           GetPositionCoordinate, GetRotationCoordinate, GetScaleCoordinate,

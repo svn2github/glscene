@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeomObjects 
-
+{
   Geometric objects. 
 
-   History :  
+  History :  
    03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
    02/09/10 - Yar - Creation
    

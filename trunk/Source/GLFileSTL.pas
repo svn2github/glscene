@@ -48,7 +48,7 @@ type
 type
   // TGLSTLVectorFile
   //
-  { : The STL vector file (stereolithography format). 
+  {  The STL vector file (stereolithography format). 
     It is a list of the triangular surfaces that describe a computer generated
     solid model. This is the standard input for most rapid prototyping machines. 
     There are two flavors of STL, the "text" and the "binary", this class

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLConsole  
-
+{
    The console is a popdown window that appears on a game for text output/input. 
 
     History :  
@@ -400,7 +399,7 @@ type
     { Main event of the console. Happens whenever the enter key is pressed.
       First the input line is compared to all registered commands, then everything
       is parsed into a TGLUserInputCommand record and  sent to the event.
-      Empty lines are  not</b> ignored (i.e. they also trigger events)}
+      Empty lines are  not  ignored (i.e. they also trigger events)}
     property OnCommandIssued: TGLlConsoleEvent read FOnCommandIssued write
       FOnCommandIssued;
 

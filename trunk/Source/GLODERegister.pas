@@ -5,7 +5,6 @@
   GLODERegister - Design time registration code for the ODE Manager
 
   History:
-
     18/06/03 - SG - Creation.
 }
 unit GLODERegister;

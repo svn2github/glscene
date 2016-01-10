@@ -1,11 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLParameter 
+{
+  Shader Parameter 
 
-	 History :  
+  History :  
      14/03/11 - Yar - Creation
-  </ul>
+  
 }
 unit GLSLParameter;
 

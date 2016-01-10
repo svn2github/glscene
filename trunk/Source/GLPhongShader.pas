@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPhongShader 
-
+{
    An ARBvp1.0 + ARBfp1.0 shader that implements phong shading. 
 
     History :  

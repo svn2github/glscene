@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLProcTextures 
-
+{
   Procedural textures. 
 
   History :  
@@ -24,8 +23,8 @@
 
   I used the following references for my implementation: 
 
-  http://freespace.virgin.net/hugo.elias/models/m_perlin.htm<br>
-  http://freespace.virgin.net/hugo.elias/models/m_clouds.htm<br>
+  http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
+  http://freespace.virgin.net/hugo.elias/models/m_clouds.htm
   http://www.delphi3d.net 
 
   Tobias Peirick

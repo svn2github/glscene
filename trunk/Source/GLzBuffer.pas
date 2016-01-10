@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLzBuffer 
-
+{
    ZBuffer retrieval and computations. 
-
-   See readme.txt in the Demos/SpecialsFX/Shadows directory.<br>
+   See readme.txt in the Demos/SpecialsFX/Shadows directory.
    By René Lindsay. 
 
   History :  

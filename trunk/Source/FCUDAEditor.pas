@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSCUDAEditor 
+{
+    Editor of TGLSCUDA. 
 
-   Editor of TGLSCUDA. 
-
-	 History :  
+       History :  
        22/08/10 - Yar - Some improvements for FPC (thanks Predator)
        19/03/10 - Yar - Creation
 	 

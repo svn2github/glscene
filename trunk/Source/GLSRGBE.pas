@@ -1,13 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSRGBE 
+{
+   GLScene RGBE 
 
    History :  
    17/11/14 - PW - Renamed from RGBE.pas to GLSRGBE.pas
    15/06/10 - Yar - Fixes for Linux x64
    20/01/10 - Yar - Creation
-  </ul> 
+   
 }
 unit GLSRGBE;
 

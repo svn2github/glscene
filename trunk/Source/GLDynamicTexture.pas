@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLDynamicTexture 
-
+{
   Adds a dynamic texture image, which allows for easy updating of
   texture data. 
 
-	 History :  
+  History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
        23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx

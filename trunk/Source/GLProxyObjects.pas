@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLProxyObjects 
-
-   Implements specific proxying classes. 
+{
+  Implements specific proxying classes. 
 
   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx

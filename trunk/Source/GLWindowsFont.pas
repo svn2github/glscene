@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLWindowsFont 
-
+{
   TFont Import into a BitmapFont using variable width... 
 
   History :  

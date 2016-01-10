@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFeedback 
-
+{
    A scene object encapsulating the OpenGL feedback buffer. 
-
    This object, when Active, will render it's children using
    the GL_FEEDBACK render mode. This will render the children
    into the feedback Buffer rather than into the frame buffer. 

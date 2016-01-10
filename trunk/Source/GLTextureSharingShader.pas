@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTextureSharingShader (originally GlProxMultiMatShader) 
-     
+{
     This shader allows to apply multiple textures, gathering them from existing materials.
     This allows saving resources, since you can reference the textures of any material in
     any materialLibrary.

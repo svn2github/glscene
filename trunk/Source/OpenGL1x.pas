@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{OpenGL1x 
-
-	OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
+{
+   OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
    a more "pragmatic" approach :) 
 
    This unit is based on OpenGL12.pas orginally written by Mike Lischke,
    please refer to OpenGL12.pas header. 
 
-	 History :  
+   History :  
        23/01/11 - DanB - Entry points now use procedural types from GLS.OpenGLTokens.pas
                             Added OpenGL 4.1 + ARB extensions
                             Switched to use GLS_REGIONS define

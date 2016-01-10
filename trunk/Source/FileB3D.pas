@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-	File streaming class for the B3D loader
+    File streaming class for the B3D loader
 
-	History :
+    History :
       24/07/09 - DaStr - Got rid of compiler hints
       29/05/08 - DaStr - Added $I GLScene.inc
       22/12/05 - Mathx - Added to the GLScene Project.

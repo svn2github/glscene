@@ -1,20 +1,18 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVectorTypes 
-
+{
    Defines base vector types for use in Geometry.pas and OpenGL1x.pas. 
-
    The sole aim of this unit is to limit dependency between the Geometry
    and OpenGL1x units by introducing the base compatibility types
    (and only the *base* types). 
 
-   Conventions:<ul>
-        d</b> is used for Double precision floating points values (64 bits)
-        f</b> is used for Single precision floating points values (32 bits)
-        i</b> is used for 32 bits signed integers (longint)
-        s</b> is uses for 16 bits signed integers (smallint)
-   </ul>
+   Conventions: 
+        d  is used for Double precision floating points values (64 bits)
+        f  is used for Single precision floating points values (32 bits)
+        i  is used for 32 bits signed integers (longint)
+        s  is uses for 16 bits signed integers (smallint)
+   
 
    Note : D3D types untested. 
 
@@ -31,7 +29,7 @@
      28/06/04 - LR - Removed ..\ from the GLScene.inc
      24/08/03 - PhP - Added smallint vectors
      04/07/01 - EG - Creation
-  </ul>
+  
 }
 unit GLVectorTypes;
 

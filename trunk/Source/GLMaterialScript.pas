@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMaterialScript 
-
+{
    Material Script Batch loader for TGLMaterialLibrary for runtime. 
 
-	 History :  
+   History :  
        22/04/10 - Yar - Fixes after GLState revision
        22/01/10 - Yar   - Added GLTextureFormat to uses
        24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas

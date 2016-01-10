@@ -1,17 +1,16 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLShaderCombiner 
+{
+   Allows to combine shaders in different sequences.
+   Note, that can't just take 2 random shaders and combine them, because
+   shaders often override the objects material and vertex data with a total
+   disregard to what existed before it. But in some cases, especially with
+   multipass shaders, this unit does magic and allows to reuse and upgrade
+   previously written shaders. 
 
-    Allows to combine shaders in different sequences.
-    Note, that can't just take 2 random shaders and combine them, because
-    shaders often override the objects material and vertex data with a total
-    disregard to what existed before it. But in some cases, especially with
-    multipass shaders, this unit does magic and allows to reuse and upgrade
-    previously written shaders. 
 
-
-	 History :  
+    History :  
        23/02/07 - DaStr - Initial version (contributed to GLScene)
 
 

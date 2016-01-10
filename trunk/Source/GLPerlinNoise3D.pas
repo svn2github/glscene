@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLPerlinNoise. 
-
+{
    Classes and function for generation of PerlinNoise. 
 
     History :  

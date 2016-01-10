@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FMaterialEditorForm 
-
+{
    Editor window for a material (with preview). 
 
-    Historique :  
+    History:  
        07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
        05/10/08 - DanB - Removed Kylix support
        29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)

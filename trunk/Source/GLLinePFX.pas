@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLLinePFX 
-
+{
    A PFX whose particles are lines
 
     History :  
@@ -58,7 +57,7 @@ type
    //
    {Polygonal particles FX manager. 
       The particles of this manager are made of N-face regular polygon with
-      a core and edge color. No texturing is available.<br>
+      a core and edge color. No texturing is available.
       If you render large particles and don't have T&L acceleration, consider
       using TGLPointLightPFXManager. }
    TGLLinePFXManager = class (TGLLifeColoredPFXManager)

@@ -1,10 +1,12 @@
-﻿{ : GLS_CL_Platform 
-
+﻿//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ 
   Conversion of OpenCL header file: cl_platform.h to Delphi,
   from http://www.khronos.org/registry/cl/. 
 
-   History :  
-   01/11/09 - DanB - Creation
+  History :  
+     01/11/09 - DanB - Creation
    
 }
 // *****************************************************************************

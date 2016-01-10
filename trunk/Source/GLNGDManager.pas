@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLNGDManager 
-
+{
   A Newton Game Dynamics Manager for GLScene. 
 
-  Where can I find ... ?<ul>
+  Where can I find ... ? 
    GLScene                                   (http://glscene.org)
    Newton Game Dynamics Engine               (http://newtondynamics.com)
    NewtonImport, a Delphi header translation (http://newtondynamics.com/forum/viewtopic.php?f=9&t=5273#p35865)
-  </ul>
+  
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
@@ -297,7 +296,7 @@ type
       FNewtonJointGroup;
   end;
 
-  { : Basis structures for GLScene behaviour style implementations. }
+  {  Basis structures for GLScene behaviour style implementations. }
   TGLNGDBehaviour = class(TGLBehaviour)
   private
     { Private Declartions }

@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGraph 
-
+{  
   Graph plotting objects for GLScene 
 
-   History :  
+  History :  
    25/01/13 - PW - Added compatibility with Cppb, changed 
                       properties with characters in lowercase to uppercase
    07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
@@ -40,7 +39,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
+  //GLS
   GLScene, OpenGLTokens, GLContext, XOpenGL, GLVectorGeometry,
   GLMaterial, GLObjects, GLVectorLists, GLColor, GLBaseClasses,
   GLRenderContextInfo, GLState, GLVectorTypes;
@@ -71,11 +70,11 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    { : Returns the Base value for Step browsing. 
+    {  Returns the Base value for Step browsing. 
       ie. the lowest value (superior to Min) that verifies
       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
-    { : Maximum number of steps that can occur between Min and Max. }
+    {  Maximum number of steps that can occur between Min and Max. }
     function MaxStepCount: Integer;
 
     function IsValid: Boolean;
@@ -108,7 +107,7 @@ type
 
   // TGLHeightField
   //
-  { : Renders a sampled height-field. 
+  {  Renders a sampled height-field. 
     HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
     render anything from math formulas to statistics. Most important properties
     of an height field are its sampling scales (X & Y) that determine the extents
@@ -159,16 +158,16 @@ type
       write SetXSamplingScale;
     property YSamplingScale: TGLSamplingScale read FYSamplingScale
       write SetYSamplingScale;
-    { : Define if and how per vertex color is used. }
+    {  Define if and how per vertex color is used. }
     property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode
       default hfcmNone;
     property Options: THeightFieldOptions read FOptions write SetOptions
       default [hfoTwoSided];
 
-    { : Primary event to return heights. }
+    {  Primary event to return heights. }
     property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
-    { : Alternate this event to return heights. 
+    {  Alternate this event to return heights. 
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
     property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
@@ -182,9 +181,9 @@ type
 
   // TXYZGridLinesStyle
   //
-  { : Rendering Style for grid lines. 
+  {  Rendering Style for grid lines. 
     - glsLine : a single line is used for each grid line (from Min to Max),
-    this provides the fastest rendering<br>
+    this provides the fastest rendering
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
@@ -192,7 +191,7 @@ type
 
   // TGLXYZGrid
   //
-  { : An XYZ Grid object. 
+  {  An XYZ Grid object. 
     Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
   private
@@ -232,7 +231,7 @@ type
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
     property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    { : Adjusts lines smoothing (or antialiasing). 
+    {  Adjusts lines smoothing (or antialiasing). 
       Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;

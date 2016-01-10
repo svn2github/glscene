@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLS_CUDA_Runtime 
+{  
+   GLScene CUDA Runtime 
 
    History :  
    13/12/13 - PW - Added GLScene.inc

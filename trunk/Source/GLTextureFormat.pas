@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTextureFormat 
+{ 
+  Texture formats and functions 
 
   History :  
          10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
@@ -11,7 +12,7 @@
          23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
                              GLTextureFormat moved to GLTexture
          21/01/10 - Yar - Creation
-   </ul> 
+    
 }
 unit GLTextureFormat;
 
@@ -213,13 +214,13 @@ type
   // TGLInternalCompression
   //
   {Texture compression option. 
-     If OpenGL supports it, this will activate a compressed texture format:<ul>
+     If OpenGL supports it, this will activate a compressed texture format: 
       tcDefault : uses global default compression option
       tcNone : do not use compression
       tcStandard : use standard compression, average quality, average rate
       tcHighQuality : choose a high-quality, low-speed compression
       tcHighSpeed : choose a high-speed, low-quality compression
-     </ul>. }
+      . }
   TGLInternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
     tcHighSpeed);
 

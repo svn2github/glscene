@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   History :  
-
+  Ode Dynamic Engine for GLScene
+  History :  
    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
    10/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
    05/04/10 - Yar - Added GLSceneMatrixToODER (thanks Vovik)

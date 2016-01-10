@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{O3TCImage 
-    Good for preview picture in OpenDialog,
+{
+    Good to preview pictures in OpenDialog,
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 
        23/10/10 - Yar - Removed PBuffer    

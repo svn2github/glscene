@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FRColorEditor 
-
+{
    RGB+Alpha color editor. 
 
-    Historique :  
+    History:  
        24/04/09 - DanB - removed some ifdef MSWINDOWS, which were actually for Kylix
        05/09/08 - DanB - Removed Kylix support
        06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)

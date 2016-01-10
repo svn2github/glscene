@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLROAMPatch 
-
-  Class for managing a ROAM (square) patch. 
+{
+   Class for managing a ROAM (square) patch. 
 
    History :  
    29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
@@ -112,28 +111,28 @@ type
 
     // Returns false if MaxCLODTriangles limit is reached(Lin)
     function Tesselate: Boolean;
-    { : AV free version of Tesselate. 
+    {  AV free version of Tesselate. 
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
     function SafeTesselate: Boolean;
-    { : Render the patch in high-resolution. 
+    {  Render the patch in high-resolution. 
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). High-resolution renders use
       display lists, and are assumed to be made together. }
     procedure RenderHighRes(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList;
       ForceROAM: Boolean);
-    { : Render the patch by accumulating triangles. 
+    {  Render the patch by accumulating triangles. 
       The lists are assumed to have enough capacity to allow AddNC calls
-      (additions without capacity check).<br>
+      (additions without capacity check).
       Once at least autoFlushVertexCount vertices have been accumulated,
       perform a FlushAccum }
     procedure RenderAccum(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList;
       AutoFlushVertexCount: Integer);
-    { : Render all vertices accumulated in the arrays and set their count
+    {  Render all vertices accumulated in the arrays and set their count
       back to zero. }
     class procedure FlushAccum(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
@@ -150,30 +149,30 @@ type
 
     property HighRes: Boolean read FHighRes write FHighRes;
 
-    { : Number of frames to skip after an occlusion test returned zero pixels. }
+    {  Number of frames to skip after an occlusion test returned zero pixels. }
     property OcclusionSkip: Integer read FOcclusionSkip write SetOcclusionSkip;
-    { : Number of frames remaining to next occlusion test. }
+    {  Number of frames remaining to next occlusion test. }
     property OcclusionCounter: Integer read FOcclusionCounter
       write FOcclusionCounter;
-    { : Result for the last occlusion test. 
+    {  Result for the last occlusion test. 
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
     property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;
     property ID: Integer read FID;
     property TriangleCount: Integer read FTriangleCount;
     property Tag: Integer read FTag write FTag;
-    { : Distance between contours - zero (default) for no contours }
+    {  Distance between contours - zero (default) for no contours }
     property ContourInterval: Integer read FContourInterval
       write FContourInterval default 0;
-    { : Width of contours }
+    {  Width of contours }
     property ContourWidth: Integer read FContourWidth
       write FContourWidth  default 1;
   end;
 
-  { : Specifies the maximum number of ROAM triangles that may be allocated. }
+  {  Specifies the maximum number of ROAM triangles that may be allocated. }
 procedure SetROAMTrianglesCapacity(nb: Integer);
 function GetROAMTrianglesCapacity: Integer;
-{ : Draw contours on rendering terrain patches }
+{  Draw contours on rendering terrain patches }
 procedure DrawContours(Vertices: TAffineVectorList; VertexIndices: TIntegerList;
   ContourInterval: Integer; ContourWidth: Integer; DecVal: Integer);
 

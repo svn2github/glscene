@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLAnimationUtils 
-
+{
   Main purpose is to give an easy way to create an interpolation. 
 
    Historique :  

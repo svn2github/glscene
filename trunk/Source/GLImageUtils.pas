@@ -1,11 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLImageUtils 
-
+{
   Main purpose is as a fallback in cases where there is no other way to process images. 
-
-   Historique :  
+  History :  
    07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)
    09/04/11 - Yar - Added AlphaGammaBrightCorrection
    08/04/11 - Yar - Complete Build2DMipmap
@@ -139,7 +137,7 @@ procedure UbyteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     pSource := PByte(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+{$I ImgUtilCaseGL2Imf.inc}
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -245,7 +243,7 @@ procedure ByteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
     pSource := PShortInt(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+{$I ImgUtilCaseGL2Imf.inc}
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -267,7 +265,7 @@ procedure UShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     pSource := PWord(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+{$I ImgUtilCaseGL2Imf.inc}
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -289,7 +287,7 @@ procedure ShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     pSource := PSmallInt(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+{$I ImgUtilCaseGL2Imf.inc}
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -311,7 +309,7 @@ procedure UIntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
     pSource := PLongWord(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+{$I ImgUtilCaseGL2Imf.inc}
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;

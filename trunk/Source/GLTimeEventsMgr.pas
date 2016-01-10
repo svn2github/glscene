@@ -1,9 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTimeEventsMgr 
-     by GliGli
-
+{
    Time based events mannager using the Cadencer 
    can be useful to make animations with GlScene 
 

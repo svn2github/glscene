@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLExplosionFx 
+{
+   TGLBExplosionFX Effect 
 
-  TGLBExplosionFX Effect 
-
-	 History :  
+   History :  
      23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
      23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
      23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures

@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFilePNG 
-
+{
+  PNG files loading implementation 
   History :  
          23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
          31/05/10 - Yar - Fixes for Linux x64
@@ -10,7 +10,7 @@
          22/04/10 - Yar - Fixes after GLState revision
          16/03/10 - Yar - Improved FPC compatibility
          05/03/10 - Yar - Creation
-   </ul> 
+    
 }
 unit GLFilePNG;
 

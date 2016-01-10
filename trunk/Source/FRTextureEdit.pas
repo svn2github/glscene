@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : FRTextureEdit 
-
+{
   Basic editing frame for TGLTexture 
 
-   Historique :  
+   History :  
    05/10/08 - DanB - Removed Kylix support
    24/03/08 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
   to GLGraphics.pas (BugTracker ID = 1923844)

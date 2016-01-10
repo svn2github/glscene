@@ -1,12 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMaterialEx 
-
- Handles extended material and it components:
+{
+  Handles extended material and it components:
   textures, samplers, combiners, shaders and etc.
 
- Features:
+  Features:
    - material can contain different level of applying accordingly to hardware i.e. Feateres scaling.
    - if automatically or by user selected level failed, material down to lower level.
    - direct state access can be used for uniforms setting.
@@ -177,19 +176,19 @@ type
       default miLinearMipMapLinear;
     property FilteringQuality: TGLTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfAnisotropic;
-    { : Texture LOD bias. }
+    {  Texture LOD bias. }
     property LodBias: Integer read FLODBias write SetLODBias default 0;
-    { : Address mode for the texture. }
+    {  Address mode for the texture. }
     property WrapX: TGLSeparateTextureWrap index 0 read GetWrap write SetWrap
       default twRepeat;
     property WrapY: TGLSeparateTextureWrap index 1 read GetWrap write SetWrap
       default twRepeat;
     property WrapZ: TGLSeparateTextureWrap index 2 read GetWrap write SetWrap
       default twRepeat;
-    { : Texture border color. }
+    {  Texture border color. }
     property BorderColor: TGLColor read FBorderColor
       write SetBorderColor;
-    { : Compare mode and function for depth texture. }
+    {  Compare mode and function for depth texture. }
     property CompareMode: TGLTextureCompareMode read FCompareMode
       write SetCompareMode default tcmNone;
     property CompareFunc: TDepthFunction read FCompareFunc

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLGraphics 
-
+{
    Utility class and functions to manipulate a bitmap in OpenGL's default
    byte order (GL_RGBA vs TBitmap's GL_BGRA) 
 
@@ -14,7 +13,7 @@
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile. 
 
-  Historique :  
+   History :  
        25/11/11 - YP - Assertion removed from AssignFromBitmap32
        10/05/11 - Yar - Now VerticalReverseOnAssignFromBitmap works for AssignToBitmap
        04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
@@ -271,7 +270,7 @@ type
     {Contains and manipulates a 32 bits (24+8) bitmap. 
        This is the base class for preparing and manipulating textures in GLScene,
        this function does not rely on a windows handle and should be used for
-       in-memory manipulations only.<br>
+       in-memory manipulations only.
        16 bits textures are automatically converted to 24 bits and an opaque (255)
        alpha channel is assumed for all planes, the byte order is as specified
        in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
@@ -313,7 +312,7 @@ type
     {Assigns from a 24 bits bitmap without swapping RGB. 
       This is faster than a regular assignment, but R and B channels
       will be reversed (from what you would view in a TImage). Suitable
-      if you do your own drawing and reverse RGB on the drawing side.<br>
+      if you do your own drawing and reverse RGB on the drawing side.
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
     procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);

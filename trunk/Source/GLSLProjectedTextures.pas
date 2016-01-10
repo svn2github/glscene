@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLProjectedTextures 
-
+{
    Implements projected textures through a GLScene object via GLSL.
 
-    History :  
+   History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
          02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
                                 Fixed AllowReverseProjection attenuation bug.
@@ -91,7 +90,7 @@ type
     property Aspect: single read FAspect write FAspect;
     {Indicates the style of the projected textures.}
     property Style: TGLSLProjectedTexturesStyle read FStyle write SetStyle;
-    {:Fall off/ attenuation of the projected texture}
+    {Fall off/ attenuation of the projected texture}
     property Attenuation: single read FAttenuation write FAttenuation;
     property Brightness: single read FBrightness write FBrightness;
     property Color: TGLColor read FColor write FColor;

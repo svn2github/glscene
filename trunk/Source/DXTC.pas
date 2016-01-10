@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{DXTC 
-
-   DXTC (also S3TC) decoding.<br>
+{
+   DXTC (also S3TC) decoding.
    Adapted from DevIL image library (http://openil.sourceforge.net) 
 
     History :  
@@ -22,6 +21,7 @@ unit DXTC;
 interface
 
 {$I GLScene.inc}
+
 {$Z4}  // Minimum enum size = dword
 
 uses

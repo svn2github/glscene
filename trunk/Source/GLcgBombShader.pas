@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLCgBombShader 
-
-   Just a good looking shader. And my first one;)  
-
+{
+    Just a good looking shader. And my first one;)
     History : 
        22/04/10 - Yar - Fixes after GLState revision
        24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
@@ -31,7 +29,6 @@
                                 Cadencer stuff abstracted into TCadencableCustomCgShader
 
 }
-
 unit GLCgBombShader;
 
 interface

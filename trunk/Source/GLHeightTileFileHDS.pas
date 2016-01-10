@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLHeightTileFileHDS 
-
+{
    HeightDataSource for the HTF (HeightTileFile) format. 
 
-	 History :  
+   History :  
        10/03/09 - DanB - Bug fix for invisible terrain, now changes
                             heightdata.DataState to hdsPreparing in StartPreparingData
        30/03/07 - DaStr - Added $I GLScene.inc

@@ -1,12 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFilePGM 
-
+{
+   PGM image loader
    History :  
-   08/05/10 - Yar - Removed check for residency in AssignFromTexture
-   04/02/10 - Yar - Creation
-  </ul> 
+     08/05/10 - Yar - Removed check for residency in AssignFromTexture
+     04/02/10 - Yar - Creation
+   
 }
 unit GLFilePGM;
 

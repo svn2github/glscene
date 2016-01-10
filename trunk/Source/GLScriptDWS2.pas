@@ -1,7 +1,10 @@
-// GLScriptDWS2
-{DelphiWebScriptII implementation for the GLScene scripting layer. 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+  DelphiWebScriptII implementation for the GLScene scripting layer. 
 
-    History :  
+  History :  
        04/11/2004 - SG - Creation
     
 }

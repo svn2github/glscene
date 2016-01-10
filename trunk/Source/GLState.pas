@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLState 
-
+{
    Tools for managing an application-side cache of OpenGL state. 
 
-  History :  
+   History :  
        10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
        12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
        07/05/11 - Yar - Bugfixed stColorMaterial action inside display list

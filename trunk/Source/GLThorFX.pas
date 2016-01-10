@@ -1,8 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLThorFX 
-   History :  
+{
+  ThorFX  for GLScene
+  History :  
    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
    21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -56,7 +57,7 @@ type
 
   // TGLThorFXManager
   //
-  { : Thor special effect manager. }
+  {  Thor special effect manager. }
   TGLThorFXManager = class(TGLCadenceAbleComponent)
   private
     { Private Declarations }
@@ -117,7 +118,7 @@ type
 
   // TGLBThorFX
   //
-  { : Thor special effect }
+  {  Thor special effect }
   TGLBThorFX = class(TGLObjectPostEffect)
   private
     { Private Declarations }
@@ -141,11 +142,11 @@ type
     procedure Render(var rci: TRenderContextInfo); override;
   published
     { Published Declarations }
-    { : Refers the collision manager. }
+    {  Refers the collision manager. }
     property Manager: TGLThorFXManager read FManager write SetManager;
   end;
 
-  { : Returns or creates the TGLBThorFX within the given object's effects.  }
+  {  Returns or creates the TGLBThorFX within the given object's effects.  }
 function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
   : TGLBThorFX;
 

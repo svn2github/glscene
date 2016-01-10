@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLODEManager 
-
+{
   An ODE Manager for GLScene. 
 
-  Where can I find ... ?<ul>
+  Where can I find ... ? 
      GLScene              (http://glscene.org)
      Open Dynamics Engine (http://opende.sourceforge.org)
      DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
-  </ul>
+  
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
@@ -117,7 +116,7 @@
      28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
                         Added TGLODEDummy.CalibrateCenterOfMass
      01/03/03 - SG - Creation.
-  </ul>
+  
 }
 
 unit GLODEManager;

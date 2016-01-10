@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{PictureRegisteredFormats 
-
+{
    Hacks into the VCL to access the list of TPicture registered TGraphic formats 
 
-    History :  
+   History :  
        19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
        04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
        19/09/10 - YP - Range check auto disabled in HackTPictureRegisteredFormats

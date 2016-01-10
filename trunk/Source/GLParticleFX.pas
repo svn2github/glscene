@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLParticleFX 
-
+{
    Base classes for scene-wide blended particles FX. 
 
    These provide a mechanism to render heterogenous particles systems with per
@@ -187,7 +186,7 @@ type
        in another list, it won't be automatically removed from that list. }
     function AddItem(aItem: TGLParticle): Integer;
     {Removes and frees a particular item for the list. 
-       If the item is not part of the list, nothing is done.<br>
+       If the item is not part of the list, nothing is done.
        If found in the list, the item's "slot" is set to nil and item is
        freed (after setting its ownership to nil). The nils can be removed
        with a call to Pack. }
@@ -239,13 +238,13 @@ type
     {Invoked when the particles of the manager will be rendered. 
        This method is fired with the "base" OpenGL states and matrices
        that will be used throughout the whole rendering, per-frame
-       initialization should take place here.<br>
+       initialization should take place here.
        OpenGL states/matrices should not be altered in any way here. }
     procedure InitializeRendering(var rci: TRenderContextInfo); dynamic; abstract;
     {Triggered just before rendering a set of particles. 
        The current OpenGL state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
-       be established here.<br>
+       be established here.
        Multiple BeginParticles can occur during a render (but all will be
        between InitializeRendering and Finalizerendering, and at least one
        particle will be rendered before EndParticles is invoked). }
@@ -378,7 +377,7 @@ type
   {Rendering interface for scene-wide particle FX. 
      A renderer can take care of rendering any number of particle systems,
      its main task being to depth-sort the particles so that they are blended
-     appropriately.<br>
+     appropriately.
      This object will usually be placed at the end of the scene hierarchy,
      just before the HUD overlays, its position, rotation etc. is of no
      importance and has no effect on the rendering of the particles. }
@@ -696,7 +695,7 @@ type
      This manager essentially surfaces the PFX methods as events, and is best
      suited when you have specific particles that don't fall into any existing
      category, or when you want to experiment with particles and later plan to
-     wrap things up in a full-blown manager.<br>
+     wrap things up in a full-blown manager.
      If the events aren't handled, nothing will be rendered. }
   TGLCustomPFXManager = class(TGLLifeColoredPFXManager)
   private
@@ -745,7 +744,7 @@ type
   //
   {Polygonal particles FX manager. 
      The particles of this manager are made of N-face regular polygon with
-     a core and edge color. No texturing is available.<br>
+     a core and edge color. No texturing is available.
      If you render large particles and don't have T&L acceleration, consider
      using TGLPointLightPFXManager. }
   TGLPolygonPFXManager = class(TGLLifeColoredPFXManager)
@@ -785,12 +784,12 @@ type
   // TSpriteColorMode
   //
   {Sprite color modes. 
-     <ul>
+     
       scmFade: vertex coloring is used to fade inner-outer
       scmInner: vertex coloring uses inner color only
       scmOuter: vertex coloring uses outer color only
       scmNone: vertex coloring is NOT used (colors are ignored).
-     </ul> }
+      }
   TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
 
   // TSpritesPerTexture
@@ -859,7 +858,7 @@ type
        Sharing sprites between PFX managers can help at the rendering stage
        if particles of the managers are mixed by helping reduce the number
        of texture switches. Note that only the texture is shared, not the
-       colors, sizes or other dynamic parameters.<br> }
+       colors, sizes or other dynamic parameters. }
     property ShareSprites: TGLBaseSpritePFXManager read FShareSprites write FShareSprites;
   end;
 

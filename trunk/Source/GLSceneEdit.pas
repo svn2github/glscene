@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneEdit 
-
-  Scene Editor, for adding + removing scene objects within the Delphi IDE. 
+{
+   Scene Editor, for adding + removing scene objects within the Delphi IDE. 
 
    History :  
    06/12/14 - PW -  Reduced doubled Camera and Expand/Collapse buttons, added GalleryListView

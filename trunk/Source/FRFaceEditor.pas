@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : FRFaceEditor 
-
+{
   Editor frame for a TGLFaceProperties. 
 
-   Historique :  
+   History:  
    05/09/08 - DanB - Removed Kylix support
    29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
    19/12/06 - DaStr - TRFaceEditor.SetGLFaceProperties bugfixed - Shiness and

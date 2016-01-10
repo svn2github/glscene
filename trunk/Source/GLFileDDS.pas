@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLFileDDS 
-
-   DDS File support for GLScene.
-
+{
+  DDS File support for GLScene.
   History :  
          04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility 
          23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
@@ -17,7 +15,7 @@
          23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map saving bug
          20/01/10 - Yar - Creation
-   </ul> 
+    
 }
 unit GLFileDDS;
 

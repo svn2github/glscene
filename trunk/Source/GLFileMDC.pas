@@ -4,7 +4,6 @@
 {
   Code for loading animated MDC files into GLScene FreeForms
   and Actors.
-
   This file format uses in Return To Castle Wolfenstein instead
   of MD3 files. It has got all MD3 features (such as Tag frames)
   plus very small data!

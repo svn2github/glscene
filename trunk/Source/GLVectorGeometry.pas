@@ -1,22 +1,21 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVectorGeometry 
-
-	Base classes and structures for GLScene. 
+{
+   Base classes and structures for GLScene. 
 
    Most common functions/procedures come in various flavours (using overloads),
-   the naming convention is :<ul>
-    TypeOperation: functions returning a result, or accepting a "var" as last
+   the naming convention is : 
+   TypeOperation: functions returning a result, or accepting a "var" as last
       parameter to place result (VectorAdd, VectorCrossProduct...)
-    OperationType : procedures taking as first parameter a "var" that will be
+   OperationType : procedures taking as first parameter a "var" that will be
       used as operand and result (AddVector, CombineVector...)
-   </ul> 
+    
    As a general rule, procedures implementations (asm or not) are the fastest
    (up to 800% faster than function equivalents), due to reduced return value
    duplication overhead (the exception being the matrix operations). 
 
-   For better performance, it is recommended  not</b> to use the "Math" unit
+   For better performance, it is recommended  not  to use the "Math" unit
    that comes with Delphi, and only use functions/procedures from this unit
    (the single-based functions have been optimized and are up to 100% faster,
    than extended-based ones from "Math"). 
@@ -169,7 +168,7 @@
        05/02/00 - EG - Added some "const", more still needed,
                           Added overloads for some of the MakeXXXVector funcs,
                           Added homogeneous vector consts, VectorSpacing
-   </ul>
+   
 }
 unit GLVectorGeometry;
 
@@ -401,7 +400,7 @@ type
 
    {A plane equation. 
       Defined by its equation A.x+B.y+C.z+D , a plane can be mapped to the
-      homogeneous space coordinates, and this is what we are doing here.<br>
+      homogeneous space coordinates, and this is what we are doing here.
       The typename is just here for easing up data manipulation. }
    THmgPlane = TVector;
    TDoubleHmgPlane = THomogeneousDblVector;
@@ -1287,7 +1286,7 @@ procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVe
 //: Constructs a unit quaternion from a rotation matrix
 function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 {Constructs a rotation matrix from (possibly non-unit) quaternion. 
-   Assumes matrix is used to multiply column vector on the left:<br>
+   Assumes matrix is used to multiply column vector on the left:
    vnew = mat vold. 
    Works correctly for right-handed coordinate system and right-handed rotations. }
 function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
@@ -1307,9 +1306,9 @@ function QuaternionFromEuler(const x, y, z: Single; eulerOrder : TEulerOrder) : 
 function QuaternionMultiply(const qL, qR : TQuaternion): TQuaternion;
 
 {Spherical linear interpolation of unit quaternions with spins. 
-   QStart, QEnd - start and end unit quaternions<br>
-   t            - interpolation parameter (0 to 1)<br>
-   Spin         - number of extra spin rotations to involve<br> }
+   QStart, QEnd - start and end unit quaternions
+   t            - interpolation parameter (0 to 1)
+   Spin         - number of extra spin rotations to involve }
 function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer; t: Single): TQuaternion; overload;
 function QuaternionSlerp(const source, dest: TQuaternion; const t : Single) : TQuaternion; overload;
 
@@ -1522,7 +1521,7 @@ function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Sin
 
 {Multiplies values in the array by factor. 
    This function is especially efficient for large arrays, it is not recommended
-   for arrays that have less than 10 items.<br>
+   for arrays that have less than 10 items.
    Expected performance is 4 to 5 times that of a Deliph-compiled loop on AMD
    CPUs, and 2 to 3 when 3DNow! isn't available. }
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
@@ -1624,12 +1623,12 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
 // intersection functions
 
 {Compute the intersection point "res" of a line with a plane. 
-   Return value:<ul>
+   Return value: 
     0 : no intersection, line parallel to plane
     1 : res is valid
     -1 : line is inside plane
-   </ul><br>
-   Adapted from:<br>
+    
+   Adapted from:
    E.Hartmann, Computeruntersttzte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
 function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
@@ -1737,7 +1736,7 @@ function MakeReflectionMatrix(const planePoint, planeNormal : TAffineVector) : T
 {Packs an homogeneous rotation matrix to 6 bytes. 
    The 6:64 (or 6:36) compression ratio is achieved by computing the quaternion
    associated to the matrix and storing its Imaginary components at 16 bits
-   precision each.<br>
+   precision each.
    Deviation is typically below 0.01% and around 0.1% in worst case situations. 
    Note: quaternion conversion is faster and more robust than an angle decomposition. }
 function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;

@@ -1,11 +1,11 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{FShaderUniformEditor 
-
-	 History :  
+{
+   Uniform editor for shaders
+   History :  
      23/03/11 - Yar - Creation
-  </ul>
+  
 }
 
 unit FShaderUniformEditor;

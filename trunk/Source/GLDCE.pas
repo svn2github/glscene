@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLDCE 
-
+{
+  Dynamic Collision Engine
   How to use:
   - Add a DCEManager to you form and configure its properties
   - Add a Dynamic Collision Behavior to you object
@@ -62,7 +62,7 @@ type
   TDCEShape = (csEllipsoid, csBox, csFreeform, csTerrain);
 
   {Indicates which type of layer comparison is made when trying to detect
-     collisions between 2 bodies (A and B). Possible values are: <ul>
+     collisions between 2 bodies (A and B). Possible values are: 
 	  ccsDCEStandard: Collides bodies if A.layer <= B.layer
 	  ccsCollisionStandard: Collides bodies if either A or B have
 		 layer equal to zero or if their layers are different.
@@ -71,7 +71,7 @@ type
 		 equal to 0 or if A.layer <= B.layer) *and* if both
 		 layers are positive (that is, turns off collision
 		 for bodies whose layer is < 0)
-	 </ul>
+	 
   }
   TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 

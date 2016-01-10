@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSDLContext 
-
+{
    SDL specific Context and Viewer. 
-
    NOTA: SDL notifies use of context destruction *after* it happened, this prevents
          clean release of allocated stuff and requires a temporary switch to
          "ignore OpenGL errors" mode during destruction, thus potentially
@@ -39,7 +37,7 @@ type
   // TGLSDLViewer
   //
   {A viewer using SDL. 
-     Beware: only one at a time, no other viewers allowed!<br>
+     Beware: only one at a time, no other viewers allowed!
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
@@ -88,11 +86,11 @@ type
   // TGLSDLContext
   //
   {A context driver for OpenGL via SDL (libsdl.org). 
-     Due to limitations of SDL:<ul>
+     Due to limitations of SDL: 
       you may have only one SDL window opened at any time (you cannot
         have memory viewers)
       closing the SDL window will terminate the application
-     </ul> }
+      }
   TGLSDLContext = class(TGLScreenControlingContext)
   private
     { Private Declarations }

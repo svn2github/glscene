@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSLDiffuseSpecularShader 
+{
+   This is a collection of GLSL diffuse-specular shaders. 
 
-    This is a collection of GLSL diffuse-specular shaders. 
-
-	 History :  
+   History :  
        09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
                            Deleted TGLSLDiffuseSpecularShaderAM, TGLSLDiffuseSpecularShaderAM
        17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader

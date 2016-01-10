@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLBlur 
-
- Applies a blur effect over the viewport. 
-
+{
+  Applies a blur effect over the viewport. 
   History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
          22/04/10 - Yar - Fixes after GLState revision
@@ -132,7 +130,7 @@ type
     property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
   end;
 
-  {:
+  {
     This component blurs everything thatis rendered BEFORE it. So if you want part
     of your scene blured, the other not blured, make sure that the other part is
     rendered after this component. It is fast and does not require shaders.

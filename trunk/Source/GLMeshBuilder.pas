@@ -1,7 +1,9 @@
-{Build mesh objects.
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Build mesh objects.
    How often do you miss a BuildSphereMesh function for testing or editors?
-
    Well this unit is intended to solve that problem. We want fast,
    flexible functions with lots of options...
 
@@ -10,7 +12,7 @@
 
    Features: BuildCube, BuildCylinder.
 
-	 History :  
+   History :  
        22/01/10 - Yar - Added GLVectorTypes to uses
        29/11/03 - JAJ - Created and Submitted to GLScene.
        21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?

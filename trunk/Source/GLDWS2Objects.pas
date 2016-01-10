@@ -1,8 +1,11 @@
-// GLDWS2Objects
-{Base classes and logic for DelphiWebScriptII enabled
-   objects in GLScene 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+  Base classes and logic for DelphiWebScript enabled
+  objects in GLScene 
 
-    History :  
+  History :  
        04/11/2004 - SG - Moved TGLDelphiWebScriptII to GLScriptDWS2 unit. 
        06/04/2004 - SG - Creation
     

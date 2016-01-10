@@ -1,15 +1,14 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLVerletHairClasses 
-
+{
    Creates a single strand of hair using verlet classes. Can be used to simulate
    ropes, fur or hair. 
 
-	 History :  
+   History :  
        29/05/08 - DaStr - Added $I GLScene.inc
        06/03/04 - MF - Creation
-   </ul>
+   
 }
 unit GLVerletHairClasses;
 

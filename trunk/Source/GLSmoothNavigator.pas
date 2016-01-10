@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSmoothNavigator 
-
-     An extention of TGLNavigator, which allows to move objects with inertia
+{
+   An extention of TGLNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
    MoveAroundTarget, Turn[Vertical/Horizontal] and AdjustDistanceTo[..] is not.
 
@@ -412,18 +411,18 @@ type
   // TGLSmoothUserInterface
   //
   {TGLSmoothUserInterface is the component which reads the userinput and transform it into action. 
-      <ul>
+      
 	    Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
-      </ul>
+      
 	   The four properties to get you started are:
-      <ul>
+      
 	    InvertMouse     : Inverts the mouse Y axis.
 	    AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
 	    GLNavigator     : The Navigator which receives the user movement.
 	    GLVertNavigator : The Navigator which if set receives the vertical user
                            movement. Used mostly for cameras....
-      </ul>
+      
    }
   TGLSmoothUserInterface = class(TComponent)
   private

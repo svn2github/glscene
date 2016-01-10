@@ -1,15 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLSMFMOD 
-
-	FMOD based sound-manager (http://www.fmod.org/, free for freeware). 
-
-   Unsupported feature(s) :<ul>
+{
+   FMOD based sound-manager (http://www.fmod.org/, free for freeware). 
+   Unsupported feature(s) : 
        sound source velocity
        looping (sounds are played either once or forever)
        sound cones
-   </ul> 
+    
 
 	 History :  
        07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of

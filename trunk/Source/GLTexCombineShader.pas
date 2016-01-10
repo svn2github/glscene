@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTexCombineShader 
-
+{
    A shader that allows texture combiner setup. 
 
-    History :  
+   History :  
        05/03/11 - Yar - Added combiner's commands cache
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci

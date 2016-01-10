@@ -52,20 +52,20 @@ type
    end of the volume. This is ONLY necessary when there's a chance that the
    camera could end up inside the shadow _or_ between the light source and
    the camera. If those two situations can't occur then not using capping is
-   the best option.<br>
+   the best option.
    Note that if you use the capping, you must either set the depth of view of
    your camera to something very large (f.i. 1e9), or you could use the infinite
    mode (csInfinitePerspective) of your camera.
-   <ul>
+   
       svcDefault : Default behaviour
       svcAlways : Always generates caps
       svcNever : Never generates caps
-   </ul>
+   
    }
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
   {Determines when a caster should actually produce a shadow;
-  <ul>
+  
     scmAlways : Caster always produces a shadow, ignoring visibility
     scmVisible : Caster casts shadow if the object has visible=true
     scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
@@ -73,7 +73,7 @@ type
     scmParentVisible : Caster produces shadow if parent has visible=true
     scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
      all have visible=true, starting from the parent (ignoring own visible setting)
-  </ul> }
+   }
 
   TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
@@ -202,7 +202,7 @@ type
   // TGLShadowVolumeOption
   //
   {Shadow volume rendering options/optimizations. 
-     <ul>
+     
       svoShowVolumes : make the shadow volumes visible
       svoDesignVisible : the shadow are visible at design-time
       svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
@@ -211,7 +211,7 @@ type
         lights are attenuated and don't illuminate the whole scene
       svoWorldScissorClip : use scissor clipping for the world, beneficial
         when shadow receivers don't cover the whole viewer surface
-     </ul> }
+      }
   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
     svoWorldScissorClip, svoDesignVisible);
   TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
@@ -219,14 +219,14 @@ type
   // TGLShadowVolumeMode
   //
   {Shadow rendering modes. 
-     <ul>
+     
       svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
       svmDarkening : renders the scene with lighting on as usual, then darkens
         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
         that don't honour to diffuse or specular lighting)
       svmOff : no shadowing will take place
-     </ul> }
+      }
   TGLShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
   // TGLShadowVolume

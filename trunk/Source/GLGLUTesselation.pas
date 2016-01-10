@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLGLUTesselation 
-
-    Code to generate triangle strips and fans for polygons.
+{
+  Code to generate triangle strips and fans for polygons.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -14,9 +13,9 @@
        29/05/08 - DaStr - Added $I GLScene.inc
        08/09/03 - Jaj - Added single outline polygon support
 
-   </ul> 
+    
 
-  License:<br>
+  License:
 
     Contributed to GLScene. 
 }

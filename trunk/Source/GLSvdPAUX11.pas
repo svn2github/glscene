@@ -1,9 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSvdPAUX11 
+{  
+  GLScene vdPAUX11 
 
-   History :  
+  History :  
    23/10/10 - Yar - Creation
    
 }

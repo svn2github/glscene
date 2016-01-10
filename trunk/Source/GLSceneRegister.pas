@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSceneRegister 
-
+{
   Registration unit for GLScene library components, property editors and
   IDE experts. 
 
@@ -280,7 +279,7 @@ type
 
   // TReuseableDefaultEditor
   //
-  { : Editor copied from DsgnIntf. 
+  {  Editor copied from DsgnIntf. 
     Could have been avoided, if only that guy at Borland didn't chose to
     publish only half of the stuff (and that's not the only class with
     that problem, most of the subitems handling code in TGLSceneBaseObject is
@@ -304,7 +303,7 @@ type
 
   // TGLMaterialLibraryEditor
   //
-  { : Editor for material library.  }
+  {  Editor for material library.  }
   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
     procedure EditProperty(const Prop: IProperty;
@@ -324,7 +323,7 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TGLSoundLibrary. 
+  {  Selection editor for TGLSoundLibrary. 
     Allows units to be added to the uses clause automatically when
     sound files are loaded into a TGLSoundLibrary at design-time. }
   TGLSoundLibrarySelectionEditor = class(TSelectionEditor)
@@ -332,7 +331,7 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  { : Selection editor for TGLBaseSceneObject. 
+  {  Selection editor for TGLBaseSceneObject. 
     Allows units to be added to the uses clause automatically when
     behaviours/effects are added to a TGLBaseSceneObject at design-time. }
   TGLBaseSceneObjectSelectionEditor = class(TSelectionEditor)
@@ -342,7 +341,7 @@ type
 
   // TGLSArchiveManagerEditor
   //
-  { : Editor for GLScene Archive Manager.  }
+  {  Editor for GLScene Archive Manager.  }
   TGLSArchiveManagerEditor = class
     (TReuseableDefaultEditor, IDefaultEditor)
   protected

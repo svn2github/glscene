@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLTextureCombiners 
-
+{
    Texture combiners setup utility functions. 
 
-    History :  
+   History :  
        05/03/11 - Yar - Added combiner's commands cache   
        23/08/10 - Yar - Added OpenGLTokens to uses
        18/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
@@ -46,11 +45,11 @@ type
     ;
 
   {Parses a TC text description and setups combiners accordingly. 
-     *experimental*<br>
-     Knowledge of texture combiners is a requirement<br>
+     *experimental*
+     Knowledge of texture combiners is a requirement
      Syntax: pascal-like, one instruction per line, use '//' for comment. 
 
-     Examples:<ul>
+     Examples: 
       Tex1:=Tex0;   // replace texture 1 with texture 0
       Tex1:=Tex0+Tex1; // additive blending between textures 0 and 1
       Tex1:=Tex0-Tex1; // subtractive blending between textures 0 and 1
@@ -58,13 +57,13 @@ type
       Tex1:=Tex0+Tex1-0.5; // signed additive blending between textures 0 and 1
       Tex1:=Interpolate(Tex0, Tex1, PrimaryColor); // interpolation between textures 0 and 1 using primary color as factor
       Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
-     </ul> 
+      
 
-     Accepted tokens:<ul>
+     Accepted tokens: 
       Tex0, Tex1, etc. : texture unit
       PrimaryColor, Col : the primary color
       ConstantColor, EnvCol : texture environment constant color
-     </ul><br>
+      
      Tokens can be qualified with '.a' or '.alpha' to specify the alpha channel
      explicitly, and '.rgb' to specify color channels (default). You cannot mix
      alpha and rgb tokens in the same line.

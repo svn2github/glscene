@@ -2,6 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
+   OpenGL tokens
    History :
        24/10/13 - Yar - Added OpenGL 4.3, 4.4
        17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap

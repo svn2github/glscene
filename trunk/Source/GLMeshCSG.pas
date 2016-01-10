@@ -1,10 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMeshCSG 
-
+{
    Constructive Solid Geometry in GLScene.
-
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,
    even if the meshes allready had BSP optimization.

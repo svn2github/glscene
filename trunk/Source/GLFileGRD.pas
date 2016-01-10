@@ -1,15 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileGRD 
-
-  GRD (Grid Text Format) vector file format implementation. 
-
+{
+   GRD (Grid Text Format) vector file format implementation. 
    History : 
-   01/05/15 - PW - Fixed LoadFromStream procedure
-   10/04/09 - PW - Separated from GLVectorFileObjects.pas
-   10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
-   26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
+     01/05/15 - PW - Fixed LoadFromStream procedure
+     10/04/09 - PW - Separated from GLVectorFileObjects.pas
+     10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
+     26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
    
 }
 unit GLFileGRD;
@@ -28,7 +26,7 @@ uses
 type
   // TGLGRDVectorFile
   //
-  { : The GRD file represents ascii grid formats in 2D/3D. 
+  {  The GRD file represents ascii grid formats in 2D/3D. 
     This is a format for storing regular grid values as a
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats }

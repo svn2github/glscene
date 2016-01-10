@@ -91,11 +91,11 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *)
-
-//////////////////////////////////////////////////////////////////////////////
+unit cgGL;
+//
 // HISTORY:
-// 19-Dec-2012 - PW: Restored CPPB compatibility, 
-//                 suppressed some unnecessary directives 
+// 19-Dec-2012 - PW: Restored CPPB compatibility,
+//                 suppressed some unnecessary directives
 // 23-Aug-2010 - YarUnderoaker
 //   - Replaced OpenGL1x to OpenGLTokens
 // 17-Nov-09 - Da Stranger
@@ -111,9 +111,7 @@
 // 11-Jan-03 - Alexey Barkovoy:
 //   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
 
-unit cgGL;
-
-{$Include GLScene.inc}
+{$I GLScene.inc}
 
 interface
 

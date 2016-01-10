@@ -4,7 +4,7 @@
 {
  Allows choosing a material in a material library 
 
-     Historique :  
+     History :  
        05/09/08 - DanB - Removed Kylix support
        29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
        19/12/06 - DaStr - LBMaterials.OnDblClick now handled

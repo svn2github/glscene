@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLScene 
-
+{
   Functions for generating perlin noise. 
 
    History :  

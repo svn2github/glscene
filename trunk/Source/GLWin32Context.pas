@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLWin32Context 
-
+{
    Win32 specific Context. 
 
-    History :  
+   History :  
        11/09/11 - Yar - Added layers support (not tested because need Quadro or FireFX VGA)
        18/07/11 - Yar - Added ability of creating OpenGL ES 2.0 profile context
        03/12/10 - Yar - Fixed window tracking (thanks to Gabriel Corneanu)

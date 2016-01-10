@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLDCEMisc 
-
+{
   Miscelaneous functions used by DCE (Dynamic Collision Engine).
 
-   History :  
+  History :  
      10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
      30/03/07 - DaStr - Added $I GLScene.inc
      23/01/05 - LucasG - Code reorganized, many fixes and some new features

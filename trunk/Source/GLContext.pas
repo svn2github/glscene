@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLContext 
-
+{
    Prototypes and base implementation of TGLContext. 
 
-    History :  
+   History :  
        01/06/11 - Yar - Now number of rendering contexts is unlimited (by Gabriel Corneanu)  
        13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
        24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
@@ -159,9 +158,9 @@ type
      The aim of this class is to offer platform-independant
      initialization, activation and management of OpenGL
      rendering context. The class also offers notifications
-     event and error/problems detection.<br>
+     event and error/problems detection.
      This is a virtual abstract a class, and platform-specific
-     subclasses must be used.<br>
+     subclasses must be used.
      All rendering context share the same lists. }
   TGLContext = class
   private
@@ -276,7 +275,7 @@ type
        Both contexts must have the same pixel format. }
     procedure ShareLists(aContext: TGLContext);
     {Destroy the context. 
-       Will fail if no context has been created.<br>
+       Will fail if no context has been created.
        The method will first invoke the OnDestroyContext
        event, then attempts to deactivate the context
        (if it is active) before destroying it. }
@@ -491,7 +490,7 @@ type
 
   // TGLQueryHandle
   //
-  {Manages a handle to a query.<br>
+  {Manages a handle to a query.
      Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
   private
@@ -531,8 +530,8 @@ type
 
   // TGLOcclusionQueryHandle
   //
-  {Manages a handle to an occlusion query.<br>
-     Requires OpenGL 1.5+<br>
+  {Manages a handle to an occlusion query.
+     Requires OpenGL 1.5+
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLOcclusionQueryHandle = class(TGLQueryHandle)
@@ -556,8 +555,8 @@ type
 
   // TGLTimerQueryHandle
   //
-  {Manages a handle to a timer query.<br>
-     Requires GL_EXT_timer_query extension.<br>
+  {Manages a handle to a timer query.
+     Requires GL_EXT_timer_query extension.
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLTimerQueryHandle = class(TGLQueryHandle)
@@ -574,8 +573,8 @@ type
 
   // TGLPrimitiveQueryHandle
   //
-  {Manages a handle to a primitive query.<br>
-     Requires OpenGL 3.0+<br>
+  {Manages a handle to a primitive query.
+     Requires OpenGL 3.0+
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLPrimitiveQueryHandle = class(TGLQueryHandle)
@@ -591,9 +590,9 @@ type
 
   // TGLBufferObjectHandle
   //
-  {Manages a handle to a Buffer Object.<br>
+  {Manages a handle to a Buffer Object.
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user. }
   TGLBufferObjectHandle = class(TGLContextHandle)
   private
     { Private Declarations }
@@ -656,9 +655,9 @@ type
 
   // TGLVBOHandle
   //
-  {Manages a handle to an Vertex Buffer Object.<br>
+  {Manages a handle to an Vertex Buffer Object.
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user.
      Do not use this class directly, use one of its subclasses instead. }
   TGLVBOHandle = class(TGLBufferObjectHandle)
   private
@@ -977,9 +976,9 @@ type
 
   // TGLShaderHandle
   //
-  {Manages a handle to a Shader Object.<br>
+  {Manages a handle to a Shader Object.
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user.
      Do not use this class directly, use one of its subclasses instead. }
   TGLShaderHandle = class(TGLSLHandle)
   private
@@ -1053,9 +1052,9 @@ type
 
   // TGLProgramHandle
   //
-  {Manages a GLSL Program Object.<br>
+  {Manages a GLSL Program Object.
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user. }
   TGLProgramHandle = class(TGLSLHandle)
   public
     class function IsValid(const ID: GLuint): Boolean; override;
@@ -1237,7 +1236,7 @@ type
     function ContextCount: Integer;
     {Registers a new object to notify when the last context is destroyed. 
        When the last rendering context is destroyed, the 'anEvent' will
-       be invoked with 'anObject' as parameter.<br>
+       be invoked with 'anObject' as parameter.
        Note that the registration is kept until the notification is triggered
        or a RemoveNotification on 'anObject' is issued. }
     procedure LastContextDestroyNotification(anObject: TObject; anEvent:

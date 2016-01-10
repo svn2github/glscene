@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLMeshLines 
-
+{
    Line implementation by means of a Triangle strip. 
 
-	 History :  
+   History :  
        05/14/07 - PVD - initial unit proposal (thanks Lord CRC for help)
 }
 
