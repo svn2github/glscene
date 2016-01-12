@@ -31,10 +31,10 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>
@@ -78,7 +78,7 @@
         <DefaultSyntaxHighlighter Value="Text"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\Source\Base\GLApplicationFileIO.pas"/>
+        <Filename Value="..\..\..\Source\ GLApplicationFileIO.pas"/>
         <UnitName Value="GLApplicationFileIO"/>
         <WindowIndex Value="0"/>
         <TopLine Value="153"/>
@@ -88,7 +88,7 @@
         <DefaultSyntaxHighlighter Value="Text"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\OpenGL1x.pas"/>
+        <Filename Value="..\..\..\Source\ OpenGL1x.pas"/>
         <UnitName Value="OpenGL1x"/>
         <WindowIndex Value="0"/>
         <TopLine Value="9349"/>

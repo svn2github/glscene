@@ -31,7 +31,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -61,7 +61,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\GLAsyncTimer.pas"/>
+        <Filename Value="..\..\..\Source\ GLAsyncTimer.pas"/>
         <UnitName Value="GLAsyncTimer"/>
         <WindowIndex Value="0"/>
         <TopLine Value="74"/>

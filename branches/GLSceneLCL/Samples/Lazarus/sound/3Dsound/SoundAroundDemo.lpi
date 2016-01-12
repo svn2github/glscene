@@ -28,7 +28,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>

@@ -63,7 +63,7 @@ begin
   with GLMaterialLibrary1 do
   begin
     // Add the specular pass
-    with AddTextureMaterial('specular', 'GLScene_alpha.bmp') do
+    with AddTextureMaterial('specular', ' GLSceneLCL_alpha.bmp') do
     begin
       // tmBlend for shiny background
       //Material.Texture.TextureMode:=tmBlend;

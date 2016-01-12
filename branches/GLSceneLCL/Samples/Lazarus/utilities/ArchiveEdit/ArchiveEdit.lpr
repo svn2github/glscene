@@ -9,7 +9,7 @@ uses
   Forms, Interfaces,
   Main in 'Main.pas' {Form1},
   FolderDialog in 'FolderDialog.pas' {FDialog},
-  FolderSelect in 'FolderSelect.pas', glscene_designtime {FolderSel};
+  FolderSelect in 'FolderSelect.pas' {FolderSel};
 
 {$R *.res}
 

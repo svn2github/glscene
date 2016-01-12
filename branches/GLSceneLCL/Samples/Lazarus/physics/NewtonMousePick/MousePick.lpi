@@ -38,7 +38,7 @@
         <PackageName Value="GLS_NGD"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>

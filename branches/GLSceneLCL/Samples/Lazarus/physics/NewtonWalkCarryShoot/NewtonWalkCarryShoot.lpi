@@ -38,7 +38,7 @@
         <PackageName Value="GLS_NGD"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>
@@ -120,7 +120,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\Source\Base\GLApplicationFileIO.pas"/>
+        <Filename Value="..\..\..\Source\ GLApplicationFileIO.pas"/>
         <UnitName Value="GLApplicationFileIO"/>
         <WindowIndex Value="0"/>
         <TopLine Value="193"/>

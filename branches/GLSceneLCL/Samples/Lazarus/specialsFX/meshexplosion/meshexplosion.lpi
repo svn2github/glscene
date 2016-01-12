@@ -31,7 +31,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -79,7 +79,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\GLVectorGeometry.pas"/>
+        <Filename Value="..\..\..\Source\ GLVectorGeometry.pas"/>
         <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7828"/>
@@ -88,7 +88,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit4>
       <Unit5>
-        <Filename Value="..\..\..\Source\Base\GLApplicationFileIO.pas"/>
+        <Filename Value="..\..\..\Source\ GLApplicationFileIO.pas"/>
         <UnitName Value="GLApplicationFileIO"/>
         <WindowIndex Value="0"/>
         <TopLine Value="188"/>
@@ -105,7 +105,7 @@
         <DefaultSyntaxHighlighter Value="LFM"/>
       </Unit6>
       <Unit7>
-        <Filename Value="..\..\..\Source\Base\XCollection.pas"/>
+        <Filename Value="..\..\..\Source\ XCollection.pas"/>
         <UnitName Value="XCollection"/>
         <WindowIndex Value="0"/>
         <TopLine Value="663"/>
@@ -114,7 +114,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit7>
       <Unit8>
-        <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
+        <Filename Value="..\..\..\Source\ GLPipelineTransformation.pas"/>
         <UnitName Value="GLPipelineTransformation"/>
         <WindowIndex Value="0"/>
         <TopLine Value="207"/>

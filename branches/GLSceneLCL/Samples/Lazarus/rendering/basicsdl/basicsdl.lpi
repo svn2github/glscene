@@ -33,7 +33,7 @@
         <PackageName Value="GLS_SDL"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>
@@ -63,7 +63,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\PersistentClasses.pas"/>
+        <Filename Value="..\..\..\Source\ PersistentClasses.pas"/>
         <UnitName Value="PersistentClasses"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>

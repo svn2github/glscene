@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 445
+  Left = 442
   Height = 414
-  Top = 270
+  Top = 143
   Width = 513
   Caption = 'Path Control'
   ClientHeight = 414
@@ -11,7 +11,7 @@ object Form1: TForm1
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
   OnActivate = FormActivate
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.4.4.0'
   object GLSceneViewer1: TGLSceneViewer
     Left = 8
     Height = 370
@@ -116,6 +116,7 @@ object Form1: TForm1
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
     GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Path Control - %FPS'
     Options = [snoMouseWheelHandled]
     KeyCombinations = <    
       item
@@ -133,4 +134,4 @@ object Form1: TForm1
     left = 16
     top = 72
   end
-end
+end

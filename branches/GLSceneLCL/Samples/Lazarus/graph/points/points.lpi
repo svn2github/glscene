@@ -30,7 +30,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -66,7 +66,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="C:\lazarus\components\GLScene\Source\Base\GLVectorGeometry.pas"/>
+        <Filename Value="C:\lazarus\components\GLSceneLCL\Source\GLVectorGeometry.pas"/>
         <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7067"/>
@@ -84,7 +84,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit3>
       <Unit4>
-        <Filename Value="..\..\..\Source\Base\GLVectorLists.pas"/>
+        <Filename Value="..\..\..\Source\GLVectorLists.pas"/>
         <UnitName Value="GLVectorLists"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1403"/>
@@ -102,7 +102,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit5>
       <Unit6>
-        <Filename Value="..\..\..\Source\Base\GLVectorGeometry.pas"/>
+        <Filename Value="..\..\..\Source\GLVectorGeometry.pas"/>
         <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7321"/>

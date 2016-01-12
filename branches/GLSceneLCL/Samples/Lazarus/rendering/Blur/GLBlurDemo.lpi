@@ -30,10 +30,10 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item2>
       <Item3>
         <PackageName Value="LCL"/>
@@ -131,7 +131,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
+        <Filename Value="..\..\..\Source\ GLPipelineTransformation.pas"/>
         <UnitName Value="GLPipelineTransformation"/>
         <WindowIndex Value="0"/>
         <TopLine Value="213"/>

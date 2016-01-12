@@ -33,11 +33,11 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
         <MinVersion Major="1" Valid="True"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
         <MinVersion Major="1" Valid="True"/>
       </Item2>
       <Item3>
@@ -96,7 +96,7 @@
         <DefaultSyntaxHighlighter Value="Text"/>
       </Unit4>
       <Unit5>
-        <Filename Value="..\..\..\Source\Base\PictureRegisteredFormats.pas"/>
+        <Filename Value="..\..\..\Source\ PictureRegisteredFormats.pas"/>
         <UnitName Value="PictureRegisteredFormats"/>
         <WindowIndex Value="0"/>
         <TopLine Value="104"/>

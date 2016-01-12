@@ -30,7 +30,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -64,7 +64,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\GLVectorGeometry.pas"/>
+        <Filename Value="..\..\..\Source\ GLVectorGeometry.pas"/>
         <UnitName Value="GLVectorGeometry"/>
         <WindowIndex Value="0"/>
         <TopLine Value="7440"/>
@@ -127,7 +127,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\Source\Base\GLSGenerics.pas"/>
+        <Filename Value="..\..\..\Source\ GLSGenerics.pas"/>
         <UnitName Value="GLSGenerics"/>
         <WindowIndex Value="0"/>
         <TopLine Value="34"/>
@@ -154,7 +154,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit11>
       <Unit12>
-        <Filename Value="..\..\..\Source\Base\OpenGLTokens.pas"/>
+        <Filename Value="..\..\..\Source\ OpenGLTokens.pas"/>
         <UnitName Value="OpenGLTokens"/>
         <WindowIndex Value="0"/>
         <TopLine Value="988"/>

@@ -35,13 +35,13 @@
     </RunParams>
     <RequiredPackages Count="4">
       <Item1>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
       </Item1>
       <Item2>
         <PackageName Value="GLS_NGD"/>
       </Item2>
       <Item3>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item3>
       <Item4>
         <PackageName Value="LCL"/>

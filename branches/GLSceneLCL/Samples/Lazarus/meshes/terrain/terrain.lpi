@@ -32,10 +32,10 @@
         <PackageName Value="GLSS_BASS"/>
       </Item1>
       <Item2>
-        <PackageName Value="GLScene_DesignTime"/>
+        <PackageName Value=" GLSceneLCL_DesignTime"/>
       </Item2>
       <Item3>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item3>
       <Item4>
         <PackageName Value="LCL"/>

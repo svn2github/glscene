@@ -28,7 +28,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -67,7 +67,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit2>
       <Unit3>
-        <Filename Value="..\..\..\Source\Base\OpenGLAdapter.pas"/>
+        <Filename Value="..\..\..\Source\ OpenGLAdapter.pas"/>
         <UnitName Value="OpenGLAdapter"/>
         <WindowIndex Value="0"/>
         <TopLine Value="3100"/>
@@ -168,7 +168,7 @@
         <UsageCount Value="10"/>
       </Unit13>
       <Unit14>
-        <Filename Value="..\..\..\Source\Base\GLPipelineTransformation.pas"/>
+        <Filename Value="..\..\..\Source\ GLPipelineTransformation.pas"/>
         <UnitName Value="GLPipelineTransformation"/>
         <WindowIndex Value="0"/>
         <TopLine Value="214"/>
@@ -177,7 +177,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit14>
       <Unit15>
-        <Filename Value="..\..\..\Source\Base\OpenGLTokens.pas"/>
+        <Filename Value="..\..\..\Source\ OpenGLTokens.pas"/>
         <UnitName Value="OpenGLTokens"/>
         <WindowIndex Value="0"/>
         <TopLine Value="180"/>
@@ -237,7 +237,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit22>
       <Unit23>
-        <Filename Value="..\..\..\Source\Base\Spline.pas"/>
+        <Filename Value="..\..\..\Source\ Spline.pas"/>
         <UnitName Value="Spline"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
@@ -262,7 +262,7 @@
     </Units>
     <JumpHistory Count="1" HistoryIndex="0">
       <Position1>
-        <Filename Value="..\..\..\Source\Base\Spline.pas"/>
+        <Filename Value="..\..\..\Source\ Spline.pas"/>
         <Caret Line="1" Column="1" TopLine="1"/>
       </Position1>
     </JumpHistory>

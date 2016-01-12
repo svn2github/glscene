@@ -30,7 +30,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -60,7 +60,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\GLSLog.pas"/>
+        <Filename Value="..\..\..\Source\ GLSLog.pas"/>
         <UnitName Value="GLSLog"/>
         <TopLine Value="452"/>
         <CursorPos X="1" Y="459"/>
@@ -120,7 +120,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\Source\Base\GLBaseClasses.pas"/>
+        <Filename Value="..\..\..\Source\ GLBaseClasses.pas"/>
         <UnitName Value="GLBaseClasses"/>
         <WindowIndex Value="0"/>
         <TopLine Value="69"/>
@@ -175,7 +175,7 @@
         </Bookmarks>
       </Unit14>
       <Unit15>
-        <Filename Value="..\..\..\Source\Base\GLCoordinates.pas"/>
+        <Filename Value="..\..\..\Source\ GLCoordinates.pas"/>
         <UnitName Value="GLCoordinates"/>
         <WindowIndex Value="0"/>
         <TopLine Value="174"/>

@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Forms, Interfaces,
-  umainform, glscene_designtime, glscene_runtime;
+  umainform,  GLSceneLCL_DesignTime,  GLSceneLCL_runtime;
 
 {$R *.res}
 

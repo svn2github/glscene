@@ -7,7 +7,7 @@ uses
   cthreads,
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, Unit1, glscene_runtime
+  Forms, Unit1,  GLSceneLCL_RunTime
   { you can add units after this };
 
 begin

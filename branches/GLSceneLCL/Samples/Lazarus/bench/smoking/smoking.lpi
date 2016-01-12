@@ -30,7 +30,7 @@
     </RunParams>
     <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="GLScene_RunTime"/>
+        <PackageName Value=" GLSceneLCL_RunTime"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -65,7 +65,7 @@
         <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit1>
       <Unit2>
-        <Filename Value="..\..\..\Source\Base\XCollection.pas"/>
+        <Filename Value="..\..\..\Source\ XCollection.pas"/>
         <UnitName Value="XCollection"/>
         <WindowIndex Value="0"/>
         <TopLine Value="550"/>
@@ -123,7 +123,7 @@
         <UsageCount Value="11"/>
       </Unit8>
       <Unit9>
-        <Filename Value="..\..\..\Source\Base\PerlinNoise.pas"/>
+        <Filename Value="..\..\..\Source\ PerlinNoise.pas"/>
         <UnitName Value="PerlinNoise"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
@@ -140,15 +140,15 @@
         <Caret Line="46" Column="5" TopLine="16"/>
       </Position1>
       <Position2>
-        <Filename Value="..\..\..\Source\Base\PerlinNoise.pas"/>
+        <Filename Value="..\..\..\Source\ PerlinNoise.pas"/>
         <Caret Line="84" Column="25" TopLine="74"/>
       </Position2>
       <Position3>
-        <Filename Value="..\..\..\Source\Base\PerlinNoise.pas"/>
+        <Filename Value="..\..\..\Source\ PerlinNoise.pas"/>
         <Caret Line="88" Column="1" TopLine="74"/>
       </Position3>
       <Position4>
-        <Filename Value="..\..\..\Source\Base\PerlinNoise.pas"/>
+        <Filename Value="..\..\..\Source\ PerlinNoise.pas"/>
         <Caret Line="89" Column="1" TopLine="74"/>
       </Position4>
       <Position5>
