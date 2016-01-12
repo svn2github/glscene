@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVectorTypes<p>
-
+{
    Defines base vector types for use in Geometry.pas and OpenGL1x.pas.<p>
 
    The sole aim of this unit is to limit dependency between the Geometry

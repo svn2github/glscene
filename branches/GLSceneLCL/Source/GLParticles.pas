@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLParticles<p>
-
+{
    Particle systems for GLScene, based on replication of full-featured scene objects.<p>
 
  <b>History : </b><font size=-1><ul>

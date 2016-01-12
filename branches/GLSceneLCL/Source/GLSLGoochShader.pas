@@ -2,7 +2,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
    Gooch shader : Gooch shading is used to substitute photorealistic
    rendering by rendering that focuses on structore and shape of the object.
    Instead of usage of light and shadow, Gooch shading uses concept of warm and cool colors.

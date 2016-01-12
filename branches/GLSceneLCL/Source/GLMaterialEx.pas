@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialEx<p>
-
- Handles extended material and it components:
+{
+  Handles extended material and it components:
   textures, samplers, combiners, shaders and etc.
 
  Features:

@@ -3,7 +3,6 @@
 //
 {
    Toon shader : Toon shading also called Cell Shading<p>
-
    At this time only one light source is supported
 
    <b>History : </b><font size=-1><ul>

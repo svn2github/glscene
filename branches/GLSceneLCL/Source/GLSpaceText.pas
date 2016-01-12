@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpaceText<p>
-
+{
   3D Text component.<p>
 
   Note: You can get valid extents (including AABB's) of this component only

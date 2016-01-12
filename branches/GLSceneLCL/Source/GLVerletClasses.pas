@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletClasses<p>
-
+{
    Classes and functions that make integration between verlets and glscene
    objects easy.
 

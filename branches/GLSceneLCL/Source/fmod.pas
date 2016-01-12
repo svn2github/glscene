@@ -1,4 +1,8 @@
-{ History:
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   History:
      DaStr - 07/11/09 - Added $I GLScene.inc for Delhi 5 compatibility
                         Improved FPC compatibility (thanks Predator) (BugtrackerID = 2893580)
      DaStr - 15/03/08 - Updated to Fmod v3.7.4 (thanks Chen, Pei)

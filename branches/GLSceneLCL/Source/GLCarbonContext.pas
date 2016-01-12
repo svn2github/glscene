@@ -1,5 +1,7 @@
-﻿{: GLCarbonContext<p>
-
+﻿//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Carbon specific Context.<p>
 
    <b>History : </b><font size=-1><ul>

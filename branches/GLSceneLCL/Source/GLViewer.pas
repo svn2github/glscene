@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLViewer<p>
-
-   Platform independant viewer.<p>
+{
+    Platform independant viewer.<p>
 
     History:
       <li>13/06/12 - Yar - Bugfix synchronization control for Mac OS (thanks to pchev)	

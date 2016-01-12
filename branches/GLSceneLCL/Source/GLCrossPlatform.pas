@@ -1,8 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCrossPlatform<p>
-
+{
    Cross platform support functions and types for GLScene.<p>
 
    Ultimately, *no* cross-platform or cross-version defines should be present

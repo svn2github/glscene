@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : XCollection<p>
-
+{ 
   A polymorphism-enabled TCollection-like set of classes<p>
 
   <b>History : </b><font size=-1><ul>

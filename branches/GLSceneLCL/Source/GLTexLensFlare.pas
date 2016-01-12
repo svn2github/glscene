@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexLensFlare<p>
-
+{
    Texture-based Lens flare object.<p>
 
  <b>History : </b><font size=-1><ul>

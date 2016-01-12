@@ -1,8 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGLXContext<p>
-
+{
    GLX specific Context.<p>
 
    <b>History : </b><font size=-1><ul>

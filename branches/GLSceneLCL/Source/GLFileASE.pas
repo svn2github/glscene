@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileASE<p>
+{
+   ASE (ASCI Scene Export) file format support for GLScene<p>
 
-	 ASE (ASCI Scene Export) file format support for GLScene<p>
-
-	<b>History :</b><font size=-1><ul>
+   <b>History :</b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
       <li>21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
       <li>29/05/08 - DaStr - Made compatible with Delphi 5

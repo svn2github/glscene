@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPerlinPFX<p>
-
+{
    PFX particle effects revolving around the use of Perlin noise.<p>
 
    <b>History : </b><font size=-1><ul>

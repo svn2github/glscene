@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODECustomColliders<p>
-
+{
   Custom ODE collider implementations.<p>
 
   <b>Credits : </b><font size=-1><ul>

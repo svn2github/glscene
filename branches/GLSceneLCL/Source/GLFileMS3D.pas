@@ -2,8 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
- Support for MS3D file format.<p>
+   Support for MS3D file format.<p>
 
   <b>History :
     <li>24/11/10 - Yar - Foxed range check error

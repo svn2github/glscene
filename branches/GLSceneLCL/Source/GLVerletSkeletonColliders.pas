@@ -1,5 +1,7 @@
-{: GLVerletSkeletonColliders<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Skeleton colliders for defining and controlling verlet
    constraints.<p>
 

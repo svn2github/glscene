@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMirror<p>
-
+{
    Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
 
    It is strongly recommended to read and understand the explanations in the

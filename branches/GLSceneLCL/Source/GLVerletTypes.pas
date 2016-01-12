@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletTypes<p>
-
+{
    Base Verlet modelling/simulation classes.<p>
    This unit is generic, GLScene-specific sub-classes are in GLVerletClasses.<p>
 

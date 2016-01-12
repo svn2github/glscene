@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLAsyncHDS<p>
-
+{
    Implements a HDS Filter that generates HeightData tiles in a seperate thread.<p>
 
    This component is a THeightDataSourceFilter, which uses a THeightDataSourceThread,

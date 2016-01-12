@@ -1,7 +1,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
    Glass shader : Environment mapping with an
    equirectangular 2D texture and refraction mapping
    with a background texture blended together using the Fresnel terms<p>

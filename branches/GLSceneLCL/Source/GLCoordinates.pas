@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLCoordinates<p>
-
+{
   Coordinate related classes.<p>
 
   <b>History : </b><font size=-1><ul>

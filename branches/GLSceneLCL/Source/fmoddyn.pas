@@ -1,4 +1,8 @@
-{ History:
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ 
+  History:
   Yar - 19/06/11 - Fixed names of entry points in Windows (thanks to Johannes Pretorius, Bugtracker ID = 3319369)
   DaStr - 07/11/09 - Added $I GLScene.inc for Delhi 5 compatibility
   Improved FPC compatibility (thanks Predator) (BugtrackerID = 2893580)

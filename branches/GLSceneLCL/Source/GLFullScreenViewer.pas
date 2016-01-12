@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFullscreenViewer<p>
-
+{
   A Platform specific full-screen viewer.<p>
 
   Note: Eng: Lazarus has problems with minimizing and normalizing windows.

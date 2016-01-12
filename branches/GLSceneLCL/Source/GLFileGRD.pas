@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileGRD<p>
-
+{
   GRD (Grid Text Format) vector file format implementation.<p>
 
   <b>History :</b><font size=-1><ul>

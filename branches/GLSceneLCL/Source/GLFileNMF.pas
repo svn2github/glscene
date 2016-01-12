@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLFileNMF - NormalMapper loading into GLScene FreeForms/Actors
+  NormalMapper loading into GLScene FreeForms/Actors
   
   Notes:
     NormalMapper can be found at http://www.ati.com/developer/tools.html

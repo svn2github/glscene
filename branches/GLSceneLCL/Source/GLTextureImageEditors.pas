@@ -1,6 +1,8 @@
-{: GLTextureImageEditors<p>
-
-	Standard texture image editors for standard texture image classes.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Standard texture image editors for standard texture image classes.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead

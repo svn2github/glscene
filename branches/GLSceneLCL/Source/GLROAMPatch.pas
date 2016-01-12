@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLROAMPatch<p>
-
+{
   Class for managing a ROAM (square) patch.<p>
 
   <b>History : </b><font size=-1><ul>

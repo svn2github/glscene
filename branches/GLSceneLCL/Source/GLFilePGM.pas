@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFilePGM<p>
-
+{
   <b>History : </b><font size=-1><ul>
   <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
   <li>04/02/10 - Yar - Creation

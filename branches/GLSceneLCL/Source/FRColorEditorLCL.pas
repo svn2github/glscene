@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRColorEditor<p>
-
+{
    RGB+Alpha color editor.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
 
    </ul></font>
 }

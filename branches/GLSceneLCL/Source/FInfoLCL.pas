@@ -1,5 +1,8 @@
-// FInfoLCL
-{: Informations on OpenGL driver.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+  Informations on OpenGL driver.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
@@ -10,7 +13,6 @@ unit FInfoLCL;
 interface
 
 {$i GLScene.inc}
-
 
 uses
   lresources, 

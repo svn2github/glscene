@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FileOCT<p>
-
-	Loader for FSRad OCT files.<p>
+{
+   Loader for FSRad OCT files.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009

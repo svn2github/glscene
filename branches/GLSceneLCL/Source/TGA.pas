@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: TGA<p>
-
+{
    Simple TGA formats supports for Delphi.<br>
    Currently supports only 24 and 32 bits RGB formats (uncompressed
    and RLE compressed).<p>

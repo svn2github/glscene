@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLHeightData<p>
-
+{
   Classes for height data access.<p>
 
   The components and classes in the unit are the core data providers for

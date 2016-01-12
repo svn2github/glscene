@@ -1,8 +1,7 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{: GLLCLViewer<p>
-
+//
+{
   A FPC specific Scene viewer.
 
   <b>History : </b><font size=-1><ul>

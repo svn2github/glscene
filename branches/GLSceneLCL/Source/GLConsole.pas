@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLConsole <p>
-
+{
    The console is a popdown window that appears on a game for text output/input.<p>
 
    <b>History : </b><font size=-1><ul>

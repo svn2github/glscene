@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FGuiSkinEditorLCL<p>
-
-   Editor for Gui skin.<p>
+{
+   Editor for Gui skin.
 
    <b>Historique : </b><font size=-1><ul>
       <li>26/08/10 - Yar - Fixed ImageWndProc (thnaks Predator)

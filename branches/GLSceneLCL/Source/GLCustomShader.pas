@@ -1,7 +1,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCustomShader<p>
-
+{
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.

@@ -1,5 +1,7 @@
-{: GLStarRecord<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Unit to interface with simple star records aimed for background skies.<p>
 
 	<b>History : </b><font size=-1><ul>

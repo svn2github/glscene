@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMovement<p>
-
+{
    Movement path behaviour by Roger Cao<p>
 
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,

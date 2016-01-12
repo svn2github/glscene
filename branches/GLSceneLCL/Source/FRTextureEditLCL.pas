@@ -1,12 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// FRTextureEdit
-{: Egg<p>
+{
+   Basic editing frame for TGLTexture<p>
 
-  Basic editing frame for TGLTexture<p>
-
-    <b>Historique : </b><font size=-1><ul>
+    <b>History : </b><font size=-1><ul>
         <li>14/06/10 - Yar - Added Filtering Quality ComboBox. Bugfixed texture image class filling.
     </ul></font>
 }

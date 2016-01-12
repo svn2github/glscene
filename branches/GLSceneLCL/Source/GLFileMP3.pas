@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMP3<p>
-
-	Support for MP3 format.<p>
+{
+   Support for MP3 format.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>25/07/09 - DaStr - Added $I GLScene.inc  

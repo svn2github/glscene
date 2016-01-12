@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLKeyboard<p>
-
-	Provides on demand state of any key on the keyboard as well as a set of
+{
+   Provides on demand state of any key on the keyboard as well as a set of
    utility functions for working with virtual keycodes.<p>
 
    Note that windows maps the mouse buttons to virtual key codes too, and you

@@ -1,10 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPolynomials.<p>
-
-   ********* IN PROGRESS - LIMITED PRECISION **********
-
+{
    Utility functions for manipulationg and solving polynomials.<p>
 
    Direct solving is supported for polynoms up to the 4th degree.<p>
@@ -30,7 +27,7 @@
       <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
 	   <li>21/08/01 - EG - Creation
 	</ul></font>
-
+   In progress.	
 }
 unit GLPolynomials;
 

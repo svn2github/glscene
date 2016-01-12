@@ -1,10 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileGL2<p>
-
-	Vector file object loading of Ghoul2 model and animation 
-	files into GLScene.<p>
+{
+   Vector file object loading of Ghoul2 model and animation 
+   files into GLScene.<p>
 
 	<b>History :</b><font size=-1><ul>
       <li>24/03/07 - DaStr - Added explicit pointer dereferencing

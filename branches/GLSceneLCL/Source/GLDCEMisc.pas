@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDCEMisc<p>
-
+{
   Miscelaneous functions used by DCE (Dynamic Collision Engine).
 
   <b>History : </b><font size=-1><ul>

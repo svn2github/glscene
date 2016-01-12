@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFBO<p>
-
+{
   Implements FBO support for GLScene.
 
   Original author of the unit is Riz.

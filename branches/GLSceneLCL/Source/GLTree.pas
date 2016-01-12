@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTree<p>
-
+{
    Dynamic tree generation in GLScene<p>
 
    This code was adapted from the nVidia Tree Demo:

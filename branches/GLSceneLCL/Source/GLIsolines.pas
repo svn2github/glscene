@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLIsolines<p>
-
+{
   Class and routines to output isolines.<p>
 
   <b>History : </b><font size=-1><ul>

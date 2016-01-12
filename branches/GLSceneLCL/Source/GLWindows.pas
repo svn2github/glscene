@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWindows<p>
-
-  OpenGL windows management classes and structures<p>
+{
+   OpenGL windows management classes and structures<p>
 
  <b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,

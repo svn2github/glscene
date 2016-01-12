@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 { =============================================================================================== }
 { FMOD presets header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2004.            }
 { =============================================================================================== }

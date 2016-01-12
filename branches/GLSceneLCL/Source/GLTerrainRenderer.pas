@@ -1,7 +1,7 @@
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{ : GLTerrainRenderer<p>
-
+//
+{ 
   GLScene's brute-force terrain renderer.<p>
 
   <b>History : </b><font size=-1><ul>

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPipelineTransformation<p>
-
+{
    <b>History : </b><font size=-1><ul>
     <li>13/12/13 - PW - Added GLSLog unit
     <li>11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation

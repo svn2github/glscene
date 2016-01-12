@@ -1,5 +1,8 @@
-// GLMultiProxy
-{: Implements a multi-proxy objects, useful for discreet LOD.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ 
+  Implements a multi-proxy objects, useful for discreet LOD.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -14,12 +17,7 @@ unit GLMultiProxy;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   OpenGLTokens, GLContext,  GLScene, GLVectorGeometry, GLSilhouette,
   GLRenderContextInfo, GLBaseClasses, GLVectorTypes;
 

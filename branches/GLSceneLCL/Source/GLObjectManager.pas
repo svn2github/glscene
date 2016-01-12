@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLObjectManager<p>
-
+{
    The object manager is used for registering classes together with a category,
    description + icon, so that they can be displayed visually.  This can then
    be used by run-time or design-time scene editors for choosing which

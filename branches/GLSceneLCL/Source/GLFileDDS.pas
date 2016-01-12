@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileDDS<p>
-
+{
    DDS File support for GLScene.
 
  <b>History : </b><font size=-1><ul>

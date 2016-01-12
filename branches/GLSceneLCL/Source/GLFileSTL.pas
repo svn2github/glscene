@@ -2,7 +2,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
     Support-code to load STL Files into TGLFreeForm-Components in GLScene.<p>
     Note that you must manually add this unit to one of your project's uses
     to enable support for STL files at run-time.<p>

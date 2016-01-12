@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLIsosurface<p>
+{
   Polygonising a scalar field by construction of isosurfaces <p>
 
 Algorithms

@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLExplosionFx<p>
-
-  TGLBExplosionFX Effect<p>
+{
+   Explosion FX Effect
 
 	<b>History : </b><font size=-1><ul>
     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

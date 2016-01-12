@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: OpenGLTokens<p>
-
+{
+   OpenGL Tokens
  <b>History : </b><font size=-1><ul>
       <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
       <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap

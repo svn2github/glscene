@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGameMenu<p>
-
+{
    Manages a basic game menu UI<p>
 
  <b>History : </b><font size=-1><ul>

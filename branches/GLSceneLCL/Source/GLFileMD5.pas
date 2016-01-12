@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileMD5<p>
-
+{
    Doom3 MD5 mesh and animation vector file format implementation.<p>
 
    <b>History :</b><font size=-1><ul>

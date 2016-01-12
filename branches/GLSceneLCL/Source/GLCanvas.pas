@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCanvas<p>
-
- Implements a basic Canvas-like interface over for OpenGL.<p>
+{
+   Implements a basic Canvas-like interface over for OpenGL.<p>
    This class can be used for generic OpenGL applications and has no dependencies
    to the GLScene core units (only to base units).<p>
 

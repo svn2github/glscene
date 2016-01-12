@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGeometryCoordinates<p>
-
-	Helper functions to convert between different three dimensional coordinate
+{
+   Helper functions to convert between different three dimensional coordinate
    systems. Room for optimisations.<p>
 
 	<b>History : </b><font size=-1><ul>

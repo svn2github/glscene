@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShaderCombiner<p>
-
+{
     Allows to combine shaders in different sequences.
     Note, that can't just take 2 random shaders and combine them, because
     shaders often override the objects material and vertex data with a total

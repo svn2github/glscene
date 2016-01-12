@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSRedBlackTree <p>
+{
+  GLScene Red Black Tree
 
   USAGE
   The TRedBlackTree generic class behaves somewhat like a TList:

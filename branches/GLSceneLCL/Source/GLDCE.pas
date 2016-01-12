@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLDCE<p>
-
+{
   How to use:
   - Add a DCEManager to you form and configure its properties
   - Add a Dynamic Collision Behavior to you object

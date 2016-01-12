@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFireFX<p>
-
- Fire special effect<p>
+{
+    Fire special effect<p>
 
  <b>Historique : </b><font size=-1><ul>
       <li>21/01/01 - DanB - Added "inherited" call to TGLBFireFX.WriteToFiler

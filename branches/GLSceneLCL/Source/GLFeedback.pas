@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFeedback<p>
-
+{
    A scene object encapsulating the OpenGL feedback buffer.<p>
 
    This object, when Active, will render it's children using

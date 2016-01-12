@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLImageUtils<p>
-
+{
   Main purpose is as a fallback in cases where there is no other way to process images.<p>
 
   <b>Historique : </b><font size=-1><ul>

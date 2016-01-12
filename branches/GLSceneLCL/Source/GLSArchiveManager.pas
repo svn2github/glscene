@@ -1,7 +1,9 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 // 
-{: 
+{
+  Archive Manager
+ 
   <b>History : </b><font size=-1><ul>
    <li>04/06/10 - Yar - Added to GLScene
                         (Created by Rustam Asmandiarov aka Predator)

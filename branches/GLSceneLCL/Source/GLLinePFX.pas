@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLLinePFX<p>
-
+{
    A PFX whose particles are lines
 
    <b>History : </b><font size=-1><ul>

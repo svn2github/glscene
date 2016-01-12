@@ -1,8 +1,10 @@
-{: FMaterialEditorForm<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Editor window for a material (with preview).<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>08/06/10 - Yar - Bugfixed asignment edition result to material
    </ul></font>
 }

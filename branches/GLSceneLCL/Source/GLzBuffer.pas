@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLzBuffer<p>
-
+{
    ZBuffer retrieval and computations.<p>
 
    See readme.txt in the Demos/SpecialsFX/Shadows directory.<br>

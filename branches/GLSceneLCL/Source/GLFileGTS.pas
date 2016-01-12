@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileGTS<p>
-
-	GTS (GNU Triangulated Surface) vector file format implementation.<p>
+{
+   GTS (GNU Triangulated Surface) vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
       <li>16/10/08 - UweR - Compatibility fix for Delphi 2009

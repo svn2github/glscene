@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCelShader<p>
-
+{
    A shader that applies cel shading through a vertex program
    and shade definition texture.<p>
 

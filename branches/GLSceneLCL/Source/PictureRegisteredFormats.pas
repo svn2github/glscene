@@ -1,8 +1,7 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
-{: PictureRegisteredFormats<p>
-
+//
+{
    Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
 
    <b>History : </b><font size=-1><ul>

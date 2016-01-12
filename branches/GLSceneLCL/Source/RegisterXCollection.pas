@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: RegisterXCollection<p>
-
-	Register TXCollection property editor<p>
+{
+   Register TXCollection property editor<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>20/05/10 - Yar - Fixes for Linux x64

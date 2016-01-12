@@ -1,5 +1,7 @@
-{ : GLFileDXF<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
   Support-Code to load DXF (Drawing eXchange Files) TGLFreeForm or
   TGLActor Components in GLScene.<p>
 

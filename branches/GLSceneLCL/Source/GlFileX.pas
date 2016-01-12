@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GlFileX<p>
-
+{
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
    <b>History : </b><font size=-1><ul>

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Types3DS<p>
-
+{
    Implements the standard Teapot, build from evaluators.<p>
 
 	<b>History : </b><font size=-1><ul>

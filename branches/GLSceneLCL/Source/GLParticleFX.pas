@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLParticleFX<p>
-
+{
    Base classes for scene-wide blended particles FX.<p>
 
    These provide a mechanism to render heterogenous particles systems with per

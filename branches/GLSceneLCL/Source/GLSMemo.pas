@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMemo<p>
-
+{
+   GLScene memo
  <b>History : </b><font size=-1><ul>
       <li>30/03/11 - Yar - Initial version (based on kpMemo by Konstantin Polyakov http://kpolyakov.narod.ru/)
  </ul></font>

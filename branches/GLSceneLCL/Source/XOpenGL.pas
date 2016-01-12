@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: XOpenGL<p>
-
+{
    "Alternate" OpenGL functions to handle multi-texturing.<p>
 
    Using this functions allows specifying none/one/multiple ARB multi-texture

@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLCollision<p>
-
-	Collision-detection management for GLScene<p>
+{
+   Collision-detection management for GLScene<p>
 
 	<b>Historique : </b><font size=-1><ul>
       <li>17/11/14 - PW - Refactored TCollisionManager to TGLCollisionManager

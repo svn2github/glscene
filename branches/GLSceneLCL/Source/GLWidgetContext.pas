@@ -1,5 +1,7 @@
-﻿{: GLWidgetContext<p>
-
+﻿//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Widget specific Context.<p>
    GLWidgetContext replaces old GLLinGTKContext.<p>
 

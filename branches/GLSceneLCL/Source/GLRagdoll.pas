@@ -1,6 +1,8 @@
-{: GLRagdoll<p>
-
-	Base abstract ragdoll class. Should be extended to use any physics system. <p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+    Base abstract ragdoll class. Should be extended to use any physics system. <p>
 
 	<b>History :</b><font size=-1><ul>
     <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records

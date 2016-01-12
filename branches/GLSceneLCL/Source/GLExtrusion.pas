@@ -1,9 +1,8 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLExtrusion<p>
-
- Extrusion objects for GLScene. Extrusion objects are solids defined by the
+{
+   Extrusion objects for GLScene. Extrusion objects are solids defined by the
    surface described by a moving curve.<p>
 
  <b>Historique : </b><font size=-1><ul>

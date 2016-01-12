@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBitmapFont<p>
-
+{
   Bitmap Fonts management classes for GLScene<p>
 
   <b>History : </b><font size=-1><ul>

@@ -1,9 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSLog<p>
-
-  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
+{  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
   You may have only one instance of TGLSLogger<p>
   To obtain it, call UserLog() function from any unit.<p>
 

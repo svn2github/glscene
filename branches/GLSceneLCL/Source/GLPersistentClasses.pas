@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLPersistentClasses<p>
-
+{
    Base persistence classes.<p>
 
    These classes are used in GLScene, but are designed for generic purpose.<br>

@@ -1,5 +1,7 @@
-{: GLOutlineShader<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    A simple shader that adds an outline to an object. <p>
 
    Limitations: <br>

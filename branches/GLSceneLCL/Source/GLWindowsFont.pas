@@ -1,11 +1,10 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWindowsFont<p>
+{
+   TFont Import into a BitmapFont using variable width...<p>
 
-  TFont Import into a BitmapFont using variable width...<p>
-
- <b>History : </b><font size=-1><ul>
+   <b>History : </b><font size=-1><ul>
       <li>04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
        <li>29/05/11 - Yar - Unicode support for Unix OSes (by Gabriel Corneanu)
       <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGizmo<p>
-
+{
   Invisible component for helping to Move, Rotate and Scale an Object
   under GLScene (usefull for an Editor).<p>
 

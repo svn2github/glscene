@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWin32Context<p>
-
+{
    Win32 specific Context.<p>
 
    <b>History : </b><font size=-1><ul>

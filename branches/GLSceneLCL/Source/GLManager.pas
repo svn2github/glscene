@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLManager<p>
-
+{
    Managers are used to manage many different kinds of clients in GLScene.
    They are registered so that when clients are loaded, the client can
    look up the manager + register themselves with it.<p>

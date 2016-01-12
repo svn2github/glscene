@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSpline<p>
-
+{
    Cubic spline interpolation functions<p>
 
 	<b>History : </b><font size=-1><ul>

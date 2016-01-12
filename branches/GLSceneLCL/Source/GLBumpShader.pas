@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBumpShader<p>
-
+{
    A shader that applies bump mapping.<p>
 
    Notes:

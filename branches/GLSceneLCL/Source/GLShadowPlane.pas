@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShadowPlane<p>
-
+{
    Implements a basic shadow plane.<p>
 
    It is strongly recommended to read and understand the explanations in the

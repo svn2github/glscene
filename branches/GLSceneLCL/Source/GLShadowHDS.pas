@@ -1,5 +1,8 @@
-// GLShadowHDS
-{: Implements an HDS that automatically generates a terrain lightmap texture.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+  Implements an HDS that automatically generates a terrain lightmap texture.<p>
 	<b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
       <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

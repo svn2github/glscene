@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: DXTC<p>
-
+{
    DXTC (also S3TC) decoding.<br>
    Adapted from DevIL image library (http://openil.sourceforge.net)<p>
 

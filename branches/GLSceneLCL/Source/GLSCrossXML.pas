@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCrossXML<p>
-
+{
    <b>History : </b><font size=-1><ul>
     <li>23/08/10 - Yar - Creation
  </ul></font>

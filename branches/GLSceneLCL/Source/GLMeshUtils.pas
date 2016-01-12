@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMeshUtils.<p>
-
+{
    General utilities for mesh manipulations.<p>
 
 	<b>History : </b><font size=-1><ul>

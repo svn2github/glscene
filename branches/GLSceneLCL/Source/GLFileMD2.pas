@@ -2,8 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
-	Quake2 MD2 vector file format implementation.<p>
+   Quake2 MD2 vector file format implementation.<p>
 
 	<b>History :</b><font size=-1><ul>
       <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)

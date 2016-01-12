@@ -2,7 +2,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
    Implements projected textures through a GLScene object via GLSL.
 
    <b>History : </b><font size=-1><ul>

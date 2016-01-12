@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileLWO<p>
-
+{
     Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
 
  <b>History : </b><font size=-1><ul>

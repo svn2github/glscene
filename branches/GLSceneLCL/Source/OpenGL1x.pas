@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: OpenGL1x<p>
-
-	OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
+{
+   OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
    a more "pragmatic" approach :)<p>
 
    This unit is based on OpenGL12.pas orginally written by Mike Lischke,

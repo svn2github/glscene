@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : PlugInIntf<p>
-
+{
   An interface unit to GLScene plug-ins.<p>
   For more information see help file for writing plug-ins.<p>
 

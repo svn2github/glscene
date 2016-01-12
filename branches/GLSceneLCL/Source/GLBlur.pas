@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLBlur<p>
-
+{
  Applies a blur effect over the viewport.<p>
 
  <b>History : </b><font size=-1><ul>

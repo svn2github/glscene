@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLAVIRecorder<p>
-
+{
   Component to make it easy to record GLScene frames into an AVI file<p>
 
   <b>History : </b><font size=-1><ul>

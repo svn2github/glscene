@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileWAV<p>
-
-	Support for Windows WAV format.<p>
+{
+   Support for Windows WAV format.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>17/11/09 - DaStr - Improved Unix compatibility

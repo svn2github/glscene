@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSoundFileFormat<p>
-
-	Support classes for loading various fileformats.<p>
+{
+   Support classes for loading various fileformats.<p>
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
 
 	<b>Historique : </b><font size=-1><ul>

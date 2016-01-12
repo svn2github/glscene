@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: cgPostTransformationShader<p>
-
+{
    A shader that uses a texture to distort the view by adjusting texture
    coordinates.
    Does not have any practical use, but is fun to play around with.<p>

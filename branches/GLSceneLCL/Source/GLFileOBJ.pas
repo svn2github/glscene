@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLFileOBJ<p>
-
+{
     Support-Code to load Wavefront OBJ Files into TGLFreeForm-Components
     in GLScene.<p>
     Note that you must manually add this unit to one of your project's uses

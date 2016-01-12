@@ -1,7 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Base classes for GLScene.<p>
+{
+   Base classes for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject

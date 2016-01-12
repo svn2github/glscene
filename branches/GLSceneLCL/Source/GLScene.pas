@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLScene<p>
-
+{
    Base classes and structures for GLScene.<p>
 
    <b>History : </b><font size=-1><ul>

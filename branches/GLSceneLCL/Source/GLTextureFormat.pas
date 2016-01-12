@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTextureFormat<p>
-
+{
  <b>History : </b><font size=-1><ul>
         <li>10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
         <li>03/08/10 - Yar - Added SNORM texture format

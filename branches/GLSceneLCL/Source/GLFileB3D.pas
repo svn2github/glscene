@@ -2,7 +2,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
   B3D VectorFile class to load Blitz 3D model files<p>
 
   <b>History :

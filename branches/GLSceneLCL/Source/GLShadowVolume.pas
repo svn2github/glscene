@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLShadowVolumes<p>
-
+{
    Implements basic shadow volumes support.<p>
 
    Be aware that only objects that support silhouette determination have a chance

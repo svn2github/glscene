@@ -1,6 +1,8 @@
-// GLScriptBase
-{: An abstract scripting interface for GLScene<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   An abstract scripting interface for GLScene<p>
    This unit provides the base methods for compiling and executing scripts as
    well as calling scripted functions. No scripting APIs are implemented here,
    only abstracted functions.<p>

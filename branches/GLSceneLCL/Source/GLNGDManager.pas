@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLNGDManager<p>
-
+{
   A Newton Game Dynamics Manager for GLScene.<p>
 
   Where can I find ... ?<ul>

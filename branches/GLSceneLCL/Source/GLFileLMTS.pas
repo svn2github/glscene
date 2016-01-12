@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLFileLMTS<p>
-
+{
   <b>History : </b><font size=-1><ul>
   <li>31/05/10 - Yar - Fixes for Linux x64
   <li>22/01/10 - Yar - Added GLTextureFormat to uses

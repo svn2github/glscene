@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVfsPAK<p>
-
-	Support-code for loading files from Quake II PAK Files.<p>
+{
+   Support-code for loading files from Quake II PAK Files.<p>
    When instance is created all LoadFromFile methods using
    GLApplicationFileIO mechanism will be pointed into PAK file.<p>
    You can change current PAK file by ActivePak variable.<p>

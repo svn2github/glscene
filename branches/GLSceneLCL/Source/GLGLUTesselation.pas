@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGLUTesselation<p>
-
+{
     Code to generate triangle strips and fans for polygons.
 
  <b>History : </b><font size=-1><ul>

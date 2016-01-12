@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSilhouette<p>
-
+{
    Enhanced silhouette classes.<p>
 
    Introduces more evolved/specific silhouette generation and management

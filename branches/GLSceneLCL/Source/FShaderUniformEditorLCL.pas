@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FShaderUniformEditor<p>
-
-	<b>History : </b><font size=-1><ul>
+{
+   <b>History : </b><font size=-1><ul>
     <li>23/03/11 - Yar - Creation
   </ul>
 }

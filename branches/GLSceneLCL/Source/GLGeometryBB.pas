@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLGeometryBB<p>
-
+{
   Calculations and manipulations on Bounding Boxes.<p>
 
   <b>History : </b><font size=-1><ul>

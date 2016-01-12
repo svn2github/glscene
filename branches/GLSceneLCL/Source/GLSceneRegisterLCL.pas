@@ -1,6 +1,6 @@
-
+//
 // This unit is part of the GLScene Project, http://glscene.org
-
+//
 {
    Registration unit for GLScene library components, property editors and
       IDE experts for Lazarus.<p>

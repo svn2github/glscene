@@ -1,5 +1,7 @@
-{: FVectorEditor<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
    Editor for a vector.<p>
 
    <b>Historique : </b><font size=-1><ul>

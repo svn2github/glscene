@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTexture<p>
-
- Handles all the color and texture stuff.<p>
+{
+    Handles all the color and texture stuff.<p>
 
  <b>History : </b><font size=-1><ul>
        <li>04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove

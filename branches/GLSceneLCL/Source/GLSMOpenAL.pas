@@ -1,6 +1,8 @@
-{: GLSMOpenAL<p>
-
-	OpenAL based sound-manager (http://www.openal.org).<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   OpenAL based sound-manager (http://www.openal.org).<p>
    OpenAL drivers can be download from the OpenAL site or your soundcard
    manufacturer's website.<p>
 

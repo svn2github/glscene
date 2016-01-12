@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: O3TCImage<p>
+{
     Good for preview picture in OpenDialog,
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 

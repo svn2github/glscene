@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSCL<p>
-
+{
    Conversion of OpenCL header file: cl.h to Delphi,
    from http://www.khronos.org/registry/cl/.<p>
 

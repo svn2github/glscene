@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLPlugInManager<p>
-
+{
   An old PlugIn Manager unit. Don't know if if ever wa used...<p>
 
   <b>Historique : </b><font size=-1><ul>

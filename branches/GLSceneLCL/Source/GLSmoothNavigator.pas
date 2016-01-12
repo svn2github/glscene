@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSmoothNavigator<p>
-
-     An extention of TGLNavigator, which allows to move objects with inertia
+{
+   An extention of TGLNavigator, which allows to move objects with inertia
    Note: it is not completely FPS-independant. Only Moving code is, but
    MoveAroundTarget, Turn[Vertical/Horizontal] and AdjustDistanceTo[..] is not.
 

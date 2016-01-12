@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLMesh<p>
-
+{
   Raw Mesh support in GLScene.<p>
 
   This unit is for simple meshes and legacy support, GLVectorFileObjects

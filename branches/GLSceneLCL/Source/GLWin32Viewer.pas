@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLWin32Viewer<p>
-
-   Win32 specific Scene viewer.<p>
+{
+    Win32 specific Scene viewer.<p>
 
  <b>History : </b><font size=-1><ul>
       <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)

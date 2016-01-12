@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMWaveOut<p>
-
-	Basic sound manager based on WinMM <p>
+{
+   Basic sound manager based on WinMM <p>
 
 	<b>History : </b><font size=-1><ul>
       <li>17/11/09 - DaStr - Improved Unix compatibility

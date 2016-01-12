@@ -1,9 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLColor<p>
-
-   All color types, constants and utilities should go here<p>
+{   All color types, constants and utilities should go here<p>
 
   <b>History : </b><font size=-1><ul>
     <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives

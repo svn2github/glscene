@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSound<p>
-
- Base classes and interface for GLScene Sound System<p>
+{
+   Base classes and interface for GLScene Sound System<p>
 
  <b>History : </b><font size=-1><ul>
       <li>24/04/11 - Yar - Bugfixed TGLSoundSample.Assign (thanks to Anonymous)

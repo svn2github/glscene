@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVerletClothify<p>
-
+{
    Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
 
 	<b>History : </b><font size=-1><ul>

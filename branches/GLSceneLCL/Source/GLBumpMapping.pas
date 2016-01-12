@@ -1,8 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-// GLBumpMapping
-{: Some useful methods for setting up bump maps.<p>
+{
+   Some useful methods for setting up bump maps.<p>
 
    <b>History : </b><font size=-1><ul>
       <li>17/11/14 - PW - Removed function RGB that is included in GLCrossPlatform.pas

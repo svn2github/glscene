@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTrail<p>
-
-	Creates a trail-like mesh.
+{
+  Creates a trail-like mesh.
   Based on Jason Lanford's demo. <p>
 
 	<b>History : </b><font size=-1><ul>

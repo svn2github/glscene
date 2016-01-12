@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLODERagdoll<p>
-
-	TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
+{
+   TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
 
 	<b>History :</b><font size=-1><ul>
     <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays

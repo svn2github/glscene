@@ -1,8 +1,10 @@
-{: GLFileNurbs<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Nurbs surfaces vector file loading.<p>
 
-	Nurbs surfaces vector file loading.<p>
-
-	<b>History :</b><font size=-1><ul>
+   <b>History :</b><font size=-1><ul>
       <li>11/08/03 - SG - Some minor changes
       <li>05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
                           with GLNurbsSurface (depricated), originally coded

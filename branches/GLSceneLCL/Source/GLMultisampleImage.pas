@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMultisampleImage<p>
-
+{
     This unit provides support for two new types of "multisample
     textures" - two-dimensional and two-dimensional array - as well as
     mechanisms to fetch a specific sample from such a texture in a shader,

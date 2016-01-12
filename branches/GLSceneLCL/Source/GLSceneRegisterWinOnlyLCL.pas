@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneRegisterWinOnlyLCL<p>
-
+{
    Contains registration for Design-Time Lazarus Windows-Only units.<p>
    Because of Lazarus'es limitations, these need to be separated from the main
    GLSceneRegisterLCL.pas

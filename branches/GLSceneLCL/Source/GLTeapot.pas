@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLTeapot<p>
-
+{
    Implements the standard Teapot, build from evaluators.<p>
 
  <b>History : </b><font size=-1><ul>
@@ -23,8 +22,7 @@ uses
   Classes,
   //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext,
-  GLRenderContextInfo
-  , GLVectorTypes;
+  GLRenderContextInfo, GLVectorTypes;
 
 type
 

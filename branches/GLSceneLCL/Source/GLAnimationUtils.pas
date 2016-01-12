@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLAnimationUtils<p>
-
+{
   Main purpose is to give an easy way to create an interpolation.<p>
 
   <b>Historique : </b><font size=-1><ul>

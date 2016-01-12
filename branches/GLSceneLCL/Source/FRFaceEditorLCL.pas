@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRFaceEditor<p>
-
+{
    Editor fram for a TGLFaceProperties.<p>
 
    <b>Historique : </b><font size=-1><ul>

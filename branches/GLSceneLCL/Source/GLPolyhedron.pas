@@ -1,5 +1,8 @@
-// GLPolyhedron
-{: Standard polyhedrons.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Standard polyhedrons.<p>
 
  <b>History : </b><font size=-1><ul>
       <li>10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes

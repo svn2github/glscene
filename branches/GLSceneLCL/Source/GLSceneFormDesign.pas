@@ -1,8 +1,7 @@
 ﻿//
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSceneFormDesign<p>
-
+{
    <b>History : </b><font size=-1><ul>
     <li>03/04/11 - Yar - Added three project wizard for Delphi
     <li>05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
@@ -17,11 +16,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms,
-{$ELSE}
   Forms,
-{$ENDIF}
 {$IFDEF GLS_DELPHI_OR_CPPB}
   Windows,
   Classes,
@@ -333,15 +328,15 @@ type
 resourcestring
   //-------------------------Projects------------------------------------------
   rBaseProjectLocalizedName = 'GLScene Base Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
+  //٠⬮��LScene а鬮禭鿠 GLSceneForm
   rBaseProjectLocalizedDescription = 'Template of GLScene Base Application with TGLSceneForm';
 
   rSimpleProjectLocalizedName = 'GLScene Simple Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
+  //٠⬮��LScene а鬮禭鿠 GLSceneForm
   rSimpleProjectLocalizedDescription = 'Template of GLScene Simple Application with TGLSceneForm';
 
   rExtendedProjectLocalizedName = 'GLScene Extended Application';
-  //٠⬮���LScene а鬮禭鿠 GLSceneForm
+  //٠⬮��LScene а鬮禭鿠 GLSceneForm
   rExtendedProjectLocalizedDescription = 'Template of GLScene Extended Application with TGLSceneForm';
 
   //--------------------------Units + LFM--------------------------------------

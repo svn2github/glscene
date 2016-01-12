@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLRenderContextInfo<p>
-
+{
    Stores contextual info useful during rendering methods.<p>
 
  <b>History : </b><font size=-1><ul>

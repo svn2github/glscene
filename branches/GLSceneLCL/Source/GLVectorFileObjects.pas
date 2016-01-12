@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVectorFileObjects<p>
-
- Vector File related objects for GLScene<p>
+{
+   Vector File related objects for GLScene<p>
 
  <b>History :</b><font size=-1><ul>
 

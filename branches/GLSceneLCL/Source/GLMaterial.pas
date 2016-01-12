@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterial<p>
-
- Handles all the material + material library stuff.<p>
+{
+   Handles all the material + material library stuff.<p>
 
  <b>History : </b><font size=-1><ul>
       <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods

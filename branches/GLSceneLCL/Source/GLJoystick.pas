@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: Joystick<p>
-
-	Component for handling joystick messages<p>
+{
+   Component for handling joystick messages<p>
 
 	<b>Historique : </b><font size=-1><ul>
       <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)

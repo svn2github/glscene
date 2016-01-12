@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMeshCSG<p>
-
+{
    Constructive Solid Geometry in GLScene.
 
    The CSG system uses BSP to optimize what triangles it considers.

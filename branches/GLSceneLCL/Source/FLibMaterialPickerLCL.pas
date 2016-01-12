@@ -1,9 +1,10 @@
-// FLibMaterialPicker
-{: Egg<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Allows choosing a material in a material library<p>
 
-  Allows choosing a material in a material library<p>
-
-    <b>Historique : </b><font size=-1><ul>
+    <b>History : </b><font size=-1><ul>
 
     </ul></font>
 }

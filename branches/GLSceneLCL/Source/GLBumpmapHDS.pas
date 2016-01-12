@@ -1,5 +1,8 @@
-// GLBumpmapHDS
-{ : Implements a HDS that automatically generates an elevation bumpmap.<p>
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{ 
+  Implements a HDS that automatically generates an elevation bumpmap.<p>
 
   The object-space elevation bumpmap can be used for dynamic terrain lighting.<p>
   A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.

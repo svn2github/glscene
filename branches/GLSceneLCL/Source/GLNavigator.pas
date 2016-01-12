@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLNavigator<p>
-
-  Unit for navigating TGLBaseObjects.<p>
+{
+    Unit for navigating TGLBaseObjects.<p>
 
 	<b>History : </b><font size=-1><ul>
       <li>20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),

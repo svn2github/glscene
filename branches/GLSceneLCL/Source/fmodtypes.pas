@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {================================================================================================ }
 { FMOD Types header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.              }
 { =============================================================================================== }

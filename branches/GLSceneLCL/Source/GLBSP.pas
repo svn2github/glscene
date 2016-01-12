@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBSP<p>
-
+{
   Binary Space Partion mesh support for GLScene.<p>
 
   The classes of this unit are designed to operate within a TGLBaseMesh.<p>

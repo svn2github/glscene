@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLSpacePartition<p>
-
+{
   Space Partition speeds up geometrical queries, like what objects does A
   overlap.<p>
 

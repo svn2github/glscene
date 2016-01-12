@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLGraphics<p>
-
+{
    Utility class and functions to manipulate a bitmap in OpenGL's default
    byte order (GL_RGBA vs TBitmap's GL_BGRA)<p>
 

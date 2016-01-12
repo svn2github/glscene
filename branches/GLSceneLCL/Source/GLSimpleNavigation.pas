@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSimpleNavigation<p>
-
+{
     A simple component written by request from someone at the www.glscene.ru forums.<p>
     Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff <p>
     that all demos usually have in themselves. All that is just by dropping <p>

@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLProxyObjects<p>
-
+{
    Implements specific proxying classes.<p>
 
  <b>History : </b><font size=-1><ul>

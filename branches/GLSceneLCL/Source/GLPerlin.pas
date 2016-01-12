@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLPerlin<p>
-
+{
   Classes for generating perlin noise.<p>
 
   The components and classes in the unit are a base to generate textures and heightmaps from,

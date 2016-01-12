@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMBASS<p>
-
-	BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
+{
+   BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
 
    Unsupported feature(s) :<ul>
       <li>sound source velocity

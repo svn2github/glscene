@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : File3DS<p>
-
+{
   Implementation of an universal 3DS file reader (and writer). This is the main file of the
   3DS import library. Currently only loading of 3DS files (Mesh files  * .3ds, Project files  * .prj
   and Material files  * .mli) is supported.

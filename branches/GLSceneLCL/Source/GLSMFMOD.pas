@@ -1,9 +1,8 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLSMFMOD<p>
-
-	FMOD based sound-manager (http://www.fmod.org/, free for freeware).<p>
+{
+   FMOD based sound-manager (http://www.fmod.org/, free for freeware).<p>
 
    Unsupported feature(s) :<ul>
       <li>sound source velocity

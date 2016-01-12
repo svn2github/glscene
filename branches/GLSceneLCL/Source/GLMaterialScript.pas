@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLMaterialScript<p>
-
+{
    Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
 
 	<b>History : </b><font size=-1><ul>

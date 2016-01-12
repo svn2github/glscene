@@ -1,7 +1,6 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-
    SEM shader : Spherical Environment Mapping
    The main idea of SEM is to get the UV coordinates (which are used to lookup the matCap texture)
    from the normal vector on the fragment instead of the original texture coordinates from the object.<p>

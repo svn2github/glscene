@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: FRMaterialPreview<p>
-
+{
    Material Preview frame.<p>
 
    <b>Historique : </b><font size=-1><ul>

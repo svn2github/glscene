@@ -1,8 +1,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{: GLVectorGeometry<p>
-
-	Base classes and structures for GLScene.<p>
+{
+   Base classes and structures for GLScene.<p>
 
    Most common functions/procedures come in various flavours (using overloads),
    the naming convention is :<ul>

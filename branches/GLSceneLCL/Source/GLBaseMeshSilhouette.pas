@@ -1,8 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLBaseMeshSilhouette<p>
-
+{
   Silhouette classes for GLBaseMesh and FaceGroups.<p>
 
   <b>History : </b><font size=-1><ul>

@@ -1,9 +1,10 @@
-// FXCollectionEditor
-{: Egg<p>
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
   Edits a TXCollection<p>
 
-  <b>Historique : </b><font size=-1><ul>
+  <b>History : </b><font size=-1><ul>
       <li>20/05/10 - Yar - Fixes for Linux x64
       <li>29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
       <li>03/07/04 - LR - Make change for Linux

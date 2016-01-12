@@ -1,5 +1,8 @@
-{: Build mesh objects.
-
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Build mesh objects.
    How often do you miss a BuildSphereMesh function for testing or editors?
 
    Well this unit is intended to solve that problem. We want fast,

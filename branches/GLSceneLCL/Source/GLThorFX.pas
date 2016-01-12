@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ : GLThorFX<p>
+{
   <b>History : </b><font size=-1><ul>
   <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
   <li>21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
