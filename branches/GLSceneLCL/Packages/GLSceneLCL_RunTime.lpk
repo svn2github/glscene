@@ -32,7 +32,7 @@
     <Description Value="GLScene OpenGL 3D library
 "/>
     <Version Major="1"/>
-    <Files Count="238">
+    <Files Count="239">
       <Item1>
         <Filename Value="../Source/GLApplicationFileIO.pas"/>
         <UnitName Value="GLApplicationFileIO"/>
@@ -985,6 +985,10 @@
         <Filename Value="../Source/GLSLVertexDisplacementShader.pas"/>
         <UnitName Value="GLSLVertexDisplacementShader"/>
       </Item238>
+      <Item239>
+        <Filename Value="../Source/GLTriangulation.pas"/>
+        <UnitName Value="GLTriangulation"/>
+      </Item239>
     </Files>
     <RequiredPkgs Count="3">
       <Item1>
