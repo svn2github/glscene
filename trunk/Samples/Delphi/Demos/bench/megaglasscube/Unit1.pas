@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
   //GLS
-  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer,
+  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer, GLVectorTypes,
   GLWin32Viewer, GLColor, GLCrossPlatform, GLCoordinates, GLMaterial,
   GLSimpleNavigation, GLBaseClasses;
 

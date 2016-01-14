@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
   //GLS
-  GLScene, GLObjects, GLSDLContext, SDL,
+  GLScene, GLObjects, GLSDLContext, GLSDL,
   GLTeapot, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLColor;
 
 type

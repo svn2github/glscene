@@ -52,7 +52,7 @@ __published:	// IDE-managed Components
 
 private:	// User declarations
 	int vx, vy;
-	TMeshObjectList *Cache;
+	TGLMeshObjectList *Cache;
 	TGLBExplosionFX *expl;
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);

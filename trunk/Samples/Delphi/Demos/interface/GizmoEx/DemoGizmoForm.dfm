@@ -1625,6 +1625,10 @@ object Form1: TForm1
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label10: TLabel
         Left = 0
         Top = 118

@@ -7,8 +7,9 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls,
   Vcl.ComCtrls, Vcl.ExtCtrls,
   //GLS
-  GLScene, GLGraph, GLObjects, GLTexture, GLCadencer, GLVectorGeometry,
-  GLWin32Viewer, GLColor, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene, GLGraph, GLObjects, GLTexture, GLCadencer,
+  GLVectorGeometry, GLVectorTypes, GLWin32Viewer, GLColor,
+  GLCrossPlatform, GLCoordinates, GLBaseClasses;
 
 type
   TForm1 = class(TForm)

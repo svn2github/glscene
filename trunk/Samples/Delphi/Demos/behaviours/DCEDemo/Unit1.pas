@@ -14,7 +14,7 @@ uses
   GLBitmapFont, GLWindowsFont, GLHUDObjects, GLCrossPlatform,
   GLCoordinates, GLVectorGeometry, GLFileMD2, GLFile3DS, GLContext,
   GLEllipseCollision, GLRenderContextInfo, GLKeyboard, GLProxyObjects,
-  GLState, GLUtils, GLBaseClasses;
+  GLState, GLUtils, GLBaseClasses, GLVectorTypes;
 
 type
   TForm1 = class(TForm)
@@ -134,13 +134,13 @@ begin
 
   Force := NullVector;
   if IsKeyDown('w') or IsKeyDown('z') then
-    Force.V[2] := cForce;
+    Force.Z := cForce;
   if IsKeyDown('s') then
-    Force.V[2] := -cForce;
+    Force.Z := -cForce;
   if IsKeyDown('a') or IsKeyDown('q') then
-    Force.V[0] := cForce;
+    Force.X := cForce;
   if IsKeyDown('d') then
-    Force.V[0] := -cForce;
+    Force.X := -cForce;
 
   GetOrCreateDCEDynamic(Player).ApplyAccel(Force);
 end;

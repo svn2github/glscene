@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls,
 
   // GLScene
-  GLScene, GLCadencer, GLObjects,
+  GLScene, GLCadencer, GLObjects, GLVectorTypes,
   GLWin32Viewer, GLKeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
   GLBaseClasses,  GLVectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;

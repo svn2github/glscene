@@ -164,7 +164,7 @@ var
         else
         begin
           Actor.MeshObjects[t].FaceGroups[u].MaterialName :=
-            TFaceGroup(stlPics.Objects[Idx]).MaterialName;
+            TGLFaceGroup(stlPics.Objects[Idx]).MaterialName;
         end;
       end;
     end;

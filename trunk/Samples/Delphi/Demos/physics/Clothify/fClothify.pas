@@ -91,7 +91,7 @@ type
     { Public declarations }
     mx, my : integer;
 
-    VerletWorld : TVerletWorld;
+    VerletWorld : TGLVerletWorld;
     EdgeDetector : TEdgeDetector;
 
     world : PdxWorld;
@@ -132,7 +132,7 @@ end;
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TMeshObject;
+   mo : TGLMeshObject;
    fg : TFGVertexNormalTexIndexList;
 begin
   // update normals
@@ -156,7 +156,7 @@ end;
 procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TMeshObject;
+   mo : TGLMeshObject;
    fg : TFGVertexIndexList;
    n : TAffineVector;
 begin
@@ -295,7 +295,7 @@ begin
 
   EdgeDetector.ProcessMesh;
 
-  VerletWorld := TVerletWorld.Create;
+  VerletWorld := TGLVerletWorld.Create;
 
   if CheckBox_UseOctree.Checked then
     VerletWorld.CreateOctree(
@@ -493,8 +493,8 @@ var
   i : integer;
 begin
   for i := 0 to VerletWorld.Constraints.Count-1 do
-    if VerletWorld.Constraints[i] is TVerletGlobalFrictionConstraint then
-      TVerletGlobalFrictionConstraint(VerletWorld.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
+    if VerletWorld.Constraints[i] is TGLVerletGlobalFrictionConstraint then
+      TGLVerletGlobalFrictionConstraint(VerletWorld.Constraints[i]).FrictionRatio := TrackBar_Friction.Position / 100;
 end;
 
 procedure TfrmClothify.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);

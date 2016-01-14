@@ -8,7 +8,7 @@ uses
   //GLS
   GLScene, GLObjects, GLGeomObjects, GLTexture, GLMultiPolygon,
   GLVectorGeometry,  GLWin32Viewer, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses;
+  GLCoordinates, GLBaseClasses, GLVectorTypes;
 
 type
   TVektor = record

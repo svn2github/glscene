@@ -19,7 +19,6 @@
 #pragma link "GLObjects"
 #pragma link "GLPolyhedron"
 #pragma link "GLScene"
-#pragma link "GLSLBumpShader"
 #pragma link "GLSLShader"
 #pragma link "GLVectorFileObjects"
 #pragma link "GLWin32Viewer"
@@ -28,8 +27,8 @@
 #pragma link "GLFile3DS"
 #pragma link "DDSImage"
 #pragma link "GLFileMS3D"
-
-
+#pragma link "GLBaseClasses"
+#pragma link "GLSLBumpShader"
 #pragma resource "*.dfm"
 TForm1 *Form1;
 //---------------------------------------------------------------------------

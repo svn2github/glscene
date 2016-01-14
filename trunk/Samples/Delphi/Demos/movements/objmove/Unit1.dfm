@@ -9,10 +9,10 @@ object Form1: TForm1
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnKeyUp = FormKeyUp
-  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object Scn: TGLSceneViewer
@@ -25,7 +25,6 @@ object Form1: TForm1
     FieldOfView = 53.929431915283200000
     Align = alClient
     OnMouseDown = ScnMouseDown
-    OnMouseMove = ScnMouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
@@ -39,57 +38,52 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 0
       Top = 26
-      Width = 161
+      Width = 158
       Height = 26
       Align = alTop
       Caption = 'Select and move with the mouse any of the two cubes.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 158
     end
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 161
+      Width = 114
       Height = 13
       Align = alTop
       Caption = 'Author: Rado Stoyanov'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 114
     end
     object Label3: TLabel
       Left = 0
       Top = 52
-      Width = 161
+      Width = 150
       Height = 26
       Align = alTop
       Caption = 'Default movement is on the XY plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 150
     end
     object Label4: TLabel
       Left = 0
       Top = 78
-      Width = 161
+      Width = 145
       Height = 26
       Align = alTop
       Caption = 'Shift + Drag moves on the XZ plane.'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 145
     end
     object Label5: TLabel
       Left = 0
       Top = 13
-      Width = 161
+      Width = 142
       Height = 13
       Align = alTop
       Caption = 'radostoyanov@softhome.net'
       ShowAccelChar = False
       WordWrap = True
-      ExplicitWidth = 142
     end
     object Button1: TButton
       Left = 618
@@ -218,7 +212,7 @@ object Form1: TForm1
     end
     object TxtZ: TGLSpaceText
       Direction.Coordinates = {F304353FF304353F0000000000000000}
-      Position.Coordinates = {9A99193ECDCCCCBD0000803F0000803F}
+      Position.Coordinates = {000000C0000000C0000000000000803F}
       Scale.Coordinates = {9A99993E9A99993E9A99993E00000000}
       Up.Coordinates = {00000080000000000000803F00000000}
       Extrusion = 0.200000002980232200
@@ -259,7 +253,7 @@ object Form1: TForm1
     Font.Height = -11
     Font.Name = 'Tahoma'
     Font.Style = []
-    Left = 328
+    Left = 448
     Top = 8
   end
 end

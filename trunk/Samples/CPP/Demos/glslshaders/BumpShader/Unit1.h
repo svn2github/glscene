@@ -19,7 +19,6 @@
 #include "GLObjects.hpp"
 #include "GLPolyhedron.hpp"
 #include "GLScene.hpp"
-#include "GLSLBumpShader.hpp"
 #include "GLSLShader.hpp"
 #include "GLVectorFileObjects.hpp"
 #include "GLWin32Viewer.hpp"
@@ -32,6 +31,9 @@
 #include "GLFileMS3D.hpp"
 
 #include "GLUtils.hpp"
+#include "GLBaseClasses.hpp"
+#include "GLSLBumpShader.hpp"
+
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

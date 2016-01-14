@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
 
   //GLS
-  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer,
+  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer, GLVectorTypes,
   GLWin32Viewer, GLCrossPlatform, GLColor, GLCoordinates, GLBaseClasses,
   GLSimpleNavigation;
 

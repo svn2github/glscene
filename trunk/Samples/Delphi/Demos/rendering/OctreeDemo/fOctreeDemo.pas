@@ -6,9 +6,8 @@ uses
   System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls, OpenGL,
-
-  //GLScene
-  GLScene, GLObjects, GLWin32Viewer, GLVectorGeometry,
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLVectorGeometry, GLVectorTypes,
   GLGeometryBB, GLTexture, GLCadencer, GLSpacePartition,
   GLCrossPlatform, GLCoordinates, GLRenderContextInfo,
   GLState, GLSimpleNavigation, GLMaterial, GLContext, GLBaseClasses;

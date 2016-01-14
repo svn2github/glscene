@@ -658,7 +658,7 @@ end;
 procedure TMainForm.acReverseRenderingOrderExecute(Sender: TObject);
 var
   i, j, n: Integer;
-  fg: TFaceGroup;
+  fg: TGLFaceGroup;
 begin
   with FreeForm.MeshObjects do
   begin
@@ -709,7 +709,7 @@ procedure TMainForm.acConvertToIndexedTrianglesExecute(Sender: TObject);
 var
   v: TAffineVectorList;
   i: TIntegerList;
-  m: TMeshObject;
+  m: TGLMeshObject;
   fg: TFGVertexIndexList;
 begin
  v := FreeForm.MeshObjects.ExtractTriangles;
@@ -720,7 +720,7 @@ begin
       IncreaseCoherency(i, 12);
       i.Capacity := i.Count;
       FreeForm.MeshObjects.Clean;
-      m := TMeshObject.CreateOwned(FreeForm.MeshObjects);
+      m := TGLMeshObject.CreateOwned(FreeForm.MeshObjects);
       m.Vertices := v;
       m.BuildNormals(i, momTriangles);
       m.Mode := momFaceGroups;
@@ -741,7 +741,7 @@ end;
 procedure TMainForm.acStripifyExecute(Sender: TObject);
 var
   i: Integer;
-  mo: TMeshObject;
+  mo: TGLMeshObject;
   fg: TFGVertexIndexList;
   strips: TPersistentObjectList;
 begin

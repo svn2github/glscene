@@ -120,12 +120,12 @@ end;
 
 procedure TForm1.Button2Click(Sender: TObject);
 var
-  Mesh : TMeshObject;
+  Mesh : TGLMeshObject;
 begin
   ButtonClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
-    TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+    TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
 
@@ -138,12 +138,12 @@ end;
 
 procedure TForm1.Button3Click(Sender: TObject);
 var
-  Mesh : TMeshObject;
+  Mesh : TGLMeshObject;
 begin
   ButtonClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
-    TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+    TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
 
@@ -156,12 +156,12 @@ end;
 
 procedure TForm1.Button4Click(Sender: TObject);
 var
-  Mesh : TMeshObject;
+  Mesh : TGLMeshObject;
 begin
   ButtonClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
-    TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+    TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
 
@@ -174,12 +174,12 @@ end;
 
 procedure TForm1.Button5Click(Sender: TObject);
 var
-  Mesh : TMeshObject;
+  Mesh : TGLMeshObject;
 begin
   ButtonClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
-    TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+    TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
 
   Mesh := GLFreeForm3.MeshObjects[0];
 

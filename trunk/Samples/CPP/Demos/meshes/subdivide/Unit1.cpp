@@ -163,7 +163,7 @@ void __fastcall TForm1::BUSubdivideClick(TObject *Sender)
 	 tris->Free();
    }
 
-//   (GLActor1->MeshObjects->Items[0] as TSkeletonMeshObject)->PrepareBoneMatrixInvertedMeshes;
+//   (GLActor1->MeshObjects->Items[0] as TGLSkeletonMeshObject)->PrepareBoneMatrixInvertedMeshes;
 
    LASubdivideTime->Caption = Format("%.1f ms",
 	 ARRAYOFCONST ((StopPrecisionTimer(t)*1000)));

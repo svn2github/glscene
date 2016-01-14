@@ -21,7 +21,7 @@ object Form1: TForm1
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clTeal
-    FieldOfView = 62.487583160400390000
+    FieldOfView = 62.487583160400400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -40,7 +40,7 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object DummyCube1: TGLDummyCube
-      CubeSize = 0.800000011920929000
+      CubeSize = 0.800000011920928900
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource
@@ -49,6 +49,14 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object Teapot1: TGLTeapot
+      Material.BackProperties.Ambient.Color = {ADAC2C3FCDCC4C3ECDCC4C3E0000803F}
+      Material.BackProperties.Emission.Color = {FBFAFA3EB9B8383FB7B6B63E6ABC343F}
+      Material.BackProperties.Shininess = 101
+      Material.FrontProperties.Ambient.Color = {A7A6263FCDCC4C3ECDCC4C3E0000803F}
+      Material.FrontProperties.Shininess = 46
+      Material.FrontProperties.Specular.Color = {0000000000000000000000007F6A1C3F}
+      Material.Texture.ImageAlpha = tiaAlphaFromIntensity
+      Material.Texture.MinFilter = miNearest
       Material.Texture.TextureMode = tmReplace
       Position.Coordinates = {00000000000080BE000000000000803F}
     end

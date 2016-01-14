@@ -44,6 +44,7 @@ object Form1: TForm1
       Material.MaterialLibrary = GLMatlLib
       HeightDataSource = GLBitmapHDS1
       TilesPerTexture = 1.000000000000000000
+      ContourWidth = 0
       BehavioursData = {
         0458434F4C02010201060C54474C444345537461746963020102001200000000
         0200060D474C4443454D616E61676572310203020009090F0000A0410F000000
@@ -174,7 +175,7 @@ object Form1: TForm1
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
     Font.Charset = ANSI_CHARSET
     Font.Color = clWhite
-    Font.Height = -13
+    Font.Height = -16
     Font.Name = 'Impact'
     Font.Style = []
     Ranges = <

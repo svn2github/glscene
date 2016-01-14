@@ -6,9 +6,8 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
-
   //GLS
-  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer,
+  GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer, GLVectorTypes,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform,
   GLCoordinates, GLBaseClasses, GLPolynomials;
 

@@ -3,6 +3,7 @@ unit Unit1;
 interface
 
 uses
+  Winapi.OpenGL,
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
@@ -10,7 +11,7 @@ uses
   //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
-  GLShadowVolume, GLKeyboard, OpenGL1x, OpenGLTokens, GLVectorGeometry,
+  GLShadowVolume, GLKeyboard, OpenGLTokens, GLVectorGeometry,
   GLGeometryBB, GLVerletTypes, GLSpacePartition, GLCrossPlatform, GLMaterial,
   GLBaseClasses, GLRenderContextInfo, GLContext, GLUtils, GLCoordinates;
 
@@ -47,7 +48,7 @@ type
   public
     { Public declarations }
     mx,my : integer;
-    VerletWorld : TVerletWorld;
+    VerletWorld : TGLVerletWorld;
     EdgeDetector : TEdgeDetector;
     AirResistance : TVFAirResistance;
   end;
@@ -64,7 +65,7 @@ implementation
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TMeshObject;
+   mo : TGLMeshObject;
    fg : TFGVertexNormalTexIndexList;
 begin
   // update normals
@@ -88,7 +89,7 @@ end;
 procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TMeshObject;
+   mo : TGLMeshObject;
    fg : TFGVertexIndexList;
    n : TAffineVector;
 begin
@@ -147,7 +148,7 @@ begin
 
   // Setting up the verlet world using the optional dynamic octree can
   // give good perfamnce increases.
-  VerletWorld := TVerletWorld.Create;
+  VerletWorld := TGLVerletWorld.Create;
   VerletWorld.CreateOctree(
     AffineVectorMake(0,0,0),
     AffineVectorMake(0,0,0), 10, 6);
@@ -281,6 +282,7 @@ begin
       glPopAttrib;
     end;
   end;
+
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);

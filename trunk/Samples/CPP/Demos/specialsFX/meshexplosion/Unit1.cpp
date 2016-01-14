@@ -31,7 +31,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   //load mesh
   mesh->LoadFromFile("mushroom.3ds");
   //cache information
-  Cache = new TMeshObjectList;
+  Cache = new TGLMeshObjectList;
   Cache->Assign(mesh->MeshObjects);
   //default settings
   expl = (TGLBExplosionFX *)(mesh->Effects->Items[0]);

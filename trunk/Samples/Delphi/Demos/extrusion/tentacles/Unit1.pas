@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
 
   //GLS
-  GLScene, GLObjects, GLExtrusion, GLCadencer, GLVectorGeometry,
+  GLScene, GLObjects, GLExtrusion, GLCadencer, GLVectorGeometry, GLVectorTypes,
   GLTexture,  GLWin32Viewer, GLColor, GLCrossPlatform,
   GLCoordinates,  GLBaseClasses;
 

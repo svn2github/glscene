@@ -4,7 +4,7 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
+  System.SysUtils, System.Classes, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
 
@@ -74,7 +74,7 @@ type
     space : PdxSpace;
     contactgroup : TdJointGroupID;
 
-    VerletWorld : TVerletWorld;
+    VerletWorld : TGLVerletWorld;
     HairList : TList;
     VCSphere : TVCSphere;
     PhysicsTime : single;
@@ -153,7 +153,7 @@ begin
   CreateODEPlaneFromGLPlane(GLShadowPlane_Wall3, space);
   // dCreatePlane (space,0,0,1,0);
 
-  VerletWorld := TVerletWorld.Create;
+  VerletWorld := TGLVerletWorld.Create;
   VerletWorld.Iterations := 2;
   VerletWorld.VerletNodeClass := TGLVerletNode;
 
@@ -188,7 +188,7 @@ const
 var
   i,j : integer;
   Delta : single;
-  Hair : TVerletHair;
+  Hair : TGLVerletHair;
   GLLines : TGLLines;
 begin
   Delta := deltaTime;
@@ -231,7 +231,7 @@ begin
 
   for i := 0 to HairList.Count -1 do
   begin
-    Hair := TVerletHair(HairList[i]);
+    Hair := TGLVerletHair(HairList[i]);
     GLLines := TGLLines(Hair.Data);
     for j := 1 to Hair.NodeList.Count-1 do
       GLLines.Nodes[j-1].AsAffineVector := Hair.NodeList[j].Location;
@@ -295,13 +295,13 @@ procedure TfrmFurBall.CreateFur;
   var
     i : integer;
     Dir : TAffineVector;
-    Hair : TVerletHair;
+    Hair : TGLVerletHair;
     GLLines : TGLLines;
   begin
     Dir := AffineVectorMake(random-0.5,random-0.5,random-0.5);
     NormalizeVector(Dir);
 
-    Hair := TVerletHair.Create(VerletWorld, FurBall.Radius * cRootDepth,
+    Hair := TGLVerletHair.Create(VerletWorld, FurBall.Radius * cRootDepth,
       FurBall.Radius*cRadiusMultiplier, cSegmentCount,
       VectorAdd(AffineVectorMake(FurBall.AbsolutePosition), VectorScale(Dir, FurBall.Radius)),
       Dir, [vhsSkip1Node]);
@@ -328,12 +328,12 @@ procedure TfrmFurBall.CreateFur;
     HairList.Add(Hair);
   end;
 var
-  Hair : TVerletHair;
+  Hair : TGLVerletHair;
   i : integer;
 begin
   for i := 0 to HairList.Count-1 do
   begin
-    Hair := TVerletHair(HairList[i]);
+    Hair := TGLVerletHair(HairList[i]);
     TGLLines(Hair.Data).Free;
     Hair.Free;
   end;
@@ -390,7 +390,7 @@ var
 begin
   for i := 0 to HairList.Count -1 do
   begin
-    with TVerletHair(HairList[i]) do
+    with TGLVerletHair(HairList[i]) do
     begin
       Anchor.NailedDown := not CheckBox_Bald.Checked;
       Anchor.OldLocation := Anchor.Location;

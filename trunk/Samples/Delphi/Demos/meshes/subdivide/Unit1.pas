@@ -194,7 +194,7 @@ begin
       tris.Free;
    end;
 
-//   (GLActor1.MeshObjects[0] as TSkeletonMeshObject).PrepareBoneMatrixInvertedMeshes;
+//   (GLActor1.MeshObjects[0] as TGLSkeletonMeshObject).PrepareBoneMatrixInvertedMeshes;
 
    LASubdivideTime.Caption:=Format('%.1f ms', [StopPrecisionTimer(t)*1000]);
    // Initial perf: 1412 ms

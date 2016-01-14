@@ -10,7 +10,7 @@ uses
   //GLS
   GLWin32Viewer, GLScene, GLObjects,
   GLVectorFileObjects, GLCameraController, GLFile3ds, GLGeomObjects, GLTexture,
-  GLCadencer, GLMaterial, GLCoordinates, GLCrossPlatform,
+  GLCadencer, GLMaterial, GLCoordinates, GLCrossPlatform, GLVectorTypes,
   GLBaseClasses, GLVectorGeometry, GLNavigator, GLSmoothNavigator, GLGraph;
 
 type

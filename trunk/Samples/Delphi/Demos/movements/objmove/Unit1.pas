@@ -8,11 +8,11 @@ uses
   Vcl.Forms, Vcl.Dialogs, Vcl.Controls,
   Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls,
   //GLS
-  GLScene, GLObjects, GLGraph, GLCollision, GLTexture,
+  GLScene, GLObjects, GLGraph, GLCollision, GLTexture, GLVectorTypes,
   GLVectorGeometry, GLVectorFileObjects, GLWin32Viewer,
   GLSpaceText, GLGeomObjects, GLColor, GLCrossPlatform,
   GLCoordinates, GLBaseClasses, GLBitmapFont, GLWindowsFont,
-  GLHUDObjects;
+  GLHUDObjects, GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)

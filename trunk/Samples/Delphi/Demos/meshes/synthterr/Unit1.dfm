@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
@@ -61,6 +63,7 @@ object Form1: TForm1
       TilesPerTexture = 1.000000000000000000
       QualityDistance = 50.000000000000000000
       CLODPrecision = 20
+      ContourWidth = 0
     end
   end
   object Timer1: TTimer

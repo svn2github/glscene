@@ -7,8 +7,8 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
 
-  //GLScene
-  GLKeyboard, GLVectorGeometry, GLScene, GLVectorFileObjects,
+  //GLS
+  GLKeyboard, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,
   GLObjects, GLWin32Viewer, GLCadencer, GLNavigator, GLGeomObjects,
   GLCrossPlatform, GLCoordinates, GLUtils, GLBaseClasses,
   GLFile3DS;

@@ -9,11 +9,11 @@ uses
   Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls, Vcl.StdCtrls,
 
   //GLS
-  GLScene, GLTexture, GLCadencer,   GLFPSMovement, GLKeyboard,
+  GLScene, GLTexture, GLCadencer,   GLFPSMovement, GLKeyboard, GLState,
   GLWin32Viewer, GLObjects, GLCollision, GLVectorFileObjects,
   GLNavigator, GLVectorLists, GLOctree, GLFile3DS, GLVectorGeometry,
   GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLState, GLSimpleNavigation, GLBaseClasses, GLUtils;
+  GLSimpleNavigation, GLBaseClasses, GLUtils;
 
 type
   TForm1 = class(TForm)

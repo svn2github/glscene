@@ -9,7 +9,7 @@ uses
 
   //GLScene
   GLScene, GLObjects, GLWin32Viewer, GLCadencer, ODEImport,
-  GLShadowPlane, GLVectorGeometry, GLGeomObjects,
+  GLShadowPlane, GLVectorGeometry, GLGeomObjects, GLVectorTypes,
   GLBitmapFont, GLWindowsFont, GLHUDObjects, GLKeyboard, GLVectorFileObjects,
   GLRagdoll, GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
   GLBaseClasses, GLODERagdoll, ODEGL, GLFileSMD, GLUtils;
@@ -169,7 +169,7 @@ var // rootBone,
    JDummy: TODERagdollDummyJoint;
    }
 
-  function bone(oBone: TODERagdollBone; id: String; j: TRagdollJoint): TODERagdollBone;
+  function bone(oBone: TODERagdollBone; id: String; j: TGLRagdolJoint): TODERagdollBone;
   var b: TODERagdollBone;
   begin
     b := TODERagdollBone.CreateOwned(oBone);

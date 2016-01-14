@@ -5,10 +5,9 @@ interface
 uses
   Winapi.OpenGL,
   System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms,
-
-  //GLScene
-  GLScene, GLObjects, GLWin32Viewer, GLTexture,  GLVectorGeometry,
-  GLGeomObjects, GLRenderContextInfo, GLState,
+  //GLS
+  GLScene, GLObjects, GLWin32Viewer, GLTexture, GLVectorGeometry,
+  GLGeomObjects, GLRenderContextInfo, GLState, GLVectorTypes,
   GLGraph, GLCoordinates, GLCrossPlatform, GLBaseClasses;
 
 type

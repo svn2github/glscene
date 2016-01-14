@@ -1853,6 +1853,10 @@ object MainForm: TMainForm
       object TabSheet8: TTabSheet
         Caption = 'Toon'
         ImageIndex = 8
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label64: TLabel
           Left = 7
           Top = 51
