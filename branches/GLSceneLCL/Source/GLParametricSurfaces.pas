@@ -6,12 +6,12 @@
    for GLScene.<p>
 
    Notes:
-   The MOParametricSurface is a TMeshObject descendant that can be used
+   The MOParametricSurface is a TGLMeshObject descendant that can be used
    to render parametric surfaces. The Renderer property defines if the
    surface should be rendered using OpenGL mesh evaluators (through GLU
    Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
    routines to generate the mesh vertices and then rendered through the
-   standard TMeshObject render routine. Please note that BSplines aren't
+   standard TGLMeshObject render routine. Please note that BSplines aren't
    correctly handled yet in the CurvesAndSurfaces unit so the output mesh
    in GLScene rendering mode is wrong. I'll have it fixed when I know
    what's going wrong. The GLU Nurbs and glMeshEval Beziers work well
@@ -24,15 +24,15 @@
    parts of the bezier surface, which can be used to blend a patch with
    other patches.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>11/05/04 - SG - Mesh building and texture coord fixes.
-      <li>05/02/04 - SG - Added FGBezierSurface facegroup descendant.
-      <li>20/08/03 - SG - Weighted control points.
-      <li>18/07/03 - SG - Creation.
-   </ul></font>
+    History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       05/03/10 - DanB - More state added to TGLStateCache
+       31/03/07 - DaStr - Added $I GLScene.inc
+       11/05/04 - SG - Mesh building and texture coord fixes.
+       05/02/04 - SG - Added FGBezierSurface facegroup descendant.
+       20/08/03 - SG - Weighted control points.
+       18/07/03 - SG - Creation.
+    
 }
 unit GLParametricSurfaces;
 
@@ -66,7 +66,7 @@ type
      control point influences on the surface. }
   TParametricSurfaceBasis = (psbBezier, psbBSpline);
 
-  TMOParametricSurface = class(TMeshObject)
+  TMOParametricSurface = class(TGLMeshObject)
   private
     FControlPoints,
       FWeightedControlPoints: TAffineVectorList;
@@ -148,7 +148,7 @@ type
      Resolution sets the detail level of the mesh evaluation.
      MinU, MaxU, MinV and MaxV define the region of the surface to be rendered,
      this is especially useful for blending with neighbouring patches. }
-  TFGBezierSurface = class(TFaceGroup)
+  TFGBezierSurface = class(TGLFaceGroup)
   private
     FCountU, FCountV: Integer;
     FControlPointIndices,

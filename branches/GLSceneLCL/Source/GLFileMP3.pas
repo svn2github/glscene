@@ -4,10 +4,10 @@
 {
    Support for MP3 format.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>25/07/09 - DaStr - Added $I GLScene.inc  
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+	 History :  
+       25/07/09 - DaStr - Added $I GLScene.inc  
+       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
+	 
 }
 unit GLFileMP3;
 
@@ -34,9 +34,9 @@ type
 
       public
          { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
+         function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
 
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
 
          procedure LoadFromStream(Stream: TStream); override;
          procedure SaveToStream(Stream: TStream); override;
@@ -57,7 +57,7 @@ implementation
 
 // CreateCopy
 //
-function TGLMP3File.CreateCopy(AOwner: TPersistent) : TDataFile;
+function TGLMP3File.CreateCopy(AOwner: TPersistent) : TGLDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
@@ -67,7 +67,7 @@ end;
 
 // Capabilities
 //
-class function TGLMP3File.Capabilities : TDataFileCapabilities;
+class function TGLMP3File.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;

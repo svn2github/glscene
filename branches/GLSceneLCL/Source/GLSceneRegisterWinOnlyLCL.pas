@@ -6,12 +6,12 @@
    Because of Lazarus'es limitations, these need to be separated from the main
    GLSceneRegisterLCL.pas
 
-   <b>History :</b><font size=-1><ul>
-      <li>07/01/10 - DaStr - Removed GLLCLFullScreenViewer because it became
+    History : 
+       07/01/10 - DaStr - Removed GLLCLFullScreenViewer because it became
                               cross-platform (thanks Predator)
-      <li>24/11/09 - DanB - Added some more windows only units
-      <li>22/11/09 - DaStr - Initial version (by Predator)
-   </ul></font>
+       24/11/09 - DanB - Added some more windows only units
+       22/11/09 - DaStr - Initial version (by Predator)
+    
 }
 
 unit GLSceneRegisterWinOnlyLCL;

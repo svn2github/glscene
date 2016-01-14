@@ -51,9 +51,9 @@ type
   end;
 
 type
-  TGLNMFVectorFile = class (TVectorFile)
+  TGLNMFVectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
       procedure SaveToStream(aStream : TStream); override;
   end;
@@ -107,7 +107,7 @@ end;
 
 // Capabilities
 //
-class function TGLNMFVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLNMFVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead, dfcWrite];
 end;
@@ -117,13 +117,13 @@ end;
 procedure TGLNMFVectorFile.LoadFromStream(aStream : TStream);
 var
   i,j  : Integer;
-  mesh : TMeshObject;
+  mesh : TGLMeshObject;
   nmf  : TFileNMF;
 begin
   nmf:=TFileNMF.Create;
   try
     nmf.LoadFromStream(aStream);
-    mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode:=momTriangles;
     for i:=0 to nmf.NumTris-1 do begin
       for j:=0 to 2 do begin

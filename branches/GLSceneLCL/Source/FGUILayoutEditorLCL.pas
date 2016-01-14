@@ -16,17 +16,11 @@ uses
   LCLType,
 {$ENDIF}
 
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils, System.Variants, System.Classes,
-  VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
-  VCL.ExtDlgs,  VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
-{$ELSE}
-  SysUtils, Variants, Classes,
-  Graphics,  Controls,  Forms,  Dialogs,  Buttons,  ExtDlgs,  StdCtrls,
-  ExtCtrls,  Spin,  Grids,
-{$ENDIF}
+ SysUtils, Variants, Classes,
+ Graphics,  Controls,  Forms,  Dialogs,  Buttons,  ExtDlgs,  StdCtrls,
+ ExtCtrls,  Spin,  Grids,
 
-  GLCrossPlatform,  GLGui, GLUtils
+ GLCrossPlatform,  GLGui, GLUtils
 
 {$IFDEF LINUX}, Process{$ENDIF};
 

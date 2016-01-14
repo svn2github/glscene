@@ -4,23 +4,23 @@
 {
    Access to large tiled height data files.<p>
 
-   Performance vs Raw file accesses (for perfect tile match):<ul>
-   <li>Cached data:<ul>
-      <li>"Smooth" terrain   1:2 to 1:10
-      <li>Random terrain     1:1
-      </ul>
-   <li>Non-cached data:<ul>
-      <li>"Smooth" terrain   1:100 to 1:1000
-      <li>Random terrain     1:100
-      </ul>
-   </ul><p>
+   Performance vs Raw file accesses (for perfect tile match): 
+    Cached data: 
+       "Smooth" terrain   1:2 to 1:10
+       Random terrain     1:1
+       
+    Non-cached data: 
+       "Smooth" terrain   1:100 to 1:1000
+       Random terrain     1:100
+       
+    <p>
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>21/12/01 - Egg - Creation
-   </ul></font>
+   History :  
+       17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
+       20/05/10 - Yar - Fixes for Linux x64
+       30/03/07 - DaStr - Added $I GLScene.inc
+       21/12/01 - Egg - Creation
+    
 }
 unit GLHeightTileFile;
 
@@ -133,7 +133,7 @@ type
                                 aData : PSmallIntArray);
 
          {: Extract a single row from the HTF file.<p>
-            This is NOT the fastest way to access HTF data.<br>
+            This is NOT the fastest way to access HTF data. 
             All of the row must be contained in the world, otherwise result
             is undefined. }
          procedure ExtractRow(x, y, len : Integer; dest : PSmallIntArray);

@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   <b>History : </b><font size=-1><ul>
-    <li>13/12/13 - PW - Added GLSLog unit
-    <li>11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
-    <li>16/11/10 - Yar - Added NormalModelMatrix
-    <li>23/08/10 - Yar - Creation
- </ul></font>
+    History :  
+     13/12/13 - PW - Added GLSLog unit
+     11/05/11 - Yar - Ranamed TGLPipelineTransformation to TGLTransformation
+     16/11/10 - Yar - Added NormalModelMatrix
+     23/08/10 - Yar - Creation
+  
 }
 
 unit GLPipelineTransformation;

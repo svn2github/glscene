@@ -3,11 +3,11 @@
 //
 {   Simple X format support for Delphi (Microsoft's favorite format)<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>17/04/13 - YP - Warn user if file content unparsable (http://paulbourke.net/dataformats/directx/)
-      <li>04/10/10 - Yar - Fixed TDXFileHeader type (thanks JironBach)
-      <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-   </ul></font>
+    History :  
+       17/04/13 - YP - Warn user if file content unparsable (http://paulbourke.net/dataformats/directx/)
+       04/10/10 - Yar - Fixed TDXFileHeader type (thanks JironBach)
+       07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
+    
 }
 unit FileX;
 

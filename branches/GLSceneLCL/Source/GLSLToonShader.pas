@@ -5,8 +5,8 @@
    Toon shader : Toon shading also called Cell Shading<p>
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>13/12/15 - J.Delauney - Creation
+    History :  
+     13/12/15 - J.Delauney - Creation
 
 }
 unit GLSLToonShader;

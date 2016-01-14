@@ -4,17 +4,17 @@
 {
    Skeleton colliders for defining and controlling ODE geoms.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+    History : 
+       10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>12/04/08 - DaStr - Cleaned up uses section
+       12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
-      <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
+       06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (replaced references, and
                              CCilinder (ode 0.8) with Capsule(ode 0.9))
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-      <li>04/12/03 - SG - Creation.
-   </ul></font>
+       02/08/04 - LR, YHC - BCB corrections: use record instead array
+       04/12/03 - SG - Creation.
+    
 }
 unit GLODESkeletonColliders;
 
@@ -28,7 +28,7 @@ type
   // TSCODEBase
   //
   {: Base ODE skeleton collider class. }
-  TSCODEBase = class(TSkeletonCollider)
+  TSCODEBase = class(TGLSkeletonCollider)
     private
       FGeom : PdxGeom;
 
@@ -113,7 +113,7 @@ type
 {: After loading call this function to add all the geoms in a
    skeleton collider list to a given ODE space. }
 procedure AddSCODEGeomsToODESpace(
-  colliders : TSkeletonColliderList; space : PdxSpace);
+  colliders : TGLSkeletonColliderList; space : PdxSpace);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -130,7 +130,7 @@ implementation
 // AddSCODEGeomsToODESpace
 //
 procedure AddSCODEGeomsToODESpace(
-  colliders : TSkeletonColliderList; space : PdxSpace);
+  colliders : TGLSkeletonColliderList; space : PdxSpace);
 var
   i : Integer;
 begin

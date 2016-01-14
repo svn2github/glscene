@@ -4,40 +4,40 @@
 {
    Cadencing composant for GLScene (ease Progress processing)<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: restored GetCurrenttime instead of GetCurrentTime
-      <li>07/08/11 - Yar - Added OnTotalProgress event, which happens after all iterations with fixed delta time (thanks Controller)
-      <li>06/02/11 - Predator - Improved TGLCadencer for Lazarus
-      <li>29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
-      <li>21/11/09 - DaStr - Bugfixed FSubscribedCadenceableComponents
+  History :  
+       10/11/12 - PW - Added CPP compatibility: restored GetCurrenttime instead of GetCurrentTime
+       07/08/11 - Yar - Added OnTotalProgress event, which happens after all iterations with fixed delta time (thanks Controller)
+       06/02/11 - Predator - Improved TGLCadencer for Lazarus
+       29/11/10 - Yar - Changed TASAPHandler.FMessageTime type to unsigned (thanks olkondr)
+       21/11/09 - DaStr - Bugfixed FSubscribedCadenceableComponents
                              (thanks Roshal Sasha)
-      <li>09/11/09 - DaStr - Improved FPC compatibility
+       09/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>21/09/07 - DaStr - Added TGLCadencer.SetCurrentTime()
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>02/08/04 - LR, YHC - BCB corrections: changed GetCurrentTime to GetCurrenttime
-      <li>28/06/04 - LR - Added some ifdef Win32 for Linux
-      <li>20/10/03 - EG - Fixed issues about cadencer destruction
-      <li>29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
-      <li>21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
-      <li>04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
-      <li>06/06/03 - EG - Added cmApplicationIdle Mode
-      <li>19/05/03 - EG - Added Reset (Roberto Bussola)
-      <li>04/03/02 - EG - Added SetTimeMultiplier
-      <li>01/07/02 - EG - Added TGLCadencedComponent
-      <li>05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
-      <li>30/11/01 - EG - Added IsBusy (thx Chris S)
-      <li>08/09/01 - EG - Added MaxDeltaTime limiter
-      <li>23/08/01 - EG - No more "deprecated" warning for Delphi6
-      <li>12/08/01 - EG - Protection against "timer flood"
-      <li>19/07/01 - EG - Fixed Memory Leak in RegisterASAPCadencer,
+       21/09/07 - DaStr - Added TGLCadencer.SetCurrentTime()
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       02/08/04 - LR, YHC - BCB corrections: changed GetCurrentTime to GetCurrenttime
+       28/06/04 - LR - Added some ifdef Win32 for Linux
+       20/10/03 - EG - Fixed issues about cadencer destruction
+       29/08/03 - EG - Added MinDeltaTime and FixedDeltaTime
+       21/08/03 - EG - Fixed Application.OnIdle reset bug (Solerman Kaplon)
+       04/07/03 - EG - Improved TimeMultiplier transitions (supports zero)
+       06/06/03 - EG - Added cmApplicationIdle Mode
+       19/05/03 - EG - Added Reset (Roberto Bussola)
+       04/03/02 - EG - Added SetTimeMultiplier
+       01/07/02 - EG - Added TGLCadencedComponent
+       05/12/01 - EG - Fix in subscription mechanism (D6 IDE freezes gone?)
+       30/11/01 - EG - Added IsBusy (thx Chris S)
+       08/09/01 - EG - Added MaxDeltaTime limiter
+       23/08/01 - EG - No more "deprecated" warning for Delphi6
+       12/08/01 - EG - Protection against "timer flood"
+       19/07/01 - EG - Fixed Memory Leak in RegisterASAPCadencer,
                           Added speed limiter TASAPHandler.WndProc
-      <li>01/02/01 - EG - Fixed "Freezing" when Enabled set to False
-      <li>08/10/00 - EG - Added TASAPHandler to support multiple ASAP cadencers
-      <li>19/06/00 - EG - Fixed TGLCadencer.Notification
-      <li>14/04/00 - EG - Minor fixes
-      <li>13/04/00 - EG - Creation
- </ul></font>
+       01/02/01 - EG - Fixed "Freezing" when Enabled set to False
+       08/10/00 - EG - Added TASAPHandler to support multiple ASAP cadencers
+       19/06/00 - EG - Fixed TGLCadencer.Notification
+       14/04/00 - EG - Minor fixes
+       13/04/00 - EG - Creation
+  
 }
 unit GLCadencer;
 
@@ -47,11 +47,7 @@ interface
 
 uses
   GLScene, GLCrossPlatform, GLBaseClasses,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.Types, VCL.Forms
-{$ELSE}
   Classes, Types, Forms
-{$ENDIF}
 
 {$IFDEF FPC}
   , lmessages, SyncObjs
@@ -66,7 +62,7 @@ type
   // TGLCadencerMode
   //
   {: Determines how the TGLCadencer operates.<p>
-   - cmManual : you must trigger progress manually (in your code)<br>
+   - cmManual : you must trigger progress manually (in your code) 
    - cmASAP : progress is triggered As Soon As Possible after a previous
     progress (uses windows messages).
        - cmApplicationIdle : will hook Application.OnIdle, this will overwrite
@@ -78,10 +74,10 @@ type
   {: Determines which time reference the TGLCadencer should use.<p>
    - cmRTC : the Real Time Clock is used (precise over long periods, but
     not accurate to the millisecond, may limit your effective framerate
-          to less than 50 FPS on some systems)<br>
+          to less than 50 FPS on some systems) 
    - cmPerformanceCounter : the windows performance counter is used (nice
     precision, may derive over long periods, this is the default option
-    as it allows the smoothest animation on fast systems)<br>
+    as it allows the smoothest animation on fast systems) 
    - cmExternal : the CurrentTime property is used }
   TGLCadencerTimeReference = (cmRTC, cmPerformanceCounter, cmExternal);
 
@@ -139,7 +135,7 @@ type
     procedure UnSubscribe(aComponent: TGLCadenceAbleComponent);
 
     {: Allows to manually trigger a progression.<p>
-     Time stuff is handled automatically.<br>
+     Time stuff is handled automatically. 
      If cadencer is disabled, this functions does nothing. }
     procedure Progress;
 
@@ -170,14 +166,14 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default True;
 
     {: Defines how CurrentTime is updated.<p>
-     See TGLCadencerTimeReference.<br>
+     See TGLCadencerTimeReference. 
      Dynamically changeing the TimeReference may cause a "jump".  }
     property TimeReference: TGLCadencerTimeReference read FTimeReference write
       SetTimeReference default cmPerformanceCounter;
 
     {: Multiplier applied to the time reference.<p>
       Zero isn't an allowed value, and be aware that if negative values
-      are accepted, they may not be supported by other GLScene objects.<br>
+      are accepted, they may not be supported by other GLScene objects. 
      Changing the TimeMultiplier will alter OriginTime. }
     property TimeMultiplier: Double read FTimeMultiplier write SetTimeMultiplier
       stored StoreTimeMultiplier;
@@ -186,14 +182,14 @@ type
        If null or negative, no max deltaTime is defined, otherwise, whenever
        an event whose actual deltaTime would be superior to MaxDeltaTime
        occurs, deltaTime is clamped to this max, and the extra time is hidden
-       by the cadencer (it isn't visible in CurrentTime either).<br>
+       by the cadencer (it isn't visible in CurrentTime either). 
        This option allows to limit progression rate in simulations where
        high values would result in errors/random behaviour. }
     property MaxDeltaTime: Double read FMaxDeltaTime write FMaxDeltaTime;
 
     {: Minimum value for deltaTime in progression events.<p>
        If superior to zero, this value specifies the minimum time step
-       between two progression events.<br>
+       between two progression events. 
        This option allows to limit progression rate in simulations where
        low values would result in errors/random behaviour. }
     property MinDeltaTime: Double read FMinDeltaTime write FMinDeltaTime;
@@ -203,7 +199,7 @@ type
        delta time. The progression remains time based, so zero to N events
        may be fired depending on the actual deltaTime (if deltaTime is
        inferior to FixedDeltaTime, no event will be fired, if it is superior
-       to two times FixedDeltaTime, two events will be fired, etc.).<br>
+       to two times FixedDeltaTime, two events will be fired, etc.). 
        This option allows to use fixed time steps in simulations (while the
        animation and rendering itself may happen at a lower or higher
        framerate). }

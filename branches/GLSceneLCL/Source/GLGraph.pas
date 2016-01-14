@@ -4,32 +4,32 @@
 {
   Graph plotting objects for GLScene<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>25/01/13 - PW - Added compatibility with Cppb, changed 
+   History :  
+   25/01/13 - PW - Added compatibility with Cppb, changed 
                       properties with characters in lowercase to uppercase
-  <li>07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+   07/01/10 - Yar - Fixed TGLHeightField.Assign (thanks mobilus)
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   14/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>12/09/03 - EG - DefaultHeightField now defines color
-  <li>16/07/02 - EG - Fixed TGLHeightField backface polygon mode
-  <li>29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
-  <li>10/01/02 - EG - Added OnGetHeight2
-  <li>30/11/01 - EG - Color fix in TGLHeightField.BuildList (thx Marc Hull)
-  <li>19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
-  <li>06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
-  <li>25/02/01 - EG - Minor T&L improvement for TGLHeightField
-  <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-  <li>29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
+   12/09/03 - EG - DefaultHeightField now defines color
+   16/07/02 - EG - Fixed TGLHeightField backface polygon mode
+   29/01/02 - EG - Fixed TGLHeightField.BuildList when field is empty
+   10/01/02 - EG - Added OnGetHeight2
+   30/11/01 - EG - Color fix in TGLHeightField.BuildList (thx Marc Hull)
+   19/07/01 - EG - TGLHeightField no longer calls OnGetHeight in design mode
+   06/03/01 - EG - Fix in TGLHeightField.BuildList (thx Rene Lindsay)
+   25/02/01 - EG - Minor T&L improvement for TGLHeightField
+   21/02/01 - EG - Now XOpenGL based (multitexture)
+   29/01/01 - EG - Changed SamplingScale "Min" and "Max" default value
                  to workaround the float property default value bug.
-  <li>05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
-  <li>15/07/00 - EG - Added TXYGrid
-  <li>06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
-  </ul></font>
+   05/11/00 - EG - Fixed "property ZSamplingScale" (thx Davide Prade)
+   15/07/00 - EG - Added TXYGrid
+   06/07/00 - EG - Creation (TGLSamplingScale & TGLHeightField)
+   
 }
 unit GLGraph;
 
@@ -38,17 +38,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   GLScene,  OpenGLTokens, GLContext,  XOpenGL, GLVectorGeometry,
-  GLMaterial,  GLObjects,  GLVectorLists, GLColor,  GLBaseClasses,
-  GLRenderContextInfo,
-  GLState
- , GLVectorTypes;
+  GLMaterial,  GLObjects,  GLVectorLists, GLColor, GLBaseClasses,
+  GLRenderContextInfo, GLState, GLVectorTypes;
 
 type
 
@@ -189,7 +182,7 @@ type
   //
   { : Rendering Style for grid lines.<p>
     - glsLine : a single line is used for each grid line (from Min to Max),
-    this provides the fastest rendering<br>
+    this provides the fastest rendering 
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }

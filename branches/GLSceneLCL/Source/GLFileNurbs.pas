@@ -4,12 +4,12 @@
 {
    Nurbs surfaces vector file loading.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>11/08/03 - SG - Some minor changes
-      <li>05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
+    History : 
+       11/08/03 - SG - Some minor changes
+       05/08/03 - SG - Initial, adapted LoadFromStream from earlier tests
                           with GLNurbsSurface (depricated), originally coded
                           by Eric Grange.
-	</ul></font>
+	 
 }
 unit GLFileNurbs;
 
@@ -24,10 +24,10 @@ type
 
    // TGLNurbsSurface
    //
-   TGLNurbsVectorFile = class(TVectorFile)
+   TGLNurbsVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;
 
@@ -45,7 +45,7 @@ implementation
 
 // Capabilities
 //
-class function TGLNurbsVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLNurbsVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

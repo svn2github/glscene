@@ -17,12 +17,12 @@
    sure your texture edges are alligned to height tile edges, or gaps will show.
    (Of course you can still multitexture in a detail texture too.)
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
+	 History :  
+       22/01/07 - LIN - Added 'TileSize' and 'TilesPerTexture' properties
                            Removed 'Active' property
                            Now works with both TGLHeightTileFileHDS AND TGLBitmapHDS
-      <li>19/01/07 - LIN - Creation 
-	</ul></font>
+       19/01/07 - LIN - Creation 
+	 
 }
 
 unit GLTexturedHDS;

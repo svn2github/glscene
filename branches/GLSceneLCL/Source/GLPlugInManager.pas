@@ -4,10 +4,10 @@
 {
   An old PlugIn Manager unit. Don't know if if ever wa used...<p>
 
-  <b>Historique : </b><font size=-1><ul>
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 -  EG   - Initial version
-  </ul></font>
+  History :  
+   31/03/07 - DaStr - Added $I GLScene.inc
+   28/07/01 -  EG   - Initial version
+   
 }
 unit GLPlugInManager;
 
@@ -16,19 +16,14 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  Winapi.Windows, System.Classes, System.SysUtils,
-  VCL.Dialogs, VCL.Forms,
-{$ELSE}
   Windows, Classes, SysUtils, Dialogs, Forms,
-{$ENDIF}
   GLPlugInIntf;
 
 
 type
-  PPlugInEntry = ^TPlugInEntry;
+  PPlugInEntry = ^TGLPlugInEntry;
 
-  TPlugInEntry = record
+  TGLPlugInEntry = record
     Path: TFileName;
     Handle: HINST;
     FileSize: Integer;
@@ -40,17 +35,17 @@ type
     GetVersion: TGetVersion;
   end;
 
-  TPlugInManager = class;
+  TGLPlugInManager = class;
 
-  TResourceManager = class(TComponent)
+  TGLResourceManager = class(TComponent)
   public
-    procedure Notify(Sender: TPlugInManager; Operation: TOperation;
+    procedure Notify(Sender: TGLPlugInManager; Operation: TOperation;
       Service: TPIServiceType; PlugIn: Integer); virtual; abstract;
   end;
 
-  TPlugInList = class(TStringList)
+  TGLPlugInList = class(TStringList)
   private
-    FOwner: TPlugInManager;
+    FOwner: TGLPlugInManager;
     function GetPlugInEntry(Index: Integer): PPlugInEntry;
     procedure SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
   protected
@@ -58,28 +53,28 @@ type
     procedure ReadPlugIns(Reader: TReader);
     procedure WritePlugIns(Writer: TWriter);
   public
-    constructor Create(AOwner: TPlugInManager); virtual;
+    constructor Create(AOwner: TGLPlugInManager); virtual;
     procedure ClearList;
     property Objects[Index: Integer]: PPlugInEntry read GetPlugInEntry
       write SetPlugInEntry; default;
-    property Owner: TPlugInManager read FOwner;
+    property Owner: TGLPlugInManager read FOwner;
   end;
 
   PResManagerEntry = ^TResManagerEntry;
 
   TResManagerEntry = record
-    Manager: TResourceManager;
+    Manager: TGLResourceManager;
     Services: TPIServices;
   end;
 
-  TPlugInManager = class(TComponent)
+  TGLPlugInManager = class(TComponent)
   private
-    FLibraryList: TPlugInList;
+    FLibraryList: TGLPlugInList;
     FResManagerList: TList;
   protected
     procedure DoNotify(Operation: TOperation; Service: TPIServiceType;
       PlugIn: Integer);
-    function FindResManager(AManager: TResourceManager): PResManagerEntry;
+    function FindResManager(AManager: TGLResourceManager): PResManagerEntry;
     function GetIndexFromFilename(FileName: String): Integer;
     function GetPlugInFromFilename(FileName: String): PPlugInEntry;
   public
@@ -87,22 +82,22 @@ type
     destructor Destroy; override;
     function AddPlugIn(Path: TFileName): Integer;
     procedure EditPlugInList;
-    procedure RegisterResourceManager(AManager: TResourceManager;
+    procedure RegisterResourceManager(AManager: TGLResourceManager;
       Services: TPIServices);
     procedure RemovePlugIn(Index: Integer);
-    procedure UnRegisterRessourceManager(AManager: TResourceManager;
+    procedure UnRegisterRessourceManager(AManager: TGLResourceManager;
       Services: TPIServices);
   published
-    property PlugIns: TPlugInList read FLibraryList write FLibraryList;
+    property PlugIns: TGLPlugInList read FLibraryList write FLibraryList;
   end;
 
   // ------------------------------------------------------------------------------
 
 implementation
 
-// ----------------- TPlugInList ------------------------------------------------
+// ----------------- TGLPlugInList ------------------------------------------------
 
-constructor TPlugInList.Create(AOwner: TPlugInManager);
+constructor TGLPlugInList.Create(AOwner: TGLPlugInManager);
 
 begin
   inherited Create;
@@ -113,7 +108,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.ClearList;
+procedure TGLPlugInList.ClearList;
 
 begin
   while Count > 0 do
@@ -122,7 +117,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInList.GetPlugInEntry(Index: Integer): PPlugInEntry;
+function TGLPlugInList.GetPlugInEntry(Index: Integer): PPlugInEntry;
 
 begin
   Result := PPlugInEntry( inherited Objects[Index]);
@@ -130,7 +125,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
+procedure TGLPlugInList.SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
 
 begin
   inherited Objects[Index] := Pointer(AEntry);
@@ -138,7 +133,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.WritePlugIns(Writer: TWriter);
+procedure TGLPlugInList.WritePlugIns(Writer: TWriter);
 
 var
   I: Integer;
@@ -152,7 +147,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.ReadPlugIns(Reader: TReader);
+procedure TGLPlugInList.ReadPlugIns(Reader: TReader);
 
 begin
   ClearList;
@@ -164,25 +159,25 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.DefineProperties(Filer: TFiler);
+procedure TGLPlugInList.DefineProperties(Filer: TFiler);
 
 begin
   Filer.DefineProperty('Paths', ReadPlugIns, WritePlugIns, Count > 0);
 end;
 
-// ----------------- TPlugInManager ---------------------------------------------
+// ----------------- TGLPlugInManager ---------------------------------------------
 
-constructor TPlugInManager.Create(AOwner: TComponent);
+constructor TGLPlugInManager.Create(AOwner: TComponent);
 
 begin
   inherited Create(AOwner);
-  FLibraryList := TPlugInList.Create(Self);
+  FLibraryList := TGLPlugInList.Create(Self);
   FResManagerList := TList.Create;
 end;
 
 // ------------------------------------------------------------------------------
 
-destructor TPlugInManager.Destroy;
+destructor TGLPlugInManager.Destroy;
 var
   I: Integer;
 begin
@@ -196,7 +191,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.AddPlugIn(Path: TFileName): Integer;
+function TGLPlugInManager.AddPlugIn(Path: TFileName): Integer;
 
 // open the given DLL and read its properties, to identify
 // whether it's a valid plug-in or not
@@ -270,7 +265,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.DoNotify(Operation: TOperation;
+procedure TGLPlugInManager.DoNotify(Operation: TOperation;
   Service: TPIServiceType; PlugIn: Integer);
 
 var
@@ -285,7 +280,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.FindResManager(AManager: TResourceManager)
+function TGLPlugInManager.FindResManager(AManager: TGLResourceManager)
   : PResManagerEntry;
 
 var
@@ -303,7 +298,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.GetIndexFromFilename(FileName: String): Integer;
+function TGLPlugInManager.GetIndexFromFilename(FileName: String): Integer;
 
 var
   I: Integer;
@@ -320,7 +315,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.GetPlugInFromFilename(FileName: String): PPlugInEntry;
+function TGLPlugInManager.GetPlugInFromFilename(FileName: String): PPlugInEntry;
 
 var
   I: Integer;
@@ -335,7 +330,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.RegisterResourceManager(AManager: TResourceManager;
+procedure TGLPlugInManager.RegisterResourceManager(AManager: TGLResourceManager;
   Services: TPIServices);
 
 var
@@ -356,7 +351,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.RemovePlugIn(Index: Integer);
+procedure TGLPlugInManager.RemovePlugIn(Index: Integer);
 
 var
   Entry: PPlugInEntry;
@@ -378,15 +373,15 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.EditPlugInList;
+procedure TGLPlugInManager.EditPlugInList;
 
 begin
-  ///TPlugInManagerEditor.EditPlugIns(Self);   //Circular call to edit Listbox items?
+  ///TGLPlugInManagerEditor.EditPlugIns(Self);   //Circular call to edit Listbox items?
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.UnRegisterRessourceManager(AManager: TResourceManager;
+procedure TGLPlugInManager.UnRegisterRessourceManager(AManager: TGLResourceManager;
   Services: TPIServices);
 
 var

@@ -4,9 +4,9 @@
 {
    Editor window for a material (with preview).<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>08/06/10 - Yar - Bugfixed asignment edition result to material
-   </ul></font>
+    History :  
+       08/06/10 - Yar - Bugfixed asignment edition result to material
+    
 }
 unit FMaterialEditorFormLCL;
 

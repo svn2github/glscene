@@ -4,12 +4,12 @@
 {
    Explosion FX Effect
 
-	<b>History : </b><font size=-1><ul>
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
-    <li>23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
-    <li>07/03/04 - Matheus Degiovani - Creation
-  </ul></font>
+	 History :  
+     23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+     23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
+     23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
+     07/03/04 - Matheus Degiovani - Creation
+   
 
   Description: this effect explodes a mesh object into triangles
   that fly over. You can define a default direction, in wich case
@@ -33,7 +33,7 @@ interface
 
 uses
   OpenGLTokens, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,
-  GLVectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
+  GLVectorLists, GLXCollection, GLCoordinates, GLRenderContextInfo;
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -64,7 +64,7 @@ type
   public
     property Enabled: boolean read FEnabled write SetEnabled;
     property Step: integer read FStep;
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci : TRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
@@ -87,7 +87,7 @@ uses
 
 // Create
 //
-constructor TGLBExplosionFx.Create(aOwner: TXCollection);
+constructor TGLBExplosionFx.Create(aOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
   FTriList := TAffineVectorList.Create;

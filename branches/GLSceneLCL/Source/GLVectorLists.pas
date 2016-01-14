@@ -4,56 +4,56 @@
 {
    Misc. lists of vectors and entities<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed VectorList unit to GLVectorList
-      <li>23/02/11 - Yar - Added Revision mechanism to TAffineVectorList
-      <li>15/12/10 - DaStr - Added Min() and Max() for TSingleList and TDoubleList
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>24/08/10 - Yar - Added to T4ByteList more overload of Add method
-      <li>11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>27/02/10 - Yar - Added TLongWordList
-      <li>06/02/10 - Yar - Added methods to TSingleList
+    History :  
+       10/12/14 - PW - Renamed VectorList unit to GLVectorList
+       23/02/11 - Yar - Added Revision mechanism to TAffineVectorList
+       15/12/10 - DaStr - Added Min() and Max() for TSingleList and TDoubleList
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+       24/08/10 - Yar - Added to T4ByteList more overload of Add method
+       11/06/10 - Yar - Bugfixed binary reading TTexPointList for FPC
+       20/05/10 - Yar - Fixes for Linux x64
+       27/02/10 - Yar - Added TLongWordList
+       06/02/10 - Yar - Added methods to TSingleList
                            Added T4ByteList
-      <li>25/11/09 - DanB - Fixed FastQuickSortLists for 64bit (thanks YarUnderoaker)
+       25/11/09 - DanB - Fixed FastQuickSortLists for 64bit (thanks YarUnderoaker)
                             ASM code protected with IFDEFs
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>01/03/08 - DaStr - Added Borland-style persistency support to TBaseList
-      <li>29/03/07 - DaStr - Added more explicit pointer dereferencing
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       01/03/08 - DaStr - Added Borland-style persistency support to TBaseList
+       29/03/07 - DaStr - Added more explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>25/01/07 - DaStr - Reformated code according to VCL standard
+       25/01/07 - DaStr - Reformated code according to VCL standard
                              Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>23/01/07 - fig - Added FindOrAdd() or IndexOf() to TTexpointList
-      <li>16/01/07 - DaStr - Added TDoubleList
-      <li>28/06/04 - LR - Removed ..\ from the GLScene.inc
-      <li>03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
-      <li>22/08/03 - EG - Faster FastQuickSortLists
-      <li>13/08/03 - SG - Added TQuaternionList
-      <li>05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
-      <li>03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
-      <li>22/01/03 - EG - Added AddIntegers
-      <li>20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
-      <li>22/10/02 - EG - Added TransformXxxx to TAffineVectorList
-      <li>04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
-      <li>15/06/02 - EG - Added TBaseListOption stuff
-      <li>28/05/02 - EG - TBaseList.SetCount now properly resets new items
-      <li>23/02/02 - EG - Added TBaseList.UseMemory
-      <li>20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
-      <li>06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
-      <li>04/12/01 - EG - Added TIntegerList.IndexOf
-      <li>18/08/01 - EG - Fixed TAffineVectorList.Add (list)
-      <li>03/08/01 - EG - Added TIntegerList.AddSerie
-      <li>19/07/01 - EG - Added TAffineVectorList.Add (list variant)
-      <li>18/03/01 - EG - Additions and enhancements
-      <li>16/03/01 - EG - Introduced new PersistentClasses
-      <li>04/03/01 - EG - Optimized TAffineVectorList.Normalize (x2 speed on K7)
-      <li>26/02/01 - EG - VectorArrayLerp 3DNow optimized (x2 speed on K7)
-      <li>08/08/00 - EG - Added TSingleList
-    <li>20/07/00 - EG - Creation
- </ul></font>
+       23/01/07 - fig - Added FindOrAdd() or IndexOf() to TTexpointList
+       16/01/07 - DaStr - Added TDoubleList
+       28/06/04 - LR - Removed ..\ from the GLScene.inc
+       03/09/03 - EG - Added TBaseList.Move, faster TIntegerList.Offset
+       22/08/03 - EG - Faster FastQuickSortLists
+       13/08/03 - SG - Added TQuaternionList
+       05/06/03 - EG - Added MinInteger, some TIntegerList optimizations
+       03/06/03 - EG - Added TIntegerList.BinarySearch and AddSorted (Mattias Fagerlund)
+       22/01/03 - EG - Added AddIntegers
+       20/01/03 - EG - Added TIntegerList.SortAndRemoveDuplicates
+       22/10/02 - EG - Added TransformXxxx to TAffineVectorList
+       04/07/02 - EG - Fixed TIntegerList.Add( 2 at once )
+       15/06/02 - EG - Added TBaseListOption stuff
+       28/05/02 - EG - TBaseList.SetCount now properly resets new items
+       23/02/02 - EG - Added TBaseList.UseMemory
+       20/01/02 - EG - Now uses new funcs Add/ScaleVectorArray and VectorArrayAdd
+       06/12/01 - EG - Added Sort & MaxInteger to TIntegerList
+       04/12/01 - EG - Added TIntegerList.IndexOf
+       18/08/01 - EG - Fixed TAffineVectorList.Add (list)
+       03/08/01 - EG - Added TIntegerList.AddSerie
+       19/07/01 - EG - Added TAffineVectorList.Add (list variant)
+       18/03/01 - EG - Additions and enhancements
+       16/03/01 - EG - Introduced new PersistentClasses
+       04/03/01 - EG - Optimized TAffineVectorList.Normalize (x2 speed on K7)
+       26/02/01 - EG - VectorArrayLerp 3DNow optimized (x2 speed on K7)
+       08/08/00 - EG - Added TSingleList
+     20/07/00 - EG - Creation
+  
 }
 unit GLVectorLists;
 
@@ -463,7 +463,7 @@ type
     procedure Offset(delta: Single); overload;
 
     {: Adds to each item the corresponding item in the delta list.<p>
-       Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+       Performs 'Items[i]:=Items[i]+delta[i]'. 
        If both lists don't have the same item count, an exception is raised. }
     procedure Offset(const delta: TSingleList); overload;
 
@@ -518,7 +518,7 @@ type
     {: Adds delta to all items in the list. }
     procedure Offset(delta: Double); overload;
         {: Adds to each item the corresponding item in the delta list.<p>
-           Performs 'Items[i]:=Items[i]+delta[i]'.<br>
+           Performs 'Items[i]:=Items[i]+delta[i]'. 
            If both lists don't have the same item count, an exception is raised. }
     procedure Offset(const delta: TDoubleList); overload;
     {: Multiplies all items by factor. }

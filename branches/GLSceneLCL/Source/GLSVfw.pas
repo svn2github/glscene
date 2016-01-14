@@ -85,11 +85,7 @@ uses
     Messages,
     CommDlg,
     ActiveX,
-{$IFDEF GLS_DELPHI_XE2_UP}
-    VCL.Dialogs;
-{$ELSE}
     Dialogs;
-{$ENDIF}
 
 (****************************************************************************
  *

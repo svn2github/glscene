@@ -10,15 +10,15 @@
    TODO: add some notification code, so that when a scene object is registered/
    unregistered, any editor that is using the object manager can be notified.
 
- <b>History : </b><font size=-1><ul>
-      <li>11/11/09 - DaStr - Improved FPC compatibility
+  History :  
+       11/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
-      <li>14/03/09 - DanB - Created by moving TObjectManager in from GLSceneRegister.pas,
+       25/07/09 - DaStr - Added $I GLScene.inc
+       26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
+       14/03/09 - DanB - Created by moving TGLObjectManager in from GLSceneRegister.pas,
                             made some slight adjustments to allow resources being loaded
                             from separate packages.
- </ul></font>
+  
 }
 
 unit GLObjectManager;
@@ -28,19 +28,11 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes,
-  System.SysUtils,
-  VCL.Graphics,
-  VCL.Controls,
-  VCL.Menus,
-{$ELSE}
   Classes,
   SysUtils,
   Graphics,
   Controls,
   Menus,
-{$ENDIF}
   //GLS
   GLCrossPlatform,
   GLScene
@@ -61,9 +53,9 @@ type
     ImageIndex: Integer; // index into "FObjectIcons"
   end;
 
-  // TObjectManager
+  // TGLObjectManager
   //
-  TObjectManager = class(TComponent)
+  TGLObjectManager = class(TComponent)
   private
     { Private Declarations }
     FSceneObjectList: TList;
@@ -121,11 +113,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-//----------------- TObjectManager ---------------------------------------------
+//----------------- TGLObjectManager ---------------------------------------------
 
 // Create
 //
-constructor TObjectManager.Create(AOwner: TComponent);
+constructor TGLObjectManager.Create(AOwner: TComponent);
 begin
   inherited;
   FSceneObjectList := TList.Create;
@@ -138,7 +130,7 @@ end;
 
 // Destroy
 //
-destructor TObjectManager.Destroy;
+destructor TGLObjectManager.Destroy;
 begin
   DestroySceneObjectList;
   FObjectIcons.Free;
@@ -147,7 +139,7 @@ end;
 
 // FindSceneObjectClass
 //
-function TObjectManager.FindSceneObjectClass(AObjectClass: TGLSceneObjectClass;
+function TGLObjectManager.FindSceneObjectClass(AObjectClass: TGLSceneObjectClass;
   const aSceneObject: string = ''): PSceneObjectEntry;
 var
   I: Integer;
@@ -172,7 +164,7 @@ end;
 
 // GetClassFromIndex
 //
-function TObjectManager.GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
+function TGLObjectManager.GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
 begin
   if Index < 0 then
     Index := 0;
@@ -183,7 +175,7 @@ end;
 
 // GetImageIndex
 //
-function TObjectManager.GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
+function TGLObjectManager.GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -197,7 +189,7 @@ end;
 // GetCategory
 //
 
-function TObjectManager.GetCategory(ASceneObject: TGLSceneObjectClass): string;
+function TGLObjectManager.GetCategory(ASceneObject: TGLSceneObjectClass): string;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -210,7 +202,7 @@ end;
 
 // GetRegisteredSceneObjects
 //
-procedure TObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
+procedure TGLObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
 var
   i: Integer;
 begin
@@ -224,7 +216,7 @@ begin
     end;
 end;
 
-procedure TObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
+procedure TGLObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
   aClickEvent: TNotifyEvent);
 var
   objectList: TStringList;
@@ -273,7 +265,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass;
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass;
   const aName, aCategory: string);
 var
   resBitmapName: string;
@@ -303,7 +295,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap);
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap);
 var
   newEntry: PSceneObjectEntry;
   bmp: TBitmap;
@@ -354,7 +346,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
 var
   bmp: TBitmap;
   resBitmapName: string;
@@ -380,7 +372,7 @@ begin
 end;
 {$ELSE}
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
 var
   newEntry: PSceneObjectEntry;
   pic: TPicture;
@@ -432,7 +424,7 @@ end;
 // UnRegisterSceneObject
 //
 
-procedure TObjectManager.UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
+procedure TGLObjectManager.UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 var
   oldEntry: PSceneObjectEntry;
 begin
@@ -452,7 +444,7 @@ end;
 //
 {$IFNDEF FPC}
 
-procedure TObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
+procedure TGLObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
 var
   bmp: TBitmap;
 begin
@@ -481,7 +473,7 @@ begin
   end;
 {$ELSE}
 
-procedure TObjectManager.CreateDefaultObjectIcons;
+procedure TGLObjectManager.CreateDefaultObjectIcons;
 begin
   with FObjectIcons do
   begin
@@ -527,7 +519,7 @@ end;
 // DestroySceneObjectList
 //
 
-procedure TObjectManager.DestroySceneObjectList;
+procedure TGLObjectManager.DestroySceneObjectList;
 var
   i: Integer;
 begin

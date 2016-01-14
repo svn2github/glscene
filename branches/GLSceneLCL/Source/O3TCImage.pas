@@ -5,13 +5,13 @@
     Good for preview picture in OpenDialog,
     so you may include both O3TCImage (preview) and GLFileO3TC (loading)
 
-      <li>23/10/10 - Yar - Removed PBuffer    
-      <li>23/08/10 - Yar - Changes after PBuffer upgrade
-      <li>21/03/10 - Yar - Added Linux support
+       23/10/10 - Yar - Removed PBuffer    
+       23/08/10 - Yar - Changes after PBuffer upgrade
+       21/03/10 - Yar - Added Linux support
                            (thanks to Rustam Asmandiarov aka Predator)
-      <li>24/01/10 - Yar - Improved FPC compatibility
-      <li>21/01/10 - Yar - Creation
-   </ul></font>
+       24/01/10 - Yar - Improved FPC compatibility
+       21/01/10 - Yar - Creation
+    
 }
 
 unit O3TCImage;

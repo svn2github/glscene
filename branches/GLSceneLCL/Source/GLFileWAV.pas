@@ -4,13 +4,13 @@
 {
    Support for Windows WAV format.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+	 History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
-      <li>06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
-	</ul></font>
+       25/07/09 - DaStr - Added $I GLScene.inc
+       26/05/09 - DanB - Fix for LengthInBytes when chunks occur after data chunk
+       06/05/09 - DanB - Creation from split from GLSoundFileObjects.pas
+	 
 }
 unit GLFileWAV;
 
@@ -41,9 +41,9 @@ type
 
       public
          { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
+         function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
 
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
 
          procedure LoadFromStream(Stream: TStream); override;
          procedure SaveToStream(Stream: TStream); override;
@@ -74,7 +74,7 @@ const
 
 // CreateCopy
 //
-function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TDataFile;
+function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TGLDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
@@ -87,7 +87,7 @@ end;
 
 // Capabilities
 //
-class function TGLWAVFile.Capabilities : TDataFileCapabilities;
+class function TGLWAVFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;

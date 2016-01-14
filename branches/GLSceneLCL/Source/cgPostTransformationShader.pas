@@ -6,10 +6,10 @@
    coordinates.
    Does not have any practical use, but is fun to play around with.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/04/07 - DaStr - Contributed to GLScene
-      <li>04/11/06 - DaStr - Creation (based on demo by Rick)
+	 History :  
+       22/04/10 - Yar - Fixes after GLState revision
+       05/04/07 - DaStr - Contributed to GLScene
+       04/11/06 - DaStr - Creation (based on demo by Rick)
 
 }
 unit cgPostTransformationShader;

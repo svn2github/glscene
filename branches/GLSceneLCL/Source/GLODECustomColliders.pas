@@ -4,46 +4,46 @@
 {
   Custom ODE collider implementations.<p>
 
-  <b>Credits : </b><font size=-1><ul>
-     <li>Heightfield collider code originally adapted from Mattias Fagerlund's
+   Credits :  
+      Heightfield collider code originally adapted from Mattias Fagerlund's
          DelphiODE terrain collision demo.
          Website: http://www.cambrianlabs.com/Mattias/DelphiODE
-  </ul>
+   
 
-  <b>History : </b><font size=-1><ul>
-    <li>19/06/14 - PW - Changed some types from Single to TdReal to permit ODE be double based in ODEImport.pas
-    <li>10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>22/04/10 - Yar - Fixes after GLState revision
-    <li>05/03/10 - DanB - More state added to TGLStateCache
-    <li>17/11/09 - DaStr - Improved Unix compatibility
+   History :  
+     19/06/14 - PW - Changed some types from Single to TdReal to permit ODE be double based in ODEImport.pas
+     10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
+     23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+     22/04/10 - Yar - Fixes after GLState revision
+     05/03/10 - DanB - More state added to TGLStateCache
+     17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
-    <li>08/11/09 - DaStr - Improved FPC compatibility
+     08/11/09 - DaStr - Improved FPC compatibility
                             (thanks Predator) (BugtrackerID = 2893580)
-    <li>12/04/08 - DaStr - Cleaned up uses section
+     12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (by Paul Robello)
+     06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (by Paul Robello)
                             Fixed reference to odeimport
-    <li>25/12/07 - DaStr  - Fixed memory leak in TGLODECustomCollider.Destroy()
+     25/12/07 - DaStr  - Fixed memory leak in TGLODECustomCollider.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>10/10/07 - Mrqzzz - Fixed reference ODEGL.ODERToGLSceneMatrix
-    <li>07/10/07 - Mrqzzz - Added reference to ODEGL
-    <li>11/09/07 - Mrqzzz - Added reference to ODEImport
-    <li>07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+     10/10/07 - Mrqzzz - Fixed reference ODEGL.ODERToGLSceneMatrix
+     07/10/07 - Mrqzzz - Added reference to ODEGL
+     11/09/07 - Mrqzzz - Added reference to ODEImport
+     07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
                            Added $I GLScene.inc
-    <li>08/12/04 - SG - Added contact point rendering to TGLODECustomCollider.
-    <li>07/12/04 - SG - Added new TGLODECustomCollider class,
+     08/12/04 - SG - Added contact point rendering to TGLODECustomCollider.
+     07/12/04 - SG - Added new TGLODECustomCollider class,
                         Geom collide code now uses Resolution to determine the
                         number of contact points to generate.
-    <li>19/11/04 - SG - Changed TGLODETerrainCollider to TGLODEHeightField
+     19/11/04 - SG - Changed TGLODETerrainCollider to TGLODEHeightField
                         which now inherits from TGLODEBehaviour and works for
                         both TGLTerrainRenderer and TGLHeightField objects.
                         Added Capsule, Cylinder and Cone collider code for
                         the heightfield collider.
-    <li>23/04/04 - SG - Removed freeform static collider
-    <li>29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
-    <li>30/07/03 - SG - Creation.
-  </ul>
+     23/04/04 - SG - Removed freeform static collider
+     29/10/03 - SG - Fix for GLODETerrainCollider (Matheus Degiovani)
+     30/07/03 - SG - Creation.
+   
 }
 unit GLODECustomColliders;
 
@@ -52,15 +52,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes,
-  System.SysUtils,
-
- {$ELSE}
   Classes,
   SysUtils,
- {$ENDIF}
-
   // GLscene
   GLODEManager,
   ODEGL,
@@ -70,7 +63,7 @@ uses
   GLScene,
   GLTerrainRenderer,
   GLGraph,
-  XCollection,
+  GLXCollection,
   OpenGLTokens,
   GLContext,
   GLTexture,
@@ -143,7 +136,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Render(var rci: TRenderContextInfo); override;
@@ -182,12 +175,12 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
 
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    class function CanAddTo(collection: TXCollection): Boolean; override;
+    class function CanAddTo(collection: TGLXCollection): Boolean; override;
 
   end;
 
@@ -523,7 +516,7 @@ end;
 // Create
 //
 
-constructor TGLODECustomCollider.Create(AOwner: TXCollection);
+constructor TGLODECustomCollider.Create(AOwner: TGLXCollection);
 begin
   inherited;
 
@@ -789,7 +782,7 @@ end;
 // Create
 //
 
-constructor TGLODEHeightField.Create(AOwner: TXCollection);
+constructor TGLODEHeightField.Create(AOwner: TGLXCollection);
 var
   Allow: Boolean;
 begin
@@ -864,7 +857,7 @@ end;
 // CanAddTo
 //
 
-class function TGLODEHeightField.CanAddTo(collection: TXCollection): Boolean;
+class function TGLODEHeightField.CanAddTo(collection: TGLXCollection): Boolean;
 begin
   Result := False;
   if collection is TGLBehaviours then

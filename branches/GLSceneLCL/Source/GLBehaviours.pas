@@ -4,20 +4,20 @@
 {
   Standard TGLBehaviour subclasses for GLScene<p>
 
-  <b>History : </b><font size=-1><ul>
-    <li>08/05/08 - DaStr - Added a global GetInertia() function
-    <li>19/12/06 - DaStr - TGLBAcceleration.Create - creates Inertia right away,
+   History :  
+     08/05/08 - DaStr - Added a global GetInertia() function
+     19/12/06 - DaStr - TGLBAcceleration.Create - creates Inertia right away,
                          thus displaying it in the XCollection Editor
                          TGLBAcceleration.DoProgress - raises an exception
                          when required Inertia component is deleted by user
-    <li>24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
-    <li>02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug)
-    <li>09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
-    <li>11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
-    <li>10/04/00 - Egg - Improved persistence logic
-    <li>06/04/00 - Egg - Added Damping stuff to inertia
-    <li>05/04/00 - Egg - Creation
-  </ul></font>
+     24/09/02 - Egg - Support for negative rotation speeds (Marco Chong)
+     02/10/00 - Egg - Fixed TGLBInertia.DoProgress (DamplingEnabled bug)
+     09/10/00 - Egg - Fixed ApplyTranslationAcceleration & ApplyForce
+     11/08/00 - Egg - Fixed translation bug with root level objects & Inertia
+     10/04/00 - Egg - Improved persistence logic
+     06/04/00 - Egg - Added Damping stuff to inertia
+     05/04/00 - Egg - Creation
+   
 }
 unit GLBehaviours;
 
@@ -26,16 +26,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils
-  {$ELSE}
-    Classes, SysUtils
-  {$ENDIF}
-  ,
+  Classes, SysUtils,
   GLVectorTypes,
   GLScene,
   GLVectorGeometry,
-  XCollection,
+  GLXCollection,
   GLBaseClasses,
   GLCoordinates;
 
@@ -45,16 +40,16 @@ type
 
   {: Holds parameters for TGLScene basic damping model.<p>
     Damping is modeled by calculating a force from the speed, this force
-    can then be transformed to an acceleration is you know the object's mass.<br>
-    Formulas :<ul>
-    <li>damping = constant + linear * Speed + quadratic * Speed^2
-    <li>accel = damping / Mass
-    </ul> That's just basic physics :). A note on the components :<ul>
-    <li>constant : use it for solid friction (will stop abruptly an object after
+    can then be transformed to an acceleration is you know the object's mass. 
+    Formulas : 
+     damping = constant + linear * Speed + quadratic * Speed^2
+     accel = damping / Mass
+      That's just basic physics :). A note on the components : 
+     constant : use it for solid friction (will stop abruptly an object after
       decreasing its speed.
-    <li>linear : linear friction damping.
-    <li>quadratic : expresses viscosity.
-    </ul>  }
+     linear : linear friction damping.
+     quadratic : expresses viscosity.
+       }
   TGLDamping = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
@@ -119,7 +114,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -160,16 +155,16 @@ type
       {: Enable/Disable damping (damping has a high cpu-cycle cost).<p>
         Damping is enabled by default. }
     property DampingEnabled: boolean read FDampingEnabled write FDampingEnabled;
-      {: Damping applied to translation speed.<br>
+      {: Damping applied to translation speed. 
         Note that it is not "exactly" applied, ie. if damping would stop
         your object after 0.5 time unit, and your progression steps are
         of 1 time unit, there will be an integration error of 0.5 time unit. }
     property TranslationDamping: TGLDamping read FTranslationDamping
       write SetTranslationDamping;
-      {: Damping applied to rotation speed (yuck!).<br>
+      {: Damping applied to rotation speed (yuck!). 
         Well, this one is not "exact", like TranslationDamping, and neither
         it is "physical" since I'm reusing the mass and... and... well don't
-        show this to your science teacher 8).<br>
+        show this to your science teacher 8). 
         Anyway that's easier to use than the realworld formulas, calculated
         faster, and properly used can give a good illusion of reality. }
     property RotationDamping: TGLDamping read FRotationDamping write SetRotationDamping;
@@ -192,7 +187,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -399,7 +394,7 @@ end;
 
 // Create
 
-constructor TGLBInertia.Create(aOwner: TXCollection);
+constructor TGLBInertia.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FTranslationSpeed := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
@@ -643,7 +638,7 @@ end;
 
 // Create
 
-constructor TGLBAcceleration.Create(aOwner: TXCollection);
+constructor TGLBAcceleration.Create(aOwner: TGLXCollection);
 begin
   inherited;
   if aOwner <> nil then

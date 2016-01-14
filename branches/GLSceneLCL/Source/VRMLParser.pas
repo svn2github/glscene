@@ -4,13 +4,13 @@
 {
    VRML file format parser.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>02/04/07 - DaStr - Added $I GLScene.inc
-      <li>29/03/07 - DaStr - Added missing parameters in procedure's implementation
+    History : 
+       02/04/07 - DaStr - Added $I GLScene.inc
+       29/03/07 - DaStr - Added missing parameters in procedure's implementation
                               (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
-      <li>14/01/05 - SG - Added to CVS
-   </ul></font>
+       25/01/05 - SG - Added ShapeHints (creaseAngle), Normal and TexCoord support
+       14/01/05 - SG - Added to CVS
+    
 }
 unit VRMLParser;
 

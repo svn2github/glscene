@@ -4,21 +4,21 @@
 {
   Spatial partitioning related code that also uses GLScene objects
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Added GLVectorTypes to uses
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       06/06/10 - Yar - Added GLVectorTypes to uses
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       24/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
-      <li>06/03/07 - DaStr - Removed obsolete FPC IFDEF's
-      <li>19/12/06 - DaStr - Old version of ExtendedFrustumMakeFromSceneViewer function
+       06/03/07 - DaStr - Removed obsolete FPC IFDEF's
+       19/12/06 - DaStr - Old version of ExtendedFrustumMakeFromSceneViewer function
                               restored as an overloaded version of the new one
-      <li>04/11/05 - Mathx - Corrections related to bug 1335349
+       04/11/05 - Mathx - Corrections related to bug 1335349
                              (ExtendedFrustumMakeFromSceneViewer supporting more
                              than just regular TGLSceneViewer).
-      <li>03/12/04 - MF - Created
-  </ul></font>
+       03/12/04 - MF - Created
+   
 }
 
 unit GLSpatialPartitioning;

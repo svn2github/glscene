@@ -4,15 +4,15 @@
 {
    Stores contextual info useful during rendering methods.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
-      <li>22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TRenderContextInfo
-      <li>14/03/09 - DanB - Removed IsVolumeClipped functions, instead replaced with
+  History :  
+       23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
+       22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TRenderContextInfo
+       14/03/09 - DanB - Removed IsVolumeClipped functions, instead replaced with
                             IsVolumeClipped functions in GLVectorGeometry.pas that use TFrustrum
-      <li>09/10/08 - DanB - Added TRenderContextClippingInfo + IsVolumeClipped
+       09/10/08 - DanB - Added TRenderContextClippingInfo + IsVolumeClipped
                             functions from GLVectorGeometry.pas, added nearClippingDistance
-      <li>05/10/08 - DanB - Created from GLTexture.pas split
-   </ul></font>
+       05/10/08 - DanB - Created from GLTexture.pas split
+    
 }
 unit GLRenderContextInfo;
 
@@ -36,16 +36,16 @@ type
   // TGLObjectsSorting
   //
   {: Determines if objects are sorted, and how.<p>
-     Sorting is done level by level (and not for all entities), values are :<ul>
-     <li>osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
-     <li>osNone : do not sort objects.
- <li>osRenderFarthestFirst : render objects whose Position is the farthest from
+     Sorting is done level by level (and not for all entities), values are : 
+      osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
+      osNone : do not sort objects.
+  osRenderFarthestFirst : render objects whose Position is the farthest from
   the camera first.
-     <li>osRenderBlendedLast : opaque objects are not sorted and rendered
+      osRenderBlendedLast : opaque objects are not sorted and rendered
         first, blended ones are rendered afterwards and depth sorted.
- <li>osRenderNearestFirst : render objects whose Position is the nearest to
+  osRenderNearestFirst : render objects whose Position is the nearest to
   the camera first.
-      </ul> }
+        }
   TGLObjectsSorting = (osInherited, osNone,
     osRenderFarthestFirst, osRenderBlendedLast,
     osRenderNearestFirst);
@@ -53,17 +53,17 @@ type
   // TGLVisibilityCulling
   //
   {: Determines the visibility culling mode.
-     Culling is done level by level, allowed values are:<ul>
-     <li>vcInherited : use inherited culling value, if selected for the root
+     Culling is done level by level, allowed values are: 
+      vcInherited : use inherited culling value, if selected for the root
         level, defaults to vcNone
-     <li>vcNone : no visibility culling is performed
-     <li>vcObjectBased : culling is done on a per-object basis, each object may
+      vcNone : no visibility culling is performed
+      vcObjectBased : culling is done on a per-object basis, each object may
         or may not be culled base on its own AxisAlignedDimensions,
         culling has no impact on the visibility of its children
-     <li>vcHierarchical : culling is performed hierarchically, using hierarchical
+      vcHierarchical : culling is performed hierarchically, using hierarchical
         bounding boxes, if a parent is culled, all of its children, whatever their
         culling options are invisible.
-     <li><br>Depending on the structure of your scene the most efficient culling
+       Depending on the structure of your scene the most efficient culling
      method will be either vcObjectBased or vcHierarchical. Also note that if
      you use many objects with "static" geometry and have a T&amp;L graphics
      board, it may be faster not to cull at all (ie. leave this to the hardware). }

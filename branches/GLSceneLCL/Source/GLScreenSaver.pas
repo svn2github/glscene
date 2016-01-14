@@ -4,13 +4,13 @@
 {
    Component for making screen-savers an easy task<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>09/07/01 - Egg - Fix in PreviewSaver (from Marco Dissel)
-      <li>12/04/00 - Egg - Added ssoEnhancedMouseMoveDetection
-      <li>11/04/00 - Egg - Creation
-	</ul></font>
+	 History :  
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       09/07/01 - Egg - Fix in PreviewSaver (from Marco Dissel)
+       12/04/00 - Egg - Added ssoEnhancedMouseMoveDetection
+       11/04/00 - Egg - Creation
+	 
 
 	Parts of this code are based on DeskSpin sample by	Tom Nuydens
 		(http://www.gamedeveloper.org/delphi3d/).<p>
@@ -22,35 +22,30 @@ unit GLScreenSaver;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses
   Windows, Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Controls, VCL.Forms, VCL.Extctrls;
-{$ELSE}
   Controls, Forms, Extctrls;
-{$ENDIF}
-
 
 type
 
    // TScreenSaverOptions
    //
    {: Options d'automatisation du screen-saver.<p>
-      <ul>
-      <li>ssoAutoAdjustFormProperties : all relevant properties of main form
+       
+       ssoAutoAdjustFormProperties : all relevant properties of main form
 			will be auto-adjusted (form style, border style, form size and for
 			preview, ParentWindow).
-      <li>ssoAutoHookKeyboardEvents : hooks to main form's OnKeyPress and closes
+       ssoAutoHookKeyboardEvents : hooks to main form's OnKeyPress and closes
          screen saver when a key is pressed (form's KeyPreview is also set to True)
-      <li>ssoAutoHookMouseEvents : hooks to main form's OnMouseMove and closes
+       ssoAutoHookMouseEvents : hooks to main form's OnMouseMove and closes
          screen saver when mouse is moved (you mays have to handle other mouse
          move events manually if you have placed components on the form)
-      <li>ssoEnhancedMouseMoveDetection : gets the mouse position every half-second
+       ssoEnhancedMouseMoveDetection : gets the mouse position every half-second
          and closes the saver if position changed (uses GetCursorPos and a TTimer)
-      </ul> }
+        }
    TScreenSaverOption = (ssoAutoAdjustFormProperties, ssoAutoHookKeyboardEvents,
                          ssoAutoHookMouseEvents, ssoEnhancedMouseMoveDetection);
 	TScreenSaverOptions = set of TScreenSaverOption;
@@ -74,16 +69,16 @@ type
 	{: Drop this component on your main form to make it a screensaver.<p>
 		You'll also need to change the extension from ".exe" to ".scr" (in the
 		project options / application tab).<p>
-		How this component works :<ul>
-		<li>At design-time, the only event you may want to hook is
+		How this component works : 
+		 At design-time, the only event you may want to hook is
 			OnPropertiesRequested (to diplay your screen-saver's config dialog,
 			if you don't have one, at least fill in the AboutString property
 			and it will be used in a ShowMessage)
-		<li>At run-time, once its props are loaded, this component will parse the
+		 At run-time, once its props are loaded, this component will parse the
 			command line and trigger relevant events
-		<li>Basicly, you only need to care about drawing in your main form's
+		 Basicly, you only need to care about drawing in your main form's
 			client area (in a resolution/size independant way if possible)
-		</ul><br>
+		  
 		There is no real difference between execution and preview modes, except
 		for the events fired... and the size of the form :). }
 	TGLScreenSaver = class (TComponent)
@@ -125,7 +120,7 @@ type
             Returns True if the Close request wasn't canceled (by event or
             password fail) and will actually happen.
 				Use this if you implemented specific screen-saver exiting in your
-				main form.<br>
+				main form. 
 				It first triggers the OnCloseQuery, where the close request can be
 				canceled, if this passed, the password is checked if there is any,
 				then sends a WM_CLOSE to the saver windows. }

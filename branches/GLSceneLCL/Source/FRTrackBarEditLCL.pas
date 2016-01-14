@@ -4,9 +4,9 @@
 {
    Frame combining a TrackBar and an Edit.<p>
 
-   <b>History : </b><font size=-1><ul>
+    History :  
 
-   </ul></font>
+    
 }
 unit FRTrackBarEditLCL;
 

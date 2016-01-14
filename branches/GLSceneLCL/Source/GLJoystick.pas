@@ -4,14 +4,14 @@
 {
    Component for handling joystick messages<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>29/01/02 - Egg - Added NoCaptureErrors
-      <li>18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
-      <li>14/04/00 - Egg - Various minor to major fixes, the component should
+	History :  
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       29/01/02 - Egg - Added NoCaptureErrors
+       18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
+       14/04/00 - Egg - Various minor to major fixes, the component should
                            now work properly for the 4 first buttons and XY axis
-	   <li>20/03/00 - Egg - Creation from GLScene's TGLJoystick
-	</ul></font>
+	    20/03/00 - Egg - Creation from GLScene's TGLJoystick
+	 
 }
 unit GLJoystick;
 
@@ -22,11 +22,7 @@ interface
 
 uses
   Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.Controls,
-{$ELSE}
   Forms, Controls,
-{$ENDIF}
   Classes, Messages;
 
 type

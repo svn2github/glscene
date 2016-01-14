@@ -4,27 +4,27 @@
 {
   Class for managing a ROAM (square) patch.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
-  <li>22/08/10 - DaStr - Fixed compiler warning
-  <li>27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
-  <li>26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
-  <li>20/05/10 - Yar - Fixes for Linux x64
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
+   History :  
+   29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
+   22/08/10 - DaStr - Fixed compiler warning
+   27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
+   26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
+   20/05/10 - Yar - Fixes for Linux x64
+   16/10/08 - UweR - Compatibility fix for Delphi 2009
+   30/03/07 - DaStr - Added $I GLScene.inc
+   19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
   It will now increase the buffer instead of not splitting. Bugtracker ID=1574111
-  <li>09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.
-  <li>09/06/06 - Lin - Bugfix: Stop splitting Triangles when MaxCLODTriangles is reached (prevents Access Violations)
-  <li>10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
+   09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.
+   09/06/06 - Lin - Bugfix: Stop splitting Triangles when MaxCLODTriangles is reached (prevents Access Violations)
+   10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
   but not GL_EXT_draw_range_elements
-  <li>25/04/04 - EG - Occlusion testing support
-  <li>06/02/03 - EG - Adaptative variance computation
-  <li>03/12/02 - EG - Minor ROAM tessel/render optimizations
-  <li>15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
-  <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
-  <li>10/09/01 - EG - Creation
-  </ul></font>
+   25/04/04 - EG - Occlusion testing support
+   06/02/03 - EG - Adaptative variance computation
+   03/12/02 - EG - Minor ROAM tessel/render optimizations
+   15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
+   24/02/02 - EG - Hybrid ROAM-stripifier engine
+   10/09/01 - EG - Creation
+   
 }
 unit GLROAMPatch;
 
@@ -122,7 +122,7 @@ type
       forceROAM: Boolean);
     { : Render the patch by accumulating triangles.<p>
       The lists are assumed to have enough capacity to allow AddNC calls
-      (additions without capacity check).<br>
+      (additions without capacity check). 
       Once at least autoFlushVertexCount vertices have been accumulated,
       perform a FlushAccum }
     procedure RenderAccum(vertices: TAffineVectorList;

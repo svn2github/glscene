@@ -5,14 +5,14 @@
    Widget specific Context.<p>
    GLWidgetContext replaces old GLLinGTKContext.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
-      <li>02/05/10 - Yar - Fixes for Linux x64
-      <li>21/04/10 - Yar - Fixed conditions
+    History :  
+       11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
+       02/05/10 - Yar - Fixes for Linux x64
+       21/04/10 - Yar - Fixed conditions
                            (by Rustam Asmandiarov aka Predator)
-      <li>06/04/10 - Yar - Added to GLScene
+       06/04/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-   </ul></font>
+    
 }
 unit GLWidgetContext;
 

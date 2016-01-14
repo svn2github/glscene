@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>29/06/10 - Yar - Improved FPC compatibility
-      <li>29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
-      <li>27/02/10 - Yar - Creation
-  </ul><p>
+   History :  
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       29/06/10 - Yar - Improved FPC compatibility
+       29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
+       27/02/10 - Yar - Creation
+   <p>
 }
 unit GLFileJPEG;
 
@@ -32,7 +32,7 @@ type
     procedure SetSmoothing(const AValue: boolean);
   public
     constructor Create; override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -605,7 +605,7 @@ end;
 // Capabilities
 
 
-class function TGLJPEGImage.Capabilities: TDataFileCapabilities;
+class function TGLJPEGImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

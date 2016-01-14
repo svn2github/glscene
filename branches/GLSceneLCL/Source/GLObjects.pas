@@ -5,141 +5,141 @@
   Implementation of basic scene objects plus some management routines.<p>
 
   All objects declared in this unit are part of the basic GLScene package,
-  these are only simple objects and should be kept simple and lightweight.<br>
+  these are only simple objects and should be kept simple and lightweight. 
 
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found GLGeomObjects.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>12/03/13 - Yar - Added TGLSuperellipsoid (contributed by Eric Hardinge)
-  <li>10/03/13 - PW - Added OctahedronBuildList and TetrahedronBuildList
-  <li>20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
+   History :  
+   12/03/13 - Yar - Added TGLSuperellipsoid (contributed by Eric Hardinge)
+   10/03/13 - PW - Added OctahedronBuildList and TetrahedronBuildList
+   20/11/12 - PW - CPP compatibility: replaced direct access to some properties with
                  getter and a setter methods
-  <li>23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
+   23/03/11 - Yar - Bugfixed TGLPlane.Assign (thanks ltyrosine)
                        Replaced plane primitives to triangles, added tangent and binormal attributes
-  <li>29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>29/06/10 - Yar - Added loColorLogicXor to TGLLines.Options
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
+   29/11/10 - Yar - Bugfixed client color array enabling in TGLPoints.BuildList when it not used (thanks rbenetis)
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   29/06/10 - Yar - Added loColorLogicXor to TGLLines.Options
+   22/04/10 - Yar - Fixes after GLState revision
+   11/04/10 - Yar - Replaced glNewList to GLState.NewList in TGLDummyCube.DoRender
+   05/03/10 - DanB - More state added to TGLStateCache
+   22/02/10 - Yar - Removed NoZWrite in TGLPlane, TGLSprite
                  Now use Material.DepthProperties
-  <li>28/12/09 - DanB - Modifying TGLLineBase.LineColor now calls StructureChanged
-  <li>13/03/09 - DanB - ScreenRect now accepts a buffer parameter, rather than using CurrentBuffer
-  <li>05/10/08 - DaStr - Added lsmLoop support to TGLLines
+   28/12/09 - DanB - Modifying TGLLineBase.LineColor now calls StructureChanged
+   13/03/09 - DanB - ScreenRect now accepts a buffer parameter, rather than using CurrentBuffer
+   05/10/08 - DaStr - Added lsmLoop support to TGLLines
                 (thanks Alejandro Leon Escalera) (BugtrackerID = 2084250)
-  <li>22/01/08 - DaStr - Fixed rendering of TGLPoints
+   22/01/08 - DaStr - Fixed rendering of TGLPoints
                 (thanks Kapitan) (BugtrackerID = 1876920)
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   14/03/07 - DaStr - Added explicit pointer dereferencing
                  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>15/02/07 - DaStr - Global $R- removed, added default values to
+   15/02/07 - DaStr - Global $R- removed, added default values to
                  TGLSprite.NoZWrite, MirrorU, MirrorV
-  <li>14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
-  <li>19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
-  <li>19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
-  <li>08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
+   14/01/07 - DaStr - Fixed TGLCube.BuildList. Bugtracker ID=1623743 (Thanks Pete Jones)
+   19/10/06 - LC - Fixed IcosahedronBuildList. Bugtracker ID=1490784 (thanks EPA_Couzijn)
+   19/10/06 - LC - Fixed TGLLineBase.Assign problem. Bugtracker ID=1549354 (thanks Zapology)
+   08/10/05 - Mathx - Fixed TGLLines.nodes.assign problem (thanks to  Yong Yoon Kit);
                  Also fixed a TGLLineBase.assign problem (object being assigned to
                  was refering the base lists, not copying them).
                  Bugtracker ID=830846
-  <li>17/01/05 - SG - Added color support for bezier style TGLLines
-  <li>03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
-  <li>06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
-  <li>20/01/04 - SG - Added IcosahedronBuildList
-  <li>30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
+   17/01/05 - SG - Added color support for bezier style TGLLines
+   03/12/04 - MF - Added TGLSprite.AxisAlignedDimensionsUnscaled override
+   06/07/04 - SG - TGLCube.RayCastIntersect fix (Eric Pascual)
+   20/01/04 - SG - Added IcosahedronBuildList
+   30/11/03 - MF - Added TGLSphere.GenerateSilhouette - it now takes the
                       stacks/slices of the sphere into account
-  <li>10/09/03 - EG - Introduced TGLNodedLines
-  <li>18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
-  <li>21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
+   10/09/03 - EG - Introduced TGLNodedLines
+   18/08/03 - SG - Added MirrorU and MirrorV to TGLSprite for mirroring textures
+   21/07/03 - EG - TGLTeapot moved to new GLTeapot unit,
                       TGLDodecahedron moved to new GLPolyhedron unit,
                       TGLCylinder, TGLCone, TGLTorus, TGLDisk, TGLArrowLine,
                       TGLAnnulus, TGLFrustrum and TGLPolygon moved to new
                       GLGeomObjects unit
-  <li>16/07/03 - EG - Style changes and cleanups
-  <li>19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
-  <li>13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
-  <li>03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
-  <li>01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)
-  <li>14/04/03 - SG - Added a Simple Bezier Spline to TGLLines (color not supported yet)
-  <li>02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
-  <li>13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
-  <li>22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
-  <li>10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
-  <li>08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
-  <li>27/09/02 - EG - Added TGLPointParameters
-  <li>24/07/02 - EG - Added TGLCylinder.Alignment
-  <li>23/07/02 - EG - Added TGLPoints (experimental)
-  <li>20/07/02 - EG - TGLCylinder.RayCastIntersect and TGLPlane.RayCastIntersect
-  <li>18/07/02 - EG - Added TGLCylinder.Align methods
-  <li>07/07/02 - EG - Added TGLPlane.Style
-  <li>03/07/02 - EG - TGLPolygon now properly setups normals (filippo)
-  <li>17/03/02 - EG - Support for transparent lines
-  <li>02/02/02 - EG - Fixed TGLSprite change notification
-  <li>26/01/02 - EG - TGLPlane & TGLCube now osDirectDraw
-  <li>20/01/02 - EG - TGLSpaceText moved to GLSpaceText
-  <li>22/08/01 - EG - TGLTorus.RayCastIntersect fixes
-  <li>30/07/01 - EG - Updated AxisAlignedDimensions implems
-  <li>16/03/01 - EG - TGLCylinderBase, changed default Stacks from 8 to 4
-  <li>27/02/01 - EG - Fix in TGLCube texcoords, added TGLFrustrum (thx Robin Gerrets)
-  <li>22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
-  <li>05/02/01 - EG - Minor changes to TGLCube.BuildList
-  <li>21/01/01 - EG - BaseProjectionMatrix fix for TGLHUDSprite (picking issue),
+   16/07/03 - EG - Style changes and cleanups
+   19/06/03 - MF - Added GenerateSilhouette to TGLCube and TGLPlane.
+   13/06/03 - EG - Fixed TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
+   03/06/03 - EG - Added TGLAnnulus.RayCastIntersect (Alexandre Hirzel)
+   01/05/03 - SG - Added NURBS Curve to TGLLines (color not supported yet)
+   14/04/03 - SG - Added a Simple Bezier Spline to TGLLines (color not supported yet)
+   02/04/03 - EG - TGLPlane.RayCastIntersect fix (Erick Schuitema)
+   13/02/03 - DanB - added AxisAlignedDimensionsUnscaled functions
+   22/01/03 - EG - TGLCube.RayCastIntersect fixes (Dan Bartlett)
+   10/01/03 - EG - TGLCube.RayCastIntersect (Stuart Gooding)
+   08/01/03 - RC - Added TGLPlane.XScope and YScope, to use just a part of the texture
+   27/09/02 - EG - Added TGLPointParameters
+   24/07/02 - EG - Added TGLCylinder.Alignment
+   23/07/02 - EG - Added TGLPoints (experimental)
+   20/07/02 - EG - TGLCylinder.RayCastIntersect and TGLPlane.RayCastIntersect
+   18/07/02 - EG - Added TGLCylinder.Align methods
+   07/07/02 - EG - Added TGLPlane.Style
+   03/07/02 - EG - TGLPolygon now properly setups normals (filippo)
+   17/03/02 - EG - Support for transparent lines
+   02/02/02 - EG - Fixed TGLSprite change notification
+   26/01/02 - EG - TGLPlane & TGLCube now osDirectDraw
+   20/01/02 - EG - TGLSpaceText moved to GLSpaceText
+   22/08/01 - EG - TGLTorus.RayCastIntersect fixes
+   30/07/01 - EG - Updated AxisAlignedDimensions implems
+   16/03/01 - EG - TGLCylinderBase, changed default Stacks from 8 to 4
+   27/02/01 - EG - Fix in TGLCube texcoords, added TGLFrustrum (thx Robin Gerrets)
+   22/02/01 - EG - Added AxisAlignedDimensions overrides by Uwe Raabe
+   05/02/01 - EG - Minor changes to TGLCube.BuildList
+   21/01/01 - EG - BaseProjectionMatrix fix for TGLHUDSprite (picking issue),
   TGLHUDSprite moved to GLHUDObjects
-  <li>14/01/01 - EG - Fixed TGLSphere texture coordinates
-  <li>13/01/01 - EG - TGLSprite matrix compatibility update
-  <li>09/01/01 - EG - TGLSpaceText now handles its TFont.OnFontChange
-  <li>08/01/01 - EG - Added TGLLinesNode (color support) and Node size control
-  <li>22/12/00 - EG - Sprites are no longer texture enabled by default,
+   14/01/01 - EG - Fixed TGLSphere texture coordinates
+   13/01/01 - EG - TGLSprite matrix compatibility update
+   09/01/01 - EG - TGLSpaceText now handles its TFont.OnFontChange
+   08/01/01 - EG - Added TGLLinesNode (color support) and Node size control
+   22/12/00 - EG - Sprites are no longer texture enabled by default,
                       updated TGLSprite.BuildList to work with new matrices
-  <li>14/11/00 - EG - Added TGLDummyCube.Destroy (thx Airatz)
-  <li>08/10/00 - EG - Fixed call to wglUseFontOutlines
-  <li>06/08/00 - EG - TRotationSolid renamed to TGLRevolutionSolid & moved to GLExtrusion
-  <li>04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
-  <li>02/08/00 - EG - Added TGLPolygonBase
-  <li>19/07/00 - EG - Added TGLHUDSprite
-  <li>18/07/00 - EG - Added TGLRevolutionSolid
-  <li>15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
+   14/11/00 - EG - Added TGLDummyCube.Destroy (thx Airatz)
+   08/10/00 - EG - Fixed call to wglUseFontOutlines
+   06/08/00 - EG - TRotationSolid renamed to TGLRevolutionSolid & moved to GLExtrusion
+   04/08/00 - EG - Fixed sphere main body texture coords + slight speedup
+   02/08/00 - EG - Added TGLPolygonBase
+   19/07/00 - EG - Added TGLHUDSprite
+   18/07/00 - EG - Added TGLRevolutionSolid
+   15/07/00 - EG - Code reduction and minor speedup for all quadric objects,
                       Added TGLLineBase (split of TGLLines),
                       TGLDummyCube now uses osDirectDraw instead of special behaviour
-  <li>13/07/00 - EG - Added TGLArrowLine (code by Aaron Hochwimmer)
-  <li>28/06/00 - EG - Support for "ObjectStyle"
-  <li>23/06/00 - EG - Reduced default Loop count for TGLDisk
-  <li>18/06/00 - EG - TGLMesh and accompanying stuff moved to GLMesh
-  <li>14/06/00 - EG - Added Capacity to TVertexList
-  <li>09/06/00 - EG - First row of Geometry-related upgrades
-  <li>08/06/00 - EG - Added ReleaseFontManager, fixed TGLSpaceText DestroyList,
-  <li>01/06/00 - EG - Added TGLAnnulus (code by Aaron Hochwimmer)
-  <li>29/05/00 - EG - TGLLines now uses TGLNode/TGLNodes
-  <li>28/05/00 - EG - Added persistence ability to TGLLines,
+   13/07/00 - EG - Added TGLArrowLine (code by Aaron Hochwimmer)
+   28/06/00 - EG - Support for "ObjectStyle"
+   23/06/00 - EG - Reduced default Loop count for TGLDisk
+   18/06/00 - EG - TGLMesh and accompanying stuff moved to GLMesh
+   14/06/00 - EG - Added Capacity to TGLVertexList
+   09/06/00 - EG - First row of Geometry-related upgrades
+   08/06/00 - EG - Added ReleaseFontManager, fixed TGLSpaceText DestroyList,
+   01/06/00 - EG - Added TGLAnnulus (code by Aaron Hochwimmer)
+   29/05/00 - EG - TGLLines now uses TGLNode/TGLNodes
+   28/05/00 - EG - Added persistence ability to TGLLines,
                       Added defaults for all TGLLines properties
-  <li>27/05/00 - EG - Moved in RogerCao's TGLLines object, added a TLineNode
+   27/05/00 - EG - Moved in RogerCao's TGLLines object, added a TLineNode
                       class (currently private) and various enhancements + fixes,
                       DodecahedronBuildList now available as a procedure,
                       CubeWireframeBuildList now available as a procedure
-  <li>26/05/00 - RoC - Added division property to TGLLines, and Spline supported
-  <li>26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
-  <li>14/05/00 - EG - Removed Top/Bottom checks for TGLSphere,
+   26/05/00 - RoC - Added division property to TGLLines, and Spline supported
+   26/05/00 - EG - Moved vectorfile remnants to GLVectorFiles
+   14/05/00 - EG - Removed Top/Bottom checks for TGLSphere,
   Added mmTriangleStrip support in CalcNormals
-  <li>08/05/00 - EG - Uncommented DisableAutoTexture in TGLSpaceText.BuildList
-  <li>07/05/00 - RoC - TGLLines added, to show a list of vertex
-  <li>26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
-  <li>18/04/00 - EG - Overriden TGLDummyCube.Render
-  <li>16/04/00 - EG - FontManager now published and auto-creating
-  <li>12/04/00 - EG - Added TGLCylinderBase.Loops (fixes a bug, thanks Uwe)
-  <li>24/03/00 - EG - Added Rotation to TGLSprite, fixed sprite size
-  <li>20/03/00 - EG - Enhanced FontManager
-  <li>17/03/00 - EG - Fixed SpaceText glBaseList bug,
+   08/05/00 - EG - Uncommented DisableAutoTexture in TGLSpaceText.BuildList
+   07/05/00 - RoC - TGLLines added, to show a list of vertex
+   26/04/00 - EG - Reactivated stuff in SetupQuadricParams (thanks Nelson Chu)
+   18/04/00 - EG - Overriden TGLDummyCube.Render
+   16/04/00 - EG - FontManager now published and auto-creating
+   12/04/00 - EG - Added TGLCylinderBase.Loops (fixes a bug, thanks Uwe)
+   24/03/00 - EG - Added Rotation to TGLSprite, fixed sprite size
+   20/03/00 - EG - Enhanced FontManager
+   17/03/00 - EG - Fixed SpaceText glBaseList bug,
   TGLSprite now uses a transposition of the globalmatrix
-  <li>16/03/00 - EG - Enhanced TFontManager to allow lower quality
-  <li>14/03/00 - EG - Added subobjects Barycenter support for TGLDummyCube
-  <li>09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
+   16/03/00 - EG - Enhanced TFontManager to allow lower quality
+   14/03/00 - EG - Added subobjects Barycenter support for TGLDummyCube
+   09/02/00 - EG - ObjectManager stuff moved to GLSceneRegister,
   FreeForm and vector file stuff moved to new GLVectorFileObjects
-  <li>08/02/00 - EG - Added TGLDummyCube
-  <li>05/02/00 - EG - Javadocisation, fixes and enhancements :
-                      TVertexList.AddVertex, "default"s to properties
-  </ul></font>
+   08/02/00 - EG - Added TGLDummyCube
+   05/02/00 - EG - Javadocisation, fixes and enhancements :
+                      TGLVertexList.AddVertex, "default"s to properties
+   
 }
 unit GLObjects;
 
@@ -148,12 +148,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils,
-  {$ELSE}
   Classes, SysUtils,
-  {$ENDIF}
-
   GLVectorGeometry, GLVectorTypes, GLScene, OpenGLAdapter,
   OpenGLTokens, GLVectorLists, GLCrossPlatform, GLContext, GLSilhouette,
   GLColor, GLRenderContextInfo, GLBaseClasses, GLNodes, GLCoordinates;
@@ -179,8 +174,8 @@ type
   { : A simple cube, invisible at run-time.<p>
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
-    mechanism needs be described, you can use DummyCubes.<br>
-    DummyCube's barycenter is its children's barycenter.<br>
+    mechanism needs be described, you can use DummyCubes. 
+    DummyCube's barycenter is its children's barycenter. 
     The DummyCube can optionnally amalgamate all its children into a single
     display list (see Amalgamate property). }
   TGLDummyCube = class(TGLCameraInvariantObject)
@@ -230,7 +225,7 @@ type
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
       situations, however, this means that changes to the children will
-      be ignored untill you call StructureChanged on the dummy cube.<br>
+      be ignored untill you call StructureChanged on the dummy cube. 
       Some objects, that have their own display list management, may not
       be compatible with this behaviour. This will also prevents sorting
       and culling to operate as usual.<p>
@@ -464,12 +459,12 @@ type
       If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
     { : Defines the points colors.<p>
-      <ul>
-      <li>if empty, point color will be opaque white
-      <li>if contains a single color, all points will use that color
-      <li>if contains N colors, the first N points (at max) will be rendered
+       
+       if empty, point color will be opaque white
+       if contains a single color, all points will use that color
+       if contains N colors, the first N points (at max) will be rendered
       using the corresponding colors.
-      </ul> }
+        }
     property Colors: TVectorList read FColors write SetColors;
 
   published
@@ -478,7 +473,7 @@ type
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
     { : Tells the component if point coordinates are static.<p>
       If static, changes to the positions should be notified via an
-      explicit StructureChanged call, or may not refresh.<br>
+      explicit StructureChanged call, or may not refresh. 
       Static sets of points may render faster than dynamic ones. }
     property Static: Boolean read FStatic write SetStatic;
     { : Point size, all points have a fixed size. }
@@ -708,12 +703,12 @@ type
       default lsmLines;
 
     { : Rendering options for the line.<p>
-      <ul>
-      <li>loUseNodeColorForLines: if set lines will be drawn using node
+       
+       loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
       will be used (single color).
       loColorLogicXor: enable logic operation for color of XOR type.
-      </ul> }
+        }
     property Options: TLinesOptions read FOptions write SetOptions;
   end;
 
@@ -773,8 +768,8 @@ type
   // TNormalSmoothing
   //
   { : Determines how and if normals are smoothed.<p>
-    - nsFlat : facetted look<br>
-    - nsSmooth : smooth look<br>
+    - nsFlat : facetted look 
+    - nsSmooth : smooth look 
     - nsNone : unlighted rendering, usefull for decla texturing }
   TNormalSmoothing = (nsFlat, nsSmooth, nsNone);
 

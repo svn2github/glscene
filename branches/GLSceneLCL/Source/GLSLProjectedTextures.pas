@@ -4,26 +4,26 @@
 {
    Implements projected textures through a GLScene object via GLSL.
 
-   <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-        <li>02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
+    History :  
+         23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+         02/05/07 - LC -     Fixed alpha bug. (Bugtracker ID=1710964)
                                 Fixed AllowReverseProjection attenuation bug.
                                   (Bugtracker ID=1710974)
                                 Added try-finally block in SetupShader
-        <li>13/04/07 - LC -     Fixed bug that caused Attenuation to fail. (Bugtracker ID=1699882)
+         13/04/07 - LC -     Fixed bug that caused Attenuation to fail. (Bugtracker ID=1699882)
                                 Also added Quadratic attenuation
-        <li>02/04/07 - DaStr -  Added $I GLScene.inc
-        <li>25/03/07 - fig -    Only The texMatrix is passed to the shader now,
+         02/04/07 - DaStr -  Added $I GLScene.inc
+         25/03/07 - fig -    Only The texMatrix is passed to the shader now,
                                   no need for the InvModelViewMatrix
                                 Changed Emitter color, brightness and Attenuation
                                   properties to use Uniforms in the shader, so
                                   they're now dynamic.
-        <li>23/03/07 - fig -    Fixed reverse projection bug and added Quick
+         23/03/07 - fig -    Fixed reverse projection bug and added Quick
                                   Decimal Separator fix.
                                 Finished Design time support.
                                 Now checks for GLSL support and just renders the children as normal,
                                   if not supported.
-        <li>22/03/07 - fig -    Initial version.
+         22/03/07 - fig -    Initial version.
  
 }
 

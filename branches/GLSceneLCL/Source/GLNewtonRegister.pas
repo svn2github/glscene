@@ -4,10 +4,10 @@
 {
   Design time registration code for the Newton Manager.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>04/01/11 - FP - Removed Joint
-  <li>15/07/10 - FP - Creation by Franck Papouin
-  </ul></font>
+   History :  
+   04/01/11 - FP - Removed Joint
+   15/07/10 - FP - Creation by Franck Papouin
+   
 }
 
 unit GLNewtonRegister;

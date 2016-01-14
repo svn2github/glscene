@@ -13,15 +13,15 @@
    glscene newsgroups.<p>
 
 
-   <b>History : </b><font size=-1><ul>
-      <li>30/06/11 - DaStr - Converted many procedures to functions
+    History :  
+       30/06/11 - DaStr - Converted many procedures to functions
                              Bugfixed Assign() in some places
                              Added "Cutoff" property instead of fixed EPS values
-      <li>02/06/11 - DaStr - DeltaTime is now Double, like in Cadencer
+       02/06/11 - DaStr - DeltaTime is now Double, like in Cadencer
                              Added CustomAnimatedItems
-      <li>28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
-      <li>25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
-      <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
+       28/05/11 - DaStr - Added the AdjustDistanceTo[..]Ex procedures
+       25/02/07 - DaStr - Added the AdjustDistanceTo[..] procedures
+       23/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     TODO:
@@ -90,7 +90,7 @@ type
   {: TGLNavigatorSmoothChangeItem includes a basic set of parameters
      that control the smoothness of movement.<p>
   }
-  TGLNavigatorSmoothChangeItem = class(TXCollectionItem)
+  TGLNavigatorSmoothChangeItem = class(TGLXCollectionItem)
   private
     FInertia: Single;
     FSpeed: Single;
@@ -106,7 +106,7 @@ type
   public
     {: Returns False if there was no change. }
     function Proceed(ADeltaTime: Double): Boolean; virtual; abstract;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     procedure Assign(Source: TPersistent); override;
     procedure ScaleParameters(const Value: Single); virtual;
     procedure ResetTargetValue(); virtual; abstract;
@@ -154,7 +154,7 @@ type
     class function FriendlyName: string; override;
     function Proceed(ADeltaTime: Double): Boolean; override;
     procedure Assign(Source: TPersistent); override;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure ResetTargetValue(); override;
   published
@@ -166,7 +166,7 @@ type
   TGLNavigatorSmoothChangeItemClass = class of TGLNavigatorSmoothChangeItem;
 
   {: XCollection of TGLNavigatorSmoothChangeItem. }
-  TGLNavigatorSmoothChangeItems = class(TXCollection)
+  TGLNavigatorSmoothChangeItems = class(TGLXCollection)
   private
     function GetItems(const Index : Integer): TGLNavigatorSmoothChangeItem;
     procedure SetItems(const Index : Integer; const Value: TGLNavigatorSmoothChangeItem);
@@ -174,8 +174,8 @@ type
     procedure DoProceed(ADeltaTime: Double);
   public
     function Add(AClass : TGLNavigatorSmoothChangeItemClass): TGLNavigatorSmoothChangeItem;
-    function CanAdd(AClass: TXCollectionItemClass): Boolean; override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    function CanAdd(AClass: TGLXCollectionItemClass): Boolean; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
     property Items[const Index : Integer]: TGLNavigatorSmoothChangeItem read GetItems write
             SetItems; default;
   end;
@@ -412,18 +412,18 @@ type
   // TGLSmoothUserInterface
   //
   {: TGLSmoothUserInterface is the component which reads the userinput and transform it into action.<p>
-      <ul>
-	   <li>Mouselook(ADeltaTime: double) : handles mouse look... Should be called
+       
+	    Mouselook(ADeltaTime: double) : handles mouse look... Should be called
                            in the Cadencer event. (Though it works everywhere!)
-      </ul>
+       
 	   The four properties to get you started are:
-      <ul>
-	   <li>InvertMouse     : Inverts the mouse Y axis.
-	   <li>AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
-	   <li>GLNavigator     : The Navigator which receives the user movement.
-	   <li>GLVertNavigator : The Navigator which if set receives the vertical user
+       
+	    InvertMouse     : Inverts the mouse Y axis.
+	    AutoUpdateMouse : If enabled (by defaul), than handles all mouse updates.
+	    GLNavigator     : The Navigator which receives the user movement.
+	    GLVertNavigator : The Navigator which if set receives the vertical user
                            movement. Used mostly for cameras....
-      </ul>
+       
    }
   TGLSmoothUserInterface = class(TComponent)
   private
@@ -1437,7 +1437,7 @@ begin
   end;
 end;
 
-constructor TGLNavigatorSmoothChangeItem.Create(aOwner: TXCollection);
+constructor TGLNavigatorSmoothChangeItem.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FInertia := 1;
@@ -1490,7 +1490,7 @@ begin
   Result := AClass.Create(Self);
 end;
 
-function TGLNavigatorSmoothChangeItems.CanAdd(AClass: TXCollectionItemClass): Boolean;
+function TGLNavigatorSmoothChangeItems.CanAdd(AClass: TGLXCollectionItemClass): Boolean;
 begin
   Result := AClass.InheritsFrom(TGLNavigatorSmoothChangeItem);
 end;
@@ -1508,7 +1508,7 @@ begin
   Result := TGLNavigatorSmoothChangeItem(inherited GetItems(Index));
 end;
 
-class function TGLNavigatorSmoothChangeItems.ItemsClass: TXCollectionItemClass;
+class function TGLNavigatorSmoothChangeItems.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TGLNavigatorSmoothChangeItem;
 end;
@@ -1593,7 +1593,7 @@ begin
   end;
 end;
 
-constructor TGLNavigatorSmoothChangeVector.Create(aOwner: TXCollection);
+constructor TGLNavigatorSmoothChangeVector.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FTargetValue := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

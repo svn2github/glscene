@@ -2,15 +2,15 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Register TXCollection property editor<p>
+   Register TGLXCollection property editor<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>11/11/09 - DaStr - Improved FPC compatibility
+	 History :  
+       20/05/10 - Yar - Fixes for Linux x64
+       11/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>03/07/04 - LR - Removed ..\ from the GLScene.inc
-      <li>16/04/00 - Egg - Creation
-	</ul></font>
+       03/07/04 - LR - Removed ..\ from the GLScene.inc
+       16/04/00 - Egg - Creation
+	 
 }
 unit RegisterXCollection;
 
@@ -19,7 +19,7 @@ interface
 {$i GLScene.inc}
 
 uses
-  Classes, XCollection,
+  Classes, GLXCollection,
   {$IFDEF FPC}
      componenteditors, propedits
   {$ELSE}
@@ -31,7 +31,7 @@ type
 
 	// TGLXCollectionProperty
 	//
-	TXCollectionProperty = class(TClassProperty)
+	TGLXCollectionProperty = class(TClassProperty)
 		public
 			{ Public Declarations }
 			function GetAttributes: TPropertyAttributes; override;
@@ -52,27 +52,27 @@ uses {$IFNDEF FPC}FXCollectionEditor{$ELSE}FXCollectionEditorLCL{$ENDIF};
 
 procedure Register;
 begin
-  RegisterPropertyEditor(TypeInfo(TXCollection), nil, '', TXCollectionProperty);
+  RegisterPropertyEditor(TypeInfo(TGLXCollection), nil, '', TGLXCollectionProperty);
 end;
 
-//----------------- TXCollectionProperty ------------------------------------
+//----------------- TGLXCollectionProperty ------------------------------------
 
 // GetAttributes
 //
-function TXCollectionProperty.GetAttributes: TPropertyAttributes;
+function TGLXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
 	Result:=[paDialog];
 end;
 
 // Edit
 //
-procedure TXCollectionProperty.Edit;
+procedure TGLXCollectionProperty.Edit;
 begin
    with XCollectionEditor do begin
    {$IFDEF FPC}
-      SetXCollection(TXCollection(GetObjectValue));
+      SetXCollection(TGLXCollection(GetObjectValue));
    {$ELSE}
-      SetXCollection(TXCollection(GetOrdValue), Self.Designer);
+      SetXCollection(TGLXCollection(GetOrdValue), Self.Designer);
    {$ENDIF}
       Show;
    end;

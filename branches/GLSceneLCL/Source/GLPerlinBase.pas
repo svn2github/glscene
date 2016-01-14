@@ -4,12 +4,12 @@
 {
   Functions for generating perlin noise.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>20/05/10 - Yar - Fixes for Linux x64
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/03/07 - DaStr - Cosmetic fixes for FPC compatibility.
-  <li>29/01/03 - JaJ - Submitted to GLScene.
-  </ul></font>
+   History :  
+   20/05/10 - Yar - Fixes for Linux x64
+   30/03/07 - DaStr - Added $I GLScene.inc
+   28/03/07 - DaStr - Cosmetic fixes for FPC compatibility.
+   29/01/03 - JaJ - Submitted to GLScene.
+   
 }
 unit GLPerlinBase;
 

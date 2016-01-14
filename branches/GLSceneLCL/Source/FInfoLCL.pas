@@ -4,9 +4,9 @@
 {
   Informations on OpenGL driver.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
-	</ul></font>
+	 History :  
+       04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
+	 
 }
 unit FInfoLCL;
 

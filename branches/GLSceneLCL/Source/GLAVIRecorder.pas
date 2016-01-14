@@ -4,24 +4,24 @@
 {
   Component to make it easy to record GLScene frames into an AVI file<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Refactored TAVIRecorder to TGLAVIRecorder
-  <li>12/07/07 - DaStr - Improved Cross-Platform compatibility
+   History :  
+   17/11/14 - PW - Refactored TAVIRecorder to TGLAVIRecorder
+   12/07/07 - DaStr - Improved Cross-Platform compatibility
   (Bugtracker ID = 1684432)
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-  <li>01/06/05 - NelC - Replaced property GLFullScreenViewer with GLNonVisualViewer
-  <li>26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
-  <li>22/10/04 - EG - Can now operate without a SceneViewer
-  <li>13/05/04 - EG - Added irmBitBlt mode (now the default mode)
-  <li>05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+   29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+   01/06/05 - NelC - Replaced property GLFullScreenViewer with GLNonVisualViewer
+   26/01/05 - JAJ - Can now operate with a GLFullScreenViewer
+   22/10/04 - EG - Can now operate without a SceneViewer
+   13/05/04 - EG - Added irmBitBlt mode (now the default mode)
+   05/01/04 - EG - Added Recording function and ability to record arbitrary bitmap,
   Added OnPostProcessEvent
-  <li>08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
+   08/07/03 - NelC - Fixed access violation on exit (thx Solerman Kaplon)
   and minor updates
-  <li>11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
+   11/12/01 - EG - Minor changes for compatibility with JEDI VfW.pas
   <li<02/03/01 - EG - Added TAVIImageRetrievalMode
-  <li>24/02/01 - NelC - Creation and initial code
-  </ul></font>
+   24/02/01 - NelC - Creation and initial code
+   
 }
 unit GLAVIRecorder;
 
@@ -32,13 +32,8 @@ interface
 
 uses
   Windows,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Messages, System.Classes, System.SysUtils,
-  VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
-{$ELSE}
   Messages, Classes, SysUtils,
   Controls, Forms, Extctrls, Graphics, Dialogs,
-{$ENDIF}
   GLGraphics, GLSVfw, GLScene, GLViewer;
 
 type
@@ -60,12 +55,12 @@ type
   //
   { : Image retrieval mode for frame capture.<p>
     Following modes are supported:<p>
-    <li>irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
-    <li>irmRenderToBitmap : renders the whole scene to a bitmap, this is
+     irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
+     irmRenderToBitmap : renders the whole scene to a bitmap, this is
     the slowest mode, but it won't be affected by driver-side specifics.
-    <li>irmBitBlt : tranfers the framebuffer using the BitBlt function,
+     irmBitBlt : tranfers the framebuffer using the BitBlt function,
     usually the fastest solution
-    </ul> }
+      }
   TAVIImageRetrievalMode = (irmSnapShot, irmRenderToBitmap, irmBitBlt);
 
   TAVIRecorderPostProcessEvent = procedure(Sender: TObject; frame: TBitmap)

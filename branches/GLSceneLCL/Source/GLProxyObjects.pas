@@ -4,48 +4,48 @@
 {
    Implements specific proxying classes.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>25/12/09 - DaStr - Bugfixed TGLActorProxy.RayCastIntersect()
+  History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       25/12/09 - DaStr - Bugfixed TGLActorProxy.RayCastIntersect()
                                in aarMorph mode (thanks Vovik)
-      <li>22/12/09 - DaStr - Added TGLActorProxy.AnimationMode (thanks Vovik)
+       22/12/09 - DaStr - Added TGLActorProxy.AnimationMode (thanks Vovik)
                              Removed TGLActorProxy.Interval (was not used)
-      <li>18/06/08 - mrqzzz - Don't raise error when setting animation to an
+       18/06/08 - mrqzzz - Don't raise error when setting animation to an
                                ActorProxy and no MasterObject is defined
-      <li>15/03/08 - DaStr - Fixup after previous update: removed all hints and
+       15/03/08 - DaStr - Fixup after previous update: removed all hints and
                               warnings, TGLActorProxy now has two versions of
                               RayCastIntersect()
-      <li>06/02/08 - mrqzzz - Added a "RayCastIntersect" overload for Actorproxy
-      <li>07/11/07 - mrqzzz - Added "OnBeforeRender" event to Actorproxy
+       06/02/08 - mrqzzz - Added a "RayCastIntersect" overload for Actorproxy
+       07/11/07 - mrqzzz - Added "OnBeforeRender" event to Actorproxy
                               allowing to apply extra transformations (f.ex: bone rotations)
                               to the referenced Actor in order to have the proxy render these changes.
-      <li>07/11/07 - mrqzzz - Added "StoredBoneNames" property
-      <li>07/11/07 - mrqzzz - Added "BoneMatrix(Boneidndex|boneName)" function and
+       07/11/07 - mrqzzz - Added "StoredBoneNames" property
+       07/11/07 - mrqzzz - Added "BoneMatrix(Boneidndex|boneName)" function and
                                StoreBonesMatrix property for TGLActorProxy
                               (To read each ActorProxy's individual Bone matrices,
                               f.ex to align a weapon in it's hand)
-      <li>06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
+       06/11/07 - mrqzzz - Added MaterialLibrary and LibMaterialName for TGLActorProxy
                               (allows different materials on proxy actors sharing same master)
-      <li>06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
+       06/11/07 - mrqzzz - Added public readonly properties for TGLActorProxy
                               (CurrentFrame,StartFrame,Endframe,etc..)
-      <li>05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
+       05/10/07 - DaStr - Bugfixed TGLMaterialProxy.DoRender
                               (Bugtracker ID = 1808666)
-      <li>04/09/07 - DaStr - Added TGLMaterialProxy
+       04/09/07 - DaStr - Added TGLMaterialProxy
                              Cleaned up this unit a bit
-      <li>10/05/07 - DaStr - Bugfixed TGLColorProxy.DoRender
+       10/05/07 - DaStr - Bugfixed TGLColorProxy.DoRender
                               (thanks Paul Robello) (Bugtracker ID = 1716692)
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>25/02/07 - Made TGLActorProxy.SetAnimation a bit safer
-      <li>20/02/07 - DaStr - Redeclared MasterObject of TGLColorProxy and TGLFreeFormProxy
+       25/02/07 - Made TGLActorProxy.SetAnimation a bit safer
+       20/02/07 - DaStr - Redeclared MasterObject of TGLColorProxy and TGLFreeFormProxy
                              Added TGLActorProxy (based on a demo published
                              on the newsgroup by don't know who...)
-      <li>18/12/03 - Dave - Dropped "Object" from "ProxyObject" class names
-      <li>17/12/03 - Dave - Changed class check in Octree code to Assert
-      <li>17/12/03 - Dave+Dan - Added OctreeSphereSweep
-      <li>06/12/03 - EG - Creation from GLScene.pas split
-   </ul></font>
+       18/12/03 - Dave - Dropped "Object" from "ProxyObject" class names
+       17/12/03 - Dave - Changed class check in Octree code to Assert
+       17/12/03 - Dave+Dan - Added OctreeSphereSweep
+       06/12/03 - EG - Creation from GLScene.pas split
+    
 }
 unit GLProxyObjects;
 
@@ -54,12 +54,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   // GLScene
   GLScene,  GLVectorGeometry,  GLTexture,  GLVectorFileObjects,
   GLStrings,  GLRenderContextInfo,  GLBaseClasses, GLMaterial,
@@ -655,7 +650,7 @@ procedure TGLActorProxy.DoStoreBonesMatrices;
 var
   i, n: integer;
   Bmo: TBoneMatrixObj;
-  Bone: TSkeletonBone;
+  Bone: TGLSkeletonBone;
 begin
   if FStoredBoneNames.count > 0 then
   begin

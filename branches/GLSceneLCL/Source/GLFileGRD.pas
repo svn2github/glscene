@@ -4,12 +4,12 @@
 {
   GRD (Grid Text Format) vector file format implementation.<p>
 
-  <b>History :</b><font size=-1><ul>
-  <li>01/05/15 - PW - Fixed LoadFromStream procedure
-  <li>10/04/09 - PW - Separated from GLVectorFileObjects.pas
-  <li>10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
-  <li>26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
-  </ul></font>
+   History : 
+   01/05/15 - PW - Fixed LoadFromStream procedure
+   10/04/09 - PW - Separated from GLVectorFileObjects.pas
+   10/04/09 - Aaron Hochwimmer - Added support for Surfer ASCII grd format
+   26/10/00 - Phil Scadden - created import of Arcinfo ASCII grd format
+   
 }
 unit GLFileGRD;
 
@@ -32,12 +32,12 @@ type
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats}
 
-  TGLGRDVectorFile = class(TVectorFile)
+  TGLGRDVectorFile = class(TGLVectorFile)
    public
     { Public Declarations }
     HeightField: TGLHeightField;
     Nodes: array of TSingleArray;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
    private
     StrVal: String;
@@ -64,7 +64,7 @@ const
 
 // Capabilities
 //
-class function TGLGRDVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLGRDVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

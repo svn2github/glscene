@@ -25,10 +25,10 @@ Overall
  - Simple Data Structures to store Mesh. Vertices are calculated and stored twice
    or even more often.
 
-	<b>History : </b><font size=-1><ul>
-     <li>05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
-	   <li>12/06/04 - Wolf Blecher - Created, first implementation (Blechwolf@myrealbox.com)
-	</ul></font>
+	 History :  
+      05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
+	    12/06/04 - Wolf Blecher - Created, first implementation (Blechwolf@myrealbox.com)
+	 
 }
 
 unit GLIsosurface;

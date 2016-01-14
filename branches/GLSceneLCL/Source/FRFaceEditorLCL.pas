@@ -4,9 +4,9 @@
 {
    Editor fram for a TGLFaceProperties.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   History :  
 
-   </ul></font>
+    
 }
 unit FRFaceEditorLCL;
 

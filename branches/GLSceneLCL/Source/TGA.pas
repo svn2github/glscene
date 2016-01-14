@@ -2,20 +2,20 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Simple TGA formats supports for Delphi.<br>
+   Simple TGA formats supports for Delphi. 
    Currently supports only 24 and 32 bits RGB formats (uncompressed
    and RLE compressed).<p>
 
    Based on David McDuffee's document from www.wotsit.org<p>
 
-	<b>History : </b><font size=-1><ul>
-           <li>07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
-           <li>20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator) 
-	   <li>07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
+	 History :  
+            07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
+            20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator) 
+	    07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
                               in Lazarus (thanks Predator)   
-	   <li>08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
-	   <li>21/11/02 - Egg - Creation
-	</ul></font>
+	    08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
+	    21/11/02 - Egg - Creation
+	 
 }
 unit TGA;
 

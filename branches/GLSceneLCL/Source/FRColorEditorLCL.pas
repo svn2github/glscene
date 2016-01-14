@@ -4,9 +4,9 @@
 {
    RGB+Alpha color editor.<p>
 
-   <b>History : </b><font size=-1><ul>
+    History :  
 
-   </ul></font>
+    
 }
 unit FRColorEditorLCL;
 

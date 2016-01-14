@@ -4,17 +4,17 @@
 {
   Nodes are used to describe lines, polygons + more.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
-  <li>17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>26/11/09 - DaStr - Improved Lazarus compatibility
+   History :  
+   01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
+   17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   26/11/09 - DaStr - Improved Lazarus compatibility
   (thanks Predator) (BugtrackerID = 2893580)
-  <li>22/11/09 - DaStr - Improved Unix compatibility
+   22/11/09 - DaStr - Improved Unix compatibility
   (thanks Predator) (BugtrackerID = 2893580)
-  <li>14/07/09 - DaStr - Added $I GLScene.inc
-  <li>05/10/08 - DanB - Created from GLMisc.pas split
-  </ul></font>
+   14/07/09 - DaStr - Added $I GLScene.inc
+   05/10/08 - DanB - Created from GLMisc.pas split
+   
 }
 unit GLNodes;
 
@@ -64,7 +64,7 @@ type
     property AsVector: TVector read FCoords write SetAsVector;
     { : The coordinates viewed as an affine vector.<p>
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead.<br>
+      if you don't want so, use DirectVector instead. 
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;

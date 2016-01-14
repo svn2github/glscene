@@ -4,30 +4,30 @@
 {
    Object with support for complex polygons.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
-      <li>04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/11/09 - DaStr - Improved Unix compatibility
+  History :  
+       14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
+       04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
+       31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
                             TMultiPolygonBase
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+       30/03/07 - DaStr - Added $I GLScene.inc
+       14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
-      <li>05/09/03 - EG - TNotifyCollection moved to GLMisc
-      <li>14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
-      <li>28/12/01 - EG - Added registration (Philipp Pammler)
-      <li>19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
+       18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
+       05/09/03 - EG - TNotifyCollection moved to GLMisc
+       14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
+       28/12/01 - EG - Added registration (Philipp Pammler)
+       19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
                            TObjectList replaced with TPersistentObjectList)
-      <li>29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
-      <li>21/02/01 - EG - Now XOpenGL based (multitexture)
-      <li>08/01/01 - EG - Compatibility fix (TGLLineNodes change),
+       29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
+       21/02/01 - EG - Now XOpenGL based (multitexture)
+       08/01/01 - EG - Compatibility fix (TGLLineNodes change),
                            Delphi 4 compatibility (removed TVectorPool) and
                            added/renamed some properties, various fixes
-      <li>08/10/00 - EG - Added header, code contributed by Uwe Raabe
-   </ul>
+       08/10/00 - EG - Added header, code contributed by Uwe Raabe
+    
 }
 { TODO
 
@@ -50,15 +50,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   OpenGLTokens,  OpenGLAdapter,  GLSpline,
-  XOpenGL,  GLContext
-  , GLVectorTypes,
+  XOpenGL,  GLContext, GLVectorTypes,
   GLVectorGeometry,  GLVectorLists,  GLPersistentClasses,
   GLScene,  GLObjects,  GLGeomObjects,  GLNodes,  GLBaseClasses,
   GLCoordinates,  GLRenderContextInfo;
@@ -145,9 +139,9 @@ type
   //
   {: Multipolygon is defined with multiple contours.<p>
      The contours have to be in the X-Y plane, otherwise they are projected
-     to it (this is done automatically by the tesselator).<br>
+     to it (this is done automatically by the tesselator). 
      The plane normal is pointing in +Z. All contours are automatically closed,
-     so there is no need to specify the last node equal to the first one.<br>
+     so there is no need to specify the last node equal to the first one. 
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the

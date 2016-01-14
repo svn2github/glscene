@@ -5,20 +5,20 @@
    Support classes for loading various fileformats.<p>
    These classes work together like vector file formats or Delphi's TGraphic classes.<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+	History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
-      <li>30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>07/06/07 - DaStr - Added $I GLScene.inc
-      <li>26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
+       13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
+       30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       07/06/07 - DaStr - Added $I GLScene.inc
+       26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
                             Reported by Dikoe Kenguru.
-      <li>16/03/01 - Egg - TGLWAVFile.Capabilities
-      <li>16/07/00 - Egg - Made use of new TDataFile class
-      <li>09/06/00 - Egg - Added WAVDataSize
-      <li>04/06/00 - Egg - Creation
-	</ul></font>
+       16/03/01 - Egg - TGLWAVFile.Capabilities
+       16/07/00 - Egg - Made use of new TGLDataFile class
+       09/06/00 - Egg - Added WAVDataSize
+       04/06/00 - Egg - Creation
+	 
 }
 unit GLSoundFileObjects;
 
@@ -80,7 +80,7 @@ type
       Default implementation for LoadFromFile/SaveToFile are to directly call the
       relevent stream-based methods, ie. you will just have to override the stream
       methods in most cases. }
-   TGLSoundFile = class (TDataFile)
+   TGLSoundFile = class (TGLDataFile)
       private
          { Private Declarations }
          FSampling : TGLSoundSampling;

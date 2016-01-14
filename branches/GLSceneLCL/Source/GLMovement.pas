@@ -7,35 +7,35 @@
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
 
-   <b>Historique : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
                           Replaced direct access to properties by methods
                           GetPositionCoordinate, GetRotationCoordinate, GetScaleCoordinate,
                           GetDirectionCoordinate and GetUpCoordinate
-      <li>21/01/01 - DanB - Added "inherited" call to TGLMovement.WriteToFiler
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>12/11/09 - DaStr - Bugfix after previous commit
-      <li>25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
-      <li>14/03/09 - DanB - Changes to Start/StopAllMovements due to TGLScene.Cameras removal
-      <li>05/10/08 - DaStr - Added Delphi5 compatibility
-      <li>21/06/08 - DaStr - A lot of cosmetic fixes
+       21/01/01 - DanB - Added "inherited" call to TGLMovement.WriteToFiler
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       12/11/09 - DaStr - Bugfix after previous commit
+       25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
+       14/03/09 - DanB - Changes to Start/StopAllMovements due to TGLScene.Cameras removal
+       05/10/08 - DaStr - Added Delphi5 compatibility
+       21/06/08 - DaStr - A lot of cosmetic fixes
                              Bugfixed same position rotation / scale interpolation
                                in TGLMovementPath.CalculateState()
                              Bugfixed destroying TGLMovement with multiple paths.
                              Added TGLMovementPath.RotationMode
                             (Bugtracker ID = 1999464) (thanks VirusX)
-      <li>02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
-      <li>25/03/07 - DaStr - Small fix for Delphi5 compatibility
-      <li>15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
-      <li>27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
-      <li>28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)
-      <li>09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
-      <li>20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
-      <li>14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
+       02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
+       25/03/07 - DaStr - Small fix for Delphi5 compatibility
+       15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
+       27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
+       28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)
+       09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
+       20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
+       14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
                            use of standard classes and documentation
-      <li>22/09/00 - RoC - Added StartAllPathTravel and StopAllPathTravel methods
-      <li>24/08/00 - RoC - TGLMovement and relative class added
-   </ul></font>
+       22/09/00 - RoC - Added StartAllPathTravel and StopAllPathTravel methods
+       24/08/00 - RoC - TGLMovement and relative class added
+    
 }
 unit GLMovement;
 
@@ -44,14 +44,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   // GLScene
-  GLScene, GLVectorGeometry, XCollection, OpenGLTokens, GLSpline, GLObjects,
+  GLScene, GLVectorGeometry, GLXCollection, OpenGLTokens, GLSpline, GLObjects,
   GLCrossPlatform, GLStrings, GLBaseClasses;
 
 type
@@ -306,7 +301,7 @@ type
 
     function GetSceneObject: TGLBaseSceneObject;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
       //add an empty path;
@@ -1286,7 +1281,7 @@ end;
 
 
 //--------------------------- TGLMovement --------------------------------------
-constructor TGLMovement.Create(aOwner: TXCollection);
+constructor TGLMovement.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FPaths           := TGLMovementPaths.Create(Self);

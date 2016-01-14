@@ -4,20 +4,20 @@
 {
    GLX specific Context.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>29/08/10 - Yar - Rewrite DoCreateContext, added CSAA antialiasing
-      <li>18/06/10 - Yar - Improved memory context and context sharing
-      <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
-      <li>06/06/10 - Yar - Fixes for Linux x64. DoActivate method now check contexts difference
-      <li>21/04/10 - Yar - Added support for GLX versions lower than 1.3
+    History :  
+       29/08/10 - Yar - Rewrite DoCreateContext, added CSAA antialiasing
+       18/06/10 - Yar - Improved memory context and context sharing
+       11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
+       06/06/10 - Yar - Fixes for Linux x64. DoActivate method now check contexts difference
+       21/04/10 - Yar - Added support for GLX versions lower than 1.3
                            (by Rustam Asmandiarov aka Predator)
-      <li>06/04/10 - Yar - Update to GLX 1.3-1.4, added PBuffer, forward context creation
+       06/04/10 - Yar - Update to GLX 1.3-1.4, added PBuffer, forward context creation
                            (by Rustam Asmandiarov aka Predator)
-      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+       07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
                              (thanks Predator)
-      <li>10/06/09 - DanB - Added to main GLScene CVS repository (from GLScene-Lazarus).
-      <li>14/01/05 - CU - Creation
-   </ul></font>
+       10/06/09 - DanB - Added to main GLScene CVS repository (from GLScene-Lazarus).
+       14/01/05 - CU - Creation
+    
 }
 unit GLGLXContext;
 

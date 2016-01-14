@@ -10,8 +10,8 @@
     previously written shaders.<p>
 
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/02/07 - DaStr - Initial version (contributed to GLScene)
+	 History :  
+       23/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     Previous version history:

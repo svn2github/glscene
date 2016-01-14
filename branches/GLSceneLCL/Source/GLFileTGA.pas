@@ -4,9 +4,9 @@
 {
    Graphic engine friendly loading of TGA image.
 
- <b>History : </b><font size=-1><ul>
-        <li>04/04/11 - Yar - Creation
-   </ul><p>
+  History :  
+         04/04/11 - Yar - Creation
+    <p>
 }
 
 unit GLFileTGA;
@@ -37,7 +37,7 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
@@ -303,7 +303,7 @@ begin
 {$MESSAGE Hint 'TGLTGAImage.AssignFromTexture not yet implemented' }
 end;
 
-class function TGLTGAImage.Capabilities: TDataFileCapabilities;
+class function TGLTGAImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

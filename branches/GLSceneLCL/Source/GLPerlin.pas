@@ -7,14 +7,14 @@
   The components and classes in the unit are a base to generate textures and heightmaps from,
   A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape <p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>20/05/10 - Yar - Fixes for Linux x64
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/03/07 - DaStr - Added explicit pointer dereferencing
+   History :  
+   20/05/10 - Yar - Fixes for Linux x64
+   31/03/07 - DaStr - Added $I GLScene.inc
+   28/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>08/07/04 - LR - Correction for Linux
-  <li>29/01/03 - JaJ - Submitted to GLScene.
-  </ul></font>
+   08/07/04 - LR - Correction for Linux
+   29/01/03 - JaJ - Submitted to GLScene.
+   
 }
 unit GLPerlin;
 

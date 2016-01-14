@@ -4,27 +4,27 @@
 {
    BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
 
-   Unsupported feature(s) :<ul>
-      <li>sound source velocity
-      <li>looping (sounds are played either once or forever)
-      <li>source priorities (not relevant, channels are not limited)
-   </ul><p>
+   Unsupported feature(s) : 
+       sound source velocity
+       looping (sounds are played either once or forever)
+       source priorities (not relevant, channels are not limited)
+    <p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>14/01/14 - PW - Updated to BASS 2.4 thanks to Ian Luck
-      <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
+	 History :  
+       14/01/14 - PW - Updated to BASS 2.4 thanks to Ian Luck
+       07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
                               sound source and with sscSample in aSource.Changes
-      <li>07/11/09 - DaStr - Improved FPC compatibility
+       07/11/09 - DaStr - Improved FPC compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>21/03/08 - DanB - Updated to BASS Version 2.3
-      <li>15/03/08 - DaStr - Added $I GLScene.inc
-      <li>09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
-      <li>24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
-      <li>27/02/02 - EG - Added 3D Factors and Environment support
-      <li>05/02/02 - EG - BASS 1.4 compatibility
-      <li>05/02/01 - EG - Fixed TGLSMBASS.CPUUsagePercent
-	   <li>13/01/01 - EG - Creation (compat BASS 0.8)
-	</ul></font>
+       21/03/08 - DanB - Updated to BASS Version 2.3
+       15/03/08 - DaStr - Added $I GLScene.inc
+       09/05/04 - GAK - Updated to BASS Version 2.0, and swapped to Dynamic DLL loading
+       24/09/02 - EG - BASS activation errors no longer result in Asserts (ignored)
+       27/02/02 - EG - Added 3D Factors and Environment support
+       05/02/02 - EG - BASS 1.4 compatibility
+       05/02/01 - EG - Fixed TGLSMBASS.CPUUsagePercent
+	    13/01/01 - EG - Creation (compat BASS 0.8)
+	 
 }
 unit GLSMBASS;
 

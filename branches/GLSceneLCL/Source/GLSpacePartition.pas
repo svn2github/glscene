@@ -15,22 +15,22 @@
   the non-discriminating volume).</i><p>
 
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/12/14 - PW - Renamed SpatialPartitioning unit to GLSpacePartition
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
-  <li>08/12/04 - MF - Fixed AV error reported by DanB
-  <li>03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
-  <li>02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
+   History :  
+   10/12/14 - PW - Renamed SpatialPartitioning unit to GLSpacePartition
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   07/09/11 - Yar - Bugfixed memory leak in TSectoredSpacePartition (thanks to chenshunbin0624)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   09/12/04 - MF - Renamed TQuadSpacePartition to TQuadtreeSpacePartition
+   08/12/04 - MF - Fixed AV error reported by DanB
+   03/12/04 - MF - Added quadtree for typical 2d (landscape) scenes
+   02/12/04 - MF - Removed rcci, cleaned up so that only frustum is used
                       streamlined frustum culling.
-  <li>01/12/04 - HRLI - Added rcci/frustum culling
-  <li>23/06/03 - MF - Separated functionality for Octrees and general
+   01/12/04 - HRLI - Added rcci/frustum culling
+   23/06/03 - MF - Separated functionality for Octrees and general
   sectored space partitions so Quadtrees will be easy
   to add.
-  <li>20/06/03 - MF - Created
-  </ul></font>
+   20/06/03 - MF - Created
+   
 }
 
 unit GLSpacePartition;

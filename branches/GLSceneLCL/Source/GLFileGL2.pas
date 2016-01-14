@@ -5,12 +5,12 @@
    Vector file object loading of Ghoul2 model and animation 
    files into GLScene.<p>
 
-	<b>History :</b><font size=-1><ul>
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+	 History : 
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-	   <li>22/10/03 - SG - Animation fixes, removed skeletal reconstruction
-	   <li>25/03/03 - SG - Creation.
-	</ul></font>
+	    22/10/03 - SG - Animation fixes, removed skeletal reconstruction
+	    25/03/03 - SG - Creation.
+	 
 }
 unit GLFileGL2;
 
@@ -22,15 +22,15 @@ uses
 
 type
 
-  TGLGLMVectorFile = class (TVectorFile)
+  TGLGLMVectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
-  TGLGLAVectorFile = class (TVectorFile)
+  TGLGLAVectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -54,7 +54,7 @@ implementation
 
 // Capabilities
 //
-class function TGLGLMVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLGLMVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -65,7 +65,7 @@ procedure TGLGLMVectorFile.LoadFromStream(aStream : TStream);
 var
   GLMFile     : TFileGLM;
   i,j,k,s,c,d : integer;
-  mesh        : TSkeletonMeshObject;
+  mesh        : TGLSkeletonMeshObject;
   fg          : TFGVertexIndexList;
   VertOfs     : integer;
   shader      : string;
@@ -98,7 +98,7 @@ begin
     d:=vGhoul2LevelOfDetail;
     if d>=Length(GLMFile.LODs) then exit;
     for s:=0 to Length(GLMFile.SurfaceHeirachy)-1 do begin
-      mesh:=TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       mesh.Name:=trim(GLMFile.SurfaceHeirachy[s].name);
       shader:=trim(GLMFile.SurfaceHeirachy[s].shader);
@@ -166,7 +166,7 @@ end;
 
 // Capabilities
 //
-class function TGLGLAVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLGLAVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -177,13 +177,13 @@ procedure TGLGLAVectorFile.LoadFromStream(aStream : TStream);
 var
   GLAFile  : TFileGLA;
   i,j      : Integer;
-  frame    : TSkeletonFrame;
+  frame    : TGLSkeletonFrame;
   CompBone : TGLACompQuatBone;
   quat     : TQuaternion;
   pos      : TAffineVector;
-  basepose : TSkeletonFrame;
+  basepose : TGLSkeletonFrame;
   bonelist : TIntegerList;
-  bone     : TSkeletonBone;
+  bone     : TGLSkeletonBone;
 
 begin
   GLAFile:=TFileGLA.Create;
@@ -198,11 +198,11 @@ begin
       bonelist.Add(i);
     while bonelist.count>0 do begin
       if GLAFile.Skeleton[bonelist[0]].parent = -1 then
-        bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
+        bone:=TGLSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
       else begin
         bone:=Owner.Skeleton.RootBones.BoneByID(GLAFile.Skeleton[bonelist[0]].parent);
         if Assigned(bone) then
-          bone:=TSkeletonBone.CreateOwned(bone)
+          bone:=TGLSkeletonBone.CreateOwned(bone)
       end;
       if Assigned(bone) then begin
         bone.Name:=GLAFile.Skeleton[bonelist[0]].Name;
@@ -214,7 +214,7 @@ begin
     bonelist.Free;
 
     // Build the base pose
-    basepose:=TSkeletonFrame.CreateOwned(TGLActor(Owner).Skeleton.Frames);
+    basepose:=TGLSkeletonFrame.CreateOwned(TGLActor(Owner).Skeleton.Frames);
     basepose.Name:='basepose';
     basepose.TransformMode:=sftQuaternion;
     basepose.Position.AddNulls(GLAFile.AnimHeader.numBones);
@@ -223,7 +223,7 @@ begin
     // Load animation data
     for i:=0 to GLAFile.AnimHeader.numFrames-1 do begin
       // Create the frame
-      frame:=TSkeletonFrame.CreateOwned(TGLActor(Owner).Skeleton.Frames);
+      frame:=TGLSkeletonFrame.CreateOwned(TGLActor(Owner).Skeleton.Frames);
       frame.Name:='Frame'+IntToStr(i);
       frame.TransformMode:=sftQuaternion;
 
@@ -240,7 +240,7 @@ begin
     Owner.Skeleton.RootBones.PrepareGlobalMatrices;
 
     for i:=0 to Owner.MeshObjects.Count-1 do
-      TSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
+      TGLSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
 
   finally
     GLAFile.Free;

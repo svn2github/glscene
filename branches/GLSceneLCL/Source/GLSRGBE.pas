@@ -4,11 +4,11 @@
 {
    GLScene RGBE
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Renamed from RGBE.pas to GLSRGBE.pas
-  <li>15/06/10 - Yar - Fixes for Linux x64
-  <li>20/01/10 - Yar - Creation
-  </ul><p>
+   History :  
+   17/11/14 - PW - Renamed from RGBE.pas to GLSRGBE.pas
+   15/06/10 - Yar - Fixes for Linux x64
+   20/01/10 - Yar - Creation
+   <p>
 }
 unit GLSRGBE;
 

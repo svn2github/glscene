@@ -10,12 +10,12 @@
          leaking memory (depending on hardware drivers willingness to perform
          automatic releases)<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>06/06/10 - Yar - Make outputDevice HWND type
-      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-      <li>11/09/06 - NC - Changes for Multiple-Render-Target
-      <li>12/12/01 - EG - Creation
+    History :  
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       06/06/10 - Yar - Make outputDevice HWND type
+       15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
+       11/09/06 - NC - Changes for Multiple-Render-Target
+       12/12/01 - EG - Creation
 }
 unit GLSDLContext;
 
@@ -40,7 +40,7 @@ type
   // TGLSDLViewer
   //
   {: A viewer using SDL.<p>
-     Beware: only one at a time, no other viewers allowed!<br>
+     Beware: only one at a time, no other viewers allowed! 
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
@@ -89,11 +89,11 @@ type
   // TGLSDLContext
   //
   {: A context driver for OpenGL via SDL (libsdl.org).<p>
-     Due to limitations of SDL:<ul>
-     <li>you may have only one SDL window opened at any time (you cannot
+     Due to limitations of SDL: 
+      you may have only one SDL window opened at any time (you cannot
         have memory viewers)
-     <li>closing the SDL window will terminate the application
-     </ul> }
+      closing the SDL window will terminate the application
+       }
   TGLSDLContext = class(TGLScreenControlingContext)
   private
     { Private Declarations }

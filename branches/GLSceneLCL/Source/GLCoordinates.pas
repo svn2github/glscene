@@ -4,26 +4,21 @@
 {
   Coordinate related classes.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
-  <li>30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
-  <li>05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thanks C4)
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses
-  <li>05/10/08 - DanB - Created, from GLMisc.pas
-  </ul></font>
+   History :  
+   20/11/12 - PW - Added CPP compatibility: replaced direct access to some properties by a get.. and a set.. methods
+   30/06/11 - DaStr - Added TGLCustomCoordinates.Coordinate default property
+   05/09/10 - Yar - Fix notification in TGLCustomCoordinates.NotifyChange (thanks C4)
+   23/08/10 - Yar - Added OpenGLTokens to uses
+   05/10/08 - DanB - Created, from GLMisc.pas
+   
 }
 unit GLCoordinates;
 
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
-  //GLScene
+  Classes, SysUtils,
+  //GLS
   GLVectorGeometry, GLVectorTypes, OpenGLTokens, GLBaseClasses,
   GLCrossPlatform;
 
@@ -34,11 +29,11 @@ type
   // TGLCoordinatesStyle
   //
   { : Identifie le type de données stockées au sein d'un TGLCustomCoordinates.<p>
-    <ul><li>csPoint2D : a simple 2D point (Z=0, W=0)
-    <ul><li>csPoint : un point (W=1)
-    <li>csVector : un vecteur (W=0)
-    <li>csUnknown : aucune contrainte
-    </ul> }
+      csPoint2D : a simple 2D point (Z=0, W=0)
+      csPoint : un point (W=1)
+     csVector : un vecteur (W=0)
+     csUnknown : aucune contrainte
+      }
   TGLCoordinatesStyle = (CsPoint2D, CsPoint, CsVector, CsUnknown);
 
   // TGLCustomCoordinates
@@ -46,7 +41,7 @@ type
   { : Stores and homogenous vector.<p>
     This class is basicly a container for a TVector, allowing proper use of
     delphi property editors and editing in the IDE. Vector/Coordinates
-    manipulation methods are only minimal.<br>
+    manipulation methods are only minimal. 
     Handles dynamic default values to save resource file space.<p> }
   TGLCustomCoordinates = class(TGLUpdateAbleObject)
   private
@@ -133,7 +128,7 @@ type
 
     { : The coordinates viewed as an affine vector.<p>
       Assigning a value to this property will trigger notification events,
-      if you don't want so, use DirectVector instead.<br>
+      if you don't want so, use DirectVector instead. 
       The W component is automatically adjustes depending on style. }
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;

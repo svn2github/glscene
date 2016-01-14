@@ -8,27 +8,27 @@
    to cast correct shadows. Transparent/blended/shader objects among the receivers
    or the casters will be rendered incorrectly.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>31/05/10 - Yar - Fixes forLinux x64
-      <li>01/05/10 - Yar - Moved ignoreBlendingRequests and ignoreDepthRequests behind RenderChildren
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>31/03/07 - DaStr - Fixed issue with invalid typecasting
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       31/05/10 - Yar - Fixes forLinux x64
+       01/05/10 - Yar - Moved ignoreBlendingRequests and ignoreDepthRequests behind RenderChildren
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       31/03/07 - DaStr - Fixed issue with invalid typecasting
                             (thanks Burkhard Carstens) (Bugtracker ID = 1692016)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>08/12/04 - DB - Fixed bug in TGLShadowVolumeCaster.SetCaster
-      <li>02/12/04 - MF - Added some documentation
-      <li>23/03/04 - EG - Added Active property
-      <li>29/11/03 - MF - Removed a "feature" that would draw the shadow of
+       08/12/04 - DB - Fixed bug in TGLShadowVolumeCaster.SetCaster
+       02/12/04 - MF - Added some documentation
+       23/03/04 - EG - Added Active property
+       29/11/03 - MF - Removed a "feature" that would draw the shadow of
                           (hierarchially) invisible objects
-      <li>27/11/03 - MF - TGLShadowVolumeCaster now registers with the FCaster
+       27/11/03 - MF - TGLShadowVolumeCaster now registers with the FCaster
                           for delete notification
-      <li>11/06/03 - EG - Added silhouette cache
-      <li>04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
-  </ul></font>
+       11/06/03 - EG - Added silhouette cache
+       04/06/03 - EG - Creation (based on code from Mattias Fagerlund)
+   
 }
 unit GLShadowVolume;
 
@@ -50,28 +50,28 @@ type
    end of the volume. This is ONLY necessary when there's a chance that the
    camera could end up inside the shadow _or_ between the light source and
    the camera. If those two situations can't occur then not using capping is
-   the best option.<br>
+   the best option. 
    Note that if you use the capping, you must either set the depth of view of
    your camera to something very large (f.i. 1e9), or you could use the infinite
    mode (csInfinitePerspective) of your camera.
-   <ul>
-     <li>svcDefault : Default behaviour
-     <li>svcAlways : Always generates caps
-     <li>svcNever : Never generates caps
-   </ul>
+    
+      svcDefault : Default behaviour
+      svcAlways : Always generates caps
+      svcNever : Never generates caps
+    
    }
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
   {: Determines when a caster should actually produce a shadow;
-  <ul>
-   <li>scmAlways : Caster always produces a shadow, ignoring visibility
-   <li>scmVisible : Caster casts shadow if the object has visible=true
-   <li>scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
+   
+    scmAlways : Caster always produces a shadow, ignoring visibility
+    scmVisible : Caster casts shadow if the object has visible=true
+    scmRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
      all have visible=true
-   <li>scmParentVisible : Caster produces shadow if parent has visible=true
-   <li>scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
+    scmParentVisible : Caster produces shadow if parent has visible=true
+    scmParentRecursivelyVisible : Caster casts shadow if ancestors up the hierarchy
      all have visible=true, starting from the parent (ignoring own visible setting)
-  </ul> }
+    }
 
   TGLShadowCastingMode = (scmAlways, scmVisible, scmRecursivelyVisible,
     scmParentVisible, scmParentRecursivelyVisible);
@@ -200,16 +200,16 @@ type
   // TGLShadowVolumeOption
   //
   {: Shadow volume rendering options/optimizations.<p>
-     <ul>
-     <li>svoShowVolumes : make the shadow volumes visible
-     <li>svoDesignVisible : the shadow are visible at design-time
-     <li>svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
+      
+      svoShowVolumes : make the shadow volumes visible
+      svoDesignVisible : the shadow are visible at design-time
+      svoCacheSilhouettes : cache shadow volume silhouettes, beneficial when
         some objects are static relatively to their light(s)
-     <li>svoScissorClips : use scissor clipping per light, beneficial when
+      svoScissorClips : use scissor clipping per light, beneficial when
         lights are attenuated and don't illuminate the whole scene
-     <li>svoWorldScissorClip : use scissor clipping for the world, beneficial
+      svoWorldScissorClip : use scissor clipping for the world, beneficial
         when shadow receivers don't cover the whole viewer surface
-     </ul> }
+       }
   TGLShadowVolumeOption = (svoShowVolumes, svoCacheSilhouettes, svoScissorClips,
     svoWorldScissorClip, svoDesignVisible);
   TGLShadowVolumeOptions = set of TGLShadowVolumeOption;
@@ -217,14 +217,14 @@ type
   // TGLShadowVolumeMode
   //
   {: Shadow rendering modes.<p>
-     <ul>
-     <li>svmAccurate : will render the scene with ambient lighting only, then
+      
+      svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
-     <li>svmDarkening : renders the scene with lighting on as usual, then darkens
+      svmDarkening : renders the scene with lighting on as usual, then darkens
         shadowed areas (i.e. inaccurate lighting, but will "shadow" objects
         that don't honour to diffuse or specular lighting)
-     <li>svmOff : no shadowing will take place
-     </ul> }
+      svmOff : no shadowing will take place
+       }
   TGLShadowVolumeMode = (svmAccurate, svmDarkening, svmOff);
 
   // TGLShadowVolume

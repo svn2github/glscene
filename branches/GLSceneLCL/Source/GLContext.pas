@@ -4,78 +4,78 @@
 {
    Prototypes and base implementation of TGLContext.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>01/06/11 - Yar - Now number of rendering contexts is unlimited (by Gabriel Corneanu)  
-      <li>13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
-      <li>24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
-      <li>24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
-      <li>14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
-      <li>16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+    History :  
+       01/06/11 - Yar - Now number of rendering contexts is unlimited (by Gabriel Corneanu)  
+       13/05/11 - Yar - Made indexing for context's handles to improve speed of operations
+       24/03/11 - Yar - Added preparation arrangement to TGLContext, TGLContextHandle 
+       24/11/10 - Yar - Added TGLBooleanOcclusionQueryHandle
+       14/10/10 - Yar - Added ServiceContext in separate thread, procedure AddTaskForServiceContext
+       16/09/10 - YP - Fixes param assertion to display missing attrib, uniform or varying by name
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
                            Added to TGLContext property PipelineTransformation
                            Added feature of debug context creating
                            Improved TGLContextHandle destroying
                            Added TGLARBVertexProgramHandle, TGLARBFragmentProgramHandle, TGLARBGeometryProgramHandle
-      <li>02/08/10 - DaStr - Bugfixed TGLContextHandle.DestroyHandle()
-      <li>18/07/10 - Yar - Added TGLTessControlShaderHandle, TGLTessEvaluationShaderHandle, TGLSamplerHandle
-      <li>17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TGLContextHandle
-      <li>02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
-      <li>02/05/10 - Yar - Handles are universal for contexts.
+       02/08/10 - DaStr - Bugfixed TGLContextHandle.DestroyHandle()
+       18/07/10 - Yar - Added TGLTessControlShaderHandle, TGLTessEvaluationShaderHandle, TGLSamplerHandle
+       17/06/10 - Yar - Added IsDataNeedUpdate, NotifyDataUpdated, NotifyChangesOfData to TGLContextHandle
+       02/05/10 - Yar - Fixes for Linux x64. Make outputDevice HWND type.
+       02/05/10 - Yar - Handles are universal for contexts.
                            You can use one handle in different contexts, regardless of the compatibility of contexts.
-      <li>01/05/10 - Yar - Added buffer objects state cashing
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>18/03/10 - Yar - Added MapBufferRange, Flush to TGLBufferObjectHandle
-      <li>06/03/10 - Yar - Added to TGLProgramHandle BindFragDataLocation, GetUniformOffset, GetUniformBlockIndex
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>22/02/10 - DanB - Added TGLContext.GLStates, to be used to cache
+       01/05/10 - Yar - Added buffer objects state cashing
+       22/04/10 - Yar - Fixes after GLState revision
+       18/03/10 - Yar - Added MapBufferRange, Flush to TGLBufferObjectHandle
+       06/03/10 - Yar - Added to TGLProgramHandle BindFragDataLocation, GetUniformOffset, GetUniformBlockIndex
+       05/03/10 - DanB - More state added to TGLStateCache
+       22/02/10 - DanB - Added TGLContext.GLStates, to be used to cache
                             global per-context state. Removed BindedGLSLProgram
                             since it should be per-context state.
-      <li>21/02/10 - Yar - Added function BindedGLSLProgram
-      <li>08/01/10 - DaStr - Added TGLFramebufferHandle.AttachLayer()
+       21/02/10 - Yar - Added function BindedGLSLProgram
+       08/01/10 - DaStr - Added TGLFramebufferHandle.AttachLayer()
                              Added more AntiAliasing modes (thanks YarUndeoaker)
-      <li>13/12/09 - DaStr - Modified for multithread support (thanks Controller)
-      <li>30/08/09 - DanB - renamed vIgnoreContextActivationFailures to vContextActivationFailureOccurred
+       13/12/09 - DaStr - Modified for multithread support (thanks Controller)
+       30/08/09 - DanB - renamed vIgnoreContextActivationFailures to vContextActivationFailureOccurred
                             + re-enabled it's original behaviour (fixes major memory leak).
-      <li>30/08/09 - DanB - Added TGLTransformFeedbackBufferHandle, TGLTextureBufferHandle,
+       30/08/09 - DanB - Added TGLTransformFeedbackBufferHandle, TGLTextureBufferHandle,
                             TGLUniformBufferHandle, TGLVertexArrayHandle,
                             TGLFramebufferHandle, TGLRenderbufferHandle
-      <li>24/08/09 - DaStr - Added TGLProgramHandle.GetVaryingLocation(),
+       24/08/09 - DaStr - Added TGLProgramHandle.GetVaryingLocation(),
                               AddActiveVarying() (thanks YarUnderoaker)
-      <li>21/08/09 - DanB - TGLQueryHandle.GetTarget no longer a class function,
+       21/08/09 - DanB - TGLQueryHandle.GetTarget no longer a class function,
                             for earlier Delphi compatibility
-      <li>13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
+       13/08/09 - DanB - Added timer & primitive queries.  Occlusion queries now
                             use OpenGL 1.5+ queries, instead of GL_NV_occlusion_query extension
-      <li>10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
-      <li>16/03/08 - DanB - moved MRT_BUFFERS into unit from opengl1x.pas rewrite,
+       10/06/09 - DanB - removed OpenGL error handling code, it already exists in OpenGL1x.pas
+       16/03/08 - DanB - moved MRT_BUFFERS into unit from opengl1x.pas rewrite,
                             and added some experimental geometry shader code
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
+       15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
                                                       (BugTracker ID = 1914782)
-      <li>06/11/07 - LC - moved vIgnoreContextActivationFailures to "Interface" section
-      <li>24/06/06 - LC - Refactored TGLVBOHandle, introduced TGLBufferObjectHandle
+       06/11/07 - LC - moved vIgnoreContextActivationFailures to "Interface" section
+       24/06/06 - LC - Refactored TGLVBOHandle, introduced TGLBufferObjectHandle
                           and TGLPackPBOHandle/TGLUnpackPBOHandle
-      <li>15/02/07 - DaStr - Added more parameters to TGLProgramHandle
+       15/02/07 - DaStr - Added more parameters to TGLProgramHandle
                              TGLProgramHandle.Name is now a property
-      <li>15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-      <li>15/09/06 - NC - TGLContextHandle.handle as Integer -> Cardinal
-      <li>11/09/06 - NC - Added TGLProgramHandle.Name, TGLProgramHandle.Uniform2f,
+       15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
+       15/09/06 - NC - TGLContextHandle.handle as Integer -> Cardinal
+       11/09/06 - NC - Added TGLProgramHandle.Name, TGLProgramHandle.Uniform2f,
                           SetUniform*, support for Multiple-Render-Target
-      <li>25/04/04 - EG - Added TGLOcclusionQueryHandle.Active
-      <li>25/09/03 - EG - Added TGLVBOHandle
-      <li>20/09/03 - EG - Added TGLOcclusionQueryHandle
-      <li>30/01/02 - EG - Added TGLVirtualHandle
-      <li>29/01/02 - EG - Improved recovery for context creation failures
-      <li>28/01/02 - EG - Activation failures always ignored
-      <li>21/01/02 - EG - Activation failures now ignored if application is
+       25/04/04 - EG - Added TGLOcclusionQueryHandle.Active
+       25/09/03 - EG - Added TGLVBOHandle
+       20/09/03 - EG - Added TGLOcclusionQueryHandle
+       30/01/02 - EG - Added TGLVirtualHandle
+       29/01/02 - EG - Improved recovery for context creation failures
+       28/01/02 - EG - Activation failures always ignored
+       21/01/02 - EG - Activation failures now ignored if application is
                           terminating (workaround for some weird ICDs)
-      <li>15/12/01 - EG - Added support for AlphaBits
-      <li>30/11/01 - EG - Added TGLContextAcceleration
-      <li>06/09/01 - EG - Win32Context moved to new GLWin32Context unit
-      <li>04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
-      <li>25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
-      <li>24/08/01 - EG - Fixed PropagateSharedContext
-      <li>12/08/01 - EG - Handles management completed
-      <li>22/07/01 - EG - Creation (glcontext.omm)
-   </ul></font>
+       15/12/01 - EG - Added support for AlphaBits
+       30/11/01 - EG - Added TGLContextAcceleration
+       06/09/01 - EG - Win32Context moved to new GLWin32Context unit
+       04/09/01 - EG - Added ChangeIAttrib, support for 16bits depth buffer
+       25/08/01 - EG - Added pbuffer support and CreateMemoryContext interface
+       24/08/01 - EG - Fixed PropagateSharedContext
+       12/08/01 - EG - Handles management completed
+       22/07/01 - EG - Creation (glcontext.omm)
+    
 }
 unit GLContext;
 
@@ -87,16 +87,11 @@ uses
   {$IFDEF MSWINDOWS}
   Windows,
   {$ENDIF}
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, System.Types, VCL.Consts, VCL.Forms,
-  VCL.Controls,
-  {$ELSE}
   Classes, SysUtils, Types, Forms, Controls,
   {$IFDEF FPC}
   LCLVersion, LCLType,
   {$ELSE}
   Consts,
-  {$ENDIF}
   {$ENDIF}
 
   SyncObjs,
@@ -170,9 +165,9 @@ type
      The aim of this class is to offer platform-independant
      initialization, activation and management of OpenGL
      rendering context. The class also offers notifications
-     event and error/problems detection.<br>
+     event and error/problems detection. 
      This is a virtual abstract a class, and platform-specific
-     subclasses must be used.<br>
+     subclasses must be used. 
      All rendering context share the same lists. }
   TGLContext = class
   private
@@ -287,7 +282,7 @@ type
        Both contexts must have the same pixel format. }
     procedure ShareLists(aContext: TGLContext);
     {: Destroy the context.<p>
-       Will fail if no context has been created.<br>
+       Will fail if no context has been created. 
        The method will first invoke the OnDestroyContext
        event, then attempts to deactivate the context
        (if it is active) before destroying it. }
@@ -502,7 +497,7 @@ type
 
   // TGLQueryHandle
   //
-  {: Manages a handle to a query.<br>
+  {: Manages a handle to a query. 
      Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
   private
@@ -542,8 +537,8 @@ type
 
   // TGLOcclusionQueryHandle
   //
-  {: Manages a handle to an occlusion query.<br>
-     Requires OpenGL 1.5+<br>
+  {: Manages a handle to an occlusion query. 
+     Requires OpenGL 1.5+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLOcclusionQueryHandle = class(TGLQueryHandle)
@@ -567,8 +562,8 @@ type
 
   // TGLTimerQueryHandle
   //
-  {: Manages a handle to a timer query.<br>
-     Requires GL_EXT_timer_query extension.<br>
+  {: Manages a handle to a timer query. 
+     Requires GL_EXT_timer_query extension. 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLTimerQueryHandle = class(TGLQueryHandle)
@@ -585,8 +580,8 @@ type
 
   // TGLPrimitiveQueryHandle
   //
-  {: Manages a handle to a primitive query.<br>
-     Requires OpenGL 3.0+<br>
+  {: Manages a handle to a primitive query. 
+     Requires OpenGL 3.0+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TGLPrimitiveQueryHandle = class(TGLQueryHandle)
@@ -602,9 +597,9 @@ type
 
   // TGLBufferObjectHandle
   //
-  {: Manages a handle to a Buffer Object.<br>
+  {: Manages a handle to a Buffer Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user.  }
   TGLBufferObjectHandle = class(TGLContextHandle)
   private
     { Private Declarations }
@@ -667,9 +662,9 @@ type
 
   // TGLVBOHandle
   //
-  {: Manages a handle to an Vertex Buffer Object.<br>
+  {: Manages a handle to an Vertex Buffer Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user. 
      Do not use this class directly, use one of its subclasses instead. }
   TGLVBOHandle = class(TGLBufferObjectHandle)
   private
@@ -988,9 +983,9 @@ type
 
   // TGLShaderHandle
   //
-  {: Manages a handle to a Shader Object.<br>
+  {: Manages a handle to a Shader Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br>
+     checked by the user. 
      Do not use this class directly, use one of its subclasses instead. }
   TGLShaderHandle = class(TGLSLHandle)
   private
@@ -1064,9 +1059,9 @@ type
 
   // TGLProgramHandle
   //
-  {: Manages a GLSL Program Object.<br>
+  {: Manages a GLSL Program Object. 
      Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.<br> }
+     checked by the user.  }
   TGLProgramHandle = class(TGLSLHandle)
   public
     class function IsValid(const ID: GLuint): Boolean; override;
@@ -1248,7 +1243,7 @@ type
     function ContextCount: Integer;
     {: Registers a new object to notify when the last context is destroyed.<p>
        When the last rendering context is destroyed, the 'anEvent' will
-       be invoked with 'anObject' as parameter.<br>
+       be invoked with 'anObject' as parameter. 
        Note that the registration is kept until the notification is triggered
        or a RemoveNotification on 'anObject' is issued. }
     procedure LastContextDestroyNotification(anObject: TObject; anEvent:

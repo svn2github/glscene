@@ -17,15 +17,15 @@ object InfoForm: TInfoForm
   OnShow = FormShow
   Position = poScreenCenter
   ShowHint = True
-  LCLVersion = '0.9.29'
+  LCLVersion = '1.4.4.0'
   object PageControl: TPageControl
     Left = 3
     Height = 341
     Top = 0
     Width = 457
-    ActivePage = TabSheet2
+    ActivePage = TabSheet3
     Anchors = [akTop, akLeft, akRight, akBottom]
-    TabIndex = 1
+    TabIndex = 2
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'GLScene'
@@ -2744,9 +2744,9 @@ object InfoForm: TInfoForm
       object WebsiteLbl: TLabel
         Cursor = crHandPoint
         Left = 57
-        Height = 14
+        Height = 13
         Top = 274
-        Width = 87
+        Width = 86
         Caption = 'http://glscene.org'
         Font.Color = clBlue
         Font.Height = -11
@@ -2758,9 +2758,9 @@ object InfoForm: TInfoForm
       end
       object Label34: TLabel
         Left = 9
-        Height = 14
+        Height = 13
         Top = 274
-        Width = 36
+        Width = 35
         Caption = 'Official:'
         ParentColor = False
       end
@@ -2799,6 +2799,7 @@ object InfoForm: TInfoForm
           'fig'
           'filippo'
           'Gabriel Corneanu'
+          'Ivan Lee Herring'
           'J.Delauney'
           'Joen A. Joensen'
           'Joen Joensen'
@@ -2848,10 +2849,12 @@ object InfoForm: TInfoForm
         Height = 315
         Top = 0
         Width = 449
+        HorzScrollBar.Page = 430
+        VertScrollBar.Page = 315
         Align = alClient
         BorderStyle = bsNone
         ClientHeight = 315
-        ClientWidth = 449
+        ClientWidth = 432
         TabOrder = 0
         object Label1: TLabel
           Left = 10

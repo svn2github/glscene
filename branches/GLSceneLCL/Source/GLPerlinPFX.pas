@@ -4,16 +4,16 @@
 {
    PFX particle effects revolving around the use of Perlin noise.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+    History :  
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility   
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
+       30/03/07 - DaStr - Added $I GLScene.inc
+       16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
-      <li>15/04/04 - EG - Creation
-   </ul></font>
+       15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
+       15/04/04 - EG - Creation
+    
 }
 unit GLPerlinPFX;
 
@@ -77,11 +77,11 @@ type
             sharp spike in the center. }
          property Smoothness : Single read FSmoothness write SetSmoothness;
          {: Brightness factor applied to the perlin texture intensity.<p>
-            Brightness acts as a scaling, non-saturating factor. Examples:<ul>
-            <li>Brightness = 1 : intensities in the [0; 1] range
-            <li>Brightness = 2 : intensities in the [0.5; 1] range
-            <li>Brightness = 0.5 : intensities in the [0; 0.5] range
-            </ul>Brightness is applied to the final texture (and thus affects
+            Brightness acts as a scaling, non-saturating factor. Examples: 
+             Brightness = 1 : intensities in the [0; 1] range
+             Brightness = 2 : intensities in the [0.5; 1] range
+             Brightness = 0.5 : intensities in the [0; 0.5] range
+             Brightness is applied to the final texture (and thus affects
             the distance based intensity). }
          property Brightness : Single read FBrightness write SetBrightness;
          property Gamma : Single read FGamma write SetGamma;

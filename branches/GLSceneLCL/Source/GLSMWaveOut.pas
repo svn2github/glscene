@@ -4,13 +4,13 @@
 {
    Basic sound manager based on WinMM <p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+	 History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>25/07/09 - DaStr - Added $I GLScene.inc
-      <li>30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
-      <li>24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
-	</ul></font>
+       25/07/09 - DaStr - Added $I GLScene.inc
+       30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
+       24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
+	 
 }
 unit GLSMWaveOut;
 

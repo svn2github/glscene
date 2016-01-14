@@ -4,12 +4,12 @@
 {
    Simple X format support for Delphi (Microsoft's favorite format)<p>
    
-   <b>History : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
-   </ul></font>
+    History :  
+       07/11/09 - DaStr - Initial version (Added from the GLScene-Lazarus SVN)
+    
 
 
-   <b>Previous version history : </b><font size=-1><ul>
+    Previous version history :  
       $Log$
       Revision 1.1  2009/11/07 22:12:25  da_stranger
       Initial version (Added from the GLScene-Lazarus SVN)
@@ -25,7 +25,7 @@
 
       Revision 1.2  2005/08/03 00:41:38  z0m3ie
       - added automatical generated History from CVS
-   </ul></font>
+    
 }
 
 unit GlFileX;
@@ -46,16 +46,16 @@ uses
   FileX;
 
 type
-  TGLXVectorFile = class (TVectorFile)
+  TGLXVectorFile = class (TGLVectorFile)
     public
       { Public Declarations }
-      class function Capabilities: TDataFileCapabilities; override;
+      class function Capabilities: TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
 implementation
 
-class function TGLXVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLXVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result := [dfcRead];
 end;
@@ -67,7 +67,7 @@ var
   procedure RecursDXFile(DXNode : TDXNode);
   var
     i,j,k,l,vertcount : integer;
-    mo : TMeshObject;
+    mo : TGLMeshObject;
     mat : TMatrix;
     libmat : TGLLibMaterial;
     fg : TFGVertexNormalTexIndexList;
@@ -81,7 +81,7 @@ var
       end;
 
     if DXNode is TDXMesh then begin
-      mo:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mo:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
       mo.Mode:=momFaceGroups;
       mo.Vertices.Assign(TDXMesh(DXNode).Vertices);
       mo.Vertices.TransformAsPoints(mat);

@@ -12,11 +12,11 @@
    - economy mode for texture bindig to active units,
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
- <b>History : </b><font size=-1><ul>
-      <li>13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
-      <li>11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
-      <li>11/03/11 - Yar - Created
-   </ul></font>
+  History :  
+       13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
+       11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
+       11/03/11 - Yar - Created
+    
 }
 
 unit GLMaterialEx;
@@ -26,15 +26,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   GLRenderContextInfo, GLBaseClasses, GLContext, GLVectorTypes,
   GLMaterial, GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLGraphics,
-  GLPersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, XCollection,
+  GLPersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, GLXCollection,
   GLTextureCombiners, OpenGLTokens, GLSLParameter,
   GLApplicationFileIO, GLStrings, GLImageUtils, GLUtils, XOpenGL,
   GLSLog;
@@ -59,7 +54,7 @@ type
   //
 
   TGLBaseMaterialCollectionItem = class(
-      TXCollectionItem,
+      TGLXCollectionItem,
       IGLMaterialLibrarySupported)
   private
     { Private Declarations }
@@ -158,7 +153,7 @@ type
     procedure SetDecodeSRGB(AValue: Boolean);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -287,7 +282,7 @@ type
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -376,7 +371,7 @@ type
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -642,7 +637,7 @@ type
     procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: TGLUint);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -675,7 +670,7 @@ type
     function GetHandle: TGLARBVertexProgramHandle;
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -797,7 +792,7 @@ type
     function GetHandle: TGLShaderHandle;
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -1249,14 +1244,14 @@ type
   // TGLMatLibComponents
   //
 
-  TGLMatLibComponents = class(TXCollection)
+  TGLMatLibComponents = class(TGLXCollection)
   protected
     { Protected Declarations }
     function GetItems(index: Integer): TGLBaseMaterialCollectionItem;
   public
     { Public Declarations }
     function GetNamePath: string; override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
     property Items[index: Integer]: TGLBaseMaterialCollectionItem
     read GetItems; default;
 
@@ -1968,7 +1963,7 @@ begin
   inherited;
 end;
 
-constructor TGLTextureImageEx.Create(AOwner: TXCollection);
+constructor TGLTextureImageEx.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2729,7 +2724,7 @@ begin
   inherited;
 end;
 
-constructor TGLTextureSampler.Create(AOwner: TXCollection);
+constructor TGLTextureSampler.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2988,7 +2983,7 @@ begin
   inherited;
 end;
 
-constructor TGLTextureCombiner.Create(AOwner: TXCollection);
+constructor TGLTextureCombiner.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -4320,7 +4315,7 @@ begin
   inherited;
 end;
 
-constructor TGLShaderEx.Create(AOwner: TXCollection);
+constructor TGLShaderEx.Create(AOwner: TGLXCollection);
 const
   cShaderClasses: array[TGLShaderType] of TGLShaderHandleClass =
     (
@@ -5464,7 +5459,7 @@ begin
   Result := nil;
 end;
 
-class function TGLMatLibComponents.ItemsClass: TXCollectionItemClass;
+class function TGLMatLibComponents.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TGLBaseMaterialCollectionItem;
 end;
@@ -6673,7 +6668,7 @@ begin
   inherited;
 end;
 
-constructor TGLFrameBufferAttachment.Create(AOwner: TXCollection);
+constructor TGLFrameBufferAttachment.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -7259,7 +7254,7 @@ begin
   inherited;
 end;
 
-constructor TGLASMVertexProgram.Create(AOwner: TXCollection);
+constructor TGLASMVertexProgram.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FHandle := TGLARBVertexProgramHandle.Create;

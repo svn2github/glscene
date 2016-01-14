@@ -4,16 +4,16 @@
 {
    Texture-based Lens flare object.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>23/03/07 - DaStr - Added missing parameters in procedure's implementation
+  History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       30/03/07 - DaStr - Added $I GLScene.inc
+       23/03/07 - DaStr - Added missing parameters in procedure's implementation
                              (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-      <li>25/09/03 - EG - Creation from GLLensFlare split
- </ul></font><p>
+       25/09/03 - EG - Creation from GLLensFlare split
+  <p>
 }
 unit GLTexLensFlare;
 
@@ -22,16 +22,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes,
-  {$ELSE}
-    Classes,
-  {$ENDIF}
-
+  Classes,
   GLScene,  GLVectorGeometry,  GLObjects,  GLTexture, OpenGLTokens,
   GLContext,  GLRenderContextInfo,  GLBaseClasses,
-  GLState
-  , GLVectorTypes;
+  GLState, GLVectorTypes;
 
 type
 

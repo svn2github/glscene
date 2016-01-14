@@ -4,16 +4,16 @@
 {
    The console is a popdown window that appears on a game for text output/input.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
-      <li>30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
-      <li>25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
-      <li>23/02/07 - DaStr - Cosmetic changes, replaced some strings with
+    History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
+       30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
+       25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
+       23/02/07 - DaStr - Cosmetic changes, replaced some strings with
                               resource strings from GLStrings.pas
-      <li>15/02/07 - DaStr - Some properties are not stored now, because they are
+       15/02/07 - DaStr - Some properties are not stored now, because they are
                               read directly from HUDSprite and HUDText
-      <li>07/02/07 - DaStr - Initial version (donated to GLScene)
+       07/02/07 - DaStr - Initial version (donated to GLScene)
 
    What is different compared to the original component?
      1) Can be aded to any object, not just the root one
@@ -73,12 +73,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, System.TypInfo, Vcl.Graphics,
-{$ELSE}
   Classes, SysUtils, TypInfo, Graphics,
-{$ENDIF}
-  // GLScene
+  // GLS
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
   GLPersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
   GLCrossPlatform, GLMaterial, GLVectorTypes;
@@ -402,7 +398,7 @@ type
     { Main event of the console. Happens whenever the enter key is pressed.
       First the input line is compared to all registered commands, then everything
       is parsed into a TGLUserInputCommand record and  sent to the event.
-      Empty lines are <b>not</b> ignored (i.e. they also trigger events)}
+      Empty lines are  not  ignored (i.e. they also trigger events)}
     property OnCommandIssued: TGLlConsoleEvent read FOnCommandIssued write
       FOnCommandIssued;
 

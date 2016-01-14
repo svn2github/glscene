@@ -5,23 +5,23 @@
    A shader that applies a render pass for each material in
    its assigned MaterialLibrary.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - Added more state to TGLStateCache
-      <li>03/07/09 - DanB - bug fix to allow multi-pass materials to be used by TGLMultiMaterialShader 
-      <li>20/01/09 - Mrqzzz - Published property "Shaderstyle"
+    History :  
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - Added more state to TGLStateCache
+       03/07/09 - DanB - bug fix to allow multi-pass materials to be used by TGLMultiMaterialShader 
+       20/01/09 - Mrqzzz - Published property "Shaderstyle"
                              (allows f.ex to have multiple textures using lightmaps)
-      <li>25/10/07 - Mrqzzz - commented "glPushAttrib(GL_ALL_ATTRIB_BITS);" in DoApply
+       25/10/07 - Mrqzzz - commented "glPushAttrib(GL_ALL_ATTRIB_BITS);" in DoApply
                               and "glPopAttrib;" in DoUnapply, which seems to fix
                               issues with other objects and materials in the scene.
 
-      <li>25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-      <li>24/05/04 - Mrqzzz - Re-added design-time rendering option
+       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
+       24/05/04 - Mrqzzz - Re-added design-time rendering option
                           (seems stable now)
-      <li>29/07/03 - SG - Removed design-time rendering option
+       29/07/03 - SG - Removed design-time rendering option
                           (shader unstable at design-time)
-      <li>29/07/03 - SG - Creation
-   </ul></font>
+       29/07/03 - SG - Creation
+    
 }
 unit GLMultiMaterialShader;
 

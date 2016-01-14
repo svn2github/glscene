@@ -4,41 +4,41 @@
 {
    Tools for managing an application-side cache of OpenGL state.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
-      <li>12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
-      <li>07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
-      <li>14/12/10 - DaStr - Added to TGLStateCache:
+  History :  
+       10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
+       12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
+       07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
+       14/12/10 - DaStr - Added to TGLStateCache:
                                Color property
                                SetGLMaterialColorsNoLighting()
                                SetGLMaterialDiffuseColor()
                              Bugfixed: TGLStateCache.SetGLMaterialAlphaChannel()
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
-      <li>27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
-      <li>09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+       03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
+       27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
+       09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
                            SetGLTextureMatrix work for ActiveTexture (in four count)
-      <li>23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
-      <li>03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
-      <li>16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
-      <li>16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
-      <li>31/05/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter, not complete yet.
-      <li>01/05/10 - Yar - Added cashing to Vertex Array Object
-      <li>22/04/10 - Yar - GLState revision
-      <li>11/04/10 - Yar - Added NewList, EndList, InsideList
-      <li>08/05/10 - DanB - Added TGLStateCache.SetColorMask
-      <li>05/03/10 - DanB - Added initial functions/properties for caching all
+       23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
+       03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
+       16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
+       16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
+       31/05/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter, not complete yet.
+       01/05/10 - Yar - Added cashing to Vertex Array Object
+       22/04/10 - Yar - GLState revision
+       11/04/10 - Yar - Added NewList, EndList, InsideList
+       08/05/10 - DanB - Added TGLStateCache.SetColorMask
+       05/03/10 - DanB - Added initial functions/properties for caching all
                             OpenGL 3.2 state, not complete yet.
-      <li>22/02/10 - DanB - added SetGLCurrentProgram
-      <li>22/02/10 - Yar - Added more control of states
-      <li>13/05/07 - fig - Added stTexture3D (GL_TEXTURE_3D)
-      <li>19/12/06 - DaStr - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
-      <li>04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
-      <li>07/01/04 - EG - Introduced TGLStateCache
-      <li>05/09/03 - EG - Creation from GLMisc split
-   </ul></font>
+       22/02/10 - DanB - added SetGLCurrentProgram
+       22/02/10 - Yar - Added more control of states
+       13/05/07 - fig - Added stTexture3D (GL_TEXTURE_3D)
+       19/12/06 - DaStr - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
+       04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
+       07/01/04 - EG - Introduced TGLStateCache
+       05/09/03 - EG - Creation from GLMisc split
+    
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,

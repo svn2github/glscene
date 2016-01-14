@@ -4,32 +4,32 @@
 {
   Geometric objects.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>13/05/11 - Vince - Add ArrowArc object
-  <li>13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
+   History :  
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   13/05/11 - Vince - Add ArrowArc object
+   13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
                  to display a slice of TGLTorus between start and stop angles
-  <li>24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
+   24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
                  now this function references the inherited function
-  <li>20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
+   20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
                  (thanks Sandor Domokos) (BugTrackerID = 1864314)
   Added a TGLCapsule object (thanks Dave Gravel)
-  <li>18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
-  <li>07/05/07 - DanB - Added TGLCone.RayCastIntersect
+   18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
+   07/05/07 - DanB - Added TGLCone.RayCastIntersect
   Improved TGLDisk.RayCastIntersect
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
+   30/03/07 - DaStr - Added $I GLScene.inc
+   25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
                  AxisAlignedBoundingBoxUnscaled,
                  AxisAlignedDimensionsUnscaled
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
   Added GetTopRadius to facilitate silhouette.
-  <li>24/10/03 - NelC - Fixed TGLTorus texture coord. bug
-  <li>21/07/03 - EG - Creation from GLObjects split
-  </ul></font>
+   24/10/03 - NelC - Fixed TGLTorus texture coord. bug
+   21/07/03 - EG - Creation from GLObjects split
+   
 }
 unit GLGeomObjects;
 
@@ -369,9 +369,9 @@ type
   //
   { : Draws an arrowhead (cylinder + cone).<p>
     The arrow head is a cone that shares the attributes of the cylinder
-    (ie stacks/slices, materials etc). Seems to work ok.<br>
+    (ie stacks/slices, materials etc). Seems to work ok. 
     This is useful for displaying a vector based field (eg velocity) or
-    other arrows that might be required.<br>
+    other arrows that might be required. 
     By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
@@ -426,9 +426,9 @@ type
   //
   { : Draws an arrowhead (Sliced Torus + cone).<p>
     The arrow head is a cone that shares the attributes of the Torus
-    (ie stacks/slices, materials etc).<br>
+    (ie stacks/slices, materials etc). 
     This is useful for displaying a movement (eg twist) or
-    other arc arrows that might be required.<br>
+    other arc arrows that might be required. 
     By default the bottom arrow is off }
   TGLArrowArc = class(TGLCylinderBase)
   private
@@ -536,7 +536,7 @@ type
   { A frustrum is a pyramid with the top chopped off.<p>
     The height of the imaginary pyramid is ApexHeight, the height of the
     frustrum is Height. If ApexHeight and Height are the same, the frustrum
-    degenerates into a pyramid.<br>
+    degenerates into a pyramid. 
     Height cannot be greater than ApexHeight. }
   TGLFrustrum = class(TGLSceneObject)
   private

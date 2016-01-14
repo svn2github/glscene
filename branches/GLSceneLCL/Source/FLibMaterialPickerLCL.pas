@@ -4,9 +4,9 @@
 {
    Allows choosing a material in a material library<p>
 
-    <b>History : </b><font size=-1><ul>
+     History :  
 
-    </ul></font>
+     
 }
 
 unit FLibMaterialPickerLCL;

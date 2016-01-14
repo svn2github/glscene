@@ -4,14 +4,14 @@
 {
    Doom3 MD5 mesh and animation vector file format implementation.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+    History : 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>02/12/04 - SG - Updated to support MD5 version 10,
+       02/12/04 - SG - Updated to support MD5 version 10,
                           version 6 support has been dropped.
-      <li>01/06/04 - SG - Initial
-   </ul></font>
+       01/06/04 - SG - Initial
+    
 }
 unit GLFileMD5;
 
@@ -23,13 +23,13 @@ uses
 
 type
 
-  TGLMD5VectorFile = class (TVectorFile)
+  TGLMD5VectorFile = class (TGLVectorFile)
     private
       FMD5String,
       FTempString,
       FBoneNames : TStringList;
       FCurrentPos : Integer;
-      FBasePose : TSkeletonFrame;
+      FBasePose : TGLSkeletonFrame;
       FFramePositions : TAffineVectorList;
       FFrameQuaternions : TQuaternionList;
       FJointFlags : TIntegerList;
@@ -41,7 +41,7 @@ type
       function ReadLine : String;
 
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -78,7 +78,7 @@ end;
 
 // Capabilities
 //
-class function TGLMD5VectorFile.Capabilities : TDataFileCapabilities;
+class function TGLMD5VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -140,7 +140,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     quat : TQuaternion;
     mat, rmat : TMatrix;
     ParentBoneID : Integer;
-    bone, parentbone : TSkeletonBone;
+    bone, parentbone : TGLSkeletonBone;
   begin
     FTempString.CommaText:=BoneString;
 
@@ -161,10 +161,10 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     if bonename<>'' then begin
       FBoneNames.Add(bonename);
       if ParentBoneID = -1 then
-        bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
+        bone:=TGLSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
       else begin
         parentBone:=Owner.Skeleton.RootBones.BoneByID(ParentBoneID);
-        bone:=TSkeletonBone.CreateOwned(parentBone);
+        bone:=TGLSkeletonBone.CreateOwned(parentBone);
 
         mat:=QuaternionToMatrix(quat);
         mat.V[3]:=PointMake(pos);
@@ -207,7 +207,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
   procedure ReadMesh;
   var
     temp, shader : String;
-    mesh : TSkeletonMeshObject;
+    mesh : TGLSkeletonMeshObject;
     fg : TFGVertexIndexList;
     vnum, wnum,
     numverts, numweights : Integer;
@@ -228,7 +228,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
 
     numverts:=0;
 
-    mesh:=TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh:=TGLSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
     fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
     mesh.Mode:=momFaceGroups;
     fg.Mode:=fgmmTriangles;
@@ -317,7 +317,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
   procedure ReadHierarchy;
   var
     temp : String;
-    bone : TSkeletonBone;
+    bone : TGLSkeletonBone;
   begin
     if not Assigned(FJointFlags) then begin
       FJointFlags:=TIntegerList.Create;
@@ -365,7 +365,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
   var
     temp : String;
     i,j : Integer;
-    frame : TSkeletonFrame;
+    frame : TGLSkeletonFrame;
     pos : TAffineVector;
     quat : TQuaternion;
   begin
@@ -420,7 +420,7 @@ procedure TGLMD5VectorFile.LoadFromStream(aStream : TStream);
     i : Integer;
   begin
     for i:=0 to Owner.MeshObjects.Count-1 do
-      TSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
+      TGLSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
   end;
 
 var
@@ -459,7 +459,7 @@ begin
           FFramePositions:=TAffineVectorList.Create;
           FFrameQuaternions:=TQuaternionList.Create;
           if Owner.Skeleton.Frames.Count = 0 then begin
-            FBasePose:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+            FBasePose:=TGLSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
             FBasePose.Position.Count:=FNumJoints;
             FBasePose.TransformMode:=sftQuaternion;
             FBasePose.Quaternion.Count:=FNumJoints;
@@ -489,7 +489,7 @@ begin
           if FNumFrames>0 then begin
             FFirstFrame:=Owner.Skeleton.Frames.Count;
             for i:=1 to FNumFrames do
-              TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+              TGLSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
             if Owner is TGLActor then begin
               with TGLActor(Owner).Animations.Add do begin
                 Name:=ChangeFileExt(ExtractFileName(ResourceName), '');

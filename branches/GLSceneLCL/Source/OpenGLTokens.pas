@@ -3,16 +3,16 @@
 //
 {
    OpenGL Tokens
- <b>History : </b><font size=-1><ul>
-      <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
-      <li>17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
+  History :  
+       24/10/13 - Yar - Added OpenGL 4.3, 4.4
+       17/12/12 - PW  - Added CPP compatibility: changed PWGLSwap to PWGLswap
                            to exclude ambiquity with 'Winapi::Windows::PWGLSwap'
-      <li>21/08/11 - Yar - Added OpenGL ES
-      <li>31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
-      <li>23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
-      <li>14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
-      <li>03/08/10 - Yar - Moved from OpenGL1x types and constants
-   </ul></font>
+       21/08/11 - Yar - Added OpenGL ES
+       31/07/11 - Yar - Added types and constants for GL_NV_Path_rendering
+       23/01/11 - DanB - Added OpenGL procedural types, OpenGL 4.1 + ARB extensions
+       14/10/10 - Yar - Moved GLU types and constants from OpenGL1x
+       03/08/10 - Yar - Moved from OpenGL1x types and constants
+    
 }
 unit OpenGLTokens;
 

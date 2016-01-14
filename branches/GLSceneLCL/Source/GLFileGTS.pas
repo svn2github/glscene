@@ -4,11 +4,11 @@
 {
    GTS (GNU Triangulated Surface) vector file format implementation.<p>
 
-	<b>History :</b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	</ul></font>
+	 History : 
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       31/03/07 - DaStr - Added $I GLScene.inc
+       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+	 
 }
 unit GLFileGTS;
 
@@ -25,14 +25,14 @@ type
    {: The GTS vector file (GNU Triangulated Surface library).<p>
       It is a simple text format, with indexed vertices. The first line contains
       the number of vertices, the number of edges and the number of faces separated
-      by spaces.<br>
+      by spaces. 
       Following lines contain the x/y/z coordinates of vertices, then the edges
-      (two indices) and the faces (three indices).<br>
+      (two indices) and the faces (three indices). 
       http://gts.sourceforge.net/ }
-   TGLGTSVectorFile = class(TVectorFile)
+   TGLGTSVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -56,7 +56,7 @@ uses
 
 // Capabilities
 //
-class function TGLGTSVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLGTSVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -67,7 +67,7 @@ procedure TGLGTSVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nv, ne, nf, k, ei : Integer;
    sl : TStringList;
-   mesh : TMeshObject;
+   mesh : TGLMeshObject;
    fg : TFGVertexIndexList;
    vertIndices : array [0..5] of Integer;
    pEdge, pTri, p : PChar;
@@ -75,7 +75,7 @@ begin
    sl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream{$IFDEF Unicode}, TEncoding.ASCII{$ENDIF});
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl.Count>0 then begin
          p:=PChar(sl[0]);

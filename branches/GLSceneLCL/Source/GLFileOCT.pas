@@ -2,17 +2,17 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Support-code to load OCT Files into TGLFreeForm-Components in GLScene.<br>
+    Support-code to load OCT Files into TGLFreeForm-Components in GLScene. 
     (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
 
-  <b>History : </b><font size=-1><ul>
-      <li>19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>19/09/03 - EG - "Lighmap" -&gt; "LightMap"
-      <li>06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
-      <li>02/02/03 - EG     - Creation
-   </ul><p>
+   History :  
+       19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
+       22/01/10 - Yar - Added GLTextureFormat to uses
+       31/03/07 - DaStr - Added $I GLScene.inc
+       19/09/03 - EG - "Lighmap" -&gt; "LightMap"
+       06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
+       02/02/03 - EG     - Creation
+    <p>
 }
 unit GLFileOCT;
 
@@ -29,13 +29,13 @@ uses
 
 type
 
-  // TGLOCTVectorFile
+  // TGLOCTGLVectorFile
 
   {: The OCT vector file (FSRad output).<p> }
-  TGLOCTVectorFile = class(TVectorFile)
+  TGLOCTGLVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -61,25 +61,25 @@ uses
   GLUtils, GLTextureFormat;
 
 // ------------------
-// ------------------ TGLOCTVectorFile ------------------
+// ------------------ TGLOCTGLVectorFile ------------------
 // ------------------
 
 // Capabilities
 
-class function TGLOCTVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLOCTGLVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
 // LoadFromStream
 
-procedure TGLOCTVectorFile.LoadFromStream(aStream: TStream);
+procedure TGLOCTGLVectorFile.LoadFromStream(aStream: TStream);
 var
   i, y, n: integer;
   oct: TOCTFile;
   octFace: POCTFace;
   octLightmap: POCTLightmap;
-  mo: TMeshObject;
+  mo: TGLMeshObject;
   fg: TFGVertexIndexList;
   lightmapLib: TGLMaterialLibrary;
   lightmapBmp: TGLBitmap;
@@ -90,7 +90,7 @@ var
 begin
   oct := TOCTFile.Create(aStream);
   try
-    mo := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mo := TGLMeshObject.CreateOwned(Owner.MeshObjects);
     mo.Mode := momFaceGroups;
 
     lightmapLib := Owner.LightmapLibrary;
@@ -179,7 +179,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('oct', 'FSRad OCT files', TGLOCTVectorFile);
+  RegisterVectorFileFormat('oct', 'FSRad OCT files', TGLOCTGLVectorFile);
 
 end.
 

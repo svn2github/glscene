@@ -4,23 +4,23 @@
 {
    This unit contains classes that imitate an atmosphere around a planet.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>19/03/11 - Yar - Added setters for Low and High atmosphere colors
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>03/04/07 - DaStr - Optimized TGLCustomAtmosphere.DoRender
+    History :  
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       19/03/11 - Yar - Added setters for Low and High atmosphere colors
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       03/04/07 - DaStr - Optimized TGLCustomAtmosphere.DoRender
                              Fixed SetPlanetRadius and SetAtmosphereRadius
-      <li>21/03/07 - DaStr - Cleaned up "uses" section
+       21/03/07 - DaStr - Cleaned up "uses" section
                              (thanks Burkhard Carstens) (Bugtracker ID = 1684432)
-      <li>01/03/07 - DaStr - Fixed TGLAtmosphereBlendingMode
+       01/03/07 - DaStr - Fixed TGLAtmosphereBlendingMode
                                              (old version did not generate RTTI)
                              Added default values to all properties
-      <li>15/02/07 - DaStr - Added TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled
-      <li>07/02/07 - DaStr - Initial version (donated to GLScene)
+       15/02/07 - DaStr - Added TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled
+       07/02/07 - DaStr - Initial version (donated to GLScene)
 
 
    Comments:

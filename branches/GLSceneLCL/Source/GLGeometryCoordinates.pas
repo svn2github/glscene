@@ -5,15 +5,15 @@
    Helper functions to convert between different three dimensional coordinate
    systems. Room for optimisations.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed GeometryCoordinates unit to GLGeometryCoordinates
-      <li>30/04/03 - EG - Hyperbolic functions moved to GLVectorGeometry.pas
-      <li>30/04/03 - ARH - Remove math.pas dependency
-      <li>24/04/03 - ARH - Double versions added
-      <li>10/04/03 - ARH - Added ProlateSpheroidal,OblateSpheroidal,
+	 History :  
+       10/12/14 - PW - Renamed GeometryCoordinates unit to GLGeometryCoordinates
+       30/04/03 - EG - Hyperbolic functions moved to GLVectorGeometry.pas
+       30/04/03 - ARH - Remove math.pas dependency
+       24/04/03 - ARH - Double versions added
+       10/04/03 - ARH - Added ProlateSpheroidal,OblateSpheroidal,
                            BiPolarCylindrical
-      <li>09/04/03 - ARH - Initial Version (Cylindrical,Spherical)
-   </ul>
+       09/04/03 - ARH - Initial Version (Cylindrical,Spherical)
+    
 }
 unit GLGeometryCoordinates;
 

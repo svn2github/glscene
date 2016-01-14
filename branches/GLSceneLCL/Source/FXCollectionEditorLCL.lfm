@@ -1,4 +1,4 @@
-object XCollectionEditor: TXCollectionEditor
+object XCollectionEditor: TGLXCollectionEditor
   Left = 265
   Height = 243
   Top = 131

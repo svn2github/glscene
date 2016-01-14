@@ -5,13 +5,13 @@
   An interface unit to GLScene plug-ins.<p>
   For more information see help file for writing plug-ins.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/14 - PW - Renamed from PlugInIntf.pas to GLPlugInIntf.pas
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
+   History :  
+   17/11/14 - PW - Renamed from PlugInIntf.pas to GLPlugInIntf.pas
+   16/10/08 - UweR - Compatibility fix for Delphi 2009
   PlugIn interface stays at PAnsiChar
-  <li>02/04/07 - DaStr - Added $I GLScene.inc
-  <li>28/07/01 - EG - Creation
-  </ul></font>
+   02/04/07 - DaStr - Added $I GLScene.inc
+   28/07/01 - EG - Creation
+   
 }
 
 unit GLPlugInIntf;

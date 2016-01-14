@@ -4,30 +4,30 @@
 {
    FMOD based sound-manager (http://www.fmod.org/, free for freeware).<p>
 
-   Unsupported feature(s) :<ul>
-      <li>sound source velocity
-      <li>looping (sounds are played either once or forever)
-      <li>sound cones
-   </ul><p>
+   Unsupported feature(s) : 
+       sound source velocity
+       looping (sounds are played either once or forever)
+       sound cones
+    <p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
+	 History :  
+       07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
                               sound source and with sscSample in aSource.Changes
-      <li>17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
-      <li>15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
-      <li>07/06/07 - DaStr - Added $I GLScene.inc
-      <li>18/10/03 - EG - Dynamic support is back
-      <li>18/09/03 - ARH - updated for fmod 3.7
-      <li>24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
-      <li>28/08/02 - EG - Fixed EAX capability detection
-      <li>27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
+       17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
+       15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
+       07/06/07 - DaStr - Added $I GLScene.inc
+       18/10/03 - EG - Dynamic support is back
+       18/09/03 - ARH - updated for fmod 3.7
+       24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
+       28/08/02 - EG - Fixed EAX capability detection
+       27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
                           Added support for EAX environments
-      <li>26/08/02 - EG - Updated to FMOD 3.6
-      <li>27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
-      <li>05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
-      <li>13/01/01 - EG - Updated for API 3.3 compatibility
-	   <li>09/06/00 - EG - Creation
-	</ul></font>
+       26/08/02 - EG - Updated to FMOD 3.6
+       27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
+       05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
+       13/01/01 - EG - Updated for API 3.3 compatibility
+	    09/06/00 - EG - Creation
+	 
 }
 unit GLSMFMOD;
 

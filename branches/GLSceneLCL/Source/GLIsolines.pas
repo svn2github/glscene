@@ -4,7 +4,7 @@
 {
   Class and routines to output isolines.<p>
 
-  <b>History : </b><font size=-1><ul>
+   History :  
   25/04/15 - PW - Fixed TriangleElevationSegments procedure
   06/07/02 - Phil Scadden - Added TContour class and Initialise_Isolining procedure
   15/08/01 - Alexander Weidauer - Added CONREC Delphi implementation

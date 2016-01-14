@@ -5,8 +5,8 @@
    Ivory shader simulate Ivory material.<p>
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Creation
+    History :  
+     08/12/15 - J.Delauney - Creation
 
 }
 

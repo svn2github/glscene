@@ -4,9 +4,9 @@
 {
    Editor for a vector.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   History :  
 
-   </ul></font>
+    
 }
 unit FVectorEditorLCL;
 

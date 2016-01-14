@@ -5,19 +5,19 @@
    Registration unit for GLScene library components, property editors and
       IDE experts for Lazarus.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>04/06/10 - Yar - Added GLSArchiveManager
+    History : 
+       04/06/10 - Yar - Added GLSArchiveManager
                            Fixes for Linux x64
-      <li>20/04/10 - Yar - Added GLSLanguage
-      <li>08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
-      <li>22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
-      <li>07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
+       20/04/10 - Yar - Added GLSLanguage
+       08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
+       22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
+       07/01/10 - DaStr - Added GLLCLFullScreenViewer and improved
                               TResolutionProperty (thanks Predator)
-      <li>24/11/09 - DanB - Removed some more windows only units
-      <li>22/11/09 - DaStr - Improved Unix compatibility (again)
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+       24/11/09 - DanB - Removed some more windows only units
+       22/11/09 - DaStr - Improved Unix compatibility (again)
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>24/03/08 - DaStr - Initial version
+       24/03/08 - DaStr - Initial version
 }
 unit GLSceneRegisterLCL;
 
@@ -44,7 +44,7 @@ type
 procedure Register;
 
 //: Auto-create for object manager
-function ObjectManager: TObjectManager;
+function ObjectManager: TGLObjectManager;
 
 implementation
 
@@ -118,12 +118,12 @@ uses
   FRColorEditorLCL, FRTrackBarEditLCL, FShaderUniformEditorLCL, FGUILayoutEditorLCL;
 
 var
-  vObjectManager: TObjectManager;
+  vObjectManager: TGLObjectManager;
 
-function ObjectManager: TObjectManager;
+function ObjectManager: TGLObjectManager;
 begin
   if not Assigned(vObjectManager) then
-    vObjectManager := TObjectManager.Create(nil);
+    vObjectManager := TGLObjectManager.Create(nil);
   Result := vObjectManager;
 end;
 

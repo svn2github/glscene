@@ -6,23 +6,23 @@
    utility functions for working with virtual keycodes.<p>
 
    Note that windows maps the mouse buttons to virtual key codes too, and you
-   can use the functions/classes in this unit to check mouse buttons too.<br>
+   can use the functions/classes in this unit to check mouse buttons too. 
    See "Virtual-Key Codes" in the Win32 programmers réferences for a list of
    key code constants (VK_* constants are declared in the "Windows" unit).<p>
 
-	<b>Historique : </b><font size=-1><ul>
-      <li>07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
+	History :  
+       07/11/09 - DaStr - Improved FPC compatibility and moved to the /Source/Platform/
                              directory (BugtrackerID = 2893580) (thanks Predator)
-      <li>28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
-      <li>19/12/06 - DaS - Added additional string constants and made all
+       28/03/07 - DaStr - Renamed from Keyboard.pas (BugTracker ID = 1678646)
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTrackerID=1681585)
+       19/12/06 - DaS - Added additional string constants and made all
                              existing 'Mixed Case', not 'UPPERCASE'
                            KeyNameToVirtualKeyCode optimized,
                            Fixed comments to KeyNameToVirtualKeyCode() function
-      <li>17/11/03 - Egg - Fixed IsKeyDown (VK) (A. P. Mohrenweiser)
-      <li>09/10/00 - Egg - Fixed VirtualKeyCodeToKeyName
-      <li>03/08/00 - Egg - Creation, partly based Silicon Commander code
-	</ul></font>
+       17/11/03 - Egg - Fixed IsKeyDown (VK) (A. P. Mohrenweiser)
+       09/10/00 - Egg - Fixed VirtualKeyCodeToKeyName
+       03/08/00 - Egg - Creation, partly based Silicon Commander code
+	 
 }
 unit GLKeyboard;
 
@@ -50,7 +50,7 @@ const
 
 {: Check if the key corresponding to the given Char is down.<p>
    The character is mapped to the <i>main keyboard</i> only, and not to the
-   numeric keypad.<br>
+   numeric keypad. 
    The Shift/Ctrl/Alt state combinations that may be required to type the
    character are ignored (ie. 'a' is equivalent to 'A', and on my french
    keyboard, '5' = '(' = '[' since they all share the same physical key). }
@@ -60,7 +60,7 @@ function IsKeyDown(c : Char) : Boolean; overload;
 function IsKeyDown(vk : TVirtualKeyCode) : Boolean; overload;
 {: Returns the first pressed key whose virtual key code is >= to minVkCode.<p>
    If no key is pressed, the return value is -1, this function does NOT
-   wait for user input.<br>
+   wait for user input. 
    If you don't care about multiple key presses, just don't use the parameter. }
 function KeyPressed(minVkCode : TVirtualKeyCode = 0) : TVirtualKeyCode;
 

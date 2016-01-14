@@ -7,25 +7,25 @@
    It is strongly recommended to read and understand the explanations in the
    materials/mirror demo before using this component.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>15/12/08- Paul Robello - corrected call to  FOnEndRenderingMirrors
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       15/12/08- Paul Robello - corrected call to  FOnEndRenderingMirrors
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>18/07/04 - Orlando - added custom shapes
-      <li>13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
-      <li>13/11/02 - EG - Fixed TGLMirror.DoRender transform
-      <li>06/11/02 - EG - Fixed Stencil setup
-      <li>30/10/02 - EG - Added OnBegin/EndRenderingMirrors
-      <li>25/10/02 - EG - Fixed Stencil cleanup
-      <li>22/02/01 - EG - Fixed change notification,
+       18/07/04 - Orlando - added custom shapes
+       13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
+       13/11/02 - EG - Fixed TGLMirror.DoRender transform
+       06/11/02 - EG - Fixed Stencil setup
+       30/10/02 - EG - Added OnBegin/EndRenderingMirrors
+       25/10/02 - EG - Fixed Stencil cleanup
+       22/02/01 - EG - Fixed change notification,
                           Fixed special effects support (PFX, etc.)
-      <li>07/12/01 - EG - Creation
-   </ul></font>
+       07/12/01 - EG - Creation
+    
 }
 unit GLMirror;
 
@@ -114,18 +114,18 @@ type
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;
     {: Controls rendering options.<p>
-       <ul>
-       <li>moUseStencil: mirror area is stenciled, prevents reflected
+        
+        moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
           must be active in the viewer)
-       <li>moOpaque: mirror is opaque (ie. painted with background color)
-       <li>moMirrorPlaneClip: a ClipPlane is defined to prevent reflections
+        moOpaque: mirror is opaque (ie. painted with background color)
+        moMirrorPlaneClip: a ClipPlane is defined to prevent reflections
           from popping out of the mirror (for objects behind or halfway through)
-       <li>moClearZBuffer: mirror area's ZBuffer is cleared so that background
+        moClearZBuffer: mirror area's ZBuffer is cleared so that background
           objects don't interfere with reflected objects (reflected objects
           must be rendered AFTER the mirror in the hierarchy). Works only
           along with stenciling.
-       </ul>
+        
     }
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;

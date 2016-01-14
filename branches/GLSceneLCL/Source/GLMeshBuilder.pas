@@ -13,11 +13,11 @@
 
    Features: BuildCube, BuildCylinder.
 
-	<b>History : </b><font size=-1><ul>
-      <li>22/01/10 - Yar - Added GLVectorTypes to uses
-      <li>29/11/03 - JAJ - Created and Submitted to GLScene.
-      <li>21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?
-	</ul></font>
+	 History :  
+       22/01/10 - Yar - Added GLVectorTypes to uses
+       29/11/03 - JAJ - Created and Submitted to GLScene.
+       21/07/03 - JAJ - Added BuildCylinder2 submitted by Gorka?
+	 
 }
 unit GLMeshBuilder;
 
@@ -27,9 +27,9 @@ Uses
   SysUtils, Classes, GLScene, GLVectorFileObjects,
   GLVectorTypes, GLVectorGeometry, GLVectorLists;
 
-Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
-Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
-Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
+Procedure BuildCube(Mesh : TGLMeshObject; Position, Scale : TAffineVector);
+Procedure BuildCylinder(Mesh : TGLMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+Procedure BuildCylinder2(Mesh : TGLMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
 
 implementation
 
@@ -41,7 +41,7 @@ Begin
   Result.V[2]:= position.V[2]+Scale.V[2]*Z;
 End;
 
-Procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
+Procedure BuildCube(Mesh : TGLMeshObject; Position, Scale : TAffineVector);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -144,7 +144,7 @@ Begin
   FGR.TexCoordIndices.Add(TextureOffset+2,TextureOffset+7,TextureOffset+6);
 End;
 
-Procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+Procedure BuildCylinder(Mesh : TGLMeshObject; Position, Scale : TAffineVector; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -212,7 +212,7 @@ Begin
 End;
 
 
-Procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
+Procedure BuildCylinder2(Mesh : TGLMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;

@@ -4,9 +4,9 @@
 {
    Basic editing frame for TGLTexture<p>
 
-    <b>History : </b><font size=-1><ul>
-        <li>14/06/10 - Yar - Added Filtering Quality ComboBox. Bugfixed texture image class filling.
-    </ul></font>
+     History :  
+         14/06/10 - Yar - Added Filtering Quality ComboBox. Bugfixed texture image class filling.
+     
 }
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
 

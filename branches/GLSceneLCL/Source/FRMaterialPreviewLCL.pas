@@ -4,9 +4,9 @@
 {
    Material Preview frame.<p>
 
-   <b>Historique : </b><font size=-1><ul>
+   History :  
 
-   </ul></font>
+    
 }
 // Возникли проблемы с GLSceneViewer и TFrame (при передаче буферу хэндла),
 // поэтому его пришлось заменить на MemoryViewer

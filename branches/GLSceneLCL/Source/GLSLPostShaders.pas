@@ -4,9 +4,9 @@
 {
    Post shaders that simulate shader visions for a mask or the entire scene.<p>
 
-   <b>History : </b><font size=-1><ul>
-    <li>04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit
-    <li>01/11/15 - J.Delauney - Initial versions for
+    History :  
+     04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit
+     01/11/15 - J.Delauney - Initial versions for
                                 GLSLPostThermalVisionShader
                                 GLSLPostDreamVisionShader
                                 GLSLPostNightVisionShader
@@ -14,7 +14,7 @@
                                 GLSLPostPosterizeShader
                                 GLSLPostFrostShader
                                 GLSLPostTroubleShader
-    <li>05/04/07 - DaStr - Initial version for GLSLPostBlurShader
+     05/04/07 - DaStr - Initial version for GLSLPostBlurShader
                            based on RenderMonkey demo
 }
 unit GLSLPostShaders;

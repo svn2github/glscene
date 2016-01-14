@@ -4,27 +4,27 @@
 {
    Miscellaneous support utilities & classes.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>02/01/13 - Yar - Added SetGLSceneMediaDir
-      <li>07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
-      <li>04/03/10 - DanB - Now uses CharInSet
-      <li>27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
-      <li>24/03/09 - DanB - removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
+  History :  
+       02/01/13 - Yar - Added SetGLSceneMediaDir
+       07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
+       04/03/10 - DanB - Now uses CharInSet
+       27/05/09 - DanB - re-added TryStrToFloat, since it ignores user's locale.
+       24/03/09 - DanB - removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
                             changed StrToFloatDef to accept only 1 param + now overloaded
-      <li>24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
+       24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
                             they work on all platforms (with FPC)
-      <li>16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
-      <li>16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
-      <li>24/03/08 - DaStr - Removed OpenGL1x dependancy
+       16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
+       16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
+       24/03/08 - DaStr - Removed OpenGL1x dependancy
                              Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
-      <li>25/03/07 - DaStr - Replaced StrUtils with GLCrossPlatform
-      <li>23/03/07 - DaStr - Removed compiler warnings caused by
+       25/03/07 - DaStr - Replaced StrUtils with GLCrossPlatform
+       23/03/07 - DaStr - Removed compiler warnings caused by
                                SaveComponentToFile and LoadComponentFromFile
-      <li>22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
-      <li>07/02/07 - DaStr - Added StringToColorAdvanced() functions
-      <li>05/09/03 - EG - Creation from GLMisc split
-   </ul></font>
+       22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
+       07/02/07 - DaStr - Added StringToColorAdvanced() functions
+       05/09/03 - EG - Creation from GLMisc split
+    
 }
 unit GLUtils;
 

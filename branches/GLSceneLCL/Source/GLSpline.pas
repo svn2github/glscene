@@ -4,16 +4,16 @@
 {
    Cubic spline interpolation functions<p>
 
-	<b>History : </b><font size=-1><ul>
-     <li>10/12/14 - PW - Renamed Spline unit to GLSpline
-     <li>30/12/12 - PW - Restored CPP compatibility with record arrays
-     <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-     <li>16/07/02 - Egg - Added methods to access slope per axis
-	   <li>28/05/00 - Egg - Javadocisation, minor changes & optimizations,
+	 History :  
+      10/12/14 - PW - Renamed Spline unit to GLSpline
+      30/12/12 - PW - Restored CPP compatibility with record arrays
+      08/07/04 - LR - Removed ../ from the GLScene.inc
+      16/07/02 - Egg - Added methods to access slope per axis
+	    28/05/00 - Egg - Javadocisation, minor changes & optimizations,
                            Renamed TSpline to TCubicSpline, added W component
                            and a bunch of helper methods
-	   <li>20/05/00 - RoC - Created, based on the C source code from Eric
-	</ul></font>
+	    20/05/00 - RoC - Created, based on the C source code from Eric
+	 
 }
 unit GLSpline;
 

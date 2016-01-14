@@ -5,11 +5,11 @@
    Classes and functions that make integration between verlets and glscene
    objects easy.
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
-      <li>13/04/04 - MF - Verlet call now uses TVerletProgressTimes
-      <li>06/03/04 - MF - Creation
-   </ul>
+	 History :  
+       23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
+       13/04/04 - MF - Verlet call now uses TVerletProgressTimes
+       06/03/04 - MF - Creation
+    
 }
 unit GLVerletClasses;
 
@@ -38,14 +38,14 @@ type
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
   end;
 
-  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
+  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TGLVerletWorld; Offset : single) : TVCFloor;
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
 implementation
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
 
-function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
+function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TGLVerletWorld; Offset : single) : TVCFloor;
 begin
   result := TVCFloor.Create(VerletWorld);
   with result do

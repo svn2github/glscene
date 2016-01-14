@@ -8,62 +8,62 @@
    particle depth-sorting (allowing correct rendering of interwoven separate
    fire and smoke particle systems for instance).<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>21/01/01 - DanB - Added "inherited" call to TGLParticleFXEffect.WriteToFiler
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
+    History :  
+       21/01/01 - DanB - Added "inherited" call to TGLParticleFXEffect.WriteToFiler
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
                             and fix RegisterAsOpenGLTexture
-      <li>12/10/08 - DanB - fix to TGLLifeColoredPFXManager.ComputeRotateAngle (it used lck.FDoScale
+       12/10/08 - DanB - fix to TGLLifeColoredPFXManager.ComputeRotateAngle (it used lck.FDoScale
                             instead of lck.FDoRotate), made more use of RCI instead of accessing via global variables.
                             Changed order of transformations when rendering particles, now does rotation+scaling before translation.
                             Disabled FRotationCenter,
-      <li>15/02/08 - Mrqzzz - Fixed SizeScale in Lifetimes of TGLBaseSpritePFXManager (was ignored)
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>02/04/07 - DaStr - TPFXLifeColors now inherits from TOwnedCollection
+       15/02/08 - Mrqzzz - Fixed SizeScale in Lifetimes of TGLBaseSpritePFXManager (was ignored)
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       02/04/07 - DaStr - TPFXLifeColors now inherits from TOwnedCollection
                              (thanks Burkhard Carstens)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+       30/03/07 - DaStr - Added $I GLScene.inc
+       14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>24/01/07 - DaStr - TGLSourcePFXEffect.Burst and TGLBaseSpritePFXManager.RenderParticle bugfixed
+       24/01/07 - DaStr - TGLSourcePFXEffect.Burst and TGLBaseSpritePFXManager.RenderParticle bugfixed
                              TGLLifeColoredPFXManager.RotateVertexBuf bugfixed (all based on old code)
-      <li>28/10/06 - LC - Fixed access violation in TGLParticleFXRenderer. Bugtracker ID=1585907 (thanks Da Stranger)
-      <li>19/10/06 - LC - Fixed memory leak in TGLParticleFXManager. Bugtracker ID=1551866 (thanks Dave Gravel)
-      <li>08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
+       28/10/06 - LC - Fixed access violation in TGLParticleFXRenderer. Bugtracker ID=1585907 (thanks Da Stranger)
+       19/10/06 - LC - Fixed memory leak in TGLParticleFXManager. Bugtracker ID=1551866 (thanks Dave Gravel)
+       08/10/05 - Mathx - Fixed access violation when a PFXManager was removed from
                              form but a particleFX still had a reference to it (added
                              the FUsers property). Butracker ID=783625.
-      <li>17/02/05 - EG - Restored correct PFXSource.Burst relative/absolute behaviour,
+       17/02/05 - EG - Restored correct PFXSource.Burst relative/absolute behaviour,
                           EffectsScale support not added back (no clue what it does... Mrqz?)
-      <li>23/11/04 - SG - Fixed memory leak in TGLLifeColoredPFXManager (kenguru)
-      <li>03/10/04 - Mrqzzz - added property TGLParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
-      <li>25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
-      <li>09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 4
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+       23/11/04 - SG - Fixed memory leak in TGLLifeColoredPFXManager (kenguru)
+       03/10/04 - Mrqzzz - added property TGLParticleFXEffect.DisabledIfOwnerInvisible. Fixed PositionDispersionRange to honour VelocityMode=svmRelative
+       25/09/04 - Graham Kennedy - Fixed restore of currentTexturingMode
+       09/09/04 - Mrqzzz - added property TGLParticleFXEffect.EffectScale allowing different scaling of effect with same manager. TGLParticleFXEffect.ArchiveVersion updated to 4
+       02/08/04 - LR, YHC - BCB corrections: use record instead array
                                Replace direct access of some properties by
                                a getter and a setter.
                                fixed undefined TPFXRegion error in BCB
-      <li>29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
-      <li>28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
-      <li>09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
-      <li>08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
+       29/08/04 - Mrqzzz - fixed particles initial position when VelocityMode=svmRelative
+       28/08/04 - Mrqzzz - fixed particles direction when VelocityMode=svmRelative
+       09/07/04 - Mrqzzz - small fixup (TGLSourcePFXEffect.WriteToFiler Archive V.4)
+       08/07/04 - Eugene Kryukov - Added rotation for particles, RotateAngle in
                                       LifeColor. And added AbsoluteRotation for TGLDynamicPFXManager
-      <li>25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
+       25/04/04 - EG - Added friction, Life sizes, multiple sprites per texture
                           and sprites sharing
-      <li>24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
-      <li>15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
+       24/04/04 - Mrqzzz - Added property "enabled" to TGLSourcePFXEffect
+       15/04/04 - EG - AspectRatio and Rotation added to sprite PFX,
                           improved texturing mode switches
-      <li>26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
-      <li>05/11/02 - EG - Enable per-manager blending mode control
-      <li>27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
+       26/05/03 - EG - Improved TGLParticleFXRenderer.BuildList
+       05/11/02 - EG - Enable per-manager blending mode control
+       27/01/02 - EG - Added TGLLifeColoredPFXManager, TGLBaseSpritePFXManager
                           and TGLPointLightPFXManager.
-      <li>23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
+       23/01/02 - EG - Added ZWrite and BlendingMode to the PFX renderer,
                           minor sort and render optims
-      <li>22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
-      <li>20/01/02 - EG - Several optimization (35% faster on Volcano bench)
-      <li>18/01/02 - EG - RenderParticle color lerp fix (GliGli)
-      <li>08/09/01 - EG - Creation (GLParticleFX.omm)
-   </ul></font>
+       22/01/02 - EG - Another RenderParticle color lerp fix (GliGli)
+       20/01/02 - EG - Several optimization (35% faster on Volcano bench)
+       18/01/02 - EG - RenderParticle color lerp fix (GliGli)
+       08/09/01 - EG - Creation (GLParticleFX.omm)
+    
 }
 unit GLParticleFX;
 
@@ -72,15 +72,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
-
-  GLScene,  OpenGLTokens,  GLCrossPlatform,  GLState
-  , GLVectorTypes,
-  GLPersistentClasses,  GLVectorGeometry,  XCollection,  GLMaterial,
+  Classes, SysUtils, Types,
+  GLScene,  OpenGLTokens,  GLCrossPlatform,  GLState, GLVectorTypes,
+  GLPersistentClasses,  GLVectorGeometry,  GLXCollection,  GLMaterial,
   GLCadencer, GLVectorLists,  GLGraphics,  GLContext,  GLColor,  GLBaseClasses,
   GLCoordinates,  GLRenderContextInfo,  GLManager,  GLTextureFormat;
 
@@ -191,7 +185,7 @@ type
        in another list, it won't be automatically removed from that list. }
     function AddItem(aItem: TGLParticle): Integer;
     {: Removes and frees a particular item for the list.<p>
-       If the item is not part of the list, nothing is done.<br>
+       If the item is not part of the list, nothing is done. 
        If found in the list, the item's "slot" is set to nil and item is
        freed (after setting its ownership to nil). The nils can be removed
        with a call to Pack. }
@@ -243,13 +237,13 @@ type
     {: Invoked when the particles of the manager will be rendered.<p>
        This method is fired with the "base" OpenGL states and matrices
        that will be used throughout the whole rendering, per-frame
-       initialization should take place here.<br>
+       initialization should take place here. 
        OpenGL states/matrices should not be altered in any way here. }
     procedure InitializeRendering(var rci: TRenderContextInfo); dynamic; abstract;
     {: Triggered just before rendering a set of particles.<p>
        The current OpenGL state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
-       be established here.<br>
+       be established here. 
        Multiple BeginParticles can occur during a render (but all will be
        between InitializeRendering and Finalizerendering, and at least one
        particle will be rendered before EndParticles is invoked). }
@@ -344,7 +338,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
   published
@@ -382,7 +376,7 @@ type
   {: Rendering interface for scene-wide particle FX.<p>
      A renderer can take care of rendering any number of particle systems,
      its main task being to depth-sort the particles so that they are blended
-     appropriately.<br>
+     appropriately. 
      This object will usually be placed at the end of the scene hierarchy,
      just before the HUD overlays, its position, rotation etc. is of no
      importance and has no effect on the rendering of the particles. }
@@ -494,7 +488,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     class function FriendlyName: string; override;
@@ -700,7 +694,7 @@ type
      This manager essentially surfaces the PFX methods as events, and is best
      suited when you have specific particles that don't fall into any existing
      category, or when you want to experiment with particles and later plan to
-     wrap things up in a full-blown manager.<br>
+     wrap things up in a full-blown manager. 
      If the events aren't handled, nothing will be rendered. }
   TGLCustomPFXManager = class(TGLLifeColoredPFXManager)
   private
@@ -749,7 +743,7 @@ type
   //
   {: Polygonal particles FX manager.<p>
      The particles of this manager are made of N-face regular polygon with
-     a core and edge color. No texturing is available.<br>
+     a core and edge color. No texturing is available. 
      If you render large particles and don't have T&L acceleration, consider
      using TGLPointLightPFXManager. }
   TGLPolygonPFXManager = class(TGLLifeColoredPFXManager)
@@ -789,12 +783,12 @@ type
   // TSpriteColorMode
   //
   {: Sprite color modes.<p>
-     <ul>
-     <li>scmFade: vertex coloring is used to fade inner-outer
-     <li>scmInner: vertex coloring uses inner color only
-     <li>scmOuter: vertex coloring uses outer color only
-     <li>scmNone: vertex coloring is NOT used (colors are ignored).
-     </ul> }
+      
+      scmFade: vertex coloring is used to fade inner-outer
+      scmInner: vertex coloring uses inner color only
+      scmOuter: vertex coloring uses outer color only
+      scmNone: vertex coloring is NOT used (colors are ignored).
+       }
   TSpriteColorMode = (scmFade, scmInner, scmOuter, scmNone);
 
   // TSpritesPerTexture
@@ -863,7 +857,7 @@ type
        Sharing sprites between PFX managers can help at the rendering stage
        if particles of the managers are mixed by helping reduce the number
        of texture switches. Note that only the texture is shared, not the
-       colors, sizes or other dynamic parameters.<br> }
+       colors, sizes or other dynamic parameters.  }
     property ShareSprites: TGLBaseSpritePFXManager read FShareSprites write FShareSprites;
   end;
 
@@ -1448,7 +1442,7 @@ end;
 // Create
 //
 
-constructor TGLParticleFXEffect.Create(aOwner: TXCollection);
+constructor TGLParticleFXEffect.Create(aOwner: TGLXCollection);
 begin
   FEffectScale := 1;
   inherited;
@@ -1896,7 +1890,7 @@ end;
 // Create
 //
 
-constructor TGLSourcePFXEffect.Create(aOwner: TXCollection);
+constructor TGLSourcePFXEffect.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FInitialVelocity := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

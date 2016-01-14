@@ -30,12 +30,12 @@
   is larger than _Key_, PrevKey returns the largest key that is
   smaller than _Key_. For Last and First key result not returned.
 
-   <b>History : </b><font size=-1><ul>
-      <li>05/05/11 - Yar - Fugfixed method Add for Lazarus (unclear node's fields)
-      <li>04/12/10 - Yar - Improved duplicate keys storing
-      <li>04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
-      <li>19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
-   </ul></font><p>
+    History :  
+       05/05/11 - Yar - Fugfixed method Add for Lazarus (unclear node's fields)
+       04/12/10 - Yar - Improved duplicate keys storing
+       04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
+       19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
+    <p>
 }
 
 unit GLSRedBlackTree;

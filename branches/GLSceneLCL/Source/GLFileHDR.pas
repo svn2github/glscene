@@ -4,15 +4,15 @@
 {
    HDR File support for GLScene.
 
- <b>History : </b><font size=-1><ul>
-        <li>04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility  
-        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>23/11/10 - DaStr - Added $I GLScene.inc
-        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
+  History :  
+         04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility  
+         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+         08/05/10 - Yar - Removed check for residency in AssignFromTexture
+         22/04/10 - Yar - Fixes after GLState revision
+         23/11/10 - DaStr - Added $I GLScene.inc
+         23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
+         20/01/10 - Yar - Creation
+    <p>
 }
 unit GLFileHDR;
 
@@ -49,7 +49,7 @@ type
     // defaults to 1.0
     fProgramType: string[16];
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
@@ -322,7 +322,7 @@ end;
 // Capabilities
 //
 
-class function TGLHDRImage.Capabilities: TDataFileCapabilities;
+class function TGLHDRImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-  <li>05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
-  <li>08/12/10 - Yar - Added code for Lazarus (thanks Rustam Asmandiarov aka Predator)
-  <li>23/08/10 - Yar - Creation
-  </ul></font>
+   History :  
+   05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
+   08/12/10 - Yar - Added code for Lazarus (thanks Rustam Asmandiarov aka Predator)
+   23/08/10 - Yar - Creation
+   
 }
 
 unit GLSceneForm;
@@ -31,14 +31,8 @@ uses
 {$IFEND}
 {$ENDIF}
   Classes,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Controls,
-  VCL.Forms,
-{$ELSE}
   Controls,
   Forms,
-{$ENDIF}
-
   GLScene,
   GLContext,
   GLCrossPlatform,

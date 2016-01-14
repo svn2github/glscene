@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-  <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-  <li>04/02/10 - Yar - Creation
-  </ul><p>
+   History :  
+   08/05/10 - Yar - Removed check for residency in AssignFromTexture
+   04/02/10 - Yar - Creation
+   <p>
 }
 unit GLFilePGM;
 
@@ -23,7 +23,7 @@ type
 
   TGLPGMImage = class(TGLBaseImage)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -180,7 +180,7 @@ end;
 
 // Capabilities
 //
-class function TGLPGMImage.Capabilities: TDataFileCapabilities;
+class function TGLPGMImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

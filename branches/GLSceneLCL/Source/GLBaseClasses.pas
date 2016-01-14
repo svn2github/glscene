@@ -4,10 +4,10 @@
 {
    Base classes for GLScene.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject
-      <li>05/10/08 - DanB - Creation, from GLMisc.pas + other places
-   </ul></font>
+    History :  
+       24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject
+       05/10/08 - DanB - Creation, from GLMisc.pas + other places
+    
 }
 
 unit GLBaseClasses;
@@ -15,13 +15,8 @@ unit GLBaseClasses;
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils,
-  {$ELSE}
   Classes, SysUtils,
-  {$ENDIF}
-
-  //GLScene
+  //GLS
   GLStrings, GLPersistentClasses, GLCrossPlatform;
 
 type

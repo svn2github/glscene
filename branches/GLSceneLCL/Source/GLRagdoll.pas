@@ -4,13 +4,13 @@
 {
     Base abstract ragdoll class. Should be extended to use any physics system. <p>
 
-	<b>History :</b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
-    <li>23/08/10 - Yar - Added GLVectorTypes to uses
-    <li>09/11/05 - LucasG - Fixed joint and few small things
-    <li>07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
-    <li>02/11/05 - LucasG - First version created.
-  </ul></font>
+	 History : 
+     10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
+     23/08/10 - Yar - Added GLVectorTypes to uses
+     09/11/05 - LucasG - Fixed joint and few small things
+     07/11/05 - LucasG - Fixed bone position and rotation (Align to animation)
+     02/11/05 - LucasG - First version created.
+   
 }
 
 unit GLRagdoll;
@@ -23,18 +23,18 @@ uses
 
 type
   TGLRagdoll = class;
-  TRagdollBone = class;
+  TGLRagdolBone = class;
 
-  TRagdollJoint = class
+  TGLRagdolJoint = class
   end;
 
-  TRagdollBoneList = class (TPersistentObjectList)
+  TGLRagdolBoneList = class (TPersistentObjectList)
   private
     { Private Declarations }
      FRagdoll : TGLRagdoll;
   protected
     { Protected Declarations }
-    function GetRagdollBone(Index: Integer) : TRagdollBone;
+    function GetRagdollBone(Index: Integer) : TGLRagdolBone;
   public
     { Public Declarations }
     constructor Create(Ragdoll: TGLRagdoll); reintroduce;
@@ -44,13 +44,13 @@ type
     procedure ReadFromFiler(reader : TVirtualReader); override;
 
     property Ragdoll : TGLRagdoll read FRagdoll;
-    property Items[Index: Integer] : TRagdollBone read GetRagdollBone; default;
+    property Items[Index: Integer] : TGLRagdolBone read GetRagdollBone; default;
 	end;
 
-	TRagdollBone = class (TRagdollBoneList)
+	TGLRagdolBone = class (TGLRagdolBoneList)
   private
     { Private Declarations }
-    FOwner : TRagdollBoneList;
+    FOwner : TGLRagdolBoneList;
     FName : String;
     FBoneID : Integer; //Refering to TGLActor Bone
     FBoundMax: TAffineVector;
@@ -59,7 +59,7 @@ type
     FOrigin: TAffineVector;
     FSize: TAffineVector;
     FBoneMatrix: TMatrix;
-    FJoint: TRagdollJoint;
+    FJoint: TGLRagdolJoint;
     FOriginalMatrix: TMatrix; //Stores the Bone.GlobalMatrix before the ragdoll start
     FReferenceMatrix: TMatrix; //Stores the first bone matrix to be used as reference
     FAnchor: TAffineVector; //The position of the joint
@@ -73,21 +73,21 @@ type
     procedure StopChild;
   protected
     { Protected Declarations }
-    function GetRagdollBone(Index: Integer) : TRagdollBone;
+    function GetRagdollBone(Index: Integer) : TGLRagdolBone;
     procedure Start; virtual; abstract;
     procedure Align; virtual; abstract;
     procedure Update; virtual; abstract;
     procedure Stop; virtual; abstract;
   public
     { Public Declarations }
-    constructor CreateOwned(aOwner : TRagdollBoneList);
+    constructor CreateOwned(aOwner : TGLRagdolBoneList);
     constructor Create(Ragdoll: TGLRagdoll);
     destructor Destroy; override;
 
     procedure WriteToFiler(writer : TVirtualWriter); override;
     procedure ReadFromFiler(reader : TVirtualReader); override;
 
-    property Owner : TRagdollBoneList read FOwner;
+    property Owner : TGLRagdolBoneList read FOwner;
     property Name : String read FName write FName;
     property BoneID : Integer read FBoneID write FBoneID;
     property Origin : TAffineVector read FOrigin;
@@ -95,15 +95,15 @@ type
     property BoneMatrix : TMatrix read FBoneMatrix;
     property ReferenceMatrix : TMatrix read FReferenceMatrix;
     property Anchor : TAffineVector read FAnchor;
-    property Joint : TRagdollJoint read FJoint write FJoint;
-    property Items[Index: Integer] : TRagdollBone read GetRagdollBone; default;
+    property Joint : TGLRagdolJoint read FJoint write FJoint;
+    property Items[Index: Integer] : TGLRagdolBone read GetRagdollBone; default;
 	end;
 
   TGLRagdoll = class(TPersistentObject)
 	private
     { Private Declarations }
     FOwner : TGLBaseMesh;
-    FRootBone : TRagdollBone;
+    FRootBone : TGLRagdolBone;
     FEnabled: Boolean;
     FBuilt: Boolean;
   protected
@@ -117,7 +117,7 @@ type
     procedure ReadFromFiler(reader : TVirtualReader); override;
 
     {: Must be set before build the ragdoll }
-    procedure SetRootBone(RootBone: TRagdollBone);
+    procedure SetRootBone(RootBone: TGLRagdolBone);
     {: Create the bounding box and setup the ragdoll do be started later }
     procedure BuildRagdoll;
 
@@ -126,7 +126,7 @@ type
     procedure Stop;
 
     property Owner : TGLBaseMesh read FOwner;
-    property RootBone : TRagdollBone read FRootBone;
+    property RootBone : TGLRagdolBone read FRootBone;
     property Enabled : Boolean read FEnabled;
 	end;
 
@@ -135,48 +135,48 @@ implementation
 uses
   GLVectorTypes;
 
-{ TRagdollBoneList }
+{ TGLRagdolBoneList }
 
-constructor TRagdollBoneList.Create(Ragdoll: TGLRagdoll);
+constructor TGLRagdolBoneList.Create(Ragdoll: TGLRagdoll);
 begin
   inherited Create;
   FRagdoll := Ragdoll;
 end;
 
-destructor TRagdollBoneList.Destroy;
+destructor TGLRagdolBoneList.Destroy;
 var i: integer;
 begin
   for i:=0 to Count-1 do Items[i].Destroy;
   inherited;
 end;
 
-function TRagdollBoneList.GetRagdollBone(Index: Integer): TRagdollBone;
+function TGLRagdolBoneList.GetRagdollBone(Index: Integer): TGLRagdolBone;
 begin
-  Result:=TRagdollBone(List^[Index]);
+  Result:=TGLRagdolBone(List^[Index]);
 end;
 
-procedure TRagdollBoneList.ReadFromFiler(reader: TVirtualReader);
-begin
-  inherited;
-  //Not implemented
-end;
-
-procedure TRagdollBoneList.WriteToFiler(writer: TVirtualWriter);
+procedure TGLRagdolBoneList.ReadFromFiler(reader: TVirtualReader);
 begin
   inherited;
   //Not implemented
 end;
 
-{ TRagdollBone }
+procedure TGLRagdolBoneList.WriteToFiler(writer: TVirtualWriter);
+begin
+  inherited;
+  //Not implemented
+end;
 
-constructor TRagdollBone.Create(Ragdoll: TGLRagdoll);
+{ TGLRagdolBone }
+
+constructor TGLRagdolBone.Create(Ragdoll: TGLRagdoll);
 begin
   inherited Create(Ragdoll);
 end;
 
-procedure TRagdollBone.CreateBoundingBox;
+procedure TGLRagdolBone.CreateBoundingBox;
 var
-  bone: TSkeletonBone;
+  bone: TGLSkeletonBone;
   i, j: integer;
   BoneVertices : TAffineVectorList;
   BoneVertex, max,min: TAffineVector;
@@ -187,7 +187,7 @@ begin
   //Get all vertices weighted to this bone
   BoneVertices:=TAffineVectorList.Create;
   for i:=0 to Ragdoll.Owner.MeshObjects.Count-1 do
-  with TSkeletonMeshObject(Ragdoll.Owner.MeshObjects[i]) do
+  with TGLSkeletonMeshObject(Ragdoll.Owner.MeshObjects[i]) do
     for j:=0 to Vertices.Count-1 do
       if bone.BoneID = VerticesBonesWeights[j][0].BoneID then
         BoneVertices.FindOrAdd(Vertices[j]);
@@ -230,22 +230,22 @@ begin
   BoneVertices.Free; // NEW1
 end;
 
-constructor TRagdollBone.CreateOwned(aOwner: TRagdollBoneList);
+constructor TGLRagdolBone.CreateOwned(aOwner: TGLRagdolBoneList);
 begin
 	Create(aOwner.Ragdoll);
   FOwner:=aOwner;
   aOwner.Add(Self);
 end;
 
-destructor TRagdollBone.Destroy;
+destructor TGLRagdolBone.Destroy;
 begin
   inherited;
 end;
 
-procedure TRagdollBone.AlignToSkeleton;
+procedure TGLRagdolBone.AlignToSkeleton;
 var
   o: TAffineVector;
-  bone: TSkeletonBone;
+  bone: TGLSkeletonBone;
   mat, posMat: TMatrix;
   noBounds: Boolean;
 begin
@@ -277,18 +277,18 @@ begin
   FBoneMatrix.V[3] := VectorMake(FOrigin,1);
 end;
 
-function TRagdollBone.GetRagdollBone(Index: Integer): TRagdollBone;
+function TGLRagdolBone.GetRagdollBone(Index: Integer): TGLRagdolBone;
 begin
-  Result:=TRagdollBone(List^[Index]);
+  Result:=TGLRagdolBone(List^[Index]);
 end;
 
-procedure TRagdollBone.ReadFromFiler(reader: TVirtualReader);
+procedure TGLRagdolBone.ReadFromFiler(reader: TVirtualReader);
 begin
   inherited;
 
 end;
 
-procedure TRagdollBone.StartChild;
+procedure TGLRagdolBone.StartChild;
 var i: integer;
 begin
   FOriginalMatrix := Ragdoll.Owner.Skeleton.BoneByID(FBoneID).GlobalMatrix;
@@ -297,20 +297,20 @@ begin
   for i := 0 to Count-1 do items[i].StartChild;
 end;
 
-procedure TRagdollBone.UpdateChild;
+procedure TGLRagdolBone.UpdateChild;
 var i: integer;
 begin
   Update;
   for i := 0 to Count-1 do items[i].UpdateChild;
 end;
 
-procedure TRagdollBone.WriteToFiler(writer: TVirtualWriter);
+procedure TGLRagdolBone.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited;
 
 end;
 
-procedure TRagdollBone.StopChild;
+procedure TGLRagdolBone.StopChild;
 var i: integer;
 begin
   Stop;
@@ -318,19 +318,19 @@ begin
   for i := 0 to Count-1 do items[i].StopChild;
 end;
 
-procedure TRagdollBone.CreateBoundsChild;
+procedure TGLRagdolBone.CreateBoundsChild;
 var i: integer;
 begin
   CreateBoundingBox;
   for i := 0 to Count-1 do items[i].CreateBoundsChild;
 end;
 
-procedure TRagdollBone.SetAnchor(Anchor: TAffineVector);
+procedure TGLRagdolBone.SetAnchor(Anchor: TAffineVector);
 begin
   FAnchor := Anchor;
 end;
 
-procedure TRagdollBone.AlignChild;
+procedure TGLRagdolBone.AlignChild;
 var i: integer;
 begin
   Align;
@@ -358,7 +358,7 @@ begin
   inherited;
 end;
 
-procedure TGLRagdoll.SetRootBone(RootBone: TRagdollBone);
+procedure TGLRagdoll.SetRootBone(RootBone: TGLRagdolBone);
 begin
   FRootBone := RootBone;
 end;

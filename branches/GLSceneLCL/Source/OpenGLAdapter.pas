@@ -2,23 +2,23 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { 
-  <b>History : </b><font size=-1><ul>
-  <li>24/10/13 - Yar - Added OpenGL 4.3, 4.4
-  <li>08/09/11 - Yar - Added WGL_NV_DX_interop
-  <li>21/08/11 - Yar - Added OpenGL ES
-  <li>31/07/11 - Yar - Added GL_NV_Path_rendering
-  <li>18/07/11 - Yar - Added WGL_EXT_create_context_es2_profile
-  <li>06/06/11 - Yar - Added GL_NV_vertex_buffer_unified_memory, GL_NV_shader_buffer_load
-  <li>11/03/11 - Yar - Added GL_EXT_texture_sRGB_decode, GL_ARB_separate_shader_objects, EXT_direct_state_access
-  <li>19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
-  <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
-  <li>18/01/11 - Yar - Added entry points for AGL
-  <li>23/10/10 - Yar - Added GL_NV_vdpau_interop
-  <li>25/09/10 - Yar - Added GL_get_program_binary
-  <li>10/09/10 - Yar - Added GL_ATI_Meminfo, GL_NVX_gpu_memory_info
-  <li>04/08/10 - Yar - Added GL_AMDX_debug_output, GL_ARB_debug_output extension. Added WGL and GLX
-  <li>21/05/10 - Yar - Creation
-  </ul></font>
+   History :  
+   24/10/13 - Yar - Added OpenGL 4.3, 4.4
+   08/09/11 - Yar - Added WGL_NV_DX_interop
+   21/08/11 - Yar - Added OpenGL ES
+   31/07/11 - Yar - Added GL_NV_Path_rendering
+   18/07/11 - Yar - Added WGL_EXT_create_context_es2_profile
+   06/06/11 - Yar - Added GL_NV_vertex_buffer_unified_memory, GL_NV_shader_buffer_load
+   11/03/11 - Yar - Added GL_EXT_texture_sRGB_decode, GL_ARB_separate_shader_objects, EXT_direct_state_access
+   19/02/11 - PREDATOR - Added Apple Extentions, Loading Apple functions
+   16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
+   18/01/11 - Yar - Added entry points for AGL
+   23/10/10 - Yar - Added GL_NV_vdpau_interop
+   25/09/10 - Yar - Added GL_get_program_binary
+   10/09/10 - Yar - Added GL_ATI_Meminfo, GL_NVX_gpu_memory_info
+   04/08/10 - Yar - Added GL_AMDX_debug_output, GL_ARB_debug_output extension. Added WGL and GLX
+   21/05/10 - Yar - Creation
+   
 }
 
 unit OpenGLAdapter;

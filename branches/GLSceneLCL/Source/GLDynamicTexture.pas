@@ -5,20 +5,20 @@
   Adds a dynamic texture image, which allows for easy updating of
   texture data.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
-      <li>23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
+       23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
                            simplify GetBitsPerPixel and GetDataFormat
-      <li>22/01/10 - Yar - Added GLTextureFormat to uses 
-      <li>08/10/08 - DanB - added FriendlyName/FriendlyDescription
-      <li>16/10/07 - LC - Added DirtyRectangle to allow partial updates.
-      <li>12/07/07 - DaStr - Added $I GLScene.inc
-      <li>25/06/07 - LC - Added SysUtils (needed for AllocMem on D7 and down).
-      <li>25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
+       22/01/10 - Yar - Added GLTextureFormat to uses 
+       08/10/08 - DanB - added FriendlyName/FriendlyDescription
+       16/10/07 - LC - Added DirtyRectangle to allow partial updates.
+       12/07/07 - DaStr - Added $I GLScene.inc
+       25/06/07 - LC - Added SysUtils (needed for AllocMem on D7 and down).
+       25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
                           new methods for freeing PBO and buffer.
-      <li>24/06/07 - LC - Creation
-   </ul></font>
+       24/06/07 - LC - Creation
+    
 }
 
 unit GLDynamicTexture;

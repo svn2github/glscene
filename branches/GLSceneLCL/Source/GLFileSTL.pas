@@ -7,9 +7,9 @@
     to enable support for STL files at run-time.<p>
 
 	History : 
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>22/11/02 - EG - Write capability now properly declared
-      <li>17/10/02 - EG - Created from split of GLVectorFileObjects,
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       22/11/02 - EG - Write capability now properly declared
+       17/10/02 - EG - Created from split of GLVectorFileObjects,
                           ASCII STL support (Adem)
 
 }
@@ -55,10 +55,10 @@ type
       There are two flavors of STL, the "text" and the "binary", this class
       reads both, but exports only the "binary" version.<p>
       Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
-   TGLSTLVectorFile = class(TVectorFile)
+   TGLSTLVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
 
          procedure LoadFromStream(aStream: TStream); override;
          procedure SaveToStream(aStream: TStream); override;
@@ -90,7 +90,7 @@ const
 
 // Capabilities
 //
-class function TGLSTLVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLSTLVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;
@@ -134,7 +134,7 @@ var
    fileContent : TStringList;
    curLine : String;
    i : Integer;
-   mesh : TMeshObject;
+   mesh : TGLMeshObject;
    header : TSTLHeader;
    dataFace : TSTLFace;
    calcNormal : TAffineVector;
@@ -153,7 +153,7 @@ begin
      Inc(i);
    end;
 
-   mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+   mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
    try
 
       mesh.Mode:=momTriangles;

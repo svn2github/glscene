@@ -4,32 +4,27 @@
 {
    Base classes and interface for GLScene Sound System<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>24/04/11 - Yar - Bugfixed TGLSoundSample.Assign (thanks to Anonymous)
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>06/05/09 - DanB - Split TGLSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
-      <li>02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
-      <li>05/03/02 - EG - TGLBSoundEmitter.Loaded
-      <li>27/02/02 - EG - Added 3D Factors, special listener-is-camera support
-      <li>13/01/01 - EG - Added CPUUsagePercent
-      <li>09/06/00 - EG - Various enhancements
-    <li>04/06/00 - EG - Creation
- </ul></font>
+  History :  
+       24/04/11 - Yar - Bugfixed TGLSoundSample.Assign (thanks to Anonymous)
+       06/06/10 - Yar - Fixed warnings
+       06/05/09 - DanB - Split TGLSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
+       02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
+       05/03/02 - EG - TGLBSoundEmitter.Loaded
+       27/02/02 - EG - Added 3D Factors, special listener-is-camera support
+       13/01/01 - EG - Added CPUUsagePercent
+       09/06/00 - EG - Various enhancements
+     04/06/00 - EG - Creation
+  
 }
 unit GLSound;
 
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
-
-  GLSoundFileObjects, GLScene, XCollection, GLVectorGeometry,
+  Classes, SysUtils, Types,
+  GLSoundFileObjects, GLScene, GLXCollection, GLVectorGeometry,
   GLCadencer, GLBaseClasses, GLCrossPlatform, GLUtils;
 
 {$I GLScene.inc}
@@ -195,7 +190,7 @@ type
        Absolute object position/orientation are taken into account, the
        object's TGLBInertia is considered if any.<p>
        If origin is nil, the source is assumed to be static at the origin.<p>
-       <b>Note :</b> since TCollectionItem do not support the "Notification"
+        Note :  since TCollectionItem do not support the "Notification"
        scheme, it is up to the Origin object to take care of updating this
        property prior to release/destruction. }
     property Origin: TGLBaseSceneObject read FOrigin write SetOrigin;
@@ -467,7 +462,7 @@ type
     {: Sets the global attenuation rolloff factor.<p>
        Normally volume for a sample will scale at 1 / distance.
        This gives a logarithmic attenuation of volume as the source gets
-       further away (or closer).<br>
+       further away (or closer). 
        Setting this value makes the sound drop off faster or slower.
        The higher the value, the faster volume will fall off. }
     property RollOffFactor: Single read FRollOffFactor write SetRollOffFactor
@@ -507,7 +502,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -1799,7 +1794,7 @@ end;
 // Create
 //
 
-constructor TGLBSoundEmitter.Create(aOwner: TXCollection);
+constructor TGLBSoundEmitter.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FSource := TGLSoundSource.Create(nil);

@@ -14,50 +14,50 @@
   is basicly a square, power of two dimensionned raster heightfield, and
   holds the data a renderer needs.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
-  <li>18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
-  <li>17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
-  <li>17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
-  <li>03/04/07 - DaStr - Commented out lines that caused compiler hints
+   History :  
+   10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
+   18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
+   17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
+   17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
+   03/04/07 - DaStr - Commented out lines that caused compiler hints
   Added more explicit pointer dereferencing
   Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
   FPC compatibility (thanks Burkhard Carstens)
-  <li>27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
+   27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
   -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
   -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
   -AfterPreparingData  : (Main Thread) - Perform any cleanup, which cant be done from a sub-thread
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+   14/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
+   13/02/07 - LIN- Added THeightDataSource.TextureCoordinates -
   Called from TGLBitmapHDS and TGLHeightTileFileHDS
   Many tweaks and changes to threading. (I hope I havent broken anything)
-  <li>02/02/07 - LIN- Added TGLHeightDataSourceFilter
-  <li>30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
+   02/02/07 - LIN- Added TGLHeightDataSourceFilter
+   30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
   GLHeightData is now derived from TGLUpdateAbleObject
   GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
-  <li>19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
-  <li>10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
-  <li>03/07/04 - LR - Corrections for Linux compatibility
+   19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
+   10/08/04 - SG - THeightData.InterpolatedHeight fix (Alan Rose)
+   03/07/04 - LR - Corrections for Linux compatibility
   CreateMonochromeBitmap NOT implemented for Linux
-  <li>12/07/03 - EG - Further InterpolatedHeight fixes
-  <li>26/06/03 - EG - Fixed InterpolatedHeight HDS selection
-  <li>06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
-  <li>24/01/03 - EG - Fixed ByteHeight normalization scaling
-  <li>07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
-  <li>03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
-  <li>25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
-  <li>10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
-  <li>16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
+   12/07/03 - EG - Further InterpolatedHeight fixes
+   26/06/03 - EG - Fixed InterpolatedHeight HDS selection
+   06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
+   24/01/03 - EG - Fixed ByteHeight normalization scaling
+   07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
+   03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
+   25/08/02 - EG - THeightData.MarkData/Release fix (Phil Scadden)
+   10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
+   16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
   THeightData now has a MaterialName property
-  <li>24/02/02 - EG - Faster Cleanup & cache management
-  <li>21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
-  <li>04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
-  <li>10/09/01 - EG - Added TGLTerrainBaseHDS
-  <li>04/03/01 - EG - Added InterpolatedHeight
-  <li>11/02/01 - EG - Creation
-  </ul></font>
+   24/02/02 - EG - Faster Cleanup & cache management
+   21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
+   04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
+   10/09/01 - EG - Added TGLTerrainBaseHDS
+   04/03/01 - EG - Added InterpolatedHeight
+   11/02/01 - EG - Creation
+   
 }
 unit GLHeightData;
 
@@ -66,11 +66,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils,
-{$ELSE}
   Classes, SysUtils,
-{$ENDIF}
 {$IFDEF MSWINDOWS}
   Windows, // for CreateMonochromeBitmap
 {$ENDIF}
@@ -109,10 +105,10 @@ type
     data retrieval (THeightData objects). The class offers the following
     features (that a subclass may decide to implement or not, what follow
     is the complete feature set, check subclass doc to see what is actually
-    supported):<ul>
-    <li>Pooling / Cacheing (return a THeightData with its "Release" method)
-    <li>Pre-loading : specify a list of THeightData you want to preload
-    <li>Multi-threaded preload/queueing : specified list can be loaded in
+    supported): 
+     Pooling / Cacheing (return a THeightData with its "Release" method)
+     Pre-loading : specify a list of THeightData you want to preload
+     Multi-threaded preload/queueing : specified list can be loaded in
     a background task.
     </p> }
 
@@ -200,7 +196,7 @@ type
       The pool (cache) can actually get larger if more data than the pool
       can accomodate is used, but as soon as data gets released and returns
       to the pool, TDataHeight will be freed until total pool Size gets
-      below this figure.<br>
+      below this figure. 
       The pool manager frees TDataHeight objects who haven't been requested
       for the longest time first.<p>
       The default value of zero effectively disables pooling. }
@@ -222,7 +218,7 @@ type
     { : Request to start preparing data.<p>
       If your subclass is thread-enabled, this is here that you'll create
       your thread and fire it (don't forget the requirements), if not,
-      that'll be here you'll be doing your work.<br>
+      that'll be here you'll be doing your work. 
       Either way, you are responsible for adjusting the DataState to
       hdsReady when you're done (DataState will be hdsPreparing when this
       method will be invoked). }
@@ -242,12 +238,12 @@ type
   // THeightDataState
   //
   { : Possible states for a THeightData.<p>
-    <ul>
-    <li>hdsQueued : the data has been queued for loading
-    <li>hdsPreparing : the data is currently loading or being prepared for use
-    <li>hdsReady : the data is fully loaded and ready for use
-    <li>hdsNone : the height data does not exist for this tile
-    </ul> }
+     
+     hdsQueued : the data has been queued for loading
+     hdsPreparing : the data is currently loading or being prepared for use
+     hdsReady : the data is fully loaded and ready for use
+     hdsNone : the height data does not exist for this tile
+      }
   THeightDataState = (hdsQueued, hdsPreparing, hdsReady, hdsNone);
 
   THeightDataThread = class;
@@ -264,7 +260,7 @@ type
     The raster is a square, whose Size must be a power of two. Data can be
     accessed through a base pointer ("ByteData[n]" f.i.), or through pointer
     indirections ("ByteRaster[y][x]" f.i.), this are the fastest way to access
-    height data (and the most unsecure).<br>
+    height data (and the most unsecure). 
     Secure (with range checking) data access is provided by specialized
     methods (f.i. "ByteHeight"), in which coordinates (x & y) are always
     considered relative (like in raster access).<p>
@@ -464,10 +460,10 @@ type
   // THeightDataThread
   //
   { : A thread specialized for processing THeightData in background.<p>
-    Requirements:<ul>
-    <li>must have FreeOnTerminate set to true,
-    <li>must check and honour Terminated swiftly
-    </ul> }
+    Requirements: 
+     must have FreeOnTerminate set to true,
+     must check and honour Terminated swiftly
+      }
   THeightDataThread = class(TThread)
   protected
     { Protected Declarations }
@@ -577,7 +573,7 @@ type
   // TGLTerrainBaseHDS
   //
   { : TerrainBase-based Height Data Source.<p>
-    This component takes its data from the TerrainBase Gobal Terrain Model.<br>
+    This component takes its data from the TerrainBase Gobal Terrain Model. 
     Though it can be used directly, the resolution of the TerrainBase dataset
     isn't high enough for accurate short-range representation and the data
     should rather be used as basis for further (fractal) refinement.<p>

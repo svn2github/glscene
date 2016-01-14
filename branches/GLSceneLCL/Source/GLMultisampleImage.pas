@@ -7,11 +7,11 @@
     mechanisms to fetch a specific sample from such a texture in a shader,
     and to attach such textures to FBOs for rendering.
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/11/10- DaStr - Added $I GLScene.inc   
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>16/05/10 - Yar - Creation (thanks to C4)
-   </ul></font>
+    History :  
+       04/11/10- DaStr - Added $I GLScene.inc   
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       16/05/10 - Yar - Creation (thanks to C4)
+    
 }
 unit GLMultisampleImage;
 

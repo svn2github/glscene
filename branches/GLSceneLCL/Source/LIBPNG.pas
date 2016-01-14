@@ -2,13 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-      <li>30/06/11 - DaStr - Fixed compiler crash for Delphi7
-      <li>16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
-      <li>01/04/10 - Yar - Bugfix when Delphi not use optimization (thanks Lampogolovii)
-      <li>15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
-      <li>05/03/10 - Yar - Creation
-  </ul></font>
+   History :  
+       30/06/11 - DaStr - Fixed compiler crash for Delphi7
+       16/02/11 - PREDATOR - Added support for Mac OS X. Tested on Mac OS X 10.6.5.
+       01/04/10 - Yar - Bugfix when Delphi not use optimization (thanks Lampogolovii)
+       15/03/10 - Yar - Fixed memory leak (thanks Lampogolovii)
+       05/03/10 - Yar - Creation
+   
 }
 
 unit LIBPNG;

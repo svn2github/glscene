@@ -4,11 +4,11 @@
 {
    ASE (ASCI Scene Export) file format support for GLScene<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
-      <li>21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
-      <li>29/05/08 - DaStr - Made compatible with Delphi 5
-      <li>27/12/07 - DaStr - Added skipping unknown file sections
+    History : 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
+       21/06/08 - DaStr - Bugfixed GetFaceGroup() (Thanks Beon)
+       29/05/08 - DaStr - Made compatible with Delphi 5
+       27/12/07 - DaStr - Added skipping unknown file sections
                              Improved ASE material objects structure:
                                Material can keep up to 12 texture maps
                                SubMaterial can keep up to 12 texture maps
@@ -16,7 +16,7 @@
                               ASE material/submaterial maps
                              Bugfixed parsing failures on unknown section found
                               (all above changes were made by MaX)
-      <li>19/05/07 - DaStr - Initial version (contributed by MaX)
+       19/05/07 - DaStr - Initial version (contributed by MaX)
 
 
   Parser supported features list:
@@ -101,7 +101,7 @@ type
   // ASE geom object, represents single mesh object;
   // contains: vertices, faces, verice indices, faces and vertices normals,
   // channels of texture coordinates and indices, scaling and location info;
-  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TMeshObject
+  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TGLMeshObject
   TGLASEMeshObject = class(TObject)
   private
     FFaces: TGLASEFaceList;
@@ -229,7 +229,7 @@ type
 
 
   // ASE vector file parser
-  TGLASEVectorFile = class(TVectorFile)
+  TGLASEVectorFile = class(TGLVectorFile)
   private
     FStringData: TStringList;
     FHeader: string;
@@ -275,7 +275,7 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure LoadFromStream(aStream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     property Header: string read FHeader;
     property Comment: string read FComment;
@@ -646,7 +646,7 @@ end;
 
 
 // here ASE geom object is converted to GLScene mesh
-procedure CopyASEToMesh(aASEMesh: TGLASEMeshObject; aMesh: TMeshObject; aASEMaterials: TGLASEMaterialList);
+procedure CopyASEToMesh(aASEMesh: TGLASEMeshObject; aMesh: TGLMeshObject; aASEMaterials: TGLASEMaterialList);
 
   const
     ASETextureMapKinds: array [TASETextureMap] of string = (
@@ -1042,7 +1042,7 @@ begin
   inherited;
 end;
 
-class function TGLASEVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLASEVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
@@ -1353,13 +1353,13 @@ end;
 procedure TGLASEVectorFile.ParseGeomObject(var aLineIndex: Integer);
 var
   aseMesh: TGLASEMeshObject;
-  obj: TMeshObject;
+  obj: TGLMeshObject;
   Data: string;
   b: Boolean;
 begin
   aseMesh := TGLASEMeshObject.Create;
   try
-    obj := TMeshObject.CreateOwned(Owner.MeshObjects);
+    obj := TGLMeshObject.CreateOwned(Owner.MeshObjects);
 
     Inc(aLineIndex);
     Data := FStringData[aLineIndex];

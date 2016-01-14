@@ -6,30 +6,30 @@
     again in your own shader classes.
     It also contains a procedures and function that can be used in all shaders.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
-      <li>04/06/10 - Yar - Added unsigned integer uniforms
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
-      <li>25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
-      <li>24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
+       04/06/10 - Yar - Added unsigned integer uniforms
+       22/04/10 - Yar - Fixes after GLState revision
+       22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
+       25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
+       24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
                               TGLFragmentProgram and TGLGeometryProgram
                              Added TGLCustomShaderParameter.AsUniformBuffer
                               (thanks YarUnderoaker)
-      <li>28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
+       28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
                              Fixed TGLCustomShader.[...]Program serialization
-      <li>24/07/09 - DaStr - Added TGLCustomShader.DebugMode
+       24/07/09 - DaStr - Added TGLCustomShader.DebugMode
                              Fixed spelling mistake in TGLShaderUnAplyEvent
                              Added TGLShaderFogSupport, IsFogEnabled()
-      <li>03/04/07 - DaStr - Added TGLCustomShaderParameter.AsFloat and AsInteger
-      <li>25/03/07 - DaStr - Added TGLCustomShaderParameter.SetToTextureOf
-      <li>20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
+       03/04/07 - DaStr - Added TGLCustomShaderParameter.AsFloat and AsInteger
+       25/03/07 - DaStr - Added TGLCustomShaderParameter.SetToTextureOf
+       20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
                              "TextureType" parameter renamed to "TextureTarget"
                              Finished working on TGLCustomShaderParameter
-      <li>04/03/07 - DaStr - Added IGLPostShader
-      <li>03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
-      <li>22/02/07 - DaStr - Initial version (contributed to GLScene)
+       04/03/07 - DaStr - Added IGLPostShader
+       03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
+       22/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     What different shader prefixes might mean:

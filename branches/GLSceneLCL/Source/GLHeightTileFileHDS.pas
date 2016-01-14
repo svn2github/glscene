@@ -4,18 +4,18 @@
 {
    HeightDataSource for the HTF (HeightTileFile) format.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/03/09 - DanB - Bug fix for invisible terrain, now changes
+	 History :  
+       10/03/09 - DanB - Bug fix for invisible terrain, now changes
                             heightdata.DataState to hdsPreparing in StartPreparingData
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>15/02/07 - LIN -Added OpenHTF function, for direct access to the HeightTileFile object.
-      <li>25/01/07 - LIN -Added Width and Height properties to GLHeightTileFieHDS
-      <li>19/01/07 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
+       30/03/07 - DaStr - Added $I GLScene.inc
+       15/02/07 - LIN -Added OpenHTF function, for direct access to the HeightTileFile object.
+       25/01/07 - LIN -Added Width and Height properties to GLHeightTileFieHDS
+       19/01/07 - LIN -Bug fix/workaround: Added 'Inverted' property to GLHeightTileFieHDS
                           Set Inverted to false, if you DONT want your rendered
                           terrain to be a mirror image of your height data.
                           (Defaults to true, so it doesnt affect existing apps);
-      <li>29/01/03 - EG - Creation
-	</ul></font>
+       29/01/03 - EG - Creation
+	 
 }
 unit GLHeightTileFileHDS;
 

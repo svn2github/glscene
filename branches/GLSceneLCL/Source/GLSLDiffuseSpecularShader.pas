@@ -4,29 +4,29 @@
 {
     This is a collection of GLSL diffuse-specular shaders.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
+	 History :  
+       09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
                            Deleted TGLSLDiffuseSpecularShaderAM, TGLSLDiffuseSpecularShaderAM
-      <li>17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>23/10/10 - Yar - Bugfixed memory leak
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>07/01/10 - DaStr - Bugfixed all DoInitialize() calls
+       17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       23/10/10 - Yar - Bugfixed memory leak
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       07/01/10 - DaStr - Bugfixed all DoInitialize() calls
                               (thanks YarUnderoaker)  
-      <li>25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
+       25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
                               which occured on all GeForce 8x and later graphic cards
-      <li>24/07/09 - DaStr - Added Fog support for single-light shaders and fixed
+       24/07/09 - DaStr - Added Fog support for single-light shaders and fixed
                               a bug with material Alpha (thanks Controller)
-      <li>02/09/07 - LC - Fixed texture bug in TGLSLMLDiffuseSpecularShader.
+       02/09/07 - LC - Fixed texture bug in TGLSLMLDiffuseSpecularShader.
                           (Bugtracker ID = 1786286)
-      <li>03/04/07 - LC - Shader didn't respect the texture matrix. Changed
+       03/04/07 - LC - Shader didn't respect the texture matrix. Changed
                           vertex shader to fix this. (Bugtracker ID = 1693389)
-      <li>20/03/07 - DaStr - Made changes related to the new parameter passing model
-      <li>06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
+       20/03/07 - DaStr - Made changes related to the new parameter passing model
+       06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
                               a single Str procedure (thanks Uwe Raabe)
-      <li>03/03/07 - DaStr - Made compatible with Delphi6
+       03/03/07 - DaStr - Made compatible with Delphi6
                              Added more stuff to RegisterClasses()
-      <li>21/02/07 - DaStr - Initial version (contributed to GLScene)
+       21/02/07 - DaStr - Initial version (contributed to GLScene)
 
 
     This is a collection of GLSL Diffuse Specular shaders, comes in these variaties

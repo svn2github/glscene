@@ -4,9 +4,9 @@
 {
   Added GLScene's toolbar to Delphi IDE.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>21/11/10 - Yar - Creation
-  </ul></font>
+   History :  
+   21/11/10 - Yar - Creation
+   
 }
 
 unit GLSceneToolbar;

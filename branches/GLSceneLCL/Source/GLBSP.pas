@@ -6,20 +6,20 @@
 
   The classes of this unit are designed to operate within a TGLBaseMesh.<p>
 
-  <b>Historique : </b><font size=-1><ul>
-  <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
+  History :  
+   04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+   22/06/08 - DaStr - Fixups after converting TGLMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>31/03/07 - DaStr - Added $I GLScene.inc
-  <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   31/03/07 - DaStr - Added $I GLScene.inc
+   14/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>07/03/03 - EG - T-junctions now properly supported and repaired
-  <li>05/03/03 - EG - Preliminary BSP splitting support
-  <li>31/01/03 - EG - Materials support, added CleanupUnusedNodes,
+   07/03/03 - EG - T-junctions now properly supported and repaired
+   05/03/03 - EG - Preliminary BSP splitting support
+   31/01/03 - EG - Materials support, added CleanupUnusedNodes,
   MaterialCache support
-  <li>30/01/03 - EG - Creation
-  </ul></font>
+   30/01/03 - EG - Creation
+   
 }
 unit GLBSP;
 
@@ -87,7 +87,7 @@ type
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
-  TBSPMeshObject = class(TMeshObject)
+  TBSPMeshObject = class(TGLMeshObject)
   private
     { Private Declarations }
     FRenderSort: TBSPRenderSort;
@@ -99,7 +99,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TMeshObjectList);
+    constructor CreateOwned(AOwner: TGLMeshObjectList);
     destructor Destroy; override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
@@ -108,7 +108,7 @@ type
       An unused node is a node that renders nothing and whose children
       render nothing. Indices are remapped in the process. }
     procedure CleanupUnusedNodes;
-    { : Returns the average BSP tree depth of end nodes.<br>
+    { : Returns the average BSP tree depth of end nodes. 
       Sums up the depth each end node (starting at 1 for root node),
       divides by the number of end nodes. This is a simple estimator
       of tree balancing (structurally speaking, not polygon-wise). }
@@ -119,7 +119,7 @@ type
 
     { : Rendering sort mode.<p>
       This sort mode can currently *not* blend with the sort by materials
-      flag, default mode is rsBackToFront.<br>
+      flag, default mode is rsBackToFront. 
       Note that in rsNone mode, the hierarchical nature of the tree is
       still honoured (positive subnode, self, then negative subnode). }
     property RenderSort: TBSPRenderSort read FRenderSort write FRenderSort;
@@ -155,7 +155,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TFaceGroups); override;
+    constructor CreateOwned(AOwner: TGLFaceGroups); override;
     destructor Destroy; override;
 
     procedure IsCulled(const bsprci: TBSPRenderContextInfo;
@@ -319,7 +319,7 @@ end;
 
 // CreateOwned
 //
-constructor TBSPMeshObject.CreateOwned(AOwner: TMeshObjectList);
+constructor TBSPMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
   inherited;
   Mode := momFaceGroups;
@@ -404,11 +404,7 @@ begin
       end;
       // render facegroups
       bspNodeList :=
-{$IFDEF GLS_DELPHI_XE2_UP}
-        @faceGroupList.List[0];
-{$ELSE}
-        faceGroupList.List;
-{$ENDIF}
+      faceGroupList.List;
       n := bsprci.faceGroups.Count;
       i := 0;
       j := 0;
@@ -626,7 +622,7 @@ end;
 
 // CreateOwned
 //
-constructor TFGBSPNode.CreateOwned(AOwner: TFaceGroups);
+constructor TFGBSPNode.CreateOwned(AOwner: TGLFaceGroups);
 begin
   inherited;
   FPositiveSubNodeIndex := 0;

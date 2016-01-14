@@ -4,30 +4,30 @@
 {
     Fire special effect<p>
 
- <b>Historique : </b><font size=-1><ul>
-      <li>21/01/01 - DanB - Added "inherited" call to TGLBFireFX.WriteToFiler
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>14/06/10 - Yar - Bugfixed in TGLBFireFX.ReadFromFiler when assertion off (thanks olkondr)
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>11/04/10 - Yar -  Replaced glNewList to GLState.NewList in TGLBFireFX.Render
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+ History :  
+       21/01/01 - DanB - Added "inherited" call to TGLBFireFX.WriteToFiler
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       14/06/10 - Yar - Bugfixed in TGLBFireFX.ReadFromFiler when assertion off (thanks olkondr)
+       22/04/10 - Yar - Fixes after GLState revision
+       11/04/10 - Yar -  Replaced glNewList to GLState.NewList in TGLBFireFX.Render
+       05/03/10 - DanB - More state added to TGLStateCache
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       30/03/07 - DaStr - Added $I GLScene.inc
+       14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
-      <li>21/02/02 - EG - Added GetOrCreateFireFX helper functions
-      <li>09/12/01 - EG - Added NoZWrite property
-      <li>12/08/01 - EG - Fixed leak (color objects)
-      <li>09/03/01 - EG - Fixed MaxParticles change, added RingExplosion
-      <li>08/03/01 - EG - Revisited the effect and added new parameters,
+       23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
+       21/02/02 - EG - Added GetOrCreateFireFX helper functions
+       09/12/01 - EG - Added NoZWrite property
+       12/08/01 - EG - Fixed leak (color objects)
+       09/03/01 - EG - Fixed MaxParticles change, added RingExplosion
+       08/03/01 - EG - Revisited the effect and added new parameters,
                           dropped/renamed some, started documentation (just started)
-      <li>13/01/01 - EG - Another matrix compatibility update
-      <li>22/12/00 - EG - Compatibility for new Matrix rules, and sometime
+       13/01/01 - EG - Another matrix compatibility update
+       22/12/00 - EG - Compatibility for new Matrix rules, and sometime
                           ago, added in all new props from Danjel Grosar
-      <li>11/08/00 - EG - A few speedups/enhancements
-    <li>08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
- </ul></font>
+       11/08/00 - EG - A few speedups/enhancements
+     08/08/00 - EG - Creation, based on Roger Cao's "FireEffectUnit"
+  
 }
 unit GLFireFX;
 
@@ -36,16 +36,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
-  GLScene,  XCollection,  GLVectorGeometry,
-  OpenGLTokens,  GLContext,  GLVectorLists
-  , GLVectorTypes,
-
+  Classes, SysUtils,
+  GLScene,  GLXCollection,  GLVectorGeometry,
+  OpenGLTokens,  GLContext,  GLVectorLists, GLVectorTypes,
   GLCadencer,  GLColor,  GLBaseClasses,  GLCoordinates,
   GLManager,  GLRenderContextInfo,  GLState,  GLTextureFormat;
 
@@ -178,7 +171,7 @@ type
 
     {: Specifies an optional object whose position to use as reference.<p>
        This property allows switching between static/shared fires (for
-       fireplaces or static torches) and dynamic fire trails.<br>
+       fireplaces or static torches) and dynamic fire trails. 
        The absolute position of the reference object is 'central' spawning
        point for new particles, usually, the object will be the one and only
        one on which the effect is applied. }
@@ -205,7 +198,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -667,7 +660,7 @@ end;
 // Create
 //
 
-constructor TGLBFireFX.Create(aOwner: TXCollection);
+constructor TGLBFireFX.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
 end;

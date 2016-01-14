@@ -4,56 +4,51 @@
 {
    Handles all the material + material library stuff.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
+  History :  
+       10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
                           in TGLShader and TGLAbstractLibMaterial for GLS_CPPB
-      <li>11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
-      <li>20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
-      <li>07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
-      <li>20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>06/03/10 - Yar - Added to TGLDepthProperties DepthClamp property
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>21/02/10 - Yar - Added TGLDepthProperties,
+       11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
+       20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
+       07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
+       20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
+       22/04/10 - Yar - Fixes after GLState revision
+       06/03/10 - Yar - Added to TGLDepthProperties DepthClamp property
+       05/03/10 - DanB - More state added to TGLStateCache
+       21/02/10 - Yar - Added TGLDepthProperties,
                            optimization of switching states
-      <li>22/01/10 - Yar - Remove Texture.Border and
+       22/01/10 - Yar - Remove Texture.Border and
                            added MappingRCoordinates, MappingQCoordinates
                            to WriteToFiler, ReadFromFiler
-      <li>07/01/10 - DaStr - TexturePaths are now cross-platform (thanks Predator)
-      <li>22/12/09 - DaStr - Updated TGLMaterialLibrary.WriteToFiler(),
+       07/01/10 - DaStr - TexturePaths are now cross-platform (thanks Predator)
+       22/12/09 - DaStr - Updated TGLMaterialLibrary.WriteToFiler(),
                               ReadFromFiler() (thanks dAlex)
                              Small update for blending constants
-      <li>13/12/09 - DaStr - Added a temporary work-around for multithread
+       13/12/09 - DaStr - Added a temporary work-around for multithread
                               mode (thanks Controller)
                              Added TGLBlendingParameters and bmCustom blending
                               mode(thanks DungeonLords, Fantom)
                              Fixed code formating in some places
-      <li>24/08/09 - DaStr - Updated TGLLibMaterial.DoOnTextureNeeded:
+       24/08/09 - DaStr - Updated TGLLibMaterial.DoOnTextureNeeded:
                               Replaced IncludeTrailingBackslash() with
                               IncludeTrailingPathDelimiter()
-      <li>28/07/09 - DaStr - Updated TGLShader.GetStardardNotSupportedMessage()
+       28/07/09 - DaStr - Updated TGLShader.GetStardardNotSupportedMessage()
                               to use component name instead class name
-      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)
-      <li>14/07/09 - DaStr - Added $I GLScene.inc
-      <li>08/10/08 - DanB - Created from split from GLTexture.pas,
+       14/07/09 - DaStr - Added $I GLScene.inc
+       08/10/08 - DanB - Created from split from GLTexture.pas,
                             Textures + materials are no longer so tightly bound
-   </ul></font>
+    
 }
 unit GLMaterial;
 
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils, System.Types,
-  {$ELSE}
-    Classes, SysUtils, Types,
-  {$ENDIF}
-
-  //GLScene
+  Classes, SysUtils, Types,
+  //GLS
   GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
   GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
   GLCrossPlatform, GLState, GLTextureFormat, GLStrings, XOpenGL,
@@ -78,26 +73,26 @@ type
 
   // TGLShaderStyle
   //
-  {: Define GLShader style application relatively to a material.<ul>
-     <li>ssHighLevel: shader is applied before material application, and unapplied
+  {: Define GLShader style application relatively to a material. 
+      ssHighLevel: shader is applied before material application, and unapplied
            after material unapplication
-     <li>ssLowLevel: shader is applied after material application, and unapplied
+      ssLowLevel: shader is applied after material application, and unapplied
            before material unapplication
-     <li>ssReplace: shader is applied in place of the material (and material
+      ssReplace: shader is applied in place of the material (and material
            is completely ignored)
-     </ul> }
+       }
   TGLShaderStyle = (ssHighLevel, ssLowLevel, ssReplace);
 
   // TGLShaderFailedInitAction
   //
-  {: Defines what to do if for some reason shader failed to initialize.<ul>
-     <li>fiaSilentdisable:          just disable it
-     <li>fiaRaiseHandledException:  raise an exception, and handle it right away
+  {: Defines what to do if for some reason shader failed to initialize. 
+      fiaSilentdisable:          just disable it
+      fiaRaiseHandledException:  raise an exception, and handle it right away
                                     (usefull, when debigging within Delphi)
-     <li>fiaRaiseStardardException: raises the exception with a string from this
+      fiaRaiseStardardException: raises the exception with a string from this
                                       function GetStardardNotSupportedMessage
-     <li>fiaReRaiseException:       Re-raises the exception
-     <li>fiaGenerateEvent:          Handles the exception, but generates an event
+      fiaReRaiseException:       Re-raises the exception
+      fiaGenerateEvent:          Handles the exception, but generates an event
                                     that user can respond to. For example, he can
                                     try to compile a substitude shader, or replace
                                     it by a material.
@@ -107,7 +102,7 @@ type
                                     Commented out, because not sure if this
                                     option should exist, let other generations of
                                     developers decide ;)
-     </ul> }
+       }
   TGLShaderFailedInitAction = (
     fiaSilentDisable, fiaRaiseStandardException,
     fiaRaiseHandledException, fiaReRaiseException
@@ -118,7 +113,7 @@ type
   {: Generic, abstract shader class.<p>
      Shaders are modeled here as an abstract material-altering entity with
      transaction-like behaviour. The base class provides basic context and user
-     tracking, as well as setup/application facilities.<br>
+     tracking, as well as setup/application facilities. 
      Subclasses are expected to provide implementation for DoInitialize,
      DoApply, DoUnApply and DoFinalize. }
   TGLShader = class(TGLUpdateAbleComponent)
@@ -143,7 +138,7 @@ type
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
        {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     {: Request to un-apply the shader.<p>
-       Subclasses can assume the shader has been applied previously.<br>
+       Subclasses can assume the shader has been applied previously. 
        Return True to request a multipass. }
     function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
        {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
@@ -228,7 +223,7 @@ type
   //
   {: Stores basic face lighting properties.<p>
      The lighting is described with the standard ambient/diffuse/emission/specular
-     properties that behave like those of most rendering tools.<br>
+     properties that behave like those of most rendering tools. 
      You also have control over shininess (governs specular lighting) and
      polygon mode (lines / fill). }
   TGLFaceProperties = class(TGLUpdateAbleObject)
@@ -305,9 +300,9 @@ type
       read FCompareFunc write SetCompareFunc default cfLequal;
     {: DepthTest enabling.<p>
        When DepthTest is enabled, objects closer to the camera will hide
-       farther ones (via use of Z-Buffering).<br>
+       farther ones (via use of Z-Buffering). 
        When DepthTest is disabled, the latest objects drawn/rendered overlap
-       all previous objects, whatever their distance to the camera.<br>
+       all previous objects, whatever their distance to the camera. 
        Even when DepthTest is enabled, objects may chose to ignore depth
        testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: boolean read FDepthTest write SetDepthTest default True;
@@ -379,13 +374,13 @@ type
   // TBlendingMode
   //
   {: Simplified blending options.<p>
-     bmOpaque : disable blending<br>
-     bmTransparency : uses standard alpha blending<br>
-     bmAdditive : activates additive blending (with saturation)<br>
+     bmOpaque : disable blending 
+     bmTransparency : uses standard alpha blending 
+     bmAdditive : activates additive blending (with saturation) 
      bmAlphaTest50 : uses opaque blending, with alpha-testing at 50% (full
-        transparency if alpha is below 0.5, full opacity otherwise)<br>
-     bmAlphaTest100 : uses opaque blending, with alpha-testing at 100%<br>
-     bmModulate : uses modulation blending<br>
+        transparency if alpha is below 0.5, full opacity otherwise) 
+     bmAlphaTest100 : uses opaque blending, with alpha-testing at 100% 
+     bmModulate : uses modulation blending 
      bmCustom : uses TGLBlendingParameters options
      }
   TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
@@ -407,7 +402,7 @@ type
    {: Describes a rendering material.<p>
       A material is basicly a set of face properties (front and back) that take
       care of standard material rendering parameters (diffuse, ambient, emission
-      and specular) and texture mapping.<br>
+      and specular) and texture mapping. 
       An instance of this class is available for almost all objects in GLScene
       to allow quick definition of material properties. It can link to a
       TGLLibMaterial (taken for a material library).<p>
@@ -750,13 +745,13 @@ type
     {: Applies the material of given name.<p>
        Returns False if the material could not be found. ake sure this
        call is balanced with a corresponding UnApplyMaterial (or an
-       assertion will be triggered in the destructor).<br>
+       assertion will be triggered in the destructor). 
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
       var ARci: TRenderContextInfo): Boolean; virtual;
     {: Un-applies the last applied material.<p>
-       Use this function in conjunction with ApplyMaterial.<br>
+       Use this function in conjunction with ApplyMaterial. 
        If no material was applied, an assertion will be triggered. }
     function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
   end;
@@ -792,7 +787,7 @@ type
     procedure AddMaterialsFromStream(aStream: TStream);
 
     {: Save library content to a file.<p>
-       Recommended extension : .GLML<br>
+       Recommended extension : .GLML 
        Currently saves only texture, ambient, diffuse, emission
        and specular colors. }
     procedure SaveToFile(const fileName: string);
@@ -801,7 +796,7 @@ type
 
     {: Add a "standard" texture material.<p>
        "standard" means linear texturing mode with mipmaps and texture
-       modulation mode with default-strength color components.<br>
+       modulation mode with default-strength color components. 
        If persistent is True, the image will be loaded persistently in memory
        (via a TGLPersistentImage), if false, it will be unloaded after upload
        to OpenGL (via TGLPicFileImage). }
@@ -838,7 +833,7 @@ type
     {: Paths to lookup when attempting to load a texture.<p>
        You can specify multiple paths when loading a texture, the separator
        being the semi-colon ';' character. Directories are looked up from
-       first to last, the first file name match is used.<br>
+       first to last, the first file name match is used. 
        The current directory is always implicit and checked last.<p>
        Note that you can also use the OnTextureNeeded event to provide a
        filename. }

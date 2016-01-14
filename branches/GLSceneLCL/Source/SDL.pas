@@ -3,14 +3,14 @@
 //
 {
    Simple DirectMedia Layer
-   <b>History : </b><font size=-1><ul>
-      <li>17/11/09 - DaStr - Improved Unix compatibility
+    History :  
+       17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>07/06/07 - DaStr - Added $I GLScene.inc
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       07/06/07 - DaStr - Added $I GLScene.inc
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC
                                                          (BugTracekrID=1681585)
-	</ul></font>
+	 
 }
 unit SDL;
 {******************************************************************************}

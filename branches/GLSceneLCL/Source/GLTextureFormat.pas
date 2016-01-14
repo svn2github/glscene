@@ -2,15 +2,15 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
- <b>History : </b><font size=-1><ul>
-        <li>10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
-        <li>03/08/10 - Yar - Added SNORM texture format
-        <li>15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
-        <li>22/04/10 - Yar - Moved TGLTextureTarget
-        <li>23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
+  History :  
+         10/05/12 - Yar - Fixed extension checking for float texture (thnaks Nelson Chu)
+         03/08/10 - Yar - Added SNORM texture format
+         15/06/10 - Yar - Replace OpenGL1x extensions to OpenGLAdapter
+         22/04/10 - Yar - Moved TGLTextureTarget
+         23/01/10 - Yar - Separated GLTextureFormat and GLInternalFormat
                              GLTextureFormat moved to GLTexture
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
+         21/01/10 - Yar - Creation
+    <p>
 }
 unit GLTextureFormat;
 
@@ -212,13 +212,13 @@ type
   // TGLInternalCompression
   //
   {: Texture compression option.<p>
-     If OpenGL supports it, this will activate a compressed texture format:<ul>
-     <li>tcDefault : uses global default compression option
-     <li>tcNone : do not use compression
-     <li>tcStandard : use standard compression, average quality, average rate
-     <li>tcHighQuality : choose a high-quality, low-speed compression
-     <li>tcHighSpeed : choose a high-speed, low-quality compression
-     </ul>. }
+     If OpenGL supports it, this will activate a compressed texture format: 
+      tcDefault : uses global default compression option
+      tcNone : do not use compression
+      tcStandard : use standard compression, average quality, average rate
+      tcHighQuality : choose a high-quality, low-speed compression
+      tcHighSpeed : choose a high-speed, low-quality compression
+      . }
   TGLInternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
     tcHighSpeed);
 

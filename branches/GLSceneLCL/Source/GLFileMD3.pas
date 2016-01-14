@@ -6,10 +6,10 @@
               FreeForms and Actors.
 
   History :
-    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-    <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-    <li>21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
-    <li>28/02/03 - SG - Creation
+     10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+     02/08/04 - LR, YHC - BCB corrections: use record instead array
+     21/08/03 - EG - Fixed GetNormalFromMD3Normal (lat/lon were inverted)
+     28/02/03 - SG - Creation
 }
 unit GLFileMD3;
 
@@ -22,9 +22,9 @@ uses
 
 type
 
-  TGLMD3VectorFile = class (TVectorFile)
+  TGLMD3VectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -42,7 +42,7 @@ implementation
 
 // Capabilities
 //
-class function TGLMD3VectorFile.Capabilities : TDataFileCapabilities;
+class function TGLMD3VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

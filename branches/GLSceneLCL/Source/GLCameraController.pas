@@ -6,22 +6,22 @@
   Can be used to zoom in/out, for linear movement, orbiting and Google Earth - like "fly-to"
   Main purpose was the SafeOrbitAndZoomToPos method, the others are usable as well
 
-  <b>History : </b><font size=-1><ul>
-      <li>30/06/11 - DaStr - [Smooth]OrbitToPos now correctly uses local and absolute coordinates
+   History :  
+       30/06/11 - DaStr - [Smooth]OrbitToPos now correctly uses local and absolute coordinates
                              Camera is now a TGLBaseSceneObject
                              Added CameraTarget property
                              Most procedures now use "const" parameters
                              Restructured TGLCameraJob: published some properties, deleted others
                              Added basic Notification
                              Removed Cadencer dependancy 
-      <li>14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
-      <li>07/05/11 - DaStr - Added Smooth OrbitToPos support
-      <li>20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
-      <li>10/05/11 - Vince - Add OnMove event
-      <li>04/05/11 - Vince - Add OrbitToPosAdvanced function to support OrbitToPos when axis are different from -1,0 or 1
-      <li>24/07/09 - DaStr - Got rid of compiler hints
-      <li>20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
-    </ul></font>
+       14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
+       07/05/11 - DaStr - Added Smooth OrbitToPos support
+       20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
+       10/05/11 - Vince - Add OnMove event
+       04/05/11 - Vince - Add OrbitToPosAdvanced function to support OrbitToPos when axis are different from -1,0 or 1
+       24/07/09 - DaStr - Got rid of compiler hints
+       20/03/09 - DanB - Donated to GLScene by Bogdan Deaky.
+     
 }
 
 //GLCameraController v1.1

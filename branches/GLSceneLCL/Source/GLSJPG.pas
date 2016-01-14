@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>Historique : </b><font size=-1><ul>
-      <li>27/02/10 - Yar - Added to GLScene from Mike Lischke GraphicEx package
-  </ul></font>
+  History :  
+       27/02/10 - Yar - Added to GLScene from Mike Lischke GraphicEx package
+   
 }
 
 unit GLSJPG;

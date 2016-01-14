@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   <b>History : </b><font size=-1><ul>
-    <li>23/08/10 - Yar - Creation
- </ul></font>
+    History :  
+     23/08/10 - Yar - Creation
+  
 }
 
 unit GLSCrossXML;

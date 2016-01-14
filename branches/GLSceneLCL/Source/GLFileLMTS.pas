@@ -2,32 +2,32 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-  <li>31/05/10 - Yar - Fixes for Linux x64
-  <li>22/01/10 - Yar - Added GLTextureFormat to uses
-  <li>25/07/07 - DaStr - Replaced some types to get rid of compiler warnings
-  <li>08/10/08 - DanB - fix for different Char size in Delphi 2009+
-  <li>22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
+   History :  
+   31/05/10 - Yar - Fixes for Linux x64
+   22/01/10 - Yar - Added GLTextureFormat to uses
+   25/07/07 - DaStr - Replaced some types to get rid of compiler warnings
+   08/10/08 - DanB - fix for different Char size in Delphi 2009+
+   22/06/08 - DaStr - Fixups after converting TGLMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
-  <li>29/05/08 - DaStr - Replaced GLUtils with GLGraphics (BugTracker ID = 1923844)
+   29/05/08 - DaStr - Replaced GLUtils with GLGraphics (BugTracker ID = 1923844)
   Added $I GLScene.inc
-  <li>13/08/07 - fig -  Added checks for DDS textures in LoadFromStream()
-  <li>23/03/07 - fig -  Fixed exception when material properties were loaded without a material library being assigned.
-  <li>15/01/07 - fig -  If available, material data is now imported/exported.
-  <li>15/01/07 - fig -  Added checks in the loader for invalid material indices.  LMTools can return meshes like this for some reason.
-  <li>14/01/07 - fig -  Material/facegroup name is now changed to the available filename instead of stripping the extention.
-  <li>12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
-  <li>07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
-  <li>06/01/07 - fig -  Strip all texture file extentions on load/save
-  <li>03/01/07 - fig -  can now use different texture types from the ones stated in the file,
+   13/08/07 - fig -  Added checks for DDS textures in LoadFromStream()
+   23/03/07 - fig -  Fixed exception when material properties were loaded without a material library being assigned.
+   15/01/07 - fig -  If available, material data is now imported/exported.
+   15/01/07 - fig -  Added checks in the loader for invalid material indices.  LMTools can return meshes like this for some reason.
+   14/01/07 - fig -  Material/facegroup name is now changed to the available filename instead of stripping the extention.
+   12/01/07 - fig -  Fixed LoadFromStream() to handle duplicate and null textures correctly.
+   07/01/07 - fig -  Fixed the file extention stripping. extra periods in the filenames were causing conflicts.
+   06/01/07 - fig -  Strip all texture file extentions on load/save
+   03/01/07 - fig -  can now use different texture types from the ones stated in the file,
   missing texture exception handling, normals are built on load,
   support for more facegroup types added.
-  <li>02/01/07 - fig - Added SavetoStream() and Capabilities function.
-  <li>02/01/07 - PvD - Dealing with non empty material libraries.
-  <li>02/01/07 - PvD - Mirrored mesh in X to original orientation.
-  <li>01/01/07 - Dave Gravel - Modification to make it work.
-  <li>10/09/03 - Domin - Creation
-  </ul><p>
+   02/01/07 - fig - Added SavetoStream() and Capabilities function.
+   02/01/07 - PvD - Dealing with non empty material libraries.
+   02/01/07 - PvD - Mirrored mesh in X to original orientation.
+   01/01/07 - Dave Gravel - Modification to make it work.
+   10/09/03 - Domin - Creation
+   <p>
 }
 unit GLFileLMTS;
 
@@ -36,11 +36,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-{$ELSE}
   Graphics,
-{$ENDIF}
   Classes, SysUtils,
   GLVectorFileObjects, GLApplicationFileIO, GLVectorLists, GLVectorGeometry,
   GLTexture, GLPersistentClasses, GLGraphics, GLMaterial;
@@ -117,9 +113,9 @@ type
     mathash: integer;
   end;
 
-  TGLLMTSVectorFile = class(TVectorFile)
+  TGLLMTSVectorFile = class(TGLVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
@@ -138,7 +134,7 @@ uses
 // Capabilities
 //
 
-class function TGLLMTSVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLLMTSVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
@@ -148,7 +144,7 @@ end;
 
 procedure TGLLMTSVectorFile.LoadFromStream(aStream: TStream);
 var
-  MO: TMeshObject;
+  MO: TGLMeshObject;
   FG: TFGVertexIndexList;
   LL: TGLMaterialLibrary;
   ML: TGLMaterialLibrary;
@@ -169,7 +165,7 @@ var
 begin
   owner.MeshObjects.Clear;
 
-  MO := TMeshObject.CreateOwned(owner.MeshObjects);
+  MO := TGLMeshObject.CreateOwned(owner.MeshObjects);
   MO.Mode := momFaceGroups;
 
   vi := Tintegerlist.create;
@@ -448,7 +444,7 @@ end;
 
 procedure TGLLMTSVectorFile.SaveToStream(aStream: TStream);
 var
-  MO: TMeshObject;
+  MO: TGLMeshObject;
   FG: TFGVertexIndexList;
   i, j, k, l, lmstartindex, C, matindex: integer;
   h: TLMTS_Header;

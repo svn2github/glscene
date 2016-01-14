@@ -13,12 +13,12 @@
 
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
- <b>History : </b><font size=-1><ul>
-      <li>06/06/10 - Yar - Added GLVectorTypes to uses
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
-      <li>29/11/03 - JAJ - Created and Submitted to GLScene.
- </ul></font>
+  History :  
+       06/06/10 - Yar - Added GLVectorTypes to uses
+       30/03/07 - DaStr - Added $I GLScene.inc
+       18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
+       29/11/03 - JAJ - Created and Submitted to GLScene.
+  
 }
 unit GLMeshCSG;
 
@@ -35,7 +35,7 @@ uses
 type
   TCSGOperation = (CSG_Union, CSG_Subtraction, CSG_Intersection);
 
-procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: TMeshObject; const MaterialName1, MaterialName2: string);
+procedure CSG_Operation(obj1, obj2: TGLMeshObject; Operation: TCSGOperation; Res: TGLMeshObject; const MaterialName1, MaterialName2: string);
 
 implementation
 
@@ -76,7 +76,7 @@ begin
   Result[2] := v3;
 end;
 
-procedure CSG_Iterate_tri(const vec, nor: TCSGTri; BSP: TBSPMeshObject; Node: TFGBSPNode; ResMesh: TMeshObject; ResFG: TFGVertexNormalTexIndexList; keepinside, keepoutside, inverttriangle: Boolean);
+procedure CSG_Iterate_tri(const vec, nor: TCSGTri; BSP: TBSPMeshObject; Node: TFGBSPNode; ResMesh: TGLMeshObject; ResFG: TFGVertexNormalTexIndexList; keepinside, keepoutside, inverttriangle: Boolean);
 
 var
   vertex_offset: Integer;
@@ -507,7 +507,7 @@ begin
   end;
 end;
 
-procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: TMeshObject; const MaterialName1, MaterialName2: string);
+procedure CSG_Operation(obj1, obj2: TGLMeshObject; Operation: TCSGOperation; Res: TGLMeshObject; const MaterialName1, MaterialName2: string);
 
 var
   v1, t1, n1: TAffineVectorList;

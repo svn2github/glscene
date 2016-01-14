@@ -13,72 +13,72 @@
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile.<p>
 
- <b>Historique : </b><font size=-1><ul>
-      <li>25/11/11 - YP - Assertion removed from AssignFromBitmap32
-      <li>10/05/11 - Yar - Now VerticalReverseOnAssignFromBitmap works for AssignToBitmap
-      <li>04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-      <li>18/07/10 - Yar - Raname TGLBitmap32 to TGLImage
-      <li>20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
-      <li>14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
-      <li>20/05/10 - Yar - Fixes for Linux x64
+ History :  
+       25/11/11 - YP - Assertion removed from AssignFromBitmap32
+       10/05/11 - Yar - Now VerticalReverseOnAssignFromBitmap works for AssignToBitmap
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
+       18/07/10 - Yar - Raname TGLBitmap32 to TGLImage
+       20/06/10 - Yar - Added in TRasterFileFormatsList.FindFromStream JPG singnature
+       14/06/10 - YP  - PngImage support added (thanks to Sergio Alexandre Gianezini)
+       20/05/10 - Yar - Fixes for Linux x64
                            Replace OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>28/03/10 - Yar - Added glGenerateMipmap when used forward context
-      <li>08/03/10 - Yar - Added in TRasterFileFormatsList.FindFromStream PNG singnature
+       22/04/10 - Yar - Fixes after GLState revision
+       28/03/10 - Yar - Added glGenerateMipmap when used forward context
+       08/03/10 - Yar - Added in TRasterFileFormatsList.FindFromStream PNG singnature
                            Added forward context cheking to circumvent deprecations
-      <li>01/03/10 - Yar - Bugfix when texture, which has lower mip-levels than the standard number is not rendered
+       01/03/10 - Yar - Bugfix when texture, which has lower mip-levels than the standard number is not rendered
                            (thanks to Controller)
-      <li>23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
+       23/02/10 - Yar - Solved problem of TGLBitmap with width of which is not a multiple of four.
                            Added in AssignFrom24BitsBitmap, AssignFrom32BitsBitmap using extension GL_EXT_bgra
-      <li>22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
+       22/02/10 - Yar - Added FindFromStream to TRasterFileFormatsList
                            (thanks to mif)
-      <li>10/02/10 - Yar   - Bugfix in RegisterAsOpenGLTexture with Cubemap mipmaping
-      <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
+       10/02/10 - Yar   - Bugfix in RegisterAsOpenGLTexture with Cubemap mipmaping
+       27/01/10 - Yar   - Bugfix in BlockOffset with negative result
                              Return to GL_SGIS_generate_mipmap
-      <li>23/01/10 - Yar   - Added to AssignFromTexture CurrentFormat parameter
-      <li>22/01/10 - Yar   - Added TRasterFileFormat, TGLBaseImage classes
+       23/01/10 - Yar   - Added to AssignFromTexture CurrentFormat parameter
+       22/01/10 - Yar   - Added TRasterFileFormat, TGLBaseImage classes
                              TGLBitmap32 now derived from TGLBaseImage
                              and can contain all types of image
                              (with mipmap level, texture array, volume texture)
                              any kind of color and data formats of OpenGL
                              remake RegisterAsOpenGLTexture
-      <li>10/11/09 - DaStr - Updated TGLBitmap32.RegisterAsOpenGLTexture() - fixed
+       10/11/09 - DaStr - Updated TGLBitmap32.RegisterAsOpenGLTexture() - fixed
                                TextureFormat and ColorFormat (thanks YarUnderoaker)
                              Improved FPC compatibility
                               (BugtrackerID = 2893580) (thanks Predator)
-      <li>24/03/07 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
+       24/03/07 - DaStr - Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
                               to GLGraphics.pas (BugTracker ID = 1923844)
-      <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-      <li>14/03/07 - DaStr - Added explicit pointer dereferencing
+       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+       14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>23/01/07 - LIN- Added TGLBitmap32.AssignToBitmap : Converts a TGLBitmap32 back into a TBitmap
-      <li>12/09/06 - NC - Added TGLBitmap32.Blank
-      <li>18/10/05 - NC - GL_ARB_texture_non_power_of_two, GL_TEXTURE_2D for float
+       23/01/07 - LIN- Added TGLBitmap32.AssignToBitmap : Converts a TGLBitmap32 back into a TBitmap
+       12/09/06 - NC - Added TGLBitmap32.Blank
+       18/10/05 - NC - GL_ARB_texture_non_power_of_two, GL_TEXTURE_2D for float
                           texture
-      <li>06/10/04 - NC - Now uses GL_TEXTURE_RECTANGLE_NV for all float texture types
-      <li>04/10/04 - NC - Added support for float texture
-      <li>05/09/03 - EG - Added TGLBitmap32.DownSampleByFactor2
-      <li>04/07/03 - EG - Added RGBA brightness/gamma correction support
-      <li>13/05/03 - EG - Added GrayScaleToNormalMap
-      <li>26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
-      <li>16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
-      <li>29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
-      <li>20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
-      <li>17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
+       06/10/04 - NC - Now uses GL_TEXTURE_RECTANGLE_NV for all float texture types
+       04/10/04 - NC - Added support for float texture
+       05/09/03 - EG - Added TGLBitmap32.DownSampleByFactor2
+       04/07/03 - EG - Added RGBA brightness/gamma correction support
+       13/05/03 - EG - Added GrayScaleToNormalMap
+       26/08/02 - EG - Fixed loading of 1D horiz textures from 24 bits bitmaps
+       16/06/02 - EG - AssignFrom32BitsBitmap fix for single-line bitmaps
+       29/01/02 - EG - Fixed ScanLine Index bug with empty bitmaps
+       20/01/02 - EG - Fixed BGR24/RGB24 last pixel transfer
+       17/01/02 - EG - Faster assignments from bitmaps (approx. x2),
                           Added AssignFromBitmap24WithoutRGBSwap
-      <li>28/12/01 - EG - Graphics32 support added
-      <li>15/12/01 - EG - Texture target support
-      <li>14/09/01 - EG - Use of vFileStreamClass
-      <li>31/08/01 - EG - 24bits Bitmaps are now made opaque by default
-      <li>12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
-      <li>20/02/01 - EG - Fixed SetHeight & SetWidth (thx Nelson Chu)
-      <li>14/02/01 - EG - Simplified RegisterAsOpenGLTexture
-      <li>15/01/01 - EG - Fixed RegisterAsOpenGLTexture (clamping)
-      <li>14/01/01 - EG - Fixed isEmpty (was invalid for rectangles)
-      <li>08/10/00 - EG - Fixed RegisterAsOpenGLTexture and Assign(nil)
-      <li>25/09/00 - EG - First operational code
-      <li>19/08/00 - EG - Creation
- </ul></font>
+       28/12/01 - EG - Graphics32 support added
+       15/12/01 - EG - Texture target support
+       14/09/01 - EG - Use of vFileStreamClass
+       31/08/01 - EG - 24bits Bitmaps are now made opaque by default
+       12/08/01 - EG - Now detects and uses GL_SGIS_generate_mipmap
+       20/02/01 - EG - Fixed SetHeight & SetWidth (thx Nelson Chu)
+       14/02/01 - EG - Simplified RegisterAsOpenGLTexture
+       15/01/01 - EG - Fixed RegisterAsOpenGLTexture (clamping)
+       14/01/01 - EG - Fixed isEmpty (was invalid for rectangles)
+       08/10/00 - EG - Fixed RegisterAsOpenGLTexture and Assign(nil)
+       25/09/00 - EG - First operational code
+       19/08/00 - EG - Creation
+  
 }
 unit GLGraphics;
 
@@ -90,20 +90,12 @@ uses
 {$IFDEF MSWINDOWS}
   Windows,
 {$ENDIF}
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.Classes, System.SysUtils, System.SyncObjs, VCL.Graphics,
-{$ELSE}
   Classes, SysUtils, SyncObjs, Graphics,
-{$ENDIF}
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
 {$IFDEF GLS_PngImage_SUPPORT}
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Imaging.Pngimage,
-{$ELSE}
   Pngimage,
-{$ENDIF}
 {$ENDIF}
 {$IFDEF FPC}
   fpimage,
@@ -165,7 +157,7 @@ type
 
   // TGLBaseImage
   //
-  TGLBaseImage = class(TDataFile)
+  TGLBaseImage = class(TGLDataFile)
   private
     FSourceStream: TStream;
     FStreamLevel: TGLImageLODRange;
@@ -287,7 +279,7 @@ type
     {: Contains and manipulates a 32 bits (24+8) bitmap.<p>
        This is the base class for preparing and manipulating textures in GLScene,
        this function does not rely on a windows handle and should be used for
-       in-memory manipulations only.<br>
+       in-memory manipulations only. 
        16 bits textures are automatically converted to 24 bits and an opaque (255)
        alpha channel is assumed for all planes, the byte order is as specified
        in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
@@ -329,7 +321,7 @@ type
     {: Assigns from a 24 bits bitmap without swapping RGB.<p>
       This is faster than a regular assignment, but R and B channels
       will be reversed (from what you would view in a TImage). Suitable
-      if you do your own drawing and reverse RGB on the drawing side.<br>
+      if you do your own drawing and reverse RGB on the drawing side. 
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
     procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);

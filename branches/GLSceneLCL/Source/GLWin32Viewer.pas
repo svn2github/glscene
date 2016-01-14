@@ -4,34 +4,34 @@
 {
     Win32 specific Scene viewer.<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
-      <li>28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
-      <li>23/08/10 - Yar - Moved TVSyncMode to GLContext
-      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
+  History :  
+       03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
+       28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
+       23/08/10 - Yar - Moved TVSyncMode to GLContext
+       22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
                               properties (thanks Yury Plashenkov)
-      <li>10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
-      <li>13/03/09 - DanB - Removed OpenGL dependencies
-      <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
+       10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
+       13/03/09 - DanB - Removed OpenGL dependencies
+       10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
-      <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
+       12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
                               to GLViewer.pas (Bugtracker ID = 1786279)
-      <li>04/12/04 - DaStr - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
+       04/12/04 - DaStr - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
                               are now published in TGLSceneViewer
-      <li>04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
-      <li>24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
-      <li>11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
-      <li>29/10/02 - EG - Added MouseEnter/Leave/InControl
-      <li>27/09/02 - EG - Added Ability to set display frequency
-      <li>22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
-      <li>19/08/02 - EG - Added GetHandle
-      <li>14/03/02 - EG - No longer invalidates while rendering
-      <li>11/02/02 - EG - Fixed BeforeRender
-      <li>29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
-      <li>22/01/02 - EG - Added TGLFullScreenViewer
-      <li>28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
-     <li>12/12/01 - EG - Creation (split from GLScene.pas)
- </ul></font>
+       04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
+       24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
+       11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
+       29/10/02 - EG - Added MouseEnter/Leave/InControl
+       27/09/02 - EG - Added Ability to set display frequency
+       22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
+       19/08/02 - EG - Added GetHandle
+       14/03/02 - EG - No longer invalidates while rendering
+       11/02/02 - EG - Fixed BeforeRender
+       29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
+       22/01/02 - EG - Added TGLFullScreenViewer
+       28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
+      12/12/01 - EG - Creation (split from GLScene.pas)
+  
 }
 unit GLWin32Viewer;
 
@@ -40,14 +40,8 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  WinApi.Windows, WinApi.Messages,  System.Classes, System.SysUtils,
-  System.Types, VCL.Graphics, VCL.Forms, VCL.Controls,
-{$ELSE}
   Windows, Messages, Classes,  SysUtils, Types,
   Graphics, Forms, Controls,
-{$ENDIF}
-
   // GLScene
   GLScene, GLWin32Context,  GLContext;
 

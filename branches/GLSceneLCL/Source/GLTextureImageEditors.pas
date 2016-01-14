@@ -4,13 +4,13 @@
 {
    Standard texture image editors for standard texture image classes.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPPB compatibility: used dummy method instead
+	 History :  
+       10/11/12 - PW - Added CPPB compatibility: used dummy method instead
                           abstract class function Edit for GLS_CPPB
-      <li>22/01/10 - Yar - Added to TGLBlankImage property editor ability to set the depth
-      <li>03/07/04 - LR - Make change for Linux
-      <li>24/07/03 - EG - Creation
-   </ul></font>
+       22/01/10 - Yar - Added to TGLBlankImage property editor ability to set the depth
+       03/07/04 - LR - Make change for Linux
+       24/07/03 - EG - Creation
+    
 }
 unit GLTextureImageEditors;
 
@@ -30,7 +30,7 @@ type
 		public
          { Public Properties }
 			{: Request to edit a textureImage.<p>
-				Returns True if changes have been made.<br>
+				Returns True if changes have been made. 
 				This method may be invoked from the IDE or at run-time. }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
    end;

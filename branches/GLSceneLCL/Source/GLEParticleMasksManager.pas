@@ -4,11 +4,11 @@
 {
    A pretty particle mask effect manager.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-      <li>24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
+    History :  
+       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
+       24/03/07 - Improved Cross-Platform compatibility (BugTracker ID = 1684432)
                      Got rid of Types dependancy
-      <li>29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
+       29/01/07 - DaStr - Initial version (donated to GLScene by Kenneth Poulter)
 
 Original Header:
 
@@ -50,12 +50,7 @@ interface
 uses
   // System
   SysUtils, Classes,
-  // VCL
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Graphics,
-{$ELSE}
   Graphics,
-{$ENDIF}
   // GLScene
   GLTexture, GLMaterial, GLScene, GLVectorGeometry, GLVectorTypes,
   GLParticleFX, GLCrossPlatform, GLCoordinates;

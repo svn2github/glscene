@@ -4,62 +4,62 @@
 {
   An ODE Manager for GLScene.<p>
 
-  Where can I find ... ?<ul>
-    <li>GLScene              (http://glscene.org)
-    <li>Open Dynamics Engine (http://opende.sourceforge.org)
-    <li>DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
-  </ul>
+  Where can I find ... ? 
+     GLScene              (http://glscene.org)
+     Open Dynamics Engine (http://opende.sourceforge.org)
+     DelphiODE            (http://www.cambrianlabs.com/Mattias/DelphiODE)
+   
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
 
-  <b>History : </b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-    <li>21/01/01 - DanB - Added "inherited" call to TODEElementPlane.WriteToFiler
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-    <li>14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
-    <li>22/04/10 - Yar - Fixes after GLState revision
-    <li>05/03/10 - DanB - More state added to TGLStateCache
-    <li>17/11/09 - DaStr - Improved Unix compatibility
+   History :  
+     10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+     21/01/01 - DanB - Added "inherited" call to TODEElementPlane.WriteToFiler
+     23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+     14/06/10 - YP  - Sub-element translation code in CalibrateCenterOfMass removed
+     22/04/10 - Yar - Fixes after GLState revision
+     05/03/10 - DanB - More state added to TGLStateCache
+     17/11/09 - DaStr - Improved Unix compatibility
                            (thanks Predator) (BugtrackerID = 2893580)
-    <li>08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
+     08/12/08 - PR - dBodySetMass no longer accepts zero mass. check added
                          joint parms now have a 1 appended to them for first parm
                          example dParamLoStop is now dParamLoStop1
-    <li>17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
-    <li>12/04/08 - DaStr - Cleaned up uses section
+     17/10/08 - DanB - changed some NotifyChange(Sender) calls to NotifyChange(Self)
+     12/04/08 - DaStr - Cleaned up uses section
                             (thanks Sandor Domokos) (BugtrackerID = 1808373)
-    <li>10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
-    <li>19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
+     10/04/08 - DaStr - Removed compiler hints from TGLODEDynamic.AddNewElement()
+     19/03/08 - Mrqzzz - by DAlex : Added different geom colors;
                             Don't create contact between static objects;
                             In Destroying procedures placed to last line the "Inherited"
-    <li>28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint
+     28/02/08 - Mrqzzz - Changed Axis2 to XHMGVector on universal joint
                              creation in TODEJointUniversal.Create
-    <li>06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello;
+     06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by by Paul Robello;
                              fixes for runtime creation)
-    <li>25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
+     25/12/07 - DaStr  - Fixed access violation in TGLODEManager.Destroy()
                              (thanks Sandor Domokos) (BugtrackerID = 1808371)
-    <li>30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
-    <li>10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit
+     30/11/07 - Mrqzzz - Changed parameters in OnCollision event (TODEObjectCollisionEvent)
+     10/10/07 - Mrqzzz - Fixed in TGLODEDynamic.AlignObject the explocit
                              reference to ODEGL.ODERToGLSceneMatrix(m,R^,pos^)
                              to avoid ambiguous overloading
-    <li>08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
+     08/09/07 - Mrqzzz - small changes in unit references (last reference is to odeimport) in order to
                            make GLODEManager compatible with non-GLODEManager based ODE worlds
                            Added public property "ContactGroup"
-    <li>24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
-    <li>07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+     24/08/07 - Mrqzzz - Updated GetSurfaceFromObject to support correctly Trimesh collision
+     07/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
                            Added $I GLScene.inc
-    <li>28/03/07 - DaStr - Renamed parameters in some methods
+     28/03/07 - DaStr - Renamed parameters in some methods
                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-    <li>01/03/05 - Mrqzzz - Moved in TODEJointBase protected code from Loaded to
+     01/03/05 - Mrqzzz - Moved in TODEJointBase protected code from Loaded to
                           public DoLoaded.
-    <li>20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
+     20/12/04 - SG - TGLODEStatic objects now realign geoms on step,
                         Fix for Hinge2 and Universal joints,
                         Fix for TGLODEDynamic.Enabled property persistence.
-    <li>10/12/04 - SG - Added TODEElementPlane,
+     10/12/04 - SG - Added TODEElementPlane,
                         Fixed TODEElementCone.Render function.
-    <li>09/12/04 - Mathx - Added getX and getOrCreateX functions.
-    <li>19/11/04 - SG - Major structural changes/improvements,
+     09/12/04 - Mathx - Added getX and getOrCreateX functions.
+     19/11/04 - SG - Major structural changes/improvements,
                         Dropped TGLBaseSceneObject style object in favour of
                         TGLBehaviour style ones,
                         TGLODEBaseBehaviour is now TGLODEBehaviour,
@@ -67,56 +67,56 @@
                         TGLODEStaticBehaviour is now TGLODEStatic,
                         Added TODEJointParams to handle joint axis parameters,
                         Added RenderPoint to GLODEManager to handle rendering.
-    <li>17/11/04 - SG - Changed Deinitialize to Finalize,
+     17/11/04 - SG - Changed Deinitialize to Finalize,
                         Changed TGLODEDummy to TGLODEDynamicDummy.
-    <li>09/11/04 - SG - Fixed problems with contact geom generation (k00m).
-    <li>03/05/04 - SG - Tri-mesh and various fixes/enhancements.
-    <li>23/04/04 - SG - Fixes for object registration,
+     09/11/04 - SG - Fixed problems with contact geom generation (k00m).
+     03/05/04 - SG - Tri-mesh and various fixes/enhancements.
+     23/04/04 - SG - Fixes for object registration,
                         Exception raised now if ODE fails to initialize at run-time.
-    <li>21/04/04 - SG - Changed to dynamic linking DelphiODE,
+     21/04/04 - SG - Changed to dynamic linking DelphiODE,
                         Design-time no longer makes any DelphiODE calls.
-    <li>15/04/04 - SG - Added OnCustomCollision event to TGLODEManager.
-    <li>14/04/04 - SG - Minor DelphiODE compatibility changes.
-    <li>30/03/04 - SG - Joint objects are now fully persistent.
-    <li>05/03/04 - SG - SetSurfaceMode fix (Alex)
-    <li>25/02/04 - SG - Added the GLODEStaticBehaviour.
-    <li>24/02/04 - SG - Added the static GLODETerrain collider.
-    <li>23/02/04 - SG - Fix for design to real time gravity persistence.
+     15/04/04 - SG - Added OnCustomCollision event to TGLODEManager.
+     14/04/04 - SG - Minor DelphiODE compatibility changes.
+     30/03/04 - SG - Joint objects are now fully persistent.
+     05/03/04 - SG - SetSurfaceMode fix (Alex)
+     25/02/04 - SG - Added the GLODEStaticBehaviour.
+     24/02/04 - SG - Added the static GLODETerrain collider.
+     23/02/04 - SG - Fix for design to real time gravity persistence.
                         Added cone, cylinder and tri-mesh elements.
                         Other various fixes/enhancements.
-    <li>28/01/04 - SG - Added TGLODEStaticDummy. Fixed Element alignment code.
+     28/01/04 - SG - Added TGLODEStaticDummy. Fixed Element alignment code.
                         Other minor fixes/changes.
-    <li>13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
+     13/11/03 - SG - Fixed bug with destroying geoms, manager now forces
                         registered objects to Deinitialize.
                         Fixed up some comments.
-    <li>12/11/03 - SG - Fixed bug with TGLODEManager.Collision
-    <li>01/09/03 - SG - Changed all relevant floating point types to TdReal,
+     12/11/03 - SG - Fixed bug with TGLODEManager.Collision
+     01/09/03 - SG - Changed all relevant floating point types to TdReal,
                         Changed Read/Write Single/Double to Read/Write Float.
-    <li>19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
+     19/08/03 - SG - Added GetBodyFromGLSceneObject (Dan Bartlett),
                         Added StepFast and FastIterations to GLODEManager.
-    <li>11/08/03 - SG - Added some force/torque methods to dynamic objects.
-    <li>30/07/03 - SG - Split terrain collider into GLODECustomColliders unit.
-    <li>25/07/03 - SG - Fixed Manager property persistence, other minor changes.
-    <li>24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
+     11/08/03 - SG - Added some force/torque methods to dynamic objects.
+     30/07/03 - SG - Split terrain collider into GLODECustomColliders unit.
+     25/07/03 - SG - Fixed Manager property persistence, other minor changes.
+     24/07/03 - SG - ReadFromFiler and WriteToFiler routines added,
                         improved object and joint initialization system.
                         Manager properties not persitent in joints and behaviours.
-    <li>26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
+     26/06/03 - EG - Replaced TObjectList with TPersistentObjectList,
                         dropped Contnrs dependency (D5 compatibility)
-    <li>23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
+     23/06/03 - SG - Added GLODETerrainCollider, an implementation from DelphiODE
                         terrain demo (buggy caused assertion error in GLHeightData.pas).
-    <li>13/06/03 - SG - Added more joints.
-    <li>11/06/03 - SG - Base joint classes implemented and added hinge joint.
-    <li>09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
-    <li>08/06/03 - SG - Added rolling friction (experimental).
-    <li>06/06/03 - SG - Added cylinder element (experimental).
-    <li>04/06/03 - SG - Changes to structures, added TGLODEDynamicBehaviour.
-    <li>30/05/03 - SG - Added capsule element and plane object,
+     13/06/03 - SG - Added more joints.
+     11/06/03 - SG - Base joint classes implemented and added hinge joint.
+     09/06/03 - SG - Added OnCollision event for ODE Objects and Behaviours.
+     08/06/03 - SG - Added rolling friction (experimental).
+     06/06/03 - SG - Added cylinder element (experimental).
+     04/06/03 - SG - Changes to structures, added TGLODEDynamicBehaviour.
+     30/05/03 - SG - Added capsule element and plane object,
                         Fixed problems with Collision callback method.
-    <li>29/05/03 - SG - Better GetCollisionSurface code (thanks to Mattias Fagerlund).
-    <li>28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
+     29/05/03 - SG - Better GetCollisionSurface code (thanks to Mattias Fagerlund).
+     28/05/03 - SG - Some fixes to ODE Elements (thanks to Mattias Fagerlund).
                         Added TGLODEDummy.CalibrateCenterOfMass
-    <li>01/03/03 - SG - Creation.
-  </ul>
+     01/03/03 - SG - Creation.
+   
 }
 
 unit GLODEManager;
@@ -127,7 +127,7 @@ interface
 
 uses
   Classes, ODEGL, ODEImport, GLScene, GLVectorGeometry, GLTexture, OpenGLTokens,
-  XOpenGL, SysUtils, GLObjects, XCollection, GLPersistentClasses, GLVectorLists,
+  XOpenGL, SysUtils, GLObjects, GLXCollection, GLPersistentClasses, GLVectorLists,
   GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState;
 
 type
@@ -333,7 +333,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure NotifyChange(Sender : TObject);
@@ -380,7 +380,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -429,7 +429,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -446,7 +446,7 @@ type
 
   // TODEElements
   //
-  TODEElements = class(TXCollection)
+  TODEElements = class(TGLXCollection)
     private
       { Private Declarations }
       function GetElement(index : integer) : TODEElementBase;
@@ -454,7 +454,7 @@ type
     public
       { Public Declarations }
       destructor Destroy; override;
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TGLXCollectionItemClass; override;
       procedure Initialize;
       procedure Finalize;
 
@@ -468,7 +468,7 @@ type
 
   // TODEElementBase
   //
-  TODEElementBase = class (TXCollectionItem)
+  TODEElementBase = class (TGLXCollectionItem)
     private
       { Private Declarations }
       FMass  : TdMass;
@@ -514,7 +514,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); virtual;
@@ -563,7 +563,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -599,7 +599,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -638,7 +638,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -678,7 +678,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner:TXCollection); override;
+      constructor Create(AOwner:TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -718,7 +718,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       class function FriendlyName : String; override;
@@ -750,21 +750,21 @@ type
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
-      class function CanAddTo(collection : TXCollection) : Boolean; override;
+      class function CanAddTo(collection : TGLXCollection) : Boolean; override;
 
   end;
 
   // TGLODEJoints
   //
   {: An XCollection decendant for ODE Joints. }
-  TODEJoints = class(TXCollection)
+  TODEJoints = class(TGLXCollection)
     protected
       { Protected Declarations }
       function GetJoint(index: integer): TODEJointBase;
 
     public
       { Public Declarations }
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TGLXCollectionItemClass; override;
 
       procedure Initialize;
       procedure Finalize;
@@ -807,7 +807,7 @@ type
   // TODEJointBase
   //
   {: Base structures for ODE Joints. }
-  TODEJointBase = class (TXCollectionItem)
+  TODEJointBase = class (TGLXCollectionItem)
     private
       { Private Declarations }
       FJointID : TdJointID;
@@ -845,7 +845,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; virtual;
 
@@ -985,7 +985,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; override;
 
@@ -1020,7 +1020,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1059,7 +1059,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1127,7 +1127,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1180,7 +1180,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Initialize; override;
@@ -2033,7 +2033,7 @@ end;
 
 // Create
 //
-constructor TGLODEBehaviour.Create(AOwner : TXCollection);
+constructor TGLODEBehaviour.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FSurface:=TODECollisionSurface.Create(Self);
@@ -2177,7 +2177,7 @@ end;
 
 // Create
 //
-constructor TGLODEDynamic.Create(AOwner : TXCollection);
+constructor TGLODEDynamic.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2498,7 +2498,7 @@ end;
 
 // Create
 //
-constructor TGLODEStatic.Create(AOwner : TXCollection);
+constructor TGLODEStatic.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2633,7 +2633,7 @@ end;
 
 // ItemsClass
 //
-class function TODEElements.ItemsClass : TXCollectionItemClass;
+class function TODEElements.ItemsClass : TGLXCollectionItemClass;
 begin
   Result:=TODEElementBase;
 end;
@@ -2684,7 +2684,7 @@ end;
 
 // Create
 //
-constructor TODEElementBase.Create(AOwner : TXCollection);
+constructor TODEElementBase.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -3051,7 +3051,7 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner : TXCollection);
+constructor TODEElementBox.Create(AOwner : TGLXCollection);
 begin
   inherited;
   BoxWidth:=1;
@@ -3271,7 +3271,7 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner : TXCollection);
+constructor TODEElementSphere.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3425,7 +3425,7 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner : TXCollection);
+constructor TODEElementCapsule.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3602,7 +3602,7 @@ end;
 
 // Create
 //
-constructor TODEElementCylinder.Create(AOwner: TXCollection);
+constructor TODEElementCylinder.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3732,7 +3732,7 @@ end;
 
 // Create
 //
-constructor TODEElementTriMesh.Create(AOwner : TXCollection);
+constructor TODEElementTriMesh.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FVertices:=TAffineVectorList.Create;
@@ -3917,7 +3917,7 @@ end;
 
 // CanAddTo
 //
-class function TODEElementPlane.CanAddTo(collection : TXCollection) : Boolean;
+class function TODEElementPlane.CanAddTo(collection : TGLXCollection) : Boolean;
 begin
   Result:=False;
   if Assigned(TODEElements(collection).Owner) then
@@ -3943,7 +3943,7 @@ end;
 
 // ItemsClass
 //
-class function TODEJoints.ItemsClass : TXCollectionItemClass;
+class function TODEJoints.ItemsClass : TGLXCollectionItemClass;
 begin
   Result:=TODEJointBase;
 end;
@@ -4068,7 +4068,7 @@ end;
 
 // Create
 //
-constructor TODEJointBase.Create(AOwner : TXCollection);
+constructor TODEJointBase.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FJointID:=nil;
@@ -4691,7 +4691,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge.Create(AOwner : TXCollection);
+constructor TODEJointHinge.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4842,7 +4842,7 @@ end;
 
 // Create
 //
-constructor TODEJointBall.Create(AOwner : TXCollection);
+constructor TODEJointBall.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4930,7 +4930,7 @@ end;
 
 // Create
 //
-constructor TODEJointSlider.Create(AOwner : TXCollection);
+constructor TODEJointSlider.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAxis:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
@@ -5107,7 +5107,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge2.Create(AOwner : TXCollection);
+constructor TODEJointHinge2.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -5321,7 +5321,7 @@ end;
 
 // Create
 //
-constructor TODEJointUniversal.Create(AOwner : TXCollection);
+constructor TODEJointUniversal.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);

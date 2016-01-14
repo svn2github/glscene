@@ -4,13 +4,13 @@
 { 
   Implements a multi-proxy objects, useful for discreet LOD.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
-      <li>26/11/03 - EG - Added bounding, raycast and silhouette proxying
-      <li>25/11/03 - EG - Added per-master visibility boolean
-      <li>24/11/03 - EG - Creation
-   </ul></font>
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
+       26/11/03 - EG - Added bounding, raycast and silhouette proxying
+       25/11/03 - EG - Added per-master visibility boolean
+       24/11/03 - EG - Creation
+    
 }
 unit GLMultiProxy;
 

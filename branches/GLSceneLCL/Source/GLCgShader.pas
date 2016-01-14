@@ -4,20 +4,20 @@
 {
    Base Cg shader classes.<p>
 
-   <b>History :</b><font size=-1><ul>
-      <li>19/12/12 - PW - Added CPPB compatibility:  changed cg.lib's name of function
+    History : 
+       19/12/12 - PW - Added CPPB compatibility:  changed cg.lib's name of function
                           GetProfileString to GetProfileStringA
-      <li>26/03/11 - Yar - Added SetAsMatrix to TCgParameter
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
+       26/03/11 - Yar - Added SetAsMatrix to TCgParameter
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       22/04/10 - Yar - Fixes after GLState revision
+       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
                               (BugTracker ID = 2826217)   
-      <li>15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
+       15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
                                                       (BugTracker ID = 1914782)
-      <li>24/03/07 - DaStr - Improved Cross-Platform compatibility
+       24/03/07 - DaStr - Improved Cross-Platform compatibility
                                                       (BugTracker ID = 1684432)
-      <li>23/02/07 - DaStr- Added TCgProgram.ManualNotification
-      <li>23/02/07 - DaStr- Added TCadencableCustomCgShader
+       23/02/07 - DaStr- Added TCgProgram.ManualNotification
+       23/02/07 - DaStr- Added TCadencableCustomCgShader
                             Added EGLCGShaderException
                             with TCustomCgShader:
                               Added ShaderSupported,
@@ -26,57 +26,52 @@
                               DoInitialize fixed to catch compilation errors
                             Moved registration to GLCgRegister.pas
                             Added more stuff to RegisterClasses()
-      <li>29/04/06 - PhP  - Fixed TCgProgram.Finalize (Achim Hannes)
-      <li>24/10/04 - NelC - Added SetAsScalar for boolean input, IncludeFilePath
-      <li>10/09/04 - NelC - Added global function IsCgProfileSupported
-      <li>07/09/04 - NelC - Added TCgProgram.Precision (Cg 1.3)
-      <li>07/09/04 - NelC - Added profiles VP40, FP40 (Cg 1.3 beta 2),
+       29/04/06 - PhP  - Fixed TCgProgram.Finalize (Achim Hannes)
+       24/10/04 - NelC - Added SetAsScalar for boolean input, IncludeFilePath
+       10/09/04 - NelC - Added global function IsCgProfileSupported
+       07/09/04 - NelC - Added TCgProgram.Precision (Cg 1.3)
+       07/09/04 - NelC - Added profiles VP40, FP40 (Cg 1.3 beta 2),
                             Added option OutputCompilerWarnings
-      <li>23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
-      <li>24/03/04 - NelC - Added GetLatestProfile
-      <li>21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
+       23/04/04 - NelC - Now ManageTexture is false by default (Cg 1.2.1)
+       24/03/04 - NelC - Added GetLatestProfile
+       21/03/04 - NelC - Added TCgFragmentProgram.ManageTexture (Cg 1.2)
                             Added TCustomCgShader.IsProfileSupported
-      <li>16/02/04 - NelC - Added TCgParameter.SetParameterPointer
-      <li>13/02/04 - NelC - Replaced two overloaded TCgProgram.SetParam's with
+       16/02/04 - NelC - Added TCgParameter.SetParameterPointer
+       13/02/04 - NelC - Replaced two overloaded TCgProgram.SetParam's with
                             SetStateMatrix and SetTexture
-      <li>05/02/04 - NelC - Fixed type checking for Half and Fixed,
+       05/02/04 - NelC - Fixed type checking for Half and Fixed,
                             Added TCgParameter.SetToTextureOf
-      <li>01/02/04 - NelC - Now reports source CgProgram or CgParameter of errors
-      <li>20/01/04 - NelC - Updated shader event handlers with Sender object,
+       01/02/04 - NelC - Now reports source CgProgram or CgParameter of errors
+       20/01/04 - NelC - Updated shader event handlers with Sender object,
                             Fixed dynamic array passing bug in CheckValueType
-      <li>03/01/04 - NelC - Shortened event handler names using 'VP' and 'FP',
+       03/01/04 - NelC - Shortened event handler names using 'VP' and 'FP',
                             Added TCustomCgShader.LoadShaderPrograms, TCgProgram.SetParam,
                             Minor change in texture type checking
-      <li>01/08/03 - NelC - Simplified type checking in SetAsStateMatrix
-      <li>04/07/03 - NelC - Added TCustomCgShader.OnInitialize,
+       01/08/03 - NelC - Simplified type checking in SetAsStateMatrix
+       04/07/03 - NelC - Added TCustomCgShader.OnInitialize,
                             Moved VertexProgram & FragmentProgram of TCustomCgShader
                             to published for easy acccess from OnInitialize
-      <li>02/07/03 - NelC - Added more value-setting methods
-      <li>01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks
-      <li>27/06/03 - NelC - Added value-setting functions for TCgParameter,
+       02/07/03 - NelC - Added more value-setting methods
+       01/07/03 - NelC - TCgProgram.ListCompilation now outputs line breaks
+       27/06/03 - NelC - Added value-setting functions for TCgParameter,
                             TCgProgram.DirectParamByName & DirectProfile, and
                             Profile property for TCgVertexProgram & TCgFragmentProgram
-      <li>24/06/03 - NelC - Initial adoptation to Cg 1.1 Final. Now automatically
+       24/06/03 - NelC - Initial adoptation to Cg 1.1 Final. Now automatically
                             uses latest hardware-supported profile and use callback
                             to show error message
-      <li>29/05/03 - RoC - Cg 1.1 Depreciated_api compatible
-      <li>25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
-      <li>19/06/02 - EG - Improved OO wrapper
-      <li>18/06/02 - EG - Creation
-   </ul></font>
+       29/05/03 - RoC - Cg 1.1 Depreciated_api compatible
+       25/09/02 - EG - Cg Beta 2/2.1 compatible, now uses ARBVP
+       19/06/02 - EG - Improved OO wrapper
+       18/06/02 - EG - Creation
+    
 }
 unit GLCgShader;
 
 interface
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
-  // GLScene
+  Classes, SysUtils,
+  // GLS
   GLVectorGeometry, GLVectorLists, GLVectorTypes, GLTexture, GLStrings,
   GLCadencer, OpenGLTokens, GLCrossPlatform, GLContext, GLBaseClasses,
   GLRenderContextInfo, GLMaterial, GLTextureFormat,

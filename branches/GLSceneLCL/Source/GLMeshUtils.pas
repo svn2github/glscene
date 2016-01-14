@@ -4,24 +4,24 @@
 {
    General utilities for mesh manipulations.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
-      <li>20/05/10 - Yar - Fixes for Linux x64
-      <li>26/02/10 - Yar - Added functions to work with adjacent triangles
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
-      <li>29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
-      <li>05/03/03 - EG - Added RemapIndicesToIndicesMap
-      <li>20/01/03 - EG - Added UnifyTrianglesWinding
-      <li>15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
-      <li>13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
+	 History :  
+       10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
+       20/05/10 - Yar - Fixes for Linux x64
+       26/02/10 - Yar - Added functions to work with adjacent triangles
+       30/03/07 - DaStr - Added $I GLScene.inc
+       29/07/03 - PVD - Fixed bug in RemapReferences limiting lists to 32768 items   
+       29/07/03 - SG - Fixed small bug in ConvertStripToList (indexed vectors variant)
+       05/03/03 - EG - Added RemapIndicesToIndicesMap
+       20/01/03 - EG - Added UnifyTrianglesWinding
+       15/01/03 - EG - Added ConvertStripToList, ConvertIndexedListToList
+       13/01/03 - EG - Added InvertTrianglesWinding, BuildNonOrientedEdgesList,
                           SubdivideTriangles 
-      <li>10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
-      <li>04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
-      <li>02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
+       10/03/02 - EG - Added WeldVertices, RemapTrianglesIndices and IncreaseCoherency
+       04/11/01 - EG - Optimized RemapAndCleanupReferences and BuildNormals
+       02/11/01 - EG - BuildVectorCountOptimizedIndices three times faster,
                           StripifyMesh slightly faster
-	   <li>18/08/01 - EG - Creation
-	</ul></font>
+	    18/08/01 - EG - Creation
+	 
 }
 unit GLMeshUtils;
 
@@ -61,7 +61,7 @@ procedure ConvertIndexedListToList(const data : TAffineVectorList;
 {: Builds a vector-count optimized indices list.<p>
    The returned list (to be freed by caller) contains an "optimized" indices
    list in which duplicates coordinates in the original vertices list are used
-   only once (the first available duplicate in the list is used).<br>
+   only once (the first available duplicate in the list is used). 
    The vertices list is left untouched, to remap/cleanup, you may use the
    RemapAndCleanupReferences function. }
 function BuildVectorCountOptimizedIndices(const vertices : TAffineVectorList;
@@ -84,9 +84,9 @@ procedure RemapAndCleanupReferences(reference : TAffineVectorList;
 {: Creates an indices map from a remap list.<p>
    The remap list is what BuildVectorCountOptimizedIndices, a list of indices
    to distinct/unique items, the indices map contains the indices of these items
-   after a remap and cleanup of the set referred by remapIndices... Clear?<br>
+   after a remap and cleanup of the set referred by remapIndices... Clear? 
    In short it takes the output of BuildVectorCountOptimizedIndices and can change
-   it to something suitable for RemapTrianglesIndices.<br>
+   it to something suitable for RemapTrianglesIndices. 
    Any simpler documentation of this function welcome ;) }
 function RemapIndicesToIndicesMap(remapIndices : TIntegerList) : TIntegerList;
 
@@ -115,7 +115,7 @@ function BuildNormals(reference : TAffineVectorList;
 
 {: Builds a list of non-oriented (non duplicated) edges list.<p>
    Each edge is represented by the two integers of its vertices,
-   sorted in ascending order.<br>
+   sorted in ascending order. 
    If not nil, triangleEdges is filled with the 3 indices of the 3 edges
    of the triangle, the edges ordering respecting the original triangle
    orientation. }
@@ -141,9 +141,9 @@ procedure WeldVertices(vertices : TAffineVectorList;
 {: Attempts to create as few as possible triangle strips to cover the mesh.<p>
    The indices parameters define a set of triangles as a set of indices to
    vertices in a vertex pool, free of duplicate vertices (or resulting
-   stripification will be of lower quality).<br>
+   stripification will be of lower quality). 
    The function returns a list of TIntegerList, each of these lists hosting
-   a triangle strip, returned objects must be freed by caller.<br>
+   a triangle strip, returned objects must be freed by caller. 
    If agglomerateLoneTriangles is True, the first of the lists actually contains
    the agglomerated list of the triangles that couldn't be stripified. }
 function StripifyMesh(indices : TIntegerList; maxVertexIndex : Integer;

@@ -7,16 +7,16 @@
   The object-space elevation bumpmap can be used for dynamic terrain lighting.<p>
   A bumpmap texture is generated for each terrain tile, and placed into a TGLMaterialLibrary.
 
-  <b>History : </b><font size=-1><ul>
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>22/01/10 - Yar - Added GLTextureFormat to uses
-  <li>13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
+   History :  
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   22/04/10 - Yar - Fixes after GLState revision
+   22/01/10 - Yar - Added GLTextureFormat to uses
+   13/02/07 - LIN- Thread-safe, for use with TGLAsyncHDS
   Also takes advantage of texture-coodrinates, calculated by HeightDataSource
-  <li>02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
+   02/02/07 - LIN- GLBumpmapHDS is now derived from THeightDataSourceFilter.
   HeightDataSource replaces ElevationHDS.
   (More efficient, since it no longer has to copy and release the entire Source HDS's THeightData object.)
-  <li>01/02/07 - LIN- Added 'MaxTextures' property.
+   01/02/07 - LIN- Added 'MaxTextures' property.
   if the MaterialLibrary.Materials.Count > MaxTextures, then unused textures are deleted.
   Set MaxTextures=0 to disable Auto-deletes, and manage your normal-map textures manually.
 
@@ -24,16 +24,16 @@
   then HeightData does NOT register the texture as being used.
   So make sure MaxTextures=0 if you use MaterialName.
 
-  <li>25/01/07 - LIN- Replaced 'StartPreparingData' and 'GenerateBumpmap' functions.
+   25/01/07 - LIN- Replaced 'StartPreparingData' and 'GenerateBumpmap' functions.
   Now supports a TGLBitmap with multiple tiles.
   Now works with HeightTileFileHDS.
   World texture coordinates for individual textures are now calculated,
   (TGLLibMaterial.TextureOffset and TGLLibMaterial.TextureScale)
   Bugfix: Terrain position no longer jumps when InfiniteWrap is turned off.
-  <li>15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
-  <li>20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
-  <li>20/02/04 - EG - Creation
-  </ul></font>
+   15/04/04 - EG - Fixed hdsNone support (Phil Scadden)
+   20/03/04 - EG - Works, reasonnably seamless but still quite inefficient
+   20/02/04 - EG - Creation
+   
 }
 unit GLBumpmapHDS;
 

@@ -4,15 +4,15 @@
 {
    MD2 file loader
 
-   <b>History :
-      <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
-      <li>04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Added explicit pointer dereferencing
+    History :
+       28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
+       04/03/10 - DanB - TFileMD2.LoadFromStream now uses CharInSet
+       31/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>25/08/03 - Php - Added FreeLists & degibbered LoadFromStream
-      <li>21/07/00 - Egg - Added frame names (Roger Cao/Carlos A. Rivero)
-      <li>07/06/00 - Egg - Added Header, reduced dependencies,
+       25/08/03 - Php - Added FreeLists & degibbered LoadFromStream
+       21/07/00 - Egg - Added frame names (Roger Cao/Carlos A. Rivero)
+       07/06/00 - Egg - Added Header, reduced dependencies,
                            LoadFromFile replaced with LoadFromStream,
                            some cleanup & optimizations
 
@@ -88,7 +88,7 @@ type
   end;
 
   TIndexList = array of TMD2VertexIndex;
-  TVertexList = array of array of TVector3f;
+  TGLVertexList = array of array of TVector3f;
 
 
 type
@@ -102,7 +102,7 @@ type
     procedure FreeLists;
   public
     fIndexList : TIndexList;
-    fVertexList : TVertexList;
+    fVertexList : TGLVertexList;
     FrameNames : TStrings;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -112,7 +112,7 @@ type
     property iTriangles: longInt read FiTriangles;
 
     property IndexList: TIndexList read fIndexList;
-    property VertexList: TVertexList read fVertexList;
+    property VertexList: TGLVertexList read fVertexList;
   end;
 
 // ------------------------------------------------------------------

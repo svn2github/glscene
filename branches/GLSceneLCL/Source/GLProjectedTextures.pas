@@ -4,18 +4,18 @@
 {
    Implements projected textures through a GLScene object.
 
-   <b>History : </b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+    History :  
+       10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>15/06/05 - Mathx - Added the Style property and inverse rendering
-      <li>07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
-      <li>01/10/04 - SG - Initial (by Matheus Degiovani)
-   </ul></font>
+       15/06/05 - Mathx - Added the Style property and inverse rendering
+       07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
+       01/10/04 - SG - Initial (by Matheus Degiovani)
+    
 }
 unit GLProjectedTextures;
 
@@ -34,17 +34,17 @@ uses
   GLState;
 
 type
-  {: Possible styles of texture projection. Possible values:<ul>
-     <li>ptsOriginal: Original projection method (first pass,
+  {: Possible styles of texture projection. Possible values: 
+      ptsOriginal: Original projection method (first pass,
          is default scene render, second pass is texture
          projection).
-     <li>ptsInverse: Inverse projection method (first pass
+      ptsInverse: Inverse projection method (first pass
          is texture projection, sencond pass is regular scene
          render). This method is useful if you want to simulate
          lighting only through projected textures (the textures
          of the scene are "masked" into the white areas of
          the projection textures).
-     </ul> }
+       }
   TGLProjectedTexturesStyle = (ptsOriginal, ptsInverse);
 
   TGLProjectedTextures = class;

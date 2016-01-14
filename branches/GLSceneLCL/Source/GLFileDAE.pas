@@ -4,11 +4,11 @@
 {
    Quake2 MD2 vector file format implementation.<p>
 
-	<b>History :</b><font size=-1><ul>
-      <li>17/01/14 - PW - Bugfixed for XE5
-      <li>16/01/14 - PW - Added $I GLScene.inc
-      <li>15/01/14 - PW - Creation
-	</ul></font>
+	 History : 
+       17/01/14 - PW - Bugfixed for XE5
+       16/01/14 - PW - Added $I GLScene.inc
+       15/01/14 - PW - Creation
+	 
 }
 unit GLFileDAE;
 
@@ -27,10 +27,10 @@ type
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap).<p>}
-   TGLDAEVectorFile = class(TVectorFile)
+   TGLDAEVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -48,7 +48,7 @@ implementation
 
 // Capabilities
 //
-class function TGLDAEVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLDAEVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;

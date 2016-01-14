@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   <b>History : </b><font size=-1><ul>
-    <li>03/04/11 - Yar - Added three project wizard for Delphi
-    <li>05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
-    <li>23/08/10 - Yar - Creation
- </ul></font>
+    History :  
+     03/04/11 - Yar - Added three project wizard for Delphi
+     05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
+     23/08/10 - Yar - Creation
+  
 }
 
 unit GLSceneFormDesign;
@@ -1952,7 +1952,7 @@ begin
 
  AProject.MainFile.SetSourceText(NewSource);
 
- AProject.AddPackageDependency('glscene_designtime');
+ AProject.AddPackageDependency('glscenelcl_designtime');
 
  AProject.Flags := AProject.Flags - [pfMainUnitHasCreateFormStatements,
  pfMainUnitHasTitleStatement,
@@ -2063,7 +2063,7 @@ begin
   inherited Create;
   Name:=rBaseFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscene_designtime' ;
+  RequiredPackages:= 'glscenelcl_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;
@@ -2150,7 +2150,7 @@ begin
   inherited Create;
   Name:=rSimpleFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscene_designtime' ;
+  RequiredPackages:= 'glscenelcl_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;
@@ -2280,7 +2280,7 @@ begin
   inherited Create;
   Name:=rExtendedFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscene_designtime' ;
+  RequiredPackages:= 'glscenelcl_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;

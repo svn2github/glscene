@@ -5,15 +5,15 @@
    Implements a multi-proxy object, useful for discreet LOD.<p>
    Allows assign a unique material for each proxy master.<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
+    History :  
+       30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       22/04/10 - Yar - Fixes after GLState revision
+       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
                               TGLMaterialMultiProxyMaster (BugTracker ID = 1938988)
-      <li>25/03/07 - Added GLCrossPlatform to uses for Delphi5 compatibility
-      <li>17/02/07 - DaStr - Initial version (contributed to GLScene)
-    </ul></font>     
+       25/03/07 - Added GLCrossPlatform to uses for Delphi5 compatibility
+       17/02/07 - DaStr - Initial version (contributed to GLScene)
+          
 
   What changed compared to GLMultiProxy:
     1) Allows assign a unique material for each proxy master
@@ -43,12 +43,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
+  Classes, SysUtils,
   // GLScene
   GLScene, GLVectorGeometry, GLTexture, GLMaterial, GLSilhouette, GLStrings,
   GLCrossPlatform, GLPersistentClasses, GLRenderContextInfo, GLBaseClasses,

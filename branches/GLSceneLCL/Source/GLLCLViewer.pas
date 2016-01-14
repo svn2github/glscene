@@ -4,24 +4,24 @@
 {
   A FPC specific Scene viewer.
 
-  <b>History : </b><font size=-1><ul>
-      <li>02/06/10 - Yar - Fixes for Linux x64
-      <li>28/04/10 - Yar - Fixed conditions for windows platform
+   History :  
+       02/06/10 - Yar - Fixes for Linux x64
+       28/04/10 - Yar - Fixed conditions for windows platform
                            Added Render method
                            (by Rustam Asmandiarov aka Predator)
-      <li>02/04/10 - Yar - Bugfix bad graphics under Windows
+       02/04/10 - Yar - Bugfix bad graphics under Windows
                            (by Rustam Asmandiarov aka Predator)
-      <li>22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
+       22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
                               properties (thanks Yury Plashenkov)
-      <li>07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
+       07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
                              (thanks Predator)
-      <li>13/07/09 - DanB - added the FieldOfView property + reduced OpenGL dependencies
-      <li>10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
+       13/07/09 - DanB - added the FieldOfView property + reduced OpenGL dependencies
+       10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
                               (thanks z80maniac) (Bugtracker ID = 1936108)
-      <li>12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
+       12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
                               to GLViewer.pas (Bugtracker ID = 1786279)
-      <li>04/06/04 -  EG   - Created from GLWin32Viewer
-  </ul></font>
+       04/06/04 -  EG   - Created from GLWin32Viewer
+   
 }
 unit GLLCLViewer;
 

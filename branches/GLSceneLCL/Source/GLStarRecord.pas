@@ -4,9 +4,9 @@
 {
    Unit to interface with simple star records aimed for background skies.<p>
 
-	<b>History : </b><font size=-1><ul>
-	   <li>05/07/03 - EG - Creation
-	</ul></font>
+	 History :  
+	    05/07/03 - EG - Creation
+	 
 }
 unit GLStarRecord;
 

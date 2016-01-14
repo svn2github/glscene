@@ -11,22 +11,22 @@
 
    Adapted to pascal by Eric Grange (egrange@glscene.org), if you find
    errors, they are probably mine. Note that contrary to the original code,
-   the functions accept 'zero' values for any of the parameters.<br>
+   the functions accept 'zero' values for any of the parameters. 
    I also made some changes for certain limit cases that (seemingly) weren't
    properly handled, these are marked by comments in the code.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed Polynomials to GLPolynomials
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+	 History :  
+       10/12/14 - PW - Renamed Polynomials to GLPolynomials
+       30/03/07 - DaStr - Added $I GLScene.inc
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>21/07/02 - EG - Added MinPositiveCoef
-      <li>14/01/02 - EG - Switched to Jochen Schwarze's solver,
+       21/07/02 - EG - Added MinPositiveCoef
+       14/01/02 - EG - Switched to Jochen Schwarze's solver,
                           droped complex stuff,
                           added utility funcs 
-      <li>22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
-	   <li>21/08/01 - EG - Creation
-	</ul></font>
+       22/08/01 - EG - Some fixes, qtcrt still no up to what I expected
+	    21/08/01 - EG - Creation
+	 
    In progress.	
 }
 unit GLPolynomials;
@@ -56,17 +56,17 @@ function MinPositiveCoef(const coefs : TDoubleArray; var aMin : Double) : Boolea
 function cbrt(const x : Double) : Double;
 
 {: Computes the real roots of a real polynomial of the 2nd degree.<p>
-   The polynomial is of the form:<br>
+   The polynomial is of the form: 
    A(0) + A(1)*Z + A(2)*Z**2 }
 function SolveQuadric(const c : PDoubleArray) : TDoubleArray;
 
 {: Computes the real roots of a real polynomial of the 3rd degree.<p>
-   The polynomial is of the form:<br>
+   The polynomial is of the form: 
    A(0) + A(1)*Z + A(2)*Z**2 + A(3)*Z**3 }
 function SolveCubic(const c : PDoubleArray) : TDoubleArray;
 
 {: Computes the real roots of a real polynomial of the 4th degree.<p>
-   The polynomial is of the form:<br>
+   The polynomial is of the form: 
    A(0) + A(1)*Z + ... + A(4)*Z**4 }
 function SolveQuartic(const c : PDoubleArray) : TDoubleArray;
 

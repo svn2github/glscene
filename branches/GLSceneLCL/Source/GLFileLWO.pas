@@ -4,16 +4,16 @@
 {
     Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
 
- <b>History : </b><font size=-1><ul>
-      <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-      <li>30/03/07 - DaStr - Added $I GLScene.inc$I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+  History :  
+       16/10/08 - UweR - Compatibility fix for Delphi 2009
+       30/03/07 - DaStr - Added $I GLScene.inc$I GLScene.inc
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>14/11/02 - EG - Added header, fixed warnings
-      <li>16/11/02 - BJ - Added smooth normals with crease angle
-      <li>17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
-      <li>17/11/02 - BJ - Added Enviroment Map Image -> Cubic Projection Map
-   </ul><p>
+       14/11/02 - EG - Added header, fixed warnings
+       16/11/02 - BJ - Added smooth normals with crease angle
+       17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
+       17/11/02 - BJ - Added Enviroment Map Image -> Cubic Projection Map
+    <p>
 
    Original code: "Brian Johns" <brianjohns1@hotmail.com>
 }
@@ -28,15 +28,15 @@ uses Classes,
   LWObjects;
 
 type
-  TGLLWOVectorFile = class(TVectorFile)
+  TGLLWOVectorFile = class(TGLVectorFile)
   private
     FLWO: TLWObjectFile;
     FPnts: TLWPnts;
     procedure AddLayr(Layr: TLWLayr; LWO: TLWObjectFile);
     procedure AddSurf(Surf: TLWSurf; LWO: TLWObjectFile);
-    procedure AddPnts(Pnts: TLWPnts; Mesh: TMeshObject);
-    procedure AddPols(Pols: TLWPols; Mesh: TMeshObject);
-    procedure AddVMap(VMap: TLWVMap; Mesh: TMeshObject);
+    procedure AddPnts(Pnts: TLWPnts; Mesh: TGLMeshObject);
+    procedure AddPols(Pols: TLWPols; Mesh: TGLMeshObject);
+    procedure AddVMap(VMap: TLWVMap; Mesh: TGLMeshObject);
   public
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -82,11 +82,11 @@ type
 procedure TGLLWOVectorFile.AddLayr(Layr: TLWLayr; LWO: TLWObjectFile);
 var
   Idx: Integer;
-  Mesh: TMeshObject;
+  Mesh: TGLMeshObject;
   Pnts: TLWPnts;
 begin
   // Add mesh
-  Mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+  Mesh := TGLMeshObject.CreateOwned(Owner.MeshObjects);
 
   with Mesh do
   begin
@@ -122,7 +122,7 @@ begin
   FPnts := nil;
 end;
 
-procedure TGLLWOVectorFile.AddPnts(Pnts: TLWPnts; Mesh: TMeshObject);
+procedure TGLLWOVectorFile.AddPnts(Pnts: TLWPnts; Mesh: TGLMeshObject);
 var
   i: Integer;
 begin
@@ -139,7 +139,7 @@ begin
   end;
 end;
 
-procedure TGLLWOVectorFile.AddPols(Pols: TLWPols; Mesh: TMeshObject);
+procedure TGLLWOVectorFile.AddPols(Pols: TLWPols; Mesh: TGLMeshObject);
 var
   Idx: Integer;
   i, j, k, PolyIdx, NormIdx: Integer;
@@ -412,7 +412,7 @@ begin
 
 end;
 
-procedure TGLLWOVectorFile.AddVMap(VMap: TLWVMap; Mesh: TMeshObject);
+procedure TGLLWOVectorFile.AddVMap(VMap: TLWVMap; Mesh: TGLMeshObject);
 var
   i: integer;
 begin

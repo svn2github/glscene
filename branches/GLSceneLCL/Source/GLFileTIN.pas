@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {   TIN (Triangular Irregular Network) vector file format implementation.<p>
-  <b>History :</b><font size=-1><ul>
-      <li>08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
-      <li>17/11/05 - PW - Added support for ascii TIN files with materials
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
-	</ul></font>
+   History : 
+       08/04/13 - PW - Fixed a bug in VertArr: decremented element numbers by one
+       17/11/05 - PW - Added support for ascii TIN files with materials
+       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+	 
 }
 unit GLFileTIN;
 
@@ -25,10 +25,10 @@ type
       It is a simple text format, with one triangle record per line, no materials,
       no texturing (there may be more, but I never saw anything in this files).<p>
       This format is encountered in the DEM/DTED world and used in place of grids. }
-   TGLTINVectorFile = class(TVectorFile)
+   TGLTINVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -48,7 +48,7 @@ uses
 
 // Capabilities
 //
-class function TGLTINVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLTINVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -59,7 +59,7 @@ procedure TGLTINVectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    sl, tl : TStringList;
-   mesh : TMeshObject;
+   mesh : TGLMeshObject;
    v1, v2, v3, n : TAffineVector;
    ActiveTin : Boolean;
    Id_Tin : Integer;
@@ -75,7 +75,7 @@ begin
   tl := TStringList.Create;
   try
     sl.LoadFromStream(aStream);
-    mesh      := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh      := TGLMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode := momTriangles;
     if sl[0]<>'TIN' then    // the file with single TIN described by vertices only
     begin

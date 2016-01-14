@@ -5,9 +5,9 @@
    Lattice shader that simulate Lattice.<p>
    At this time only one light source is supported
 
-   <b>History : </b><font size=-1><ul>
-    <li>08/12/15 - J.Delauney - Made compatible with the latest SVN version of GLScene
-    <li>02/11/06 - Da Stranger - Creation
+    History :  
+     08/12/15 - J.Delauney - Made compatible with the latest SVN version of GLScene
+     02/11/06 - Da Stranger - Creation
 }
 
 

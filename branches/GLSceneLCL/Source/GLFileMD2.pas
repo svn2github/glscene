@@ -4,10 +4,10 @@
 {
    Quake2 MD2 vector file format implementation.<p>
 
-	<b>History :</b><font size=-1><ul>
-      <li>28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
+	 History : 
+       28/08/10 - Yar - Bugfix for FPC 2.5.1 (Thanks Predator)
+       31/03/07 - DaStr - Added $I GLScene.inc
+       05/06/03 - SG - Separated from GLVectorFileObjects.pas
 
 }
 unit GLFileMD2;
@@ -29,10 +29,10 @@ type
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap).<p>
       Based on code by Roger Cao. }
-   TGLMD2VectorFile = class(TVectorFile)
+   TGLMD2VectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -53,7 +53,7 @@ implementation
 
 // Capabilities
 //
-class function TGLMD2VectorFile.Capabilities : TDataFileCapabilities;
+class function TGLMD2VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;

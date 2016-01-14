@@ -4,17 +4,17 @@
    Base classes and structures for GLScene.<p>
 
    Most common functions/procedures come in various flavours (using overloads),
-   the naming convention is :<ul>
-   <li>TypeOperation: functions returning a result, or accepting a "var" as last
+   the naming convention is : 
+    TypeOperation: functions returning a result, or accepting a "var" as last
       parameter to place result (VectorAdd, VectorCrossProduct...)
-   <li>OperationType : procedures taking as first parameter a "var" that will be
+    OperationType : procedures taking as first parameter a "var" that will be
       used as operand and result (AddVector, CombineVector...)
-   </ul><p>
+    <p>
    As a general rule, procedures implementations (asm or not) are the fastest
    (up to 800% faster than function equivalents), due to reduced return value
    duplication overhead (the exception being the matrix operations).<p>
 
-   For better performance, it is recommended <b>not</b> to use the "Math" unit
+   For better performance, it is recommended  not  to use the "Math" unit
    that comes with Delphi, and only use functions/procedures from this unit
    (the single-based functions have been optimized and are up to 100% faster,
    than extended-based ones from "Math").<p>
@@ -29,145 +29,145 @@
    routines if you want to support these. All AMD processors after K5, and
    all Intel processors after Pentium should be immune to this.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>10/12/14 - PW - Renamed "VectorGeometry.pas" to "GLVectorGeometry.pas"
-      <li>20/11/12 - PW - Added CPP compatibility using records instead arrays for vectors,
+	 History :  
+       10/12/14 - PW - Renamed "VectorGeometry.pas" to "GLVectorGeometry.pas"
+       20/11/12 - PW - Added CPP compatibility using records instead arrays for vectors,
                           moved IsPointInPolygon from GLGizmoEx;
-      <li>05/06/12 - Maverick - Added SegmentPlaneIntersection routine
-      <li>10/05/12 - Maverick - Added quad/disk intersection routines,
+       05/06/12 - Maverick - Added SegmentPlaneIntersection routine
+       10/05/12 - Maverick - Added quad/disk intersection routines,
                                 c3PIdiv2 constant, some asm blocks
-      <li>10/05/12 - Maverick - Added plane/triangle intersection routines,
+       10/05/12 - Maverick - Added plane/triangle intersection routines,
                                 overloaded plane routines, linelinedistance routine
-      <li>28/03/12 - Maverick - Added IsColinear test and Vector2d dot product
-      <li>19/12/11 - Yar - Added VectorAdd for 2d vector (thanks microalexx)
+       28/03/12 - Maverick - Added IsColinear test and Vector2d dot product
+       19/12/11 - Yar - Added VectorAdd for 2d vector (thanks microalexx)
 
-      <li>10/06/11 - DaStr - Added some Vector2f routines
+       10/06/11 - DaStr - Added some Vector2f routines
                              Overloaded some procedures to accept both 3f and 4f vectors
                              Marked some methods as inline
                              Added SignStrict, MoveObjectAround(), GetSafeTurnAngle(),
                              RectanglesIntersect(), RectangleContains(),
                              AngleBetweenVectors(), ShiftObjectFromCenter()  
-      <li>11/05/11 - Yar - Added ClampInteger        
-      <li>25/11/10 - DaStr - Added InterpolateExp() and itExp mode
-      <li>04/11/10 - DaStr - Removed duplicate standard type definitions
-      <li>09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
+       11/05/11 - Yar - Added ClampInteger        
+       25/11/10 - DaStr - Added InterpolateExp() and itExp mode
+       04/11/10 - DaStr - Removed duplicate standard type definitions
+       09/08/10 - Yar - Added CreateLookAtMatrix, CreateMatrixFromFrustum, CreatePerspectiveMatrix, 
                            CreateOrthoMatrix, CreatePickMatrix, Project, UnProject
-      <li>14/06/10 - Yar - Added VectorArrayLerp for TTexPointArray
-      <li>06/06/10 - Yar - Fixed warnings for FPC
-      <li>15/04/10 - Yar - Bugfixed vector normalization on Intel processors
+       14/06/10 - Yar - Added VectorArrayLerp for TTexPointArray
+       06/06/10 - Yar - Fixed warnings for FPC
+       15/04/10 - Yar - Bugfixed vector normalization on Intel processors
                            (thanks mif) (BugTracker ID = 2987779)
-      <li>02/04/10 - Yar - Added inline directive for small vector operations
-      <li>12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
-      <li>09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
+       02/04/10 - Yar - Added inline directive for small vector operations
+       12/03/09 - DanB - Added overloaded versions of IsVolumeClipped
+       09/10/08 - DanB - moved TRenderContextClippingInfo + IsVolumeClipped functions that
                             use TRenderContextClippingInfo to GLRenderContextInfo.pas
-      <li>21/02/07 - DaStr - Bugfixed InterpolatePower() to support negative Base
+       21/02/07 - DaStr - Bugfixed InterpolatePower() to support negative Base
                                and not round Exponent parameters
-      <li>12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett
-      <li>12/02/08 - Mrqzzz - Dave Gravel added const cPIdiv360 to fix ResetAndPitchTurnRoll
-      <li>18/11/07 - DaStr - Added MatrixInvert(), VectorDivide() functions
-      <li>19/09/07 - DaStr - Added AddPoint() and PointAdd() procedures
-      <li>18/09/07 - DaStr - Added two more overloaded versions of VectorScale()
-      <li>29/08/07 - LC - Fixed BarycentricCoordinates to work with triangles in yz plane 
-      <li>27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
+       12/02/08 - Mrqzzz - Removed cPIdiv360, not needed anymore, by Pete,Dan Bartlett
+       12/02/08 - Mrqzzz - Dave Gravel added const cPIdiv360 to fix ResetAndPitchTurnRoll
+       18/11/07 - DaStr - Added MatrixInvert(), VectorDivide() functions
+       19/09/07 - DaStr - Added AddPoint() and PointAdd() procedures
+       18/09/07 - DaStr - Added two more overloaded versions of VectorScale()
+       29/08/07 - LC - Fixed BarycentricCoordinates to work with triangles in yz plane 
+       27/08/07 - DaStr - Bugfixed VectorAffineFltToDbl and VectorFltToDbl
                              (thanks Biot!) (BugTracker ID = 1782005)
-      <li>23/08/07 - LC - Added BarycentricCoordinates
-      <li>16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in "VectorTypes.pas")
-      <li>25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
+       23/08/07 - LC - Added BarycentricCoordinates
+       16/04/07 - DaStr - Removed TMatrix[3/4][w/e] types (declared in "VectorTypes.pas")
+       25/03/07 - DaStr - Replaced Types with GLCrossPlatform for Delphi 5 support
                              Added YZHmgVector and XZHmgVector
-      <li>21/03/07 - DaStr - Bugfixed MatrixDecompose
+       21/03/07 - DaStr - Bugfixed MatrixDecompose
                              (thanks Burkhard Carstens) (BugTrackerID=1684438)
-      <li>06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
-      <li>03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
+       06/03/07 - DaStr - Added InterpolateXXX and MatrixLerp functions
+       03/03/07 - DaStr - Added [Vector/Matrix/Rect]Equals, Vector[2/3/4][i/f/s/b/d]Make
                              Added Vector[More/Less](Equal)Then
-      <li>15/02/07 - DaStr - Returned to old code formating style
-      <li>29/01/07 - DaStr - Added IntersectSphereBox (Thanks to dikoe Kenguru)
-      <li>23/01/07 - fig - Added TexpointEquals() function
-      <li>13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
+       15/02/07 - DaStr - Returned to old code formating style
+       29/01/07 - DaStr - Added IntersectSphereBox (Thanks to dikoe Kenguru)
+       23/01/07 - fig - Added TexpointEquals() function
+       13/01/07 - DaStr - Added RayCastBoxIntersect and IntersectTriangleBox (Thanx to dikoe Kenguru)
                              Deleted types that were duplicated  (BugTrackerID = 1586318),
                              some other types moved to "VectorTypes.pas" unit
-      <li>07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
-      <li>02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
+       07/04/06 - DB - Fixed VectorArrayLerp_3DNow (affine) for n<=1 (dikoe Kenguru)
+       02/12/04 - MF - Added IsVolumeClipped overload that uses Frustum instead
                           of rcci
-      <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
+       02/08/04 - LR, YHC - BCB corrections: use record instead array
                                move PAffineVectorArray, PVectorArray and PMatrixArray to "VectorTypes.pas" Unit
-      <li>08/07/04 - LR - Removed ../ from the GLScene.inc
-      <li>26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
-      <li>17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
-      <li>13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
-      <li>21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
-      <li>04/07/03 - EG - New VectorCombine overload, some optimizations
-      <li>18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
+       08/07/04 - LR - Removed ../ from the GLScene.inc
+       26/10/03 - EG - Renamed from "Geometry.pas" to "VectorGeometry.pas"
+       17/10/03 - EG - Optimized Min/MaxInteger, some of the Min/MaxFloat
+       13/08/03 - SG - Added TQuaternionArray, PQuaternionArray and PQuaternion
+       21/07/03 - EG - Added RoundInt, faster Round/Round64, updated Power
+       04/07/03 - EG - New VectorCombine overload, some optimizations
+       18/06/03 - MF - Added PointSegmentClosestPoint, PointSegmentDistance,
                           PointLineClosestPoint and PointLineDistance.
-      <li>26/05/03 - EG - NO_ASM variant creation completed
-      <li>22/05/03 - EG - All vSIMD asm tests should now be under GEOMETRY_NO_ASM control
-      <li>20/05/03 - EG - Added MakeParallelProjectionMatrix
-      <li>13/05/03 - EG - 3DNow! optimization for ClampValue
-      <li>30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
-      <li>14/02/03 - EG - Added ScaleAndRound
-      <li>28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
-      <li>29/10/02 - EG - New MinFloat overloads (Bob)
-      <li>04/09/02 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
+       26/05/03 - EG - NO_ASM variant creation completed
+       22/05/03 - EG - All vSIMD asm tests should now be under GEOMETRY_NO_ASM control
+       20/05/03 - EG - Added MakeParallelProjectionMatrix
+       13/05/03 - EG - 3DNow! optimization for ClampValue
+       30/04/03 - EG - Hyperbolic trig functions (Aaron Hochwimmer)
+       14/02/03 - EG - Added ScaleAndRound
+       28/01/03 - EG - Affine matrix inversion and related functions (Dan Barlett)
+       29/10/02 - EG - New MinFloat overloads (Bob)
+       04/09/02 - EG - New Abs/Max functions, VectorTransform(affine, hmgMatrix)
                           now considers the matrix as 4x3 (was 3x3)
-      <li>21/08/02 - EG - Added Pack/UnPackRotationMatrix
-      <li>13/08/02 - EG - Added Area functions
-      <li>20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits
-      <li>05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)
-      <li>22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
-      <li>12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
-      <li>11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
-      <li>07/02/02 - EG - Added AnglePreservingMatrixInvert
-      <li>30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
-      <li>29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
-      <li>20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
-      <li>11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
-      <li>10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
+       21/08/02 - EG - Added Pack/UnPackRotationMatrix
+       13/08/02 - EG - Added Area functions
+       20/07/02 - EG - Fixed RayCastTriangleIntersect "backward" hits
+       05/07/02 - EG - Started adding non-asm variants (GEOMETRY_NO_ASM)
+       22/02/02 - EG - Temporary Quaternion fix for VectorAngleLerp
+       12/02/02 - EG - Added QuaternionFromEuler (Alex Grigny de Castro)
+       11/02/02 - EG - Non-spinned QuaternionSlerp (Alex Grigny de Castro)
+       07/02/02 - EG - Added AnglePreservingMatrixInvert
+       30/01/02 - EG - New Quaternion<->Matrix code (Alex Grigny de Castro)
+       29/01/02 - EG - Fixed AngleLerp, added DistanceBetweenAngles (Alex Grigny de Castro)
+       20/01/02 - EG - Added VectorArrayAdd, ScaleFloatArray, OffsetFloatArray
+       11/01/02 - EG - 3DNow Optim for VectorAdd (hmg)
+       10/01/02 - EG - Fixed VectorEquals ("True" wasn't Pascal compliant "1"),
                           3DNow optims for vector mormalizations (affine),
                           Added RSqrt
-      <li>04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
-      <li>13/12/01 - EG - Fixed MakeReflectionMatrix
-      <li>02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)
-      <li>22/08/01 - EG - Some new overloads
-      <li>19/08/01 - EG - Added sphere raycasting functions
-      <li>08/08/01 - EG - Added MaxFloat overloads
-      <li>24/07/01 - EG - VectorAngle renamed to VectorAngleCosine to avoid confusions
-      <li>06/07/01 - EG - Added NormalizeDegAngle
-      <li>04/07/01 - EG - Now uses "VectorTypes.pas"
-      <li>18/03/01 - EG - Added AngleLerp and NormalizeAngle
-      <li>15/03/01 - EG - Added Int, Ceil and Floor, faster "Frac"
-      <li>06/03/01 - EG - Fix in PointInPolygon by Pavel Vassiliev
-      <li>04/03/01 - EG - Added NormalizeVectorArray
-      <li>03/03/01 - EG - Added MakeReflectionMatrix
-      <li>02/03/01 - EG - New PointInPolygon code by Pavel Vassiliev
-      <li>25/02/01 - EG - Fixed 'VectorSubstract', added VectorArrayLerp and a few minors
-      <li>22/02/01 - EG - Added MinXYZ/MaxXYZ variants and Plane-Line intersection
-      <li>21/02/01 - EG - Added Sign, MinFloat & MaxFloat
-      <li>15/02/01 - EG - Faster Vector Transforms (3DNow! optimizations)
-      <li>14/02/01 - EG - Faster Matrix multiplications (3DNow! & FPU optimizations),
+       04/01/02 - EG - Updated/fixed RayCastTriangleIntersect
+       13/12/01 - EG - Fixed MakeReflectionMatrix
+       02/11/01 - EG - Faster mode for PrepareSinCosCache (by Nelson Chu)
+       22/08/01 - EG - Some new overloads
+       19/08/01 - EG - Added sphere raycasting functions
+       08/08/01 - EG - Added MaxFloat overloads
+       24/07/01 - EG - VectorAngle renamed to VectorAngleCosine to avoid confusions
+       06/07/01 - EG - Added NormalizeDegAngle
+       04/07/01 - EG - Now uses "VectorTypes.pas"
+       18/03/01 - EG - Added AngleLerp and NormalizeAngle
+       15/03/01 - EG - Added Int, Ceil and Floor, faster "Frac"
+       06/03/01 - EG - Fix in PointInPolygon by Pavel Vassiliev
+       04/03/01 - EG - Added NormalizeVectorArray
+       03/03/01 - EG - Added MakeReflectionMatrix
+       02/03/01 - EG - New PointInPolygon code by Pavel Vassiliev
+       25/02/01 - EG - Fixed 'VectorSubstract', added VectorArrayLerp and a few minors
+       22/02/01 - EG - Added MinXYZ/MaxXYZ variants and Plane-Line intersection
+       21/02/01 - EG - Added Sign, MinFloat & MaxFloat
+       15/02/01 - EG - Faster Vector Transforms (3DNow! optimizations)
+       14/02/01 - EG - Faster Matrix multiplications (3DNow! & FPU optimizations),
                           Added support for FPU-only sections
-      <li>05/02/01 - EG - Faster VectorEquals
-      <li>21/01/01 - EG - Fixed MakePoint/Vector affine variants (thx Jacques Tur)
-      <li>17/01/00 - EG - VectoAdd return type fix (thx Jacques Tur),
+       05/02/01 - EG - Faster VectorEquals
+       21/01/01 - EG - Fixed MakePoint/Vector affine variants (thx Jacques Tur)
+       17/01/00 - EG - VectoAdd return type fix (thx Jacques Tur),
                           also added a few new overloads
-      <li>05/11/00 - EG - Added RayCastPlaneIntersect
-      <li>08/10/00 - EG - Added SetMatrix
-      <li>13/08/00 - EG - Added Plane geometry support
-      <li>06/08/00 - EG - Various minor additions
-      <li>16/07/00 - EG - Added some new mixed vector/scalar funcs and new overloads
-      <li>12/07/00 - EG - New overloads and replacements for Power, Trunc, Frac & Round
-      <li>25/06/00 - EG - End of major update
-      <li>13/06/00 - EG - Start of major update
-      <li>09/06/00 - EG - Some additions and fixes in preparation for major changes
-      <li>05/06/00 - EG - Added VectorLength overloads
-      <li>26/05/00 - EG - [0..0] arrays changed to [0..cMaxArray]
-      <li>23/05/00 - EG - Added intersection functions,
+       05/11/00 - EG - Added RayCastPlaneIntersect
+       08/10/00 - EG - Added SetMatrix
+       13/08/00 - EG - Added Plane geometry support
+       06/08/00 - EG - Various minor additions
+       16/07/00 - EG - Added some new mixed vector/scalar funcs and new overloads
+       12/07/00 - EG - New overloads and replacements for Power, Trunc, Frac & Round
+       25/06/00 - EG - End of major update
+       13/06/00 - EG - Start of major update
+       09/06/00 - EG - Some additions and fixes in preparation for major changes
+       05/06/00 - EG - Added VectorLength overloads
+       26/05/00 - EG - [0..0] arrays changed to [0..cMaxArray]
+       23/05/00 - EG - Added intersection functions,
                           Replaced some xxxAffinexxx funcs with overloads
-      <li>22/03/00 - EG - Added MakeShadowMatrix (adapted from "OpenGL SuperBible" book)
-      <li>21/03/00 - EG - Removed PWordArray (was a SysUtils's duplicate)
-      <li>06/02/00 - EG - Added VectorEquals
-      <li>05/02/00 - EG - Added some "const", more still needed,
+       22/03/00 - EG - Added MakeShadowMatrix (adapted from "OpenGL SuperBible" book)
+       21/03/00 - EG - Removed PWordArray (was a SysUtils's duplicate)
+       06/02/00 - EG - Added VectorEquals
+       05/02/00 - EG - Added some "const", more still needed,
                           Added overloads for some of the MakeXXXVector funcs,
                           Added homogeneous vector consts, VectorSpacing
-   </ul>
+    
 }
 unit GLVectorGeometry;
 
@@ -397,7 +397,7 @@ type
 
    {: A plane equation.<p>
       Defined by its equation A.x+B.y+C.z+D<p>, a plane can be mapped to the
-      homogeneous space coordinates, and this is what we are doing here.<br>
+      homogeneous space coordinates, and this is what we are doing here. 
       The typename is just here for easing up data manipulation. }
    THmgPlane = TVector;
    TDoubleHmgPlane = THomogeneousDblVector;
@@ -1283,7 +1283,7 @@ procedure QuaternionToPoints(const Q: TQuaternion; var ArcFrom, ArcTo: TAffineVe
 //: Constructs a unit quaternion from a rotation matrix
 function QuaternionFromMatrix(const mat : TMatrix) : TQuaternion;
 {: Constructs a rotation matrix from (possibly non-unit) quaternion.<p>
-   Assumes matrix is used to multiply column vector on the left:<br>
+   Assumes matrix is used to multiply column vector on the left: 
    vnew = mat vold.<p>
    Works correctly for right-handed coordinate system and right-handed rotations. }
 function QuaternionToMatrix(quat : TQuaternion) : TMatrix;
@@ -1303,9 +1303,9 @@ function QuaternionFromEuler(const x, y, z: Single; eulerOrder : TEulerOrder) : 
 function QuaternionMultiply(const qL, qR : TQuaternion): TQuaternion;
 
 {: Spherical linear interpolation of unit quaternions with spins.<p>
-   QStart, QEnd - start and end unit quaternions<br>
-   t            - interpolation parameter (0 to 1)<br>
-   Spin         - number of extra spin rotations to involve<br> }
+   QStart, QEnd - start and end unit quaternions 
+   t            - interpolation parameter (0 to 1) 
+   Spin         - number of extra spin rotations to involve  }
 function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer; t: Single): TQuaternion; overload;
 function QuaternionSlerp(const source, dest: TQuaternion; const t : Single) : TQuaternion; overload;
 
@@ -1518,7 +1518,7 @@ function PolygonSignedArea(const p : PAffineVectorArray; nSides : Integer) : Sin
 
 {: Multiplies values in the array by factor.<p>
    This function is especially efficient for large arrays, it is not recommended
-   for arrays that have less than 10 items.<br>
+   for arrays that have less than 10 items. 
    Expected performance is 4 to 5 times that of a Deliph-compiled loop on AMD
    CPUs, and 2 to 3 when 3DNow! isn't available. }
 procedure ScaleFloatArray(values : PSingleArray; nb : Integer;
@@ -1620,12 +1620,12 @@ function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector; Angle
 // intersection functions
 
 {: Compute the intersection point "res" of a line with a plane.<p>
-   Return value:<ul>
-   <li>0 : no intersection, line parallel to plane
-   <li>1 : res is valid
-   <li>-1 : line is inside plane
-   </ul><br>
-   Adapted from:<br>
+   Return value: 
+    0 : no intersection, line parallel to plane
+    1 : res is valid
+    -1 : line is inside plane
+     
+   Adapted from: 
    E.Hartmann, Computeruntersttzte Darstellende Geometrie, B.G. Teubner Stuttgart 1988 }
 function IntersectLinePlane(const point, direction : TVector;
                             const plane : THmgPlane;
@@ -1733,7 +1733,7 @@ function MakeReflectionMatrix(const planePoint, planeNormal : TAffineVector) : T
 {: Packs an homogeneous rotation matrix to 6 bytes.<p>
    The 6:64 (or 6:36) compression ratio is achieved by computing the quaternion
    associated to the matrix and storing its Imaginary components at 16 bits
-   precision each.<br>
+   precision each. 
    Deviation is typically below 0.01% and around 0.1% in worst case situations.<p>
    Note: quaternion conversion is faster and more robust than an angle decomposition. }
 function PackRotationMatrix(const mat : TMatrix) : TPackedRotationMatrix;

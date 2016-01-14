@@ -4,43 +4,43 @@
 { 
   GLScene's brute-force terrain renderer.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>15/08/10 - Yar - Return missing part of code in BuildList
-  <li>20/05/10 - Yar - Fixes for Linux x64
-  <li>20/07/07 - LC - Fixed a problem when camera is far away from the terrain bounds.
+   History :  
+   10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   15/08/10 - Yar - Return missing part of code in BuildList
+   20/05/10 - Yar - Fixes for Linux x64
+   20/07/07 - LC - Fixed a problem when camera is far away from the terrain bounds.
   (Bugtracker ID = 1757733)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/03/07 - DaStr - Cosmetic fixes for FPC compatibility
-  <li>27/03/07 - Lin- Added TileManagement flags. - Helps prevent tile cache fushes.
-  <li>19/03/07 - Lin- Added IgnoredByRenderer flag to THeightData.
+   30/03/07 - DaStr - Added $I GLScene.inc
+   28/03/07 - DaStr - Cosmetic fixes for FPC compatibility
+   27/03/07 - Lin- Added TileManagement flags. - Helps prevent tile cache fushes.
+   19/03/07 - Lin- Added IgnoredByRenderer flag to THeightData.
   Helps manage duplicate tiles, when a dirty tile is being replaced.
-  <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+   16/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>08/02/07 - Lin- Ignore tiles that are not hdsReady (Prevents crashes when threading)
-  <li>30/01/07 - Lin- Added HashedTileCount - Counts the tiles in the buffer
-  <li>19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
-  <li>09/10/06 - Lin- Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
-  <li>01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>25/04/04 - EG - Occlusion testing support
-  <li>13/01/04 - EG - Leak fix (Phil Scadden)
-  <li>05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
-  <li>06/02/03 - EG - Fixed speculative range computation, better hashkey
-  <li>14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
-  <li>24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
-  <li>28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
+   08/02/07 - Lin- Ignore tiles that are not hdsReady (Prevents crashes when threading)
+   30/01/07 - Lin- Added HashedTileCount - Counts the tiles in the buffer
+   19/10/06 - LC - Changed the behaviour of OnMaxCLODTrianglesReached
+   09/10/06 - Lin- Added OnMaxCLODTrianglesReached event.(Rene Lindsay)
+   01/09/04 - SG - Fix for RayCastIntersect (Alan Rose)
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   25/04/04 - EG - Occlusion testing support
+   13/01/04 - EG - Leak fix (Phil Scadden)
+   05/11/03 - SG - Fixed minuscule bug in RayCastIntersect (thanks Michael)
+   06/02/03 - EG - Fixed speculative range computation, better hashkey
+   14/01/03 - EG - RayCastIntersect normals fix (Stuart Gooding)
+   24/09/02 - EG - Added RayCastIntersect (Stuart Gooding)
+   28/08/02 - EG - Now longer wrongly requests hdtByte (Phil Scadden),
   Terrain bounds limiting event (Erazem Polutnik)
-  <li>10/07/02 - EG - Added support for "holes" in the elevation data
-  <li>16/06/02 - EG - Added support for multi-material terrains
-  <li>24/02/02 - EG - Hybrid ROAM-stripifier engine
-  <li>18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
-  <li>12/08/01 - EG - Completely rewritten handles management
-  <li>21/07/01 - EG - Added Notication registration in SetHeightDataSource
-  <li>04/03/01 - EG - Completed for first release
-  <li>12/02/01 - EG - Creation
-  </ul></font><p>
+   10/07/02 - EG - Added support for "holes" in the elevation data
+   16/06/02 - EG - Added support for multi-material terrains
+   24/02/02 - EG - Hybrid ROAM-stripifier engine
+   18/12/01 - EG - Vertex-cache aware stripifier (+10% on GeForce)
+   12/08/01 - EG - Completely rewritten handles management
+   21/07/01 - EG - Added Notication registration in SetHeightDataSource
+   04/03/01 - EG - Completed for first release
+   12/02/01 - EG - Creation
+   <p>
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
@@ -202,7 +202,7 @@ type
       write FMaxCLODTriangles default 65536;
     { : Precision of CLOD tiles.<p>
       The lower the value, the higher the precision and triangle count.
-      Large values will result in coarse terrain.<br>
+      Large values will result in coarse terrain. 
       high-resolution tiles (closer than QualityDistance) ignore this setting. }
     property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision
       default 100;
@@ -212,13 +212,13 @@ type
       a mountain or a cliff) or by geometry that was rendered before the
       terrain (large buildings). If there is little occlusion in your scene
       (such as in top down or high-altitude view), turning occlusion on
-      may have a slightly negative effect on framerate.<br>
+      may have a slightly negative effect on framerate. 
       It works by turning off rendering of tiles for the specified number
       of frames if it has been found invisible, after FrameSkip number
       of frames have been skipped, it will be rendered again, and a new
       occlusion testing made. This makes occlusion-testing a frame-to-frame
       coherency optimization, and as such, shouldn't be used for static
-      rendering (ie. leave value to its default of zero).<br>
+      rendering (ie. leave value to its default of zero). 
       This optimization requires the hardware to support GL_NV_occlusion_query. }
     property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
       write SetOcclusionFrameSkip default 0;

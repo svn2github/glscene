@@ -11,16 +11,16 @@
    Rustam Asmandiarov (aka Predator) re-wrote TGLGizmo from scratch and 
    contributed to GLScene. This is how TGLGizmoEx was born.
 
-   <b>History : </b><font size=-1><ul>
-      <li>28/01/13 - PW - Added CPP compatibility, moved function
+    History :  
+       28/01/13 - PW - Added CPP compatibility, moved function
                           IsPointInPolygon to GLVectorgeometry unit;
-      <li>24/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>31/05/10 - Yar - Fixed warnings
-      <li>22/04/10 - Yar - Fixes after GLState revision
-      <li>05/03/10 - DanB - More state added to TGLStateCache
-      <li>17/13/2009 - DaStr - Small bugfixes (by Predator)   
-      <li>11/13/2009 - DaStr - Initial version (contributed by Predator)
-   </ul></font>
+       24/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       31/05/10 - Yar - Fixed warnings
+       22/04/10 - Yar - Fixes after GLState revision
+       05/03/10 - DanB - More state added to TGLStateCache
+       17/13/2009 - DaStr - Small bugfixes (by Predator)   
+       11/13/2009 - DaStr - Initial version (contributed by Predator)
+    
 
    
    Note: A very nice manual for TGLGizmoEx is inclued in this download:

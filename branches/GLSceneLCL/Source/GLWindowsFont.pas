@@ -4,26 +4,26 @@
 {
    TFont Import into a BitmapFont using variable width...<p>
 
-   <b>History : </b><font size=-1><ul>
-      <li>04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
-       <li>29/05/11 - Yar - Unicode support for Unix OSes (by Gabriel Corneanu)
-      <li>16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
-      <li>13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Added "VectorTypes.pas" unit to uses
-      <li>25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
+    History :  
+       04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
+        29/05/11 - Yar - Unicode support for Unix OSes (by Gabriel Corneanu)
+       16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
+       13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       06/06/10 - Yar - Added "VectorTypes.pas" unit to uses
+       25/01/10 - Yar - Bugfix in LoadWindowsFont with zero width of char
                           (thanks olkondr)
                           Replace Char to AnsiChar
-      <li>11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
-      <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-      <li>12/15/04 - Eugene Kryukov - Added TGLStoredBitmapFont
-      <li>03/07/04 - LR - Added ifdef for Graphics uses
-      <li>29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
+       11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
+       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+       12/15/04 - Eugene Kryukov - Added TGLStoredBitmapFont
+       03/07/04 - LR - Added ifdef for Graphics uses
+       29/09/02 - EG - Fixed transparency, style fixes, prop defaults fixed,
                           dropped interface dependency, texture size auto computed,
                           fixed italics spacing, uses LUM+ALPHA texture
-      <li>06/09/02 - JAJ - Fixed alot of bugs... Expecially designtime updating bugs..
-      <li>12/08/02 - JAJ - Made into a standalone unit...
- </ul></font>
+       06/09/02 - JAJ - Fixed alot of bugs... Expecially designtime updating bugs..
+       12/08/02 - JAJ - Made into a standalone unit...
+  
 }
 unit GLWindowsFont;
 
@@ -378,7 +378,7 @@ begin
 end;
 
 type
-  TFriendlyRange = class(TBitmapFontRange);
+  TFriendlyRange = class(TGLBitmapFontRange);
 
 procedure TGLWindowsBitmapFont.StreamlineRanges;
 var

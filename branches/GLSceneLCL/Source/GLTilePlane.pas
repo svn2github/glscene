@@ -4,17 +4,17 @@
 {
    Implements a tiled texture plane.<p>
 
-	<b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>30/03/07 - DaStr - Added $I GLScene.inc
-      <li>28/03/07 - DaStr - Renamed parameters in some methods
+	 History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       30/03/07 - DaStr - Added $I GLScene.inc
+       28/03/07 - DaStr - Renamed parameters in some methods
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-      <li>23/03/07 - DaStr - Added explicit pointer dereferencing
+       23/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
-      <li>23/03/04 - EG - Added NoZWrite
-      <li>09/01/04 - EG - Creation
-   </ul></font>
+       19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
+       23/03/04 - EG - Added NoZWrite
+       09/01/04 - EG - Creation
+    
 }
 unit GLTilePlane;
 
@@ -109,7 +109,7 @@ type
    //
    {: A tiled textured plane.<p>
       This plane object stores and displays texture tiles that composes it,
-      and is optimized to minimize texture switches when rendering.<br>
+      and is optimized to minimize texture switches when rendering. 
       Its bounding dimensions are determined by its painted tile. }
 	TGLTilePlane = class (TGLImmaterialSceneObject)
 	   private

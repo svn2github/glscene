@@ -6,26 +6,26 @@
 
   TODO: move the many public vars/fields to private/protected<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/14 - PW - Renamed from "Octree.pas" to "GLOctree.pas" and added ListHandle in TOctreeNode
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>28/03/07 - DaStr - Renamed parameters in some methods
+   History :  
+   10/11/14 - PW - Renamed from "Octree.pas" to "GLOctree.pas" and added ListHandle in TOctreeNode
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+   30/03/07 - DaStr - Added $I GLScene.inc
+   28/03/07 - DaStr - Renamed parameters in some methods
                         (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-  <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+   24/03/07 - DaStr - Added explicit pointer dereferencing
                         (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
-  <li>31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
-  <li>20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
-  <li>08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
-  <li>08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
-  <li>22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
-  <li>29/11/02 - EG - Added triangleInfo
-  <li>14/07/02 - EG - Dropped GLvectorFileObjects dependency
-  <li>17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
-  <li>13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
-  </ul></font>
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   19/06/04 - LucasG - Moved triangleFiler and WalkSphereToLeaf to public
+   31/01/04 - Mathx - Bugfix on DisposeTree (thanks dikoe Kanguru)
+   20/07/03 - DanB - Modified SphereSweepIntersect to deal with embedded spheres better
+   08/05/03 - DanB - name changes + added ClosestPointOnTriangle + fixes
+   08/05/03 - DanB - added AABBIntersect (Matheus Degiovani)
+   22/01/03 - EG - GetTrianglesInCube moved in (Bernd Klaiber)
+   29/11/02 - EG - Added triangleInfo
+   14/07/02 - EG - Dropped GLvectorFileObjects dependency
+   17/03/02 - EG - Added SphereIntersectAABB from Robert Hayes
+   13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
+   
 }
 unit GLOctree;
 

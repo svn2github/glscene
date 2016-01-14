@@ -4,10 +4,10 @@
 {
   Geometric objects.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
-  <li>02/09/10 - Yar - Creation
-  </ul></font>
+   History :  
+   03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
+   02/09/10 - Yar - Creation
+   
 }
 unit GLSelection;
 

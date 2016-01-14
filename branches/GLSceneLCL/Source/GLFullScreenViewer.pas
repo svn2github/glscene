@@ -19,16 +19,16 @@
   ћодуль еще не закончен! ¬ линуксе есть проблемы перехвата мыши
   и проблемы с DoActivate DoDeactivate.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>22/08/10 - DaStr - Restored backward-compatibility after previous changes
-  <li>11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
-  <li>28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
+   History :  
+   22/08/10 - DaStr - Restored backward-compatibility after previous changes
+   11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
+   28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
   (by Rustam Asmandiarov aka Predator)
-  <li>08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
-  <li>07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
-  <li>07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
-  <li>24/07/03 - EG - Creation from GLWin32Viewer split
-  </ul></font>
+   08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
+   07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
+   07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
+   24/07/03 - EG - Creation from GLWin32Viewer split
+   
 }
 unit GLFullScreenViewer;
 
@@ -37,12 +37,7 @@ interface
 {$I GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  VCL.Forms, VCL.Controls, VCL.Menus,
-{$ELSE}
   Forms, Controls, Menus,
-{$ENDIF}
-
   Classes, Messages, GLViewer, GLScene, GLContext
 {$IFDEF FPC}
     , LcLtype, LCLIntf
@@ -63,11 +58,11 @@ type
   { : A FullScreen viewer.<p>
     This non visual viewer will, when activated, use the full screen as rendering
     surface. It will also switch/restore videomode depending on the required
-    width/height.<br>
+    width/height. 
     This is performed by creating an underlying TForm and using its surface
     for rendering OpenGL, "decent" ICDs will automatically use PageFlipping
     instead of BlockTransfer (slower buffer flipping mode used for windowed
-    OpenGL).<br>
+    OpenGL). 
     Note: if you terminate the application either via a kill or in the IDE,
     the original resolution isn't restored. }
   TGLFullScreenViewer = class(TGLNonVisualViewer)

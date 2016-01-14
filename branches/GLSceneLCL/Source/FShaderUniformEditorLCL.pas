@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   <b>History : </b><font size=-1><ul>
-    <li>23/03/11 - Yar - Creation
-  </ul>
+    History :  
+     23/03/11 - Yar - Creation
+   
 }
 
 unit FShaderUniformEditorLCL;
@@ -15,14 +15,8 @@ interface
 
 uses
   lresources,
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils, System.Variants, System.Classes,
-  VCL.Graphics, VCL.Controls, VCL.Forms,
-  VCL.Dialogs, VCL.StdCtrls, VCL.ExtCtrls, VCL.Buttons,
-{$ELSE}
   SysUtils, Variants, Classes,  Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons,
-{$ENDIF}
   GLSLParameter, GLTextureFormat, GLVectorGeometry;
 
 type

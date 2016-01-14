@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>Historique : </b><font size=-1><ul>
-      <li>07/05/10 - Yar - Fixed for Linux x64
-      <li>06/05/10 - Yar - Added to GLScene (contributed by oleg matrozov)
-  </ul></font>
+  History :  
+       07/05/10 - Yar - Fixed for Linux x64
+       06/05/10 - Yar - Added to GLScene (contributed by oleg matrozov)
+   
 
 {*****************************************************************************
 *                                                                            *

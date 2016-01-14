@@ -4,45 +4,45 @@
 {
   3DStudio 3DS vector file format implementation.<p>
 
-  <b>History :</b><font size=-1><ul>
-      <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-      <li>30/06/11 - DaStr - Properly fixed range check bug  
-      <li>15/12/10 - YP - Disable and re-enable range-check only if needed
-      <li>14/12/10 - DaStr - Added a work-around for a range-check bug
+   History : 
+       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+       30/06/11 - DaStr - Properly fixed range check bug  
+       15/12/10 - YP - Disable and re-enable range-check only if needed
+       14/12/10 - DaStr - Added a work-around for a range-check bug
                              Bugfixed a case when material texture was turned on
                              when it should not be enabled
-      <li>14/10/10 - YP - Fixed rotate only vertices of TGLFile3DSMeshObject
-      <li>11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
+       14/10/10 - YP - Fixed rotate only vertices of TGLFile3DSMeshObject
+       11/10/10 - YP - New vGLFile3DS_LoadedStaticFrame option
                           Fixed ExtractTriangles when vGLFile3DS_LoadedStaticFrame is ON
                           Fixed GetExtents when vGLFile3DS_LoadedStaticFrame is ON
-      <li>07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
+       07/10/10 - YP - Fixed vGLFile3DS_FixDefaultUpAxisY
                           Fixed first frame index (it's 0 not 1)
-      <li>29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
+       29/09/10 - YP - Fixed invalid frame limits (SegBegin-SegEnd), wrong 
                           SetFrameOffset in Lerp and MorphTo, wrong Frame test
                           in InterpolateValue
-      <li>24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
-      <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-      <li>xx/xx/xx - xxx - Fixes for Linux x64
-      <li>08/11/09 - DaStr - Improved FPC compatibility
+       24/09/10 - YP - Added vGLFile3DS_FixDefaultUpAxisY global option
+       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+       xx/xx/xx - xxx - Fixes for Linux x64
+       08/11/09 - DaStr - Improved FPC compatibility
                               (thanks Predator) (BugtrackerID = 2893580)
-      <li>07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
+       07/06/08 - DaStr - Added vGLFile3DS_EnableAnimation option
                              Implemented TGLFile3DSDummyObject.ExtractTriangles()
-      <li>29/04/08 - DaStr - Fixed memory leak in TGLFile3DSCameraObject
-      <li>27/04/08 - DaStr - TGL3DSVectorFile.UseTextureEx converted into a
+       29/04/08 - DaStr - Fixed memory leak in TGLFile3DSCameraObject
+       27/04/08 - DaStr - TGL3DSVectorFile.UseTextureEx converted into a
                              global variable and disabled by default
-      <li>12/04/08 - DaStr - Added TGL3DSVectorFile.UseTextureEx option
+       12/04/08 - DaStr - Added TGL3DSVectorFile.UseTextureEx option
                              (Bugtracker ID = 1940451)
-      <li>06/04/08 - DaStr - Added animation support (by Lexer, Luca Burlizzi,
+       06/04/08 - DaStr - Added animation support (by Lexer, Luca Burlizzi,
                               Dave Gravel, mif, Oxygen and a bit myself)
-      <li>05/11/07 - DaStr - Fixed transparency issue.
-      <li>31/03/07 - DaStr - Added $I GLScene.inc
-      <li>24/03/07 - DaStr - Added explicit pointer dereferencing
+       05/11/07 - DaStr - Fixed transparency issue.
+       31/03/07 - DaStr - Added $I GLScene.inc
+       24/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-      <li>28/01/07 - DaStr - Added transparency and opacity texture support (thanks DIVON)
-      <li>09/12/04 - LR - Add Integer cast line 94 for Linux
-      <li>25/10/04 - SG - Added lightmap (3DS IllumMap) support
-      <li>05/06/03 - SG - Separated from GLVectorFileObjects.pas
-  </ul></font>
+       28/01/07 - DaStr - Added transparency and opacity texture support (thanks DIVON)
+       09/12/04 - LR - Add Integer cast line 94 for Linux
+       25/10/04 - SG - Added lightmap (3DS IllumMap) support
+       05/06/03 - SG - Separated from GLVectorFileObjects.pas
+   
 }
 unit GLFile3DS;
 
@@ -309,10 +309,10 @@ type
      Uses an upgraded version if a 3DS import library by Mike Lischke.<p>
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
-  TGL3DSVectorFile = class(TVectorFile)
+  TGL3DSVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -328,8 +328,8 @@ var
   {: If enabled, allows 3ds animation and fixes loading of some 3ds models,
      but has a few bugs:
      - TGLFreeForm.AutoCentering does now work correctly.
-     - TMeshObject.vertices return values different from
-        TMeshObject.ExtractTriangles()
+     - TGLMeshObject.vertices return values different from
+        TGLMeshObject.ExtractTriangles()
      }
   vGLFile3DS_EnableAnimation: boolean = False;
 
@@ -1677,7 +1677,7 @@ end;
 
 // Capabilities
 
-class function TGL3DSVectorFile.Capabilities: TDataFileCapabilities;
+class function TGL3DSVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

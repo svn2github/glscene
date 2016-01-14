@@ -19,27 +19,27 @@
   - SlideOrBounce: The object can bounce like a ball or slide like an FPS
   - BounceFactor: Restituition factor, 1 means that it will bounce forever
 
-  <b>History : </b><font size=-1><ul>
-    <li>21/01/01 - DanB - Added "inherited" call to TGLDCEDynamic/TGLDCEStatic.WriteToFiler
-    <li>18/09/10 - YP - Moved published behaviours' events to public (they cannot be restored by the filer)
-    <li>30/03/07 - DaStr - Added $I GLScene.inc
-    <li>29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-    <li>01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
-    <li>23/01/05 - LucasG - Code reorganized, many fixes and some new features
-    <li>19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
-    <li>17/11/04 - LucasG - Added support for static box colliders
-    <li>17/11/04 - LucasG - Added UseGravity property to behaviour
-    <li>14/11/04 - LucasG - Fixed average friction calculation
-    <li>14/11/04 - LucasG - Added AirFriction property to DCEManager
-    <li>13/11/04 - LucasG - Added Active property to behaviour
-    <li>17/11/04 - LucasG - Added support for static box colliders
-    <li>17/11/04 - LucasG - Added UseGravity property to behaviour
-    <li>14/11/04 - LucasG - Fixed average friction calculation
-    <li>14/11/04 - LucasG - Added AirFriction property to DCEManager
-    <li>13/11/04 - LucasG - Added Active property to behaviour
-    <li>03/09/04 - LucasG - First release
-    <li>29/07/04 - LucasG - Creation
-  </ul></font>
+   History :  
+     21/01/01 - DanB - Added "inherited" call to TGLDCEDynamic/TGLDCEStatic.WriteToFiler
+     18/09/10 - YP - Moved published behaviours' events to public (they cannot be restored by the filer)
+     30/03/07 - DaStr - Added $I GLScene.inc
+     29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
+     01/07/05 - MathX - Fixed memory leak on contactPoints (moveByDistance method)
+     23/01/05 - LucasG - Code reorganized, many fixes and some new features
+     19/11/04 - GAK - Added standardised collision selection (optionally use same selection criteria as other collision system)
+     17/11/04 - LucasG - Added support for static box colliders
+     17/11/04 - LucasG - Added UseGravity property to behaviour
+     14/11/04 - LucasG - Fixed average friction calculation
+     14/11/04 - LucasG - Added AirFriction property to DCEManager
+     13/11/04 - LucasG - Added Active property to behaviour
+     17/11/04 - LucasG - Added support for static box colliders
+     17/11/04 - LucasG - Added UseGravity property to behaviour
+     14/11/04 - LucasG - Fixed average friction calculation
+     14/11/04 - LucasG - Added AirFriction property to DCEManager
+     13/11/04 - LucasG - Added Active property to behaviour
+     03/09/04 - LucasG - First release
+     29/07/04 - LucasG - Creation
+   
 }
 
 unit GLDCE;
@@ -49,32 +49,26 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
-  GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
+  Classes, SysUtils,
+  GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
-  GLTerrainRenderer, GLCoordinates, GLBaseClasses, GLManager
-  , GLVectorTypes;
+  GLTerrainRenderer, GLCoordinates, GLBaseClasses, GLManager, GLVectorTypes;
 
 type
   {Only csEllipsoid can have dynamic behaviour}
   TDCEShape = (csEllipsoid, csBox, csFreeform, csTerrain);
 
   {: Indicates which type of layer comparison is made when trying to detect
-     collisions between 2 bodies (A and B). Possible values are: <ul>
-	 <li>ccsDCEStandard: Collides bodies if A.layer <= B.layer
-	 <li>ccsCollisionStandard: Collides bodies if either A or B have
+     collisions between 2 bodies (A and B). Possible values are:  
+	  ccsDCEStandard: Collides bodies if A.layer <= B.layer
+	  ccsCollisionStandard: Collides bodies if either A or B have
 		 layer equal to zero or if their layers are different.
-     <li>ccsHybrid: Collides bodies if either one of the previous
+      ccsHybrid: Collides bodies if either one of the previous
 	     checks would pass (i.e. if the layer of either body  is
 		 equal to 0 or if A.layer <= B.layer) *and* if both
 		 layers are positive (that is, turns off collision
 		 for bodies whose layer is < 0)
-	 </ul>
+	  
   }
   TDCECollisionSelection = (ccsDCEStandard, ccsCollisionStandard, ccsHybrid); // gak:20041119
 
@@ -165,7 +159,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -223,7 +217,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -606,7 +600,7 @@ begin
    inherited Assign(Source);
 end;
 
-constructor TGLDCEStatic.Create(aOwner: TXCollection);
+constructor TGLDCEStatic.Create(aOwner: TGLXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
@@ -773,7 +767,7 @@ begin
   inherited Assign(Source);
 end;
 
-constructor TGLDCEDynamic.Create(aOwner: TXCollection);
+constructor TGLDCEDynamic.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FActive := True;

@@ -2,27 +2,27 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
-  <li>21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
-  <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  <li>14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
-  <li>22/04/10 - Yar - Fixes after GLState revision
-  <li>05/03/10 - DanB - More state added to TGLStateCache
-  <li>06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-  <li>30/03/07 - DaStr - Added $I GLScene.inc
-  <li>16/03/07 - DaStr - Added explicit pointer dereferencing
+   History :  
+   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records in Render
+   21/01/11 - DanB - Added "inherited" call to TGLBThorFX.WriteToFiler
+   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+   14/06/10 - Yar - Bugfixed in TGLBThorFX.ReadFromFiler when assertion off (thanks olkondr)
+   22/04/10 - Yar - Fixes after GLState revision
+   05/03/10 - DanB - More state added to TGLStateCache
+   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
+   30/03/07 - DaStr - Added $I GLScene.inc
+   16/03/07 - DaStr - Added explicit pointer dereferencing
   (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  <li>13/02/07 - aidave - Updated Target.Style to csPoint
-  <li>23/12/04 - PhP - GLScenestyled Header
-  <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-  <li>06/04/04 - PhP - Removed property Paused use of property Disabled instead
-  <li>04/15/03 - Added initialization to CalcThor, to fix an error
+   13/02/07 - aidave - Updated Target.Style to csPoint
+   23/12/04 - PhP - GLScenestyled Header
+   02/08/04 - LR, YHC - BCB corrections: use record instead array
+   06/04/04 - PhP - Removed property Paused use of property Disabled instead
+   04/15/03 - Added initialization to CalcThor, to fix an error
   Thanks to Martin Kirsch for this solution
-  <li>12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
+   12/08/01 - EG - Dropped unused Handle allocation (leftover from FirexFX)
   Fixed leaks (colors)
-  <li>09/03/01 - René Lindsay - unit created
-  </ul></font>
+   09/03/01 - René Lindsay - unit created
+   
 }
 unit GLThorFX;
 
@@ -31,15 +31,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  {$IFDEF GLS_DELPHI_XE2_UP}
-    System.Classes, System.SysUtils,
-  {$ELSE}
-    Classes, SysUtils,
-  {$ENDIF}
-
-  GLScene, XCollection, GLVectorGeometry,
-  OpenGLTokens, GLContext, GLVectorLists
-  , GLVectorTypes,
+  Classes, SysUtils,
+  GLScene, GLXCollection, GLVectorGeometry,
+  OpenGLTokens, GLContext, GLVectorLists, GLVectorTypes,
   GLCadencer, GLColor, GLBaseClasses, GLCoordinates, GLRenderContextInfo,
   GLManager, GLState, GLTextureFormat;
 
@@ -138,7 +132,7 @@ type
     procedure SetTarget(const val: TGLCoordinates);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -434,7 +428,7 @@ end;
 
 // Create
 //
-constructor TGLBThorFX.Create(AOwner: TXCollection);
+constructor TGLBThorFX.Create(AOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
   FTarget := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));

@@ -3,14 +3,14 @@
 //
 {
 
- <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-        <li>31/05/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>16/03/10 - Yar - Improved FPC compatibility
-        <li>05/03/10 - Yar - Creation
-   </ul><p>
+  History :  
+         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+         31/05/10 - Yar - Fixes for Linux x64
+         08/05/10 - Yar - Removed check for residency in AssignFromTexture
+         22/04/10 - Yar - Fixes after GLState revision
+         16/03/10 - Yar - Improved FPC compatibility
+         05/03/10 - Yar - Creation
+    <p>
 }
 unit GLFilePNG;
 
@@ -28,7 +28,7 @@ type
   TGLPNGImage = class(TGLBaseImage)
   private
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -395,7 +395,7 @@ end;
 // Capabilities
 //
 
-class function TGLPNGImage.Capabilities: TDataFileCapabilities;
+class function TGLPNGImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

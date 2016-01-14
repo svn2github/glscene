@@ -11,15 +11,15 @@
     Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
- <b>History : </b><font size=-1><ul>
-        <li>23/10/10 - Yar - Removed PBuffer
-        <li>23/08/10 - Yar - Changes after PBuffer upgrade
-        <li>20/05/10 - Yar - Fixes for Linux x64
-        <li>21/03/10 - Yar - Added Linux support
+  History :  
+         23/10/10 - Yar - Removed PBuffer
+         23/08/10 - Yar - Changes after PBuffer upgrade
+         20/05/10 - Yar - Fixes for Linux x64
+         21/03/10 - Yar - Added Linux support
                              (thanks to Rustam Asmandiarov aka Predator)
-        <li>24/01/10 - Yar - Improved FPC compatibility
-        <li>21/01/10 - Yar - Creation
-   </ul><p>
+         24/01/10 - Yar - Improved FPC compatibility
+         21/01/10 - Yar - Creation
+    <p>
 }
 
 unit DDSImage;

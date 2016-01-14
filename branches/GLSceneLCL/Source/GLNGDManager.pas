@@ -4,64 +4,64 @@
 {
   A Newton Game Dynamics Manager for GLScene.<p>
 
-  Where can I find ... ?<ul>
-  <li>GLScene                                   (http://glscene.org)
-  <li>Newton Game Dynamics Engine               (http://newtondynamics.com)
-  <li>NewtonImport, a Delphi header translation (http://newtondynamics.com/forum/viewtopic.php?f=9&t=5273#p35865)
-  </ul>
+  Where can I find ... ? 
+   GLScene                                   (http://glscene.org)
+   Newton Game Dynamics Engine               (http://newtondynamics.com)
+   NewtonImport, a Delphi header translation (http://newtondynamics.com/forum/viewtopic.php?f=9&t=5273#p35865)
+   
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
   To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
-  <li>11/17/12 - YP - Check not nil result with GetBodyFromGLSceneObject
+   History :  
+   10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
+   11/17/12 - YP - Check not nil result with GetBodyFromGLSceneObject
                       FreeAndNil when destroying objects
                       Destroy all relative joints when finalizing a behaviour to avoid random crash
                       Smart GetBBoxCollision
                       DestroyNewtonData is now common for all procedures
-  <li>28/06/12 - YP - Updated to newton 2.36 (no api change with 2.35)
-  <li>02/02/11 - FP - Read/Write to Filer update to version 1
+   28/06/12 - YP - Updated to newton 2.36 (no api change with 2.35)
+   02/02/11 - FP - Read/Write to Filer update to version 1
                  Use RWFloat instead of RWSingle for Single for lazarus compatibility
-  <li>02/02/11 - FP - Add initial name for behavior
+   02/02/11 - FP - Add initial name for behavior
                  Moved two TNGDSurfacePair properties from published to public for Lazarus
-  <li>01/02/11 - FP - Fixed custom hinge DegToRad limit
+   01/02/11 - FP - Fixed custom hinge DegToRad limit
                  Update newtoncreatebody API with matrix parameter (since newton 2.28)
                  Joint draw [parent-to-pivot-to-child] instead of [parent-to-child]
-  <li>21/01/11 - FP - Huge update: Joint in manager collection. Material (now surface) in manager collection
+   21/01/11 - FP - Huge update: Joint in manager collection. Material (now surface) in manager collection
                   Callback as static class function now raise events
                   Debugs view use TGLLines instead of TGLRenderPoint
                   Reset filer version to zero
-  <li>16/12/10 - FP - Update to NewtonSDK 2.25-2.26
-  <li>19/11/10 - FP - Fixed FAngularDamping memory leak for TGLNGDDynamic
-  <li>19/11/10 - FP - Added UseGravity property for TGLNGDDynamic
-  <li>05/11/10 - FP - Removed check freeform in TGLNGDStatic.GeTree
+   16/12/10 - FP - Update to NewtonSDK 2.25-2.26
+   19/11/10 - FP - Fixed FAngularDamping memory leak for TGLNGDDynamic
+   19/11/10 - FP - Added UseGravity property for TGLNGDDynamic
+   05/11/10 - FP - Removed check freeform in TGLNGDStatic.GeTree
                   Removed FCollisionArray from TGLNGDBehaviour
                   Modified misspelling usevelovity to usevelocity [thx bobrob69]
                   Moved Creation of compound collision for freeform from GetCollisionFromBaseSceneObject to SetCollision for TGLNGDDynamic [thx bobrob69]
-  <li>25/10/10 - FP - Fixed Material badly loaded when created in design time
-  <li>25/10/10 - FP - Commented 'Release each collision form the array' in TGLNGDBehaviour.SetCollision.
+   25/10/10 - FP - Fixed Material badly loaded when created in design time
+   25/10/10 - FP - Commented 'Release each collision form the array' in TGLNGDBehaviour.SetCollision.
                   Changed angular friction in  TGLNGDDynamic.Pick method to be able to pick body with small mass.
                   Added Beta Serialize and Deserialise for TGLNGDBehaviour.
                   Commented 'rebuild in runtime' in TGLNGDStatic.Render, because this is conflicting with news serialize methods
-  <li>23/10/10 - Yar - Replace OpenGL1x to OpenGLAdapter
-  <li>08/10/10 - FP - Added show contact for dynamic in render.
+   23/10/10 - Yar - Replace OpenGL1x to OpenGLAdapter
+   08/10/10 - FP - Added show contact for dynamic in render.
                  Uncommented ShowContact property in manager.
-  <li>07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
-  <li>30/09/10 - FP - Removed beta functions of player and car in TGLNGDDynamic.
+   07/10/10 - FP - Joints connected to TGLNGDBehaviour are now freed in TGLNGDBehaviour.Destroy
+   30/09/10 - FP - Removed beta functions of player and car in TGLNGDDynamic.
                  Added AddImpulse function in TGLNGDDynamic.
-  <li>29/09/10 - FP - Moved FManager assignation for MaterialPair from loaded to create
-  <li>21/09/10 - FP - Added timestep in TContactProcessEvent.
+   29/09/10 - FP - Moved FManager assignation for MaterialPair from loaded to create
+   21/09/10 - FP - Added timestep in TContactProcessEvent.
                   Removed Manager property of MaterialPair.
                   MaterialPair.loaded use the owner.owner component as manager now.
                   MaterialPair FilerVersion up to 1
-  <li>20/09/10 - FP - Call Finalize/Initialize in Setid
-  <li>20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
-  <li>19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
-  <li>18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
-  <li>15/07/10 - FP - Creation by Franck Papouin
-  </ul></font>
+   20/09/10 - FP - Call Finalize/Initialize in Setid
+   20/09/10 - YP - Moved MaterialAutoCreateGroupID call into Material.Initialize
+   19/09/10 - YP - Added MaterialAutoCreateGroupID to fix loaded order
+   18/09/10 - YP - Added Get and GetOrCreate NGD behaviors routine
+   15/07/10 - FP - Creation by Franck Papouin
+   
 }
 
 unit GLNGDManager;
@@ -80,7 +80,7 @@ uses
   NewtonImport, NewtonImport_JointLibrary, // Newton
   GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLVectorLists, // TaffineVectorList for Tree
-  XCollection, // GLS TXCollection file function
+  GLXCollection, // GLS TGLXCollection file function
   GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates, //
   GLObjects, GLGeomObjects, GLVectorFileObjects, // cube cone freeform...
   GLColor, GLGeometryBB; // For show debug
@@ -362,7 +362,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
     property Initialized: Boolean read FInitialized;
@@ -452,7 +452,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
     function GetOmega: TVector;
@@ -1516,7 +1516,7 @@ end;
 
 { TGLNGDBehaviour }
 
-constructor TGLNGDBehaviour.Create(AOwner: TXCollection);
+constructor TGLNGDBehaviour.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FInitialized := False;
@@ -2143,7 +2143,7 @@ begin
     NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
-constructor TGLNGDDynamic.Create(AOwner: TXCollection);
+constructor TGLNGDDynamic.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FAutoSleep := True;

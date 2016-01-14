@@ -4,10 +4,10 @@
 {
   Archive Manager
  
-  <b>History : </b><font size=-1><ul>
-   <li>04/06/10 - Yar - Added to GLScene
+   History :  
+    04/06/10 - Yar - Added to GLScene
                         (Created by Rustam Asmandiarov aka Predator)
-  </ul></font>
+   
 }
 
 unit GLSArchiveManager;
@@ -43,9 +43,9 @@ Type
 
   //Базовый класс для архиваторов
 
-  { TBaseArchive }
+  { TGLBaseArchive }
 
-  TBaseArchive= class(TDataFile)
+  TGLBaseArchive= class(TGLDataFile)
     protected
       FFileName: string;
       FContentList: TStrings;
@@ -82,7 +82,7 @@ Type
       procedure Extract(ContentName, NewName: string); overload; virtual;abstract;
   end;
 
-  TBaseArchiveClass = class of TBaseArchive;
+  TGLBaseArchiveClass = class of TGLBaseArchive;
 
   //****************************************************************************
 
@@ -94,25 +94,25 @@ Type
 
   TArchiveFileFormat = class
   public
-    BaseArchiveClass: TBaseArchiveClass;
+    BaseArchiveClass: TGLBaseArchiveClass;
     Extension: string;
     Description: string;
     DescResID: Integer;
   end;
 
-  {TArchiveFileFormatsList}
+  {TGLArchiveFileFormatsList}
   {Список зарегестрированных классов}
 
-  TArchiveFileFormatsList = class(TPersistentObjectList)
+  TGLArchiveFileFormatsList = class(TPersistentObjectList)
   public
     { Public Declarations }
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
-      TBaseArchiveClass);
-    function FindExt(ext: string): TBaseArchiveClass;
-    function FindFromFileName(const fileName: string): TBaseArchiveClass;
-    procedure Remove(AClass: TBaseArchiveClass);
+      TGLBaseArchiveClass);
+    function FindExt(ext: string): TGLBaseArchiveClass;
+    function FindFromFileName(const fileName: string): TGLBaseArchiveClass;
+    procedure Remove(AClass: TGLBaseArchiveClass);
   end;
 
   //*****************************************************************************
@@ -125,8 +125,8 @@ Type
   TLibArchive = class(TCollectionItem)
   private
     { Private Declarations }
-      vArchive: TBaseArchive;
-      ArcClass: TBaseArchiveClass;
+      vArchive: TGLBaseArchive;
+      ArcClass: TGLBaseArchiveClass;
       FFileName:  string;
       FName: string;
       procedure SetCompressionLevel(aValue: TCompressionLevel);
@@ -236,12 +236,12 @@ Type
   EInvalidArchiveFile = class(Exception);
 
   //Получение класса доступных архиваторов
-  function GetArchiveFileFormats: TArchiveFileFormatsList;
+  function GetArchiveFileFormats: TGLArchiveFileFormatsList;
 
   //Регистрация архиватора.
   procedure RegisterArchiveFormat(const AExtension, ADescription: string;
-    AClass: TBaseArchiveClass);
-  procedure UnregisterArchiveFormat(AClass: TBaseArchiveClass);
+    AClass: TGLBaseArchiveClass);
+  procedure UnregisterArchiveFormat(AClass: TGLBaseArchiveClass);
 
   //Получение активного менеджера архивов
   //Внимание!!! Работает только для одного Менеджера Архивов
@@ -265,24 +265,24 @@ Uses
   GLStrings;
 
 var
-  vArchiveFileFormats: TArchiveFileFormatsList;
+  vArchiveFileFormats: TGLArchiveFileFormatsList;
   vArchiveManager: TGLSArchiveManager;
 
-function GetArchiveFileFormats: TArchiveFileFormatsList;
+function GetArchiveFileFormats: TGLArchiveFileFormatsList;
 begin
   if not Assigned(vArchiveFileFormats) then
-    vArchiveFileFormats := TArchiveFileFormatsList.Create;
+    vArchiveFileFormats := TGLArchiveFileFormatsList.Create;
   Result := vArchiveFileFormats;
 end;
 
 procedure RegisterArchiveFormat(const AExtension, ADescription: string;
-  AClass: TBaseArchiveClass);
+  AClass: TGLBaseArchiveClass);
 begin
   RegisterClass(AClass);
   GetArchiveFileFormats.Add(AExtension, ADescription, 0, AClass);
 end;
 
-procedure UnregisterArchiveFormat(AClass: TBaseArchiveClass);
+procedure UnregisterArchiveFormat(AClass: TGLBaseArchiveClass);
 begin
   if Assigned(vArchiveFileFormats) then
     vArchiveFileFormats.Remove(AClass);
@@ -628,17 +628,17 @@ begin
     Result := '';
 end;
 
-{ TArchiveFileFormatsList }
+{ TGLArchiveFileFormatsList }
 //******************************************************************************
 
-destructor TArchiveFileFormatsList.Destroy;
+destructor TGLArchiveFileFormatsList.Destroy;
 begin
   Clean;
   inherited Destroy;
 end;
 
-procedure TArchiveFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
-  AClass: TBaseArchiveClass);
+procedure TGLArchiveFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
+  AClass: TGLBaseArchiveClass);
 var
   newRec: TArchiveFileFormat;
 begin
@@ -653,7 +653,7 @@ begin
   inherited Add(newRec);
 end;
 
-function TArchiveFileFormatsList.FindExt(ext: string): TBaseArchiveClass;
+function TGLArchiveFileFormatsList.FindExt(ext: string): TGLBaseArchiveClass;
 var
   i: Integer;
 begin
@@ -670,8 +670,8 @@ begin
   Result := nil;
 end;
 
-function TArchiveFileFormatsList.FindFromFileName(const fileName: string
-  ): TBaseArchiveClass;
+function TGLArchiveFileFormatsList.FindFromFileName(const fileName: string
+  ): TGLBaseArchiveClass;
 var
   ext: string;
 begin
@@ -683,7 +683,7 @@ begin
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
-procedure TArchiveFileFormatsList.Remove(AClass: TBaseArchiveClass);
+procedure TGLArchiveFileFormatsList.Remove(AClass: TGLBaseArchiveClass);
 var
   i: Integer;
 begin
@@ -697,22 +697,22 @@ end;
 
 //******************************************************************************
 
-{ TBaseArchive }
+{ TGLBaseArchive }
 
-procedure TBaseArchive.SetCompressionLevel(aValue: TCompressionLevel);
+procedure TGLBaseArchive.SetCompressionLevel(aValue: TCompressionLevel);
 begin
   if FCompressionLevel <> aValue then
      FCompressionLevel := aValue;
 end;
 
-constructor TBaseArchive.Create(AOwner: TPersistent);
+constructor TGLBaseArchive.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
   FContentList := TStringList.Create;
   FCompressionLevel := clNone;
 end;
 
-destructor TBaseArchive.Destroy;
+destructor TGLBaseArchive.Destroy;
 begin
   FContentList.Free;
   inherited Destroy;

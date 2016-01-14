@@ -4,25 +4,25 @@
 {
   Non visual wrapper around basic SDL window features.<p>
 
-  <u>Notes to Self:</u><br>
+  <u>Notes to Self:</u> 
   Unit must ultimately *NOT* make use of any platform specific stuff,
-  *EVEN* through the use of conditionnals.<br>
+  *EVEN* through the use of conditionnals. 
   SDL-specifics should also be avoided in the "interface" section.<p>
 
   Written and maintained by Eric Grange (http://glscene.org),
   this component uses JEDI-SDL conversion (http://delphi-jedi.org),
   which is a Delphi header conversion for SDL (http://libsdl.org)<p>
 
-  <b>History : </b><font size=-1><ul>
-  <li>17/11/09 - DaStr - Improved Unix compatibility
+   History :  
+   17/11/09 - DaStr - Improved Unix compatibility
   (thanks Predator) (BugtrackerID = 2893580)
-  <li>16/10/08 - UweR - Compatibility fix for Delphi 2009
-  <li>07/06/07 - DaStr - Added $I GLScene.inc
-  <li>17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-  <li>16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
-  <li>12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
+   16/10/08 - UweR - Compatibility fix for Delphi 2009
+   07/06/07 - DaStr - Added $I GLScene.inc
+   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
+   16/12/01 - Egg - Resize no longer recreates SDL surface in OpenGL mode
+   12/12/01 - Egg - Fixes & additions (code from Dominique Louis),
   Added doc tags, Stencil buffer and others.
-  <li>11/12/01 - Egg - Creation
+   11/12/01 - Egg - Creation
 }
 unit GLSDLWindow;
 
@@ -39,25 +39,25 @@ type
   // TSDLWindowPixelDepth
   //
   { : Pixel Depth options.<p>
-    <ul>
-    <li>vpd16bits: 16bpp graphics (565) (and 16 bits depth buffer for OpenGL)
-    <li>vpd24bits: 24bpp graphics (565) (and 24 bits depth buffer for OpenGL)
-    </ul> }
+     
+     vpd16bits: 16bpp graphics (565) (and 16 bits depth buffer for OpenGL)
+     vpd24bits: 24bpp graphics (565) (and 24 bits depth buffer for OpenGL)
+      }
   TSDLWindowPixelDepth = (vpd16bits, vpd24bits);
 
   // TSDLWindowOptions
   //
   { : Specifies optional settings for the SDL window.<p>
-    Those options are a simplified subset of the SDL options:<ul>
-    <li>voDoubleBuffer: create a double-buffered window
-    <li>voHardwareAccel: enables all hardware acceleration options (software
+    Those options are a simplified subset of the SDL options: 
+     voDoubleBuffer: create a double-buffered window
+     voHardwareAccel: enables all hardware acceleration options (software
     only if not defined).
-    <li>voOpenGL: requires OpenGL capability for the window
-    <li>voResizable: window should be resizable
-    <li>voFullScreen: requires a fullscreen "window" (screen resolution may
+     voOpenGL: requires OpenGL capability for the window
+     voResizable: window should be resizable
+     voFullScreen: requires a fullscreen "window" (screen resolution may
     be changed)
-    <li>voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)
-    </ul> }
+     voStencilBuffer: requires a stencil buffer (8bits, use along voOpenGL)
+      }
   TSDLWindowOption = (voDoubleBuffer, voHardwareAccel, voOpenGL, voResizable,
     voFullScreen, voStencilBuffer);
   TSDLWindowOptions = set of TSDLWindowOption;

@@ -4,18 +4,18 @@
 {
     Code to generate triangle strips and fans for polygons.
 
- <b>History : </b><font size=-1><ul>
-      <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-      <li>06/06/10 - Yar - Fixed warnings
-      <li>26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
-      <li>10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
+  History :  
+       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+       06/06/10 - Yar - Fixed warnings
+       26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
+       10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
                             TGLFreeform, so can now use TGLActor with it too
-      <li>29/05/08 - DaStr - Added $I GLScene.inc
-      <li>08/09/03 - Jaj - Added single outline polygon support
+       29/05/08 - DaStr - Added $I GLScene.inc
+       08/09/03 - Jaj - Added single outline polygon support
 
-   </ul><p>
+    <p>
 
-  License:<br>
+  License: 
 
     Contributed to GLScene.<p>
 }
@@ -42,7 +42,7 @@ uses
   GLVectorTypes;
 
 var
-  TessMesh: TMeshObject;
+  TessMesh: TGLMeshObject;
   TessFace: TFGIndexTexCoordList;
   TessExtraVertices: Integer;
   TessVertices: PAffineVectorArray;
@@ -107,7 +107,7 @@ begin
   // Select or Create FaceGroup
   if Mesh.MeshObjects.Count = 0 then
   begin
-    TessMesh := TMeshObject.CreateOwned(Mesh.MeshObjects);
+    TessMesh := TGLMeshObject.CreateOwned(Mesh.MeshObjects);
     Mesh.MeshObjects[0].Mode := momFaceGroups;
   end
   else

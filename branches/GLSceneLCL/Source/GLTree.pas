@@ -7,13 +7,13 @@
    This code was adapted from the nVidia Tree Demo:
    http://developer.nvidia.com/object/Procedural_Tree.html<p>
 
-   History:<ul>
-     <li>10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-     <li>23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-     <li>30/03/07 - DaStr - Added $I GLScene.inc
-     <li>28/03/07 - DaStr - Renamed parameters in some methods
+   History: 
+      10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
+      23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
+      30/03/07 - DaStr - Added $I GLScene.inc
+      28/03/07 - DaStr - Renamed parameters in some methods
                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-     <li>13/01/07 - DaStr - Added changes proposed by Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
+      13/01/07 - DaStr - Added changes proposed by Tim "Sivael" Kapuœciñski [sivael@gensys.pl]
                          Modified the code to create much more realistic trees -
                           added third branch for every node and modified constants
                           to make the tree look more "alive".
@@ -22,20 +22,20 @@
                           branches were much more "in order".
                          Added Center* declarations, CenterBranchConstant,
                          Added AutoRebuild flag.
-     <li>02/08/04 - LR, YHC - BCB corrections: use record instead array
-     <li>14/04/04 - SG - Added AutoCenter property.
-     <li>03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
-     <li>24/11/03 - SG - Creation.
-   </ul>
+      02/08/04 - LR, YHC - BCB corrections: use record instead array
+      14/04/04 - SG - Added AutoCenter property.
+      03/03/04 - SG - Added GetExtents and AxisAlignedDimensionsUnscaled.
+      24/11/03 - SG - Creation.
+    
 
    Some info:
-  <ul>CenterBranchConstant</ul> -
+   CenterBranchConstant  -
     Defines, how big the central branch is. When around 50%
     it makes a small branch inside the tree, for higher values
     much more branches and leaves are created, so either use it
     with low depth, or set it to zero, and have two-branched tree.
     Default : 0.5
-  <ul>"AutoRebuild" flag</ul> -
+   "AutoRebuild" flag  -
     Rebuild tree after property change.
     Default: True
 }
@@ -892,7 +892,7 @@ end;
 //
 procedure TGLTree.BuildMesh(GLBaseMesh : TGLBaseMesh);
 
-   procedure RecursBranches(Branch : TGLTreeBranch; bone : TSkeletonBone; Frame : TSkeletonFrame);
+   procedure RecursBranches(Branch : TGLTreeBranch; bone : TGLSkeletonBone; Frame : TGLSkeletonFrame);
    var
       trans : TTransformations;
       mat : TMatrix;
@@ -920,18 +920,18 @@ procedure TGLTree.BuildMesh(GLBaseMesh : TGLBaseMesh);
 
       // Recurse with child branches
       if Assigned(Branch.Left) then
-         RecursBranches(Branch.Left, TSkeletonBone.CreateOwned(bone), Frame);
+         RecursBranches(Branch.Left, TGLSkeletonBone.CreateOwned(bone), Frame);
       if Assigned(Branch.Right) then
-         RecursBranches(Branch.Right, TSkeletonBone.CreateOwned(bone), Frame);
+         RecursBranches(Branch.Right, TGLSkeletonBone.CreateOwned(bone), Frame);
    end;
 
 var
-   //SkelMesh : TSkeletonMeshObject;
+   //SkelMesh : TGLSkeletonMeshObject;
    fg : TFGVertexIndexList;
    fg2 : TFGVertexNormalTexIndexList;
    i,j,stride : integer;
    //parent_id : integer;
-   //bone : TSkeletonBone;
+   //bone : TGLSkeletonBone;
 begin
    if not Assigned(GLBaseMesh) then exit;
 
@@ -944,9 +944,9 @@ begin
    GLBaseMesh.Skeleton.Clear;
 
    //if GLBaseMesh is TGLActor then
-   //   TSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
+   //   TGLSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
    //else
-      TMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
+      TGLMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
    GLBaseMesh.MeshObjects[0].Mode:=momFaceGroups;
 
    // Branches
@@ -956,9 +956,9 @@ begin
    {if GLBaseMesh is TGLActor then begin
       TGLActor(GLBaseMesh).Reference:=aarSkeleton;
       RecursBranches(Branches.FRoot,
-                     TSkeletonBone.CreateOwned(GLBaseMesh.Skeleton.RootBones),
-                     TSkeletonFrame.CreateOwned(GLBaseMesh.Skeleton.Frames));
-      SkelMesh:=TSkeletonMeshObject(GLBaseMesh.MeshObjects[0]);
+                     TGLSkeletonBone.CreateOwned(GLBaseMesh.Skeleton.RootBones),
+                     TGLSkeletonFrame.CreateOwned(GLBaseMesh.Skeleton.Frames));
+      SkelMesh:=TGLSkeletonMeshObject(GLBaseMesh.MeshObjects[0]);
       SkelMesh.BonesPerVertex:=1;
       SkelMesh.VerticeBoneWeightCount:=Branches.FBranchIndices.Count;
       for i:=0 to Branches.FBranchIndices.Count-1 do
@@ -979,9 +979,9 @@ begin
 
    // Leaves
    //if GLBaseMesh is TGLActor then
-   //   TSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
+   //   TGLSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
    //else
-      TMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
+      TGLMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
    GLBaseMesh.MeshObjects[1].Mode:=momFaceGroups;
 
    GLBaseMesh.MeshObjects[1].Vertices.Add(Leaves.Vertices);

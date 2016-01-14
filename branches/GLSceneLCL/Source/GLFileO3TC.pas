@@ -3,17 +3,17 @@
 //
 {
 
- <b>History : </b><font size=-1><ul>
-        <li>23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-        <li>31/05/10 - Yar - Fixes for Linux x64
-        <li>08/05/10 - Yar - Removed check for residency in AssignFromTexture
-        <li>22/04/10 - Yar - Fixes after GLState revision
-        <li>27/01/10 - Yar   - Bugfix in BlockOffset with negative result
-        <li>23/11/10 - DaStr - Added $I GLScene.inc
-        <li>23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
+  History :  
+         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
+         31/05/10 - Yar - Fixes for Linux x64
+         08/05/10 - Yar - Removed check for residency in AssignFromTexture
+         22/04/10 - Yar - Fixes after GLState revision
+         27/01/10 - Yar   - Bugfix in BlockOffset with negative result
+         23/11/10 - DaStr - Added $I GLScene.inc
+         23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map loading bug
-        <li>20/01/10 - Yar - Creation
-   </ul><p>
+         20/01/10 - Yar - Creation
+    <p>
 }
 unit GLFileO3TC;
 
@@ -35,7 +35,7 @@ type
 
   TGLO3TCImage = class(TGLBaseImage)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -426,7 +426,7 @@ end;
 // Capabilities
 //
 
-class function TGLO3TCImage.Capabilities: TDataFileCapabilities;
+class function TGLO3TCImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

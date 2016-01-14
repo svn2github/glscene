@@ -3,17 +3,17 @@
 //
 {   All color types, constants and utilities should go here<p>
 
-  <b>History : </b><font size=-1><ul>
-    <li>10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
-    <li>04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
-    <li>24/10/10 - DaStr - Removed dependancy from OpenGL
-    <li>23/08/10 - Yar - Added OpenGLTokens to uses
-    <li>31/05/10 - Yar - Fixed warnings for Delhi2009/2010
-    <li>04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
-    <li>05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
-    <li>06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
+   History :  
+     10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
+     04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
+     24/10/10 - DaStr - Removed dependancy from OpenGL
+     23/08/10 - Yar - Added OpenGLTokens to uses
+     31/05/10 - Yar - Fixed warnings for Delhi2009/2010
+     04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
+     05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
+     06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
                           (separated from GLTexture.pas and GLCrossPlatform.pas)
-  </ul>
+   
 }
 unit GLColor;
 
@@ -22,13 +22,8 @@ interface
 {$i GLScene.inc}
 
 uses
-{$IFDEF GLS_DELPHI_XE2_UP}
-  System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,
-{$ELSE}
   SysUtils, Classes, Dialogs, Graphics,
-{$ENDIF}
-
-  // GLScene
+  // GLS
   GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
   GLPersistentClasses, GLBaseClasses;
 
