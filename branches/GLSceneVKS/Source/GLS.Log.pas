@@ -72,31 +72,31 @@ type
   );
 
   { Class reference to log session class }
-  CLogSession = class of TLogSession;
-  TLogSession = class;
+  CLogSession = class of TVKLogSession;
+  TVKLogSession = class;
 
   { Thread that periodically flushes the buffer to disk. }
   TLogBufferFlushThread = class(TThread)
   private
-    FParent: TLogSession;
+    FParent: TVKLogSession;
   protected
     procedure Execute; override;
   public
-    constructor Create(const AParent: TLogSession);
+    constructor Create(const AParent: TVKLogSession);
   end;
 
   { Thread that checks file size and splits the file if nessesary. }
   TLogCheckSizeThread = class(TThread)
   private
-    FParent: TLogSession;
+    FParent: TVKLogSession;
   protected
     procedure Execute; override;
   public
-    constructor Create(const AParent: TLogSession);
+    constructor Create(const AParent: TVKLogSession);
   end;
 
   { Abstract Logger class }
-  TLogSession = class(TPersistent)
+  TVKLogSession = class(TPersistent)
   private
     FBuffer: TStringList;
     FBuffered: Boolean;
@@ -229,9 +229,9 @@ type
     FReplaceAssertion: Boolean;
     FTimeFormat: TLogTimeFormat;
     FLogLevels: TLogLevels;
-    FLog: TLogSession;
+    FLog: TVKLogSession;
     procedure SetReplaceAssertion(Value: Boolean);
-    function GetLog: TLogSession;
+    function GetLog: TVKLogSession;
   protected
     { Protected Declarations }
 
@@ -241,7 +241,7 @@ type
     destructor Destroy; override;
     { Set component primary and then UserLog return it's log }
     procedure DoPrimary;
-    property Log: TLogSession read GetLog;
+    property Log: TVKLogSession read GetLog;
   published
     { Published Declarations }
     property ReplaceAssertion: Boolean read FReplaceAssertion
@@ -256,7 +256,7 @@ type
   TIDELogProc = procedure(const AMsg: string);
 
   { Return logger wich created by TVKSLogger component }
-function UserLog: TLogSession;
+function UserLog: TVKLogSession;
 function SkipBeforeSTR(var TextFile: Text; SkipSTR: string): Boolean;
 function ReadLine(var TextFile: Text): string;
 
@@ -267,8 +267,8 @@ function ReadLine(var TextFile: Text): string;
     custom parameters for user's application, for example a different log path
     (Often the EXE application directory is read-only).
  }
-function GLSLogger(): TLogSession;
-procedure UseCustomGLSLogger(const ALogger: TLogSession);
+function GLSLogger(): TVKLogSession;
+procedure UseCustomGLSLogger(const ALogger: TVKLogSession);
 
 function ConstArrayToString(const Elements: array of const): String;
 
@@ -278,28 +278,28 @@ var
 implementation
 
 var
-  v_GLSLogger: TLogSession;
+  v_GLSLogger: TVKLogSession;
   vAssertErrorHandler: TAssertErrorProc;
   vCurrentLogger: TVKSLogger;
 
 { GLScene inner logger. Create on first use, not in unit initialization. }
-function GLSLogger(): TLogSession;
+function GLSLogger(): TVKLogSession;
 begin
   if v_GLSLogger = nil then
   begin
   {$IFDEF VKS_LOGGING}
-    v_GLSLogger := TLogSession.Init(Copy(ExtractFileName(ParamStr(0)), 1,
+    v_GLSLogger := TVKLogSession.Init(Copy(ExtractFileName(ParamStr(0)), 1,
     Length(ExtractFileName(ParamStr(0))) - Length(ExtractFileExt(ParamStr(0)))) +
     '.log', lfElapsed, llMax);
   {$ELSE}
-    v_GLSLogger := TLogSession.OnlyCreate;
+    v_GLSLogger := TVKLogSession.OnlyCreate;
   {$ENDIF}
   end;
 
   Result := v_GLSLogger;
 end;
 
-procedure UseCustomGLSLogger(const ALogger: TLogSession);
+procedure UseCustomGLSLogger(const ALogger: TVKLogSession);
 begin
   if (v_GLSLogger <> nil) then v_GLSLogger.Destroy;
   v_GLSLogger := ALogger;
@@ -413,7 +413,7 @@ Begin
 End;
 
 
-function UserLog: TLogSession;
+function UserLog: TVKLogSession;
 begin
   if Assigned(vCurrentLogger) then
     Result := vCurrentLogger.Log
@@ -512,10 +512,10 @@ begin
   inherited Destroy;
 end;
 
-function TVKSLogger.GetLog: TLogSession;
+function TVKSLogger.GetLog: TVKLogSession;
 begin
   if not Assigned(FLog) then
-    FLog := TLogSession.Init(Name + '.log', FTimeFormat, FLogLevels);
+    FLog := TVKLogSession.Init(Name + '.log', FTimeFormat, FLogLevels);
   Result := FLog;
 end;
 
@@ -539,10 +539,10 @@ begin
 end;
 
 // ------------------
-// ------------------ TLogSession ------------------
+// ------------------ TVKLogSession ------------------
 // ------------------
 
-procedure TLogSession.BackUpOldLogs(const ACurrentLogFileName: string);
+procedure TVKLogSession.BackUpOldLogs(const ACurrentLogFileName: string);
 var
   sRec: TSearchRec;
   lLogFileName: string;
@@ -596,14 +596,14 @@ begin
   end;
 end;
 
-procedure TLogSession.SetBuffered(const Value: Boolean);
+procedure TVKLogSession.SetBuffered(const Value: Boolean);
 begin
   if FBuffered = Value then Exit;
   FBuffered := Value;
   ChangeBufferedState();
 end;
 
-procedure TLogSession.SetEnabled(const Value: Boolean);
+procedure TVKLogSession.SetEnabled(const Value: Boolean);
 begin
   if (FEnabled = Value) then Exit;
   FEnabled := Value;
@@ -613,7 +613,7 @@ begin
     Log('Logging session paused');
 end;
 
-procedure TLogSession.SetLogFileMaxSize(const Value: Integer);
+procedure TVKLogSession.SetLogFileMaxSize(const Value: Integer);
 begin
   if FLogFileMaxSize = Value then Exit;
   FLogFileMaxSize := Value;
@@ -635,7 +635,7 @@ begin
   end;
 end;
 
-procedure TLogSession.SetMode(const NewMode: TLogLevels);
+procedure TVKLogSession.SetMode(const NewMode: TLogLevels);
 begin
 {$IFNDEF VKS_LOGGING}
   if Self = v_GLSLogger then
@@ -645,7 +645,7 @@ begin
   PrintLogLevels();
 end;
 
-function TLogSession.DoResetLog: Boolean;
+function TVKLogSession.DoResetLog: Boolean;
 begin
   try
     FFileAccessCriticalSection.Enter;
@@ -662,7 +662,7 @@ begin
   end;
 end;
 
-function TLogSession.DoWriteBufferToLog: Boolean;
+function TVKLogSession.DoWriteBufferToLog: Boolean;
 var
   I: Integer;
   lLast: Integer;
@@ -694,7 +694,7 @@ begin
   end;
 end;
 
-function TLogSession.DoWriteToLog(const AString: string): Boolean;
+function TVKLogSession.DoWriteToLog(const AString: string): Boolean;
 begin
   try
     FFileAccessCriticalSection.Enter;
@@ -710,13 +710,13 @@ begin
   end;
 end;
 
-procedure TLogSession.FlushBuffer;
+procedure TVKLogSession.FlushBuffer;
 begin
   if Buffered then
     DoWriteBufferToLog();
 end;
 
-constructor TLogSession.Init(const AFileName: string;
+constructor TVKLogSession.Init(const AFileName: string;
   const ATimeFormat: TLogTimeFormat; const ALevels: TLogLevels;
   const ALogThreadId: Boolean = True; const ABuffered: Boolean = False;
   const AMaxSize: Integer = 0; const ABackUpOldLogs: Boolean = False;
@@ -795,14 +795,14 @@ end;
 
 {$IFNDEF VKS_LOGGING}
 
-constructor TLogSession.OnlyCreate;
+constructor TVKLogSession.OnlyCreate;
 begin
   inherited;
 end;
 
 {$ENDIF}
 
-procedure TLogSession.PrintLogLevels;
+procedure TVKLogSession.PrintLogLevels;
 var
   ModeStr: string;
   i: Integer;
@@ -822,7 +822,7 @@ begin
   Log('Logging ' + ModeStr, lkInfo);
 end;
 
-procedure TLogSession.PrintLogStatistics;
+procedure TVKLogSession.PrintLogStatistics;
 begin
   Log('Logged fatal_errors: ' + IntToStr(FLogKindCount[lkFatalError]) +
     ', errors: ' + IntToStr(FLogKindCount[lkError]) +
@@ -832,7 +832,7 @@ begin
     ', debug: ' + IntToStr(FLogKindCount[lkDebug]));
 end;
 
-function TLogSession.AttachLogFile(const AFileName: string; const AResetFile: Boolean = True): Boolean;
+function TVKLogSession.AttachLogFile(const AFileName: string; const AResetFile: Boolean = True): Boolean;
 var
   lPath: string;
 begin
@@ -867,7 +867,7 @@ begin
   end;
 end;
 
-procedure TLogSession.ChangeBufferedState();
+procedure TVKLogSession.ChangeBufferedState();
 begin
   if (FBuffered) then
   begin
@@ -886,7 +886,7 @@ begin
   end;
 end;
 
-procedure TLogSession.ClearLogsInTheSameDir;
+procedure TVKLogSession.ClearLogsInTheSameDir;
 var
   sRec: TSearchRec;
   lFilePath: string;
@@ -917,7 +917,7 @@ begin
   end;
 end;
 
-procedure TLogSession.CreateNewLogFileIfNeeded;
+procedure TVKLogSession.CreateNewLogFileIfNeeded;
 var
   lNewFileName: string;
   I, Index: Integer;
@@ -955,7 +955,7 @@ begin
   end;
 end;
 
-destructor TLogSession.Destroy;
+destructor TVKLogSession.Destroy;
 var
   I: TLogLevel;
 begin
@@ -992,7 +992,7 @@ begin
   FFileAccessCriticalSection.Destroy;
 end;
 
-procedure TLogSession.DisplayLog;
+procedure TVKLogSession.DisplayLog;
 {$IFDEF LINUX}
 var
   lProcess: TProcess;
@@ -1010,38 +1010,38 @@ begin
 {$ENDIF}
 end;
 
-procedure TLogSession.Log(const Desc: string; const Level: TLogLevel = lkInfo);
+procedure TVKLogSession.Log(const Desc: string; const Level: TLogLevel = lkInfo);
 begin
   AppendLog(Desc, Level);
 end;
 
-procedure TLogSession.LogAdv(const args: array of const;
+procedure TVKLogSession.LogAdv(const args: array of const;
   const ALevel: TLogLevel);
 begin
   Log(constArrayToString(args), ALevel);
 end;
 
-procedure TLogSession.LogDebug(const Desc: string);
+procedure TVKLogSession.LogDebug(const Desc: string);
 begin
   Log(Desc, lkDebug);
 end;
 
-procedure TLogSession.LogInfo(const Desc: string);
+procedure TVKLogSession.LogInfo(const Desc: string);
 begin
   Log(Desc, lkInfo);
 end;
 
-procedure TLogSession.LogNotice(const Desc: string);
+procedure TVKLogSession.LogNotice(const Desc: string);
 begin
   Log(Desc, lkNotice);
 end;
 
-procedure TLogSession.LogWarning(const Desc: string);
+procedure TVKLogSession.LogWarning(const Desc: string);
 begin
   Log(Desc, lkWarning);
 end;
 
-procedure TLogSession.LogEmtryLine;
+procedure TVKLogSession.LogEmtryLine;
 begin
  if not FEnabled then Exit;
 
@@ -1068,47 +1068,47 @@ begin
     vIDELogProc('');
 end;
 
-procedure TLogSession.LogError(const Desc: string);
+procedure TVKLogSession.LogError(const Desc: string);
 begin
   Log(Desc, lkError);
 end;
 
-procedure TLogSession.LogFatalError(const Desc: string);
+procedure TVKLogSession.LogFatalError(const Desc: string);
 begin
   Log(Desc, lkFatalError);
 end;
 
-procedure TLogSession.LogDebugFmt(const Desc: string;
+procedure TVKLogSession.LogDebugFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkDebug);
 end;
 
-procedure TLogSession.LogInfoFmt(const Desc: string;
+procedure TVKLogSession.LogInfoFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkInfo);
 end;
 
-procedure TLogSession.LogNoticeFmt(const Desc: string;
+procedure TVKLogSession.LogNoticeFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkWarning);
 end;
 
-procedure TLogSession.LogWarningFmt(const Desc: string;
+procedure TVKLogSession.LogWarningFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkWarning);
 end;
 
-procedure TLogSession.LogErrorFmt(const Desc: string;
+procedure TVKLogSession.LogErrorFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkError);
 end;
 
-procedure TLogSession.LogException(const E: Exception; const aFunctionName: string;
+procedure TVKLogSession.LogException(const E: Exception; const aFunctionName: string;
   const args: array of const; const ALevel: TLogLevel = lkError);
 begin
   Log('Exception in ' + aFunctionName + ': ' + E.Message + string(#13#10) +
@@ -1116,13 +1116,13 @@ begin
    constArrayToString(args), ALevel);
 end;
 
-procedure TLogSession.LogFatalErrorFmt(const Desc: string;
+procedure TVKLogSession.LogFatalErrorFmt(const Desc: string;
   const Args: array of const );
 begin
   Log(Format(Desc, Args), lkFatalError);
 end;
 
-procedure TLogSession.AppendLog(const AString: string; const ALevel: TLogLevel;
+procedure TVKLogSession.AppendLog(const AString: string; const ALevel: TLogLevel;
   const ALogTime: Boolean);
 var
   line: string;
@@ -1203,7 +1203,7 @@ end;
 
 { TLogBufferFlushThread }
 
-constructor TLogBufferFlushThread.Create(const AParent: TLogSession);
+constructor TLogBufferFlushThread.Create(const AParent: TVKLogSession);
 begin
   FParent := AParent;
   inherited Create(True);
@@ -1220,7 +1220,7 @@ end;
 
 { TLogCheckSizeThread }
 
-constructor TLogCheckSizeThread.Create(const AParent: TLogSession);
+constructor TLogCheckSizeThread.Create(const AParent: TVKLogSession);
 begin
   FParent := AParent;
   inherited Create(True);

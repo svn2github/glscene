@@ -29,9 +29,9 @@ type
 
       public
          { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
+         function CreateCopy(AOwner: TPersistent) : TVKDataFile; override;
 
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
 
          procedure LoadFromStream(Stream: TStream); override;
          procedure SaveToStream(Stream: TStream); override;
@@ -52,7 +52,7 @@ implementation
 
 // CreateCopy
 //
-function TVKMP3File.CreateCopy(AOwner: TPersistent) : TDataFile;
+function TVKMP3File.CreateCopy(AOwner: TPersistent) : TVKDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
@@ -62,7 +62,7 @@ end;
 
 // Capabilities
 //
-class function TVKMP3File.Capabilities : TDataFileCapabilities;
+class function TVKMP3File.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;

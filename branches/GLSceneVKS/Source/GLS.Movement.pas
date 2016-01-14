@@ -272,7 +272,7 @@ type
 
     function GetSceneObject: TVKBaseSceneObject;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
       //add an empty path;
@@ -1250,7 +1250,7 @@ end;
 
 
 //--------------------------- TVKMovement --------------------------------------
-constructor TVKMovement.Create(aOwner: TXCollection);
+constructor TVKMovement.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
   FPaths           := TVKMovementPaths.Create(Self);

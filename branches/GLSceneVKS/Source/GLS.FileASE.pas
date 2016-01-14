@@ -81,7 +81,7 @@ type
   // ASE geom object, represents single mesh object;
   // contains: vertices, faces, verice indices, faces and vertices normals,
   // channels of texture coordinates and indices, scaling and location info;
-  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TMeshObject
+  // this object used only to store ASE data temporary to copy supported piece of it into GLScene TVKMeshObject
   TVKASEMeshObject = class(TObject)
   private
     FFaces: TVKASEFaceList;
@@ -209,7 +209,7 @@ type
 
 
   // ASE vector file parser
-  TVKASEVectorFile = class(TVectorFile)
+  TVKASEVectorFile = class(TVKVectorFile)
   private
     FStringData: TStringList;
     FHeader: string;
@@ -255,7 +255,7 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure LoadFromStream(aStream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     property Header: string read FHeader;
     property Comment: string read FComment;
@@ -626,7 +626,7 @@ end;
 
 
 // here ASE geom object is converted to GLScene mesh
-procedure CopyASEToMesh(aASEMesh: TVKASEMeshObject; aMesh: TMeshObject; aASEMaterials: TVKASEMaterialList);
+procedure CopyASEToMesh(aASEMesh: TVKASEMeshObject; aMesh: TVKMeshObject; aASEMaterials: TVKASEMaterialList);
 
   const
     ASETextureMapKinds: array [TASETextureMap] of string = (
@@ -1022,7 +1022,7 @@ begin
   inherited;
 end;
 
-class function TVKASEVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKASEVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
@@ -1333,13 +1333,13 @@ end;
 procedure TVKASEVectorFile.ParseGeomObject(var aLineIndex: Integer);
 var
   aseMesh: TVKASEMeshObject;
-  obj: TMeshObject;
+  obj: TVKMeshObject;
   Data: string;
   b: Boolean;
 begin
   aseMesh := TVKASEMeshObject.Create;
   try
-    obj := TMeshObject.CreateOwned(Owner.MeshObjects);
+    obj := TVKMeshObject.CreateOwned(Owner.MeshObjects);
 
     Inc(aLineIndex);
     Data := FStringData[aLineIndex];

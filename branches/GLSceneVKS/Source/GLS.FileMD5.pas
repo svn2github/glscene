@@ -14,13 +14,13 @@ uses
 
 type
 
-  TVKMD5VectorFile = class (TVectorFile)
+  TVKMD5VectorFile = class (TVKVectorFile)
     private
       FMD5String,
       FTempString,
       FBoneNames : TStringList;
       FCurrentPos : Integer;
-      FBasePose : TSkeletonFrame;
+      FBasePose : TVKSkeletonFrame;
       FFramePositions : TAffineVectorList;
       FFrameQuaternions : TQuaternionList;
       FJointFlags : TIntegerList;
@@ -32,7 +32,7 @@ type
       function ReadLine : String;
 
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -69,7 +69,7 @@ end;
 
 // Capabilities
 //
-class function TVKMD5VectorFile.Capabilities : TDataFileCapabilities;
+class function TVKMD5VectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -131,7 +131,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
     quat : TQuaternion;
     mat, rmat : TMatrix;
     ParentBoneID : Integer;
-    bone, parentbone : TSkeletonBone;
+    bone, parentbone : TVKSkeletonBone;
   begin
     FTempString.CommaText:=BoneString;
 
@@ -152,10 +152,10 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
     if bonename<>'' then begin
       FBoneNames.Add(bonename);
       if ParentBoneID = -1 then
-        bone:=TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
+        bone:=TVKSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
       else begin
         parentBone:=Owner.Skeleton.RootBones.BoneByID(ParentBoneID);
-        bone:=TSkeletonBone.CreateOwned(parentBone);
+        bone:=TVKSkeletonBone.CreateOwned(parentBone);
 
         mat:=QuaternionToMatrix(quat);
         mat.V[3]:=PointMake(pos);
@@ -198,7 +198,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
   procedure ReadMesh;
   var
     temp, shader : String;
-    mesh : TSkeletonMeshObject;
+    mesh : TVKSkeletonMeshObject;
     fg : TFGVertexIndexList;
     vnum, wnum,
     numverts, numweights : Integer;
@@ -219,7 +219,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
 
     numverts:=0;
 
-    mesh:=TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh:=TVKSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
     fg:=TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
     mesh.Mode:=momFaceGroups;
     fg.Mode:=fgmmTriangles;
@@ -308,7 +308,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
   procedure ReadHierarchy;
   var
     temp : String;
-    bone : TSkeletonBone;
+    bone : TVKSkeletonBone;
   begin
     if not Assigned(FJointFlags) then begin
       FJointFlags:=TIntegerList.Create;
@@ -356,7 +356,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
   var
     temp : String;
     i,j : Integer;
-    frame : TSkeletonFrame;
+    frame : TVKSkeletonFrame;
     pos : TAffineVector;
     quat : TQuaternion;
   begin
@@ -411,7 +411,7 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
     i : Integer;
   begin
     for i:=0 to Owner.MeshObjects.Count-1 do
-      TSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
+      TVKSkeletonMeshObject(Owner.MeshObjects[i]).PrepareBoneMatrixInvertedMeshes;
   end;
 
 var
@@ -450,7 +450,7 @@ begin
           FFramePositions:=TAffineVectorList.Create;
           FFrameQuaternions:=TQuaternionList.Create;
           if Owner.Skeleton.Frames.Count = 0 then begin
-            FBasePose:=TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+            FBasePose:=TVKSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
             FBasePose.Position.Count:=FNumJoints;
             FBasePose.TransformMode:=sftQuaternion;
             FBasePose.Quaternion.Count:=FNumJoints;
@@ -480,7 +480,7 @@ begin
           if FNumFrames>0 then begin
             FFirstFrame:=Owner.Skeleton.Frames.Count;
             for i:=1 to FNumFrames do
-              TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+              TVKSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
             if Owner is TVKActor then begin
               with TVKActor(Owner).Animations.Add do begin
                 Name:=ChangeFileExt(ExtractFileName(ResourceName), '');

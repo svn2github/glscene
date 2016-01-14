@@ -35,7 +35,7 @@ type
   { Used by the SpriteAnimation when Dimensions are set manual. The animation
      will use the offsets, width and height to determine the texture coodinates
      for this frame. }
-  TSpriteAnimFrame = class(TXCollectionItem)
+  TSpriteAnimFrame = class(TVKXCollectionItem)
   private
     FOffsetX,
       FOffsetY,
@@ -66,10 +66,10 @@ type
 
   // TSpriteAnimFrameList
   { The XCollection used for the TSpriteAnimFrame object. }
-  TSpriteAnimFrameList = class(TXCollection)
+  TSpriteAnimFrameList = class(TVKXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
 
   end;
 
@@ -115,7 +115,7 @@ type
   // TSpriteAnimation
   { Animations define how the texture coordinates for each offset
      are to be determined. }
-  TSpriteAnimation = class(TXCollectionItem, IGLMaterialLibrarySupported)
+  TSpriteAnimation = class(TVKXCollectionItem, IGLMaterialLibrarySupported)
   private
     FCurrentFrame,
       FStartFrame,
@@ -147,7 +147,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary; virtual;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -191,15 +191,15 @@ type
 
   // TSpriteAnimationList
   { A collection for storing TSpriteAnimation objects. }
-  TSpriteAnimationList = class(TXCollection)
+  TSpriteAnimationList = class(TVKXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
 
   end;
 
   // TSpriteAnimationMode
-  { Sets the current animation playback mode: <ul>
+  { Sets the current animation playback mode: 
      samNone - No playback, the animation does not progress.
      samPlayOnce - Plays the animation once then switches to samNone.
      samLoop - Play the animation forward in a continuous loop.
@@ -446,7 +446,7 @@ end;
 // ItemsClass
 //
 
-class function TSpriteAnimFrameList.ItemsClass: TXCollectionItemClass;
+class function TSpriteAnimFrameList.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TSpriteAnimFrame;
 end;
@@ -528,7 +528,7 @@ end;
 // Create
 //
 
-constructor TSpriteAnimation.Create(aOwner: TXCollection);
+constructor TSpriteAnimation.Create(aOwner: TVKXCollection);
 begin
   inherited;
   FFrames := TSpriteAnimFrameList.Create(Self);
@@ -789,7 +789,7 @@ end;
 // ItemsClass
 //
 
-class function TSpriteAnimationList.ItemsClass: TXCollectionItemClass;
+class function TSpriteAnimationList.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TSpriteAnimation;
 end;

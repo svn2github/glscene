@@ -101,7 +101,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
 
     procedure Render(var rci: TRenderContextInfo); override;
@@ -140,12 +140,12 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
 
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    class function CanAddTo(collection: TXCollection): Boolean; override;
+    class function CanAddTo(collection: TVKXCollection): Boolean; override;
 
   end;
 
@@ -481,7 +481,7 @@ end;
 // Create
 //
 
-constructor TVKODECustomCollider.Create(AOwner: TXCollection);
+constructor TVKODECustomCollider.Create(AOwner: TVKXCollection);
 begin
   inherited;
 
@@ -747,7 +747,7 @@ end;
 // Create
 //
 
-constructor TVKODEHeightField.Create(AOwner: TXCollection);
+constructor TVKODEHeightField.Create(AOwner: TVKXCollection);
 var
   Allow: Boolean;
 begin
@@ -822,7 +822,7 @@ end;
 // CanAddTo
 //
 
-class function TVKODEHeightField.CanAddTo(collection: TXCollection): Boolean;
+class function TVKODEHeightField.CanAddTo(collection: TVKXCollection): Boolean;
 begin
   Result := False;
   if collection is TVKBehaviours then

@@ -19,9 +19,9 @@ uses
 
 type
 
-  // TSkyDomeBand
+  // TVKSkyDomeBand
   //
-  TSkyDomeBand = class(TCollectionItem)
+  TVKSkyDomeBand = class(TCollectionItem)
   private
     { Private Declarations }
     FStartAngle: Single;
@@ -60,31 +60,31 @@ type
     property Stacks: Integer read FStacks write SetStacks default 1;
   end;
 
-  // TSkyDomeBands
+  // TVKSkyDomeBands
   //
-  TSkyDomeBands = class(TCollection)
+  TVKSkyDomeBands = class(TCollection)
   protected
     { Protected Declarations }
     owner: TComponent;
     function GetOwner: TPersistent; override;
-    procedure SetItems(index: Integer; const val: TSkyDomeBand);
-    function GetItems(index: Integer): TSkyDomeBand;
+    procedure SetItems(index: Integer; const val: TVKSkyDomeBand);
+    function GetItems(index: Integer): TVKSkyDomeBand;
 
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent);
-    function Add: TSkyDomeBand;
-    function FindItemID(ID: Integer): TSkyDomeBand;
-    property Items[index: Integer]: TSkyDomeBand read GetItems write SetItems;
+    function Add: TVKSkyDomeBand;
+    function FindItemID(ID: Integer): TVKSkyDomeBand;
+    property Items[index: Integer]: TVKSkyDomeBand read GetItems write SetItems;
     default;
 
     procedure NotifyChange;
     procedure BuildList(var rci: TRenderContextInfo);
   end;
 
-  // TSkyDomeStar
+  // TVKSkyDomeStar
   //
-  TSkyDomeStar = class(TCollectionItem)
+  TVKSkyDomeStar = class(TCollectionItem)
   private
     { Private Declarations }
     FRA, FDec: Single;
@@ -116,15 +116,15 @@ type
 
   end;
 
-  // TSkyDomeStars
+  // TVKSkyDomeStars
   //
-  TSkyDomeStars = class(TCollection)
+  TVKSkyDomeStars = class(TCollection)
   protected
     { Protected Declarations }
     owner: TComponent;
     function GetOwner: TPersistent; override;
-    procedure SetItems(index: Integer; const val: TSkyDomeStar);
-    function GetItems(index: Integer): TSkyDomeStar;
+    procedure SetItems(index: Integer; const val: TVKSkyDomeStar);
+    function GetItems(index: Integer): TVKSkyDomeStar;
 
     procedure PrecomputeCartesianCoordinates;
 
@@ -132,9 +132,9 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent);
 
-    function Add: TSkyDomeStar;
-    function FindItemID(ID: Integer): TSkyDomeStar;
-    property Items[index: Integer]: TSkyDomeStar read GetItems write SetItems;
+    function Add: TVKSkyDomeStar;
+    function FindItemID(ID: Integer): TVKSkyDomeStar;
+    property Items[index: Integer]: TVKSkyDomeStar read GetItems write SetItems;
     default;
 
     procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
@@ -149,10 +149,10 @@ type
     procedure LoadStarsFile(const starsFileName: string);
   end;
 
-  // TSkyDomeOption
+  // TVKSkyDomeOption
   //
-  TSkyDomeOption = (sdoTwinkle);
-  TSkyDomeOptions = set of TSkyDomeOption;
+  TVKSkyDomeOption = (sdoTwinkle);
+  TVKSkyDomeOptions = set of TVKSkyDomeOption;
 
   // TVKSkyDome
   //
@@ -169,15 +169,15 @@ type
   TVKSkyDome = class(TVKCameraInvariantObject)
   private
     { Private Declarations }
-    FOptions: TSkyDomeOptions;
-    FBands: TSkyDomeBands;
-    FStars: TSkyDomeStars;
+    FOptions: TVKSkyDomeOptions;
+    FBands: TVKSkyDomeBands;
+    FStars: TVKSkyDomeStars;
 
   protected
     { Protected Declarations }
-    procedure SetBands(const val: TSkyDomeBands);
-    procedure SetStars(const val: TSkyDomeStars);
-    procedure SetOptions(const val: TSkyDomeOptions);
+    procedure SetBands(const val: TVKSkyDomeBands);
+    procedure SetStars(const val: TVKSkyDomeStars);
+    procedure SetOptions(const val: TVKSkyDomeOptions);
 
   public
     { Public Declarations }
@@ -189,9 +189,9 @@ type
 
   published
     { Published Declarations }
-    property Bands: TSkyDomeBands read FBands write SetBands;
-    property Stars: TSkyDomeStars read FStars write SetStars;
-    property Options: TSkyDomeOptions read FOptions write SetOptions default [];
+    property Bands: TVKSkyDomeBands read FBands write SetBands;
+    property Stars: TVKSkyDomeStars read FStars write SetStars;
+    property Options: TVKSkyDomeOptions read FOptions write SetOptions default [];
   end;
 
   TEarthSkydomeOption = (esoFadeStarsWithSun, esoRotateOnTwelveHours, esoDepthTest);
@@ -286,13 +286,13 @@ uses
   GLS.State;
 
 // ------------------
-// ------------------ TSkyDomeBand ------------------
+// ------------------ TVKSkyDomeBand ------------------
 // ------------------
 
 // Create
 //
 
-constructor TSkyDomeBand.Create(Collection: TCollection);
+constructor TVKSkyDomeBand.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
   FStartColor := TVKColor.Create(Self);
@@ -308,7 +308,7 @@ end;
 // Destroy
 //
 
-destructor TSkyDomeBand.Destroy;
+destructor TVKSkyDomeBand.Destroy;
 begin
   FStartColor.Free;
   FStopColor.Free;
@@ -318,16 +318,16 @@ end;
 // Assign
 //
 
-procedure TSkyDomeBand.Assign(Source: TPersistent);
+procedure TVKSkyDomeBand.Assign(Source: TPersistent);
 begin
-  if Source is TSkyDomeBand then
+  if Source is TVKSkyDomeBand then
   begin
-    FStartAngle := TSkyDomeBand(Source).FStartAngle;
-    FStopAngle := TSkyDomeBand(Source).FStopAngle;
-    FStartColor.Assign(TSkyDomeBand(Source).FStartColor);
-    FStopColor.Assign(TSkyDomeBand(Source).FStopColor);
-    FSlices := TSkyDomeBand(Source).FSlices;
-    FStacks := TSkyDomeBand(Source).FStacks;
+    FStartAngle := TVKSkyDomeBand(Source).FStartAngle;
+    FStopAngle := TVKSkyDomeBand(Source).FStopAngle;
+    FStartColor.Assign(TVKSkyDomeBand(Source).FStartColor);
+    FStopColor.Assign(TVKSkyDomeBand(Source).FStopColor);
+    FSlices := TVKSkyDomeBand(Source).FSlices;
+    FStacks := TVKSkyDomeBand(Source).FStacks;
   end;
   inherited Destroy;
 end;
@@ -335,7 +335,7 @@ end;
 // GetDisplayName
 //
 
-function TSkyDomeBand.GetDisplayName: string;
+function TVKSkyDomeBand.GetDisplayName: string;
 begin
   Result := Format('%d: %.1f° - %.1f°', [Index, StartAngle, StopAngle]);
 end;
@@ -343,17 +343,17 @@ end;
 // SetStartAngle
 //
 
-procedure TSkyDomeBand.SetStartAngle(const val: Single);
+procedure TVKSkyDomeBand.SetStartAngle(const val: Single);
 begin
   FStartAngle := ClampValue(val, -90, 90);
   if FStartAngle > FStopAngle then FStopAngle := FStartAngle;
-  TSkyDomeBands(Collection).NotifyChange;
+  TVKSkyDomeBands(Collection).NotifyChange;
 end;
 
 // SetStartColor
 //
 
-procedure TSkyDomeBand.SetStartColor(const val: TVKColor);
+procedure TVKSkyDomeBand.SetStartColor(const val: TVKColor);
 begin
   FStartColor.Assign(val);
 end;
@@ -361,18 +361,18 @@ end;
 // SetStopAngle
 //
 
-procedure TSkyDomeBand.SetStopAngle(const val: Single);
+procedure TVKSkyDomeBand.SetStopAngle(const val: Single);
 begin
   FStopAngle := ClampValue(val, -90, 90);
   if FStopAngle < FStartAngle then
     FStartAngle := FStopAngle;
-  TSkyDomeBands(Collection).NotifyChange;
+  TVKSkyDomeBands(Collection).NotifyChange;
 end;
 
 // SetStopColor
 //
 
-procedure TSkyDomeBand.SetStopColor(const val: TVKColor);
+procedure TVKSkyDomeBand.SetStopColor(const val: TVKColor);
 begin
   FStopColor.Assign(val);
 end;
@@ -380,39 +380,39 @@ end;
 // SetSlices
 //
 
-procedure TSkyDomeBand.SetSlices(const val: Integer);
+procedure TVKSkyDomeBand.SetSlices(const val: Integer);
 begin
   if val < 3 then
     FSlices := 3
   else
     FSlices := val;
-  TSkyDomeBands(Collection).NotifyChange;
+  TVKSkyDomeBands(Collection).NotifyChange;
 end;
 
 // SetStacks
 //
 
-procedure TSkyDomeBand.SetStacks(const val: Integer);
+procedure TVKSkyDomeBand.SetStacks(const val: Integer);
 begin
   if val < 1 then
     FStacks := 1
   else
     FStacks := val;
-  TSkyDomeBands(Collection).NotifyChange;
+  TVKSkyDomeBands(Collection).NotifyChange;
 end;
 
 // OnColorChange
 //
 
-procedure TSkyDomeBand.OnColorChange(sender: TObject);
+procedure TVKSkyDomeBand.OnColorChange(sender: TObject);
 begin
-  TSkyDomeBands(Collection).NotifyChange;
+  TVKSkyDomeBands(Collection).NotifyChange;
 end;
 
 // BuildList
 //
 
-procedure TSkyDomeBand.BuildList(var rci: TRenderContextInfo);
+procedure TVKSkyDomeBand.BuildList(var rci: TRenderContextInfo);
 
 // coordinates system note: X is forward, Y is left and Z is up
 // always rendered as sphere of radius 1
@@ -496,41 +496,41 @@ begin
 end;
 
 // ------------------
-// ------------------ TSkyDomeBands ------------------
+// ------------------ TVKSkyDomeBands ------------------
 // ------------------
 
-constructor TSkyDomeBands.Create(AOwner: TComponent);
+constructor TVKSkyDomeBands.Create(AOwner: TComponent);
 begin
   Owner := AOwner;
-  inherited Create(TSkyDomeBand);
+  inherited Create(TVKSkyDomeBand);
 end;
 
-function TSkyDomeBands.GetOwner: TPersistent;
+function TVKSkyDomeBands.GetOwner: TPersistent;
 begin
   Result := Owner;
 end;
 
-procedure TSkyDomeBands.SetItems(index: Integer; const val: TSkyDomeBand);
+procedure TVKSkyDomeBands.SetItems(index: Integer; const val: TVKSkyDomeBand);
 begin
   inherited Items[index] := val;
 end;
 
-function TSkyDomeBands.GetItems(index: Integer): TSkyDomeBand;
+function TVKSkyDomeBands.GetItems(index: Integer): TVKSkyDomeBand;
 begin
-  Result := TSkyDomeBand(inherited Items[index]);
+  Result := TVKSkyDomeBand(inherited Items[index]);
 end;
 
-function TSkyDomeBands.Add: TSkyDomeBand;
+function TVKSkyDomeBands.Add: TVKSkyDomeBand;
 begin
-  Result := (inherited Add) as TSkyDomeBand;
+  Result := (inherited Add) as TVKSkyDomeBand;
 end;
 
-function TSkyDomeBands.FindItemID(ID: Integer): TSkyDomeBand;
+function TVKSkyDomeBands.FindItemID(ID: Integer): TVKSkyDomeBand;
 begin
-  Result := (inherited FindItemID(ID)) as TSkyDomeBand;
+  Result := (inherited FindItemID(ID)) as TVKSkyDomeBand;
 end;
 
-procedure TSkyDomeBands.NotifyChange;
+procedure TVKSkyDomeBands.NotifyChange;
 begin
   if Assigned(owner) and (owner is TVKBaseSceneObject) then TVKBaseSceneObject(owner).StructureChanged;
 end;
@@ -538,7 +538,7 @@ end;
 // BuildList
 //
 
-procedure TSkyDomeBands.BuildList(var rci: TRenderContextInfo);
+procedure TVKSkyDomeBands.BuildList(var rci: TRenderContextInfo);
 var
   i: Integer;
 begin
@@ -546,13 +546,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TSkyDomeStar ------------------
+// ------------------ TVKSkyDomeStar ------------------
 // ------------------
 
 // Create
 //
 
-constructor TSkyDomeStar.Create(Collection: TCollection);
+constructor TVKSkyDomeStar.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
@@ -560,7 +560,7 @@ end;
 // Destroy
 //
 
-destructor TSkyDomeStar.Destroy;
+destructor TVKSkyDomeStar.Destroy;
 begin
   inherited Destroy;
 end;
@@ -568,15 +568,15 @@ end;
 // Assign
 //
 
-procedure TSkyDomeStar.Assign(Source: TPersistent);
+procedure TVKSkyDomeStar.Assign(Source: TPersistent);
 begin
-  if Source is TSkyDomeStar then
+  if Source is TVKSkyDomeStar then
   begin
-    FRA := TSkyDomeStar(Source).FRA;
-    FDec := TSkyDomeStar(Source).FDec;
-    FMagnitude := TSkyDomeStar(Source).FMagnitude;
-    FColor := TSkyDomeStar(Source).FColor;
-    SetVector(FCacheCoord, TSkyDomeStar(Source).FCacheCoord);
+    FRA := TVKSkyDomeStar(Source).FRA;
+    FDec := TVKSkyDomeStar(Source).FDec;
+    FMagnitude := TVKSkyDomeStar(Source).FMagnitude;
+    FColor := TVKSkyDomeStar(Source).FColor;
+    SetVector(FCacheCoord, TVKSkyDomeStar(Source).FCacheCoord);
   end;
   inherited Destroy;
 end;
@@ -584,28 +584,28 @@ end;
 // GetDisplayName
 //
 
-function TSkyDomeStar.GetDisplayName: string;
+function TVKSkyDomeStar.GetDisplayName: string;
 begin
   Result := Format('RA: %5.1f / Dec: %5.1f', [RA, Dec]);
 end;
 
 // ------------------
-// ------------------ TSkyDomeStars ------------------
+// ------------------ TVKSkyDomeStars ------------------
 // ------------------
 
 // Create
 //
 
-constructor TSkyDomeStars.Create(AOwner: TComponent);
+constructor TVKSkyDomeStars.Create(AOwner: TComponent);
 begin
   Owner := AOwner;
-  inherited Create(TSkyDomeStar);
+  inherited Create(TVKSkyDomeStar);
 end;
 
 // GetOwner
 //
 
-function TSkyDomeStars.GetOwner: TPersistent;
+function TVKSkyDomeStars.GetOwner: TPersistent;
 begin
   Result := Owner;
 end;
@@ -613,7 +613,7 @@ end;
 // SetItems
 //
 
-procedure TSkyDomeStars.SetItems(index: Integer; const val: TSkyDomeStar);
+procedure TVKSkyDomeStars.SetItems(index: Integer; const val: TVKSkyDomeStar);
 begin
   inherited Items[index] := val;
 end;
@@ -621,34 +621,34 @@ end;
 // GetItems
 //
 
-function TSkyDomeStars.GetItems(index: Integer): TSkyDomeStar;
+function TVKSkyDomeStars.GetItems(index: Integer): TVKSkyDomeStar;
 begin
-  Result := TSkyDomeStar(inherited Items[index]);
+  Result := TVKSkyDomeStar(inherited Items[index]);
 end;
 
 // Add
 //
 
-function TSkyDomeStars.Add: TSkyDomeStar;
+function TVKSkyDomeStars.Add: TVKSkyDomeStar;
 begin
-  Result := (inherited Add) as TSkyDomeStar;
+  Result := (inherited Add) as TVKSkyDomeStar;
 end;
 
 // FindItemID
 //
 
-function TSkyDomeStars.FindItemID(ID: Integer): TSkyDomeStar;
+function TVKSkyDomeStars.FindItemID(ID: Integer): TVKSkyDomeStar;
 begin
-  Result := (inherited FindItemID(ID)) as TSkyDomeStar;
+  Result := (inherited FindItemID(ID)) as TVKSkyDomeStar;
 end;
 
 // PrecomputeCartesianCoordinates
 //
 
-procedure TSkyDomeStars.PrecomputeCartesianCoordinates;
+procedure TVKSkyDomeStars.PrecomputeCartesianCoordinates;
 var
   i: Integer;
-  star: TSkyDomeStar;
+  star: TVKSkyDomeStar;
   raC, raS, decC, decS: Single;
 begin
   // to be enhanced...
@@ -666,11 +666,11 @@ end;
 // BuildList
 //
 
-procedure TSkyDomeStars.BuildList(var rci: TRenderContextInfo; twinkle:
+procedure TVKSkyDomeStars.BuildList(var rci: TRenderContextInfo; twinkle:
   Boolean);
 var
   i, n: Integer;
-  star: TSkyDomeStar;
+  star: TVKSkyDomeStar;
   lastColor: TColor;
   lastPointSize10, pointSize10: Integer;
   color, twinkleColor: TColorVector;
@@ -748,12 +748,12 @@ end;
 // AddRandomStars
 //
 
-procedure TSkyDomeStars.AddRandomStars(const nb: Integer; const color: TColor;
+procedure TVKSkyDomeStars.AddRandomStars(const nb: Integer; const color: TColor;
   const limitToTopDome: Boolean = False);
 var
   i: Integer;
   coord: TAffineVector;
-  star: TSkyDomeStar;
+  star: TVKSkyDomeStar;
 begin
   for i := 1 to nb do
   begin
@@ -776,7 +776,7 @@ end;
 // AddRandomStars
 //
 
-procedure TSkyDomeStars.AddRandomStars(const nb: Integer; const ColorMin,
+procedure TVKSkyDomeStars.AddRandomStars(const nb: Integer; const ColorMin,
   ColorMax: TVector3b;
   const Magnitude_min, Magnitude_max: Single;
   const limitToTopDome: Boolean = False);
@@ -789,7 +789,7 @@ procedure TSkyDomeStars.AddRandomStars(const nb: Integer; const ColorMin,
 var
   i: Integer;
   coord: TAffineVector;
-  star: TSkyDomeStar;
+  star: TVKSkyDomeStar;
 
 begin
   for i := 1 to nb do
@@ -815,7 +815,7 @@ end;
 // LoadStarsFile
 //
 
-procedure TSkyDomeStars.LoadStarsFile(const starsFileName: string);
+procedure TVKSkyDomeStars.LoadStarsFile(const starsFileName: string);
 var
   fs: TFileStream;
   sr: TVKStarRecord;
@@ -855,7 +855,7 @@ begin
   inherited Create(AOwner);
   CamInvarianceMode := cimPosition;
   ObjectStyle := ObjectStyle + [osDirectDraw, osNoVisibilityCulling];
-  FBands := TSkyDomeBands.Create(Self);
+  FBands := TVKSkyDomeBands.Create(Self);
   with FBands.Add do
   begin
     StartAngle := 0;
@@ -871,7 +871,7 @@ begin
     Stacks := 4;
     StopColor.Color := clrNavy;
   end;
-  FStars := TSkyDomeStars.Create(Self);
+  FStars := TVKSkyDomeStars.Create(Self);
 end;
 
 // Destroy
@@ -900,7 +900,7 @@ end;
 // SetBands
 //
 
-procedure TVKSkyDome.SetBands(const val: TSkyDomeBands);
+procedure TVKSkyDome.SetBands(const val: TVKSkyDomeBands);
 begin
   FBands.Assign(val);
   StructureChanged;
@@ -909,7 +909,7 @@ end;
 // SetStars
 //
 
-procedure TVKSkyDome.SetStars(const val: TSkyDomeStars);
+procedure TVKSkyDome.SetStars(const val: TVKSkyDomeStars);
 begin
   FStars.Assign(val);
   StructureChanged;
@@ -918,7 +918,7 @@ end;
 // SetOptions
 //
 
-procedure TVKSkyDome.SetOptions(const val: TSkyDomeOptions);
+procedure TVKSkyDome.SetOptions(const val: TVKSkyDomeOptions);
 begin
   if val <> FOptions then
   begin

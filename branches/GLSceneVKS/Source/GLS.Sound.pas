@@ -490,7 +490,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -1782,7 +1782,7 @@ end;
 // Create
 //
 
-constructor TVKBSoundEmitter.Create(aOwner: TXCollection);
+constructor TVKBSoundEmitter.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
   FSource := TVKSoundSource.Create(nil);

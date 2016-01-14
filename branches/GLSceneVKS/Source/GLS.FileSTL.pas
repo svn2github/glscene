@@ -48,10 +48,10 @@ type
     There are two flavors of STL, the "text" and the "binary", this class
     reads both, but exports only the "binary" version.
     Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
-  TVKSTLVectorFile = class(TVectorFile)
+  TVKSTLVectorFile = class(TVKVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
@@ -82,7 +82,7 @@ const
 
   // Capabilities
   //
-class function TVKSTLVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKSTLVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
@@ -126,7 +126,7 @@ var
   fileContent: TStringList;
   curLine: String;
   i: Integer;
-  mesh: TMeshObject;
+  mesh: TVKMeshObject;
   header: TSTLHeader;
   dataFace: TSTLFace;
   calcNormal: TAffineVector;
@@ -147,7 +147,7 @@ begin
     Inc(i);
   end;
 
-  mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+  mesh := TVKMeshObject.CreateOwned(Owner.MeshObjects);
   try
 
     mesh.Mode := momTriangles;

@@ -31,7 +31,7 @@ type
   private
     procedure flipSurface(chgData: PGLubyte; w, h, d: integer);
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -610,7 +610,7 @@ end;
 // Capabilities
 //
 
-class function TVKDDSImage.Capabilities: TDataFileCapabilities;
+class function TVKDDSImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

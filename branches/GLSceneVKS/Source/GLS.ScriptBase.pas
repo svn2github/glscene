@@ -30,7 +30,7 @@ type
   { The base script class that defines the abstract functions and properties. 
      Don't use this class directly, use the script classes descended from this 
      base class.  }
-  TVKScriptBase = class(TXCollectionItem)
+  TVKScriptBase = class(TVKXCollectionItem)
 		private
       { Private Declarations }
       FText : TStringList;
@@ -47,7 +47,7 @@ type
 
 		public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure Assign(Source: TPersistent); override;
@@ -74,7 +74,7 @@ type
   // TVKScripts
   //
   { XCollection descendant for storing and handling scripts. }
-  TVKScripts = class(TXCollection)
+  TVKScripts = class(TVKXCollection)
 		private
 			{ Private Declarations }
 
@@ -86,9 +86,9 @@ type
 			{ Public Declarations }
 			procedure Assign(Source: TPersistent); override;
 
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TVKXCollectionItemClass; override;
 
-      function CanAdd(aClass : TXCollectionItemClass) : Boolean; override;
+      function CanAdd(aClass : TVKXCollectionItemClass) : Boolean; override;
       property Items[index : Integer] : TVKScriptBase read GetItems; default;
 
   end;
@@ -129,7 +129,7 @@ implementation
 
 // Create
 //
-constructor TVKScriptBase.Create(aOwner: TXCollection);
+constructor TVKScriptBase.Create(aOwner: TVKXCollection);
 begin
   inherited;
   FText:=TStringList.Create;
@@ -220,14 +220,14 @@ end;
 
 // ItemsClass
 //
-class function TVKScripts.ItemsClass: TXCollectionItemClass;
+class function TVKScripts.ItemsClass: TVKXCollectionItemClass;
 begin
   Result:=TVKScriptBase;
 end;
 
 // CanAdd
 //
-function TVKScripts.CanAdd(aClass: TXCollectionItemClass): Boolean;
+function TVKScripts.CanAdd(aClass: TVKXCollectionItemClass): Boolean;
 begin
   Result:=aClass.InheritsFrom(TVKScriptBase);
 end;

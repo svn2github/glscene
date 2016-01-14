@@ -46,7 +46,7 @@ type
       procedure Loaded; override;
 
     public
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
@@ -86,7 +86,7 @@ end;
 
 // Create
 //
-constructor TVKDWS2ActiveBehaviour.Create(AOwner: TXCollection);
+constructor TVKDWS2ActiveBehaviour.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;

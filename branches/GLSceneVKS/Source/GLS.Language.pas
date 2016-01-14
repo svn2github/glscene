@@ -7,7 +7,7 @@
   In Delphi, the text is encoded using Ansi cp1251 and can not be encoded \ decoding.
   In Lazarus has the ability to upload text from any encoding.
   Ru:
-  TLanguage создан для локализации вашего приложения
+  TVKLanguage создан для локализации вашего приложения
   В Delphi текст имеет кодировку Ansi cp1251 и не подлежит кодировке\декодировке.
   В Lazarus можно загружать текст любой кодировки
    
@@ -23,25 +23,25 @@ uses
 
 type
 
-  TLanguageEntry = record
+  TVKLanguageEntry = record
     ID: String; // **< identifier
     Text: String; // **< translation
   end;
 
-  TLanguageEntryArray = array of TLanguageEntry;
+  TVKLanguageEntryArray = array of TVKLanguageEntry;
 
-  { TLanguage }
+  { TVKLanguage }
   { **
     * Eng
-    *   Class TLanguage is used for downloading and translation, as in the final product it's no need for text processing.
+    *   Class TVKLanguage is used for downloading and translation, as in the final product it's no need for text processing.
     * Ru
-    *   Класс TLanguage используется толко для загрузки и перевода текста, так как в конечном
+    *   Класс TVKLanguage используется толко для загрузки и перевода текста, так как в конечном
     *   продукте нет необходимости в обработке текста.
     * }
-  TLanguage = class
+  TVKLanguage = class
   private
     FCurrentLanguageFile: String;
-    Entry: TLanguageEntryArray; // **< Entrys of Chosen Language
+    Entry: TVKLanguageEntryArray; // **< Entrys of Chosen Language
   public
     function FindID(const ID: String): integer;
     function Translate(const ID: String): String;
@@ -55,16 +55,16 @@ type
     * Ru
     *   Расширенный класс созданный для загрузки и обработки текста, будет полезен для редакторов языка.
     * }
-  TLanguageExt = class(TLanguage)
+  TVKLanguageExt = class(TVKLanguage)
   private
-    function GetEntry(Index: integer): TLanguageEntry;
-    procedure SetEntry(Index: integer; aValue: TLanguageEntry);
+    function GetEntry(Index: integer): TVKLanguageEntry;
+    procedure SetEntry(Index: integer; aValue: TVKLanguageEntry);
     function GetCount: integer;
   public
     procedure AddConst(const ID: String; const Text: String);
     procedure AddConsts(aValues: TStrings);
     procedure ChangeConst(const ID: String; const Text: String);
-    property Items[Index: integer]: TLanguageEntry read GetEntry write SetEntry;
+    property Items[Index: integer]: TVKLanguageEntry read GetEntry write SetEntry;
     property Count: integer read GetCount;
     procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
@@ -76,9 +76,9 @@ type
   { Абстрактный класс,  для палитры компонентов  }
   TVKSLanguage = class(TComponent)
   private
-    FLanguage: TLanguageExt;
+    FLanguage: TVKLanguageExt;
     FLanguageList: TStrings;
-    procedure SetLanguage(aValue: TLanguageExt);
+    procedure SetLanguage(aValue: TVKLanguageExt);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -86,7 +86,7 @@ type
     procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
     function Translate(const ID: String): String;
-    property Language: TLanguageExt read FLanguage write SetLanguage;
+    property Language: TVKLanguageExt read FLanguage write SetLanguage;
   end;
 
 //-----------------------------------------------------------------------
@@ -100,12 +100,12 @@ implementation
 uses
   GLS.CrossPlatform, GLS.Log;
 
-{ TLanguage }
+{ TVKLanguage }
 
 { **
   * Load the specified LanguageFile
   * }
-procedure TLanguage.LoadLanguageFromFile(const Language: String);
+procedure TVKLanguage.LoadLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -156,7 +156,7 @@ end;
   * Find the index of ID an array of language entry.
   * @returns the index on success, -1 otherwise.
   * }
-function TLanguage.FindID(const ID: String): integer;
+function TVKLanguage.FindID(const ID: String): integer;
 var
   Index: integer;
 begin
@@ -177,7 +177,7 @@ end;
   * setting. If Text is not a known ID, it will be returned as is.
   * @param Text either an ID or an UTF-8 encoded string
   * }
-function TLanguage.Translate(const ID: String): String;
+function TVKLanguage.Translate(const ID: String): String;
 var
   EntryIndex: integer;
 begin
@@ -194,19 +194,19 @@ begin
   end;
 end;
 
-{ TLanguageExt }
+{ TVKLanguageExt }
 
 { **
   * Add a Constant ID that will be Translated but not Loaded from the LanguageFile
   * }
-procedure TLanguageExt.AddConst(const ID: String; const Text: String);
+procedure TVKLanguageExt.AddConst(const ID: String; const Text: String);
 begin
   SetLength(Entry, Length(Entry) + 1);
   Entry[high(Entry)].ID := ID;
   Entry[high(Entry)].Text := Text;
 end;
 
-procedure TLanguageExt.AddConsts(aValues: TStrings);
+procedure TVKLanguageExt.AddConsts(aValues: TStrings);
 var
   I: integer;
 begin
@@ -219,7 +219,7 @@ end;
 { **
   * Change a Constant Value by ID
   * }
-procedure TLanguageExt.ChangeConst(const ID: String;
+procedure TVKLanguageExt.ChangeConst(const ID: String;
   const Text: String);
 var
   I: integer;
@@ -234,17 +234,17 @@ begin
   end;
 end;
 
-function TLanguageExt.GetEntry(Index: integer): TLanguageEntry;
+function TVKLanguageExt.GetEntry(Index: integer): TVKLanguageEntry;
 begin
   Result := Entry[Index];
 end;
 
-procedure TLanguageExt.SetEntry(Index: integer; aValue: TLanguageEntry);
+procedure TVKLanguageExt.SetEntry(Index: integer; aValue: TVKLanguageEntry);
 begin
   Entry[Index] := aValue;
 end;
 
-function TLanguageExt.GetCount: integer;
+function TVKLanguageExt.GetCount: integer;
 begin
   Result := high(Entry) + 1;
 end;
@@ -252,7 +252,7 @@ end;
 { **
   * Save Update Language File
   * }
-procedure TLanguageExt.SaveLanguageFromFile(const Language: String);
+procedure TVKLanguageExt.SaveLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -270,7 +270,7 @@ begin
   IniFile.Free;
 end;
 
-procedure TLanguageExt.SaveLanguageFromFile;
+procedure TVKLanguageExt.SaveLanguageFromFile;
 begin
   SaveLanguageFromFile(CurrentLanguageFile);
 end;
@@ -280,7 +280,7 @@ end;
 constructor TVKSLanguage.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FLanguage := TLanguageExt.Create;
+  FLanguage := TVKLanguageExt.Create;
   FLanguageList := TStringList.Create;
 end;
 
@@ -296,7 +296,7 @@ begin
   FLanguage.LoadLanguageFromFile(Language);
 end;
 
-procedure TVKSLanguage.SetLanguage(aValue: TLanguageExt);
+procedure TVKSLanguage.SetLanguage(aValue: TVKLanguageExt);
 begin
   if aValue <> nil then
     FLanguage := aValue;

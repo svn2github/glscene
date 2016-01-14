@@ -72,7 +72,7 @@ type
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
-  TBSPMeshObject = class(TMeshObject)
+  TBSPMeshObject = class(TVKMeshObject)
   private
     { Private Declarations }
     FRenderSort: TBSPRenderSort;
@@ -84,7 +84,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TMeshObjectList);
+    constructor CreateOwned(AOwner: TVKMeshObjectList);
     destructor Destroy; override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
@@ -140,7 +140,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TFaceGroups); override;
+    constructor CreateOwned(AOwner: TVKFaceGroups); override;
     destructor Destroy; override;
 
     procedure IsCulled(const bsprci: TBSPRenderContextInfo;
@@ -304,7 +304,7 @@ end;
 
 // CreateOwned
 //
-constructor TBSPMeshObject.CreateOwned(AOwner: TMeshObjectList);
+constructor TBSPMeshObject.CreateOwned(AOwner: TVKMeshObjectList);
 begin
   inherited;
   Mode := momFaceGroups;
@@ -607,7 +607,7 @@ end;
 
 // CreateOwned
 //
-constructor TFGBSPNode.CreateOwned(AOwner: TFaceGroups);
+constructor TFGBSPNode.CreateOwned(AOwner: TVKFaceGroups);
 begin
   inherited;
   FPositiveSubNodeIndex := 0;

@@ -48,11 +48,11 @@ type
   TVertexDataArray = array[0..(MAXINT shr 6)] of TVertexData;
   PVertexDataArray = ^TVertexDataArray;
 
-  // TVertexList
+  // TVKVertexList
   //
   { Stores an interlaced vertex list for direct use in OpenGL. 
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
-  TVertexList = class(TVKUpdateAbleObject)
+  TVKVertexList = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
     FValues: PVertexDataArray;
@@ -90,8 +90,8 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
-    function CreateInterpolatedCoords(list2: TVertexList; lerpFactor: Single)
-      : TVertexList;
+    function CreateInterpolatedCoords(list2: TVKVertexList; lerpFactor: Single)
+      : TVKVertexList;
 
     { Adds a vertex to the list, fastest method. }
     procedure AddVertex(const vertexData: TVertexData); overload;
@@ -172,7 +172,7 @@ type
   TVKMesh = class(TVKSceneObject)
   private
     { Private Declarations }
-    FVertices: TVertexList;
+    FVertices: TVKVertexList;
     FMode: TMeshMode;
     FVertexMode: TVertexMode;
     FAxisAlignedDimensionsCache: TVector;
@@ -180,7 +180,7 @@ type
   protected
     { Protected Declarations }
     procedure SetMode(AValue: TMeshMode);
-    procedure SetVertices(AValue: TVertexList);
+    procedure SetVertices(AValue: TVKVertexList);
     procedure SetVertexMode(AValue: TVertexMode);
 
     procedure VerticesChanged(Sender: TObject);
@@ -193,7 +193,7 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure CalcNormals(Frontface: TFaceWinding);
-    property Vertices: TVertexList read FVertices write SetVertices;
+    property Vertices: TVKVertexList read FVertices write SetVertices;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure StructureChanged; override;
 
@@ -213,9 +213,9 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// ----------------- TVertexList ------------------------------------------------
+// ----------------- TVKVertexList ------------------------------------------------
 
-constructor TVertexList.Create(AOwner: TPersistent);
+constructor TVKVertexList.Create(AOwner: TPersistent);
 begin
   inherited;
   FValues := nil;
@@ -227,7 +227,7 @@ end;
 // Destroy
 //
 
-destructor TVertexList.Destroy;
+destructor TVKVertexList.Destroy;
 begin
   Locked := False;
   FreeMem(FValues);
@@ -237,13 +237,13 @@ end;
 // CreateInterpolatedCoords
 //
 
-function TVertexList.CreateInterpolatedCoords(list2: TVertexList;
-  lerpFactor: Single): TVertexList;
+function TVKVertexList.CreateInterpolatedCoords(list2: TVKVertexList;
+  lerpFactor: Single): TVKVertexList;
 var
   i: Integer;
 begin
   Assert(Count = list2.Count);
-  Result := TVertexList.Create(nil);
+  Result := TVKVertexList.Create(nil);
   Result.Capacity := Count;
   Move(FValues[0], Result.FValues[0], Count * SizeOf(TVertexData));
   // interpolate vertices
@@ -255,7 +255,7 @@ end;
 // SetCapacity
 //
 
-procedure TVertexList.SetCapacity(const val: Integer);
+procedure TVKVertexList.SetCapacity(const val: Integer);
 begin
   Assert(not Locked, 'Cannot change locked list capacity !');
   FCapacity := val;
@@ -267,7 +267,7 @@ end;
 // SetGrowth
 //
 
-procedure TVertexList.SetGrowth(const val: Integer);
+procedure TVKVertexList.SetGrowth(const val: Integer);
 begin
   if val > 16 then
     FGrowth := val
@@ -278,7 +278,7 @@ end;
 // Grow
 //
 
-procedure TVertexList.Grow;
+procedure TVKVertexList.Grow;
 begin
   Assert(not Locked, 'Cannot add to a locked list !');
   FCapacity := FCapacity + FGrowth;
@@ -288,7 +288,7 @@ end;
 // GetFirstColor
 //
 
-function TVertexList.GetFirstColor: PGLFloat;
+function TVKVertexList.GetFirstColor: PGLFloat;
 begin
   Result := @(FValues^[0].color);
 end;
@@ -296,7 +296,7 @@ end;
 // GetFirstEntry
 //
 
-function TVertexList.GetFirstEntry: PGLFloat;
+function TVKVertexList.GetFirstEntry: PGLFloat;
 begin
   Result := Pointer(FValues);
 end;
@@ -304,7 +304,7 @@ end;
 // GetFirstNormal
 //
 
-function TVertexList.GetFirstNormal: PGLFloat;
+function TVKVertexList.GetFirstNormal: PGLFloat;
 begin
   Result := @(FValues^[0].normal);
 end;
@@ -312,7 +312,7 @@ end;
 // GetFirstVertex
 //
 
-function TVertexList.GetFirstVertex: PGLFloat;
+function TVKVertexList.GetFirstVertex: PGLFloat;
 begin
   Result := @(FValues^[0].coord);
 end;
@@ -320,7 +320,7 @@ end;
 // GetFirstTexPoint
 //
 
-function TVertexList.GetFirstTexPoint: PGLFloat;
+function TVKVertexList.GetFirstTexPoint: PGLFloat;
 begin
   Result := @(FValues^[0].textCoord);
 end;
@@ -328,7 +328,7 @@ end;
 // GetLocked
 //
 
-function TVertexList.GetLocked: Boolean;
+function TVKVertexList.GetLocked: Boolean;
 begin
   Result := Assigned(FLockedOldValues);
 end;
@@ -336,7 +336,7 @@ end;
 // SetLocked
 //
 
-procedure TVertexList.SetLocked(val: Boolean);
+procedure TVKVertexList.SetLocked(val: Boolean);
 var
   size: Integer;
 begin
@@ -384,7 +384,7 @@ end;
 // EnterLockSection
 //
 
-procedure TVertexList.EnterLockSection;
+procedure TVKVertexList.EnterLockSection;
 begin
   if Locked then
   begin
@@ -396,7 +396,7 @@ end;
 // LeaveLockSection
 //
 
-procedure TVertexList.LeaveLockSection;
+procedure TVKVertexList.LeaveLockSection;
 begin
   if Locked then
   begin
@@ -408,7 +408,7 @@ end;
 // SetVertices
 //
 
-procedure TVertexList.SetVertices(index: Integer; const val: TVertexData);
+procedure TVKVertexList.SetVertices(index: Integer; const val: TVertexData);
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   FValues^[index] := val;
@@ -418,7 +418,7 @@ end;
 // GetVertices
 //
 
-function TVertexList.GetVertices(index: Integer): TVertexData;
+function TVKVertexList.GetVertices(index: Integer): TVertexData;
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   Result := FValues^[index];
@@ -427,7 +427,7 @@ end;
 // SetVertexCoord
 //
 
-procedure TVertexList.SetVertexCoord(index: Integer; const val: TAffineVector);
+procedure TVKVertexList.SetVertexCoord(index: Integer; const val: TAffineVector);
 begin
   FValues^[index].coord := val;
   NotifyChange(Self);
@@ -436,7 +436,7 @@ end;
 // GetVertexCoord
 //
 
-function TVertexList.GetVertexCoord(index: Integer): TAffineVector;
+function TVKVertexList.GetVertexCoord(index: Integer): TAffineVector;
 begin
   Result := FValues^[index].coord;
 end;
@@ -444,7 +444,7 @@ end;
 // SetVertexNormal
 //
 
-procedure TVertexList.SetVertexNormal(index: Integer; const val: TAffineVector);
+procedure TVKVertexList.SetVertexNormal(index: Integer; const val: TAffineVector);
 begin
   FValues^[index].normal := val;
   NotifyChange(Self);
@@ -453,7 +453,7 @@ end;
 // GetVertexNormal
 //
 
-function TVertexList.GetVertexNormal(index: Integer): TAffineVector;
+function TVKVertexList.GetVertexNormal(index: Integer): TAffineVector;
 begin
   Result := FValues^[index].normal;
 end;
@@ -461,7 +461,7 @@ end;
 // SetVertexTexCoord
 //
 
-procedure TVertexList.SetVertexTexCoord(index: Integer; const val: TTexPoint);
+procedure TVKVertexList.SetVertexTexCoord(index: Integer; const val: TTexPoint);
 begin
   FValues^[index].textCoord := val;
   NotifyChange(Self);
@@ -470,7 +470,7 @@ end;
 // GetVertexTexCoord
 //
 
-function TVertexList.GetVertexTexCoord(index: Integer): TTexPoint;
+function TVKVertexList.GetVertexTexCoord(index: Integer): TTexPoint;
 begin
   Result := FValues^[index].textCoord;
 end;
@@ -478,7 +478,7 @@ end;
 // SetVertexColor
 //
 
-procedure TVertexList.SetVertexColor(index: Integer; const val: TVector4f);
+procedure TVKVertexList.SetVertexColor(index: Integer; const val: TVector4f);
 begin
   FValues^[index].color := val;
   NotifyChange(Self);
@@ -487,7 +487,7 @@ end;
 // GetVertexColor
 //
 
-function TVertexList.GetVertexColor(index: Integer): TVector4f;
+function TVKVertexList.GetVertexColor(index: Integer): TVector4f;
 begin
   Result := FValues^[index].color;
 end;
@@ -495,7 +495,7 @@ end;
 // AddVertex (direct)
 //
 
-procedure TVertexList.AddVertex(const vertexData: TVertexData);
+procedure TVKVertexList.AddVertex(const vertexData: TVertexData);
 begin
   if FCount = FCapacity then
     Grow;
@@ -507,7 +507,7 @@ end;
 // AddVertex3
 //
 
-procedure TVertexList.AddVertex3(const vd1, vd2, vd3: TVertexData);
+procedure TVKVertexList.AddVertex3(const vd1, vd2, vd3: TVertexData);
 begin
   // extend memory space
   if FCount + 2 >= FCapacity then
@@ -523,7 +523,7 @@ end;
 // AddVertex (texturing)
 //
 
-procedure TVertexList.AddVertex(const aVertex: TVertex;
+procedure TVKVertexList.AddVertex(const aVertex: TVertex;
   const aNormal: TAffineVector; const aColor: TColorVector;
   const aTexPoint: TTexPoint);
 begin
@@ -544,7 +544,7 @@ end;
 // AddVertex (no texturing)
 //
 
-procedure TVertexList.AddVertex(const vertex: TVertex;
+procedure TVKVertexList.AddVertex(const vertex: TVertex;
   const normal: TAffineVector; const color: TColorVector);
 begin
   AddVertex(vertex, normal, color, NullTexPoint);
@@ -553,7 +553,7 @@ end;
 // AddVertex (no texturing, no color)
 //
 
-procedure TVertexList.AddVertex(const vertex: TVertex;
+procedure TVKVertexList.AddVertex(const vertex: TVertex;
   const normal: TAffineVector);
 begin
   AddVertex(vertex, normal, clrBlack, NullTexPoint);
@@ -562,7 +562,7 @@ end;
 // DuplicateVertex
 //
 
-procedure TVertexList.DuplicateVertex(index: Integer);
+procedure TVKVertexList.DuplicateVertex(index: Integer);
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   if FCount = FCapacity then
@@ -575,7 +575,7 @@ end;
 // Clear
 //
 
-procedure TVertexList.Clear;
+procedure TVKVertexList.Clear;
 begin
   Assert(not Locked, 'Cannot clear a locked list !');
   FreeMem(FValues);
@@ -588,7 +588,7 @@ end;
 // SumVertexCoords
 //
 
-function TVertexList.SumVertexCoords: TAffineVector;
+function TVKVertexList.SumVertexCoords: TAffineVector;
 var
   i: Integer;
 begin
@@ -600,7 +600,7 @@ end;
 // GetExtents
 //
 
-procedure TVertexList.GetExtents(var min, max: TAffineVector);
+procedure TVKVertexList.GetExtents(var min, max: TAffineVector);
 var
   i, k: Integer;
   f: Single;
@@ -627,7 +627,7 @@ end;
 // NormalizeNormals
 //
 
-procedure TVertexList.NormalizeNormals;
+procedure TVKVertexList.NormalizeNormals;
 var
   i: Integer;
 begin
@@ -638,7 +638,7 @@ end;
 // Translate
 //
 
-procedure TVertexList.Translate(const v: TAffineVector);
+procedure TVKVertexList.Translate(const v: TAffineVector);
 var
   i: Integer;
 begin
@@ -649,7 +649,7 @@ end;
 // DefineOpenGLArrays
 //
 
-procedure TVertexList.DefineOpenGLArrays;
+procedure TVKVertexList.DefineOpenGLArrays;
 begin
   GL.EnableClientState(GL_VERTEX_ARRAY);
   GL.VertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
@@ -665,14 +665,14 @@ end;
 // Assign
 //
 
-procedure TVertexList.Assign(Source: TPersistent);
+procedure TVKVertexList.Assign(Source: TPersistent);
 begin
-  if Assigned(Source) and (Source is TVertexList) then
+  if Assigned(Source) and (Source is TVKVertexList) then
   begin
-    FCount := TVertexList(Source).FCount;
+    FCount := TVKVertexList(Source).FCount;
     FCapacity := FCount;
     ReallocMem(FValues, FCount * SizeOf(TVertexData));
-    Move(TVertexList(Source).FValues^, FValues^, FCount * SizeOf(TVertexData));
+    Move(TVKVertexList(Source).FValues^, FValues^, FCount * SizeOf(TVertexData));
   end
   else
     inherited Assign(Source);
@@ -687,7 +687,7 @@ constructor TVKMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   // ObjectStyle:=ObjectStyle+[osDirectDraw];
-  FVertices := TVertexList.Create(Self);
+  FVertices := TVKVertexList.Create(Self);
   FVertices.AddVertex(XVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(YVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(ZVector, ZVector, NullHmgVector, NullTexPoint);
@@ -785,7 +785,7 @@ end;
 // SetVertices
 //
 
-procedure TVKMesh.SetVertices(AValue: TVertexList);
+procedure TVKMesh.SetVertices(AValue: TVKVertexList);
 begin
   if AValue <> FVertices then
   begin

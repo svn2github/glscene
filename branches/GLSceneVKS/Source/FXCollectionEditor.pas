@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-  Edits a TXCollection 
+  Edits a TVKXCollection 
    
 }
 unit FXCollectionEditor;
@@ -34,7 +34,7 @@ type
 
 
 type
-  TXCollectionEditor = class(TForm)
+  TVKXCollectionEditor = class(TForm)
     ToolBar1: TToolBar;
     TBAdd: TButton;
     ListView: TListView;
@@ -56,7 +56,7 @@ type
     procedure ListViewChange(Sender: TObject);
   private
     { Private declarations }
-    FXCollection: TXCollection;
+    FXCollection: TVKXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
     UpdatingListView: Boolean;
@@ -67,10 +67,10 @@ type
     procedure OnXCollectionDestroyed(Sender: TObject);
   public
     { Public declarations }
-    procedure SetXCollection(aXCollection: TXCollection; designer: IDesigner);
+    procedure SetXCollection(aXCollection: TVKXCollection; designer: IDesigner);
   end;
 
-function XCollectionEditor: TXCollectionEditor;
+function XCollectionEditor: TVKXCollectionEditor;
 procedure ReleaseXCollectionEditor;
 
 
@@ -84,12 +84,12 @@ resourcestring
   cXCollectionEditor = 'XCollection editor';
 
 var
-  vXCollectionEditor: TXCollectionEditor;
+  vXCollectionEditor: TVKXCollectionEditor;
 
-function XCollectionEditor: TXCollectionEditor;
+function XCollectionEditor: TVKXCollectionEditor;
 begin
   if not Assigned(vXCollectionEditor) then
-    vXCollectionEditor := TXCollectionEditor.Create(nil);
+    vXCollectionEditor := TVKXCollectionEditor.Create(nil);
   Result := vXCollectionEditor;
 end;
 
@@ -104,7 +104,7 @@ end;
 
 // FormCreate
 //
-procedure TXCollectionEditor.FormCreate(Sender: TObject);
+procedure TVKXCollectionEditor.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
   RegisterGLMaterialExNameChangeEvent(OnNameChanged);
@@ -113,7 +113,7 @@ end;
 
 // FormDestroy
 //
-procedure TXCollectionEditor.FormDestroy(Sender: TObject);
+procedure TVKXCollectionEditor.FormDestroy(Sender: TObject);
 begin
   DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
   DeRegisterGLMaterialExNameChangeEvent(OnNameChanged);
@@ -122,7 +122,7 @@ end;
 
 // FormHide
 //
-procedure TXCollectionEditor.FormHide(Sender: TObject);
+procedure TVKXCollectionEditor.FormHide(Sender: TObject);
 begin
   SetXCollection(nil, nil);
   ReleaseXCollectionEditor;
@@ -130,7 +130,7 @@ end;
 
 // SetXCollection
 //
-procedure TXCollectionEditor.SetXCollection(aXCollection: TXCollection;
+procedure TVKXCollectionEditor.SetXCollection(aXCollection: TVKXCollection;
   designer: IDesigner);
 begin
   // if Assigned(ownerComponent) then
@@ -154,7 +154,7 @@ begin
 end;
 
 
-procedure TXCollectionEditor.ListViewChange(Sender: TObject);
+procedure TVKXCollectionEditor.ListViewChange(Sender: TObject);
 var
   sel: Boolean;
 begin
@@ -171,14 +171,14 @@ begin
     { TODO : E2003 Undeclared identifier: 'SelectComponent' }
     (*
       if sel then
-        FDesigner.SelectComponent(TXCollectionItem(ListView.Selected.Data))
+        FDesigner.SelectComponent(TVKXCollectionItem(ListView.Selected.Data))
       else
         FDesigner.SelectComponent(nil);
      *)
   end;
 end;
 
-procedure TXCollectionEditor.ACMoveDownExecute(Sender: TObject);
+procedure TVKXCollectionEditor.ACMoveDownExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -186,7 +186,7 @@ begin
   end;
 end;
 
-procedure TXCollectionEditor.ACMoveUpExecute(Sender: TObject);
+procedure TVKXCollectionEditor.ACMoveUpExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -194,7 +194,7 @@ begin
   end;
 end;
 
-procedure TXCollectionEditor.ACRemoveExecute(Sender: TObject);
+procedure TVKXCollectionEditor.ACRemoveExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -202,29 +202,29 @@ begin
   end;
 end;
 
-procedure TXCollectionEditor.OnAddXCollectionItemClick(Sender: TObject);
+procedure TVKXCollectionEditor.OnAddXCollectionItemClick(Sender: TObject);
 begin
   /// to do
 end;
 
-procedure TXCollectionEditor.OnNameChanged(Sender: TObject);
+procedure TVKXCollectionEditor.OnNameChanged(Sender: TObject);
 begin
   /// to do
 end;
 
 // OnXCollectionDestroyed
 //
-procedure TXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
+procedure TVKXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
 begin
-  if TXCollection(Sender) = FXCollection then
+  if TVKXCollection(Sender) = FXCollection then
     Close;
 end;
 
-procedure TXCollectionEditor.PrepareListView;
+procedure TVKXCollectionEditor.PrepareListView;
 var
   i: Integer;
   prevSelData: TValue;   // prev Pointer;
-  XCollectionItem: TXCollectionItem;
+  XCollectionItem: TVKXCollectionItem;
   DisplayedName: String;
 begin
   Assert(Assigned(ListView));
@@ -268,11 +268,11 @@ end;
 
 // PrepareXCollectionItemPopup
 //
-procedure TXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
+procedure TVKXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
 var
   i: Integer;
   list: TList;
-  XCollectionItemClass: TXCollectionItemClass;
+  XCollectionItemClass: TVKXCollectionItemClass;
   mi, categoryItem: TMenuItem;
 begin
   list := GetXCollectionItemClassesList(FXCollection.ItemsClass);
@@ -280,7 +280,7 @@ begin
     parent.Clear;
     for i := 0 to list.Count - 1 do
     begin
-      XCollectionItemClass := TXCollectionItemClass(list[i]);
+      XCollectionItemClass := TVKXCollectionItemClass(list[i]);
       if XCollectionItemClass.ItemCategory <> '' then
       begin
         { TODO : E2003 Undeclared identifier: 'Find' }

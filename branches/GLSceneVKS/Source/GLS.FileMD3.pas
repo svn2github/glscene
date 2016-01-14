@@ -17,9 +17,9 @@ uses
 
 type
 
-  TVKMD3VectorFile = class (TVectorFile)
+  TVKMD3VectorFile = class (TVKVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -37,7 +37,7 @@ implementation
 
 // Capabilities
 //
-class function TVKMD3VectorFile.Capabilities : TDataFileCapabilities;
+class function TVKMD3VectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

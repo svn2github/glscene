@@ -284,7 +284,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
   published
@@ -434,7 +434,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
     class function FriendlyName: string; override;
@@ -1388,7 +1388,7 @@ end;
 // Create
 //
 
-constructor TVKParticleFXEffect.Create(aOwner: TXCollection);
+constructor TVKParticleFXEffect.Create(aOwner: TVKXCollection);
 begin
   FEffectScale := 1;
   inherited;
@@ -1836,7 +1836,7 @@ end;
 // Create
 //
 
-constructor TVKSourcePFXEffect.Create(aOwner: TXCollection);
+constructor TVKSourcePFXEffect.Create(aOwner: TVKXCollection);
 begin
   inherited;
   FInitialVelocity := TVKCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

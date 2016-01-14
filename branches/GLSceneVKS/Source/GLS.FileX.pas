@@ -22,16 +22,16 @@ uses
   FileX;
 
 type
-  TVKXVectorFile = class (TVectorFile)
+  TVKXVectorFile = class (TVKVectorFile)
     public
       { Public Declarations }
-      class function Capabilities: TDataFileCapabilities; override;
+      class function Capabilities: TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
 implementation
 
-class function TVKXVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKXVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result := [dfcRead];
 end;
@@ -43,7 +43,7 @@ var
   procedure RecursDXFile(DXNode : TDXNode);
   var
     i,j,k,l,vertcount : integer;
-    mo : TMeshObject;
+    mo : TVKMeshObject;
     mat : TMatrix;
     libmat : TVKLibMaterial;
     fg : TFGVertexNormalTexIndexList;
@@ -57,7 +57,7 @@ var
       end;
 
     if DXNode is TDXMesh then begin
-      mo:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mo:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
       mo.Mode:=momFaceGroups;
       mo.Vertices.Assign(TDXMesh(DXNode).Vertices);
       mo.Vertices.TransformAsPoints(mat);

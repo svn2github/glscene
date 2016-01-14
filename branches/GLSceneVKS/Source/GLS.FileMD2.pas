@@ -23,10 +23,10 @@ type
       it may be animated by TVKActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap). 
       Based on code by Roger Cao. }
-   TVKMD2VectorFile = class(TVectorFile)
+   TVKMD2VectorFile = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -47,7 +47,7 @@ implementation
 
 // Capabilities
 //
-class function TVKMD2VectorFile.Capabilities : TDataFileCapabilities;
+class function TVKMD2VectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;

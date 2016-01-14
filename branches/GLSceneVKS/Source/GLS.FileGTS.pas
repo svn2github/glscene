@@ -23,10 +23,10 @@ type
       Following lines contain the x/y/z coordinates of vertices, then the edges
       (two indices) and the faces (three indices). 
       http://gts.sourceforge.net/ }
-   TVKGTSVectorFile = class(TVectorFile)
+   TVKGTSVectorFile = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -50,7 +50,7 @@ uses
 
 // Capabilities
 //
-class function TVKGTSVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKGTSVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -61,7 +61,7 @@ procedure TVKGTSVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nv, ne, nf, k, ei : Integer;
    sl : TStringList;
-   mesh : TMeshObject;
+   mesh : TVKMeshObject;
    fg : TFGVertexIndexList;
    vertIndices : array [0..5] of Integer;
    pEdge, pTri, p : PChar;
@@ -69,7 +69,7 @@ begin
    sl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream{$IFDEF Unicode}, TEncoding.ASCII{$ENDIF});
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl.Count>0 then begin
          p:=PChar(sl[0]);

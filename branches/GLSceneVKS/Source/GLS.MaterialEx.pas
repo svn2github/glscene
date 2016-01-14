@@ -50,7 +50,7 @@ type
   //
 
   TVKBaseMaterialCollectionItem = class(
-      TXCollectionItem,
+      TVKXCollectionItem,
       IGLMaterialLibrarySupported)
   private
     { Private Declarations }
@@ -149,7 +149,7 @@ type
     procedure SetDecodeSRGB(AValue: Boolean);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -278,7 +278,7 @@ type
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -367,7 +367,7 @@ type
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -633,7 +633,7 @@ type
     procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TGLuint);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -666,7 +666,7 @@ type
     function GetHandle: TVKARBVertexProgramHandle;
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -788,7 +788,7 @@ type
     function GetHandle: TVKShaderHandle;
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
@@ -1240,14 +1240,14 @@ type
   // TVKMatLibComponents
   //
 
-  TVKMatLibComponents = class(TXCollection)
+  TVKMatLibComponents = class(TVKXCollection)
   protected
     { Protected Declarations }
     function GetItems(index: Integer): TVKBaseMaterialCollectionItem;
   public
     { Public Declarations }
     function GetNamePath: string; override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
     property Items[index: Integer]: TVKBaseMaterialCollectionItem
     read GetItems; default;
 
@@ -1959,7 +1959,7 @@ begin
   inherited;
 end;
 
-constructor TVKTextureImageEx.Create(AOwner: TXCollection);
+constructor TVKTextureImageEx.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2721,7 +2721,7 @@ begin
   inherited;
 end;
 
-constructor TVKTextureSampler.Create(AOwner: TXCollection);
+constructor TVKTextureSampler.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -2980,7 +2980,7 @@ begin
   inherited;
 end;
 
-constructor TVKTextureCombiner.Create(AOwner: TXCollection);
+constructor TVKTextureCombiner.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -4312,7 +4312,7 @@ begin
   inherited;
 end;
 
-constructor TVKShaderEx.Create(AOwner: TXCollection);
+constructor TVKShaderEx.Create(AOwner: TVKXCollection);
 const
   cShaderClasses: array[TVKShaderType] of TVKShaderHandleClass =
     (
@@ -5456,7 +5456,7 @@ begin
   Result := nil;
 end;
 
-class function TVKMatLibComponents.ItemsClass: TXCollectionItemClass;
+class function TVKMatLibComponents.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TVKBaseMaterialCollectionItem;
 end;
@@ -6665,7 +6665,7 @@ begin
   inherited;
 end;
 
-constructor TVKFrameBufferAttachment.Create(AOwner: TXCollection);
+constructor TVKFrameBufferAttachment.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FDefferedInit := False;
@@ -7251,7 +7251,7 @@ begin
   inherited;
 end;
 
-constructor TVKASMVertexProgram.Create(AOwner: TXCollection);
+constructor TVKASMVertexProgram.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FHandle := TVKARBVertexProgramHandle.Create;

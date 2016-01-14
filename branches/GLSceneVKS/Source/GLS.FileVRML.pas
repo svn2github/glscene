@@ -16,9 +16,9 @@ uses
 
 type
 
-  TVKVRMLVectorFile = class (TVectorFile)
+  TVKVRMLVectorFile = class (TVKVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -141,7 +141,7 @@ end;
 
 // Capabilities
 //
-class function TVKVRMLVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKVRMLVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -150,7 +150,7 @@ end;
 //
 procedure TVKVRMLVectorFile.LoadFromStream(aStream : TStream);
 var
-  mesh : TMeshObject;
+  mesh : TVKMeshObject;
   uniqueMatID : Integer;
   currentMaterial : TVKLibMaterial;
   currentTransform : TMatrix;
@@ -442,7 +442,7 @@ var
     // Read node data
     if (node.Name = 'Coordinate3') and (node.Count>0) then begin
       RebuildMesh;
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
       points:=TVRMLSingleArray(node[0]).Values;
       for i:=0 to (points.Count div 3) - 1 do
         mesh.Vertices.Add(points[3*i], points[3*i+1], points[3*i+2]);

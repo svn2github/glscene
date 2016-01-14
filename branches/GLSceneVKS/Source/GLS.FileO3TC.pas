@@ -22,7 +22,7 @@ type
 
   TVKO3TCImage = class(TVKBaseImage)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -413,7 +413,7 @@ end;
 // Capabilities
 //
 
-class function TVKO3TCImage.Capabilities: TDataFileCapabilities;
+class function TVKO3TCImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

@@ -37,7 +37,7 @@ type
 
   TVKBFPSMovement = class;
 
-  TVKMapCollectionItem = class(TXCollectionItem)
+  TVKMapCollectionItem = class(TVKXCollectionItem)
   private
     FMap: TVKFreeForm;
     FMapName: string;
@@ -49,7 +49,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     class function FriendlyName: String; override;
   published
 
@@ -65,9 +65,9 @@ type
 
   TVKMapCollectionItemClass = class of TVKMapCollectionItem;
 
-  TVKMapCollection = class(TXCollection)
+  TVKMapCollection = class(TVKXCollection)
   public
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
     function addMap(Map: TVKFreeForm; CollisionGroup: integer = 0)
       : TVKMapCollectionItem;
     function findMap(mapFreeForm: TVKFreeForm): TVKMapCollectionItem;
@@ -146,7 +146,7 @@ type
   public
     Velocity: TVector;
 
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
@@ -162,7 +162,7 @@ type
   published
     property Manager: TVKFPSMovementManager read FManager write FManager;
 
-    { :
+    { 
       Radius to execute the testing with. A value < 0 indicates to use
       the boundingSphereRadius of the object.
     }
@@ -233,7 +233,7 @@ end;
 // ------------------
 // ------------------ TVKMapCollectionItem ------------------
 // ------------------
-constructor TVKMapCollectionItem.Create(aOwner: TXCollection);
+constructor TVKMapCollectionItem.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
 
@@ -296,7 +296,7 @@ end;
 // ------------------
 // ------------------ TVKMapCollection ------------------
 // ------------------
-class function TVKMapCollection.ItemsClass: TXCollectionItemClass;
+class function TVKMapCollection.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TVKMapCollectionItem;
 end;
@@ -607,7 +607,7 @@ end;
 // ------------------ TVKBFPSMovement ------------------
 // ------------------
 
-constructor TVKBFPSMovement.Create(aOwner: TXCollection);
+constructor TVKBFPSMovement.Create(aOwner: TVKXCollection);
 
   procedure setupArrow(arrow: TVKArrowLine; color: TColor); //TDelphiColor
   begin

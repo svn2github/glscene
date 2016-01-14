@@ -27,8 +27,8 @@ const
    cDEFAULT_CONSTRAINT_FRICTION = 0.6;
 
 type
-   TVerletEdgeList = class;
-   TVerletWorld = class;
+   TVKVerletEdgeList = class;
+   TVKVerletWorld = class;
 
    TVerletProgressTimes = packed record
       deltaTime, newTime : Double;
@@ -42,7 +42,7 @@ type
       private
 			{ Private Declarations }
          FForce : TAffineVector;
-         FOwner : TVerletWorld;
+         FOwner : TVKVerletWorld;
          FWeight, FInvWeight : Single;
          FRadius : Single;
          FNailedDown : Boolean;
@@ -62,7 +62,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor CreateOwned(const aOwner : TVerletWorld); virtual;
+         constructor CreateOwned(const aOwner : TVKVerletWorld); virtual;
          destructor Destroy; override;
 
          { Applies friction }
@@ -85,12 +85,12 @@ type
          function GetMovement : TAffineVector;
 
          { The TVerletNode inherits from TSpacePartitionLeaf, and it needs to
-         know how to publish itself. The owner ( a TVerletWorld ) has a spatial
+         know how to publish itself. The owner ( a TVKVerletWorld ) has a spatial
          partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
          { The VerletWorld that owns this verlet }
-         property Owner : TVerletWorld read FOwner;
+         property Owner : TVKVerletWorld read FOwner;
 
          { The location of the verlet }
          property Location : TAffineVector read FLocation write SetLocation;
@@ -145,13 +145,13 @@ type
    TVerletConstraint = class (TObject)
       private
 			{ Private Declarations }
-         FOwner : TVerletWorld;
+         FOwner : TVKVerletWorld;
          FEnabled : Boolean;
          FTag : Integer;
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); virtual;
+         constructor Create(const aOwner : TVKVerletWorld); virtual;
          destructor Destroy; override;
 
          { Updates the position of one or several nodes to make sure that they
@@ -163,16 +163,16 @@ type
          procedure BeforeIterations; virtual;
 
          { Onwer of the constraint }
-         property Owner : TVerletWorld read FOwner;
+         property Owner : TVKVerletWorld read FOwner;
          { Determines if the constraint should be enforced or not }
          property Enabled : Boolean read FEnabled write FEnabled;
          { Tag field reserved for the user. }
          property Tag : Integer read FTag write FTag;
    end;
 
-   // TVerletDualConstraint
+   // TVKVerletDualConstraint
    //
-   TVerletDualConstraint = class (TVerletConstraint)
+   TVKVerletDualConstraint = class (TVerletConstraint)
       private
 			{ Private Declarations }
          FNodeA, FNodeB : TVerletNode;
@@ -196,7 +196,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
          destructor Destroy; override;
 
          procedure RemoveNode(const aNode : TVerletNode); override;
@@ -205,9 +205,9 @@ type
          property Nodes : TVerletNodeList read FNodes;
    end;
 
-   // TVerletEdge
+   // TVKVerletEdge
    // Verlet edges simulate rigid collission edges
-   TVerletEdge = class(TSpacePartitionLeaf)
+   TVKVerletEdge = class(TSpacePartitionLeaf)
       private
 			{ Private Declarations }
          FNodeA: TVerletNode;
@@ -215,8 +215,8 @@ type
 
       public
 			{ Public Declarations }
-         { The TVerletEdge inherits from TSpacePartitionLeaf, and it needs to
-         know how to publish itself. The owner ( a TVerletWorld ) has a spatial
+         { The TVKVerletEdge inherits from TSpacePartitionLeaf, and it needs to
+         know how to publish itself. The owner ( a TVKVerletWorld ) has a spatial
          partitioning object}
          procedure UpdateCachedAABBAndBSphere; override;
 
@@ -229,20 +229,20 @@ type
          property NodeB : TVerletNode read FNodeB write FNodeB;
    end;
 
-   TVerletEdgeList = class(TList)
+   TVKVerletEdgeList = class(TList)
       private
 			{ Private Declarations }
-         function GetItems(i: Integer): TVerletEdge;
-         procedure SetItems(i: Integer; const Value: TVerletEdge);
+         function GetItems(i: Integer): TVKVerletEdge;
+         procedure SetItems(i: Integer; const Value: TVKVerletEdge);
 
       public
 			{ Public Declarations }
-         property Items[i : Integer] : TVerletEdge read GetItems write SetItems; default;
+         property Items[i : Integer] : TVKVerletEdge read GetItems write SetItems; default;
    end;
 
-   // TVerletGlobalConstraint
+   // TVKVerletGlobalConstraint
    //
-   TVerletGlobalConstraint = class (TVerletConstraint)
+   TVKVerletGlobalConstraint = class (TVerletConstraint)
       private
 			{ Private Declarations }
          FKickbackForce: TAffineVector;
@@ -252,7 +252,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
          destructor Destroy; override;
 
          procedure RemoveNode(const aNode : TVerletNode); override;
@@ -261,7 +261,7 @@ type
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure SatisfyConstraintForNode(const aNode : TVerletNode;
                         const iteration, maxIterations : Integer); virtual; abstract;
-         procedure SatisfyConstraintForEdge(const aEdge : TVerletEdge;
+         procedure SatisfyConstraintForEdge(const aEdge : TVKVerletEdge;
                         const iteration, maxIterations : Integer); virtual;
 
          property Location : TAffineVector read FLocation write SetLocation;
@@ -286,27 +286,27 @@ type
          function TranslateKickbackTorque(const TorqueCenter : TAffineVector) : TAffineVector;
    end;
 
-   // TVerletGlobalFrictionConstraint
+   // TVKVerletGlobalFrictionConstraint
    //
-   TVerletGlobalFrictionConstraint = class (TVerletGlobalConstraint)
+   TVKVerletGlobalFrictionConstraint = class (TVKVerletGlobalConstraint)
       private
 			{ Private Declarations }
          FFrictionRatio: Single;
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
          
          property FrictionRatio : Single read FFrictionRatio write FFrictionRatio;
    end;
 
-   TVerletGlobalFrictionConstraintSP = class(TVerletGlobalFrictionConstraint)
+   TVKVerletGlobalFrictionConstraintSP = class(TVKVerletGlobalFrictionConstraint)
       public
          procedure SatisfyConstraint(const iteration, maxIterations : Integer); override;
          procedure PerformSpaceQuery; virtual; abstract;
    end;
 
-   TVerletGlobalFrictionConstraintSphere = class(TVerletGlobalFrictionConstraintSP)
+   TVKVerletGlobalFrictionConstraintSphere = class(TVKVerletGlobalFrictionConstraintSP)
       private
          FCachedBSphere: TBSphere;
 
@@ -319,7 +319,7 @@ type
          property CachedBSphere : TBSphere read FCachedBSphere;
    end;
 
-   TVerletGlobalFrictionConstraintBox = class(TVerletGlobalFrictionConstraintSP)
+   TVKVerletGlobalFrictionConstraintBox = class(TVKVerletGlobalFrictionConstraintSP)
       private
          FCachedAABB: TAABB;
 
@@ -346,17 +346,17 @@ type
          property Items[i : Integer] : TVerletConstraint read GetItems write SetItems; default;
    end;
 
-   // TVerletForce
+   // TVKVerletForce
    //
    { Generic verlet force. }
-   TVerletForce = class (TObject)
+   TVKVerletForce = class (TObject)
       private
 			{ Private Declarations }
-         FOwner : TVerletWorld;
+         FOwner : TVKVerletWorld;
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); virtual;
+         constructor Create(const aOwner : TVKVerletWorld); virtual;
          destructor Destroy; override;
 
          //: Implementation should add force to force resultant for all relevant nodes
@@ -365,13 +365,13 @@ type
          //: Notifies removal of a node
          procedure RemoveNode(const aNode : TVerletNode); virtual; abstract;
 
-         property Owner : TVerletWorld read FOwner;
+         property Owner : TVKVerletWorld read FOwner;
    end;
 
-   // TVerletDualForce
+   // TVKVerletDualForce
    //
    { A verlet force that applies to two specified nodes. }
-   TVerletDualForce = class (TVerletForce)
+   TVKVerletDualForce = class (TVKVerletForce)
       private
 			{ Private Declarations }
          FNodeA, FNodeB : TVerletNode;
@@ -389,14 +389,14 @@ type
    // TVerletGroupForce
    //
    { A verlet force that applies to a specified group of nodes. }
-   TVerletGroupForce = class (TVerletForce)
+   TVerletGroupForce = class (TVKVerletForce)
       private
 			{ Private Declarations }
          FNodes : TVerletNodeList;
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
          destructor Destroy; override;
 
          procedure RemoveNode(const aNode : TVerletNode); override;
@@ -405,10 +405,10 @@ type
          property Nodes : TVerletNodeList read FNodes;
    end;
 
-   // TVerletGlobalForce
+   // TVKVerletGlobalForce
    //
    { A global force (applied to all verlet nodes). }
-   TVerletGlobalForce = class (TVerletForce)
+   TVKVerletGlobalForce = class (TVKVerletForce)
       private
 			{ Private Declarations }
 
@@ -420,17 +420,17 @@ type
          procedure AddForceToNode(const aNode : TVerletNode); virtual; abstract;
    end;
 
-   // TVerletForceList
+   // TVKVerletForceList
    //
-   TVerletForceList = class (TList)
+   TVKVerletForceList = class (TList)
       private
 			{ Private Declarations }
-         function GetItems(i : Integer): TVerletForce;
-         procedure SetItems(i : Integer; const Value: TVerletForce);
+         function GetItems(i : Integer): TVKVerletForce;
+         procedure SetItems(i : Integer; const Value: TVKVerletForce);
 
       public
 			{ Public Declarations }
-         property Items[i : Integer] : TVerletForce read GetItems write SetItems; default;
+         property Items[i : Integer] : TVKVerletForce read GetItems write SetItems; default;
    end;
 
    TVCStick = class;
@@ -441,20 +441,20 @@ type
    TCollisionConstraintTypes = (cctEdge, cctNode);
    TCollisionConstraintTypesSet = set of TCollisionConstraintTypes;
 
-   // TVerletWorld
+   // TVKVerletWorld
    //
-   TVerletWorld = class (TObject)
+   TVKVerletWorld = class (TObject)
       private
 			{ Private Declarations }
          FIterations : Integer;
          FNodes : TVerletNodeList;
          FConstraints : TVerletConstraintList;
-         FForces : TVerletForceList;
+         FForces : TVKVerletForceList;
          FMaxDeltaTime, FSimTime : Single;
          FDrag : Single;
          FCurrentDeltaTime: Single;
          FInvCurrentDeltaTime : Single;
-         FSolidEdges: TVerletEdgeList;
+         FSolidEdges: TVKVerletEdgeList;
          FSpacePartition: TBaseSpacePartition;
          FCurrentStepCount: Integer;
          FUpdateSpacePartion: TUpdateSpacePartion;
@@ -483,8 +483,8 @@ type
          function  AddConstraint(const aConstraint : TVerletConstraint) : Integer;
          procedure RemoveConstraint(const aConstraint : TVerletConstraint);
 
-         function  AddForce(const aForce : TVerletForce) : Integer;
-         procedure RemoveForce(const aForce : TVerletForce);
+         function  AddForce(const aForce : TVKVerletForce) : Integer;
+         procedure RemoveForce(const aForce : TVKVerletForce);
 
          procedure AddSolidEdge(const aNodeA, aNodeB : TVerletNode);
 
@@ -519,7 +519,7 @@ type
          property MaxDeltaTime : Single read FMaxDeltaTime write FMaxDeltaTime;
 
          property CurrentDeltaTime : Single read FCurrentDeltaTime;
-         property SolidEdges : TVerletEdgeList read FSolidEdges write FSolidEdges;
+         property SolidEdges : TVKVerletEdgeList read FSolidEdges write FSolidEdges;
          property CurrentStepCount : Integer read FCurrentStepCount;
          property SpacePartition: TBaseSpacePartition read FSpacePartition;
          property UpdateSpacePartion : TUpdateSpacePartion read FUpdateSpacePartion write FUpdateSpacePartion;
@@ -530,14 +530,14 @@ type
 
    // TVFGravity
    //
-   TVFGravity = class(TVerletGlobalForce)
+   TVFGravity = class(TVKVerletGlobalForce)
       private
 			{ Private Declarations }
          FGravity : TAffineVector;
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
 
          procedure AddForceToNode(const aNode : TVerletNode); override;
 
@@ -546,7 +546,7 @@ type
 
    // TVFAirResistance
    //
-   TVFAirResistance = class(TVerletGlobalForce)
+   TVFAirResistance = class(TVKVerletGlobalForce)
       private
 			{ Private Declarations }
          FDragCoeff: Single;
@@ -557,7 +557,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
          procedure AddForceToNode(const aNode : TVerletNode); override;
 
          property DragCoeff : Single read FDragCoeff write FDragCoeff;
@@ -569,7 +569,7 @@ type
 
    // TVFSpring
    //
-   TVFSpring = class (TVerletDualForce)
+   TVFSpring = class (TVKVerletDualForce)
       private
 			{ Private Declarations }
          FRestLength : Single;
@@ -597,7 +597,7 @@ type
    // TVCFloor
    //
    { Floor collision constraint }
-   TVCFloor = class (TVerletGlobalFrictionConstraintSP)
+   TVCFloor = class (TVKVerletGlobalFrictionConstraintSP)
       private
 			{ Private Declarations }
          FBounceRatio, FFloorLevel : Single;
@@ -609,7 +609,7 @@ type
 
       public
 			{ Public Declarations }
-         constructor Create(const aOwner : TVerletWorld); override;
+         constructor Create(const aOwner : TVKVerletWorld); override;
 
          procedure PerformSpaceQuery; override;
          procedure SatisfyConstraintForNode(const aNode : TVerletNode;
@@ -643,7 +643,7 @@ type
    //
    { Stick constraint. 
       Imposes a fixed distance between two nodes. }
-   TVCStick = class (TVerletDualConstraint)
+   TVCStick = class (TVKVerletDualConstraint)
       private
 			{ Private Declarations }
          FSlack : Single;
@@ -690,7 +690,7 @@ type
       Imposes that two nodes be aligned on a defined direction, on which they
       can slide freely. Note that the direction is fixed and won't rotate
       with the verlet assembly!. }
-   TVCSlider = class (TVerletDualConstraint)
+   TVCSlider = class (TVKVerletDualConstraint)
       private
 			{ Private Declarations }
          FSlideDirection : TAffineVector;
@@ -712,7 +712,7 @@ type
    // TVCSphere
    //
    { Sphere collision constraint. }
-   TVCSphere = class (TVerletGlobalFrictionConstraintSphere)
+   TVCSphere = class (TVKVerletGlobalFrictionConstraintSphere)
       private
 			{ Private Declarations }
          FRadius  : Single;
@@ -723,7 +723,7 @@ type
          procedure SatisfyConstraintForNode(const aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
-         procedure SatisfyConstraintForEdge(const aEdge : TVerletEdge;
+         procedure SatisfyConstraintForEdge(const aEdge : TVKVerletEdge;
                         const iteration, maxIterations : Integer); override;
 
          property Radius : Single read FRadius write FRadius;
@@ -733,7 +733,7 @@ type
    //
    { Cylinder collision constraint. 
       The cylinder is considered infinite by this constraint. }
-   TVCCylinder = class (TVerletGlobalFrictionConstraint)
+   TVCCylinder = class (TVKVerletGlobalFrictionConstraint)
       private
 			{ Private Declarations }
          FAxis : TAffineVector;
@@ -763,7 +763,7 @@ type
    // TVCCube
    //
    { Cube collision constraint. }
-   TVCCube = class (TVerletGlobalFrictionConstraintBox)
+   TVCCube = class (TVKVerletGlobalFrictionConstraintBox)
       private
 			{ Private Declarations }
          FHalfSides : TAffineVector;
@@ -779,7 +779,7 @@ type
                            const iteration, maxIterations : Integer); override;
 
          // Broken and very slow!
-         procedure SatisfyConstraintForEdge(const aEdge : TVerletEdge;
+         procedure SatisfyConstraintForEdge(const aEdge : TVKVerletEdge;
                         const iteration, maxIterations : Integer); override;//}
 
          property Direction : TAffineVector read FDirection write FDirection;
@@ -789,7 +789,7 @@ type
    // TVCCapsule
    //
    { Capsule collision constraint. }
-   TVCCapsule = class (TVerletGlobalFrictionConstraintSphere)
+   TVCCapsule = class (TVKVerletGlobalFrictionConstraintSphere)
       private
 			{ Private Declarations }
          FAxis : TAffineVector;
@@ -808,7 +808,7 @@ type
          procedure SatisfyConstraintForNode(const aNode : TVerletNode;
                            const iteration, maxIterations : Integer); override;
 
-         procedure SatisfyConstraintForEdge(const aEdge : TVerletEdge;
+         procedure SatisfyConstraintForEdge(const aEdge : TVKVerletEdge;
                         const iteration, maxIterations : Integer); override;
 
          // property Base : TAffineVector read FBase write FBase;
@@ -828,7 +828,7 @@ implementation
 
 // Create
 //
-constructor TVerletNode.CreateOwned(const aOwner : TVerletWorld);
+constructor TVerletNode.CreateOwned(const aOwner : TVKVerletWorld);
 begin
 
    inherited CreateOwned(aOwner.SpacePartition);
@@ -1004,7 +1004,7 @@ end;
 
 // Create
 //
-constructor TVerletConstraint.Create(const aOwner : TVerletWorld);
+constructor TVerletConstraint.Create(const aOwner : TVKVerletWorld);
 begin
    inherited Create;
    if Assigned(aOwner) then
@@ -1029,12 +1029,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletDualConstraint ------------------
+// ------------------ TVKVerletDualConstraint ------------------
 // ------------------
 
 // RemoveNode
 //
-procedure TVerletDualConstraint.RemoveNode(const aNode : TVerletNode);
+procedure TVKVerletDualConstraint.RemoveNode(const aNode : TVerletNode);
 begin
    if FNodeA=aNode then
       FNodeA:=nil;
@@ -1050,7 +1050,7 @@ end;
 
 // Create
 //
-constructor TVerletGroupConstraint.Create(const aOwner : TVerletWorld);
+constructor TVerletGroupConstraint.Create(const aOwner : TVKVerletWorld);
 begin
    inherited Create(aOwner);
    FNodes:=TVerletNodeList.Create;
@@ -1072,13 +1072,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletGlobalConstraint ------------------
+// ------------------ TVKVerletGlobalConstraint ------------------
 // ------------------
 
 // RemoveNode
 //
 
-procedure TVerletGlobalConstraint.AddKickbackForceAt(const Pos : TAffineVector; const Force: TAffineVector);
+procedure TVKVerletGlobalConstraint.AddKickbackForceAt(const Pos : TAffineVector; const Force: TAffineVector);
 var
   dPos : TAffineVector;
 begin
@@ -1090,35 +1090,35 @@ begin
   AddVector(FKickbackTorque, VectorCrossProduct(dPos, Force));
 end;
 
-function TVerletGlobalConstraint.TranslateKickbackTorque(
+function TVKVerletGlobalConstraint.TranslateKickbackTorque(
   const TorqueCenter: TAffineVector): TAffineVector;
 begin
   // EM(b) = EM(a) + EF x VectorSubtract(b, a).  
   Result := VectorAdd(FKickbackTorque, VectorCrossProduct(VectorSubtract(TorqueCenter, FLocation), FKickbackForce));
 end;
 
-procedure TVerletGlobalConstraint.BeforeIterations;
+procedure TVKVerletGlobalConstraint.BeforeIterations;
 begin
   inherited;
   FKickbackForce := NullVector;
   FKickbackTorque := NullVector;
 end;
 
-procedure TVerletGlobalConstraint.RemoveNode(const aNode : TVerletNode);
+procedure TVKVerletGlobalConstraint.RemoveNode(const aNode : TVerletNode);
 begin
    // nothing to do here
 end;
 
 // SetLocation
 //
-procedure TVerletGlobalConstraint.SetLocation(const Value: TAffineVector);
+procedure TVKVerletGlobalConstraint.SetLocation(const Value: TAffineVector);
 begin
   FLocation := Value;
 end;
 
 // SatisfyConstraint
 //
-procedure TVerletGlobalConstraint.SatisfyConstraint(const iteration, maxIterations : Integer);
+procedure TVKVerletGlobalConstraint.SatisfyConstraint(const iteration, maxIterations : Integer);
 var
    i : Integer;
    node : TVerletNode;
@@ -1138,36 +1138,36 @@ end;
 
 // SatisfyConstraintForEdge
 //
-procedure TVerletGlobalConstraint.SatisfyConstraintForEdge(
-  const aEdge: TVerletEdge; const iteration, maxIterations: Integer);
+procedure TVKVerletGlobalConstraint.SatisfyConstraintForEdge(
+  const aEdge: TVKVerletEdge; const iteration, maxIterations: Integer);
 begin
   // Purely virtual, but can't be abstract...
 end;
 
 // ------------------
-// ------------------ TVerletGlobalFrictionConstraint ------------------
+// ------------------ TVKVerletGlobalFrictionConstraint ------------------
 // ------------------
 
 // Create
 //
-constructor TVerletGlobalFrictionConstraint.Create(const aOwner: TVerletWorld);
+constructor TVKVerletGlobalFrictionConstraint.Create(const aOwner: TVKVerletWorld);
 begin
    inherited;
    FFrictionRatio:=cDEFAULT_CONSTRAINT_FRICTION;
 end;
 
 // ------------------
-// ------------------ TVerletGlobalFrictionConstraintSP ------------------
+// ------------------ TVKVerletGlobalFrictionConstraintSP ------------------
 // ------------------
 
 // SatisfyConstraint
 //
-procedure TVerletGlobalFrictionConstraintSP.SatisfyConstraint(
+procedure TVKVerletGlobalFrictionConstraintSP.SatisfyConstraint(
                               const iteration, maxIterations: Integer);
 var
    i : Integer;
    node : TVerletNode;
-   edge : TVerletEdge;
+   edge : TVKVerletEdge;
    SP : TBaseSpacePartition;
    Leaf : TSpacePartitionLeaf;
 begin
@@ -1187,9 +1187,9 @@ begin
             if not node.NailedDown then
                SatisfyConstraintForNode(node, iteration, maxIterations);
          end;
-      end else if Leaf is TVerletEdge then begin
+      end else if Leaf is TVKVerletEdge then begin
          if cctEdge in Owner.CollisionConstraintTypes then begin
-            edge := Leaf as TVerletEdge;
+            edge := Leaf as TVKVerletEdge;
             SatisfyConstraintForEdge(edge, iteration, maxIterations);
          end;
       end else Assert(False, 'Bad objects in list!');
@@ -1216,12 +1216,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletForce ------------------
+// ------------------ TVKVerletForce ------------------
 // ------------------
 
 // Create
 //
-constructor TVerletForce.Create(const aOwner : TVerletWorld);
+constructor TVKVerletForce.Create(const aOwner : TVKVerletWorld);
 begin
    inherited Create;
    if Assigned(aOwner) then
@@ -1230,7 +1230,7 @@ end;
 
 // Destroy
 //
-destructor TVerletForce.Destroy;
+destructor TVKVerletForce.Destroy;
 begin
    if Assigned(FOwner) then
       FOwner.RemoveForce(Self);
@@ -1243,7 +1243,7 @@ end;
 
 // Create
 //
-constructor TVerletGroupForce.Create(const aOwner : TVerletWorld);
+constructor TVerletGroupForce.Create(const aOwner : TVKVerletWorld);
 begin
    inherited Create(aOwner);
    FNodes:=TVerletNodeList.Create;
@@ -1265,19 +1265,19 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletGlobalForce ------------------
+// ------------------ TVKVerletGlobalForce ------------------
 // ------------------
 
 // RemoveNode
 //
-procedure TVerletGlobalForce.RemoveNode(const aNode : TVerletNode);
+procedure TVKVerletGlobalForce.RemoveNode(const aNode : TVerletNode);
 begin
    // nothing to do here
 end;
 
 // AddForce
 //
-procedure TVerletGlobalForce.AddForce;
+procedure TVKVerletGlobalForce.AddForce;
 var
    i : Integer;
    node : TVerletNode;
@@ -1290,12 +1290,12 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletDualForce ------------------
+// ------------------ TVKVerletDualForce ------------------
 // ------------------
 
 // RemoveNode
 //
-procedure TVerletDualForce.RemoveNode(const aNode : TVerletNode);
+procedure TVKVerletDualForce.RemoveNode(const aNode : TVerletNode);
 begin
    if FNodeA=aNode then
       FNodeA:=nil;
@@ -1304,40 +1304,40 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletForceList ------------------
+// ------------------ TVKVerletForceList ------------------
 // ------------------
 
 // GetItems
 //
-function TVerletForceList.GetItems(i : Integer) : TVerletForce;
+function TVKVerletForceList.GetItems(i : Integer) : TVKVerletForce;
 begin
    Result:=Get(i);
 end;
 
 // SetItems
 //
-procedure TVerletForceList.SetItems(i : Integer; const value : TVerletForce);
+procedure TVKVerletForceList.SetItems(i : Integer; const value : TVKVerletForce);
 begin
    Put(i, value);
 end;
 
 // ------------------
-// ------------------ TVerletWorld ------------------
+// ------------------ TVKVerletWorld ------------------
 // ------------------
 
 // Create
 //
-constructor TVerletWorld.Create;
+constructor TVKVerletWorld.Create;
 begin
    inherited;
    FDrag:=G_DRAG;
    FNodes:=TVerletNodeList.Create;
    FConstraints:=TVerletConstraintList.Create;
    FConstraintsWithBeforeIterations:=TVerletConstraintList.Create;
-   FForces:=TVerletForceList.Create;
+   FForces:=TVKVerletForceList.Create;
    FMaxDeltaTime:=0.02;
    FIterations:=3;
-   FSolidEdges := TVerletEdgeList.Create;
+   FSolidEdges := TVKVerletEdgeList.Create;
    FCurrentStepCount := 0;
    FUpdateSpacePartion := uspNever;
    FCollisionConstraintTypes := [cctNode, cctEdge];
@@ -1348,7 +1348,7 @@ end;
 
 // Destroy
 //
-destructor TVerletWorld.Destroy;
+destructor TVKVerletWorld.Destroy;
 var
    i : Integer;
 begin
@@ -1383,7 +1383,7 @@ end;
 
 // AccumulateForces
 //
-procedure TVerletWorld.AccumulateForces(const vpt : TVerletProgressTimes);
+procedure TVKVerletWorld.AccumulateForces(const vpt : TVerletProgressTimes);
 var
    i : Integer;
 begin
@@ -1397,7 +1397,7 @@ end;
 
 // AddNode
 //
-function TVerletWorld.AddNode(const aNode : TVerletNode) : Integer;
+function TVKVerletWorld.AddNode(const aNode : TVerletNode) : Integer;
 begin
    if Assigned(aNode.FOwner) then
       aNode.Owner.FNodes.Remove(aNode);
@@ -1407,7 +1407,7 @@ end;
 
 // RemoveNode
 //
-procedure TVerletWorld.RemoveNode(const aNode : TVerletNode);
+procedure TVKVerletWorld.RemoveNode(const aNode : TVerletNode);
 var
    i : Integer;
 begin
@@ -1425,7 +1425,7 @@ end;
 
 // AddConstraint
 //
-function TVerletWorld.AddConstraint(const aConstraint : TVerletConstraint) : Integer;
+function TVKVerletWorld.AddConstraint(const aConstraint : TVerletConstraint) : Integer;
 begin
    if Assigned(aConstraint.FOwner) then
       aConstraint.Owner.FConstraints.Remove(aConstraint);
@@ -1435,7 +1435,7 @@ end;
 
 // RemoveConstraint
 //
-procedure TVerletWorld.RemoveConstraint(const aConstraint : TVerletConstraint);
+procedure TVKVerletWorld.RemoveConstraint(const aConstraint : TVerletConstraint);
 begin
    if aConstraint.Owner=Self then begin
       FConstraints.Remove(aConstraint);
@@ -1445,7 +1445,7 @@ end;
 
 // AddForce
 //
-function TVerletWorld.AddForce(const aForce : TVerletForce) : Integer;
+function TVKVerletWorld.AddForce(const aForce : TVKVerletForce) : Integer;
 begin
    if Assigned(aForce.FOwner) then
       aForce.Owner.FForces.Remove(aForce);
@@ -1455,7 +1455,7 @@ end;
 
 // RemoveForce
 //
-procedure TVerletWorld.RemoveForce(const aForce : TVerletForce);
+procedure TVKVerletWorld.RemoveForce(const aForce : TVKVerletForce);
 begin
    if aForce.Owner=Self then begin
       FForces.Remove(aForce);
@@ -1465,17 +1465,17 @@ end;
 
 // AddSolidEdge
 //
-procedure TVerletWorld.AddSolidEdge(const aNodeA, aNodeB: TVerletNode);
+procedure TVKVerletWorld.AddSolidEdge(const aNodeA, aNodeB: TVerletNode);
 var
-  VerletEdge : TVerletEdge;
+  VerletEdge : TVKVerletEdge;
 begin
-  VerletEdge := TVerletEdge.CreateEdgeOwned(aNodeA, aNodeB);
+  VerletEdge := TVKVerletEdge.CreateEdgeOwned(aNodeA, aNodeB);
   SolidEdges.Add(VerletEdge);
 end;
 
 // FirstNode
 //
-function TVerletWorld.FirstNode : TVerletNode;
+function TVKVerletWorld.FirstNode : TVerletNode;
 begin
    Assert(FNodes.Count>0, 'There are no nodes in the assembly!');
    Result:=FNodes[0];
@@ -1483,7 +1483,7 @@ end;
 
 // lastNode
 //
-function TVerletWorld.LastNode : TVerletNode;
+function TVKVerletWorld.LastNode : TVerletNode;
 begin
    Assert(FNodes.Count>0, 'There are no nodes in the assembly!');
    Result:=FNodes[FNodes.Count-1];
@@ -1491,7 +1491,7 @@ end;
 
 // CreateOwnedNode
 //
-function TVerletWorld.CreateOwnedNode(const location : TAffineVector;
+function TVKVerletWorld.CreateOwnedNode(const location : TAffineVector;
             const aRadius : Single = 0; const aWeight : Single=1) : TVerletNode;
 begin
    Result:=VerletNodeClass.CreateOwned(self);
@@ -1503,7 +1503,7 @@ end;
 
 // CreateStick
 //
-function TVerletWorld.CreateStick(const aNodeA, aNodeB : TVerletNode; const Slack : Single = 0) : TVCStick;
+function TVKVerletWorld.CreateStick(const aNodeA, aNodeB : TVerletNode; const Slack : Single = 0) : TVCStick;
 begin
    Assert(aNodeA <> aNodeB, 'Can''t create stick between same node!');
    Result:=TVCStick.Create(Self);
@@ -1515,7 +1515,7 @@ end;
 
 // CreateSpring
 //
-function TVerletWorld.CreateSpring(const aNodeA, aNodeB : TVerletNode;
+function TVKVerletWorld.CreateSpring(const aNodeA, aNodeB : TVerletNode;
               const aStrength, aDamping : Single; const aSlack : Single = 0) : TVFSpring;
 begin
    Result:=TVFSpring.Create(Self);
@@ -1529,7 +1529,7 @@ end;
 
 // CreateSlider
 //
-function TVerletWorld.CreateSlider(const aNodeA, aNodeB : TVerletNode;
+function TVKVerletWorld.CreateSlider(const aNodeA, aNodeB : TVerletNode;
                                    const aSlideDirection : TAffineVector) : TVCSlider;
 begin
    Result:=TVCSlider.Create(Self);
@@ -1540,7 +1540,7 @@ end;
 
 // Initialize
 //
-procedure TVerletWorld.Initialize;
+procedure TVKVerletWorld.Initialize;
 var
    i : Integer;
 begin
@@ -1550,7 +1550,7 @@ end;
 
 // Progress
 //
-function TVerletWorld.Progress(const deltaTime, newTime : Double) : Integer;
+function TVKVerletWorld.Progress(const deltaTime, newTime : Double) : Integer;
 var
    i : Integer;
    ticks : Integer;
@@ -1592,7 +1592,7 @@ end;
 
 // DoUpdateSpacePartition
 //
-procedure TVerletWorld.DoUpdateSpacePartition;
+procedure TVKVerletWorld.DoUpdateSpacePartition;
 var
   i : Integer;
 begin
@@ -1611,7 +1611,7 @@ end;
 
 // SatisfyConstraints
 //
-procedure TVerletWorld.SatisfyConstraints(const vpt : TVerletProgressTimes);
+procedure TVKVerletWorld.SatisfyConstraints(const vpt : TVerletProgressTimes);
 var
    i, j : Integer;
    Constraint : TVerletConstraint;
@@ -1641,7 +1641,7 @@ end;
 
 // Verlet
 //
-procedure TVerletWorld.Verlet(const vpt : TVerletProgressTimes);
+procedure TVKVerletWorld.Verlet(const vpt : TVerletProgressTimes);
 var
    i : Integer;
 begin
@@ -1661,7 +1661,7 @@ end;
 
 // Create
 //
-constructor TVFGravity.Create(const aOwner : TVerletWorld);
+constructor TVFGravity.Create(const aOwner : TVKVerletWorld);
 begin
    inherited;
    FGravity.V[0]:=0;
@@ -1757,7 +1757,7 @@ begin
   end;
 end;
 
-constructor TVFAirResistance.Create(const aOwner: TVerletWorld);
+constructor TVFAirResistance.Create(const aOwner: TVKVerletWorld);
 begin
   inherited;
 
@@ -1780,7 +1780,7 @@ end;
 
 // Create
 //
-constructor TVCFloor.Create(const aOwner: TVerletWorld);
+constructor TVCFloor.Create(const aOwner: TVKVerletWorld);
 begin
   inherited;
   MakeVector(FNormal, 0, 1, 0);
@@ -2122,7 +2122,7 @@ begin
   result.Radius := FRadius;
 end;
 
-procedure TVCSphere.SatisfyConstraintForEdge(const aEdge: TVerletEdge;
+procedure TVCSphere.SatisfyConstraintForEdge(const aEdge: TVKVerletEdge;
   const iteration, maxIterations: Integer);
 var
   closestPoint, move, delta, contactNormal : TAffineVector;
@@ -2253,7 +2253,7 @@ begin
 end;
 
 // BROKEN AND VERY SLOW!
-procedure TVCCube.SatisfyConstraintForEdge(const aEdge: TVerletEdge;
+procedure TVCCube.SatisfyConstraintForEdge(const aEdge: TVKVerletEdge;
   const iteration, maxIterations: Integer);
 var
   Corners : array[0..7] of TAffineVector;
@@ -2509,7 +2509,7 @@ begin
 end;
 
 
-procedure TVCCapsule.SatisfyConstraintForEdge(const aEdge: TVerletEdge;
+procedure TVCCapsule.SatisfyConstraintForEdge(const aEdge: TVKVerletEdge;
   const iteration, maxIterations: Integer);
 var
    sphereLocation, closestPoint, dummy, delta, move, contactNormal : TAffineVector;
@@ -2561,12 +2561,12 @@ begin
 
 end;
 // ------------------
-// ------------------ TVerletEdge ------------------
+// ------------------ TVKVerletEdge ------------------
 // ------------------
 
-{ TVerletEdge }
+{ TVKVerletEdge }
 
-constructor TVerletEdge.CreateEdgeOwned(const aNodeA, aNodeB: TVerletNode);
+constructor TVKVerletEdge.CreateEdgeOwned(const aNodeA, aNodeB: TVerletNode);
 begin
   FNodeA := aNodeA;
   FNodeB := aNodeB;
@@ -2575,10 +2575,10 @@ begin
 end;
 
 // ------------------
-// ------------------ TVerletEdgeList ------------------
+// ------------------ TVKVerletEdgeList ------------------
 // ------------------
 
-procedure TVerletEdge.UpdateCachedAABBAndBSphere;
+procedure TVKVerletEdge.UpdateCachedAABBAndBSphere;
 begin
   FCachedAABB.min := FNodeA.FLocation;
   FCachedAABB.max := FNodeA.FLocation;
@@ -2588,14 +2588,14 @@ begin
   AABBToBSphere(FCachedAABB, FCachedBSphere);
 end;
 
-{ TVerletEdgeList }
+{ TVKVerletEdgeList }
 
-function TVerletEdgeList.GetItems(i: Integer): TVerletEdge;
+function TVKVerletEdgeList.GetItems(i: Integer): TVKVerletEdge;
 begin
   result := Get(i);
 end;
 
-procedure TVerletEdgeList.SetItems(i: Integer; const Value: TVerletEdge);
+procedure TVKVerletEdgeList.SetItems(i: Integer; const Value: TVKVerletEdge);
 begin
   put(i, Value);
 end;
@@ -2614,7 +2614,7 @@ begin
   FChangedOnStep := Owner.CurrentStepCount;
 end;
 
-procedure TVerletWorld.CreateOctree(const OctreeMin,
+procedure TVKVerletWorld.CreateOctree(const OctreeMin,
   OctreeMax: TAffineVector; const LeafThreshold, MaxTreeDepth: Integer);
 var
   Octree : TOctreeSpacePartition;
@@ -2636,20 +2636,20 @@ begin
     FUpdateSpacePartion := uspEveryFrame;
 end;
 
-procedure TVerletWorld.PauseInertia(const IterationSteps: Integer);
+procedure TVKVerletWorld.PauseInertia(const IterationSteps: Integer);
 begin
   FInertaPauseSteps := IterationSteps+1;
   Inertia := false;
 end;
 
-{ TVerletGlobalFrictionConstraintBox }
+{ TVKVerletGlobalFrictionConstraintBox }
 
-procedure TVerletGlobalFrictionConstraintBox.PerformSpaceQuery;
+procedure TVKVerletGlobalFrictionConstraintBox.PerformSpaceQuery;
 begin
   Owner.SpacePartition.QueryAABB(FCachedAABB);
 end;
 
-procedure TVerletGlobalFrictionConstraintBox.SetLocation(
+procedure TVKVerletGlobalFrictionConstraintBox.SetLocation(
   const Value: TAffineVector);
 begin
   inherited;
@@ -2657,38 +2657,38 @@ begin
   UpdateCachedAABB;
 end;
 
-procedure TVerletGlobalFrictionConstraintBox.UpdateCachedAABB;
+procedure TVKVerletGlobalFrictionConstraintBox.UpdateCachedAABB;
 begin
   FCachedAABB := GetAABB;
 end;
 
-{ TVerletGlobalFrictionConstraintSphere }
+{ TVKVerletGlobalFrictionConstraintSphere }
 
-procedure TVerletGlobalFrictionConstraintSphere.PerformSpaceQuery;
+procedure TVKVerletGlobalFrictionConstraintSphere.PerformSpaceQuery;
 begin
   Owner.SpacePartition.QueryBSphere(FCachedBSphere);
 end;
 
-procedure TVerletGlobalFrictionConstraintSphere.SetLocation(
+procedure TVKVerletGlobalFrictionConstraintSphere.SetLocation(
   const Value: TAffineVector);
 begin
   inherited;
   UpdateCachedBSphere;
 end;
 
-procedure TVerletGlobalFrictionConstraintSphere.UpdateCachedBSphere;
+procedure TVKVerletGlobalFrictionConstraintSphere.UpdateCachedBSphere;
 begin
   FCachedBSphere := GetBSphere;
 end;
 
-constructor TVerletGlobalConstraint.Create(const aOwner: TVerletWorld);
+constructor TVKVerletGlobalConstraint.Create(const aOwner: TVKVerletWorld);
 begin
   inherited;
   if Assigned(aOwner) then
     aOwner.ConstraintsWithBeforeIterations.Add(self);
 end;
 
-destructor TVerletGlobalConstraint.Destroy;
+destructor TVKVerletGlobalConstraint.Destroy;
 begin
   if Assigned(Owner) then
     Owner.ConstraintsWithBeforeIterations.Remove(self);

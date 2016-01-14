@@ -1,4 +1,4 @@
-object XCollectionEditor: TXCollectionEditor
+object XCollectionEditor: TVKXCollectionEditor
   Left = 0
   Top = 0
   Caption = 'Form1'

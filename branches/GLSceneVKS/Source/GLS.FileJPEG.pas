@@ -25,7 +25,7 @@ type
     procedure SetSmoothing(const AValue: boolean);
   public
     constructor Create; override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -131,7 +131,7 @@ end;
 // Capabilities
 
 
-class function TVKJPEGImage.Capabilities: TDataFileCapabilities;
+class function TVKJPEGImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

@@ -665,7 +665,7 @@ type
       Subclasses must be registered using the RegisterXCollectionItemClass
         function
        }
-  TVKBaseBehaviour = class(TXCollectionItem)
+  TVKBaseBehaviour = class(TVKXCollectionItem)
   protected
     { Protected Declarations }
     procedure SetName(const val: string); override;
@@ -681,7 +681,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
@@ -702,10 +702,10 @@ type
   //
   { Holds a list of TVKBehaviour objects. 
      This object expects itself to be owned by a TVKBaseSceneObject. 
-     As a TXCollection (and contrary to a TCollection), this list can contain
+     As a TVKXCollection (and contrary to a TCollection), this list can contain
      objects of varying class, the only constraint being that they should all
      be TVKBehaviour subclasses. }
-  TVKBehaviours = class(TXCollection)
+  TVKBehaviours = class(TVKXCollection)
   protected
     { Protected Declarations }
     function GetBehaviour(index: Integer): TVKBehaviour;
@@ -716,11 +716,11 @@ type
 
     function GetNamePath: string; override;
 
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
 
     property Behaviour[index: Integer]: TVKBehaviour read GetBehaviour; default;
 
-    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TVKXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTimes: TProgressTimes);
   end;
@@ -781,7 +781,7 @@ type
   //
   { Holds a list of object effects. 
      This object expects itself to be owned by a TVKBaseSceneObject.  }
-  TVKObjectEffects = class(TXCollection)
+  TVKObjectEffects = class(TVKXCollection)
   protected
     { Protected Declarations }
     function GetEffect(index: Integer): TVKObjectEffect;
@@ -792,12 +792,12 @@ type
 
     function GetNamePath: string; override;
 
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
 
     property ObjectEffect[index: Integer]: TVKObjectEffect read GetEffect;
     default;
 
-    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TVKXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes);
     procedure RenderPreEffects(var rci: TRenderContextInfo);
@@ -5061,7 +5061,7 @@ end;
 // Create
 //
 
-constructor TVKBaseBehaviour.Create(aOwner: TXCollection);
+constructor TVKBaseBehaviour.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
   // nothing more, yet
@@ -5164,7 +5164,7 @@ end;
 // ItemsClass
 //
 
-class function TVKBehaviours.ItemsClass: TXCollectionItemClass;
+class function TVKBehaviours.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TVKBehaviour;
 end;
@@ -5180,7 +5180,7 @@ end;
 // CanAdd
 //
 
-function TVKBehaviours.CanAdd(aClass: TXCollectionItemClass): Boolean;
+function TVKBehaviours.CanAdd(aClass: TVKXCollectionItemClass): Boolean;
 begin
   Result := (not aClass.InheritsFrom(TVKObjectEffect)) and (inherited
     CanAdd(aClass));
@@ -5270,7 +5270,7 @@ end;
 // ItemsClass
 //
 
-class function TVKObjectEffects.ItemsClass: TXCollectionItemClass;
+class function TVKObjectEffects.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TVKObjectEffect;
 end;
@@ -5286,7 +5286,7 @@ end;
 // CanAdd
 //
 
-function TVKObjectEffects.CanAdd(aClass: TXCollectionItemClass): Boolean;
+function TVKObjectEffects.CanAdd(aClass: TVKXCollectionItemClass): Boolean;
 begin
   Result := (aClass.InheritsFrom(TVKObjectEffect)) and (inherited
     CanAdd(aClass));

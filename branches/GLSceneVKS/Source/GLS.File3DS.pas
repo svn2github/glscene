@@ -267,10 +267,10 @@ type
      Uses an upgraded version if a 3DS import library by Mike Lischke. 
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
-  TVK3DSVectorFile = class(TVectorFile)
+  TVK3DSVectorFile = class(TVKVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -286,8 +286,8 @@ var
   { If enabled, allows 3ds animation and fixes loading of some 3ds models,
      but has a few bugs:
      - TVKFreeForm.AutoCentering does now work correctly.
-     - TMeshObject.vertices return values different from
-        TMeshObject.ExtractTriangles()
+     - TVKMeshObject.vertices return values different from
+        TVKMeshObject.ExtractTriangles()
      }
   vGLFile3DS_EnableAnimation: boolean = False;
 
@@ -1635,7 +1635,7 @@ end;
 
 // Capabilities
 
-class function TVK3DSVectorFile.Capabilities: TDataFileCapabilities;
+class function TVK3DSVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

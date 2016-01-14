@@ -1,4 +1,4 @@
-object PlugInManagerEditor: TPlugInManagerEditor
+object PlugInManagerEditor: TVKPlugInManagerEditor
   Left = 0
   Top = 0
   Caption = 'Plug-in registration :'

@@ -17,7 +17,7 @@ interface
 {$I GLScene.inc}
 
 uses 
-  System.Classes, 
+  System.Classes, System.SysUtils,
   GLS.VectorGeometry, GLS.VectorLists, GLS.CrossPlatform;
 
 type
@@ -156,8 +156,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
-uses SysUtils;
 
 // ------------------
 // ------------------ TVKSilhouette ------------------

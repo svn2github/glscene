@@ -34,7 +34,7 @@ type
     // defaults to 1.0
     fProgramType: string[16];
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
@@ -307,7 +307,7 @@ end;
 // Capabilities
 //
 
-class function TVKHDRImage.Capabilities: TDataFileCapabilities;
+class function TVKHDRImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

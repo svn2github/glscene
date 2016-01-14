@@ -24,10 +24,10 @@ type
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TVKActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap). }
-   TVKFileDAE = class(TVectorFile)
+   TVKFileDAE = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -41,7 +41,7 @@ implementation
 
 // Capabilities
 //
-class function TVKFileDAE.Capabilities : TDataFileCapabilities;
+class function TVKFileDAE.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;

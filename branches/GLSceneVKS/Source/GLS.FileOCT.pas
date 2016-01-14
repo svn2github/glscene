@@ -22,13 +22,13 @@ uses
 
 type
 
-  // TVKOCTVectorFile
+  // TVKOCTVKVectorFile
 
   { The OCT vector file (FSRad output).  }
-  TVKOCTVectorFile = class(TVectorFile)
+  TVKOCTVKVectorFile = class(TVKVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -54,25 +54,25 @@ uses
   GLS.Utils, GLS.TextureFormat;
 
 // ------------------
-// ------------------ TVKOCTVectorFile ------------------
+// ------------------ TVKOCTVKVectorFile ------------------
 // ------------------
 
 // Capabilities
 
-class function TVKOCTVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKOCTVKVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
 // LoadFromStream
 
-procedure TVKOCTVectorFile.LoadFromStream(aStream: TStream);
+procedure TVKOCTVKVectorFile.LoadFromStream(aStream: TStream);
 var
   i, y, n: integer;
   oct: TOCTFile;
   octFace: POCTFace;
   octLightmap: POCTLightmap;
-  mo: TMeshObject;
+  mo: TVKMeshObject;
   fg: TFGVertexIndexList;
   lightmapLib: TVKMaterialLibrary;
   lightmapBmp: TVKBitmap;
@@ -80,7 +80,7 @@ var
 begin
   oct := TOCTFile.Create(aStream);
   try
-    mo := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mo := TVKMeshObject.CreateOwned(Owner.MeshObjects);
     mo.Mode := momFaceGroups;
 
     lightmapLib := Owner.LightmapLibrary;
@@ -166,7 +166,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('oct', 'FSRad OCT files', TVKOCTVectorFile);
+  RegisterVectorFileFormat('oct', 'FSRad OCT files', TVKOCTVKVectorFile);
 
 end.
 

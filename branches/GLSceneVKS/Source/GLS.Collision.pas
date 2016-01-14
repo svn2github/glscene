@@ -93,7 +93,7 @@ type
 
 		public
 			{ Public Declarations }
-			constructor Create(aOwner : TXCollection); override;
+			constructor Create(aOwner : TVKXCollection); override;
 			destructor Destroy; override;
 
          procedure Assign(Source: TPersistent); override;
@@ -811,7 +811,7 @@ end;
 
 // Create
 //
-constructor TVKBCollision.Create(aOwner : TXCollection);
+constructor TVKBCollision.Create(aOwner : TVKXCollection);
 begin
    inherited Create(aOwner);
 

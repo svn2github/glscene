@@ -43,9 +43,9 @@ type
   end;
 
 type
-  TVKNMFVectorFile = class (TVectorFile)
+  TVKNMFVectorFile = class (TVKVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TVKDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
       procedure SaveToStream(aStream : TStream); override;
   end;
@@ -99,7 +99,7 @@ end;
 
 // Capabilities
 //
-class function TVKNMFVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKNMFVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead, dfcWrite];
 end;
@@ -109,13 +109,13 @@ end;
 procedure TVKNMFVectorFile.LoadFromStream(aStream : TStream);
 var
   i,j  : Integer;
-  mesh : TMeshObject;
+  mesh : TVKMeshObject;
   nmf  : TFileNMF;
 begin
   nmf:=TFileNMF.Create;
   try
     nmf.LoadFromStream(aStream);
-    mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode:=momTriangles;
     for i:=0 to nmf.NumTris-1 do begin
       for j:=0 to 2 do begin

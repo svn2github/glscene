@@ -30,7 +30,7 @@ Type
 
   { TZLibArchive }
 
-  TZLibArchive=class(TBaseArchive)
+  TZLibArchive=class(TVKBaseArchive)
     private
       FHeader: TZLibHeader;
       FStream: TFileStream;

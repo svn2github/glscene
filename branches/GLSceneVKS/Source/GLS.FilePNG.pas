@@ -18,7 +18,7 @@ type
   TVKPNGImage = class(TVKBaseImage)
   private
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -167,7 +167,7 @@ end;
 // Capabilities
 //
 
-class function TVKPNGImage.Capabilities: TDataFileCapabilities;
+class function TVKPNGImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

@@ -16,7 +16,7 @@ uses
   GLS.PlugInIntf, GLS.PlugInManager, FMX.Memo;
 
 type
-  TPlugInManagerEditor = class(TForm)
+  TVKPlugInManagerEditor = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
@@ -44,14 +44,14 @@ type
     procedure ServiceBoxChange(Sender: TObject);
   private
     { Private declarations }
-    FManager: TPlugInManager;
+    FManager: TVKPlugInManager;
   public
     { Public declarations }
-    class procedure EditPlugIns(AManager: TPlugInManager);
+    class procedure EditPlugIns(AManager: TVKPlugInManager);
   end;
 
 var
-  PlugInManagerEditor: TPlugInManagerEditor;
+  PlugInManagerEditor: TVKPlugInManagerEditor;
 
   // ------------------------------------------------------------------------------
 
@@ -59,12 +59,12 @@ implementation
 
 {$R *.fmx}
 
-procedure TPlugInManagerEditor.OKButtonClick(Sender: TObject);
+procedure TVKPlugInManagerEditor.OKButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TPlugInManagerEditor.LoadButtonClick(Sender: TObject);
+procedure TVKPlugInManagerEditor.LoadButtonClick(Sender: TObject);
 var
   I, Index: Integer;
 begin
@@ -87,12 +87,12 @@ begin
       end;
 end;
 
-class procedure TPlugInManagerEditor.EditPlugIns(AManager: TPlugInManager);
+class procedure TVKPlugInManagerEditor.EditPlugIns(AManager: TVKPlugInManager);
 begin
   // ensure only one instance
   if assigned(PlugInManagerEditor) then
     PlugInManagerEditor.Free;
-  PlugInManagerEditor := TPlugInManagerEditor.Create(Application);
+  PlugInManagerEditor := TVKPlugInManagerEditor.Create(Application);
   with PlugInManagerEditor do
   begin
     ListBox.Items := AManager.PlugIns;
@@ -103,7 +103,7 @@ begin
   PlugInManagerEditor := nil;
 end;
 
-procedure TPlugInManagerEditor.ListBoxClick(Sender: TObject);
+procedure TVKPlugInManagerEditor.ListBoxClick(Sender: TObject);
 var
   Entry: Integer;
   Service: TPIServiceType;
@@ -162,7 +162,7 @@ begin
   end;
 end;
 
-procedure TPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
+procedure TVKPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
 
 var
   I: Integer;
@@ -194,7 +194,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
+procedure TVKPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
 begin
   NameBox.Items.Clear;
   with ServiceBox, Items do

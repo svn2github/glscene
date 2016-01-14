@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-  Register TXCollection property editor 
+  Register TVKXCollection property editor 
  
 }
 unit RegisterXCollection;
@@ -37,7 +37,7 @@ type
 
 	// TVKXCollectionProperty
 	//
-	TXCollectionProperty = class(TClassProperty)
+	TVKXCollectionProperty = class(TClassProperty)
 		public
       function GetAttributes: TPropertyAttributes; //override;  <- not found in base class
 			procedure Edit; //override;  <- not found in base class
@@ -77,27 +77,27 @@ procedure Register;
 begin
   { TODO : E2003 Undeclared identifier: 'RegisterPropertyEditor' }
   (*
-  RegisterPropertyEditor(TypeInfo(TXCollection), nil, '', TXCollectionProperty);
+  RegisterPropertyEditor(TypeInfo(TVKXCollection), nil, '', TVKXCollectionProperty);
   *)
 end;
 
-//----------------- TXCollectionProperty ------------------------------------
+//----------------- TVKXCollectionProperty ------------------------------------
 
 // GetAttributes
 //
-function TXCollectionProperty.GetAttributes: TPropertyAttributes;
+function TVKXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result:=[paDialog];
 end;
 
 // Edit
 //
-procedure TXCollectionProperty.Edit;
+procedure TVKXCollectionProperty.Edit;
 begin
    with XCollectionEditor do
    begin
       { TODO : E2003 Undeclared identifier: 'Designer' }
-      (*SetXCollection(TXCollection(GetOrdValue), Self.Designer);*)
+      (*SetXCollection(TVKXCollection(GetOrdValue), Self.Designer);*)
       Show;
    end;
 end;

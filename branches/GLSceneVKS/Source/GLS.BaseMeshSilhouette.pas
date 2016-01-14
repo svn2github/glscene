@@ -17,13 +17,13 @@ uses
   GLS.VectorGeometry, GLS.VectorLists, GLS.VectorFileObjects, GLS.Silhouette;
 
 type
-  // TFaceGroupConnectivity
+  // TVKFaceGroupConnectivity
   //
-  TFaceGroupConnectivity = class(TConnectivity)
+  TVKFaceGroupConnectivity = class(TConnectivity)
   private
-    FMeshObject: TMeshObject;
+    FMeshObject: TVKMeshObject;
     FOwnsVertices: boolean;
-    procedure SetMeshObject(const Value: TMeshObject);
+    procedure SetMeshObject(const Value: TVKMeshObject);
 
   public
     procedure Clear; override;
@@ -31,10 +31,10 @@ type
     { Builds the connectivity information. }
     procedure RebuildEdgeList;
 
-    property MeshObject: TMeshObject read FMeshObject write SetMeshObject;
+    property MeshObject: TVKMeshObject read FMeshObject write SetMeshObject;
 
     constructor Create(APrecomputeFaceNormal: boolean); override;
-    constructor CreateFromMesh(aMeshObject: TMeshObject; APrecomputeFaceNormal: boolean);
+    constructor CreateFromMesh(aMeshObject: TVKMeshObject; APrecomputeFaceNormal: boolean);
     destructor Destroy; override;
   end;
 
@@ -44,7 +44,7 @@ type
   private
     FGLBaseMesh: TVKBaseMesh;
     FFaceGroupConnectivityList: TList;
-    function GetFaceGroupConnectivity(i: integer): TFaceGroupConnectivity;
+    function GetFaceGroupConnectivity(i: integer): TVKFaceGroupConnectivity;
     function GetConnectivityCount: integer;
     procedure SetGLBaseMesh(const Value: TVKBaseMesh);
 
@@ -54,7 +54,7 @@ type
 
   public
     property ConnectivityCount: integer read GetConnectivityCount;
-    property FaceGroupConnectivity[i: integer]: TFaceGroupConnectivity read GetFaceGroupConnectivity;
+    property FaceGroupConnectivity[i: integer]: TVKFaceGroupConnectivity read GetFaceGroupConnectivity;
     property GLBaseMesh: TVKBaseMesh read FGLBaseMesh write SetGLBaseMesh;
 
     procedure Clear(SaveFaceGroupConnectivity: boolean);
@@ -71,13 +71,13 @@ type
 
 implementation
 
-{ TFaceGroupConnectivity }
+{ TVKFaceGroupConnectivity }
 
 // ------------------
-// ------------------ TFaceGroupConnectivity ------------------
+// ------------------ TVKFaceGroupConnectivity ------------------
 // ------------------
 
-procedure TFaceGroupConnectivity.Clear;
+procedure TVKFaceGroupConnectivity.Clear;
   begin
     if Assigned(FVertices) then
     begin
@@ -95,14 +95,14 @@ procedure TFaceGroupConnectivity.Clear;
       inherited;
   end;
 
-constructor TFaceGroupConnectivity.Create(APrecomputeFaceNormal: boolean);
+constructor TVKFaceGroupConnectivity.Create(APrecomputeFaceNormal: boolean);
   begin
     inherited;
 
     FOwnsVertices := true;
   end;
 
-procedure TFaceGroupConnectivity.SetMeshObject(const Value: TMeshObject);
+procedure TVKFaceGroupConnectivity.SetMeshObject(const Value: TVKMeshObject);
   begin
     Clear;
 
@@ -118,14 +118,14 @@ procedure TFaceGroupConnectivity.SetMeshObject(const Value: TMeshObject);
     RebuildEdgeList;
   end;
 
-constructor TFaceGroupConnectivity.CreateFromMesh(aMeshObject: TMeshObject; APrecomputeFaceNormal: boolean);
+constructor TVKFaceGroupConnectivity.CreateFromMesh(aMeshObject: TVKMeshObject; APrecomputeFaceNormal: boolean);
   begin
     Create(APrecomputeFaceNormal);
 
     MeshObject := aMeshObject;
   end;
 
-destructor TFaceGroupConnectivity.Destroy;
+destructor TVKFaceGroupConnectivity.Destroy;
   begin
     if FOwnsVertices then
       FVertices.Free;
@@ -134,7 +134,7 @@ destructor TFaceGroupConnectivity.Destroy;
     inherited;
   end;
 
-procedure TFaceGroupConnectivity.RebuildEdgeList;
+procedure TVKFaceGroupConnectivity.RebuildEdgeList;
   var
     iFaceGroup, iFace, iVertex: integer;
     FaceGroup: TFGVertexIndexList;
@@ -228,8 +228,8 @@ constructor TVKBaseMeshConnectivity.CreateFromMesh(aGLBaseMesh: TVKBaseMesh);
 procedure TVKBaseMeshConnectivity.SetGLBaseMesh(const Value: TVKBaseMesh);
   var
     i: integer;
-    MO: TMeshObject;
-    Connectivity: TFaceGroupConnectivity;
+    MO: TVKMeshObject;
+    Connectivity: TVKFaceGroupConnectivity;
   begin
     Clear(false);
 
@@ -245,7 +245,7 @@ procedure TVKBaseMeshConnectivity.SetGLBaseMesh(const Value: TVKBaseMesh);
 
       if MO.Visible then
       begin
-        Connectivity := TFaceGroupConnectivity.CreateFromMesh(MO, FPrecomputeFaceNormal);
+        Connectivity := TVKFaceGroupConnectivity.CreateFromMesh(MO, FPrecomputeFaceNormal);
 
         FFaceGroupConnectivityList.Add(Connectivity);
       end;
@@ -297,9 +297,9 @@ function TVKBaseMeshConnectivity.GetFaceCount: integer;
       result := result + FaceGroupConnectivity[i].FaceCount;
   end;
 
-function TVKBaseMeshConnectivity.GetFaceGroupConnectivity(i: integer): TFaceGroupConnectivity;
+function TVKBaseMeshConnectivity.GetFaceGroupConnectivity(i: integer): TVKFaceGroupConnectivity;
   begin
-    result := TFaceGroupConnectivity(FFaceGroupConnectivityList[i]);
+    result := TVKFaceGroupConnectivity(FFaceGroupConnectivityList[i]);
   end;
 
 end.

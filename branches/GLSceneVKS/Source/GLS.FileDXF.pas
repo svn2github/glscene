@@ -22,7 +22,7 @@ uses
   GLS.VectorFileObjects, GLS.Material;
 
 type
-  TVKDXFVectorFile = class(TVectorFile)
+  TVKDXFVectorFile = class(TVKVectorFile)
   private
     FSourceStream: TStream; { Load from this stream }
     FBuffer: String; { Buffer and current line }
@@ -40,11 +40,11 @@ type
     procedure SkipTable;
     procedure SkipSection;
     // procedure DoProgress (Stage: TVKProgressStage; PercentDone: single; RedrawNow: Boolean; const Msg: string);
-    function NeedMesh(basemesh: TVKBaseMesh; layer: STRING): TMeshObject;
-    function NeedFaceGroup(m: TMeshObject; fgmode: TFaceGroupMeshMode;
+    function NeedMesh(basemesh: TVKBaseMesh; layer: STRING): TVKMeshObject;
+    function NeedFaceGroup(m: TVKMeshObject; fgmode: TVKFaceGroupMeshMode;
       fgmat: STRING): TFGVertexIndexList;
     procedure NeedMeshAndFaceGroup(basemesh: TVKBaseMesh; layer: STRING;
-      fgmode: TFaceGroupMeshMode; fgmat: STRING; var m: TMeshObject;
+      fgmode: TVKFaceGroupMeshMode; fgmat: STRING; var m: TVKMeshObject;
       var fg: TFGVertexIndexList);
 
     function ReadLine: STRING;
@@ -61,13 +61,13 @@ type
     procedure ReadEntities(basemesh: TVKBaseMesh);
 
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
 implementation
 
-procedure BuildNormals(m: TMeshObject); FORWARD;
+procedure BuildNormals(m: TVKMeshObject); FORWARD;
 
 const
   DXFcolorsRGB: ARRAY [1 .. 255] OF LONGINT = ($FF0000, $FFFF00, $00FF00,
@@ -119,7 +119,7 @@ const
     result := (S.Position >= S.Size);
   end;
 
-  class function TVKDXFVectorFile.Capabilities: TDataFileCapabilities;
+  class function TVKDXFVectorFile.Capabilities: TVKDataFileCapabilities;
   begin
     result := [dfcRead];
   end;
@@ -382,8 +382,8 @@ const
       pt, insertpoint, scale: TAffineVector;
       blockmesh: TVKBaseMesh;
       // blockproxy  :TVKProxyObject;
-      mo_block: TMeshObject;
-      mo_base: TMeshObject;
+      mo_block: TVKMeshObject;
+      mo_base: TVKMeshObject;
       fg_block, fg_base: TFGVertexIndexList;
     begin
       blockname := '';
@@ -471,7 +471,7 @@ const
     end;
 
     function TVKDXFVectorFile.NeedMesh(basemesh: TVKBaseMesh; layer: STRING)
-      : TMeshObject;
+      : TVKMeshObject;
     var
       i: Integer;
     begin
@@ -483,14 +483,14 @@ const
         result := basemesh.MeshObjects[i]
       else
       begin
-        result := TMeshObject.CreateOwned(basemesh.MeshObjects);
+        result := TVKMeshObject.CreateOwned(basemesh.MeshObjects);
         result.mode := momFaceGroups;
         result.name := layer;
       end;
     end;
 
-    function TVKDXFVectorFile.NeedFaceGroup(m: TMeshObject;
-      fgmode: TFaceGroupMeshMode; fgmat: STRING): TFGVertexIndexList;
+    function TVKDXFVectorFile.NeedFaceGroup(m: TVKMeshObject;
+      fgmode: TVKFaceGroupMeshMode; fgmat: STRING): TFGVertexIndexList;
     var
       i: Integer;
       acadcolor: LONGINT;
@@ -533,8 +533,8 @@ const
     end;
 
     procedure TVKDXFVectorFile.NeedMeshAndFaceGroup(basemesh: TVKBaseMesh;
-      layer: STRING; fgmode: TFaceGroupMeshMode; fgmat: STRING;
-      var m: TMeshObject; var fg: TFGVertexIndexList);
+      layer: STRING; fgmode: TVKFaceGroupMeshMode; fgmat: STRING;
+      var m: TVKMeshObject; var fg: TFGVertexIndexList);
     begin
       m := NeedMesh(basemesh, layer);
       fg := NeedFaceGroup(m, fgmode, fgmat);
@@ -547,7 +547,7 @@ const
       isquad: Boolean;
       fg: TFGVertexIndexList;
       color, layer: STRING;
-      m: TMeshObject;
+      m: TVKMeshObject;
     begin
       color := '';
       layer := '';
@@ -616,7 +616,7 @@ const
 
     procedure TVKDXFVectorFile.ReadEntityPolyLine(basemesh: TVKBaseMesh);
 
-      procedure ReadPolylineVertex(m: TMeshObject; vertexindexbase: Integer);
+      procedure ReadPolylineVertex(m: TVKMeshObject; vertexindexbase: Integer);
       var
         color: STRING;
         pt: TAffineVector;
@@ -704,7 +704,7 @@ const
       end;
 
     var
-      m: TMeshObject;
+      m: TVKMeshObject;
       code, vertexindexbase: Integer;
       S, layer: STRING;
     begin
@@ -768,7 +768,7 @@ const
     end;
 
     // build normals
-    procedure BuildNormals(m: TMeshObject);
+    procedure BuildNormals(m: TVKMeshObject);
     var
       i, j: Integer;
       v1, v2, v3, v4, n: TAffineVector;

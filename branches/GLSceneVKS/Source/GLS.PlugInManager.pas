@@ -19,9 +19,9 @@ uses
 
 
 type
-  PPlugInEntry = ^TPlugInEntry;
+  PPlugInEntry = ^TVKPlugInEntry;
 
-  TPlugInEntry = record
+  TVKPlugInEntry = record
     Path: TFileName;
     Handle: HINST;
     FileSize: Integer;
@@ -33,17 +33,17 @@ type
     GetVersion: TGetVersion;
   end;
 
-  TPlugInManager = class;
+  TVKPlugInManager = class;
 
-  TResourceManager = class(TComponent)
+  TVKResourceManager = class(TComponent)
   public
-    procedure Notify(Sender: TPlugInManager; Operation: TOperation;
+    procedure Notify(Sender: TVKPlugInManager; Operation: TOperation;
       Service: TPIServiceType; PlugIn: Integer); virtual; abstract;
   end;
 
-  TPlugInList = class(TStringList)
+  TVKPlugInList = class(TStringList)
   private
-    FOwner: TPlugInManager;
+    FOwner: TVKPlugInManager;
     function GetPlugInEntry(Index: Integer): PPlugInEntry;
     procedure SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
   protected
@@ -51,28 +51,28 @@ type
     procedure ReadPlugIns(Reader: TReader);
     procedure WritePlugIns(Writer: TWriter);
   public
-    constructor Create(AOwner: TPlugInManager); virtual;
+    constructor Create(AOwner: TVKPlugInManager); virtual;
     procedure ClearList;
     property Objects[Index: Integer]: PPlugInEntry read GetPlugInEntry
       write SetPlugInEntry; default;
-    property Owner: TPlugInManager read FOwner;
+    property Owner: TVKPlugInManager read FOwner;
   end;
 
   PResManagerEntry = ^TResManagerEntry;
 
   TResManagerEntry = record
-    Manager: TResourceManager;
+    Manager: TVKResourceManager;
     Services: TPIServices;
   end;
 
-  TPlugInManager = class(TComponent)
+  TVKPlugInManager = class(TComponent)
   private
-    FLibraryList: TPlugInList;
+    FLibraryList: TVKPlugInList;
     FResManagerList: TList;
   protected
     procedure DoNotify(Operation: TOperation; Service: TPIServiceType;
       PlugIn: Integer);
-    function FindResManager(AManager: TResourceManager): PResManagerEntry;
+    function FindResManager(AManager: TVKResourceManager): PResManagerEntry;
     function GetIndexFromFilename(FileName: String): Integer;
     function GetPlugInFromFilename(FileName: String): PPlugInEntry;
   public
@@ -80,20 +80,20 @@ type
     destructor Destroy; override;
     function AddPlugIn(Path: TFileName): Integer;
     procedure EditPlugInList;
-    procedure RegisterResourceManager(AManager: TResourceManager;
+    procedure RegisterResourceManager(AManager: TVKResourceManager;
       Services: TPIServices);
     procedure RemovePlugIn(Index: Integer);
-    procedure UnRegisterRessourceManager(AManager: TResourceManager;
+    procedure UnRegisterRessourceManager(AManager: TVKResourceManager;
       Services: TPIServices);
   published
-    property PlugIns: TPlugInList read FLibraryList write FLibraryList;
+    property PlugIns: TVKPlugInList read FLibraryList write FLibraryList;
   end;
 
   // ------------------------------------------------------------------------------
 implementation
-// ----------------- TPlugInList ------------------------------------------------
+// ----------------- TVKPlugInList ------------------------------------------------
 
-constructor TPlugInList.Create(AOwner: TPlugInManager);
+constructor TVKPlugInList.Create(AOwner: TVKPlugInManager);
 
 begin
   inherited Create;
@@ -104,7 +104,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.ClearList;
+procedure TVKPlugInList.ClearList;
 
 begin
   while Count > 0 do
@@ -113,7 +113,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInList.GetPlugInEntry(Index: Integer): PPlugInEntry;
+function TVKPlugInList.GetPlugInEntry(Index: Integer): PPlugInEntry;
 
 begin
   Result := PPlugInEntry( inherited Objects[Index]);
@@ -121,7 +121,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
+procedure TVKPlugInList.SetPlugInEntry(Index: Integer; AEntry: PPlugInEntry);
 
 begin
   inherited Objects[Index] := Pointer(AEntry);
@@ -129,7 +129,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.WritePlugIns(Writer: TWriter);
+procedure TVKPlugInList.WritePlugIns(Writer: TWriter);
 
 var
   I: Integer;
@@ -143,7 +143,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.ReadPlugIns(Reader: TReader);
+procedure TVKPlugInList.ReadPlugIns(Reader: TReader);
 
 begin
   ClearList;
@@ -155,25 +155,25 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInList.DefineProperties(Filer: TFiler);
+procedure TVKPlugInList.DefineProperties(Filer: TFiler);
 
 begin
   Filer.DefineProperty('Paths', ReadPlugIns, WritePlugIns, Count > 0);
 end;
 
-// ----------------- TPlugInManager ---------------------------------------------
+// ----------------- TVKPlugInManager ---------------------------------------------
 
-constructor TPlugInManager.Create(AOwner: TComponent);
+constructor TVKPlugInManager.Create(AOwner: TComponent);
 
 begin
   inherited Create(AOwner);
-  FLibraryList := TPlugInList.Create(Self);
+  FLibraryList := TVKPlugInList.Create(Self);
   FResManagerList := TList.Create;
 end;
 
 // ------------------------------------------------------------------------------
 
-destructor TPlugInManager.Destroy;
+destructor TVKPlugInManager.Destroy;
 var
   I: Integer;
 begin
@@ -187,7 +187,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.AddPlugIn(Path: TFileName): Integer;
+function TVKPlugInManager.AddPlugIn(Path: TFileName): Integer;
 
 // open the given DLL and read its properties, to identify
 // whether it's a valid plug-in or not
@@ -256,7 +256,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.DoNotify(Operation: TOperation;
+procedure TVKPlugInManager.DoNotify(Operation: TOperation;
   Service: TPIServiceType; PlugIn: Integer);
 
 var
@@ -271,7 +271,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.FindResManager(AManager: TResourceManager)
+function TVKPlugInManager.FindResManager(AManager: TVKResourceManager)
   : PResManagerEntry;
 
 var
@@ -289,7 +289,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.GetIndexFromFilename(FileName: String): Integer;
+function TVKPlugInManager.GetIndexFromFilename(FileName: String): Integer;
 
 var
   I: Integer;
@@ -306,7 +306,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-function TPlugInManager.GetPlugInFromFilename(FileName: String): PPlugInEntry;
+function TVKPlugInManager.GetPlugInFromFilename(FileName: String): PPlugInEntry;
 
 var
   I: Integer;
@@ -321,7 +321,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.RegisterResourceManager(AManager: TResourceManager;
+procedure TVKPlugInManager.RegisterResourceManager(AManager: TVKResourceManager;
   Services: TPIServices);
 
 var
@@ -342,7 +342,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.RemovePlugIn(Index: Integer);
+procedure TVKPlugInManager.RemovePlugIn(Index: Integer);
 
 var
   Entry: PPlugInEntry;
@@ -364,15 +364,15 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.EditPlugInList;
+procedure TVKPlugInManager.EditPlugInList;
 
 begin
-  ///TPlugInManagerEditor.EditPlugIns(Self);   //Circular call to edit Listbox items?
+  ///TVKPlugInManagerEditor.EditPlugIns(Self);   //Circular call to edit Listbox items?
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManager.UnRegisterRessourceManager(AManager: TResourceManager;
+procedure TVKPlugInManager.UnRegisterRessourceManager(AManager: TVKResourceManager;
   Services: TPIServices);
 
 var

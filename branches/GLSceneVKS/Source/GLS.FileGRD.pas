@@ -26,12 +26,12 @@ type
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats}
 
-  TVKGRDVectorFile = class(TVectorFile)
+  TVKGRDVectorFile = class(TVKVectorFile)
    public
     { Public Declarations }
     HeightField: TVKHeightField;
     Nodes: array of TSingleArray;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
    private
     StrVal: String;
@@ -58,7 +58,7 @@ const
 
 // Capabilities
 //
-class function TVKGRDVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKGRDVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

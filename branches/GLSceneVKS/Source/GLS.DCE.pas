@@ -140,7 +140,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -198,7 +198,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -581,7 +581,7 @@ begin
    inherited Assign(Source);
 end;
 
-constructor TVKDCEStatic.Create(aOwner: TXCollection);
+constructor TVKDCEStatic.Create(aOwner: TVKXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
@@ -748,7 +748,7 @@ begin
   inherited Assign(Source);
 end;
 
-constructor TVKDCEDynamic.Create(aOwner: TXCollection);
+constructor TVKDCEDynamic.Create(aOwner: TVKXCollection);
 begin
   inherited Create(aOwner);
   FActive := True;

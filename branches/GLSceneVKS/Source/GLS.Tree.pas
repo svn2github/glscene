@@ -866,7 +866,7 @@ end;
 //
 procedure TVKTree.BuildMesh(GLBaseMesh : TVKBaseMesh);
 
-   procedure RecursBranches(Branch : TVKTreeBranch; bone : TSkeletonBone; Frame : TSkeletonFrame);
+   procedure RecursBranches(Branch : TVKTreeBranch; bone : TVKSkeletonBone; Frame : TVKSkeletonFrame);
    var
       trans : TTransformations;
       mat : TMatrix;
@@ -894,18 +894,18 @@ procedure TVKTree.BuildMesh(GLBaseMesh : TVKBaseMesh);
 
       // Recurse with child branches
       if Assigned(Branch.Left) then
-         RecursBranches(Branch.Left, TSkeletonBone.CreateOwned(bone), Frame);
+         RecursBranches(Branch.Left, TVKSkeletonBone.CreateOwned(bone), Frame);
       if Assigned(Branch.Right) then
-         RecursBranches(Branch.Right, TSkeletonBone.CreateOwned(bone), Frame);
+         RecursBranches(Branch.Right, TVKSkeletonBone.CreateOwned(bone), Frame);
    end;
 
 var
-   //SkelMesh : TSkeletonMeshObject;
+   //SkelMesh : TVKSkeletonMeshObject;
    fg : TFGVertexIndexList;
    fg2 : TFGVertexNormalTexIndexList;
    i,j,stride : integer;
    //parent_id : integer;
-   //bone : TSkeletonBone;
+   //bone : TVKSkeletonBone;
 begin
    if not Assigned(GLBaseMesh) then exit;
 
@@ -918,9 +918,9 @@ begin
    GLBaseMesh.Skeleton.Clear;
 
    //if GLBaseMesh is TVKActor then
-   //   TSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
+   //   TVKSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
    //else
-      TMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
+      TVKMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
    GLBaseMesh.MeshObjects[0].Mode:=momFaceGroups;
 
    // Branches
@@ -930,9 +930,9 @@ begin
    {if GLBaseMesh is TVKActor then begin
       TVKActor(GLBaseMesh).Reference:=aarSkeleton;
       RecursBranches(Branches.FRoot,
-                     TSkeletonBone.CreateOwned(GLBaseMesh.Skeleton.RootBones),
-                     TSkeletonFrame.CreateOwned(GLBaseMesh.Skeleton.Frames));
-      SkelMesh:=TSkeletonMeshObject(GLBaseMesh.MeshObjects[0]);
+                     TVKSkeletonBone.CreateOwned(GLBaseMesh.Skeleton.RootBones),
+                     TVKSkeletonFrame.CreateOwned(GLBaseMesh.Skeleton.Frames));
+      SkelMesh:=TVKSkeletonMeshObject(GLBaseMesh.MeshObjects[0]);
       SkelMesh.BonesPerVertex:=1;
       SkelMesh.VerticeBoneWeightCount:=Branches.FBranchIndices.Count;
       for i:=0 to Branches.FBranchIndices.Count-1 do
@@ -953,9 +953,9 @@ begin
 
    // Leaves
    //if GLBaseMesh is TVKActor then
-   //   TSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
+   //   TVKSkeletonMeshObject.CreateOwned(GLBaseMesh.MeshObjects)
    //else
-      TMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
+      TVKMeshObject.CreateOwned(GLBaseMesh.MeshObjects);
    GLBaseMesh.MeshObjects[1].Mode:=momFaceGroups;
 
    GLBaseMesh.MeshObjects[1].Vertices.Add(Leaves.Vertices);

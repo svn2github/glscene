@@ -85,7 +85,7 @@ type
 
   // TVKBaseImage
   //
-  TVKBaseImage = class(TDataFile)
+  TVKBaseImage = class(TVKDataFile)
   private
     FSourceStream: TStream;
     FStreamLevel: TVKImageLODRange;

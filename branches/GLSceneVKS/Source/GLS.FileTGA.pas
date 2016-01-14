@@ -34,7 +34,7 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
       const textureHandle: TGLuint;
@@ -300,7 +300,7 @@ begin
 {$MESSAGE Hint 'TVKTGAImage.AssignFromTexture not yet implemented' }
 end;
 
-class function TVKTGAImage.Capabilities: TDataFileCapabilities;
+class function TVKTGAImage.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

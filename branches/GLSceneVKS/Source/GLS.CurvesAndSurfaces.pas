@@ -11,6 +11,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  System.SysUtils,
   System.Math,
   GLS.VectorGeometry, GLS.VectorLists;
 
@@ -28,9 +29,13 @@ procedure GenerateBSpline(Steps,Order : Integer; KnotVector : TSingleList; Contr
 procedure GenerateBSplineSurface(Steps, UOrder, VOrder, Width, Height : Integer; UKnotVector, VKnotVector : TSingleList; ControlPoints, Vertices : TAffineVectorList);
 procedure GenerateKnotVector(KnotVector : TSingleList; NumberOfPoints, Order : Integer; Continuity : TBSplineContinuity);
 
+//----------------------------------------------------------------  
+//----------------------------------------------------------------  
+//----------------------------------------------------------------  
 implementation
-
-uses SysUtils;
+//----------------------------------------------------------------  
+//----------------------------------------------------------------  
+//----------------------------------------------------------------  
 
 function Factorial(n : Integer) : Single;
 var

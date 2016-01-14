@@ -87,9 +87,9 @@ type
     mathash: integer;
   end;
 
-  TVKLMTSVectorFile = class(TVectorFile)
+  TVKLMTSVectorFile = class(TVKVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
@@ -108,7 +108,7 @@ uses
 // Capabilities
 //
 
-class function TVKLMTSVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKLMTSVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
@@ -118,7 +118,7 @@ end;
 
 procedure TVKLMTSVectorFile.LoadFromStream(aStream: TStream);
 var
-  MO: TMeshObject;
+  MO: TVKMeshObject;
   FG: TFGVertexIndexList;
   LL: TVKMaterialLibrary;
   ML: TVKMaterialLibrary;
@@ -139,7 +139,7 @@ var
 begin
   owner.MeshObjects.Clear;
 
-  MO := TMeshObject.CreateOwned(owner.MeshObjects);
+  MO := TVKMeshObject.CreateOwned(owner.MeshObjects);
   MO.Mode := momFaceGroups;
 
   vi := Tintegerlist.create;
@@ -418,7 +418,7 @@ end;
 
 procedure TVKLMTSVectorFile.SaveToStream(aStream: TStream);
 var
-  MO: TMeshObject;
+  MO: TVKMeshObject;
   FG: TFGVertexIndexList;
   i, j, k, l, lmstartindex, C, matindex: integer;
   h: TLMTS_Header;

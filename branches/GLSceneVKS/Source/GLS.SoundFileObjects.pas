@@ -13,7 +13,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,{$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF}
+  System.Classes, System.SysUtils,
+  {$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF}
   GLS.ApplicationFileIO, GLS.CrossPlatform;
 
 type
@@ -66,7 +67,7 @@ type
       Default implementation for LoadFromFile/SaveToFile are to directly call the
       relevent stream-based methods, ie. you will just have to override the stream
       methods in most cases. }
-   TVKSoundFile = class (TDataFile)
+   TVKSoundFile = class (TVKDataFile)
       private
          { Private Declarations }
          FSampling : TVKSoundSampling;
@@ -133,8 +134,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses SysUtils;
 
 var
    vSoundFileFormats : TVKSoundFileFormatsList;

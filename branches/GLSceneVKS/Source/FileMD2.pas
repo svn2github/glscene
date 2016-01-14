@@ -76,7 +76,7 @@ type
   end;
 
   TIndexList = array of TMD2VertexIndex;
-  TVertexList = array of array of TVector3f;
+  TVKVertexList = array of array of TVector3f;
 
 
 type
@@ -90,7 +90,7 @@ type
     procedure FreeLists;
   public
     fIndexList : TIndexList;
-    fVertexList : TVertexList;
+    fVertexList : TVKVertexList;
     FrameNames : TStrings;
     constructor Create; virtual;
     destructor Destroy; override;
@@ -100,7 +100,7 @@ type
     property iTriangles: longInt read FiTriangles;
 
     property IndexList: TIndexList read fIndexList;
-    property VertexList: TVertexList read fVertexList;
+    property VertexList: TVKVertexList read fVertexList;
   end;
 
 // ------------------------------------------------------------------

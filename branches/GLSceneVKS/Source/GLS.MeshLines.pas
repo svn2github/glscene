@@ -120,7 +120,7 @@ type
   TVKMeshLines = class(TVKFreeForm)
   private
     FLines: TLineCollection;
-    FMesh: TMeshObject;
+    FMesh: TVKMeshObject;
     FLightmapBounds: TLightmapBounds;
     FLightmapIndex: Integer;
     FLightmapMaterialName: String;
@@ -540,7 +540,7 @@ begin
 
   FMeshObjects.Clear;
   lFirstLineDone := False;
-  FMesh := TMeshObject.CreateOwned(FMeshObjects);
+  FMesh := TVKMeshObject.CreateOwned(FMeshObjects);
   FMesh.Mode := momFaceGroups;
   FFaceGroup := TFGVertexIndexList.CreateOwned(FMesh.FaceGroups);
   FFaceGroup.Mode := fgmmTriangleStrip;

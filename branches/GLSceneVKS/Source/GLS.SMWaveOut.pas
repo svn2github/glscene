@@ -13,7 +13,8 @@ interface
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses 
-  System.Classes, {$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF} 
+  System.Classes, System.SysUtils,
+  {$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF} 
   GLS.Sound, GLSoundFileObjects;
 
 type
@@ -54,9 +55,13 @@ procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
 function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
                         waveFormat : TWaveFormatEx) : HWaveOut; overload;
 
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
-
-uses SysUtils;
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
 type
   TSoundState = (ssPlaying, ssFinished);

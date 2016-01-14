@@ -3,7 +3,6 @@
 //
 {
   Routines to interact with the screen/desktop. 
-   
 }
 unit GLS.Screen;
 
@@ -14,7 +13,7 @@ interface
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF VKS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
-  System.Classes, 
+  System.Classes, System.SysUtils,
   GLS.VectorGeometry, GLS.CrossPlatform;
 
 const
@@ -32,9 +31,9 @@ type
   // window-to-screen fitting
   TWindowFitting = (wfDefault, wfFitWindowToScreen, wfFitScreenToWindow);
 
-  // TDisplayOptions
+  // TVKDisplayOptions
   //
-  TDisplayOptions = class(TPersistent)
+  TVKDisplayOptions = class(TPersistent)
   private
     FFullScreen: Boolean;
     FScreenResolution: TResolution;
@@ -106,8 +105,7 @@ implementation
 // ------------------------------------------------------------------------------
 
 uses
-  FMX.Forms,
-  SysUtils;
+  FMX.Forms;
 
 type
   TLowResMode = packed record
@@ -133,14 +131,14 @@ const
 
   // Assign
   //
-procedure TDisplayOptions.Assign(Source: TPersistent);
+procedure TVKDisplayOptions.Assign(Source: TPersistent);
 begin
-  if Source is TDisplayOptions then
+  if Source is TVKDisplayOptions then
   begin
-    FFullScreen := TDisplayOptions(Source).FFullScreen;
-    FScreenResolution := TDisplayOptions(Source).FScreenResolution;
-    FWindowAttributes := TDisplayOptions(Source).FWindowAttributes;
-    FWindowFitting := TDisplayOptions(Source).FWindowFitting;
+    FFullScreen := TVKDisplayOptions(Source).FFullScreen;
+    FScreenResolution := TVKDisplayOptions(Source).FScreenResolution;
+    FWindowAttributes := TVKDisplayOptions(Source).FWindowAttributes;
+    FWindowFitting := TVKDisplayOptions(Source).FWindowFitting;
   end
   else
     inherited Assign(Source);

@@ -32,7 +32,7 @@ Type
 
   { TPAKArchive }
 
-  TPAKArchive=class(TBaseArchive)
+  TPAKArchive=class(TVKBaseArchive)
     private
       FHeader: TPakHeader;
       FStream: TFileStream;

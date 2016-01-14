@@ -26,10 +26,10 @@ type
   // TVKQ3BSPVectorFile
   //
   { The Q3BSP vector file (Quake III BSP).  }
-  TVKQ3BSPVectorFile = class(TVectorFile)
+  TVKQ3BSPVectorFile = class(TVKVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -54,7 +54,7 @@ implementation
 // Capabilities
 //
 
-class function TVKQ3BSPVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKQ3BSPVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

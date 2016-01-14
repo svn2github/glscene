@@ -19,7 +19,7 @@ type
   // TSCODEBase
   //
   { Base ODE skeleton collider class. }
-  TSCODEBase = class(TSkeletonCollider)
+  TSCODEBase = class(TVKSkeletonCollider)
     private
       FGeom : PdxGeom;
 
@@ -104,7 +104,7 @@ type
 { After loading call this function to add all the geoms in a
    skeleton collider list to a given ODE space. }
 procedure AddSCODEGeomsToODESpace(
-  colliders : TSkeletonColliderList; space : PdxSpace);
+  colliders : TVKSkeletonColliderList; space : PdxSpace);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -117,7 +117,7 @@ implementation
 // AddSCODEGeomsToODESpace
 //
 procedure AddSCODEGeomsToODESpace(
-  colliders : TSkeletonColliderList; space : PdxSpace);
+  colliders : TVKSkeletonColliderList; space : PdxSpace);
 var
   i : Integer;
 begin

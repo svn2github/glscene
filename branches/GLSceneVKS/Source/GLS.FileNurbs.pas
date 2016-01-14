@@ -17,10 +17,10 @@ type
 
    // TVKNurbsSurface
    //
-   TVKNurbsVectorFile = class(TVectorFile)
+   TVKNurbsVectorFile = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;
 
@@ -38,7 +38,7 @@ implementation
 
 // Capabilities
 //
-class function TVKNurbsVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKNurbsVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

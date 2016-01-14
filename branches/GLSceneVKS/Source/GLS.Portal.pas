@@ -25,7 +25,7 @@ type
    //
    { A mesh object list that handles portal rendering. 
       The items are treated as being sectors. } 
-   TPortalMeshObjectList = class (TMeshObjectList)
+   TPortalMeshObjectList = class (TVKMeshObjectList)
       private
          { Private Declarations }
 
@@ -54,7 +54,7 @@ type
 
       public
          { Public Declarations }
-         constructor CreateOwned(AOwner : TMeshObjectList);
+         constructor CreateOwned(AOwner : TVKMeshObjectList);
          destructor Destroy; override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
@@ -77,7 +77,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor CreateOwned(AOwner : TFaceGroups); override;
+	      constructor CreateOwned(AOwner : TVKFaceGroups); override;
          destructor Destroy; override;
 
          procedure Prepare; override;
@@ -100,7 +100,7 @@ type
 
 	   public
 	      { Public Declarations }
-	      constructor CreateOwned(AOwner : TFaceGroups); override;
+	      constructor CreateOwned(AOwner : TVKFaceGroups); override;
          destructor Destroy; override;
 
          procedure BuildList(var mrci : TRenderContextInfo); override;
@@ -157,7 +157,7 @@ end;
 procedure TPortalMeshObjectList.BuildList(var mrci : TRenderContextInfo);
 var
    i : Integer;
-   startSector : TMeshObject;
+   startSector : TVKMeshObject;
 begin
    for i:=0 to Count-1 do with TSectorMeshObject(Items[i]) do
       if InheritsFrom(TSectorMeshObject) then RenderDone:=False;
@@ -179,7 +179,7 @@ end;
 
 // CreateOwned
 //
-constructor TSectorMeshObject.CreateOwned(AOwner : TMeshObjectList);
+constructor TSectorMeshObject.CreateOwned(AOwner : TVKMeshObjectList);
 begin
 	inherited;
    Mode:=momFaceGroups;
@@ -236,7 +236,7 @@ end;
 
 // CreateOwned
 //
-constructor TFGPolygon.CreateOwned(AOwner : TFaceGroups);
+constructor TFGPolygon.CreateOwned(AOwner : TVKFaceGroups);
 begin
 	inherited;
    Mode:=fgmmTriangleFan;
@@ -262,7 +262,7 @@ end;
 
 // CreateOwned
 //
-constructor TFGPortalPolygon.CreateOwned(AOwner : TFaceGroups);
+constructor TFGPortalPolygon.CreateOwned(AOwner : TVKFaceGroups);
 begin
 	inherited;
 end;

@@ -114,9 +114,9 @@ type
   end;
 
 type
-  TVKMDCVectorFile = class(TVectorFile)
+  TVKMDCVectorFile = class(TVKVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
@@ -135,7 +135,7 @@ implementation
 
 // Capabilities
 //
-class function TVKMDCVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKMDCVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;

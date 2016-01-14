@@ -4,7 +4,7 @@
 { 
   Non visual wrapper around basic SDL window features. 
 
-  <u>Notes to Self:</u> 
+  Notes to Self: 
   Unit must ultimately *NOT* make use of any platform specific stuff,
   *EVEN* through the use of conditionnals. 
   SDL-specifics should also be avoided in the "interface" section. 

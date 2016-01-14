@@ -225,7 +225,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure NotifyChange(Sender : TObject);
@@ -272,7 +272,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -321,7 +321,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -338,7 +338,7 @@ type
 
   // TODEElements
   //
-  TODEElements = class(TXCollection)
+  TODEElements = class(TVKXCollection)
     private
       { Private Declarations }
       function GetElement(index : integer) : TODEElementBase;
@@ -346,7 +346,7 @@ type
     public
       { Public Declarations }
       destructor Destroy; override;
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TVKXCollectionItemClass; override;
       procedure Initialize;
       procedure Finalize;
 
@@ -360,7 +360,7 @@ type
 
   // TODEElementBase
   //
-  TODEElementBase = class (TXCollectionItem)
+  TODEElementBase = class (TVKXCollectionItem)
     private
       { Private Declarations }
       FMass  : TdMass;
@@ -406,7 +406,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); virtual;
@@ -455,7 +455,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -491,7 +491,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -530,7 +530,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -570,7 +570,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner:TXCollection); override;
+      constructor Create(AOwner:TVKXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -610,7 +610,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       class function FriendlyName : String; override;
@@ -642,21 +642,21 @@ type
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
-      class function CanAddTo(collection : TXCollection) : Boolean; override;
+      class function CanAddTo(collection : TVKXCollection) : Boolean; override;
 
   end;
 
   // TVKODEJoints
   //
   { An XCollection decendant for ODE Joints. }
-  TODEJoints = class(TXCollection)
+  TODEJoints = class(TVKXCollection)
     protected
       { Protected Declarations }
       function GetJoint(index: integer): TODEJointBase;
 
     public
       { Public Declarations }
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TVKXCollectionItemClass; override;
 
       procedure Initialize;
       procedure Finalize;
@@ -699,7 +699,7 @@ type
   // TODEJointBase
   //
   { Base structures for ODE Joints. }
-  TODEJointBase = class (TXCollectionItem)
+  TODEJointBase = class (TVKXCollectionItem)
     private
       { Private Declarations }
       FJointID : TdJointID;
@@ -737,7 +737,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; virtual;
 
@@ -877,7 +877,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; override;
 
@@ -912,7 +912,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -951,7 +951,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1019,7 +1019,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1072,7 +1072,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TVKXCollection); override;
       destructor Destroy; override;
 
       procedure Initialize; override;
@@ -1925,7 +1925,7 @@ end;
 
 // Create
 //
-constructor TVKODEBehaviour.Create(AOwner : TXCollection);
+constructor TVKODEBehaviour.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FSurface:=TODECollisionSurface.Create(Self);
@@ -2069,7 +2069,7 @@ end;
 
 // Create
 //
-constructor TVKODEDynamic.Create(AOwner : TXCollection);
+constructor TVKODEDynamic.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2390,7 +2390,7 @@ end;
 
 // Create
 //
-constructor TVKODEStatic.Create(AOwner : TXCollection);
+constructor TVKODEStatic.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2525,7 +2525,7 @@ end;
 
 // ItemsClass
 //
-class function TODEElements.ItemsClass : TXCollectionItemClass;
+class function TODEElements.ItemsClass : TVKXCollectionItemClass;
 begin
   Result:=TODEElementBase;
 end;
@@ -2576,7 +2576,7 @@ end;
 
 // Create
 //
-constructor TODEElementBase.Create(AOwner : TXCollection);
+constructor TODEElementBase.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FPosition:=TVKCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -2943,7 +2943,7 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner : TXCollection);
+constructor TODEElementBox.Create(AOwner : TVKXCollection);
 begin
   inherited;
   BoxWidth:=1;
@@ -3163,7 +3163,7 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner : TXCollection);
+constructor TODEElementSphere.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3317,7 +3317,7 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner : TXCollection);
+constructor TODEElementCapsule.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3494,7 +3494,7 @@ end;
 
 // Create
 //
-constructor TODEElementCylinder.Create(AOwner: TXCollection);
+constructor TODEElementCylinder.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3624,7 +3624,7 @@ end;
 
 // Create
 //
-constructor TODEElementTriMesh.Create(AOwner : TXCollection);
+constructor TODEElementTriMesh.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FVertices:=TAffineVectorList.Create;
@@ -3809,7 +3809,7 @@ end;
 
 // CanAddTo
 //
-class function TODEElementPlane.CanAddTo(collection : TXCollection) : Boolean;
+class function TODEElementPlane.CanAddTo(collection : TVKXCollection) : Boolean;
 begin
   Result:=False;
   if Assigned(TODEElements(collection).Owner) then
@@ -3835,7 +3835,7 @@ end;
 
 // ItemsClass
 //
-class function TODEJoints.ItemsClass : TXCollectionItemClass;
+class function TODEJoints.ItemsClass : TVKXCollectionItemClass;
 begin
   Result:=TODEJointBase;
 end;
@@ -3960,7 +3960,7 @@ end;
 
 // Create
 //
-constructor TODEJointBase.Create(AOwner : TXCollection);
+constructor TODEJointBase.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FJointID:=nil;
@@ -4583,7 +4583,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge.Create(AOwner : TXCollection);
+constructor TODEJointHinge.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4734,7 +4734,7 @@ end;
 
 // Create
 //
-constructor TODEJointBall.Create(AOwner : TXCollection);
+constructor TODEJointBall.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4822,7 +4822,7 @@ end;
 
 // Create
 //
-constructor TODEJointSlider.Create(AOwner : TXCollection);
+constructor TODEJointSlider.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAxis:=TVKCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
@@ -4999,7 +4999,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge2.Create(AOwner : TXCollection);
+constructor TODEJointHinge2.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -5213,7 +5213,7 @@ end;
 
 // Create
 //
-constructor TODEJointUniversal.Create(AOwner : TXCollection);
+constructor TODEJointUniversal.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);

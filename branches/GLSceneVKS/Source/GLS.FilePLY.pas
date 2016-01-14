@@ -23,10 +23,10 @@ type
       collection of polygons. The format is extensible, supports variations and
       subformats. This importer only works for the simplest variant (triangles
       without specified normals, and will ignore most header specifications. }
-   TVKPLYVectorFile = class(TVectorFile)
+   TVKPLYVectorFile = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -46,7 +46,7 @@ uses GLS.Utils;
 
 // Capabilities
 //
-class function TVKPLYVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKPLYVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -57,14 +57,14 @@ procedure TVKPLYVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nbVertices, nbFaces : Integer;
    sl : TStringList;
-   mesh : TMeshObject;
+   mesh : TVKMeshObject;
    fg : TFGVertexIndexList;
    p : PChar;
 begin
    sl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream{$IFDEF Unicode}, TEncoding.ASCII{$ENDIF});
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TVKMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl[0]<>'ply' then
          raise Exception.Create('Not a valid ply file !');

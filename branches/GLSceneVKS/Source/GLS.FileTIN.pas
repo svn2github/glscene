@@ -22,10 +22,10 @@ type
       It is a simple text format, with one triangle record per line, no materials,
       no texturing (there may be more, but I never saw anything in this files). 
       This format is encountered in the DEM/DTED world and used in place of grids. }
-   TVKTINVectorFile = class(TVectorFile)
+   TVKTINVectorFile = class(TVKVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TVKDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -45,7 +45,7 @@ uses
 
 // Capabilities
 //
-class function TVKTINVectorFile.Capabilities : TDataFileCapabilities;
+class function TVKTINVectorFile.Capabilities : TVKDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -56,7 +56,7 @@ procedure TVKTINVectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    sl, tl : TStringList;
-   mesh : TMeshObject;
+   mesh : TVKMeshObject;
    v1, v2, v3, n : TAffineVector;
    ActiveTin : Boolean;
    Id_Tin : Integer;
@@ -72,7 +72,7 @@ begin
   tl := TStringList.Create;
   try
     sl.LoadFromStream(aStream);
-    mesh      := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh      := TVKMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode := momTriangles;
     if sl[0]<>'TIN' then    // the file with single TIN described by vertices only
     begin

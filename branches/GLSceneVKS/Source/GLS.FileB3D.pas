@@ -17,9 +17,9 @@ uses
   FileB3D;
 
 type
-  TVKB3DVectorFile = class(TVectorFile)
+  TVKB3DVectorFile = class(TVKVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
@@ -35,7 +35,7 @@ implementation
 // ------------------------------ TVKB3DVectorFile ------------------------------
 // Capabilities
 
-class function TVKB3DVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKB3DVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
@@ -47,7 +47,7 @@ procedure TVKB3DVectorFile.LoadFromStream(AStream: TStream);
 var
   B3d: TFileB3D;
   S: string;
-  Mo: TMeshObject;
+  Mo: TVKMeshObject;
   I, J: Integer;
   FaceGroup: TFGVertexIndexList;
   // lightmapBmp : TVKBitmap;
@@ -223,7 +223,7 @@ begin
     begin
       if Node^.Meshes <> nil then
       begin
-        Mo := TMeshObject.CreateOwned(Owner.MeshObjects);
+        Mo := TVKMeshObject.CreateOwned(Owner.MeshObjects);
 
         SetString(S, Node^.Name, Strlen(Node^.Name));
         // if Pos('16', s)>1 then

@@ -16,15 +16,15 @@ uses
   LWObjects;
 
 type
-  TVKLWOVectorFile = class(TVectorFile)
+  TVKLWOVectorFile = class(TVKVectorFile)
   private
     FLWO: TLWObjectFile;
     FPnts: TLWPnts;
     procedure AddLayr(Layr: TLWLayr; LWO: TLWObjectFile);
     procedure AddSurf(Surf: TLWSurf; LWO: TLWObjectFile);
-    procedure AddPnts(Pnts: TLWPnts; Mesh: TMeshObject);
-    procedure AddPols(Pols: TLWPols; Mesh: TMeshObject);
-    procedure AddVMap(VMap: TLWVMap; Mesh: TMeshObject);
+    procedure AddPnts(Pnts: TLWPnts; Mesh: TVKMeshObject);
+    procedure AddPols(Pols: TLWPols; Mesh: TVKMeshObject);
+    procedure AddVMap(VMap: TLWVMap; Mesh: TVKMeshObject);
   public
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -69,11 +69,11 @@ type
 procedure TVKLWOVectorFile.AddLayr(Layr: TLWLayr; LWO: TLWObjectFile);
 var
   Idx: Integer;
-  Mesh: TMeshObject;
+  Mesh: TVKMeshObject;
   Pnts: TLWPnts;
 begin
   // Add mesh
-  Mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+  Mesh := TVKMeshObject.CreateOwned(Owner.MeshObjects);
 
   with Mesh do
   begin
@@ -109,7 +109,7 @@ begin
   FPnts := nil;
 end;
 
-procedure TVKLWOVectorFile.AddPnts(Pnts: TLWPnts; Mesh: TMeshObject);
+procedure TVKLWOVectorFile.AddPnts(Pnts: TLWPnts; Mesh: TVKMeshObject);
 var
   i: Integer;
 begin
@@ -126,7 +126,7 @@ begin
   end;
 end;
 
-procedure TVKLWOVectorFile.AddPols(Pols: TLWPols; Mesh: TMeshObject);
+procedure TVKLWOVectorFile.AddPols(Pols: TLWPols; Mesh: TVKMeshObject);
 var
   Idx: Integer;
   i, j, k, PolyIdx, NormIdx: Integer;
@@ -399,7 +399,7 @@ begin
 
 end;
 
-procedure TVKLWOVectorFile.AddVMap(VMap: TLWVMap; Mesh: TMeshObject);
+procedure TVKLWOVectorFile.AddVMap(VMap: TLWVMap; Mesh: TVKMeshObject);
 var
   i: integer;
 begin

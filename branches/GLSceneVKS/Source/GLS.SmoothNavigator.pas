@@ -61,7 +61,7 @@ type
   { TVKNavigatorSmoothChangeItem includes a basic set of parameters
      that control the smoothness of movement. 
   }
-  TVKNavigatorSmoothChangeItem = class(TXCollectionItem)
+  TVKNavigatorSmoothChangeItem = class(TVKXCollectionItem)
   private
     FInertia: Single;
     FSpeed: Single;
@@ -77,7 +77,7 @@ type
   public
     { Returns False if there was no change. }
     function Proceed(ADeltaTime: Double): Boolean; virtual; abstract;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     procedure Assign(Source: TPersistent); override;
     procedure ScaleParameters(const Value: Single); virtual;
     procedure ResetTargetValue(); virtual; abstract;
@@ -125,7 +125,7 @@ type
     class function FriendlyName: string; override;
     function Proceed(ADeltaTime: Double): Boolean; override;
     procedure Assign(Source: TPersistent); override;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure ResetTargetValue(); override;
   published
@@ -137,7 +137,7 @@ type
   TVKNavigatorSmoothChangeItemClass = class of TVKNavigatorSmoothChangeItem;
 
   { XCollection of TVKNavigatorSmoothChangeItem. }
-  TVKNavigatorSmoothChangeItems = class(TXCollection)
+  TVKNavigatorSmoothChangeItems = class(TVKXCollection)
   private
     function GetItems(const Index : Integer): TVKNavigatorSmoothChangeItem;
     procedure SetItems(const Index : Integer; const Value: TVKNavigatorSmoothChangeItem);
@@ -145,8 +145,8 @@ type
     procedure DoProceed(ADeltaTime: Double);
   public
     function Add(AClass : TVKNavigatorSmoothChangeItemClass): TVKNavigatorSmoothChangeItem;
-    function CanAdd(AClass: TXCollectionItemClass): Boolean; override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    function CanAdd(AClass: TVKXCollectionItemClass): Boolean; override;
+    class function ItemsClass: TVKXCollectionItemClass; override;
     property Items[const Index : Integer]: TVKNavigatorSmoothChangeItem read GetItems write
             SetItems; default;
   end;
@@ -1408,7 +1408,7 @@ begin
   end;
 end;
 
-constructor TVKNavigatorSmoothChangeItem.Create(aOwner: TXCollection);
+constructor TVKNavigatorSmoothChangeItem.Create(aOwner: TVKXCollection);
 begin
   inherited;
   FInertia := 1;
@@ -1461,7 +1461,7 @@ begin
   Result := AClass.Create(Self);
 end;
 
-function TVKNavigatorSmoothChangeItems.CanAdd(AClass: TXCollectionItemClass): Boolean;
+function TVKNavigatorSmoothChangeItems.CanAdd(AClass: TVKXCollectionItemClass): Boolean;
 begin
   Result := AClass.InheritsFrom(TVKNavigatorSmoothChangeItem);
 end;
@@ -1479,7 +1479,7 @@ begin
   Result := TVKNavigatorSmoothChangeItem(inherited GetItems(Index));
 end;
 
-class function TVKNavigatorSmoothChangeItems.ItemsClass: TXCollectionItemClass;
+class function TVKNavigatorSmoothChangeItems.ItemsClass: TVKXCollectionItemClass;
 begin
   Result := TVKNavigatorSmoothChangeItem;
 end;
@@ -1564,7 +1564,7 @@ begin
   end;
 end;
 
-constructor TVKNavigatorSmoothChangeVector.Create(aOwner: TXCollection);
+constructor TVKNavigatorSmoothChangeVector.Create(aOwner: TVKXCollection);
 begin
   inherited;
   FTargetValue := TVKCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

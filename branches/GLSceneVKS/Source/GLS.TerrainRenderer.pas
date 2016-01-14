@@ -105,7 +105,7 @@ type
   public
     { Public Declarations }
 
-    { :TileManagement flags can be used to turn off various Tile cache management features.
+    { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
     TileManagement: TTileManagementFlags;
 

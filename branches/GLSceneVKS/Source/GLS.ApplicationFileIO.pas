@@ -82,12 +82,12 @@ type
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
-  // TDataFileCapabilities
+  // TVKDataFileCapabilities
   //
-  TDataFileCapability = (dfcRead, dfcWrite);
-  TDataFileCapabilities = set of TDataFileCapability;
+  TVKDataFileCapability = (dfcRead, dfcWrite);
+  TVKDataFileCapabilities = set of TVKDataFileCapability;
 
-  // TDataFile
+  // TVKDataFile
   //
   { Abstract base class for data file formats interfaces. 
      This class declares base file-related behaviours, ie. ability to load/save
@@ -96,7 +96,7 @@ type
      file-based one just call these, and stream-based behaviours allow for more
      enhancement (such as other I/O abilities, compression, cacheing, etc.)
      to this class, without the need to rewrite subclasses. }
-  TDataFile = class(TVKUpdateAbleObject)
+  TVKDataFile = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
     FResourceName: string;
@@ -104,13 +104,13 @@ type
   public
     { Public Declarations }
 
-    { Describes what the TDataFile is capable of. 
+    { Describes what the TVKDataFile is capable of. 
        Default value is [dfcRead]. }
-    class function Capabilities: TDataFileCapabilities; virtual;
+    class function Capabilities: TVKDataFileCapabilities; virtual;
 
     { Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
-    function CreateCopy(AOwner: TPersistent): TDataFile; dynamic;
+    function CreateCopy(AOwner: TPersistent): TVKDataFile; dynamic;
 
     procedure LoadFromFile(const fileName: string); dynamic;
     procedure SaveToFile(const fileName: string); dynamic;
@@ -124,7 +124,7 @@ type
     property ResourceName: string read FResourceName write SetResourceName;
   end;
 
-  TDataFileClass = class of TDataFile;
+  TVKDataFileClass = class of TVKDataFile;
   TVKSResourceStream = TResourceStream;
 
   //: Returns true if an GLS.ApplicationFileIO has been defined
@@ -240,12 +240,12 @@ end;
 
 
 // ------------------
-// ------------------ TDataFile ------------------
+// ------------------ TVKDataFile ------------------
 // ------------------
 
 // Capabilities
 //
-class function TDataFile.Capabilities: TDataFileCapabilities;
+class function TVKDataFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
@@ -253,10 +253,10 @@ end;
 
 // CreateCopy
 //
-function TDataFile.CreateCopy(AOwner: TPersistent): TDataFile;
+function TVKDataFile.CreateCopy(AOwner: TPersistent): TVKDataFile;
 begin
   if Self <> nil then
-    Result := TDataFileClass(Self.ClassType).Create(AOwner)
+    Result := TVKDataFileClass(Self.ClassType).Create(AOwner)
   else
     Result := nil;
 end;
@@ -264,7 +264,7 @@ end;
 // LoadFromFile
 //
 
-procedure TDataFile.LoadFromFile(const fileName: string);
+procedure TVKDataFile.LoadFromFile(const fileName: string);
 var
   fs: TStream;
 begin
@@ -280,7 +280,7 @@ end;
 // SaveToFile
 //
 
-procedure TDataFile.SaveToFile(const fileName: string);
+procedure TVKDataFile.SaveToFile(const fileName: string);
 var
   fs: TStream;
 begin
@@ -296,7 +296,7 @@ end;
 // LoadFromStream
 //
 
-procedure TDataFile.LoadFromStream(stream: TStream);
+procedure TVKDataFile.LoadFromStream(stream: TStream);
 begin
   Assert(False, 'Imaport for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
@@ -304,16 +304,16 @@ end;
 // SaveToStream
 //
 
-procedure TDataFile.SaveToStream(stream: TStream);
+procedure TVKDataFile.SaveToStream(stream: TStream);
 begin
   Assert(False, 'Export for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
 
-procedure TDataFile.Initialize;
+procedure TVKDataFile.Initialize;
 begin
 end;
 
-procedure TDataFile.SetResourceName(const AName: string);
+procedure TVKDataFile.SetResourceName(const AName: string);
 begin
   FResourceName := AName;
 end;

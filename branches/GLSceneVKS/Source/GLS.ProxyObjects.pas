@@ -150,7 +150,7 @@ type
     FLastFrame: Integer;
     FCurrentFrameDelta: Single;
     FCurrentTime: TProgressTimes;
-    FAnimation: TActorAnimationName;
+    FAnimation: TVKActorAnimationName;
 
     FTempLibMaterialName: string;
     FMasterLibMaterial: TVKLibMaterial;
@@ -162,7 +162,7 @@ type
     FOnBeforeRender: TVKProgressEvent;
     FAnimationMode: TVKActorProxyAnimationMode;
 
-    procedure SetAnimation(const Value: TActorAnimationName);
+    procedure SetAnimation(const Value: TVKActorAnimationName);
     procedure SetMasterActorObject(const Value: TVKActor);
     function GetMasterActorObject: TVKActor;
     function GetLibMaterialName: TVKLibMaterialName;
@@ -218,7 +218,7 @@ type
     { Published Declarations }
     property AnimationMode: TVKActorProxyAnimationMode read FAnimationMode write
       FAnimationMode default pamInherited;
-    property Animation: TActorAnimationName read FAnimation write SetAnimation;
+    property Animation: TVKActorAnimationName read FAnimation write SetAnimation;
     // Redeclare as TVKActor.
     property MasterObject: TVKActor read GetMasterActorObject write
       SetMasterActorObject;
@@ -604,7 +604,7 @@ procedure TVKActorProxy.DoStoreBonesMatrices;
 var
   i, n: integer;
   Bmo: TBoneMatrixObj;
-  Bone: TSkeletonBone;
+  Bone: TVKSkeletonBone;
 begin
   if FStoredBoneNames.count > 0 then
   begin
@@ -776,9 +776,9 @@ end;
 // SetAnimation
 //
 
-procedure TVKActorProxy.SetAnimation(const Value: TActorAnimationName);
+procedure TVKActorProxy.SetAnimation(const Value: TVKActorAnimationName);
 var
-  anAnimation: TActorAnimation;
+  anAnimation: TVKActorAnimation;
 begin
   // We first assign the value (for persistency support), then check it.
   FAnimation := Value;

@@ -58,7 +58,7 @@ type
   public
     property Enabled: boolean read FEnabled write SetEnabled;
     property Step: integer read FStep;
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci : TRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
@@ -78,7 +78,7 @@ implementation
 
 // Create
 //
-constructor TVKBExplosionFx.Create(aOwner: TXCollection);
+constructor TVKBExplosionFx.Create(aOwner: TVKXCollection);
 begin
   inherited Create(AOwner);
   FTriList := TAffineVectorList.Create;

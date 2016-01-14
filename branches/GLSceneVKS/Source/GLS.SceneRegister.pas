@@ -371,7 +371,7 @@ resourcestring
 procedure Register;
 
 // : Auto-create for object manager
-function ObjectManager: TObjectManager;
+function ObjectManager: TVKObjectManager;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -548,12 +548,12 @@ uses
   GLS.Log;
 
 var
-  vObjectManager: TObjectManager;
+  vObjectManager: TVKObjectManager;
 
-function ObjectManager: TObjectManager;
+function ObjectManager: TVKObjectManager;
 begin
   if not Assigned(vObjectManager) then
-    vObjectManager := TObjectManager.Create(nil);
+    vObjectManager := TVKObjectManager.Create(nil);
   Result := vObjectManager;
 end;
 
@@ -1715,13 +1715,13 @@ begin
 
   { GLS.VectorFileObjects }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TActorAnimationMode), TypeInfo(TActorAnimations),
+    [TypeInfo(TVKActorAnimationMode), TypeInfo(TVKActorAnimations),
     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
-    TypeInfo(TActorAnimationReference), TypeInfo(TVKActor)]);
+    TypeInfo(TVKActorAnimationReference), TypeInfo(TVKActor)]);
   RegisterPropertiesInCategory(sLayoutCategoryName,
     [TypeInfo(TMeshNormalsOrientation)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TMeshAutoCenterings), TypeInfo(TActorAnimationReference),
+    [TypeInfo(TMeshAutoCenterings), TypeInfo(TVKActorAnimationReference),
     TypeInfo(TMeshNormalsOrientation)]);
   // TVKFreeForm
   RegisterPropertiesInCategory(sOpenGLCategoryName, TVKFreeForm,
@@ -1732,7 +1732,7 @@ begin
   RegisterPropertiesInCategory(sLinkageCategoryName, TVKAnimationControler,
     ['AnimationName']);
   // TVKActor
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TActorAnimation,
+  RegisterPropertiesInCategory(sOpenGLCategoryName, TVKActorAnimation,
     ['*Frame']);
   RegisterPropertiesInCategory(sOpenGLCategoryName, TVKActor,
     ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
@@ -1764,13 +1764,13 @@ begin
 
   { GLS.Skydome }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TSkyDomeBands), TypeInfo(TSkyDomeOptions),
-    TypeInfo(TSkyDomeStars)]);
-  // TSkyDomeBand
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeBand,
+    [TypeInfo(TVKSkyDomeBands), TypeInfo(TVKSkyDomeOptions),
+    TypeInfo(TVKSkyDomeStars)]);
+  // TVKSkyDomeBand
+  RegisterPropertiesInCategory(sVisualCategoryName, TVKSkyDomeBand,
     ['Slices', 'Stacks', '*Angle']);
-  // TSkyDomeStar
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeStar,
+  // TVKSkyDomeStar
+  RegisterPropertiesInCategory(sVisualCategoryName, TVKSkyDomeStar,
     ['Dec', 'Magnitude', 'RA']);
   // TVKEarthSkyDome
   RegisterPropertiesInCategory(sOpenGLCategoryName, TVKEarthSkyDome,
@@ -1869,9 +1869,9 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TVKMagFilter), TypeInfo(TVKMinFilter)]);
   RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TBitmapFontRanges)]);
-  // TBitmapFontRange
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFontRange,
+    [TypeInfo(TVKBitmapFontRanges)]);
+  // TVKBitmapFontRange
+  RegisterPropertiesInCategory(sLocalizableCategoryName, TVKBitmapFontRange,
     ['*ASCII']);
   // TVKBitmapFont
   RegisterPropertiesInCategory(sLayoutCategoryName, TVKBitmapFont,
@@ -1969,7 +1969,7 @@ begin
     TVKLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TVKLibMaterialName), TVKFBORenderer, '',
     TVKLibMaterialNameProperty);
-  RegisterPropertyEditor(TypeInfo(TActorAnimationName), TVKAnimationControler,
+  RegisterPropertyEditor(TypeInfo(TVKActorAnimationName), TVKAnimationControler,
     '', TVKAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TVKLibMaterialName),
     TVKTextureSharingShaderMaterial, 'LibMaterialName',

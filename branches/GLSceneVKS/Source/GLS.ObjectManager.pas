@@ -42,9 +42,9 @@ type
     ImageIndex: Integer; // index into "FObjectIcons"
   end;
 
-  // TObjectManager
+  // TVKObjectManager
   //
-  TObjectManager = class(TComponent)
+  TVKObjectManager = class(TComponent)
   private
     { Private Declarations }
     FSceneObjectList: TList;
@@ -94,11 +94,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-//----------------- TObjectManager ---------------------------------------------
+//----------------- TVKObjectManager ---------------------------------------------
 
 // Create
 //
-constructor TObjectManager.Create(AOwner: TComponent);
+constructor TVKObjectManager.Create(AOwner: TComponent);
 begin
   inherited;
   FSceneObjectList := TList.Create;
@@ -108,7 +108,7 @@ end;
 
 // Destroy
 //
-destructor TObjectManager.Destroy;
+destructor TVKObjectManager.Destroy;
 begin
   DestroySceneObjectList;
   FObjectIcons.Free;
@@ -117,7 +117,7 @@ end;
 
 // FindSceneObjectClass
 //
-function TObjectManager.FindSceneObjectClass(AObjectClass: TVKSceneObjectClass;
+function TVKObjectManager.FindSceneObjectClass(AObjectClass: TVKSceneObjectClass;
   const aSceneObject: string = ''): PSceneObjectEntry;
 var
   I: Integer;
@@ -142,7 +142,7 @@ end;
 
 // GetClassFromIndex
 //
-function TObjectManager.GetClassFromIndex(Index: Integer): TVKSceneObjectClass;
+function TVKObjectManager.GetClassFromIndex(Index: Integer): TVKSceneObjectClass;
 begin
   if Index < 0 then
     Index := 0;
@@ -153,7 +153,7 @@ end;
 
 // GetImageIndex
 //
-function TObjectManager.GetImageIndex(ASceneObject: TVKSceneObjectClass): Integer;
+function TVKObjectManager.GetImageIndex(ASceneObject: TVKSceneObjectClass): Integer;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -167,7 +167,7 @@ end;
 // GetCategory
 //
 
-function TObjectManager.GetCategory(ASceneObject: TVKSceneObjectClass): string;
+function TVKObjectManager.GetCategory(ASceneObject: TVKSceneObjectClass): string;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -180,7 +180,7 @@ end;
 
 // GetRegisteredSceneObjects
 //
-procedure TObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
+procedure TVKObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
 var
   i: Integer;
 begin
@@ -194,7 +194,7 @@ begin
     end;
 end;
 
-procedure TObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
+procedure TVKObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
   AClickEvent: TNotifyEvent);
 var
   ObjectList: TStringList;
@@ -245,7 +245,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass;
+procedure TVKObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass;
   const aName, aCategory: string);
 var
   resBitmapName: string;
@@ -275,7 +275,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const AName, ACategory: string; ABitmap: TBitmap);
+procedure TVKObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const AName, ACategory: string; ABitmap: TBitmap);
 var
   NewEntry: PSceneObjectEntry;
   bmp: TBitmap;
@@ -333,7 +333,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
+procedure TVKObjectManager.RegisterSceneObject(ASceneObject: TVKSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
 var
   bmp: TBitmap;
   resBitmapName: string;
@@ -361,7 +361,7 @@ end;
 // UnRegisterSceneObject
 //
 
-procedure TObjectManager.UnRegisterSceneObject(ASceneObject: TVKSceneObjectClass);
+procedure TVKObjectManager.UnRegisterSceneObject(ASceneObject: TVKSceneObjectClass);
 var
   oldEntry: PSceneObjectEntry;
 begin
@@ -379,7 +379,7 @@ end;
 
 // CreateDefaultObjectIcons
 //
-procedure TObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
+procedure TVKObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
 var
   bmp: TBitmap;
 begin
@@ -415,7 +415,7 @@ end;
 // DestroySceneObjectList
 //
 
-procedure TObjectManager.DestroySceneObjectList;
+procedure TVKObjectManager.DestroySceneObjectList;
 var
   i: Integer;
 begin

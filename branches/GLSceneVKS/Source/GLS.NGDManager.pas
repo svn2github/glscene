@@ -21,7 +21,7 @@ uses
   NewtonImport, NewtonImport_JointLibrary, // Newton
   GLS.VectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLS.VectorLists, // TaffineVectorList for Tree
-  GLS.XCollection, //GLS TXCollection file function
+  GLS.XCollection, //GLS TVKXCollection file function
   GLS.BaseClasses, GLS.Scene, GLS.Manager, GLS.CrossPlatform,
   GLS.Coordinates, GLS.Objects, GLS.GeomObjects,
   GLS.VectorFileObjects, // cube cone freeform...
@@ -304,7 +304,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
     property Initialized: Boolean read FInitialized;
@@ -394,7 +394,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
     function GetOmega: TVector;
@@ -1458,7 +1458,7 @@ end;
 
 { TVKNGDBehaviour }
 
-constructor TVKNGDBehaviour.Create(AOwner: TXCollection);
+constructor TVKNGDBehaviour.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FInitialized := False;
@@ -2084,7 +2084,7 @@ begin
     NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
-constructor TVKNGDDynamic.Create(AOwner: TXCollection);
+constructor TVKNGDDynamic.Create(AOwner: TVKXCollection);
 begin
   inherited;
   FAutoSleep := True;

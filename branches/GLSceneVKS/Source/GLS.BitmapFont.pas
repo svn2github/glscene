@@ -26,12 +26,12 @@ type
   UnicodeString = WideString; // Use WideString for earlier versions
 {$ENDIF}
 
-  // TBitmapFontRange
+  // TVKBitmapFontRange
   //
   { An individual character range in a bitmap font.<p>
     A range allows mapping ASCII characters to character tiles in a font
     bitmap, tiles are enumerated line then column (raster). }
-  TBitmapFontRange = class(TCollectionItem)
+  TVKBitmapFontRange = class(TCollectionItem)
   private
     function GetStartASCII: WideString;
     function GetStopASCII: WideString;
@@ -59,9 +59,9 @@ type
     property CharCount: Integer read FCharCount;
   end;
 
-  // TBitmapFontRanges
+  // TVKBitmapFontRanges
   //
-  TBitmapFontRanges = class(TCollection)
+  TVKBitmapFontRanges = class(TCollection)
   private
     FCharCount: Integer;
   protected
@@ -69,8 +69,8 @@ type
     FOwner: TComponent;
 
     function GetOwner: TPersistent; override;
-    procedure SetItems(index: Integer; const val: TBitmapFontRange);
-    function GetItems(index: Integer): TBitmapFontRange;
+    procedure SetItems(index: Integer; const val: TVKBitmapFontRange);
+    function GetItems(index: Integer): TVKBitmapFontRange;
     function CalcCharacterCount: Integer;
     procedure Update(Item: TCollectionItem); override;
 
@@ -79,13 +79,13 @@ type
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
-    function Add: TBitmapFontRange; overload;
+    function Add: TVKBitmapFontRange; overload;
     function Add(const StartASCII, StopASCII: WideChar)
-      : TBitmapFontRange; overload;
+      : TVKBitmapFontRange; overload;
     function Add(const StartASCII, StopASCII: AnsiChar)
-      : TBitmapFontRange; overload;
-    function FindItemID(ID: Integer): TBitmapFontRange;
-    property Items[index: Integer]: TBitmapFontRange read GetItems
+      : TVKBitmapFontRange; overload;
+    function FindItemID(ID: Integer): TVKBitmapFontRange;
+    property Items[index: Integer]: TVKBitmapFontRange read GetItems
       write SetItems; default;
 
     { Converts an ASCII character into a tile index.<p>
@@ -108,7 +108,7 @@ type
   //
   { Provides access to individual characters in a BitmapFont.<p>
     Only fixed-width bitmap fonts are supported, the characters are enumerated
-    in a raster fashion (line then column).<br>
+    in a raster fashion (line then column).
     Transparency is all or nothing, the transparent color being that of the
     top left pixel of the Glyphs bitmap.<p>
     Performance note: as usual, for best performance, you base font bitmap
@@ -118,7 +118,7 @@ type
   TVKCustomBitmapFont = class(TVKUpdateAbleComponent)
   private
     { Private Declarations }
-    FRanges: TBitmapFontRanges;
+    FRanges: TVKBitmapFontRanges;
     FGlyphs: TVKPicture;
     FCharWidth, FCharHeight: Integer;
     FGlyphsIntervalX, FGlyphsIntervalY: Integer;
@@ -139,7 +139,7 @@ type
     procedure ResetCharWidths(w: Integer = -1);
     procedure SetCharWidths(index, value: Integer);
 
-    procedure SetRanges(const val: TBitmapFontRanges);
+    procedure SetRanges(const val: TVKBitmapFontRanges);
     procedure SetGlyphs(const val: TVKPicture);
     procedure SetCharWidth(const val: Integer);
     procedure SetCharHeight(const val: Integer);
@@ -168,7 +168,7 @@ type
     { A single bitmap containing all the characters.<p>
       The transparent color is that of the top left pixel. }
     property Glyphs: TVKPicture read FGlyphs write SetGlyphs;
-    { : Nb of horizontal pixels between two columns in the Glyphs. }
+    {  Nb of horizontal pixels between two columns in the Glyphs. }
     property GlyphsIntervalX: Integer read FGlyphsIntervalX
       write SetGlyphsIntervalX;
     { Nb of vertical pixels between two rows in the Glyphs. }
@@ -176,7 +176,7 @@ type
       write SetGlyphsIntervalY;
     { Ranges allow converting between ASCII and tile indexes.<p>
       See TVKCustomBitmapFontRange. }
-    property Ranges: TBitmapFontRanges read FRanges write SetRanges;
+    property Ranges: TVKBitmapFontRanges read FRanges write SetRanges;
 
     { Width of a single character. }
     property CharWidth: Integer read FCharWidth write SetCharWidth default 16;
@@ -325,7 +325,7 @@ type
     { Color modulation, can be used for fade in/out too. }
     property ModulateColor: TVKColor read FModulateColor write SetModulateColor;
     { Flat text options.<p>
-      <ul><li>ftoTwoSided : when set the text will be visible from its two
+       <li>ftoTwoSided : when set the text will be visible from its two
       sides even if faceculling is on (at the scene-level).
      }
     property Options: TVKFlatTextOptions read FOptions write SetOptions;
@@ -341,32 +341,32 @@ implementation
 // ------------------------------------------------------------------
 
 // ------------------
-// ------------------ TBitmapFontRange ------------------
+// ------------------ TVKBitmapFontRange ------------------
 // ------------------
 
 // Create
 //
-constructor TBitmapFontRange.Create(Collection: TCollection);
+constructor TVKBitmapFontRange.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
 
 // Destroy
 //
-destructor TBitmapFontRange.Destroy;
+destructor TVKBitmapFontRange.Destroy;
 begin
   inherited;
 end;
 
 // Assign
 //
-procedure TBitmapFontRange.Assign(Source: TPersistent);
+procedure TVKBitmapFontRange.Assign(Source: TPersistent);
 begin
-  if Source is TBitmapFontRange then
+  if Source is TVKBitmapFontRange then
   begin
-    FStartASCII := TBitmapFontRange(Source).FStartASCII;
-    FStopASCII := TBitmapFontRange(Source).FStopASCII;
-    FStartGlyphIdx := TBitmapFontRange(Source).FStartGlyphIdx;
+    FStartASCII := TVKBitmapFontRange(Source).FStartASCII;
+    FStopASCII := TVKBitmapFontRange(Source).FStopASCII;
+    FStartGlyphIdx := TVKBitmapFontRange(Source).FStartGlyphIdx;
     NotifyChange;
   end
   else
@@ -375,35 +375,35 @@ end;
 
 // NotifyChange
 //
-procedure TBitmapFontRange.NotifyChange;
+procedure TVKBitmapFontRange.NotifyChange;
 begin
   FCharCount := Integer(FStopASCII) - Integer(FStartASCII) + 1;
   FStopGlyphIdx := FStartGlyphIdx + FCharCount - 1;
   if Assigned(Collection) then
-    (Collection as TBitmapFontRanges).NotifyChange;
+    (Collection as TVKBitmapFontRanges).NotifyChange;
 end;
 
 // GetDisplayName
 //
-function TBitmapFontRange.GetDisplayName: string;
+function TVKBitmapFontRange.GetDisplayName: string;
 begin
   Result := Format('ASCII [#%d, #%d] -> Glyphs [%d, %d]',
     [Integer(FStartASCII), Integer(FStopASCII), StartGlyphIdx, StopGlyphIdx]);
 end;
 
-function TBitmapFontRange.GetStartASCII: WideString;
+function TVKBitmapFontRange.GetStartASCII: WideString;
 begin
   Result := FStartASCII;
 end;
 
-function TBitmapFontRange.GetStopASCII: WideString;
+function TVKBitmapFontRange.GetStopASCII: WideString;
 begin
   Result := FStopASCII;
 end;
 
 // SetStartASCII
 //
-procedure TBitmapFontRange.SetStartASCII(const val: WideString);
+procedure TVKBitmapFontRange.SetStartASCII(const val: WideString);
 begin
   if (Length(val) > 0) and (val[1] <> FStartASCII) then
   begin
@@ -416,7 +416,7 @@ end;
 
 // SetStopASCII
 //
-procedure TBitmapFontRange.SetStopASCII(const val: WideString);
+procedure TVKBitmapFontRange.SetStopASCII(const val: WideString);
 begin
   if (Length(val) > 0) and (FStopASCII <> val[1]) then
   begin
@@ -429,7 +429,7 @@ end;
 
 // SetStartGlyphIdx
 //
-procedure TBitmapFontRange.SetStartGlyphIdx(val: Integer);
+procedure TVKBitmapFontRange.SetStartGlyphIdx(val: Integer);
 begin
   val := MaxInteger(0, val);
   if val <> FStartGlyphIdx then
@@ -440,27 +440,27 @@ begin
 end;
 
 // ------------------
-// ------------------ TBitmapFontRanges ------------------
+// ------------------ TVKBitmapFontRanges ------------------
 // ------------------
 
 // Create
 //
-constructor TBitmapFontRanges.Create(AOwner: TComponent);
+constructor TVKBitmapFontRanges.Create(AOwner: TComponent);
 begin
   FOwner := AOwner;
-  inherited Create(TBitmapFontRange);
+  inherited Create(TVKBitmapFontRange);
 end;
 
 // Destroy
 //
-destructor TBitmapFontRanges.Destroy;
+destructor TVKBitmapFontRanges.Destroy;
 begin
   inherited;
 end;
 
 // GetOwner
 //
-function TBitmapFontRanges.GetOwner: TPersistent;
+function TVKBitmapFontRanges.GetOwner: TPersistent;
 begin
   Result := FOwner;
 end;
@@ -468,30 +468,30 @@ end;
 // SetItems
 //
 
-procedure TBitmapFontRanges.SetItems(index: Integer;
-  const val: TBitmapFontRange);
+procedure TVKBitmapFontRanges.SetItems(index: Integer;
+  const val: TVKBitmapFontRange);
 begin
   inherited Items[index] := val;
 end;
 
 // GetItems
 //
-function TBitmapFontRanges.GetItems(index: Integer): TBitmapFontRange;
+function TVKBitmapFontRanges.GetItems(index: Integer): TVKBitmapFontRange;
 begin
-  Result := TBitmapFontRange(inherited Items[index]);
+  Result := TVKBitmapFontRange(inherited Items[index]);
 end;
 
 // Add
 //
-function TBitmapFontRanges.Add: TBitmapFontRange;
+function TVKBitmapFontRanges.Add: TVKBitmapFontRange;
 begin
-  Result := (inherited Add) as TBitmapFontRange;
+  Result := (inherited Add) as TVKBitmapFontRange;
 end;
 
 // Add
 //
-function TBitmapFontRanges.Add(const StartASCII, StopASCII: WideChar)
-  : TBitmapFontRange;
+function TVKBitmapFontRanges.Add(const StartASCII, StopASCII: WideChar)
+  : TVKBitmapFontRange;
 begin
   Result := Add;
   Result.StartASCII := StartASCII;
@@ -500,22 +500,22 @@ end;
 
 // Add
 //
-function TBitmapFontRanges.Add(const StartASCII, StopASCII: AnsiChar)
-  : TBitmapFontRange;
+function TVKBitmapFontRanges.Add(const StartASCII, StopASCII: AnsiChar)
+  : TVKBitmapFontRange;
 begin
   Result := Add(CharToWideChar(StartASCII), CharToWideChar(StopASCII));
 end;
 
 // FindItemID
 //
-function TBitmapFontRanges.FindItemID(ID: Integer): TBitmapFontRange;
+function TVKBitmapFontRanges.FindItemID(ID: Integer): TVKBitmapFontRange;
 begin
-  Result := (inherited FindItemID(ID)) as TBitmapFontRange;
+  Result := (inherited FindItemID(ID)) as TVKBitmapFontRange;
 end;
 
 // CharacterToTileIndex
 //
-function TBitmapFontRanges.CharacterToTileIndex(aChar: WideChar): Integer;
+function TVKBitmapFontRanges.CharacterToTileIndex(aChar: WideChar): Integer;
 var
   i: Integer;
 begin
@@ -531,7 +531,7 @@ begin
     end;
 end;
 
-function TBitmapFontRanges.TileIndexToChar(aIndex: Integer): WideChar;
+function TVKBitmapFontRanges.TileIndexToChar(aIndex: Integer): WideChar;
 var
   i: Integer;
 begin
@@ -547,7 +547,7 @@ begin
     end;
 end;
 
-procedure TBitmapFontRanges.Update(Item: TCollectionItem);
+procedure TVKBitmapFontRanges.Update(Item: TCollectionItem);
 begin
   inherited;
   NotifyChange;
@@ -555,7 +555,7 @@ end;
 
 // NotifyChange
 //
-procedure TBitmapFontRanges.NotifyChange;
+procedure TVKBitmapFontRanges.NotifyChange;
 begin
   FCharCount := CalcCharacterCount;
 
@@ -570,7 +570,7 @@ end;
 
 // CharacterCount
 //
-function TBitmapFontRanges.CalcCharacterCount: Integer;
+function TVKBitmapFontRanges.CalcCharacterCount: Integer;
 var
   i: Integer;
 begin
@@ -589,7 +589,7 @@ end;
 constructor TVKCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FRanges := TBitmapFontRanges.Create(Self);
+  FRanges := TVKBitmapFontRanges.Create(Self);
   FGlyphs := TVKPicture.Create(AOwner);
   FGlyphs.Bitmap.OnChange := OnGlyphsChanged;
   FCharWidth := 16;
@@ -674,7 +674,7 @@ end;
 
 // SetRanges
 //
-procedure TVKCustomBitmapFont.SetRanges(const val: TBitmapFontRanges);
+procedure TVKCustomBitmapFont.SetRanges(const val: TVKBitmapFontRanges);
 begin
   FRanges.Assign(val);
   InvalidateUsers;

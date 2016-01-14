@@ -33,7 +33,7 @@ type
 
   // TVKOBJVectorFile
   //
-  TVKOBJVectorFile = class(TVectorFile)
+  TVKOBJVectorFile = class(TVKVectorFile)
   private
     FSourceStream: TStream; { Load from this stream }
     FBuffer: AnsiString; { Buffer }
@@ -48,10 +48,10 @@ type
     // Raise a class-specific exception
     procedure Error(const msg: string);
 
-    procedure CalcMissingOBJNormals(mesh: TMeshObject);
+    procedure CalcMissingOBJNormals(mesh: TVKMeshObject);
 
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
@@ -188,7 +188,7 @@ type
 
   public
     procedure Assign(Source: TPersistent); override;
-    constructor CreateOwned(aOwner: TFaceGroups); override;
+    constructor CreateOwned(aOwner: TVKFaceGroups); override;
     destructor Destroy; override;
 
     procedure WriteToFiler(writer: TVirtualWriter); override;
@@ -207,7 +207,7 @@ type
     property ShowNormals: boolean read FShowNormals write FShowNormals;
   end;
 
-constructor TOBJFGVertexNormalTexIndexList.CreateOwned(aOwner: TFaceGroups);
+constructor TOBJFGVertexNormalTexIndexList.CreateOwned(aOwner: TVKFaceGroups);
 begin
   inherited CreateOwned(aOwner);
   FMode := objfgmmTriangleStrip;
@@ -579,7 +579,7 @@ end;
 // Capabilities
 //
 
-class function TVKOBJVectorFile.Capabilities: TDataFileCapabilities;
+class function TVKOBJVectorFile.Capabilities: TVKDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
@@ -587,7 +587,7 @@ end;
 // CalcMissingOBJNormals
 //
 
-procedure TVKOBJVectorFile.CalcMissingOBJNormals(mesh: TMeshObject);
+procedure TVKOBJVectorFile.CalcMissingOBJNormals(mesh: TVKMeshObject);
 var
   vertexPool: PAffineVectorArray;
   n: TAffineVector;
@@ -671,7 +671,7 @@ procedure TVKOBJVectorFile.LoadFromStream(aStream: TStream);
 var
   hv: THomogeneousVector;
   av: TAffineVector;
-  mesh: TMeshObject;
+  mesh: TVKMeshObject;
   faceGroup: TOBJFGVertexNormalTexIndexList;
   faceGroupNames: TStringList;
 
@@ -947,7 +947,7 @@ var
   procedure SplitMesh;
   var
     i, j, count: Integer;
-    newMesh: TMeshObject;
+    newMesh: TVKMeshObject;
     newfaceGroup: TOBJFGVertexNormalTexIndexList;
     VertexIdx, NormalIdx, TexCoordIdx: Integer;
     AffineVector: TAffineVector;
@@ -956,7 +956,7 @@ var
     begin
       faceGroup := mesh.FaceGroups[i] as TOBJFGVertexNormalTexIndexList;
 
-      newMesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+      newMesh := TVKMeshObject.CreateOwned(Owner.MeshObjects);
       newMesh.Mode := momFaceGroups;
       newMesh.Name := faceGroup.Name;
 
@@ -1009,7 +1009,7 @@ begin
   objMtlFileName := '';
   curMtlName := '';
 
-  mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
+  mesh := TVKMeshObject.CreateOwned(Owner.MeshObjects);
   mesh.Mode := momFaceGroups;
 
   faceGroupNames := TStringList.Create;
@@ -1306,7 +1306,7 @@ var
   procedure WriteFaceGroups;
   var
     j, i, k: Integer;
-    fg: TFaceGroup;
+    fg: TVKFaceGroup;
     MoName: string;
   begin
     k := 0;
