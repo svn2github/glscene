@@ -15,7 +15,7 @@
        26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
                             Reported by Dikoe Kenguru.
        16/03/01 - Egg - TGLWAVFile.Capabilities
-       16/07/00 - Egg - Made use of new TDataFile class
+       16/07/00 - Egg - Made use of new TGLDataFile class
        09/06/00 - Egg - Added WAVDataSize
        04/06/00 - Egg - Creation
 	 
@@ -83,7 +83,7 @@ type
       Default implementation for LoadFromFile/SaveToFile are to directly call the
       relevent stream-based methods, ie. you will just have to override the stream
       methods in most cases. }
-   TGLSoundFile = class (TDataFile)
+   TGLSoundFile = class (TGLDataFile)
       private
          { Private Declarations }
          FSampling : TGLSoundSampling;

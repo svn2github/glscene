@@ -79,7 +79,7 @@ uses
   //GLS
   GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLVectorLists, // TaffineVectorList for Tree
-  XCollection, // GLS TXCollection file function
+  GLXCollection, // GLS TGLXCollection file function
   GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates, //
   GLObjects, GLGeomObjects, GLVectorFileObjects, // cube cone freeform...
   GLColor, GLGeometryBB, // For show debug
@@ -362,7 +362,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
     property Initialized: Boolean read FInitialized;
@@ -452,7 +452,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
     function GetOmega: TVector;
@@ -1522,7 +1522,7 @@ end;
 
 { TGLNGDBehaviour }
 
-constructor TGLNGDBehaviour.Create(AOwner: TXCollection);
+constructor TGLNGDBehaviour.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FInitialized := False;
@@ -2148,7 +2148,7 @@ begin
     NewtonBodyAddImpulse(FNewtonBody, @veloc, @pointposit);
 end;
 
-constructor TGLNGDDynamic.Create(AOwner: TXCollection);
+constructor TGLNGDDynamic.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FAutoSleep := True;

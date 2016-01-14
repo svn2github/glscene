@@ -263,9 +263,9 @@ type
   { The MilkShape vector file.
      By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
 
-  TGLMS3DVectorFile = class(TVectorFile)
+  TGLMS3DVectorFile = class(TGLVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -360,7 +360,7 @@ end;
 // capabilities
 //
 
-class function TGLMS3DVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLMS3DVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
@@ -374,9 +374,9 @@ var
   itemp: PtrUInt;
   wtemp: word;
   TexCoordID: integer;
-  MO: TMeshObject;
+  MO: TGLMeshObject;
   FaceGroup: TFGVertexNormalTexIndexList;
-  Sk_MO: TSkeletonMeshObject;
+  Sk_MO: TGLSkeletonMeshObject;
 
   GroupList: TList;
   GLLibMaterial: TGLLibMaterial;
@@ -405,8 +405,8 @@ var
   ms3d_joints: PMS3DJointArray;
 
   bonelist: TStringList;
-  bone: TSkeletonBone;
-  frame: TSkeletonFrame;
+  bone: TGLSkeletonBone;
+  frame: TGLSkeletonFrame;
   rot, pos: TVector3f;
 
   //Tod
@@ -507,11 +507,11 @@ begin
     // Create the vertex list
     if Owner is TGLActor then
     begin
-      MO := TSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
-      TSkeletonMeshObject(MO).BonesPerVertex := 4;
+      MO := TGLSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
+      TGLSkeletonMeshObject(MO).BonesPerVertex := 4;
     end
     else
-      MO := TMeshObject.CreateOwned(Owner.MeshObjects);
+      MO := TGLMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
 
     // Then comes nNumVertices * sizeof (ms3d_vertex_t)
@@ -524,7 +524,7 @@ begin
         // Add the vertex to the vertexlist
         MO.Vertices.Add(vertex.v);
         if Owner is TGLActor then
-          TSkeletonMeshObject(MO).AddWeightedBone(Byte(BoneID), 1);
+          TGLSkeletonMeshObject(MO).AddWeightedBone(Byte(BoneID), 1);
       end;
 
     // number of triangles
@@ -781,7 +781,7 @@ begin
     //Read in the vertex weights
     //
     aStream.ReadBuffer(subVersionVertexExtra, sizeof(subVersionVertexExtra));
-    Sk_MO := TSkeletonMeshObject(MO);
+    Sk_MO := TGLSkeletonMeshObject(MO);
     if Owner is TGLActor then
     begin
       for i := 0 to nNumVertices - 1 do
@@ -858,15 +858,15 @@ begin
       begin
         j := bonelist.IndexOf(string(ms3d_joints^[i].Base.ParentName));
         if j = -1 then
-          bone := TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
+          bone := TGLSkeletonBone.CreateOwned(Owner.Skeleton.RootBones)
         else
-          bone := TSkeletonBone.CreateOwned(Owner.Skeleton.RootBones.BoneByID(j));
+          bone := TGLSkeletonBone.CreateOwned(Owner.Skeleton.RootBones.BoneByID(j));
         bone.Name := string(ms3d_joints^[i].Base.Name);
         bone.BoneID := i;
       end;
       bonelist.Free;
       // Set up the base pose
-      frame := TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
+      frame := TGLSkeletonFrame.CreateOwned(Owner.Skeleton.Frames);
       for i := 0 to nNumJoints - 1 do
       begin
         pos := ms3d_joints^[i].Base.Position.V;
@@ -881,7 +881,7 @@ begin
         for j := 0 to ms3d_joints^[i].Base.NumKeyFramesRot - 1 do
         begin
           if (j + 1) = Owner.Skeleton.Frames.Count then
-            frame := TSkeletonFrame.CreateOwned(Owner.Skeleton.Frames)
+            frame := TGLSkeletonFrame.CreateOwned(Owner.Skeleton.Frames)
           else
             frame := Owner.Skeleton.Frames[j + 1];
           if ms3d_joints^[i].Base.ParentName = '' then
@@ -902,7 +902,7 @@ begin
         end;
       end;
       Owner.Skeleton.RootBones.PrepareGlobalMatrices;
-      TSkeletonMeshObject(MO).PrepareBoneMatrixInvertedMeshes;
+      TGLSkeletonMeshObject(MO).PrepareBoneMatrixInvertedMeshes;
       with TGLActor(Owner).Animations.Add do
       begin
         Reference := aarSkeleton;

@@ -38,7 +38,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
 
-  GLScene,  XCollection,  GLVectorGeometry,
+  GLScene,  GLXCollection,  GLVectorGeometry,
   OpenGLTokens,  GLContext,  GLVectorLists, GLVectorTypes,
   GLCadencer,  GLColor,  GLBaseClasses,  GLCoordinates,
   GLManager,  GLRenderContextInfo,  GLState,  GLTextureFormat;
@@ -199,7 +199,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -661,7 +661,7 @@ end;
 // Create
 //
 
-constructor TGLBFireFX.Create(aOwner: TXCollection);
+constructor TGLBFireFX.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
 end;

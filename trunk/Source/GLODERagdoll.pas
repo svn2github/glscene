@@ -65,11 +65,11 @@ type
     property Ragdoll: TODERagdoll read FRagdoll;
   end;
 
-  TODERagdollDummyJoint = class(TRagdollJoint)
+  TODERagdollDummyJoint = class(TGLRagdolJoint)
   end;
 
 
-  TODERagdollHingeJoint = class(TRagdollJoint)
+  TODERagdollHingeJoint = class(TGLRagdolJoint)
   private
     FParamHiStop: Single;
     FParamLoStop: Single;
@@ -95,7 +95,7 @@ type
     property ParamHiStop2: Single read FParamHiStop2 write FParamHiStop2;
   end;
 
-	TODERagdollBone = class (TRagdollBone)
+	TODERagdollBone = class (TGLRagdolBone)
   private
     FOwner: TODERagdollBone;
     FRagdoll: TODERagdoll;

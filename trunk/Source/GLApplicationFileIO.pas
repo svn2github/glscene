@@ -14,7 +14,7 @@
        23/01/10 - Yar - Change LoadFromStream to dynamic
        29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
        02/08/04 - LR, YHC - BCB corrections: fixed BCB Compiler error "E2370 Simple type name expected"
-       05/06/03 - EG - TDataFile moved in from GLMisc
+       05/06/03 - EG - TGLDataFile moved in from GLMisc
        31/01/03 - EG - Added FileExists mechanism
        21/11/02 - EG - Creation
   
@@ -99,12 +99,12 @@ type
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
-  // TDataFileCapabilities
+  // TGLDataFileCapabilities
   //
-  TDataFileCapability = (dfcRead, dfcWrite);
-  TDataFileCapabilities = set of TDataFileCapability;
+  TGLDataFileCapability = (dfcRead, dfcWrite);
+  TGLDataFileCapabilities = set of TGLDataFileCapability;
 
-  // TDataFile
+  // TGLDataFile
   //
   {Abstract base class for data file formats interfaces. 
      This class declares base file-related behaviours, ie. ability to load/save
@@ -113,7 +113,7 @@ type
      file-based one just call these, and stream-based behaviours allow for more
      enhancement (such as other I/O abilities, compression, cacheing, etc.)
      to this class, without the need to rewrite subclasses. }
-  TDataFile = class(TGLUpdateAbleObject)
+  TGLDataFile = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
     FResourceName: string;
@@ -121,13 +121,13 @@ type
   public
     { Public Declarations }
 
-    {Describes what the TDataFile is capable of. 
+    {Describes what the TGLDataFile is capable of. 
        Default value is [dfcRead]. }
-    class function Capabilities: TDataFileCapabilities; virtual;
+    class function Capabilities: TGLDataFileCapabilities; virtual;
 
     {Duplicates Self and returns a copy. 
        Subclasses should override this method to duplicate their data. }
-    function CreateCopy(AOwner: TPersistent): TDataFile; dynamic;
+    function CreateCopy(AOwner: TPersistent): TGLDataFile; dynamic;
 
     procedure LoadFromFile(const fileName: string); dynamic;
     procedure SaveToFile(const fileName: string); dynamic;
@@ -141,7 +141,7 @@ type
     property ResourceName: string read FResourceName write SetResourceName;
   end;
 
-  TDataFileClass = class of TDataFile;
+  TGLDataFileClass = class of TGLDataFile;
   TGLSResourceStream = TResourceStream;
 
   //: Returns true if an GLApplicationFileIO has been defined
@@ -261,12 +261,12 @@ end;
 
 
 // ------------------
-// ------------------ TDataFile ------------------
+// ------------------ TGLDataFile ------------------
 // ------------------
 
 // Capabilities
 //
-class function TDataFile.Capabilities: TDataFileCapabilities;
+class function TGLDataFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
@@ -274,10 +274,10 @@ end;
 
 // CreateCopy
 //
-function TDataFile.CreateCopy(AOwner: TPersistent): TDataFile;
+function TGLDataFile.CreateCopy(AOwner: TPersistent): TGLDataFile;
 begin
   if Self <> nil then
-    Result := TDataFileClass(Self.ClassType).Create(AOwner)
+    Result := TGLDataFileClass(Self.ClassType).Create(AOwner)
   else
     Result := nil;
 end;
@@ -285,7 +285,7 @@ end;
 // LoadFromFile
 //
 
-procedure TDataFile.LoadFromFile(const fileName: string);
+procedure TGLDataFile.LoadFromFile(const fileName: string);
 var
   fs: TStream;
 begin
@@ -301,7 +301,7 @@ end;
 // SaveToFile
 //
 
-procedure TDataFile.SaveToFile(const fileName: string);
+procedure TGLDataFile.SaveToFile(const fileName: string);
 var
   fs: TStream;
 begin
@@ -317,7 +317,7 @@ end;
 // LoadFromStream
 //
 
-procedure TDataFile.LoadFromStream(stream: TStream);
+procedure TGLDataFile.LoadFromStream(stream: TStream);
 begin
   Assert(False, 'Imaport for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
@@ -325,16 +325,16 @@ end;
 // SaveToStream
 //
 
-procedure TDataFile.SaveToStream(stream: TStream);
+procedure TGLDataFile.SaveToStream(stream: TStream);
 begin
   Assert(False, 'Export for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
 
-procedure TDataFile.Initialize;
+procedure TGLDataFile.Initialize;
 begin
 end;
 
-procedure TDataFile.SetResourceName(const AName: string);
+procedure TGLDataFile.SetResourceName(const AName: string);
 begin
   FResourceName := AName;
 end;

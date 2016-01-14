@@ -17,7 +17,7 @@ interface
 uses
   System.Classes, System.SysUtils, 
   dws2Comp, dws2Exprs, dws2Symbols,
-  GLScene, XCollection, GLScriptDWS2, GLBaseClasses, GLManager;
+  GLScene, GLXCollection, GLScriptDWS2, GLBaseClasses, GLManager;
 
 type
   // TGLDWS2ActiveBehaviour
@@ -49,7 +49,7 @@ type
       procedure Loaded; override;
 
     public
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
       class function FriendlyName : String; override;
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
@@ -89,7 +89,7 @@ end;
 
 // Create
 //
-constructor TGLDWS2ActiveBehaviour.Create(AOwner: TXCollection);
+constructor TGLDWS2ActiveBehaviour.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;

@@ -44,9 +44,9 @@ type
 // into an animation list. The NamePrefix parameter is used to determine
 // which class of animation is extracted. eg NamePrefix='TORSO' will load
 // all animations starting with 'TORSO_' like 'TORSO_STAND'
-procedure LoadQ3Anims(Animations:TActorAnimations;
+procedure LoadQ3Anims(Animations:TGLActorAnimations;
             FileName:string; NamePrefix:string); overload;
-procedure LoadQ3Anims(Animations:TActorAnimations;
+procedure LoadQ3Anims(Animations:TGLActorAnimations;
             Strings:TStrings; NamePrefix:string); overload;
 
 // Quake3 Skin loading procedure. Use this procedure to apply textures
@@ -59,7 +59,7 @@ implementation
 
 // LoadQ3Anims
 //
-procedure LoadQ3Anims(Animations:TActorAnimations;
+procedure LoadQ3Anims(Animations:TGLActorAnimations;
             FileName:string; NamePrefix:string);
 var
   AnimStrings:TStrings;
@@ -70,7 +70,7 @@ begin
   AnimStrings.Free;
 end;
 
-procedure LoadQ3Anims(Animations:TActorAnimations;
+procedure LoadQ3Anims(Animations:TGLActorAnimations;
             Strings:TStrings; NamePrefix:string);
 var
   anim :TStringList;
@@ -144,7 +144,7 @@ begin
         StartFrame:=val[0];
         EndFrame:=val[0]+val[1]-1;
         Reference:=aarMorph;
-        // Need a way in TActorAnimation to tell whether it is
+        // Need a way in TGLActorAnimation to tell whether it is
         // a looping type animation or a play once type and
         // the framerate (interval) it uses. Both of these can
         // be determined here and loaded.
@@ -165,13 +165,13 @@ var
   temp         : TStrings;
   i,j          : integer;
   libmat       : TGLLibMaterial;
-  mesh         : TMeshObject;
+  mesh         : TGLMeshObject;
   texture,
   textureNoDir : string;
   textureFound,
   meshFound    : Boolean;
 
-  function GetMeshObjectByName(MeshObjects:TMeshObjectList; Name:string; var mesh:TMeshObject):Boolean;
+  function GetMeshObjectByName(MeshObjects:TGLMeshObjectList; Name:string; var mesh:TGLMeshObject):Boolean;
   var
     i : integer;
   begin

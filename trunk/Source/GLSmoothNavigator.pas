@@ -52,10 +52,9 @@ interface
 
 uses
   System.Classes,
-
   // GLS
-  GLScene, GLVectorTypes, GLNavigator, GLVectorGeometry,  GLCrossPlatform,
-  GLCoordinates, GLScreen, XCollection;
+  GLScene, GLVectorTypes, GLNavigator, GLVectorGeometry,
+  GLCrossPlatform, GLCoordinates, GLScreen, GLXCollection;
 
 type
 
@@ -89,7 +88,7 @@ type
   {TGLNavigatorSmoothChangeItem includes a basic set of parameters
      that control the smoothness of movement. 
   }
-  TGLNavigatorSmoothChangeItem = class(TXCollectionItem)
+  TGLNavigatorSmoothChangeItem = class(TGLXCollectionItem)
   private
     FInertia: Single;
     FSpeed: Single;
@@ -105,7 +104,7 @@ type
   public
     {Returns False if there was no change. }
     function Proceed(ADeltaTime: Double): Boolean; virtual; abstract;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     procedure Assign(Source: TPersistent); override;
     procedure ScaleParameters(const Value: Single); virtual;
     procedure ResetTargetValue(); virtual; abstract;
@@ -153,7 +152,7 @@ type
     class function FriendlyName: string; override;
     function Proceed(ADeltaTime: Double): Boolean; override;
     procedure Assign(Source: TPersistent); override;
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure ResetTargetValue(); override;
   published
@@ -165,7 +164,7 @@ type
   TGLNavigatorSmoothChangeItemClass = class of TGLNavigatorSmoothChangeItem;
 
   {XCollection of TGLNavigatorSmoothChangeItem. }
-  TGLNavigatorSmoothChangeItems = class(TXCollection)
+  TGLNavigatorSmoothChangeItems = class(TGLXCollection)
   private
     function GetItems(const Index : Integer): TGLNavigatorSmoothChangeItem;
     procedure SetItems(const Index : Integer; const Value: TGLNavigatorSmoothChangeItem);
@@ -173,8 +172,8 @@ type
     procedure DoProceed(ADeltaTime: Double);
   public
     function Add(AClass : TGLNavigatorSmoothChangeItemClass): TGLNavigatorSmoothChangeItem;
-    function CanAdd(AClass: TXCollectionItemClass): Boolean; override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    function CanAdd(AClass: TGLXCollectionItemClass): Boolean; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
     property Items[const Index : Integer]: TGLNavigatorSmoothChangeItem read GetItems write
             SetItems; default;
   end;
@@ -1436,7 +1435,7 @@ begin
   end;
 end;
 
-constructor TGLNavigatorSmoothChangeItem.Create(aOwner: TXCollection);
+constructor TGLNavigatorSmoothChangeItem.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FInertia := 1;
@@ -1489,7 +1488,7 @@ begin
   Result := AClass.Create(Self);
 end;
 
-function TGLNavigatorSmoothChangeItems.CanAdd(AClass: TXCollectionItemClass): Boolean;
+function TGLNavigatorSmoothChangeItems.CanAdd(AClass: TGLXCollectionItemClass): Boolean;
 begin
   Result := AClass.InheritsFrom(TGLNavigatorSmoothChangeItem);
 end;
@@ -1507,7 +1506,7 @@ begin
   Result := TGLNavigatorSmoothChangeItem(inherited GetItems(Index));
 end;
 
-class function TGLNavigatorSmoothChangeItems.ItemsClass: TXCollectionItemClass;
+class function TGLNavigatorSmoothChangeItems.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TGLNavigatorSmoothChangeItem;
 end;
@@ -1592,7 +1591,7 @@ begin
   end;
 end;
 
-constructor TGLNavigatorSmoothChangeVector.Create(aOwner: TXCollection);
+constructor TGLNavigatorSmoothChangeVector.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FTargetValue := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

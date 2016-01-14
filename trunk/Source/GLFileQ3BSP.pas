@@ -34,10 +34,10 @@ type
   // TGLQ3BSPVectorFile
   //
   {The Q3BSP vector file (Quake III BSP).  }
-  TGLQ3BSPVectorFile = class(TVectorFile)
+  TGLQ3BSPVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -59,7 +59,7 @@ implementation
 // Capabilities
 //
 
-class function TGLQ3BSPVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLQ3BSPVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

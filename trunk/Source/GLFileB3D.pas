@@ -23,9 +23,9 @@ uses
   FileB3D;
 
 type
-  TGLB3DVectorFile = class(TVectorFile)
+  TGLB3DVectorFile = class(TGLVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
@@ -41,7 +41,7 @@ implementation
 // ------------------------------ TGLB3DVectorFile ------------------------------
 // Capabilities
 
-class function TGLB3DVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLB3DVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;
@@ -53,7 +53,7 @@ procedure TGLB3DVectorFile.LoadFromStream(AStream: TStream);
 var
   B3d: TFileB3D;
   S: string;
-  Mo: TMeshObject;
+  Mo: TGLMeshObject;
   I, J: Integer;
   FaceGroup: TFGVertexIndexList;
   // lightmapBmp : TGLBitmap;
@@ -229,7 +229,7 @@ begin
     begin
       if Node^.Meshes <> nil then
       begin
-        Mo := TMeshObject.CreateOwned(Owner.MeshObjects);
+        Mo := TGLMeshObject.CreateOwned(Owner.MeshObjects);
 
         SetString(S, Node^.Name, Strlen(Node^.Name));
         // if Pos('16', s)>1 then

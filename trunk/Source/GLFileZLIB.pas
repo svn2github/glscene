@@ -41,7 +41,7 @@ Type
 
   { TZLibArchive }
 
-  TZLibArchive=class(TBaseArchive)
+  TZLibArchive=class(TGLBaseArchive)
     private
       FHeader: TZLibHeader;
       FStream: TFileStream;

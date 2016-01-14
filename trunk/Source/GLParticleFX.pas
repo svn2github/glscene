@@ -75,7 +75,7 @@ uses
   System.Classes, System.SysUtils, System.Types,
 
   GLScene, OpenGLTokens, GLCrossPlatform, GLState, GLVectorTypes,
-  GLPersistentClasses, GLVectorGeometry, XCollection, GLMaterial,
+  GLPersistentClasses, GLVectorGeometry, GLXCollection, GLMaterial,
   GLCadencer, GLVectorLists, GLGraphics, GLContext, GLColor, GLBaseClasses,
   GLCoordinates, GLRenderContextInfo, GLManager, GLTextureFormat;
 
@@ -339,7 +339,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
   published
@@ -489,7 +489,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     class function FriendlyName: string; override;
@@ -1451,7 +1451,7 @@ end;
 // Create
 //
 
-constructor TGLParticleFXEffect.Create(aOwner: TXCollection);
+constructor TGLParticleFXEffect.Create(aOwner: TGLXCollection);
 begin
   FEffectScale := 1;
   inherited;
@@ -1899,7 +1899,7 @@ end;
 // Create
 //
 
-constructor TGLSourcePFXEffect.Create(aOwner: TXCollection);
+constructor TGLSourcePFXEffect.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FInitialVelocity := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);

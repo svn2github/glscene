@@ -193,7 +193,7 @@ type
     FLastFrame: Integer;
     FCurrentFrameDelta: Single;
     FCurrentTime: TProgressTimes;
-    FAnimation: TActorAnimationName;
+    FAnimation: TGLActorAnimationName;
 
     FTempLibMaterialName: string;
     FMasterLibMaterial: TGLLibMaterial;
@@ -205,7 +205,7 @@ type
     FOnBeforeRender: TGLProgressEvent;
     FAnimationMode: TGLActorProxyAnimationMode;
 
-    procedure SetAnimation(const Value: TActorAnimationName);
+    procedure SetAnimation(const Value: TGLActorAnimationName);
     procedure SetMasterActorObject(const Value: TGLActor);
     function GetMasterActorObject: TGLActor;
     function GetLibMaterialName: TGLLibMaterialName;
@@ -261,7 +261,7 @@ type
     { Published Declarations }
     property AnimationMode: TGLActorProxyAnimationMode read FAnimationMode write
       FAnimationMode default pamInherited;
-    property Animation: TActorAnimationName read FAnimation write SetAnimation;
+    property Animation: TGLActorAnimationName read FAnimation write SetAnimation;
     // Redeclare as TGLActor.
     property MasterObject: TGLActor read GetMasterActorObject write
       SetMasterActorObject;
@@ -647,7 +647,7 @@ procedure TGLActorProxy.DoStoreBonesMatrices;
 var
   i, n: integer;
   Bmo: TBoneMatrixObj;
-  Bone: TSkeletonBone;
+  Bone: TGLSkeletonBone;
 begin
   if FStoredBoneNames.count > 0 then
   begin
@@ -819,9 +819,9 @@ end;
 // SetAnimation
 //
 
-procedure TGLActorProxy.SetAnimation(const Value: TActorAnimationName);
+procedure TGLActorProxy.SetAnimation(const Value: TGLActorAnimationName);
 var
-  anAnimation: TActorAnimation;
+  anAnimation: TGLActorAnimation;
 begin
   // We first assign the value (for persistency support), then check it.
   FAnimation := Value;

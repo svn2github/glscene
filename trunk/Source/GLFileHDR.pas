@@ -48,7 +48,7 @@ type
     // defaults to 1.0
     fProgramType: string[16];
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
@@ -321,7 +321,7 @@ end;
 // Capabilities
 //
 
-class function TGLHDRImage.Capabilities: TDataFileCapabilities;
+class function TGLHDRImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

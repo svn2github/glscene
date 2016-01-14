@@ -38,7 +38,7 @@ type
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
   end;
 
-  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
+  function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TGLVerletWorld; Offset : single) : TVCFloor;
 
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ implementation
 //-------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------
 
-function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TVerletWorld; Offset : single) : TVCFloor;
+function CreateVCPlaneFromGLPlane(Plane : TGLPlane; VerletWorld : TGLVerletWorld; Offset : single) : TVCFloor;
 begin
   result := TVCFloor.Create(VerletWorld);
   with result do

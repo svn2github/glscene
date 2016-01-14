@@ -28,13 +28,13 @@ uses
 
 type
 
-  // TGLOCTVectorFile
+  // TGLOCTGLVectorFile
 
   {The OCT vector file (FSRad output).  }
-  TGLOCTVectorFile = class(TVectorFile)
+  TGLOCTGLVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
   end;
@@ -60,25 +60,25 @@ uses
   GLUtils, GLTextureFormat;
 
 // ------------------
-// ------------------ TGLOCTVectorFile ------------------
+// ------------------ TGLOCTGLVectorFile ------------------
 // ------------------
 
 // Capabilities
 
-class function TGLOCTVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLOCTGLVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
 // LoadFromStream
 
-procedure TGLOCTVectorFile.LoadFromStream(aStream: TStream);
+procedure TGLOCTGLVectorFile.LoadFromStream(aStream: TStream);
 var
   i, y, n: integer;
   oct: TOCTFile;
   octFace: POCTFace;
   octLightmap: POCTLightmap;
-  mo: TMeshObject;
+  mo: TGLMeshObject;
   fg: TFGVertexIndexList;
   lightmapLib: TGLMaterialLibrary;
   lightmapBmp: TGLBitmap;
@@ -86,7 +86,7 @@ var
 begin
   oct := TOCTFile.Create(aStream);
   try
-    mo := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mo := TGLMeshObject.CreateOwned(Owner.MeshObjects);
     mo.Mode := momFaceGroups;
 
     lightmapLib := Owner.LightmapLibrary;
@@ -167,7 +167,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('oct', 'FSRad OCT files', TGLOCTVectorFile);
+  RegisterVectorFileFormat('oct', 'FSRad OCT files', TGLOCTGLVectorFile);
 
 end.
 

@@ -16,7 +16,7 @@
    08/04/10 - Yar - Added code belonged section GLS_EXPERIMENTAL
    22/01/10 - Yar - Added GLCompositeImage, GLFileDDS, GLFileO3TC, GLFileHDR to uses
    07/05/09 - DanB - Added TGLSoundLibrarySelectionEditor, TGLBaseSceneObjectSelectionEditor
-   14/03/09 - DanB - Split TObjectManager to GLObjectManager.pas.  Moved property
+   14/03/09 - DanB - Split TGLObjectManager to GLObjectManager.pas.  Moved property
                         editors to interface section, and made their methods public.
    08/10/08 - DanB - Added DynamicTexture unit (to allow choosing this at designtime)
                         + register TGLSLPostBlurShader
@@ -74,7 +74,7 @@
    09/06/00 - EG - Added TSoundFileProperty & TSoundNameProperty
    23/05/00 - EG - Added GLCollision
    16/05/00 - EG - Delphi 4 Compatibility
-   28/04/00 - EG - Removed ObjectStock in TObjectManager (was useless)
+   28/04/00 - EG - Removed ObjectStock in TGLObjectManager (was useless)
    26/04/00 - EG - Added Categories in ObjectManager,
                       enhanced GetRegisteredSceneObjects
    16/04/00 - EG - Objects icons are now loaded from ressources using
@@ -456,7 +456,7 @@ resourcestring
 procedure Register;
 
 // : Auto-create for object manager
-function ObjectManager: TObjectManager;
+function ObjectManager: TGLObjectManager;
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -635,12 +635,12 @@ uses
   GLSLog;
 
 var
-  vObjectManager: TObjectManager;
+  vObjectManager: TGLObjectManager;
 
-function ObjectManager: TObjectManager;
+function ObjectManager: TGLObjectManager;
 begin
   if not Assigned(vObjectManager) then
-    vObjectManager := TObjectManager.Create(nil);
+    vObjectManager := TGLObjectManager.Create(nil);
   Result := vObjectManager;
 end;
 
@@ -1802,13 +1802,13 @@ begin
 
   { GLVectorFileObjects }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TActorAnimationMode), TypeInfo(TActorAnimations),
+    [TypeInfo(TGLActorAnimationMode), TypeInfo(TGLActorAnimations),
     TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
-    TypeInfo(TActorAnimationReference), TypeInfo(TGLActor)]);
+    TypeInfo(TGLActorAnimationReference), TypeInfo(TGLActor)]);
   RegisterPropertiesInCategory(sLayoutCategoryName,
     [TypeInfo(TMeshNormalsOrientation)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TMeshAutoCenterings), TypeInfo(TActorAnimationReference),
+    [TypeInfo(TMeshAutoCenterings), TypeInfo(TGLActorAnimationReference),
     TypeInfo(TMeshNormalsOrientation)]);
   // TGLFreeForm
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
@@ -1819,7 +1819,7 @@ begin
   RegisterPropertiesInCategory(sLinkageCategoryName, TGLAnimationControler,
     ['AnimationName']);
   // TGLActor
-  RegisterPropertiesInCategory(sOpenGLCategoryName, TActorAnimation,
+  RegisterPropertiesInCategory(sOpenGLCategoryName, TGLActorAnimation,
     ['*Frame']);
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLActor,
     ['*Frame*', 'Interval', 'OverlaySkeleton', 'UseMeshmaterials']);
@@ -1851,13 +1851,13 @@ begin
 
   { GLSkydome }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TSkyDomeBands), TypeInfo(TSkyDomeOptions),
-    TypeInfo(TSkyDomeStars)]);
-  // TSkyDomeBand
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeBand,
+    [TypeInfo(TGLSkyDomeBands), TypeInfo(TGLSkyDomeOptions),
+    TypeInfo(TGLSkyDomeStars)]);
+  // TGLSkyDomeBand
+  RegisterPropertiesInCategory(sVisualCategoryName, TGLSkyDomeBand,
     ['Slices', 'Stacks', '*Angle']);
-  // TSkyDomeStar
-  RegisterPropertiesInCategory(sVisualCategoryName, TSkyDomeStar,
+  // TGLSkyDomeStar
+  RegisterPropertiesInCategory(sVisualCategoryName, TGLSkyDomeStar,
     ['Dec', 'Magnitude', 'RA']);
   // TGLEarthSkyDome
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLEarthSkyDome,
@@ -1956,9 +1956,9 @@ begin
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TGLMagFilter), TypeInfo(TGLMinFilter)]);
   RegisterPropertiesInCategory(sLocalizableCategoryName,
-    [TypeInfo(TBitmapFontRanges)]);
-  // TBitmapFontRange
-  RegisterPropertiesInCategory(sLocalizableCategoryName, TBitmapFontRange,
+    [TypeInfo(TGLBitmapFontRanges)]);
+  // TGLBitmapFontRange
+  RegisterPropertiesInCategory(sLocalizableCategoryName, TGLBitmapFontRange,
     ['*ASCII']);
   // TGLBitmapFont
   RegisterPropertiesInCategory(sLayoutCategoryName, TGLBitmapFont,
@@ -2060,7 +2060,7 @@ begin
     TGLLibMaterialNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLFBORenderer, '',
     TGLLibMaterialNameProperty);
-  RegisterPropertyEditor(TypeInfo(TActorAnimationName), TGLAnimationControler,
+  RegisterPropertyEditor(TypeInfo(TGLActorAnimationName), TGLAnimationControler,
     '', TGLAnimationNameProperty);
   RegisterPropertyEditor(TypeInfo(TGLLibMaterialName),
     TGLTextureSharingShaderMaterial, 'LibMaterialName',

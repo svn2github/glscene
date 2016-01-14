@@ -107,7 +107,7 @@
    28/06/00 - EG - Support for "ObjectStyle"
    23/06/00 - EG - Reduced default Loop count for TGLDisk
    18/06/00 - EG - TGLMesh and accompanying stuff moved to GLMesh
-   14/06/00 - EG - Added Capacity to TVertexList
+   14/06/00 - EG - Added Capacity to TGLVertexList
    09/06/00 - EG - First row of Geometry-related upgrades
    08/06/00 - EG - Added ReleaseFontManager, fixed TGLSpaceText DestroyList,
    01/06/00 - EG - Added TGLAnnulus (code by Aaron Hochwimmer)
@@ -138,7 +138,7 @@
   FreeForm and vector file stuff moved to new GLVectorFileObjects
    08/02/00 - EG - Added TGLDummyCube
    05/02/00 - EG - Javadocisation, fixes and enhancements :
-                      TVertexList.AddVertex, "default"s to properties
+                      TGLVertexList.AddVertex, "default"s to properties
    
 }
 unit GLObjects;

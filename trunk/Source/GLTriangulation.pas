@@ -63,7 +63,7 @@ type
   TDComplete = array of Boolean;
   TDEdges = array of array of LongInt;
 
-{  TDelaunay2D is a class for Delaunay triangulation of arbitrary points
+{  TGLDelaunay2D is a class for Delaunay triangulation of arbitrary points
   Credit to Paul Bourke (http://paulbourke.net/) for the original Fortran 77 Program :))
   Conversion to Visual Basic by EluZioN (EluZioN@casesladder.com)
   Conversion from VB to Delphi6 by Dr Steve Evans (steve@lociuk.com)
@@ -78,7 +78,7 @@ type
 }
 
 type
-  TDelaunay2D = class
+  TGLDelaunay2D = class
   private
     { Private declarations }
     function InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single; var Xc: Single;
@@ -108,7 +108,7 @@ implementation
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
-constructor TDelaunay2D.Create;
+constructor TGLDelaunay2D.Create;
 begin
   // Initiate total points to 1, using base 0 causes problems in the functions
   inherited;
@@ -119,14 +119,14 @@ begin
   OnProgress := nil;
 end;
 
-destructor TDelaunay2D.Destroy;
+destructor TGLDelaunay2D.Destroy;
 begin
   SetLength(Vertex, 0);
   SetLength(Triangle, 0);
   inherited;
 end;
 
-function TDelaunay2D.InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single;
+function TGLDelaunay2D.InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single;
   var Xc: Single; var Yc: Single; var R: Single; j: Integer): Boolean;
 // Return TRUE if the point (xp,yp) lies inside the circumcircle
 // made up by points (x1,y1) (x2,y2) (x3,y3)
@@ -219,7 +219,7 @@ begin
     InCircle := True;
 end;
 
-function TDelaunay2D.Triangulate(nvert: Integer): Integer;
+function TGLDelaunay2D.Triangulate(nvert: Integer): Integer;
 // Takes as input NVERT vertices in arrays Vertex()
 // Returned is a list of NTRI triangular faces in the array
 // Triangle(). These triangles are arranged in clockwise order.
@@ -408,7 +408,7 @@ begin
   SetLength(Edges, 2, 0);
 end;
 
-procedure TDelaunay2D.Mesh(sort: Boolean);
+procedure TGLDelaunay2D.Mesh(sort: Boolean);
 begin
   if sort then
     QuickSort(Vertex, 1, tPoints - 1);
@@ -418,7 +418,7 @@ begin
   // 'Returns number of triangles created.
 end;
 
-procedure TDelaunay2D.AddPoint(X, Y, Z, U, V: Single; MatIndex: Integer);
+procedure TGLDelaunay2D.AddPoint(X, Y, Z, U, V: Single; MatIndex: Integer);
 var
   i, AE: Integer;
 begin
@@ -446,7 +446,7 @@ begin
   end;
 end;
 
-procedure TDelaunay2D.AddPointNoCheck(X, Y, Z, U, V: Single; MatIndex: Integer);
+procedure TGLDelaunay2D.AddPointNoCheck(X, Y, Z, U, V: Single; MatIndex: Integer);
 begin
   Vertex[tPoints].X := X;
   Vertex[tPoints].Y := Y;
@@ -457,12 +457,12 @@ begin
   tPoints := tPoints + 1;
 end;
 
-procedure TDelaunay2D.RemoveLastPoint;
+procedure TGLDelaunay2D.RemoveLastPoint;
 begin
   tPoints := tPoints - 1;
 end;
 
-procedure TDelaunay2D.QuickSort(var A: TDVertex; Low, High: Integer);
+procedure TGLDelaunay2D.QuickSort(var A: TDVertex; Low, High: Integer);
 // Sort all points by x
 procedure DoQuickSort(var A: TDVertex; iLo, iHi: Integer);
 var

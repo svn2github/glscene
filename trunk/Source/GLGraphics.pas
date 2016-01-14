@@ -148,7 +148,7 @@ type
 
   // TGLBaseImage
   //
-  TGLBaseImage = class(TDataFile)
+  TGLBaseImage = class(TGLDataFile)
   private
     FSourceStream: TStream;
     FStreamLevel: TGLImageLODRange;

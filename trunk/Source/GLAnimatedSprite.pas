@@ -32,7 +32,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLScene, GLVectorGeometry, OpenGLTokens, GLMaterial,
-  GLPersistentClasses, XCollection, GLCrossPlatform, GLRenderContextInfo,
+  GLPersistentClasses, GLXCollection, GLCrossPlatform, GLRenderContextInfo,
   GLBaseClasses, GLContext, GLState;
 
 type
@@ -46,7 +46,7 @@ type
   {Used by the SpriteAnimation when Dimensions are set manual. The animation
      will use the offsets, width and height to determine the texture coodinates
      for this frame. }
-  TSpriteAnimFrame = class(TXCollectionItem)
+  TSpriteAnimFrame = class(TGLXCollectionItem)
   private
     FOffsetX,
       FOffsetY,
@@ -77,10 +77,10 @@ type
 
   // TSpriteAnimFrameList
   {The XCollection used for the TSpriteAnimFrame object. }
-  TSpriteAnimFrameList = class(TXCollection)
+  TSpriteAnimFrameList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
 
   end;
 
@@ -126,7 +126,7 @@ type
   // TSpriteAnimation
   {Animations define how the texture coordinates for each offset
      are to be determined. }
-  TSpriteAnimation = class(TXCollectionItem, IGLMaterialLibrarySupported)
+  TSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
   private
     FCurrentFrame,
       FStartFrame,
@@ -158,7 +158,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary; virtual;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
@@ -202,10 +202,10 @@ type
 
   // TSpriteAnimationList
   {A collection for storing TSpriteAnimation objects. }
-  TSpriteAnimationList = class(TXCollection)
+  TSpriteAnimationList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
 
   end;
 
@@ -457,7 +457,7 @@ end;
 // ItemsClass
 //
 
-class function TSpriteAnimFrameList.ItemsClass: TXCollectionItemClass;
+class function TSpriteAnimFrameList.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TSpriteAnimFrame;
 end;
@@ -539,7 +539,7 @@ end;
 // Create
 //
 
-constructor TSpriteAnimation.Create(aOwner: TXCollection);
+constructor TSpriteAnimation.Create(aOwner: TGLXCollection);
 begin
   inherited;
   FFrames := TSpriteAnimFrameList.Create(Self);
@@ -800,7 +800,7 @@ end;
 // ItemsClass
 //
 
-class function TSpriteAnimationList.ItemsClass: TXCollectionItemClass;
+class function TSpriteAnimationList.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TSpriteAnimation;
 end;

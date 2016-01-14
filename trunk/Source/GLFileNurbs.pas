@@ -26,10 +26,10 @@ type
 
    // TGLNurbsSurface
    //
-   TGLNurbsVectorFile = class(TVectorFile)
+   TGLNurbsVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;
 
@@ -47,7 +47,7 @@ implementation
 
 // Capabilities
 //
-class function TGLNurbsVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLNurbsVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

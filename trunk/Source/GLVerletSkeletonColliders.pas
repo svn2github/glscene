@@ -25,14 +25,14 @@ type
   // TSCVerletBase
   //
   {Base verlet skeleton collider class. }
-  TSCVerletBase = class(TSkeletonCollider)
+  TSCVerletBase = class(TGLSkeletonCollider)
     private
       FVerletConstraint : TVerletConstraint;
 
     public
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); virtual;
+      procedure AddToVerletWorld(VerletWorld : TGLVerletWorld); virtual;
 
       {The verlet constraint is created through the AddToVerletWorld
          procedure. }
@@ -53,7 +53,7 @@ type
       constructor Create; override;
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); override;
+      procedure AddToVerletWorld(VerletWorld : TGLVerletWorld); override;
       procedure AlignCollider; override;
 
       property Radius : Single read FRadius write SetRadius;
@@ -75,7 +75,7 @@ type
       constructor Create; override;
       procedure WriteToFiler(writer : TVirtualWriter); override;
       procedure ReadFromFiler(reader : TVirtualReader); override;
-      procedure AddToVerletWorld(VerletWorld : TVerletWorld); override;
+      procedure AddToVerletWorld(VerletWorld : TGLVerletWorld); override;
       procedure AlignCollider; override;
 
       property Radius : Single read FRadius write SetRadius;
@@ -85,7 +85,7 @@ type
 {After loading call this function to add all the constraints in a
    skeleton collider list to a given verlet world. }
 procedure AddSCVerletConstriantsToVerletWorld(
-  colliders : TSkeletonColliderList; world : TVerletWorld);
+  colliders : TGLSkeletonColliderList; world : TGLVerletWorld);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -98,7 +98,7 @@ implementation
 // AddSCVerletConstriantsToVerletWorld
 //
 procedure AddSCVerletConstriantsToVerletWorld(
-  colliders : TSkeletonColliderList; world : TVerletWorld);
+  colliders : TGLSkeletonColliderList; world : TGLVerletWorld);
 var
   i : Integer;
 begin
@@ -136,7 +136,7 @@ end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletBase.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletBase.AddToVerletWorld(VerletWorld : TGLVerletWorld);
 begin
   AlignCollider;
 end;
@@ -181,7 +181,7 @@ end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletSphere.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletSphere.AddToVerletWorld(VerletWorld : TGLVerletWorld);
 begin
   FVerletConstraint:=TVCSphere.Create(VerletWorld);
   TVCSphere(FVerletConstraint).Radius:=FRadius;
@@ -251,7 +251,7 @@ end;
 
 // AddToVerletWorld
 //
-procedure TSCVerletCapsule.AddToVerletWorld(VerletWorld : TVerletWorld);
+procedure TSCVerletCapsule.AddToVerletWorld(VerletWorld : TGLVerletWorld);
 begin
   FVerletConstraint:=TVCCapsule.Create(VerletWorld);
   TVCCapsule(FVerletConstraint).Radius:=FRadius;

@@ -24,7 +24,7 @@ uses
   GLPlugInIntf, GLPlugInManager;
 
 type
-  TPlugInManagerEditor = class(TForm)
+  TGLPlugInManagerEditor = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
@@ -50,14 +50,14 @@ type
     procedure ServiceBoxChange(Sender: TObject);
   private
     { Private declarations }
-    FManager: TPlugInManager;
+    FManager: TGLPlugInManager;
   public
     { Public declarations }
-    class procedure EditPlugIns(AManager: TPlugInManager);
+    class procedure EditPlugIns(AManager: TGLPlugInManager);
   end;
 
 var
-  PlugInManagerEditor: TPlugInManagerEditor;
+  PlugInManagerEditor: TGLPlugInManagerEditor;
 
   // ------------------------------------------------------------------------------
 
@@ -66,14 +66,14 @@ implementation
 {$R *.DFM}
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.OKButtonClick(Sender: TObject);
+procedure TGLPlugInManagerEditor.OKButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.LoadButtonClick(Sender: TObject);
+procedure TGLPlugInManagerEditor.LoadButtonClick(Sender: TObject);
 
 var
   I, Index: Integer;
@@ -99,13 +99,13 @@ end;
 
 // ------------------------------------------------------------------------------
 
-class procedure TPlugInManagerEditor.EditPlugIns(AManager: TPlugInManager);
+class procedure TGLPlugInManagerEditor.EditPlugIns(AManager: TGLPlugInManager);
 
 begin
   // ensure only one instance
   if assigned(PlugInManagerEditor) then
     PlugInManagerEditor.Free;
-  PlugInManagerEditor := TPlugInManagerEditor.Create(Application);
+  PlugInManagerEditor := TGLPlugInManagerEditor.Create(Application);
   with PlugInManagerEditor do
   begin
     ListBox.Items := AManager.PlugIns;
@@ -118,7 +118,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.ListBoxClick(Sender: TObject);
+procedure TGLPlugInManagerEditor.ListBoxClick(Sender: TObject);
 
 var
   Entry: Integer;
@@ -180,7 +180,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
+procedure TGLPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
 
 var
   I: Integer;
@@ -213,7 +213,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
+procedure TGLPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
 
 begin
   NameBox.Items.Clear;

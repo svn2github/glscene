@@ -27,10 +27,10 @@ type
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
       (the whole mesh uses a single texture bitmap). }
-   TGLDAEVectorFile = class(TVectorFile)
+   TGLDAEVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -48,7 +48,7 @@ implementation
 
 // Capabilities
 //
-class function TGLDAEVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLDAEVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;

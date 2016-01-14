@@ -56,9 +56,9 @@ type
   // window-to-screen fitting
   TWindowFitting = (wfDefault, wfFitWindowToScreen, wfFitScreenToWindow);
 
-  // TDisplayOptions
+  // TGLDisplayOptions
   //
-  TDisplayOptions = class(TPersistent)
+  TGLDisplayOptions = class(TPersistent)
   private
     FFullScreen: Boolean;
     FScreenResolution: TResolution;
@@ -157,14 +157,14 @@ const
 
   // Assign
   //
-procedure TDisplayOptions.Assign(Source: TPersistent);
+procedure TGLDisplayOptions.Assign(Source: TPersistent);
 begin
-  if Source is TDisplayOptions then
+  if Source is TGLDisplayOptions then
   begin
-    FFullScreen := TDisplayOptions(Source).FFullScreen;
-    FScreenResolution := TDisplayOptions(Source).FScreenResolution;
-    FWindowAttributes := TDisplayOptions(Source).FWindowAttributes;
-    FWindowFitting := TDisplayOptions(Source).FWindowFitting;
+    FFullScreen := TGLDisplayOptions(Source).FFullScreen;
+    FScreenResolution := TGLDisplayOptions(Source).FScreenResolution;
+    FWindowAttributes := TGLDisplayOptions(Source).FWindowAttributes;
+    FWindowFitting := TGLDisplayOptions(Source).FWindowFitting;
   end
   else
     inherited Assign(Source);

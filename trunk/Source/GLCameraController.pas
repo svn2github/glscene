@@ -13,7 +13,7 @@
                              Most procedures now use "const" parameters
                              Restructured TGLCameraJob: published some properties, deleted others
                              Added basic Notification
-                             Removed Cadencer dependancy 
+                             Removed Cadencer dependancy
        14/06/11 - Vince - Correct positioning errors (OrbitToPosAdvance)
        07/05/11 - DaStr - Added Smooth OrbitToPos support
        20/05/11 - YanP - GLCameraController refactored as a Job manager, each camera movement is a job in a list
@@ -49,8 +49,7 @@ unit GLCameraController;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Math, System.Contnrs,
-
+  System.Classes, System.SysUtils, System.Math, System.Contnrs, System.Types,
   //GLS
   GLScene, GLVectorGeometry,
   GLSmoothNavigator,GLVectorTypes;

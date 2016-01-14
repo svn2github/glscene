@@ -32,9 +32,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes, System.SysUtils, System.Types, System.Math,
 
-  GLScene, XCollection, GLVectorGeometry,
+  GLScene, GLXCollection, GLVectorGeometry,
   OpenGLTokens, GLContext, GLVectorLists, GLVectorTypes,
   GLCadencer, GLColor, GLBaseClasses, GLCoordinates, GLRenderContextInfo,
   GLManager, GLState, GLTextureFormat;
@@ -134,7 +134,7 @@ type
     procedure SetTarget(const val: TGLCoordinates);
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
@@ -430,7 +430,7 @@ end;
 
 // Create
 //
-constructor TGLBThorFX.Create(AOwner: TXCollection);
+constructor TGLBThorFX.Create(AOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
   FTarget := TGLCoordinates.CreateInitialized(Self, VectorMake(0, 1, 0));

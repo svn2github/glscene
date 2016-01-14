@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Register TXCollection property editor 
+   Register TGLXCollection property editor 
   
    History :  
        20/05/10 - Yar - Fixes for Linux x64
@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  XCollection,
+  GLXCollection,
 
   DesignEditors, DesignIntf;
 
@@ -28,7 +28,7 @@ type
 
 	// TGLXCollectionProperty
 	//
-	TXCollectionProperty = class(TClassProperty)
+	TGLXCollectionProperty = class(TClassProperty)
 		public
 			{ Public Declarations }
 			function GetAttributes: TPropertyAttributes; override;
@@ -50,24 +50,24 @@ uses
 
 procedure Register;
 begin
-  RegisterPropertyEditor(TypeInfo(TXCollection), nil, '', TXCollectionProperty);
+  RegisterPropertyEditor(TypeInfo(TGLXCollection), nil, '', TGLXCollectionProperty);
 end;
 
-//----------------- TXCollectionProperty ------------------------------------
+//----------------- TGLXCollectionProperty ------------------------------------
 
 // GetAttributes
 //
-function TXCollectionProperty.GetAttributes: TPropertyAttributes;
+function TGLXCollectionProperty.GetAttributes: TPropertyAttributes;
 begin
 	Result:=[paDialog];
 end;
 
 // Edit
 //
-procedure TXCollectionProperty.Edit;
+procedure TGLXCollectionProperty.Edit;
 begin
    with XCollectionEditor do begin
-     SetXCollection(TXCollection(GetOrdValue), Self.Designer);
+     SetXCollection(TGLXCollection(GetOrdValue), Self.Designer);
      Show;
    end;
 end;

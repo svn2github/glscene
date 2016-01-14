@@ -24,19 +24,19 @@ uses
 
 type
 
-  TLanguageEntry = record
+  TGLLanguageEntry = record
     ID: String; //**< identifier
     Text: String; //**< translation
   end;
 
-  TLanguageEntryArray = array of TLanguageEntry;
+  TGLLanguageEntryArray = array of TGLLanguageEntry;
 
-  { Class TLanguage is used only for downloading and translation,
+  { Class TGLLanguage is used only for downloading and translation,
     as in the final product it's no need for the text processing}
-  TLanguage = class
+  TGLLanguage = class
   private
     FCurrentLanguageFile: String;
-    Entry: TLanguageEntryArray; //**< Entrys of Chosen Language
+    Entry: TGLLanguageEntryArray; //**< Entrys of Chosen Language
   public
     function FindID(const ID: String): integer;
     function Translate(const ID: String): String;
@@ -46,16 +46,16 @@ type
 
   { Advanced class is designed for loading and processing,
     will be useful for language editors}
-  TLanguageExt = class(TLanguage)
+  TGLLanguageExt = class(TGLLanguage)
   private
-    function GetEntry(Index: integer): TLanguageEntry;
-    procedure SetEntry(Index: integer; aValue: TLanguageEntry);
+    function GetEntry(Index: integer): TGLLanguageEntry;
+    procedure SetEntry(Index: integer; aValue: TGLLanguageEntry);
     function GetCount: integer;
   public
     procedure AddConst(const ID: String; const Text: String);
     procedure AddConsts(aValues: TStrings);
     procedure ChangeConst(const ID: String; const Text: String);
-    property Items[Index: integer]: TLanguageEntry read GetEntry write SetEntry;
+    property Items[Index: integer]: TGLLanguageEntry read GetEntry write SetEntry;
     property Count: integer read GetCount;
     procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
@@ -64,9 +64,9 @@ type
   { Abstract class for control Language  }
   TGLSLanguage = class(TComponent)
   private
-    FLanguage: TLanguageExt;
+    FLanguage: TGLLanguageExt;
     FLanguageList: TStrings;
-    procedure SetLanguage(aValue: TLanguageExt);
+    procedure SetLanguage(aValue: TGLLanguageExt);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -74,7 +74,7 @@ type
     procedure SaveLanguageFromFile(const Language: String); overload;
     procedure SaveLanguageFromFile; overload;
     function Translate(const ID: String): String;
-    property Language: TLanguageExt read FLanguage write SetLanguage;
+    property Language: TGLLanguageExt read FLanguage write SetLanguage;
   end;
 
 //-----------------------------------------------------------------------
@@ -88,10 +88,10 @@ implementation
 uses
   GLCrossPlatform, GLSLog;
 
-{ TLanguage }
+{ TGLLanguage }
 
 { Load the specified LanguageFile }
-procedure TLanguage.LoadLanguageFromFile(const Language: String);
+procedure TGLLanguage.LoadLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -140,7 +140,7 @@ end;
 
 { Find the index of ID an array of language entry.
    @returns the index on success, -1 otherwise }
-function TLanguage.FindID(const ID: String): integer;
+function TGLLanguage.FindID(const ID: String): integer;
 var
   Index: integer;
 begin
@@ -160,7 +160,7 @@ end;
    setting. If Text is not a known ID, it will be returned as is.
    @param Text either an ID or an UTF-8 encoded string
  }
-function TLanguage.Translate(const ID: String): String;
+function TGLLanguage.Translate(const ID: String): String;
 var
   EntryIndex: integer;
 begin
@@ -176,16 +176,16 @@ begin
   end;
 end;
 
-// TLanguageExt
+// TGLLanguageExt
 // Add a Constant ID that will be Translated but not Loaded from the LanguageFile
-procedure TLanguageExt.AddConst(const ID: String; const Text: String);
+procedure TGLLanguageExt.AddConst(const ID: String; const Text: String);
 begin
   SetLength(Entry, Length(Entry) + 1);
   Entry[high(Entry)].ID := ID;
   Entry[high(Entry)].Text := Text;
 end;
 
-procedure TLanguageExt.AddConsts(aValues: TStrings);
+procedure TGLLanguageExt.AddConsts(aValues: TStrings);
 var
   I: integer;
 begin
@@ -197,7 +197,7 @@ end;
 
 // Change a Constant Value by ID
 //
-procedure TLanguageExt.ChangeConst(const ID: String;
+procedure TGLLanguageExt.ChangeConst(const ID: String;
   const Text: String);
 var
   I: integer;
@@ -212,24 +212,24 @@ begin
   end;
 end;
 
-function TLanguageExt.GetEntry(Index: integer): TLanguageEntry;
+function TGLLanguageExt.GetEntry(Index: integer): TGLLanguageEntry;
 begin
   Result := Entry[Index];
 end;
 
-procedure TLanguageExt.SetEntry(Index: integer; aValue: TLanguageEntry);
+procedure TGLLanguageExt.SetEntry(Index: integer; aValue: TGLLanguageEntry);
 begin
   Entry[Index] := aValue;
 end;
 
-function TLanguageExt.GetCount: integer;
+function TGLLanguageExt.GetCount: integer;
 begin
   Result := high(Entry) + 1;
 end;
 
 // Save Update Language File
 //
-procedure TLanguageExt.SaveLanguageFromFile(const Language: String);
+procedure TGLLanguageExt.SaveLanguageFromFile(const Language: String);
 var
   IniFile: TMemIniFile;
   E: integer; // entry
@@ -247,7 +247,7 @@ begin
   IniFile.Free;
 end;
 
-procedure TLanguageExt.SaveLanguageFromFile;
+procedure TGLLanguageExt.SaveLanguageFromFile;
 begin
   SaveLanguageFromFile(CurrentLanguageFile);
 end;
@@ -257,7 +257,7 @@ end;
 constructor TGLSLanguage.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FLanguage := TLanguageExt.Create;
+  FLanguage := TGLLanguageExt.Create;
   FLanguageList := TStringList.Create;
 end;
 
@@ -273,7 +273,7 @@ begin
   FLanguage.LoadLanguageFromFile(Language);
 end;
 
-procedure TGLSLanguage.SetLanguage(aValue: TLanguageExt);
+procedure TGLSLanguage.SetLanguage(aValue: TGLLanguageExt);
 begin
   if aValue <> nil then
     FLanguage := aValue;

@@ -25,7 +25,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
   //GLS
-  GLSoundFileObjects, GLScene, XCollection, GLVectorGeometry,
+  GLSoundFileObjects, GLScene, GLXCollection, GLVectorGeometry,
   GLCadencer, GLBaseClasses, GLCrossPlatform, GLUtils;
 
 {$I GLScene.inc}
@@ -503,7 +503,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -1795,7 +1795,7 @@ end;
 // Create
 //
 
-constructor TGLBSoundEmitter.Create(aOwner: TXCollection);
+constructor TGLBSoundEmitter.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FSource := TGLSoundSource.Create(nil);

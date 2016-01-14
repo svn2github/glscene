@@ -31,12 +31,12 @@ type
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats }
 
-  TGLGRDVectorFile = class(TVectorFile)
+  TGLGRDVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
     HeightField: TGLHeightField;
     Nodes: array of TSingleArray;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   private
     StrVal: String;
@@ -64,7 +64,7 @@ const
 
   // Capabilities
   //
-class function TGLGRDVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLGRDVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

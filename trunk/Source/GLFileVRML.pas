@@ -25,9 +25,9 @@ uses
 
 type
 
-  TGLVRMLVectorFile = class (TVectorFile)
+  TGLVRMLVectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -150,7 +150,7 @@ end;
 
 // Capabilities
 //
-class function TGLVRMLVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLVRMLVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
@@ -159,7 +159,7 @@ end;
 //
 procedure TGLVRMLVectorFile.LoadFromStream(aStream : TStream);
 var
-  mesh : TMeshObject;
+  mesh : TGLMeshObject;
   uniqueMatID : Integer;
   currentMaterial : TGLLibMaterial;
   currentTransform : TMatrix;
@@ -451,7 +451,7 @@ var
     // Read node data
     if (node.Name = 'Coordinate3') and (node.Count>0) then begin
       RebuildMesh;
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
       points:=TVRMLSingleArray(node[0]).Values;
       for i:=0 to (points.Count div 3) - 1 do
         mesh.Vertices.Add(points[3*i], points[3*i+1], points[3*i+2]);

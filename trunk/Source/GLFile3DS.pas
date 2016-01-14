@@ -306,10 +306,10 @@ type
      Uses an upgraded version if a 3DS import library by Mike Lischke. 
      (http://www.lishcke-online.de). A 3DS file may contain material
      information and require textures when loading. }
-  TGL3DSVectorFile = class(TVectorFile)
+  TGL3DSVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
@@ -325,8 +325,8 @@ var
   {If enabled, allows 3ds animation and fixes loading of some 3ds models,
      but has a few bugs:
      - TGLFreeForm.AutoCentering does now work correctly.
-     - TMeshObject.vertices return values different from
-        TMeshObject.ExtractTriangles()
+     - TGLMeshObject.vertices return values different from
+        TGLMeshObject.ExtractTriangles()
      }
   vGLFile3DS_EnableAnimation: boolean = False;
 
@@ -1674,7 +1674,7 @@ end;
 
 // Capabilities
 
-class function TGL3DSVectorFile.Capabilities: TDataFileCapabilities;
+class function TGL3DSVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;

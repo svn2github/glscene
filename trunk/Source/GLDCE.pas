@@ -52,7 +52,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
   //GLS
-  GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
+  GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
   GLTerrainRenderer, GLCoordinates, GLBaseClasses,
   GLManager, GLVectorTypes;
@@ -162,7 +162,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -220,7 +220,7 @@ type
     procedure Loaded; override;
   public
     { Public Declarations }
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName : String; override;
@@ -603,7 +603,7 @@ begin
    inherited Assign(Source);
 end;
 
-constructor TGLDCEStatic.Create(aOwner: TXCollection);
+constructor TGLDCEStatic.Create(aOwner: TGLXCollection);
 begin
    inherited Create(aOwner);
    FActive := True;
@@ -770,7 +770,7 @@ begin
   inherited Assign(Source);
 end;
 
-constructor TGLDCEDynamic.Create(aOwner: TXCollection);
+constructor TGLDCEDynamic.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FActive := True;

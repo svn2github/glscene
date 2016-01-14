@@ -51,7 +51,7 @@ type
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
@@ -566,7 +566,7 @@ begin
   {$Message Hint 'TGLBMPImage.AssignFromTexture not yet implemented' }
 end;
 
-class function TGLBMPImage.Capabilities: TDataFileCapabilities;
+class function TGLBMPImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead {, dfcWrite}];
 end;

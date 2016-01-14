@@ -30,7 +30,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types,
   //GLS
-  GLScene, XCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
+  GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLGeometryBB, GLCrossPlatform,
   GLManager , GLVectorTypes;
 
@@ -111,7 +111,7 @@ type
 
 		public
 			{ Public Declarations }
-			constructor Create(aOwner : TXCollection); override;
+			constructor Create(aOwner : TGLXCollection); override;
 			destructor Destroy; override;
 
          procedure Assign(Source: TPersistent); override;
@@ -829,7 +829,7 @@ end;
 
 // Create
 //
-constructor TGLBCollision.Create(aOwner : TXCollection);
+constructor TGLBCollision.Create(aOwner : TGLXCollection);
 begin
    inherited Create(aOwner);
 

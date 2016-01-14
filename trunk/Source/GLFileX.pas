@@ -41,10 +41,10 @@ uses
   FileX;
 
 type
-  TGLXVectorFile = class (TVectorFile)
+  TGLXVectorFile = class (TGLVectorFile)
     public
       { Public Declarations }
-      class function Capabilities: TDataFileCapabilities; override;
+      class function Capabilities: TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -56,7 +56,7 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-class function TGLXVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLXVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result := [dfcRead];
 end;
@@ -68,7 +68,7 @@ var
   procedure RecursDXFile(DXNode : TDXNode);
   var
     i,j,k,l,vertcount : integer;
-    mo : TMeshObject;
+    mo : TGLMeshObject;
     mat : TMatrix;
     libmat : TGLLibMaterial;
     fg : TFGVertexNormalTexIndexList;
@@ -82,7 +82,7 @@ var
       end;
 
     if DXNode is TDXMesh then begin
-      mo:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mo:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
       mo.Mode:=momFaceGroups;
       mo.Vertices.Assign(TDXMesh(DXNode).Vertices);
       mo.Vertices.TransformAsPoints(mat);

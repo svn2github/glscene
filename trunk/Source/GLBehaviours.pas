@@ -27,11 +27,11 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-
+  //GLS
   GLVectorTypes,
   GLScene,
   GLVectorGeometry,
-  XCollection,
+  GLXCollection,
   GLBaseClasses,
   GLCoordinates;
 
@@ -115,7 +115,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -188,7 +188,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
@@ -395,7 +395,7 @@ end;
 
 // Create
 
-constructor TGLBInertia.Create(aOwner: TXCollection);
+constructor TGLBInertia.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FTranslationSpeed := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
@@ -639,7 +639,7 @@ end;
 
 // Create
 
-constructor TGLBAcceleration.Create(aOwner: TXCollection);
+constructor TGLBAcceleration.Create(aOwner: TGLXCollection);
 begin
   inherited;
   if aOwner <> nil then

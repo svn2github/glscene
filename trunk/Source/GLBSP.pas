@@ -7,7 +7,7 @@
 
   History :  
    04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-   22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
+   22/06/08 - DaStr - Fixups after converting TGLMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
    06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
    31/03/07 - DaStr - Added $I GLScene.inc
@@ -88,7 +88,7 @@ type
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
-  TBSPMeshObject = class(TMeshObject)
+  TBSPMeshObject = class(TGLMeshObject)
   private
     { Private Declarations }
     FRenderSort: TBSPRenderSort;
@@ -100,7 +100,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TMeshObjectList);
+    constructor CreateOwned(AOwner: TGLMeshObjectList);
     destructor Destroy; override;
 
     procedure BuildList(var mrci: TRenderContextInfo); override;
@@ -156,7 +156,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TFaceGroups); override;
+    constructor CreateOwned(AOwner: TGLFaceGroups); override;
     destructor Destroy; override;
 
     procedure IsCulled(const bsprci: TBSPRenderContextInfo;
@@ -318,7 +318,7 @@ end;
 
 // CreateOwned
 //
-constructor TBSPMeshObject.CreateOwned(AOwner: TMeshObjectList);
+constructor TBSPMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
   inherited;
   Mode := momFaceGroups;
@@ -621,7 +621,7 @@ end;
 
 // CreateOwned
 //
-constructor TFGBSPNode.CreateOwned(AOwner: TFaceGroups);
+constructor TFGBSPNode.CreateOwned(AOwner: TGLFaceGroups);
 begin
   inherited;
   FPositiveSubNodeIndex := 0;

@@ -42,9 +42,9 @@ type
 
       public
          { Private Declarations }
-         function CreateCopy(AOwner: TPersistent) : TDataFile; override;
+         function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
 
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
 
          procedure LoadFromStream(Stream: TStream); override;
          procedure SaveToStream(Stream: TStream); override;
@@ -81,7 +81,7 @@ const
 
 // CreateCopy
 //
-function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TDataFile;
+function TGLWAVFile.CreateCopy(AOwner: TPersistent) : TGLDataFile;
 begin
    Result:=inherited CreateCopy(AOwner);
    if Assigned(Result) then begin
@@ -94,7 +94,7 @@ end;
 
 // Capabilities
 //
-class function TGLWAVFile.Capabilities : TDataFileCapabilities;
+class function TGLWAVFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead, dfcWrite];
 end;

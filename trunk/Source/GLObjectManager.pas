@@ -15,7 +15,7 @@
                              (thanks Predator) (BugtrackerID = 2893580)
        25/07/09 - DaStr - Added $I GLScene.inc
        26/03/09 - DanB - Added PopulateMenuWithRegisteredSceneObjects procedure.
-       14/03/09 - DanB - Created by moving TObjectManager in from GLSceneRegister.pas,
+       14/03/09 - DanB - Created by moving TGLObjectManager in from GLSceneRegister.pas,
                             made some slight adjustments to allow resources being loaded
                             from separate packages.
   
@@ -50,9 +50,9 @@ type
     ImageIndex: Integer; // index into "FObjectIcons"
   end;
 
-  // TObjectManager
+  // TGLObjectManager
   //
-  TObjectManager = class(TComponent)
+  TGLObjectManager = class(TComponent)
   private
     { Private Declarations }
     FSceneObjectList: TList;
@@ -102,11 +102,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-//----------------- TObjectManager ---------------------------------------------
+//----------------- TGLObjectManager ---------------------------------------------
 
 // Create
 //
-constructor TObjectManager.Create(AOwner: TComponent);
+constructor TGLObjectManager.Create(AOwner: TComponent);
 begin
   inherited;
   FSceneObjectList := TList.Create;
@@ -116,7 +116,7 @@ end;
 
 // Destroy
 //
-destructor TObjectManager.Destroy;
+destructor TGLObjectManager.Destroy;
 begin
   DestroySceneObjectList;
   FObjectIcons.Free;
@@ -125,7 +125,7 @@ end;
 
 // FindSceneObjectClass
 //
-function TObjectManager.FindSceneObjectClass(AObjectClass: TGLSceneObjectClass;
+function TGLObjectManager.FindSceneObjectClass(AObjectClass: TGLSceneObjectClass;
   const aSceneObject: string = ''): PSceneObjectEntry;
 var
   I: Integer;
@@ -150,7 +150,7 @@ end;
 
 // GetClassFromIndex
 //
-function TObjectManager.GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
+function TGLObjectManager.GetClassFromIndex(Index: Integer): TGLSceneObjectClass;
 begin
   if Index < 0 then
     Index := 0;
@@ -161,7 +161,7 @@ end;
 
 // GetImageIndex
 //
-function TObjectManager.GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
+function TGLObjectManager.GetImageIndex(ASceneObject: TGLSceneObjectClass): Integer;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -175,7 +175,7 @@ end;
 // GetCategory
 //
 
-function TObjectManager.GetCategory(ASceneObject: TGLSceneObjectClass): string;
+function TGLObjectManager.GetCategory(ASceneObject: TGLSceneObjectClass): string;
 var
   classEntry: PSceneObjectEntry;
 begin
@@ -188,7 +188,7 @@ end;
 
 // GetRegisteredSceneObjects
 //
-procedure TObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
+procedure TGLObjectManager.GetRegisteredSceneObjects(objectList: TStringList);
 var
   i: Integer;
 begin
@@ -202,7 +202,7 @@ begin
     end;
 end;
 
-procedure TObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
+procedure TGLObjectManager.PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem;
   AClickEvent: TNotifyEvent);
 var
   ObjectList: TStringList;
@@ -248,7 +248,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass;
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass;
   const aName, aCategory: string);
 var
   resBitmapName: string;
@@ -278,7 +278,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap);
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap);
 var
   newEntry: PSceneObjectEntry;
   bmp: TBitmap;
@@ -329,7 +329,7 @@ end;
 // RegisterSceneObject
 //
 
-procedure TObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
+procedure TGLObjectManager.RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = '');
 var
   bmp: TBitmap;
   resBitmapName: string;
@@ -357,7 +357,7 @@ end;
 // UnRegisterSceneObject
 //
 
-procedure TObjectManager.UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
+procedure TGLObjectManager.UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 var
   oldEntry: PSceneObjectEntry;
 begin
@@ -375,7 +375,7 @@ end;
 
 // CreateDefaultObjectIcons
 //
-procedure TObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
+procedure TGLObjectManager.CreateDefaultObjectIcons(ResourceModule: Cardinal);
 var
   bmp: TBitmap;
 begin
@@ -407,7 +407,7 @@ end;
 // DestroySceneObjectList
 //
 
-procedure TObjectManager.DestroySceneObjectList;
+procedure TGLObjectManager.DestroySceneObjectList;
 var
   i: Integer;
 begin

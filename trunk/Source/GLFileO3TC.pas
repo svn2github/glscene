@@ -37,7 +37,7 @@ type
 
   TGLO3TCImage = class(TGLBaseImage)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
@@ -434,7 +434,7 @@ end;
 // Capabilities
 //
 
-class function TGLO3TCImage.Capabilities: TDataFileCapabilities;
+class function TGLO3TCImage.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;

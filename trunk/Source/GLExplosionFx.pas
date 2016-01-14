@@ -33,7 +33,7 @@ interface
 
 uses
   OpenGLTokens, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,
-  GLVectorLists, XCollection, GLCoordinates, GLRenderContextInfo;
+  GLVectorLists, GLXCollection, GLCoordinates, GLRenderContextInfo;
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -64,7 +64,7 @@ type
   public
     property Enabled: boolean read FEnabled write SetEnabled;
     property Step: integer read FStep;
-    constructor Create(aOwner : TXCollection); override;
+    constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Render(var rci : TRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
@@ -87,7 +87,7 @@ uses
 
 // Create
 //
-constructor TGLBExplosionFx.Create(aOwner: TXCollection);
+constructor TGLBExplosionFx.Create(aOwner: TGLXCollection);
 begin
   inherited Create(AOwner);
   FTriList := TAffineVectorList.Create;

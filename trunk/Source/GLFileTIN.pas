@@ -27,10 +27,10 @@ type
       It is a simple text format, with one triangle record per line, no materials,
       no texturing (there may be more, but I never saw anything in this files). 
       This format is encountered in the DEM/DTED world and used in place of grids. }
-   TGLTINVectorFile = class(TVectorFile)
+   TGLTINVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -50,7 +50,7 @@ uses
 
 // Capabilities
 //
-class function TGLTINVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLTINVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -61,7 +61,7 @@ procedure TGLTINVectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    sl, tl : TStringList;
-   mesh : TMeshObject;
+   mesh : TGLMeshObject;
    v1, v2, v3, n : TAffineVector;
    ActiveTin : Boolean;
    Id_Tin : Integer;
@@ -77,7 +77,7 @@ begin
   tl := TStringList.Create;
   try
     sl.LoadFromStream(aStream);
-    mesh      := TMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh      := TGLMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode := momTriangles;
     if sl[0]<>'TIN' then    // the file with single TIN described by vertices only
     begin

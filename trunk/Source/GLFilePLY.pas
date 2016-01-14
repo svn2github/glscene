@@ -28,10 +28,10 @@ type
       collection of polygons. The format is extensible, supports variations and
       subformats. This importer only works for the simplest variant (triangles
       without specified normals, and will ignore most header specifications. }
-   TGLPLYVectorFile = class(TVectorFile)
+   TGLPLYVectorFile = class(TGLVectorFile)
       public
          { Public Declarations }
-         class function Capabilities : TDataFileCapabilities; override;
+         class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;
 
@@ -52,7 +52,7 @@ uses
 
 // Capabilities
 //
-class function TGLPLYVectorFile.Capabilities : TDataFileCapabilities;
+class function TGLPLYVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
    Result:=[dfcRead];
 end;
@@ -63,14 +63,14 @@ procedure TGLPLYVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nbVertices, nbFaces : Integer;
    sl : TStringList;
-   mesh : TMeshObject;
+   mesh : TGLMeshObject;
    fg : TFGVertexIndexList;
    p : PChar;
 begin
    sl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream{$IFDEF Unicode}, TEncoding.ASCII{$ENDIF});
-      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl[0]<>'ply' then
          raise Exception.Create('Not a valid ply file !');

@@ -1,4 +1,4 @@
-object XCollectionEditor: TXCollectionEditor
+object XCollectionEditor: TGLXCollectionEditor
   Left = 352
   Top = 151
   Caption = 'XCollectionEditor'

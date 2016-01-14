@@ -345,7 +345,7 @@ begin
 end;
 
 type
-  TFriendlyRange = class(TBitmapFontRange);
+  TFriendlyRange = class(TGLBitmapFontRange);
 
 procedure TGLWindowsBitmapFont.StreamlineRanges;
 var

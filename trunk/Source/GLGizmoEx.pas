@@ -67,7 +67,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, System.Classes, System.SysUtils,
+  Winapi.Windows, System.Classes, System.SysUtils, System.Types,
   // GLS
   OpenGL1x, GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,

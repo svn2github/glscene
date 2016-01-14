@@ -31,11 +31,11 @@ var
    vDefaultMeshOptimizerOptions : TMeshOptimizerOptions =
       [mooStandardize, mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
-procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aList : TMeshObjectList); overload;
-procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aMeshObject : TMeshObject); overload;
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
+procedure OptimizeMesh(aList : TGLMeshObjectList; options : TMeshOptimizerOptions); overload;
+procedure OptimizeMesh(aList : TGLMeshObjectList); overload;
+procedure OptimizeMesh(aMeshObject : TGLMeshObject; options : TMeshOptimizerOptions); overload;
+procedure OptimizeMesh(aMeshObject : TGLMeshObject); overload;
+procedure FacesSmooth(aMeshObj: TGLMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
 
 
 // ------------------------------------------------------------------
@@ -51,18 +51,18 @@ uses
 
 // OptimizeMesh (list, default options)
 //
-procedure OptimizeMesh(aList : TMeshObjectList);
+procedure OptimizeMesh(aList : TGLMeshObjectList);
 begin
    OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (list, with options)
 //
-procedure OptimizeMesh(aList : TMeshObjectList; options : TMeshOptimizerOptions);
+procedure OptimizeMesh(aList : TGLMeshObjectList; options : TMeshOptimizerOptions);
 var
    i, k : Integer;
-   mob, mo : TMeshObject;
-   fg : TFaceGroup;
+   mob, mo : TGLMeshObject;
+   fg : TGLFaceGroup;
    fgvi : TFGVertexIndexList;
 begin
    // optimize all mesh objects
@@ -102,17 +102,17 @@ end;
 
 // OptimizeMesh (object, default options)
 //
-procedure OptimizeMesh(aMeshObject : TMeshObject);
+procedure OptimizeMesh(aMeshObject : TGLMeshObject);
 begin
    OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (object, with options)
 //
-procedure OptimizeMesh(aMeshObject : TMeshObject; options : TMeshOptimizerOptions);
+procedure OptimizeMesh(aMeshObject : TGLMeshObject; options : TMeshOptimizerOptions);
 var
    i : Integer;
-   fg : TFaceGroup;
+   fg : TGLFaceGroup;
    coords, texCoords, normals : TAffineVectorList;
    il : TIntegerList;
    materialName : String;
@@ -177,7 +177,7 @@ end;
 
 
 
-procedure FacesSmooth(aMeshObj: TMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
+procedure FacesSmooth(aMeshObj: TGLMeshObject; aWeldDistance: Single=0.0000001; aThreshold: Single=35.0; InvertNormals:boolean=false);
 Var
   I, J, K, L: integer;
   WeldedVertex: TAffineVectorList;
@@ -189,7 +189,7 @@ Var
   FaceList: TIntegerList;
   NormalList: TAffineVectorList;
   FaceNormalList: TAffineVectorList;
-  FaceGroup: TFaceGroup;
+  FaceGroup: TGLFaceGroup;
   FG, FG1: TFGVertexIndexList;
   Threshold: Single;
   Angle: Single;

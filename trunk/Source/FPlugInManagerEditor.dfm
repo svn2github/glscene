@@ -1,4 +1,4 @@
-object PlugInManagerEditor: TPlugInManagerEditor
+object PlugInManagerEditor: TGLPlugInManagerEditor
   Left = 371
   Top = 143
   BorderIcons = []

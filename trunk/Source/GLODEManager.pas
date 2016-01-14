@@ -129,7 +129,7 @@ uses
   System.Classes, System.SysUtils, System.Math, System.Types,
   //GLS
   ODEGL, ODEImport, GLScene, GLVectorGeometry, GLTexture, OpenGLTokens,
-  XOpenGL, GLObjects, XCollection, GLPersistentClasses, GLVectorLists,
+  XOpenGL, GLObjects, GLXCollection, GLPersistentClasses, GLVectorLists,
   GLColor, GLCoordinates, GLRenderContextInfo, GLManager, GLState,
   GLVectorTypes;
 
@@ -336,7 +336,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure NotifyChange(Sender : TObject);
@@ -383,7 +383,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -432,7 +432,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); override;
@@ -449,7 +449,7 @@ type
 
   // TODEElements
   //
-  TODEElements = class(TXCollection)
+  TODEElements = class(TGLXCollection)
     private
       { Private Declarations }
       function GetElement(index : integer) : TODEElementBase;
@@ -457,7 +457,7 @@ type
     public
       { Public Declarations }
       destructor Destroy; override;
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TGLXCollectionItemClass; override;
       procedure Initialize;
       procedure Finalize;
 
@@ -471,7 +471,7 @@ type
 
   // TODEElementBase
   //
-  TODEElementBase = class (TXCollectionItem)
+  TODEElementBase = class (TGLXCollectionItem)
     private
       { Private Declarations }
       FMass  : TdMass;
@@ -517,7 +517,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Render(var rci : TRenderContextInfo); virtual;
@@ -566,7 +566,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -602,7 +602,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -641,7 +641,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -681,7 +681,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner:TXCollection); override;
+      constructor Create(AOwner:TGLXCollection); override;
 
       procedure Render(var rci : TRenderContextInfo); override;
 
@@ -721,7 +721,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(AOwner : TXCollection); override;
+      constructor Create(AOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       class function FriendlyName : String; override;
@@ -753,21 +753,21 @@ type
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
       class function ItemCategory : String; override;
-      class function CanAddTo(collection : TXCollection) : Boolean; override;
+      class function CanAddTo(collection : TGLXCollection) : Boolean; override;
 
   end;
 
   // TGLODEJoints
   //
   {An XCollection decendant for ODE Joints. }
-  TODEJoints = class(TXCollection)
+  TODEJoints = class(TGLXCollection)
     protected
       { Protected Declarations }
       function GetJoint(index: integer): TODEJointBase;
 
     public
       { Public Declarations }
-      class function ItemsClass : TXCollectionItemClass; override;
+      class function ItemsClass : TGLXCollectionItemClass; override;
 
       procedure Initialize;
       procedure Finalize;
@@ -810,7 +810,7 @@ type
   // TODEJointBase
   //
   {Base structures for ODE Joints. }
-  TODEJointBase = class (TXCollectionItem)
+  TODEJointBase = class (TGLXCollectionItem)
     private
       { Private Declarations }
       FJointID : TdJointID;
@@ -848,7 +848,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; virtual;
 
@@ -988,7 +988,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
       procedure StructureChanged; override;
 
@@ -1023,7 +1023,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1062,7 +1062,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1130,7 +1130,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure StructureChanged; override;
@@ -1183,7 +1183,7 @@ type
 
     public
       { Public Declarations }
-      constructor Create(aOwner : TXCollection); override;
+      constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
       procedure Initialize; override;
@@ -2036,7 +2036,7 @@ end;
 
 // Create
 //
-constructor TGLODEBehaviour.Create(AOwner : TXCollection);
+constructor TGLODEBehaviour.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FSurface:=TODECollisionSurface.Create(Self);
@@ -2180,7 +2180,7 @@ end;
 
 // Create
 //
-constructor TGLODEDynamic.Create(AOwner : TXCollection);
+constructor TGLODEDynamic.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2501,7 +2501,7 @@ end;
 
 // Create
 //
-constructor TGLODEStatic.Create(AOwner : TXCollection);
+constructor TGLODEStatic.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FElements:=TODEElements.Create(Self);
@@ -2636,7 +2636,7 @@ end;
 
 // ItemsClass
 //
-class function TODEElements.ItemsClass : TXCollectionItemClass;
+class function TODEElements.ItemsClass : TGLXCollectionItemClass;
 begin
   Result:=TODEElementBase;
 end;
@@ -2687,7 +2687,7 @@ end;
 
 // Create
 //
-constructor TODEElementBase.Create(AOwner : TXCollection);
+constructor TODEElementBase.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FPosition:=TGLCoordinates.CreateInitialized(Self, NullHmgPoint, csPoint);
@@ -3054,7 +3054,7 @@ end;
 
 // Create
 //
-constructor TODEElementBox.Create(AOwner : TXCollection);
+constructor TODEElementBox.Create(AOwner : TGLXCollection);
 begin
   inherited;
   BoxWidth:=1;
@@ -3274,7 +3274,7 @@ end;
 
 // Create
 //
-constructor TODEElementSphere.Create(AOwner : TXCollection);
+constructor TODEElementSphere.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3428,7 +3428,7 @@ end;
 
 // Create
 //
-constructor TODEElementCapsule.Create(AOwner : TXCollection);
+constructor TODEElementCapsule.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3605,7 +3605,7 @@ end;
 
 // Create
 //
-constructor TODEElementCylinder.Create(AOwner: TXCollection);
+constructor TODEElementCylinder.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FRadius:=0.5;
@@ -3735,7 +3735,7 @@ end;
 
 // Create
 //
-constructor TODEElementTriMesh.Create(AOwner : TXCollection);
+constructor TODEElementTriMesh.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FVertices:=TAffineVectorList.Create;
@@ -3920,7 +3920,7 @@ end;
 
 // CanAddTo
 //
-class function TODEElementPlane.CanAddTo(collection : TXCollection) : Boolean;
+class function TODEElementPlane.CanAddTo(collection : TGLXCollection) : Boolean;
 begin
   Result:=False;
   if Assigned(TODEElements(collection).Owner) then
@@ -3946,7 +3946,7 @@ end;
 
 // ItemsClass
 //
-class function TODEJoints.ItemsClass : TXCollectionItemClass;
+class function TODEJoints.ItemsClass : TGLXCollectionItemClass;
 begin
   Result:=TODEJointBase;
 end;
@@ -4071,7 +4071,7 @@ end;
 
 // Create
 //
-constructor TODEJointBase.Create(AOwner : TXCollection);
+constructor TODEJointBase.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FJointID:=nil;
@@ -4694,7 +4694,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge.Create(AOwner : TXCollection);
+constructor TODEJointHinge.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4845,7 +4845,7 @@ end;
 
 // Create
 //
-constructor TODEJointBall.Create(AOwner : TXCollection);
+constructor TODEJointBall.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4933,7 +4933,7 @@ end;
 
 // Create
 //
-constructor TODEJointSlider.Create(AOwner : TXCollection);
+constructor TODEJointSlider.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAxis:=TGLCoordinates.CreateInitialized(Self, ZHmgVector, csVector);
@@ -5110,7 +5110,7 @@ end;
 
 // Create
 //
-constructor TODEJointHinge2.Create(AOwner : TXCollection);
+constructor TODEJointHinge2.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -5324,7 +5324,7 @@ end;
 
 // Create
 //
-constructor TODEJointUniversal.Create(AOwner : TXCollection);
+constructor TODEJointUniversal.Create(AOwner : TGLXCollection);
 begin
   inherited;
   FAnchor:=TGLCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);

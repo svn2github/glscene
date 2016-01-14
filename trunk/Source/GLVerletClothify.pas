@@ -41,12 +41,12 @@ type
   public
     Vertices : array[0..2] of integer;
     Normal : TAffineVector;
-    MeshObject : TMeshObject;
+    MeshObject : TGLMeshObject;
     Active : boolean;
 
     procedure UpdateNormal;
 
-    constructor Create(aMeshObject : TMeshObject);
+    constructor Create(aMeshObject : TGLMeshObject);
   end;
 
   {List of faces }
@@ -69,10 +69,10 @@ type
 
     procedure SetWeldDistance(const Value: single);
   protected
-    procedure ProcessMeshObject(const MeshObject : TMeshObject); virtual;
+    procedure ProcessMeshObject(const MeshObject : TGLMeshObject); virtual;
   public
     procedure ExtractFacesFromVertexIndexList(
-      const FaceGroup : TFGVertexIndexList; const MeshObject : TMeshObject);
+      const FaceGroup : TFGVertexIndexList; const MeshObject : TGLMeshObject);
 
     property FaceList : TFaceList read FFaceList;
 
@@ -86,7 +86,7 @@ type
 
     property NodeList : TVerletNodeList read FNodeList;
 
-    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; virtual;
+    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TGLMeshObject) : TFace; virtual;
 
     constructor Create(const aGLBaseMesh : TGLBaseMesh); virtual;
     destructor Destroy; override;
@@ -99,7 +99,7 @@ type
   private
     FSolid: boolean;
     FLength: single;
-    FMeshObject: TMeshObject;
+    FMeshObject: TGLMeshObject;
     FOwner: TEdgeDetector;
   public
     Vertices : array[0..1] of integer;
@@ -108,14 +108,14 @@ type
     procedure Contract;
 
     property Owner : TEdgeDetector read FOwner;
-    property MeshObject : TMeshObject read FMeshObject write FMeshObject;
+    property MeshObject : TGLMeshObject read FMeshObject write FMeshObject;
     property Length : single read FLength write FLength;
     property Solid : boolean read FSolid write FSolid;
 
     procedure UpdateEdgeLength;
 
     constructor Create(const AOwner: TEdgeDetector; AVi0, AVi1 : integer;
-      AFace0, AFace1 : TFace; AMeshObject : TMeshObject; ASolid : boolean);
+      AFace0, AFace1 : TFace; AMeshObject : TGLMeshObject; ASolid : boolean);
   end;
 
   TEdgeList = class(TList)
@@ -144,15 +144,15 @@ type
     procedure Clear; override;
     procedure ProcessMesh; override;
 
-    function AddEdge(const Vi0, Vi1 : integer; const Face : TFace; const AMeshObject : TMeshObject) : TEdge;
-    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TMeshObject) : TFace; override;
-    function AddNode(const VerletWorld : TVerletWorld; const MeshObject : TMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
+    function AddEdge(const Vi0, Vi1 : integer; const Face : TFace; const AMeshObject : TGLMeshObject) : TEdge;
+    function AddFace(const Vi0, Vi1, Vi2 : integer; const MeshObject : TGLMeshObject) : TFace; override;
+    function AddNode(const VerletWorld : TGLVerletWorld; const MeshObject : TGLMeshObject; const VertexIndex : integer) : TVerletNode; virtual;
 
-    procedure AddNodes(const VerletWorld : TVerletWorld);
-    procedure AddEdgesAsSticks(const VerletWorld : TVerletWorld; const Slack : single);
-    procedure AddEdgesAsSprings(const VerletWorld : TVerletWorld; const Strength, Damping, Slack : single);
-    procedure AddEdgesAsSolidEdges(const VerletWorld : TVerletWorld);
-    procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TVerletWorld);
+    procedure AddNodes(const VerletWorld : TGLVerletWorld);
+    procedure AddEdgesAsSticks(const VerletWorld : TGLVerletWorld; const Slack : single);
+    procedure AddEdgesAsSprings(const VerletWorld : TGLVerletWorld; const Strength, Damping, Slack : single);
+    procedure AddEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
+    procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
 
     procedure RenderEdges(var rci : TRenderContextInfo);
 
@@ -165,14 +165,14 @@ type
     destructor Destroy; override;
   end;
 
-  TMeshObjectVerletNode = class(TVerletNode)
+  TGLMeshObjectVerletNode = class(TVerletNode)
   private
-    MeshObject : TMeshObject;
+    MeshObject : TGLMeshObject;
     VertexIndices : TIntegerList;
   public
     procedure AfterProgress; override;
 
-    constructor CreateOwned(const aOwner : TVerletWorld); override;
+    constructor CreateOwned(const aOwner : TGLVerletWorld); override;
     destructor Destroy; override;
   end;
 
@@ -209,7 +209,7 @@ begin
 end;
 
 procedure TFaceExtractor.ExtractFacesFromVertexIndexList(
-  const FaceGroup : TFGVertexIndexList; const MeshObject : TMeshObject);
+  const FaceGroup : TFGVertexIndexList; const MeshObject : TGLMeshObject);
 var
   List : PIntegerArray;
   iFace, iVertex  : integer;
@@ -252,7 +252,7 @@ end;
 procedure TFaceExtractor.ProcessMesh;
 var
   iMeshObject : integer;
-  MeshObject : TMeshObject;
+  MeshObject : TGLMeshObject;
 begin
   for iMeshObject := 0 to FGLBaseMesh.MeshObjects.Count - 1 do
   begin
@@ -262,7 +262,7 @@ begin
   end;
 end;
 
-procedure TFaceExtractor.ProcessMeshObject(const MeshObject : TMeshObject);
+procedure TFaceExtractor.ProcessMeshObject(const MeshObject : TGLMeshObject);
 var
  iFaceGroup : integer;
 begin
@@ -280,7 +280,7 @@ begin
     Assert(false);
 end;
 
-function TFaceExtractor.AddFace(const Vi0, Vi1, Vi2: integer; const MeshObject : TMeshObject) : TFace;
+function TFaceExtractor.AddFace(const Vi0, Vi1, Vi2: integer; const MeshObject : TGLMeshObject) : TFace;
 var
   Face : TFace;
 begin
@@ -359,21 +359,21 @@ begin
   Sort(@EdgeLength);
 end;
 
-{ TMeshObjectVerletNode }
+{ TGLMeshObjectVerletNode }
 
-constructor TMeshObjectVerletNode.CreateOwned(const aOwner: TVerletWorld);
+constructor TGLMeshObjectVerletNode.CreateOwned(const aOwner: TGLVerletWorld);
 begin
   inherited;
   VertexIndices := TIntegerList.Create;
 end;
 
-destructor TMeshObjectVerletNode.Destroy;
+destructor TGLMeshObjectVerletNode.Destroy;
 begin
   VertexIndices.Free;
   inherited;
 end;
 
-procedure TMeshObjectVerletNode.AfterProgress;
+procedure TGLMeshObjectVerletNode.AfterProgress;
 var
   i : integer;
 begin
@@ -416,7 +416,7 @@ begin
   FreeAndNil(FEdgeList);
 end;
 
-function TEdgeDetector.AddEdge(const Vi0, Vi1: integer; const Face: TFace; const AMeshObject : TMeshObject): TEdge;
+function TEdgeDetector.AddEdge(const Vi0, Vi1: integer; const Face: TFace; const AMeshObject : TGLMeshObject): TEdge;
 var
   i : integer;
   Edge : TEdge;
@@ -444,7 +444,7 @@ begin
 end;
 
 function TEdgeDetector.AddFace(const Vi0, Vi1, Vi2: integer;
-  const MeshObject: TMeshObject): TFace;
+  const MeshObject: TGLMeshObject): TFace;
 var
   Face : TFace;
 begin
@@ -463,10 +463,10 @@ begin
   result := Face;
 end;
 
-procedure TEdgeDetector.AddNodes(const VerletWorld : TVerletWorld);
+procedure TEdgeDetector.AddNodes(const VerletWorld : TGLVerletWorld);
 var
   i : integer;
-  MO : TMeshObject;
+  MO : TGLMeshObject;
 begin
   FNodesAdded := true;
   FCurrentNodeOffset := FNodeList.Count;
@@ -479,7 +479,7 @@ begin
   // Assert(FNodeList.Count = MO.Vertices.Count, Format('%d <> %d',[FNodeList.Count, MO.Vertices.Count]));
 end;
 
-procedure TEdgeDetector.AddEdgesAsSprings(const VerletWorld : TVerletWorld;
+procedure TEdgeDetector.AddEdgesAsSprings(const VerletWorld : TGLVerletWorld;
   const Strength, Damping, Slack: single);
 var
   i : integer;
@@ -502,7 +502,7 @@ begin
   end;
 end;
 
-procedure TEdgeDetector.AddEdgesAsSticks(const VerletWorld : TVerletWorld;
+procedure TEdgeDetector.AddEdgesAsSticks(const VerletWorld : TGLVerletWorld;
   const Slack : single);
 var
   i : integer;
@@ -526,7 +526,7 @@ begin
 end;
 
 procedure TEdgeDetector.AddEdgesAsSolidEdges(
-  const VerletWorld: TVerletWorld);
+  const VerletWorld: TGLVerletWorld);
 var
   i : integer;
   Edge : TEdge;
@@ -549,7 +549,7 @@ begin
 end;
 
 procedure TEdgeDetector.AddOuterEdgesAsSolidEdges(
-  const VerletWorld: TVerletWorld);
+  const VerletWorld: TGLVerletWorld);
 var
   i : integer;
   Edge : TEdge;
@@ -659,11 +659,11 @@ begin
   end;
 end;
 
-function TEdgeDetector.AddNode(const VerletWorld : TVerletWorld; const MeshObject: TMeshObject;
+function TEdgeDetector.AddNode(const VerletWorld : TGLVerletWorld; const MeshObject: TGLMeshObject;
   const VertexIndex: integer): TVerletNode;
 var
   Location : TAffineVector;
-  aNode : TMeshObjectVerletNode;
+  aNode : TGLMeshObjectVerletNode;
   i : integer;
 begin
   // Is there an identical node?
@@ -671,7 +671,7 @@ begin
 
   for i := FCurrentNodeOffset to FNodeList.Count-1 do
   begin
-    aNode := TMeshObjectVerletNode(FNodeList[i]);
+    aNode := TGLMeshObjectVerletNode(FNodeList[i]);
 
     if VectorDistance2(Location, aNode.Location)<=FWeldDistance then
     begin
@@ -682,7 +682,7 @@ begin
     end;
   end;//}
 
-  aNode := TMeshObjectVerletNode.CreateOwned(VerletWorld);
+  aNode := TGLMeshObjectVerletNode.CreateOwned(VerletWorld);
   aNode.MeshObject := MeshObject;
   aNode.VertexIndices.Add(VertexIndex);
   aNode.Location := Location;
@@ -762,7 +762,7 @@ end;
 
 { TFace }
 
-constructor TFace.Create(aMeshObject: TMeshObject);
+constructor TFace.Create(aMeshObject: TGLMeshObject);
 begin
   MeshObject := aMeshObject;
   Active := true;
@@ -787,7 +787,7 @@ begin
 end;
 
 constructor TEdge.Create(const AOwner: TEdgeDetector; AVi0, AVi1 : integer;
-  AFace0, AFace1 : TFace; AMeshObject : TMeshObject; ASolid : boolean);
+  AFace0, AFace1 : TFace; AMeshObject : TGLMeshObject; ASolid : boolean);
 begin
   FOwner := AOwner;
   Vertices[0] := AVi0;

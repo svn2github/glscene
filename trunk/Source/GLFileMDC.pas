@@ -126,9 +126,9 @@ type
   end;
 
 type
-  TGLMDCVectorFile = class(TVectorFile)
+  TGLMDCVectorFile = class(TGLVectorFile)
   public
-    class function Capabilities: TDataFileCapabilities; override;
+    class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(AStream: TStream); override;
   end;
 
@@ -143,7 +143,7 @@ implementation
 
 // Capabilities
 //
-class function TGLMDCVectorFile.Capabilities: TDataFileCapabilities;
+class function TGLMDCVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [DfcRead];
 end;

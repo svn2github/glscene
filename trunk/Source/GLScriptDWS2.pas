@@ -14,7 +14,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, 
-  XCollection, GLScriptBase, dws2Comp, dws2Exprs,
+  GLXCollection, GLScriptBase, dws2Comp, dws2Exprs,
   dws2Symbols, GLManager;
 
 type

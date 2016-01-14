@@ -22,9 +22,9 @@ uses
 
 type
 
-  TGLMD3VectorFile = class (TVectorFile)
+  TGLMD3VectorFile = class (TGLVectorFile)
     public
-      class function Capabilities : TDataFileCapabilities; override;
+      class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
@@ -38,7 +38,7 @@ implementation
 
 // Capabilities
 //
-class function TGLMD3VectorFile.Capabilities : TDataFileCapabilities;
+class function TGLMD3VectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;

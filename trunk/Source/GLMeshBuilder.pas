@@ -28,9 +28,9 @@ uses
   GLScene, GLVectorFileObjects,
   GLVectorTypes, GLVectorGeometry, GLVectorLists;
 
-procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
-procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
-procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
+procedure BuildCube(Mesh : TGLMeshObject; Position, Scale : TAffineVector);
+procedure BuildCylinder(Mesh : TGLMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+procedure BuildCylinder2(Mesh : TGLMeshObject; Position, Scale : TAffineVector; TopRadius,BottomRadius,Height: single; Slices : Integer);
 
 implementation
 
@@ -42,7 +42,7 @@ Begin
   Result.V[2]:= position.V[2]+Scale.V[2]*Z;
 End;
 
-procedure BuildCube(Mesh : TMeshObject; Position, Scale : TAffineVector);
+procedure BuildCube(Mesh : TGLMeshObject; Position, Scale : TAffineVector);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -145,7 +145,7 @@ Begin
   FGR.TexCoordIndices.Add(TextureOffset+2,TextureOffset+7,TextureOffset+6);
 End;
 
-procedure BuildCylinder(Mesh : TMeshObject; Position, Scale : TAffineVector; Slices : Integer);
+procedure BuildCylinder(Mesh : TGLMeshObject; Position, Scale : TAffineVector; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;
@@ -213,7 +213,7 @@ Begin
 End;
 
 
-procedure BuildCylinder2(Mesh : TMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
+procedure BuildCylinder2(Mesh : TGLMeshObject; Position, Scale : TAffineVector;  TopRadius,BottomRadius,Height: single; Slices : Integer);
 Var
   FGR : TFGVertexNormalTexIndexList;
   VertexOffset : Integer;

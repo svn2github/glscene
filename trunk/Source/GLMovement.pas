@@ -46,7 +46,7 @@ uses
   System.Classes, System.SysUtils,
 
   // GLS
-  GLScene, GLVectorGeometry, XCollection, OpenGLTokens, GLSpline, GLObjects,
+  GLScene, GLVectorGeometry, GLXCollection, OpenGLTokens, GLSpline, GLObjects,
   GLCrossPlatform, GLStrings, GLBaseClasses;
 
 type
@@ -301,7 +301,7 @@ type
 
     function GetSceneObject: TGLBaseSceneObject;
   public
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
       //add an empty path;
@@ -1281,7 +1281,7 @@ end;
 
 
 //--------------------------- TGLMovement --------------------------------------
-constructor TGLMovement.Create(aOwner: TXCollection);
+constructor TGLMovement.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   FPaths           := TGLMovementPaths.Create(Self);

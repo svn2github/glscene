@@ -354,7 +354,7 @@ uses
   VCL.Graphics,  VCL.Controls,
 
   // GLS
-  OpenGLTokens, GLContext, GLVectorGeometry, XCollection, GLSilhouette,
+  OpenGLTokens, GLContext, GLVectorGeometry, GLXCollection, GLSilhouette,
   GLPersistentClasses, GLState, GLGraphics, GLGeometryBB, GLCrossPlatform,
   GLVectorLists, GLTexture, GLColor, GLBaseClasses, GLCoordinates,
   GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection,
@@ -1001,7 +1001,7 @@ type
       Subclasses must be registered using the RegisterXCollectionItemClass
         function
       }
-  TGLBaseBehaviour = class(TXCollectionItem)
+  TGLBaseBehaviour = class(TGLXCollectionItem)
   protected
     { Protected Declarations }
     procedure SetName(const val: string); override;
@@ -1017,7 +1017,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(aOwner: TXCollection); override;
+    constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
@@ -1038,10 +1038,10 @@ type
   //
   {Holds a list of TGLBehaviour objects. 
      This object expects itself to be owned by a TGLBaseSceneObject. 
-     As a TXCollection (and contrary to a TCollection), this list can contain
+     As a TGLXCollection (and contrary to a TCollection), this list can contain
      objects of varying class, the only constraint being that they should all
      be TGLBehaviour subclasses. }
-  TGLBehaviours = class(TXCollection)
+  TGLBehaviours = class(TGLXCollection)
   protected
     { Protected Declarations }
     function GetBehaviour(index: Integer): TGLBehaviour;
@@ -1052,11 +1052,11 @@ type
 
     function GetNamePath: string; override;
 
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
 
     property Behaviour[index: Integer]: TGLBehaviour read GetBehaviour; default;
 
-    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TGLXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTimes: TProgressTimes);
   end;
@@ -1117,7 +1117,7 @@ type
   //
   {Holds a list of object effects. 
      This object expects itself to be owned by a TGLBaseSceneObject.  }
-  TGLObjectEffects = class(TXCollection)
+  TGLObjectEffects = class(TGLXCollection)
   protected
     { Protected Declarations }
     function GetEffect(index: Integer): TGLObjectEffect;
@@ -1128,12 +1128,12 @@ type
 
     function GetNamePath: string; override;
 
-    class function ItemsClass: TXCollectionItemClass; override;
+    class function ItemsClass: TGLXCollectionItemClass; override;
 
     property ObjectEffect[index: Integer]: TGLObjectEffect read GetEffect;
     default;
 
-    function CanAdd(aClass: TXCollectionItemClass): Boolean; override;
+    function CanAdd(aClass: TGLXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes);
     procedure RenderPreEffects(var rci: TRenderContextInfo);
@@ -5397,7 +5397,7 @@ end;
 // Create
 //
 
-constructor TGLBaseBehaviour.Create(aOwner: TXCollection);
+constructor TGLBaseBehaviour.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
   // nothing more, yet
@@ -5500,7 +5500,7 @@ end;
 // ItemsClass
 //
 
-class function TGLBehaviours.ItemsClass: TXCollectionItemClass;
+class function TGLBehaviours.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TGLBehaviour;
 end;
@@ -5516,7 +5516,7 @@ end;
 // CanAdd
 //
 
-function TGLBehaviours.CanAdd(aClass: TXCollectionItemClass): Boolean;
+function TGLBehaviours.CanAdd(aClass: TGLXCollectionItemClass): Boolean;
 begin
   Result := (not aClass.InheritsFrom(TGLObjectEffect)) and (inherited
     CanAdd(aClass));
@@ -5606,7 +5606,7 @@ end;
 // ItemsClass
 //
 
-class function TGLObjectEffects.ItemsClass: TXCollectionItemClass;
+class function TGLObjectEffects.ItemsClass: TGLXCollectionItemClass;
 begin
   Result := TGLObjectEffect;
 end;
@@ -5622,7 +5622,7 @@ end;
 // CanAdd
 //
 
-function TGLObjectEffects.CanAdd(aClass: TXCollectionItemClass): Boolean;
+function TGLObjectEffects.CanAdd(aClass: TGLXCollectionItemClass): Boolean;
 begin
   Result := (aClass.InheritsFrom(TGLObjectEffect)) and (inherited
     CanAdd(aClass));

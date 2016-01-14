@@ -61,10 +61,11 @@ uses
   ODEImport,
   GLVectorGeometry,
   GLVectorLists,
+  GLVectorTypes,
   GLScene,
   GLTerrainRenderer,
   GLGraph,
-  XCollection,
+  GLXCollection,
   OpenGLTokens,
   GLContext,
   GLTexture,
@@ -137,7 +138,7 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
     procedure Render(var rci: TRenderContextInfo); override;
@@ -176,12 +177,12 @@ type
 
   public
     { Public Declarations }
-    constructor Create(AOwner: TXCollection); override;
+    constructor Create(AOwner: TGLXCollection); override;
 
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: Boolean; override;
-    class function CanAddTo(collection: TXCollection): Boolean; override;
+    class function CanAddTo(collection: TGLXCollection): Boolean; override;
 
   end;
 
@@ -523,7 +524,7 @@ end;
 // Create
 //
 
-constructor TGLODECustomCollider.Create(AOwner: TXCollection);
+constructor TGLODECustomCollider.Create(AOwner: TGLXCollection);
 begin
   inherited;
 
@@ -789,7 +790,7 @@ end;
 // Create
 //
 
-constructor TGLODEHeightField.Create(AOwner: TXCollection);
+constructor TGLODEHeightField.Create(AOwner: TGLXCollection);
 var
   Allow: Boolean;
 begin
@@ -864,7 +865,7 @@ end;
 // CanAddTo
 //
 
-class function TGLODEHeightField.CanAddTo(collection: TXCollection): Boolean;
+class function TGLODEHeightField.CanAddTo(collection: TGLXCollection): Boolean;
 begin
   Result := False;
   if collection is TGLBehaviours then
