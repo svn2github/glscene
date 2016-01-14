@@ -1,10 +1,10 @@
 Samples/Demos for using GLScene with Lazarus
 
 For all this demos it supposed that  
-- example projects are in ..\GLScene_LCL\Samples\Lazarus directory;
-- media files are in ..\GLScene_LCL\Samples\media;
+- example projects are in ..\GLSceneLCL\Samples\Lazarus directory;
+- media files are in ..\GLSceneLCL\Samples\media;
 
-Additional Dynamic libraries, dll are in ..\GLScene_LCL\Source\external directory
+Additional Dynamic libraries, dll are in ..\GLSceneLCL\external directory
 
 All the files are released under Mozilla PL (MPL).
 GLScene is an open-source graphic library.

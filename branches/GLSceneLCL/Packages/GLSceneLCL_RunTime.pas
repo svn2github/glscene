@@ -13,7 +13,7 @@ uses
   GLTextureCombiners, GLHeightTileFile, GLImageUtils, GLMeshUtils, GLOctree, 
   OpenGLAdapter, OpenGLTokens, GLPerlinNoise3D, GLPersistentClasses, 
   GLPolynomials, GLSpacePartition, GLSpline, GLVectorGeometry, GLVectorLists, 
-  GLVectorTypes, GLVerletTypes, GLVerletHairClasses, XCollection, XOpenGL, 
+  GLVectorTypes, GLVerletTypes, GLVerletHairClasses, GLXCollection, XOpenGL, 
   Const3DS, DDSImage, DXTC, File3DS, FileB3D, FileGL2, FileMD2, FileMD3, 
   FileOCT, FileX, GLFile3DS, GLFile3DSSceneObjects, GLFileASE, GLFileB3D, 
   GLFileDDS, GLFileGL2, GLFileGTS, GLFileHDR, GLFileJPEG, GLFileLMTS, 

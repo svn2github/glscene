@@ -55,7 +55,7 @@ type
 var
   Form1: TForm1;
   vx, vy: integer;
-  Cache: TMeshObjectList;
+  Cache: TGLMeshObjectList;
 
 implementation
 
@@ -71,7 +71,7 @@ begin
   //load mesh
   mesh.LoadFromFile('mushroom.3ds');
   //cache information
-  cache := TMeshObjectList.Create;
+  cache := TGLMeshObjectList.Create;
   cache.Assign(mesh.MeshObjects);
   //default settings
   exp := TGLBExplosionFx(mesh.effects.items[0]);

@@ -166,7 +166,7 @@
         <UnitName Value="GLVerletHairClasses"/>
       </Item33>
       <Item34>
-        <Filename Value="../Source/XCollection.pas"/>
+        <Filename Value="../Source/GLXCollection.pas"/>
         <UnitName Value="XCollection"/>
       </Item34>
       <Item35>

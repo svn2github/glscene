@@ -81,7 +81,7 @@ uses
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
   i, j, k: integer;
-  mo: TMeshObject;
+  mo: TGLMeshObject;
   fg: TFGVertexNormalTexIndexList;
 begin
   // update normals
@@ -109,7 +109,7 @@ end;
 procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
   i, j, k: integer;
-  mo: TMeshObject;
+  mo: TGLMeshObject;
   fg: TFGVertexIndexList;
   n: TAffineVector;
 begin

@@ -23,6 +23,7 @@ del *.local /s
 rem delete more files
 
 del *.bak /s
+del *.dbg /s
 del *.xml /s
 del *.identcache /s
 del *.otares /s
@@ -36,7 +37,7 @@ echo             Don't delete some files
 echo ************************************************
 echo _
 
-del *.res /s
+rem del *.res /s
 rem del *.ico /s  - some projects have own icos
 rem del *.obj /s  - obj models and resources for lazarus
 rem del *.cfg /s  - there are quake's animations

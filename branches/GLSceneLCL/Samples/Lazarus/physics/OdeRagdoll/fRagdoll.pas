@@ -181,7 +181,7 @@ var // rootBone,
    JDummy: TODERagdollDummyJoint;
    }
 
-  function bone(oBone: TODERagdollBone; id: String; j: TRagdollJoint): TODERagdollBone;
+  function bone(oBone: TODERagdollBone; id: String; j: TGLRagdolJoint): TODERagdollBone;
   var b: TODERagdollBone;
   begin
     b := TODERagdollBone.CreateOwned(oBone);
