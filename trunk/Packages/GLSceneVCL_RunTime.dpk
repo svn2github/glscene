@@ -266,6 +266,7 @@ contains
   GLWin32Viewer in '..\Source\GLWin32Viewer.pas',
   GLWindows in '..\Source\GLWindows.pas',
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
+  GLXCollection in '..\Source\GLXCollection.pas',
   GLzBuffer in '..\Source\GLzBuffer.pas',
   HDRImage in '..\Source\HDRImage.pas',
   LIBPNG in '..\Source\LIBPNG.pas',
@@ -280,7 +281,6 @@ contains
   Types3DS in '..\Source\Types3DS.pas',
   Utils3DS in '..\Source\Utils3DS.pas',
   VRMLParser in '..\Source\VRMLParser.pas',
-  XCollection in '..\Source\XCollection.pas',
   XOpenGL in '..\Source\XOpenGL.pas';
 
 end.

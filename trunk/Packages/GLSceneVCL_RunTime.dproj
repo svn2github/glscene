@@ -364,6 +364,7 @@
         <DCCReference Include="..\Source\GLWin32Viewer.pas"/>
         <DCCReference Include="..\Source\GLWindows.pas"/>
         <DCCReference Include="..\Source\GLWindowsFont.pas"/>
+        <DCCReference Include="..\Source\GLXCollection.pas"/>
         <DCCReference Include="..\Source\GLzBuffer.pas"/>
         <DCCReference Include="..\Source\HDRImage.pas"/>
         <DCCReference Include="..\Source\LIBPNG.pas"/>
@@ -378,7 +379,6 @@
         <DCCReference Include="..\Source\Types3DS.pas"/>
         <DCCReference Include="..\Source\Utils3DS.pas"/>
         <DCCReference Include="..\Source\VRMLParser.pas"/>
-        <DCCReference Include="..\Source\XCollection.pas"/>
         <DCCReference Include="..\Source\XOpenGL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -401,7 +401,6 @@
                     <Source Name="MainSource">GLSceneVCL_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
