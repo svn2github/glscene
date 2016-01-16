@@ -31,7 +31,7 @@ uses
   GLMaterial,  GLState;
 
 type
-  TMaterialEditorForm = class(TForm)
+  TGLMaterialEditorForm = class(TForm)
     PageControl1: TPageControl;
     TSFront: TTabSheet;
     TSBack: TTabSheet;
@@ -57,7 +57,7 @@ type
     function Execute(AMaterial: TGLMaterial): Boolean;
   end;
 
-function MaterialEditorForm: TMaterialEditorForm;
+function GLMaterialEditorForm: TGLMaterialEditorForm;
 procedure ReleaseMaterialEditorForm;
 
 implementation
@@ -65,28 +65,28 @@ implementation
 {$R *.dfm}
 
 var
-  vMaterialEditorForm: TMaterialEditorForm;
+  vGLMaterialEditorForm: TGLMaterialEditorForm;
 
-function MaterialEditorForm: TMaterialEditorForm;
+function GLMaterialEditorForm: TGLMaterialEditorForm;
 begin
-  if not Assigned(vMaterialEditorForm) then
-    vMaterialEditorForm := TMaterialEditorForm.Create(nil);
-  Result := vMaterialEditorForm;
+  if not Assigned(vGLMaterialEditorForm) then
+    vGLMaterialEditorForm := TGLMaterialEditorForm.Create(nil);
+  Result := vGLMaterialEditorForm;
 end;
 
 procedure ReleaseMaterialEditorForm;
 begin
-  if Assigned(vMaterialEditorForm) then
+  if Assigned(vGLMaterialEditorForm) then
   begin
-    vMaterialEditorForm.Free;
-    vMaterialEditorForm := nil;
+    vGLMaterialEditorForm.Free;
+    vGLMaterialEditorForm := nil;
   end;
 end;
 
 // Create
 //
 
-constructor TMaterialEditorForm.Create(AOwner: TComponent);
+constructor TGLMaterialEditorForm.Create(AOwner: TComponent);
 var
   I: Integer;
 begin
@@ -104,7 +104,7 @@ end;
 // Execute
 //
 
-function TMaterialEditorForm.Execute(AMaterial: TGLMaterial): Boolean;
+function TGLMaterialEditorForm.Execute(AMaterial: TGLMaterial): Boolean;
 begin
   with AMaterial.GetActualPrimaryMaterial do
   begin
@@ -130,7 +130,7 @@ end;
 // OnMaterialChanged
 //
 
-procedure TMaterialEditorForm.OnMaterialChanged(Sender: TObject);
+procedure TGLMaterialEditorForm.OnMaterialChanged(Sender: TObject);
 begin
   with MPPreview.Material do
   begin

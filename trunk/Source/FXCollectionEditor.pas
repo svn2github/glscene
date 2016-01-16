@@ -23,7 +23,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Actions,
+  System.Classes, System.SysUtils, System.Actions, System.ImageList,
   VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList, VCL.Menus,
   VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
 
@@ -36,7 +36,7 @@ uses
   GLXCollection;
 
 type
-  TGLXCollectionEditor = class(TForm)
+  TGLXCollectionEditorForm = class(TForm)
     ListView: TListView;
     PMListView: TPopupMenu;
     ActionList: TActionList;
@@ -87,7 +87,7 @@ type
     procedure SetXCollection(aXCollection: TGLXCollection; designer: IDesigner );
   end;
 
-function XCollectionEditor: TGLXCollectionEditor;
+function GLXCollectionEditorForm: TGLXCollectionEditorForm;
 procedure ReleaseXCollectionEditor;
 
 // ------------------------------------------------------------------
@@ -104,27 +104,27 @@ resourcestring
   cXCollectionEditor = 'XCollection editor';
 
 var
-  vXCollectionEditor: TGLXCollectionEditor;
+  vGLXCollectionEditorForm: TGLXCollectionEditorForm;
 
-function XCollectionEditor: TGLXCollectionEditor;
+function GLXCollectionEditorForm: TGLXCollectionEditorForm;
 begin
-  if not Assigned(vXCollectionEditor) then
-    vXCollectionEditor := TGLXCollectionEditor.Create(nil);
-  Result := vXCollectionEditor;
+  if not Assigned(vGLXCollectionEditorForm) then
+    vGLXCollectionEditorForm := TGLXCollectionEditorForm.Create(nil);
+  Result := vGLXCollectionEditorForm;
 end;
 
 procedure ReleaseXCollectionEditor;
 begin
-  if Assigned(vXCollectionEditor) then
+  if Assigned(vGLXCollectionEditorForm) then
   begin
-    vXCollectionEditor.Release;
-    vXCollectionEditor := nil;
+    vGLXCollectionEditorForm.Release;
+    vGLXCollectionEditorForm := nil;
   end;
 end;
 
 // FormCreate
 //
-procedure TGLXCollectionEditor.FormCreate(Sender: TObject);
+procedure TGLXCollectionEditorForm.FormCreate(Sender: TObject);
 begin
   RegisterGLBehaviourNameChangeEvent(OnNameChanged);
   RegisterGLMaterialExNameChangeEvent(OnNameChanged);
@@ -133,7 +133,7 @@ end;
 
 // FormDestroy
 //
-procedure TGLXCollectionEditor.FormDestroy(Sender: TObject);
+procedure TGLXCollectionEditorForm.FormDestroy(Sender: TObject);
 begin
   DeRegisterGLBehaviourNameChangeEvent(OnNameChanged);
   DeRegisterGLMaterialExNameChangeEvent(OnNameChanged);
@@ -142,7 +142,7 @@ end;
 
 // FormHide
 //
-procedure TGLXCollectionEditor.FormHide(Sender: TObject);
+procedure TGLXCollectionEditorForm.FormHide(Sender: TObject);
 begin
   SetXCollection(nil, nil);
   ReleaseXCollectionEditor;
@@ -150,7 +150,7 @@ end;
 
 // SetXCollection
 //
-procedure TGLXCollectionEditor.SetXCollection(aXCollection: TGLXCollection; designer: IDesigner);
+procedure TGLXCollectionEditorForm.SetXCollection(aXCollection: TGLXCollection; designer: IDesigner);
 begin
   // if Assigned(ownerComponent) then
   // ownerComponent.RemoveFreeNotification(Self);
@@ -174,14 +174,14 @@ end;
 
 // TBAddClick
 //
-procedure TGLXCollectionEditor.TBAddClick(Sender: TObject);
+procedure TGLXCollectionEditorForm.TBAddClick(Sender: TObject);
 begin
   TBAdd.CheckMenuDropdown;
 end;
 
 // ListViewChange
 //
-procedure TGLXCollectionEditor.ListViewChange(Sender: TObject; Item: TListItem;
+procedure TGLXCollectionEditorForm.ListViewChange(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 var
   sel: Boolean;
@@ -205,7 +205,7 @@ end;
 
 // PrepareListView
 //
-procedure TGLXCollectionEditor.PrepareListView;
+procedure TGLXCollectionEditorForm.PrepareListView;
 var
   i: Integer;
   prevSelData: Pointer;
@@ -249,7 +249,7 @@ end;
 
 // PrepareXCollectionItemPopup
 //
-procedure TGLXCollectionEditor.PrepareXCollectionItemPopup(parent: TMenuItem);
+procedure TGLXCollectionEditorForm.PrepareXCollectionItemPopup(parent: TMenuItem);
 var
   i: Integer;
   list: TList;
@@ -290,7 +290,7 @@ end;
 
 // OnNameChanged
 //
-procedure TGLXCollectionEditor.OnNameChanged(Sender: TObject);
+procedure TGLXCollectionEditorForm.OnNameChanged(Sender: TObject);
 begin
   if TGLXCollectionItem(Sender).owner = FXCollection then
     PrepareListView;
@@ -298,7 +298,7 @@ end;
 
 // OnXCollectionDestroyed
 //
-procedure TGLXCollectionEditor.OnXCollectionDestroyed(Sender: TObject);
+procedure TGLXCollectionEditorForm.OnXCollectionDestroyed(Sender: TObject);
 begin
   if TGLXCollection(Sender) = FXCollection then
     Close;
@@ -306,7 +306,7 @@ end;
 
 // Notification
 //
-procedure TGLXCollectionEditor.Notification(AComponent: TComponent;
+procedure TGLXCollectionEditorForm.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
   { if (Operation=opRemove) and (AComponent=ownerComponent) then begin
@@ -320,7 +320,7 @@ end;
 
 // OnAddXCollectionItemClick
 //
-procedure TGLXCollectionEditor.OnAddXCollectionItemClick(Sender: TObject);
+procedure TGLXCollectionEditorForm.OnAddXCollectionItemClick(Sender: TObject);
 var
   XCollectionItemClass: TGLXCollectionItemClass;
   XCollectionItem: TGLXCollectionItem;
@@ -334,7 +334,7 @@ end;
 
 // ACRemoveExecute
 //
-procedure TGLXCollectionEditor.ACRemoveExecute(Sender: TObject);
+procedure TGLXCollectionEditorForm.ACRemoveExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -349,7 +349,7 @@ end;
 
 // ACMoveUpExecute
 //
-procedure TGLXCollectionEditor.ACMoveUpExecute(Sender: TObject);
+procedure TGLXCollectionEditorForm.ACMoveUpExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -361,7 +361,7 @@ end;
 
 // ACMoveDownExecute
 //
-procedure TGLXCollectionEditor.ACMoveDownExecute(Sender: TObject);
+procedure TGLXCollectionEditorForm.ACMoveDownExecute(Sender: TObject);
 begin
   if ListView.Selected <> nil then
   begin
@@ -373,14 +373,14 @@ end;
 
 // PMToolBarPopup
 //
-procedure TGLXCollectionEditor.PMToolBarPopup(Sender: TObject);
+procedure TGLXCollectionEditorForm.PMToolBarPopup(Sender: TObject);
 begin
   PrepareXCollectionItemPopup(PMToolBar.Items);
 end;
 
 // PMListViewPopup
 //
-procedure TGLXCollectionEditor.PMListViewPopup(Sender: TObject);
+procedure TGLXCollectionEditorForm.PMListViewPopup(Sender: TObject);
 begin
   PrepareXCollectionItemPopup(MIAdd);
 end;

@@ -22,7 +22,7 @@ uses
   GLSLParameter, GLTextureFormat, GLVectorGeometry;
 
 type
-  TShaderUniformEditor = class(TForm)
+  TGLShaderUniformEditor = class(TForm)
     LBUniforms: TListBox;
     Labe1: TLabel;
     AutoSetBox: TComboBox;
@@ -59,7 +59,7 @@ type
   end;
 
 
-function ShaderUniformEditor: TShaderUniformEditor;
+function GLShaderUniformEditor: TGLShaderUniformEditor;
 procedure ReleaseShaderUniformEditor;
 
 //-----------------------------------------------------------------
@@ -73,27 +73,27 @@ implementation
 {$R *.dfm}
 
 var
-  vShaderUniformEditor: TShaderUniformEditor;
+  vGLShaderUniformEditor: TGLShaderUniformEditor;
 
-function ShaderUniformEditor: TShaderUniformEditor;
+function GLShaderUniformEditor: TGLShaderUniformEditor;
 begin
-  if not Assigned(vShaderUniformEditor) then
-    vShaderUniformEditor := TShaderUniformEditor.Create(nil);
-  Result := vShaderUniformEditor;
+  if not Assigned(vGLShaderUniformEditor) then
+    vGLShaderUniformEditor := TGLShaderUniformEditor.Create(nil);
+  Result := vGLShaderUniformEditor;
 end;
 
 procedure ReleaseShaderUniformEditor;
 begin
-  if Assigned(vShaderUniformEditor) then
+  if Assigned(vGLShaderUniformEditor) then
   begin
-    vShaderUniformEditor.Free;
-    vShaderUniformEditor := nil;
+    vGLShaderUniformEditor.Free;
+    vGLShaderUniformEditor := nil;
   end;
 end;
 
 { TShaderUniformEditor }
 
-procedure TShaderUniformEditor.AddUniform(AValue: IShaderParameter);
+procedure TGLShaderUniformEditor.AddUniform(AValue: IShaderParameter);
 begin
   if AValue <> nil then
   begin
@@ -102,7 +102,7 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.AutoSetBoxChange(Sender: TObject);
+procedure TGLShaderUniformEditor.AutoSetBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -110,7 +110,7 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.Clear;
+procedure TGLShaderUniformEditor.Clear;
 var
   I: Integer;
 begin
@@ -134,7 +134,7 @@ begin
   AlphaGroup.ItemIndex := -1;
 end;
 
-procedure TShaderUniformEditor.Execute;
+procedure TGLShaderUniformEditor.Execute;
 var
   I: Integer;
   str: AnsiString;
@@ -150,12 +150,12 @@ begin
   ShowModal;
 end;
 
-procedure TShaderUniformEditor.FormDestroy(Sender: TObject);
+procedure TGLShaderUniformEditor.FormDestroy(Sender: TObject);
 begin
   FUniformList := nil;
 end;
 
-procedure TShaderUniformEditor.LBUniformsClick(Sender: TObject);
+procedure TGLShaderUniformEditor.LBUniformsClick(Sender: TObject);
 var
   SV: TSwizzleVector;
   IParam: IShaderParameter;
@@ -197,12 +197,12 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.LBUniformsKeyPress(Sender: TObject; var Key: Char);
+procedure TGLShaderUniformEditor.LBUniformsKeyPress(Sender: TObject; var Key: Char);
 begin
   LBUniformsClick(Self);
 end;
 
-procedure TShaderUniformEditor.SamplerBoxChange(Sender: TObject);
+procedure TGLShaderUniformEditor.SamplerBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -211,7 +211,7 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.TextureBoxChange(Sender: TObject);
+procedure TGLShaderUniformEditor.TextureBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -220,7 +220,7 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.ColorGroupClick(Sender: TObject);
+procedure TGLShaderUniformEditor.ColorGroupClick(Sender: TObject);
 var
   SV: TSwizzleVector;
 begin
@@ -234,12 +234,12 @@ begin
   end;
 end;
 
-procedure TShaderUniformEditor.AddTextureName(const S: string);
+procedure TGLShaderUniformEditor.AddTextureName(const S: string);
 begin
   TextureBox.Items.Add(S);
 end;
 
-procedure TShaderUniformEditor.AddSamplerName(const S: string);
+procedure TGLShaderUniformEditor.AddSamplerName(const S: string);
 begin
   SamplerBox.Items.Add(S);
 end;

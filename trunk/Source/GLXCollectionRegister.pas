@@ -12,11 +12,11 @@
        16/04/00 - Egg - Creation
 	 
 }
-unit RegisterXCollection;
+unit GLXCollectionRegister;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes,
@@ -25,7 +25,6 @@ uses
   DesignEditors, DesignIntf;
 
 type
-
 	// TGLXCollectionProperty
 	//
 	TGLXCollectionProperty = class(TClassProperty)
@@ -66,7 +65,7 @@ end;
 //
 procedure TGLXCollectionProperty.Edit;
 begin
-   with XCollectionEditor do begin
+   with GLXCollectionEditorForm do begin
      SetXCollection(TGLXCollection(GetOrdValue), Self.Designer);
      Show;
    end;

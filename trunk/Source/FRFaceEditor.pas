@@ -24,7 +24,7 @@ uses
   VCL.ImgList, VCL.Controls, VCL.Graphics,
 
   FRTrackBarEdit, FRColorEditor,
-  GLTexture, GLMaterial, GLState;
+  GLTexture, GLMaterial, GLState, System.ImageList;
 
 type
   TRFaceEditor = class(TFrame)

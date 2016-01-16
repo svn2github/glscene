@@ -17,13 +17,13 @@ interface
 uses
   System.Classes, GLNGDManager;
 
-procedure register;
+procedure Register;
 
 implementation
 
 // Register
 //
-procedure register;
+procedure Register;
 begin
   RegisterClasses([TGLNGDManager, TGLNGDDynamic, TGLNGDStatic]);
   RegisterComponents('GLScene', [TGLNGDManager]);

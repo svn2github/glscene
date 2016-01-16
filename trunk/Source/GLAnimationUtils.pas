@@ -4,7 +4,7 @@
 {
   Main purpose is to give an easy way to create an interpolation. 
 
-   Historique :  
+   History :  
    17/11/14 - PW - Renamed from AnimationUtils.pas to GLAnimationUtils.pas
    27/06/12 - YP - First pascal implementation of the tweener library
                       http://code.google.com/p/tweener/

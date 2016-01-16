@@ -15,7 +15,7 @@
       
     
 
-    Historique :  
+    History :  
        17/11/14 - PW - Renamed from HeightTileFile.pas to GLHeightTileFile.pas
        20/05/10 - Yar - Fixes for Linux x64
        30/03/07 - DaStr - Added $I GLScene.inc

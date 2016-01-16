@@ -26,7 +26,7 @@ uses
 
 
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 type
   TGLVector = array of Single;

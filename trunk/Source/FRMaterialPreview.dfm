@@ -46,7 +46,7 @@ object RMaterialPreview: TRMaterialPreview
   end
   object GLScene: TGLScene
     ObjectsSorting = osNone
-    Left = 160
+    Left = 24
     Top = 32
     object BackGroundSprite: TGLHUDSprite
       Material.MaterialOptions = [moNoLighting]
@@ -176,7 +176,7 @@ object RMaterialPreview: TRMaterialPreview
         Name = 'LibMaterial'
         Tag = 0
       end>
-    Left = 128
+    Left = 136
     Top = 32
   end
 end

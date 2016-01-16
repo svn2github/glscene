@@ -22,7 +22,7 @@ interface
 uses
   GLVectorGeometry;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 type
 

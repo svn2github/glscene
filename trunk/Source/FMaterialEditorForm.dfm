@@ -1,4 +1,4 @@
-object MaterialEditorForm: TMaterialEditorForm
+object GLMaterialEditorForm: TGLMaterialEditorForm
   Left = 143
   Top = 100
   BorderStyle = bsDialog

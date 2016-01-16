@@ -24,7 +24,7 @@ unit GLSilhouette;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses 
   System.Classes, 

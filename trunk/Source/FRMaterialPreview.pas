@@ -18,7 +18,7 @@ unit FRMaterialPreview;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes,

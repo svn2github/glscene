@@ -99,7 +99,7 @@ unit OpenGL1x;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
  // DaStr: MULTITHREADOPENGL is defined in GLScene.inc, but you can override it
  // manually here, though I would not reccomend it. This is because other units

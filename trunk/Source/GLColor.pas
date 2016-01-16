@@ -20,7 +20,7 @@ unit GLColor;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,

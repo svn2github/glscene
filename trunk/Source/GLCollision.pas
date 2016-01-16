@@ -51,7 +51,7 @@ type
        cbmEllipsoid the object is defined by its bounding axis-aligned ellipsoid
        cbmCube : the object is defined by a bounding axis-aligned "cube"
        cbmFaces : the object is defined by its faces (needs object-level support,
-         if unavalaible, uses cbmCube code)
+         if unavailable, uses cbmCube code)
        }
    TCollisionBoundingMode = (cbmPoint, cbmSphere, cbmEllipsoid, cbmCube, cbmFaces);
 

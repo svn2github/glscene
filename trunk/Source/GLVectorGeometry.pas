@@ -225,7 +225,7 @@ const
    cMaxArray = (MaxInt shr 4);
    cColinearBias = 1e-8;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 // define for turning off assembly routines in this unit
 // *experimental* and incomplete

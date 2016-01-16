@@ -29,7 +29,7 @@ unit GLExplosionFx;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   OpenGLTokens, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,

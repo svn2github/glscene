@@ -26,7 +26,7 @@ uses
   GLMaterial;
 
 type
-  TLibMaterialPicker = class(TForm)
+  TGLLibMaterialPicker = class(TForm)
     LBMaterials: TListBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -39,12 +39,12 @@ type
   private
     { Private declarations }
   public
-    { Déclarations publiques }
+    { Public declarations }
     function Execute(var materialName: TGLLibMaterialName;
       materialLibrary: TGLAbstractMaterialLibrary): Boolean;
   end;
 
-function LibMaterialPicker: TLibMaterialPicker;
+function GLLibMaterialPicker: TGLLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
 implementation
@@ -52,28 +52,28 @@ implementation
 {$R *.dfm}
 
 var
-  vLibMaterialPicker: TLibMaterialPicker;
+  vGLLibMaterialPicker: TGLLibMaterialPicker;
 
-function LibMaterialPicker: TLibMaterialPicker;
+function GLLibMaterialPicker: TGLLibMaterialPicker;
 begin
-  if not Assigned(vLibMaterialPicker) then
-    vLibMaterialPicker := TLibMaterialPicker.Create(nil);
-  Result := vLibMaterialPicker;
+  if not Assigned(vGLLibMaterialPicker) then
+    vGLLibMaterialPicker := TGLLibMaterialPicker.Create(nil);
+  Result := vGLLibMaterialPicker;
 end;
 
 procedure ReleaseLibMaterialPicker;
 begin
-  if Assigned(vLibMaterialPicker) then
+  if Assigned(vGLLibMaterialPicker) then
   begin
-    vLibMaterialPicker.Free;
-    vLibMaterialPicker := nil;
+    vGLLibMaterialPicker.Free;
+    vGLLibMaterialPicker := nil;
   end;
 end;
 
 // Execute
 //
 
-function TLibMaterialPicker.Execute(var materialName: TGLLibMaterialName;
+function TGLLibMaterialPicker.Execute(var materialName: TGLLibMaterialName;
   materialLibrary: TGLAbstractMaterialLibrary): Boolean;
 begin
   with LBMaterials do
@@ -96,20 +96,20 @@ begin
   end;
 end;
 
-procedure TLibMaterialPicker.LBMaterialsClick(Sender: TObject);
+procedure TGLLibMaterialPicker.LBMaterialsClick(Sender: TObject);
 begin
   with LBMaterials do
     if ItemIndex >= 0 then
       MPPreview.LibMaterial := TGLAbstractLibMaterial(Items.Objects[ItemIndex]);
 end;
 
-procedure TLibMaterialPicker.LBMaterialsKeyPress(Sender: TObject;
+procedure TGLLibMaterialPicker.LBMaterialsKeyPress(Sender: TObject;
   var Key: Char);
 begin
   LBMaterialsClick(Sender);
 end;
 
-procedure TLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
+procedure TGLLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
 begin
   BBOk.Click;
 end;

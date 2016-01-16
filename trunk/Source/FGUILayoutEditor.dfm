@@ -1,4 +1,4 @@
-object Layouts_form: TLayouts_form
+object GLLayoutEditorForm: TGLLayoutEditorForm
   Left = 208
   Top = 187
   BorderIcons = [biSystemMenu]
@@ -555,6 +555,14 @@ object Layouts_form: TLayouts_form
       TabOrder = 8
       OnClick = elements_gridClick
       OnDblClick = elements_gridDblClick
+      ColWidths = (
+        24
+        24
+        24)
+      RowHeights = (
+        24
+        24
+        24)
     end
     object Panel3: TPanel
       Left = 40

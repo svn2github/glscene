@@ -17,7 +17,7 @@ unit FRColorEditor;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,

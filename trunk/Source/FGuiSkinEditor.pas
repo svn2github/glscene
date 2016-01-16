@@ -4,7 +4,7 @@
 {
    Editor for Gui skin. 
 
-    Historique :  
+    History :  
        17/11/14 - PW - Renamed from GuiSkinEditorFormUnit.pas to FGuiSkinEditor
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
        04/03/10 - DanB - Now uses CharInSet
@@ -38,7 +38,7 @@ uses
   GLCoordinates, GLBaseClasses, GLMaterial;
 
 type
-  TGUISkinEditor = class(TForm)
+  TGLSkinEditorForm = class(TForm)
     GLScene1: TGLScene;
     GLCamera1: TGLCamera;
     GLPanel1: TGLPanel;
@@ -177,7 +177,7 @@ type
   end;
 
 var
-  GUISkinEditor: TGUISkinEditor;
+  GLSkinEditorForm: TGLSkinEditorForm;
 
 function GUIComponentDialog(GuiComponent: TGLGuiElementList): Boolean;
 
@@ -193,14 +193,14 @@ implementation
 
 function GUIComponentDialog(GuiComponent: TGLGuiElementList): Boolean;
 var
-  Editor: TGUISkinEditor;
+  Editor: TGLSkinEditorForm;
 begin
-  Editor := TGUISkinEditor.Create(nil);
+  Editor := TGLSkinEditorForm.Create(nil);
   Result := Editor.Edit(GuiComponent);
   Editor.Free;
 end;
 
-procedure TGUISkinEditor.FormCreate(Sender: TObject);
+procedure TGLSkinEditorForm.FormCreate(Sender: TObject);
 begin
   //override original WndProc to capture image mouse leave message
   FOriginalWndProc := imgFull.WindowProc;
@@ -236,12 +236,12 @@ begin
   panZoomImage.ParentBackground := False;
 end;
 
-procedure TGUISkinEditor.FormDestroy(Sender: TObject);
+procedure TGLSkinEditorForm.FormDestroy(Sender: TObject);
 begin
   Tex.Free;
 end;
 
-function TGUISkinEditor.Edit(GuiComponent: TGLGuiElementList): Boolean;
+function TGLSkinEditorForm.Edit(GuiComponent: TGLGuiElementList): Boolean;
 
 var
   Mat: TGLMaterial;
@@ -295,7 +295,7 @@ begin
   Result := ShowModal = mrOk;
 end;
 
-procedure TGUISkinEditor.Button3Click(Sender: TObject);
+procedure TGLSkinEditorForm.Button3Click(Sender: TObject);
 begin
   Zoom := Zoom + 0.5;
   Label2.Caption := FormatFloat('####0.0', Zoom);
@@ -307,7 +307,7 @@ begin
   Render;
 end;
 
-procedure TGUISkinEditor.Button4Click(Sender: TObject);
+procedure TGLSkinEditorForm.Button4Click(Sender: TObject);
 begin
   if Abs(Zoom - 0.5) > 0.001 then
     Zoom := Zoom - 0.5;
@@ -321,7 +321,7 @@ begin
   Render;
 end;
 
-procedure TGUISkinEditor.Render;
+procedure TGLSkinEditorForm.Render;
 var
   BitMap: TBitmap;
   Image: TGLBitmap32;
@@ -408,7 +408,7 @@ begin
   DrawCrossair(FullMousePoint);
 end;
 
-procedure TGUISkinEditor.SetMax(Scrollbar: TScrollbar; Val: Integer);
+procedure TGLSkinEditorForm.SetMax(Scrollbar: TScrollbar; Val: Integer);
 begin
 {$IFDEF MSWINDOWS}
   if Scrollbar.Position + Scrollbar.PageSize >= val then
@@ -419,7 +419,7 @@ begin
   Scrollbar.Max := val;
 end;
 
-procedure TGUISkinEditor.ScrollBarScroll(Sender: TObject;
+procedure TGLSkinEditorForm.ScrollBarScroll(Sender: TObject;
   ScrollCode: TScrollCode; var ScrollPos: Integer);
 begin
 {$IFDEF MSWINDOWS}
@@ -430,12 +430,12 @@ begin
 {$ENDIF}
 end;
 
-procedure TGUISkinEditor.ScrollbarChange(Sender: TObject);
+procedure TGLSkinEditorForm.ScrollbarChange(Sender: TObject);
 begin
   Render;
 end;
 
-procedure TGUISkinEditor.WidthEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.WidthEditChange(Sender: TObject);
 var
   Val: Integer;
 begin
@@ -458,7 +458,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.HeightEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.HeightEditChange(Sender: TObject);
 var
   Val: Integer;
 begin
@@ -481,7 +481,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.btnAddClick(Sender: TObject);
+procedure TGLSkinEditorForm.btnAddClick(Sender: TObject);
 var
   PopupPoint: TPoint;
 begin
@@ -490,12 +490,12 @@ begin
   popElements.Popup(PopupPoint.X, PopupPoint.Y);
 end;
 
-procedure TGUISkinEditor.lbElementsClick(Sender: TObject);
+procedure TGLSkinEditorForm.lbElementsClick(Sender: TObject);
 begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.ComboBox1Change(Sender: TObject);
+procedure TGLSkinEditorForm.ComboBox1Change(Sender: TObject);
 var
   S: string;
   Count: Integer;
@@ -521,7 +521,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.btnDeleteClick(Sender: TObject);
+procedure TGLSkinEditorForm.btnDeleteClick(Sender: TObject);
 var
   Index: Integer;
 begin
@@ -546,7 +546,7 @@ begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.imgFullMouseDown(Sender: TObject;
+procedure TGLSkinEditorForm.imgFullMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if SelectedElement = nil then
@@ -571,7 +571,7 @@ begin
   DrawImageFocusRect(FFocusRect);
 end;
 
-procedure TGUISkinEditor.imgFullMouseUp(Sender: TObject;
+procedure TGLSkinEditorForm.imgFullMouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if SelectedElement = nil then
@@ -596,7 +596,7 @@ begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.imgFullMouseMove(Sender: TObject;
+procedure TGLSkinEditorForm.imgFullMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
   DrawCrossair(FullMousePoint);
@@ -633,7 +633,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.lbElementsKeyDown(Sender: TObject; var Key: Word;
+procedure TGLSkinEditorForm.lbElementsKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if key = glKey_LEFT then
@@ -651,14 +651,14 @@ begin
 
 end;
 
-procedure TGUISkinEditor.CheckBox1Click(Sender: TObject);
+procedure TGLSkinEditorForm.CheckBox1Click(Sender: TObject);
 begin
   GLPanel1.ReBuildGui := True;
   GLPanel1.GUIRedraw := True;
   Render;
 end;
 
-procedure TGUISkinEditor.ScaleXEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.ScaleXEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -675,7 +675,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.ScaleYEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.ScaleYEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -692,7 +692,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.LeftEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.LeftEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -714,7 +714,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.TopEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.TopEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -736,7 +736,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.RightEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.RightEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -758,7 +758,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.BottomEditChange(Sender: TObject);
+procedure TGLSkinEditorForm.BottomEditChange(Sender: TObject);
 var
   res: Single;
 begin
@@ -780,7 +780,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.DrawImageFocusRect(ARect: TRect);
+procedure TGLSkinEditorForm.DrawImageFocusRect(ARect: TRect);
 begin
   imgFull.Canvas.Brush.Style := bsClear;
   imgFull.Canvas.Pen.Color := clRed;
@@ -790,14 +790,14 @@ begin
   imgFull.Canvas.Rectangle(ARect);
 end;
 
-procedure TGUISkinEditor.EditKeyPress(Sender: TObject; var Key: Char);
+procedure TGLSkinEditorForm.EditKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key > #32) and not CharInSet(Key, ['0'..'9',
     FormatSettings.DecimalSeparator]) then
     Key := #0;
 end;
 
-procedure TGUISkinEditor.AlignZoomPanel;
+procedure TGLSkinEditorForm.AlignZoomPanel;
 begin
   imgFull.Left := 0;
   imgFull.Top := 0;
@@ -816,7 +816,7 @@ begin
   Render;
 end;
 
-procedure TGUISkinEditor.UpdateRegionEdits;
+procedure TGLSkinEditorForm.UpdateRegionEdits;
 begin
   if (lbElements.ItemIndex >= 0) and (lbElements.ItemIndex <
     lbElements.Items.Count) then
@@ -840,7 +840,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.SetEditState(Parent: TControl; Enabled: Boolean);
+procedure TGLSkinEditorForm.SetEditState(Parent: TControl; Enabled: Boolean);
 var
   i: Integer;
 begin
@@ -886,17 +886,17 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.FormResize(Sender: TObject);
+procedure TGLSkinEditorForm.FormResize(Sender: TObject);
 begin
   AlignZoomPanel;
 end;
 
-procedure TGUISkinEditor.MenuItemClick(Sender: TObject);
+procedure TGLSkinEditorForm.MenuItemClick(Sender: TObject);
 begin
   AddElement((Sender as TMenuItem).Tag);
 end;
 
-procedure TGUISkinEditor.mnuAddAllClick(Sender: TObject);
+procedure TGLSkinEditorForm.mnuAddAllClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -906,7 +906,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.AddElement(Index: Integer);
+procedure TGLSkinEditorForm.AddElement(Index: Integer);
 var
   S: string;
   Count: Integer;
@@ -927,7 +927,7 @@ begin
   UpdateRegionEdits;
 end;
 
-procedure TGUISkinEditor.mnuAllTopClick(Sender: TObject);
+procedure TGLSkinEditorForm.mnuAllTopClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -937,7 +937,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.mnuAllMiddleClick(Sender: TObject);
+procedure TGLSkinEditorForm.mnuAllMiddleClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -947,7 +947,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.mnuAllBottomClick(Sender: TObject);
+procedure TGLSkinEditorForm.mnuAllBottomClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -957,13 +957,13 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.imgPreviewMouseDown(Sender: TObject;
+procedure TGLSkinEditorForm.imgPreviewMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   PreviewMousePoint := Point(X, Y);
 end;
 
-procedure TGUISkinEditor.imgPreviewMouseMove(Sender: TObject;
+procedure TGLSkinEditorForm.imgPreviewMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
   if PtInRect(VisibleRect, Point(X, Y)) then
@@ -998,7 +998,7 @@ begin
   end;
 end;
 
-procedure TGUISkinEditor.DrawCrossair(Point: TPoint);
+procedure TGLSkinEditorForm.DrawCrossair(Point: TPoint);
 begin
   if Point.X < 0 then
     Exit;
@@ -1014,7 +1014,7 @@ begin
   imgFull.Canvas.LineTo(imgFull.Width, Point.Y);
 end;
 
-procedure TGUISkinEditor.ImageWndProc(var Message: TMessage);
+procedure TGLSkinEditorForm.ImageWndProc(var Message: TMessage);
 begin
   if (Message.Msg = CM_MOUSELEAVE) then
   begin

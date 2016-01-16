@@ -1,4 +1,4 @@
-object ShaderUniformEditor: TShaderUniformEditor
+object GLShaderUniformEditor: TGLShaderUniformEditor
   Left = 432
   Top = 332
   BorderStyle = bsDialog

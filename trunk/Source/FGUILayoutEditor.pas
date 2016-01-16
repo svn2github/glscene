@@ -1,7 +1,7 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-unit FGUILayoutEditor;
+unit FGuiLayoutEditor;
 
 interface
 
@@ -11,12 +11,12 @@ uses
   Winapi.Windows, Winapi.ShellApi,
   System.SysUtils, System.Variants, System.Classes,
   VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
-  VCL.ExtDlgs,  VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
-
+  VCL.ExtDlgs, VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
+  //GLS
   GLCrossPlatform,  GLBaseClasses,  GLGui;
 
 type
-  TLayouts_form = class(TForm)
+  TGLLayoutEditorForm = class(TForm)
     Panel1: TPanel;
     Panel2: TPanel;
     items_list: TListBox;
@@ -86,7 +86,7 @@ type
     property EnabledSpins: Boolean read GetEnabledSpins write SetEnabledSpins;
   end;
 
-function GUILayoutEditorForm: TLayouts_form;
+function GUILayoutEditorForm: TGLLayoutEditorForm;
 procedure ReleaseGUILayoutEditor;
 
 implementation
@@ -96,15 +96,15 @@ implementation
 uses GLUtils;
 
 var
-  vGUILayoutEditor: Tlayouts_form;
+  vGUILayoutEditor: TGLLayoutEditorForm;
   rect_point1, rect_point2: TPoint;
   zoom: integer = 1;
   sorted_elements: array[0..9] of TGLGuiElement;
 
-function GUILayoutEditorForm: Tlayouts_form;
+function GUILayoutEditorForm: TGLLayoutEditorForm;
 begin
   if not Assigned(vGUILayoutEditor) then
-    vGUILayoutEditor := Tlayouts_form.Create(nil);
+    vGUILayoutEditor := TGLLayoutEditorForm.Create(nil);
   Result := vGUILayoutEditor;
 end;
 
@@ -123,7 +123,7 @@ begin
   Result.Y := (Y div zoom) * zoom;
 end;
 
-procedure TLayouts_form.SetEnabledSpins(Value: Boolean);
+procedure TGLLayoutEditorForm.SetEnabledSpins(Value: Boolean);
 begin
   left_edit.Enabled := Value;
   top_edit.Enabled := Value;
@@ -131,7 +131,7 @@ begin
   width_edit.Enabled := Value;
 end;
 
-procedure TLayouts_form.SyncImages;
+procedure TGLLayoutEditorForm.SyncImages;
 begin
   Image2.Width := Image1.Width;
   Image2.Height := Image1.Height;
@@ -145,7 +145,7 @@ begin
     Image1.Canvas, Image1.Canvas.ClipRect);
 end;
 
-procedure TLayouts_form.DrawCurrentElement;
+procedure TGLLayoutEditorForm.DrawCurrentElement;
 begin
   with elements_grid do
     if (items_list.ItemIndex > -1) and (sorted_elements[Col + 3 * Row] <> nil)
@@ -158,7 +158,7 @@ begin
       end;
 end;
 
-procedure TLayouts_form.open_image_buttonClick(Sender: TObject);
+procedure TGLLayoutEditorForm.open_image_buttonClick(Sender: TObject);
 var
   LFileName: string;
 begin
@@ -178,7 +178,7 @@ begin
     end;
 end;
 
-procedure TLayouts_form.RefreshComponentBox;
+procedure TGLLayoutEditorForm.RefreshComponentBox;
 var
   i: integer;
 begin
@@ -189,7 +189,7 @@ begin
   items_listClick(nil);
 end;
 
-procedure TLayouts_form.open_buttonClick(Sender: TObject);
+procedure TGLLayoutEditorForm.open_buttonClick(Sender: TObject);
 
 begin
   case Application.MessageBox('Save layout?',
@@ -208,7 +208,7 @@ begin
     end;
 end;
 
-procedure TLayouts_form.save_buttonClick(Sender: TObject);
+procedure TGLLayoutEditorForm.save_buttonClick(Sender: TObject);
 begin
   if SaveDialog1.FileName = '' then
     if SaveDialog1.Execute then
@@ -218,19 +218,19 @@ begin
     GLGuiLayout1.SaveToFile(SaveDialog1.FileName);
 end;
 
-procedure TLayouts_form.FormCreate(Sender: TObject);
+procedure TGLLayoutEditorForm.FormCreate(Sender: TObject);
 begin
   rect_point1.X := -1;
   Image2.Canvas.FillRect(Image2.Canvas.ClipRect);
   Image2.Canvas.Pen.Color := clAqua;
 end;
 
-function TLayouts_form.GetEnabledSpins: Boolean;
+function TGLLayoutEditorForm.GetEnabledSpins: Boolean;
 begin
   Result := left_edit.Enabled;
 end;
 
-procedure TLayouts_form.Image1MouseMove(Sender: TObject;
+procedure TGLLayoutEditorForm.Image1MouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 begin
   x_label.Caption := 'X: ' + IntToStr(X div zoom);
@@ -266,7 +266,7 @@ begin
   height_edit.Value := Abs(rect_point2.Y - rect_point1.Y) div zoom;
 end;
 
-procedure TLayouts_form.Image1MouseDown(Sender: TObject;
+procedure TGLLayoutEditorForm.Image1MouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if not (ssRight in Shift) then
@@ -279,7 +279,7 @@ begin
   end;
 end;
 
-procedure TLayouts_form.Image1MouseUp(Sender: TObject;
+procedure TGLLayoutEditorForm.Image1MouseUp(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   if not (ssRight in Shift) then
@@ -287,7 +287,7 @@ begin
   rect_point1.X := -1;
 end;
 
-procedure TLayouts_form.add_buttonClick(Sender: TObject);
+procedure TGLLayoutEditorForm.add_buttonClick(Sender: TObject);
 var
   i: integer;
 begin
@@ -310,7 +310,7 @@ begin
   end;
 end;
 
-procedure TLayouts_form.delete_item_buttonClick(Sender: TObject);
+procedure TGLLayoutEditorForm.delete_item_buttonClick(Sender: TObject);
 begin
   if items_list.ItemIndex = -1 then
     Exit;
@@ -322,7 +322,7 @@ begin
     name_edit.Text := '';
 end;
 
-procedure TLayouts_form.items_listClick(Sender: TObject);
+procedure TGLLayoutEditorForm.items_listClick(Sender: TObject);
 var
   i, p: integer;
 begin
@@ -350,7 +350,7 @@ begin
   elements_gridClick(nil);
 end;
 
-procedure TLayouts_form.name_editExit(Sender: TObject);
+procedure TGLLayoutEditorForm.name_editExit(Sender: TObject);
 begin
   if items_list.ItemIndex > -1 then
   begin
@@ -361,13 +361,13 @@ begin
   end;
 end;
 
-procedure TLayouts_form.name_editKeyPress(Sender: TObject; var Key: Char);
+procedure TGLLayoutEditorForm.name_editKeyPress(Sender: TObject; var Key: Char);
 begin
   if Key = #13 then
     name_editExit(nil);
 end;
 
-procedure TLayouts_form.elements_gridClick(Sender: TObject);
+procedure TGLLayoutEditorForm.elements_gridClick(Sender: TObject);
 begin
   with elements_grid do
     if (items_list.ItemIndex > -1) and (sorted_elements[Col + 3 * Row] <> nil)
@@ -388,7 +388,7 @@ begin
     end;
 end;
 
-procedure TLayouts_form.elements_gridDblClick(Sender: TObject);
+procedure TGLLayoutEditorForm.elements_gridDblClick(Sender: TObject);
 var
   I: Integer;
   E: TGLGuiElement;
@@ -414,7 +414,7 @@ begin
     end;
 end;
 
-procedure TLayouts_form.left_editChange(Sender: TObject);
+procedure TGLLayoutEditorForm.left_editChange(Sender: TObject);
 begin
   if (items_list.ItemIndex = -1) or not EnabledSpins then
     Exit;
@@ -427,7 +427,7 @@ begin
   DrawCurrentElement;
 end;
 
-procedure TLayouts_form.top_editChange(Sender: TObject);
+procedure TGLLayoutEditorForm.top_editChange(Sender: TObject);
 begin
   if (items_list.ItemIndex = -1) or not EnabledSpins then
     Exit;
@@ -440,7 +440,7 @@ begin
   DrawCurrentElement;
 end;
 
-procedure TLayouts_form.width_editChange(Sender: TObject);
+procedure TGLLayoutEditorForm.width_editChange(Sender: TObject);
 begin
   if (items_list.ItemIndex = -1) or not EnabledSpins then
     Exit;
@@ -454,7 +454,7 @@ begin
   DrawCurrentElement;
 end;
 
-procedure TLayouts_form.height_editChange(Sender: TObject);
+procedure TGLLayoutEditorForm.height_editChange(Sender: TObject);
 begin
   if (items_list.ItemIndex = -1) or not EnabledSpins  then
     Exit;
@@ -468,7 +468,7 @@ begin
   DrawCurrentElement;
 end;
 
-procedure TLayouts_form.BitBtn4Click(Sender: TObject);
+procedure TGLLayoutEditorForm.BitBtn4Click(Sender: TObject);
 begin
   if zoom + TBitBtn(Sender).Tag < 1 then
     Exit;
@@ -480,7 +480,7 @@ begin
   elements_gridClick(nil);
 end;
 
-procedure TLayouts_form.BitBtn6Click(Sender: TObject);
+procedure TGLLayoutEditorForm.BitBtn6Click(Sender: TObject);
 {$IFDEF LINUX}
 var
   lProcess: TProcess;
@@ -500,7 +500,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TLayouts_form.Execute(AGUILayout: TGLGuiLayout);
+procedure TGLLayoutEditorForm.Execute(AGUILayout: TGLGuiLayout);
 begin
   GLGuiLayout1.Assign(AGUILayout);
   Image1.Stretch := false;

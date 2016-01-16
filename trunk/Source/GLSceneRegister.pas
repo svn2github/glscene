@@ -1114,7 +1114,7 @@ begin
   x := glc.x;
   y := glc.y;
   z := glc.z;
-  if VectorEditorForm.Execute(x, y, z) then
+  if GLVectorEditorForm.Execute(x, y, z) then
   begin
     glc.AsVector := VectorMake(x, y, z);
     Modified;
@@ -1136,7 +1136,7 @@ end;
 
 procedure TGLMaterialProperty.Edit;
 begin
-  if FMaterialEditorForm.MaterialEditorForm.Execute(TGLMaterial(GetOrdValue))
+  if FMaterialEditorForm.GLMaterialEditorForm.Execute(TGLMaterial(GetOrdValue))
   then
     Modified;
 end;
@@ -1305,7 +1305,7 @@ begin
   end;
   if not Assigned(ml) then
     ShowMessage('Select the material library first.')
-  else if LibMaterialPicker.Execute(buf, ml) then
+  else if GLLibMaterialPicker.Execute(buf, ml) then
     SetStrValue(buf);
 end;
 
@@ -1580,7 +1580,7 @@ end;
 
 procedure TUniformAutoSetProperty.PassUniform(const S: string);
 begin
-  ShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0))
+  GLShaderUniformEditor.AddUniform(TGLBaseShaderModel(GetComponent(0))
     .Uniforms[S]);
 end;
 
@@ -1591,7 +1591,7 @@ begin
   LOwner := TGLBaseShaderModel(GetComponent(0));
   if LOwner.Enabled and LOwner.IsValid then
   begin
-    with ShaderUniformEditor do
+    with GLShaderUniformEditor do
     begin
       Clear;
       LOwner.MaterialLibrary.GetNames(AddTextureName, TGLTextureImageEx);
@@ -2185,7 +2185,7 @@ initialization
 // ------------------------------------------------------------------
 
 SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
-LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'SVN version');
+LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'VCL version');
 GLCrossPlatform.IsDesignTime := True;
 GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
 GLColor.vUseDefaultColorSets := True;

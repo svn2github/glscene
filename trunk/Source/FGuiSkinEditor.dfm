@@ -1,4 +1,4 @@
-object GUISkinEditor: TGUISkinEditor
+object GLSkinEditorForm: TGLSkinEditorForm
   Left = 262
   Top = 321
   Caption = 'Skin Editor'

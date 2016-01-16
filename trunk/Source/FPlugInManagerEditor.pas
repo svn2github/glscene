@@ -24,7 +24,7 @@ uses
   GLPlugInIntf, GLPlugInManager;
 
 type
-  TGLPlugInManagerEditor = class(TForm)
+  TGLPlugInManagerEditorForm = class(TForm)
     OpenDialog: TOpenDialog;
     ListBox: TListBox;
     Label1: TLabel;
@@ -56,24 +56,23 @@ type
     class procedure EditPlugIns(AManager: TGLPlugInManager);
   end;
 
-var
-  PlugInManagerEditor: TGLPlugInManagerEditor;
-
   // ------------------------------------------------------------------------------
-
 implementation
-
 {$R *.DFM}
 // ------------------------------------------------------------------------------
 
-procedure TGLPlugInManagerEditor.OKButtonClick(Sender: TObject);
+var
+  vGLPlugInManagerEditor: TGLPlugInManagerEditorForm;
+
+
+procedure TGLPlugInManagerEditorForm.OKButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TGLPlugInManagerEditor.LoadButtonClick(Sender: TObject);
+procedure TGLPlugInManagerEditorForm.LoadButtonClick(Sender: TObject);
 
 var
   I, Index: Integer;
@@ -99,26 +98,26 @@ end;
 
 // ------------------------------------------------------------------------------
 
-class procedure TGLPlugInManagerEditor.EditPlugIns(AManager: TGLPlugInManager);
+class procedure TGLPlugInManagerEditorForm.EditPlugIns(AManager: TGLPlugInManager);
 
 begin
   // ensure only one instance
-  if assigned(PlugInManagerEditor) then
-    PlugInManagerEditor.Free;
-  PlugInManagerEditor := TGLPlugInManagerEditor.Create(Application);
-  with PlugInManagerEditor do
+  if Assigned(vGLPlugInManagerEditor) then
+    vGLPlugInManagerEditor.Free;
+  vGLPlugInManagerEditor := TGLPlugInManagerEditorForm.Create(Application);
+  with vGLPlugInManagerEditor do
   begin
     ListBox.Items := AManager.PlugIns;
     FManager := AManager;
     ShowModal;
     Free;
   end;
-  PlugInManagerEditor := nil;
+  vGLPlugInManagerEditor := nil;
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TGLPlugInManagerEditor.ListBoxClick(Sender: TObject);
+procedure TGLPlugInManagerEditorForm.ListBoxClick(Sender: TObject);
 
 var
   Entry: Integer;
@@ -180,7 +179,7 @@ end;
 
 // ------------------------------------------------------------------------------
 
-procedure TGLPlugInManagerEditor.UnloadButtonClick(Sender: TObject);
+procedure TGLPlugInManagerEditorForm.UnloadButtonClick(Sender: TObject);
 
 var
   I: Integer;
@@ -208,12 +207,12 @@ end;
 procedure NameCallback(Name: PAnsiChar); stdcall;
 
 begin
-  PlugInManagerEditor.NameBox.Items.Add(String(Name));
+  vGLPlugInManagerEditor.NameBox.Items.Add(String(Name));
 end;
 
 // ------------------------------------------------------------------------------
 
-procedure TGLPlugInManagerEditor.ServiceBoxChange(Sender: TObject);
+procedure TGLPlugInManagerEditorForm.ServiceBoxChange(Sender: TObject);
 
 begin
   NameBox.Items.Clear;

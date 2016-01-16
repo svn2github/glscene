@@ -1,4 +1,4 @@
-object LibMaterialPicker: TLibMaterialPicker
+object GLLibMaterialPicker: TGLLibMaterialPicker
   Left = 326
   Top = 157
   BorderStyle = bsDialog

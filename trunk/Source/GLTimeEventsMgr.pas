@@ -35,7 +35,7 @@ type
 	//
    TGLTimeEventsMGR = class(TGLUpdateAbleComponent)
    private
-      { Déclarations privées }
+      { Private declarations }
       FCadencer : TGLCadencer;
       FEnabled : boolean;
       FFreeEventOnEnd : boolean;
@@ -49,7 +49,7 @@ type
       procedure SetEvents(const val : TTimeEvents);
 
    public
-      { Déclarations publiques }
+      { Public declarations }
       constructor Create(aOwner : TComponent); override;
       destructor Destroy; override;
 

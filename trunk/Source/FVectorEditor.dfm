@@ -1,4 +1,4 @@
-object VectorEditorForm: TVectorEditorForm
+object GLVectorEditorForm: TGLVectorEditorForm
   Left = 411
   Top = 108
   BorderStyle = bsDialog

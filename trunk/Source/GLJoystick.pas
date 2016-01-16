@@ -17,7 +17,7 @@ unit GLJoystick;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 {$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
 
 uses

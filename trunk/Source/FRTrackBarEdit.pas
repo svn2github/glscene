@@ -17,7 +17,7 @@ unit FRTrackBarEdit;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes, System.SysUtils,

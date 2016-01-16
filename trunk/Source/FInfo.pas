@@ -46,7 +46,7 @@ uses
 
 type
 
-  TInfoForm = class(TForm)
+  TGLInfoForm = class(TForm)
     AccLabel: TLabel;
     AccumLabel: TLabel;
     AuxLabel: TLabel;
@@ -149,39 +149,39 @@ implementation
 //
 procedure ShowInfoForm(aSceneBuffer: TGLSceneBuffer; Modal: boolean);
 var
-  infoForm: TInfoForm;
+  GLInfoForm: TGLInfoForm;
 begin
-  infoForm := TInfoForm.Create(nil);
+  GLInfoForm := TGLInfoForm.Create(nil);
   try
-    infoForm.GetInfoFrom(aSceneBuffer);
-    with infoForm do
+    GLInfoForm.GetInfoFrom(aSceneBuffer);
+    with GLInfoForm do
       if Modal then
         ShowModal
       else
         Show;
   except
-    infoForm.Free;
+    GLInfoForm.Free;
     raise;
   end;
 end;
 
 // FormCreate
 //
-procedure TInfoForm.FormCreate(Sender: TObject);
+procedure TGLInfoForm.FormCreate(Sender: TObject);
 begin
   PageControl.ActivePageIndex := 0;
 end;
 
 // FormShow
 //
-procedure TInfoForm.FormShow(Sender: TObject);
+procedure TGLInfoForm.FormShow(Sender: TObject);
 begin
   PageControl.ActivePageIndex := 0;
 end;
 
 // GetInfoFrom
 //
-procedure TInfoForm.GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
+procedure TGLInfoForm.GetInfoFrom(aSceneBuffer: TGLSceneBuffer);
 const
   DRIVER_MASK = PFD_GENERIC_FORMAT or PFD_GENERIC_ACCELERATED;
 var
@@ -310,14 +310,14 @@ end;
 
 // CloseButtonClick
 //
-procedure TInfoForm.CloseButtonClick(Sender: TObject);
+procedure TGLInfoForm.CloseButtonClick(Sender: TObject);
 begin
   Close;
 end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.FormKeyPress(Sender: TObject; var Key: Char);
+procedure TGLInfoForm.FormKeyPress(Sender: TObject; var Key: Char);
 
 begin
   if Key = #27 then
@@ -326,14 +326,14 @@ end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TGLInfoForm.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Release;
 end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.ListBoxExtensionsDblClick(Sender: TObject);
+procedure TGLInfoForm.ListBoxExtensionsDblClick(Sender: TObject);
 var
   p: Integer;
   url, buf: String;
@@ -358,7 +358,7 @@ end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.MIDelphi3DClick(Sender: TObject);
+procedure TGLInfoForm.MIDelphi3DClick(Sender: TObject);
 var
   url: String;
 begin
@@ -374,7 +374,7 @@ end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.ListBoxExtensionsClick(Sender: TObject);
+procedure TGLInfoForm.ListBoxExtensionsClick(Sender: TObject);
 var
   extName: String;
 begin
@@ -389,14 +389,14 @@ begin
   end;
 end;
 
-procedure TInfoForm.ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
+procedure TGLInfoForm.ListBoxExtensionsKeyPress(Sender: TObject; var Key: Char);
 begin
   ListBoxExtensionsClick(Sender);
 end;
 
 // -------------------------------------------------------------------
 //
-procedure TInfoForm.LoadContributors;
+procedure TGLInfoForm.LoadContributors;
 // var
 // ContributorsFileName: string;
 begin
@@ -414,7 +414,7 @@ end;
 
 // -------------------------------------------------------------------
 //
-function TInfoForm.GetSceneVersion: string;
+function TGLInfoForm.GetSceneVersion: string;
 var
   FExePath, FGLSceneRevision: string;
 begin
@@ -439,7 +439,7 @@ end;
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
-procedure TInfoForm.WebsiteLblClick(Sender: TObject);
+procedure TGLInfoForm.WebsiteLblClick(Sender: TObject);
 begin
   ShowHTMLUrl(WebsiteLbl.Caption);
 end;
