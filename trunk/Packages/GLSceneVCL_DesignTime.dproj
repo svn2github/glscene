@@ -85,13 +85,13 @@
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=preferExternal;largeHeap=False;theme=TitleBar;hardwareAccelerated=true</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;GLScene_RunTime;GLScene_RunTime_VCL;vclactnband;vclx;vcldb;bdertl;GbComp;GLCg_RunTime_VCL;GLSS_BASS_VCL;GLSS_FMOD_VCL;GLS_Computing_RunTime_VCL;GLS_NGD_VCL;GLS_ODE_VCL;GLSS_OpenAL_VCL;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;GLScene_RunTime;GLSceneVCL_RunTime;vclactnband;vclx;vcldb;bdertl;GbComp;GLSceneVCL_Cg_RunTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_CUDA_RunTime;GLSceneVCL_NGD;GLSceneVCL_ODE;GLSceneVCL_OpenAL;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;vclactnband;vclx;vcldb;GLCg_RunTime_VCL;GLS_Computing_RunTime_VCL;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;vclactnband;vclx;vcldb;GLSceneVCL_Cg_RunTime;GLSceneVCL_CUDA_RunTime;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -126,8 +126,8 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="..\Resources\GLSceneObjects.dcr"/>
-        <DCCReference Include="..\Resources\GLSceneVCL.dcr"/>
-        <DCCReference Include="..\Resources\nonGLSceneVCL.dcr"/>
+        <DCCReference Include="..\Resources\GLScene.dcr"/>
+        <DCCReference Include="..\Resources\nonGLScene.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="designide.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
@@ -137,25 +137,28 @@
         <DCCReference Include="..\Source\GLSceneEdit.pas">
             <Form>GLSceneEditorForm</Form>
         </DCCReference>
-        <DCCReference Include="..\Source\GLSceneFormDesign.pas"/>
         <DCCReference Include="..\Source\FLibMaterialPicker.pas">
-            <Form>LibMaterialPicker</Form>
+            <Form>GLLibMaterialPicker</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FMaterialEditorForm.pas">
-            <Form>MaterialEditorForm</Form>
+            <Form>GLMaterialEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FGUILayoutEditor.pas">
-            <Form>Layouts_form</Form>
+            <Form>GLLayoutEditorForm</Form>
+        </DCCReference>
+        <DCCReference Include="..\Source\FRFaceEditor.pas">
+            <Form>RFaceEditor</Form>
+            <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\Source\FRMaterialPreview.pas">
             <Form>RMaterialPreview</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\Source\FGuiSkinEditor.pas">
-            <Form>GUISkinEditor</Form>
+            <Form>GLSkinEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FShaderUniformEditor.pas">
-            <Form>ShaderUniformEditor</Form>
+            <Form>GLShaderUniformEditor</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FRColorEditor.pas">
             <Form>RColorEditor</Form>
@@ -170,20 +173,20 @@
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
         <DCCReference Include="..\Source\FVectorEditor.pas">
-            <Form>VectorEditorForm</Form>
+            <Form>GLVectorEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FPlugInManagerEditor.pas">
-            <Form>PlugInManagerEditor</Form>
+            <Form>GLPlugInManagerEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FShaderMemo.pas"/>
         <DCCReference Include="..\Source\FInfo.pas">
-            <Form>InfoForm</Form>
+            <Form>GLInfoForm</Form>
         </DCCReference>
+        <DCCReference Include="..\Source\GLSceneFormDesign.pas"/>
         <DCCReference Include="..\Source\GLSceneRegister.pas"/>
-        <DCCReference Include="..\Source\FRFaceEditor.pas"/>
-        <DCCReference Include="..\Source\RegisterXCollection.pas"/>
+        <DCCReference Include="..\Source\GLXCollectionRegister.pas"/>
         <DCCReference Include="..\Source\FXCollectionEditor.pas">
-            <Form>XCollectionEditor</Form>
+            <Form>GLXCollectionEditorForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Debug">
@@ -207,7 +210,6 @@
                     <Source Name="MainSource">GLSceneVCL_DesignTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\BPL\VirtualTreesCD.bpl not found</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -226,16 +228,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -549,7 +542,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

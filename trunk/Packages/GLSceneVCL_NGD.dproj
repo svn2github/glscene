@@ -130,7 +130,7 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="..\Resources\GLSceneVCLNGD.dcr"/>
+        <DCCReference Include="..\Resources\GLSceneNGD.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="GLSceneVCL_RunTime.dcp"/>

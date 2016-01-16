@@ -281,6 +281,8 @@ contains
   Types3DS in '..\Source\Types3DS.pas',
   Utils3DS in '..\Source\Utils3DS.pas',
   VRMLParser in '..\Source\VRMLParser.pas',
-  XOpenGL in '..\Source\XOpenGL.pas';
+  XOpenGL in '..\Source\XOpenGL.pas',
+  GLSLBumpShader in '..\Source\GLSLBumpShader.pas',
+  GLShaderCombiner in '..\Source\GLShaderCombiner.pas';
 
 end.

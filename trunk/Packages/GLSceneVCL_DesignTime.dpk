@@ -2,8 +2,8 @@ package GLSceneVCL_DesignTime;
 
 {$R *.res}
 {$R '..\Resources\GLSceneObjects.dcr'}
-{$R '..\Resources\GLSceneVCL.dcr'}
-{$R '..\Resources\nonGLSceneVCL.dcr'}
+{$R '..\Resources\GLScene.dcr'}
+{$R '..\Resources\nonGLScene.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -42,24 +42,24 @@ requires
 
 contains
   GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
-  GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
-  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {LibMaterialPicker},
-  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas' {MaterialEditorForm},
-  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {Layouts_form},
+  FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {GLLibMaterialPicker},
+  FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas' {GLMaterialEditorForm},
+  FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {GLLayoutEditorForm},
+  FRFaceEditor in '..\Source\FRFaceEditor.pas' {RFaceEditor: TFrame},
   FRMaterialPreview in '..\Source\FRMaterialPreview.pas' {RMaterialPreview: TFrame},
-  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GUISkinEditor},
-  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {ShaderUniformEditor},
+  FGuiSkinEditor in '..\Source\FGuiSkinEditor.pas' {GLSkinEditorForm},
+  FShaderUniformEditor in '..\Source\FShaderUniformEditor.pas' {GLShaderUniformEditor},
   FRColorEditor in '..\Source\FRColorEditor.pas' {RColorEditor: TFrame},
   FRTextureEdit in '..\Source\FRTextureEdit.pas' {RTextureEdit: TFrame},
   FRTrackBarEdit in '..\Source\FRTrackBarEdit.pas' {RTrackBarEdit: TFrame},
-  FVectorEditor in '..\Source\FVectorEditor.pas' {VectorEditorForm},
-  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {PlugInManagerEditor},
+  FVectorEditor in '..\Source\FVectorEditor.pas' {GLVectorEditorForm},
+  FPlugInManagerEditor in '..\Source\FPlugInManagerEditor.pas' {GLPlugInManagerEditorForm},
   FShaderMemo in '..\Source\FShaderMemo.pas',
-  FInfo in '..\Source\FInfo.pas' {InfoForm},
+  FInfo in '..\Source\FInfo.pas' {GLInfoForm},
+  GLSceneFormDesign in '..\Source\GLSceneFormDesign.pas',
   GLSceneRegister in '..\Source\GLSceneRegister.pas',
-  FRFaceEditor in '..\Source\FRFaceEditor.pas',
-  RegisterXCollection in '..\Source\RegisterXCollection.pas',
-  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {XCollectionEditor};
+  GLXCollectionRegister in '..\Source\GLXCollectionRegister.pas',
+  FXCollectionEditor in '..\Source\FXCollectionEditor.pas' {GLXCollectionEditorForm};
 
 end.
 
