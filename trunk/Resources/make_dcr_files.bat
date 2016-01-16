@@ -1,15 +1,15 @@
 @echo off
 del *.dcr
-BRCC32 -r -foGLSceneVCL.dcr GLSceneVCL.rc
+BRCC32 -r -foGLScene.dcr GLScene.rc
 BRCC32 -r -foGLSceneObjects.dcr GLSceneObjects.rc
-BRCC32 -r -fononGLSceneVCL.dcr nonGLSceneVCL.rc
-BRCC32 -r -foGLSceneVCLBass.dcr GLSceneVCLBass.rc
-BRCC32 -r -foGLSceneVCLFMod.dcr GLSceneVCLFMod.rc
-BRCC32 -r -foGLSceneVCLOpenAL.dcr GLSceneVCLOpenAL.rc
-BRCC32 -r -foGLSceneVCLODE.dcr GLSceneVCLODE.rc
-BRCC32 -r -foGLSceneVCLNGD.dcr GLSceneVCLNGD.rc
-BRCC32 -r -foGLSceneVCLSDL.dcr GLSceneVCLSDL.rc
-BRCC32 -r -foGLSceneVCLCg.dcr GLSceneVCLCg.rc
-BRCC32 -r -foGLSceneVCLCUDA.dcr GLSceneVCLCUDA.rc
+BRCC32 -r -fononGLScene.dcr nonGLScene.rc
+BRCC32 -r -foGLSceneBass.dcr GLSceneBass.rc
+BRCC32 -r -foGLSceneFMod.dcr GLSceneFMod.rc
+BRCC32 -r -foGLSceneOpenAL.dcr GLSceneOpenAL.rc
+BRCC32 -r -foGLSceneODE.dcr GLSceneODE.rc
+BRCC32 -r -foGLSceneNGD.dcr GLSceneNGD.rc
+BRCC32 -r -foGLSceneSDL.dcr GLSceneSDL.rc
+BRCC32 -r -foGLSceneCg.dcr GLSceneCg.rc
+BRCC32 -r -foGLSceneCUDA.dcr GLSceneCUDA.rc
 BRCC32 -r -foGLSceneRunTime.dcr GLSceneRunTime.rc
 pause
