@@ -134,7 +134,7 @@
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="VclSmp.dcp"/>
         <DCCReference Include="GLSceneVCL_RunTime.dcp"/>
-        <DCCReference Include="..\Source\GLSceneEdit.pas">
+        <DCCReference Include="..\Source\FSceneEditor.pas">
             <Form>GLSceneEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\FLibMaterialPicker.pas">

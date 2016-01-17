@@ -41,7 +41,7 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  GLSceneEdit in '..\Source\GLSceneEdit.pas' {GLSceneEditorForm},
+  FSceneEditor in '..\Source\FSceneEditor.pas' {GLSceneEditorForm},
   FLibMaterialPicker in '..\Source\FLibMaterialPicker.pas' {GLLibMaterialPicker},
   FMaterialEditorForm in '..\Source\FMaterialEditorForm.pas' {GLMaterialEditorForm},
   FGUILayoutEditor in '..\Source\FGUILayoutEditor.pas' {GLLayoutEditorForm},
