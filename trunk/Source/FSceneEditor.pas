@@ -44,7 +44,7 @@
    05/02/00 - EG - Fixed DragDrop, added root nodes auto-expansion
    
 }
-unit GLSceneEdit;
+unit FSceneEditor;
 
 interface
 
