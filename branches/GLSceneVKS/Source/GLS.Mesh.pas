@@ -1,8 +1,8 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 { 
-  Raw Mesh support in VKScene.
+  Raw Mesh support in GLScene.
 
   This unit is for simple meshes and legacy support, GLS.VectorFileObjects
   implements more efficient (though more complex) mesh tools.
@@ -874,7 +874,7 @@ begin
   else
     Assert(False);
   end;
-{$IFNDEF VKS_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
   // clear fpu exception flag
   asm fclex
   end;

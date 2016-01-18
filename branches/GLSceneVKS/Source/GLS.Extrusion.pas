@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Extrusion objects for VKScene.  Extrusion objects are solids defined by the
+   Extrusion objects for GLScene.  Extrusion objects are solids defined by the
    surface described by a moving curve. 
   
 }

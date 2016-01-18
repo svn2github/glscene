@@ -29,7 +29,7 @@ type
   { Extract exponent and mantissa from X }
 procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
 { Mantissa ptr in EAX, Exponent ptr in EDX }
-{$IFDEF VKS_NO_ASM}
+{$IFDEF GLS_NO_ASM}
 begin
   Exponent := 0;
   if (X <> 0) then
@@ -80,7 +80,7 @@ asm
 end;
 
 function Ldexp(X: Extended; const P: Integer): Extended;
-{$IFDEF VKS_NO_ASM}
+{$IFDEF GLS_NO_ASM}
 begin
   Ldexp := X * Intpower(2.0, P);
 {$ELSE}

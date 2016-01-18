@@ -77,9 +77,9 @@ type
     procedure SetViewMatrix(const AMatrix: TMatrix);
     procedure SetProjectionMatrix(const AMatrix: TMatrix);
   protected
-    procedure LoadModelViewMatrix; {$IFDEF VKS_INLINE} inline; {$ENDIF}
-    procedure LoadProjectionMatrix; {$IFDEF VKS_INLINE} inline; {$ENDIF}
-    procedure DoMatrcesLoaded; {$IFDEF VKS_INLINE} inline; {$ENDIF}
+    procedure LoadModelViewMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    procedure LoadProjectionMatrix; {$IFDEF GLS_INLINE} inline; {$ENDIF}
+    procedure DoMatrcesLoaded; {$IFDEF GLS_INLINE} inline; {$ENDIF}
     property OnPush: TOnMatricesPush read FOnPush write FOnPush;
   public
     constructor Create;

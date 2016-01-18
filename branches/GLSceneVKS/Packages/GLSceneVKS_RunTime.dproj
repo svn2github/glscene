@@ -128,17 +128,17 @@
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
-        <DCCReference Include="..\Source\Const3DS.pas"/>
-        <DCCReference Include="..\Source\DDSImage.pas"/>
-        <DCCReference Include="..\Source\DXTC.pas"/>
-        <DCCReference Include="..\Source\File3DS.pas"/>
-        <DCCReference Include="..\Source\FileB3D.pas"/>
-        <DCCReference Include="..\Source\FileGL2.pas"/>
-        <DCCReference Include="..\Source\FileMD2.pas"/>
-        <DCCReference Include="..\Source\FileMD3.pas"/>
-        <DCCReference Include="..\Source\FileOCT.pas"/>
-        <DCCReference Include="..\Source\FileX.pas"/>
-        <DCCReference Include="..\Source\GLS.AVIRecorder.pas"/>
+        <DCCReference Include="..\Source\FileFormats\Const3DS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\DDSImage.pas"/>
+        <DCCReference Include="..\Source\FileFormats\DXTC.pas"/>
+        <DCCReference Include="..\Source\FileFormats\File3DS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileB3D.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileGL2.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileMD2.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileMD3.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileOCT.pas"/>
+        <DCCReference Include="..\Source\FileFormats\FileX.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.AVIRecorder.pas"/>
         <DCCReference Include="..\Source\GLS.AnimatedSprite.pas"/>
         <DCCReference Include="..\Source\GLS.AnimationUtils.pas"/>
         <DCCReference Include="..\Source\GLS.ApplicationFileIO.pas"/>
@@ -148,13 +148,13 @@
         <DCCReference Include="..\Source\GLS.AsyncTimer.pas"/>
         <DCCReference Include="..\Source\GLS.Atmosphere.pas"/>
         <DCCReference Include="..\Source\GLS.BSP.pas"/>
-        <DCCReference Include="..\Source\GLS.BaseClasses.pas"/>
-        <DCCReference Include="..\Source\GLS.BaseMeshSilhouette.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.BaseClasses.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.BaseMeshSilhouette.pas"/>
         <DCCReference Include="..\Source\GLS.Behaviours.pas"/>
         <DCCReference Include="..\Source\GLS.BitmapFont.pas"/>
         <DCCReference Include="..\Source\GLS.Blur.pas"/>
         <DCCReference Include="..\Source\GLS.BumpMapping.pas"/>
-        <DCCReference Include="..\Source\GLS.BumpShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.BumpShader.pas"/>
         <DCCReference Include="..\Source\GLS.BumpmapHDS.pas"/>
         <DCCReference Include="..\Source\GLS.Cadencer.pas"/>
         <DCCReference Include="..\Source\GLS.CameraController.pas"/>
@@ -179,50 +179,56 @@
         <DCCReference Include="..\Source\GLS.FBORenderer.pas"/>
         <DCCReference Include="..\Source\GLS.FPSMovement.pas"/>
         <DCCReference Include="..\Source\GLS.Feedback.pas"/>
-        <DCCReference Include="..\Source\GLS.File3DS.pas"/>
-        <DCCReference Include="..\Source\GLS.File3DSSceneObjects.pas"/>
-        <DCCReference Include="..\Source\GLS.FileASE.pas"/>
-        <DCCReference Include="..\Source\GLS.FileB3D.pas"/>
-        <DCCReference Include="..\Source\GLS.FileBMP.pas"/>
-        <DCCReference Include="..\Source\GLS.FileDDS.pas"/>
-        <DCCReference Include="..\Source\GLS.FileDXF.pas"/>
-        <DCCReference Include="..\Source\GLS.FileGL2.pas"/>
-        <DCCReference Include="..\Source\GLS.FileGRD.pas"/>
-        <DCCReference Include="..\Source\GLS.FileGTS.pas"/>
-        <DCCReference Include="..\Source\GLS.FileHDR.pas"/>
-        <DCCReference Include="..\Source\GLS.FileJPEG.pas"/>
-        <DCCReference Include="..\Source\GLS.FileLMTS.pas"/>
-        <DCCReference Include="..\Source\GLS.FileLWO.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMD2.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMD3.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMD5.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMDC.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMP3.pas"/>
-        <DCCReference Include="..\Source\GLS.FileMS3D.pas"/>
-        <DCCReference Include="..\Source\GLS.FileNMF.pas"/>
-        <DCCReference Include="..\Source\GLS.FileNurbs.pas"/>
-        <DCCReference Include="..\Source\GLS.FileO3TC.pas"/>
-        <DCCReference Include="..\Source\GLS.FileOBJ.pas"/>
-        <DCCReference Include="..\Source\GLS.FileOCT.pas"/>
-        <DCCReference Include="..\Source\GLS.FilePAK.pas"/>
-        <DCCReference Include="..\Source\GLS.FilePLY.pas"/>
-        <DCCReference Include="..\Source\GLS.FilePNG.pas"/>
-        <DCCReference Include="..\Source\GLS.FileQ3BSP.pas"/>
-        <DCCReference Include="..\Source\GLS.FileSMD.pas"/>
-        <DCCReference Include="..\Source\GLS.FileSTL.pas"/>
-        <DCCReference Include="..\Source\GLS.FileTGA.pas"/>
-        <DCCReference Include="..\Source\GLS.FileTIN.pas"/>
-        <DCCReference Include="..\Source\GLS.FileVRML.pas"/>
-        <DCCReference Include="..\Source\GLS.FileWAV.pas"/>
-        <DCCReference Include="..\Source\GLS.FileX.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.File3DS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.File3DSSceneObjects.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileASE.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileB3D.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileBMP.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileDDS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileDXF.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileGL2.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileGRD.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileGTS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileHDR.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileJPEG.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileLMTS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileLWO.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMD2.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMD3.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMD5.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMDC.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMP3.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileMS3D.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileNMF.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileNurbs.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileO3TC.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileOBJ.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileOCT.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FilePAK.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FilePLY.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FilePNG.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileQ3BSP.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileSMD.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileSTL.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileTGA.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileTIN.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileVRML.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileWAV.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.FileX.pas"/>
         <DCCReference Include="..\Source\GLS.FireFX.pas"/>
         <DCCReference Include="..\Source\GLS.FullScreenViewer.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLBumpShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLDiffuseSpecularShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLParameter.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLPostShaders.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLProjectedTextures.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.GLSLShader.pas"/>
         <DCCReference Include="..\Source\GLS.GLUTesselation.pas"/>
-        <DCCReference Include="..\Source\GLS.GameMenu.pas"/>
+        <DCCReference Include="..\Source\GameAPIs\GLS.GameMenu.pas"/>
         <DCCReference Include="..\Source\GLS.Generics.pas"/>
-        <DCCReference Include="..\Source\GLS.GeomObjects.pas"/>
-        <DCCReference Include="..\Source\GLS.GeometryBB.pas"/>
-        <DCCReference Include="..\Source\GLS.GeometryCoordinates.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.GeomObjects.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.GeometryBB.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.GeometryCoordinates.pas"/>
         <DCCReference Include="..\Source\GLS.Gizmo.pas"/>
         <DCCReference Include="..\Source\GLS.GizmoEx.pas"/>
         <DCCReference Include="..\Source\GLS.Graph.pas"/>
@@ -264,8 +270,8 @@
         <DCCReference Include="..\Source\GLS.ObjectManager.pas"/>
         <DCCReference Include="..\Source\GLS.Objects.pas"/>
         <DCCReference Include="..\Source\GLS.Octree.pas"/>
-        <DCCReference Include="..\Source\GLS.OpenGLAdapter.pas"/>
-        <DCCReference Include="..\Source\GLS.OpenGLTokens.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.OpenGLAdapter.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.OpenGLTokens.pas"/>
         <DCCReference Include="..\Source\GLS.OutlineShader.pas"/>
         <DCCReference Include="..\Source\GLS.ParametricSurfaces.pas"/>
         <DCCReference Include="..\Source\GLS.ParticleFX.pas"/>
@@ -300,7 +306,7 @@
         <DCCReference Include="..\Source\GLS.ScreenSaver.pas"/>
         <DCCReference Include="..\Source\GLS.ScriptBase.pas"/>
         <DCCReference Include="..\Source\GLS.Selection.pas"/>
-        <DCCReference Include="..\Source\GLS.ShaderCombiner.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.ShaderCombiner.pas"/>
         <DCCReference Include="..\Source\GLS.ShadowHDS.pas"/>
         <DCCReference Include="..\Source\GLS.ShadowPlane.pas"/>
         <DCCReference Include="..\Source\GLS.ShadowVolume.pas"/>
@@ -309,8 +315,8 @@
         <DCCReference Include="..\Source\GLS.SkyBox.pas"/>
         <DCCReference Include="..\Source\GLS.Skydome.pas"/>
         <DCCReference Include="..\Source\GLS.SmoothNavigator.pas"/>
-        <DCCReference Include="..\Source\GLS.Sound.pas"/>
-        <DCCReference Include="..\Source\GLS.SoundFileObjects.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.Sound.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.SoundFileObjects.pas"/>
         <DCCReference Include="..\Source\GLS.SpacePartition.pas"/>
         <DCCReference Include="..\Source\GLS.SpaceText.pas"/>
         <DCCReference Include="..\Source\GLS.SpatialPartitioning.pas"/>
@@ -320,53 +326,47 @@
         <DCCReference Include="..\Source\GLS.Strings.pas"/>
         <DCCReference Include="..\Source\GLS.Teapot.pas"/>
         <DCCReference Include="..\Source\GLS.TerrainRenderer.pas"/>
-        <DCCReference Include="..\Source\GLS.TexCombineShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.TexCombineShader.pas"/>
         <DCCReference Include="..\Source\GLS.TexLensFlare.pas"/>
         <DCCReference Include="..\Source\GLS.Texture.pas"/>
         <DCCReference Include="..\Source\GLS.TextureCombiners.pas"/>
         <DCCReference Include="..\Source\GLS.TextureFormat.pas"/>
         <DCCReference Include="..\Source\GLS.TextureImageEditors.pas"/>
-        <DCCReference Include="..\Source\GLS.TextureSharingShader.pas"/>
+        <DCCReference Include="..\Source\Shaders\GLS.TextureSharingShader.pas"/>
         <DCCReference Include="..\Source\GLS.TexturedHDS.pas"/>
         <DCCReference Include="..\Source\GLS.ThorFX.pas"/>
         <DCCReference Include="..\Source\GLS.TilePlane.pas"/>
         <DCCReference Include="..\Source\GLS.TimeEventsMgr.pas"/>
         <DCCReference Include="..\Source\GLS.Trail.pas"/>
         <DCCReference Include="..\Source\GLS.Tree.pas"/>
-        <DCCReference Include="..\Source\GLS.Types.pas"/>
-        <DCCReference Include="..\Source\GLS.Utils.pas"/>
-        <DCCReference Include="..\Source\GLS.VectorFileObjects.pas"/>
-        <DCCReference Include="..\Source\GLS.VectorGeometry.pas"/>
-        <DCCReference Include="..\Source\GLS.VectorLists.pas"/>
-        <DCCReference Include="..\Source\GLS.VectorTypes.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.Types.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.Utils.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.VectorFileObjects.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.VectorGeometry.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.VectorLists.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.VectorTypes.pas"/>
         <DCCReference Include="..\Source\GLS.VerletClasses.pas"/>
         <DCCReference Include="..\Source\GLS.VerletClothify.pas"/>
         <DCCReference Include="..\Source\GLS.VerletHairClasses.pas"/>
         <DCCReference Include="..\Source\GLS.VerletSkeletonColliders.pas"/>
         <DCCReference Include="..\Source\GLS.VerletTypes.pas"/>
-        <DCCReference Include="..\Source\GLS.VfsPAK.pas"/>
-        <DCCReference Include="..\Source\GLS.Vfw.pas"/>
+        <DCCReference Include="..\Source\FileFormats\GLS.VfsPAK.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.Vfw.pas"/>
         <DCCReference Include="..\Source\GLS.WaterPlane.pas"/>
         <DCCReference Include="..\Source\GLS.Windows.pas"/>
         <DCCReference Include="..\Source\GLS.WindowsFont.pas"/>
         <DCCReference Include="..\Source\GLS.XCollection.pas"/>
-        <DCCReference Include="..\Source\GLS.XOpenGL.pas"/>
+        <DCCReference Include="..\Source\Basis\GLS.XOpenGL.pas"/>
         <DCCReference Include="..\Source\GLS.zBuffer.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLBumpShader.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLDiffuseSpecularShader.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLParameter.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLPostShaders.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLProjectedTextures.pas"/>
-        <DCCReference Include="..\Source\GLS.GLSLShader.pas"/>
-        <DCCReference Include="..\Source\HDRImage.pas"/>
+        <DCCReference Include="..\Source\FileFormats\HDRImage.pas"/>
         <DCCReference Include="..\Source\LIBFREETYPE.pas"/>
-        <DCCReference Include="..\Source\LWObjects.pas"/>
-        <DCCReference Include="..\Source\Q3BSP.pas"/>
-        <DCCReference Include="..\Source\Q3MD3.pas"/>
-        <DCCReference Include="..\Source\TGA.pas"/>
-        <DCCReference Include="..\Source\Types3DS.pas"/>
-        <DCCReference Include="..\Source\Utils3DS.pas"/>
-        <DCCReference Include="..\Source\VRMLParser.pas"/>
+        <DCCReference Include="..\Source\FileFormats\LWObjects.pas"/>
+        <DCCReference Include="..\Source\FileFormats\Q3BSP.pas"/>
+        <DCCReference Include="..\Source\FileFormats\Q3MD3.pas"/>
+        <DCCReference Include="..\Source\FileFormats\TGA.pas"/>
+        <DCCReference Include="..\Source\FileFormats\Types3DS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\Utils3DS.pas"/>
+        <DCCReference Include="..\Source\FileFormats\VRMLParser.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -426,7 +426,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -740,16 +749,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

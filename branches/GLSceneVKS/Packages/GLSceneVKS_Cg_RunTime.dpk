@@ -34,10 +34,10 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  cgGL in '..\Source\cgGL.pas',
-  cg in '..\Source\cg.pas',
-  GLS.CgShader in '..\Source\GLS.CgShader.pas',
-  GLS.CgBombShader in '..\Source\GLS.CgBombShader.pas',
-  GLS.CgPostTransformationShader in '..\Source\GLS.CgPostTransformationShader.pas';
+  cgGL in '..\Source\Shaders\cgGL.pas',
+  cg in '..\Source\Shaders\cg.pas',
+  GLS.CgShader in '..\Source\Shaders\GLS.CgShader.pas',
+  GLS.CgBombShader in '..\Source\Shaders\GLS.CgBombShader.pas',
+  GLS.CgPostTransformationShader in '..\Source\Shaders\GLS.CgPostTransformationShader.pas';
 
 end.

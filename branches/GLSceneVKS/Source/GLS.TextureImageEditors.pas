@@ -27,7 +27,7 @@ type
 			{ Request to edit a textureImage. 
 				Returns True if changes have been made. 
 				This method may be invoked from the IDE or at run-time. }
-			class function Edit(aTexImage : TVKTextureImage) : Boolean; virtual;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+			class function Edit(aTexImage : TVKTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
    end;
 
    TVKTextureImageEditorClass = class of TVKTextureImageEditor;
@@ -85,7 +85,7 @@ var
 
   // Dummy method for CPP
   //
-{$IFDEF VKS_CPPB}
+{$IFDEF GLS_CPPB}
 class function TVKTextureImageEditor.Edit(ATexImage: TVKTextureImage): Boolean;
 begin
   Result := True;

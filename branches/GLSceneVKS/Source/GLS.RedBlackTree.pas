@@ -45,7 +45,7 @@ type
 
   // TRedBlackTree
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GRedBlackTree < TKey, TValue > = class

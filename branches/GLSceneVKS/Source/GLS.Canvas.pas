@@ -1,5 +1,5 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 {
    Implements a basic Canvas-like interface over for OpenGL. 

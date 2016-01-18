@@ -165,7 +165,7 @@ implementation
 const
    cFileVersion = 'HTF100';
 
-{$IFNDEF VKS_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 // FillSmallInt
 //
 procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt); register;

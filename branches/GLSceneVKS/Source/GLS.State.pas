@@ -24,7 +24,7 @@ unit GLS.State;
 interface
 
 {$I GLScene.inc}
-{.$DEFINE VKS_CACHE_MISS_CHECK}
+{.$DEFINE GLS_CACHE_MISS_CHECK}
 
 uses
   System.Classes, System.SysUtils,
@@ -36,7 +36,7 @@ uses
   GLS.TextureFormat;
 
 const
-  VKS_VERTEX_ATTR_NUM = 16;
+  GLS_VERTEX_ATTR_NUM = 16;
 
 type
 
@@ -1211,7 +1211,7 @@ implementation
 uses
   GLS.Context, GLS.Color;
 
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 resourcestring
   glsStateCashMissing = 'States cash missing: ';
 {$ENDIF}
@@ -1466,7 +1466,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Include(FStates, aState);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
     if GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Enable');
 {$ENDIF}
@@ -1486,7 +1486,7 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Exclude(FStates, aState);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
     if not GL.IsEnabled(cGLStateToGLEnum[aState].GLConst) then
       GLSLogger.LogError(glsStateCashMissing + 'Disable');
 {$ENDIF}
@@ -2242,13 +2242,13 @@ end;
 
 procedure TVKStateCache.SetGLAlphaFunction(func: TComparisonFunction;
   ref: TGLclampf);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 var I: TGLuint; E: Single;
 {$ENDIF}
 begin
   if FForwardContext then
     exit;
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_ALPHA_TEST_FUNC, @I);
   if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
     GLSLogger.LogError(glsStateCashMissing + 'AlphaTest function');
@@ -2831,11 +2831,11 @@ begin
 end;
 
 procedure TVKStateCache.SetStencilClearValue(const Value: TGLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 var I: TGLuint;
 {$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
   if FStencilClearValue <> I then
     GLSLogger.LogError(glsStateCashMissing + 'Stencil clear value');
@@ -2881,13 +2881,13 @@ end;
 
 procedure TVKStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
   const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 var UI: TGLuint; I: TGLint;
 {$ENDIF}
 begin
 //  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
 //    or FInsideList then
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_STENCIL_FUNC, @UI);
   if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
     GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
@@ -2951,11 +2951,11 @@ begin
 end;
 
 procedure TVKStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 var I: TGLuint;
 {$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_STENCIL_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilFail] <> I then
     GLSLogger.LogError(glsStateCashMissing + 'Stencil fail');
@@ -3020,11 +3020,11 @@ begin
 end;
 
 procedure TVKStateCache.SetStencilWriteMask(const Value: TGLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
 var I: TGLuint;
 {$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
+{$IFDEF GLS_CACHE_MISS_CHECK}
   GL.GetIntegerv(GL_STENCIL_WRITEMASK, @I);
   if FStencilWriteMask <> I then
     GLSLogger.LogError(glsStateCashMissing + 'Stencil write mask');

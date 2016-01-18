@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Base classes and structures for VKScene.  
+   Base classes and structures for GLScene.  
 }
 
 unit GLS.Scene;
@@ -2171,7 +2171,7 @@ implementation
 
 var
   vCounterFrequency: Int64;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
 var
 {$ELSE}
 threadvar
@@ -2189,7 +2189,7 @@ end;
 procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(13, 'AxesBuildList');
 {$ENDIF}
@@ -4510,7 +4510,7 @@ var
   aabb: TAABB;
   master: TObject;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
       Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
@@ -4569,7 +4569,7 @@ begin
   if shouldRenderSelf then
   begin
     vCurrentRenderingObject := Self;
-{$IFNDEF VKS_OPTIMIZATIONS}
+{$IFNDEF GLS_OPTIMIZATIONS}
     if FShowAxes then
       DrawAxes(ARci, $CCCC);
 {$ENDIF}

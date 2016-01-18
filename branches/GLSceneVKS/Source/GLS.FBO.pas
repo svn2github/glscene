@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Implements FBO support for VKScene. 
+   Implements FBO support for GLScene. 
    Original author of the unit is Riz.
    Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
  

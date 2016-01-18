@@ -1,5 +1,5 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 { 
   Invisible component for helping to Move, Rotate and Scale an Object

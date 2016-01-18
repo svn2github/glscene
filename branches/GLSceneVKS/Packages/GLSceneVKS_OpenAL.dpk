@@ -36,7 +36,7 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  openal in '..\Source\openal.pas',
-  GLS.SMOpenAL in '..\Source\GLS.SMOpenAL.pas';
+  openal in '..\Source\SoundVideoAPIs\openal.pas',
+  GLS.SMOpenAL in '..\Source\SoundVideoAPIs\GLS.SMOpenAL.pas';
 
 end.

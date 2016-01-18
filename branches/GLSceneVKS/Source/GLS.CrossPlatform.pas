@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Cross platform support functions and types for VKScene.  
+   Cross platform support functions and types for GLScene.  
 
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead. 
@@ -142,7 +142,7 @@ const
 const
   glsAllFilter: string = SMsgDlgAll; //in VCL -> sAllFilter;
 
-  VKS_FONT_CHARS_COUNT = 2024;
+  GLS_FONT_CHARS_COUNT = 2024;
 
 var
   IsDesignTime: Boolean = False;

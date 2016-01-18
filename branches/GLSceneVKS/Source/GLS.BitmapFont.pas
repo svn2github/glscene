@@ -8,7 +8,7 @@ unit GLS.BitmapFont;
 
 {$I GLScene.inc}
 
-{$DEFINE VKS_UNICODE_SUPPORT}
+{$DEFINE GLS_UNICODE_SUPPORT}
 
 interface
 
@@ -22,7 +22,7 @@ uses
   GLS.OpenGLTokens, GLS.XOpenGL, GLS.VectorTypes;
 
 type
-{$IFNDEF VKS_UNICODE_SUPPORT}
+{$IFNDEF GLS_UNICODE_SUPPORT}
   UnicodeString = WideString; // Use WideString for earlier versions
 {$ENDIF}
 

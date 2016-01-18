@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Portal Rendering support for VKScene.  
+   Portal Rendering support for GLScene.  
    The portal structures are subclasses of the Mesh structures, with a "sector"
    being assimilated to a "MeshObject" and sector polygons to facegroups. 
      

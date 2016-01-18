@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   VKScene cross IDE generic classes collection. 
+   GLScene cross IDE generic classes collection. 
    
 }
 
@@ -25,7 +25,7 @@ type
 
   // GList
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GList<T> = class(TObject)
@@ -73,13 +73,13 @@ type
 
   // GThreadList
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GThreadList<T> = class
   public
     type
-      TLockableList = {$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
+      TLockableList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
     var
   private
     FList: TLockableList;
@@ -96,13 +96,13 @@ type
 
   // GOrderedList
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GOrderedList<T> = class(TObject)
   private
     type
-      TOrderedList = {$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
+      TOrderedList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GList<T>;
     var
       FList: TOrderedList;
   protected
@@ -123,17 +123,17 @@ type
 
   // GStack
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
-  GStack<T> = class({$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF} GOrderedList<T>)
+  GStack<T> = class({$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF} GOrderedList<T>)
   protected
     procedure PushItem(AItem: T); override;
   end;
 
   // GQueue
   //
-{$IFDEF VKS_GENERIC_PREFIX}
+{$IFDEF GLS_GENERIC_PREFIX}
   generic
 {$ENDIF}
   GQueue<T> = class(GOrderedList<T>)
@@ -145,18 +145,18 @@ implementation
 
 {$REGION 'GList'}
 
-destructor GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
+destructor GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
 begin
   Clear;
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Clear;
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Clear;
 begin
   SetCount(0);
   SetCapacity(0);
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.SetCapacity(Value: Integer);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.SetCapacity(Value: Integer);
 begin
 {$IFOPT R+}
   Assert(not (Value < FCount) or (Value > MaxListSize));
@@ -168,7 +168,7 @@ begin
   end;
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.SetCount(Value: Integer);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.SetCount(Value: Integer);
 var
   I: Integer;
 begin
@@ -183,7 +183,7 @@ begin
   FCount := Value;
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Add(AItem: T): Integer;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Add(AItem: T): Integer;
 begin
   Result := FCount;
   if Result = FCapacity then
@@ -193,7 +193,7 @@ begin
   Notify(AItem, lnAdded);
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Delete(Index: Integer);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Delete(Index: Integer);
 var
   Temp: T;
 begin
@@ -209,7 +209,7 @@ begin
 end;
 
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Extract(AItem: T);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Extract(AItem: T);
 var
   I: Integer;
 begin
@@ -221,12 +221,12 @@ begin
   end;
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.First: T;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.First: T;
 begin
   Result := GetItem(0);
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.GetItem(Index: Integer): T;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.GetItem(Index: Integer): T;
 begin
 {$IFOPT R+}
   Assert(Index < FCount);
@@ -234,7 +234,7 @@ begin
   Result := FItems[Index];
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.GetItemAddress(Index: Integer): Pointer;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.GetItemAddress(Index: Integer): Pointer;
 begin
 {$IFOPT R+}
   Assert(Index < FCount);
@@ -242,7 +242,7 @@ begin
   Result := @FItems[Index];
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.IndexOf(AItem: T): Integer;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.IndexOf(AItem: T): Integer;
 begin
   for Result := 0 to FCount - 1 do
     if CompareMem(@FItems[Result], @AItem, SizeOf(T)) then
@@ -250,7 +250,7 @@ begin
   Result := -1;
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Insert(Index: Integer; AItem: T);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Insert(Index: Integer; AItem: T);
 begin
 {$IFOPT R+}
   Assert(Index < FCount);
@@ -265,7 +265,7 @@ begin
   Notify(AItem, lnAdded);
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Exchange(Index1, Index2: Integer);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Exchange(Index1, Index2: Integer);
 var
   Item: T;
 begin
@@ -278,31 +278,31 @@ begin
   FItems[Index2] := Item;
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Last: T;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Last: T;
 begin
   if FCount > 0 then
     Result := FItems[FCount-1];
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Notify(const Item: T; Action: TListNotification);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Notify(const Item: T; Action: TListNotification);
 begin
 //  if Assigned(FOnChange) then FOnChange(Self, Item, Action);
   if Assigned(FOnChange) then FOnChange(Self);
 end;
 
-function GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Remove(AItem: T): Integer;
+function GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Remove(AItem: T): Integer;
 begin
   Result := IndexOf(AItem);
   if Result >= 0 then
     Delete(Result);
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.SetItem(Index: Integer; const Value: T);
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.SetItem(Index: Integer; const Value: T);
 begin
   FItems[Index] := Value;
 end;
 
-procedure GList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Grow;
+procedure GList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Grow;
 var
   Delta: Integer;
 begin
@@ -318,14 +318,14 @@ end;
 {$ENDREGION}
 
 {$REGION 'GThreadList'}
-constructor GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
+constructor GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
 begin
   inherited Create;
   FLock := TCriticalSection.Create;
   FList := TLockableList.Create;
 end;
 
-destructor GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
+destructor GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
 begin
   LockList;
   try
@@ -337,7 +337,7 @@ begin
   end;
 end;
 
-procedure GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Add(AItem: T);
+procedure GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Add(AItem: T);
 begin
   LockList;
   try
@@ -347,7 +347,7 @@ begin
   end;
 end;
 
-procedure GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Clear;
+procedure GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Clear;
 begin
   LockList;
   try
@@ -357,13 +357,13 @@ begin
   end;
 end;
 
-function GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.LockList: TLockableList;
+function GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.LockList: TLockableList;
 begin
   FLock.Enter;
   Result := FList;
 end;
 
-procedure GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Remove(AItem: T);
+procedure GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Remove(AItem: T);
 begin
   LockList;
   try
@@ -373,7 +373,7 @@ begin
   end;
 end;
 
-procedure GThreadList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.UnlockList;
+procedure GThreadList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.UnlockList;
 begin
   FLock.Leave;
 end;
@@ -381,49 +381,49 @@ end;
 
 {$REGION 'GOrderedList'}
 
-constructor GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
+constructor GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Create;
 begin
   FList := TOrderedList.Create;
 end;
 
-destructor GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
+destructor GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Destroy;
 begin
   FList.Free;
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.AtLeast(ACount: Integer): Boolean;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.AtLeast(ACount: Integer): Boolean;
 begin
   Result := List.Count >= ACount;
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.PeekItem: T;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PeekItem: T;
 begin
   Result := List[List.Count-1];
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.PopItem: T;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PopItem: T;
 begin
   Result := PeekItem;
   List.Delete(List.Count-1);
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Peek: T;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Peek: T;
 begin
   Result := PeekItem;
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Pop: T;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Pop: T;
 begin
   Result := PopItem;
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Push(const AItem: T): T;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Push(const AItem: T): T;
 begin
   PushItem(AItem);
   Result := AItem;
 end;
 
-function GOrderedList{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.Count: Integer;
+function GOrderedList{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.Count: Integer;
 begin
   Result := List.Count;
 end;
@@ -431,14 +431,14 @@ end;
 {$ENDREGION}
 
 {$REGION 'GStack'}
-procedure GStack{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
+procedure GStack{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
 begin
   List.Add(AItem);
 end;
 {$ENDREGION 'GStack'}
 
 {$REGION 'GQueue'}
-procedure GQueue{$IFNDEF VKS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
+procedure GQueue{$IFNDEF GLS_GENERIC_PREFIX}<T>{$ENDIF}.PushItem(AItem: T);
 begin
   List.Insert(0, AItem);
 end;

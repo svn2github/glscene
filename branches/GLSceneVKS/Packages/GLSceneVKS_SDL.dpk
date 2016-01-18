@@ -34,8 +34,8 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  GLS.SDLContext in '..\Source\GLS.SDLContext.pas',
-  GLS.SDLWindow in '..\Source\GLS.SDLWindow.pas',
-  SDL in '..\Source\SDL.pas';
+  GLS.SDLContext in '..\Source\GamesAPIs\GLS.SDLContext.pas',
+  GLS.SDLWindow in '..\Source\GamesAPIs\GLS.SDLWindow.pas',
+  SDL in '..\Source\GamesAPIs\SDL.pas';
 
 end.

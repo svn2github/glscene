@@ -1,8 +1,8 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 {
-   String constants that are used in many VKScene units
+   String constants that are used in many GLScene units
      
 }
 

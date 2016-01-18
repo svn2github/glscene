@@ -581,7 +581,7 @@ begin
     if Assigned(FShareContext) and (FShareContext.RC <> 0) then
     begin
       if not wglShareLists(FShareContext.RC, FRC) then
-      {$IFDEF VKS_LOGGING}
+      {$IFDEF GLS_LOGGING}
         GLSLogger.LogWarning(glsFailedToShare)
       {$ENDIF}
       else
@@ -1132,7 +1132,7 @@ begin
 
                 localRC := FGL.WCreateContextAttribsARB(localDC, 0, @FiAttribs[0]);
                 if localRC = 0 then
-               {$IFDEF VKS_LOGGING}
+               {$IFDEF GLS_LOGGING}
                 begin
                   if GLStates.ForwardContext then
                     GLSLogger.LogErrorFmt(cForwardContextFailed,

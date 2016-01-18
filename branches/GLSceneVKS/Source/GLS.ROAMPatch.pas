@@ -1,5 +1,5 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 { 
   Class for managing a ROAM (square) patch.

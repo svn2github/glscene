@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Imposter building and rendering implementation for VKScene.  
+   Imposter building and rendering implementation for GLScene.  
 }
 unit GLS.Imposter;
 
@@ -1429,7 +1429,7 @@ begin
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
   begin
-    {$IFDEF VKS_OPENGL_DEBUG}
+    {$IFDEF GLS_OPENGL_DEBUG}
       if GL.GREMEDY_string_marker then
         GL.StringMarkerGREMEDY(22, 'Imposter texture setup');
     {$ENDIF}

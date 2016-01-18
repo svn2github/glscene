@@ -1,0 +1,54 @@
+package GLSceneVKS_Parallel_RunTime;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'GLSceneVKS Vulkan GPU Computing'}
+{$RUNONLY}
+{$IMPLICITBUILD ON}
+
+requires
+  rtl,
+  fmx,
+  GLSceneVKS_RunTime;
+
+contains
+  GLS.CLPlatform in '..\Source\ParallelAPIs\GLS.CLPlatform.pas',
+  GLS.CL in '..\Source\ParallelAPIs\GLS.CL.pas',
+  GLS.CLGL in '..\Source\ParallelAPIs\GLS.CLGL.pas',
+  GLS.CUDAApi in '..\Source\ParallelAPIs\GLS.CUDAApi.pas',
+  GLS.CUDARunTime in '..\Source\ParallelAPIs\GLS.CUDARunTime.pas',
+  GLS.CUDAFourierTransform in '..\Source\ParallelAPIs\GLS.CUDAFourierTransform.pas',
+  GLS.CUDAUtility in '..\Source\ParallelAPIs\GLS.CUDAUtility.pas',
+  GLS.CUDA in '..\Source\ParallelAPIs\GLS.CUDA.pas',
+  GLS.CUDACompiler in '..\Source\ParallelAPIs\GLS.CUDACompiler.pas',
+  GLS.CUDAContext in '..\Source\ParallelAPIs\GLS.CUDAContext.pas',
+  GLS.CUDAFFTPlan in '..\Source\ParallelAPIs\GLS.CUDAFFTPlan.pas',
+  GLS.CUDAGraphics in '..\Source\ParallelAPIs\GLS.CUDAGraphics.pas',
+  GLS.CUDAParser in '..\Source\ParallelAPIs\GLS.CUDAParser.pas',
+  GLS.FilePGM in '..\Source\ParallelAPIs\GLS.FilePGM.pas',
+  GLS.CUDADataAccess in '..\Source\ParallelAPIs\GLS.CUDADataAccess.pas';
+
+end.

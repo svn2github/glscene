@@ -20,7 +20,7 @@
 
                 The images should be
 
-   Licenses: Removed. Donated to VKScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
+   Licenses: Removed. Donated to GLScene's Code Base as long as the author (Kenneth Poulter) is not altered in this file.
              Theft of code also is not allowed, although alterations are allowed.
 
 }

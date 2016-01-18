@@ -3,7 +3,7 @@
 //
 {
    Time based events mannager using the Cadencer 
-   can be useful to make animations with VKScene 
+   can be useful to make animations with GLScene 
 }
 
 unit GLS.TimeEventsMgr;

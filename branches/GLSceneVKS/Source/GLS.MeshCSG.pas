@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Constructive Solid Geometry in VKScene. 
+   Constructive Solid Geometry in GLScene. 
 
    The CSG system uses BSP to optimize what triangles it considers.
    Its kept on a mesh basis to simplyfy things, it allways generates new BSP's,

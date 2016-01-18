@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-  VKScene objects that get rendered in 2D coordinates 
+  GLScene objects that get rendered in 2D coordinates 
 }
 unit GLS.HUDObjects;
 

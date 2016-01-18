@@ -32,12 +32,12 @@ package GLSceneVKS_NGD;
 requires
   rtl,
   fmx,
-  GLSceneVKS_R;
+  GLSceneVKS_RunTime;
 
 contains
-  GLS.NGDManager in '..\Source\GLS.NGDManager.pas',
-  GLS.NewtonRegister in '..\Source\GLS.NewtonRegister.pas',
-  NewtonImport in '..\Source\NewtonImport.pas',
-  NewtonImport_JointLibrary in '..\Source\NewtonImport_JointLibrary.pas';
+  GLS.NGDManager in '..\Source\PhysicsAPIs\GLS.NGDManager.pas',
+  GLS.NewtonRegister in '..\Source\PhysicsAPIs\GLS.NewtonRegister.pas',
+  NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
 
 end.

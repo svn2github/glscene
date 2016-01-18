@@ -368,7 +368,7 @@ var
   i: Integer;
   rnd: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Rays');
 {$ENDIF}
@@ -403,7 +403,7 @@ var
   i: Integer;
   a, f, s, c: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(17, 'LensFlare.Streaks');
 {$ENDIF}
@@ -432,7 +432,7 @@ var
   i: Integer;
   rW, s0, c0, s, c: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(14, 'LensFlare.Ring');
 {$ENDIF}
@@ -477,7 +477,7 @@ var
   v: TAffineVector;
   grad: TVKFlareGradient;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(21, 'LensFlare.Secondaries');
 {$ENDIF}
@@ -684,7 +684,7 @@ begin
       begin
         if FTexRays.Handle <> 0 then
         begin
-        {$IFDEF VKS_OPENGL_DEBUG}
+        {$IFDEF GLS_OPENGL_DEBUG}
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}

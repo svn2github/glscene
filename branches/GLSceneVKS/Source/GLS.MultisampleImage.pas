@@ -83,7 +83,7 @@ implementation
 // ------------------ TVKMultisampleImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKMultisampleImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKMultisampleImage'}{$ENDIF}
 
 // Create
 //
@@ -343,7 +343,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   RegisterGLTextureImageClass(TVKMultisampleImage);

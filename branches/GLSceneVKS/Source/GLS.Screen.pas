@@ -12,7 +12,7 @@ interface
 
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
+{$IFDEF GLS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
   System.Classes, System.SysUtils,
   GLS.VectorGeometry, GLS.CrossPlatform;
 
@@ -88,7 +88,7 @@ var
 {$IFDEF MSWINDOWS}
   vVideoModes: array of TVideoMode;
 {$ENDIF} // Unix
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
   vDisplay: PDisplay;
   vScreenModeChanged: Boolean;
   vVideoModes: array of PXF86VidModeModeInfo;
@@ -184,7 +184,7 @@ begin
       end;
     end;
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
   with vVideoModes[I]^ do
   begin
     if (hDisplay >= XRes) and ((hDisplay - XRes) <= XDiff) and
@@ -248,7 +248,7 @@ begin
   end;
   Inc(vNumberVideoModes);
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
 
   procedure TryToAddToList(); // Without input parameters.
   begin
@@ -329,7 +329,7 @@ begin
         end;
       end;
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
       var
         I, j: Integer;
       begin
@@ -395,7 +395,7 @@ begin
           if Result then
             vCurrentVideoMode := modeIndex;
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
           var
             vSettings: TXF86VidModeModeInfo;
             wnd: TWindow;
@@ -462,7 +462,7 @@ begin
               t := nil;
               ChangeDisplaySettings(t^, CDS_FULLSCREEN);
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
               begin
                 // if vCurrentVideoMode=0 then
                 ReadVideoModes;
@@ -493,7 +493,7 @@ begin
                 begin
                   SetCursorPos(AScreenX, AScreenY);
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
                   var
                     dpy: PDisplay;
                     root: TWindow;
@@ -515,7 +515,7 @@ begin
                     begin
                       GetCursorPos(point);
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
                       var
                         dpy: PDisplay;
                         root, child: TWindow;
@@ -566,7 +566,7 @@ finalization
 {$IFDEF MSWINDOWS}
 if vCurrentVideoMode <> 0 then
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
   if vScreenModeChanged then
 {$ENDIF}
     RestoreDefaultMode; // set default video mode

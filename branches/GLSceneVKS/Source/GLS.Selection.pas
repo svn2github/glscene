@@ -124,7 +124,7 @@ begin
     Result := TVKSelectRenderModeTechnique;
 end;
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKPickList'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKPickList'}{$ENDIF}
 // ------------------
 // ------------------ TVKPickList ------------------
 // ------------------
@@ -253,9 +253,9 @@ function TVKPickList.GetSubObjects(aValue: Integer): TPickSubobjects;
 begin
   Result := TPickRecord(Items[AValue]).SubObjects;
 end;
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKSelectRenderModeTechnique'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKSelectRenderModeTechnique'}{$ENDIF}
 // ------------------
 // ------------------ TVKSelectRenderModeTechnique ------------------
 // ------------------
@@ -357,6 +357,6 @@ begin
   Inc(FCurrentName);
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 end.

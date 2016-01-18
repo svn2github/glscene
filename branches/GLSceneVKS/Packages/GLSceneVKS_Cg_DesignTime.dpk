@@ -37,6 +37,6 @@ requires
   GLSceneVKS_DesignTime;
 
 contains
-  GLS.CgRegister in '..\Source\GLS.CgRegister.pas';
+  GLS.CgRegister in '..\Source\Shaders\GLS.CgRegister.pas';
 
 end.

@@ -1,5 +1,5 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 {
    Components and functions that abstract file I/O access for an application. 
@@ -18,10 +18,10 @@ uses
 
 
 const
-  VKS_RC_DDS_Type = RT_RCDATA;
-  VKS_RC_JPG_Type = RT_RCDATA;
-  VKS_RC_XML_Type = RT_RCDATA;
-  VKS_RC_String_Type = RT_RCDATA;
+  GLS_RC_DDS_Type = RT_RCDATA;
+  GLS_RC_JPG_Type = RT_RCDATA;
+  GLS_RC_XML_Type = RT_RCDATA;
+  GLS_RC_String_Type = RT_RCDATA;
 
 type
 

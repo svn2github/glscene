@@ -6,12 +6,12 @@
    byte order (GL_RGBA vs TBitmap's GL_BGRA) 
 
    Note: TVKBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the VKS_Graphics32_SUPPORT conditionnal
-   is active in VKScene. inc and recompile. 
+   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
+   is active in GLScene. inc and recompile. 
 
    Note: TVKBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the VKS_Graphics32_SUPPORT conditionnal
-   is active in VKScene. inc and recompile. 
+   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
+   is active in GLScene. inc and recompile. 
 
 }
 
@@ -27,7 +27,7 @@ uses
 {$ENDIF}
   System.Classes, System.SysUtils, System.SyncObjs, System.UITypes, System.Math,
   FMX.Graphics,
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
 
@@ -90,7 +90,7 @@ type
     FSourceStream: TStream;
     FStreamLevel: TVKImageLODRange;
     FFinishEvent: TFinishTaskEvent;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
     procedure ImageStreamingTask; stdcall;
 {$ENDIF}
   protected
@@ -233,10 +233,10 @@ type
     function GetScanLine(index: Integer): PGLPixel32Array;
     procedure AssignFrom24BitsBitmap(aBitmap: TVKBitmap);
     procedure AssignFrom32BitsBitmap(aBitmap: TVKBitmap);
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GLS_Graphics32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF GLS_PngImage_SUPPORT}
     procedure AssignFromPngImage(aPngImage: TPngImage);
 {$ENDIF}
 
@@ -429,7 +429,7 @@ resourcestring
 var
   vRasterFileFormats: TRasterFileFormatsList;
 
-{$IFDEF VKS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
 
   // GetRasterFileFormats
   //
@@ -682,9 +682,9 @@ begin
 
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$REGION 'RGBA Utils'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'RGBA Utils'}{$ENDIF}
 // GammaCorrectRGBArray
 //
 
@@ -980,13 +980,13 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKBaseImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKBaseImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKBaseImage'}{$ENDIF}
 // Create
 //
 
@@ -2163,7 +2163,7 @@ end;
 
 procedure TVKBaseImage.DoStreaming;
 begin
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
   if Assigned(FFinishEvent) then
   begin
     if FFinishEvent.WaitFor(0) <> wrSignaled then
@@ -2177,7 +2177,7 @@ begin
 {$ENDIF}
 end;
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 procedure TVKBaseImage.ImageStreamingTask;
 var
   readSize: Integer;
@@ -2240,13 +2240,13 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKImage'}{$ENDIF}
 // Create
 //
 
@@ -2304,7 +2304,7 @@ begin
       else
         AssignFrom32BitsBitmap(TVKBitmap(Source))
     end
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF GLS_PngImage_SUPPORT}
     else if Source is TPngImage then
       AssignFromPngImage(TPngImage(Source))
 {$ENDIF}
@@ -2346,7 +2346,7 @@ begin
       end;
     end;
   end
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GLS_Graphics32_SUPPORT}
   else if Source is TBitmap32 then
   begin
     Narrow;
@@ -2562,7 +2562,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_Graphics32_SUPPORT}
+{$IFDEF GLS_Graphics32_SUPPORT}
 // AssignFromBitmap32
 //
 procedure TVKImage.AssignFromBitmap32(aBitmap32: TBitmap32);
@@ -2598,7 +2598,7 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF VKS_PngImage_SUPPORT}
+{$IFDEF GLS_PngImage_SUPPORT}
 // AlphaChannel Support
 
 procedure TVKImage.AssignFromPngImage(aPngImage: TPngImage);
@@ -2609,7 +2609,7 @@ var
   AlphaScan: pByteArray;
   Pixel: Integer;
 begin
-{$IFDEF VKS_PngImage_RESIZENEAREST}
+{$IFDEF GLS_PngImage_RESIZENEAREST}
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
 {$ENDIF}
@@ -3351,7 +3351,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
 

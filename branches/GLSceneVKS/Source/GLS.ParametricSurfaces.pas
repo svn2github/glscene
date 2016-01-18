@@ -3,7 +3,7 @@
 //
 {
    Parametric surface implementation (like Bezier and BSpline surfaces)
-   for VKScene.  
+   for GLScene.  
 
    Notes:
    The MOParametricSurface is a TVKMeshObject descendant that can be used

@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   Managers are used to manage many different kinds of clients in VKScene. 
+   Managers are used to manage many different kinds of clients in GLScene. 
    They are registered so that when clients are loaded, the client can
    look up the manager + register themselves with it. 
    

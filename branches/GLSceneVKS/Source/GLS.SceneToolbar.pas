@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-  Added VKScene's toolbar to Delphi IDE. 
+  Added GLScene's toolbar to Delphi IDE. 
   
 }
 

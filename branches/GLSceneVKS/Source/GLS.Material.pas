@@ -18,7 +18,7 @@ uses
   GLS.ApplicationFileIO, GLS.Graphics, GLS.Utils, GLS.Log;
 
 {$I GLScene.inc}
-{$UNDEF VKS_MULTITHREAD}
+{$UNDEF GLS_MULTITHREAD}
 type
   TVKFaceProperties = class;
   TVKMaterial = class;
@@ -99,12 +99,12 @@ type
     { Request to apply the shader. 
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
-       {$IFNDEF VKS_CPPB} abstract; {$ENDIF}
+       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     { Request to un-apply the shader. 
        Subclasses can assume the shader has been applied previously. 
        Return True to request a multipass. }
     function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
-       {$IFNDEF VKS_CPPB} abstract; {$ENDIF}
+       {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     { Invoked once, before the destruction of context or release of shader. 
        The call happens with the OpenGL context being active. }
     procedure DoFinalize; dynamic;
@@ -507,7 +507,7 @@ type
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TVKLibMaterialName);
-    procedure Loaded; virtual;{$IFNDEF VKS_CPPB} abstract; {$ENDIF}
+    procedure Loaded; virtual;{$IFNDEF GLS_CPPB} abstract; {$ENDIF}
 
   public
     { Public Declarations }
@@ -516,9 +516,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); virtual; {$IFNDEF VKS_CPPB} abstract; {$ENDIF}
+    procedure Apply(var ARci: TRenderContextInfo); virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; {$IFNDEF VKS_CPPB} abstract; {$ENDIF}
+    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
 
     procedure RegisterUser(obj: TVKUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TVKUpdateAbleObject); overload;
@@ -625,7 +625,7 @@ type
     { Protected Declarations }
     procedure Loaded;
     function GetMaterial(const AName: TVKLibMaterialName): TVKAbstractLibMaterial;
-    {$IFDEF VKS_INLINE}inline;{$ENDIF}
+    {$IFDEF GLS_INLINE}inline;{$ENDIF}
   public
     function MakeUniqueName(const nameRoot: TVKLibMaterialName):
       TVKLibMaterialName; virtual;
@@ -807,7 +807,7 @@ resourcestring
 
   // Dummy methods for CPP
   //
-{$IFDEF VKS_CPPB}
+{$IFDEF GLS_CPPB}
 procedure TVKShader.DoApply(var Rci: TRenderContextInfo; Sender: TObject);
 begin
 end;
@@ -1180,7 +1180,7 @@ end;
 
 procedure TVKShader.Apply(var rci: TRenderContextInfo; Sender: TObject);
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   Assert(not FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   // Need to check it twice, because shader may refuse to initialize
@@ -1200,7 +1200,7 @@ end;
 
 function TVKShader.UnApply(var rci: TRenderContextInfo): Boolean;
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   Assert(FShaderActive, 'Unbalanced shader application.');
 {$ENDIF}
   if Enabled then
@@ -1239,7 +1239,7 @@ end;
 
 procedure TVKShader.SetEnabled(val: Boolean);
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   Assert(not FShaderActive, 'Shader is active.');
 {$ENDIF}
   if val <> FEnabled then
@@ -1918,7 +1918,7 @@ end;
 // ------------------
 // ------------------ TVKAbstractLibMaterial ------------------
 // ------------------
-{$IFDEF VKS_REGION}{$REGION 'TVKAbstractLibMaterial'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKAbstractLibMaterial'}{$ENDIF}
 
 // Create
 //
@@ -2144,12 +2144,12 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKLibMaterial ------------------
 // ------------------
-{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterial'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterial'}{$ENDIF}
 
 // Create
 //
@@ -2559,12 +2559,12 @@ begin
       end;
   end;
 end;
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKLibMaterials ------------------
 // ------------------
- {$IFDEF VKS_REGION}{$REGION 'TVKLibMaterials'}{$ENDIF}
+ {$IFDEF GLS_REGION}{$REGION 'TVKLibMaterials'}{$ENDIF}
 
  // MakeUniqueName
 //
@@ -2802,9 +2802,9 @@ begin
   EndUpdate;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKAbstractMaterialLibrary'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKAbstractMaterialLibrary'}{$ENDIF}
 
 // SetTexturePaths
 //
@@ -2905,13 +2905,13 @@ begin
   FMaterials.Loaded;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKMaterialLibrary ------------------
 // ------------------
 
-{$IFDEF VKS_REGION}{$REGION 'TVKMaterialLibrary'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKMaterialLibrary'}{$ENDIF}
 
 // Create
 //
@@ -3515,11 +3515,11 @@ begin
     Result := Materials.GetNameOfLibMaterial(LibMat);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 { TVKBlendingParameters }
 
-{$IFDEF VKS_REGION}{$REGION 'TVKBlendingParameters'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKBlendingParameters'}{$ENDIF}
 
 procedure TVKBlendingParameters.Apply(var rci: TRenderContextInfo);
 begin
@@ -3656,7 +3656,7 @@ begin
   Result := (Abs(AlphaFuncRef) > 0.001);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

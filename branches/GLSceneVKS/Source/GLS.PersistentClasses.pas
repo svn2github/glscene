@@ -1051,7 +1051,7 @@ end;
 //
 
 function TPersistentObjectList.IndexOf(Item: TObject): Integer;
-{$IFNDEF VKS_NO_ASM}
+{$IFNDEF GLS_NO_ASM}
 var
   c: Integer;
   p: ^TObject;

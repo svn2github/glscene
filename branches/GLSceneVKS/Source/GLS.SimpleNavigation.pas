@@ -366,7 +366,7 @@ begin
     { TODO : E2009 Incompatible types: 'Parameter lists differ' }
     (*TForm(FForm).OnMouseWheel := ViewerMouseWheel;*)
     FForm.FreeNotification(Self);
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
     if FForm is TVKSceneForm then
     begin
       FSceneForm := True;

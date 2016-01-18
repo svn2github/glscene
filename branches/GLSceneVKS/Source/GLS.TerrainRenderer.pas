@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-  VKScene's brute-force terrain renderer. 
+  GLScene's brute-force terrain renderer. 
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).

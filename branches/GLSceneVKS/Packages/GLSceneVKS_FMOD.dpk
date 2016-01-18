@@ -36,10 +36,10 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  fmod in '..\Source\fmod.pas',
-  fmodtypes in '..\Source\fmodtypes.pas',
-  fmoderrors in '..\Source\fmoderrors.pas',
-  fmodpresets in '..\Source\fmodpresets.pas',
-  GLS.SMFMOD in '..\Source\GLS.SMFMOD.pas';
+  fmod in '..\Source\SoundVideoAPIs\fmod.pas',
+  fmodtypes in '..\Source\SoundVideoAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundVideoAPIs\fmoderrors.pas',
+  fmodpresets in '..\Source\SoundVideoAPIs\fmodpresets.pas',
+  GLS.SMFMOD in '..\Source\SoundVideoAPIs\GLS.SMFMOD.pas';
 
 end.

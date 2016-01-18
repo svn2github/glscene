@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 { 
-  Binary Space Partion mesh support for VKScene.  
+  Binary Space Partion mesh support for GLScene.  
   The classes of this unit are designed to operate within a TVKBaseMesh.
 
 }

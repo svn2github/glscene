@@ -134,9 +134,9 @@ type
     class function IsSelfLoading: Boolean; virtual;
     procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
     function GetTextureTarget: TVKTextureTarget; virtual; abstract;
-    function GetHeight: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
-    function GetWidth: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
-    function GetDepth: Integer; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
+    function GetDepth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
 
     property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
@@ -151,7 +151,7 @@ type
     { Save textureImage to file. 
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
-    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     { Load textureImage from a file. 
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture. 
@@ -161,7 +161,7 @@ type
     { Returns a user-friendly denomination for the class. 
      This denomination is used for picking a texture image class
      in the IDE expert. }
-    class function FriendlyName: string; virtual;{$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     { Returns a user-friendly description for the class. 
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
@@ -174,7 +174,7 @@ type
     { Returns image's bitmap handle. 
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
-    function GetBitmap32: TVKImage; virtual; {$IFNDEF VKS_CPPB}abstract;{$ENDIF}
+    function GetBitmap32: TVKImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     { Request for unloading bitmapData, to free some memory. 
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap. 
@@ -848,7 +848,7 @@ var
 type
   TFriendlyImage = class(TVKBaseImage);
 
-{$IFDEF VKS_CPPB}
+{$IFDEF GLS_CPPB}
   // Dummy methods for CPP
   //
 function TVKTextureImage.GetHeight: Integer;
@@ -883,7 +883,7 @@ end;
 {$ENDIF}
 
 
-{$IFDEF VKS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
   // RegisterTGraphicClassFileExtension
   //
@@ -1030,13 +1030,13 @@ begin
   SetGLTextureImageClassesToStrings(Result);
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKTextureImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureImage'}{$ENDIF}
 
 // Create
 //
@@ -1144,13 +1144,13 @@ procedure TVKTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
 begin
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKBlankImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKBlankImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKBlankImage'}{$ENDIF}
 
 // Create
 //
@@ -1422,13 +1422,13 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPictureImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKPictureImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKPictureImage'}{$ENDIF}
 
 // Create
 //
@@ -1602,13 +1602,13 @@ begin
   Result := ttTexture2D;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPersistentImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKPersistentImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKPersistentImage'}{$ENDIF}
 
 // Create
 //
@@ -1683,13 +1683,13 @@ begin
     + 'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKPicFileImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKPicFileImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKPicFileImage'}{$ENDIF}
 
 // Create
 //
@@ -1865,13 +1865,13 @@ begin
   Result := 'Image data is retrieved from a file.';
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKCubeMapImage ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKCubeMapImage'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKCubeMapImage'}{$ENDIF}
 
 // Create
 //
@@ -2128,13 +2128,13 @@ begin
   Result := FPicture[index];
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TVKTexture ------------------
 // ------------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKTexture'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKTexture'}{$ENDIF}
 
 // Create
 //
@@ -3576,13 +3576,13 @@ begin
 end;
 
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TVKTextureExItem ---------------
 // ---------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureExItem'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureExItem'}{$ENDIF}
 
 // Create
 //
@@ -3820,13 +3820,13 @@ begin
   CalculateTextureMatrix;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ---------------
 // --------------- TVKTextureEx ---------------
 // ---------------
 
-{$IFDEF VKS_REGIONS}{$REGION 'TVKTextureEx'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TVKTextureEx'}{$ENDIF}
 
 // Create
 //
@@ -3946,7 +3946,7 @@ begin
       Result := Result or Items[i].Texture.Enabled;
 end;
 
-{$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   // ------------------------------------------------------------------

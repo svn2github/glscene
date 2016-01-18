@@ -21,7 +21,7 @@ uses
   FMX.Controls,
   FMX.Types,
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
   GLS.Generics,
 {$ENDIF}
   GLS.OpenGLTokens,
@@ -59,10 +59,10 @@ type
     Event: TFinishTaskEvent;
   end;
 
-{$IFDEF VKS_SERVICE_CONTEXT}
-  TServiceContextTaskList = {$IFDEF VKS_GENERIC_PREFIX} specialize {$ENDIF}
+{$IFDEF GLS_SERVICE_CONTEXT}
+  TServiceContextTaskList = {$IFDEF GLS_GENERIC_PREFIX} specialize {$ENDIF}
     GThreadList < TServiceContextTask > ;
-{$ENDIF VKS_SERVICE_CONTEXT}
+{$ENDIF GLS_SERVICE_CONTEXT}
 
   TVKContext = class;
   TVKContextManager = class;
@@ -137,7 +137,7 @@ type
     FTransformation: TVKTransformation;
     FAcceleration: TVKContextAcceleration;
     FLayer: TVKContextLayer;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     FSharedContexts: TList;
 {$ELSE}
     FSharedContexts: TThreadList;
@@ -299,7 +299,7 @@ type
     function GetHandle: TGLuint;
     function GetContext: TVKContext;
     function SearchRC(AContext: TVKContext): PGLRCHandle;
-    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF VKS_INLINE}inline;{$ENDIF}
+    function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
     { Protected Declarations }
@@ -1132,13 +1132,13 @@ type
     FNotifications: array of TVKContextNotification;
     FCreatedRCCount: Integer;
 
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     FHandles: TList;
 {$ELSE}
     FHandles: TThreadList;
-{$ENDIF VKS_MULTITHREAD}
+{$ENDIF GLS_MULTITHREAD}
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
     FThread: TThread;
     FServiceStarter: TEvent;
     FThreadTask: TServiceContextTaskList;
@@ -1155,7 +1155,7 @@ type
     procedure ContextCreatedBy(aContext: TVKContext);
     procedure DestroyingContextBy(aContext: TVKContext);
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
     { Create a special service and resource-keeper context. }
     procedure CreateServiceContext;
     procedure QueueTaskDepleted;
@@ -1210,7 +1210,7 @@ function GL: TGLExtensionsAndEntryPoints;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 {$ENDIF}
 
@@ -1245,7 +1245,7 @@ resourcestring
   cContextNotCreated = 'Context not created';
   cUnbalancedContexActivations = 'Unbalanced context activations';
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 type
   // TServiceContextThread
   //
@@ -1268,11 +1268,11 @@ var
   vContextClasses: TList;
   GLwithoutContext: TGLExtensionsAndEntryPoints;
   vServiceWindow: TForm;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
   OldInitProc: Pointer;
 {$ENDIF}
 
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
 var
 {$ELSE}
 threadvar
@@ -1294,7 +1294,7 @@ begin
   Result := CurrentGLContext;
   if not Assigned(Result) then
   begin
-   {$IFDEF VKS_LOGGING}
+   {$IFDEF GLS_LOGGING}
     GLSLogger.LogError(cNoActiveRC);
    {$ENDIF}
     Abort;
@@ -1347,7 +1347,7 @@ end;
 constructor TVKContext.Create;
 begin
   inherited Create;
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
   FLock := TCriticalSection.Create;
 {$ENDIF}
   FColorBits := 32;
@@ -1356,7 +1356,7 @@ begin
   FAuxBuffers := 0;
   FLayer := clMainPlane;
   FOptions := [];
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   FSharedContexts := TList.Create;
 {$ELSE}
   FSharedContexts := TThreadList.Create;
@@ -1384,7 +1384,7 @@ begin
   FXGL.Free;
   FTransformation.Free;
   FSharedContexts.Free;
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
   FLock.Free;
 {$ENDIF}
   inherited Destroy;
@@ -1553,7 +1553,7 @@ var
 begin
   if vCurrentGLContext = Self then
   begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       LHandle := TVKContextHandle(Manager.FHandles[i]);
@@ -1586,7 +1586,7 @@ var
   otherContext: TVKContext;
   otherList: TList;
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   with FSharedContexts do
   begin
     for i := 1 to Count - 1 do
@@ -1636,7 +1636,7 @@ end;
 
 procedure TVKContext.ShareLists(AContext: TVKContext);
 begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   if FSharedContexts.IndexOf(AContext) < 0 then
   begin
     if DoShareLists(AContext) then
@@ -1671,7 +1671,7 @@ var
 begin
   Activate;
   try
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
       TVKContextHandle(Manager.FHandles[i]).ContextDestroying;
 {$ELSE}
@@ -1710,7 +1710,7 @@ begin
 
   Activate;
   try
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
     begin
       contextHandle := TVKContextHandle(Manager.FHandles[i]);
@@ -1730,7 +1730,7 @@ begin
 {$ENDIF}
     Manager.DestroyingContextBy(Self);
 
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
     aList := FSharedContexts.LockList;
 {$ELSE}
     aList := FSharedContexts;
@@ -1742,7 +1742,7 @@ begin
     end;
     FSharedContexts.Clear;
     FSharedContexts.Add(Self);
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
     FSharedContexts.UnlockList;
 {$ENDIF}
     Active := False;
@@ -1760,7 +1760,7 @@ end;
 
 procedure TVKContext.Activate;
 begin
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
   FLock.Enter;
 {$ENDIF}
   if FActivationCount = 0 then
@@ -1800,7 +1800,7 @@ begin
   end
   else if FActivationCount < 0 then
     raise EGLContext.Create(cUnbalancedContexActivations);
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
 end;
@@ -1813,7 +1813,7 @@ var
   i: Integer;
 begin
   Result := nil;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   for i := 0 to FSharedContexts.Count - 1 do
     if TVKContext(FSharedContexts[i]) <> Self then
     begin
@@ -1929,7 +1929,7 @@ begin
   bSucces := False;
   if Transferable then
   begin
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
     aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
     aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -1949,7 +1949,7 @@ begin
           break;
         end;
       end;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
 {$ELSE}
     finally
       vCurrentGLContext.FSharedContexts.UnlockList;
@@ -2073,12 +2073,12 @@ begin
     bShared := False;
     if Transferable then
     begin
-    {$IFNDEF VKS_MULTITHREAD}
+    {$IFNDEF GLS_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
     {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
       try
-    {$ENDIF VKS_MULTITHREAD}
+    {$ENDIF GLS_MULTITHREAD}
         for I := FHandles.Count-1 downto 1 do
         begin
           P := RCItem(I);
@@ -2090,11 +2090,11 @@ begin
               break;
             end;
         end;
-    {$IFDEF VKS_MULTITHREAD}
+    {$IFDEF GLS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnLockList;
       end;
-    {$ENDIF VKS_MULTITHREAD}
+    {$ENDIF GLS_MULTITHREAD}
     end;
 
     for I := FHandles.Count-1 downto 1 do
@@ -2177,7 +2177,7 @@ begin
     end
     else
     begin
-  {$IFNDEF VKS_MULTITHREAD}
+  {$IFNDEF GLS_MULTITHREAD}
       aList := vCurrentGLContext.FSharedContexts;
   {$ELSE}
       aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2189,7 +2189,7 @@ begin
             if (FHandle <> 0) then
               FChanged := False;
         end;
-  {$IFDEF VKS_MULTITHREAD}
+  {$IFDEF GLS_MULTITHREAD}
       finally
         vCurrentGLContext.FSharedContexts.UnlockList;
       end;
@@ -2226,7 +2226,7 @@ begin
   if not Transferable then
     exit;
   Result := True;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   aList := vCurrentGLContext.FSharedContexts;
 {$ELSE}
   aList := vCurrentGLContext.FSharedContexts.LockList;
@@ -2240,7 +2240,7 @@ begin
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
-{$IFDEF VKS_MULTITHREAD}
+{$IFDEF GLS_MULTITHREAD}
   finally
     vCurrentGLContext.FSharedContexts.UnlockList;
   end;
@@ -4379,7 +4379,7 @@ end;
 // ------------------ TVKContextManager ------------------
 // ------------------
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
@@ -4394,11 +4394,11 @@ end;
 constructor TVKContextManager.Create;
 begin
   inherited Create;
-{$IFNDEF VKS_MULTITHREAD}
+{$IFNDEF GLS_MULTITHREAD}
   FHandles := TList.Create;
 {$ELSE}
   FHandles := TThreadList.Create;
-{$ENDIF VKS_MULTITHREAD}
+{$ENDIF GLS_MULTITHREAD}
   FList := TThreadList.Create;
 end;
 
@@ -4431,7 +4431,7 @@ begin
     Result := nil;
 end;
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 
 procedure TVKContextManager.CreateServiceContext;
 begin
@@ -4477,7 +4477,7 @@ begin
   end;
 end;
 
-{$ENDIF VKS_SERVICE_CONTEXT}
+{$ENDIF GLS_SERVICE_CONTEXT}
 
 
 // Lock
@@ -4651,7 +4651,7 @@ end;
 procedure TVKContextManager.Terminate;
 begin
   FTerminated := True;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
   // Sevice context may not be created becouse Application.Initialize not happened
   if Assigned(FServiceContext) then
   begin
@@ -4688,7 +4688,7 @@ begin
     end;
 end;
 
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
 
 {$REGION 'TServiceContextThread'}
 
@@ -4875,7 +4875,7 @@ begin
   end;
 end;
 
-{$ENDIF VKS_SERVICE_CONTEXT}
+{$ENDIF GLS_SERVICE_CONTEXT}
 
 constructor TFinishTaskEvent.Create;
 begin
@@ -4892,10 +4892,10 @@ initialization
   // ------------------------------------------------------------------
 
   vMainThread := True;
-{$IFDEF VKS_SERVICE_CONTEXT}
+{$IFDEF GLS_SERVICE_CONTEXT}
   OldInitProc := InitProc;
   InitProc := @OnApplicationInitialize;
-{$ENDIF VKS_SERVICE_CONTEXT}
+{$ENDIF GLS_SERVICE_CONTEXT}
   GLContextManager := TVKContextManager.Create;
   GLwithoutContext := TGLExtensionsAndEntryPoints.Create;
   GLwithoutContext.Close;

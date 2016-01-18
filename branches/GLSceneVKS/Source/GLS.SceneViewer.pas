@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   VKScene cross-platform viewer. 
+   GLScene cross-platform viewer. 
 }
 
 unit GLS.SceneViewer;

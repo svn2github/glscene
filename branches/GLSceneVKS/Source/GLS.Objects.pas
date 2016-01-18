@@ -1,5 +1,5 @@
 //
-// VKScene project based on GLScene library, http://glscene.sourceforge.net
+// GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 { 
   Implementation of basic scene objects plus some management routines.
@@ -877,7 +877,7 @@ procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLfloat;
 var
   mi, ma: Single;
 begin
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
@@ -1425,7 +1425,7 @@ end;
 
 procedure TVKPlane.BuildList(var rci: TRenderContextInfo);
 
-  procedure EmitVertex(ptr: PVertexRec); {$IFDEF VKS_INLINE}inline;{$ENDIF}
+  procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
     XGL.TexCoord2fv(@ptr^.TexCoord);
     GL.Vertex3fv(@ptr^.Position);

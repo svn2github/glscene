@@ -1,9 +1,6 @@
 ﻿//
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
-{
-      
-}
 
 unit GLS.SceneForm;
 
@@ -354,7 +351,7 @@ begin
   FColorDepth := vVideoModes[0].ColorDepth;
   FFrequency := vVideoModes[0].MaxFrequency;
 {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+{$IFDEF GLS_X11_SUPPORT}
   FWidth := vVideoModes[0].vdisplay;
   FHeight := vVideoModes[0].hdisplay;
   FColorDepth := 32;

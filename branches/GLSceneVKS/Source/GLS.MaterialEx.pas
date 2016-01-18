@@ -895,13 +895,13 @@ type
     FStoreProgram: TGLuint;
     FAutoSet: TUniformAutoSetMethod;
     function GetProgram: TGLuint;
-{$IFDEF VKS_INLINE} inline;
+{$IFDEF GLS_INLINE} inline;
 {$ENDIF}
     procedure PushProgram;
-{$IFDEF VKS_INLINE} inline;
+{$IFDEF GLS_INLINE} inline;
 {$ENDIF}
     procedure PopProgram;
-{$IFDEF VKS_INLINE} inline;
+{$IFDEF GLS_INLINE} inline;
 {$ENDIF}
 
     function GetFloat: Single; override;
@@ -1477,7 +1477,7 @@ begin
 end;
 
 procedure Div2(var Value: Integer);
-{$IFDEF VKS_INLINE} inline;
+{$IFDEF GLS_INLINE} inline;
 {$ENDIF}
 begin
   Value := Value div 2;
@@ -1521,7 +1521,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$REGION 'TVKBaseMaterialCollectionItem'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKBaseMaterialCollectionItem'}{$ENDIF}
 
 destructor TVKBaseMaterialCollectionItem.Destroy;
 var
@@ -1622,9 +1622,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKFixedFunctionProperties'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKFixedFunctionProperties'}{$ENDIF}
 
 procedure TVKFixedFunctionProperties.Apply(var ARci: TRenderContextInfo);
 begin
@@ -1890,18 +1890,18 @@ begin
     FTexProp.UnApply(ARci);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKAbstractTexture'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKAbstractTexture'}{$ENDIF}
 
 function TVKAbstractTexture.GetTextureTarget: TVKTextureTarget;
 begin
   Result := FHandle.Target;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureImageEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKTextureImageEx'}{$ENDIF}
 
 procedure TVKTextureImageEx.Apply(var ARci: TRenderContextInfo);
 begin
@@ -2689,9 +2689,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureSampler'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKTextureSampler'}{$ENDIF}
 
 procedure TVKTextureSampler.Apply(var ARci: TRenderContextInfo);
 begin
@@ -2807,7 +2807,7 @@ begin
               SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
-{$IFDEF VKS_OPENGL_DEBUG}
+{$IFDEF GLS_OPENGL_DEBUG}
           CheckError;
 {$ENDIF}
 
@@ -2964,9 +2964,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureCombiner'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKTextureCombiner'}{$ENDIF}
 
 procedure TVKTextureCombiner.Assign(Source: TPersistent);
 var
@@ -3088,9 +3088,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialEx'}{$ENDIF}
 
 procedure TVKLibMaterialEx.Apply(var ARci: TRenderContextInfo);
 var
@@ -3437,9 +3437,9 @@ begin
     FNextPass.Apply(ARCi);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKMultitexturingProperties'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKMultitexturingProperties'}{$ENDIF}
 
 procedure TVKMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
 var
@@ -3694,9 +3694,9 @@ begin
     GL.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureProperties'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKTextureProperties'}{$ENDIF}
 
 procedure TVKTextureProperties.Apply(var ARci: TRenderContextInfo);
 var
@@ -4294,9 +4294,9 @@ begin
     end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKShaderEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKShaderEx'}{$ENDIF}
 
 procedure TVKShaderEx.Assign(Source: TPersistent);
 var
@@ -4520,9 +4520,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialProperty'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialProperty'}{$ENDIF}
 
 function TVKLibMaterialProperty.GetMaterial: TVKLibMaterialEx;
 begin
@@ -4586,9 +4586,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKLibMaterialsEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialsEx'}{$ENDIF}
 
 function TVKLibMaterialsEx.Add: TVKLibMaterialEx;
 begin
@@ -4647,9 +4647,9 @@ begin
   inherited Items[AIndex] := AValue;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKBaseShaderModel'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKBaseShaderModel'}{$ENDIF}
 
 procedure TVKBaseShaderModel.Apply(var ARci: TRenderContextInfo);
 var
@@ -5295,9 +5295,9 @@ begin
   ARci.amalgamating := False;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKMatLibComponents'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKMatLibComponents'}{$ENDIF}
 
 function TVKMatLibComponents.GetAttachmentByName(
   const AName: TVKMaterialComponentName): TVKFrameBufferAttachment;
@@ -5475,9 +5475,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKMaterialLibraryEx'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKMaterialLibraryEx'}{$ENDIF}
 
 function TVKMaterialLibraryEx.AddAttachment(
   const AName: TVKMaterialComponentName): TVKFrameBufferAttachment;
@@ -5618,9 +5618,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniformTexture'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformTexture'}{$ENDIF}
 
 procedure TVKShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
 
@@ -5957,9 +5957,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKAbstractShaderUniform'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKAbstractShaderUniform'}{$ENDIF}
 
 function TVKAbstractShaderUniform.GetFloat: Single;
 begin
@@ -6175,9 +6175,9 @@ procedure TVKAbstractShaderUniform.WriteToFiler(AWriter: TWriter);
 begin
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniform'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniform'}{$ENDIF}
 
 function TVKShaderUniform.GetFloat: Single;
 begin
@@ -6456,9 +6456,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKShaderUniformDSA'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformDSA'}{$ENDIF}
 
 procedure TVKShaderUniformDSA.SetFloat(const Value: TGLfloat);
 begin
@@ -6555,9 +6555,9 @@ begin
     Value.V[3]);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKTextureSwizzling'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKTextureSwizzling'}{$ENDIF}
 
 procedure TVKTextureSwizzling.Assign(Source: TPersistent);
 var
@@ -6624,9 +6624,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKFrameBufferAttachment'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKFrameBufferAttachment'}{$ENDIF}
 
 procedure TVKFrameBufferAttachment.Apply(var ARci: TRenderContextInfo);
 begin
@@ -7058,9 +7058,9 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
 
 constructor TStandartUniformAutoSetExecutor.Create;
 begin
@@ -7235,9 +7235,9 @@ begin
     ARci.PipelineTransformation.ProjectionMatrix);
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF VKS_REGION}{$REGION 'TVKASMVertexProgram'}{$ENDIF}
+{$IFDEF GLS_REGION}{$REGION 'TVKASMVertexProgram'}{$ENDIF}
 
 procedure TVKASMVertexProgram.Assign(Source: TPersistent);
 var
@@ -7392,7 +7392,7 @@ begin
   end;
 end;
 
-{$IFDEF VKS_REGION}{$ENDREGION}{$ENDIF}
+{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 
