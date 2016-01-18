@@ -1,4 +1,4 @@
-package GLSceneVCL_CUDA_DesignTime;
+package GLSceneVCL_Parallel_DesignTime;
 
 {$R *.res}
 {$R '..\Resources\GLSceneCUDA.dcr'}
@@ -35,10 +35,10 @@ requires
   designide,
   vcl,
   GLSceneVCL_DesignTime,
-  GLSceneVCL_CUDA_RunTime;
+  GLSceneVCL_Parallel_RunTime;
 
 contains
-  FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLSComputingRegister in '..\Source\GLSComputingRegister.pas';
+  FCUDAEditor in '..\Source\DesignTime\FCUDAEditor.pas' {GLSCUDAEditorForm},
+  GLSComputingRegister in '..\Source\ParallelAPIs\GLSComputingRegister.pas';
 
 end.

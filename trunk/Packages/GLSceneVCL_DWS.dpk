@@ -32,7 +32,7 @@ package GLSceneVCL_DWS;
 requires
   rtl,
   vcl,
-  GLScene_RunTime_VCL,
+  GLSceneVCL_RunTime,
   dws2Runtime;
 
 contains

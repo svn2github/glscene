@@ -34,7 +34,7 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  Bass in '..\Source\Bass.pas',
-  GLSMBASS in '..\Source\GLSMBASS.pas';
+  Bass in '..\Source\SoundVideoAPIs\Bass.pas',
+  GLSMBASS in '..\Source\SoundVideoAPIs\GLSMBASS.pas';
 
 end.

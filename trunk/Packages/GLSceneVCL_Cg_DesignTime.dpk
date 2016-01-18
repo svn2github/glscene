@@ -39,6 +39,6 @@ requires
   GLSceneVCL_Cg_RunTime;
 
 contains
-  GLCgRegister in '..\Source\GLCgRegister.pas';
+  GLCgRegister in '..\Source\Shaders\GLCgRegister.pas';
 
 end.

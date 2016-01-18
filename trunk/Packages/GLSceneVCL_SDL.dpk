@@ -36,8 +36,8 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  GLSDL in '..\Source\GLSDL.pas',
-  GLSDLContext in '..\Source\GLSDLContext.pas',
-  GLSDLWindow in '..\Source\GLSDLWindow.pas';
+  GLSDL in '..\Source\GameAPIs\GLSDL.pas',
+  GLSDLContext in '..\Source\GameAPIs\GLSDLContext.pas',
+  GLSDLWindow in '..\Source\GameAPIs\GLSDLWindow.pas';
 
 end.

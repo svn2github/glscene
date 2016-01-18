@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{80301A84-B97D-4AC1-B92B-78A2FF785613}</ProjectGuid>
-        <MainSource>GLScene_DWS.dpk</MainSource>
+        <MainSource>GLSceneVCL_DWS.dpk</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>

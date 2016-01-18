@@ -35,10 +35,10 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  fmod in '..\Source\fmod.pas',
-  GLSMFMOD in '..\Source\GLSMFMOD.pas',
-  fmodpresets in '..\Source\fmodpresets.pas',
-  fmodtypes in '..\Source\fmodtypes.pas',
-  fmoderrors in '..\Source\fmoderrors.pas';
+  fmod in '..\Source\SoundVideoAPIs\fmod.pas',
+  GLSMFMOD in '..\Source\SoundVideoAPIs\GLSMFMOD.pas',
+  fmodpresets in '..\Source\SoundVideoAPIs\fmodpresets.pas',
+  fmodtypes in '..\Source\SoundVideoAPIs\fmodtypes.pas',
+  fmoderrors in '..\Source\SoundVideoAPIs\fmoderrors.pas';
 
 end.

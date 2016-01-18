@@ -35,7 +35,7 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  GLSMOpenAL in '..\Source\GLSMOpenAL.pas',
-  openal in '..\Source\openal.pas';
+  GLSMOpenAL in '..\Source\SoundVideoAPIs\GLSMOpenAL.pas',
+  openal in '..\Source\SoundVideoAPIs\openal.pas';
 
 end.

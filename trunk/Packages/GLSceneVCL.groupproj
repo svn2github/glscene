@@ -30,10 +30,10 @@
         <Projects Include="GLSceneVCL_Cg_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_CUDA_RunTime.dproj">
+        <Projects Include="GLSceneVCL_Parallel_RunTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_CUDA_DesignTime.dproj">
+        <Projects Include="GLSceneVCL_Parallel_DesignTime.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="GLSceneVCL_SDL.dproj">
@@ -128,23 +128,23 @@
     <Target Name="GLSceneVCL_Cg_DesignTime:Make">
         <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_RunTime">
-        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj"/>
+    <Target Name="GLSceneVCL_Parallel_RunTime">
+        <MSBuild Projects="GLSceneVCL_Parallel_RunTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_RunTime:Clean">
-        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Parallel_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Parallel_RunTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_RunTime:Make">
-        <MSBuild Projects="GLSceneVCL_CUDA_RunTime.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Parallel_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_Parallel_RunTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_DesignTime">
-        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj"/>
+    <Target Name="GLSceneVCL_Parallel_DesignTime">
+        <MSBuild Projects="GLSceneVCL_Parallel_DesignTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_DesignTime:Clean">
-        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Parallel_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Parallel_DesignTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_CUDA_DesignTime:Make">
-        <MSBuild Projects="GLSceneVCL_CUDA_DesignTime.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Parallel_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_Parallel_DesignTime.dproj" Targets="Make"/>
     </Target>
     <Target Name="GLSceneVCL_SDL">
         <MSBuild Projects="GLSceneVCL_SDL.dproj"/>
@@ -156,13 +156,13 @@
         <MSBuild Projects="GLSceneVCL_SDL.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLSceneVCL_RunTime;GLSceneVCL_DesignTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_OpenAL;GLSceneVCL_ODE;GLSceneVCL_NGD;GLSceneVCL_Cg_RunTime;GLSceneVCL_Cg_DesignTime;GLSceneVCL_CUDA_RunTime;GLSceneVCL_CUDA_DesignTime;GLSceneVCL_SDL"/>
+        <CallTarget Targets="GLSceneVCL_RunTime;GLSceneVCL_DesignTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_OpenAL;GLSceneVCL_ODE;GLSceneVCL_NGD;GLSceneVCL_Cg_RunTime;GLSceneVCL_Cg_DesignTime;GLSceneVCL_Parallel_RunTime;GLSceneVCL_Parallel_DesignTime;GLSceneVCL_SDL"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLSceneVCL_RunTime:Clean;GLSceneVCL_DesignTime:Clean;GLSceneVCL_BASS:Clean;GLSceneVCL_FMOD:Clean;GLSceneVCL_OpenAL:Clean;GLSceneVCL_ODE:Clean;GLSceneVCL_NGD:Clean;GLSceneVCL_Cg_RunTime:Clean;GLSceneVCL_Cg_DesignTime:Clean;GLSceneVCL_CUDA_RunTime:Clean;GLSceneVCL_CUDA_DesignTime:Clean;GLSceneVCL_SDL:Clean"/>
+        <CallTarget Targets="GLSceneVCL_RunTime:Clean;GLSceneVCL_DesignTime:Clean;GLSceneVCL_BASS:Clean;GLSceneVCL_FMOD:Clean;GLSceneVCL_OpenAL:Clean;GLSceneVCL_ODE:Clean;GLSceneVCL_NGD:Clean;GLSceneVCL_Cg_RunTime:Clean;GLSceneVCL_Cg_DesignTime:Clean;GLSceneVCL_Parallel_RunTime:Clean;GLSceneVCL_Parallel_DesignTime:Clean;GLSceneVCL_SDL:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLSceneVCL_RunTime:Make;GLSceneVCL_DesignTime:Make;GLSceneVCL_BASS:Make;GLSceneVCL_FMOD:Make;GLSceneVCL_OpenAL:Make;GLSceneVCL_ODE:Make;GLSceneVCL_NGD:Make;GLSceneVCL_Cg_RunTime:Make;GLSceneVCL_Cg_DesignTime:Make;GLSceneVCL_CUDA_RunTime:Make;GLSceneVCL_CUDA_DesignTime:Make;GLSceneVCL_SDL:Make"/>
+        <CallTarget Targets="GLSceneVCL_RunTime:Make;GLSceneVCL_DesignTime:Make;GLSceneVCL_BASS:Make;GLSceneVCL_FMOD:Make;GLSceneVCL_OpenAL:Make;GLSceneVCL_ODE:Make;GLSceneVCL_NGD:Make;GLSceneVCL_Cg_RunTime:Make;GLSceneVCL_Cg_DesignTime:Make;GLSceneVCL_Parallel_RunTime:Make;GLSceneVCL_Parallel_DesignTime:Make;GLSceneVCL_SDL:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

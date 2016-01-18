@@ -35,10 +35,10 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  GLNGDManager in '..\Source\GLNGDManager.pas',
-  GLNewtonRegister in '..\Source\GLNewtonRegister.pas',
-  NewtonImport in '..\Source\NewtonImport.pas',
-  NewtonImport_JointLibrary in '..\Source\NewtonImport_JointLibrary.pas';
+  GLNGDManager in '..\Source\PhysicsAPIs\GLNGDManager.pas',
+  GLNewtonRegister in '..\Source\PhysicsAPIs\GLNewtonRegister.pas',
+  NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
 
 end.
 
