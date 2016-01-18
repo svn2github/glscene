@@ -47,9 +47,6 @@
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE GLS_OPTIMIZATIONS}
 
-// Enable all "Unsafe Type" / "Unsafe Code" compiler warnings
-// May be useful when debugging.
-{.$DEFINE GLS_ENABLE_UNSAFE_WARNINGS}
 
 // De-Activate assembly routines in GLVectorGeometry.pas
 {.$DEFINE GEOMETRY_NO_ASM}
@@ -75,6 +72,21 @@
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
 // This work only on windows platform and with modern compiler (D2009 and FPC}
 {$DEFINE GLS_SERVICE_CONTEXT}
+
+// Activate support of MSWindows
+{.$DEFINE MSWINDOWS}
+
+// Activate support of Mac OS
+{.$DEFINE MACOS}
+
+// Activate support of iOS
+{.$DEFINE iOS}
+
+// Activate support of Android
+{.$DEFINE ANDROID}
+
+// Activate support of Linux
+{.$DEFINE MSWINDOWS}
 
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}
