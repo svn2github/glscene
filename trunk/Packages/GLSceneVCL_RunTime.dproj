@@ -144,7 +144,7 @@
         <DCCReference Include="..\Source\FileFormats\FileMD3.pas"/>
         <DCCReference Include="..\Source\FileFormats\FileOCT.pas"/>
         <DCCReference Include="..\Source\FileFormats\FileX.pas"/>
-        <DCCReference Include="..\Source\GLAVIRecorder.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\GLAVIRecorder.pas"/>
         <DCCReference Include="..\Source\GLAnimatedSprite.pas"/>
         <DCCReference Include="..\Source\GLAnimationUtils.pas"/>
         <DCCReference Include="..\Source\GLApplicationFileIO.pas"/>
@@ -153,8 +153,8 @@
         <DCCReference Include="..\Source\GLAsyncTimer.pas"/>
         <DCCReference Include="..\Source\GLAtmosphere.pas"/>
         <DCCReference Include="..\Source\GLBSP.pas"/>
-        <DCCReference Include="..\Source\GLBaseClasses.pas"/>
-        <DCCReference Include="..\Source\GLBaseMeshSilhouette.pas"/>
+        <DCCReference Include="..\Source\Basis\GLBaseClasses.pas"/>
+        <DCCReference Include="..\Source\Basis\GLBaseMeshSilhouette.pas"/>
         <DCCReference Include="..\Source\GLBehaviours.pas"/>
         <DCCReference Include="..\Source\GLBitmapFont.pas"/>
         <DCCReference Include="..\Source\GLBlur.pas"/>
@@ -223,10 +223,10 @@
         <DCCReference Include="..\Source\GLFireFX.pas"/>
         <DCCReference Include="..\Source\GLFullScreenViewer.pas"/>
         <DCCReference Include="..\Source\GLGLUTesselation.pas"/>
-        <DCCReference Include="..\Source\GLGameMenu.pas"/>
-        <DCCReference Include="..\Source\GLGeomObjects.pas"/>
-        <DCCReference Include="..\Source\GLGeometryBB.pas"/>
-        <DCCReference Include="..\Source\GLGeometryCoordinates.pas"/>
+        <DCCReference Include="..\Source\GameAPIs\GLGameMenu.pas"/>
+        <DCCReference Include="..\Source\Basis\GLGeomObjects.pas"/>
+        <DCCReference Include="..\Source\Basis\GLGeometryBB.pas"/>
+        <DCCReference Include="..\Source\Basis\GLGeometryCoordinates.pas"/>
         <DCCReference Include="..\Source\GLGizmo.pas"/>
         <DCCReference Include="..\Source\GLGizmoEx.pas"/>
         <DCCReference Include="..\Source\GLGraph.pas"/>
@@ -347,13 +347,13 @@
         <DCCReference Include="..\Source\GLTrail.pas"/>
         <DCCReference Include="..\Source\GLTree.pas"/>
         <DCCReference Include="..\Source\GLTriangulation.pas"/>
-        <DCCReference Include="..\Source\GLTypes.pas"/>
+        <DCCReference Include="..\Source\Basis\GLTypes.pas"/>
         <DCCReference Include="..\Source\Shaders\GLUserShader.pas"/>
-        <DCCReference Include="..\Source\GLUtils.pas"/>
-        <DCCReference Include="..\Source\GLVectorFileObjects.pas"/>
-        <DCCReference Include="..\Source\GLVectorGeometry.pas"/>
-        <DCCReference Include="..\Source\GLVectorLists.pas"/>
-        <DCCReference Include="..\Source\GLVectorTypes.pas"/>
+        <DCCReference Include="..\Source\Basis\GLUtils.pas"/>
+        <DCCReference Include="..\Source\Basis\GLVectorFileObjects.pas"/>
+        <DCCReference Include="..\Source\Basis\GLVectorGeometry.pas"/>
+        <DCCReference Include="..\Source\Basis\GLVectorLists.pas"/>
+        <DCCReference Include="..\Source\Basis\GLVectorTypes.pas"/>
         <DCCReference Include="..\Source\GLVerletClasses.pas"/>
         <DCCReference Include="..\Source\GLVerletClothify.pas"/>
         <DCCReference Include="..\Source\GLVerletHairClasses.pas"/>
@@ -372,16 +372,16 @@
         <DCCReference Include="..\Source\FileFormats\LIBPNG.pas"/>
         <DCCReference Include="..\Source\FileFormats\LWObjects.pas"/>
         <DCCReference Include="..\Source\FileFormats\O3TCImage.pas"/>
-        <DCCReference Include="..\Source\OpenGL1x.pas"/>
-        <DCCReference Include="..\Source\OpenGLAdapter.pas"/>
-        <DCCReference Include="..\Source\OpenGLTokens.pas"/>
+        <DCCReference Include="..\Source\Basis\OpenGL1x.pas"/>
+        <DCCReference Include="..\Source\Basis\OpenGLAdapter.pas"/>
+        <DCCReference Include="..\Source\Basis\OpenGLTokens.pas"/>
         <DCCReference Include="..\Source\FileFormats\Q3BSP.pas"/>
         <DCCReference Include="..\Source\FileFormats\Q3MD3.pas"/>
         <DCCReference Include="..\Source\FileFormats\TGA.pas"/>
         <DCCReference Include="..\Source\FileFormats\Types3DS.pas"/>
         <DCCReference Include="..\Source\FileFormats\Utils3DS.pas"/>
         <DCCReference Include="..\Source\FileFormats\VRMLParser.pas"/>
-        <DCCReference Include="..\Source\XOpenGL.pas"/>
+        <DCCReference Include="..\Source\Basis\XOpenGL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -427,16 +427,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -750,7 +741,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
@@ -759,6 +759,7 @@
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
             </Deployment>
+            <ModelSupport>False</ModelSupport>
         </BorlandProject>
         <ProjectFileVersion>12</ProjectFileVersion>
     </ProjectExtensions>

@@ -46,7 +46,7 @@ type
   TSqrt255Array = array[0..255] of Byte;
   PSqrt255Array = ^TSqrt255Array;
 
-  //: Copies the values of Source to Dest (converting word values to integer values)
+//: Copies the values of Source to Dest (converting word values to integer values)
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 //: Round ups to the nearest power of two, value must be positive
 function RoundUpToPowerOf2(value: Integer): Integer;
