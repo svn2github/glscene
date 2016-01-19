@@ -97,11 +97,6 @@ type
    end;
    PBASSInfo = ^TBASSInfo;
 
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TGLSMBASS]);
-end;
-
 // VectorToBASSVector
 //
 procedure VectorToBASSVector(const aVector : TVector; var aBASSVector : BASS_3DVECTOR);
@@ -376,6 +371,12 @@ begin
       Result:=-1;
    end;
 end;
+
+procedure Register;
+begin
+  //RegisterComponents('GLScene', [TGLSMBASS]);
+end;
+
 
 end.
 

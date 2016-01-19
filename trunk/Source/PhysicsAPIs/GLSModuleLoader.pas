@@ -38,7 +38,7 @@ unit GLSModuleLoader;
 
 interface
 
-{$i delphiode.inc}
+{$I delphiode.inc}
 {$WEAKPACKAGEUNIT ON}
 
 // each OS gets its own IFDEFed complete code block to make reading easier

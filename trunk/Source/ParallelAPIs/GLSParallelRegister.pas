@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Registration unit for GLScene Computing package. 
+   Registration unit for GLScene GPU Computing package. 
 
    History :  
        05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam
@@ -11,13 +11,13 @@
        19/03/10 - Yar - Creation
 	 
 }
-unit GLSComputingRegister;
+unit GLSParallelRegister;
 
 interface
 
 uses
   System.Classes, System.SysUtils,
-  DesignIntf, DesignEditors, STREDIT, ToolsAPI,
+  DesignIntf, DesignEditors, StrEdit, ToolsAPI,
   //GLS
   GLSceneRegister;
 
@@ -67,9 +67,13 @@ type
     procedure GetValues(Proc: TGetStrProc); override;
     procedure SetValue(const Value: String); override;
   end;
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 implementation
-
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
+//--------------------------------------------------------------------
 uses
   GLSCUDARunTime,
   GLSCUDAContext,
@@ -79,23 +83,6 @@ uses
   GLSCUDAGraphics,
   GLSCUDAParser,
   FCUDAEditor;
-
-procedure Register;
-begin
-  RegisterComponents('GLScene Computing', [TGLSCUDA, TGLSCUDADevice,
-    TGLSCUDACompiler]);
-  RegisterComponentEditor(TGLSCUDA, TGLSCUDAEditor);
-  RegisterComponentEditor(TGLSCUDACompiler, TGLSCUDACompilerEditor);
-  RegisterPropertyEditor(TypeInfo(string), TGLSCUDACompiler, 'ProjectModule',
-    TGLSCUDACompilerSourceProperty);
-  RegisterPropertyEditor(TypeInfo(string), TGLSCUDADevice, 'SelectDevice',
-    TGLSCUDADeviceProperty);
-  RegisterNoIcon([TCUDAModule, TCUDAMemData, TCUDAFunction, TCUDATexture,
-    TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource, TCUDAConstant,
-    TCUDAFuncParam]);
-
-  ObjectManager.RegisterSceneObject(TGLFeedBackMesh, 'GPU generated mesh', 'Computing', HInstance);
-end;
 
 function FindCuFile(var AModuleName: string): Boolean;
 var
@@ -451,6 +438,24 @@ begin
     end;
   Modified;
 end;
+
+procedure Register;
+begin
+  RegisterComponents('GLScene GPU Computing', [TGLSCUDA, TGLSCUDADevice,
+    TGLSCUDACompiler]);
+  RegisterComponentEditor(TGLSCUDA, TGLSCUDAEditor);
+  RegisterComponentEditor(TGLSCUDACompiler, TGLSCUDACompilerEditor);
+  RegisterPropertyEditor(TypeInfo(string), TGLSCUDACompiler, 'ProjectModule',
+    TGLSCUDACompilerSourceProperty);
+  RegisterPropertyEditor(TypeInfo(string), TGLSCUDADevice, 'SelectDevice',
+    TGLSCUDADeviceProperty);
+  RegisterNoIcon([TCUDAModule, TCUDAMemData, TCUDAFunction, TCUDATexture,
+    TCUDAFFTPlan, TCUDAGLImageResource, TCUDAGLGeometryResource, TCUDAConstant,
+    TCUDAFuncParam]);
+
+  ObjectManager.RegisterSceneObject(TGLFeedBackMesh, 'GPU generated mesh', 'GPU Computing', HInstance);
+end;
+
 
 initialization
 

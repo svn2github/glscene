@@ -85,11 +85,6 @@ implementation
 uses
   GLVectorGeometry, OpenAL{al, alut, alTypes};
 
-procedure Register;
-begin
-   RegisterComponents('GLScene', [TGLSMOpenAL]);
-end;
-
 //checks for an error and raises an exception if necessary
 procedure CheckOpenALError;
 var
@@ -393,6 +388,11 @@ begin
           8: result:= AL_FORMAT_STEREO8;
           16: result:= AL_FORMAT_STEREO16;
      end;
+end;
+
+procedure Register;
+begin
+   //RegisterComponents('GLScene', [TGLSMOpenAL]);
 end;
 
 end.

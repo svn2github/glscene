@@ -98,11 +98,6 @@ type
    end;
    PFMODInfo = ^TFMODInfo;
 
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TGLSMFMOD]);
-end;
-
 // VectorToFMODVector
 //
 procedure VectorToFMODVector(const aVector : TVector; var aFMODVector : TFSoundVector);
@@ -386,6 +381,11 @@ begin
    except
       Result:=-1;
    end;
+end;
+
+procedure Register;
+begin
+  //RegisterComponents('GLScene', [TGLSMFMOD]);
 end;
 
 end.
