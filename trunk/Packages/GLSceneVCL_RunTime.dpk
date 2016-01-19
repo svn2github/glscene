@@ -204,7 +204,6 @@ contains
   GLSLanguage in '..\Source\GLSLanguage.pas',
   GLSLog in '..\Source\GLSLog.pas',
   GLSLShader in '..\Source\Shaders\GLSLShader.pas',
-  GLSMWaveOut in '..\Source\SoundVideoAPIs\GLSMWaveOut.pas',
   GLSMemo in '..\Source\GLSMemo.pas',
   GLSRGBE in '..\Source\GLSRGBE.pas',
   GLSRedBlackTree in '..\Source\GLSRedBlackTree.pas',

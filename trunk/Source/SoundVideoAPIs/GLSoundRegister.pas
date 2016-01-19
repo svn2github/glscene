@@ -33,7 +33,7 @@ implementation
 procedure Register;
 begin
   RegisterClasses([TGLSMWaveOut]);
-  RegisterComponents('GLScene',[TGLSMBASS,TGLSMFMOD,TGLSMOpenAL]);
+  RegisterComponents('GLScene',[TGLSMBASS,TGLSMFMOD,TGLSMOpenAL,TGLSMWaveOut]);
 end;
 
 end.
