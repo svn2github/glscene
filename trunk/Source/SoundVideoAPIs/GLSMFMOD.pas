@@ -10,6 +10,7 @@
     
 
 	 History :  
+       12/01/16 - PW - Removed RegisterComponent to GLSoundRegister unit 
        07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
                               sound source and with sscSample in aSource.Changes
        17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
@@ -79,8 +80,6 @@ type
 	      { Published Declarations }
          property MaxChannels default 32;
 	end;
-
-procedure Register;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -381,11 +380,6 @@ begin
    except
       Result:=-1;
    end;
-end;
-
-procedure Register;
-begin
-  //RegisterComponents('GLScene', [TGLSMFMOD]);
 end;
 
 end.

@@ -9,7 +9,8 @@
        source priorities (not relevant, channels are not limited)
     
 
-	 History :  
+	 History : 
+       12/01/16 - PW - Removed RegisterComponent to GLSoundRegister unit 	 
        14/01/14 - PW - Updated to BASS 2.4 thanks to Ian Luck
        07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
                               sound source and with sscSample in aSource.Changes
@@ -79,8 +80,6 @@ type
 	      { Published Declarations }
          property Algorithm3D : TBASS3DAlgorithm read FAlgorithm3D write FAlgorithm3D default algDefault;
 	end;
-
-procedure Register;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -370,11 +369,6 @@ begin
    except
       Result:=-1;
    end;
-end;
-
-procedure Register;
-begin
-  //RegisterComponents('GLScene', [TGLSMBASS]);
 end;
 
 

@@ -18,6 +18,7 @@
     
 
     History :  
+	   12/01/16 - PW - Removed RegisterComponent to GLSoundRegister unit 
        11/11/09 - DaStr - Added $I GLScene.inc
        16/10/08 - UweR - Compatibility fix for Delphi 2009
        25/03/08 - DanB - Added design-time support, linked to new OpenAL headers
@@ -71,8 +72,6 @@ type
 	end;
 
    EOpenALError = Exception;
-
-procedure Register;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -388,11 +387,6 @@ begin
           8: result:= AL_FORMAT_STEREO8;
           16: result:= AL_FORMAT_STEREO16;
      end;
-end;
-
-procedure Register;
-begin
-   //RegisterComponents('GLScene', [TGLSMOpenAL]);
 end;
 
 end.

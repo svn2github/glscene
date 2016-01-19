@@ -5,6 +5,7 @@
    Basic sound manager based on WinMM  
 
    History :  
+       12/01/16 - PW - Removed RegisterClasses to GLSoundRegister unit 
        17/11/09 - DaStr - Improved Unix compatibility
                              (thanks Predator) (BugtrackerID = 2893580)
        25/07/09 - DaStr - Added $I GLScene.inc
@@ -252,6 +253,5 @@ end;
 
 initialization
 
-  RegisterClasses([TGLSMWaveOut]);
-
+ 
 end.
