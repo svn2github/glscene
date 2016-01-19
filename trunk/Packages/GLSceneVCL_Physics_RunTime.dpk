@@ -1,7 +1,6 @@
-package GLSceneVCL_NGD;
+package GLSceneVCL_Physics_RunTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,6 +26,7 @@ package GLSceneVCL_NGD;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLSceneVCL NGD Manager'}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
@@ -35,10 +35,17 @@ requires
   GLSceneVCL_RunTime;
 
 contains
+  GLODEManager in '..\Source\PhysicsAPIs\GLODEManager.pas',
+  GLODECustomColliders in '..\Source\PhysicsAPIs\GLODECustomColliders.pas',
+  GLODESkeletonColliders in '..\Source\PhysicsAPIs\GLODESkeletonColliders.pas',
+  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
+  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
+  GLODERagdoll in '..\Source\PhysicsAPIs\GLODERagdoll.pas',
+  GLSModuleLoader in '..\Source\PhysicsAPIs\GLSModuleLoader.pas',
   GLNGDManager in '..\Source\PhysicsAPIs\GLNGDManager.pas',
-  GLNewtonRegister in '..\Source\PhysicsAPIs\GLNewtonRegister.pas',
   NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
-  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
+  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas',
+  GLPhysX in '..\Source\PhysicsAPIs\GLPhysX.pas';
 
 end.
 

@@ -1,7 +1,9 @@
-package GLSceneVCL_FMOD;
+package GLSceneVCL_Sounds_DesignTime;
 
 {$R *.res}
+{$R '..\Resources\GLSceneBass.dcr'}
 {$R '..\Resources\GLSceneFMod.dcr'}
+{$R '..\Resources\GLSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,19 +28,18 @@ package GLSceneVCL_FMOD;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL FMOD Manager'}
+{$DESCRIPTION 'GLSceneVCL Sound Managers'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
-  GLSceneVCL_RunTime;
+  designide,
+  vcl,
+  GLSceneVCL_DesignTime,
+  GLSceneVCL_Sounds_RunTime;
 
 contains
-  fmod in '..\Source\SoundVideoAPIs\fmod.pas',
-  GLSMFMOD in '..\Source\SoundVideoAPIs\GLSMFMOD.pas',
-  fmodpresets in '..\Source\SoundVideoAPIs\fmodpresets.pas',
-  fmodtypes in '..\Source\SoundVideoAPIs\fmodtypes.pas',
-  fmoderrors in '..\Source\SoundVideoAPIs\fmoderrors.pas';
+  GLSoundRegister in '..\Source\SoundVideoAPIs\GLSoundRegister.pas';
 
 end.

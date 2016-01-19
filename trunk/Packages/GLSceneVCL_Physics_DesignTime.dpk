@@ -1,7 +1,8 @@
-package GLScene_ODE;
+package GLSceneVCL_Physics_DesignTime;
 
-{.$R *.res}
+{$R *.res}
 {$R '..\Resources\GLSceneODE.dcr'}
+{$R '..\Resources\GLSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,22 +27,19 @@ package GLScene_ODE;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL ODE Manager'}
+{$DESCRIPTION 'GLSceneVCL NGD Manager'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
-  GLSceneVCL_RunTime;
+  vcl,
+  GLSceneVCL_RunTime,
+  GLSceneVCL_Physics_RunTime;
 
 contains
-  GLODEManager in '..\Source\PhysicsAPIs\GLODEManager.pas',
   GLODERegister in '..\Source\PhysicsAPIs\GLODERegister.pas',
-  GLODECustomColliders in '..\Source\PhysicsAPIs\GLODECustomColliders.pas',
-  GLODESkeletonColliders in '..\Source\PhysicsAPIs\GLODESkeletonColliders.pas',
-  ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
-  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
-  GLODERagdoll in '..\Source\PhysicsAPIs\GLODERagdoll.pas',
-  GLSModuleLoader in '..\Source\PhysicsAPIs\GLSModuleLoader.pas';
+  GLNewtonRegister in '..\Source\PhysicsAPIs\GLNewtonRegister.pas';
 
 end.
+

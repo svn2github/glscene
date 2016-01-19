@@ -39,6 +39,6 @@ requires
 
 contains
   FCUDAEditor in '..\Source\DesignTime\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLSComputingRegister in '..\Source\ParallelAPIs\GLSComputingRegister.pas';
+  GLSParallelRegister in '..\Source\ParallelAPIs\GLSParallelRegister.pas';
 
 end.

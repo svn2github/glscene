@@ -30,8 +30,8 @@ package GLSceneVCL_Cg_RunTime;
 {$IMPLICITBUILD ON}
 
 requires
-  vcl,
   rtl,
+  vcl,
   vclimg,
   xmlrtl,
   GLSceneVCL_RunTime;

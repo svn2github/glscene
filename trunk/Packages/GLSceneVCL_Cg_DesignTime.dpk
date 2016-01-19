@@ -35,8 +35,8 @@ requires
   designide,
   VclSmp,
   GLSceneVCL_RunTime,
-  GLSceneVCL_DesignTime,
-  GLSceneVCL_Cg_RunTime;
+  GLSceneVCL_Cg_RunTime,
+  GLSceneVCL_DesignTime;
 
 contains
   GLCgRegister in '..\Source\Shaders\GLCgRegister.pas';

@@ -9,25 +9,16 @@
         <Projects Include="GLSceneVCL_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_BASS.dproj">
+        <Projects Include="GLSceneVCL_Sounds_RunTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_FMOD.dproj">
+        <Projects Include="GLSceneVCL_Sounds_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_OpenAL.dproj">
+        <Projects Include="GLSceneVCL_Physics_RunTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_ODE.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="GLSceneVCL_NGD.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="GLSceneVCL_Cg_RunTime.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="GLSceneVCL_Cg_DesignTime.dproj">
+        <Projects Include="GLSceneVCL_Physics_DesignTime.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="GLSceneVCL_Parallel_RunTime.dproj">
@@ -36,7 +27,10 @@
         <Projects Include="GLSceneVCL_Parallel_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="GLSceneVCL_SDL.dproj">
+        <Projects Include="GLSceneVCL_Cg_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GLSceneVCL_Cg_DesignTime.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -65,68 +59,41 @@
     <Target Name="GLSceneVCL_DesignTime:Make">
         <MSBuild Projects="GLSceneVCL_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_BASS">
-        <MSBuild Projects="GLSceneVCL_BASS.dproj"/>
+    <Target Name="GLSceneVCL_Sounds_RunTime">
+        <MSBuild Projects="GLSceneVCL_Sounds_RunTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_BASS:Clean">
-        <MSBuild Projects="GLSceneVCL_BASS.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Sounds_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Sounds_RunTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_BASS:Make">
-        <MSBuild Projects="GLSceneVCL_BASS.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Sounds_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_Sounds_RunTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_FMOD">
-        <MSBuild Projects="GLSceneVCL_FMOD.dproj"/>
+    <Target Name="GLSceneVCL_Sounds_DesignTime">
+        <MSBuild Projects="GLSceneVCL_Sounds_DesignTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_FMOD:Clean">
-        <MSBuild Projects="GLSceneVCL_FMOD.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Sounds_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Sounds_DesignTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_FMOD:Make">
-        <MSBuild Projects="GLSceneVCL_FMOD.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Sounds_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_Sounds_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_OpenAL">
-        <MSBuild Projects="GLSceneVCL_OpenAL.dproj"/>
+    <Target Name="GLSceneVCL_Physics_RunTime">
+        <MSBuild Projects="GLSceneVCL_Physics_RunTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_OpenAL:Clean">
-        <MSBuild Projects="GLSceneVCL_OpenAL.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Physics_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Physics_RunTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_OpenAL:Make">
-        <MSBuild Projects="GLSceneVCL_OpenAL.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Physics_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_Physics_RunTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_ODE">
-        <MSBuild Projects="GLSceneVCL_ODE.dproj"/>
+    <Target Name="GLSceneVCL_Physics_DesignTime">
+        <MSBuild Projects="GLSceneVCL_Physics_DesignTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_ODE:Clean">
-        <MSBuild Projects="GLSceneVCL_ODE.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Physics_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Physics_DesignTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_ODE:Make">
-        <MSBuild Projects="GLSceneVCL_ODE.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="GLSceneVCL_NGD">
-        <MSBuild Projects="GLSceneVCL_NGD.dproj"/>
-    </Target>
-    <Target Name="GLSceneVCL_NGD:Clean">
-        <MSBuild Projects="GLSceneVCL_NGD.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLSceneVCL_NGD:Make">
-        <MSBuild Projects="GLSceneVCL_NGD.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_RunTime">
-        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_RunTime:Clean">
-        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_RunTime:Make">
-        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_DesignTime">
-        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_DesignTime:Clean">
-        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GLSceneVCL_Cg_DesignTime:Make">
-        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Physics_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_Physics_DesignTime.dproj" Targets="Make"/>
     </Target>
     <Target Name="GLSceneVCL_Parallel_RunTime">
         <MSBuild Projects="GLSceneVCL_Parallel_RunTime.dproj"/>
@@ -146,23 +113,32 @@
     <Target Name="GLSceneVCL_Parallel_DesignTime:Make">
         <MSBuild Projects="GLSceneVCL_Parallel_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="GLSceneVCL_SDL">
-        <MSBuild Projects="GLSceneVCL_SDL.dproj"/>
+    <Target Name="GLSceneVCL_Cg_RunTime">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj"/>
     </Target>
-    <Target Name="GLSceneVCL_SDL:Clean">
-        <MSBuild Projects="GLSceneVCL_SDL.dproj" Targets="Clean"/>
+    <Target Name="GLSceneVCL_Cg_RunTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="GLSceneVCL_SDL:Make">
-        <MSBuild Projects="GLSceneVCL_SDL.dproj" Targets="Make"/>
+    <Target Name="GLSceneVCL_Cg_RunTime:Make">
+        <MSBuild Projects="GLSceneVCL_Cg_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime:Clean">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLSceneVCL_Cg_DesignTime:Make">
+        <MSBuild Projects="GLSceneVCL_Cg_DesignTime.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLSceneVCL_RunTime;GLSceneVCL_DesignTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_OpenAL;GLSceneVCL_ODE;GLSceneVCL_NGD;GLSceneVCL_Cg_RunTime;GLSceneVCL_Cg_DesignTime;GLSceneVCL_Parallel_RunTime;GLSceneVCL_Parallel_DesignTime;GLSceneVCL_SDL"/>
+        <CallTarget Targets="GLSceneVCL_RunTime;GLSceneVCL_DesignTime;GLSceneVCL_Sounds_RunTime;GLSceneVCL_Sounds_DesignTime;GLSceneVCL_Physics_RunTime;GLSceneVCL_Physics_DesignTime;GLSceneVCL_Parallel_RunTime;GLSceneVCL_Parallel_DesignTime;GLSceneVCL_Cg_RunTime;GLSceneVCL_Cg_DesignTime"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLSceneVCL_RunTime:Clean;GLSceneVCL_DesignTime:Clean;GLSceneVCL_BASS:Clean;GLSceneVCL_FMOD:Clean;GLSceneVCL_OpenAL:Clean;GLSceneVCL_ODE:Clean;GLSceneVCL_NGD:Clean;GLSceneVCL_Cg_RunTime:Clean;GLSceneVCL_Cg_DesignTime:Clean;GLSceneVCL_Parallel_RunTime:Clean;GLSceneVCL_Parallel_DesignTime:Clean;GLSceneVCL_SDL:Clean"/>
+        <CallTarget Targets="GLSceneVCL_RunTime:Clean;GLSceneVCL_DesignTime:Clean;GLSceneVCL_Sounds_RunTime:Clean;GLSceneVCL_Sounds_DesignTime:Clean;GLSceneVCL_Physics_RunTime:Clean;GLSceneVCL_Physics_DesignTime:Clean;GLSceneVCL_Parallel_RunTime:Clean;GLSceneVCL_Parallel_DesignTime:Clean;GLSceneVCL_Cg_RunTime:Clean;GLSceneVCL_Cg_DesignTime:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLSceneVCL_RunTime:Make;GLSceneVCL_DesignTime:Make;GLSceneVCL_BASS:Make;GLSceneVCL_FMOD:Make;GLSceneVCL_OpenAL:Make;GLSceneVCL_ODE:Make;GLSceneVCL_NGD:Make;GLSceneVCL_Cg_RunTime:Make;GLSceneVCL_Cg_DesignTime:Make;GLSceneVCL_Parallel_RunTime:Make;GLSceneVCL_Parallel_DesignTime:Make;GLSceneVCL_SDL:Make"/>
+        <CallTarget Targets="GLSceneVCL_RunTime:Make;GLSceneVCL_DesignTime:Make;GLSceneVCL_Sounds_RunTime:Make;GLSceneVCL_Sounds_DesignTime:Make;GLSceneVCL_Physics_RunTime:Make;GLSceneVCL_Physics_DesignTime:Make;GLSceneVCL_Parallel_RunTime:Make;GLSceneVCL_Parallel_DesignTime:Make;GLSceneVCL_Cg_RunTime:Make;GLSceneVCL_Cg_DesignTime:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>
