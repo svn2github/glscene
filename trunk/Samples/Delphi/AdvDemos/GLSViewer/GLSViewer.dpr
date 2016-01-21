@@ -12,7 +12,6 @@ uses
   FGLOptions in 'Source\FGLOptions.pas' {GLOptions},
   FMain in 'Source\FMain.pas' {MainForm},
   FGLAbout in 'Source\FGLAbout.pas' {GLAbout},
-  GNUgettext in 'Source\GNUgettext.pas',
   UGlobals in 'Source\UGlobals.pas',
   USettings in 'Source\USettings.pas';
 

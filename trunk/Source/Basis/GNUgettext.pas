@@ -1,3 +1,6 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
 {*------------------------------------------------------------------------------
   GNU gettext translation system for Delphi, Kylix, C++ Builder and others.
   All parts of the translation system are kept in this unit.

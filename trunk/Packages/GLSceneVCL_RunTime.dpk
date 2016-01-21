@@ -269,6 +269,7 @@ contains
   GLWindowsFont in '..\Source\GLWindowsFont.pas',
   GLXCollection in '..\Source\GLXCollection.pas',
   GLzBuffer in '..\Source\GLzBuffer.pas',
+  GNUgettext in '..\Source\Basis\GNUgettext.pas',
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
   LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
   LWObjects in '..\Source\FileFormats\LWObjects.pas',

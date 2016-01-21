@@ -253,5 +253,6 @@ end;
 
 initialization
 
+  RegisterClasses([TGLSMWaveOut]);
  
 end.

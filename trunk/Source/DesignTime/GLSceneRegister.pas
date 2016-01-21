@@ -557,7 +557,6 @@ uses
   GLSLProjectedTextures,
   GLSLShader,
   GLSmoothNavigator,
-  GLSMWaveOut,
   GLState,
   GLStrings,
   GLTeapot,
@@ -1981,7 +1980,7 @@ begin
   RegisterComponents('GLScene', [TGLScene, TGLSceneViewer, TGLMemoryViewer,
   TGLMaterialLibrary, TGLMaterialLibraryEx, TGLCadencer, TGLGuiLayout, 
   TGLBitmapFont, TGLWindowsBitmapFont, TGLScriptLibrary, TGLSoundLibrary,
-  TGLSMWaveOut, TGLFullScreenViewer]);
+  TGLFullScreenViewer]);
   
   RegisterComponents('GLScene PFX', 
     [TGLCustomPFXManager, TGLPolygonPFXManager,
