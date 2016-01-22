@@ -44,6 +44,12 @@ rem win64
 copy newton64.dll %SystemRoot%\System32\
 copy dJointLibrary64.dll %SystemRoot%\System32\
 
+echo Copying nVidia PhysX DLLs
+rem win32
+copy PhysXwrap.dll %SystemRoot%\SysWOW64\
+rem win64
+copy PhysXwrap.dll %SystemRoot%\System32\
+
 echo Copying CUDA and zlib1 DLLs
 rem win32
 copy cutil32.dll %SystemRoot%\SysWOW64\

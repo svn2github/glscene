@@ -85,6 +85,7 @@
         <VerInfo_Keys>package=com.embarcadero.$(MSBuildProjectName);label=$(MSBuildProjectName);versionCode=1;versionName=1.0.0;persistent=False;restoreAnyVersion=False;installLocation=preferExternal;largeHeap=False;theme=TitleBar;hardwareAccelerated=true</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <DCC_Description>GLSceneVCL OpenGL 3D library</DCC_Description>
         <DCC_UsePackage>rtl;vcl;vclimg;fmx;VclSmp;GLScene_RunTime;vclactnband;vclx;vcldb;bdertl;GbComp;GLSceneVCL_Cg_RunTime;GLSceneVCL_BASS;GLSceneVCL_FMOD;GLSceneVCL_CUDA_RunTime;GLSceneVCL_NGD;GLSceneVCL_ODE;GLSceneVCL_OpenAL;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
@@ -109,6 +110,7 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_Description>GLSceneVCL OpenGL 3D library</DCC_Description>
         <DCC_AdditionalSwitches>-LUDesignIDE </DCC_AdditionalSwitches>
         <DCC_HppOutput>..\include\</DCC_HppOutput>
         <DCC_ObjOutput>..\lib\</DCC_ObjOutput>

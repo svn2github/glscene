@@ -27,7 +27,7 @@ package GLSceneVCL_Physics_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL Physics Manager'}
+{$DESCRIPTION 'GLSceneVCL Physics Managers'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
