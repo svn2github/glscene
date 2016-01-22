@@ -1,7 +1,6 @@
-package GLSceneVKS_FMOD;
+package GLSceneVKS_Sounds_RunTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneFMOD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,20 +25,24 @@ package GLSceneVKS_FMOD;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS Vulkan FMOD Manager'}
+{$DESCRIPTION 'GLSceneVKS Sound Managers'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  fmx,
-  rtl,
-  GLSceneVKS_RunTime;
+  rtl;
 
 contains
+  Bass in '..\Source\SoundVideoAPIs\Bass.pas',
   fmod in '..\Source\SoundVideoAPIs\fmod.pas',
-  fmodtypes in '..\Source\SoundVideoAPIs\fmodtypes.pas',
+  fmoddyn in '..\Source\SoundVideoAPIs\fmoddyn.pas',
   fmoderrors in '..\Source\SoundVideoAPIs\fmoderrors.pas',
   fmodpresets in '..\Source\SoundVideoAPIs\fmodpresets.pas',
-  GLS.SMFMOD in '..\Source\SoundVideoAPIs\GLS.SMFMOD.pas';
+  fmodtypes in '..\Source\SoundVideoAPIs\fmodtypes.pas',
+  GLS.SMBASS in '..\Source\SoundVideoAPIs\GLS.SMBASS.pas',
+  GLS.SMFMOD in '..\Source\SoundVideoAPIs\GLS.SMFMOD.pas',
+  GLS.SMOpenAL in '..\Source\SoundVideoAPIs\GLS.SMOpenAL.pas',
+  GLS.SMWaveOut in '..\Source\SoundVideoAPIs\GLS.SMWaveOut.pas',
+  OpenAL in '..\Source\SoundVideoAPIs\OpenAL.pas';
 
 end.

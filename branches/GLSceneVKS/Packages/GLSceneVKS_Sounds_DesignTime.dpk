@@ -1,7 +1,9 @@
-package GLSceneVKS_NGD;
+package GLSceneVKS_Sounds_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneNGD.dcr'}
+{$R '..\Resources\GLSceneBass.dcr'}
+{$R '..\Resources\GLSceneFMod.dcr'}
+{$R '..\Resources\GLSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,18 +28,17 @@ package GLSceneVKS_NGD;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS NGD Manager'}
+{$DESCRIPTION 'GLSceneVKS Sound Managers'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  GLSceneVKS_RunTime;
+  GLSceneVKS_DesignTime,
+  GLSceneVKS_Sounds_RunTime;
 
 contains
-  GLS.NGDManager in '..\Source\PhysicsAPIs\GLS.NGDManager.pas',
-  GLS.NewtonRegister in '..\Source\PhysicsAPIs\GLS.NewtonRegister.pas',
-  NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
-  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas';
+  GLS.SoundRegister in '..\Source\SoundVideoAPIs\GLS.SoundRegister.pas';
 
 end.

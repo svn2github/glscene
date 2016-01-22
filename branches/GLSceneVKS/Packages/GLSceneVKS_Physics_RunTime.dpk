@@ -1,7 +1,6 @@
-package GLSceneVKS_ODE;
+package GLSceneVKS_Physics_RunTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneODE.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,22 +25,27 @@ package GLSceneVKS_ODE;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS ODE Manager'}
+{$DESCRIPTION 'GLScene 3D library'}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  fmx,
   rtl,
+  vcl,
   GLSceneVKS_RunTime;
 
 contains
-  GLS.ModuleLoader in '..\Source\PhysicsAPIs\GLS.ModuleLoader.pas',
   GLS.ODEManager in '..\Source\PhysicsAPIs\GLS.ODEManager.pas',
-  GLS.ODERegister in '..\Source\PhysicsAPIs\GLS.ODERegister.pas',
   GLS.ODECustomColliders in '..\Source\PhysicsAPIs\GLS.ODECustomColliders.pas',
   GLS.ODESkeletonColliders in '..\Source\PhysicsAPIs\GLS.ODESkeletonColliders.pas',
   ODEImport in '..\Source\PhysicsAPIs\ODEImport.pas',
+  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas',
   GLS.ODERagdoll in '..\Source\PhysicsAPIs\GLS.ODERagdoll.pas',
-  ODEGL in '..\Source\PhysicsAPIs\ODEGL.pas';
+  GLS.ModuleLoader in '..\Source\PhysicsAPIs\GLS.ModuleLoader.pas',
+  GLS.NGDManager in '..\Source\PhysicsAPIs\GLS.NGDManager.pas',
+  NewtonImport in '..\Source\PhysicsAPIs\NewtonImport.pas',
+  NewtonImport_JointLibrary in '..\Source\PhysicsAPIs\NewtonImport_JointLibrary.pas',
+  GLS.PhysX in '..\Source\PhysicsAPIs\GLS.PhysX.pas';
 
 end.
+

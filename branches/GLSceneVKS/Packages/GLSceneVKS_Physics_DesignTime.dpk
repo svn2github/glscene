@@ -1,7 +1,8 @@
-package GLSceneVKS_OpenAL;
+package GLSceneVKS_Physics_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneOpenAL.dcr'}
+{$R '..\Resources\GLSceneODE.dcr'}
+{$R '..\Resources\GLSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,17 +27,19 @@ package GLSceneVKS_OpenAL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS Vulkan OpenAL Manager'}
-{$RUNONLY}
+{$DESCRIPTION 'GLSceneVCL Physics Manager'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
-  fmx,
   rtl,
-  GLSceneVKS_RunTime;
+  vcl,
+  GLSceneVKS_RunTime,
+  GLSceneVKS_Physics_RunTime;
 
 contains
-  openal in '..\Source\SoundVideoAPIs\openal.pas',
-  GLS.SMOpenAL in '..\Source\SoundVideoAPIs\GLS.SMOpenAL.pas';
+  GLS.ODERegister in '..\Source\PhysicsAPIs\GLS.ODERegister.pas',
+  GLS.NewtonRegister in '..\Source\PhysicsAPIs\GLS.NewtonRegister.pas';
 
 end.
+

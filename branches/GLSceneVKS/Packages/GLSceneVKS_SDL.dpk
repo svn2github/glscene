@@ -26,7 +26,7 @@ package GLSceneVKS_SDL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS SDL library'}
+{$DESCRIPTION 'GLScene VKS SDL library'}
 {$IMPLICITBUILD ON}
 
 requires
@@ -34,8 +34,8 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  GLS.SDLContext in '..\Source\GamesAPIs\GLS.SDLContext.pas',
-  GLS.SDLWindow in '..\Source\GamesAPIs\GLS.SDLWindow.pas',
-  SDL in '..\Source\GamesAPIs\SDL.pas';
+  GLS.SDLContext in '..\Source\GameAPIs\GLS.SDLContext.pas',
+  GLS.SDLWindow in '..\Source\GameAPIs\GLS.SDLWindow.pas',
+  SDL in '..\Source\GameAPIs\SDL.pas';
 
 end.

@@ -761,7 +761,7 @@ type
     shtFragment
     );
 
-  // TVKSLShaderEx
+  // TVKGLSLShaderEx
   //
 
   TVKShaderEx = class(TVKBaseMaterialCollectionItem)

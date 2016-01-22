@@ -27,6 +27,7 @@ package GLSceneVKS_Parallel_DesignTime;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLSceneVKS GPU Computing'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
@@ -37,6 +38,6 @@ requires
 
 contains
   FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLS.ComputingRegister in '..\Source\GLS.ComputingRegister.pas';
+  GLS.ParallelRegister in '..\Source\GLS.ParallelRegister.pas';
 
 end.
