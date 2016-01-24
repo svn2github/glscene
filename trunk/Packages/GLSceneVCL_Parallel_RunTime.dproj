@@ -65,10 +65,7 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_HppOutput>..\include\</DCC_HppOutput>
         <GenPackage>true</GenPackage>
-        <DCC_ObjOutput>..\lib\</DCC_ObjOutput>
-        <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
         <SanitizedProjectName>GLSceneVCL_Parallel_RunTime</SanitizedProjectName>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_K>false</DCC_K>

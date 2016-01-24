@@ -59,16 +59,13 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_HppOutput>..\include\</DCC_HppOutput>
         <GenPackage>true</GenPackage>
-        <DCC_ObjOutput>..\lib\</DCC_ObjOutput>
         <SanitizedProjectName>GLSceneVCL_DesignTime</SanitizedProjectName>
-        <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_K>false</DCC_K>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <GenDll>true</GenDll>
-        <DCC_Description>GLScene VCL OpenGL 3D library</DCC_Description>
+        <DCC_Description>GLSceneVCL OpenGL 3D library</DCC_Description>
         <DCC_F>false</DCC_F>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;REST.Authenticator.OAuth.WebForm;Winapi;System.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
@@ -110,11 +107,7 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_Description>GLSceneVCL OpenGL 3D library</DCC_Description>
         <DCC_AdditionalSwitches>-LUDesignIDE </DCC_AdditionalSwitches>
-        <DCC_HppOutput>..\include\</DCC_HppOutput>
-        <DCC_ObjOutput>..\lib\</DCC_ObjOutput>
-        <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
