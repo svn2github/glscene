@@ -116,7 +116,7 @@
         <TASM_Debugging>Full</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <ILINK_LibraryPath>..\..\..\..\..\lib\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <VerInfo_Locale>1033</VerInfo_Locale>

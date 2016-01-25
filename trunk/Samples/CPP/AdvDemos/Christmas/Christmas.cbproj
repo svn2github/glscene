@@ -64,7 +64,7 @@
         <OutputExt>scr</OutputExt>
         <SanitizedProjectName>Christmas</SanitizedProjectName>
         <ProjectType>CppVCLApplication</ProjectType>
-        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_BASS.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_Sounds_RunTime.lib</AllPackageLibs>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <Multithreaded>true</Multithreaded>
@@ -80,7 +80,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <PackageImports>IndyIPClient;frx17;fs17;GLSceneVCL_NGD;bindcompfmx;DBXSqliteDriver;vcldbx;GLSceneVCL_ODE;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLSceneVCL_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
+        <PackageImports>IndyIPClient;frx17;fs17;GLSceneVCL_Physics_RunTime;bindcompfmx;DBXSqliteDriver;vcldbx;GLSceneVCL_Physics_RunTime;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLSceneVCL_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
         <IncludePath>$(BDSINCLUDE)\windows\vcl</IncludePath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -95,7 +95,7 @@
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
-        <PackageImports>IndyIPClient;frx17;fs17;GLSceneVCL_NGD;bindcompfmx;DBXSqliteDriver;vcldbx;GLSceneVCL_ODE;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLSceneVCL_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
+        <PackageImports>IndyIPClient;frx17;fs17;GLSceneVCL_Physics_RunTime;bindcompfmx;DBXSqliteDriver;vcldbx;GLSceneVCL_Physics_RunTime;fmx;rtl;dbrtl;DbxClientDriver;IndySystem;TeeDB;bindcomp;inetdb;inetdbbde;vclib;DBXInterBaseDriver;DataSnapClient;DataSnapCommon;DBXOdbcDriver;DataSnapServer;Tee;GLSceneVCL_RunTime;DataSnapProviderClient;xmlrtl;DBXSybaseASEDriver;ibxpress;DbxCommonDriver;vclimg;IndyProtocols;DBXMySQLDriver;dbxcds;MetropolisUILiveTile;bindengine;vclactnband;vcldb;soaprtl;bindcompdbx;vcldsnap;bindcompvcl;FMXTee;TeeUI;vclie;DBXDb2Driver;vcltouch;bcbsmp;websnap;DBXOracleDriver;CustomIPTransport;vclribbon;VclSmp;dsnap;DBXInformixDriver;IndyIPServer;fmxase;vcl;DataSnapConnectors;IndyCore;DBXMSSQLDriver;CodeSiteExpressPkg;CloudService;DBXFirebirdDriver;dsnapcon;frxDB17;inet;fsDB17;fmxobj;IndyIPCommon;FmxTeeUI;vclx;frxe17;inetdbxpress;webdsnap;DBXSybaseASADriver;fmxdae;bdertl;dbexpress;DataSnapIndy10ServerTransport;adortl;bcbie;$(PackageImports)</PackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <BCC_OptimizeForSpeed>false</BCC_OptimizeForSpeed>
@@ -119,12 +119,12 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <ILINK_LibraryPath>..\..\..\..\lib\</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp</ILINK_LibraryPath>
         <Defines>_DEBUG;$(Defines)</Defines>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <FinalOutputDir>.</FinalOutputDir>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <LinkPackageStatics>GLSceneVCL_BASS.lib</LinkPackageStatics>
+        <LinkPackageStatics>GLSceneVCL_Sounds_RunTime.lib</LinkPackageStatics>
         <LinkPackageImports>rtl.bpi;vcl.bpi;fmx.bpi;xmlrtl.bpi;vclimg.bpi;GLSceneVCL_RunTime.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
@@ -262,12 +262,27 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules">
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <RemoteDir>Contents\MacOS</RemoteDir>
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="iOSSimulator">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
@@ -621,27 +636,12 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
+                <DeployClass Name="ProjectiOSDeviceResourceRules">
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>

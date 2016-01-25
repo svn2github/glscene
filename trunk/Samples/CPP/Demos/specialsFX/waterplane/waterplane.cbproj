@@ -118,7 +118,7 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
-        <ILINK_LibraryPath>..\..\..\..\..\lib\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <FinalOutputDir>.\$(Platform)\$(Config)</FinalOutputDir>
         <IntermediateOutputDir>.\$(Platform)\$(Config)</IntermediateOutputDir>
         <Defines>DEBUG;$(Defines)</Defines>

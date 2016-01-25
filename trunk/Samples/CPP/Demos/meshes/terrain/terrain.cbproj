@@ -81,7 +81,7 @@
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <BCC_PCHCache>true</BCC_PCHCache>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
-        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_BASS.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_Sounds_RunTime.lib</AllPackageLibs>
         <ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
         <DynamicRTL>true</DynamicRTL>
         <FinalOutputDir>.</FinalOutputDir>
@@ -117,14 +117,14 @@
         <TASM_Debugging>Full</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <ILINK_LibraryPath>..\..\..\..\..\lib\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <_TCHARMapping>char</_TCHARMapping>
-        <LinkPackageStatics>fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_BASS.lib</LinkPackageStatics>
+        <LinkPackageStatics>fmx.lib;xmlrtl.lib;vclimg.lib;GLSceneVCL_RunTime.lib;GLSceneVCL_Sounds_RunTime.lib</LinkPackageStatics>
         <LinkPackageImports>rtl.bpi;vcl.bpi</LinkPackageImports>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
