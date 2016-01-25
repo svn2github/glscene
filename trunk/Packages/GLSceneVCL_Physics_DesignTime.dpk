@@ -38,8 +38,7 @@ requires
   GLSceneVCL_Physics_RunTime;
 
 contains
-  GLODERegister in '..\Source\PhysicsAPIs\GLODERegister.pas',
-  GLNewtonRegister in '..\Source\PhysicsAPIs\GLNewtonRegister.pas';
+  GLPhysicsRegister in '..\Source\PhysicsAPIs\GLPhysicsRegister.pas';
 
 end.
 
