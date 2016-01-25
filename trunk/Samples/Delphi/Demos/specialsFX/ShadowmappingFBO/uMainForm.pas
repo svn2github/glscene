@@ -40,14 +40,14 @@ type
     procedure GLSLShader2Initialize(Shader: TGLCustomGLSLShader);
     procedure GLSLShader1UnApply(Shader: TGLCustomGLSLShader; var ThereAreMorePasses: Boolean);
     procedure FormResize(Sender: TObject);
-    procedure PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure PrepareShadowMappingRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLSLShader2Apply(Shader: TGLCustomGLSLShader);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure LightFBORendererBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure LightFBORendererAfterRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure LightFBORendererBeforeRender(Sender: TObject; var rci: TGLRenderContextInfo);
+    procedure LightFBORendererAfterRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
@@ -68,7 +68,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.PrepareShadowMappingRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   // prepare shadow mapping matrix
   FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
@@ -193,7 +193,7 @@ begin
   end;
 end;
 
-procedure TForm1.LightFBORendererBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.LightFBORendererBeforeRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   // get the modelview and projection matrices from the light's "camera"
   with rci.PipelineTransformation do
@@ -211,7 +211,7 @@ begin
   end;
 end;
 
-procedure TForm1.LightFBORendererAfterRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.LightFBORendererAfterRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   rci.GLStates.Disable(stPolygonOffsetFill);
 end;

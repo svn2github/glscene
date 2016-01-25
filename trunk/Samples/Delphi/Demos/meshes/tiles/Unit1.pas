@@ -43,7 +43,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure GLDirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGLRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure BUPackClick(Sender: TObject);
     procedure CBShowGridClick(Sender: TObject);
     procedure CBSortByMaterialsClick(Sender: TObject);
@@ -155,7 +155,7 @@ begin
    GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.GLDirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGLRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
    // we clear the depth buffer, so that the grid is always in front of the
    // tile plane and won't Z-Fight with it

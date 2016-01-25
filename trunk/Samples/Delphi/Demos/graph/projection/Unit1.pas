@@ -23,7 +23,7 @@ type
     GLLightSource1: TGLLightSource;
     GLXYZGrid1: TGLXYZGrid;
     procedure FormCreate(Sender: TObject);
-    procedure DirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure DirectOpenGLRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure SceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure SceneViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -53,7 +53,7 @@ begin
       GLPoints.Positions.Add((Random-0.5)*5, (Random-0.5)*5, (Random-0.5)*5);
 end;
 
-procedure TForm1.DirectOpenGLRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.DirectOpenGLRender(Sender: TObject; var rci: TGLRenderContextInfo);
 var
    i : Integer;
    mat : TMatrix;

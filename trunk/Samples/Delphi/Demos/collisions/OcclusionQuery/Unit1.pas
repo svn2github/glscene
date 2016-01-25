@@ -35,9 +35,9 @@ type
     CheckBox1: TCheckBox;
     LabelFPS: TLabel;
     procedure OGLBeginQueriesRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure OGLEndQueriesRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure FormDestroy(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -98,7 +98,7 @@ begin
 end;
 
 procedure TForm1.OGLBeginQueriesRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   // Generate the queries, if not already created
   if not queriesCreated then
@@ -124,7 +124,7 @@ begin
 end;
 
 procedure TForm1.OGLEndQueriesRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   lQuery: TGLQueryHandle;
 begin

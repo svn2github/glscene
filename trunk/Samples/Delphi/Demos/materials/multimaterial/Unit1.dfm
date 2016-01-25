@@ -14,7 +14,6 @@ object Form1: TForm1
   Position = poScreenCenter
   WindowState = wsMaximized
   OnCreate = FormCreate
-  OnMouseWheel = FormMouseWheel
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -26,7 +25,6 @@ object Form1: TForm1
     FieldOfView = 149.673782348632800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
-    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object GLScene1: TGLScene
@@ -87,5 +85,25 @@ object Form1: TForm1
     DesignTimeEnabled = False
     Left = 240
     Top = 8
+  end
+  object GLSimpleNavigation1: TGLSimpleNavigation
+    Form = Owner
+    GLSceneViewer = GLSceneViewer1
+    FormCaption = 'Multi Material - %FPS'
+    KeyCombinations = <
+      item
+        ShiftState = [ssLeft, ssRight]
+        Action = snaZoom
+      end
+      item
+        ShiftState = [ssLeft]
+        Action = snaMoveAroundTarget
+      end
+      item
+        ShiftState = [ssRight]
+        Action = snaMoveAroundTarget
+      end>
+    Left = 200
+    Top = 152
   end
 end

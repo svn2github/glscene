@@ -31,7 +31,7 @@ type
     Label2: TLabel;
     LabelFPS: TLabel;
     procedure GLDirectOpenGL1Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
@@ -78,7 +78,7 @@ begin
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
    camPos, pos : TVector;
    imp : TImposter;

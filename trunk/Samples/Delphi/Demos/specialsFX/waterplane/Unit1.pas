@@ -37,13 +37,13 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLUserShader1DoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var color: TVector4f; var texPoint: TTexPoint);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+      var rci: TGLRenderContextInfo; var Continue: Boolean);
   private
     { Private declarations }
   public
@@ -117,7 +117,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
    cubeMapMode : Integer;
 begin
@@ -140,7 +140,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+  var rci: TGLRenderContextInfo; var Continue: Boolean);
 begin
    rci.GLStates.Disable(stBlend);
 end;
@@ -150,7 +150,7 @@ begin
    reflectionToggle:=False;   // toggle for environment sphere
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
    reflectionToggle:=True;    // toggle for pond/water plane
 end;

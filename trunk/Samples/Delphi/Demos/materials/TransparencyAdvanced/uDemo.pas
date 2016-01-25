@@ -40,12 +40,12 @@ type
     GLWindowsBitmapFont1: TGLWindowsBitmapFont;
     ClearFrameBuffer: TGLDirectOpenGL;
     procedure ClearFrameBufferRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure FormCreate(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
-    procedure CustomRedererRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure CustomRedererRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLSceneViewer1AfterRender(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
@@ -91,7 +91,7 @@ begin
 end;
 
 procedure TForm1.ClearFrameBufferRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 end;
@@ -268,7 +268,7 @@ begin
 end;
 
 procedure TForm1.CustomRedererRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   rci.ignoreBlendingRequests := True;
   rci.GLStates.Disable(stBlend);

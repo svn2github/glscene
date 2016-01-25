@@ -50,7 +50,7 @@ type
       newTime: Double);
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
     procedure GLDirectOpenGL1Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormShow(Sender: TObject);
     procedure aniPosChange(Sender: TObject);
@@ -58,9 +58,9 @@ type
     procedure aniBoxSelect(Sender: TObject);
     procedure Actor1EndFrameReached(Sender: TObject);
     procedure GLFrameBufferAfterRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLFrameBufferBeforeRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
   private
     FAppPath: string;
     procedure SetAppPath(const Value: string);
@@ -281,7 +281,7 @@ begin
 end;
 
 procedure TfrmMain.GLDirectOpenGL1Render(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   // prepare shadow mapping matrix
   FInvCameraMatrix := rci.PipelineTransformation.InvModelViewMatrix;
@@ -294,13 +294,13 @@ begin
 end;
 
 procedure TfrmMain.GLFrameBufferAfterRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   CurrentGLContext.GLStates.Disable(stPolygonOffsetFill);
 end;
 
 procedure TfrmMain.GLFrameBufferBeforeRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   with CurrentGLContext.PipelineTransformation do
   begin

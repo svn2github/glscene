@@ -178,11 +178,11 @@ type
     BackgroundColor: TColorVector;
     PassCount: Integer;
   public
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   end;
 
-procedure THiddenLineShader.DoApply(var rci: TRenderContextInfo;
+procedure THiddenLineShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
   PassCount := 1;
@@ -197,7 +197,7 @@ begin
   end;
 end;
 
-function THiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function THiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case PassCount of
     1:

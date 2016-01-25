@@ -34,19 +34,19 @@ type
     GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure DOInitializeRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure GLUserShader1DoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+      var rci: TGLRenderContextInfo; var Continue: Boolean);
     procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
       var color: TVector4f; var texPoint: TTexPoint);
     procedure DOOceanPlaneRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLMemoryViewer1BeforeRender(Sender: TObject);
   private
     { Private declarations }
@@ -91,7 +91,7 @@ begin
 end;
 
 procedure TForm1.DoInitializeRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   if not (GL.ARB_shader_objects and GL.ARB_vertex_program and GL.ARB_vertex_shader
     and GL.ARB_fragment_shader) then
@@ -134,7 +134,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   camPos: TVector;
 begin
@@ -147,7 +147,7 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+  var rci: TGLRenderContextInfo; var Continue: Boolean);
 begin
   programObject.EndUseProgramObject;
 end;
@@ -189,7 +189,7 @@ var
   nbVerts: Integer;
 
 procedure TForm1.DOOceanPlaneRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   x, y: Integer;
   v: TTexPointList;

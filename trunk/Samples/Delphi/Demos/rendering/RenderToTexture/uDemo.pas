@@ -33,11 +33,11 @@ type
     GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLFBORenderer2AfterRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLFBORenderer1AfterRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure CheckBox1Click(Sender: TObject);
@@ -88,7 +88,7 @@ begin
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   Inc(N);
   if N >= FramerateRatio then
@@ -101,14 +101,14 @@ begin
 end;
 
 procedure TForm1.GLFBORenderer1AfterRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   GLCube1.Material.LibMaterialName := GLFBORenderer1.ColorTextureName;
   GLFBORenderer1.Active := False;
 end;
 
 procedure TForm1.GLFBORenderer2AfterRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   GLCube1.Material.LibMaterialName := GLFBORenderer2.ColorTextureName;
   GLFBORenderer2.Active := False;

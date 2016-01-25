@@ -53,7 +53,7 @@ type
       ObjectCollided: TGLBaseSceneObject; CollisionInfo: TDCECollision);
     procedure Timer1Timer(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
   private
     { Private declarations }
   public
@@ -361,7 +361,7 @@ begin
 end;
 
 procedure TForm1.GLDirectOpenGL1Render(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   i: integer;
   p, n: TAffineVector;

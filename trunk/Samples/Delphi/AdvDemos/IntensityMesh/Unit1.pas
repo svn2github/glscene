@@ -38,7 +38,7 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLUserShaderDoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+      var rci: TGLRenderContextInfo; var Continue: Boolean);
     procedure CBSmoothClick(Sender: TObject);
     procedure CBWireFrameClick(Sender: TObject);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
@@ -122,7 +122,7 @@ begin
 end;
 
 procedure TForm1.GLUserShaderDoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+  var rci: TGLRenderContextInfo; var Continue: Boolean);
 begin
    if not CBWireFrame.Checked then
       Pass:=2; // skip wireframe pass

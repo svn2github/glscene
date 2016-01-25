@@ -57,10 +57,10 @@ type
     procedure cudaProcessParameterSetup(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure CallPostProcessRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure ResultShaderApply(Shader: TGLCustomGLSLShader);
-    procedure RenderToTextureBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure RenderToTextureAfterRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure RenderToTextureBeforeRender(Sender: TObject; var rci: TGLRenderContextInfo);
+    procedure RenderToTextureAfterRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure TrackBar1Change(Sender: TObject);
     procedure GLSCUDA1OpenGLInteropInit(out Context: TGLContext);
   private
@@ -93,7 +93,7 @@ begin
 end;
 
 procedure TForm1.CallPostProcessRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   processedTextureMapper.MapResources;
   processedTextureMapper.BindArrayToTexture(processedTextureArray, 0, 0);
@@ -134,7 +134,7 @@ begin
   GLSceneViewer1.Invalidate;
 end;
 
-procedure TForm1.RenderToTextureBeforeRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.RenderToTextureBeforeRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   CommonShader.Apply(rci, Self);
 end;
@@ -144,7 +144,7 @@ begin
   Context := GLSceneViewer1.Buffer.RenderingContext;
 end;
 
-procedure TForm1.RenderToTextureAfterRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.RenderToTextureAfterRender(Sender: TObject; var rci: TGLRenderContextInfo);
 begin
   CommonShader.UnApply(rci);
 end;

@@ -38,7 +38,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure GLPostEffect1CustomEffect(Sender: TObject;
-      var rci: TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
+      var rci: TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer);
   private
     { Private declarations }
   public
@@ -88,7 +88,7 @@ end;
 
 {$R-} // Turn off range checking.
 procedure TMainForm.GLPostEffect1CustomEffect(Sender: TObject;
-  var rci: TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
+  var rci: TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer);
 var
   I: Longword;
 begin

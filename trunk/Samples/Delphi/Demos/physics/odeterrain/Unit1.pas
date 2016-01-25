@@ -49,7 +49,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    procedure DropODEObject(anElementClass : TODEElementClass);
+    procedure DropODEObject(anElementClass : TGLODEElementClass);
   end;
 
 var
@@ -206,7 +206,7 @@ begin
    GLLensFlare.PreRender(Sender as TGLSceneBuffer);
 end;
 
-procedure TForm1.DropODEObject(anElementClass : TODEElementClass);
+procedure TForm1.DropODEObject(anElementClass : TGLODEElementClass);
 var
   dummy : TGLBaseSceneObject;
   dyn : TGLODEDynamic;

@@ -33,7 +33,7 @@ type
     GLSkyDome: TGLSkyDome;
     ConstellationLines: TGLLines;
     procedure FormCreate(Sender: TObject);
-    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+    procedure GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencerProgress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -98,7 +98,7 @@ begin
   end;
 end;
 
-procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRenderContextInfo);
 const
   // unrealisticly thick atmospheres look better :)
   cAtmosphereRadius: Single = 0.55;

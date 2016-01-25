@@ -11,7 +11,7 @@ uses
   //GLScene
   GLScene, GLObjects, GLWin32Viewer, GLTexture, GLVectorGeometry,
   GLCadencer, GLMultiMaterialShader, GLTexCombineShader, GLMaterial,
-  GLCoordinates, GLCrossPlatform, GLUtils, GLBaseClasses;
+  GLCoordinates, GLCrossPlatform, GLUtils, GLBaseClasses, GLSimpleNavigation;
 
 type
   TForm1 = class(TForm)
@@ -26,6 +26,7 @@ type
     GLMultiMaterialShader1: TGLMultiMaterialShader;
     GLCadencer1: TGLCadencer;
     GLTexCombineShader1: TGLTexCombineShader;
+    GLSimpleNavigation1: TGLSimpleNavigation;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);

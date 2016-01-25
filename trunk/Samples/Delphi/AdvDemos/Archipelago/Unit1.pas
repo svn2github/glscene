@@ -49,8 +49,8 @@ type
     procedure GLSceneViewerBeforeRender(Sender: TObject);
     procedure DOWakeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
-    procedure DOWakeRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure TerrainRendererHeightDataPostRender(var rci: TRenderContextInfo;
+    procedure DOWakeRender(Sender: TObject; var rci: TGLRenderContextInfo);
+    procedure TerrainRendererHeightDataPostRender(var rci: TGLRenderContextInfo;
       var HeightDatas: TList);
   private
     { Private declarations }
@@ -393,7 +393,7 @@ begin
 end;
 
 procedure TForm1.TerrainRendererHeightDataPostRender(
-  var rci: TRenderContextInfo; var HeightDatas: TList);
+  var rci: TGLRenderContextInfo; var HeightDatas: TList);
 var
   i, x, y, s, s2: Integer;
   t: Single;
@@ -543,7 +543,7 @@ begin
   end;
 end;
 
-procedure TForm1.DOWakeRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TForm1.DOWakeRender(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   i, n: Integer;
   p: PAffineVector;

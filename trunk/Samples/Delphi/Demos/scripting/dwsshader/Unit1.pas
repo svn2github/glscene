@@ -38,9 +38,9 @@ type
     procedure RecompileClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GLUserShader1DoApply(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-      var rci: TRenderContextInfo; var Continue: Boolean);
+      var rci: TGLRenderContextInfo; var Continue: Boolean);
     procedure EnabledClick(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
@@ -84,14 +84,14 @@ begin
 end;
 
 procedure TForm1.GLUserShader1DoApply(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   // Call the scripted DoApply procedure to handle the shader application
   GLScriptLibrary1.Scripts[0].Call('DoApply',[]);
 end;
 
 procedure TForm1.GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
-  var rci: TRenderContextInfo; var Continue: Boolean);
+  var rci: TGLRenderContextInfo; var Continue: Boolean);
 begin
   // Call the scripted DoUnApply function to handle the shader unapplication
   // pass the result of the scripted function to the Continue variable

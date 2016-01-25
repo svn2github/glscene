@@ -50,15 +50,15 @@ type
       newTime: Double);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
-    procedure DOTreesRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure DOTreesRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure PFXTreesBeginParticles(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure PFXTreesCreateParticle(Sender: TObject;
       aParticle: TGLParticle);
     procedure PFXTreesEndParticles(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure PFXTreesRenderParticle(Sender: TObject;
-      aParticle: TGLParticle; var rci: TRenderContextInfo);
+      aParticle: TGLParticle; var rci: TGLRenderContextInfo);
     procedure SIBTreeImposterLoaded(Sender: TObject;
       impostoredObject: TGLBaseSceneObject; destImposter: TImposter);
     function SIBTreeLoadingImposter(Sender: TObject;
@@ -70,11 +70,11 @@ type
     function PFXTreesGetParticleCountEvent(Sender: TObject): Integer;
     procedure FormResize(Sender: TObject);
     procedure DOInitializeReflectionRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure DOGLSLWaterPlaneRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure DOClassicWaterPlaneRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure FormDeactivate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
@@ -330,14 +330,14 @@ begin
 end;
 
 procedure TForm1.PFXTreesBeginParticles(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   imposter := SIBTree.ImposterFor(TestTree);
   imposter.BeginRender(rci);
 end;
 
 procedure TForm1.PFXTreesRenderParticle(Sender: TObject;
-  aParticle: TGLParticle; var rci: TRenderContextInfo);
+  aParticle: TGLParticle; var rci: TGLRenderContextInfo);
 const
   cTreeCenteringOffset: TAffineVector = (X:0; Y:30; Z:0);
 var
@@ -362,7 +362,7 @@ begin
 end;
 
 procedure TForm1.PFXTreesEndParticles(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   aParticle: TGLParticle;
   camPos: TVector;
@@ -381,7 +381,7 @@ begin
 end;
 
 procedure TForm1.DOTreesRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   i: Integer;
   particle: TGLParticle;
@@ -468,7 +468,7 @@ begin
 end;
 
 procedure TForm1.DOInitializeReflectionRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   w, h: Integer;
   refMat: TMatrix;
@@ -568,7 +568,7 @@ begin
 end;
 
 procedure TForm1.DOClassicWaterPlaneRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 const
   cWaveScale = 7;
   cWaveSpeed = 0.02;
@@ -662,7 +662,7 @@ begin
 end;
 
 procedure TForm1.DOGLSLWaterPlaneRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   x, y: Integer;
 begin
