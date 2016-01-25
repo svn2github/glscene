@@ -140,7 +140,7 @@ type
     destructor Destroy; override;
 
     //: Main rendering procedure.
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     //: Used to determine extents.
     function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
@@ -213,7 +213,7 @@ begin
 end;
 
 
-procedure TGLCustomAtmosphere.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TGLCustomAtmosphere.DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean);
 var
   radius, invAtmosphereHeight:    Single;
   sunPos, eyePos, lightingVector: TVector;

@@ -35,7 +35,7 @@
                         Geom collide code now uses Resolution to determine the
                         number of contact points to generate.
      19/11/04 - SG - Changed TGLODETerrainCollider to TGLODEHeightField
-                        which now inherits from TGLODEBehaviour and works for
+                        which now inherits from TODEBehaviour and works for
                         both TGLTerrainRenderer and TGLHeightField objects.
                         Added Capsule, Cylinder and Cone collider code for
                         the heightfield collider.
@@ -141,7 +141,7 @@ type
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TGLRenderContextInfo); override;
 
     property Geom: PdxGeom read FGeom;
 
@@ -186,8 +186,8 @@ type
 
   end;
 
-function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
-function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
@@ -204,7 +204,7 @@ var
   // GetODEHeightField
   //
 
-function GetODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
   result := TGLODEHeightField(obj.Behaviours.GetByClass(TGLODEHeightField));
 end;
@@ -212,7 +212,7 @@ end;
 // GetOrCreateODEHeightField
 //
 
-function GetOrCreateODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
+function GetOrCreateGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;
 begin
   result := TGLODEHeightField(obj.GetOrCreateBehaviour(TGLODEHeightField));
 end;
@@ -735,7 +735,7 @@ end;
 // Render
 //
 
-procedure TGLODECustomCollider.Render(var rci: TRenderContextInfo);
+procedure TGLODECustomCollider.Render(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin

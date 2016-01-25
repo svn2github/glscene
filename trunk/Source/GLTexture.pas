@@ -39,7 +39,7 @@
        06/10/08 - DanB - added Assert check for trying to create texture images
        05/10/08 - DanB - separated texture image editor from texture unit
                             moved color related stuff to GLColor.pas
-                            moved TRenderContextInfo into separate unit
+                            moved TGLRenderContextInfo into separate unit
        12/04/08 - DaStr - Bugfixed TGLTextureExItem.Create()
                               (thanks dAlex) (BugTracker ID = 1940451)
        10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
@@ -133,7 +133,7 @@
        04/09/01 - EG - Texture binding cache
        31/08/01 - EG - tiaDefault wasn't honoured (Rene Lindsay)
        25/08/01 - EG - Added TGLBlankImage
-       16/08/01 - EG - drawState now part of TRenderContextInfo
+       16/08/01 - EG - drawState now part of TGLRenderContextInfo
        15/08/01 - EG - TexGen support (object_linear, eye_linear and sphere_map)
        13/08/01 - EG - Fixed OnTextureNeeded handling (paths for mat lib)
        12/08/01 - EG - Completely rewritten handles management
@@ -761,17 +761,17 @@ type
     procedure PrepareBuildList;
     procedure ApplyMappingMode;
     procedure UnApplyMappingMode;
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure UnApply(var rci: TGLRenderContextInfo);
     {Applies to TEXTURE1 }
-    procedure ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix: PMatrix
+    procedure ApplyAsTexture2(var rci: TGLRenderContextInfo; textureMatrix: PMatrix
       = nil);
-    procedure UnApplyAsTexture2(var rci: TRenderContextInfo;
+    procedure UnApplyAsTexture2(var rci: TGLRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
     {N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
-    procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+    procedure ApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
       textureMatrix: PMatrix = nil);
-    procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+    procedure UnApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
 
     procedure Assign(Source: TPersistent); override;
@@ -966,8 +966,8 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject);
 
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure UnApply(var rci: TGLRenderContextInfo);
 
   published
     { Published Decalarations }
@@ -996,8 +996,8 @@ type
     constructor Create(AOwner: TGLUpdateAbleObject);
 
     procedure NotifyChange(Sender: TObject);
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure UnApply(var rci: TGLRenderContextInfo);
     function IsTextureEnabled(Index: Integer): Boolean;
 
     function Add: TGLTextureExItem;
@@ -3176,7 +3176,7 @@ end;
 // Apply
 //
 
-procedure TGLTexture.Apply(var rci: TRenderContextInfo);
+procedure TGLTexture.Apply(var rci: TGLRenderContextInfo);
 
   procedure SetCubeMapTextureMatrix;
   var
@@ -3257,7 +3257,7 @@ end;
 // UnApply
 //
 
-procedure TGLTexture.UnApply(var rci: TRenderContextInfo);
+procedure TGLTexture.UnApply(var rci: TGLRenderContextInfo);
 begin
   if not Disabled
     and not rci.GLStates.ForwardContext then
@@ -3279,7 +3279,7 @@ end;
 // ApplyAsTexture2
 //
 
-procedure TGLTexture.ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix:
+procedure TGLTexture.ApplyAsTexture2(var rci: TGLRenderContextInfo; textureMatrix:
   PMatrix = nil);
 begin
   ApplyAsTextureN(2, rci, textureMatrix);
@@ -3288,7 +3288,7 @@ end;
 // UnApplyAsTexture2
 //
 
-procedure TGLTexture.UnApplyAsTexture2(var rci: TRenderContextInfo;
+procedure TGLTexture.UnApplyAsTexture2(var rci: TGLRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
   UnApplyAsTextureN(2, rci, reloadIdentityTextureMatrix);
@@ -3297,7 +3297,7 @@ end;
 // ApplyAsTextureN
 //
 
-procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+procedure TGLTexture.ApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
   textureMatrix: PMatrix = nil);
 var
   m: TMatrix;
@@ -3337,7 +3337,7 @@ end;
 // UnApplyAsTextureN
 //
 
-procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+procedure TGLTexture.UnApplyAsTextureN(n: Integer; var rci: TGLRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
   if not rci.GLStates.ForwardContext then
@@ -3897,7 +3897,7 @@ end;
 // Apply
 //
 
-procedure TGLTextureExItem.Apply(var rci: TRenderContextInfo);
+procedure TGLTextureExItem.Apply(var rci: TGLRenderContextInfo);
 begin
   FApplied := False;
   if FTexture.Enabled then
@@ -3924,7 +3924,7 @@ end;
 // UnApply
 //
 
-procedure TGLTextureExItem.UnApply(var rci: TRenderContextInfo);
+procedure TGLTextureExItem.UnApply(var rci: TGLRenderContextInfo);
 begin
   if FApplied then
   begin
@@ -4069,7 +4069,7 @@ end;
 // Apply
 //
 
-procedure TGLTextureEx.Apply(var rci: TRenderContextInfo);
+procedure TGLTextureEx.Apply(var rci: TGLRenderContextInfo);
 var
   i, texUnits: Integer;
   units: Cardinal;
@@ -4097,7 +4097,7 @@ end;
 // UnApply
 //
 
-procedure TGLTextureEx.UnApply(var rci: TRenderContextInfo);
+procedure TGLTextureEx.UnApply(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin

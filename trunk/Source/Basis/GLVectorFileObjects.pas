@@ -417,7 +417,7 @@ type
     function BoneCount: Integer;
 
     //: Render skeleton wireframe
-    procedure BuildList(var mrci: TRenderContextInfo); virtual; abstract;
+    procedure BuildList(var mrci: TGLRenderContextInfo); virtual; abstract;
     procedure PrepareGlobalMatrices; virtual;
   end;
 
@@ -437,7 +437,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
     //: Render skeleton wireframe
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
 
     property GlobalMatrix: TMatrix read FGlobalMatrix write FGlobalMatrix;
   end;
@@ -471,7 +471,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
     //: Render skeleton wireframe
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
 
     property Owner: TGLSkeletonBoneList read FOwner;
     property Name: string read FName write FName;
@@ -732,12 +732,12 @@ type
 
     procedure BufferArrays;
 
-    procedure DeclareArraysToOpenGL(var mrci: TRenderContextInfo;
+    procedure DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo;
       evenIfAlreadyDeclared: Boolean = False);
-    procedure DisableOpenGLArrays(var mrci: TRenderContextInfo);
+    procedure DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
 
-    procedure EnableLightMapArray(var mrci: TRenderContextInfo);
-    procedure DisableLightMapArray(var mrci: TRenderContextInfo);
+    procedure EnableLightMapArray(var mrci: TGLRenderContextInfo);
+    procedure DisableLightMapArray(var mrci: TGLRenderContextInfo);
 
     procedure SetTexCoordsEx(index: Integer; const val: TVectorList);
     function GetTexCoordsEx(index: Integer): TVectorList;
@@ -774,9 +774,9 @@ type
 
     {Prepare the texture and materials before rendering. 
        Invoked once, before building the list and NOT while building the list. }
-    procedure PrepareBuildList(var mrci: TRenderContextInfo); virtual;
+    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); virtual;
     //: Similar to regular scene object's BuildList method
-    procedure BuildList(var mrci: TRenderContextInfo); virtual;
+    procedure BuildList(var mrci: TGLRenderContextInfo); virtual;
 
     //: The extents of the object (min and max coordinates)
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
@@ -877,9 +877,9 @@ type
 
     {Prepare the texture and materials before rendering. 
        Invoked once, before building the list and NOT while building the list. }
-    procedure PrepareBuildList(var mrci: TRenderContextInfo); virtual;
+    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); virtual;
     //: Similar to regular scene object's BuildList method
-    procedure BuildList(var mrci: TRenderContextInfo); virtual;
+    procedure BuildList(var mrci: TGLRenderContextInfo); virtual;
 
     procedure MorphTo(morphTargetIndex: Integer);
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
@@ -1091,8 +1091,8 @@ type
   protected
     { Protected Declarations }
     procedure AttachLightmap(lightMap: TGLTexture; var mrci:
-      TRenderContextInfo);
-    procedure AttachOrDetachLightmap(var mrci: TRenderContextInfo);
+      TGLRenderContextInfo);
+    procedure AttachOrDetachLightmap(var mrci: TGLRenderContextInfo);
 
   public
     { Public Declarations }
@@ -1105,7 +1105,7 @@ type
     procedure PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
     procedure DropMaterialLibraryCache;
 
-    procedure BuildList(var mrci: TRenderContextInfo); virtual; abstract;
+    procedure BuildList(var mrci: TGLRenderContextInfo); virtual; abstract;
 
     {Add to the list the triangles corresponding to the facegroup. 
        This function is used by TGLMeshObjects ExtractTriangles to retrieve
@@ -1171,7 +1171,7 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
@@ -1215,7 +1215,7 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
@@ -1250,7 +1250,7 @@ type
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
@@ -1407,7 +1407,7 @@ type
        MaterialLibraryCache can be assumed to having been prepared if materials
        are active. Default behaviour is to prepare build lists for the
        meshobjects. }
-    procedure PrepareBuildList(var mrci: TRenderContextInfo); dynamic;
+    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); dynamic;
 
   public
     { Public Declarations }
@@ -1422,8 +1422,8 @@ type
     function BarycenterPosition: TVector;
     function BarycenterAbsolutePosition: TVector; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
     {Notifies that geometry data changed, but no re-preparation is needed. 
@@ -1827,7 +1827,7 @@ type
     procedure SetOptions(const val: TGLActorOptions);
 
     procedure PrepareMesh; override;
-    procedure PrepareBuildList(var mrci: TRenderContextInfo); override;
+    procedure PrepareBuildList(var mrci: TGLRenderContextInfo); override;
     procedure DoAnimate; virtual;
 
     procedure RegisterControler(aControler: TGLBaseAnimationControler);
@@ -1839,7 +1839,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
@@ -2987,7 +2987,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkeletonRootBoneList.BuildList(var mrci: TRenderContextInfo);
+procedure TGLSkeletonRootBoneList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -3074,7 +3074,7 @@ end;
 // BuildList
 //
 
-procedure TGLSkeletonBone.BuildList(var mrci: TRenderContextInfo);
+procedure TGLSkeletonBone.BuildList(var mrci: TGLRenderContextInfo);
 
   procedure IssueColor(color: Cardinal);
   begin
@@ -4732,7 +4732,7 @@ end;
 // DeclareArraysToOpenGL
 //
 
-procedure TGLMeshObject.DeclareArraysToOpenGL(var mrci: TRenderContextInfo;
+procedure TGLMeshObject.DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo;
   evenIfAlreadyDeclared: Boolean = False);
 var
   i: Integer;
@@ -4867,7 +4867,7 @@ end;
 // DisableOpenGLArrays
 //
 
-procedure TGLMeshObject.DisableOpenGLArrays(var mrci: TRenderContextInfo);
+procedure TGLMeshObject.DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -4935,7 +4935,7 @@ end;
 // EnableLightMapArray
 //
 
-procedure TGLMeshObject.EnableLightMapArray(var mrci: TRenderContextInfo);
+procedure TGLMeshObject.EnableLightMapArray(var mrci: TGLRenderContextInfo);
 begin
   if GL.ARB_multitexture and (not mrci.ignoreMaterials) then
   begin
@@ -4953,7 +4953,7 @@ end;
 // DisableLightMapArray
 //
 
-procedure TGLMeshObject.DisableLightMapArray(var mrci: TRenderContextInfo);
+procedure TGLMeshObject.DisableLightMapArray(var mrci: TGLRenderContextInfo);
 begin
   if GL.ARB_multitexture and FLightMapArrayEnabled then
   begin
@@ -4967,7 +4967,7 @@ end;
 // PrepareMaterials
 //
 
-procedure TGLMeshObject.PrepareBuildList(var mrci: TRenderContextInfo);
+procedure TGLMeshObject.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5116,7 +5116,7 @@ begin
   GL.CheckError;
 end;
 
-procedure TGLMeshObject.BuildList(var mrci: TRenderContextInfo);
+procedure TGLMeshObject.BuildList(var mrci: TGLRenderContextInfo);
 var
   i, j, groupID, nbGroups: Integer;
   gotNormals, gotTexCoords, gotColor: Boolean;
@@ -5326,7 +5326,7 @@ end;
 // PrepareBuildList
 //
 
-procedure TGLMeshObjectList.PrepareBuildList(var mrci: TRenderContextInfo);
+procedure TGLMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5339,7 +5339,7 @@ end;
 // BuildList
 //
 
-procedure TGLMeshObjectList.BuildList(var mrci: TRenderContextInfo);
+procedure TGLMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -6348,7 +6348,7 @@ end;
 //
 
 procedure TGLFaceGroup.AttachLightmap(lightMap: TGLTexture; var mrci:
-  TRenderContextInfo);
+  TGLRenderContextInfo);
 begin
   if GL.ARB_multitexture then
     with lightMap do
@@ -6364,7 +6364,7 @@ end;
 // AttachOrDetachLightmap
 //
 
-procedure TGLFaceGroup.AttachOrDetachLightmap(var mrci: TRenderContextInfo);
+procedure TGLFaceGroup.AttachOrDetachLightmap(var mrci: TGLRenderContextInfo);
 var
   libMat: TGLLibMaterial;
 begin
@@ -6529,7 +6529,7 @@ end;
 // BuildList
 //
 
-procedure TFGVertexIndexList.BuildList(var mrci: TRenderContextInfo);
+procedure TFGVertexIndexList.BuildList(var mrci: TGLRenderContextInfo);
 const
   cFaceGroupMeshModeToOpenGL: array[TGLFaceGroupMeshMode] of Integer =
     (GL_TRIANGLES, GL_TRIANGLE_STRIP, GL_TRIANGLES, GL_TRIANGLE_FAN, GL_QUADS);
@@ -6850,7 +6850,7 @@ end;
 // BuildList
 //
 
-procedure TFGVertexNormalTexIndexList.BuildList(var mrci: TRenderContextInfo);
+procedure TFGVertexNormalTexIndexList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
   vertexPool: PAffineVectorArray;
@@ -6984,7 +6984,7 @@ end;
 // BuildList
 //
 
-procedure TFGIndexTexCoordList.BuildList(var mrci: TRenderContextInfo);
+procedure TFGIndexTexCoordList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i, k: integer;
   texCoordPool: PAffineVectorArray;
@@ -7823,7 +7823,7 @@ end;
 // PrepareBuildList
 //
 
-procedure TGLBaseMesh.PrepareBuildList(var mrci: TRenderContextInfo);
+procedure TGLBaseMesh.PrepareBuildList(var mrci: TGLRenderContextInfo);
 begin
   MeshObjects.PrepareBuildList(mrci);
   if LightmapLibrary <> nil then
@@ -7847,7 +7847,7 @@ end;
 // BuildList
 //
 
-procedure TGLBaseMesh.BuildList(var rci: TRenderContextInfo);
+procedure TGLBaseMesh.BuildList(var rci: TGLRenderContextInfo);
 begin
   MeshObjects.BuildList(rci);
 end;
@@ -7855,7 +7855,7 @@ end;
 // DoRender
 //
 
-procedure TGLBaseMesh.DoRender(var rci: TRenderContextInfo;
+procedure TGLBaseMesh.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   if Assigned(LightmapLibrary) then
@@ -9124,7 +9124,7 @@ end;
 // BuildList
 //
 
-procedure TGLActor.BuildList(var rci: TRenderContextInfo);
+procedure TGLActor.BuildList(var rci: TGLRenderContextInfo);
 begin
   DoAnimate;
   inherited;
@@ -9151,7 +9151,7 @@ end;
 // PrepareBuildList
 //
 
-procedure TGLActor.PrepareBuildList(var mrci: TRenderContextInfo);
+procedure TGLActor.PrepareBuildList(var mrci: TGLRenderContextInfo);
 begin
   // no preparation needed for actors, they don't use buildlists
 end;

@@ -109,7 +109,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     {Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
@@ -185,7 +185,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     {Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
@@ -315,7 +315,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     {Number of triangles used for rendering. }
     property TriangleCount: Integer read FTriangleCount;
@@ -497,7 +497,7 @@ end;
 // BuildList
 //
 
-procedure TGLRevolutionSolid.BuildList(var rci: TRenderContextInfo);
+procedure TGLRevolutionSolid.BuildList(var rci: TGLRenderContextInfo);
 var
   deltaAlpha, startAlpha, stopAlpha, alpha: Single;
   deltaS: Single;
@@ -1127,7 +1127,7 @@ end;
 var
   vSinCache, vCosCache: array of Single;
 
-procedure TGLPipe.BuildList(var rci: TRenderContextInfo);
+procedure TGLPipe.BuildList(var rci: TGLRenderContextInfo);
 type
   TNodeData = record
     pos: TAffineVector;
@@ -1690,7 +1690,7 @@ end;
 // BuildList
 //
 
-procedure TGLExtrusionSolid.BuildList(var rci: TRenderContextInfo);
+procedure TGLExtrusionSolid.BuildList(var rci: TGLRenderContextInfo);
 var
   {deltaS,}deltaZ: Single;
   lastNormal: TAffineVector;

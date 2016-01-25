@@ -107,9 +107,9 @@ type
     property OnUnApply: TGLAsmShaderUnUplyEvent read FOnUnApply write FOnUnApply;
     property OnInitialize: TGLAsmShaderEvent read FOnInitialize write FOnInitialize;
 
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
   public
     { Public Declarations }
@@ -182,7 +182,7 @@ begin
   FGPHandle := nil;
 end;
 
-procedure TGLCustomAsmShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomAsmShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   ApplyShaderPrograms();
 
@@ -190,7 +190,7 @@ begin
     FOnApply(Self);
 end;
 
-procedure TGLCustomAsmShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomAsmShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   if not ShaderSupported then
   begin
@@ -233,7 +233,7 @@ begin
   end;
 end;
 
-function TGLCustomAsmShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomAsmShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   if Assigned(FOnUnApply) then
     FOnUnApply(Self, Result)

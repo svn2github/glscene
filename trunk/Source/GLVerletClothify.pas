@@ -154,7 +154,7 @@ type
     procedure AddEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
     procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TGLVerletWorld);
 
-    procedure RenderEdges(var rci : TRenderContextInfo);
+    procedure RenderEdges(var rci : TGLRenderContextInfo);
 
     property CurrentNodeOffset : integer read FCurrentNodeOffset;
     property NodesAdded : boolean read FNodesAdded;
@@ -571,7 +571,7 @@ begin
   end;
 end;
 
-procedure TEdgeDetector.RenderEdges(var rci: TRenderContextInfo);
+procedure TEdgeDetector.RenderEdges(var rci: TGLRenderContextInfo);
 var
   i : integer;
   Edge : TEdge;

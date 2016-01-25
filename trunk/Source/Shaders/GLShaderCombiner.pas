@@ -57,8 +57,8 @@ type
     procedure SetShaderOne(const Value: TGLShader);
     procedure SetShaderTwo(const Value: TGLShader);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     property CombinerType: TGLShaderCombinerType read FCombinerType write FCombinerType default sctOneSPTwoAP;
@@ -108,7 +108,7 @@ begin
   FCombinerType := sctOneSPTwoAP;
 end;
 
-procedure TGLCustomShaderCombiner.DoApply(var rci: TRenderContextInfo;
+procedure TGLCustomShaderCombiner.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
   if (csDesigning in ComponentState) then Exit;
@@ -142,7 +142,7 @@ begin
   end;
 end;
 
-function TGLCustomShaderCombiner.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomShaderCombiner.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case FCombinerType of
     sctOneMPTwoSP:

@@ -2183,13 +2183,13 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
-LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'VCL version');
-GLCrossPlatform.IsDesignTime := True;
-GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
-GLColor.vUseDefaultColorSets := True;
-GLCoordinates.vUseDefaultCoordinateSets := True;
-ReadVideoModes;
+  SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
+  LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'VCL version');
+  GLCrossPlatform.IsDesignTime := True;
+  GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
+  GLColor.vUseDefaultColorSets := True;
+  GLCoordinates.vUseDefaultCoordinateSets := True;
+  ReadVideoModes;
 
 with ObjectManager do
 begin

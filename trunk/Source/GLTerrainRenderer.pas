@@ -63,11 +63,11 @@ const
 
 type
   TGetTerrainBoundsEvent = procedure(var l, t, r, b: Single) of object;
-  TPatchPostRenderEvent = procedure(var rci: TRenderContextInfo;
+  TPatchPostRenderEvent = procedure(var rci: TGLRenderContextInfo;
     const patches: TList) of object;
-  THeightDataPostRenderEvent = procedure(var rci: TRenderContextInfo;
+  THeightDataPostRenderEvent = procedure(var rci: TGLRenderContextInfo;
     var HeightDatas: TList) of object;
-  TMaxCLODTrianglesReachedEvent = procedure(var rci: TRenderContextInfo)
+  TMaxCLODTrianglesReachedEvent = procedure(var rci: TGLRenderContextInfo)
     of object;
 
   TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
@@ -150,7 +150,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
@@ -514,7 +514,7 @@ end;
 
 // BuildList
 //
-procedure TGLTerrainRenderer.BuildList(var rci: TRenderContextInfo);
+procedure TGLTerrainRenderer.BuildList(var rci: TGLRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
   TilePos, AbsTilePos, Observer: TAffineVector;

@@ -153,7 +153,7 @@ type
     FManagerName: string;
 
     procedure setShowArrows(value: boolean);
-    procedure RenderArrowLines(Sender: TObject; var rci: TRenderContextInfo);
+    procedure RenderArrowLines(Sender: TObject; var rci: TGLRenderContextInfo);
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -885,7 +885,7 @@ begin
 end;
 
 procedure TGLBFPSMovement.RenderArrowLines(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   x, y, z, t: single;
   i: integer;

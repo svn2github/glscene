@@ -68,9 +68,9 @@ type
     procedure NotifyLibMaterial3Destruction;
     procedure NotifyLibMaterial4Destruction;
 
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
 
   public
@@ -233,14 +233,14 @@ end;
 // DoInitialize
 //
 
-procedure TGLTexCombineShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLTexCombineShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
 end;
 
 // DoApply
 //
 
-procedure TGLTexCombineShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLTexCombineShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 var
   n, units: Integer;
 begin
@@ -313,7 +313,7 @@ end;
 // DoUnApply
 //
 
-function TGLTexCombineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLTexCombineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   if FApplied3 then
     with currentLibMaterial3.Material.Texture do

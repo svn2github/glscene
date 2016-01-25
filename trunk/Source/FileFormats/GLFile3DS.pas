@@ -257,7 +257,7 @@ type
   TGLFile3DSMeshObject = class(TGLFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
-    procedure BuildList(var ARci: TRenderContextInfo); override;
+    procedure BuildList(var ARci: TGLRenderContextInfo); override;
   end;
 
   {TGLFile3DSDummyObject. A 3ds-specific omni light. }
@@ -1384,7 +1384,7 @@ begin
     SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
-procedure TGLFile3DSMeshObject.BuildList(var ARci: TRenderContextInfo);
+procedure TGLFile3DSMeshObject.BuildList(var ARci: TGLRenderContextInfo);
 begin
   GL.PushMatrix;
   if not FStatic then

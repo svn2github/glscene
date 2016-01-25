@@ -184,7 +184,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -193,7 +193,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -202,7 +202,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -211,7 +211,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -220,7 +220,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -229,7 +229,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -238,7 +238,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -247,7 +247,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -397,8 +397,8 @@ type
     procedure SetGLGizmoExThickness(const Value: Single);
 
     procedure ActivatingElements(PickList: TGLPickList);
-    procedure InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure InternalRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure InterfaceRender(Sender: TObject; var rci: TGLRenderContextInfo);
+    procedure InternalRender(Sender: TObject; var rci: TGLRenderContextInfo);
     function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TGLPickList;
     procedure SetViewer(const Value: TGLSceneViewer);
     procedure SetLabelFont(const Value: TGLCustomBitmapFont);
@@ -669,7 +669,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUIArrowLine.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUIArrowLine.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -685,7 +685,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUIDisk.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUIDisk.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -700,7 +700,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUISphere.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUISphere.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -715,7 +715,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUIPolyGon.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUIPolyGon.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -730,7 +730,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUIFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUIFrustrum.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -745,7 +745,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUITorus.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUITorus.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -760,7 +760,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUILines.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUILines.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -775,7 +775,7 @@ begin
   inherited;
 end;
 
-procedure TGLGizmoExUIFlatText.BuildList(var rci: TRenderContextInfo);
+procedure TGLGizmoExUIFlatText.BuildList(var rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -2101,7 +2101,7 @@ end;
 
 
 
-procedure TGLGizmoEx.InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TGLGizmoEx.InterfaceRender(Sender: TObject; var rci: TGLRenderContextInfo);
 
   procedure cLine(glc: TGLCanvas; p1, p2: TPoint);
   begin
@@ -2167,7 +2167,7 @@ begin
   end;
 end;
 
-procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextInfo);
 
   procedure ShowBoundingBox(aObject: TGLBaseSceneObject);
   const

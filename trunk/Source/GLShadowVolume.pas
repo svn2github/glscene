@@ -157,7 +157,7 @@ type
 
     {Compute and setup scissor clipping rect for the light. 
        Returns true if a scissor rect was setup }
-    function SetupScissorRect(worldAABB: PAABB; var rci: TRenderContextInfo):
+    function SetupScissorRect(worldAABB: PAABB; var rci: TGLRenderContextInfo):
       Boolean;
 
   public
@@ -271,7 +271,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -497,7 +497,7 @@ end;
 //
 
 function TGLShadowVolumeLight.SetupScissorRect(worldAABB: PAABB; var rci:
-  TRenderContextInfo): Boolean;
+  TGLRenderContextInfo): Boolean;
 var
   mvp: TMatrix;
   ls: TGLLightSource;
@@ -760,7 +760,7 @@ end;
 // DoRender
 //
 
-procedure TGLShadowVolume.DoRender(var ARci: TRenderContextInfo;
+procedure TGLShadowVolume.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 
 // Function that determines if an object is "recursively visible". It halts when

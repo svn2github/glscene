@@ -65,7 +65,7 @@ type
     { Protected Declarations }
     {Sets up the base texture matrix for this emitter 
        Should be called whenever a change on its properties is made.}
-    procedure SetupTexMatrix(var ARci: TRenderContextInfo);
+    procedure SetupTexMatrix(var ARci: TGLRenderContextInfo);
 
   public
     { Public Declarations }
@@ -143,7 +143,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
@@ -182,7 +182,7 @@ end;
 // SetupTexMatrix
 //
 
-procedure TGLTextureEmitter.SetupTexMatrix(var ARci: TRenderContextInfo);
+procedure TGLTextureEmitter.SetupTexMatrix(var ARci: TGLRenderContextInfo);
 const
   cBaseMat: TMatrix =
   (V:((X:0.5; Y:0;   Z:0; W:0),
@@ -326,7 +326,7 @@ end;
 // DoRender
 //
 
-procedure TGLProjectedTextures.DoRender(var ARci: TRenderContextInfo;
+procedure TGLProjectedTextures.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: boolean);
 const
   PS: array[0..3] of GLfloat = (1, 0, 0, 0);

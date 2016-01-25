@@ -198,10 +198,10 @@ type
     function CharactersPerRow: Integer;
     procedure GetCharTexCoords(Ch: WideChar;
       var TopLeft, BottomRight: TTexPoint);
-    procedure GetICharTexCoords(var ARci: TRenderContextInfo; Chi: Integer;
+    procedure GetICharTexCoords(var ARci: TGLRenderContextInfo; Chi: Integer;
       out TopLeft, BottomRight: TTexPoint);
-    procedure PrepareImage(var ARci: TRenderContextInfo); virtual;
-    procedure PrepareParams(var ARci: TRenderContextInfo);
+    procedure PrepareImage(var ARci: TGLRenderContextInfo); virtual;
+    procedure PrepareParams(var ARci: TGLRenderContextInfo);
 
     {  A single bitmap containing all the characters. 
       The transparent color is that of the top left pixel. }
@@ -246,7 +246,7 @@ type
       The current matrix is blindly used, meaning you can render all kinds
       of rotated and linear distorted text with this method, OpenGL
       Enable states are also possibly altered. }
-    procedure RenderString(var ARci: TRenderContextInfo;
+    procedure RenderString(var ARci: TGLRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
@@ -254,9 +254,9 @@ type
     {  A simpler canvas-style TextOut helper for RenderString. 
       The rendering is reversed along Y by default, to allow direct use
       with TGLCanvas }
-    procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
+    procedure TextOut(var rci: TGLRenderContextInfo; X, Y: Single;
       const Text: UnicodeString; const Color: TColorVector); overload;
-    procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
+    procedure TextOut(var rci: TGLRenderContextInfo; X, Y: Single;
       const Text: UnicodeString; const Color: TColor); overload;
     function TextWidth(const Text: UnicodeString): Integer;
 
@@ -271,7 +271,7 @@ type
       overload; virtual;
 
     // make texture if needed
-    procedure CheckTexture(var ARci: TRenderContextInfo);
+    procedure CheckTexture(var ARci: TGLRenderContextInfo);
 
     {  Height of a single character. }
     property CharHeight: Integer read FCharHeight write SetCharHeight
@@ -338,7 +338,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: boolean); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -860,7 +860,7 @@ end;
 
 // PrepareImage
 //
-procedure TGLCustomBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
+procedure TGLCustomBitmapFont.PrepareImage(var ARci: TGLRenderContextInfo);
 var
   bitmap: TGLBitmap;
   bitmap32: TGLBitmap32;
@@ -964,7 +964,7 @@ end;
 
 // PrepareParams
 //
-procedure TGLCustomBitmapFont.PrepareParams(var ARci: TRenderContextInfo);
+procedure TGLCustomBitmapFont.PrepareParams(var ARci: TGLRenderContextInfo);
 const
   cTextureMagFilter: array [maNearest .. maLinear] of TGLEnum = (GL_NEAREST,
     GL_LINEAR);
@@ -1007,7 +1007,7 @@ end;
 
 // RenderString
 //
-procedure TGLCustomBitmapFont.RenderString(var ARci: TRenderContextInfo;
+procedure TGLCustomBitmapFont.RenderString(var ARci: TGLRenderContextInfo;
   const aText: UnicodeString; aAlignment: TAlignment; aLayout: TGLTextLayout;
   const aColor: TColorVector; aPosition: PVector = nil;
   aReverseY: boolean = False);
@@ -1144,7 +1144,7 @@ end;
 
 // TextOut
 //
-procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo; X, Y: Single;
+procedure TGLCustomBitmapFont.TextOut(var rci: TGLRenderContextInfo; X, Y: Single;
   const Text: UnicodeString; const Color: TColorVector);
 var
   V: TVector;
@@ -1159,7 +1159,7 @@ end;
 // TextOut
 //
 
-procedure TGLCustomBitmapFont.TextOut(var rci: TRenderContextInfo; X, Y: Single;
+procedure TGLCustomBitmapFont.TextOut(var rci: TGLRenderContextInfo; X, Y: Single;
   const Text: UnicodeString; const Color: TColor);
 begin
   TextOut(rci, X, Y, Text, ConvertWinColor(Color));
@@ -1229,7 +1229,7 @@ end;
 // TileIndexToTexCoords
 // it also activates the target texture
 //
-procedure TGLCustomBitmapFont.GetICharTexCoords(var ARci: TRenderContextInfo;
+procedure TGLCustomBitmapFont.GetICharTexCoords(var ARci: TGLRenderContextInfo;
   Chi: Integer; out TopLeft, BottomRight: TTexPoint);
 var
   tileIndex: Integer;
@@ -1313,7 +1313,7 @@ begin
 end;
 
 // force texture when needed
-procedure TGLCustomBitmapFont.CheckTexture(var ARci: TRenderContextInfo);
+procedure TGLCustomBitmapFont.CheckTexture(var ARci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -1431,7 +1431,7 @@ end;
 
 // DoRender
 //
-procedure TGLFlatText.DoRender(var rci: TRenderContextInfo;
+procedure TGLFlatText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: boolean);
 begin
   if Assigned(FBitmapFont) and (Text <> '') then

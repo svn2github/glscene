@@ -207,7 +207,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
 
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TGLRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -772,7 +772,7 @@ end;
 // Render
 //
 
-procedure TGLBFireFX.Render(var rci: TRenderContextInfo);
+procedure TGLBFireFX.Render(var rci: TGLRenderContextInfo);
 var
   n: Integer;
   i: Integer;

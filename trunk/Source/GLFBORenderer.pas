@@ -131,13 +131,13 @@ type
 
     procedure ForceDimensions(Texture: TGLTexture);
 
-    procedure RenderToFBO(var ARci: TRenderContextInfo);
+    procedure RenderToFBO(var ARci: TGLRenderContextInfo);
 
-    procedure ApplyCamera(var ARci: TRenderContextInfo);
-    procedure UnApplyCamera(var ARci: TRenderContextInfo);
+    procedure ApplyCamera(var ARci: TGLRenderContextInfo);
+    procedure UnApplyCamera(var ARci: TGLRenderContextInfo);
 
-    procedure DoBeforeRender(var ARci: TRenderContextInfo);
-    procedure DoAfterRender(var ARci: TRenderContextInfo);
+    procedure DoBeforeRender(var ARci: TGLRenderContextInfo);
+    procedure DoAfterRender(var ARci: TGLRenderContextInfo);
     procedure DoPreInitialize;
     procedure DoPostInitialize;
 
@@ -150,7 +150,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf: Boolean;
+    procedure DoRender(var ARci: TGLRenderContextInfo; ARenderSelf: Boolean;
       ARenderChildren: Boolean); override;
 
     {  Layer (also cube map face) is activated only on
@@ -250,7 +250,7 @@ implementation
 
 { TGLFBORenderer }
 
-procedure TGLFBORenderer.ApplyCamera(var ARci: TRenderContextInfo);
+procedure TGLFBORenderer.ApplyCamera(var ARci: TGLRenderContextInfo);
 var
   sc: Single;
 begin
@@ -281,7 +281,7 @@ begin
   end;
 end;
 
-procedure TGLFBORenderer.UnApplyCamera(var ARci: TRenderContextInfo);
+procedure TGLFBORenderer.UnApplyCamera(var ARci: TGLRenderContextInfo);
 begin
   ARci.cameraPosition := FStoreCamera[0];
   ARci.cameraDirection := FStoreCamera[1];
@@ -326,13 +326,13 @@ begin
     FRootObject := nil;
 end;
 
-procedure TGLFBORenderer.DoAfterRender(var ARci: TRenderContextInfo);
+procedure TGLFBORenderer.DoAfterRender(var ARci: TGLRenderContextInfo);
 begin
   if Assigned(FAfterRender) then
     FAfterRender(Self, ARci);
 end;
 
-procedure TGLFBORenderer.DoBeforeRender(var ARci: TRenderContextInfo);
+procedure TGLFBORenderer.DoBeforeRender(var ARci: TGLRenderContextInfo);
 begin
   if Assigned(FBeforeRender) then
     FBeforeRender(Self, ARci);
@@ -350,7 +350,7 @@ begin
     FPreInitialize(Self);
 end;
 
-procedure TGLFBORenderer.DoRender(var ARci: TRenderContextInfo;
+procedure TGLFBORenderer.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if not (csDesigning in ComponentState) then
@@ -580,7 +580,7 @@ begin
   ClearStructureChanged;
 end;
 
-procedure TGLFBORenderer.RenderToFBO(var ARci: TRenderContextInfo);
+procedure TGLFBORenderer.RenderToFBO(var ARci: TGLRenderContextInfo);
 
   function GetClearBits: cardinal;
   begin

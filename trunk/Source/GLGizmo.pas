@@ -242,8 +242,8 @@ type
 
     procedure SetExcludeObjectsList(const AValue: TStrings);
 
-    procedure DirectGlDisable(Sender: TObject; var Rci: TRenderContextInfo);
-    procedure DirectGlEnable(Sender: TObject; var Rci: TRenderContextInfo);
+    procedure DirectGlDisable(Sender: TObject; var Rci: TGLRenderContextInfo);
+    procedure DirectGlEnable(Sender: TObject; var Rci: TGLRenderContextInfo);
 
     function MouseWorldPos(const X, Y: Integer): TVector;
     function CheckObjectInExcludeList(const Obj: TGLBaseSceneObject): Boolean;
@@ -933,7 +933,7 @@ end;
 // ------------------------------------------------------------------------------
 
 procedure TGLGizmo.DirectGlDisable(Sender: TObject;
-  var Rci: TRenderContextInfo);
+  var Rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     Rci.GLStates.Disable(StDepthTest);
@@ -956,7 +956,7 @@ begin
   end;
 end;
 
-procedure TGLGizmo.DirectGlEnable(Sender: TObject; var Rci: TRenderContextInfo);
+procedure TGLGizmo.DirectGlEnable(Sender: TObject; var Rci: TGLRenderContextInfo);
 begin
   if FNoZWrite then
     Rci.GLStates.Enable(StDepthTest);

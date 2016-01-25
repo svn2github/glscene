@@ -85,8 +85,8 @@ type
     function GetMaterialLibrary: TGLAbstractMaterialLibrary; virtual;
 
   public
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure UnApply(var rci: TGLRenderContextInfo);
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
@@ -125,8 +125,8 @@ type
     FCurrentPass: Integer;
     procedure SetMaterials(const Value: TGLTextureSharingShaderMaterials);
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -147,7 +147,7 @@ implementation
 
 { TGLTextureSharingShaderMaterial }
 
-procedure TGLTextureSharingShaderMaterial.Apply(var rci: TRenderContextInfo);
+procedure TGLTextureSharingShaderMaterial.Apply(var rci: TGLRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
@@ -464,7 +464,7 @@ begin
   FNeedToUpdateTextureMatrix := True;
 end;
 
-procedure TGLTextureSharingShaderMaterial.UnApply(var rci: TRenderContextInfo);
+procedure TGLTextureSharingShaderMaterial.UnApply(var rci: TGLRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
@@ -518,7 +518,7 @@ begin
   inherited;
 end;
 
-procedure TGLTextureSharingShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLTextureSharingShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   if Materials.Count > 0 then
   begin
@@ -529,7 +529,7 @@ begin
   end;
 end;
 
-function TGLTextureSharingShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLTextureSharingShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   if Materials.Count > 0 then

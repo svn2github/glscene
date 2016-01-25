@@ -46,8 +46,8 @@ type
     procedure SetOutlineColor(AValue: TGLColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -177,7 +177,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLToonShader.DoApply(var rci: TRenderContextInfo;Sender: TObject);
+procedure TGLCustomGLSLToonShader.DoApply(var rci: TGLRenderContextInfo;Sender: TObject);
 begin
 
   GetGLSLProg.UseProgramObject;
@@ -194,7 +194,7 @@ begin
 
 end;
 
-function TGLCustomGLSLToonShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLToonShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   GetGLSLProg.EndUseProgramObject;
   Result := False;

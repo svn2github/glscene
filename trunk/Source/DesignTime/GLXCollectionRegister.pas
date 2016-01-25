@@ -47,11 +47,6 @@ uses
   FXCollectionEditor;
 
 
-procedure Register;
-begin
-  RegisterPropertyEditor(TypeInfo(TGLXCollection), nil, '', TGLXCollectionProperty);
-end;
-
 //----------------- TGLXCollectionProperty ------------------------------------
 
 // GetAttributes
@@ -70,6 +65,12 @@ begin
      Show;
    end;
 end;
+
+procedure Register;
+begin
+  RegisterPropertyEditor(TypeInfo(TGLXCollection), nil, '', TGLXCollectionProperty);
+end;
+
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

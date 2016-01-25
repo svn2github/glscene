@@ -66,7 +66,7 @@ type
     property Step: integer read FStep;
     constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
-    procedure Render(var rci : TRenderContextInfo); override;
+    procedure Render(var rci : TGLRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
       the mesh can be exploded again }
     procedure Reset;
@@ -237,7 +237,7 @@ end;
 
 // Render
 //
-procedure TGLBExplosionFX.Render(var rci : TRenderContextInfo);
+procedure TGLBExplosionFX.Render(var rci : TGLRenderContextInfo);
 var
   Face: integer;
   dir, p1, p2, p3: TAffineVector;

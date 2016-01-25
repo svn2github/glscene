@@ -467,7 +467,7 @@ type
   IGLInitializable = interface
     ['{EA40AE8E-79B3-42F5-ADF1-7A901B665E12}']
     procedure InitializeObject(ASender: TObject; const ARci:
-      TRenderContextInfo);
+      TGLRenderContextInfo);
   end;
 
   // TGLInitializableObjectList
@@ -610,7 +610,7 @@ type
 
     procedure RecTransformationChanged;
 
-    procedure DrawAxes(var rci: TRenderContextInfo; pattern: Word);
+    procedure DrawAxes(var rci: TGLRenderContextInfo; pattern: Word);
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
     //: Should the object be considered as blended for sorting purposes?
     function Blended: Boolean; virtual;
@@ -643,7 +643,7 @@ type
 
     {Returns the handle to the object's build list. 
        Use with caution! Some objects don't support buildlists! }
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
+    function GetHandle(var rci: TGLRenderContextInfo): Cardinal; virtual;
     function ListHandleAllocated: Boolean;
 
     {The local transformation (relative to parent). 
@@ -886,7 +886,7 @@ type
     {Make object-specific geometry description here. 
        Subclasses should MAINTAIN OpenGL states (restore the states if
        they were altered). }
-    procedure BuildList(var rci: TRenderContextInfo); virtual;
+    procedure BuildList(var rci: TGLRenderContextInfo); virtual;
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
     function IsUpdating: Boolean;
@@ -926,11 +926,11 @@ type
     //: Orients the object toward a target absolute position
     procedure PointTo(const AAbsolutePosition, AUpVector: TVector); overload;
 
-    procedure Render(var ARci: TRenderContextInfo);
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure Render(var ARci: TGLRenderContextInfo);
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); virtual;
     procedure RenderChildren(firstChildIndex, lastChildIndex: Integer;
-      var rci: TRenderContextInfo); virtual;
+      var rci: TGLRenderContextInfo); virtual;
 
     procedure StructureChanged; dynamic;
     procedure ClearStructureChanged;
@@ -1089,7 +1089,7 @@ type
 
   public
     { Public Declarations }
-    procedure Render(var rci: TRenderContextInfo); virtual;
+    procedure Render(var rci: TGLRenderContextInfo); virtual;
   end;
 
   // TGLObjectPreEffect
@@ -1136,9 +1136,9 @@ type
     function CanAdd(aClass: TGLXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes);
-    procedure RenderPreEffects(var rci: TRenderContextInfo);
+    procedure RenderPreEffects(var rci: TGLRenderContextInfo);
     {Also take care of registering after effects with the GLSceneViewer. }
-    procedure RenderPostEffects(var rci: TRenderContextInfo);
+    procedure RenderPostEffects(var rci: TGLRenderContextInfo);
   end;
 
   // TGLCustomSceneObject
@@ -1166,7 +1166,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     property Material: TGLMaterial read FMaterial write SeTGLMaterial;
@@ -1196,7 +1196,7 @@ type
   TGLImmaterialSceneObject = class(TGLCustomSceneObject)
   public
     { Public Declarations }
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
@@ -1243,7 +1243,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
@@ -1277,7 +1277,7 @@ type
   // TDirectRenderEvent
   //
   {Event for user-specific rendering in a TGLDirectOpenGL object. }
-  TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo)
+  TDirectRenderEvent = procedure(Sender: TObject; var rci: TGLRenderContextInfo)
     of object;
 
   // TGLDirectOpenGL
@@ -1304,7 +1304,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
@@ -1349,7 +1349,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     procedure RegisterCallBack(renderEvent: TDirectRenderEvent;
       renderPointFreed: TNotifyEvent);
@@ -1387,7 +1387,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     function BarycenterAbsolutePosition: TVector; override;
@@ -1481,10 +1481,10 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     //: light sources have different handle types than normal scene objects
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; override;
+    function GetHandle(var rci: TGLRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -1583,7 +1583,7 @@ type
 
     //: Apply camera transformation
     procedure Apply;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -2488,7 +2488,7 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
 {Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
+procedure AxesBuildList(var rci: TGLRenderContextInfo; pattern: Word; AxisLen:
   Single);
 
 {Registers the procedure call used to invoke the info form. }
@@ -2522,7 +2522,7 @@ end;
   // AxesBuildList
   //
 
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
+procedure AxesBuildList(var rci: TGLRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
@@ -2700,7 +2700,7 @@ end;
 // GetHandle
 //
 
-function TGLBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
+function TGLBaseSceneObject.GetHandle(var rci: TGLRenderContextInfo): Cardinal;
 begin
   if not Assigned(FListHandle) then
     FListHandle := TGLListHandle.Create;
@@ -2804,7 +2804,7 @@ end;
 // BuildList
 //
 
-procedure TGLBaseSceneObject.BuildList(var rci: TRenderContextInfo);
+procedure TGLBaseSceneObject.BuildList(var rci: TGLRenderContextInfo);
 begin
   // nothing
 end;
@@ -2980,7 +2980,7 @@ end;
 // DrawAxes
 //
 
-procedure TGLBaseSceneObject.DrawAxes(var rci: TRenderContextInfo; pattern:
+procedure TGLBaseSceneObject.DrawAxes(var rci: TGLRenderContextInfo; pattern:
   Word);
 begin
   AxesBuildList(rci, Pattern, rci.rcci.farClippingDistance -
@@ -4840,7 +4840,7 @@ end;
 // Render
 //
 
-procedure TGLBaseSceneObject.Render(var ARci: TRenderContextInfo);
+procedure TGLBaseSceneObject.Render(var ARci: TGLRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
@@ -4963,7 +4963,7 @@ end;
 // DoRender
 //
 
-procedure TGLBaseSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TGLBaseSceneObject.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -4984,7 +4984,7 @@ end;
 
 procedure TGLBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex:
   Integer;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   i: Integer;
   objList: TPersistentObjectList;
@@ -5569,7 +5569,7 @@ end;
 // Render
 //
 
-procedure TGLObjectEffect.Render(var rci: TRenderContextInfo);
+procedure TGLObjectEffect.Render(var rci: TGLRenderContextInfo);
 begin
   // nothing here, this implem is just to avoid "abstract error"
 end;
@@ -5642,7 +5642,7 @@ end;
 // RenderPreEffects
 //
 
-procedure TGLObjectEffects.RenderPreEffects(var rci: TRenderContextInfo);
+procedure TGLObjectEffects.RenderPreEffects(var rci: TGLRenderContextInfo);
 var
   i: Integer;
   effect: TGLObjectEffect;
@@ -5658,7 +5658,7 @@ end;
 // RenderPostEffects
 //
 
-procedure TGLObjectEffects.RenderPostEffects(var rci: TRenderContextInfo);
+procedure TGLObjectEffects.RenderPostEffects(var rci: TGLRenderContextInfo);
 var
   i: Integer;
   effect: TGLObjectEffect;
@@ -5746,7 +5746,7 @@ end;
 // DoRender
 //
 
-procedure TGLCustomSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TGLCustomSceneObject.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -6584,7 +6584,7 @@ end;
 // DoRender
 //
 
-procedure TGLCamera.DoRender(var ARci: TRenderContextInfo;
+procedure TGLCamera.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if ARenderChildren and (Count > 0) then
@@ -6608,7 +6608,7 @@ end;
 // DoRender
 //
 
-procedure TGLImmaterialSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TGLImmaterialSceneObject.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -6652,7 +6652,7 @@ end;
 // DoRender
 //
 
-procedure TGLCameraInvariantObject.DoRender(var ARci: TRenderContextInfo;
+procedure TGLCameraInvariantObject.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if CamInvarianceMode <> cimNone then
@@ -6740,7 +6740,7 @@ end;
 // BuildList
 //
 
-procedure TGLDirectOpenGL.BuildList(var rci: TRenderContextInfo);
+procedure TGLDirectOpenGL.BuildList(var rci: TGLRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
@@ -6817,7 +6817,7 @@ end;
 // BuildList
 //
 
-procedure TGLRenderPoint.BuildList(var rci: TRenderContextInfo);
+procedure TGLRenderPoint.BuildList(var rci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -6920,7 +6920,7 @@ end;
 // Render
 //
 
-procedure TGLProxyObject.DoRender(var ARci: TRenderContextInfo;
+procedure TGLProxyObject.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;
@@ -7134,7 +7134,7 @@ end;
 // DoRender
 //
 
-procedure TGLLightSource.DoRender(var ARci: TRenderContextInfo;
+procedure TGLLightSource.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if ARenderChildren and Assigned(FChildren) then
@@ -7173,7 +7173,7 @@ end;
 // GetHandle
 //
 
-function TGLLightSource.GetHandle(var rci: TRenderContextInfo): Cardinal;
+function TGLLightSource.GetHandle(var rci: TGLRenderContextInfo): Cardinal;
 begin
   Result := 0;
 end;
@@ -9440,7 +9440,7 @@ procedure TGLSceneBuffer.RenderScene(aScene: TGLScene;
 
 var
   i: Integer;
-  rci: TRenderContextInfo;
+  rci: TGLRenderContextInfo;
   rightVector: TVector;
 begin
   FAfterRenderEffects.Clear;

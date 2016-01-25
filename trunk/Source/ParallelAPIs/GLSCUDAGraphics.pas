@@ -157,7 +157,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     property ArrayBufferHandle: TGLVBOArrayBufferHandle read FVBO;
     property ElementArrayHandle: TGLVBOElementArrayHandle read FEBO;
@@ -1073,7 +1073,7 @@ end;
 //    IR.UnMapResources;
 //  end;
 
-procedure TGLCustomFeedBackMesh.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TGLCustomFeedBackMesh.DoRender(var ARci: TGLRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 const
   cPrimitives: array[TFeedBackMeshPrimitive] of TGLEnum =

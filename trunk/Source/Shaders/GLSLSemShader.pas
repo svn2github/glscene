@@ -63,8 +63,8 @@ TGLCustomGLSLSemShader = class(TGLCustomGLSLShader)
     procedure SetSpecularColor(AValue: TGLColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TGLAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -195,7 +195,7 @@ begin
   inherited;
 end;
 
-procedure TGLCustomGLSLSemShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLCustomGLSLSemShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
 
   GetGLSLProg.UseProgramObject;
@@ -213,7 +213,7 @@ begin
 
 end;
 
-function TGLCustomGLSLSemShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLCustomGLSLSemShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   gl.ActiveTexture(GL_TEXTURE0_ARB);
   GetGLSLProg.EndUseProgramObject;

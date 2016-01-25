@@ -52,8 +52,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
+    procedure UnApply(var rci: TGLRenderContextInfo);
 
   published
     { Published Declarations }
@@ -88,8 +88,8 @@ type
     procedure SetShadeModel(const val: TGLShadeModel);
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
   public
     { Public Declarations }
@@ -182,7 +182,7 @@ var
   // Apply
   //
 
-procedure TGLLineSettings.Apply(var rci: TRenderContextInfo);
+procedure TGLLineSettings.Apply(var rci: TGLRenderContextInfo);
 begin
   rci.GLStates.LineWidth := Width;
   GL.Color4fv(Color.AsAddress);
@@ -205,7 +205,7 @@ end;
 // UnApply
 //
 
-procedure TGLLineSettings.UnApply(var rci: TRenderContextInfo);
+procedure TGLLineSettings.UnApply(var rci: TGLRenderContextInfo);
 begin
   if ForceMaterial then
     rci.ignoreMaterials := IgnoreMatSave;
@@ -259,7 +259,7 @@ end;
 // DoApply
 //
 
-procedure TGLHiddenLineShader.DoApply(var rci: TRenderContextInfo; Sender:
+procedure TGLHiddenLineShader.DoApply(var rci: TGLRenderContextInfo; Sender:
   TObject);
 begin
   FPassCount := 1;
@@ -304,7 +304,7 @@ end;
 // DoUnApply
 //
 
-function TGLHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TGLHiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 
   procedure SetLineSmoothBlend;
   begin

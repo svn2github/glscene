@@ -159,7 +159,7 @@ type
     procedure Unbind;
 
     procedure PreRender;
-    procedure Render(var rci: TRenderContextInfo; baseObject:
+    procedure Render(var rci: TGLRenderContextInfo; baseObject:
       TGLBaseSceneObject);
     procedure PostRender(const PostGenerateMipmap: Boolean);
 
@@ -679,7 +679,7 @@ begin
 
 end;
 
-procedure TGLFrameBuffer.Render(var rci: TRenderContextInfo; baseObject:
+procedure TGLFrameBuffer.Render(var rci: TGLRenderContextInfo; baseObject:
   TGLBaseSceneObject);
 var
   backColor: TColorVector;

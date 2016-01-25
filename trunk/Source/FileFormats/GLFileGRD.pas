@@ -34,7 +34,7 @@ type
   TGLGRDVectorFile = class(TGLVectorFile)
   public
     { Public Declarations }
-    HeightField: TGLHeightField;
+    GLHeightField: TGLHeightField;
     Nodes: array of TSingleArray;
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
@@ -149,7 +149,7 @@ begin
       Exit;
     end;
 
-    HeightField := TGLHeightField.Create(Owner);
+    GLHeightField := TGLHeightField.Create(Owner);
 
     Zo := 3 * 10E38; // Low
     Ze := -3 * 10E38; // High
@@ -242,10 +242,10 @@ begin
       end;
     end;
 
-    HeightField.XSamplingScale.Min := -(Nx div 2);
-    HeightField.XSamplingScale.Max := (Nx div 2);
-    HeightField.YSamplingScale.Min := -(Ny div 2);
-    HeightField.YSamplingScale.Max := (Ny div 2);
+    GLHeightField.XSamplingScale.Min := -(Nx div 2);
+    GLHeightField.XSamplingScale.Max := (Nx div 2);
+    GLHeightField.YSamplingScale.Min := -(Ny div 2);
+    GLHeightField.YSamplingScale.Max := (Ny div 2);
 
   finally
     Tl.Free;

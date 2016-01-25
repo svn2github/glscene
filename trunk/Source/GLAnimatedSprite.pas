@@ -262,7 +262,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
     //: Steps the current animation to the next frame
@@ -840,7 +840,7 @@ end;
 // BuildList
 //
 
-procedure TGLAnimatedSprite.BuildList(var rci: TRenderContextInfo);
+procedure TGLAnimatedSprite.BuildList(var rci: TGLRenderContextInfo);
 var
   vx, vy: TAffineVector;
   w, h, temp: Single;

@@ -6,7 +6,7 @@
 
   History :  
        23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
-       22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TRenderContextInfo
+       22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TGLRenderContextInfo
        14/03/09 - DanB - Removed IsVolumeClipped functions, instead replaced with
                             IsVolumeClipped functions in GLVectorGeometry.pas that use TFrustrum
        09/10/08 - DanB - Added TRenderContextClippingInfo + IsVolumeClipped
@@ -80,10 +80,10 @@ type
     frustum: TFrustum;
   end;
 
-  // TRenderContextInfo
+  // TGLRenderContextInfo
   //
   {Stores contextual info useful during rendering methods. }
-  TRenderContextInfo = record
+  TGLRenderContextInfo = record
     scene: TObject; //usually TGLScene
     buffer: TObject; //usually TGLSceneBuffer
     cameraPosition: TVector;
@@ -115,7 +115,7 @@ type
     primitiveMask: TGLMeshPrimitives;
     orderCounter: Integer;
   end;
-  PRenderContextInfo = ^TRenderContextInfo;
+  PRenderContextInfo = ^TGLRenderContextInfo;
 
 implementation
 

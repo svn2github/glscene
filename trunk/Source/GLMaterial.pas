@@ -132,21 +132,21 @@ type
     { Protected Declarations }
           {Invoked once, before the first call to DoApply. 
              The call happens with the OpenGL context being active. }
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+    procedure DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
       dynamic;
     {Request to apply the shader. 
        Always followed by a DoUnApply when the shader is no longer needed. }
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); virtual;
     {Request to un-apply the shader. 
        Subclasses can assume the shader has been applied previously.
        Return True to request a multipass. }
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; virtual;
     {Invoked once, before the destruction of context or release of shader. 
        The call happens with the OpenGL context being active. }
     procedure DoFinalize; dynamic;
 
     function GetShaderInitialized: Boolean;
-    procedure InitializeShader(var rci: TRenderContextInfo; Sender: TObject);
+    procedure InitializeShader(var rci: TGLRenderContextInfo; Sender: TObject);
     procedure FinalizeShader;
     procedure OnVirtualHandleAllocate(sender: TGLVirtualHandle; var handle:
       Cardinal);
@@ -179,12 +179,12 @@ type
     procedure EndUpdate;
 
     {Apply shader to OpenGL state machine.}
-    procedure Apply(var rci: TRenderContextInfo; Sender: TObject);
+    procedure Apply(var rci: TGLRenderContextInfo; Sender: TObject);
     {UnApply shader. 
        When returning True, the caller is expected to perform a multipass
        rendering by re-rendering then invoking UnApply again, until a
        "False" is returned. }
-    function UnApply(var rci: TRenderContextInfo): Boolean;
+    function UnApply(var rci: TGLRenderContextInfo): Boolean;
 
     {Shader application style (default is ssLowLevel). }
     property ShaderStyle: TGLShaderStyle read FShaderStyle write FShaderStyle
@@ -244,8 +244,8 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
-    procedure Apply(var rci: TRenderContextInfo; aFace: TCullFaceMode);
-    procedure ApplyNoLighting(var rci: TRenderContextInfo; aFace:
+    procedure Apply(var rci: TGLRenderContextInfo; aFace: TCullFaceMode);
+    procedure ApplyNoLighting(var rci: TGLRenderContextInfo; aFace:
       TCullFaceMode);
     procedure Assign(Source: TPersistent); override;
 
@@ -281,7 +281,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
 
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -347,7 +347,7 @@ type
     function StoreAlphaFuncRef: Boolean;
   public
     constructor Create(AOwner: TPersistent); override;
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc
       default False;
@@ -455,10 +455,10 @@ type
     destructor Destroy; override;
 
     procedure PrepareBuildList;
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TGLRenderContextInfo);
     {Restore non-standard material states that were altered; 
        A return value of True is a multipass request. }
-    function UnApply(var rci: TRenderContextInfo): Boolean;
+    function UnApply(var rci: TGLRenderContextInfo): Boolean;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
     procedure NotifyTexMapChange(Sender: TObject);
@@ -552,9 +552,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); virtual;
+    procedure Apply(var ARci: TGLRenderContextInfo); virtual;
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual;
+    function UnApply(var ARci: TGLRenderContextInfo): Boolean; virtual;
 
     procedure RegisterUser(obj: TGLUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TGLUpdateAbleObject); overload;
@@ -616,9 +616,9 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure PrepareBuildList;
-    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TGLRenderContextInfo); override;
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; override;
+    function UnApply(var ARci: TGLRenderContextInfo): Boolean; override;
 
     procedure NotifyUsersOfTexMapChange;
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
@@ -736,11 +736,11 @@ type
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
-      var ARci: TRenderContextInfo): Boolean; virtual;
+      var ARci: TGLRenderContextInfo): Boolean; virtual;
     {Un-applies the last applied material. 
        Use this function in conjunction with ApplyMaterial.
        If no material was applied, an assertion will be triggered. }
-    function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
+    function UnApplyMaterial(var ARci: TGLRenderContextInfo): Boolean; virtual;
   end;
 
   // TGLMaterialLibrary
@@ -844,11 +844,11 @@ resourcestring
   // Dummy methods for CPP
   //
 procedure TGLShader.DoApply
-(var Rci: TRenderContextInfo; Sender: TObject);
+(var Rci: TGLRenderContextInfo; Sender: TObject);
 begin
 end;
 
-function TGLShader.DoUnApply(var Rci: TRenderContextInfo): Boolean;
+function TGLShader.DoUnApply(var Rci: TGLRenderContextInfo): Boolean;
 begin
   Result := True;
 end;
@@ -857,11 +857,11 @@ procedure TGLAbstractLibMaterial.Loaded;
 begin
 end;
 
-procedure TGLAbstractLibMaterial.Apply(var ARci: TRenderContextInfo);
+procedure TGLAbstractLibMaterial.Apply(var ARci: TGLRenderContextInfo);
 begin
 end;
 
-function TGLAbstractLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+function TGLAbstractLibMaterial.UnApply(var ARci: TGLRenderContextInfo): Boolean;
 begin
   Result := True;
 end;
@@ -897,7 +897,7 @@ end;
 
 // Apply
 //
-procedure TGLFaceProperties.Apply(var rci: TRenderContextInfo;
+procedure TGLFaceProperties.Apply(var rci: TGLRenderContextInfo;
   aFace: TCullFaceMode);
 begin
   with rci.GLStates do
@@ -909,7 +909,7 @@ end;
 
 // ApplyNoLighting
 //
-procedure TGLFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
+procedure TGLFaceProperties.ApplyNoLighting(var rci: TGLRenderContextInfo;
   aFace: TCullFaceMode);
 begin
   GL.Color4fv(Diffuse.AsAddress);
@@ -993,7 +993,7 @@ begin
   FDepthClamp := False;
 end;
 
-procedure TGLDepthProperties.Apply(var rci: TRenderContextInfo);
+procedure TGLDepthProperties.Apply(var rci: TGLRenderContextInfo);
 begin
   with rci.GLStates do
   begin
@@ -1165,7 +1165,7 @@ end;
 // DoInitialize
 //
 
-procedure TGLShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   // nothing here
 end;
@@ -1189,7 +1189,7 @@ end;
 // InitializeShader
 //
 
-procedure TGLShader.InitializeShader(var rci: TRenderContextInfo; Sender:
+procedure TGLShader.InitializeShader(var rci: TGLRenderContextInfo; Sender:
   TObject);
 begin
   FVirtualHandle.AllocateHandle;
@@ -1212,7 +1212,7 @@ end;
 // Apply
 //
 
-procedure TGLShader.Apply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TGLShader.Apply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
 {$IFNDEF GLS_MULTITHREAD}
   Assert(not FShaderActive, 'Unbalanced shader application.');
@@ -1232,7 +1232,7 @@ end;
 // UnApply
 //
 
-function TGLShader.UnApply(var rci: TRenderContextInfo): Boolean;
+function TGLShader.UnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
 {$IFNDEF GLS_MULTITHREAD}
   Assert(FShaderActive, 'Unbalanced shader application.');
@@ -1651,7 +1651,7 @@ end;
 // Apply
 //
 
-procedure TGLMaterial.Apply(var rci: TRenderContextInfo);
+procedure TGLMaterial.Apply(var rci: TGLRenderContextInfo);
 begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.Apply(rci)
@@ -1771,7 +1771,7 @@ end;
 // UnApply
 //
 
-function TGLMaterial.UnApply(var rci: TRenderContextInfo): Boolean;
+function TGLMaterial.UnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   if Assigned(currentLibMaterial) then
     Result := currentLibMaterial.UnApply(rci)
@@ -2265,7 +2265,7 @@ end;
 // Apply
 //
 
-procedure TGLLibMaterial.Apply(var ARci: TRenderContextInfo);
+procedure TGLLibMaterial.Apply(var ARci: TGLRenderContextInfo);
 var
   multitextured: Boolean;
 begin
@@ -2345,7 +2345,7 @@ end;
 // UnApply
 //
 
-function TGLLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+function TGLLibMaterial.UnApply(var ARci: TGLRenderContextInfo): Boolean;
 begin
   Result := False;
   if Assigned(FShader) then
@@ -2885,7 +2885,7 @@ end;
 //
 
 function TGLAbstractMaterialLibrary.ApplyMaterial(const AName: string;
-  var ARci: TRenderContextInfo): Boolean;
+  var ARci: TGLRenderContextInfo): Boolean;
 begin
   FLastAppliedMaterial := FMaterials.GetMaterial(AName);
   Result := Assigned(FLastAppliedMaterial);
@@ -2897,7 +2897,7 @@ end;
 //
 
 function TGLAbstractMaterialLibrary.UnApplyMaterial(
-  var ARci: TRenderContextInfo): Boolean;
+  var ARci: TGLRenderContextInfo): Boolean;
 begin
   if Assigned(FLastAppliedMaterial) then
   begin
@@ -3553,7 +3553,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TGLBlendingParameters'}{$ENDIF}
 
-procedure TGLBlendingParameters.Apply(var rci: TRenderContextInfo);
+procedure TGLBlendingParameters.Apply(var rci: TGLRenderContextInfo);
 begin
   if FUseAlphaFunc then
   begin

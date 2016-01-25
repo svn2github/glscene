@@ -65,7 +65,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     {Parse the the feedback buffer for polygon data and build
@@ -140,7 +140,7 @@ end;
 // DoRender
 //
 
-procedure TGLFeedback.DoRender(var ARci: TRenderContextInfo;
+procedure TGLFeedback.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 
   function RecursChildRadius(obj: TGLBaseSceneObject): Single;

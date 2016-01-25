@@ -213,7 +213,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -832,7 +832,7 @@ end;
 // BuildList
 //
 
-procedure TGLMultiPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TGLMultiPolygon.BuildList(var rci: TGLRenderContextInfo);
 var
   normal: TAffineVector;
 begin

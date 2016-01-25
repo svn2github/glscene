@@ -259,7 +259,7 @@ type
     procedure ReadFromFiler(reader: TVirtualReader); override;    
 
     procedure Add(VertexIdx, NormalIdx, TexCoordIdx: Integer);
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
@@ -312,7 +312,7 @@ begin
   end;
 end;
 
-procedure TOBJFGVertexNormalTexIndexList.BuildList(var mrci: TRenderContextInfo);
+procedure TOBJFGVertexNormalTexIndexList.BuildList(var mrci: TGLRenderContextInfo);
 var
   VertexPool: PAffineVectorArray;
   NormalPool: PAffineVectorArray;

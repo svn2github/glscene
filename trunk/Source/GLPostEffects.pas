@@ -95,7 +95,7 @@ type
     constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var rci : TRenderContextInfo;
+    procedure DoRender(var rci : TGLRenderContextInfo;
                        renderSelf, renderChildren : Boolean); override;
   published
     property TempTextureTarget: TGLTextureTarget read FTempTextureTarget write FTempTextureTarget default ttTexture2d;
@@ -113,7 +113,7 @@ type
 
   TGLPostEffectBuffer = array of TGLPostEffectColor;
 
-  TGLOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer) of object;
+  TGLOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer) of object;
 
   {Some presets for TGLPostEffect:
        pepNone - does nothing.
@@ -142,10 +142,10 @@ type
     procedure MakeDistortEffect; virtual;
     procedure MakeNoiseEffect; virtual;
     procedure MakeNightVisionEffect; virtual;
-    procedure MakeBlurEffect(var rci : TRenderContextInfo); virtual;
-    procedure DoOnCustomEffect(var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer); virtual;
+    procedure MakeBlurEffect(var rci : TGLRenderContextInfo); virtual;
+    procedure DoOnCustomEffect(var rci : TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer); virtual;
   public
-    procedure DoRender(var rci : TRenderContextInfo;
+    procedure DoRender(var rci : TGLRenderContextInfo;
                        renderSelf, renderChildren : Boolean); override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -177,13 +177,13 @@ begin
 end;
 
 procedure TGLPostEffect.DoOnCustomEffect(
-  var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer);
+  var rci : TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer);
 begin
   if Assigned(FOnCustomEffect) then
     FOnCustomEffect(Self, rci, Buffer);
 end;
 
-procedure TGLPostEffect.DoRender(var rci : TRenderContextInfo;
+procedure TGLPostEffect.DoRender(var rci : TGLRenderContextInfo;
                                       renderSelf, renderChildren : Boolean);
 var
   NewScreenSize: Integer;
@@ -297,7 +297,7 @@ begin
   end;
 end;
 
-procedure TGLPostEffect.MakeBlurEffect(var rci : TRenderContextInfo);
+procedure TGLPostEffect.MakeBlurEffect(var rci : TGLRenderContextInfo);
 const
   lOffset: Integer = 2;
 var
@@ -408,7 +408,7 @@ begin
   inherited;
 end;
 
-procedure TGLPostShaderHolder.DoRender(var rci: TRenderContextInfo;
+procedure TGLPostShaderHolder.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   I: Integer;

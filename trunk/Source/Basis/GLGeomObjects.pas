@@ -17,8 +17,7 @@
                  (thanks Sandor Domokos) (BugTrackerID = 1864314)
   Added a TGLCapsule object (thanks Dave Gravel)
    18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
-   07/05/07 - DanB - Added TGLCone.RayCastIntersect
-  Improved TGLDisk.RayCastIntersect
+   07/05/07 - DanB - Added TGLCone.RayCastIntersect Improved TGLDisk.RayCastIntersect
    30/03/07 - DaStr - Added $I GLScene.inc
    25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
                  AxisAlignedBoundingBoxUnscaled,
@@ -65,7 +64,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -152,7 +151,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -195,7 +194,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -236,7 +235,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -284,7 +283,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -331,7 +330,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -389,7 +388,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -453,7 +452,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -503,7 +502,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -552,7 +551,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function TopDepth: TGLFloat;
     function TopWidth: TGLFloat;
@@ -607,7 +606,7 @@ end;
 // BuildList
 //
 
-procedure TGLDisk.BuildList(var rci: TRenderContextInfo);
+procedure TGLDisk.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -968,7 +967,7 @@ end;
 // BuildList
 //
 
-procedure TGLCone.BuildList(var rci: TRenderContextInfo);
+procedure TGLCone.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -1124,7 +1123,7 @@ end;
 // BuildList
 //
 
-procedure TGLCylinder.BuildList(var rci: TRenderContextInfo);
+procedure TGLCylinder.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -1410,7 +1409,7 @@ end;
 // BuildList
 //
 
-procedure TGLCapsule.BuildList(var rci: TRenderContextInfo);
+procedure TGLCapsule.BuildList(var rci: TGLRenderContextInfo);
 var
   i, j, n: integer;
   start_nx2: Single;
@@ -1859,7 +1858,7 @@ end;
 // BuildList
 //
 
-procedure TGLAnnulus.BuildList(var rci: TRenderContextInfo);
+procedure TGLAnnulus.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -2125,7 +2124,7 @@ end;
 // BuildList
 //
 
-procedure TGLTorus.BuildList(var rci: TRenderContextInfo);
+procedure TGLTorus.BuildList(var rci: TGLRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   begin
@@ -2644,7 +2643,7 @@ end;
 // BuildList
 //
 
-procedure TGLArrowLine.BuildList(var rci: TRenderContextInfo);
+procedure TGLArrowLine.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadricObj;
   cylHeight, cylOffset, headInfluence: Single;
@@ -2899,7 +2898,7 @@ end;
 // BuildList
 //
 
-procedure TGLArrowArc.BuildList(var rci: TRenderContextInfo);
+procedure TGLArrowArc.BuildList(var rci: TGLRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
@@ -3427,7 +3426,7 @@ begin
   FNormalDirection := ndOutside;
 end;
 
-procedure TGLFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TGLFrustrum.BuildList(var rci: TGLRenderContextInfo);
 var
   HBW, HBD: TGLFloat; // half of width, half of depth at base
   HTW, HTD: TGLFloat; // half of width, half of depth at top of frustrum
@@ -3724,7 +3723,7 @@ end;
 // BuildList
 //
 
-procedure TGLPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TGLPolygon.BuildList(var rci: TGLRenderContextInfo);
 var
   Normal: TAffineVector;
   pNorm: PAffineVector;

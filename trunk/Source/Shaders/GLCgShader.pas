@@ -154,8 +154,8 @@ type
 
     procedure Initialize; dynamic;
     procedure Finalize;
-    procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
-    procedure UnApply(var rci : TRenderContextInfo);
+    procedure Apply(var rci : TGLRenderContextInfo; Sender : TObject);
+    procedure UnApply(var rci : TGLRenderContextInfo);
 
     { ParamByName returns CgParameter; returns nil if not found. }
     function ParamByName(const name : String) : TCgParameter;
@@ -360,10 +360,10 @@ type
     function GetOnInitialize : TCgShaderEvent;
     procedure SetOnInitialize(const val : TCgShaderEvent);
 
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
     procedure DoFinalize; override;
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function  DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+    procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+    function  DoUnApply(var rci : TGLRenderContextInfo) : Boolean; override;
 
     // IsProfileSupported to be obsoleted by global function IsCgProfileSupported
     function IsProfileSupported(Profile: TcgProfile): boolean;
@@ -403,7 +403,7 @@ type
     FCadencer: TGLCadencer;
     procedure SetCadencer(const Value: TGLCadencer);
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
@@ -692,7 +692,7 @@ end;
 
 // Apply
 //
-procedure TCgProgram.Apply(var rci : TRenderContextInfo; Sender : TObject);
+procedure TCgProgram.Apply(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if not Assigned(FHandle) then exit;
   if not FEnabled then exit;
@@ -707,7 +707,7 @@ end;
 
 // UnApply
 //
-procedure TCgProgram.UnApply(var rci : TRenderContextInfo);
+procedure TCgProgram.UnApply(var rci : TGLRenderContextInfo);
 begin
   if not Assigned(FHandle) then exit;
   if not FEnabled then exit;
@@ -1302,7 +1302,7 @@ end;
 
 // DoInitialize
 //
-procedure TCustomCgShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TCustomCgShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and (not FDesignEnable) then
     Exit;
@@ -1328,7 +1328,7 @@ end;
 
 // DoApply
 //
-procedure TCustomCgShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
+procedure TCustomCgShader.DoApply(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and (not FDesignEnable) then
     Exit;
@@ -1338,7 +1338,7 @@ end;
 
 // DoUnApply
 //
-function TCustomCgShader.DoUnApply(var rci : TRenderContextInfo) : Boolean;
+function TCustomCgShader.DoUnApply(var rci : TGLRenderContextInfo) : Boolean;
 begin
   if (not (csDesigning in ComponentState)) or FDesignEnable then
   begin
@@ -1387,7 +1387,7 @@ end;
 
 // DoInitialize
 //
-procedure TCadencableCustomCgShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TCadencableCustomCgShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if FCadencer = nil then
   begin

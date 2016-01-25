@@ -92,7 +92,7 @@ type
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
 
     property Enabled[AIndex: Integer]: Boolean read GetEnabled write SetEnabled;
     property SelectedText: string read GetSelectedText;
@@ -218,7 +218,7 @@ end;
 // BuildList
 //
 
-procedure TGLGameMenu.BuildList(var rci: TRenderContextInfo);
+procedure TGLGameMenu.BuildList(var rci: TGLRenderContextInfo);
 var
   canvas: TGLCanvas;
   buffer: TGLSceneBuffer;

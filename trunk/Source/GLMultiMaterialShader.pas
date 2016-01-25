@@ -44,8 +44,8 @@ type
     procedure SetShaderStyle(const Value: TGLShaderStyle);
       protected
          procedure SetMaterialLibrary(const val : TGLMaterialLibrary);
-         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-         function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+         procedure DoApply(var rci : TGLRenderContextInfo; Sender : TObject); override;
+         function DoUnApply(var rci : TGLRenderContextInfo) : Boolean; override;
       public
          constructor Create(aOwner : TComponent); override;
       published
@@ -77,7 +77,7 @@ end;
 
 // DoApply
 //
-procedure TGLMultiMaterialShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
+procedure TGLMultiMaterialShader.DoApply(var rci: TGLRenderContextInfo; Sender : TObject);
 begin
    if not Assigned(FMaterialLibrary) then exit;
 
@@ -97,7 +97,7 @@ end;
 // DoUnApply
 //
 function TGLMultiMaterialShader.DoUnApply(
-   var rci: TRenderContextInfo): Boolean;
+   var rci: TGLRenderContextInfo): Boolean;
 begin
    Result:=False;
    if not Assigned(FMaterialLibrary) then exit;

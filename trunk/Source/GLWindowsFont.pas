@@ -77,7 +77,7 @@ type
     procedure LoadWindowsFont; virtual;
     function  StoreRanges: Boolean;
 
-    procedure PrepareImage(var ARci: TRenderContextInfo); override;
+    procedure PrepareImage(var ARci: TGLRenderContextInfo); override;
     function  TextureFormat: Integer; override;
     procedure StreamlineRanges;
   public
@@ -424,7 +424,7 @@ end;
 // PrepareImage
 //
 
-procedure TGLWindowsBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
+procedure TGLWindowsBitmapFont.PrepareImage(var ARci: TGLRenderContextInfo);
 begin
   LoadWindowsFont;
   inherited PrepareImage(ARci);

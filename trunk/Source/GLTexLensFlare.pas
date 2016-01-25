@@ -59,7 +59,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
     { Public Declarations }
@@ -145,7 +145,7 @@ end;
 // BuildList
 //
 
-procedure TGLTextureLensFlare.BuildList(var rci: TRenderContextInfo);
+procedure TGLTextureLensFlare.BuildList(var rci: TGLRenderContextInfo);
 var
   v, rv, screenPos, posVector: TAffineVector;
   depth, rnd: Single;

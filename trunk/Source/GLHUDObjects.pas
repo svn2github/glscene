@@ -86,7 +86,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -126,14 +126,14 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RenderTextAtPosition(const X, Y, Z: Single;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
 
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -164,7 +164,7 @@ type
     them to screen coordinates and renderes text there. }
   TGLAbsoluteHUDText = class(TGLHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
   end;
 
@@ -175,7 +175,7 @@ type
     Note: this still does not solve the font scaling problem. }
   TGLResolutionIndependantHUDText = class(TGLHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     constructor Create(AOwner: TComponent); override;
   end;
@@ -239,7 +239,7 @@ end;
 // DoRender
 //
 
-procedure TGLHUDSprite.DoRender(var rci: TRenderContextInfo;
+procedure TGLHUDSprite.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   vx, vy, vx1, vy1, f: Single;
@@ -445,7 +445,7 @@ end;
 //
 
 procedure TGLHUDText.RenderTextAtPosition(const X, Y, Z: Single;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 var
   f: Single;
 begin
@@ -481,7 +481,7 @@ end;
 // DoRender
 //
 
-procedure TGLHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X, Position.Y, Position.Z, rci);
@@ -506,7 +506,7 @@ end;
 // DoRender
 //
 
-procedure TGLResolutionIndependantHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLResolutionIndependantHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X * rci.viewPortSize.cx,
@@ -522,7 +522,7 @@ end;
 // DoRender
 //
 
-procedure TGLAbsoluteHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TGLAbsoluteHUDText.DoRender(var rci: TGLRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   Temp: TAffineVector;

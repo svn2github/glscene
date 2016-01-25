@@ -103,7 +103,7 @@ type
     constructor CreateOwned(AOwner: TGLMeshObjectList);
     destructor Destroy; override;
 
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TGLRenderContextInfo); override;
 
     {  Drops all unused nodes from the facegroups list. 
       An unused node is a node that renders nothing and whose children
@@ -337,7 +337,7 @@ end;
 
 // BuildList
 //
-procedure TBSPMeshObject.BuildList(var mrci: TRenderContextInfo);
+procedure TBSPMeshObject.BuildList(var mrci: TGLRenderContextInfo);
 var
   i, j, k, n, camCluster: Integer;
   bsprci: TBSPRenderContextInfo;
