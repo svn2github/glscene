@@ -27,8 +27,8 @@ type
     procedure SetShaderStyle(const Value: TVKShaderStyle);
       protected
          procedure SetMaterialLibrary(const val : TVKMaterialLibrary);
-         procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-         function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+         procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+         function DoUnApply(var rci : TVKRenderContextInfo) : Boolean; override;
       public
          constructor Create(aOwner : TComponent); override;
       published
@@ -56,7 +56,7 @@ end;
 
 // DoApply
 //
-procedure TVKMultiMaterialShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
+procedure TVKMultiMaterialShader.DoApply(var rci: TVKRenderContextInfo; Sender : TObject);
 begin
    if not Assigned(FMaterialLibrary) then exit;
 
@@ -76,7 +76,7 @@ end;
 // DoUnApply
 //
 function TVKMultiMaterialShader.DoUnApply(
-   var rci: TRenderContextInfo): Boolean;
+   var rci: TVKRenderContextInfo): Boolean;
 begin
    Result:=False;
    if not Assigned(FMaterialLibrary) then exit;

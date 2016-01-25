@@ -2,7 +2,7 @@
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
 {
-   TVKSLShader is a wrapper for GLS shaders. 
+   TVKGLSLShader is a wrapper for GLS shaders. 
      
  }
 unit GLS.GLSLShader;
@@ -18,14 +18,14 @@ uses
   GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat, GLS.GLSLParameter;
 
 type
-  TVKSLShaderParameter = class;
+  TVKGLSLShaderParameter = class;
   TVKCustomGLSLShader = class;
   EGLSLShaderException = class(EGLCustomShaderException);
 
-  TVKSLShaderEvent = procedure(Shader: TVKCustomGLSLShader) of object;
-  TVKSLShaderUnApplyEvent = procedure(Shader: TVKCustomGLSLShader;
+  TVKGLSLShaderEvent = procedure(Shader: TVKCustomGLSLShader) of object;
+  TVKGLSLShaderUnApplyEvent = procedure(Shader: TVKCustomGLSLShader;
                                      var ThereAreMorePasses: Boolean) of object;
-  TVKSLShaderEventEx = procedure(Shader: TVKCustomGLSLShader;
+  TVKGLSLShaderEventEx = procedure(Shader: TVKCustomGLSLShader;
     Sender: TObject) of object;
 
   TVKActiveAttrib = record
@@ -40,34 +40,34 @@ type
   TVKCustomGLSLShader = class(TVKCustomShader)
   private
     FGLSLProg: TVKProgramHandle;
-    FParam: TVKSLShaderParameter;
+    FParam: TVKGLSLShaderParameter;
     FActiveVarying: TStrings;
     FTransformFeedBackMode: TVKTransformFeedBackMode;
 
-    FOnInitialize: TVKSLShaderEvent;
-    FOnApply: TVKSLShaderEvent;
-    FOnUnApply: TVKSLShaderUnApplyEvent;
-    FOnInitializeEx: TVKSLShaderEventEx;
-    FOnApplyEx: TVKSLShaderEventEx;
+    FOnInitialize: TVKGLSLShaderEvent;
+    FOnApply: TVKGLSLShaderEvent;
+    FOnUnApply: TVKGLSLShaderUnApplyEvent;
+    FOnInitializeEx: TVKGLSLShaderEventEx;
+    FOnApplyEx: TVKGLSLShaderEventEx;
 
-    function GetParam(const Index: string): TVKSLShaderParameter;
-    function GetDirectParam(const Index: Cardinal): TVKSLShaderParameter;
+    function GetParam(const Index: string): TVKGLSLShaderParameter;
+    function GetDirectParam(const Index: Cardinal): TVKGLSLShaderParameter;
     procedure OnChangeActiveVarying(Sender: TObject);
   protected
-    property OnApply: TVKSLShaderEvent read FOnApply write FOnApply;
-    property OnUnApply: TVKSLShaderUnApplyEvent read FOnUnApply write FOnUnApply;
-    property OnInitialize: TVKSLShaderEvent read FOnInitialize write FOnInitialize;
-    property OnInitializeEx: TVKSLShaderEventEx read FOnInitializeEx write FOnInitializeEx;
-    property OnApplyEx: TVKSLShaderEventEx read FOnApplyEx write FOnApplyEx;
+    property OnApply: TVKGLSLShaderEvent read FOnApply write FOnApply;
+    property OnUnApply: TVKGLSLShaderUnApplyEvent read FOnUnApply write FOnUnApply;
+    property OnInitialize: TVKGLSLShaderEvent read FOnInitialize write FOnInitialize;
+    property OnInitializeEx: TVKGLSLShaderEventEx read FOnInitializeEx write FOnInitializeEx;
+    property OnApplyEx: TVKGLSLShaderEventEx read FOnApplyEx write FOnApplyEx;
 
     function GetGLSLProg: TVKProgramHandle; virtual;
-    function GetCurrentParam: TVKSLShaderParameter; virtual;
+    function GetCurrentParam: TVKGLSLShaderParameter; virtual;
     procedure SetActiveVarying(const Value: TStrings);
     procedure SetTransformFeedBackMode(const Value: TVKTransformFeedBackMode);
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
     procedure DoFinalize; override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -75,15 +75,15 @@ type
     function ShaderSupported: Boolean; override;
     function GetActiveAttribs: TVKActiveAttribArray;
 
-    property Param[const Index: string]: TVKSLShaderParameter read GetParam;
-    property DirectParam[const Index: Cardinal]: TVKSLShaderParameter read GetDirectParam;
+    property Param[const Index: string]: TVKGLSLShaderParameter read GetParam;
+    property DirectParam[const Index: Cardinal]: TVKGLSLShaderParameter read GetDirectParam;
     property ActiveVarying: TStrings read FActiveVarying write SetActiveVarying;
     property TransformFeedBackMode: TVKTransformFeedBackMode read FTransformFeedBackMode write SetTransformFeedBackMode default tfbmInterleaved;
   end;
 
 
   { Wrapper around a parameter of a GLSL program. }
-  TVKSLShaderParameter = class(TVKCustomShaderParameter)
+  TVKGLSLShaderParameter = class(TVKCustomShaderParameter)
   private
     { Private Declarations }
     FGLSLProg: TVKProgramHandle;
@@ -139,7 +139,7 @@ type
      // Nothing here ...yet.
    end;
 
-  TVKSLShader = class(TVKCustomGLSLShader)
+  TVKGLSLShader = class(TVKCustomGLSLShader)
   published
     property FragmentProgram;
     property VertexProgram;
@@ -166,7 +166,7 @@ uses
 
 { TVKCustomGLSLShader }
 
-procedure TVKCustomGLSLShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   FGLSLProg.UseProgramObject;
   if Assigned(FOnApply) then
@@ -176,7 +176,7 @@ begin
 end;
 
 
-procedure TVKCustomGLSLShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 const
   cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
@@ -275,7 +275,7 @@ begin
 end;
 
 
-function TVKCustomGLSLShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   if Assigned(FOnUnApply) then
@@ -293,7 +293,7 @@ end;
 
 function TVKCustomGLSLShader.GetActiveAttribs: TVKActiveAttribArray;
 var
-  LRci: TRenderContextInfo;
+  LRci: TVKRenderContextInfo;
   i, j: Integer;
   buff: array[0..127] of AnsiChar;
   len: GLsizei;
@@ -368,20 +368,20 @@ begin
 end;
 
 function TVKCustomGLSLShader.GetParam(
-  const Index: string): TVKSLShaderParameter;
+  const Index: string): TVKGLSLShaderParameter;
 begin
   FParam.FParameterID := FGLSLProg.GetUniformLocation(Index);
   Result := FParam;
 end;
 
 function TVKCustomGLSLShader.GetDirectParam(
-  const Index: Cardinal): TVKSLShaderParameter;
+  const Index: Cardinal): TVKGLSLShaderParameter;
 begin
   FParam.FParameterID := Index;
   Result := FParam;
 end;
 
-function TVKCustomGLSLShader.GetCurrentParam: TVKSLShaderParameter;
+function TVKCustomGLSLShader.GetCurrentParam: TVKGLSLShaderParameter;
 begin
   Result := FParam;
 end;
@@ -390,7 +390,7 @@ constructor TVKCustomGLSLShader.Create(AOwner: TComponent);
 begin
   inherited;
   FGLSLProg := TVKProgramHandle.Create;
-  FParam := TVKSLShaderParameter.Create;
+  FParam := TVKGLSLShaderParameter.Create;
   FParam.FGLSLProg := FGLSLProg;
   FActiveVarying := TStringList.Create;
   TStringList(FActiveVarying).OnChange := OnChangeActiveVarying;
@@ -425,70 +425,70 @@ begin
   NotifyChange(Self);
 end;
 
-{ TVKSLShaderParameter }
+{ TVKGLSLShaderParameter }
 
-function TVKSLShaderParameter.GetAsCustomTexture(
+function TVKGLSLShaderParameter.GetAsCustomTexture(
   const TextureIndex: Integer; TextureTarget: TVKTextureTarget): Cardinal;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, TextureIndex, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsMatrix2f: TMatrix2f;
+function TVKGLSLShaderParameter.GetAsMatrix2f: TMatrix2f;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsMatrix3f: TMatrix3f;
+function TVKGLSLShaderParameter.GetAsMatrix3f: TMatrix3f;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsMatrix4f: TMatrix4f;
+function TVKGLSLShaderParameter.GetAsMatrix4f: TMatrix4f;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector1f: Single;
+function TVKGLSLShaderParameter.GetAsVector1f: Single;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector1i: Integer;
+function TVKGLSLShaderParameter.GetAsVector1i: Integer;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector2f: TVector2f;
+function TVKGLSLShaderParameter.GetAsVector2f: TVector2f;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector2i: TVector2i;
+function TVKGLSLShaderParameter.GetAsVector2i: TVector2i;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector3f: TVector3f;
+function TVKGLSLShaderParameter.GetAsVector3f: TVector3f;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector3i: TVector3i;
+function TVKGLSLShaderParameter.GetAsVector3i: TVector3i;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector4f: TVector;
+function TVKGLSLShaderParameter.GetAsVector4f: TVector;
 begin
   GL.GetUniformfv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector4i: TVector4i;
+function TVKGLSLShaderParameter.GetAsVector4i: TVector4i;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TVKSLShaderParameter.SetAsCustomTexture(
+procedure TVKGLSLShaderParameter.SetAsCustomTexture(
   const TextureIndex: Integer; TextureTarget: TVKTextureTarget;
   const Value: Cardinal);
 begin
@@ -496,113 +496,113 @@ begin
   GL.Uniform1i(FParameterID, TextureIndex);
 end;
 
-procedure TVKSLShaderParameter.SetAsMatrix2f(const Value: TMatrix2f);
+procedure TVKGLSLShaderParameter.SetAsMatrix2f(const Value: TMatrix2f);
 begin
   GL.UniformMatrix2fv(FParameterID, 1, False, @Value);
 end;
 
-procedure TVKSLShaderParameter.SetAsMatrix3f(const Value: TMatrix3f);
+procedure TVKGLSLShaderParameter.SetAsMatrix3f(const Value: TMatrix3f);
 begin
   GL.UniformMatrix3fv(FParameterID, 1, False, @Value);
 end;
 
-procedure TVKSLShaderParameter.SetAsMatrix4f(const Value: TMatrix4f);
+procedure TVKGLSLShaderParameter.SetAsMatrix4f(const Value: TMatrix4f);
 begin
   GL.UniformMatrix4fv(FParameterID, 1, False, @Value);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector1f(const Value: Single);
+procedure TVKGLSLShaderParameter.SetAsVector1f(const Value: Single);
 begin
   GL.Uniform1f(FParameterID, Value);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector1i(const Value: Integer);
+procedure TVKGLSLShaderParameter.SetAsVector1i(const Value: Integer);
 begin
   GL.Uniform1i(FParameterID, Value);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector2f(const Value: TVector2f);
+procedure TVKGLSLShaderParameter.SetAsVector2f(const Value: TVector2f);
 begin
   GL.Uniform2f(FParameterID, Value.V[0], Value.V[1]);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector2i(const Value: TVector2i);
+procedure TVKGLSLShaderParameter.SetAsVector2i(const Value: TVector2i);
 begin
   GL.Uniform2i(FParameterID, Value.V[0], Value.V[1]);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector3f(const Value: TVector3f);
+procedure TVKGLSLShaderParameter.SetAsVector3f(const Value: TVector3f);
 begin
   GL.Uniform3f(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector3i(const Value: TVector3i);
+procedure TVKGLSLShaderParameter.SetAsVector3i(const Value: TVector3i);
 begin
   GL.Uniform3i(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector4f(const Value: TVector4f);
+procedure TVKGLSLShaderParameter.SetAsVector4f(const Value: TVector4f);
 begin
   GL.Uniform4f(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector4i(const Value: TVector4i);
+procedure TVKGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
   GL.Uniform4i(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
 end;
 
-function TVKSLShaderParameter.GetAsUniformBuffer: GLenum;
+function TVKGLSLShaderParameter.GetAsUniformBuffer: GLenum;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TVKSLShaderParameter.GetAsVector1ui: GLuint;
+function TVKGLSLShaderParameter.GetAsVector1ui: GLuint;
 begin
   GL.GetUniformuiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector1ui(const Value: GLuint);
+procedure TVKGLSLShaderParameter.SetAsVector1ui(const Value: GLuint);
 begin
   GL.Uniform1ui(FParameterID, Value);
 end;
 
-function TVKSLShaderParameter.GetAsVector2ui: TVector2ui;
+function TVKGLSLShaderParameter.GetAsVector2ui: TVector2ui;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
+procedure TVKGLSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
 begin
   GL.Uniform2ui(FParameterID, Value.V[0], Value.V[1]);
 end;
 
-function TVKSLShaderParameter.GetAsVector3ui: TVector3ui;
+function TVKGLSLShaderParameter.GetAsVector3ui: TVector3ui;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
+procedure TVKGLSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
 begin
   GL.Uniform3ui(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
 end;
 
-function TVKSLShaderParameter.GetAsVector4ui: TVector4ui;
+function TVKGLSLShaderParameter.GetAsVector4ui: TVector4ui;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TVKSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
+procedure TVKGLSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
 begin
   GL.Uniform4ui(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
 end;
 
-procedure TVKSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);
+procedure TVKGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);
 begin
   CurrentGLContext.GLStates.UniformBufferBinding := UBO;
   GL.UniformBuffer(FGLSLProg.Handle, FParameterID, UBO);
 end;
 
 initialization
-  RegisterClasses([TVKCustomGLSLShader, TVKSLShader]);
+  RegisterClasses([TVKCustomGLSLShader, TVKGLSLShader]);
 
 end.

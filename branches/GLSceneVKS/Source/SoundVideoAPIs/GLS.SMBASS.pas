@@ -1,14 +1,14 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  BASS based sound-manager (http://www.un4seen.com/music/, free for freeware). 
+  BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).
 
-   Unsupported feature(s) : 
+   Unsupported feature(s) :
        sound source velocity
        looping (sounds are played either once or forever)
        source priorities (not relevant, channels are not limited)
- 
+
 }
 unit GLS.SMBASS;
 
@@ -17,10 +17,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.Windows,
   System.Classes, System.SysUtils, FMX.Forms,
   //GLS
   Bass,  
-  GLS.Sound, GLS.Scene, GLS.VectorGeometry;
+  GLS.Sound, 
+  GLS.Scene, 
+  GLS.VectorGeometry;
 
 type
 
@@ -66,7 +69,6 @@ type
          property Algorithm3D : TBASS3DAlgorithm read FAlgorithm3D write FAlgorithm3D default algDefault;
 	end;
 
-procedure Register;
 
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -82,11 +84,6 @@ type
       sample : HSAMPLE;
    end;
    PBASSInfo = ^TBASSInfo;
-
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TVKSMBASS]);
-end;
 
 // VectorToBASSVector
 //
@@ -124,9 +121,11 @@ function TVKSMBASS.DoActivate : Boolean;
 const
    c3DAlgo : array [algDefault..algLight] of Integer =
       (BASS_3DALG_DEFAULT, BASS_3DALG_OFF, BASS_3DALG_FULL, BASS_3DALG_LIGHT);
+var
+  AHWND: HWND;
 begin
    Assert(bass_isloaded,'BASS DLL is not present');
-   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, Application.Handle,nil) then
+   if not BASS_Init(1, OutputFrequency, BASS_DEVICE_3D, AHWND, nil) then
    begin
       Result:=False;
       Exit;

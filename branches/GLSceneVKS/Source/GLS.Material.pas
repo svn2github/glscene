@@ -94,23 +94,23 @@ type
     { Protected Declarations }
           { Invoked once, before the first call to DoApply. 
              The call happens with the OpenGL context being active. }
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
       dynamic;
     { Request to apply the shader. 
        Always followed by a DoUnApply when the shader is no longer needed. }
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); virtual;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); virtual;
        {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     { Request to un-apply the shader. 
        Subclasses can assume the shader has been applied previously. 
        Return True to request a multipass. }
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; virtual;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; virtual;
        {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     { Invoked once, before the destruction of context or release of shader. 
        The call happens with the OpenGL context being active. }
     procedure DoFinalize; dynamic;
 
     function GetShaderInitialized: Boolean;
-    procedure InitializeShader(var rci: TRenderContextInfo; Sender: TObject);
+    procedure InitializeShader(var rci: TVKRenderContextInfo; Sender: TObject);
     procedure FinalizeShader;
     procedure OnVirtualHandleAllocate(sender: TVKVirtualHandle; var handle:
       Cardinal);
@@ -143,12 +143,12 @@ type
     procedure EndUpdate;
 
     { Apply shader to OpenGL state machine.}
-    procedure Apply(var rci: TRenderContextInfo; Sender: TObject);
+    procedure Apply(var rci: TVKRenderContextInfo; Sender: TObject);
     { UnApply shader. 
        When returning True, the caller is expected to perform a multipass
        rendering by re-rendering then invoking UnApply again, until a
        "False" is returned. }
-    function UnApply(var rci: TRenderContextInfo): Boolean;
+    function UnApply(var rci: TVKRenderContextInfo): Boolean;
 
     { Shader application style (default is ssLowLevel). }
     property ShaderStyle: TVKShaderStyle read FShaderStyle write FShaderStyle
@@ -208,8 +208,8 @@ type
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
-    procedure Apply(var rci: TRenderContextInfo; aFace: TCullFaceMode);
-    procedure ApplyNoLighting(var rci: TRenderContextInfo; aFace:
+    procedure Apply(var rci: TVKRenderContextInfo; aFace: TCullFaceMode);
+    procedure ApplyNoLighting(var rci: TVKRenderContextInfo; aFace:
       TCullFaceMode);
     procedure Assign(Source: TPersistent); override;
 
@@ -245,7 +245,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
 
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -311,7 +311,7 @@ type
     function StoreAlphaFuncRef: Boolean;
   public
     constructor Create(AOwner: TPersistent); override;
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
   published
     property UseAlphaFunc: Boolean read FUseAlphaFunc write SetUseAlphaFunc
       default False;
@@ -419,10 +419,10 @@ type
     destructor Destroy; override;
 
     procedure PrepareBuildList;
-    procedure Apply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
     { Restore non-standard material states that were altered; 
        A return value of True is a multipass request. }
-    function UnApply(var rci: TRenderContextInfo): Boolean;
+    function UnApply(var rci: TVKRenderContextInfo): Boolean;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
     procedure NotifyTexMapChange(Sender: TObject);
@@ -516,9 +516,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+    procedure Apply(var ARci: TVKRenderContextInfo); virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
+    function UnApply(var ARci: TVKRenderContextInfo): Boolean; virtual; {$IFNDEF GLS_CPPB} abstract; {$ENDIF}
 
     procedure RegisterUser(obj: TVKUpdateAbleObject); overload;
     procedure UnregisterUser(obj: TVKUpdateAbleObject); overload;
@@ -580,9 +580,9 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure PrepareBuildList;
-    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
     //: Restore non-standard material states that were altered
-    function UnApply(var ARci: TRenderContextInfo): Boolean; override;
+    function UnApply(var ARci: TVKRenderContextInfo): Boolean; override;
 
     procedure NotifyUsersOfTexMapChange;
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
@@ -700,11 +700,11 @@ type
        If a material is already applied, and has not yet been unapplied,
        an assertion will be triggered. }
     function ApplyMaterial(const AName: string;
-      var ARci: TRenderContextInfo): Boolean; virtual;
+      var ARci: TVKRenderContextInfo): Boolean; virtual;
     { Un-applies the last applied material. 
        Use this function in conjunction with ApplyMaterial. 
        If no material was applied, an assertion will be triggered. }
-    function UnApplyMaterial(var ARci: TRenderContextInfo): Boolean; virtual;
+    function UnApplyMaterial(var ARci: TVKRenderContextInfo): Boolean; virtual;
   end;
 
   // TVKMaterialLibrary
@@ -808,11 +808,11 @@ resourcestring
   // Dummy methods for CPP
   //
 {$IFDEF GLS_CPPB}
-procedure TVKShader.DoApply(var Rci: TRenderContextInfo; Sender: TObject);
+procedure TVKShader.DoApply(var Rci: TVKRenderContextInfo; Sender: TObject);
 begin
 end;
 
-function TVKShader.DoUnApply(var Rci: TRenderContextInfo): Boolean;
+function TVKShader.DoUnApply(var Rci: TVKRenderContextInfo): Boolean;
 begin
   Result := True;
 end;
@@ -821,11 +821,11 @@ procedure TVKAbstractLibMaterial.Loaded;
 begin
 end;
 
-procedure TVKAbstractLibMaterial.Apply(var ARci: TRenderContextInfo);
+procedure TVKAbstractLibMaterial.Apply(var ARci: TVKRenderContextInfo);
 begin
 end;
 
-function TVKAbstractLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+function TVKAbstractLibMaterial.UnApply(var ARci: TVKRenderContextInfo): Boolean;
 begin
   Result := True;
 end;
@@ -863,7 +863,7 @@ end;
 
 // Apply
 //
-procedure TVKFaceProperties.Apply(var rci: TRenderContextInfo;
+procedure TVKFaceProperties.Apply(var rci: TVKRenderContextInfo;
   aFace: TCullFaceMode);
 begin
   with rci.GLStates do
@@ -875,7 +875,7 @@ end;
 
 // ApplyNoLighting
 //
-procedure TVKFaceProperties.ApplyNoLighting(var rci: TRenderContextInfo;
+procedure TVKFaceProperties.ApplyNoLighting(var rci: TVKRenderContextInfo;
   aFace: TCullFaceMode);
 begin
   GL.Color4fv(Diffuse.AsAddress);
@@ -959,7 +959,7 @@ begin
   FDepthClamp := False;
 end;
 
-procedure TVKDepthProperties.Apply(var rci: TRenderContextInfo);
+procedure TVKDepthProperties.Apply(var rci: TVKRenderContextInfo);
 begin
   with rci.GLStates do
   begin
@@ -1131,7 +1131,7 @@ end;
 // DoInitialize
 //
 
-procedure TVKShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   // nothing here
 end;
@@ -1155,7 +1155,7 @@ end;
 // InitializeShader
 //
 
-procedure TVKShader.InitializeShader(var rci: TRenderContextInfo; Sender:
+procedure TVKShader.InitializeShader(var rci: TVKRenderContextInfo; Sender:
   TObject);
 begin
   FVirtualHandle.AllocateHandle;
@@ -1178,7 +1178,7 @@ end;
 // Apply
 //
 
-procedure TVKShader.Apply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKShader.Apply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
 {$IFNDEF GLS_MULTITHREAD}
   Assert(not FShaderActive, 'Unbalanced shader application.');
@@ -1198,7 +1198,7 @@ end;
 // UnApply
 //
 
-function TVKShader.UnApply(var rci: TRenderContextInfo): Boolean;
+function TVKShader.UnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
 {$IFNDEF GLS_MULTITHREAD}
   Assert(FShaderActive, 'Unbalanced shader application.');
@@ -1617,7 +1617,7 @@ end;
 // Apply
 //
 
-procedure TVKMaterial.Apply(var rci: TRenderContextInfo);
+procedure TVKMaterial.Apply(var rci: TVKRenderContextInfo);
 begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.Apply(rci)
@@ -1737,7 +1737,7 @@ end;
 // UnApply
 //
 
-function TVKMaterial.UnApply(var rci: TRenderContextInfo): Boolean;
+function TVKMaterial.UnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   if Assigned(currentLibMaterial) then
     Result := currentLibMaterial.UnApply(rci)
@@ -2231,7 +2231,7 @@ end;
 // Apply
 //
 
-procedure TVKLibMaterial.Apply(var ARci: TRenderContextInfo);
+procedure TVKLibMaterial.Apply(var ARci: TVKRenderContextInfo);
 var
   multitextured: Boolean;
 begin
@@ -2311,7 +2311,7 @@ end;
 // UnApply
 //
 
-function TVKLibMaterial.UnApply(var ARci: TRenderContextInfo): Boolean;
+function TVKLibMaterial.UnApply(var ARci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   if Assigned(FShader) then
@@ -2851,7 +2851,7 @@ end;
 //
 
 function TVKAbstractMaterialLibrary.ApplyMaterial(const AName: string;
-  var ARci: TRenderContextInfo): Boolean;
+  var ARci: TVKRenderContextInfo): Boolean;
 begin
   FLastAppliedMaterial := FMaterials.GetMaterial(AName);
   Result := Assigned(FLastAppliedMaterial);
@@ -2863,7 +2863,7 @@ end;
 //
 
 function TVKAbstractMaterialLibrary.UnApplyMaterial(
-  var ARci: TRenderContextInfo): Boolean;
+  var ARci: TVKRenderContextInfo): Boolean;
 begin
   if Assigned(FLastAppliedMaterial) then
   begin
@@ -3521,7 +3521,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKBlendingParameters'}{$ENDIF}
 
-procedure TVKBlendingParameters.Apply(var rci: TRenderContextInfo);
+procedure TVKBlendingParameters.Apply(var rci: TVKRenderContextInfo);
 begin
   if FUseAlphaFunc then
   begin

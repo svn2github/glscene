@@ -70,8 +70,8 @@ type
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
 
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
     procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); virtual;
     procedure OnUnApplyFP(CgProgram: TCgProgram); virtual;
@@ -105,8 +105,8 @@ type
 
   TVKCgBombShader = class(TVKCustomCGBombShader)
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
     procedure OnApplyVP(CgProgram: TCgProgram; Sender: TObject); override;
     procedure OnApplyFP(CgProgram: TCgProgram; Sender: TObject); override;
     procedure OnUnApplyFP(CgProgram: TCgProgram); override;
@@ -160,7 +160,7 @@ begin
 end;
 
 
-procedure TVKCustomCGBombShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomCGBombShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   VertexProgram.Apply(rci, Sender);
   FragmentProgram.Apply(rci, Sender);
@@ -182,7 +182,7 @@ begin
 end;
 
 
-procedure TVKCustomCGBombShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomCGBombShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   if FGradientTexture = nil then
   try
@@ -456,7 +456,7 @@ end;
 
 { TVKCgBombShader }
 
-procedure TVKCgBombShader.DoApply(var rci: TRenderContextInfo;
+procedure TVKCgBombShader.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -465,7 +465,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TVKCgBombShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCgBombShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then

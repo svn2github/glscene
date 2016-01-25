@@ -138,7 +138,7 @@ type
     FManagerName: string;
 
     procedure setShowArrows(value: boolean);
-    procedure RenderArrowLines(Sender: TObject; var rci: TRenderContextInfo);
+    procedure RenderArrowLines(Sender: TObject; var rci: TVKRenderContextInfo);
   protected
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -875,7 +875,7 @@ begin
 end;
 
 procedure TVKBFPSMovement.RenderArrowLines(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TVKRenderContextInfo);
 var
   x, y, z, t: single;
   i: integer;

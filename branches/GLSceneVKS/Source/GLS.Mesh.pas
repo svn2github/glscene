@@ -191,7 +191,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure CalcNormals(Frontface: TFaceWinding);
     property Vertices: TVKVertexList read FVertices write SetVertices;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -717,7 +717,7 @@ end;
 // BuildList
 //
 
-procedure TVKMesh.BuildList(var rci: TRenderContextInfo);
+procedure TVKMesh.BuildList(var rci: TVKRenderContextInfo);
 var
   VertexCount: Longint;
 begin

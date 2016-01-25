@@ -64,8 +64,8 @@ type
 
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -274,7 +274,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLFurShader.DoApply(var rci: TRenderContextInfo;Sender: TObject);
+procedure TVKCustomGLSLFurShader.DoApply(var rci: TVKRenderContextInfo;Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   //Fur stuff
@@ -308,7 +308,7 @@ begin
 
 end;
 
-function TVKCustomGLSLFurShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLFurShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   if FCurrentPass < PassCount then
   begin

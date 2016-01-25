@@ -124,9 +124,9 @@ type
 			constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
-         procedure DoRender(var ARci : TRenderContextInfo;
+         procedure DoRender(var ARci : TVKRenderContextInfo;
                             ARenderSelf, ARenderChildren : Boolean); override;
-         procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure BuildList(var rci : TVKRenderContextInfo); override;
 
          //: Access to the TiledArea data
          property Tiles : TVKTiledArea read FTiles write SetTiles;
@@ -562,7 +562,7 @@ end;
 
 // DoRender
 //
-procedure TVKTilePlane.DoRender(var ARci : TRenderContextInfo;
+procedure TVKTilePlane.DoRender(var ARci : TVKRenderContextInfo;
                                 ARenderSelf, ARenderChildren : Boolean);
 var
    i : Integer;
@@ -576,7 +576,7 @@ end;
 
 // BuildList
 //
-procedure TVKTilePlane.BuildList(var rci : TRenderContextInfo);
+procedure TVKTilePlane.BuildList(var rci : TVKRenderContextInfo);
 type
    TQuadListInfo = packed record
       x, y : TIntegerList;

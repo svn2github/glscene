@@ -24,7 +24,7 @@ type
   TVKDodecahedron = class(TVKSceneObject)
   public
     { Public Declarations }
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
   // TVKIcosahedron
@@ -35,7 +35,7 @@ type
   TVKIcosahedron = class(TVKSceneObject)
   public
     { Public Declarations }
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
   // TVKOctahedron
@@ -46,7 +46,7 @@ type
   TVKOctahedron = class(TVKSceneObject)
   public
     { Public Declarations }
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
   // TVKTetrahedron
@@ -57,7 +57,7 @@ type
   TVKTetrahedron = class(TVKSceneObject)
   public
     { Public Declarations }
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
   end;
 
 
@@ -72,7 +72,7 @@ implementation
 // BuildList
 //
 
-procedure TVKDodecahedron.BuildList(var rci: TRenderContextInfo);
+procedure TVKDodecahedron.BuildList(var rci: TVKRenderContextInfo);
 begin
   DodecahedronBuildList;
 end;
@@ -84,7 +84,7 @@ end;
 // BuildList
 //
 
-procedure TVKIcosahedron.BuildList(var rci: TRenderContextInfo);
+procedure TVKIcosahedron.BuildList(var rci: TVKRenderContextInfo);
 begin
   IcosahedronBuildList;
 end;
@@ -95,7 +95,7 @@ end;
 
 // BuildList
 //
-procedure TVKOctahedron.BuildList(var rci: TRenderContextInfo);
+procedure TVKOctahedron.BuildList(var rci: TVKRenderContextInfo);
 begin
   OctahedronBuildList;
 end;
@@ -106,7 +106,7 @@ end;
 
 // BuildList
 //
-procedure TVKTetrahedron.BuildList(var rci: TRenderContextInfo);
+procedure TVKTetrahedron.BuildList(var rci: TVKRenderContextInfo);
 begin
   TetrahedronBuildList;
 end;

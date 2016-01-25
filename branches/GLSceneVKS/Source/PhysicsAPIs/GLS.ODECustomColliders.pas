@@ -104,7 +104,7 @@ type
     constructor Create(AOwner: TVKXCollection); override;
     destructor Destroy; override;
 
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
 
     property Geom: PdxGeom read FGeom;
 
@@ -692,7 +692,7 @@ end;
 // Render
 //
 
-procedure TVKODECustomCollider.Render(var rci: TRenderContextInfo);
+procedure TVKODECustomCollider.Render(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin

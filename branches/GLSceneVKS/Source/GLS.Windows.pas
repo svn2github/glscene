@@ -47,9 +47,9 @@ type
     procedure SetDoChangesOnProgress(const Value: Boolean);
     procedure SetAutosize(const Value: Boolean);
   protected
-    procedure RenderHeader(var rci: TRenderContextInfo; renderSelf,
+    procedure RenderHeader(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean);
-    procedure RenderFooter(var rci: TRenderContextInfo; renderSelf,
+    procedure RenderFooter(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean);
 
     procedure SetGuiLayout(NewGui: TVKGuiLayout); virtual;
@@ -77,9 +77,9 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren:
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); virtual;
     property GUIRedraw: Boolean read FGUIRedraw write SetGUIRedraw;
     property ReBuildGui: Boolean read FReBuildGui write FReBuildGui;
@@ -182,9 +182,9 @@ type
     procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
     procedure SetBitmapFont(NewFont: TVKCustomBitmapFont);
     function GetBitmapFont: TVKCustomBitmapFont;
-    procedure WriteTextAt(var rci: TRenderContextInfo; const X, Y: TGLfloat;
+    procedure WriteTextAt(var rci: TVKRenderContextInfo; const X, Y: TGLfloat;
       const Data: UnicodeString; const Color: TColorVector); overload;
-    procedure WriteTextAt(var rci: TRenderContextInfo; const X1, Y1, X2, Y2:
+    procedure WriteTextAt(var rci: TVKRenderContextInfo; const X1, Y1, X2, Y2:
       TGLfloat; const Data: UnicodeString; const Color: TColorVector); overload;
     function GetFontHeight: Integer;
   public
@@ -273,7 +273,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
     procedure SetMaterial(AMaterial: TVKMaterial);
     property CustomData: Pointer read FCustomData write FCustomData;
@@ -311,9 +311,9 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure PopUp(Px, Py: Integer);
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren:
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren:
       Boolean); override;
     function MouseDown(Sender: TObject; Button: TVKMouseButton; Shift:
       TShiftState; X, Y: Integer): Boolean; override;
@@ -363,7 +363,7 @@ type
       TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
     property TitleColor: TColor read GetTitleColor write SetTitleColor;
@@ -398,7 +398,7 @@ type
     procedure SetGroup(const val: Integer);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
     procedure NotifyChange(Sender: TObject); override;
   published
@@ -443,7 +443,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
     property Group: Integer read FGroup write SetGroup;
@@ -477,7 +477,7 @@ type
     procedure SetEditChar(const Value: string);
   public
     constructor Create(AOwner: TComponent); override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
     property EditChar: string read FEditChar write SetEditChar;
@@ -495,7 +495,7 @@ type
   protected
   public
     constructor Create(AOwner: TComponent); override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
     property Alignment: TAlignment read FAlignment write SetAlignment;
@@ -506,7 +506,7 @@ type
   private
   protected
   public
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
   end;
@@ -557,7 +557,7 @@ type
       TShiftState; X, Y: Integer): Boolean; override;
     function MouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer):
       Boolean; override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
   published
     property Horizontal: Boolean read FHorizontal write SetHorizontal;
@@ -616,7 +616,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure NotifyChange(Sender: TObject); override;
-    procedure InternalRender(var rci: TRenderContextInfo; renderSelf,
+    procedure InternalRender(var rci: TVKRenderContextInfo; renderSelf,
       renderChildren: Boolean); override;
     procedure OnStringListChange(Sender: TObject);
     property Row[index: Integer]: TStringList read GetRow write SetRow;
@@ -716,7 +716,7 @@ begin
   BlockRendering := False;
 end;
 
-procedure TVKBaseComponent.RenderHeader(var rci: TRenderContextInfo; renderSelf,
+procedure TVKBaseComponent.RenderHeader(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -745,7 +745,7 @@ begin
   rci.GLStates.DepthWriteMask := False;
 end;
 
-procedure TVKBaseComponent.RenderFooter(var rci: TRenderContextInfo; renderSelf,
+procedure TVKBaseComponent.RenderFooter(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 begin
@@ -1069,7 +1069,7 @@ begin
   end;
 end;
 
-procedure TVKBaseComponent.InternalRender(var rci: TRenderContextInfo;
+procedure TVKBaseComponent.InternalRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 
 begin
@@ -1086,7 +1086,7 @@ begin
   end;
 end;
 
-procedure TVKBaseComponent.DoRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKBaseComponent.DoRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -1769,7 +1769,7 @@ begin
   GuiRedraw := True;
 end;
 
-procedure TVKBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X,
+procedure TVKBaseFontControl.WriteTextAt(var rci: TVKRenderContextInfo; const X,
   Y: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
@@ -1784,7 +1784,7 @@ begin
   end;
 end;
 
-procedure TVKBaseFontControl.WriteTextAt(var rci: TRenderContextInfo; const X1,
+procedure TVKBaseFontControl.WriteTextAt(var rci: TVKRenderContextInfo; const X1,
   Y1, X2, Y2: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
@@ -1850,7 +1850,7 @@ begin
   FBitmap.Assign(ABitmap);
 end;
 
-procedure TVKCustomControl.InternalRender(var rci: TRenderContextInfo;
+procedure TVKCustomControl.InternalRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 
 var
@@ -2078,7 +2078,7 @@ begin
   RootControl.ActiveControl := Self;
 end;
 
-procedure TVKPopupMenu.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKPopupMenu.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -2135,7 +2135,7 @@ begin
     end;
 end;
 
-procedure TVKPopupMenu.DoRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKPopupMenu.DoRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 begin
@@ -2327,7 +2327,7 @@ begin
     Result := inherited MouseMove(Sender, Shift, X, Y);
 end;
 
-procedure TVKForm.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKForm.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 var
   ATitleColor: TColorVector;
@@ -2435,7 +2435,7 @@ begin
   FGroup := -1;
 end;
 
-procedure TVKCheckBox.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKCheckBox.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 begin
   if Checked then
@@ -2658,7 +2658,7 @@ begin
   FBitBtn.Free;
 end;
 
-procedure TVKButton.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKButton.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -2886,7 +2886,7 @@ begin
   FEditChar := '*';
 end;
 
-procedure TVKEdit.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKEdit.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 var
   Tekst: UnicodeString;
@@ -2968,7 +2968,7 @@ begin
   FTextLayout := tlCenter;
 end;
 
-procedure TVKLabel.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKLabel.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -3039,7 +3039,7 @@ begin
   end;
 end;
 
-procedure TVKAdvancedLabel.InternalRender(var rci: TRenderContextInfo;
+procedure TVKAdvancedLabel.InternalRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 
 begin
@@ -3345,7 +3345,7 @@ begin
     Result := inherited MouseMove(Sender, Shift, X, Y);
 end;
 
-procedure TVKScrollbar.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TVKScrollbar.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
 var
@@ -3708,7 +3708,7 @@ begin
   inherited;
 end;
 
-procedure TGLStringGrid.InternalRender(var rci: TRenderContextInfo; renderSelf,
+procedure TGLStringGrid.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
   function CellSelected(X, Y: Integer): Boolean;

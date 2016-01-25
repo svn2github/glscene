@@ -187,7 +187,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -805,7 +805,7 @@ end;
 // BuildList
 //
 
-procedure TVKMultiPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TVKMultiPolygon.BuildList(var rci: TVKRenderContextInfo);
 var
   normal: TAffineVector;
 begin

@@ -26,7 +26,7 @@ type
 
   { Render a spacial partitioning descending from TSectoredSpacePartition
   (octree and quadtree) as a grid - great for debugging and visualisation }
-procedure RenderSpatialPartitioning(var rci: TRenderContextInfo;
+procedure RenderSpatialPartitioning(var rci: TVKRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
 { Create an extended frustum from a GLSceneViewer - this makes the unit
@@ -38,8 +38,8 @@ function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
   const AGLSceneViewer: TVKSceneViewer): TExtendedFrustum; overload;
 
 { Renders an AABB as a line }
-procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
-procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
+procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
+procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB); overload;
 
 //-------------------------------------------------------------------
 //-------------------------------------------------------------------
@@ -52,12 +52,12 @@ uses
   GLS.VectorTypes,
   GLS.Context;
 
-procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB);
+procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB);
 begin
   RenderAABB(rci, AABB, 1, 0.8, 0.8, 0.8);
 end;
 
-procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single);
+procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB; w, r, g, b: single);
 begin
   GL.Color3f(r, g, b);
   rci.GLStates.LineWidth := w;
@@ -90,7 +90,7 @@ end;
 
 // RenderSpatialPartitioning
 //
-procedure RenderSpatialPartitioning(var rci: TRenderContextInfo;
+procedure RenderSpatialPartitioning(var rci: TVKRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
   procedure RenderSectorNode(Node: TSectorNode);

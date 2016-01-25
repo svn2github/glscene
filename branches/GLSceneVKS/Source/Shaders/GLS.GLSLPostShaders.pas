@@ -32,8 +32,8 @@ type
     function GetTextureTarget: TVKTextureTarget;
     function StoreThreshold: Boolean;
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -67,8 +67,8 @@ type
     function StoreIntensity: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -100,8 +100,8 @@ type
    function StoreThreshold: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -152,8 +152,8 @@ type
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -203,8 +203,8 @@ type
     function StorePixelHeight: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -237,8 +237,8 @@ type
     function StoreNumColors: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -271,8 +271,8 @@ type
     function StoreRandFactor: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner: TComponent); override;
 
@@ -322,8 +322,8 @@ type
     function StoreFreq: Boolean;
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -426,7 +426,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostBlurShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['threshold'] := FThreshold;
@@ -434,7 +434,7 @@ begin
 end;
 
 function TVKCustomGLSLPostBlurShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -511,7 +511,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostThermalVisionShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['Threshold'] := FThreshold;
@@ -521,7 +521,7 @@ begin
 end;
 
 function TVKCustomGLSLPostThermalVisionShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -609,7 +609,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostDreamVisionShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['Threshold'] := (FThreshold*255)/100;
@@ -618,7 +618,7 @@ begin
 end;
 
 function TVKCustomGLSLPostDreamVisionShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -707,7 +707,7 @@ begin
 
 end;
 
-procedure TVKCustomGLSLPostNightVisionShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLPostNightVisionShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
 
   GetGLSLProg.UseProgramObject;
@@ -721,7 +721,7 @@ begin
 end;
 
 function TVKCustomGLSLPostNightVisionShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -886,7 +886,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostPixelateShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['pixel_w'] := FPixelWidth;
@@ -896,7 +896,7 @@ begin
 end;
 
 function TVKCustomGLSLPostPixelateShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -975,7 +975,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostPosterizeShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['gamma'] := FGamma;
@@ -985,7 +985,7 @@ begin
 end;
 
 function TVKCustomGLSLPostPosterizeShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -1070,7 +1070,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostFrostShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['rnd_scale'] := FRandScale;
@@ -1080,7 +1080,7 @@ begin
 end;
 
 function TVKCustomGLSLPostFrostShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;
@@ -1237,7 +1237,7 @@ begin
 end;
 
 procedure TVKCustomGLSLPostTroubleShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   GetGLSLProg.Uniform1f['PixelX'] := FPixelX;
@@ -1250,7 +1250,7 @@ begin
 end;
 
 function TVKCustomGLSLPostTroubleShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   rci.GLStates.ActiveTexture := 0;
   GetGLSLProg.EndUseProgramObject;

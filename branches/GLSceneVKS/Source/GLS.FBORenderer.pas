@@ -104,13 +104,13 @@ type
 
     procedure ForceDimensions(Texture: TVKTexture);
 
-    procedure RenderToFBO(var ARci: TRenderContextInfo);
+    procedure RenderToFBO(var ARci: TVKRenderContextInfo);
 
-    procedure ApplyCamera(var ARci: TRenderContextInfo);
-    procedure UnApplyCamera(var ARci: TRenderContextInfo);
+    procedure ApplyCamera(var ARci: TVKRenderContextInfo);
+    procedure UnApplyCamera(var ARci: TVKRenderContextInfo);
 
-    procedure DoBeforeRender(var ARci: TRenderContextInfo);
-    procedure DoAfterRender(var ARci: TRenderContextInfo);
+    procedure DoBeforeRender(var ARci: TVKRenderContextInfo);
+    procedure DoAfterRender(var ARci: TVKRenderContextInfo);
     procedure DoPreInitialize;
     procedure DoPostInitialize;
 
@@ -123,7 +123,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf: Boolean;
+    procedure DoRender(var ARci: TVKRenderContextInfo; ARenderSelf: Boolean;
       ARenderChildren: Boolean); override;
 
     { Layer (also cube map face) is activated only on
@@ -225,7 +225,7 @@ implementation
 
 { TVKFBORenderer }
 
-procedure TVKFBORenderer.ApplyCamera(var ARci: TRenderContextInfo);
+procedure TVKFBORenderer.ApplyCamera(var ARci: TVKRenderContextInfo);
 var
   sc: Single;
 begin
@@ -256,7 +256,7 @@ begin
   end;
 end;
 
-procedure TVKFBORenderer.UnApplyCamera(var ARci: TRenderContextInfo);
+procedure TVKFBORenderer.UnApplyCamera(var ARci: TVKRenderContextInfo);
 begin
   ARci.cameraPosition := FStoreCamera[0];
   ARci.cameraDirection := FStoreCamera[1];
@@ -301,13 +301,13 @@ begin
     FRootObject := nil;
 end;
 
-procedure TVKFBORenderer.DoAfterRender(var ARci: TRenderContextInfo);
+procedure TVKFBORenderer.DoAfterRender(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FAfterRender) then
     FAfterRender(Self, ARci);
 end;
 
-procedure TVKFBORenderer.DoBeforeRender(var ARci: TRenderContextInfo);
+procedure TVKFBORenderer.DoBeforeRender(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FBeforeRender) then
     FBeforeRender(Self, ARci);
@@ -325,7 +325,7 @@ begin
     FPreInitialize(Self);
 end;
 
-procedure TVKFBORenderer.DoRender(var ARci: TRenderContextInfo;
+procedure TVKFBORenderer.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if not(csDesigning in ComponentState) then
@@ -553,7 +553,7 @@ begin
   ClearStructureChanged;
 end;
 
-procedure TVKFBORenderer.RenderToFBO(var ARci: TRenderContextInfo);
+procedure TVKFBORenderer.RenderToFBO(var ARci: TVKRenderContextInfo);
 
   function GetClearBits: cardinal;
   begin

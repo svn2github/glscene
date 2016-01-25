@@ -28,7 +28,10 @@ uses
    FMX.Forms, FMX.Dialogs,
    //GLS
    OpenAL{al, alut, alTypes},  
-   GLS.VectorGeometry, GLS.Sound, GLS.Scene, GLS.SoundFileObjects;
+   GLS.VectorGeometry, 
+   GLS.Sound, 
+   GLS.Scene, 
+   GLS.SoundFileObjects;
 
 type
 	// TVKSMOpenAL
@@ -65,8 +68,6 @@ type
 
    EOpenALError = Exception;
 
-procedure Register;
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -74,11 +75,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
-
-procedure Register;
-begin
-   RegisterComponents('GLScene', [TVKSMOpenAL]);
-end;
 
 //checks for an error and raises an exception if necessary
 procedure CheckOpenALError;

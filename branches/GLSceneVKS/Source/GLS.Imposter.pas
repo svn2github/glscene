@@ -71,7 +71,7 @@ type
     FQuad: array[0..3] of TVector;
     FStaticScale: Single;
 
-    procedure PrepareTexture(var rci: TRenderContextInfo); dynamic;
+    procedure PrepareTexture(var rci: TVKRenderContextInfo); dynamic;
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
 
   public
@@ -79,13 +79,13 @@ type
     constructor Create(aBuilder: TVKImposterBuilder); virtual;
     destructor Destroy; override;
 
-    procedure BeginRender(var rci: TRenderContextInfo); virtual;
-    procedure Render(var rci: TRenderContextInfo;
+    procedure BeginRender(var rci: TVKRenderContextInfo); virtual;
+    procedure Render(var rci: TVKRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); virtual;
-    procedure EndRender(var rci: TRenderContextInfo); virtual;
+    procedure EndRender(var rci: TVKRenderContextInfo); virtual;
 
-    procedure RenderOnce(var rci: TRenderContextInfo;
+    procedure RenderOnce(var rci: TVKRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single);
 
@@ -144,13 +144,13 @@ type
     procedure UnregisterImposter(imposter: TImposter);
 
     function CreateNewImposter: TImposter; virtual;
-    procedure PrepareImposters(Sender: TObject; var rci: TRenderContextInfo);
+    procedure PrepareImposters(Sender: TObject; var rci: TVKRenderContextInfo);
       virtual;
-    procedure DoPrepareImposter(var rci: TRenderContextInfo;
+    procedure DoPrepareImposter(var rci: TVKRenderContextInfo;
       impostoredObject: TVKBaseSceneObject;
       destImposter: TImposter); virtual; abstract;
     procedure DoUserSpecifiedImposter(
-      var rci: TRenderContextInfo;
+      var rci: TVKRenderContextInfo;
       destImposter: TImposter;
       bmp32: TVKBitmap32); virtual;
 
@@ -289,7 +289,7 @@ type
 
   public
     { Public Declarations }
-    procedure Render(var rci: TRenderContextInfo;
+    procedure Render(var rci: TVKRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); override;
   end;
@@ -330,11 +330,11 @@ type
     function ComputeOptimalTextureSize: TVKPoint;
 
     function CreateNewImposter: TImposter; override;
-    procedure DoPrepareImposter(var rci: TRenderContextInfo;
+    procedure DoPrepareImposter(var rci: TVKRenderContextInfo;
       impostoredObject: TVKBaseSceneObject;
       destImposter: TImposter); override;
     procedure DoUserSpecifiedImposter(
-      var rci: TRenderContextInfo;
+      var rci: TVKRenderContextInfo;
       destImposter: TImposter;
       bmp32: TVKBitmap32); override;
     procedure ComputeStaticParams(destImposter: TImposter);
@@ -346,7 +346,7 @@ type
 
     { Render imposter texture. 
        Buffer and object must be compatible, RC must have been activated. }
-    procedure Render(var rci: TRenderContextInfo;
+    procedure Render(var rci: TVKRenderContextInfo;
       impostoredObject: TVKBaseSceneObject;
       destImposter: TImposter);
     { Ratio (0..1) of the texture that will be used by samples. 
@@ -407,7 +407,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    {         procedure DoRender(var rci : TRenderContextInfo;
+    {         procedure DoRender(var rci : TVKRenderContextInfo;
                                 renderSelf, renderChildren : Boolean); override; }
 
   published
@@ -439,7 +439,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
@@ -492,7 +492,7 @@ end;
 // PrepareTexture
 //
 
-procedure TImposter.PrepareTexture(var rci: TRenderContextInfo);
+procedure TImposter.PrepareTexture(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin
@@ -518,7 +518,7 @@ end;
 // BeginRender
 //
 
-procedure TImposter.BeginRender(var rci: TRenderContextInfo);
+procedure TImposter.BeginRender(var rci: TVKRenderContextInfo);
 var
   mat: TMatrix;
   filter: TGLenum;
@@ -604,7 +604,7 @@ end;
 // Render
 //
 
-procedure TImposter.Render(var rci: TRenderContextInfo;
+procedure TImposter.Render(var rci: TVKRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 const
@@ -637,7 +637,7 @@ end;
 // EndRender
 //
 
-procedure TImposter.EndRender(var rci: TRenderContextInfo);
+procedure TImposter.EndRender(var rci: TVKRenderContextInfo);
 begin
   GL.End_;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
@@ -646,7 +646,7 @@ end;
 // RenderOnce
 //
 
-procedure TImposter.RenderOnce(var rci: TRenderContextInfo;
+procedure TImposter.RenderOnce(var rci: TVKRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 begin
@@ -725,7 +725,7 @@ end;
 //
 
 procedure TVKImposterBuilder.PrepareImposters(Sender: TObject; var rci:
-  TRenderContextInfo);
+  TVKRenderContextInfo);
 var
   i: Integer;
   imp: TImposter;
@@ -757,7 +757,7 @@ end;
 //
 
 procedure TVKImposterBuilder.DoUserSpecifiedImposter(
-  var rci: TRenderContextInfo;
+  var rci: TVKRenderContextInfo;
   destImposter: TImposter;
   bmp32: TVKBitmap32);
 var
@@ -1149,7 +1149,7 @@ end;
 // Render
 //
 
-procedure TStaticImposter.Render(var rci: TRenderContextInfo;
+procedure TStaticImposter.Render(var rci: TVKRenderContextInfo;
   const objPos, localCameraPos: TVector;
   size: Single);
 var
@@ -1332,7 +1332,7 @@ end;
 //
 
 procedure TVKStaticImposterBuilder.DoPrepareImposter(var rci:
-  TRenderContextInfo;
+  TVKRenderContextInfo;
   impostoredObject: TVKBaseSceneObject; destImposter: TImposter);
 begin
   Render(rci, impostoredObject, destImposter);
@@ -1342,7 +1342,7 @@ end;
 //
 
 procedure TVKStaticImposterBuilder.DoUserSpecifiedImposter(
-  var rci: TRenderContextInfo;
+  var rci: TVKRenderContextInfo;
   destImposter:
   TImposter;
   bmp32: TVKBitmap32);
@@ -1383,7 +1383,7 @@ end;
 // Render
 //
 
-procedure TVKStaticImposterBuilder.Render(var rci: TRenderContextInfo;
+procedure TVKStaticImposterBuilder.Render(var rci: TVKRenderContextInfo;
   impostoredObject: TVKBaseSceneObject; destImposter: TImposter);
 var
   i, coronaIdx, curSample: Integer;
@@ -1579,7 +1579,7 @@ end;
 {
 // DoRender
 //
-procedure TVKDynamicImposterBuilder.DoRender(var rci : TRenderContextInfo;
+procedure TVKDynamicImposterBuilder.DoRender(var rci : TVKRenderContextInfo;
   renderSelf, renderChildren : Boolean);
 var
   i, size, Left, Top, Width, Height : Integer;
@@ -1747,7 +1747,7 @@ end;
 // DoRender
 //
 
-procedure TVKImposter.DoRender(var ARci: TRenderContextInfo;
+procedure TVKImposter.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   camPos: TVector;

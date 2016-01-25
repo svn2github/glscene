@@ -51,7 +51,7 @@ type
          constructor Create(AOwner : TVKTree);
          destructor Destroy; override;
 
-         procedure BuildList(var rci : TRenderContextInfo);
+         procedure BuildList(var rci : TVKRenderContextInfo);
          procedure AddNew(matrix : TMatrix);
          procedure Clear;
 
@@ -121,7 +121,7 @@ type
          constructor Create(AOwner : TVKTree);
          destructor Destroy; override;
 
-         procedure BuildList(var rci : TRenderContextInfo);
+         procedure BuildList(var rci : TVKRenderContextInfo);
          procedure Clear;
 
          property Owner : TVKTree read FOwner;
@@ -223,9 +223,9 @@ type
          destructor Destroy; override;
 
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-         procedure DoRender(var ARci : TRenderContextInfo;
+         procedure DoRender(var ARci : TVKRenderContextInfo;
                             ARenderSelf, ARenderChildren : Boolean); override;
-         procedure BuildList(var rci : TRenderContextInfo); override;
+         procedure BuildList(var rci : TVKRenderContextInfo); override;
          procedure StructureChanged; override;
 
          procedure BuildMesh(GLBaseMesh : TVKBaseMesh);
@@ -344,7 +344,7 @@ end;
 
 // BuildList
 //
-procedure TVKTreeLeaves.BuildList(var rci: TRenderContextInfo);
+procedure TVKTreeLeaves.BuildList(var rci: TVKRenderContextInfo);
 var
    i : integer;
    n : TAffineVector;
@@ -683,7 +683,7 @@ end;
 
 // BuildList
 //
-procedure TVKTreeBranches.BuildList(var rci: TRenderContextInfo);
+procedure TVKTreeBranches.BuildList(var rci: TVKRenderContextInfo);
 var
    i, stride : Integer;
    libMat : TVKLibMaterial;
@@ -833,7 +833,7 @@ end;
 
 // DoRender
 //
-procedure TVKTree.DoRender(var ARci : TRenderContextInfo;
+procedure TVKTree.DoRender(var ARci : TVKRenderContextInfo;
                            ARenderSelf, ARenderChildren : Boolean);
 begin
    MaterialLibrary.LibMaterialByName(BranchMaterialName).PrepareBuildList;
@@ -844,7 +844,7 @@ end;
 
 // BuildList
 //
-procedure TVKTree.BuildList(var rci: TRenderContextInfo);
+procedure TVKTree.BuildList(var rci: TVKRenderContextInfo);
 begin
    if FRebuildTree then begin
       FBranches.BuildBranches;

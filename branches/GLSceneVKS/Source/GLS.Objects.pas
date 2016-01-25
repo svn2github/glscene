@@ -31,7 +31,7 @@ type
   // TVKVisibilityDeterminationEvent
   //
   TVKVisibilityDeterminationEvent = function(Sender: TObject;
-    var rci: TRenderContextInfo): Boolean of object;
+    var rci: TVKRenderContextInfo): Boolean of object;
 
   PVertexRec = ^TVertexRec;
   TVertexRec = record
@@ -78,8 +78,8 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     procedure StructureChanged; override;
     function BarycenterAbsolutePosition: TVector; override;
@@ -157,7 +157,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
 
@@ -216,7 +216,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
@@ -326,7 +326,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     { Points positions. 
       If empty, a single point is assumed at (0, 0, 0) }
@@ -437,7 +437,7 @@ type
     { Setup OpenGL states according to line style. 
       You must call RestoreLineStyle after drawing your lines. 
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
-    procedure SetupLineStyle(var rci: TRenderContextInfo);
+    procedure SetupLineStyle(var rci: TVKRenderContextInfo);
 
   public
     { Public Declarations }
@@ -488,7 +488,7 @@ type
     procedure SetNodeSize(const val: Single);
     function StoreNodeSize: Boolean;
 
-    procedure DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+    procedure DrawNode(var rci: TVKRenderContextInfo; X, Y, Z: Single;
       Color: TVKColor);
 
   public
@@ -559,7 +559,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     property NURBSKnots: TSingleList read FNURBSKnots;
     property NURBSOrder: Integer read FNURBSOrder write SetNURBSOrder;
@@ -616,7 +616,7 @@ type
 
     function GenerateSilhouette(const silhouetteParameters
       : TVKSilhouetteParameters): TVKSilhouette; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -712,7 +712,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -809,7 +809,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -835,7 +835,7 @@ type
 
 
 { Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLfloat;
+procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: TGLfloat;
   Stipple: Boolean; const Color: TColorVector);
 { Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
@@ -872,7 +872,7 @@ const
   // CubeWireframeBuildList
   //
 
-procedure CubeWireframeBuildList(var rci: TRenderContextInfo; Size: TGLfloat;
+procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: TGLfloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
@@ -1156,7 +1156,7 @@ end;
 // BuildList
 //
 
-procedure TVKDummyCube.BuildList(var rci: TRenderContextInfo);
+procedure TVKDummyCube.BuildList(var rci: TVKRenderContextInfo);
 begin
   if (csDesigning in ComponentState) or (FVisibleAtRunTime) then
     CubeWireframeBuildList(rci, FCubeSize, True, EdgeColor.Color);
@@ -1165,7 +1165,7 @@ end;
 // DoRender
 //
 
-procedure TVKDummyCube.DoRender(var rci: TRenderContextInfo;
+procedure TVKDummyCube.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   if Assigned(FOnVisibilityDetermination) then
@@ -1423,7 +1423,7 @@ end;
 // BuildList
 //
 
-procedure TVKPlane.BuildList(var rci: TRenderContextInfo);
+procedure TVKPlane.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
@@ -1761,7 +1761,7 @@ end;
 // BuildList
 //
 
-procedure TVKSprite.BuildList(var rci: TRenderContextInfo);
+procedure TVKSprite.BuildList(var rci: TVKRenderContextInfo);
 var
   vx, vy: TAffineVector;
   w, h: Single;
@@ -2146,7 +2146,7 @@ end;
 // BuildList
 //
 
-procedure TVKPoints.BuildList(var rci: TRenderContextInfo);
+procedure TVKPoints.BuildList(var rci: TVKRenderContextInfo);
 var
   n: Integer;
   v: TVector;
@@ -2422,7 +2422,7 @@ end;
 // SetupLineStyle
 //
 
-procedure TVKLineBase.SetupLineStyle(var rci: TRenderContextInfo);
+procedure TVKLineBase.SetupLineStyle(var rci: TVKRenderContextInfo);
 begin
   with rci.GLStates do
   begin
@@ -2654,7 +2654,7 @@ end;
 // DrawNode
 //
 
-procedure TVKNodedLines.DrawNode(var rci: TRenderContextInfo; X, Y, Z: Single;
+procedure TVKNodedLines.DrawNode(var rci: TVKRenderContextInfo; X, Y, Z: Single;
   Color: TVKColor);
 begin
   GL.PushMatrix;
@@ -2855,7 +2855,7 @@ end;
 // BuildList
 //
 
-procedure TVKLines.BuildList(var rci: TRenderContextInfo);
+procedure TVKLines.BuildList(var rci: TVKRenderContextInfo);
 var
   i, n: Integer;
   A, B, C: TGLfloat;
@@ -3032,7 +3032,7 @@ end;
 // BuildList
 //
 
-procedure TVKCube.BuildList(var rci: TRenderContextInfo);
+procedure TVKCube.BuildList(var rci: TVKRenderContextInfo);
 var
   hw, hh, hd, nd: TGLfloat;
   TanLoc, BinLoc: Integer;
@@ -3502,7 +3502,7 @@ end;
 // BuildList
 //
 
-procedure TVKSphere.BuildList(var rci: TRenderContextInfo);
+procedure TVKSphere.BuildList(var rci: TVKRenderContextInfo);
 var
   v1, V2, N1: TAffineVector;
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH: Double;
@@ -4044,7 +4044,7 @@ end;
 // BuildList
 //
 
-procedure TVKSuperellipsoid.BuildList(var rci: TRenderContextInfo);
+procedure TVKSuperellipsoid.BuildList(var rci: TVKRenderContextInfo);
 var
   CosPc1, SinPc1, CosTc2, SinTc2: Double;
 

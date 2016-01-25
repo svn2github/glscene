@@ -151,7 +151,7 @@ type
     procedure SetViewer(const val: TVKSceneViewer);
     function GetCaster: TVKMemoryViewer;
     procedure SetCaster(const val: TVKMemoryViewer);
-    procedure CalcShadowTexture(var rci: TRenderContextInfo);
+    procedure CalcShadowTexture(var rci: TVKRenderContextInfo);
     function HardSet(const x, y: integer): Byte;
 
     function SoftTest(const x, y: integer): Byte;
@@ -167,7 +167,7 @@ type
     CasterZBuf: TVKzBuffer;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+    procedure DoRender(var ARci: TVKRenderContextInfo; ARenderSelf,
       ARenderChildren: Boolean); override;
   published
     property Viewer: TVKSceneViewer read GetViewer write SetViewer;
@@ -734,7 +734,7 @@ end;
 // DoRender
 //
 
-procedure TVKZShadows.DoRender(var ARci: TRenderContextInfo;
+procedure TVKZShadows.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   vx, vy, vx1, vy1: Single;
@@ -832,7 +832,7 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TVKZShadows.CalcShadowTexture(var rci: TRenderContextInfo);
+procedure TVKZShadows.CalcShadowTexture(var rci: TVKRenderContextInfo);
 var
   pix, p0, p1, p2, p3, p4: Byte;
   pM, pL, pT: Byte;

@@ -124,8 +124,8 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     function TextWidth(const str: WideString = ''): Single;
@@ -414,7 +414,7 @@ end;
 // BuildList
 //
 
-procedure TVKSpaceText.BuildList(var rci: TRenderContextInfo);
+procedure TVKSpaceText.BuildList(var rci: TVKRenderContextInfo);
 var
   textL, maxUnder, maxHeight: Single;
   charScale: Single;
@@ -546,7 +546,7 @@ end;
 // DoRender
 //
 
-procedure TVKSpaceText.DoRender(var ARci: TRenderContextInfo;
+procedure TVKSpaceText.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   firstChar, lastChar: Integer;

@@ -71,10 +71,10 @@ type
     frustum: TFrustum;
   end;
 
-  // TRenderContextInfo
+  // TVKRenderContextInfo
   //
   { Stores contextual info useful during rendering methods. }
-  TRenderContextInfo = record
+  TVKRenderContextInfo = record
     scene: TObject; //usually TVKScene
     buffer: TObject; //usually TVKSceneBuffer
     cameraPosition: TVector;
@@ -106,7 +106,7 @@ type
     primitiveMask: TVKMeshPrimitives;
     orderCounter: Integer;
   end;
-  PRenderContextInfo = ^TRenderContextInfo;
+  PRenderContextInfo = ^TVKRenderContextInfo;
 
 implementation
 

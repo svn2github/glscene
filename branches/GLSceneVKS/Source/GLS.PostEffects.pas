@@ -66,7 +66,7 @@ type
     constructor Create(Owner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var rci : TRenderContextInfo;
+    procedure DoRender(var rci : TVKRenderContextInfo;
                        renderSelf, renderChildren : Boolean); override;
   published
     property TempTextureTarget: TVKTextureTarget read FTempTextureTarget write FTempTextureTarget default ttTexture2d;
@@ -84,7 +84,7 @@ type
 
   TVKPostEffectBuffer = array of TVKPostEffectColor;
 
-  TVKOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TRenderContextInfo; var Buffer: TVKPostEffectBuffer) of object;
+  TVKOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TVKRenderContextInfo; var Buffer: TVKPostEffectBuffer) of object;
 
   { Some presets for TVKPostEffect:
        pepNone - does nothing.
@@ -113,10 +113,10 @@ type
     procedure MakeDistortEffect; virtual;
     procedure MakeNoiseEffect; virtual;
     procedure MakeNightVisionEffect; virtual;
-    procedure MakeBlurEffect(var rci : TRenderContextInfo); virtual;
-    procedure DoOnCustomEffect(var rci : TRenderContextInfo; var Buffer: TVKPostEffectBuffer); virtual;
+    procedure MakeBlurEffect(var rci : TVKRenderContextInfo); virtual;
+    procedure DoOnCustomEffect(var rci : TVKRenderContextInfo; var Buffer: TVKPostEffectBuffer); virtual;
   public
-    procedure DoRender(var rci : TRenderContextInfo;
+    procedure DoRender(var rci : TVKRenderContextInfo;
                        renderSelf, renderChildren : Boolean); override;
     procedure Assign(Source: TPersistent); override;
   published
@@ -144,13 +144,13 @@ begin
 end;
 
 procedure TVKPostEffect.DoOnCustomEffect(
-  var rci : TRenderContextInfo; var Buffer: TVKPostEffectBuffer);
+  var rci : TVKRenderContextInfo; var Buffer: TVKPostEffectBuffer);
 begin
   if Assigned(FOnCustomEffect) then
     FOnCustomEffect(Self, rci, Buffer);
 end;
 
-procedure TVKPostEffect.DoRender(var rci : TRenderContextInfo;
+procedure TVKPostEffect.DoRender(var rci : TVKRenderContextInfo;
                                       renderSelf, renderChildren : Boolean);
 var
   NewScreenSize: Integer;
@@ -264,7 +264,7 @@ begin
   end;
 end;
 
-procedure TVKPostEffect.MakeBlurEffect(var rci : TRenderContextInfo);
+procedure TVKPostEffect.MakeBlurEffect(var rci : TVKRenderContextInfo);
 const
   lOffset: Integer = 2;
 var
@@ -375,7 +375,7 @@ begin
   inherited;
 end;
 
-procedure TVKPostShaderHolder.DoRender(var rci: TRenderContextInfo;
+procedure TVKPostShaderHolder.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   I: Integer;

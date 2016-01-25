@@ -41,8 +41,8 @@ type
 
   protected
     { Protected Declarations }
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
   public
     { Public Declarations }
@@ -90,7 +90,7 @@ end;
 // DoApply
 //
 
-procedure TVKOutlineShader.DoApply(var rci: TRenderContextInfo; Sender:
+procedure TVKOutlineShader.DoApply(var rci: TVKRenderContextInfo; Sender:
   TObject);
 begin
   // We first draw the object as usual in the first pass. This allows objects
@@ -101,7 +101,7 @@ end;
 // DoUnApply
 //
 
-function TVKOutlineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKOutlineShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   if rci.ignoreMaterials or (stStencilTest in rci.GLStates.States) then
   begin

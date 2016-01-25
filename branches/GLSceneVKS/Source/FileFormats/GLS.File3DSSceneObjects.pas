@@ -27,7 +27,7 @@ type
     FMultipler: Single;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); override;
     destructor Destroy; override;
   published
@@ -43,7 +43,7 @@ type
     FQuadDisk: array[0..1] of PGLUquadric;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); override;
     destructor Destroy; override;
   published
@@ -74,7 +74,7 @@ type
     FRefMat: TMatrix;
     constructor Create(AOWner: TComponent); override;
     destructor Destroy; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure CoordinateChanged(Sender: TVKCustomCoordinates); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
@@ -158,7 +158,7 @@ begin
   FMultipler := 1;
 end;
 
-procedure TVKFile3DSLight.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TVKFile3DSLight.DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean);
 
   procedure BuildFace;
   begin
@@ -236,7 +236,7 @@ begin
   end;
 end;
 
-procedure TVKFile3DSCamera.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TVKFile3DSCamera.DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean);
 
   procedure BuildCyl;
   begin
@@ -405,7 +405,7 @@ begin
   Filer.DefineBinaryProperty('MeshObjectsData', ReadMesh, WriteMesh, True);
 end;
 
-procedure TVKFile3DSFreeForm.BuildList(var rci: TRenderContextInfo);
+procedure TVKFile3DSFreeForm.BuildList(var rci: TVKRenderContextInfo);
 begin
   GL.MultMatrixf(@FTransfMat);
   GL.MultMatrixf(@FScaleMat);

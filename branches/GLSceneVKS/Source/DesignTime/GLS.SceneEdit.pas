@@ -133,10 +133,10 @@ implementation
 {$R *.fmx}
 
 resourcestring
-  cGLSceneEditor = 'GLScene FMX Editor';
+  cGLSceneEditor = 'GLSceneVKS Editor';
 
 const
-  cRegistryKey = 'Software\GLScene_FMX\GLSceneEdit';
+  cRegistryKey = 'Software\GLSceneVKS\GLSceneEdit';
 
 var
   vGLSceneEditorForm: TVKSceneEditorForm;

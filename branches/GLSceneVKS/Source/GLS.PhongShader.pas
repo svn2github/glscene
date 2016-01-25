@@ -27,12 +27,12 @@ type
   protected
     { Protected Declarations }
     procedure DoLightPass(lightID: Cardinal); virtual;
-    procedure DoAmbientPass(var rci: TRenderContextInfo); virtual;
-    procedure UnApplyLights(var rci: TRenderContextInfo); virtual;
+    procedure DoAmbientPass(var rci: TVKRenderContextInfo); virtual;
+    procedure UnApplyLights(var rci: TVKRenderContextInfo); virtual;
 
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
@@ -49,7 +49,7 @@ implementation
 
 // DoApply
 //
-procedure TVKPhongShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKPhongShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
 
@@ -72,7 +72,7 @@ end;
 
 // DoUnApply
 //
-function TVKPhongShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKPhongShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
@@ -101,7 +101,7 @@ end;
 
 // DoInitialize
 //
-procedure TVKPhongShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKPhongShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   if (csDesigning in ComponentState) and not DesignTimeEnabled then Exit;
   inherited;
@@ -206,7 +206,7 @@ end;
 
 // UnApplyLights
 //
-procedure TVKPhongShader.UnApplyLights(var rci: TRenderContextInfo);
+procedure TVKPhongShader.UnApplyLights(var rci: TVKRenderContextInfo);
 begin
   rci.GLStates.DepthFunc := cfLEqual;
   rci.GLStates.Enable(stBlend);
@@ -221,7 +221,7 @@ begin
   inherited;
 end;
 
-procedure TVKPhongShader.DoAmbientPass(var rci: TRenderContextInfo);
+procedure TVKPhongShader.DoAmbientPass(var rci: TVKRenderContextInfo);
 var
   ambient, materialAmbient: TVector;
 begin

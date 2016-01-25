@@ -39,7 +39,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   published
     { Published Declarations }
@@ -75,7 +75,7 @@ type
       override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
@@ -183,7 +183,7 @@ type
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
     property CurrentFrame: Integer read FCurrentFrame;
@@ -275,7 +275,7 @@ end;
 // Render
 //
 
-procedure TVKColorProxy.DoRender(var ARci: TRenderContextInfo;
+procedure TVKColorProxy.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;
@@ -506,7 +506,7 @@ end;
 // DoRender
 //
 
-procedure TVKActorProxy.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TVKActorProxy.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 var
   // TVKActorProxy specific
@@ -872,7 +872,7 @@ begin
   inherited;
 end;
 
-procedure TVKMaterialProxy.DoRender(var ARci: TRenderContextInfo;
+procedure TVKMaterialProxy.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;

@@ -30,7 +30,7 @@ type
     FTransformationPower:      Single;
     FTransformationTexture: TVKTexture;
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
 
     // Implementing IGLPostShader.
     procedure DoUseTempTexture(const TempTexture: TVKTextureHandle; TextureTarget: TVKTextureTarget);
@@ -113,7 +113,7 @@ begin
 end;
 
 procedure TVKCustomCGPostTransformationShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   inherited;
   FragmentProgram.ParamByName('screenW').SetAsScalar(rci.viewPortSize.cx);

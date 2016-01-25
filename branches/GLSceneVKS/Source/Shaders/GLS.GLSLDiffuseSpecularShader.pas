@@ -41,8 +41,8 @@ type
     procedure SetRealisticSpecular(const Value: Boolean);
     procedure SetFogSupport(const Value: TVKShaderFogSupport);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     property LightPower: Single read FLightPower write FLightPower;
@@ -65,7 +65,7 @@ type
   protected
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
   public
     property MainTexture: TVKTexture read FMainTexture write FMainTexture;
     property MainTextureName: TVKLibMaterialName read GetMainTextureName write SetMainTextureName;
@@ -76,14 +76,14 @@ type
 
   TVKCustomGLSLDiffuseSpecularShader = class(TVKBaseCustomGLSLDiffuseSpecular)
   protected
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
   end;
 
 
   TVKCustomGLSLDiffuseSpecularShaderMT = class(TVKBaseGLSLDiffuseSpecularShaderMT)
   protected
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
   end;
 
                      {********  Multi Light  ************}
@@ -100,8 +100,8 @@ type
   private
     FLightTrace: array[0..7] of TLightRecord;
   protected
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
   end;
@@ -110,8 +110,8 @@ type
   private
     FLightTrace: array[0..7] of TLightRecord;
   protected
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
   end;
@@ -156,7 +156,7 @@ implementation
 //---------------------------------------------------------------------------
 
 procedure GetVertexProgramCode(const Code: TStrings;
-  AFogSupport: Boolean; var rci: TRenderContextInfo);
+  AFogSupport: Boolean; var rci: TVKRenderContextInfo);
 begin
   with Code do
   begin
@@ -381,7 +381,7 @@ end;
 
 procedure GetFragmentProgramCode(const Code: TStrings;
   const ARealisticSpecular: Boolean; const AFogSupport: Boolean;
-  aRci: TRenderContextInfo);
+  aRci: TVKRenderContextInfo);
 var
   scene: TVKScene;
 begin
@@ -500,14 +500,14 @@ begin
 end;
 
 procedure TVKBaseCustomGLSLDiffuseSpecular.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   Param['LightIntensity'].AsVector1f := FLightPower;
 end;
 
 function TVKBaseCustomGLSLDiffuseSpecular.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   GetGLSLProg.EndUseProgramObject;
@@ -537,7 +537,7 @@ end;
 { TVKBaseGLSLDiffuseSpecularShaderMT }
 
 procedure TVKBaseGLSLDiffuseSpecularShaderMT.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   inherited;
   Param['MainTexture'].AsTexture2D[0] := FMainTexture;
@@ -610,7 +610,7 @@ end;
 
 { TVKCustomGLSLDiffuseSpecularShaderMT }
 
-procedure TVKCustomGLSLDiffuseSpecularShaderMT.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLDiffuseSpecularShaderMT.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code, IsFogEnabled(FFogSupport, rci), rci);
   GetFragmentProgramCode(FragmentProgram.Code, FRealisticSpecular, IsFogEnabled(FFogSupport, rci), rci);
@@ -622,13 +622,13 @@ end;
 { TVKCustomGLSLDiffuseSpecularShader }
 
 procedure TVKCustomGLSLDiffuseSpecularShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   inherited;
   Param['MainTexture'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TVKCustomGLSLDiffuseSpecularShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLDiffuseSpecularShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code, IsFogEnabled(FFogSupport, rci), rci);
   GetFragmentProgramCode(FragmentProgram.Code, FRealisticSpecular, IsFogEnabled(FFogSupport, rci), rci);
@@ -645,7 +645,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLMLDiffuseSpecularShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLMLDiffuseSpecularShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 var
   I: Integer;
   scene: TVKScene;
@@ -685,7 +685,7 @@ begin
   Param['MainTexture'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TVKCustomGLSLMLDiffuseSpecularShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLMLDiffuseSpecularShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 var
   I: Integer;
   scene: TVKScene;
@@ -727,7 +727,7 @@ begin
 end;
 
 procedure TVKCustomGLSLMLDiffuseSpecularShaderMT.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 var
   I: Integer;
   scene: TVKScene;
@@ -766,7 +766,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLMLDiffuseSpecularShaderMT.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLMLDiffuseSpecularShaderMT.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 var
   I: Integer;
   scene: TVKScene;

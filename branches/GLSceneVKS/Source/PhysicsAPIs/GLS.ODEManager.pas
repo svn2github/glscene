@@ -89,7 +89,7 @@ type
       procedure UnregisterODEBehaviour(ODEBehaviour : TVKODEBehaviour);
 
       procedure SetRenderPoint(const value : TVKRenderPoint);
-      procedure RenderEvent(Sender : TObject; var rci : TRenderContextInfo);
+      procedure RenderEvent(Sender : TObject; var rci : TVKRenderContextInfo);
       procedure RenderPointFreed(Sender : TObject);
 
     procedure SetVisible(const Value: Boolean);
@@ -229,7 +229,7 @@ type
       destructor Destroy; override;
 
       procedure NotifyChange(Sender : TObject);
-      procedure Render(var rci : TRenderContextInfo); virtual;
+      procedure Render(var rci : TVKRenderContextInfo); virtual;
 
       procedure Reinitialize;
       property Initialized : Boolean read FInitialized;
@@ -275,7 +275,7 @@ type
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function UniqueItem : Boolean; override;
@@ -324,7 +324,7 @@ type
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function UniqueItem : Boolean; override;
@@ -352,7 +352,7 @@ type
 
       procedure NotifyChange(Sender : TObject);
 
-      procedure Render(var rci : TRenderContextInfo);
+      procedure Render(var rci : TVKRenderContextInfo);
 
       property Element[index : integer] : TODEElementBase read GetElement;
 
@@ -409,7 +409,7 @@ type
       constructor Create(AOwner : TVKXCollection); override;
       destructor Destroy; override;
 
-      procedure Render(var rci : TRenderContextInfo); virtual;
+      procedure Render(var rci : TVKRenderContextInfo); virtual;
 
       function AbsoluteMatrix:TMatrix;
       function AbsolutePosition:TAffineVector;
@@ -457,7 +457,7 @@ type
       { Public Declarations }
       constructor Create(AOwner : TVKXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -493,7 +493,7 @@ type
       { Public Declarations }
       constructor Create(AOwner : TVKXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -532,7 +532,7 @@ type
       { Public Declarations }
       constructor Create(AOwner : TVKXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -572,7 +572,7 @@ type
       { Public Declarations }
       constructor Create(AOwner:TVKXCollection); override;
 
-      procedure Render(var rci : TRenderContextInfo); override;
+      procedure Render(var rci : TVKRenderContextInfo); override;
 
       class function FriendlyName : String; override;
       class function FriendlyDescription : String; override;
@@ -1560,7 +1560,7 @@ end;
 // RenderEvent
 //
 procedure TVKODEManager.RenderEvent(Sender: TObject;
-  var rci : TRenderContextInfo);
+  var rci : TVKRenderContextInfo);
 var
   i : Integer;
 begin
@@ -2013,7 +2013,7 @@ end;
 
 // Render
 //
-procedure TVKODEBehaviour.Render(var rci: TRenderContextInfo);
+procedure TVKODEBehaviour.Render(var rci: TVKRenderContextInfo);
 begin
   // virtual
 end;
@@ -2088,7 +2088,7 @@ end;
 
 // Render
 //
-procedure TVKODEDynamic.Render(var rci : TRenderContextInfo);
+procedure TVKODEDynamic.Render(var rci : TVKRenderContextInfo);
 var
   mat : TMatrix;
 begin
@@ -2406,7 +2406,7 @@ end;
 
 // Render
 //
-procedure TVKODEStatic.Render(var rci: TRenderContextInfo);
+procedure TVKODEStatic.Render(var rci: TVKRenderContextInfo);
 var
   mat : TMatrix;
 begin
@@ -2552,7 +2552,7 @@ end;
 
 // Render
 //
-procedure TODEElements.Render(var rci : TRenderContextInfo);
+procedure TODEElements.Render(var rci : TVKRenderContextInfo);
 var
   i : integer;
 begin
@@ -2605,7 +2605,7 @@ end;
 
 // Render
 //
-procedure TODEElementBase.Render(var rci: TRenderContextInfo);
+procedure TODEElementBase.Render(var rci: TVKRenderContextInfo);
 begin
   // Override this procedure with element drawing OpenGL code
 end;
@@ -2907,7 +2907,7 @@ end;
 
 // BuildList
 //
-procedure TODEElementBox.Render(var rci : TRenderContextInfo);
+procedure TODEElementBox.Render(var rci : TVKRenderContextInfo);
 begin
   GL.PushMatrix;
 
@@ -3096,7 +3096,7 @@ end;
 
 // Render
 //
-procedure TODEElementSphere.Render(var rci : TRenderContextInfo);
+procedure TODEElementSphere.Render(var rci : TVKRenderContextInfo);
 var
   AngTop, AngBottom, AngStart, AngStop, StepV, StepH : Double;
   SinP, CosP, SinP2, CosP2, SinT, CosT, Phi, Phi2, Theta: Double;
@@ -3265,7 +3265,7 @@ end;
 
 // Render
 //
-procedure TODEElementCapsule.Render(var rci : TRenderContextInfo);
+procedure TODEElementCapsule.Render(var rci : TVKRenderContextInfo);
 var
   i,j,
   Stacks,Slices : integer;
@@ -3446,7 +3446,7 @@ end;
 
 // Render
 //
-procedure TODEElementCylinder.Render(var rci : TRenderContextInfo);
+procedure TODEElementCylinder.Render(var rci : TVKRenderContextInfo);
 var
   i,j,
   Stacks,Slices : integer;

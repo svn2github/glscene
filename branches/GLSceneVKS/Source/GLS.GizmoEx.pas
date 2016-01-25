@@ -140,7 +140,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -149,7 +149,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -158,7 +158,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -167,7 +167,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -176,7 +176,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -185,7 +185,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -194,7 +194,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -203,7 +203,7 @@ type
     FNoZWrite: Boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     property NoZWrite: Boolean read FNoZWrite write FNoZWrite;
   end;
 
@@ -353,8 +353,8 @@ type
     procedure SetVKGizmoExThickness(const Value: Single);
 
     procedure ActivatingElements(PickList: TVKPickList);
-    procedure InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
-    procedure InternalRender(Sender: TObject; var rci: TRenderContextInfo);
+    procedure InterfaceRender(Sender: TObject; var rci: TVKRenderContextInfo);
+    procedure InternalRender(Sender: TObject; var rci: TVKRenderContextInfo);
     function InternalGetPickedObjects(const x1, y1, x2, y2: Integer; const guessCount: Integer = 8): TVKPickList;
     procedure SetViewer(const Value: TVKSceneViewer);
     procedure SetLabelFont(const Value: TVKCustomBitmapFont);
@@ -622,7 +622,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUIArrowLine.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUIArrowLine.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -638,7 +638,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUIDisk.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUIDisk.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -653,7 +653,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUISphere.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUISphere.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -668,7 +668,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUIPolyGon.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUIPolyGon.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -683,7 +683,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUIFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUIFrustrum.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -698,7 +698,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUITorus.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUITorus.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -713,7 +713,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUILines.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUILines.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -728,7 +728,7 @@ begin
   inherited;
 end;
 
-procedure TVKGizmoExUIFlatText.BuildList(var rci: TRenderContextInfo);
+procedure TVKGizmoExUIFlatText.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
     rci.GLStates.Disable(stDepthTest)
@@ -2054,7 +2054,7 @@ end;
 
 
 
-procedure TVKGizmoEx.InterfaceRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TVKGizmoEx.InterfaceRender(Sender: TObject; var rci: TVKRenderContextInfo);
 
   procedure cLine(glc: TVKCanvas; p1, p2: TPoint);
   begin
@@ -2120,7 +2120,7 @@ begin
   end;
 end;
 
-procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TRenderContextInfo);
+procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextInfo);
 
   procedure ShowBoundingBox(aObject: TVKBaseSceneObject);
   const

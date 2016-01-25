@@ -50,7 +50,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -137,7 +137,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -180,7 +180,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -221,7 +221,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -269,7 +269,7 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -316,7 +316,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
@@ -374,7 +374,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -438,7 +438,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
@@ -488,7 +488,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -537,7 +537,7 @@ type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
     function TopDepth: TGLfloat;
     function TopWidth: TGLfloat;
@@ -584,7 +584,7 @@ end;
 // BuildList
 //
 
-procedure TVKDisk.BuildList(var rci: TRenderContextInfo);
+procedure TVKDisk.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -945,7 +945,7 @@ end;
 // BuildList
 //
 
-procedure TVKCone.BuildList(var rci: TRenderContextInfo);
+procedure TVKCone.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -1101,7 +1101,7 @@ end;
 // BuildList
 //
 
-procedure TVKCylinder.BuildList(var rci: TRenderContextInfo);
+procedure TVKCylinder.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -1387,7 +1387,7 @@ end;
 // BuildList
 //
 
-procedure TVKCapsule.BuildList(var rci: TRenderContextInfo);
+procedure TVKCapsule.BuildList(var rci: TVKRenderContextInfo);
 var
   i, j, n: integer;
   start_nx2: Single;
@@ -1836,7 +1836,7 @@ end;
 // BuildList
 //
 
-procedure TVKAnnulus.BuildList(var rci: TRenderContextInfo);
+procedure TVKAnnulus.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
@@ -2102,7 +2102,7 @@ end;
 // BuildList
 //
 
-procedure TVKTorus.BuildList(var rci: TRenderContextInfo);
+procedure TVKTorus.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   begin
@@ -2621,7 +2621,7 @@ end;
 // BuildList
 //
 
-procedure TVKArrowLine.BuildList(var rci: TRenderContextInfo);
+procedure TVKArrowLine.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
   cylHeight, cylOffset, headInfluence: Single;
@@ -2876,7 +2876,7 @@ end;
 // BuildList
 //
 
-procedure TVKArrowArc.BuildList(var rci: TRenderContextInfo);
+procedure TVKArrowArc.BuildList(var rci: TVKRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
@@ -3404,7 +3404,7 @@ begin
   FNormalDirection := ndOutside;
 end;
 
-procedure TVKFrustrum.BuildList(var rci: TRenderContextInfo);
+procedure TVKFrustrum.BuildList(var rci: TVKRenderContextInfo);
 var
   HBW, HBD: TGLfloat; // half of width, half of depth at base
   HTW, HTD: TGLfloat; // half of width, half of depth at top of frustrum
@@ -3701,7 +3701,7 @@ end;
 // BuildList
 //
 
-procedure TVKPolygon.BuildList(var rci: TRenderContextInfo);
+procedure TVKPolygon.BuildList(var rci: TVKRenderContextInfo);
 var
   Normal: TAffineVector;
   pNorm: PAffineVector;

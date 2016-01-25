@@ -80,8 +80,8 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var ARci: TRenderContextInfo); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure BuildList(var ARci: TVKRenderContextInfo); override;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
@@ -204,7 +204,7 @@ end;
 // BuildList
 //
 
-procedure TVKParticles.BuildList(var ARci: TRenderContextInfo);
+procedure TVKParticles.BuildList(var ARci: TVKRenderContextInfo);
 var
   mi, ma: Single;
 begin
@@ -251,7 +251,7 @@ end;
 // DoRender
 //
 
-procedure TVKParticles.DoRender(var ARci: TRenderContextInfo;
+procedure TVKParticles.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if (csDesigning in ComponentState) or (FVisibleAtRunTime) then

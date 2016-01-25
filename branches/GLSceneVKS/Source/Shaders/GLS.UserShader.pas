@@ -19,8 +19,8 @@ uses
   GLS.Material, GLS.RenderContextInfo;
 
 type
-  TOnDoApplyEvent = procedure (Sender : TObject; var rci : TRenderContextInfo) of Object;
-  TOnDoUnApplyEvent = procedure (Sender : TObject; Pass:Integer; var rci : TRenderContextInfo; var Continue : Boolean) of Object;
+  TOnDoApplyEvent = procedure (Sender : TObject; var rci : TVKRenderContextInfo) of Object;
+  TOnDoUnApplyEvent = procedure (Sender : TObject; Pass:Integer; var rci : TVKRenderContextInfo; var Continue : Boolean) of Object;
   
   TVKUserShader = class(TVKShader)
     private
@@ -28,8 +28,8 @@ type
       FOnDoApply : TOnDoApplyEvent;
       FOnDoUnApply : TOnDoUnApplyEvent;
     protected
-      procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-      function DoUnApply(var rci : TRenderContextInfo) : Boolean; override;
+      procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+      function DoUnApply(var rci : TVKRenderContextInfo) : Boolean; override;
     published
       property OnDoApply : TOnDoApplyEvent read FOnDoApply write FOnDoApply;
       property OnDoUnApply : TOnDoUnApplyEvent read FOnDoUnApply write FOnDoUnApply;
@@ -46,7 +46,7 @@ implementation
 
 // DoApply
 //
-procedure TVKUserShader.DoApply(var rci: TRenderContextInfo; Sender : TObject);
+procedure TVKUserShader.DoApply(var rci: TVKRenderContextInfo; Sender : TObject);
 begin
   FPass:=1;
   if Assigned(FOnDoApply) and (not (csDesigning in ComponentState)) then
@@ -55,7 +55,7 @@ end;
 
 // DoUnApply
 //
-function TVKUserShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKUserShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result:=False;
   if Assigned(FOnDoUnApply) and (not (csDesigning in ComponentState)) then begin

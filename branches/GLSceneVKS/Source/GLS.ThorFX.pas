@@ -116,7 +116,7 @@ type
     procedure Assign(Source: TPersistent); override;
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
   published
     { Published Declarations }
     { Refers the collision manager. }
@@ -515,7 +515,7 @@ end;
 
 // Render
 //
-procedure TVKBThorFX.Render(var rci: TRenderContextInfo);
+procedure TVKBThorFX.Render(var rci: TVKRenderContextInfo);
 var
   N: integer;
   i: integer;

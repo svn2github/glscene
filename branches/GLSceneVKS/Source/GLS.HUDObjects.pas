@@ -61,7 +61,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -101,14 +101,14 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
     procedure RenderTextAtPosition(const X, Y, Z: Single;
-      var rci: TRenderContextInfo);
+      var rci: TVKRenderContextInfo);
 
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
@@ -139,7 +139,7 @@ type
     them to screen coordinates and renderes text there. }
   TVKAbsoluteHUDText = class(TVKHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
   end;
 
@@ -150,7 +150,7 @@ type
     Note: this still does not solve the font scaling problem. }
   TVKResolutionIndependantHUDText = class(TVKHUDText)
   public
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
     constructor Create(AOwner: TComponent); override;
   end;
@@ -203,7 +203,7 @@ end;
 // DoRender
 //
 
-procedure TVKHUDSprite.DoRender(var rci: TRenderContextInfo;
+procedure TVKHUDSprite.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   vx, vy, vx1, vy1, f: Single;
@@ -409,7 +409,7 @@ end;
 //
 
 procedure TVKHUDText.RenderTextAtPosition(const X, Y, Z: Single;
-  var rci: TRenderContextInfo);
+  var rci: TVKRenderContextInfo);
 var
   f: Single;
 begin
@@ -445,7 +445,7 @@ end;
 // DoRender
 //
 
-procedure TVKHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TVKHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X, Position.Y, Position.Z, rci);
@@ -470,7 +470,7 @@ end;
 // DoRender
 //
 
-procedure TVKResolutionIndependantHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TVKResolutionIndependantHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 begin
   RenderTextAtPosition(Position.X * rci.viewPortSize.cx,
@@ -486,7 +486,7 @@ end;
 // DoRender
 //
 
-procedure TVKAbsoluteHUDText.DoRender(var rci: TRenderContextInfo;
+procedure TVKAbsoluteHUDText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   Temp: TAffineVector;

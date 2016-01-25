@@ -142,7 +142,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector; intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
@@ -486,7 +486,7 @@ end;
 
 // Render
 //
-procedure TVKMaterialMultiProxy.DoRender(var rci: TRenderContextInfo;
+procedure TVKMaterialMultiProxy.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: Boolean);
 var
   I:  Integer;

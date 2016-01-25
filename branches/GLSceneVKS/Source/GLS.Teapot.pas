@@ -32,8 +32,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
@@ -65,7 +65,7 @@ end;
 // BuildList
 //
 
-procedure TVKTeapot.BuildList(var rci: TRenderContextInfo);
+procedure TVKTeapot.BuildList(var rci: TVKRenderContextInfo);
 
 const
   PatchData: array[0..9, 0..15] of Integer =
@@ -170,7 +170,7 @@ end;
 // DoRender
 //
 
-procedure TVKTeapot.DoRender(var ARci: TRenderContextInfo;
+procedure TVKTeapot.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 const
   M: TMatrix = (

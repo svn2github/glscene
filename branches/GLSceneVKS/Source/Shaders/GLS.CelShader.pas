@@ -61,8 +61,8 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     property ShadeTexture: TVKTexture read FShadeTexture;
 
@@ -231,7 +231,7 @@ end;
 // DoApply
 //
 
-procedure TVKCelShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCelShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 var
   light: TVector;
 begin
@@ -266,7 +266,7 @@ end;
 // DoUnApply
 //
 
-function TVKCelShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCelShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   if (csDesigning in ComponentState) then

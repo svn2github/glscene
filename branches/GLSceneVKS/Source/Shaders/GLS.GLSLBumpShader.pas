@@ -58,8 +58,8 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TVKAbstractMaterialLibrary;
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure SetMaterialLibrary(const Value: TVKMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
@@ -106,8 +106,8 @@ type
     function GetAlpha: Single;
     procedure SetAlpha(const Value: Single);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -121,8 +121,8 @@ type
 
   TVKCustomGLSLBumpShaderMT = class(TVKBaseCustomGLSLBumpShaderMT)
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   end;
 
   TVKCustomGLSLBumpShader = class(TVKBaseCustomGLSLBumpShader, IGLShaderDescription)
@@ -142,8 +142,8 @@ type
 
     function GetShaderDescription: string;
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   end;
 
   // MultiLight shaders.
@@ -169,8 +169,8 @@ type
 
     function GetShaderDescription: string;
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TVKLightSourceSet read FLightSources write SetLightSources default [1];
@@ -186,8 +186,8 @@ type
     procedure SetLightSources(const Value: TVKLightSourceSet);
     procedure SetLightCompensation(const Value: Single);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TVKLightSourceSet read FLightSources write SetLightSources default [1];
@@ -570,7 +570,7 @@ begin
 end;
 
 procedure TVKBaseCustomGLSLBumpShader.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   // Don't inherit not to call the event.
   GetGLSLProg.UseProgramObject;
@@ -593,7 +593,7 @@ begin
 end;
 
 function TVKBaseCustomGLSLBumpShader.DoUnApply(
-  var rci: TRenderContextInfo): Boolean;
+  var rci: TVKRenderContextInfo): Boolean;
 begin
   //don't inherit not to call the event
   Result := False;
@@ -798,7 +798,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLBumpShaderAM.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomGLSLBumpShaderAM.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
   inherited;
@@ -810,7 +810,7 @@ begin
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TVKCustomGLSLBumpShaderAM.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLBumpShaderAM.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCodeMP(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -841,14 +841,14 @@ begin
   FLightCompensation := 1;
 end;
 
-procedure TVKCustomGLSLMLBumpShaderMT.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomGLSLMLBumpShaderMT.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
   inherited;
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TVKCustomGLSLMLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLMLBumpShaderMT.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 var
   I: Integer;
   lLightCount: Integer;
@@ -893,13 +893,13 @@ end;
 { TVKCustomGLSLBumpShaderMT }
 
 procedure TVKCustomGLSLBumpShaderMT.DoApply(
-  var rci: TRenderContextInfo; Sender: TObject);
+  var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   inherited;
   Param['baseMap'].AsTexture2D[0] := FMainTexture;
 end;
 
-procedure TVKCustomGLSLBumpShaderMT.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLBumpShaderMT.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCode(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -908,14 +908,14 @@ end;
 
 { TVKCustomGLSLBumpShader }
 
-procedure TVKCustomGLSLBumpShader.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomGLSLBumpShader.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
   inherited;
   Param['baseMap'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TVKCustomGLSLBumpShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLBumpShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   GetVertexProgramCode(VertexProgram.Code);
   GetFragmentProgramCode(FragmentProgram.Code, FSpecularTexture <> nil, FNormalTexture <> nil);
@@ -996,14 +996,14 @@ begin
   FLightCompensation := 1;
 end;
 
-procedure TVKCustomGLSLMLBumpShader.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomGLSLMLBumpShader.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
   inherited;
   Param['baseMap'].AsVector1i := 0;  // Use the current texture.
 end;
 
-procedure TVKCustomGLSLMLBumpShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLMLBumpShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 var
   I: Integer;
   lLightCount: Integer;

@@ -69,8 +69,8 @@ type
     function GetMaterialLibrary: TVKAbstractMaterialLibrary; virtual;
 
   public
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
+    procedure UnApply(var rci: TVKRenderContextInfo);
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
@@ -109,8 +109,8 @@ type
     FCurrentPass: Integer;
     procedure SetMaterials(const Value: TVKTextureSharingShaderMaterials);
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -131,7 +131,7 @@ implementation
 
 { TVKTextureSharingShaderMaterial }
 
-procedure TVKTextureSharingShaderMaterial.Apply(var rci: TRenderContextInfo);
+procedure TVKTextureSharingShaderMaterial.Apply(var rci: TVKRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
@@ -448,7 +448,7 @@ begin
   FNeedToUpdateTextureMatrix := True;
 end;
 
-procedure TVKTextureSharingShaderMaterial.UnApply(var rci: TRenderContextInfo);
+procedure TVKTextureSharingShaderMaterial.UnApply(var rci: TVKRenderContextInfo);
 begin
   if not Assigned(FLibMaterial) then
     Exit;
@@ -502,7 +502,7 @@ begin
   inherited;
 end;
 
-procedure TVKTextureSharingShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKTextureSharingShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   if Materials.Count > 0 then
   begin
@@ -513,7 +513,7 @@ begin
   end;
 end;
 
-function TVKTextureSharingShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKTextureSharingShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   if Materials.Count > 0 then

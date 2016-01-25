@@ -39,8 +39,8 @@ type
     { Public Declarations }
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
+    procedure UnApply(var rci: TVKRenderContextInfo);
 
   published
     { Published Declarations }
@@ -75,8 +75,8 @@ type
     procedure SetShadeModel(const val: TVKShadeModel);
 
   protected
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
   public
     { Public Declarations }
@@ -169,7 +169,7 @@ var
   // Apply
   //
 
-procedure TVKLineSettings.Apply(var rci: TRenderContextInfo);
+procedure TVKLineSettings.Apply(var rci: TVKRenderContextInfo);
 begin
   rci.GLStates.LineWidth := Width;
   GL.Color4fv(Color.AsAddress);
@@ -192,7 +192,7 @@ end;
 // UnApply
 //
 
-procedure TVKLineSettings.UnApply(var rci: TRenderContextInfo);
+procedure TVKLineSettings.UnApply(var rci: TVKRenderContextInfo);
 begin
   if ForceMaterial then
     rci.ignoreMaterials := IgnoreMatSave;
@@ -246,7 +246,7 @@ end;
 // DoApply
 //
 
-procedure TVKHiddenLineShader.DoApply(var rci: TRenderContextInfo; Sender:
+procedure TVKHiddenLineShader.DoApply(var rci: TVKRenderContextInfo; Sender:
   TObject);
 begin
   FPassCount := 1;
@@ -291,7 +291,7 @@ end;
 // DoUnApply
 //
 
-function TVKHiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKHiddenLineShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 
   procedure SetLineSmoothBlend;
   begin

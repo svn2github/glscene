@@ -41,10 +41,10 @@ type
   TVKASMVertexProgram = class;
 
   TOnAsmProgSetting = procedure(Sender: TVKASMVertexProgram;
-    var ARci: TRenderContextInfo) of object;
+    var ARci: TVKRenderContextInfo) of object;
   TOnUniformInitialize = procedure(Sender: TVKBaseShaderModel) of object;
   TOnUniformSetting = procedure(Sender: TVKBaseShaderModel;
-    var ARci: TRenderContextInfo) of object;
+    var ARci: TVKRenderContextInfo) of object;
 
   // TVKBaseMaterialCollectionItem
   //
@@ -156,8 +156,8 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
     procedure DoOnPrepare(Sender: TVKContext); override;
-    procedure Apply(var ARci: TRenderContextInfo);
-    procedure UnApply(var ARci: TRenderContextInfo);
+    procedure Apply(var ARci: TVKRenderContextInfo);
+    procedure UnApply(var ARci: TVKRenderContextInfo);
 
     class function FriendlyName: string; override;
 
@@ -211,8 +211,8 @@ type
     FApplicableSampler: TVKTextureSampler;
     FLastSampler: TVKTextureSampler;
     function GetTextureTarget: TVKTextureTarget;
-    procedure Apply(var ARci: TRenderContextInfo); virtual; abstract;
-    procedure UnApply(var ARci: TRenderContextInfo); virtual; abstract;
+    procedure Apply(var ARci: TVKRenderContextInfo); virtual; abstract;
+    procedure UnApply(var ARci: TVKRenderContextInfo); virtual; abstract;
   public
     { Public Declarations }
     property Handle: TVKTextureHandle read FHandle;
@@ -285,8 +285,8 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
     procedure DoOnPrepare(Sender: TVKContext); override;
-    procedure Apply(var ARci: TRenderContextInfo); override;
-    procedure UnApply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
+    procedure UnApply(var ARci: TVKRenderContextInfo); override;
 
     class function FriendlyName: string; override;
   published
@@ -374,8 +374,8 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
     procedure DoOnPrepare(Sender: TVKContext); override;
-    procedure Apply(var ARci: TRenderContextInfo); override;
-    procedure UnApply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
+    procedure UnApply(var ARci: TVKRenderContextInfo); override;
 
     class function FriendlyName: string; override;
   published
@@ -505,8 +505,8 @@ type
     procedure Notification(Sender: TObject; Operation: TOperation); override;
 
     function IsValid: Boolean;
-    procedure Apply(var ARci: TRenderContextInfo);
-    procedure UnApply(var ARci: TRenderContextInfo);
+    procedure Apply(var ARci: TVKRenderContextInfo);
+    procedure UnApply(var ARci: TVKRenderContextInfo);
 
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
   published
@@ -582,8 +582,8 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure Apply(var ARci: TRenderContextInfo);
-    procedure UnApply(var ARci: TRenderContextInfo);
+    procedure Apply(var ARci: TVKRenderContextInfo);
+    procedure UnApply(var ARci: TVKRenderContextInfo);
     { Returns True if the material is blended.  }
     function Blended: Boolean;
 
@@ -722,8 +722,8 @@ type
     procedure Notification(Sender: TObject; Operation: TOperation); override;
 
     function IsValid: Boolean;
-    procedure Apply(var ARci: TRenderContextInfo);
-    procedure UnApply(var ARci: TRenderContextInfo);
+    procedure Apply(var ARci: TVKRenderContextInfo);
+    procedure UnApply(var ARci: TVKRenderContextInfo);
   published
     { Published Declarations }
     property LibCombinerName: string read GetLibCombinerName
@@ -880,7 +880,7 @@ type
 
     procedure WriteToFiler(AWriter: TWriter); virtual;
     procedure ReadFromFiler(AReader: TReader); virtual;
-    procedure Apply(var ARci: TRenderContextInfo); virtual;
+    procedure Apply(var ARci: TVKRenderContextInfo); virtual;
   end;
 
   CGLAbstractShaderUniform = class of TVKAbstractShaderUniform;
@@ -953,7 +953,7 @@ type
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
 
     property Name: string read GetName;
     property Location: TGLint read FLocation;
@@ -1022,7 +1022,7 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Notification(Sender: TObject; Operation: TOperation); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
 
     property LibTextureName: TVKMaterialComponentName read GetTextureName
       write SetTextureName;
@@ -1080,8 +1080,8 @@ type
     procedure Notification(Sender: TObject; Operation: TOperation); override;
 
     procedure DoOnPrepare(Sender: TVKContext);
-    procedure Apply(var ARci: TRenderContextInfo); virtual;
-    procedure UnApply(var ARci: TRenderContextInfo); virtual;
+    procedure Apply(var ARci: TVKRenderContextInfo); virtual;
+    procedure UnApply(var ARci: TVKRenderContextInfo); virtual;
 
     procedure GetUniformNames(Proc: TGetStrProc);
 
@@ -1122,8 +1122,8 @@ type
   TVKShaderModel5 = class(TVKBaseShaderModel)
   public
     { Public Declarations }
-    procedure Apply(var ARci: TRenderContextInfo); override;
-    procedure UnApply(var ARci: TRenderContextInfo); override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
+    procedure UnApply(var ARci: TVKRenderContextInfo); override;
     class function IsSupported: Boolean; override;
   published
     { Published Declarations }
@@ -1177,8 +1177,8 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
 
-    procedure Apply(var ARci: TRenderContextInfo); override;
-    function UnApply(var ARci: TRenderContextInfo): Boolean; override;
+    procedure Apply(var ARci: TVKRenderContextInfo); override;
+    function UnApply(var ARci: TVKRenderContextInfo): Boolean; override;
 
     function Blended: Boolean; override;
   published
@@ -1402,49 +1402,49 @@ type
   public
     constructor Create;
     procedure SetModelMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetViewMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetInvModelMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetNormalModelMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetInvModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetWorldViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetCameraPosition(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     // Lighting
     procedure SetLightSource0Position(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     // Material
     procedure SetMaterialFrontAmbient(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialFrontDiffuse(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialFrontSpecular(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialFrontEmission(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialFrontShininess(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialBackAmbient(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialBackDiffuse(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialBackSpecular(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialBackShininess(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
     procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
   end;
 
 var
@@ -1626,7 +1626,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKFixedFunctionProperties'}{$ENDIF}
 
-procedure TVKFixedFunctionProperties.Apply(var ARci: TRenderContextInfo);
+procedure TVKFixedFunctionProperties.Apply(var ARci: TVKRenderContextInfo);
 begin
   with ARci.GLStates do
   begin
@@ -1884,7 +1884,7 @@ begin
   end;
 end;
 
-procedure TVKFixedFunctionProperties.UnApply(var ARci: TRenderContextInfo);
+procedure TVKFixedFunctionProperties.UnApply(var ARci: TVKRenderContextInfo);
 begin
   if FTexProp.Enabled and FTexProp.IsValid then
     FTexProp.UnApply(ARci);
@@ -1903,7 +1903,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKTextureImageEx'}{$ENDIF}
 
-procedure TVKTextureImageEx.Apply(var ARci: TRenderContextInfo);
+procedure TVKTextureImageEx.Apply(var ARci: TVKRenderContextInfo);
 begin
   if FIsValid then
   begin
@@ -2663,7 +2663,7 @@ begin
   Result := (FHeightToNormalScale <> cDefaultNormalMapScale);
 end;
 
-procedure TVKTextureImageEx.UnApply(var ARci: TRenderContextInfo);
+procedure TVKTextureImageEx.UnApply(var ARci: TVKRenderContextInfo);
 begin
   ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
@@ -2693,7 +2693,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKTextureSampler'}{$ENDIF}
 
-procedure TVKTextureSampler.Apply(var ARci: TRenderContextInfo);
+procedure TVKTextureSampler.Apply(var ARci: TVKRenderContextInfo);
 begin
   if FIsValid then
     ARci.GLStates.SamplerBinding[ARci.GLStates.ActiveTexture] := FHandle.Handle;
@@ -2936,7 +2936,7 @@ begin
   end;
 end;
 
-procedure TVKTextureSampler.UnApply(var ARci: TRenderContextInfo);
+procedure TVKTextureSampler.UnApply(var ARci: TVKRenderContextInfo);
 begin
   if FHandle.IsSupported then
     with ARci.GLStates do
@@ -3092,7 +3092,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKLibMaterialEx'}{$ENDIF}
 
-procedure TVKLibMaterialEx.Apply(var ARci: TRenderContextInfo);
+procedure TVKLibMaterialEx.Apply(var ARci: TVKRenderContextInfo);
 var
   LevelReady: array[TVKMaterialLevel] of Boolean;
   L, MaxLevel: TVKMaterialLevel;
@@ -3358,7 +3358,7 @@ begin
   FSM5.Assign(AValue);
 end;
 
-function TVKLibMaterialEx.UnApply(var ARci: TRenderContextInfo): Boolean;
+function TVKLibMaterialEx.UnApply(var ARci: TVKRenderContextInfo): Boolean;
 
   procedure GetNextPass(AProp: TVKLibMaterialProperty);
   begin
@@ -3441,7 +3441,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKMultitexturingProperties'}{$ENDIF}
 
-procedure TVKMultitexturingProperties.Apply(var ARci: TRenderContextInfo);
+procedure TVKMultitexturingProperties.Apply(var ARci: TVKRenderContextInfo);
 var
   N, U: Integer;
   LDir: TVector;
@@ -3676,7 +3676,7 @@ begin
   end;
 end;
 
-procedure TVKMultitexturingProperties.UnApply(var ARci: TRenderContextInfo);
+procedure TVKMultitexturingProperties.UnApply(var ARci: TVKRenderContextInfo);
 var
   N: Integer;
 begin
@@ -3698,7 +3698,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKTextureProperties'}{$ENDIF}
 
-procedure TVKTextureProperties.Apply(var ARci: TRenderContextInfo);
+procedure TVKTextureProperties.Apply(var ARci: TVKRenderContextInfo);
 var
   glTarget: TGLenum;
 begin
@@ -4262,7 +4262,7 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TVKTextureProperties.UnApply(var ARci: TRenderContextInfo);
+procedure TVKTextureProperties.UnApply(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FLibTexture) then
   begin
@@ -4651,7 +4651,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKBaseShaderModel'}{$ENDIF}
 
-procedure TVKBaseShaderModel.Apply(var ARci: TRenderContextInfo);
+procedure TVKBaseShaderModel.Apply(var ARci: TVKRenderContextInfo);
 var
   I: Integer;
   LEvent: TOnUniformSetting;
@@ -5211,7 +5211,7 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TVKBaseShaderModel.UnApply(var ARci: TRenderContextInfo);
+procedure TVKBaseShaderModel.UnApply(var ARci: TVKRenderContextInfo);
 begin
   if FIsValid and not ARci.GLStates.ForwardContext then
     FHandle.EndUseProgramObject;
@@ -5276,7 +5276,7 @@ begin
   end;
 end;
 
-procedure TVKShaderModel5.Apply(var ARci: TRenderContextInfo);
+procedure TVKShaderModel5.Apply(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
   begin
@@ -5287,7 +5287,7 @@ begin
   inherited;
 end;
 
-procedure TVKShaderModel5.UnApply(var ARci: TRenderContextInfo);
+procedure TVKShaderModel5.UnApply(var ARci: TVKRenderContextInfo);
 begin
   inherited;
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
@@ -5622,7 +5622,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformTexture'}{$ENDIF}
 
-procedure TVKShaderUniformTexture.Apply(var ARci: TRenderContextInfo);
+procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
 
   function FindHotActiveUnit: Boolean;
   var
@@ -6021,7 +6021,7 @@ begin
   Result := rstrNothing;
 end;
 
-procedure TVKAbstractShaderUniform.Apply(var ARci: TRenderContextInfo);
+procedure TVKAbstractShaderUniform.Apply(var ARci: TVKRenderContextInfo);
 begin
 end;
 
@@ -6225,7 +6225,7 @@ begin
   Result := TVKBaseShaderModel(Owner).FHandle.Handle;
 end;
 
-procedure TVKShaderUniform.Apply(var ARci: TRenderContextInfo);
+procedure TVKShaderUniform.Apply(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FAutoSet) then
     FAutoSet(Self, ARci);
@@ -6628,7 +6628,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKFrameBufferAttachment'}{$ENDIF}
 
-procedure TVKFrameBufferAttachment.Apply(var ARci: TRenderContextInfo);
+procedure TVKFrameBufferAttachment.Apply(var ARci: TVKRenderContextInfo);
 begin
   if FIsValid and not FOnlyWrite then
   begin
@@ -7034,7 +7034,7 @@ begin
   end;
 end;
 
-procedure TVKFrameBufferAttachment.UnApply(var ARci: TRenderContextInfo);
+procedure TVKFrameBufferAttachment.UnApply(var ARci: TVKRenderContextInfo);
 begin
   ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
@@ -7108,127 +7108,127 @@ begin
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetCameraPosition(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.cameraPosition;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetInvModelMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.InvModelMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetInvModelViewMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.InvModelViewMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetLightSource0Position(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.LightPosition[0];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackAmbient(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialAmbient[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackDiffuse(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialDiffuse[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackEmission(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialEmission[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackShininess(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.float := ARci.GLStates.MaterialShininess[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackSpecular(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialSpecular[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontAmbient(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialAmbient[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontDiffuse(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialDiffuse[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontEmission(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialEmission[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontShininess(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.float := ARci.GLStates.MaterialShininess[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontSpecular(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.vec4 := ARci.GLStates.MaterialSpecular[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetModelMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.ModelMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetModelViewMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.ModelViewMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetNormalModelMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat3 := ARci.PipelineTransformation.NormalModelMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetProjectionMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.ProjectionMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetViewMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.ViewMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetViewProjectionMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := ARci.PipelineTransformation.ViewProjectionMatrix;
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetWorldViewProjectionMatrix(Sender:
-  IShaderParameter; var ARci: TRenderContextInfo);
+  IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
   Sender.mat4 := MatrixMultiply(
     ARci.PipelineTransformation.ModelViewMatrix,

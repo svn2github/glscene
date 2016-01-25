@@ -56,9 +56,9 @@ type
     procedure NotifyLibMaterial3Destruction;
     procedure NotifyLibMaterial4Destruction;
 
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
 
   public
@@ -221,14 +221,14 @@ end;
 // DoInitialize
 //
 
-procedure TVKTexCombineShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKTexCombineShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
 end;
 
 // DoApply
 //
 
-procedure TVKTexCombineShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKTexCombineShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 var
   n, units: Integer;
 begin
@@ -301,7 +301,7 @@ end;
 // DoUnApply
 //
 
-function TVKTexCombineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKTexCombineShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   if FApplied3 then
     with currentLibMaterial3.Material.Texture do

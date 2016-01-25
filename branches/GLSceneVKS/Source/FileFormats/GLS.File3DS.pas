@@ -218,7 +218,7 @@ type
   TVKFile3DSMeshObject = class(TVKFile3DSDummyObject)
   public
     procedure LoadAnimation(const AData: Pointer); override;
-    procedure BuildList(var ARci: TRenderContextInfo); override;
+    procedure BuildList(var ARci: TVKRenderContextInfo); override;
   end;
 
   { TVKFile3DSDummyObject. A 3ds-specific omni light. }
@@ -1345,7 +1345,7 @@ begin
     SetFrame(vGLFile3DS_LoadedStaticFrame);
 end;
 
-procedure TVKFile3DSMeshObject.BuildList(var ARci: TRenderContextInfo);
+procedure TVKFile3DSMeshObject.BuildList(var ARci: TVKRenderContextInfo);
 begin
   GL.PushMatrix;
   if not FStatic then

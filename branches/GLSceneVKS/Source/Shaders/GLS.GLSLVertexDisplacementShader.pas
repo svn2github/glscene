@@ -65,8 +65,8 @@ Type
     procedure SetSpecularColor(AValue: TVKColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -365,7 +365,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLVertexDisplacementShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLVertexDisplacementShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
 
   GetGLSLProg.UseProgramObject;
@@ -388,7 +388,7 @@ begin
 
 end;
 
-function TVKCustomGLSLVertexDisplacementShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLVertexDisplacementShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   gl.ActiveTexture(GL_TEXTURE0_ARB);
   GetGLSLProg.EndUseProgramObject;

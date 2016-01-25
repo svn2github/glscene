@@ -63,8 +63,6 @@ type
          property MaxChannels default 32;
 	end;
 
-procedure Register;
-
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
@@ -80,11 +78,6 @@ type
       pfs : PFSoundSample;
    end;
    PFMODInfo = ^TFMODInfo;
-
-procedure Register;
-begin
-  RegisterComponents('GLScene', [TVKSMFMOD]);
-end;
 
 // VectorToFMODVector
 //

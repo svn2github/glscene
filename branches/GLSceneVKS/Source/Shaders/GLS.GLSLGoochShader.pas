@@ -51,8 +51,8 @@ type
     procedure SetCoolColor(AValue: TVKColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -196,7 +196,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLSimpleGoochShader.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomGLSLSimpleGoochShader.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
 
@@ -219,7 +219,7 @@ begin
 //  gl.BlendFunc(cGLBlendFunctionToGLEnum[FBlendSrc],cGLBlendFunctionToGLEnum[FBlendDst]);
 end;
 
-function TVKCustomGLSLSimpleGoochShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLSimpleGoochShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
 
   gl.ActiveTexture(GL_TEXTURE0_ARB);

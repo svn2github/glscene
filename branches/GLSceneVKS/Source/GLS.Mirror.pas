@@ -80,9 +80,9 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    procedure BuildList(var ARci: TRenderContextInfo); override;
+    procedure BuildList(var ARci: TVKRenderContextInfo); override;
 
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
@@ -155,7 +155,7 @@ end;
 // DoRender
 //
 
-procedure TVKMirror.DoRender(var ARci: TRenderContextInfo;
+procedure TVKMirror.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   oldProxySubObject: Boolean;
@@ -302,7 +302,7 @@ end;
 // BuildList
 //
 
-procedure TVKMirror.BuildList(var ARci: TRenderContextInfo);
+procedure TVKMirror.BuildList(var ARci: TVKRenderContextInfo);
 var
   hw, hh: TGLfloat;
   quadric: PGLUquadricObj;

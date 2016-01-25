@@ -60,7 +60,7 @@ type
     property Step: integer read FStep;
     constructor Create(aOwner : TVKXCollection); override;
     destructor Destroy; override;
-    procedure Render(var rci : TRenderContextInfo); override;
+    procedure Render(var rci : TVKRenderContextInfo); override;
     { resets the behaviour, so the information can be re-cached and
       the mesh can be exploded again }
     procedure Reset;
@@ -228,7 +228,7 @@ end;
 
 // Render
 //
-procedure TVKBExplosionFX.Render(var rci : TRenderContextInfo);
+procedure TVKBExplosionFX.Render(var rci : TVKRenderContextInfo);
 var
   Face: integer;
   dir, p1, p2, p3: TAffineVector;

@@ -120,7 +120,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure NotifyChange(Sender: TObject); override;
 
     property TriangleCount: Integer read FTriangleCount;
@@ -190,7 +190,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure NotifyChange(Sender: TObject); override;
 
   published
@@ -398,7 +398,7 @@ end;
 // BuildList
 //
 
-procedure TVKHeightField.BuildList(var rci: TRenderContextInfo);
+procedure TVKHeightField.BuildList(var rci: TVKRenderContextInfo);
 type
   TRowData = packed record
     Color: TColorVector;
@@ -766,7 +766,7 @@ end;
 // BuildList
 //
 
-procedure TVKXYZGrid.BuildList(var rci: TRenderContextInfo);
+procedure TVKXYZGrid.BuildList(var rci: TVKRenderContextInfo);
 var
   xBase, x, xStep, xMax, yBase, y, yStep, yMax, zBase, z, zStep, zMax: Single;
 begin

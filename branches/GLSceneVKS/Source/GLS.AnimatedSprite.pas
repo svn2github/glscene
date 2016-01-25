@@ -251,7 +251,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
     // Steps the current animation to the next frame
@@ -829,7 +829,7 @@ end;
 // BuildList
 //
 
-procedure TVKAnimatedSprite.BuildList(var rci: TRenderContextInfo);
+procedure TVKAnimatedSprite.BuildList(var rci: TVKRenderContextInfo);
 var
   vx, vy: TAffineVector;
   w, h, temp: Single;

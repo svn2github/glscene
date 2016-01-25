@@ -94,9 +94,9 @@ type
     property OnUnApply: TVKAsmShaderUnUplyEvent read FOnUnApply write FOnUnApply;
     property OnInitialize: TVKAsmShaderEvent read FOnInitialize write FOnInitialize;
 
-    procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject); override;
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    procedure DoApply(var rci: TVKRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
   public
     { Public Declarations }
@@ -163,7 +163,7 @@ begin
   FGPHandle := nil;
 end;
 
-procedure TVKCustomAsmShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomAsmShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   ApplyShaderPrograms();
 
@@ -171,7 +171,7 @@ begin
     FOnApply(Self);
 end;
 
-procedure TVKCustomAsmShader.DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomAsmShader.DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   if not ShaderSupported then
   begin
@@ -214,7 +214,7 @@ begin
   end;
 end;
 
-function TVKCustomAsmShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomAsmShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   if Assigned(FOnUnApply) then
     FOnUnApply(Self, Result)

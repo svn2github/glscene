@@ -58,7 +58,7 @@ type
     procedure LoadWindowsFont; virtual;
     function  StoreRanges: Boolean;
 
-    procedure PrepareImage(var ARci: TRenderContextInfo); override;
+    procedure PrepareImage(var ARci: TVKRenderContextInfo); override;
     function  TextureFormat: Integer; override;
     procedure StreamlineRanges;
   public
@@ -420,7 +420,7 @@ end;
 // PrepareImage
 //
 
-procedure TVKWindowsBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
+procedure TVKWindowsBitmapFont.PrepareImage(var ARci: TVKRenderContextInfo);
 begin
   LoadWindowsFont;
   inherited PrepareImage(ARci);

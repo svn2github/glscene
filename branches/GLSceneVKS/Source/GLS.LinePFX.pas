@@ -62,11 +62,11 @@ type
          function StoreDefaultLength : Boolean;
 
          function TexturingMode : Cardinal; override;
-         procedure InitializeRendering(var rci: TRenderContextInfo); override;
-         procedure BeginParticles(var rci: TRenderContextInfo); override;
-         procedure RenderParticle(var rci: TRenderContextInfo; aParticle : TVKParticle); override;
-         procedure EndParticles(var rci: TRenderContextInfo); override;
-         procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+         procedure InitializeRendering(var rci: TVKRenderContextInfo); override;
+         procedure BeginParticles(var rci: TVKRenderContextInfo); override;
+         procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle : TVKParticle); override;
+         procedure EndParticles(var rci: TVKRenderContextInfo); override;
+         procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
       public
          { Public Declarations }
@@ -133,7 +133,7 @@ end;
 
 // InitializeRendering
 //
-procedure TVKLinePFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TVKLinePFXManager.InitializeRendering(var rci: TVKRenderContextInfo);
 var
    i : Integer;
    matrix : TMatrix;
@@ -150,14 +150,14 @@ end;
 
 // BeginParticles
 //
-procedure TVKLinePFXManager.BeginParticles(var rci: TRenderContextInfo);
+procedure TVKLinePFXManager.BeginParticles(var rci: TVKRenderContextInfo);
 begin
    ApplyBlendingMode(rci);
 end;
 
 // RenderParticle
 //
-procedure TVKLinePFXManager.RenderParticle(var rci: TRenderContextInfo; aParticle : TVKParticle);
+procedure TVKLinePFXManager.RenderParticle(var rci: TVKRenderContextInfo; aParticle : TVKParticle);
 var
    lifeTime, sizeScale, fx, fy, f : Single;
    inner, outer : TColorVector;
@@ -200,14 +200,14 @@ end;
 
 // EndParticles
 //
-procedure TVKLinePFXManager.EndParticles(var rci: TRenderContextInfo);
+procedure TVKLinePFXManager.EndParticles(var rci: TVKRenderContextInfo);
 begin
    UnapplyBlendingMode(rci);
 end;
 
 // FinalizeRendering
 //
-procedure TVKLinePFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TVKLinePFXManager.FinalizeRendering(var rci: TVKRenderContextInfo);
 begin
    inherited;
 end;

@@ -37,7 +37,7 @@ type
          constructor CreateOwned(AOwner : TVKBaseMesh);
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TVKRenderContextInfo); override;
    end;
 
 
@@ -57,7 +57,7 @@ type
          constructor CreateOwned(AOwner : TVKMeshObjectList);
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TVKRenderContextInfo); override;
          procedure Prepare; override;
 
          property RenderDone : Boolean read FRenderDone write FRenderDone;
@@ -103,7 +103,7 @@ type
 	      constructor CreateOwned(AOwner : TVKFaceGroups); override;
          destructor Destroy; override;
 
-         procedure BuildList(var mrci : TRenderContextInfo); override;
+         procedure BuildList(var mrci : TVKRenderContextInfo); override;
 
          procedure Prepare; override;
 
@@ -154,7 +154,7 @@ end;
 
 // BuildList
 //
-procedure TPortalMeshObjectList.BuildList(var mrci : TRenderContextInfo);
+procedure TPortalMeshObjectList.BuildList(var mrci : TVKRenderContextInfo);
 var
    i : Integer;
    startSector : TVKMeshObject;
@@ -194,7 +194,7 @@ end;
 
 // BuildList
 //
-procedure TSectorMeshObject.BuildList(var mrci : TRenderContextInfo);
+procedure TSectorMeshObject.BuildList(var mrci : TVKRenderContextInfo);
 var
    i : Integer;
    libMat : TVKLibMaterial;
@@ -276,7 +276,7 @@ end;
 
 // BuildList
 //
-procedure TFGPortalPolygon.BuildList(var mrci : TRenderContextInfo);
+procedure TFGPortalPolygon.BuildList(var mrci : TVKRenderContextInfo);
 var
    dir : TAffineVector;
 begin

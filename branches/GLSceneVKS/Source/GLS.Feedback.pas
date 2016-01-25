@@ -53,7 +53,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     { Parse the the feedback buffer for polygon data and build
@@ -128,7 +128,7 @@ end;
 // DoRender
 //
 
-procedure TVKFeedback.DoRender(var ARci: TRenderContextInfo;
+procedure TVKFeedback.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 
   function RecursChildRadius(obj: TVKBaseSceneObject): Single;

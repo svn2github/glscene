@@ -68,8 +68,8 @@ Type
     procedure SetSpecularColor(AValue: TVKColor);
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -280,7 +280,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLSimpleErosionShader.DoApply(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLSimpleErosionShader.DoApply(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   GetGLSLProg.UseProgramObject;
 
@@ -304,7 +304,7 @@ begin
  // GetGLSLProg.UniformTextureHandle['Noise2d', 1, GL_TEXTURE_2D] := FNoiseTexture.Handle;
 end;
 
-function TVKCustomGLSLSimpleErosionShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLSimpleErosionShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   GetGLSLProg.EndUseProgramObject;
   //gl.PopAttrib;

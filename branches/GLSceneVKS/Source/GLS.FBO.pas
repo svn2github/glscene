@@ -147,7 +147,7 @@ type
     procedure Unbind;
 
     procedure PreRender;
-    procedure Render(var rci: TRenderContextInfo; baseObject:
+    procedure Render(var rci: TVKRenderContextInfo; baseObject:
       TVKBaseSceneObject);
     procedure PostRender(const PostGenerateMipmap: Boolean);
 
@@ -661,7 +661,7 @@ begin
 
 end;
 
-procedure TVKFrameBuffer.Render(var rci: TRenderContextInfo; baseObject:
+procedure TVKFrameBuffer.Render(var rci: TVKRenderContextInfo; baseObject:
   TVKBaseSceneObject);
 var
   backColor: TColorVector;

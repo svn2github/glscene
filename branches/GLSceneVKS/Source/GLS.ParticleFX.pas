@@ -185,7 +185,7 @@ type
        that will be used throughout the whole rendering, per-frame
        initialization should take place here. 
        OpenGL states/matrices should not be altered in any way here. }
-    procedure InitializeRendering(var rci: TRenderContextInfo); dynamic; abstract;
+    procedure InitializeRendering(var rci: TVKRenderContextInfo); dynamic; abstract;
     { Triggered just before rendering a set of particles. 
        The current OpenGL state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
@@ -193,18 +193,18 @@ type
        Multiple BeginParticles can occur during a render (but all will be
        between InitializeRendering and Finalizerendering, and at least one
        particle will be rendered before EndParticles is invoked). }
-    procedure BeginParticles(var rci: TRenderContextInfo); virtual; abstract;
+    procedure BeginParticles(var rci: TVKRenderContextInfo); virtual; abstract;
     { Request to render a particular particle. 
        Due to the nature of the rendering, no particular order should be
        assumed. If possible, no OpenGL state changes should be made in this
        method, but should be placed in Begin/EndParticles. }
-    procedure RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle); virtual; abstract;
+    procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle); virtual; abstract;
     { Triggered after a set of particles as been rendered. 
        If OpenGL state were altered directly (ie. not through the states
        caches of GLMisc), it should be restored back to the "base" state. }
-    procedure EndParticles(var rci: TRenderContextInfo); virtual; abstract;
+    procedure EndParticles(var rci: TVKRenderContextInfo); virtual; abstract;
     { Invoked when rendering of particles for this manager is done. }
-    procedure FinalizeRendering(var rci: TRenderContextInfo); dynamic; abstract;
+    procedure FinalizeRendering(var rci: TVKRenderContextInfo); dynamic; abstract;
 
     { ID for the next created particle. }
     property NextID: Integer read FNextID write FNextID;
@@ -213,9 +213,9 @@ type
        Protected and unused in the base class. }
     property BlendingMode: TBlendingMode read FBlendingMode write FBlendingMode;
     { Apply BlendingMode relatively to the renderer's blending mode. }
-    procedure ApplyBlendingMode(var rci: TRenderContextInfo);
+    procedure ApplyBlendingMode(var rci: TVKRenderContextInfo);
     { Unapply BlendingMode relatively by restoring the renderer's blending mode. }
-    procedure UnapplyBlendingMode(var rci: TRenderContextInfo);
+    procedure UnapplyBlendingMode(var rci: TVKRenderContextInfo);
 
     procedure registerUser(obj: TVKParticleFXEffect);
     procedure unregisterUser(obj: TVKParticleFXEffect);
@@ -354,7 +354,7 @@ type
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     { Time (in msec) spent sorting the particles for last render. }
     property LastSortTime: Double read FLastSortTime;
@@ -597,8 +597,8 @@ type
     procedure SetColorInner(const val: TVKColor);
     procedure SetColorOuter(const val: TVKColor);
 
-    procedure InitializeRendering(var rci: TRenderContextInfo); override;
-    procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+    procedure InitializeRendering(var rci: TVKRenderContextInfo); override;
+    procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
     function MaxParticleAge: Single; override;
 
@@ -627,7 +627,7 @@ type
   end;
 
   TPFXDirectRenderEvent = procedure(Sender: TObject; aParticle: TVKParticle;
-    var rci: TRenderContextInfo) of object;
+    var rci: TVKRenderContextInfo) of object;
   TPFXProgressEvent = procedure(Sender: TObject; const progressTime: TProgressTimes;
     var defaultProgress: Boolean) of object;
   TPFXParticleProgress = procedure(Sender: TObject; const progressTime: TProgressTimes;
@@ -657,11 +657,11 @@ type
   protected
     { Protected Declarations }
     function TexturingMode: Cardinal; override;
-    procedure InitializeRendering(var rci: TRenderContextInfo); override;
-    procedure BeginParticles(var rci: TRenderContextInfo); override;
-    procedure RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle); override;
-    procedure EndParticles(var rci: TRenderContextInfo); override;
-    procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+    procedure InitializeRendering(var rci: TVKRenderContextInfo); override;
+    procedure BeginParticles(var rci: TVKRenderContextInfo); override;
+    procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle); override;
+    procedure EndParticles(var rci: TVKRenderContextInfo); override;
+    procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
   public
     { Public Declarations }
@@ -705,11 +705,11 @@ type
     procedure SetNbSides(const val: Integer);
 
     function TexturingMode: Cardinal; override;
-    procedure InitializeRendering(var rci: TRenderContextInfo); override;
-    procedure BeginParticles(var rci: TRenderContextInfo); override;
-    procedure RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle); override;
-    procedure EndParticles(var rci: TRenderContextInfo); override;
-    procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+    procedure InitializeRendering(var rci: TVKRenderContextInfo); override;
+    procedure BeginParticles(var rci: TVKRenderContextInfo); override;
+    procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle); override;
+    procedure EndParticles(var rci: TVKRenderContextInfo); override;
+    procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
   public
     { Public Declarations }
@@ -765,7 +765,7 @@ type
     { Subclasses should draw their stuff in this bmp32. }
     procedure PrepareImage(bmp32: TVKBitmap32; var texFormat: Integer); virtual; abstract;
 
-    procedure BindTexture(var rci: TRenderContextInfo);
+    procedure BindTexture(var rci: TVKRenderContextInfo);
     procedure SetSpritesPerTexture(const val: TSpritesPerTexture); virtual;
     procedure SetColorMode(const val: TSpriteColorMode);
     procedure SetAspectRatio(const val: Single);
@@ -774,11 +774,11 @@ type
     procedure SetShareSprites(const val: TVKBaseSpritePFXManager);
 
     function TexturingMode: Cardinal; override;
-    procedure InitializeRendering(var rci: TRenderContextInfo); override;
-    procedure BeginParticles(var rci: TRenderContextInfo); override;
-    procedure RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle); override;
-    procedure EndParticles(var rci: TRenderContextInfo); override;
-    procedure FinalizeRendering(var rci: TRenderContextInfo); override;
+    procedure InitializeRendering(var rci: TVKRenderContextInfo); override;
+    procedure BeginParticles(var rci: TVKRenderContextInfo); override;
+    procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle); override;
+    procedure EndParticles(var rci: TVKRenderContextInfo); override;
+    procedure FinalizeRendering(var rci: TVKRenderContextInfo); override;
 
     property SpritesPerTexture: TSpritesPerTexture read FSpritesPerTexture write SetSpritesPerTexture;
 
@@ -1558,7 +1558,7 @@ end;
 // BuildList
 // (beware, large and complex stuff below... this is the heart of the ParticleFX)
 
-procedure TVKParticleFXRenderer.BuildList(var rci: TRenderContextInfo);
+procedure TVKParticleFXRenderer.BuildList(var rci: TVKRenderContextInfo);
 {
    Quick Explanation of what is below:
 
@@ -2472,7 +2472,7 @@ end;
 // InitializeRendering
 //
 
-procedure TVKLifeColoredPFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TVKLifeColoredPFXManager.InitializeRendering(var rci: TVKRenderContextInfo);
 var
   i, n: Integer;
 begin
@@ -2489,7 +2489,7 @@ end;
 // FinalizeRendering
 //
 
-procedure TVKLifeColoredPFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TVKLifeColoredPFXManager.FinalizeRendering(var rci: TVKRenderContextInfo);
 begin
   FLifeColorsLookup.Free;
 end;
@@ -2822,7 +2822,7 @@ end;
 // InitializeRendering
 //
 
-procedure TVKCustomPFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TVKCustomPFXManager.InitializeRendering(var rci: TVKRenderContextInfo);
 begin
   inherited;
   if Assigned(FOnInitializeRendering) then
@@ -2832,7 +2832,7 @@ end;
 // BeginParticles
 //
 
-procedure TVKCustomPFXManager.BeginParticles(var rci: TRenderContextInfo);
+procedure TVKCustomPFXManager.BeginParticles(var rci: TVKRenderContextInfo);
 begin
   if Assigned(FOnBeginParticles) then
     FOnBeginParticles(Self, rci);
@@ -2841,7 +2841,7 @@ end;
 // RenderParticle
 //
 
-procedure TVKCustomPFXManager.RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle);
+procedure TVKCustomPFXManager.RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle);
 begin
   if Assigned(FOnRenderParticle) then
     FOnRenderParticle(Self, aParticle, rci);
@@ -2850,7 +2850,7 @@ end;
 // EndParticles
 //
 
-procedure TVKCustomPFXManager.EndParticles(var rci: TRenderContextInfo);
+procedure TVKCustomPFXManager.EndParticles(var rci: TVKRenderContextInfo);
 begin
   if Assigned(FOnEndParticles) then
     FOnEndParticles(Self, rci);
@@ -2859,7 +2859,7 @@ end;
 // FinalizeRendering
 //
 
-procedure TVKCustomPFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TVKCustomPFXManager.FinalizeRendering(var rci: TVKRenderContextInfo);
 begin
   if Assigned(FOnFinalizeRendering) then
     FOnFinalizeRendering(Self, rci);
@@ -2923,7 +2923,7 @@ end;
 // InitializeRendering
 //
 
-procedure TVKPolygonPFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TVKPolygonPFXManager.InitializeRendering(var rci: TVKRenderContextInfo);
 var
   i: Integer;
   matrix: TMatrix;
@@ -2950,7 +2950,7 @@ end;
 // BeginParticles
 //
 
-procedure TVKPolygonPFXManager.BeginParticles(var rci: TRenderContextInfo);
+procedure TVKPolygonPFXManager.BeginParticles(var rci: TVKRenderContextInfo);
 begin
   ApplyBlendingMode(rci);
 end;
@@ -2958,7 +2958,7 @@ end;
 // RenderParticle
 //
 
-procedure TVKPolygonPFXManager.RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle);
+procedure TVKPolygonPFXManager.RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle);
 var
   i: Integer;
   lifeTime, sizeScale: Single;
@@ -3009,7 +3009,7 @@ end;
 // EndParticles
 //
 
-procedure TVKPolygonPFXManager.EndParticles(var rci: TRenderContextInfo);
+procedure TVKPolygonPFXManager.EndParticles(var rci: TVKRenderContextInfo);
 begin
   UnapplyBlendingMode(rci);
 end;
@@ -3017,7 +3017,7 @@ end;
 // FinalizeRendering
 //
 
-procedure TVKPolygonPFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TVKPolygonPFXManager.FinalizeRendering(var rci: TVKRenderContextInfo);
 begin
   FVertBuf.Free;
   FVertices.Free;
@@ -3124,7 +3124,7 @@ end;
 // BindTexture
 //
 
-procedure TVKBaseSpritePFXManager.BindTexture(var rci: TRenderContextInfo);
+procedure TVKBaseSpritePFXManager.BindTexture(var rci: TVKRenderContextInfo);
 var
   bmp32: TVKBitmap32;
   tw, th, td, tf: Integer;
@@ -3178,7 +3178,7 @@ end;
 // InitializeRendering
 //
 
-procedure TVKBaseSpritePFXManager.InitializeRendering(var rci: TRenderContextInfo);
+procedure TVKBaseSpritePFXManager.InitializeRendering(var rci: TVKRenderContextInfo);
 var
   i: Integer;
   matrix: TMatrix;
@@ -3216,7 +3216,7 @@ end;
 // BeginParticles
 //
 
-procedure TVKBaseSpritePFXManager.BeginParticles(var rci: TRenderContextInfo);
+procedure TVKBaseSpritePFXManager.BeginParticles(var rci: TVKRenderContextInfo);
 begin
   BindTexture(rci);
   if ColorMode = scmNone then
@@ -3231,7 +3231,7 @@ end;
 // RenderParticle
 //
 
-procedure TVKBaseSpritePFXManager.RenderParticle(var rci: TRenderContextInfo; aParticle: TVKParticle);
+procedure TVKBaseSpritePFXManager.RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle);
 type
   TTexCoordsSet = array[0..3] of TTexPoint;
   PTexCoordsSet = ^TTexCoordsSet;
@@ -3340,7 +3340,7 @@ end;
 // EndParticles
 //
 
-procedure TVKBaseSpritePFXManager.EndParticles(var rci: TRenderContextInfo);
+procedure TVKBaseSpritePFXManager.EndParticles(var rci: TVKRenderContextInfo);
 begin
   if ColorMode <> scmFade then
     GL.End_;
@@ -3350,7 +3350,7 @@ end;
 // FinalizeRendering
 //
 
-procedure TVKBaseSpritePFXManager.FinalizeRendering(var rci: TRenderContextInfo);
+procedure TVKBaseSpritePFXManager.FinalizeRendering(var rci: TVKRenderContextInfo);
 begin
   FVertBuf.Free;
   FVertices.Free;

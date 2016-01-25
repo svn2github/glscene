@@ -160,10 +160,10 @@ type
     function CharactersPerRow: Integer;
     procedure GetCharTexCoords(Ch: WideChar;
       var TopLeft, BottomRight: TTexPoint);
-    procedure GetICharTexCoords(var ARci: TRenderContextInfo; Chi: Integer;
+    procedure GetICharTexCoords(var ARci: TVKRenderContextInfo; Chi: Integer;
       out TopLeft, BottomRight: TTexPoint);
-    procedure PrepareImage(var ARci: TRenderContextInfo); virtual;
-    procedure PrepareParams(var ARci: TRenderContextInfo);
+    procedure PrepareImage(var ARci: TVKRenderContextInfo); virtual;
+    procedure PrepareParams(var ARci: TVKRenderContextInfo);
 
     { A single bitmap containing all the characters.<p>
       The transparent color is that of the top left pixel. }
@@ -208,7 +208,7 @@ type
       The current matrix is blindly used, meaning you can render all kinds
       of rotated and linear distorted text with this method, OpenGL
       Enable states are also possibly altered. }
-    procedure RenderString(var ARci: TRenderContextInfo;
+    procedure RenderString(var ARci: TVKRenderContextInfo;
       const aText: UnicodeString; aAlignment: TAlignment;
       aLayout: TVKTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
@@ -216,9 +216,9 @@ type
     { A simpler canvas-style TextOut helper for RenderString.<p>
       The rendering is reversed along Y by default, to allow direct use
       with TVKCanvas }
-    procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
+    procedure TextOut(var rci: TVKRenderContextInfo; X, Y: Single;
       const Text: UnicodeString; const Color: TColorVector); overload;
-    procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
+    procedure TextOut(var rci: TVKRenderContextInfo; X, Y: Single;
       const Text: UnicodeString; const Color: TColor); overload;
     function TextWidth(const Text: UnicodeString): Integer;
 
@@ -233,7 +233,7 @@ type
       overload; virtual;
 
     // make texture if needed
-    procedure CheckTexture(var ARci: TRenderContextInfo);
+    procedure CheckTexture(var ARci: TVKRenderContextInfo);
 
     { Height of a single character. }
     property CharHeight: Integer read FCharHeight write SetCharHeight
@@ -300,7 +300,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var rci: TRenderContextInfo;
+    procedure DoRender(var rci: TVKRenderContextInfo;
       renderSelf, renderChildren: boolean); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -827,7 +827,7 @@ end;
 
 // PrepareImage
 //
-procedure TVKCustomBitmapFont.PrepareImage(var ARci: TRenderContextInfo);
+procedure TVKCustomBitmapFont.PrepareImage(var ARci: TVKRenderContextInfo);
 var
   bitmap: TVKBitmap;
   bitmap32: TVKBitmap32;
@@ -932,7 +932,7 @@ end;
 
 // PrepareParams
 //
-procedure TVKCustomBitmapFont.PrepareParams(var ARci: TRenderContextInfo);
+procedure TVKCustomBitmapFont.PrepareParams(var ARci: TVKRenderContextInfo);
 const
   cTextureMagFilter: array [maNearest .. maLinear] of TGLenum = (GL_NEAREST,
     GL_LINEAR);
@@ -975,7 +975,7 @@ end;
 
 // RenderString
 //
-procedure TVKCustomBitmapFont.RenderString(var ARci: TRenderContextInfo;
+procedure TVKCustomBitmapFont.RenderString(var ARci: TVKRenderContextInfo;
   const aText: UnicodeString; aAlignment: TAlignment; aLayout: TVKTextLayout;
   const aColor: TColorVector; aPosition: PVector = nil;
   aReverseY: boolean = False);
@@ -1112,7 +1112,7 @@ end;
 
 // TextOut
 //
-procedure TVKCustomBitmapFont.TextOut(var rci: TRenderContextInfo; X, Y: Single;
+procedure TVKCustomBitmapFont.TextOut(var rci: TVKRenderContextInfo; X, Y: Single;
   const Text: UnicodeString; const Color: TColorVector);
 var
   V: TVector;
@@ -1127,7 +1127,7 @@ end;
 // TextOut
 //
 
-procedure TVKCustomBitmapFont.TextOut(var rci: TRenderContextInfo; X, Y: Single;
+procedure TVKCustomBitmapFont.TextOut(var rci: TVKRenderContextInfo; X, Y: Single;
   const Text: UnicodeString; const Color: TColor);
 begin
   TextOut(rci, X, Y, Text, ConvertWinColor(Color));
@@ -1197,7 +1197,7 @@ end;
 // TileIndexToTexCoords
 // it also activates the target texture
 //
-procedure TVKCustomBitmapFont.GetICharTexCoords(var ARci: TRenderContextInfo;
+procedure TVKCustomBitmapFont.GetICharTexCoords(var ARci: TVKRenderContextInfo;
   Chi: Integer; out TopLeft, BottomRight: TTexPoint);
 var
   tileIndex: Integer;
@@ -1281,7 +1281,7 @@ begin
 end;
 
 // force texture when needed
-procedure TVKCustomBitmapFont.CheckTexture(var ARci: TRenderContextInfo);
+procedure TVKCustomBitmapFont.CheckTexture(var ARci: TVKRenderContextInfo);
 var
   i: Integer;
 begin
@@ -1399,7 +1399,7 @@ end;
 
 // DoRender
 //
-procedure TVKFlatText.DoRender(var rci: TRenderContextInfo;
+procedure TVKFlatText.DoRender(var rci: TVKRenderContextInfo;
   renderSelf, renderChildren: boolean);
 begin
   if Assigned(FBitmapFont) and (Text <> '') then

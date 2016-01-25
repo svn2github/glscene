@@ -540,17 +540,17 @@ type
     procedure PrepareBuildList;
     procedure ApplyMappingMode;
     procedure UnApplyMappingMode;
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
+    procedure UnApply(var rci: TVKRenderContextInfo);
     { Applies to TEXTURE1 }
-    procedure ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix: PMatrix
+    procedure ApplyAsTexture2(var rci: TVKRenderContextInfo; textureMatrix: PMatrix
       = nil);
-    procedure UnApplyAsTexture2(var rci: TRenderContextInfo;
+    procedure UnApplyAsTexture2(var rci: TVKRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
     { N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
-    procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+    procedure ApplyAsTextureN(n: Integer; var rci: TVKRenderContextInfo;
       textureMatrix: PMatrix = nil);
-    procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+    procedure UnApplyAsTextureN(n: Integer; var rci: TVKRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
 
     procedure Assign(Source: TPersistent); override;
@@ -745,8 +745,8 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject);
 
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
+    procedure UnApply(var rci: TVKRenderContextInfo);
 
   published
     { Published Decalarations }
@@ -775,8 +775,8 @@ type
     constructor Create(AOwner: TVKUpdateAbleObject);
 
     procedure NotifyChange(Sender: TObject);
-    procedure Apply(var rci: TRenderContextInfo);
-    procedure UnApply(var rci: TRenderContextInfo);
+    procedure Apply(var rci: TVKRenderContextInfo);
+    procedure UnApply(var rci: TVKRenderContextInfo);
     function IsTextureEnabled(Index: Integer): Boolean;
 
     function Add: TVKTextureExItem;
@@ -2957,7 +2957,7 @@ end;
 // Apply
 //
 
-procedure TVKTexture.Apply(var rci: TRenderContextInfo);
+procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
 
   procedure SetCubeMapTextureMatrix;
   var
@@ -3038,7 +3038,7 @@ end;
 // UnApply
 //
 
-procedure TVKTexture.UnApply(var rci: TRenderContextInfo);
+procedure TVKTexture.UnApply(var rci: TVKRenderContextInfo);
 begin
   if not Disabled
     and not rci.GLStates.ForwardContext then
@@ -3060,7 +3060,7 @@ end;
 // ApplyAsTexture2
 //
 
-procedure TVKTexture.ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix:
+procedure TVKTexture.ApplyAsTexture2(var rci: TVKRenderContextInfo; textureMatrix:
   PMatrix = nil);
 begin
   ApplyAsTextureN(2, rci, textureMatrix);
@@ -3069,7 +3069,7 @@ end;
 // UnApplyAsTexture2
 //
 
-procedure TVKTexture.UnApplyAsTexture2(var rci: TRenderContextInfo;
+procedure TVKTexture.UnApplyAsTexture2(var rci: TVKRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
   UnApplyAsTextureN(2, rci, reloadIdentityTextureMatrix);
@@ -3078,7 +3078,7 @@ end;
 // ApplyAsTextureN
 //
 
-procedure TVKTexture.ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+procedure TVKTexture.ApplyAsTextureN(n: Integer; var rci: TVKRenderContextInfo;
   textureMatrix: PMatrix = nil);
 var
   m: TMatrix;
@@ -3118,7 +3118,7 @@ end;
 // UnApplyAsTextureN
 //
 
-procedure TVKTexture.UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
+procedure TVKTexture.UnApplyAsTextureN(n: Integer; var rci: TVKRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
   if not rci.GLStates.ForwardContext then
@@ -3678,7 +3678,7 @@ end;
 // Apply
 //
 
-procedure TVKTextureExItem.Apply(var rci: TRenderContextInfo);
+procedure TVKTextureExItem.Apply(var rci: TVKRenderContextInfo);
 begin
   FApplied := False;
   if FTexture.Enabled then
@@ -3705,7 +3705,7 @@ end;
 // UnApply
 //
 
-procedure TVKTextureExItem.UnApply(var rci: TRenderContextInfo);
+procedure TVKTextureExItem.UnApply(var rci: TVKRenderContextInfo);
 begin
   if FApplied then
   begin
@@ -3850,7 +3850,7 @@ end;
 // Apply
 //
 
-procedure TVKTextureEx.Apply(var rci: TRenderContextInfo);
+procedure TVKTextureEx.Apply(var rci: TVKRenderContextInfo);
 var
   i, texUnits: Integer;
   units: Cardinal;
@@ -3878,7 +3878,7 @@ end;
 // UnApply
 //
 
-procedure TVKTextureEx.UnApply(var rci: TRenderContextInfo);
+procedure TVKTextureEx.UnApply(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin

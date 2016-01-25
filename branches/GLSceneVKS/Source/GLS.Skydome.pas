@@ -48,7 +48,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo);
+    procedure BuildList(var rci: TVKRenderContextInfo);
 
   published
     { Published Declarations }
@@ -79,7 +79,7 @@ type
     default;
 
     procedure NotifyChange;
-    procedure BuildList(var rci: TRenderContextInfo);
+    procedure BuildList(var rci: TVKRenderContextInfo);
   end;
 
   // TVKSkyDomeStar
@@ -137,7 +137,7 @@ type
     property Items[index: Integer]: TVKSkyDomeStar read GetItems write SetItems;
     default;
 
-    procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
+    procedure BuildList(var rci: TVKRenderContextInfo; twinkle: Boolean);
 
     { Adds nb random stars of the given color. 
        Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
@@ -185,7 +185,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -249,7 +249,7 @@ type
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     procedure SetSunAtTime(HH, MM: Single);
 
@@ -412,7 +412,7 @@ end;
 // BuildList
 //
 
-procedure TVKSkyDomeBand.BuildList(var rci: TRenderContextInfo);
+procedure TVKSkyDomeBand.BuildList(var rci: TVKRenderContextInfo);
 
 // coordinates system note: X is forward, Y is left and Z is up
 // always rendered as sphere of radius 1
@@ -538,7 +538,7 @@ end;
 // BuildList
 //
 
-procedure TVKSkyDomeBands.BuildList(var rci: TRenderContextInfo);
+procedure TVKSkyDomeBands.BuildList(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin
@@ -666,7 +666,7 @@ end;
 // BuildList
 //
 
-procedure TVKSkyDomeStars.BuildList(var rci: TRenderContextInfo; twinkle:
+procedure TVKSkyDomeStars.BuildList(var rci: TVKRenderContextInfo; twinkle:
   Boolean);
 var
   i, n: Integer;
@@ -937,7 +937,7 @@ end;
 // BuildList
 //
 
-procedure TVKSkyDome.BuildList(var rci: TRenderContextInfo);
+procedure TVKSkyDome.BuildList(var rci: TVKRenderContextInfo);
 var
   f: Single;
 begin
@@ -1128,7 +1128,7 @@ end;
 // BuildList
 //
 
-procedure TVKEarthSkyDome.BuildList(var rci: TRenderContextInfo);
+procedure TVKEarthSkyDome.BuildList(var rci: TVKRenderContextInfo);
 var
   f: Single;
 begin

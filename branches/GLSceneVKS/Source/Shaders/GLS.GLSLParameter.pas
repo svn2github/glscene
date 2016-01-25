@@ -249,7 +249,7 @@ resourcestring
   rstrNothing = '*nothing*';
 
 type
-  TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TRenderContextInfo) of object;
+  TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TVKRenderContextInfo) of object;
 
 function GLSLTypeEnum(AType: TVKSLDataType): TGLenum;
 function GLSLTypeComponentCount(AType: TVKSLDataType): Integer;

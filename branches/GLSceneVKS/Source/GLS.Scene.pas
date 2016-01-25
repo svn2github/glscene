@@ -131,7 +131,7 @@ type
   IGLInitializable = interface
     ['{EA40AE8E-79B3-42F5-ADF1-7A901B665E12}']
     procedure InitializeObject(ASender: TObject; const ARci:
-      TRenderContextInfo);
+      TVKRenderContextInfo);
   end;
 
   // TVKInitializableObjectList
@@ -274,7 +274,7 @@ type
 
     procedure RecTransformationChanged;
 
-    procedure DrawAxes(var rci: TRenderContextInfo; pattern: Word);
+    procedure DrawAxes(var rci: TVKRenderContextInfo; pattern: Word);
     procedure GetChildren(AProc: TGetChildProc; Root: TComponent); override;
     //: Should the object be considered as blended for sorting purposes?
     function Blended: Boolean; virtual;
@@ -307,7 +307,7 @@ type
 
     { Returns the handle to the object's build list. 
        Use with caution! Some objects don't support buildlists! }
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; virtual;
+    function GetHandle(var rci: TVKRenderContextInfo): Cardinal; virtual;
     function ListHandleAllocated: Boolean;
 
     { The local transformation (relative to parent). 
@@ -550,7 +550,7 @@ type
     { Make object-specific geometry description here. 
        Subclasses should MAINTAIN OpenGL states (restore the states if
        they were altered). }
-    procedure BuildList(var rci: TRenderContextInfo); virtual;
+    procedure BuildList(var rci: TVKRenderContextInfo); virtual;
     function GetParentComponent: TComponent; override;
     function HasParent: Boolean; override;
     function IsUpdating: Boolean;
@@ -590,11 +590,11 @@ type
     //: Orients the object toward a target absolute position
     procedure PointTo(const AAbsolutePosition, AUpVector: TVector); overload;
 
-    procedure Render(var ARci: TRenderContextInfo);
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure Render(var ARci: TVKRenderContextInfo);
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); virtual;
     procedure RenderChildren(firstChildIndex, lastChildIndex: Integer;
-      var rci: TRenderContextInfo); virtual;
+      var rci: TVKRenderContextInfo); virtual;
 
     procedure StructureChanged; dynamic;
     procedure ClearStructureChanged;
@@ -753,7 +753,7 @@ type
 
   public
     { Public Declarations }
-    procedure Render(var rci: TRenderContextInfo); virtual;
+    procedure Render(var rci: TVKRenderContextInfo); virtual;
   end;
 
   // TVKObjectPreEffect
@@ -800,9 +800,9 @@ type
     function CanAdd(aClass: TVKXCollectionItemClass): Boolean; override;
 
     procedure DoProgress(const progressTime: TProgressTimes);
-    procedure RenderPreEffects(var rci: TRenderContextInfo);
+    procedure RenderPreEffects(var rci: TVKRenderContextInfo);
     { Also take care of registering after effects with the GLSceneViewer. }
-    procedure RenderPostEffects(var rci: TRenderContextInfo);
+    procedure RenderPostEffects(var rci: TVKRenderContextInfo);
   end;
 
   // TVKCustomSceneObject
@@ -830,7 +830,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     property Material: TVKMaterial read FMaterial write SetVKMaterial;
@@ -860,7 +860,7 @@ type
   TVKImmaterialSceneObject = class(TVKCustomSceneObject)
   public
     { Public Declarations }
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
@@ -907,7 +907,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   end;
 
@@ -941,7 +941,7 @@ type
   // TDirectRenderEvent
   //
   { Event for user-specific rendering in a TVKDirectOpenGL object. }
-  TDirectRenderEvent = procedure(Sender: TObject; var rci: TRenderContextInfo)
+  TDirectRenderEvent = procedure(Sender: TObject; var rci: TVKRenderContextInfo)
     of object;
 
   // TVKDirectOpenGL
@@ -968,7 +968,7 @@ type
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
@@ -1013,7 +1013,7 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     procedure RegisterCallBack(renderEvent: TDirectRenderEvent;
       renderPointFreed: TNotifyEvent);
@@ -1051,7 +1051,7 @@ type
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
     function BarycenterAbsolutePosition: TVector; override;
@@ -1145,10 +1145,10 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     //: light sources have different handle types than normal scene objects
-    function GetHandle(var rci: TRenderContextInfo): Cardinal; override;
+    function GetHandle(var rci: TVKRenderContextInfo): Cardinal; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
@@ -1247,7 +1247,7 @@ type
 
     //: Apply camera transformation
     procedure Apply;
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
@@ -2152,7 +2152,7 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
 { Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; AxisLen:
+procedure AxesBuildList(var rci: TVKRenderContextInfo; pattern: Word; AxisLen:
   Single);
 
 { Registers the procedure call used to invoke the info form. }
@@ -2186,7 +2186,7 @@ end;
   // AxesBuildList
   //
 
-procedure AxesBuildList(var rci: TRenderContextInfo; pattern: Word; axisLen:
+procedure AxesBuildList(var rci: TVKRenderContextInfo; pattern: Word; axisLen:
   Single);
 begin
 {$IFDEF GLS_OPENGL_DEBUG}
@@ -2364,7 +2364,7 @@ end;
 // GetHandle
 //
 
-function TVKBaseSceneObject.GetHandle(var rci: TRenderContextInfo): Cardinal;
+function TVKBaseSceneObject.GetHandle(var rci: TVKRenderContextInfo): Cardinal;
 begin
   if not Assigned(FListHandle) then
     FListHandle := TVKListHandle.Create;
@@ -2468,7 +2468,7 @@ end;
 // BuildList
 //
 
-procedure TVKBaseSceneObject.BuildList(var rci: TRenderContextInfo);
+procedure TVKBaseSceneObject.BuildList(var rci: TVKRenderContextInfo);
 begin
   // nothing
 end;
@@ -2644,7 +2644,7 @@ end;
 // DrawAxes
 //
 
-procedure TVKBaseSceneObject.DrawAxes(var rci: TRenderContextInfo; pattern:
+procedure TVKBaseSceneObject.DrawAxes(var rci: TVKRenderContextInfo; pattern:
   Word);
 begin
   AxesBuildList(rci, Pattern, rci.rcci.farClippingDistance -
@@ -4504,7 +4504,7 @@ end;
 // Render
 //
 
-procedure TVKBaseSceneObject.Render(var ARci: TRenderContextInfo);
+procedure TVKBaseSceneObject.Render(var ARci: TVKRenderContextInfo);
 var
   shouldRenderSelf, shouldRenderChildren: Boolean;
   aabb: TAABB;
@@ -4627,7 +4627,7 @@ end;
 // DoRender
 //
 
-procedure TVKBaseSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TVKBaseSceneObject.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -4648,7 +4648,7 @@ end;
 
 procedure TVKBaseSceneObject.RenderChildren(firstChildIndex, lastChildIndex:
   Integer;
-  var rci: TRenderContextInfo);
+  var rci: TVKRenderContextInfo);
 var
   i: Integer;
   objList: TPersistentObjectList;
@@ -5233,7 +5233,7 @@ end;
 // Render
 //
 
-procedure TVKObjectEffect.Render(var rci: TRenderContextInfo);
+procedure TVKObjectEffect.Render(var rci: TVKRenderContextInfo);
 begin
   // nothing here, this implem is just to avoid "abstract error"
 end;
@@ -5306,7 +5306,7 @@ end;
 // RenderPreEffects
 //
 
-procedure TVKObjectEffects.RenderPreEffects(var rci: TRenderContextInfo);
+procedure TVKObjectEffects.RenderPreEffects(var rci: TVKRenderContextInfo);
 var
   i: Integer;
   effect: TVKObjectEffect;
@@ -5322,7 +5322,7 @@ end;
 // RenderPostEffects
 //
 
-procedure TVKObjectEffects.RenderPostEffects(var rci: TRenderContextInfo);
+procedure TVKObjectEffects.RenderPostEffects(var rci: TVKRenderContextInfo);
 var
   i: Integer;
   effect: TVKObjectEffect;
@@ -5410,7 +5410,7 @@ end;
 // DoRender
 //
 
-procedure TVKCustomSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TVKCustomSceneObject.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -6248,7 +6248,7 @@ end;
 // DoRender
 //
 
-procedure TVKCamera.DoRender(var ARci: TRenderContextInfo;
+procedure TVKCamera.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if ARenderChildren and (Count > 0) then
@@ -6272,7 +6272,7 @@ end;
 // DoRender
 //
 
-procedure TVKImmaterialSceneObject.DoRender(var ARci: TRenderContextInfo;
+procedure TVKImmaterialSceneObject.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   // start rendering self
@@ -6316,7 +6316,7 @@ end;
 // DoRender
 //
 
-procedure TVKCameraInvariantObject.DoRender(var ARci: TRenderContextInfo;
+procedure TVKCameraInvariantObject.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if CamInvarianceMode <> cimNone then
@@ -6404,7 +6404,7 @@ end;
 // BuildList
 //
 
-procedure TVKDirectOpenGL.BuildList(var rci: TRenderContextInfo);
+procedure TVKDirectOpenGL.BuildList(var rci: TVKRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
@@ -6481,7 +6481,7 @@ end;
 // BuildList
 //
 
-procedure TVKRenderPoint.BuildList(var rci: TRenderContextInfo);
+procedure TVKRenderPoint.BuildList(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin
@@ -6584,7 +6584,7 @@ end;
 // Render
 //
 
-procedure TVKProxyObject.DoRender(var ARci: TRenderContextInfo;
+procedure TVKProxyObject.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 var
   gotMaster, masterGotEffects, oldProxySubObject: Boolean;
@@ -6798,7 +6798,7 @@ end;
 // DoRender
 //
 
-procedure TVKLightSource.DoRender(var ARci: TRenderContextInfo;
+procedure TVKLightSource.DoRender(var ARci: TVKRenderContextInfo;
   ARenderSelf, ARenderChildren: Boolean);
 begin
   if ARenderChildren and Assigned(FChildren) then
@@ -6837,7 +6837,7 @@ end;
 // GetHandle
 //
 
-function TVKLightSource.GetHandle(var rci: TRenderContextInfo): Cardinal;
+function TVKLightSource.GetHandle(var rci: TVKRenderContextInfo): Cardinal;
 begin
   Result := 0;
 end;
@@ -9106,7 +9106,7 @@ procedure TVKSceneBuffer.RenderScene(aScene: TVKScene;
 
 var
   i: Integer;
-  rci: TRenderContextInfo;
+  rci: TVKRenderContextInfo;
   rightVector: TVector;
 begin
   FAfterRenderEffects.Clear;

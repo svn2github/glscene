@@ -1894,7 +1894,7 @@ begin
   RegisterComponents('GLScene', [TVKScene, TVKSceneViewer, TVKMemoryViewer,
     TVKMaterialLibrary, TVKMaterialLibraryEx, TVKCadencer, TVKGuiLayout,
     TVKBitmapFont, TVKWindowsBitmapFont, TVKScriptLibrary, TVKSoundLibrary,
-    TVKSMWaveOut, TVKFullScreenViewer]);
+    TVKFullScreenViewer]);
 
   RegisterComponents('GLScene PFX', [TVKCustomPFXManager, TVKPolygonPFXManager,
     TVKPointLightPFXManager, TVKCustomSpritePFXManager, TVKPerlinPFXManager,
@@ -1915,7 +1915,7 @@ begin
 
   RegisterComponents('GLScene Shaders', [TVKTexCombineShader, TVKPhongShader,
     TVKUserShader, TVKHiddenLineShader, TVKCelShader, TVKOutlineShader,
-    TVKMultiMaterialShader, TVKBumpShader, TVKSLShader,
+    TVKMultiMaterialShader, TVKBumpShader, TVKGLSLShader,
     TVKSLDiffuseSpecularShader, TVKSLBumpShader, TVKAsmShader,
     TVKShaderCombiner, TVKTextureSharingShader, TVKSLPostBlurShader]);
 

@@ -63,8 +63,8 @@ Type
 
 
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -252,7 +252,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLGlassShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLGlassShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
   // Auto Render EnvMap
   // capture and create material from framebuffer
@@ -305,7 +305,7 @@ begin
 
 end;
 
-function TVKCustomGLSLGlassShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLGlassShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   gl.Disable(GL_BLEND);
   GetGLSLProg.EndUseProgramObject;

@@ -51,8 +51,8 @@ type
     procedure SetShaderOne(const Value: TVKShader);
     procedure SetShaderTwo(const Value: TVKShader);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     property CombinerType: TVKShaderCombinerType read FCombinerType write FCombinerType default sctOneSPTwoAP;
@@ -94,7 +94,7 @@ begin
   FCombinerType := sctOneSPTwoAP;
 end;
 
-procedure TVKCustomShaderCombiner.DoApply(var rci: TRenderContextInfo;
+procedure TVKCustomShaderCombiner.DoApply(var rci: TVKRenderContextInfo;
   Sender: TObject);
 begin
   if (csDesigning in ComponentState) then Exit;
@@ -128,7 +128,7 @@ begin
   end;
 end;
 
-function TVKCustomShaderCombiner.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomShaderCombiner.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   case FCombinerType of
     sctOneMPTwoSP:

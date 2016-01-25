@@ -34,8 +34,8 @@ type
     procedure SetLatticeScale(const Value: TVKCoordinates2);
     procedure SetLatticeThreshold(const Value: TVKCoordinates2);
   protected
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    function DoUnApply(var rci: TVKRenderContextInfo): Boolean; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -72,8 +72,8 @@ type
     procedure SetSpecularColor(AValue: TVKColor);
 
   protected
-    procedure DoInitialize(var rci : TRenderContextInfo; Sender : TObject); override;
-    procedure DoApply(var rci : TRenderContextInfo; Sender : TObject); override;
+    procedure DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject); override;
+    procedure DoApply(var rci : TVKRenderContextInfo; Sender : TObject); override;
 
     procedure SetMaterialLibrary(const Value: TVKAbstractMaterialLibrary); virtual;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -153,14 +153,14 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLSimpleLatticeShader.DoApply(var rci: TRenderContextInfo;Sender: TObject);
+procedure TVKCustomGLSLSimpleLatticeShader.DoApply(var rci: TVKRenderContextInfo;Sender: TObject);
 begin
   GetGLSLProg.UseProgramObject;
   Param['Scale'].AsVector2f := FLatticeScale.AsPoint2D;
   Param['Threshold'].AsVector2f := FLatticeThreshold.AsPoint2D;
 end;
 
-function TVKCustomGLSLSimpleLatticeShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function TVKCustomGLSLSimpleLatticeShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   Result := False;
   //gl.ActiveTexture(GL_TEXTURE0_ARB);
@@ -207,7 +207,7 @@ begin
   inherited;
 end;
 
-procedure TVKCustomGLSLLatticeShader.DoApply(var rci: TRenderContextInfo; Sender: TObject);
+procedure TVKCustomGLSLLatticeShader.DoApply(var rci: TVKRenderContextInfo; Sender: TObject);
 begin
 
   inherited;
@@ -223,7 +223,7 @@ begin
 
 end;
 
-procedure TVKCustomGLSLLatticeShader.DoInitialize(var rci : TRenderContextInfo; Sender : TObject);
+procedure TVKCustomGLSLLatticeShader.DoInitialize(var rci : TVKRenderContextInfo; Sender : TObject);
 begin
   with VertexProgram.Code do
   begin

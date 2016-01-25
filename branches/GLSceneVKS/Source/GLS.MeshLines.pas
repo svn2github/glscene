@@ -147,7 +147,7 @@ type
     procedure AddVertices(Up, Inner, Outer: TAffineVector; S: Single; Correction: Single; UseDegenerate: Boolean; LineItem: TLineItem);
     procedure BuildLineItem(LineItem: TLineItem);
     procedure BuildGeometry;
-    procedure DrawNode(var rci : TRenderContextInfo; Node: TLineNode; LineWidth: Single);
+    procedure DrawNode(var rci : TVKRenderContextInfo; Node: TLineNode; LineWidth: Single);
     procedure DrawCircle(Radius: Single);
     function SelectNode(LineItem: TLineItem; X,Z: Single):TLineNode;
   protected
@@ -161,8 +161,8 @@ type
     function SelectLineItem(LineNode: TLineNode): TLineItem; overload;
     procedure DeselectLineItem;
     procedure DeselectLineNode;
-    procedure BuildList(var rci : TRenderContextInfo); override;
-    procedure DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean); override;
+    procedure BuildList(var rci : TVKRenderContextInfo); override;
+    procedure DoRender(var rci : TVKRenderContextInfo; renderSelf, renderChildren : Boolean); override;
     procedure NotifyChange(Sender : TObject); override;
     property SelectedLineItem: TLineItem read FSelectedLineItem;
     property SelectedNode: TLineNode read FSelectedNode;
@@ -448,7 +448,7 @@ begin
   StructureChanged;
 end;
 
-procedure TVKMeshLines.BuildList(var rci : TRenderContextInfo);
+procedure TVKMeshLines.BuildList(var rci : TVKRenderContextInfo);
 var
   i,j: Integer;
 begin
@@ -466,7 +466,7 @@ begin
   end;
 end;
 
-procedure TVKMeshLines.DoRender(var rci : TRenderContextInfo; renderSelf, renderChildren : Boolean);
+procedure TVKMeshLines.DoRender(var rci : TVKRenderContextInfo; renderSelf, renderChildren : Boolean);
 begin
   if FNoZWrite then
   begin
@@ -571,7 +571,7 @@ begin
     end;
 end;
 
-procedure TVKMeshLines.DrawNode(var rci : TRenderContextInfo; Node: TLineNode; LineWidth: Single);
+procedure TVKMeshLines.DrawNode(var rci : TVKRenderContextInfo; Node: TLineNode; LineWidth: Single);
 var
   lNodeSize: Single;
 begin

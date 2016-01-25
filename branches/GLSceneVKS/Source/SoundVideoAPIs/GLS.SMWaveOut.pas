@@ -15,7 +15,8 @@ interface
 uses 
   System.Classes, System.SysUtils,
   {$IFDEF MSWINDOWS}Winapi.MMSystem,{$ENDIF} 
-  GLS.Sound, GLSoundFileObjects;
+  GLS.Sound, 
+  GLS.SoundFileObjects;
 
 type
 

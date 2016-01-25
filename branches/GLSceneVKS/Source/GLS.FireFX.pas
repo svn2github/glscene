@@ -183,7 +183,7 @@ type
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
 
-    procedure Render(var rci: TRenderContextInfo); override;
+    procedure Render(var rci: TVKRenderContextInfo); override;
 
   published
     { Published Declarations }
@@ -748,7 +748,7 @@ end;
 // Render
 //
 
-procedure TVKBFireFX.Render(var rci: TRenderContextInfo);
+procedure TVKBFireFX.Render(var rci: TVKRenderContextInfo);
 var
   n: Integer;
   i: Integer;

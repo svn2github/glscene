@@ -86,7 +86,7 @@ type
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TVKRenderContextInfo); override;
     procedure Prepare; override;
     procedure Clear; override;
     { Generates a mesh approximation of the surface defined by the
@@ -160,7 +160,7 @@ type
     destructor Destroy; override;
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-    procedure BuildList(var mrci: TRenderContextInfo); override;
+    procedure BuildList(var mrci: TVKRenderContextInfo); override;
     procedure Prepare; override;
 
     property CountU: Integer read FCountU write FCountU;
@@ -273,7 +273,7 @@ end;
 // BuildList
 //
 
-procedure TMOParametricSurface.BuildList(var mrci: TRenderContextInfo);
+procedure TMOParametricSurface.BuildList(var mrci: TVKRenderContextInfo);
 var
   NurbsRenderer: PGLUNurbs;
 begin
@@ -570,7 +570,7 @@ end;
 // BuildList
 //
 
-procedure TFGBezierSurface.BuildList(var mrci: TRenderContextInfo);
+procedure TFGBezierSurface.BuildList(var mrci: TVKRenderContextInfo);
 begin
   if (FTempControlPoints.Count = 0)
     or (FTempControlPoints.Count <> FControlPointIndices.Count) then

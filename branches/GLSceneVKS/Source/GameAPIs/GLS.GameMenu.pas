@@ -74,7 +74,7 @@ type
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
-    procedure BuildList(var rci: TRenderContextInfo); override;
+    procedure BuildList(var rci: TVKRenderContextInfo); override;
 
     property Enabled[AIndex: Integer]: Boolean read GetEnabled write SetEnabled;
     property SelectedText: string read GetSelectedText;
@@ -197,7 +197,7 @@ end;
 // BuildList
 //
 
-procedure TVKGameMenu.BuildList(var rci: TRenderContextInfo);
+procedure TVKGameMenu.BuildList(var rci: TVKRenderContextInfo);
 var
   canvas: TVKCanvas;
   buffer: TVKSceneBuffer;

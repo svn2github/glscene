@@ -140,7 +140,7 @@ type
     procedure AddEdgesAsSolidEdges(const VerletWorld : TVKVerletWorld);
     procedure AddOuterEdgesAsSolidEdges(const VerletWorld : TVKVerletWorld);
 
-    procedure RenderEdges(var rci : TRenderContextInfo);
+    procedure RenderEdges(var rci : TVKRenderContextInfo);
 
     property CurrentNodeOffset : integer read FCurrentNodeOffset;
     property NodesAdded : boolean read FNodesAdded;
@@ -559,7 +559,7 @@ begin
   end;
 end;
 
-procedure TEdgeDetector.RenderEdges(var rci: TRenderContextInfo);
+procedure TEdgeDetector.RenderEdges(var rci: TVKRenderContextInfo);
 var
   i : integer;
   Edge : TEdge;

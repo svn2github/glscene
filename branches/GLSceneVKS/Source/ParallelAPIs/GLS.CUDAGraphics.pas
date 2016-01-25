@@ -97,7 +97,7 @@ type
     FPrimitiveType: TFeedBackMeshPrimitive;
     FVertexNumber: Integer;
     FElementNumber: Integer;
-    FShader: TVKSLShader;
+    FShader: TVKGLSLShader;
     FCommonFunc: TCUDAFunction;
     FLaunching: TFeedBackMeshLaunching;
     FBlend: Boolean;
@@ -105,7 +105,7 @@ type
     procedure SetPrimitiveType(AValue: TFeedBackMeshPrimitive);
     procedure SetVertexNumber(AValue: Integer);
     procedure SetElementNumber(AValue: Integer);
-    procedure SetShader(AShader: TVKSLShader);
+    procedure SetShader(AShader: TVKGLSLShader);
     procedure SetCommonFunc(AFunc: TCUDAFunction);
   protected
     { Protected Declarations }
@@ -118,7 +118,7 @@ type
     { Protected Declarations }
     property Attributes: TVKVertexAttributes read FAttributes write SetAttributes;
     { GLSL shader as material. If it absent or disabled - nothing be drawen. }
-    property Shader: TVKSLShader read FShader write SetShader;
+    property Shader: TVKGLSLShader read FShader write SetShader;
     { Primitive type. }
     property PrimitiveType: TFeedBackMeshPrimitive read FPrimitiveType
       write SetPrimitiveType default fbmpPoint;
@@ -147,7 +147,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    procedure DoRender(var ARci: TRenderContextInfo;
+    procedure DoRender(var ARci: TVKRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
     property ArrayBufferHandle: TVKVBOArrayBufferHandle read FVBO;
     property ElementArrayHandle: TVKVBOElementArrayHandle read FEBO;
@@ -1064,7 +1064,7 @@ end;
 //    IR.UnMapResources;
 //  end;
 
-procedure TVKCustomFeedBackMesh.DoRender(var ARci: TRenderContextInfo; ARenderSelf,
+procedure TVKCustomFeedBackMesh.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 const
   cPrimitives: array[TFeedBackMeshPrimitive] of TGLenum =
@@ -1193,7 +1193,7 @@ begin
   FPrimitiveType := AValue;
 end;
 
-procedure TVKCustomFeedBackMesh.SetShader(AShader: TVKSLShader);
+procedure TVKCustomFeedBackMesh.SetShader(AShader: TVKGLSLShader);
 begin
   if AShader <> FShader then
   begin

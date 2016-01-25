@@ -89,7 +89,7 @@ type
     destructor Destroy; override;
 
     // Main rendering procedure.
-    procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
+    procedure DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean); override;
     // Used to determine extents.
     function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
@@ -162,7 +162,7 @@ begin
 end;
 
 
-procedure TVKCustomAtmosphere.DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean);
+procedure TVKCustomAtmosphere.DoRender(var rci: TVKRenderContextInfo; renderSelf, renderChildren: Boolean);
 var
   radius, invAtmosphereHeight:    Single;
   sunPos, eyePos, lightingVector: TVector;
