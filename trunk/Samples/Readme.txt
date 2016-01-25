@@ -1,18 +1,15 @@
-Samples/Demos for using GLScene with Delphi, C++Builder and Lazarus
+Samples/Demos of GLSceneVCL using with Delphi, C++Builder and Lazarus
 
 For all this demos it supposed that  
-- example projects are in ..\GLScene\Samples directory;
-- media files are in ..\GLScene\Samples\media;
-- CPP header files are in ..\GLScene\Source\include;
-- CPP lib files are in ..\GLScene\Source\lib.
+- sample projects are in ..\GLSceneVCL\Samples\ directory;
+- media files are in ..\GLSceneVCL\Samples\media\;
+- CPP header files are in $(BDSCOMMONDIR)\hpp\$(Platform)
+- CPP lib files are in $(BDSCOMMONDIR)\Dcp
 
-Please, for your own C++ projects, edit the options and correct the include and lib paths 
-according to your configuration.
+Additional Dynamic libraries, dll with Setup.bat are in the folder ..\GLSceneVCL\external\
 
-Additional Dynamic libraries, dll with Setup.bat are in ..\GLScene\Source\external directory
-
-All the files are released under Mozilla PL (MPL).
-GLScene is an open-source graphic library.
+All demos are released under Mozilla PL (MPL).
+GLScene is an open-source graphic engine.
 
 http://glscene.org
 http://sourceforge.net/projects/glscene
