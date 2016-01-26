@@ -48,7 +48,6 @@ Source: "D:\Library\GLSceneVCL\Samples\*"; DestDir: "{app}\Samples"; Flags: recu
 Source: "D:\Library\GLSceneVCL\Source\*"; DestDir: "{app}\Source"; Flags: recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Utilities\*"; DestDir: "{app}\Utilities"; Flags: recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\_Installation\*"; DestDir: "{app}\_Installation"; Flags: ignoreversion recursesubdirs createallsubdirs
-
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
@@ -57,6 +56,20 @@ Root: HKLM; Subkey: "Software\GLScene\GLSceneVCL"; Flags: uninsdeletekey
 ;{reg:HKLM\Software\GLScene\GLSceneVCL,C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVCL_DesignTime.bpl|GLSceneVCL OpenGL 3D library} 
 ;Root: HKLM; Subkey: "Software\Company\Program\Settings"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
 ;Root: HKLM; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages";"REG_SZ"; C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVCL_DesignTime.bpl;                      GLSceneVCL OpenGL 3D library
+
+[Code]
+function IsRegularUser(): Boolean;
+begin
+  Result := not (IsAdminLoggedOn or IsPowerUserLoggedOn)
+end;
+ 
+function GetDefRoot(Param: String): String;
+begin
+  if IsRegularUser then
+    Result := ExpandConstant('{localappdata}')
+  else
+    Result := ExpandConstant('{pf}')
+end;
 
 [Run]
 Filename: "{app}\SetupDLLs.bat"
