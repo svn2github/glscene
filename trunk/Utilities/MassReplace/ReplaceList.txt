@@ -103,3 +103,4 @@ TVectorFile>>>TGLVectorFile
 TVectorFileFormat>>>TGLVectorFileFormat
 TVertexList>>>TGLVertexList
 TXCollectionItem>>>TGLXCollectionItem
+TRenderContextInfo>>TGLRenderContextInfo
