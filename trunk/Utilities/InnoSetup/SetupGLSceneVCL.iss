@@ -23,7 +23,6 @@ AppUpdatesURL={#GLSceneURL}
 DefaultDirName=D:\GLScene\{#GLSceneName}
 DefaultGroupName={#GLSceneName}
 DisableProgramGroupPage=yes
-LicenseFile=D:\Library\GLSceneVCL\Docs\License.txt
 InfoBeforeFile=D:\Library\GLSceneVCL\Docs\Introduction.txt
 InfoAfterFile=D:\Library\GLSceneVCL\Samples\Readme.txt
 OutputBaseFilename=SetupGLSceneVCL
@@ -32,9 +31,9 @@ Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "french"; MessagesFile: "compiler:Languages\French.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "D:\Library\GLSceneVCL\Docs\License.txt"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"; 
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "D:\Library\GLSceneVCL\Docs\License_rus.txt"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
