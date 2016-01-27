@@ -31,23 +31,23 @@ Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "D:\Library\GLSceneVCL\Docs\License.txt"
+Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "D:\Library\GLSceneVCL\Locale\en\License.txt"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"; 
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "D:\Library\GLSceneVCL\Docs\License_rus.txt"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "D:\Library\GLSceneVCL\Locale\ru\License.txt"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Files]
-Source: "D:\Library\GLSceneVCL\CleanForRelease.bat"; DestDir: "{app}"; 
-Source: "D:\Library\GLSceneVCL\external\*"; DestDir: "{app}\external"; 
-Source: "D:\Library\GLSceneVCL\Docs\*"; DestDir: "{app}\Docs"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Help\*"; DestDir: "{app}\Help"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Locale\*"; DestDir: "{app}\Locale"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Packages\*"; DestDir: "{app}\Packages"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Resources\*"; DestDir: "{app}\Resources"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Samples\*"; DestDir: "{app}\Samples"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Source\*"; DestDir: "{app}\Source"; Flags: recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Utilities\*"; DestDir: "{app}\Utilities"; Flags: recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\Library\GLSceneVCL\external\*"; DestDir: "{app}\external"; Flags: ignoreversion
+Source: "D:\Library\GLSceneVCL\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Help\*"; DestDir: "{app}\Help"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Locale\*"; DestDir: "{app}\Locale"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Packages\*"; DestDir: "{app}\Packages"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Resources\*"; DestDir: "{app}\Resources"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Samples\*"; DestDir: "{app}\Samples"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Source\*"; DestDir: "{app}\Source"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\Library\GLSceneVCL\Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\_Installation\*"; DestDir: "{app}\_Installation"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
