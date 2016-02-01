@@ -1,5 +1,7 @@
 GLScene for VCL v.1.4
+
 -------------------------------------------------------
+
 GLScene is an OpenGL based 3D library for Delphi, C++Builder and Lazarus. 
 It provides visual components and objects allowing description and rendering of 3D scenes in an easy, 
 no-hassle, yet powerfull manner.
@@ -14,7 +16,9 @@ at the expense of CPU horsepower. Advanced demos and samples can be found in the
 at http://sourceforge/projects/glscene/
 The GLScene Sound System allows positional 3D audio via low-level APIs like 
 FMOD, BASS, OpenAL and WaveOut.
+
 ---------------------------------------------------------
+
 To Install GLScene follow the instruction in installation directory. 
 To compile GLScene, after having installed all the necessary units and updated your environment library paths 
 (and after making sure you have no duplicates or leftover units from other/older packages), 
@@ -33,6 +37,7 @@ The option DEFINE GLS_Graphics32_SUPPORT  controls support and dependency to Ale
 assignments from TBitmap32.
 
 See http://www.sourceforge.net/projects/glscene for more details.
+
 --------------------------------------------------------------
 
-GLScene, Copyright (c) 2000-2016, GLSTeam
+GLSTeam

@@ -1,6 +1,5 @@
-GLScene for VCL
-Developers and Contributors
-
+GLScene Development Team
+Developers and contributors
 ===========================
  
 Aaron Hochwimmer,
