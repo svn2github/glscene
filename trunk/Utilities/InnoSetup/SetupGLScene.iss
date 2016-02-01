@@ -23,40 +23,39 @@ AppUpdatesURL={#GLSceneURL}
 DefaultDirName=D:\GLScene\{#GLSceneName}
 DefaultGroupName={#GLSceneName}
 DisableProgramGroupPage=yes
-InfoBeforeFile=D:\Library\GLSceneVCL\Docs\Introduction.txt
+InfoBeforeFile=D:\Library\GLSceneVCL\Help\en\Introduction.txt
 InfoAfterFile=D:\Library\GLSceneVCL\Samples\Readme.txt
-OutputBaseFilename=SetupGLSceneVCL
+OutputBaseFilename=SetupGLScene
 SetupIconFile=D:\Library\GLSceneVCL\Samples\media\gls.ico
 Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "D:\Library\GLSceneVCL\Locale\en\License.txt"
+Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "D:\Library\GLSceneVCL\Help\en\License.txt"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"; 
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "D:\Library\GLSceneVCL\Locale\ru\License.txt"
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "D:\Library\GLSceneVCL\Help\ru\License.txt"
 Name: "german"; MessagesFile: "compiler:Languages\German.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Files]
 Source: "D:\Library\GLSceneVCL\CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\Library\GLSceneVCL\external\*"; DestDir: "{app}\external"; Flags: ignoreversion
-Source: "D:\Library\GLSceneVCL\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Help\*"; DestDir: "{app}\Help"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\Locale\*"; DestDir: "{app}\Locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Packages\*"; DestDir: "{app}\Packages"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Resources\*"; DestDir: "{app}\Resources"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Samples\*"; DestDir: "{app}\Samples"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Source\*"; DestDir: "{app}\Source"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\Library\GLSceneVCL\Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\Library\GLSceneVCL\_Installation\*"; DestDir: "{app}\_Installation"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
 Root: HKLM; Subkey: "Software\GLScene\GLSceneVCL"; Flags: uninsdeletekey
 ;{reg:HKxx\SubkeyName,ValueName|DefaultValue} 
-;{reg:HKLM\Software\GLScene\GLSceneVCL,C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVCL_DesignTime.bpl|GLSceneVCL OpenGL 3D library} 
+
 ;Root: HKLM; Subkey: "Software\Company\Program\Settings"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
-;Root: HKLM; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages";"REG_SZ"; C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVCL_DesignTime.bpl;                      GLSceneVCL OpenGL 3D library
+;Root: HKLM; Subkey: "Software\Embarcadero\BDS\15.0\Known Packages";"REG_SZ"; C:\Users\Public\Documents\Embarcadero\Studio\15.0\Bpl\GLSceneVCL_DesignTime.bpl; ValueData: "{app}"
+;Root: HKLM; Subkey: "Software\Embarcadero\BDS\16.0\Known Packages";"REG_SZ"; C:\Users\Public\Documents\Embarcadero\Studio\16.0\Bpl\GLSceneVCL_DesignTime.bpl; ValueData: "{app}"
+;Root: HKLM; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages";"REG_SZ"; C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVCL_DesignTime.bpl; ValueData: "{app}"
 
 [Code]
 function IsRegularUser(): Boolean;
