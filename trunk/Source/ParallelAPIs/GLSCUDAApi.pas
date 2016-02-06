@@ -57,7 +57,7 @@ interface
 uses
 {$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF}
   GLCrossPlatform,
-  GLSCLPlatform,
+  CL_Platform,
   GLSLog;
 
 const
@@ -434,11 +434,11 @@ type
   *)
 
   TcudaFuncAttributes = record
-    sharedSizeBytes: TSize_t;
+    sharedSizeBytes: Tsize_t;
     /// < Size of shared memory in bytes
-    constSizeBytes: TSize_t;
+    constSizeBytes: Tsize_t;
     /// < Size of constant memory in bytes
-    localSizeBytes: TSize_t;
+    localSizeBytes: Tsize_t;
     /// < Size of local memory in bytes
     maxThreadsPerBlock: Integer;
     /// < Maximum number of threads per block
@@ -771,7 +771,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceTotalMem = function(bytes: PSize_t; dev: TCUdevice): TCUresult;
+  TcuDeviceTotalMem = function(bytes: Psize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -780,7 +780,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetAttribute = function(pi: PSize_t; attrib: TCUdevice_attribute;
+  TcuDeviceGetAttribute = function(pi: Psize_t; attrib: TCUdevice_attribute;
     dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
@@ -1757,7 +1757,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceTotalMemShell(bytes: PSize_t; dev: TCUdevice): TCUresult;
+function cuDeviceTotalMemShell(bytes: Psize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -1780,7 +1780,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetAttributeShell(pi: PSize_t; attrib: TCUdevice_attribute;
+function cuDeviceGetAttributeShell(pi: Psize_t; attrib: TCUdevice_attribute;
   dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;

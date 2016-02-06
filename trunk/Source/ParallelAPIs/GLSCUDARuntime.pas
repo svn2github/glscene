@@ -54,10 +54,10 @@ interface
 
 uses
 {$IFDEF MSWINDOWS}
-  Windows,
+  Winapi.Windows,
 {$ENDIF}
   GLCrossPlatform,
-  GLSCLPlatform,
+  CL_Platform,
   GLSCUDAApi,
   OpenGLTokens,
   GLSLog;
@@ -227,23 +227,23 @@ type
   { +//DEVICE_BUILTIN*/ }
   TcudaPitchedPtr = record
     ptr: Pointer;
-    pitch: TSize_t;
-    xsize: TSize_t;
-    ysize: TSize_t;
+    pitch: Tsize_t;
+    xsize: Tsize_t;
+    ysize: Tsize_t;
   end { cudaPitchedPtr };
 
   { +//DEVICE_BUILTIN*/ }
   TcudaExtent = record
-    width: TSize_t;
-    height: TSize_t;
-    depth: TSize_t;
+    width: Tsize_t;
+    height: Tsize_t;
+    depth: Tsize_t;
   end { cudaExtent };
 
   { +//DEVICE_BUILTIN*/ }
   TcudaPos = record
-    x: TSize_t;
-    y: TSize_t;
-    z: TSize_t;
+    x: Tsize_t;
+    y: Tsize_t;
+    z: Tsize_t;
   end { cudaPos };
 
   { +//DEVICE_BUILTIN*/ }
@@ -263,19 +263,19 @@ type
 
   TCudaDeviceProp = record
     name: array [0 .. 256 - 1] of AnsiChar;
-    totalGlobalMem: TSize_t;
-    sharedMemPerBlock: TSize_t;
+    totalGlobalMem: Tsize_t;
+    sharedMemPerBlock: Tsize_t;
     regsPerBlock: Integer;
     warpSize: Integer;
-    memPitch: TSize_t;
+    memPitch: Tsize_t;
     maxThreadsPerBlock: Integer;
     maxThreadsDim: array [0 .. 3 - 1] of Integer;
     maxGridSize: array [0 .. 3 - 1] of Integer;
     clockRate: Integer;
-    totalConstMem: TSize_t;
+    totalConstMem: Tsize_t;
     major: Integer;
     minor: Integer;
-    textureAlignment: TSize_t;
+    textureAlignment: Tsize_t;
     deviceOverlap: Integer;
     multiProcessorCount: Integer;
     // Specified whether there is a run time limit on kernels
@@ -295,7 +295,7 @@ type
     // Maximum 2D texture array dimensions
     maxTexture2DArray: array[0..2] of Integer;
     // Alignment requirements for surfaces
-    surfaceAlignment: TSize_t;
+    surfaceAlignment: Tsize_t;
      // Device can possibly execute multiple kernels concurrently
     concurrentKernels: Integer;
     // Device has ECC support enabled
@@ -347,15 +347,15 @@ type
 
 var
 
-  cudaBindTexture: function(var offset: TSize_t; const texref: PTextureReference;
-    var devPtr: Pointer; var desc: TCudaChannelFormatDesc; size: TSize_t)
+  cudaBindTexture: function(var offset: Tsize_t; const texref: PTextureReference;
+    var devPtr: Pointer; var desc: TCudaChannelFormatDesc; size: Tsize_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaBindTexture2D: function(var offset: TSize_t;
+  cudaBindTexture2D: function(var offset: Tsize_t;
     const texref: PTextureReference; const devPtr: Pointer;
-    var desc: TCudaChannelFormatDesc; width, height, pitch: TSize_t)
+    var desc: TCudaChannelFormatDesc; width, height, pitch: Tsize_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -369,7 +369,7 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGetTextureAlignmentOffset: function(offset: TSize_t;
+  cudaGetTextureAlignmentOffset: function(offset: Tsize_t;
     const texref: PTextureReference): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -420,21 +420,21 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMalloc: function(var devPtr; size: TSize_t): cudaError_t;
+  cudaMalloc: function(var devPtr; size: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMallocHost: function(var ptr: Pointer; size: TSize_t): cudaError_t;
+  cudaMallocHost: function(var ptr: Pointer; size: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMallocPitch: function(var devPtr; var pitch: TSize_t; width: TSize_t;
-    height: TSize_t): cudaError_t;
+  cudaMallocPitch: function(var devPtr; var pitch: Tsize_t; width: Tsize_t;
+    height: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaMallocArray: function(var aarray: Pointer;
-    var desc: TCudaChannelFormatDesc; width: TSize_t; height: TSize_t)
+    var desc: TCudaChannelFormatDesc; width: Tsize_t; height: Tsize_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -451,7 +451,7 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaHostAlloc: function(var pHost: Pointer; bytes: TSize_t; flags: Cardinal)
+  cudaHostAlloc: function(var pHost: Pointer; bytes: Tsize_t; flags: Cardinal)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -465,65 +465,65 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemGetInfo: function(var free: TSize_t; var total: TSize_t): cudaError_t;
+  cudaMemGetInfo: function(var free: Tsize_t; var total: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy: function(dst: Pointer; src: Pointer; count: TSize_t;
+  cudaMemcpy: function(dst: Pointer; src: Pointer; count: Tsize_t;
     kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyToArray: function(var dst: PcudaArray; wOffset: TSize_t;
-    hOffset: TSize_t; var src; count: TSize_t; kind: TcudaMemcpyKind)
+  cudaMemcpyToArray: function(var dst: PcudaArray; wOffset: Tsize_t;
+    hOffset: Tsize_t; var src; count: Tsize_t; kind: TcudaMemcpyKind)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyFromArray: function(var dst; const src: PcudaArray; wOffset: TSize_t;
-    hOffset: TSize_t; count: TSize_t; kind: TcudaMemcpyKind): cudaError_t;
+  cudaMemcpyFromArray: function(var dst; const src: PcudaArray; wOffset: Tsize_t;
+    hOffset: Tsize_t; count: Tsize_t; kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyArrayToArray: function(dst: PcudaArray; wOffsetDst: TSize_t;
-    hOffsetDst: TSize_t; const src: PcudaArray; wOffsetSrc: TSize_t;
-    hOffsetSrc: TSize_t; count: TSize_t;
+  cudaMemcpyArrayToArray: function(dst: PcudaArray; wOffsetDst: Tsize_t;
+    hOffsetDst: Tsize_t; const src: PcudaArray; wOffsetSrc: Tsize_t;
+    hOffsetSrc: Tsize_t; count: Tsize_t;
     const kind: TcudaMemcpyKind = cudaMemcpyDeviceToDevice): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2D: function(var dst; dpitch: TSize_t; var src; spitch: TSize_t;
-    width: TSize_t; height: TSize_t; kind: TcudaMemcpyKind): cudaError_t;
+  cudaMemcpy2D: function(var dst; dpitch: Tsize_t; var src; spitch: Tsize_t;
+    width: Tsize_t; height: Tsize_t; kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DToArray: function(dst: PcudaArray; wOffset: TSize_t;
-    hOffset: TSize_t; var src; spitch: TSize_t; width: TSize_t; height: TSize_t;
+  cudaMemcpy2DToArray: function(dst: PcudaArray; wOffset: Tsize_t;
+    hOffset: Tsize_t; var src; spitch: Tsize_t; width: Tsize_t; height: Tsize_t;
     kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DFromArray: function(var dst; dpitch: TSize_t; src: PcudaArray;
-    wOffset: TSize_t; hOffset: TSize_t; width: TSize_t; height: TSize_t;
+  cudaMemcpy2DFromArray: function(var dst; dpitch: Tsize_t; src: PcudaArray;
+    wOffset: Tsize_t; hOffset: Tsize_t; width: Tsize_t; height: Tsize_t;
     kind: TcudaMemcpyKind): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DArrayToArray: function(dst: PcudaArray; wOffsetDst: TSize_t;
-    hOffsetDst: TSize_t; src: PcudaArray; wOffsetSrc: TSize_t; hOffsetSrc: TSize_t;
-    width: TSize_t; height: TSize_t;
+  cudaMemcpy2DArrayToArray: function(dst: PcudaArray; wOffsetDst: Tsize_t;
+    hOffsetDst: Tsize_t; src: PcudaArray; wOffsetSrc: Tsize_t; hOffsetSrc: Tsize_t;
+    width: Tsize_t; height: Tsize_t;
     const kind: TcudaMemcpyKind = cudaMemcpyDeviceToDevice): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyToSymbol: function(symbol: PAnsiChar; var src; count: TSize_t;
-    const offset: TSize_t = 0;
+  cudaMemcpyToSymbol: function(symbol: PAnsiChar; var src; count: Tsize_t;
+    const offset: Tsize_t = 0;
     const kind: TcudaMemcpyKind = cudaMemcpyHostToDevice): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyFromSymbol: function(var dst; symbol: PAnsiChar; count: TSize_t;
-    const offset: TSize_t = 0;
+  cudaMemcpyFromSymbol: function(var dst; symbol: PAnsiChar; count: Tsize_t;
+    const offset: Tsize_t = 0;
     const kind: TcudaMemcpyKind = cudaMemcpyDeviceToHost): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -534,49 +534,49 @@ var
   { -** }
   { =***************************************************************************** }
 
-  cudaMemcpyAsync: function(var dst; const src; count: TSize_t;
+  cudaMemcpyAsync: function(var dst; const src; count: Tsize_t;
     kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpyToArrayAsync: function(dst: PcudaArray; wOffset: TSize_t;
-    hOffset: TSize_t; const src; count: TSize_t; kind: TcudaMemcpyKind;
+  cudaMemcpyToArrayAsync: function(dst: PcudaArray; wOffset: Tsize_t;
+    hOffset: Tsize_t; const src; count: Tsize_t; kind: TcudaMemcpyKind;
     stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaMemcpyFromArrayAsync: function(var dst; const src: PcudaArray;
-    wOffset: TSize_t; hOffset: TSize_t; count: TSize_t; kind: TcudaMemcpyKind;
+    wOffset: Tsize_t; hOffset: Tsize_t; count: Tsize_t; kind: TcudaMemcpyKind;
     stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DAsync: function(var dst; dpitch: TSize_t; const src;
-    spitch: TSize_t; width: TSize_t; height: TSize_t; kind: TcudaMemcpyKind;
+  cudaMemcpy2DAsync: function(var dst; dpitch: Tsize_t; const src;
+    spitch: Tsize_t; width: Tsize_t; height: Tsize_t; kind: TcudaMemcpyKind;
     stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DToArrayAsync: function(dst: PcudaArray; wOffset: TSize_t;
-    hOffset: TSize_t; const src; spitch: TSize_t; width: TSize_t; height: TSize_t;
+  cudaMemcpy2DToArrayAsync: function(dst: PcudaArray; wOffset: Tsize_t;
+    hOffset: Tsize_t; const src; spitch: Tsize_t; width: Tsize_t; height: Tsize_t;
     kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemcpy2DFromArrayAsync: function(var dst; dpitch: TSize_t;
-    const src: PcudaArray; wOffset: TSize_t; hOffset: TSize_t; width: TSize_t;
-    height: TSize_t; kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
+  cudaMemcpy2DFromArrayAsync: function(var dst; dpitch: Tsize_t;
+    const src: PcudaArray; wOffset: Tsize_t; hOffset: Tsize_t; width: Tsize_t;
+    height: Tsize_t; kind: TcudaMemcpyKind; stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaMemcpyToSymbolAsync: function(const symbol: PAnsiChar; const src;
-    count: TSize_t; offset: TSize_t; kind: TcudaMemcpyKind; stream: cudaStream_t)
+    count: Tsize_t; offset: Tsize_t; kind: TcudaMemcpyKind; stream: cudaStream_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaMemcpyFromSymbolAsync: function(var dst; const symbol: PAnsiChar;
-    count: TSize_t; offset: TSize_t; kind: TcudaMemcpyKind; stream: cudaStream_t)
+    count: Tsize_t; offset: Tsize_t; kind: TcudaMemcpyKind; stream: cudaStream_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -587,12 +587,12 @@ var
   // *                                                                            *
   // *****************************************************************************/
 
-  cudaMemset: function(var devPtr; value: Integer; count: TSize_t): cudaError_t;
+  cudaMemset: function(var devPtr; value: Integer; count: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaMemset2D: function(var devPtr; pitch: TSize_t; value: Integer;
-    width: TSize_t; height: TSize_t): cudaError_t;
+  cudaMemset2D: function(var devPtr; pitch: Tsize_t; value: Integer;
+    width: Tsize_t; height: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
@@ -607,7 +607,7 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGetSymbolSize: function(var size: TSize_t; const symbol: PAnsiChar)
+  cudaGetSymbolSize: function(var size: Tsize_t; const symbol: PAnsiChar)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -655,12 +655,12 @@ var
   { -** }
   { =*******************************************************************************/ }
 
-  cudaConfigureCall: function(gridDim, blockDim: TDim3; sharedMem: TSize_t;
+  cudaConfigureCall: function(gridDim, blockDim: TDim3; sharedMem: Tsize_t;
     stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaSetupArgument: function(const arg: Pointer; size: TSize_t; offset: TSize_t)
+  cudaSetupArgument: function(const arg: Pointer; size: Tsize_t; offset: Tsize_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
@@ -873,11 +873,11 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaThreadSetLimit: function(limit: TcudaLimit; value: TSize_t): cudaError_t;
+  cudaThreadSetLimit: function(limit: TcudaLimit; value: Tsize_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaThreadGetLimit: function(var value: TSize_t; limit: TcudaLimit)
+  cudaThreadGetLimit: function(var value: Tsize_t; limit: TcudaLimit)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;

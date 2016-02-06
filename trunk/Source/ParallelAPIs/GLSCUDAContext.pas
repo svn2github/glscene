@@ -21,10 +21,11 @@ uses
   GLBaseClasses,
   GLSCUDAApi,
   GLSCUDARunTime,
-  GLSCLPlatform,
   GLContext,
   GLSGenerics,
-  GLSLog;
+  GLSLog,
+  //OpenCL
+  CL_Platform;
 
 type
 
@@ -91,20 +92,20 @@ type
   published
     { Published declarations }
     property Name: string read GetName;
-    property TotalGlobalMem: TSize_t read fDeviceProperties.TotalGlobalMem;
-    property SharedMemPerBlock: TSize_t read fDeviceProperties.SharedMemPerBlock;
+    property TotalGlobalMem: Tsize_t read fDeviceProperties.TotalGlobalMem;
+    property SharedMemPerBlock: Tsize_t read fDeviceProperties.SharedMemPerBlock;
     property RegsPerBlock: Integer read fDeviceProperties.RegsPerBlock;
     property WarpSize: Integer read fDeviceProperties.WarpSize;
-    property MemPitch: TSize_t read fDeviceProperties.MemPitch;
+    property MemPitch: Tsize_t read fDeviceProperties.MemPitch;
     property MaxThreadsPerBlock: Integer
       read fDeviceProperties.MaxThreadsPerBlock;
     property MaxThreadsDim: TCUDADimensions read fMaxThreadsDim;
     property MaxGridSize: TCUDADimensions read fMaxGridSize;
     property ClockRate: Integer read fDeviceProperties.ClockRate;
-    property TotalConstMem: TSize_t read fDeviceProperties.TotalConstMem;
+    property TotalConstMem: Tsize_t read fDeviceProperties.TotalConstMem;
     property Major: Integer read fDeviceProperties.Major;
     property Minor: Integer read fDeviceProperties.Minor;
-    property TextureAlignment: TSize_t read fDeviceProperties.TextureAlignment;
+    property TextureAlignment: Tsize_t read fDeviceProperties.TextureAlignment;
     property DeviceOverlap: Integer read fDeviceProperties.DeviceOverlap;
     property MultiProcessorCount: Integer
       read fDeviceProperties.MultiProcessorCount;

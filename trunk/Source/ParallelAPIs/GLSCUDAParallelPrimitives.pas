@@ -5,7 +5,7 @@
    CUDA Parallel Primitives 
 
    History :
-       12/01/15 -PW - Renamed size_t to TSize_t
+       12/01/15 - PW - Renamed size_t to Tsize_t
        28/01/10 - Yar - Creation
     
 }
@@ -25,7 +25,7 @@ unit GLSCUDAParallelPrimitives;
 interface
 
 uses
-  GLSCLPlatform;
+  CL_Platform;
 
 {$I cuda.inc}
 
@@ -101,15 +101,15 @@ type
     options: TCUDPPoption; // Options to configure the algorithm
   end;
 
-  TCUDPPHandle = TSize_t;
+  TCUDPPHandle = Tsize_t;
 
   // Plan allocation (for scan, sort, and compact)
 
 function cudppPlan(var planHandle: TCUDPPHandle;
   config: TCUDPPConfiguration;
-  n: TSize_t;
-  rows: TSize_t;
-  rowPitch: TSize_t): TCUDPPResult;
+  n: Tsize_t;
+  rows: Tsize_t;
+  rowPitch: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -128,7 +128,7 @@ external CUDPPDLL;
 function cudppScan(planHandle: TCUDPPHandle;
   var d_out;
   var d_in,
-  numElements: TSize_t): TCUDPPResult;
+  numElements: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -138,8 +138,8 @@ external CUDPPDLL;
 function cudppMultiScan(planHandle: TCUDPPHandle;
   var d_out;
   var d_in;
-  numElements: TSize_t;
-  numRows: TSize_t): TCUDPPResult;
+  numElements: Tsize_t;
+  numRows: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -150,7 +150,7 @@ function cudppSegmentedScan(planHandle: TCUDPPHandle;
   var d_out;
   var d_idata;
   const d_iflags: PCardinal;
-  numElements: TSize_t): TCUDPPResult;
+  numElements: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -159,10 +159,10 @@ external CUDPPDLL;
 
 function cudppCompact(planHandle: TCUDPPHandle;
   var d_out;
-  var d_numValidElements: TSize_t;
+  var d_numValidElements: Tsize_t;
   var d_in;
   const d_isValid: PCardinal;
-  numElements: TSize_t): TCUDPPResult;
+  numElements: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -173,7 +173,7 @@ function cudppSort(planHandle: TCUDPPHandle;
   var d_keys;
   var d_values;
   keybits: Integer;
-  numElements: TSize_t): TCUDPPResult;
+  numElements: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;
@@ -184,8 +184,8 @@ external CUDPPDLL;
 
 function cudppSparseMatrix(var sparseMatrixHandle: TCUDPPHandle;
   config: TCUDPPConfiguration;
-  n: TSize_t;
-  rows: TSize_t;
+  n: Tsize_t;
+  rows: Tsize_t;
   var A;
   const h_rowIndices: PCardinal;
   const h_indices: PCardinal): TCUDPPResult;
@@ -217,7 +217,7 @@ external CUDPPDLL;
 // random number generation algorithms
 function cudppRand(planHandle: TCUDPPHandle;
   var d_out;
-  numElements: TSize_t): TCUDPPResult;
+  numElements: Tsize_t): TCUDPPResult;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}
 {$IFDEF CUDA_CDECL}cdecl;

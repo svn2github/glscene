@@ -201,7 +201,7 @@ var
   vCustomColliderClass: TdGeomClass;
   vCustomColliderClassNum: Integer;
 
-  // GetODEHeightField
+  // GetGLODEHeightField
   //
 
 function GetGLODEHeightField(obj: TGLBaseSceneObject): TGLODEHeightField;

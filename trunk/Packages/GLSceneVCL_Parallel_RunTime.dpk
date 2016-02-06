@@ -37,9 +37,8 @@ requires
   GLSceneVCL_RunTime;
 
 contains
-  GLSCLPlatform in '..\Source\ParallelAPIs\GLSCLPlatform.pas',
-  GLSCL in '..\Source\ParallelAPIs\GLSCL.pas',
-  GLSCLGL in '..\Source\ParallelAPIs\GLSCLGL.pas',
+  CL in '..\Source\ParallelAPIs\CL.pas',
+  CL_GL in '..\Source\ParallelAPIs\CL_GL.pas',
   GLSCUDAApi in '..\Source\ParallelAPIs\GLSCUDAApi.pas',
   GLSCUDARuntime in '..\Source\ParallelAPIs\GLSCUDARuntime.pas',
   GLSCUDAFourierTransform in '..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas',
@@ -51,7 +50,8 @@ contains
   GLSCUDAGraphics in '..\Source\ParallelAPIs\GLSCUDAGraphics.pas',
   GLSCUDAParser in '..\Source\ParallelAPIs\GLSCUDAParser.pas',
   GLSCUDADataAccess in '..\Source\ParallelAPIs\GLSCUDADataAccess.pas',
-  GLSCUDAParallelPrimitives in '..\Source\ParallelAPIs\GLSCUDAParallelPrimitives.pas';
+  GLSCUDAParallelPrimitives in '..\Source\ParallelAPIs\GLSCUDAParallelPrimitives.pas',
+  CL_Platform in '..\Source\ParallelAPIs\CL_Platform.pas';
 
 end.
 

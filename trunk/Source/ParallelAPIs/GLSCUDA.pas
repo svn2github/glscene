@@ -24,13 +24,14 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
   // GLS
   GLPersistentClasses,  GLBaseClasses,  GLCrossPlatform,  GLContext,
   GLVectorGeometry,  GLVectorTypes,  GLVectorLists,  GLGraphics,
-  GLSCLPlatform,  GLSCUDAApi,  GLSCUDARunTime,  GLSCUDAParser,
+  GLSCUDAApi,  GLSCUDARunTime,  GLSCUDAParser,
   GLSCUDAFourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
-  GLSCUDADataAccess,  GLStrings,  GLUtils, GLSLog;
+  GLSCUDADataAccess,  GLStrings,  GLUtils, GLSLog,
+  //OpenCL
+  CL_Platform;
 
 type
 
@@ -1628,7 +1629,7 @@ end;
 
 procedure TCUDAFunction.SetSharedMemorySize(Value: Integer);
 var
-  MemPerBlock: TSize_t;
+  MemPerBlock: Tsize_t;
 begin
   Context.Requires;
   MemPerBlock := TGLSCUDA(TCUDAModule(FMaster).FMaster)
