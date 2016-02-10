@@ -1,5 +1,6 @@
-The directory for GLScene's help manuals and po files with translations of captions, text strings and hints 
-from English to other languages using GNU Gettext tools for Delphi, C++ and Lazarus.
+The directory for GLScene's system help, user guide, and po files with translations 
+of captions, text strings and hints from English to other languages 
+using GNU Gettext tools for Delphi, C++ and Lazarus.
 
 ----------------------------------------------------------------------------------------
 

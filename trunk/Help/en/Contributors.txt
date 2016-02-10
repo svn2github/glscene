@@ -1,5 +1,6 @@
 GLScene Development Team
 Developers and contributors
+
 ===========================
  
 Aaron Hochwimmer,
@@ -56,4 +57,4 @@ Stuart Gooding,
 Uwe Raabe,
 YarUnderoaker,
 Zsolt Laky
- 
+
