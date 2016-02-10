@@ -1,4 +1,4 @@
-GLScene for VCL v.1.5
+GLScene 1.4
 
 ===========================================
 
@@ -51,4 +51,4 @@ See http://www.sourceforge.net/projects/glscene for more details.
 
 ________________________________________
 
-Copyright 2000-2016 by GLS Team
+Copyright 2000-2016 by GLSTeam
