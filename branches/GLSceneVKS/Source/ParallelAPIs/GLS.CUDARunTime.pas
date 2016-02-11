@@ -48,7 +48,7 @@ uses
   Winapi.Windows,
 {$ENDIF}
   GLS.CrossPlatform,
-  GLS.CLPlatform,
+  GLS.CL_Platform,
   GLS.CUDAAPI,
   GLS.OpenGLTokens,
   GLS.Log;

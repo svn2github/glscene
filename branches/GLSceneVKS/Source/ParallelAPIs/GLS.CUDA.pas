@@ -15,7 +15,7 @@ uses
 
   GLS.PersistentClasses, GLS.BaseClasses, GLS.CrossPlatform, GLS.Context,
   GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists, GLS.Graphics,
-  GLS.CLPlatform, GLS.CUDAApi, GLS.CUDARuntime, GLS.CUDAParser,
+  GLS.CL_Platform, GLS.CUDAApi, GLS.CUDARuntime, GLS.CUDAParser,
   GLS.CUDAFourierTransform, GLS.CUDACompiler, GLS.CUDAContext,
   GLS.CUDADataAccess, GLS.Strings, GLS.Utils, GLS.Log;
 
@@ -950,7 +950,7 @@ begin
         [Self.ClassName]);
   end
   else
-    GLSLogger.LogErrorFmt(glsFailedOpenFile, [AFilename]);
+    GLSLogger.LogErrorFmt(vksFailedOpenFile, [AFilename]);
 end;
 
 // LoadFromSource
@@ -2028,7 +2028,7 @@ begin
         ctUInt16, ctInt16, ctHalfFloat:
           FStatus := cuMemsetD16(Ptr, Word(Value), DataSize div SizeOf(Word));
         ctUInt32, ctInt32, ctFloat:
-          FStatus := cuMemsetD32(Ptr, DWord(Value), DataSize div SizeOf(DWord));
+          FStatus := cuMemsetD32(Ptr, Word(Value), DataSize div SizeOf(Word));
       end;
     end
     // 2D memory set
@@ -2042,7 +2042,7 @@ begin
           FStatus := cuMemsetD2D16(Ptr, fPitch, Word(Value), RowSize,
             fHeight);
         ctUInt32, ctInt32, ctFloat:
-          FStatus := cuMemsetD2D32(Ptr, fPitch, DWord(Value),
+          FStatus := cuMemsetD2D32(Ptr, fPitch, Word(Value),
             RowSize, fHeight);
       end;
     end;

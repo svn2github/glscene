@@ -4,10 +4,14 @@
 { 
   Conversion of OpenCL header file: cl_platform.h to Delphi,
   from http://www.khronos.org/registry/cl/. 
-   
+
+  History :
+     05/02/16 - PW - Updated from OpenCL 1.1 to 2.1
+     01/11/09 - DanB - Creation
+
 }
 // *****************************************************************************
-// * Copyright (c) 2008-2009 The Khronos Group Inc.
+// * Copyright (c) 2008-2013 The Khronos Group Inc.
 // *
 // * Permission is hereby granted, free of charge, to any person obtaining a
 // * copy of this software and/or associated documentation files (the
@@ -29,15 +33,15 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // ****************************************************************************/
 
-unit GLS.CLPlatform;
+unit GLS.CL_Platform;
 
 interface
 
 {$I GLScene.inc}
 
 type
-  TSize_T = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^TSize_T;
+  Tsize_t = NativeUInt; // 32 or 64 bit unsigned integer
+  Psize_t = ^Tsize_t;
   intptr_t = NativeUInt;
   // Pintptr_t = ^intptr_t;
 
@@ -51,7 +55,7 @@ type
   Tcl_long = Int64;
   Tcl_ulong = UInt64;
 
-  Tcl_half = Word; // hmmm, no half precision floating point in Delphi
+  Tcl_half = Word;
   Tcl_float = Single;
   Tcl_double = Double;
 

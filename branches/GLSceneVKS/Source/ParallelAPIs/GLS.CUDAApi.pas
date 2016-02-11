@@ -45,7 +45,7 @@ interface
 uses
 {$IFDEF MSWINDOWS}Windows,{$ENDIF}
   GLS.CrossPlatform,
-  GLS.CLPlatform,
+  GLS.CL_Platform,
   GLS.Log;
 
 const

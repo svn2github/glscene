@@ -14,7 +14,7 @@ uses
   GLS.BaseClasses,
   GLS.CUDAAPI,
   GLS.CUDARunTime,
-  GLS.CLPlatform,
+  GLS.CL_Platform,
   GLS.Context,
   GLS.Generics,
   GLS.Log;

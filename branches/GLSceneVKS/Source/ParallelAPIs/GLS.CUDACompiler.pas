@@ -1,10 +1,10 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  Component allows to compile the CUDA-source (*.cu) file. 
-  in design- and runtime. 
-  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++. 
+  Component allows to compile the CUDA-source (*.cu) file.
+  in design- and runtime.
+  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.
 }
 unit GLS.CUDACompiler;
 
@@ -13,7 +13,8 @@ interface
 {$I cuda.inc}
 
 uses
-  System.Classes,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, System.UITypes,
   FMX.Forms, FMX.Dialogs,
 
   GLS.CUDAParser, GLS.ApplicationFileIO, GLS.Log;
@@ -129,8 +130,6 @@ var
 implementation
 
 uses
-{$IFDEF MSWINDOWS}Winapi.Windows, {$ENDIF}
-  System.SysUtils,
   ShellAPI,
   TlHelp32;
 
@@ -258,7 +257,7 @@ begin
   if not FileExists(FSourceCodeFile) then
   begin
     if csDesigning in ComponentState then
-      MessageDlg(cudasSourceFileNotFound, mtError, [mbOk], 0)
+      MessageDlg(cudasSourceFileNotFound, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
     else
       GLSLogger.LogError(cudasSourceFileNotFound);
     exit(false);
@@ -380,7 +379,7 @@ begin
       else
       begin
         if csDesigning in ComponentState then
-          MessageDlg(cudasFailRunNVCC, mtError, [mbOk], 0)
+          MessageDlg(cudasFailRunNVCC, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogError(cudasFailRunNVCC);
       end;
@@ -393,12 +392,12 @@ begin
 
         if csDesigning in ComponentState then
           FProduct.OnChange(Self);
-        SysUtils.DeleteFile(pathfile);
+        DeleteFile(pathfile);
         Result := true;
         FConsoleContent := string(StrPas(Buffer));
         msg := Format(cudasSuccessCompilation, [FConsoleContent]);
         if csDesigning in ComponentState then
-          MessageDlg(msg, mtInformation, [mbOk], 0)
+          MessageDlg(msg, TMsgDlgType.mtInformation, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogInfo(msg);
       end
@@ -406,7 +405,7 @@ begin
       begin
         msg := Format(cudasFailCompilation, [StrPas(Buffer)]);
         if csDesigning in ComponentState then
-          MessageDlg(msg, mtError, [mbOk], 0)
+          MessageDlg(msg, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogError(msg);
       end;
@@ -419,13 +418,13 @@ begin
     else
     begin
       if csDesigning in ComponentState then
-        MessageDlg(cudasFailCreatePipe, mtError, [mbOk], 0)
+        MessageDlg(cudasFailCreatePipe, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
       else
         GLSLogger.LogError(cudasFailCreatePipe);
     end;
 
     pathfile := tempFile + '.cu';
-    SysUtils.DeleteFile(pathfile);
+    DeleteFile(pathfile);
   end;
   CodeSource.Free;
 end;

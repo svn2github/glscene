@@ -1,4 +1,4 @@
-GLSceneVKS v.0.1 alpha
+GLScene VKS v.0.1 alpha
 Vulkan Solution for Delphi, C++Builder, Lazarus and Typhon
 
 ==========================================================

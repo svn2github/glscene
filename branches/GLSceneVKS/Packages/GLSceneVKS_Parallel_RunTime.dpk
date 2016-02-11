@@ -35,9 +35,7 @@ requires
   GLSceneVKS_RunTime;
 
 contains
-  GLS.CLPlatform in '..\Source\ParallelAPIs\GLS.CLPlatform.pas',
   GLS.CL in '..\Source\ParallelAPIs\GLS.CL.pas',
-  GLS.CLGL in '..\Source\ParallelAPIs\GLS.CLGL.pas',
   GLS.CUDAApi in '..\Source\ParallelAPIs\GLS.CUDAApi.pas',
   GLS.CUDARunTime in '..\Source\ParallelAPIs\GLS.CUDARunTime.pas',
   GLS.CUDAFourierTransform in '..\Source\ParallelAPIs\GLS.CUDAFourierTransform.pas',
@@ -48,7 +46,8 @@ contains
   GLS.CUDAFFTPlan in '..\Source\ParallelAPIs\GLS.CUDAFFTPlan.pas',
   GLS.CUDAGraphics in '..\Source\ParallelAPIs\GLS.CUDAGraphics.pas',
   GLS.CUDAParser in '..\Source\ParallelAPIs\GLS.CUDAParser.pas',
-  GLS.FilePGM in '..\Source\ParallelAPIs\GLS.FilePGM.pas',
-  GLS.CUDADataAccess in '..\Source\ParallelAPIs\GLS.CUDADataAccess.pas';
+  GLS.CUDADataAccess in '..\Source\ParallelAPIs\GLS.CUDADataAccess.pas',
+  GLS.CL_GL in '..\Source\ParallelAPIs\GLS.CL_GL.pas',
+  GLS.CL_Platform in '..\Source\ParallelAPIs\GLS.CL_Platform.pas';
 
 end.

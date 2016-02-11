@@ -13,7 +13,8 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects,
 
-  GLS.PlugInIntf, GLS.PlugInManager, FMX.Memo;
+  GLS.PlugInIntf, GLS.PlugInManager, FMX.Memo, FMX.ScrollBox,
+  FMX.Controls.Presentation;
 
 type
   TVKPlugInManagerEditor = class(TForm)

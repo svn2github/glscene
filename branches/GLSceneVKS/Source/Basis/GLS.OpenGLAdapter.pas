@@ -1,9 +1,6 @@
 //
 // GLScene on Vulkan, http://glscene.sourceforge.net 
 //
-{
-      
-}
 
 unit GLS.OpenGLAdapter;
 

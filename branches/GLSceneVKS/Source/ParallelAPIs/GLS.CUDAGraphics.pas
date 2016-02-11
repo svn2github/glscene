@@ -20,8 +20,8 @@ uses
   GLS.Graphics,
   GLS.Material,
   GLS.Texture,
-  GLSL.Shader,
-  GLSL.Parameter,
+  GLS.GLSLShader,
+  GLS.GLSLParameter,
   GLS.RenderContextInfo;
 
 type
@@ -258,8 +258,8 @@ implementation
 uses
   System.SysUtils,
   GLS.Strings,
-  GLS.TextureFormat
-  {$IFDEF GLS_LOGGING}, GLSLog {$ENDIF};
+  GLS.TextureFormat,
+  GLS.Log;
 
 resourcestring
   cudasFailToBindArrayToTex = 'Unable to bind CUDA array to OpenGL unmaped t' +
