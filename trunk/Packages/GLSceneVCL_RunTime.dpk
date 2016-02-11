@@ -46,6 +46,7 @@ contains
   FileMD3 in '..\Source\FileFormats\FileMD3.pas',
   FileOCT in '..\Source\FileFormats\FileOCT.pas',
   FileX in '..\Source\FileFormats\FileX.pas',
+  GL in '..\Source\Basis\GL.pas',
   GLAVIRecorder in '..\Source\SoundVideoAPIs\GLAVIRecorder.pas',
   GLAnimatedSprite in '..\Source\GLAnimatedSprite.pas',
   GLAnimationUtils in '..\Source\GLAnimationUtils.pas',

@@ -602,7 +602,7 @@ const
   CL_PROGRAM_IL =                                 $1169;
 
   //* cl_program_build_info *//
-  CL_PROGRAM_BUILD_STATUS = 				      $1181;
+  CL_PROGRAM_BUILD_STATUS =     			      $1181;
   CL_PROGRAM_BUILD_OPTIONS =                      $1182;
   CL_PROGRAM_BUILD_LOG =                          $1183;
   CL_PROGRAM_BINARY_TYPE =                        $1184;
@@ -728,7 +728,7 @@ const
   CL_PROFILING_COMMAND_COMPLETE =                 $1284;
 
 
-  //*********************************************************************
+  //********************************************************************************
 var
   //* Platform API *//
   clGetPlatformIDs: function(num_entries: Tcl_uint;
@@ -1487,7 +1487,7 @@ var
     func_name: Pcl_char): Pointer;  //CL_API_SUFFIX__VERSION_1_2
   {$IFDEF CL_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
-//-------------------------------------------------------------------------
+
    //* Deprecated OpenCL 1.1 APIs *//
    // clCreateImage2D();
    // clCreateImage3D();
