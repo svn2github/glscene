@@ -38,10 +38,10 @@ unit CL_GL;
 interface
 
 uses
+  Winapi.OpenGL,
   CL,
-  CL_Platform,
-  OpenGLTokens;
-
+  CL_Platform;
+  
 {$I cl.inc}
 
 type

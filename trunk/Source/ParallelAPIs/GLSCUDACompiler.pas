@@ -3,16 +3,16 @@
 //
 {
   Component allows to compile the CUDA-source (*.cu) file.
-  in design- and runtime. 
-  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++. 
+  in design- and runtime.
+  To work requires the presence of CUDA Toolkit 3.X and MS Visual Studio C++.
 
-   History :  
+   History :
    22/03/12 - Maverick - Added Visual Studio 8 & 10 paths
    10/02/11 - Yar - Added capturing message from NVCC
    22/08/10 - Yar - Some improvements for FPC (thanks Predator)
    08/06/10 - Yar - Added ProjectModule property
    19/03/10 - Yar - Creation
-    
+
 }
 unit GLSCUDACompiler;
 
@@ -21,8 +21,13 @@ interface
 {$I cuda.inc}
 
 uses
+  Winapi.Windows,
+  Winapi.ShellAPI,
+  Winapi.TlHelp32,
+  System.SysUtils,
   System.Classes,
   Vcl.Forms,
+  VCL.Dialogs,
   GLSCUDAParser,
   GLSLog;
 
@@ -135,14 +140,16 @@ type
 var
   vFindCuFileFunc: TFindCuFileFunc;
 
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------
+//------------------------------------------------------------------
+//------------------------------------------------------------------
 
 uses
-{$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-  System.SysUtils, VCL.Dialogs, 
-  GLApplicationFileIO,
-  ShellAPI,
-  TlHelp32;
+  GLApplicationFileIO;
 
 resourcestring
   cudasSourceFileNotFound = 'Source file not found';
@@ -268,7 +275,7 @@ begin
   if not FileExists(FSourceCodeFile) then
   begin
     if csDesigning in ComponentState then
-      MessageDlg(cudasSourceFileNotFound, mtError, [mbOk], 0)
+      MessageDlg(cudasSourceFileNotFound, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
     else
       GLSLogger.LogError(cudasSourceFileNotFound);
     exit(false);
@@ -390,7 +397,7 @@ begin
       else
       begin
         if csDesigning in ComponentState then
-          MessageDlg(cudasFailRunNVCC, mtError, [mbOk], 0)
+          MessageDlg(cudasFailRunNVCC, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogError(cudasFailRunNVCC);
       end;
@@ -408,7 +415,7 @@ begin
         FConsoleContent := string(StrPas(Buffer));
         msg := Format(cudasSuccessCompilation, [FConsoleContent]);
         if csDesigning in ComponentState then
-          MessageDlg(msg, mtInformation, [mbOk], 0)
+          MessageDlg(msg, TMsgDlgType.mtInformation, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogInfo(msg);
       end
@@ -416,7 +423,7 @@ begin
       begin
         msg := Format(cudasFailCompilation, [StrPas(Buffer)]);
         if csDesigning in ComponentState then
-          MessageDlg(msg, mtError, [mbOk], 0)
+          MessageDlg(msg, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
           GLSLogger.LogError(msg);
       end;
@@ -429,7 +436,7 @@ begin
     else
     begin
       if csDesigning in ComponentState then
-        MessageDlg(cudasFailCreatePipe, mtError, [mbOk], 0)
+        MessageDlg(cudasFailCreatePipe, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
       else
         GLSLogger.LogError(cudasFailCreatePipe);
     end;
