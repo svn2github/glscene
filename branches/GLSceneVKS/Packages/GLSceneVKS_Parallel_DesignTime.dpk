@@ -33,11 +33,11 @@ package GLSceneVKS_Parallel_DesignTime;
 requires
   rtl,
   fmx,
-  GLSceneVKS_CUDA_RunTime,
+  GLSceneVKS_Parallel_RunTime,
   GLSceneVKS_DesignTime;
 
 contains
   FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  GLS.ParallelRegister in '..\Source\GLS.ParallelRegister.pas';
+  GLS.ParallelRegister in '..\Source\ParallelAPIs\GLS.ParallelRegister.pas';
 
 end.

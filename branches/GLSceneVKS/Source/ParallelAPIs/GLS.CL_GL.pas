@@ -38,9 +38,9 @@ unit GLS.CL_GL;
 interface
 
 uses
+  Winapi.OpenGL,
   GLS.CL,
-  GLS.CL_Platform,
-  GLS.GL;
+  GLS.CL_Platform;
 
 
 {$I cl.inc}

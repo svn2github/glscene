@@ -273,8 +273,7 @@ contains
   TGA in '..\Source\FileFormats\TGA.pas',
   Types3DS in '..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
-  VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
-  GLS.GL in '..\Source\Basis\GLS.GL.pas';
+  VRMLParser in '..\Source\FileFormats\VRMLParser.pas';
 
 end.
 

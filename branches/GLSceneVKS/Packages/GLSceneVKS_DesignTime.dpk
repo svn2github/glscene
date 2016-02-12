@@ -30,7 +30,6 @@ package GLSceneVKS_DesignTime;
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'GLSceneVKS Vulkan 3D library'}
 {$RUNONLY}
-{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires

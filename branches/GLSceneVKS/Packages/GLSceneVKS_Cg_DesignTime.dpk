@@ -26,15 +26,15 @@ package GLSceneVKS_Cg_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS Cg library'}
+{$DESCRIPTION 'GLScene FMX OpenGL 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  GLSceneVKS_Cg_RunTime,
   GLSceneVKS_RunTime,
-  GLSceneVKS_DesignTime;
+  GLSceneVKS_DesignTime,
+  GLSceneVKS_Cg_RunTime;
 
 contains
   GLS.CgRegister in '..\Source\Shaders\GLS.CgRegister.pas';
