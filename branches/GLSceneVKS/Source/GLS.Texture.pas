@@ -72,7 +72,7 @@ type
 
   // TVKTextureCompression
   //
-  TVKTextureCompression = TGLInternalCompression;
+  TVKTextureCompression = GLinternalCompression;
 
   TVKTexture = class;
 
@@ -132,7 +132,7 @@ type
     FOnTextureNeeded: TTextureNeededEvent;
     FResourceFile: string;
     class function IsSelfLoading: Boolean; virtual;
-    procedure LoadTexture(AInternalFormat: TGLInternalFormat); virtual;
+    procedure LoadTexture(AInternalFormat: GLinternalFormat); virtual;
     function GetTextureTarget: TVKTextureTarget; virtual; abstract;
     function GetHeight: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
     function GetWidth: Integer; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
@@ -439,7 +439,7 @@ type
     { Private Declarations }
     FTextureHandle: TVKTextureHandle;
     FSamplerHandle: TVKVirtualHandle;
-    FTextureFormat: TGLInternalFormat;
+    FTextureFormat: GLinternalFormat;
     FTextureMode: TVKTextureMode;
     FTextureWrap: TVKTextureWrap;
     FMinFilter: TVKMinFilter;
@@ -488,7 +488,7 @@ type
     procedure SetTextureWrapR(AValue: TVKSeparateTextureWrap);
     function GetTextureFormat: TVKTextureFormat;
     procedure SetTextureFormat(const val: TVKTextureFormat);
-    procedure SetTextureFormatEx(const val: TGLInternalFormat);
+    procedure SetTextureFormatEx(const val: GLinternalFormat);
     function StoreTextureFormatEx: Boolean;
     procedure SetCompression(const val: TVKTextureCompression);
     procedure SetFilteringQuality(const val: TVKTextureFilteringQuality);
@@ -518,11 +518,11 @@ type
 
     function StoreImageClassName: Boolean;
 
-    function GetHandle: TGLuint; virtual;
+    function GetHandle: GLuint; virtual;
     //: Load texture to OpenGL subsystem
-    procedure PrepareImage(target: TGLuint); virtual;
+    procedure PrepareImage(target: GLuint); virtual;
     //: Setup OpenGL texture parameters
-    procedure PrepareParams(target: TGLuint); virtual;
+    procedure PrepareParams(target: GLuint); virtual;
 
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnSamplerAllocate(Sender: TVKVirtualHandle; var Handle: Cardinal);
@@ -572,7 +572,7 @@ type
     { Allocates the texture handle if not already allocated. 
       The texture is binded and parameters are setup, but no image data
       is initialized by this call - for expert use only. }
-    function AllocateHandle: TGLuint;
+    function AllocateHandle: GLuint;
     function IsHandleAllocated: Boolean;
     { Returns OpenGL texture format corresponding to current options. }
     function OpenGLTextureFormat: Integer;
@@ -584,7 +584,7 @@ type
     { Handle to the OpenGL texture object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
-    property Handle: TGLuint read GetHandle;
+    property Handle: GLuint read GetHandle;
     property TextureHandle: TVKTextureHandle read FTextureHandle;
 
     { Actual width, height and depth used for last texture
@@ -650,7 +650,7 @@ type
     See TVKTextureFormat for details. }
     property TextureFormat: TVKTextureFormat read GetTextureFormat write
       SetTextureFormat default tfDefault;
-    property TextureFormatEx: TGLInternalFormat read FTextureFormat write
+    property TextureFormatEx: GLinternalFormat read FTextureFormat write
       SetTextureFormatEx stored StoreTextureFormatEx;
 
     { Texture compression control. 
@@ -823,11 +823,11 @@ uses
   GLS.VectorTypes;
 
 const
-  cTextureMode: array[tmDecal..tmAdd] of TGLenum =
+  cTextureMode: array[tmDecal..tmAdd] of GLEnum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
   cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of
-    TGLInternalFormat = (
+    GLinternalFormat = (
     tfRGB8,
     tfRGBA8,
     tfRGB5,
@@ -1140,7 +1140,7 @@ begin
   Result := False;
 end;
 
-procedure TVKTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
+procedure TVKTextureImage.LoadTexture(AInternalFormat: GLinternalFormat);
 begin
 end;
 
@@ -1362,7 +1362,7 @@ begin
   end
   else
   begin
-    Assert(False, Format(vksFailedOpenFile, [fileName]));
+    Assert(False, Format(glsFailedOpenFile, [fileName]));
   end;
 end;
 
@@ -1663,7 +1663,7 @@ begin
     Exit;
   end;
   Picture.Bitmap := nil;
-  raise ETexture.CreateFmt(vksFailedOpenFile, [fileName]);
+  raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
 end;
 
 // FriendlyName
@@ -1802,7 +1802,7 @@ begin
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
-          GLOKMessageBox(Format(vksFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),vksError);
+          GLOKMessageBox(Format(glsFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),glsError);
         end;
       end;
       Result := inherited GetBitmap32;
@@ -2619,7 +2619,7 @@ end;
 // SetTextureFormat
 //
 
-procedure TVKTexture.SetTextureFormatEx(const val: TGLInternalFormat);
+procedure TVKTexture.SetTextureFormatEx(const val: GLinternalFormat);
 begin
   if val <> FTextureFormat then
   begin
@@ -2864,73 +2864,73 @@ procedure TVKTexture.ApplyMappingMode;
 var
   R_Dim: Boolean;
 begin
-  R_Dim := GL.ARB_texture_cube_map or GL.EXT_texture3D;
+  R_Dim := GL.ARB_texture_cube_map or GL_EXT_texture3D;
   case MappingMode of
     tmmUser: ; // nothing to do, but checked first (common case)
     tmmObjectLinear:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-        GL.TexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
-        GL.TexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+        glTexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
+        glTexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
 
         if R_Dim then
         begin
-          GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          GL.TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          GL.TexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
-          GL.TexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
-          GL.Enable(GL_TEXTURE_GEN_R);
-          GL.Enable(GL_TEXTURE_GEN_Q);
+          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          glTexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
+          glTexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
+          glEnable(GL_TEXTURE_GEN_R);
+          glEnable(GL_TEXTURE_GEN_Q);
         end;
       end;
     tmmEyeLinear:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
         // specify planes in eye space, not world space
-        GL.MatrixMode(GL_MODELVIEW);
-        GL.PushMatrix;
-        GL.LoadIdentity;
-        GL.TexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
-        GL.TexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix;
+        glLoadIdentity;
+        glTexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
+        glTexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
         if R_Dim then
         begin
-          GL.TexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
-          GL.TexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
-          GL.Enable(GL_TEXTURE_GEN_R);
-          GL.Enable(GL_TEXTURE_GEN_Q);
+          glTexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
+          glTexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
+          glEnable(GL_TEXTURE_GEN_R);
+          glEnable(GL_TEXTURE_GEN_Q);
         end;
-        GL.PopMatrix;
+        glPopMatrix;
       end;
     tmmSphere:
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
       end;
     tmmCubeMapReflection, tmmCubeMapCamera: if GL.ARB_texture_cube_map then
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
-        GL.Enable(GL_TEXTURE_GEN_R);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+        glEnable(GL_TEXTURE_GEN_R);
       end;
     tmmCubeMapNormal, tmmCubeMapLight0: if GL.ARB_texture_cube_map then
       begin
-        GL.TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-        GL.Enable(GL_TEXTURE_GEN_S);
-        GL.Enable(GL_TEXTURE_GEN_T);
-        GL.Enable(GL_TEXTURE_GEN_R);
+        glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+        glEnable(GL_TEXTURE_GEN_S);
+        glEnable(GL_TEXTURE_GEN_T);
+        glEnable(GL_TEXTURE_GEN_R);
       end;
   else
     Assert(False);
@@ -2944,12 +2944,12 @@ procedure TVKTexture.UnApplyMappingMode;
 begin
   if MappingMode <> tmmUser then
   begin
-    GL.Disable(GL_TEXTURE_GEN_S);
-    GL.Disable(GL_TEXTURE_GEN_T);
-    if GL.EXT_texture3D or GL.ARB_texture_cube_map then
+    glDisable(GL_TEXTURE_GEN_S);
+    glDisable(GL_TEXTURE_GEN_T);
+    if GL_EXT_texture3D or GL.ARB_texture_cube_map then
     begin
-      GL.Disable(GL_TEXTURE_GEN_R);
-      GL.Disable(GL_TEXTURE_GEN_Q);
+      glDisable(GL_TEXTURE_GEN_R);
+      glDisable(GL_TEXTURE_GEN_Q);
     end;
   end;
 end;
@@ -3001,7 +3001,7 @@ procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
     end;
   end;
 var
-  H : TGLuint;
+  H : GLuint;
 begin
   // Multisample image do not work with FFP
   if (FTextureHandle.Target = ttTexture2DMultisample) or
@@ -3022,9 +3022,9 @@ begin
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
         cTextureMode[FTextureMode]);
-      GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+      glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
       ApplyMappingMode;
       xgl.MapTexCoordToMain;
     end;
@@ -3106,8 +3106,8 @@ begin
 
       if not ForwardContext then
       begin
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         ActiveTexture := 0;
       end;
@@ -3142,7 +3142,7 @@ end;
 // AllocateHandle
 //
 
-function TVKTexture.AllocateHandle: TGLuint;
+function TVKTexture.AllocateHandle: GLuint;
 var
   vTarget: TVKTextureTarget;
 begin
@@ -3191,10 +3191,10 @@ end;
 // GetHandle
 //
 
-function TVKTexture.GetHandle: TGLuint;
+function TVKTexture.GetHandle: GLuint;
 var
-  target: TGLuint;
-  LBinding: array[TVKTextureTarget] of TGLuint;
+  target: GLuint;
+  LBinding: array[TVKTextureTarget] of GLuint;
 
   procedure StoreBindings;
   var
@@ -3236,7 +3236,7 @@ begin
           target := GL_TEXTURE_2D;
         end;
         // Load images
-        if not GL.EXT_direct_state_access then
+        if not GL_EXT_direct_state_access then
           TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
         PrepareImage(target);
       end;
@@ -3306,11 +3306,11 @@ end;
 // PrepareImage
 //
 
-procedure TVKTexture.PrepareImage(target: TGLuint);
+procedure TVKTexture.PrepareImage(target: GLuint);
 var
   bitmap32: TVKImage;
   texComp: TVKTextureCompression;
-  glFormat: TGLenum;
+  glFormat: GLEnum;
 begin
   if Image.IsSelfLoading then
   begin
@@ -3400,7 +3400,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, vksErrorEx + vksUnknownType);
+          Assert(False, glsErrorEx + glsUnknownType);
         end;
         glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
       end
@@ -3416,9 +3416,9 @@ begin
       FTexDepth);
   end;
 
-  if GL.GetError <> GL_NO_ERROR then
+  if glGetError <> GL_NO_ERROR then
   begin
-    GL.ClearError;
+    glClearError;
     SetTextureErrorImage;
   end
   else
@@ -3433,31 +3433,31 @@ end;
 // PrepareParams
 //
 
-procedure TVKTexture.PrepareParams(target: TGLuint);
+procedure TVKTexture.PrepareParams(target: GLuint);
 const
-  cTextureSWrap: array[twBoth..twHorizontal] of TGLenum =
+  cTextureSWrap: array[twBoth..twHorizontal] of GLEnum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT);
-  cTextureTWrap: array[twBoth..twHorizontal] of TGLenum =
+  cTextureTWrap: array[twBoth..twHorizontal] of GLEnum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureRWrap: array[twBoth..twHorizontal] of TGLenum =
+  cTextureRWrap: array[twBoth..twHorizontal] of GLEnum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureSWrapOld: array[twBoth..twHorizontal] of TGLenum =
+  cTextureSWrapOld: array[twBoth..twHorizontal] of GLEnum =
     (GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT);
-  cTextureTWrapOld: array[twBoth..twHorizontal] of TGLenum =
+  cTextureTWrapOld: array[twBoth..twHorizontal] of GLEnum =
     (GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP);
-  cTextureMagFilter: array[maNearest..maLinear] of TGLenum =
+  cTextureMagFilter: array[maNearest..maLinear] of GLEnum =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLenum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of GLEnum =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
   cFilteringQuality: array[tfIsotropic..tfAnisotropic] of Integer = (1, 2);
-  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of TGLenum =
+  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of GLEnum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of GLEnum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
+  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of GLEnum =
     (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
 
 var
@@ -3468,7 +3468,7 @@ begin
     or (target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY) then
     Exit;
 
-  R_Dim := GL.ARB_texture_cube_map or GL.EXT_texture3D;
+  R_Dim := GL.ARB_texture_cube_map or GL_EXT_texture3D;
 
   with CurrentGLContext.GLStates do
   begin
@@ -3478,38 +3478,38 @@ begin
     UnpackSkipPixels := 0;
   end;
 
-  GL.TexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
+  glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
 
-  if (GL.VERSION_1_2 or GL.EXT_texture_edge_clamp) then
+  if (GL.VERSION_1_2 or GL_EXT_texture_edge_clamp) then
   begin
     if FTextureWrap = twSeparate then
     begin
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_S,
+      glTexParameteri(target, GL_TEXTURE_WRAP_S,
         cSeparateTextureWrap[FTextureWrapS]);
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_T,
+      glTexParameteri(target, GL_TEXTURE_WRAP_T,
         cSeparateTextureWrap[FTextureWrapT]);
       if R_Dim then
-        GL.TexParameteri(target, GL_TEXTURE_WRAP_R,
+        glTexParameteri(target, GL_TEXTURE_WRAP_R,
           cSeparateTextureWrap[FTextureWrapR]);
     end
     else
     begin
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
-      GL.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
+      glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrap[FTextureWrap]);
+      glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrap[FTextureWrap]);
       if R_Dim then
-        GL.TexParameteri(target, GL_TEXTURE_WRAP_R, cTextureRWrap[FTextureWrap]);
+        glTexParameteri(target, GL_TEXTURE_WRAP_R, cTextureRWrap[FTextureWrap]);
     end;
   end
   else
   begin
-    GL.TexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
-    GL.TexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, cTextureSWrapOld[FTextureWrap]);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, cTextureTWrapOld[FTextureWrap]);
   end;
 
   lMinFilter := FMinFilter;
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not (GL.EXT_texture_lod or GL.SGIS_texture_lod) then
+    or not (GL_EXT_texture_lod or GL.SGIS_texture_lod) then
   begin
     if lMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       lMinFilter := miNearest;
@@ -3517,21 +3517,21 @@ begin
       lMinFilter := miLinear;
   end;
 
-  GL.TexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[lMinFilter]);
-  GL.TexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
+  glTexParameteri(target, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[lMinFilter]);
+  glTexParameteri(target, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
 
-  if GL.EXT_texture_filter_anisotropic then
-    GL.TexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+  if GL_EXT_texture_filter_anisotropic then
+    glTexParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT,
       cFilteringQuality[FFilteringQuality]);
 
   if IsDepthFormat(fTextureFormat) then
   begin
-    GL.TexParameteri(target, GL_TEXTURE_COMPARE_MODE,
+    glTexParameteri(target, GL_TEXTURE_COMPARE_MODE,
       cTextureCompareMode[fTextureCompareMode]);
-    GL.TexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
+    glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
     if not FTextureHandle.RenderingContext.GLStates.ForwardContext then
-      GL.TexParameteri(target, GL_DEPTH_TEXTURE_MODE,
+      glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
         cDepthTextureMode[fDepthTextureMode]);
   end;
 end;
@@ -3684,13 +3684,13 @@ begin
   if FTexture.Enabled then
   begin
     rci.GLStates.ActiveTexture := FTextureIndex;
-    GL.MatrixMode(GL_TEXTURE);
-    GL.PushMatrix;
+    glMatrixMode(GL_TEXTURE);
+    glPushMatrix;
     if FTextureMatrixIsIdentity then
-      GL.LoadIdentity
+      glLoadIdentity
     else
-      GL.LoadMatrixf(@FTextureMatrix.V[0].V[0]);
-    GL.MatrixMode(GL_MODELVIEW);
+      glLoadMatrixf(@FTextureMatrix.V[0].V[0]);
+    glMatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
       FTexture.Apply(rci)
@@ -3716,9 +3716,9 @@ begin
     else if FTextureIndex >= 2 then
       FTexture.UnApplyAsTextureN(FTextureIndex + 1, rci, false);
     rci.GLStates.ActiveTexture := FTextureIndex;
-    GL.MatrixMode(GL_TEXTURE);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_TEXTURE);
+    glPopMatrix;
+    glMatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     FApplied := False;
   end;
@@ -3859,7 +3859,7 @@ begin
     exit;
 
   units := 0;
-  GL.GetIntegerv(GL_MAX_TEXTURE_UNITS, @texUnits);
+  glGetIntegerv(GL_MAX_TEXTURE_UNITS, @texUnits);
   for i := 0 to Count - 1 do
   begin
     if Items[i].TextureIndex < texUnits then

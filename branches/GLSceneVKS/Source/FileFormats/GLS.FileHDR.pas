@@ -40,10 +40,10 @@ type
     procedure LoadFromStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TGLuint;
+      const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const intFormat: GLinternalFormat); reintroduce;
 
     property Gamma: Single read fGamma;
     property Exposure: Single read fExposure;
@@ -238,16 +238,16 @@ end;
 //
 
 procedure TVKHDRImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TGLuint;
+  const textureHandle: GLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TGLInternalFormat);
+  const intFormat: GLinternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat: TGLInternalFormat;
-  glTarget: TGLenum;
+  residentFormat: GLinternalFormat;
+  glTarget: GLEnum;
 begin
   glTarget := DecodeGLTextureTarget(textureTarget);
   if not ((glTarget = GL_TEXTURE_2D)
@@ -271,11 +271,11 @@ begin
     fColorFormat := GL_RGB;
     fDataType := GL_FLOAT;
     // Check level existence
-    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
+    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
       FLOD[0].Depth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
@@ -289,7 +289,7 @@ begin
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(FData, DataSize);
-      GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
       fLevelCount := 1;

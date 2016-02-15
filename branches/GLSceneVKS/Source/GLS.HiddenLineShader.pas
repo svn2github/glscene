@@ -26,11 +26,11 @@ type
     { Private Declarations }
     FColor: TVKColor;
     FWidth: Single;
-    FPattern: TGLushort;
+    FPattern: GLushort;
 
     FForceMaterial: Boolean;
 
-    procedure SetPattern(const value: TGLushort);
+    procedure SetPattern(const value: GLushort);
     procedure SetColor(const v: TVKColor);
     procedure SetWidth(const Value: Single);
     procedure SetForceMaterial(v: boolean);
@@ -46,7 +46,7 @@ type
     { Published Declarations }
     property Width: Single read FWidth write SetWidth;
     property Color: TVKColor read FColor write SetColor;
-    property Pattern: TGLushort read FPattern write SetPattern default $FFFF;
+    property Pattern: GLushort read FPattern write SetPattern default $FFFF;
     { Set ForceMaterial to true to enforce the application of the line settings
        for objects that sets their own color, line width and pattern. }
     property ForceMaterial: Boolean read FForceMaterial write SetForceMaterial
@@ -136,7 +136,7 @@ end;
 // SetPattern
 //
 
-procedure TVKLineSettings.SetPattern(const value: TGLushort);
+procedure TVKLineSettings.SetPattern(const value: GLushort);
 begin
   if FPattern <> value then
   begin
@@ -172,7 +172,7 @@ var
 procedure TVKLineSettings.Apply(var rci: TVKRenderContextInfo);
 begin
   rci.GLStates.LineWidth := Width;
-  GL.Color4fv(Color.AsAddress);
+  glColor4fv(Color.AsAddress);
   if Pattern <> $FFFF then
   begin
     rci.GLStates.Enable(stLineStipple);
@@ -261,14 +261,14 @@ begin
       if FLighting then
       begin
         case ShadeModel of
-          smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
-          smFlat: GL.ShadeModel(GL_FLAT);
+          smDefault, smSmooth: glShadeModel(GL_SMOOTH);
+          smFlat: glShadeModel(GL_FLAT);
         end
       end
       else
       begin
         Disable(stLighting);
-        GL.Color4fv(FBackgroundColor.AsAddress); // use background color
+        glColor4fv(FBackgroundColor.AsAddress); // use background color
       end;
       // enable and adjust polygon offset
       Enable(stPolygonOffsetFill);

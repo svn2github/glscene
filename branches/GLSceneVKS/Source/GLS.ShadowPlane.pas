@@ -187,7 +187,7 @@ begin
         if (spoUseStencil in ShadowOptions) then
         begin
           StencilClearValue := 0;
-          GL.Clear(GL_STENCIL_BUFFER_BIT);
+          glClear(GL_STENCIL_BUFFER_BIT);
           Enable(stStencilTest);
           SetStencilFunc(cfAlways, 1, 1);
           SetStencilOp(soReplace, soReplace, soReplace);
@@ -248,7 +248,7 @@ begin
           Disable(stLighting);
           Disable(stFog);
 
-          GL.Color4fv(ShadowColor.AsAddress);
+          glColor4fv(ShadowColor.AsAddress);
 
           if (spoUseStencil in ShadowOptions) then
           begin

@@ -290,42 +290,42 @@ begin
         if I = 13 then
         begin
           // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-          GL.Begin_(GL_QUAD_STRIP);
+          glBegin(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            GL.Color4fv(@pColor[k1 + J]);
-            GL.Vertex3fv(@pVertex[k1 + J]);
-            GL.Color4fv(@clrTransparent);
-            GL.Vertex3fv(@pVertex[k0 + J]);
+            glColor4fv(@pColor[k1 + J]);
+            glVertex3fv(@pVertex[k1 + J]);
+            glColor4fv(@clrTransparent);
+            glVertex3fv(@pVertex[k0 + J]);
           end;
-          GL.End_;
+          glEnd;
         end
         else
         begin
           // GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_DST_COLOR);
-          GL.Begin_(GL_QUAD_STRIP);
+          glBegin(GL_QUAD_STRIP);
           for J := FSlices downto 0 do
           begin
-            GL.Color4fv(@pColor[k1 + J]);
-            GL.Vertex3fv(@pVertex[k1 + J]);
-            GL.Color4fv(@pColor[k0 + J]);
-            GL.Vertex3fv(@pVertex[k0 + J]);
+            glColor4fv(@pColor[k1 + J]);
+            glVertex3fv(@pVertex[k1 + J]);
+            glColor4fv(@pColor[k0 + J]);
+            glVertex3fv(@pVertex[k0 + J]);
           end;
-          GL.End_;
+          glEnd;
         end;
       end
       else if I = 1 then
       begin
         //GL.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(@pColor[k1]);
-        GL.Vertex3fv(@pVertex[k1]);
+        glBegin(GL_TRIANGLE_FAN);
+        glColor4fv(@pColor[k1]);
+        glVertex3fv(@pVertex[k1]);
         for J := k0 + FSlices downto k0 do
         begin
-          GL.Color4fv(@pColor[J]);
-          GL.Vertex3fv(@pVertex[J]);
+          glColor4fv(@pColor[J]);
+          glVertex3fv(@pVertex[J]);
         end;
-        GL.End_;
+        glEnd;
       end;
     end;
   end;
@@ -402,7 +402,7 @@ begin
     abmOneMinusSrcAlpha:
       StateCache.SetBlendFunc(bfDstAlpha, bfOneMinusSrcAlpha);
   else
-    Assert(False, vksErrorEx + vksUnknownType);
+    Assert(False, glsErrorEx + glsUnknownType);
   end;
   StateCache.Enable(stAlphaTest);
 end;

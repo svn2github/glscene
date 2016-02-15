@@ -698,7 +698,7 @@ end;
 procedure TVKROAMPatch.RenderHighRes(vertices: TAffineVectorList;
   vertexIndices: TIntegerList; texCoords: TTexPointList; forceROAM: Boolean);
 var
-  primitive: TGLenum;
+  primitive: GLEnum;
 begin
   // Prepare display list if needed
   if FListHandle.Handle = 0 then
@@ -722,12 +722,12 @@ begin
     texCoords.ScaleAndTranslate(PTexPoint(@TextureScale)^,
       PTexPoint(@TextureOffset)^);
 
-    GL.VertexPointer(3, GL_FLOAT, 0, vertices.List);
-    xgl.TexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
+    glVertexPointer(3, GL_FLOAT, 0, vertices.List);
+    xglTexCoordPointer(2, GL_FLOAT, 0, texCoords.List);
 
     FListHandle.AllocateHandle;
     GL.NewList(FListHandle.Handle, GL_COMPILE);
-    GL.DrawElements(primitive, vertexIndices.Count, GL_UNSIGNED_INT,
+    glDrawElements(primitive, vertexIndices.Count, GL_UNSIGNED_INT,
       vertexIndices.List);
     GL.EndList;
 
@@ -806,28 +806,28 @@ begin
     FVBOVertHandle.AllocateHandle;
     FVBOVertHandle.BindBufferData(vertices.List, vertices.DataSize,
       GL_STREAM_DRAW_ARB);
-    GL.VertexPointer(3, GL_FLOAT, 0, nil);
+    glVertexPointer(3, GL_FLOAT, 0, nil);
 
     FVBOTexHandle.AllocateHandle;
     FVBOTexHandle.BindBufferData(texCoords.List, texCoords.DataSize,
       GL_STREAM_DRAW_ARB);
-    xgl.TexCoordPointer(2, GL_FLOAT, 0, nil);
+    xglTexCoordPointer(2, GL_FLOAT, 0, nil);
 
-    GL.DrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1,
+    glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1,
       vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
     GL.BindBuffer(GL_ARRAY_BUFFER_ARB, 0);
     GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   end
-  else if GL.EXT_compiled_vertex_array and GL.EXT_draw_range_elements then
+  else if GL_EXT_compiled_vertex_array and GL_EXT_draw_range_elements then
   begin
     GL.LockArrays(0, vertices.Count);
-    GL.DrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1,
+    glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1,
       vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
     GL.UnLockArrays;
   end
   else
   begin
-    GL.DrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT,
+    glDrawElements(GL_TRIANGLES, vertexIndices.Count, GL_UNSIGNED_INT,
       vertexIndices.List);
   end;
   vertices.Count := 0;

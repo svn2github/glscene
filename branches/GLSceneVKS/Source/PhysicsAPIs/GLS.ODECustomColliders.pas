@@ -698,12 +698,12 @@ var
 begin
   if FRenderContacts and (FContactRenderPoints.Count > 0) then
   begin
-    GL.Color3fv(FContactColor.AsAddress);
+    glColor3fv(FContactColor.AsAddress);
     rci.GLStates.PointSize := FPointSize;
-    GL.Begin_(GL_POINTS);
+    glBegin(GL_POINTS);
     for i := 0 to FContactRenderPoints.Count - 1 do
-      GL.Vertex3fv(@FContactRenderPoints.List[i]);
-    GL.End_;
+      glVertex3fv(@FContactRenderPoints.List[i]);
+    glEnd;
   end;
   FContactRenderPoints.Clear;
 end;

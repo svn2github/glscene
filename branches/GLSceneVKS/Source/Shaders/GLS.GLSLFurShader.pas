@@ -298,8 +298,8 @@ begin
   param['vLightIntensity'].AsVector1f := FLightIntensity;
 
 
-  gl.PushAttrib(GL_COLOR_BUFFER_BIT);
-  gl.Enable(GL_BLEND);
+  glPushAttrib(GL_COLOR_BUFFER_BIT);
+  glEnable(GL_BLEND);
   gl.BlendFunc(cGLBlendFunctionToGLEnum[FBlendSrc],cGLBlendFunctionToGLEnum[FBlendDst]);
 
  // GL.BlendFunc(GL_SRC_ALPHA, cGLBlendFunctionToGLEnum[FBlendSrc]);
@@ -323,7 +323,7 @@ begin
    // glActiveTextureARB(GL_TEXTURE0_ARB);
     gl.ActiveTexture(GL_TEXTURE0_ARB);
     GetGLSLProg.EndUseProgramObject;
-    gl.PopAttrib;
+    glPopAttrib;
     Result := False;
   end;
 end;

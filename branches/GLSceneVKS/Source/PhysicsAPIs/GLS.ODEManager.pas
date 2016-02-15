@@ -1575,11 +1575,11 @@ begin
   for i := 0 to FODEBehaviours.Count - 1 do begin
     if ODEBehaviours[i] is TVKODEDynamic then
       if TVKODEDynamic(ODEBehaviours[i]).GetEnabled then
-        GL.Color4fv(GeomColorDynE.AsAddress)
+        glColor4fv(GeomColorDynE.AsAddress)
       else
-        GL.Color4fv(GeomColorDynD.AsAddress)
+        glColor4fv(GeomColorDynD.AsAddress)
     else
-      GL.Color4fv(GeomColorStat.AsAddress);
+      glColor4fv(GeomColorStat.AsAddress);
 
     ODEBehaviours[i].Render(rci);
   end;
@@ -2909,36 +2909,36 @@ end;
 //
 procedure TODEElementBox.Render(var rci : TVKRenderContextInfo);
 begin
-  GL.PushMatrix;
+  glPushMatrix;
 
   GL.MultMatrixf(@FLocalMatrix);
 
-  GL.Begin_(GL_LINE_LOOP);
-    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-  GL.End_;
+  glBegin(GL_LINE_LOOP);
+    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+  glEnd;
 
-  GL.Begin_(GL_LINE_LOOP);
-    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-  GL.End_;
+  glBegin(GL_LINE_LOOP);
+    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+  glEnd;
 
-  GL.Begin_(GL_LINES);
-    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
-    GL.Vertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-    GL.Vertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
-  GL.End_;
+  glBegin(GL_LINES);
+    glVertex3f(-FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,-FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
+    glVertex3f(-FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+    glVertex3f(FBoxWidth/2,FBoxHeight/2,FBoxDepth/2);
+  glEnd;
 
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // Create
@@ -3103,7 +3103,7 @@ var
   FTop, FBottom, FStart, FStop : Single;
   I, J, FSlices, FStacks: Integer;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
 
   GL.MultMatrixf(@FLocalMatrix);
   GL.Scalef(Radius, Radius, Radius);
@@ -3129,13 +3129,13 @@ begin
     SinCosine(Phi, SinP, CosP);
     SinCosine(Phi2, SinP2, CosP2);
 
-    GL.Begin_(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCosine(Theta, SinT, CosT);
-      GL.Vertex3f(CosP*SinT,SinP,CosP*CosT);
+      glVertex3f(CosP*SinT,SinP,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    GL.End_;
+    glEnd;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
@@ -3147,18 +3147,18 @@ begin
     SinCosine(Phi, SinP, CosP);
     SinCosine(Phi2, SinP2, CosP2);
 
-    GL.Begin_(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
     for i:=0 to FSlices do begin
       SinCosine(Theta, SinT, CosT);
-      GL.Vertex3f(SinP,CosP*SinT,CosP*CosT);
+      glVertex3f(SinP,CosP*SinT,CosP*CosT);
       Theta:=Theta+StepH;
     end;
-    GL.End_;
+    glEnd;
     Phi:=Phi2;
     Phi2:=Phi2 - StepV;
   end;
 
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // Create
@@ -3270,7 +3270,7 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
 
   GL.MultMatrixf(@FLocalMatrix);
 
@@ -3279,40 +3279,40 @@ begin
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    GL.Begin_(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
-    GL.End_;
+        glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1));
+    glEnd;
   end;
 
   // Middle vertical lines
-  GL.Begin_(GL_LINES);
+  glBegin(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
-      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
-      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
-      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),-FLength/2);
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FRadius*cos(2*i*PI/Slices),FLength/2);
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),-FLength/2);
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FRadius*cos(2*i*PI/Slices),FLength/2);
     end;
-  GL.End_;
+  glEnd;
 
   // Cap XZ half-circles
-  GL.PushMatrix;
+  glPushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
     // Top
-    GL.Begin_(GL_LINE_STRIP);
+    glBegin(GL_LINE_STRIP);
       for i:=0 to Slices do
-        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
-    GL.End_;
+        glVertex3f(FRadius*cos(i*PI/Slices),0,FRadius*sin(i*PI/Slices)+FLength/2);
+    glEnd;
 
     // Bottom
-    GL.Begin_(GL_LINE_STRIP);
+    glBegin(GL_LINE_STRIP);
       for i:=0 to Slices do
-        GL.Vertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
-    GL.End_;
+        glVertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
+    glEnd;
     GL.Rotatef(360/Slices,0,0,1);
   end;
-  GL.PopMatrix;
-  GL.PopMatrix;
+  glPopMatrix;
+  glPopMatrix;
 end;
 
 // Create
@@ -3451,7 +3451,7 @@ var
   i,j,
   Stacks,Slices : integer;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
 
   GL.MultMatrixf(@FLocalMatrix);
 
@@ -3460,36 +3460,36 @@ begin
 
   // Middle horizontal circles
   for j:=0 to Stacks-1 do begin
-    GL.Begin_(GL_LINE_LOOP);
+    glBegin(GL_LINE_LOOP);
       for i:=0 to Slices-1 do
-        GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
-    GL.End_;
+        glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2+FLength*j/(Stacks-1),FRadius*cos(2*i*PI/Slices));
+    glEnd;
   end;
 
   // Middle vertical lines
-  GL.Begin_(GL_LINES);
+  glBegin(GL_LINES);
     for i:=0 to (Slices div 2)-1 do begin
-      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
-      GL.Vertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
-      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
-      GL.Vertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
+      glVertex3f(FRadius*sin(2*i*PI/Slices),-FLength/2,FRadius*cos(2*i*PI/Slices));
+      glVertex3f(FRadius*sin(2*i*PI/Slices),FLength/2,FRadius*cos(2*i*PI/Slices));
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),-FLength/2,-FRadius*cos(2*i*PI/Slices));
+      glVertex3f(-FRadius*sin(2*i*PI/Slices),FLength/2,-FRadius*cos(2*i*PI/Slices));
     end;
-  GL.End_;
+  glEnd;
 
   // Caps
-  GL.PushMatrix;
+  glPushMatrix;
   for j:=0 to (Slices div 2)-1 do begin
-    GL.Begin_(GL_LINES);
-      GL.Vertex3f(-FRadius,FLength/2,0);
-      GL.Vertex3f(FRadius,FLength/2,0);
-      GL.Vertex3f(-FRadius,-FLength/2,0);
-      GL.Vertex3f(FRadius,-FLength/2,0);
-    GL.End_;
+    glBegin(GL_LINES);
+      glVertex3f(-FRadius,FLength/2,0);
+      glVertex3f(FRadius,FLength/2,0);
+      glVertex3f(-FRadius,-FLength/2,0);
+      glVertex3f(FRadius,-FLength/2,0);
+    glEnd;
     GL.Rotatef(360/Slices,0,1,0);
   end;
-  GL.PopMatrix;
+  glPopMatrix;
 
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // Create

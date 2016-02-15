@@ -241,7 +241,7 @@ begin
     try
       if Assigned(currentLibMaterial3) or Assigned(currentLibMaterial4) then
       begin
-        GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @n);
+        glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @n);
         units := 0;
         if Assigned(currentLibMaterial3) and (n >= 3) then
         begin
@@ -284,8 +284,8 @@ begin
       for n := 0 to High(FCommandCache) do
       begin
         rci.GLStates.ActiveTexture := FCommandCache[n].ActiveUnit;
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, FCommandCache[n].Arg1, FCommandCache[n].Arg2);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, FCommandCache[n].Arg1, FCommandCache[n].Arg2);
       end;
       rci.GLStates.ActiveTexture := 0;
     except

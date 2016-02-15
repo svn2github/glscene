@@ -29,10 +29,10 @@ type
 
 const
   cMeshModeToGLEnum: array[Low(TMeshMode)..High(TMeshMode)
-    ] of TGLenum = (GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
+    ] of GLEnum = (GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
     GL_QUAD_STRIP, GL_QUADS, GL_POLYGON);
   cVertexModeToGLEnum: array[Low(TVertexMode)..High(TVertexMode)
-    ] of TGLenum = (GL_V3F, GL_N3F_V3F, GL_C4F_N3F_V3F, GL_T2F_C4F_N3F_V3F,
+    ] of GLEnum = (GL_V3F, GL_N3F_V3F, GL_C4F_N3F_V3F, GL_T2F_C4F_N3F_V3F,
     GL_T2F_N3F_V3F, GL_T2F_V3F);
 
 type
@@ -388,8 +388,8 @@ procedure TVKVertexList.EnterLockSection;
 begin
   if Locked then
   begin
-    GL.VertexArrayRangeNV(FCount * SizeOf(TVertexData), FValues);
-    GL.EnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
+    glVertexArrayRangeNV(FCount * SizeOf(TVertexData), FValues);
+    glEnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
   end;
 end;
 
@@ -400,8 +400,8 @@ procedure TVKVertexList.LeaveLockSection;
 begin
   if Locked then
   begin
-    GL.DisableClientState(GL_VERTEX_ARRAY_RANGE_NV);
-    GL.FlushVertexArrayRangeNV;
+    glDisableClientState(GL_VERTEX_ARRAY_RANGE_NV);
+    glFlushVertexArrayRangeNV;
   end;
 end;
 
@@ -651,14 +651,14 @@ end;
 
 procedure TVKVertexList.DefineOpenGLArrays;
 begin
-  GL.EnableClientState(GL_VERTEX_ARRAY);
-  GL.VertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstVertex);
-  GL.EnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
   GL.NormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstNormal);
-  xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-  xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
+  xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  xglTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
 
@@ -738,12 +738,12 @@ begin
     vmVT:
       GL.InterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
   else
-    Assert(False, vksInterleaveNotSupported);
+    Assert(False, glsInterleaveNotSupported);
   end;
   if FVertexMode in [vmVNC, vmVNCT] then
   begin
     rci.GLStates.Enable(stColorMaterial);
-    GL.ColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80,
       clrBlack, 0);
     rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
@@ -752,17 +752,17 @@ begin
   VertexCount := FVertices.Count;
   case FMode of
     mmTriangleStrip:
-      GL.DrawArrays(GL_TRIANGLE_STRIP, 0, VertexCount);
+      glDrawArrays(GL_TRIANGLE_STRIP, 0, VertexCount);
     mmTriangleFan:
-      GL.DrawArrays(GL_TRIANGLE_FAN, 0, VertexCount);
+      glDrawArrays(GL_TRIANGLE_FAN, 0, VertexCount);
     mmTriangles:
-      GL.DrawArrays(GL_TRIANGLES, 0, VertexCount);
+      glDrawArrays(GL_TRIANGLES, 0, VertexCount);
     mmQuadStrip:
-      GL.DrawArrays(GL_QUAD_STRIP, 0, VertexCount);
+      glDrawArrays(GL_QUAD_STRIP, 0, VertexCount);
     mmQuads:
-      GL.DrawArrays(GL_QUADS, 0, VertexCount);
+      glDrawArrays(GL_QUADS, 0, VertexCount);
     mmPolygon:
-      GL.DrawArrays(GL_POLYGON, 0, VertexCount);
+      glDrawArrays(GL_POLYGON, 0, VertexCount);
   else
     Assert(False);
   end;

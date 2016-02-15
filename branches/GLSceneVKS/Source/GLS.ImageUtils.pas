@@ -27,9 +27,11 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+    Winapi.OpenGLext,
   System.SysUtils, System.Classes,  System.Math,
-
-  GLS.CrossPlatform, GLS.OpenGLTokens, GLS.TextureFormat, GLS.VectorGeometry;
+  //GLS
+  GLS.CrossPlatform, GLS.TextureFormat, GLS.VectorGeometry;
 
 var
   vImageScaleFilterWidth: Integer = 5; // Relative sample radius for filtering
@@ -72,12 +74,12 @@ procedure ImageAlphaInverseLuminance(var AColor: TIntermediateFormat);
 procedure ImageAlphaInverseLuminanceSqrt(var AColor: TIntermediateFormat);
 procedure ImageAlphaBottomRightPointColorTransparent(var AColor: TIntermediateFormat);
 
-procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: TGLenum; ASrcDataType, ADstDataType: TGLenum; AWidth, AHeight: Integer);
+procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: GLEnum; ASrcDataType, ADstDataType: GLEnum; AWidth, AHeight: Integer);
 
-procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: TGLenum; ADataType: TGLenum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
-procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: TGLenum; ADataType: TGLenum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
+procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: GLEnum; ADataType: GLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
+procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: GLEnum; ADataType: GLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
 
-procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: TGLenum; ADataType: TGLenum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
+procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: GLEnum; ADataType: GLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
 //----------------------------------------------------------------------------------------
 implementation
 //----------------------------------------------------------------------------------------
@@ -89,8 +91,8 @@ const
   cSuperBlack: TIntermediateFormat = (R: 0.0; G: 0.0; B: 0.0; A: 0.0);
 
 type
-  TConvertToImfProc = procedure(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
-  TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+  TConvertToImfProc = procedure(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
+  TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
 
 procedure Swap(var A, B: Integer);
 {$IFDEF GLS_INLINE} inline;
@@ -105,12 +107,12 @@ end;
 
 {$IFDEF GLS_REGIONS}{$REGION 'OpenGL format image to RGBA Float'}{$ENDIF}
 
-procedure UnsupportedToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UnsupportedToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   begin
     raise EGLImageUtils.Create('Unimplemented type of conversion');
   end;
 
-procedure UbyteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UbyteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     n: Integer;
@@ -132,7 +134,7 @@ procedure UbyteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     end;
   end;
 
-procedure Ubyte332ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure Ubyte332ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     c0, c1, c2, c3: Byte;
@@ -174,7 +176,7 @@ procedure Ubyte332ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColo
     end;
   end;
 
-procedure Ubyte233RToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure Ubyte233RToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     c0, c1, c2, c3: Byte;
@@ -216,7 +218,7 @@ procedure Ubyte233RToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACol
     end;
   end;
 
-procedure ByteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ByteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PShortInt;
     n: Integer;
@@ -238,7 +240,7 @@ procedure ByteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
     end;
   end;
 
-procedure UShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PWord;
     n: Integer;
@@ -260,7 +262,7 @@ procedure UShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     end;
   end;
 
-procedure ShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PSmallInt;
     n: Integer;
@@ -282,7 +284,7 @@ procedure ShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     end;
   end;
 
-procedure UIntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UIntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PLongWord;
     n: Integer;
@@ -304,7 +306,7 @@ procedure UIntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
     end;
   end;
 
-procedure IntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure IntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PLongInt;
     n: Integer;
@@ -326,7 +328,7 @@ procedure IntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorForm
     end;
   end;
 
-procedure FloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure FloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PSingle;
     n: Integer;
@@ -348,7 +350,7 @@ procedure FloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     end;
   end;
 
-procedure HalfFloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure HalfFloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PHalfFloat;
     n: Integer;
@@ -370,7 +372,7 @@ procedure HalfFloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACol
     end;
   end;
 
-procedure UInt8888ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UInt8888ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     n: Integer;
@@ -417,7 +419,7 @@ procedure UInt8888ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColo
     end;
   end;
 
-procedure UInt8888RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UInt8888RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     n: Integer;
@@ -464,7 +466,7 @@ procedure UInt8888RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AC
     end;
   end;
 
-procedure UShort4444ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort4444ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     n: Integer;
@@ -511,7 +513,7 @@ procedure UShort4444ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACo
     end;
   end;
 
-procedure UShort4444RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort4444RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PByte;
     n: Integer;
@@ -558,7 +560,7 @@ procedure UShort4444RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; 
     end;
   end;
 
-procedure UShort565ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort565ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PWord;
     n: Integer;
@@ -601,7 +603,7 @@ procedure UShort565ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACol
     end;
   end;
 
-procedure UShort565RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort565RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PWord;
     n: Integer;
@@ -644,7 +646,7 @@ procedure UShort565RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; A
     end;
   end;
 
-procedure UShort5551ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort5551ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PWord;
     n: Integer;
@@ -690,7 +692,7 @@ procedure UShort5551ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACo
     end;
   end;
 
-procedure UShort5551RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UShort5551RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PWord;
     n: Integer;
@@ -736,7 +738,7 @@ procedure UShort5551RevToImf(ASource: Pointer; ADest: PIntermediateFormatArray; 
     end;
   end;
 
-procedure UInt_10_10_10_2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UInt_10_10_10_2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PLongWord;
     n: Integer;
@@ -782,7 +784,7 @@ procedure UInt_10_10_10_2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArra
     end;
   end;
 
-procedure UInt_10_10_10_2_Rev_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UInt_10_10_10_2_Rev_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pSource: PLongWord;
     n: Integer;
@@ -838,7 +840,7 @@ procedure DecodeColor565(col: Word; out R, G, B: Byte);
     B := (col shr 11) and $1F;
   end;
 
-procedure DXT1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure DXT1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, k, select, offset: Integer;
     col0, col1: Word;
@@ -917,7 +919,7 @@ procedure DXT1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     end;
   end;
 
-procedure DXT3_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure DXT3_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, k, select: Integer;
     col0, col1, wrd: Word;
@@ -1004,7 +1006,7 @@ procedure DXT3_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     end;
   end;
 
-procedure DXT5_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure DXT5_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, k, select, offset: Integer;
     col0, col1: Word;
@@ -1145,7 +1147,7 @@ procedure Decode48BitBlock(ACode: Int64; out ABlock: T48BitBlock); overload;
       end;
   end;
 
-procedure LATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure LATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     LUM0, LUM1: Byte;
@@ -1226,7 +1228,7 @@ procedure LATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     end;
   end;
 
-procedure SLATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure SLATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     LUM0, LUM1: SmallInt;
@@ -1307,7 +1309,7 @@ procedure SLATC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
     end;
   end;
 
-procedure LATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure LATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     LUM0, LUM1: Byte;
@@ -1442,7 +1444,7 @@ procedure LATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     end;
   end;
 
-procedure SLATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure SLATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     LUM0, LUM1: SmallInt;
@@ -1578,7 +1580,7 @@ procedure SLATC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
     end;
   end;
 
-procedure RGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure RGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     RED0, RED1: Byte;
@@ -1659,7 +1661,7 @@ procedure RGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     end;
   end;
 
-procedure SRGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure SRGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     RED0, RED1: SmallInt;
@@ -1740,7 +1742,7 @@ procedure SRGTC1_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
     end;
   end;
 
-procedure RGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure RGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     RED0, RED1: Byte;
@@ -1875,7 +1877,7 @@ procedure RGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     end;
   end;
 
-procedure SRGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure SRGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     x, y, i, j, offset: Integer;
     RED0, RED1: SmallInt;
@@ -2016,12 +2018,12 @@ procedure SRGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
 {$IFDEF GLS_REGIONS}{$ENDREGION 'Decompression'}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'RGBA Float to OpenGL format image'}{$ENDIF}
 
-procedure UnsupportedFromImf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure UnsupportedFromImf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   begin
     raise EGLImageUtils.Create('Unimplemented type of conversion');
   end;
 
-procedure ImfToUbyte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToUbyte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PByte;
     n: Integer;
@@ -2048,7 +2050,7 @@ procedure ImfToUbyte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     end;
   end;
 
-procedure ImfToByte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToByte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PShortInt;
     n: Integer;
@@ -2075,7 +2077,7 @@ procedure ImfToByte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
     end;
   end;
 
-procedure ImfToUShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToUShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PWord;
     n: Integer;
@@ -2102,7 +2104,7 @@ procedure ImfToUShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorF
     end;
   end;
 
-procedure ImfToShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PSmallInt;
     n: Integer;
@@ -2129,7 +2131,7 @@ procedure ImfToShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     end;
   end;
 
-procedure ImfToUInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToUInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PLongWord;
     n: Integer;
@@ -2156,7 +2158,7 @@ procedure ImfToUInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
     end;
   end;
 
-procedure ImfToInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   var
     pDest: PLongInt;
     n: Integer;
@@ -2183,7 +2185,7 @@ procedure ImfToInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorForm
     end;
   end;
 
-procedure ImfToFloat(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToFloat(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   const
     cInv255 = 1.0 / 255.0;
 
@@ -2213,7 +2215,7 @@ procedure ImfToFloat(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     end;
   end;
 
-procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLenum; AWidth, AHeight: Integer);
+procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: GLEnum; AWidth, AHeight: Integer);
   const
     cInv255 = 1.0 / 255.0;
 
@@ -2539,7 +2541,7 @@ type
 
 type
   TConvertTableRec = record
-    type_: TGLenum;
+    type_: GLEnum;
     proc1: TConvertToImfProc;
     proc2: TConvertFromInfProc;
   end;
@@ -2610,7 +2612,7 @@ const
 
     (type_: GL_COMPRESSED_SIGNED_LUMINANCE_ALPHA_LATC2_EXT; proc1: SLATC2_ToImf; proc2: UnsupportedFromImf),
 
-    (type_: GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI; proc1: UnsupportedToImf; proc2: UnsupportedFromImf),
+    (type_: GL_COMPRESSED_LUMINANCE_ALPHA_ARB; proc1: UnsupportedToImf; proc2: UnsupportedFromImf),
 
     (type_: GL_COMPRESSED_RED_RGTC1; proc1: RGTC1_ToImf; proc2: UnsupportedFromImf),
 
@@ -2622,7 +2624,7 @@ const
 
 {$IFDEF GLS_REGIONS}{$ENDREGION 'Data type conversion table'}{$ENDIF}
 
-procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: TGLenum; ASrcDataType, ADstDataType: TGLenum; AWidth, AHeight: Integer);
+procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: GLEnum; ASrcDataType, ADstDataType: GLEnum; AWidth, AHeight: Integer);
   var
     ConvertToIntermediateFormat: TConvertToImfProc;
     ConvertFromIntermediateFormat: TConvertFromInfProc;
@@ -2679,8 +2681,8 @@ procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat
 procedure RescaleImage(
   const ASrc: Pointer;
   const ADst: Pointer;
-  AColorFormat: TGLenum;
-  ADataType: TGLenum;
+  AColorFormat: GLEnum;
+  ADataType: GLEnum;
   AFilter: TImageFilterFunction;
   ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
 
@@ -2944,8 +2946,8 @@ end;
 procedure Build2DMipmap(
   const ASrc: Pointer;
   const ADst: TPointerArray;
-  AColorFormat: TGLenum;
-  ADataType: TGLenum;
+  AColorFormat: GLEnum;
+  ADataType: GLEnum;
   AFilter: TImageFilterFunction;
   ASrcWidth, ASrcHeight: Integer);
 
@@ -3155,8 +3157,8 @@ end;
 
 procedure AlphaGammaBrightCorrection(
   const ASrc: Pointer;
-  AColorFormat: TGLenum;
-  ADataType: TGLenum;
+  AColorFormat: GLEnum;
+  ADataType: GLEnum;
   ASrcWidth, ASrcHeight: Integer;
   anAlphaProc: TImageAlphaProc;
   ABrightness: Single;

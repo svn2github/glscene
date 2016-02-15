@@ -2032,7 +2032,7 @@ var
   mask : Cardinal;
 begin
   mask:=Info['mask'];
-  GL.PushAttrib(mask);
+  glPushAttrib(mask);
 end;
 
 // ----------
@@ -2041,7 +2041,7 @@ end;
 
 procedure TglPopAttrib.Execute;
 begin
-  GL.PopAttrib;
+  glPopAttrib;
 end;
 
 // ----------
@@ -2053,7 +2053,7 @@ var
   mask : Cardinal;
 begin
   mask:=Info['mask'];
-  GL.PushClientAttrib(mask);
+  glPushClientAttrib(mask);
 end;
 
 // ----------
@@ -2062,7 +2062,7 @@ end;
 
 procedure TglPopClientAttrib.Execute;
 begin
-  GL.PopClientAttrib;
+  glPopClientAttrib;
 end;
 
 // ----------
@@ -2074,7 +2074,7 @@ var
   cap : Cardinal;
 begin
   cap:=Info['cap'];
-  GL.Enable(cap);
+  glEnable(cap);
 end;
 
 // ----------
@@ -2086,7 +2086,7 @@ var
   cap : Cardinal;
 begin
   cap:=Info['cap'];
-  GL.Disable(cap);
+  glDisable(cap);
 end;
 
 // ----------
@@ -2098,7 +2098,7 @@ var
   aarray : Cardinal;
 begin
   aarray:=Info['aarray'];
-  GL.EnableClientState(aarray);
+  glEnableClientState(aarray);
 end;
 
 // ----------
@@ -2110,7 +2110,7 @@ var
   aarray : Cardinal;
 begin
   aarray:=Info['aarray'];
-  GL.DisableClientState(aarray);
+  glDisableClientState(aarray);
 end;
 
 // ----------
@@ -2122,7 +2122,7 @@ var
   mode : Cardinal;
 begin
   mode:=Info['mode'];
-  GL.MatrixMode(mode);
+  glMatrixMode(mode);
 end;
 
 // ----------
@@ -2131,7 +2131,7 @@ end;
 
 procedure TglPushMatrix.Execute;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
 end;
 
 // ----------
@@ -2140,7 +2140,7 @@ end;
 
 procedure TglPopMatrix.Execute;
 begin
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // ----------
@@ -2149,7 +2149,7 @@ end;
 
 procedure TglLoadIdentity.Execute;
 begin
-  GL.LoadIdentity;
+  glLoadIdentity;
 end;
 
 // ----------
@@ -2161,7 +2161,7 @@ var
   m : TMatrix;
 begin
   m:=GetMatrixFromInfo(Info.Vars['m']);
-  GL.LoadMatrixf(@m[0]);
+  glLoadMatrixf(@m[0]);
 end;
 
 // ----------
@@ -2216,7 +2216,7 @@ var
   mode : Cardinal;
 begin
   mode:=Info['mode'];
-  GL.ShadeModel(mode);
+  glShadeModel(mode);
 end;
 
 // ----------
@@ -2265,7 +2265,7 @@ var
   mode : Cardinal;
 begin
   mode:=Info['mode'];
-  GL.Begin_(mode);
+  glBegin(mode);
 end;
 
 // ----------
@@ -2274,7 +2274,7 @@ end;
 
 procedure TglEnd.Execute;
 begin
-  GL.End_;
+  glEnd;
 end;
 
 // ----------
@@ -2288,7 +2288,7 @@ begin
   red:=Info['red'];
   green:=Info['green'];
   blue:=Info['blue'];
-  GL.Color3f(red, green, blue);
+  glColor3f(red, green, blue);
 end;
 
 // ----------
@@ -2303,7 +2303,7 @@ begin
   green:=Info['green'];
   blue:=Info['blue'];
   alpha:=Info['alpha'];
-  GL.Color4f(red, green, blue, alpha);
+  glColor4f(red, green, blue, alpha);
 end;
 
 // ----------
@@ -2331,7 +2331,7 @@ begin
   x:=Info['x'];
   y:=Info['y'];
   z:=Info['z'];
-  GL.Vertex3f(x, y, z);
+  glVertex3f(x, y, z);
 end;
 
 // ----------
@@ -2343,7 +2343,7 @@ var
   s : Single;
 begin
   s:=Info['s'];
-  GL.TexCoord1f(s);
+  glTexCoord1f(s);
 end;
 
 // ----------
@@ -2356,7 +2356,7 @@ var
 begin
   s:=Info['s'];
   t:=Info['t'];
-  GL.TexCoord2f(s, t);
+  glTexCoord2f(s, t);
 end;
 
 // ----------
@@ -2370,7 +2370,7 @@ begin
   s:=Info['s'];
   t:=Info['t'];
   r:=Info['r'];
-  GL.TexCoord3f(s, t, r);
+  glTexCoord3f(s, t, r);
 end;
 
 // ----------
@@ -2385,7 +2385,7 @@ begin
   t:=Info['t'];
   r:=Info['r'];
   q:=Info['q'];
-  GL.TexCoord4f(s, t, r, q);
+  glTexCoord4f(s, t, r, q);
 end;
 
 // ----------
@@ -2411,7 +2411,7 @@ var
 begin
   target:=Info['target'];
   s:=Info['s'];
-  GL.MultiTexCoord1f(target, s);
+  glMultiTexCoord1f(target, s);
 end;
 
 // ----------
@@ -2426,7 +2426,7 @@ begin
   target:=Info['target'];
   s:=Info['s'];
   t:=Info['t'];
-  GL.MultiTexCoord2f(target, s, t);
+  glMultiTexCoord2f(target, s, t);
 end;
 
 // ----------
@@ -2442,7 +2442,7 @@ begin
   s:=Info['s'];
   t:=Info['t'];
   r:=Info['r'];
-  GL.MultiTexCoord3f(target, s, t, r);
+  glMultiTexCoord3f(target, s, t, r);
 end;
 
 // ----------
@@ -2459,7 +2459,7 @@ begin
   t:=Info['t'];
   r:=Info['r'];
   q:=Info['q'];
-  GL.MultiTexCoord4f(target, s, t, r, q);
+  glMultiTexCoord4f(target, s, t, r, q);
 end;
 
 // ----------
@@ -2483,7 +2483,7 @@ var
   target : Cardinal;
 begin
   target:=Info['target'];
-  GL.ClientActiveTexture(target);
+  glClientActiveTexture(target);
 end;
 
 // ----------
@@ -2498,7 +2498,7 @@ begin
   target:=Info['target'];
   pname:=Info['pname'];
   param:=Info['param'];
-  GL.TexEnvf(target, pname, param);
+  glTexEnvf(target, pname, param);
 end;
 
 // ----------
@@ -2513,7 +2513,7 @@ begin
   target:=Info['target'];
   pname:=Info['pname'];
   param:=Info['param'];
-  GL.TexEnvi(target, pname, param);
+  glTexEnvi(target, pname, param);
 end;
 
 // ----------

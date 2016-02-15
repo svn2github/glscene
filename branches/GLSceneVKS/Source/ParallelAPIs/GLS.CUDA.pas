@@ -950,7 +950,7 @@ begin
         [Self.ClassName]);
   end
   else
-    GLSLogger.LogErrorFmt(vksFailedOpenFile, [AFilename]);
+    GLSLogger.LogErrorFmt(glsFailedOpenFile, [AFilename]);
 end;
 
 // LoadFromSource

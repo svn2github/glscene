@@ -141,7 +141,7 @@ begin
       LType := CUFFT_Z2Z;
   else
     begin
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
       LType := CUFFT_R2C;
     end;
   end;

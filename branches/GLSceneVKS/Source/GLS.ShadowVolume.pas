@@ -904,7 +904,7 @@ begin
           LightEnabling[lightSource.LightID] := False;
       end;
 
-      GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
+      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @NullHmgPoint);
       ARci.PipelineTransformation.Push;
 
       // render contribution of all shadow casting lights
@@ -936,13 +936,13 @@ begin
         end;
 
         // clear the stencil and prepare for shadow volume pass
-        GL.Clear(GL_STENCIL_BUFFER_BIT);
+        glClear(GL_STENCIL_BUFFER_BIT);
         SetStencilFunc(cfAlways, 0, 255);
         DepthFunc := cfLess;
 
         if svoShowVolumes in Options then
         begin
-          GL.Color3f(0.05 * i, 0.1, 0);
+          glColor3f(0.05 * i, 0.1, 0);
           Enable(stBlend);
         end
         else
@@ -953,7 +953,7 @@ begin
         Enable(stCullFace);
 
         Disable(stLighting);
-        GL.EnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
         SetPolygonOffset(1, 1);
 
         // for all opaque shadow casters
@@ -979,12 +979,12 @@ begin
             try
               // render the silhouette
               ARci.PipelineTransformation.ModelMatrix := obj.AbsoluteMatrix;
-              GL.VertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
+              glVertexPointer(4, GL_FLOAT, 0, sil.Vertices.List);
 
               if Boolean(PtrUInt(opaqueCapping[k])) then
               begin
                 // z-fail
-                if GL.EXT_compiled_vertex_array then
+                if GL_EXT_compiled_vertex_array then
                   GL.LockArrays(0, sil.Vertices.Count);
 
                 CullFaceMode := cmFront;
@@ -992,10 +992,10 @@ begin
 
                 with sil do
                 begin
-                  GL.DrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
+                  glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
                     Indices.List);
                   Enable(stPolygonOffsetFill);
-                  GL.DrawElements(GL_TRIANGLES, CapIndices.Count,
+                  glDrawElements(GL_TRIANGLES, CapIndices.Count,
                     GL_UNSIGNED_INT,
                     CapIndices.List);
                   Disable(stPolygonOffsetFill);
@@ -1006,16 +1006,16 @@ begin
 
                 with sil do
                 begin
-                  GL.DrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
+                  glDrawElements(GL_QUADS, Indices.Count, GL_UNSIGNED_INT,
                     Indices.List);
                   Enable(stPolygonOffsetFill);
-                  GL.DrawElements(GL_TRIANGLES, CapIndices.Count,
+                  glDrawElements(GL_TRIANGLES, CapIndices.Count,
                     GL_UNSIGNED_INT,
                     CapIndices.List);
                   Disable(stPolygonOffsetFill);
                 end;
 
-                if GL.EXT_compiled_vertex_array then
+                if GL_EXT_compiled_vertex_array then
                   GL.UnlockArrays;
               end
               else
@@ -1024,13 +1024,13 @@ begin
                 CullFaceMode := cmBack;
                 SetStencilOp(soKeep, soKeep, soIncr);
 
-                GL.DrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
+                glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
                   sil.Indices.List);
 
                 CullFaceMode := cmFront;
                 SetStencilOp(soKeep, soKeep, soDecr);
 
-                GL.DrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
+                glDrawElements(GL_QUADS, sil.Indices.Count, GL_UNSIGNED_INT,
                   sil.Indices.List);
               end;
 
@@ -1043,7 +1043,7 @@ begin
             end;
         end;
 
-        GL.DisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         // re-enable light's diffuse and specular, but no ambient
         LightEnabling[LightID] := True;
@@ -1071,24 +1071,24 @@ begin
           DepthFunc := cfAlways;
           SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
-          GL.PushMatrix;
-          GL.LoadIdentity;
-          GL.MatrixMode(GL_PROJECTION);
-          GL.PushMatrix;
+          glPushMatrix;
+          glLoadIdentity;
+          glMatrixMode(GL_PROJECTION);
+          glPushMatrix;
           PM := CreateOrthoMatrix(0, 1, 1, 0, -1, 1);
-          GL.LoadMatrixf(PGLFloat(@PM));
+          glLoadMatrixf(PGLFloat(@PM));
 
-          GL.Color4fv(FDarkeningColor.AsAddress);
-          GL.Begin_(GL_QUADS);
-          GL.Vertex2f(0, 0);
-          GL.Vertex2f(0, 1);
-          GL.Vertex2f(1, 1);
-          GL.Vertex2f(1, 0);
-          GL.End_;
+          glColor4fv(FDarkeningColor.AsAddress);
+          glBegin(GL_QUADS);
+          glVertex2f(0, 0);
+          glVertex2f(0, 1);
+          glVertex2f(1, 1);
+          glVertex2f(1, 0);
+          glEnd;
 
-          GL.PopMatrix;
-          GL.MatrixMode(GL_MODELVIEW);
-          GL.PopMatrix;
+          glPopMatrix;
+          glMatrixMode(GL_MODELVIEW);
+          glPopMatrix;
 
           SetBlendFunc(bfSrcAlpha, bfOne);
         end;
@@ -1100,7 +1100,7 @@ begin
       ARci.PipelineTransformation.Pop;
 
       // restore OpenGL state
-      GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
+      glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
       Scene.SetupLights(ARci.GLStates.MaxLights);
       Disable(stStencilTest);
       SetPolygonOffset(0, 0);

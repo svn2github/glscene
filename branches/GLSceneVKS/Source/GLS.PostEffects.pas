@@ -161,7 +161,7 @@ begin
     if NewScreenSize <> Length(FRenderBuffer) then
       SetLength(FRenderBuffer, NewScreenSize);
 
-    GL.ReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    glReadPixels(0, 0, rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
     case FPreset of
       // pepNone is handled in the first line.
       pepGray:        MakeGrayEffect;
@@ -172,9 +172,9 @@ begin
       pepBlur:        MakeBlurEffect(rci);
       pepCustom:      DoOnCustomEffect(rci, FRenderBuffer);
     else
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
     end;
-    GL.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
+    glDrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
 
   // Start rendering children (if any).
@@ -338,7 +338,7 @@ begin
 
   if RealOwner <> nil then
     if FPostShaderInterface.GetTextureTarget <> RealOwner.TempTextureTarget then
-      raise EGLPostShaderHolderException.Create(vksErrorEx + 'TextureTarget is not compatible!');
+      raise EGLPostShaderHolderException.Create(glsErrorEx + 'TextureTarget is not compatible!');
   // If RealOwner = nil, we ignore this case and hope it will turn out ok...
 
   FShader := Value;

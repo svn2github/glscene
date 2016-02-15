@@ -40,18 +40,18 @@ type
     FName: string;
     FType: TVKSLDataType;
     FFunc: TCUDAFunction;
-    FLocation: TGLint;
+    FLocation: GLint;
     FOnBeforeKernelLaunch: TOnBeforeKernelLaunch;
     procedure SetName(const AName: string);
     procedure SetType(AType: TVKSLDataType);
     procedure SetFunc(AFunc: TCUDAFunction);
-    function GetLocation: TGLint;
+    function GetLocation: GLint;
     function GetOwner: TVKVertexAttributes; reintroduce;
   public
     { Public Declarations }
     constructor Create(ACollection: TCollection); override;
     procedure NotifyChange(Sender: TObject);
-    property Location: TGLint read GetLocation;
+    property Location: GLint read GetLocation;
   published
     { Published Declarations }
     property Name: string read FName write SetName;
@@ -643,7 +643,7 @@ begin
     GLSLTypeMat4F: typeSize := 16 * SizeOf(GLFloat);
   else
     begin
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
       typeSize := 0;
     end;
   end;
@@ -778,10 +778,10 @@ begin
   end;
 end;
 
-function TVKVertexAttribute.GetLocation: TGLint;
+function TVKVertexAttribute.GetLocation: GLint;
 begin
   if FLocation < 0 then
-    FLocation := GL.GetAttribLocation(
+    FLocation := glGetAttribLocation(
       CurrentGLContext.GLStates.CurrentProgram,
       PGLChar(TGLString(FName)));
   Result := FLocation;
@@ -909,49 +909,49 @@ begin
         case Attributes[I].GLSLType of
 
             GLSLType1F:
-              GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLType2F:
-              GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLType3F:
-              GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLType4F:
-              GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLType1I:
-              GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
 
             GLSLType2I:
-              GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
 
             GLSLType3I:
-              GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
 
             GLSLType4I:
-              GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
 
             GLSLType1UI:
-              GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLType2UI:
-              GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLType3UI:
-              GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLType4UI:
-              GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
+              glVertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLTypeMat2F:
-              GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLTypeMat3F:
-              GL.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
 
             GLSLTypeMat4F:
-              GL.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
 
         end; // of case
       end;
@@ -1042,7 +1042,7 @@ begin
             end;
         end;
     else
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
     end;
     // Produce indexes
     if (GR.GetElementArrayDataSize > 0)
@@ -1067,7 +1067,7 @@ end;
 procedure TVKCustomFeedBackMesh.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf,
   ARenderChildren: Boolean);
 const
-  cPrimitives: array[TFeedBackMeshPrimitive] of TGLenum =
+  cPrimitives: array[TFeedBackMeshPrimitive] of GLEnum =
     (GL_POINTS, GL_LINES, GL_TRIANGLES);
 begin
   if ARenderSelf
@@ -1088,7 +1088,7 @@ begin
         // Render mesh
         if FElementNumber > 0 then
         begin
-          GL.DrawElements(
+          glDrawElements(
             cPrimitives[FPrimitiveType],
             FElementNumber,
             GL_UNSIGNED_INT,
@@ -1096,7 +1096,7 @@ begin
         end
         else
         begin
-          GL.DrawArrays(
+          glDrawArrays(
             cPrimitives[FPrimitiveType],
             0,
             FVertexNumber);

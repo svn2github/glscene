@@ -428,53 +428,53 @@ procedure TVKSkyDomeBand.BuildList(var rci: TVKRenderContextInfo);
     if start = -90 then
     begin
       // triangle fan with south pole
-      GL.Begin_(GL_TRIANGLE_FAN);
-      GL.Color4fv(@colStart);
-      GL.Vertex3f(0, 0, -1);
+      glBegin(GL_TRIANGLE_FAN);
+      glColor4fv(@colStart);
+      glVertex3f(0, 0, -1);
       f := 2 * PI / Slices;
       SinCosine(DegToRadian(stop), vertex1.V[2], r);
-      GL.Color4fv(@colStop);
+      glColor4fv(@colStop);
       for i := 0 to Slices do
       begin
         SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
-        GL.Vertex4fv(@vertex1);
+        glVertex4fv(@vertex1);
       end;
-      GL.End_;
+      glEnd;
     end
     else if stop = 90 then
     begin
       // triangle fan with north pole
-      GL.Begin_(GL_TRIANGLE_FAN);
-      GL.Color4fv(@colStop);
-      GL.Vertex3fv(@ZHmgPoint);
+      glBegin(GL_TRIANGLE_FAN);
+      glColor4fv(@colStop);
+      glVertex3fv(@ZHmgPoint);
       f := 2 * PI / Slices;
       SinCosine(DegToRadian(start), vertex1.V[2], r);
-      GL.Color4fv(@colStart);
+      glColor4fv(@colStart);
       for i := Slices downto 0 do
       begin
         SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
-        GL.Vertex4fv(@vertex1);
+        glVertex4fv(@vertex1);
       end;
-      GL.End_;
+      glEnd;
     end
     else
     begin
       vertex2.V[3] := 1;
       // triangle strip
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       f := 2 * PI / Slices;
       SinCosine(DegToRadian(start), vertex1.V[2], r);
       SinCosine(DegToRadian(stop), vertex2.V[2], r2);
       for i := 0 to Slices do
       begin
         SinCosine(i * f, r, vertex1.V[1], vertex1.V[0]);
-        GL.Color4fv(@colStart);
-        GL.Vertex4fv(@vertex1);
+        glColor4fv(@colStart);
+        glVertex4fv(@vertex1);
         SinCosine(i * f, r2, vertex2.V[1], vertex2.V[0]);
-        GL.Color4fv(@colStop);
-        GL.Vertex4fv(@vertex2);
+        glColor4fv(@colStop);
+        glVertex4fv(@vertex2);
       end;
-      GL.End_;
+      glEnd;
     end;
   end;
 
@@ -680,7 +680,7 @@ var
     if (n and 63) = 0 then
     begin
       twinkleColor := VectorScale(color, Random * 0.6 + 0.4);
-      GL.Color3fv(@twinkleColor.V[0]);
+      glColor3fv(@twinkleColor.V[0]);
       n := 0;
     end
     else
@@ -701,7 +701,7 @@ begin
   rci.GLStates.Enable(stBlend);
   rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
 
-  GL.Begin_(GL_POINTS);
+  glBegin(GL_POINTS);
   for i := 0 to Count - 1 do
   begin
     star := Items[i];
@@ -710,17 +710,17 @@ begin
     begin
       if pointSize10 > 15 then
       begin
-        GL.End_;
+        glEnd;
         lastPointSize10 := pointSize10;
         rci.GLStates.PointSize := pointSize10 * 0.1;
-        GL.Begin_(GL_POINTS);
+        glBegin(GL_POINTS);
       end
       else if lastPointSize10 <> 15 then
       begin
-        GL.End_;
+        glEnd;
         lastPointSize10 := 15;
         rci.GLStates.PointSize := 1.5;
-        GL.Begin_(GL_POINTS);
+        glBegin(GL_POINTS);
       end;
     end;
     if lastColor <> star.FColor then
@@ -732,14 +732,14 @@ begin
         DoTwinkle;
       end
       else
-        GL.Color3fv(@color.V[0]);
+        glColor3fv(@color.V[0]);
       lastColor := star.FColor;
     end
     else if twinkle then
       DoTwinkle;
-    GL.Vertex3fv(@star.FCacheCoord.V[0]);
+    glVertex3fv(@star.FCacheCoord.V[0]);
   end;
-  GL.End_;
+  glEnd;
 
   // restore default GLScene AlphaFunc
   rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
@@ -1334,10 +1334,10 @@ var
     r := 0;
     vertex1.V[3] := 1;
     // triangle fan with south pole
-    GL.Begin_(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
-    GL.Color4fv(DeepColor.AsAddress);
-    GL.Vertex3f(0, 0, -1);
+    glColor4fv(DeepColor.AsAddress);
+    glVertex3f(0, 0, -1);
     SinCosine(DegToRadian(stop), vertex1.V[2], r);
     thetaStart := DegToRadian(90 - stop);
     for i := 0 to steps - 1 do
@@ -1345,10 +1345,10 @@ var
       vertex1.V[0] := r * cosTable[i];
       vertex1.V[1] := r * sinTable[i];
       color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-      GL.Color4fv(@color);
-      GL.Vertex4fv(@vertex1);
+      glColor4fv(@color);
+      glVertex4fv(@vertex1);
     end;
-    GL.End_;
+    glEnd;
   end;
 
   procedure RenderBand(start, stop: Single);
@@ -1362,10 +1362,10 @@ var
     if stop = 90 then
     begin
       // triangle fan with north pole
-      GL.Begin_(GL_TRIANGLE_FAN);
+      glBegin(GL_TRIANGLE_FAN);
       color := CalculateColor(0, CalculateCosGamma(ZHmgPoint));
-      GL.Color4fv(@color);
-      GL.Vertex4fv(@ZHmgPoint);
+      glColor4fv(@color);
+      glVertex4fv(@ZHmgPoint);
       SinCosine(DegToRadian(start), vertex1.V[2], r);
       thetaStart := DegToRadian(90 - start);
       for i := 0 to steps - 1 do
@@ -1373,16 +1373,16 @@ var
         vertex1.V[0] := r * cosTable[i];
         vertex1.V[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-        GL.Color4fv(@color);
-        GL.Vertex4fv(@vertex1);
+        glColor4fv(@color);
+        glVertex4fv(@vertex1);
       end;
-      GL.End_;
+      glEnd;
     end
     else
     begin
       vertex2.V[3] := 1;
       // triangle strip
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       SinCosine(DegToRadian(start), vertex1.V[2], r);
       SinCosine(DegToRadian(stop), vertex2.V[2], r2);
       thetaStart := DegToRadian(90 - start);
@@ -1392,15 +1392,15 @@ var
         vertex1.V[0] := r * cosTable[i];
         vertex1.V[1] := r * sinTable[i];
         color := CalculateColor(thetaStart, CalculateCosGamma(vertex1));
-        GL.Color4fv(@color);
-        GL.Vertex4fv(@vertex1);
+        glColor4fv(@color);
+        glVertex4fv(@vertex1);
         vertex2.V[0] := r2 * cosTable[i];
         vertex2.V[1] := r2 * sinTable[i];
         color := CalculateColor(thetaStop, CalculateCosGamma(vertex2));
-        GL.Color4fv(@color);
-        GL.Vertex4fv(@vertex2);
+        glColor4fv(@color);
+        glVertex4fv(@vertex2);
       end;
-      GL.End_;
+      glEnd;
     end;
   end;
 

@@ -132,7 +132,7 @@ begin
         else
           Disable(stBlend);
 
-        GL.Color4fv(FlineColor.AsAddress);
+        glColor4fv(FlineColor.AsAddress);
         LineWidth := FOutlineWidth;
         Disable(stLineStipple);
         PolygonMode := pmLines;

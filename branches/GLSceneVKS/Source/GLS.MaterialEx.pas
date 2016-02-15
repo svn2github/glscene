@@ -203,7 +203,7 @@ type
   protected
     { Protected Declarations }
     FHandle: TVKTextureHandle;
-    FInternalFormat: TGLInternalFormat;
+    FInternalFormat: GLinternalFormat;
     FWidth: Integer;
     FHeight: Integer;
     FDepth: Integer;
@@ -259,7 +259,7 @@ type
     FBaseLevel: Integer;
     FMaxLevel: Integer;
     FLastTime: Double;
-    procedure SetInternalFormat(const AValue: TGLInternalFormat);
+    procedure SetInternalFormat(const AValue: GLinternalFormat);
     procedure SetImageAlpha(const AValue: TVKTextureImageAlpha);
     procedure SetImageBrightness(const AValue: Single);
     function StoreBrightness: Boolean;
@@ -296,7 +296,7 @@ type
     property InternalWidth: Integer read FWidth;
     property InternalHeight: Integer read FHeight;
     property InternalDepth: Integer read FDepth;
-    property InternalFormat: TGLInternalFormat read FInternalFormat
+    property InternalFormat: GLinternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
 
     { Automatic Image Alpha setting. 
@@ -359,7 +359,7 @@ type
     procedure SetWidth(AValue: Integer);
     procedure SetHeight(AValue: Integer);
     procedure SetDepth(AValue: Integer);
-    procedure SetInternalFormat(const AValue: TGLInternalFormat);
+    procedure SetInternalFormat(const AValue: GLinternalFormat);
     procedure SetOnlyWrite(AValue: Boolean);
     procedure SetLayered(AValue: Boolean);
     procedure SetCubeMap(AValue: Boolean);
@@ -386,7 +386,7 @@ type
       write SetHeight default 256;
     property InternalDepth: Integer read FDepth
       write SetDepth default 0;
-    property InternalFormat: TGLInternalFormat read FInternalFormat
+    property InternalFormat: GLinternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
     { This flag makes use render buffer as target which makes
         it impossible to read it as texture, but improves efficiency. }
@@ -629,8 +629,8 @@ type
     FScript: TStringList;
     FCommandCache: TCombinerCache;
     procedure SetScript(AValue: TStringList);
-    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TGLuint);
-    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TGLuint);
+    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: GLuint);
+    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: GLuint);
   public
     { Public Declarations }
     constructor Create(AOwner: TVKXCollection); override;
@@ -778,13 +778,13 @@ type
     FInfoLog: string;
     FGeometryInput: TVKgsInTypes;
     FGeometryOutput: TVKgsOutTypes;
-    FGeometryVerticesOut: TGLint;
+    FGeometryVerticesOut: GLint;
     procedure SetSource(AValue: TStringList);
     procedure SetSourceFile(AValue: string);
     procedure SetShaderType(AValue: TVKShaderType);
     procedure SetGeometryInput(AValue: TVKgsInTypes);
     procedure SetGeometryOutput(AValue: TVKgsOutTypes);
-    procedure SetGeometryVerticesOut(AValue: TGLint);
+    procedure SetGeometryVerticesOut(AValue: GLint);
     function GetHandle: TVKShaderHandle;
   public
     { Public Declarations }
@@ -809,7 +809,7 @@ type
       write SetGeometryInput default gsInPoints;
     property GeometryOutput: TVKgsOutTypes read FGeometryOutput
       write SetGeometryOutput default gsOutPoints;
-    property GeometryVerticesOut: TGLint read FGeometryVerticesOut
+    property GeometryVerticesOut: GLint read FGeometryVerticesOut
       write SetGeometryVerticesOut default 1;
   end;
 
@@ -842,17 +842,17 @@ type
     function GetVec3: TVector3f; virtual;
     function GetVec4: TVector; virtual;
 
-    function GetInt: TGLint; virtual;
+    function GetInt: GLint; virtual;
     function GetIVec2: TVector2i; virtual;
     function GetIVec3: TVector3i; virtual;
     function GetIVec4: TVector4i; virtual;
 
-    function GetUInt: TGLuint; virtual;
+    function GetUInt: GLuint; virtual;
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
 
-    procedure SetFloat(const Value: TGLfloat); virtual;
+    procedure SetFloat(const Value: GLfloat); virtual;
     procedure SetVec2(const Value: TVector2f); virtual;
     procedure SetVec3(const Value: TVector3f); virtual;
     procedure SetVec4(const Value: TVector4f); virtual;
@@ -891,10 +891,10 @@ type
   TVKShaderUniform = class(TVKAbstractShaderUniform, IShaderParameter)
   protected
     { Protected Declarations }
-    FLocation: TGLint;
-    FStoreProgram: TGLuint;
+    FLocation: GLint;
+    FStoreProgram: GLuint;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: TGLuint;
+    function GetProgram: GLuint;
 {$IFDEF GLS_INLINE} inline;
 {$ENDIF}
     procedure PushProgram;
@@ -909,17 +909,17 @@ type
     function GetVec3: TVector3f; override;
     function GetVec4: TVector; override;
 
-    function GetInt: TGLint; override;
+    function GetInt: GLint; override;
     function GetIVec2: TVector2i; override;
     function GetIVec3: TVector3i; override;
     function GetIVec4: TVector4i; override;
 
-    function GetUInt: TGLuint; override;
+    function GetUInt: GLuint; override;
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
 
-    procedure SetFloat(const Value: TGLfloat); override;
+    procedure SetFloat(const Value: GLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -956,7 +956,7 @@ type
     procedure Apply(var ARci: TVKRenderContextInfo); override;
 
     property Name: string read GetName;
-    property Location: TGLint read FLocation;
+    property Location: GLint read FLocation;
     property GLSLType: TVKSLDataType read GetGLSLType;
   end;
 
@@ -966,7 +966,7 @@ type
   TVKShaderUniformDSA = class(TVKShaderUniform)
   protected
     { Protected Declarations }
-    procedure SetFloat(const Value: TGLfloat); override;
+    procedure SetFloat(const Value: GLfloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
     procedure SetVec4(const Value: TVector4f); override;
@@ -1163,8 +1163,8 @@ type
     procedure SetSM3(AValue: TVKShaderModel3);
     procedure SetSM4(AValue: TVKShaderModel4);
     procedure SetSM5(AValue: TVKShaderModel5);
-    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: TGLuint);
-    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: TGLuint);
+    procedure DoAllocate(Sender: TVKVirtualHandle; var handle: GLuint);
+    procedure DoDeallocate(Sender: TVKVirtualHandle; var handle: GLuint);
   protected
     procedure Loaded; override;
     procedure RemoveDefferedInit;
@@ -1324,17 +1324,17 @@ procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 implementation
 
 const
-  cTextureMagFilter: array[maNearest..maLinear] of TGLenum =
+  cTextureMagFilter: array[maNearest..maLinear] of GLEnum =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLenum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of GLEnum =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
-  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of TGLenum =
+  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of GLEnum =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI,
       GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of GLEnum =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
   cSamplerToTexture: array[TVKSLSamplerType] of TVKTextureTarget =
     (
@@ -1377,7 +1377,7 @@ const
     ttTexture2DMultisample
     );
 
-  cTextureSwizzle: array[TVKTextureSwizzle] of TGLenum =
+  cTextureSwizzle: array[TVKTextureSwizzle] of GLEnum =
     (
     GL_RED,
     GL_GREEN,
@@ -1388,7 +1388,7 @@ const
     );
 
 const
-  cTextureMode: array[TVKTextureMode] of TGLenum =
+  cTextureMode: array[TVKTextureMode] of GLEnum =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
 const
@@ -1450,7 +1450,7 @@ type
 var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-  vStoreBegin: procedure(mode: TGLenum);
+  vStoreBegin: procedure(mode: GLEnum);
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -1737,7 +1737,7 @@ begin
       begin
         ARci.GLStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
           cTextureMode[FTextureMode]);
       end;
     end;
@@ -2070,7 +2070,7 @@ end;
 procedure TVKTextureImageEx.FullTransfer;
 var
   LCompression: TVKTextureCompression;
-  glFormat: TGLenum;
+  glFormat: GLEnum;
 begin
   with GL do
   begin
@@ -2095,7 +2095,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, vksErrorEx + vksUnknownType);
+          Assert(False, glsErrorEx + glsUnknownType);
         end;
         if not GetGenericCompressedFormat(
           FInternalFormat,
@@ -2191,7 +2191,7 @@ var
   bContinueStreaming: Boolean;
   OldBaseLevel, level: Integer;
   newTime: Double;
-  glInternalFormat: TGLenum;
+  glInternalFormat: GLEnum;
   transferMethod: 0..3;
 begin
   LImage := TFriendlyImage(FImage);
@@ -2203,7 +2203,7 @@ begin
     transferMethod := 1
   else
     transferMethod := 0;
-  if GL.EXT_direct_state_access then
+  if GL_EXT_direct_state_access then
     transferMethod := transferMethod + 2;
 
   bContinueStreaming := False;
@@ -2316,7 +2316,7 @@ var
   LGraphic: TVKGraphic;
   LImage: TVKImage;
   level: Integer;
-  glColorFormat, glDataType: TGLenum;
+  glColorFormat, glDataType: GLEnum;
   bReadFromSource: Boolean;
   LStream: TStream;
   ptr: PByte;
@@ -2517,7 +2517,7 @@ begin
     begin
       Name := ReadString;
       FDefferedInit := ReadBoolean;
-      FInternalFormat := TGLInternalFormat(ReadInteger);
+      FInternalFormat := GLinternalFormat(ReadInteger);
       FCompression := TVKTextureCompression(ReadInteger);
       FImageAlpha := TVKTextureImageAlpha(ReadInteger);
       FImageBrightness := ReadFloat;
@@ -2573,7 +2573,7 @@ begin
   end;
 end;
 
-procedure TVKTextureImageEx.SetInternalFormat(const AValue: TGLInternalFormat);
+procedure TVKTextureImageEx.SetInternalFormat(const AValue: GLinternalFormat);
 begin
   if AValue <> FInternalFormat then
   begin
@@ -2762,7 +2762,7 @@ end;
 
 procedure TVKTextureSampler.DoOnPrepare(Sender: TVKContext);
 var
-  ID: TGLuint;
+  ID: GLuint;
 begin
   if IsDesignTime and FDefferedInit then
     exit;
@@ -3008,13 +3008,13 @@ begin
 end;
 
 procedure TVKTextureCombiner.DoAllocate(Sender: TVKVirtualHandle;
-  var handle: TGLuint);
+  var handle: GLuint);
 begin
   handle := 1;
 end;
 
 procedure TVKTextureCombiner.DoDeallocate(Sender: TVKVirtualHandle;
-  var handle: TGLuint);
+  var handle: GLuint);
 begin
   handle := 0;
 end;
@@ -3239,13 +3239,13 @@ begin
 end;
 
 procedure TVKLibMaterialEx.DoAllocate(Sender: TVKVirtualHandle;
-  var handle: TGLuint);
+  var handle: GLuint);
 begin
   handle := 1;
 end;
 
 procedure TVKLibMaterialEx.DoDeallocate(Sender: TVKVirtualHandle;
-  var handle: TGLuint);
+  var handle: GLuint);
 begin
   handle := 0;
 end;
@@ -3465,7 +3465,7 @@ begin
           LDir := ARci.GLStates.LightPosition[FLightSourceIndex];
           LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
           NormalizeVector(LDir);
-          GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
+          glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
         end;
         U := U or (1 shl N);
       end;
@@ -3474,7 +3474,7 @@ begin
     if Assigned(FLibAsmProg) then
     begin
       FLibAsmProg.Handle.Bind;
-      GL.Enable(GL_VERTEX_PROGRAM_ARB);
+      glEnable(GL_VERTEX_PROGRAM_ARB);
       if Assigned(GetMaterial.FOnAsmProgSetting) then
         GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
@@ -3691,7 +3691,7 @@ begin
   ARci.GLStates.ActiveTexture := 0;
 
   if Assigned(FLibAsmProg) then
-    GL.Disable(GL_VERTEX_PROGRAM_ARB);
+    glDisable(GL_VERTEX_PROGRAM_ARB);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -3700,7 +3700,7 @@ end;
 
 procedure TVKTextureProperties.Apply(var ARci: TVKRenderContextInfo);
 var
-  glTarget: TGLenum;
+  glTarget: GLEnum;
 begin
   if Assigned(FLibTexture) then
     with GL do
@@ -3792,7 +3792,7 @@ begin
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
+        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         if ARci.currentMaterialLevel = mlFixedFunction then
           XGL.MapTexCoordToMain;
@@ -4463,7 +4463,7 @@ begin
   end;
 end;
 
-procedure TVKShaderEx.SetGeometryVerticesOut(AValue: TGLint);
+procedure TVKShaderEx.SetGeometryVerticesOut(AValue: GLint);
 begin
   if AValue < 1 then
     AValue := 1
@@ -4730,12 +4730,12 @@ var
   T: TVKShaderType;
   LUniforms: TPersistentObjectList;
   LUniform, LUniform2: TVKShaderUniform;
-  ID: TGLuint;
+  ID: GLuint;
   I, J, C: Integer;
   buff: array[0..255] of AnsiChar;
-  Size: TGLInt;
+  Size: GLint;
   Len: GLsizei;
-  Loc: TGLint;
+  Loc: GLint;
   AType: GLenum;
   UName: string;
   GLSLData: TVKSLDataType;
@@ -4821,12 +4821,12 @@ begin
               // Get uniforms
               LUniforms := TPersistentObjectList.Create;
 
-              GL.GetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
+              glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
               for I := 0 to C - 1 do
               begin
                 GetActiveUniform(
                   ID,
-                  TGLuint(I),
+                  GLuint(I),
                   Length(buff),
                   @Len,
                   @Size,
@@ -5242,7 +5242,7 @@ end;
 
 class function TVKShaderModel4.IsSupported: Boolean;
 begin
-  Result := GL.EXT_gpu_shader4;
+  Result := GL_EXT_gpu_shader4;
 end;
 
 class function TVKShaderModel5.IsSupported: Boolean;
@@ -5250,7 +5250,7 @@ begin
   Result := GL.ARB_gpu_shader5;
 end;
 
-procedure BeginPatch(mode: TGLenum);
+procedure BeginPatch(mode: GLEnum);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -5270,7 +5270,7 @@ begin
   end
   else
   begin
-    GL.Begin_ := vStoreBegin;
+    glBegin := vStoreBegin;
     GLSLogger.LogError('glBegin called with unsupported primitive for tessellation');
     Abort;
   end;
@@ -5280,8 +5280,8 @@ procedure TVKShaderModel5.Apply(var ARci: TVKRenderContextInfo);
 begin
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
   begin
-    vStoreBegin := GL.Begin_;
-    GL.Begin_ := BeginPatch;
+    vStoreBegin := glBegin;
+    glBegin := BeginPatch;
     ARci.amalgamating := True;
   end;
   inherited;
@@ -5291,7 +5291,7 @@ procedure TVKShaderModel5.UnApply(var ARci: TVKRenderContextInfo);
 begin
   inherited;
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
-    GL.Begin_ := vStoreBegin;
+    glBegin := vStoreBegin;
   ARci.amalgamating := False;
 end;
 
@@ -5626,7 +5626,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
 
   function FindHotActiveUnit: Boolean;
   var
-    ID: TGLuint;
+    ID: GLuint;
     I, J: Integer;
     bindTime, minTime: Double;
     LTex: TVKTextureImageEx;
@@ -5694,7 +5694,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
   end;
 
 var
-  glTarget: TGLenum;
+  glTarget: GLEnum;
 begin
   if FLocation > -1 then
   begin
@@ -5976,7 +5976,7 @@ begin
   Result := FType;
 end;
 
-function TVKAbstractShaderUniform.GetInt: TGLint;
+function TVKAbstractShaderUniform.GetInt: GLint;
 begin
   FillChar(Result, SizeOf(Result), $00);
 end;
@@ -6040,7 +6040,7 @@ begin
   Result := cDefaultSwizzleVector;
 end;
 
-function TVKAbstractShaderUniform.GetUInt: TGLuint;
+function TVKAbstractShaderUniform.GetUInt: GLuint;
 begin
   FillChar(Result, SizeOf(Result), $00);
 end;
@@ -6079,7 +6079,7 @@ procedure TVKAbstractShaderUniform.ReadFromFiler(AReader: TReader);
 begin
 end;
 
-procedure TVKAbstractShaderUniform.SetFloat(const Value: TGLfloat);
+procedure TVKAbstractShaderUniform.SetFloat(const Value: GLfloat);
 begin
 end;
 
@@ -6182,45 +6182,45 @@ end;
 function TVKShaderUniform.GetFloat: Single;
 begin
   // TODO: Type checking
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
-function TVKShaderUniform.GetInt: TGLint;
+function TVKShaderUniform.GetInt: GLint;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  glGetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetIVec2: TVector2i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  glGetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetIVec3: TVector3i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  glGetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetIVec4: TVector4i;
 begin
-  GL.GetUniformiv(GetProgram, FLocation, @Result);
+  glGetUniformiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetMat2: TMatrix2f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetMat3: TMatrix3f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetMat4: TMatrix4f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
-function TVKShaderUniform.GetProgram: TGLuint;
+function TVKShaderUniform.GetProgram: GLuint;
 begin
   Result := TVKBaseShaderModel(Owner).FHandle.Handle;
 end;
@@ -6252,39 +6252,39 @@ begin
   Result := GetUniformAutoSetMethodName(FAutoSet);
 end;
 
-function TVKShaderUniform.GetUInt: TGLuint;
+function TVKShaderUniform.GetUInt: GLuint;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  glGetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetUVec2: TVector2ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  glGetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetUVec3: TVector3ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  glGetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetUVec4: TVector4ui;
 begin
-  GL.GetUniformuiv(GetProgram, FLocation, @Result);
+  glGetUniformuiv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetVec2: TVector2f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetVec3: TVector3f;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 function TVKShaderUniform.GetVec4: TVector;
 begin
-  GL.GetUniformfv(GetProgram, FLocation, @Result);
+  glGetUniformfv(GetProgram, FLocation, @Result);
 end;
 
 procedure TVKShaderUniform.PopProgram;
@@ -6313,7 +6313,7 @@ begin
   end;
 end;
 
-procedure TVKShaderUniform.SetFloat(const Value: TGLfloat);
+procedure TVKShaderUniform.SetFloat(const Value: GLfloat);
 begin
   PushProgram;
   GL.Uniform1f(FLocation, Value);
@@ -6460,7 +6460,7 @@ end;
 
 {$IFDEF GLS_REGION}{$REGION 'TVKShaderUniformDSA'}{$ENDIF}
 
-procedure TVKShaderUniformDSA.SetFloat(const Value: TGLfloat);
+procedure TVKShaderUniformDSA.SetFloat(const Value: GLfloat);
 begin
   GL.ProgramUniform1f(GetProgram, FLocation, Value);
 end;
@@ -6696,7 +6696,7 @@ procedure TVKFrameBufferAttachment.DoOnPrepare(Sender: TVKContext);
 var
   LTarget: TVKTextureTarget;
   w, h, d, s, Level, MaxLevel: Integer;
-  glTarget, glFormat, glFace: TGLenum;
+  glTarget, glFormat, glFace: GLEnum;
 begin
   if IsDesignTime and FDefferedInit then
     exit;
@@ -6737,7 +6737,7 @@ begin
 
   // Check target support
   if FOnlyWrite and (LTarget = ttTexture2DMultisample)
-    and not Sender.GL.EXT_framebuffer_multisample then
+    and not Sender.GL_EXT_framebuffer_multisample then
   begin
     FIsValid := False;
     exit;
@@ -6814,7 +6814,7 @@ begin
         GL_TEXTURE_1D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage1D(glTarget, Level, glFormat, w, 0, GL_RGBA,
+            glTexImage1D(glTarget, Level, glFormat, w, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6822,7 +6822,7 @@ begin
         GL_TEXTURE_2D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
+            glTexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6830,14 +6830,14 @@ begin
 
         GL_TEXTURE_RECTANGLE:
           begin
-            GL.TexImage2D(glTarget, 0, glFormat, w, h, 0, GL_RGBA,
+            glTexImage2D(glTarget, 0, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
           end;
 
         GL_TEXTURE_3D:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
+            glTexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6849,7 +6849,7 @@ begin
           begin
             for glFace := GL_TEXTURE_CUBE_MAP_POSITIVE_X to
               GL_TEXTURE_CUBE_MAP_NEGATIVE_Z do
-              GL.TexImage2D(glFace, Level, glFormat, w, w, 0, GL_RGBA,
+              glTexImage2D(glFace, Level, glFormat, w, w, 0, GL_RGBA,
                 GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6857,7 +6857,7 @@ begin
         GL_TEXTURE_1D_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
+            glTexImage2D(glTarget, Level, glFormat, w, h, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6865,7 +6865,7 @@ begin
         GL_TEXTURE_2D_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
+            glTexImage3D(glTarget, Level, glFormat, w, h, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
             Div2(h);
@@ -6874,7 +6874,7 @@ begin
         GL_TEXTURE_CUBE_MAP_ARRAY:
           for Level := 0 to MaxLevel - 1 do
           begin
-            GL.TexImage3D(glTarget, Level, glFormat, w, w, d, 0, GL_RGBA,
+            glTexImage3D(glTarget, Level, glFormat, w, w, d, 0, GL_RGBA,
               GL_UNSIGNED_BYTE, nil);
             Div2(w);
           end;
@@ -6884,9 +6884,9 @@ begin
       FOnlyWrite := False;
     end; // of texture
 
-  if GL.GetError <> GL_NO_ERROR then
+  if glGetError <> GL_NO_ERROR then
   begin
-    GL.ClearError;
+    glClearError;
     GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.Name]);
     exit;
   end
@@ -6928,7 +6928,7 @@ begin
       FWidth := ReadInteger;
       FHeight := ReadInteger;
       FDepth := ReadInteger;
-      FInternalFormat := TGLInternalFormat(ReadInteger);
+      FInternalFormat := GLinternalFormat(ReadInteger);
     end
     else
       RaiseFilerException(archiveVersion);
@@ -6980,7 +6980,7 @@ begin
 end;
 
 procedure TVKFrameBufferAttachment.SetInternalFormat(
-  const AValue: TGLInternalFormat);
+  const AValue: GLinternalFormat);
 begin
   if FInternalFormat <> AValue then
   begin

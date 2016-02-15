@@ -98,23 +98,23 @@ type
 
   TLightmapBounds = class(TVKCustomCoordinates)
   private
-    function GetLeft: TGLfloat;
-    function GetTop: TGLfloat;
-    function GetRight: TGLfloat;
-    function GetBottom: TGLfloat;
-    function GetWidth: TGLfloat;
-    function GetHeight: TGLfloat;
-    procedure SetLeft(const value: TGLfloat);
-    procedure SetTop(const value: TGLfloat);
-    procedure SetRight(const value: TGLfloat);
-    procedure SetBottom(const value: TGLfloat);
+    function GetLeft: GLfloat;
+    function GetTop: GLfloat;
+    function GetRight: GLfloat;
+    function GetBottom: GLfloat;
+    function GetWidth: GLfloat;
+    function GetHeight: GLfloat;
+    procedure SetLeft(const value: GLfloat);
+    procedure SetTop(const value: GLfloat);
+    procedure SetRight(const value: GLfloat);
+    procedure SetBottom(const value: GLfloat);
   published
-    property Left: TGLfloat read GetLeft write SetLeft stored False;
-    property Top: TGLfloat read GetTop write SetTop stored False;
-    property Right: TGLfloat read GetRight write SetRight stored False;
-    property Bottom: TGLfloat read GetBottom write SetBottom stored False;
-    property Width: TGLfloat read GetWidth;
-    property Height: TGLfloat read GetHeight;
+    property Left: GLfloat read GetLeft write SetLeft stored False;
+    property Top: GLfloat read GetTop write SetTop stored False;
+    property Right: GLfloat read GetRight write SetRight stored False;
+    property Bottom: GLfloat read GetBottom write SetBottom stored False;
+    property Width: GLfloat read GetWidth;
+    property Height: GLfloat read GetHeight;
   end;
 
   TVKMeshLines = class(TVKFreeForm)
@@ -352,52 +352,52 @@ end;
 
 { TLightmapBounds }
 
-function TLightmapBounds.GetLeft: TGLfloat;
+function TLightmapBounds.GetLeft: GLfloat;
 begin
   Result := X;
 end;
 
-function TLightmapBounds.GetTop: TGLfloat;
+function TLightmapBounds.GetTop: GLfloat;
 begin
   Result := Y;
 end;
 
-function TLightmapBounds.GetRight: TGLfloat;
+function TLightmapBounds.GetRight: GLfloat;
 begin
   Result := Z;
 end;
 
-function TLightmapBounds.GetBottom: TGLfloat;
+function TLightmapBounds.GetBottom: GLfloat;
 begin
   Result := W;
 end;
 
-function TLightmapBounds.GetWidth: TGLfloat;
+function TLightmapBounds.GetWidth: GLfloat;
 begin
   Result := Z - X;
 end;
 
-function TLightmapBounds.GetHeight: TGLfloat;
+function TLightmapBounds.GetHeight: GLfloat;
 begin
   Result := W - Y;
 end;
 
-procedure TLightmapBounds.SetLeft(const value: TGLfloat);
+procedure TLightmapBounds.SetLeft(const value: GLfloat);
 begin
   X := Value;
 end;
 
-procedure TLightmapBounds.SetTop(const value: TGLfloat);
+procedure TLightmapBounds.SetTop(const value: GLfloat);
 begin
   Y := Value;
 end;
 
-procedure TLightmapBounds.SetRight(const value: TGLfloat);
+procedure TLightmapBounds.SetRight(const value: GLfloat);
 begin
   Z := Value;
 end;
 
-procedure TLightmapBounds.SetBottom(const value: TGLfloat);
+procedure TLightmapBounds.SetBottom(const value: GLfloat);
 begin
   W := Value;
 end;
@@ -470,9 +470,9 @@ procedure TVKMeshLines.DoRender(var rci : TVKRenderContextInfo; renderSelf, rend
 begin
   if FNoZWrite then
   begin
-    GL.Disable(GL_Depth_Test);
+    glDisable(GL_Depth_Test);
     inherited;
-    GL.Enable(GL_Depth_Test);
+    glEnable(GL_Depth_Test);
   end
   else
     inherited;
@@ -576,11 +576,11 @@ var
   lNodeSize: Single;
 begin
   lNodeSize := LineWidth* 0.7;
-  GL.PushMatrix;
+  glPushMatrix;
   GL.Translatef(Node.x,Node.y,Node.z);
   if lNodeSize <>1 then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Scalef(lNodeSize, lNodeSize, lNodeSize);
 ///    rci.GLStates.UnSetGLState(stTexture2D);
     rci.GLStates.UnSetGLState(stColorMaterial);
@@ -590,7 +590,7 @@ begin
     else
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
-    GL.PopMatrix;
+    glPopMatrix;
   end
   else
   begin
@@ -600,7 +600,7 @@ begin
       rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
   end;
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 procedure TVKMeshLines.DrawCircle(Radius: Single);
@@ -612,7 +612,7 @@ var
 begin
   inner := VectorMake(1, 0, 0);
   outer := VectorMake(1.3, 0, 0);
-  GL.Begin_(GL_TRIANGLE_STRIP);
+  glBegin(GL_TRIANGLE_STRIP);
   for i:= 0 to CIRCLESEGMENTS do
   begin
     a := i * 2 * pi / CIRCLESEGMENTS;
@@ -621,10 +621,10 @@ begin
     lUp := Up.AsAffineVector;
     RotateVector(p1,lUp, a);
     RotateVector(p2,lUp, a);
-    GL.Vertex3fv(@p1.X);
-    GL.Vertex3fv(@p2.X);
+    glVertex3fv(@p1.X);
+    glVertex3fv(@p2.X);
   end;
-  GL.End_();
+  glEnd();
 end;
 
 function TVKMeshLines.SelectNode(LineItem: TLineItem; X,Z: Single): TLineNode;

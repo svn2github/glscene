@@ -153,7 +153,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
     procedure AddNode(const i: Integer; const coords: TVKCoordinates); overload;
-    procedure AddNode(const i: Integer; const X, Y, Z: TGLfloat); overload;
+    procedure AddNode(const i: Integer; const X, Y, Z: GLfloat); overload;
     procedure AddNode(const i: Integer; const value: TVector); overload;
     procedure AddNode(const i: Integer; const value: TAffineVector); overload;
 
@@ -481,7 +481,7 @@ end;
 // AddNode (float)
 //
 
-procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: TGLfloat);
+procedure TMultiPolygonBase.AddNode(const i: Integer; const x, y, z: GLfloat);
 begin
   Path[i].AddNode(x, y, z);
 end;
@@ -552,7 +552,7 @@ end;
 var
   vVertexPool: TVectorPool;
 
-procedure tessError(errno: TGLenum);
+procedure tessError(errno: GLEnum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -565,8 +565,8 @@ procedure tessIssueVertex(vertexData: Pointer);
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
-  xgl.TexCoord2fv(vertexData);
-  GL.Vertex3fv(vertexData);
+  xglTexCoord2fv(vertexData);
+  glVertex3fv(vertexData);
 end;
 
 procedure tessCombine(coords: PDoubleVector; vertex_data: Pointer;
@@ -579,7 +579,7 @@ begin
   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
-procedure tessBeginList(typ: TGLenum; polygonData: Pointer);
+procedure tessBeginList(typ: GLEnum; polygonData: Pointer);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -738,12 +738,12 @@ begin
   vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
   tess := gluNewTess;
   try
-    gluTessCallback(tess, GLU_TESS_BEGIN, @GL.Begin_);
+    gluTessCallback(tess, GLU_TESS_BEGIN, @glBegin);
     if textured then
       gluTessCallback(tess, GLU_TESS_VERTEX, @tessIssueVertex)
     else
-      gluTessCallback(tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    gluTessCallback(tess, GLU_TESS_END, @GL.End_);
+      gluTessCallback(tess, GLU_TESS_VERTEX, @glVertex3fv);
+    gluTessCallback(tess, GLU_TESS_END, @glEnd);
     gluTessCallback(tess, GLU_TESS_ERROR, @tessError);
     gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
     // Issue normal

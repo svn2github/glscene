@@ -51,13 +51,13 @@ type
     { Private Declarations }
     FRendering: Boolean;
     FMirrorObject: TVKBaseSceneObject;
-    FWidth, FHeight: TGLfloat;
+    FWidth, FHeight: GLfloat;
     FMirrorOptions: TMirrorOptions;
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
 
     FShape: TMirrorShapes; //ORL
-    FRadius: TGLfloat; //ORL
-    FSlices: TGLInt; //ORL
+    FRadius: GLfloat; //ORL
+    FSlices: GLint; //ORL
 
   protected
     { Protected Declarations }
@@ -67,14 +67,14 @@ type
     procedure SetMirrorOptions(const val: TMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TVKSceneBuffer);
 
-    procedure SetHeight(AValue: TGLfloat);
-    procedure SetWidth(AValue: TGLfloat);
+    procedure SetHeight(AValue: GLfloat);
+    procedure SetWidth(AValue: GLfloat);
 
     procedure SetRadius(const aValue: Single); //ORL
-    procedure SetSlices(const aValue: TGLInt); //ORL
+    procedure SetSlices(const aValue: GLint); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
     function GetRadius: single; //ORL
-    function GetSlices: TGLInt; //ORL
+    function GetSlices: GLint; //ORL
 
   public
     { Public Declarations }
@@ -110,8 +110,8 @@ type
     property MirrorOptions: TMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
 
-    property Height: TGLfloat read FHeight write SetHeight;
-    property Width: TGLfloat read FWidth write SetWidth;
+    property Height: GLfloat read FHeight write SetHeight;
+    property Width: GLfloat read FWidth write SetWidth;
 
     { Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
@@ -120,8 +120,8 @@ type
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
 
-    property Radius: TGLfloat read FRadius write SetRadius; //ORL
-    property Slices: TGLInt read FSlices write SetSlices default 16; //ORL
+    property Radius: GLfloat read FRadius write SetRadius; //ORL
+    property Slices: GLint read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
     //ORL
   end;
@@ -185,7 +185,7 @@ begin
           begin
             Enable(stStencilTest);
             ARci.GLStates.StencilClearValue := 0;
-            GL.Clear(GL_STENCIL_BUFFER_BIT);
+            glClear(GL_STENCIL_BUFFER_BIT);
             SetStencilFunc(cfAlways, 1, 1);
             SetStencilOp(soReplace, soZero, soReplace);
           end;
@@ -225,7 +225,7 @@ begin
 
         if moMirrorPlaneClip in MirrorOptions then
         begin
-          GL.Enable(GL_CLIP_PLANE0);
+          glEnable(GL_CLIP_PLANE0);
           SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
             VectorNegate(AffineVectorMake(AbsoluteDirection))));
           GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
@@ -273,7 +273,7 @@ begin
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
         ARci.PipelineTransformation.Pop;
         if moMirrorPlaneClip in MirrorOptions then
-          GL.Disable(GL_CLIP_PLANE0);
+          glDisable(GL_CLIP_PLANE0);
         ARci.GLStates.Disable(stStencilTest);
 
         ARci.proxySubObject := oldProxySubObject;
@@ -304,7 +304,7 @@ end;
 
 procedure TVKMirror.BuildList(var ARci: TVKRenderContextInfo);
 var
-  hw, hh: TGLfloat;
+  hw, hh: GLfloat;
   quadric: PGLUquadricObj;
 begin
   if msRect = FShape then
@@ -312,12 +312,12 @@ begin
     hw := FWidth * 0.5;
     hh := FHeight * 0.5;
     GL.Normal3fv(@ZVector);
-    GL.Begin_(GL_QUADS);
-    GL.Vertex3f(hw, hh, 0);
-    GL.Vertex3f(-hw, hh, 0);
-    GL.Vertex3f(-hw, -hh, 0);
-    GL.Vertex3f(hw, -hh, 0);
-    GL.End_;
+    glBegin(GL_QUADS);
+    glVertex3f(hw, hh, 0);
+    glVertex3f(-hw, hh, 0);
+    glVertex3f(-hw, -hh, 0);
+    glVertex3f(hw, -hh, 0);
+    glEnd;
   end
   else
   begin
@@ -336,14 +336,14 @@ var
 begin
   with aBuffer do
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     worldMat := Self.AbsoluteMatrix;
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PushMatrix;
-    GL.LoadIdentity;
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix;
+    glLoadIdentity;
     GL.Ortho(0, Width, 0, Height, 1, -1);
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.LoadIdentity;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity;
 
     with aBuffer.RenderingContext.GLStates do
     begin
@@ -351,20 +351,20 @@ begin
       SetGLColorWriting(False);
     end;
 
-    GL.Begin_(GL_QUADS);
+    glBegin(GL_QUADS);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.V[0], p.V[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.V[0], p.V[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.V[0], p.V[1], 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    GL.Vertex3f(p.V[0], p.V[1], 0.999);
-    GL.End_;
+    glVertex3f(p.V[0], p.V[1], 0.999);
+    glEnd;
 
     with aBuffer.RenderingContext.GLStates do
     begin
@@ -372,10 +372,10 @@ begin
       SetGLColorWriting(True);
     end;
 
-    GL.MatrixMode(GL_PROJECTION);
-    GL.PopMatrix;
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PopMatrix;
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix;
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix;
   end;
 end;
 
@@ -408,7 +408,7 @@ end;
 // SetWidth
 //
 
-procedure TVKMirror.SetWidth(AValue: TGLfloat);
+procedure TVKMirror.SetWidth(AValue: GLfloat);
 begin
   if AValue <> FWidth then
   begin
@@ -420,7 +420,7 @@ end;
 // SetHeight
 //
 
-procedure TVKMirror.SetHeight(AValue: TGLfloat);
+procedure TVKMirror.SetHeight(AValue: GLfloat);
 begin
   if AValue <> FHeight then
   begin
@@ -490,7 +490,7 @@ end;
 // SetSlices
 //
 
-procedure TVKMirror.SetSlices(const aValue: TGLInt);
+procedure TVKMirror.SetSlices(const aValue: GLint);
 begin
   if aValue <> FSlices then
   begin
@@ -506,7 +506,7 @@ end;
 // GetSlices
 //
 
-function TVKMirror.GetSlices: TGLInt;
+function TVKMirror.GetSlices: GLint;
 begin
   result := FSlices;
 end;

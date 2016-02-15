@@ -48,10 +48,10 @@ type
     function GetAsAffineVector: TAffineVector;
     function GetAsPoint2D: TVector2f;
     function GetAsString: String;
-    function GetCoordinate(const AIndex: Integer): TGLfloat;
-    procedure SetCoordinate(const AIndex: Integer; const AValue: TGLfloat);
-    function GetDirectCoordinate(const Index: Integer): TGLfloat;
-    procedure SetDirectCoordinate(const Index: Integer; const AValue: TGLfloat);
+    function GetCoordinate(const AIndex: Integer): GLfloat;
+    procedure SetCoordinate(const AIndex: Integer; const AValue: GLfloat);
+    function GetDirectCoordinate(const Index: Integer): GLfloat;
+    procedure SetDirectCoordinate(const Index: Integer; const AValue: GLfloat);
 
   protected
     { Protected Declarations }
@@ -92,8 +92,8 @@ type
     procedure Normalize;
     procedure Invert;
     procedure Scale(Factor: Single);
-    function VectorLength: TGLfloat;
-    function VectorNorm: TGLfloat;
+    function VectorLength: GLfloat;
+    function VectorNorm: GLfloat;
     function MaxXYZ: Single;
     function Equals(const AVector: TVector): Boolean; reintroduce;
 
@@ -131,12 +131,12 @@ type
       if you don't want so, use DirectVector instead. }
     property AsPoint2D: TVector2f read GetAsPoint2D write SetAsPoint2D;
 
-    property X: TGLfloat index 0 read GetCoordinate write SetCoordinate;
-    property Y: TGLfloat index 1 read GetCoordinate write SetCoordinate;
-    property Z: TGLfloat index 2 read GetCoordinate write SetCoordinate;
-    property W: TGLfloat index 3 read GetCoordinate write SetCoordinate;
+    property X: GLfloat index 0 read GetCoordinate write SetCoordinate;
+    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate;
+    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate;
+    property W: GLfloat index 3 read GetCoordinate write SetCoordinate;
 
-    property Coordinate[const AIndex: Integer]: TGLfloat read GetCoordinate
+    property Coordinate[const AIndex: Integer]: GLfloat read GetCoordinate
       write SetCoordinate; default;
 
     { The coordinates, in-between brackets, separated by semi-colons. }
@@ -144,13 +144,13 @@ type
 
     // : Similar to AsVector but does not trigger notification events
     property DirectVector: TVector read FCoords write SetDirectVector;
-    property DirectX: TGLfloat index 0 read GetDirectCoordinate
+    property DirectX: GLfloat index 0 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectY: TGLfloat index 1 read GetDirectCoordinate
+    property DirectY: GLfloat index 1 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectZ: TGLfloat index 2 read GetDirectCoordinate
+    property DirectZ: GLfloat index 2 read GetDirectCoordinate
       write SetDirectCoordinate;
-    property DirectW: TGLfloat index 3 read GetDirectCoordinate
+    property DirectW: GLfloat index 3 read GetDirectCoordinate
       write SetDirectCoordinate;
   end;
 
@@ -424,14 +424,14 @@ end;
 
 // VectorLength
 //
-function TVKCustomCoordinates.VectorLength: TGLfloat;
+function TVKCustomCoordinates.VectorLength: GLfloat;
 begin
   Result := GLS.VectorGeometry.VectorLength(FCoords);
 end;
 
 // VectorNorm
 //
-function TVKCustomCoordinates.VectorNorm: TGLfloat;
+function TVKCustomCoordinates.VectorNorm: GLfloat;
 begin
   Result := GLS.VectorGeometry.VectorNorm(FCoords);
 end;
@@ -489,7 +489,7 @@ end;
 // SetDirectVector
 //
 procedure TVKCustomCoordinates.SetDirectCoordinate(const Index: Integer;
-  const AValue: TGLfloat);
+  const AValue: GLfloat);
 begin
   FCoords.V[index] := AValue;
 end;
@@ -660,7 +660,7 @@ end;
 // SetCoordinate
 //
 procedure TVKCustomCoordinates.SetCoordinate(const AIndex: Integer;
-  const AValue: TGLfloat);
+  const AValue: GLfloat);
 begin
   FCoords.V[AIndex] := AValue;
   NotifyChange(Self);
@@ -668,13 +668,13 @@ end;
 
 // GetCoordinate
 //
-function TVKCustomCoordinates.GetCoordinate(const AIndex: Integer): TGLfloat;
+function TVKCustomCoordinates.GetCoordinate(const AIndex: Integer): GLfloat;
 begin
   Result := FCoords.V[AIndex];
 end;
 
 function TVKCustomCoordinates.GetDirectCoordinate(
-  const Index: Integer): TGLfloat;
+  const Index: Integer): GLfloat;
 begin
   Result := FCoords.V[index]
 end;

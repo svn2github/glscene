@@ -162,11 +162,11 @@ procedure TVKFile3DSLight.DoRender(var rci: TVKRenderContextInfo; renderSelf, re
 
   procedure BuildFace;
   begin
-    GL.Begin_(GL_TRIANGLES);
-    GL.Vertex3f(0.03, 0, 0);
-    GL.Vertex3f(0, 0.03, 0);
-    GL.Vertex3f(0, 0, 0.07);
-    GL.End_;
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.03, 0, 0);
+    glVertex3f(0, 0.03, 0);
+    glVertex3f(0, 0, 0.07);
+    glEnd;
   end;
 
 var
@@ -178,7 +178,7 @@ begin
     Exit;
 
   rci.GLStates.PolygonMode := pmLines;
-  GL.PushMatrix;
+  glPushMatrix;
 
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
   GL.Scalef(dv, dv, dv);
@@ -202,7 +202,7 @@ begin
   GL.Rotatef(270, 0, 0, 1);
   BuildFace;
 
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 procedure TVKFile3DSLight.CoordinateChanged(Sender: TVKCustomCoordinates);
@@ -276,7 +276,7 @@ begin
 
   rci.GLStates.PolygonMode := pmLines;
 
-  GL.PushMatrix;
+  glPushMatrix;
   GL.Rotatef(ang * 180 / pi, 0, 0, 1);
   dv := VectorDistance(Position.AsVector, rci.cameraPosition);
   GL.Scalef(dv / 25, dv / 25, dv / 25);
@@ -287,7 +287,7 @@ begin
   GL.Translatef(1, -1, 0);
   BuildCyl;
   BuildFace;
-  GL.PopMatrix;
+  glPopMatrix;
 
   rci.GLStates.PolygonMode := pmFill;
 end;
@@ -410,10 +410,10 @@ begin
   GL.MultMatrixf(@FTransfMat);
   GL.MultMatrixf(@FScaleMat);
 
-  GL.PushMatrix;
+  glPushMatrix;
   GL.MultMatrixf(@FRefMat);
   inherited;
-  GL.PopMatrix;
+  glPopMatrix;
 
   if parent is TVKFile3DSFreeForm then
     ParentMatrix := (parent as TVKFile3DSFreeForm).ParentMatrix

@@ -139,7 +139,7 @@ var
    matrix : TMatrix;
 begin
    inherited;
-   GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
       Fvx.V[i]:=matrix.V[i].V[0];
       Fvy.V[i]:=matrix.V[i].V[1];
@@ -184,18 +184,18 @@ begin
 
    dv:=VectorCombine(Fvx, Fvy, fx, fy);
 
-   GL.Begin_(GL_TRIANGLE_FAN);
-      GL.Color4fv(@inner);
-      GL.Vertex3fv(@start);
-      GL.Color4fv(@outer);
-      GL.Vertex3f(start.V[0]+dv.V[0], start.V[1]+dv.V[1], start.V[2]+dv.V[2]);
-      GL.Vertex3f(stop.V[0]+dv.V[0], stop.V[1]+dv.V[1], stop.V[2]+dv.V[2]);
-      GL.Color4fv(@inner);
-      GL.Vertex3fv(@stop);
-      GL.Color4fv(@outer);
-      GL.Vertex3f(stop.V[0]-dv.V[0], stop.V[1]-dv.V[1], stop.V[2]-dv.V[2]);
-      GL.Vertex3f(start.V[0]-dv.V[0], start.V[1]-dv.V[1], start.V[2]-dv.V[2]);
-   GL.End_;
+   glBegin(GL_TRIANGLE_FAN);
+      glColor4fv(@inner);
+      glVertex3fv(@start);
+      glColor4fv(@outer);
+      glVertex3f(start.V[0]+dv.V[0], start.V[1]+dv.V[1], start.V[2]+dv.V[2]);
+      glVertex3f(stop.V[0]+dv.V[0], stop.V[1]+dv.V[1], stop.V[2]+dv.V[2]);
+      glColor4fv(@inner);
+      glVertex3fv(@stop);
+      glColor4fv(@outer);
+      glVertex3f(stop.V[0]-dv.V[0], stop.V[1]-dv.V[1], stop.V[2]-dv.V[2]);
+      glVertex3f(start.V[0]-dv.V[0], start.V[1]-dv.V[1], start.V[2]-dv.V[2]);
+   glEnd;
 end;
 
 // EndParticles

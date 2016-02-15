@@ -544,7 +544,7 @@ begin
   FVertexProgramHandle.Bind;
 
   // Set the light position to program.local[0]
-  GL.GetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.V[0]);
+  glGetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.V[0]);
   GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.V[0]);
 
   // Set the light attenutation to program.local[1]
@@ -558,10 +558,10 @@ begin
       begin
         rci.GLStates.ActiveTexture := 0;
         dummyHandle := rci.GLStates.TextureBinding[0, ttTexture2D];
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGB_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE0_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
 
         rci.GLStates.ActiveTexture := 1;
         rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
@@ -569,16 +569,16 @@ begin
         if tempHandle = 0 then
           rci.GLStates.TextureBinding[1, ttTexture2D] := dummyHandle;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
-        GL.GetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
+        glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
         lightDiffuse.V[0] := lightDiffuse.V[0] * materialDiffuse.V[0];
         lightDiffuse.V[1] := lightDiffuse.V[1] * materialDiffuse.V[1];
         lightDiffuse.V[2] := lightDiffuse.V[2] * materialDiffuse.V[2];
         lightDiffuse.V[3] := lightDiffuse.V[3] * materialDiffuse.V[3];
-        GL.TexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-        GL.TexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
+        glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
+        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
 
         with rci.GLStates do
         begin
@@ -623,7 +623,7 @@ begin
   if not Enabled then
     exit;
 
-  GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
+  glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @maxTextures);
 
   success := False;
   try
@@ -697,12 +697,12 @@ begin
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 0;
 
-      GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
+      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
       ambient.V[0] := ambient.V[0] * LMaterialAmbient.V[0];
       ambient.V[1] := ambient.V[1] * LMaterialAmbient.V[1];
       ambient.V[2] := ambient.V[2] * LMaterialAmbient.V[2];
-      GL.Color3fv(@ambient);
+      glColor3fv(@ambient);
 
       FAmbientPass := True;
 
@@ -749,7 +749,7 @@ begin
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 1;
       ActiveTextureEnabled[ttTexture2D] := True;
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
       ActiveTexture := 2;
       ActiveTextureEnabled[ttTexture2D] := False;
       ActiveTexture := 0;
@@ -780,12 +780,12 @@ begin
       Enable(stBlend);
       SetBlendFunc(bfOne, bfOne);
 
-      GL.GetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
-      GL.GetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
+      glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
+      glGetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
       ambient.V[0] := ambient.V[0] * LMaterialAmbient.V[0];
       ambient.V[1] := ambient.V[1] * LMaterialAmbient.V[1];
       ambient.V[2] := ambient.V[2] * LMaterialAmbient.V[2];
-      GL.Color3fv(@ambient);
+      glColor3fv(@ambient);
 
       FAmbientPass := True;
       Result := True;

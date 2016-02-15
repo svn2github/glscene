@@ -300,14 +300,14 @@ begin
   Param['EnvMap'].AsTexture2D[0] := FMainTexture;
   Param['RefractionMap'].AsTexture2D[1] :=FRefractionTexture ;
 
-  gl.Enable(GL_BLEND);
+  glEnable(GL_BLEND);
   gl.BlendFunc(cGLBlendFunctionToGLEnum[FBlendSrc],cGLBlendFunctionToGLEnum[FBlendDst]);
 
 end;
 
 function TVKCustomGLSLGlassShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
-  gl.Disable(GL_BLEND);
+  glDisable(GL_BLEND);
   GetGLSLProg.EndUseProgramObject;
   Result := False;
 end;

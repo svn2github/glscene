@@ -591,7 +591,7 @@ begin
       end;
     end;
     FGL.DebugMode := False;
-    FGL.Initialize;
+    FglInitialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -728,7 +728,7 @@ begin
       Abort;
     end;
 
-    FGL.Initialize;
+    FglInitialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -846,7 +846,7 @@ begin
       try
         DoActivate;
         try
-          FGL.ClearError;
+          FglClearError;
           if FGL.W_ARB_pixel_format then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
@@ -1036,7 +1036,7 @@ begin
     try
       DoActivate;
       try
-        FGL.ClearError;
+        FglClearError;
         if FGL.W_ARB_pixel_format and FGL.W_ARB_pbuffer then
         begin
           ClearIAttribs;
@@ -1195,7 +1195,7 @@ begin
   end;
 
   Activate;
-  FGL.Initialize;
+  FglInitialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
     GLStates.MultisampleFilterHint := hintNicest
@@ -1205,7 +1205,7 @@ begin
 
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
-    FGL.DrawBuffers(BufferCount, @MRT_BUFFERS);
+    FglDrawBuffers(BufferCount, @MRT_BUFFERS);
 
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
   begin
@@ -1294,7 +1294,7 @@ begin
   end;
 
   if not FGL.IsInitialized then
-    FGL.Initialize(CurrentGLContext = nil);
+    FglInitialize(CurrentGLContext = nil);
 end;
 
 // Deactivate

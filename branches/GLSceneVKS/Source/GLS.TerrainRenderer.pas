@@ -583,25 +583,25 @@ begin
   FBufferVertices.Capacity := n;
   FBufferTexPoints.Capacity := n;
 
-  xgl.PushState;
+  xglPushState;
   try
     if GL.ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
 
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Scalef(1, 1, 1 / 128);
     GL.Translatef(-0.5 * TileSize, -0.5 * TileSize, 0);
-    GL.EnableClientState(GL_VERTEX_ARRAY);
-    xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-    GL.DisableClientState(GL_COLOR_ARRAY);
-    GL.DisableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
 
-    GL.VertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
-    xgl.TexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
+    glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
+    xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
   finally
-    xgl.PopState;
+    xglPopState;
   end;
 
   HeightDataSource.Data.LockList; // Lock out the HDS thread while rendering
@@ -760,17 +760,17 @@ begin
   TVKROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices,
     FBufferTexPoints);
 
-  xgl.PushState;
+  xglPushState;
   try
     if GL.ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
 
-    GL.DisableClientState(GL_VERTEX_ARRAY);
-    xgl.DisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
   finally
-    xgl.PopState;
+    xglPopState;
   end;
 
   ApplyMaterial('');
@@ -785,7 +785,7 @@ begin
     postRenderHeightDataList.Free;
   end;
 
-  GL.PopMatrix;
+  glPopMatrix;
 
   if (tmReleaseUnusedTiles in TileManagement) then
   begin // Tile cache management option

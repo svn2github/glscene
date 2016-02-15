@@ -53,7 +53,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
     class function IsSelfLoading: Boolean; override;
-    procedure LoadTexture(AInternalFormat: TGLInternalFormat); override;
+    procedure LoadTexture(AInternalFormat: GLinternalFormat); override;
     function GetBitmap32: TVKBitmap32; override;
     procedure ReleaseBitmap32; override;
 
@@ -291,29 +291,29 @@ begin
   Result := True;
 end;
 
-procedure TVKMultisampleImage.LoadTexture(AInternalFormat: TGLInternalFormat);
+procedure TVKMultisampleImage.LoadTexture(AInternalFormat: GLinternalFormat);
 var
   target: TVKTextureTarget;
-  maxSamples, maxSize: TGLint;
+  maxSamples, maxSize: GLint;
 begin
   // Check smaples count range
-  GL.GetIntegerv(GL_MAX_SAMPLES, @maxSamples);
+  glGetIntegerv(GL_MAX_SAMPLES, @maxSamples);
   if FSamplesCount > maxSamples then
     FSamplesCount := maxSamples;
   if IsDepthFormat(AInternalFormat) then
   begin
-    GL.GetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
+    glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end
   else
   begin
-    GL.GetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
+    glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, @maxSamples);
     if FSamplesCount > maxSamples then
       FSamplesCount := maxSamples;
   end;
   // Check texture size
-  GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxSize);
   if FWidth > maxSize then
     FWidth := maxSize;
   if FHeight > maxSize then
@@ -323,7 +323,7 @@ begin
   case target of
 
     ttTexture2DMultisample:
-      GL.TexImage2DMultisample(
+      glTexImage2DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),
@@ -332,7 +332,7 @@ begin
         FFixedSamplesLocation);
 
     ttTexture2DMultisampleArray:
-      GL.TexImage3DMultisample(
+      glTexImage3DMultisample(
         DecodeGLTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),

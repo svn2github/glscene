@@ -54,7 +54,7 @@ type
   TVKParticles = class(TVKImmaterialSceneObject)
   private
     { Private Declarations }
-    FCubeSize: TGLfloat;
+    FCubeSize: GLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime: Boolean;
     particlePool: TList;
@@ -67,7 +67,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetCubeSize(const val: TGLfloat);
+    procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetParticlePoolSize(val: Integer);
@@ -97,7 +97,7 @@ type
 
   published
     { Published Declarations }
-    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
+    property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
 
@@ -219,33 +219,33 @@ begin
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do
-    GL.Color3f(Color.V[0], Color.V[1], Color.V[2]);
-  GL.Begin_(GL_LINE_STRIP);
+    glColor3f(Color.V[0], Color.V[1], Color.V[2]);
+  glBegin(GL_LINE_STRIP);
   // front face
-  GL.Vertex3f(ma, mi, mi);
-  GL.Vertex3f(ma, ma, mi);
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(ma, mi, mi);
+  glVertex3f(ma, mi, mi);
+  glVertex3f(ma, ma, mi);
+  glVertex3f(ma, ma, ma);
+  glVertex3f(ma, mi, ma);
+  glVertex3f(ma, mi, mi);
   // partial up back fac
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, mi, ma);
-  GL.Vertex3f(mi, ma, ma);
-  GL.Vertex3f(mi, ma, mi);
+  glVertex3f(mi, mi, mi);
+  glVertex3f(mi, mi, ma);
+  glVertex3f(mi, ma, ma);
+  glVertex3f(mi, ma, mi);
   // right side low
-  GL.Vertex3f(ma, ma, mi);
-  GL.End_;
-  GL.Begin_(GL_LINES);
+  glVertex3f(ma, ma, mi);
+  glEnd;
+  glBegin(GL_LINES);
   // right high
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(mi, ma, ma);
+  glVertex3f(ma, ma, ma);
+  glVertex3f(mi, ma, ma);
   // back low
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, ma, mi);
+  glVertex3f(mi, mi, mi);
+  glVertex3f(mi, ma, mi);
   // left high
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(mi, mi, ma);
-  GL.End_;
+  glVertex3f(ma, mi, ma);
+  glVertex3f(mi, mi, ma);
+  glEnd;
 end;
 
 // DoRender
@@ -292,7 +292,7 @@ end;
 // SetCubeSize
 //
 
-procedure TVKParticles.SetCubeSize(const val: TGLfloat);
+procedure TVKParticles.SetCubeSize(const val: GLfloat);
 begin
   if val <> FCubeSize then
   begin

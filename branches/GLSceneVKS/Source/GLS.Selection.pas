@@ -63,8 +63,8 @@ type
   TVKBaseSelectTechnique = class
   protected
     FObjectStack: array of TObject;
-    FNameStack: array[0..255] of TGLuint;
-    FCurrentName: TGLuint;
+    FNameStack: array[0..255] of GLuint;
+    FCurrentName: GLuint;
     FStackPosition: Integer;
     FObjectCountGuess: Integer;
     FHits: Integer;
@@ -285,19 +285,19 @@ end;
 procedure TVKSelectRenderModeTechnique.Start;
 begin
   SetLength(FBuffer, FObjectCountGuess * 4 + 32);
-  GL.SelectBuffer(FObjectCountGuess * SizeOf(TGLuint), @FBuffer[0]);
-  GL.RenderMode(GL_SELECT);
-  GL.InitNames;
+  glSelectBuffer(FObjectCountGuess * SizeOf(GLuint), @FBuffer[0]);
+  glRenderMode(GL_SELECT);
+  glInitNames;
   FCurrentName := 0;
   SetLength(FObjectStack, MAX_OBJECT_STACK_DEPTH);
   FStackPosition := 0;
-  GL.PushName(0);
+  glPushName(0);
 end;
 
 function TVKSelectRenderModeTechnique.Stop: Boolean;
 begin
-  GL.Flush;
-  FHits := GL.RenderMode(GL_RENDER);
+  glFlush;
+  FHits := glRenderMode(GL_RENDER);
   Result := FHits > -1;
   if not Result then
     Inc(FObjectCountGuess);
@@ -353,7 +353,7 @@ begin
   if FCurrentName >= Length(FObjectStack) then
     SetLength(FObjectStack, Length(FObjectStack) * 2);
   FObjectStack[FCurrentName] := Value;
-  GL.LoadName(FCurrentName);
+  glLoadName(FCurrentName);
   Inc(FCurrentName);
 end;
 

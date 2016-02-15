@@ -14,9 +14,6 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
-
-
-
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE GLS_OPTIMIZATIONS}
@@ -39,12 +36,16 @@
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
 
-// Activate Multithread support
-{.$DEFINE GLS_MULTITHREAD}
-
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
-// This work only on windows platform and with modern compiler (D2009 and FPC}
+// This work only on windows platform and with modern compiler (XE2 and FPC or higher}
 {$DEFINE GLS_SERVICE_CONTEXT}
+
+// Activate Multithread support
+{$DEFINE GLS_MULTITHREAD}
+
+{$IFDEF GLS_MULTITHREAD}
+  {$DEFINE MULTITHREADOPENGL}
+{$ENDIF}
 
 // Activate support of MSWindows
 {.$DEFINE MSWINDOWS}
@@ -59,7 +60,7 @@
 {.$DEFINE ANDROID}
 
 // Activate support of Linux
-{.$DEFINE MSWINDOWS}
+{.$DEFINE LINUX}
 
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}
@@ -73,10 +74,6 @@
 {$IFDEF WIN64}
   {$DEFINE GLS_NO_ASM}
   {$DEFINE GEOMETRY_NO_ASM}
-{$ENDIF}
-
-{$IFDEF GLS_MULTITHREAD}
-  {$DEFINE MULTITHREADOPENGL}
 {$ENDIF}
 
 {$IFDEF LINUX}
@@ -123,8 +120,3 @@
 {$IFNDEF GLS_NO_REGIONS}
   {$DEFINE GLS_REGIONS}
 {$ENDIF}
-
-{$IFDEF GLS_SERVICE_CONTEXT}
-  {$DEFINE GLS_MULTITHREAD}
-{$ENDIF}
-

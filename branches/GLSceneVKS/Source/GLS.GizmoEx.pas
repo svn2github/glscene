@@ -2149,10 +2149,10 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
         AVector := VectorScale(AVector, 0.25);
         AVector := VectorAdd(AVector, BB.BBox[I]);
 
-        GL.Begin_(GL_LINES);
-        GL.Vertex3f(BB.BBox[I].V[0], BB.BBox[I].V[1], BB.BBox[I].V[2]);
-        GL.Vertex3f(AVector.V[0], AVector.V[1], AVector.V[2]);
-        GL.End_;
+        glBegin(GL_LINES);
+        glVertex3f(BB.BBox[I].V[0], BB.BBox[I].V[1], BB.BBox[I].V[2]);
+        glVertex3f(AVector.V[0], AVector.V[1], AVector.V[2]);
+        glEnd;
       end;
     end;
   end;
@@ -2172,8 +2172,8 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
     FLayout := GLS.CrossPlatform.tlCenter;
     FAlignment := taCenter;
 
-    GL.MatrixMode(GL_MODELVIEW);
-    GL.PushMatrix;
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix;
     wm := rci.PipelineTransformation.ViewMatrix;
 
     TransposeMatrix(wm);
@@ -2184,7 +2184,7 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
           wm.V[I].V[J] := 1
         else
           wm.V[I].V[J] := 0;
-    GL.LoadMatrixf(@wm);
+    glLoadMatrixf(@wm);
 
     rci.GLStates.PolygonMode := pmFill;
     GL.Scalef(Scale.V[0], Scale.V[1], Scale.V[2]);
@@ -2200,7 +2200,7 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
     rci.GLStates.Disable(stCullFace);
 
     FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
-    GL.PopMatrix;
+    glPopMatrix;
 
   end;
 
@@ -2221,10 +2221,10 @@ begin
     else
       rci.GLStates.LineWidth := 1;
 
-    GL.ColorMaterial(GL_FRONT, GL_EMISSION);
+    glColorMaterial(GL_FRONT, GL_EMISSION);
     rci.GLStates.Enable(stColorMaterial);
 
-    GL.Color4fv(@FBoundingBoxColor.Color);
+    glColor4fv(@FBoundingBoxColor.Color);
 
     for I := 0 to FSelectedObjects.Count - 1 do
       ShowBoundingBox(TVKBaseSceneObject(FSelectedObjects.Hit[I]));
@@ -2969,7 +2969,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, vksUnknownType);
+      Assert(False, glsUnknownType);
     end;
   end;
 end;

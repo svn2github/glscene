@@ -176,8 +176,8 @@ begin
     with aSceneBuffer do
     begin
       // common properties
-      VendorLabel.Text := String(GL.GetString(GL_VENDOR));
-      RendererLabel.Text := String(GL.GetString(GL_RENDERER));
+      VendorLabel.Text := String(glGetString(GL_VENDOR));
+      RendererLabel.Text := String(glGetString(GL_RENDERER));
 (*
       dc := wglGetCurrentDC();
       pixelFormat := GetPixelFormat(dc);
@@ -190,8 +190,8 @@ begin
       else if (DRIVER_MASK and pfd.dwFlags) = PFD_GENERIC_FORMAT then
         AccLabel.Text := 'Generic Software Driver';
 *)
-      VersionLabel.Text := String(GL.GetString(GL_VERSION));
-      ExtStr := String(GL.GetString(GL_EXTENSIONS));
+      VersionLabel.Text := String(glGetString(GL_VERSION));
+      ExtStr := String(glGetString(GL_EXTENSIONS));
       ListBoxExtensions.Clear;
       while Length(ExtStr) > 0 do
       begin

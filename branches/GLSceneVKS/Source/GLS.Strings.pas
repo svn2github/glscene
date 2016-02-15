@@ -12,83 +12,102 @@ interface
 
 resourcestring
   // GLS.General
-  vksDot = '.';
-  vksError   = 'Error!';
-  vksErrorEx = 'Error: ';
+  glsDot = '.';
+  glsError   = 'Error!';
+  glsErrorEx = 'Error: ';
 
   // GLS.SceneViewer
-  vksNoRenderingContext = 'Could not create a rendering context';
-  vksWrongVersion       = 'Need at least OpenGL version 1.1';
-  vksTooManyLights      = 'Too many lights in the scene';
-  vksDisplayList        = 'Failed to create a new display list for object ''%s''';
-  vksWrongBitmapCanvas  = 'Couldn''t create a rendering context for the given bitmap';
-  vksWrongPrinter       = 'Couldn''t render to printer';
-  vksAlreadyRendering   = 'Already rendering';
-  vksSceneViewerNotDefined = 'SceneViewer not defined!';
+  glsNoRenderingContext = 'Could not create a rendering context';
+  glsWrongVersion       = 'Need at least OpenGL version 1.1';
+  glsTooManyLights      = 'Too many lights in the scene';
+  glsDisplayList        = 'Failed to create a new display list for object ''%s''';
+  glsWrongBitmapCanvas  = 'Couldn''t create a rendering context for the given bitmap';
+  glsWrongPrinter       = 'Couldn''t render to printer';
+  glsAlreadyRendering   = 'Already rendering';
+  glsSceneViewerNotDefined = 'SceneViewer not defined!';
 
   // GLS.Cadencer
-  vksCadencerNotDefined   = 'Cadencer not defined!';
-  vksCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
+  glsCadencerNotDefined   = 'Cadencer not defined!';
+  glsCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
 
-  // Shaders
-  vksShaderNeedsAtLeastOneLightSource   = 'This shader needs at least one LightSource!';
-  vksShaderNeedsAtLeastOneLightSourceEx = 'Shader ''%s'' needs at least one LightSource!';
+  // GLS.Context
+  glsIncompatibleContexts = 'Incompatible contexts';
+  glsDeleteContextFailed = 'Delete context failed';
+  glsContextActivationFailed = 'Context activation failed: %X, %s';
+  glsContextDeactivationFailed = 'Context deactivation failed';
+  glsUnableToCreateLegacyContext = 'Unable to create legacy context';
+  glsNoActiveRC = 'No active rendering context';
+  glsFailedToShare = 'DoCreateContext - Failed to share contexts';
 
-  // VKTree
-  vksSceneRoot  = 'Scene root';
-  vksObjectRoot = 'Scene objects';
-  vksCameraRoot = 'Cameras';
-  vksCamera     = 'Camera';
+  //GLS.InitOpenGL
+  glsOpenGLError = 'OpenGL error - %s';
+
+
+  //GLS.Shaders
+  glsShaderNeedsAtLeastOneLightSource   = 'This shader needs at least one LightSource!';
+  glsShaderNeedsAtLeastOneLightSourceEx = 'Shader ''%s'' needs at least one LightSource!';
+
+  // GLS.Tree
+  glsSceneRoot  = 'Scene root';
+  glsObjectRoot = 'Scene objects';
+  glsCameraRoot = 'Cameras';
+  glsCamera     = 'Camera';
 
   // GLS.Textures
-  vksImageInvalid = 'Could not load texture, image is invalid';
-  vksNoNewTexture = 'Could not get new texture name';
+  glsImageInvalid = 'Could not load texture, image is invalid';
+  glsNoNewTexture = 'Could not get new texture name';
 
   // VKMaterials
-  vksMatLibNotDefined = 'Material Library not defined!';
-  vksMaterialNotFoundInMatlib = 'Material not found in current Material Library!';
-  vksMaterialNotFoundInMatlibEx = 'Material "%s" not found in current Material Library!';
+  glsMatLibNotDefined = 'Material Library not defined!';
+  glsMaterialNotFoundInMatlib = 'Material not found in current Material Library!';
+  glsMaterialNotFoundInMatlibEx = 'Material "%s" not found in current Material Library!';
 
   // GLS.Objects
-  vksSphereTopBottom = 'The top angle must be higher than the bottom angle';
-  vksSphereStartStop = 'The start angle must be smaller than then stop angle';
-  vksMaterialNotFound = 'Loading failed: could not find material %s';
-  vksInterleaveNotSupported = 'Interleaved Array format not supported yet. Sorry.';
+  glsSphereTopBottom = 'The top angle must be higher than the bottom angle';
+  glsSphereStartStop = 'The start angle must be smaller than then stop angle';
+  glsMaterialNotFound = 'Loading failed: could not find material %s';
+  glsInterleaveNotSupported = 'Interleaved Array format not supported yet. Sorry.';
 
-  // Common messages
-  vksUnknownArchive = '%s : unknown archive version %d';
-  vksOutOfMemory = 'Fatal: Out of memory';
-  vksFileNotFound = 'File %s not found';
-  vksFailedOpenFile = 'Could not open file: %s';
-  vksFailedOpenFileFromCurrentDir = 'Could not open file: %s'#13#10'(Current directory is %s)';
-  vksNoDescriptionAvailable = 'No description available';
-  vksUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
-  vksUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
+  // GLS Common messages
+  glsUnknownArchive = '%s : unknown archive version %d';
+  glsOutOfMemory = 'Fatal: Out of memory';
+  glsFileNotFound = 'File %s not found';
+  glsFailedOpenFile = 'Could not open file: %s';
+  glsFailedOpenFileFromCurrentDir = 'Could not open file: %s'#13#10'(Current directory is %s)';
+  glsNoDescriptionAvailable = 'No description available';
+  glsUnBalancedBeginEndUpdate = 'Unbalanced Begin/EndUpdate';
+  glsUnknownExtension = 'Unknown file extension (%s), maybe you forgot to add the support '
                        +'unit to your uses? (%s?)' ;
-  vksMissingResource = 'Missing application resource: %s: %s';
+  glsMissingResource = 'Missing application resource: %s: %s';
 
-  vksIncompatibleTypes = 'Incompatible types!';
-  vksUnknownType       = 'Unknown type!';
-  vksUnsupportedType   = 'Unsupported type!';
+  glsIncompatibleTypes = 'Incompatible types!';
+  glsUnknownType       = 'Unknown type!';
+  glsUnsupportedType   = 'Unsupported type!';
 
   // Object categories
-  vksOCBasicGeometry = 'Basic geometry';
-  vksOCAdvancedGeometry = 'Advanced geometry';
-  vksOCMeshObjects = 'Mesh objects';
-  vksOCParticleSystems = 'Particle systems';
-  vksOCEnvironmentObjects = 'Environment objects';
-  vksOCSpecialObjects = 'Special objects';
-  vksOCGraphPlottingObjects = 'Graph-plotting objects';
-  vksOCDoodad = 'Doodad objects';
-  vksOCHUDObjects = 'HUD objects';
-  vksOCGuiObjects = 'GUI objects';
-  vksOCProxyObjects = 'Proxy objects';
-  vksOCExperimental = 'Experimental objects';
+  glsOCBasicGeometry = 'Basic geometry';
+  glsOCAdvancedGeometry = 'Advanced geometry';
+  glsOCMeshObjects = 'Mesh objects';
+  glsOCParticleSystems = 'Particle systems';
+  glsOCEnvironmentObjects = 'Environment objects';
+  glsOCSpecialObjects = 'Special objects';
+  glsOCGraphPlottingObjects = 'Graph-plotting objects';
+  glsOCDoodad = 'Doodad objects';
+  glsOCHUDObjects = 'HUD objects';
+  glsOCGuiObjects = 'GUI objects';
+  glsOCProxyObjects = 'Proxy objects';
+  glsOCExperimental = 'Experimental objects';
 
-  vksUnknownParam =
+  glsUnknownParam =
     'Unknown %s "%s" for "%s" or program not in use';
 
+//---------------------------------------------------------
+//---------------------------------------------------------
+//---------------------------------------------------------
 implementation
+//---------------------------------------------------------
+//---------------------------------------------------------
+//---------------------------------------------------------
 
 end.
 

@@ -34,10 +34,10 @@ type
 
     { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TGLuint;
+      const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const intFormat: GLinternalFormat); reintroduce;
 
     property DivScale: longword read FDivScale write FDivScale;
     property Dither: boolean read FDither write FDither;
@@ -116,8 +116,8 @@ end;
 
 
 procedure TVKJPEGImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TGLuint; textureTarget: TVKTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
+  const textureHandle: GLuint; textureTarget: TVKTextureTarget;
+  const CurrentFormat: boolean; const intFormat: GLinternalFormat);
 begin
 
 end;

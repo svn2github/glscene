@@ -249,7 +249,7 @@ begin
   end;
 
   rci.GLStates.Disable(stLighting);
-  GL.GetLightfv(GL_LIGHT0, GL_POSITION, @light.V[0]);
+  glGetLightfv(GL_LIGHT0, GL_POSITION, @light.V[0]);
   FVPHandle.Enable;
   FVPHandle.Bind;
   GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @light.V[0]);
@@ -299,7 +299,7 @@ begin
       LineSmoothHint := hintNicest;
       SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       DepthFunc := cfLEqual;
-      GL.Color4fv(FOutlineColor.AsAddress);
+      glColor4fv(FOutlineColor.AsAddress);
 
       Result := True;
       FOutlinePass := False;

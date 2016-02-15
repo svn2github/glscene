@@ -109,17 +109,17 @@ type
     function GetVec3: TVector3f;
     function GetVec4: TVector4f;
 
-    function GetInt: TGLint;
+    function GetInt: GLint;
     function GetIVec2: TVector2i;
     function GetIVec3: TVector3i;
     function GetIVec4: TVector4i;
 
-    function GetUInt: TGLuint;
+    function GetUInt: GLuint;
     function GetUVec2: TVector2ui;
     function GetUVec3: TVector3ui;
     function GetUVec4: TVector4ui;
 
-    procedure SetFloat(const Value: TGLfloat);
+    procedure SetFloat(const Value: GLfloat);
     procedure SetVec2(const Value: TVector2f);
     procedure SetVec3(const Value: TVector3f);
     procedure SetVec4(const Value: TVector4f);
@@ -149,9 +149,9 @@ type
     property GLSLType: TVKSLDataType read GetGLSLType;
     property GLSLSamplerType: TVKSLSamplerType read GetGLSLSamplerType;
     { Scalar types. }
-    property float: TGLfloat read GetFloat write SetFloat;
-    property int: TGLint read GetInt write SetInt;
-    property uint: TGLuint read GetUInt write SetUInt;
+    property float: GLfloat read GetFloat write SetFloat;
+    property int: GLint read GetInt write SetInt;
+    property uint: GLuint read GetUInt write SetUInt;
 
     { Float vector types. }
     property vec2: TVector2f read GetVec2 write SetVec2;
@@ -251,7 +251,7 @@ resourcestring
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TVKRenderContextInfo) of object;
 
-function GLSLTypeEnum(AType: TVKSLDataType): TGLenum;
+function GLSLTypeEnum(AType: TVKSLDataType): GLEnum;
 function GLSLTypeComponentCount(AType: TVKSLDataType): Integer;
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TVKSLDataType; AMethod: TUniformAutoSetMethod);
@@ -324,7 +324,7 @@ type
 var
   vMethods: array of TAutoSetMethodRec;
 
-function GLSLTypeEnum(AType: TVKSLDataType): TGLenum;
+function GLSLTypeEnum(AType: TVKSLDataType): GLEnum;
 begin
   Result := cGLSLTypeEnum[AType];
 end;

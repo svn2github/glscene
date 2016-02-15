@@ -27,10 +27,10 @@ type
 
     { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TGLuint;
+      const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const intFormat: GLinternalFormat); reintroduce;
   end;
 
 implementation
@@ -99,16 +99,16 @@ end;
 //
 
 procedure TVKPNGImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TGLuint;
+  const textureHandle: GLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TGLInternalFormat);
+  const intFormat: GLinternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
-  residentFormat: TGLInternalFormat;
-  glTarget: TGLenum;
+  residentFormat: GLinternalFormat;
+  glTarget: GLEnum;
 begin
   if not ((textureTarget = ttTexture2D)
     or (textureTarget = ttTextureRect)) then
@@ -130,12 +130,12 @@ begin
     fCubeMap := false;
     fTextureArray := false;
     // Check level existence
-    GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
+    glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_INTERNAL_FORMAT,
       @texFormat);
     if texFormat > 1 then
     begin
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-      GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+      glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
       FLOD[0].Depth := 0;
       residentFormat := OpenGLFormatToInternalFormat(texFormat);
       if CurrentFormat then
@@ -149,7 +149,7 @@ begin
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       ReallocMem(FData, DataSize);
-      GL.GetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
+      glGetTexImage(glTarget, 0, fColorFormat, fDataType, fData);
     end
     else
       fLevelCount := 1;

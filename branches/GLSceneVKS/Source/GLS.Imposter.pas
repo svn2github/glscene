@@ -502,7 +502,7 @@ begin
   FTexture.AllocateHandle;
   FTexture.Target := ttTexture2D;
   rci.GLStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
-  if GL.EXT_texture_edge_clamp then
+  if GL_EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
@@ -521,7 +521,7 @@ end;
 procedure TImposter.BeginRender(var rci: TVKRenderContextInfo);
 var
   mat: TMatrix;
-  filter: TGLenum;
+  filter: GLEnum;
   fx, fy, yOffset, cosAlpha, dynScale: Single;
 begin
   with rci.GLStates do
@@ -552,15 +552,15 @@ begin
       filter := GL_NEAREST
     else
       filter := GL_LINEAR;
-    GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-    GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
     if FModulated then
     begin
-      GL.Color4fv(@XYZWHmgVector);
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      glColor4fv(@XYZWHmgVector);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     end
     else
-      GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     mat := rci.PipelineTransformation.ModelViewMatrix;
     FVx.V[0] := mat.V[0].V[0];
@@ -597,7 +597,7 @@ begin
     FQuad[3] := VectorSubtract(VectorCombine(FVx, FVy, fx, -fy + yOffset),
       FStaticOffset);
 
-    GL.Begin_(GL_QUADS);
+    glBegin(GL_QUADS);
   end;
 end;
 
@@ -621,17 +621,17 @@ var
   pos: TVector;
 begin
   VectorCombine(objPos, FQuad[0], size, pos);
-  GL.TexCoord2f(texExtents.V[2], texExtents.V[3]);
-  GL.Vertex3fv(@pos);
+  glTexCoord2f(texExtents.V[2], texExtents.V[3]);
+  glVertex3fv(@pos);
   VectorCombine(objPos, FQuad[1], size, pos);
-  GL.TexCoord2f(texExtents.V[0], texExtents.V[3]);
-  GL.Vertex3fv(@pos);
+  glTexCoord2f(texExtents.V[0], texExtents.V[3]);
+  glVertex3fv(@pos);
   VectorCombine(objPos, FQuad[2], size, pos);
-  GL.TexCoord2f(texExtents.V[0], texExtents.V[1]);
-  GL.Vertex3fv(@pos);
+  glTexCoord2f(texExtents.V[0], texExtents.V[1]);
+  glVertex3fv(@pos);
   VectorCombine(objPos, FQuad[3], size, pos);
-  GL.TexCoord2f(texExtents.V[2], texExtents.V[1]);
-  GL.Vertex3fv(@pos);
+  glTexCoord2f(texExtents.V[2], texExtents.V[1]);
+  glVertex3fv(@pos);
 end;
 
 // EndRender
@@ -639,7 +639,7 @@ end;
 
 procedure TImposter.EndRender(var rci: TVKRenderContextInfo);
 begin
-  GL.End_;
+  glEnd;
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
@@ -895,7 +895,7 @@ end;
 procedure TVKImposterBuilder.InitializeImpostorTexture(const textureSize:
   TVKPoint);
 begin
-    GL.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, textureSize.X, textureSize.Y, 0,
       GL_RGBA, GL_UNSIGNED_BYTE, nil);
 end;
 
@@ -1452,7 +1452,7 @@ begin
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
       rci.GLStates.DepthWriteMask := True;
-      GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
+      glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
       if Lighting = siblStaticLighting then
@@ -1467,7 +1467,7 @@ begin
 
       rci.GLStates.TextureBinding[0, ttTexture2D] :=
         destImposter.Texture.Handle;
-      GL.CopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
+      glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
         SampleSize, SampleSize);
 
       Inc(curSample);
@@ -1478,7 +1478,7 @@ begin
   GL.PixelTransferf(GL_ALPHA_SCALE, 1);
   rci.PipelineTransformation.Pop;
 
-  GL.Clear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
   if Lighting = siblStaticLighting then
     (rci.scene as TVKScene).SetupLights(rci.GLStates.MaxLights);
 end;
@@ -1496,7 +1496,7 @@ begin
   if CurrentGLContext = nil then
     maxTexSize := 16 * 1024
   else
-    GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);
   maxSamples := Sqr(maxTexSize div SampleSize);
   if nbSamples < maxSamples then
   begin

@@ -131,11 +131,11 @@ type
     FTriangleCount: Integer;
     FNormalDirection: TNormalDirection;
     FParts: TExtrusionSolidParts;
-    FHeight: TGLfloat;
+    FHeight: GLfloat;
     FMinSmoothAngle: Single;
     FMinSmoothAngleCos: Single;
     FAxisAlignedDimensionsCache: TVector;
-    procedure SetHeight(const Value: TGLfloat);
+    procedure SetHeight(const Value: GLfloat);
     procedure SetMinSmoothAngle(const Value: Single);
 
   protected
@@ -162,7 +162,7 @@ type
     property Parts: TExtrusionSolidParts read FParts write SetParts default
       [espOutside];
 
-    property Height: TGLfloat read FHeight write SetHeight;
+    property Height: GLfloat read FHeight write SetHeight;
     property Stacks: Integer read FStacks write SetStacks default 1;
 
     property Normals: TNormalSmoothing read FNormals write SetNormals default
@@ -551,15 +551,15 @@ var
     inc(i);
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    glBegin(GL_TRIANGLE_STRIP);
     GL.Normal3fv(@topNormal);
-    xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
+    xglTexCoord2fv(@topTPBase);
+    glVertex3fv(@topBase);
     while alpha < stopAlpha do
     begin
       GL.Normal3fv(@bottomNormal);
-      xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
+      xglTexCoord2fv(@bottomTPBase);
+      glVertex3fv(@bottomBase);
       nextAlpha := alpha + deltaAlpha;
       topTPNext.S := topTPNext.S + deltaS;
       bottomTPNext.S := bottomTPNext.S + deltaS;
@@ -574,9 +574,9 @@ var
       CalcNormal(@topNext, @bottomNext, normal);
       SetLocalNormals;
       inc(i);
-      xgl.TexCoord2fv(@topTPNext);
+      xglTexCoord2fv(@topTPNext);
       GL.Normal3fv(@topNormal);
-      GL.Vertex3fv(@topNext);
+      glVertex3fv(@topNext);
       alpha := nextAlpha;
       topBase := topNext;
       topTPBase := topTPNext;
@@ -584,9 +584,9 @@ var
       bottomTPBase := bottomTPNext;
     end;
     GL.Normal3fv(@bottomNormal);
-    xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
+    xglTexCoord2fv(@bottomTPBase);
+    glVertex3fv(@bottomBase);
+    glEnd;
     firstStep := False;
   end;
 
@@ -693,7 +693,7 @@ begin
       end;
       if (rspInside in FParts) and (rspOutside in FParts) then
         FTriangleCount := FTriangleCount * 2;
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       // release lastNormals buffer (if smoothing)
       if FNormals = nsSmooth then
         FreeMem(lastNormals);
@@ -1109,7 +1109,7 @@ type
   end;
   PRowData = ^TRowData;
 const
-  cPNCMtoEnum: array[pncmEmission..pncmAmbientAndDiffuse] of TGLenum =
+  cPNCMtoEnum: array[pncmEmission..pncmAmbientAndDiffuse] of GLEnum =
     (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
   procedure CalculateRow(row: PRowData;
@@ -1467,7 +1467,7 @@ begin
     // create position spline
     posSpline := Nodes.CreateNewCubicSpline;
     // create radius spline
-    GetMem(ra, SizeOf(TGLfloat) * Nodes.Count);
+    GetMem(ra, SizeOf(GLfloat) * Nodes.Count);
     for i := 0 to Nodes.Count - 1 do
       ra^[i] := TVKPipeNode(Nodes[i]).RadiusFactor;
     rSpline := TCubicSpline.Create(ra, nil, nil, nil, Nodes.Count);
@@ -1483,7 +1483,7 @@ begin
 
   if NodesColorMode <> pncmNone then
   begin
-    GL.ColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
+    glColorMaterial(GL_FRONT_AND_BACK, cPNCMtoEnum[NodesColorMode]);
     rci.GLStates.Enable(stColorMaterial);
   end
   else
@@ -1739,31 +1739,31 @@ var
     bottomNext := bottomBase;
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    glBegin(GL_TRIANGLE_STRIP);
     GL.Normal3fv(@normTop);
-    xgl.TexCoord2fv(@topTPBase);
-    GL.Vertex3fv(@topBase);
+    xglTexCoord2fv(@topTPBase);
+    glVertex3fv(@topBase);
     for step := 1 to FStacks do
     begin
       GL.Normal3fv(@normBottom);
-      xgl.TexCoord2fv(@bottomTPBase);
-      GL.Vertex3fv(@bottomBase);
+      xglTexCoord2fv(@bottomTPBase);
+      glVertex3fv(@bottomBase);
       topNext.V[2] := step * DeltaZ;
       bottomNext.V[2] := topNext.V[2];
       topTPNext.T := topNext.V[2];
       bottomTPNext.T := bottomNext.V[2];
-      xgl.TexCoord2fv(@topTPNext);
+      xglTexCoord2fv(@topTPNext);
       GL.Normal3fv(@normTop);
-      GL.Vertex3fv(@topNext);
+      glVertex3fv(@topNext);
       topBase := topNext;
       topTPBase := topTPNext;
       bottomBase := bottomNext;
       bottomTPBase := bottomTPNext;
     end;
     GL.Normal3fv(@normBottom);
-    xgl.TexCoord2fv(@bottomTPBase);
-    GL.Vertex3fv(@bottomBase);
-    GL.End_;
+    xglTexCoord2fv(@bottomTPBase);
+    glVertex3fv(@bottomBase);
+    glEnd;
   end;
 
 var
@@ -1811,7 +1811,7 @@ begin
           end;
         end;
     end;
-    xgl.TexCoord2fv(@NullTexPoint);
+    xglTexCoord2fv(@NullTexPoint);
   end;
   // tessellate start/stop polygons
   if (espStartPolygon in FParts) or (espStopPolygon in FParts) then
@@ -1820,10 +1820,10 @@ begin
     // tessellate stop polygon
     if espStopPolygon in FParts then
     begin
-      GL.PushMatrix;
+      glPushMatrix;
       GL.Translatef(0, 0, FHeight);
       RenderTesselatedPolygon(true, @normal, invertedNormals);
-      GL.PopMatrix;
+      glPopMatrix;
     end;
     // tessellate start polygon
     if espStartPolygon in FParts then
@@ -1860,7 +1860,7 @@ end;
 // SetHeight
 //
 
-procedure TVKExtrusionSolid.SetHeight(const Value: TGLfloat);
+procedure TVKExtrusionSolid.SetHeight(const Value: GLfloat);
 begin
   if (Value <> FHeight) then
   begin

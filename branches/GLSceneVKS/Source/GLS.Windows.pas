@@ -29,11 +29,11 @@ type
     FGuiComponent: TVKGuiComponent;
     FReBuildGui: Boolean;
     FRedrawAtOnce: Boolean;
-    MoveX, MoveY: TGLfloat;
+    MoveX, MoveY: GLfloat;
     FRenderStatus: TGUIDrawResult;
 
     FAlphaChannel: Single;
-    FRotation: TGLfloat;
+    FRotation: GLfloat;
     FNoZWrite: Boolean;
 
     BlockRendering: Boolean;
@@ -58,7 +58,7 @@ type
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
-    procedure SetRotation(const val: TGLfloat);
+    procedure SetRotation(const val: GLfloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetNoZWrite(const val: Boolean);
@@ -92,7 +92,7 @@ type
 
     { This the ON-SCREEN rotation of the GuiComponent. 
        Rotatation=0 is handled faster. }
-    property Rotation: TGLfloat read FRotation write SetRotation;
+    property Rotation: GLfloat read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
       StoreAlphaChannel;
@@ -182,10 +182,10 @@ type
     procedure SetDefaultColor(value: TColor);  //in VCL TDelphiColor
     procedure SetBitmapFont(NewFont: TVKCustomBitmapFont);
     function GetBitmapFont: TVKCustomBitmapFont;
-    procedure WriteTextAt(var rci: TVKRenderContextInfo; const X, Y: TGLfloat;
+    procedure WriteTextAt(var rci: TVKRenderContextInfo; const X, Y: GLfloat;
       const Data: UnicodeString; const Color: TColorVector); overload;
     procedure WriteTextAt(var rci: TVKRenderContextInfo; const X1, Y1, X2, Y2:
-      TGLfloat; const Data: UnicodeString; const Color: TColorVector); overload;
+      GLfloat; const Data: UnicodeString; const Color: TColorVector); overload;
     function GetFontHeight: Integer;
   public
     constructor Create(AOwner: TComponent); override;
@@ -726,9 +726,9 @@ begin
   if AlphaChannel <> 1 then
     rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
   // Prepare matrices
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PushMatrix;
-  GL.LoadMatrixf(@TVKSceneBuffer(rci.buffer).BaseProjectionMatrix);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix;
+  glLoadMatrixf(@TVKSceneBuffer(rci.buffer).BaseProjectionMatrix);
   if rci.renderDPI = 96 then
     f := 1
   else
@@ -738,9 +738,9 @@ begin
     rci.viewPortSize.cy * 0.5 - f * Position.Y, 0);
   if Rotation <> 0 then
     GL.Rotatef(Rotation, 0, 0, 1);
-  GL.MatrixMode(GL_PROJECTION);
-  GL.PushMatrix;
-  GL.LoadIdentity;
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix;
+  glLoadIdentity;
   rci.GLStates.Disable(stDepthTest);
   rci.GLStates.DepthWriteMask := False;
 end;
@@ -749,9 +749,9 @@ procedure TVKBaseComponent.RenderFooter(var rci: TVKRenderContextInfo; renderSel
   renderChildren: Boolean);
 
 begin
-  GL.PopMatrix;
-  GL.MatrixMode(GL_MODELVIEW);
-  GL.PopMatrix;
+  glPopMatrix;
+  glMatrixMode(GL_MODELVIEW);
+  glPopMatrix;
   FGuiLayout.Material.UnApply(rci);
 end;
 
@@ -814,7 +814,7 @@ end;
 // SetRotation
 //
 
-procedure TVKBaseComponent.SetRotation(const val: TGLfloat);
+procedure TVKBaseComponent.SetRotation(const val: GLfloat);
 begin
   if FRotation <> val then
   begin
@@ -842,10 +842,10 @@ end;
 
 procedure TVKBaseComponent.SetAutosize(const Value: Boolean);
 var
-  MarginLeft, MarginCenter, MarginRight: TGLfloat;
-  MarginTop, MarginMiddle, MarginBottom: TGLfloat;
-  MaxWidth: TGLfloat;
-  MaxHeight: TGLfloat;
+  MarginLeft, MarginCenter, MarginRight: GLfloat;
+  MarginTop, MarginMiddle, MarginBottom: GLfloat;
+  MaxWidth: GLfloat;
+  MaxHeight: GLfloat;
   i: integer;
 begin
   if FAutosize <> Value then
@@ -1770,7 +1770,7 @@ begin
 end;
 
 procedure TVKBaseFontControl.WriteTextAt(var rci: TVKRenderContextInfo; const X,
-  Y: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
+  Y: GLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -1785,7 +1785,7 @@ begin
 end;
 
 procedure TVKBaseFontControl.WriteTextAt(var rci: TVKRenderContextInfo; const X1,
-  Y1, X2, Y2: TGLfloat; const Data: UnicodeString; const Color: TColorVector);
+  Y1, X2, Y2: GLfloat; const Data: UnicodeString; const Color: TColorVector);
 var
   Position: TVector;
 begin
@@ -1929,21 +1929,21 @@ begin
 
   GuiLayout.Material.UnApply(rci);
   Material.Apply(rci);
-  GL.Begin_(GL_QUADS);
+  glBegin(GL_QUADS);
 
-  GL.TexCoord2f(FXTexCoord, -FYTexCoord);
-  GL.Vertex2f(X2, Y2);
+  glTexCoord2f(FXTexCoord, -FYTexCoord);
+  glVertex2f(X2, Y2);
 
-  GL.TexCoord2f(FXTexCoord, 0);
-  GL.Vertex2f(X2, Y1);
+  glTexCoord2f(FXTexCoord, 0);
+  glVertex2f(X2, Y1);
 
-  GL.TexCoord2f(0, 0);
-  GL.Vertex2f(X1, Y1);
+  glTexCoord2f(0, 0);
+  glVertex2f(X1, Y1);
 
-  GL.TexCoord2f(0, -FYTexCoord);
-  GL.Vertex2f(X1, Y2);
+  glTexCoord2f(0, -FYTexCoord);
+  glVertex2f(X1, Y2);
 
-  GL.End_();
+  glEnd();
 
   Material.UnApply(rci);
   GuiLayout.Material.Apply(rci);
@@ -2165,7 +2165,7 @@ procedure TVKForm.InternalMouseDown(Shift: TShiftState; Button: TVKMouseButton;
 
 var
   CanMove: Boolean;
-  YHere: TGLfloat;
+  YHere: GLfloat;
 
 begin
   YHere := Y - Position.Y;
@@ -2723,23 +2723,23 @@ begin
       if TexHeight = 0 then
         TexHeight := Material.Texture.Image.Height;
 
-      GL.Begin_(GL_QUADS);
+      glBegin(GL_QUADS);
 
-      GL.TexCoord2f(0, 0);
-      GL.Vertex2f(X1 - XOffSet, -Y1 + YOffSet);
+      glTexCoord2f(0, 0);
+      glVertex2f(X1 - XOffSet, -Y1 + YOffSet);
 
-      GL.TexCoord2f(0, -(LogicHeight - 1) / TexHeight);
-      GL.Vertex2f(X1 - XOffSet, -Y1 + YOffset - LogicHeight + 1);
+      glTexCoord2f(0, -(LogicHeight - 1) / TexHeight);
+      glVertex2f(X1 - XOffSet, -Y1 + YOffset - LogicHeight + 1);
 
-      GL.TexCoord2f((LogicWidth - 1) / TexWidth, -(LogicHeight - 1) /
+      glTexCoord2f((LogicWidth - 1) / TexWidth, -(LogicHeight - 1) /
         TexHeight);
-      GL.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffset - LogicHeight +
+      glVertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffset - LogicHeight +
         1);
 
-      GL.TexCoord2f((LogicWidth - 1) / TexWidth, 0);
-      GL.Vertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffSet);
+      glTexCoord2f((LogicWidth - 1) / TexWidth, 0);
+      glVertex2f(X1 - XOffSet + LogicWidth - 1, -Y1 + YOffSet);
 
-      GL.End_();
+      glEnd();
       BitBtn.UnApply(rci);
       GuiLayout.Material.Apply(rci);
     end;

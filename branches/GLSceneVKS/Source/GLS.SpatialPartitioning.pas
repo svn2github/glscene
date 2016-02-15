@@ -59,33 +59,33 @@ end;
 
 procedure RenderAABB(var rci: TVKRenderContextInfo; AABB: TAABB; w, r, g, b: single);
 begin
-  GL.Color3f(r, g, b);
+  glColor3f(r, g, b);
   rci.GLStates.LineWidth := w;
 
-  GL.Begin_(GL_LINE_STRIP);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
 
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.End_;
+  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glEnd;
 
-  GL.Begin_(GL_LINES);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glBegin(GL_LINES);
+  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
 
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
 
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.End_;
+  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glEnd;
 end;
 
 // RenderSpatialPartitioning

@@ -1,9 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
    DDS File support for GLScene.
-
 }
 unit GLS.FileDDS;
 
@@ -12,10 +11,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
-  GLS.RGBE, GLS.ApplicationFileIO, GLS.VectorGeometry, GLS.Strings;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.Graphics,
+  GLS.TextureFormat,
+  GLS.RGBE,
+  GLS.ApplicationFileIO,
+  GLS.VectorGeometry,
+  GLS.Strings;
 
 type
 
@@ -40,10 +49,10 @@ type
 
     { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TGLuint;
+      const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: Boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const intFormat: GLinternalFormat); reintroduce;
   end;
 
 var
@@ -80,7 +89,7 @@ begin
     end;
   end
   else
-    raise EInvalidRasterFile.CreateFmt(vksFileNotFound, [filename]);
+    raise EInvalidRasterFile.CreateFmt(glsFileNotFound, [filename]);
 end;
 
 // SaveToFile
@@ -234,7 +243,7 @@ begin
         Dec(fLevelCount, 2);
       end;
   else
-    Assert(False, vksErrorEx + vksUnknownType);
+    Assert(False, glsErrorEx + glsUnknownType);
   end;
 
   ReallocMem(fData, DataSize);
@@ -361,21 +370,21 @@ end;
 //
 
 procedure TVKDDSImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TGLuint;
+  const textureHandle: GLuint;
   textureTarget: TVKTextureTarget;
   const CurrentFormat: Boolean;
-  const intFormat: TGLInternalFormat);
+  const intFormat: GLinternalFormat);
 var
   oldContext: TVKContext;
   contextActivate: Boolean;
   texFormat, texLod, optLod: Cardinal;
   level, faceCount, face: Integer;
-  residentFormat: TGLInternalFormat;
+  residentFormat: GLinternalFormat;
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
   cw, ch: Integer;
-  glTarget: TGLenum;
+  glTarget: GLEnum;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin
@@ -404,7 +413,7 @@ begin
   try
     textureContext.GLStates.TextureBinding[0, textureTarget] := textureHandle;
     fLevelCount := 0;
-    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -422,7 +431,7 @@ begin
 
     repeat
       // Check level existence
-      GL.GetTexLevelParameteriv(glTarget, fLevelCount,
+      glGetTexLevelParameteriv(glTarget, fLevelCount,
         GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
@@ -430,13 +439,13 @@ begin
       Inc(fLevelCount);
       if fLevelCount = 1 then
       begin
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-        GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
         FLOD[0].Depth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-          GL.GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
+          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CurrentFormat then
           fInternalFormat := residentFormat
@@ -475,13 +484,13 @@ begin
         begin
           if bCompressed then
           begin
-
-            if GL.NV_texture_compression_vtc and (FLOD[level].Depth > 0)
+            if GL_NV_texture_compression_vtc
+              and (FLOD[level].Depth > 0)
               and not fTextureArray then
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
-              GL.GetCompressedTexImage(glTarget, level, vtcBuffer);
+              glGetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
               cw := (FLOD[level].Width + 3) div 4;
               ch := (FLOD[level].Height + 3) div 4;
@@ -497,10 +506,10 @@ begin
                   end;
             end
             else
-              GL.GetCompressedTexImage(glTarget, level, GetLevelAddress(level));
+              glGetCompressedTexImage(glTarget, level, GetLevelAddress(level));
           end
           else
-            GL.GetTexImage(glTarget, level, fColorFormat, fDataType, GetLevelAddress(level));
+            glGetTexImage(glTarget, level, fColorFormat, fDataType, GetLevelAddress(level));
 
         end; // for level
       end; // for face
@@ -512,7 +521,7 @@ begin
 
     if fLevelCount < 1 then
       fLevelCount := 1;
-    GL.CheckError;
+    CheckOpenGLError;
   finally
     if contextActivate then
     begin

@@ -24,16 +24,21 @@ interface
 uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
 {$ENDIF}
-  System.Classes, System.SysUtils, System.SyncObjs, System.UITypes, System.Math,
+  System.Classes,
+  System.SysUtils,
+  System.SyncObjs,
+  System.UITypes,
+  System.Math,
   FMX.Graphics,
 {$IFDEF GLS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
-
+  GLS.OpenGLAdapter,
   GLS.ApplicationFileIO,
   GLS.PersistentClasses,
-  GLS.OpenGLTokens,
   GLS.Context,
   GLS.ImageUtils,
   GLS.Utils,
@@ -97,9 +102,9 @@ type
     fData: PGLPixel32Array;
     FLOD: TVKImagePiramid;
     fLevelCount: TVKImageLODRange;
-    fColorFormat: TGLenum;
-    fInternalFormat: TGLInternalFormat;
-    fDataType: TGLenum;
+    fColorFormat: GLEnum;
+    fInternalFormat: GLinternalFormat;
+    fDataType: GLEnum;
     fElementSize: Integer;
     fCubeMap: Boolean;
     fTextureArray: Boolean;
@@ -135,7 +140,7 @@ type
     procedure RegisterAsOpenGLTexture(
       AHandle: TVKTextureHandle;
       aMipmapGen: Boolean;
-      aTexFormat: TGLenum;
+      aTexFormat: GLEnum;
       out texWidth: integer;
       out texHeight: integer;
       out texDepth: integer); virtual;
@@ -144,9 +149,9 @@ type
     function AssignFromTexture(
       AHandle: TVKTextureHandle;
       const CastToFormat: Boolean;
-      const intFormat: TGLInternalFormat = tfRGBA8;
-      const colorFormat: TGLenum = 0;
-      const dataType: TGLenum = 0): Boolean; virtual;
+      const intFormat: GLinternalFormat = tfRGBA8;
+      const colorFormat: GLEnum = 0;
+      const dataType: GLEnum = 0): Boolean; virtual;
 
     { Convert vertical cross format of non compressed, non mipmaped image
        to six face of cube map }
@@ -192,8 +197,8 @@ type
     { Number of levels. }
     property LevelCount: TVKImageLODRange read fLevelCount;
 
-    property InternalFormat: TGLInternalFormat read FInternalFormat;
-    property ColorFormat: TGLenum read fColorFormat;
+    property InternalFormat: GLinternalFormat read FInternalFormat;
+    property ColorFormat: GLEnum read fColorFormat;
     property DataType: GLenum read fDataType;
     property ElementSize: Integer read fElementSize;
     property CubeMap: Boolean read fCubeMap;
@@ -273,7 +278,7 @@ type
     { OpenGL color format }
     property ColorFormat: GLenum read fColorFormat;
     { Recommended texture internal format }
-    property InternalFormat: TGLInternalFormat read FInternalFormat write
+    property InternalFormat: GLinternalFormat read FInternalFormat write
       FInternalFormat;
     { OpenGL data type }
     property DataType: GLenum read fDataType;
@@ -528,7 +533,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidRasterFile.CreateFmt(vksUnknownExtension,
+    raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
@@ -559,7 +564,7 @@ begin
 
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidRasterFile.CreateFmt(vksUnknownExtension,
+    raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
@@ -1560,13 +1565,13 @@ end;
 procedure TVKBaseImage.RegisterAsOpenGLTexture(
   AHandle: TVKTextureHandle;
   aMipmapGen: Boolean;
-  aTexFormat: TGLenum;
+  aTexFormat: GLEnum;
   out texWidth: integer;
   out texHeight: integer;
   out texDepth: integer);
 var
-  glTarget: TGLenum;
-  glHandle: TGLuint;
+  glTarget: GLEnum;
+  glHandle: GLuint;
   Level: integer;
   LLevelCount, face: integer;
   bCompress, bBlank: boolean;
@@ -1574,7 +1579,7 @@ var
   p, buffer: Pointer;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
-  transferMethod: 0..3;
+  TransferMethod: 0..3;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin
@@ -1592,8 +1597,6 @@ var
 begin
   if AHandle.Target = ttNoShape then
     exit;
-
-  with GL do
   begin
     UpdateLevelsInfo;
 
@@ -1601,22 +1604,17 @@ begin
       bBlank := TVKImage(Self).Blank
     else
       bBlank := False;
-    // Check for Non-power-of-two
-    if not ARB_texture_non_power_of_two then
-    begin
+    w := GetWidth;
+    h := GetHeight;
+    d := GetDepth;
+    {
+    begin     // for Non-power-of-two
       w := RoundUpToPowerOf2(GetWidth);
       h := RoundUpToPowerOf2(GetHeight);
       d := RoundUpToPowerOf2(GetDepth);
-      if GetDepth = 0 then
-        d := 0;
-    end
-    else
-    begin
-      w := GetWidth;
-      h := GetHeight;
-      d := GetDepth;
+      if GetDepth = 0 then  d := 0;
     end;
-
+    }
     // Check maximum dimension
     maxSize := CurrentGLContext.GLStates.MaxTextureSize;
     if w > maxSize then
@@ -1666,16 +1664,16 @@ begin
     aMipmapGen := aMipmapGen and (LLevelCount = 1);
     if aMipmapGen then
     begin
-      if SGIS_generate_mipmap then
+      if true {SGIS_generate_mipmap} then
       begin
-        if EXT_direct_state_access then
-          TextureParameterf(
+        if true {EXT_direct_state_access} then
+          glTextureParameterfEXT(
             glHandle,
             glTarget,
             GL_GENERATE_MIPMAP_SGIS,
             GL_TRUE)
         else
-          TexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+          glTexParameteri(glTarget, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
       end
       else
       begin
@@ -1686,22 +1684,22 @@ begin
     end;
 
     // Setup top limitation of LODs
-    if SGIS_texture_lod and (LLevelCount > 1) then
-      if EXT_direct_state_access then
-        TextureParameterf(
+    if {SGIS_texture_lod and} (LLevelCount > 1) then
+      if true {EXT_direct_state_access} then
+        glTextureParameterfEXT(
           glHandle,
           glTarget,
           GL_TEXTURE_MAX_LEVEL_SGIS,
           LLevelCount - 1)
       else
-        TexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL_SGIS, LLevelCount - 1);
+        glTexParameteri(glTarget, GL_TEXTURE_MAX_LEVEL_SGIS, LLevelCount - 1);
 
     // Select transfer method
     if bCompress then
       transferMethod := 1
     else
       transferMethod := 0;
-    if EXT_direct_state_access then
+    if true {EXT_direct_state_access} then
       transferMethod := transferMethod + 2;
 
     // if image is blank then doing only allocatation texture in videomemory
@@ -1719,10 +1717,10 @@ begin
             p := nil;
 
           case transferMethod of
-            0: TexImage1D(glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
-            1: CompressedTexImage1D(glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p);
-            2: TextureImage1D(glHandle, glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
-            3: CompressedTextureImage1D(glHandle, glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p)
+            0: glTexImage1D(glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
+            1: glCompressedTexImage1D(glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p);
+            2: glTextureImage1DEXT(glHandle, glTarget, Level, aTexFormat, w, 0, FColorFormat, FDataType, p);
+            3: glCompressedTextureImage1DEXT(glHandle, glTarget, Level, aTexFormat, w, 0, GetLevelSizeInByte(Level), p)
           end;
 
           Div2(w);
@@ -1739,10 +1737,10 @@ begin
             p := nil;
 
           case transferMethod of
-            0: TexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            1: CompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
-            2: TextureImage2D(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: CompressedTextureImage2D(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+            0: glTexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            1: glCompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -1759,10 +1757,10 @@ begin
             p := nil;
 
           case transferMethod of
-            0: TexImage2D(glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            1: CompressedTexImage2D(glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
-            2: TextureImage2D(glHandle, glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: CompressedTextureImage2D(glHandle, glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
+            0: glTexImage2D(glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            1: glCompressedTexImage2D(glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
+            2: glTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            3: glCompressedTextureImage2DEXT(glHandle, glTarget, 0, aTexFormat, w, h, 0, GetLevelSizeInByte(0), p);
           end;
         end;
 
@@ -1776,7 +1774,7 @@ begin
           else
             p := nil;
 
-          if GL.NV_texture_compression_vtc and bCompress then
+          if {GL_NV_texture_compression_vtc and} bCompress then
           begin
             // Shufle blocks for Volume Texture Compression
             if Assigned(p) then
@@ -1796,19 +1794,19 @@ begin
                     Inc(top, fElementSize);
                   end;
             end;
-            if EXT_direct_state_access then
-              CompressedTextureImage3D(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer)
+            if true {EXT_direct_state_access} then
+              glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer)
             else
-              CompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer);
+              glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), vtcBuffer);
           end
           else
           begin
             // Normal compression
             case transferMethod of
-              0: TexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-              1: CompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
-              2: TextureImage3D(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-              3: CompressedTextureImage3D(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+              0: glTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+              1: glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+              2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+              3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
             end;
 
           end;
@@ -1831,10 +1829,10 @@ begin
               p := nil;
 
             case transferMethod of
-              0: TexImage2D(face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-              1: CompressedTexImage2D(face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
-              2: TextureImage2D(glHandle, face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-              3: CompressedTextureImage2D(glHandle, face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
+              0: glTexImage2D(face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+              1: glCompressedTexImage2D(face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
+              2: glTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+              3: glCompressedTextureImage2DEXT(glHandle, face, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level) div 6, p);
             end;
 
           end;
@@ -1853,10 +1851,10 @@ begin
             p := nil;
 
           case transferMethod of
-            0: TexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            1: CompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
-            2: TextureImage2D(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
-            3: CompressedTextureImage2D(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+            0: glTexImage2D(glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            1: glCompressedTexImage2D(glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
+            2: glTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, FColorFormat, FDataType, p);
+            3: glCompressedTextureImage2DEXT(glHandle, glTarget, Level, aTexFormat, w, h, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -1873,10 +1871,10 @@ begin
             p := nil;
 
           case transferMethod of
-            0: TexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-            1: CompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
-            2: TextureImage3D(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
-            3: CompressedTextureImage3D(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+            0: glTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+            1: glCompressedTexImage3D(glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
+            2: glTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, FColorFormat, FDataType, p);
+            3: glCompressedTextureImage3DEXT(glHandle, glTarget, Level, aTexFormat, w, h, d, 0, GetLevelSizeInByte(Level), p);
           end;
 
           Div2(w);
@@ -1898,16 +1896,16 @@ end;
 function TVKBaseImage.AssignFromTexture(
   AHandle: TVKTextureHandle;
   const CastToFormat: Boolean;
-  const intFormat: TGLInternalFormat = tfRGBA8;
-  const colorFormat: TGLenum = 0;
-  const dataType: TGLenum = 0): Boolean;
+  const intFormat: GLinternalFormat = tfRGBA8;
+  const colorFormat: GLEnum = 0;
+  const dataType: GLEnum = 0): Boolean;
 var
   LContext: TVKContext;
   texFormat, texLod, optLod: Cardinal;
-  glTarget: TGLenum;
+  glTarget: GLEnum;
   level, maxFace, face: Integer;
   lData: PGLubyte;
-  residentFormat: TGLInternalFormat;
+  residentFormat: GLinternalFormat;
   bCompressed: Boolean;
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
@@ -1947,7 +1945,7 @@ begin
     LContext.GLStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
 
     FLevelCount := 0;
-    GL.GetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
+    glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
     if glTarget = GL_TEXTURE_CUBE_MAP then
     begin
       fCubeMap := true;
@@ -1963,10 +1961,9 @@ begin
       or (glTarget = GL_TEXTURE_2D_ARRAY)
       or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY);
 
-    with GL do
     repeat
       // Check level existence
-      GL.GetTexLevelParameteriv(glTarget, FLevelCount,
+      glGetTexLevelParameteriv(glTarget, FLevelCount,
         GL_TEXTURE_INTERNAL_FORMAT,
         @texFormat);
       if texFormat = 1 then
@@ -1974,13 +1971,13 @@ begin
       Inc(FLevelCount);
       if FLevelCount = 1 then
       begin
-        GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-        GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,@FLOD[0].Height);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+        glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_HEIGHT,@FLOD[0].Height);
         FLOD[0].Depth := 0;
         if (glTarget = GL_TEXTURE_3D)
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
-          GetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
+          glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
         residentFormat := OpenGLFormatToInternalFormat(texFormat);
         if CastToFormat then
           fInternalFormat := residentFormat
@@ -2004,7 +2001,6 @@ begin
     until FLevelCount = Integer(texLod);
 
     if FLevelCount > 0 then
-    with GL do
     begin
       fElementSize := GetTextureElementSize(fColorFormat, fDataType);
       UpdateLevelsInfo;
@@ -2026,11 +2022,11 @@ begin
           if bCompressed then
           begin
 
-            if NV_texture_compression_vtc and (d > 1) and not fTextureArray then
+            if {NV_texture_compression_vtc and} (d > 1) and not fTextureArray then
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
-              GetCompressedTexImage(glTarget, level, vtcBuffer);
+              glGetCompressedTexImage(glTarget, level, vtcBuffer);
               // Shufle blocks from VTC to S3TC
               cw := (w + 3) div 4;
               ch := (h + 3) div 4;
@@ -2049,10 +2045,10 @@ begin
               Div2(d);
             end
             else
-              GetCompressedTexImage(glTarget, level, lData);
+              glGetCompressedTexImage(glTarget, level, lData);
           end
           else
-            GetTexImage(glTarget, level, fColorFormat, fDataType, lData);
+            glGetTexImage(glTarget, level, fColorFormat, fDataType, lData);
 
           Inc(lData, GetLevelSizeInByte(level));
         end; // for level
@@ -2074,7 +2070,7 @@ begin
       end;
     end;
 
-    GL.CheckError;
+    glGetError;
     Result := True;
 
   finally
@@ -2126,7 +2122,7 @@ begin
       Read(Temp, SizeOf(Integer)); // Version
       if Temp > 0 then
       begin
-        GLSLogger.LogError(Format(vksUnknownArchive, [Self.ClassType, Temp]));
+        GLSLogger.LogError(Format(glsUnknownArchive, [Self.ClassType, Temp]));
         Abort;
       end;
       Read(FLOD[0].Width, SizeOf(Integer));
@@ -2134,7 +2130,7 @@ begin
       Read(FLOD[0].Depth, SizeOf(Integer));
       Read(fColorFormat, SizeOf(GLenum));
       Read(Temp, SizeOf(Integer));
-      fInternalFormat := TGLInternalFormat(Temp);
+      fInternalFormat := GLinternalFormat(Temp);
       Read(fDataType, SizeOf(GLenum));
       Read(fElementSize, SizeOf(Integer));
       Read(fLevelCount, SizeOf(TVKImageLODRange));
@@ -2194,8 +2190,8 @@ begin
       { This may work with multiple unshared context, but never tested
         because unlikely. }
       PBO.BindBufferData(nil, MaxInteger(Size, 1024), GL_STREAM_DRAW);
-      if Assigned(MapAddress) then
-        if not PBO.UnmapBuffer then
+      if Assigned(MapAddress) then;
+        if not (glUnmapBuffer(PBO.AllocateHandle) = 1) then
           exit;
       MapAddress := PBO.MapBuffer(GL_WRITE_ONLY);
       StreamOffset := 0;
@@ -2224,7 +2220,7 @@ begin
     if StreamOffset >= Size then
     begin
       PBO.Bind;
-      if PBO.UnmapBuffer then
+      if glUnmapBuffer(PBO.AllocateHandle) > 0 then
         State := ssLoaded;
       PBO.UnBind;
       if State <> ssLoaded then
@@ -2297,7 +2293,7 @@ begin
   begin
     if (Source is TVKBitmap)
     and (TVKBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
-    and (((TVKBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
+    and (((TVKBitmap(Source).Width and 3) = 0) or (GL_EXT_bgra)) then
     begin
       if TVKBitmap(Source).PixelFormat = glpf24bit then
         AssignFrom24BitsBitmap(TVKBitmap(Source))
@@ -2370,7 +2366,7 @@ begin
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
   FLOD[0].Depth := 0;
-  if GL.EXT_bgra then
+  if (GL_EXT_bgra) then
   begin
     fColorFormat := GL_BGR;
     fElementSize := 3;
@@ -2393,7 +2389,7 @@ begin
     pDest := @PAnsiChar(FData)[GetWidth * fElementSize * (GetHeight - 1)];
     if Height = 1 then
     begin
-      if GL.EXT_bgra then
+      if true {GL_EXT_bgra} then
       begin
         pSrc := BitmapScanLine(aBitmap, 0);
         Move(pSrc^, pDest^, lineSize);
@@ -2414,7 +2410,7 @@ begin
         pSrc := BitmapScanLine(aBitmap, 0);
         rowOffset := Int64(BitmapScanLine(aBitmap, 1)) - Int64(pSrc);
       end;
-      if GL.EXT_bgra then
+      if true {GL_EXT_bgra} then
       begin
         for y := 0 to Height - 1 do
         begin
@@ -2502,7 +2498,7 @@ begin
   FLOD[0].Width := aBitmap.Width;
   FLOD[0].Height := aBitmap.Height;
   FLOD[0].Depth := 0;
-  if GL.EXT_bgra then
+  if true {GL_EXT_bgra} then
     fColorFormat := GL_BGRA
   else
   begin
@@ -2541,7 +2537,7 @@ begin
       else
         rowOffset := 0;
     end;
-    if GL.EXT_bgra then
+    if GL_EXT_bgra then
     begin
       for y := 0 to Height - 1 do
       begin
@@ -2679,8 +2675,8 @@ begin
     oldTex := TextureBinding[ActiveTexture, ttTexture2D];
     TextureBinding[ActiveTexture, ttTexture2D] := textureHandle;
 
-    GL.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
-    GL.GetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, @FLOD[0].Width);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, @FLOD[0].Height);
     FLOD[0].Depth := 0;
     fColorFormat := GL_RGBA;
     fInternalFormat := tfRGBA8;
@@ -2689,7 +2685,7 @@ begin
     fCubeMap := false;
     fTextureArray := false;
     ReallocMem(FData, DataSize);
-    GL.GetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, FData);
     FBlank := false;
 
     TextureBinding[ActiveTexture, ttTexture2D] := oldTex;
@@ -3130,7 +3126,7 @@ begin
   fTextureArray := false;
   fBlank := false;
   ReallocMem(FData, DataSize);
-  GL.ReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
+  glReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
 end;
 
 // DrawPixels
@@ -3141,8 +3137,8 @@ begin
   if fBlank or IsEmpty then
     Exit;
   Assert(not CurrentGLContext.GLStates.ForwardContext);
-  GL.RasterPos2f(x, y);
-  GL.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
+  glRasterPos2f(x, y);
+  glDrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
 
 // TVKImage

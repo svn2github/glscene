@@ -177,8 +177,6 @@ contains
   GLS.ObjectManager in '..\Source\GLS.ObjectManager.pas',
   GLS.Objects in '..\Source\GLS.Objects.pas',
   GLS.Octree in '..\Source\GLS.Octree.pas',
-  GLS.OpenGLAdapter in '..\Source\Basis\GLS.OpenGLAdapter.pas',
-  GLS.OpenGLTokens in '..\Source\Basis\GLS.OpenGLTokens.pas',
   GLS.OutlineShader in '..\Source\GLS.OutlineShader.pas',
   GLS.ParametricSurfaces in '..\Source\GLS.ParametricSurfaces.pas',
   GLS.ParticleFX in '..\Source\GLS.ParticleFX.pas',
@@ -273,7 +271,8 @@ contains
   TGA in '..\Source\FileFormats\TGA.pas',
   Types3DS in '..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
-  VRMLParser in '..\Source\FileFormats\VRMLParser.pas';
+  VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
+  GLS.OpenGLAdapter in '..\Source\Basis\GLS.OpenGLAdapter.pas';
 
 end.
 

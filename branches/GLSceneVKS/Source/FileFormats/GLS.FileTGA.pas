@@ -37,10 +37,10 @@ type
     class function Capabilities: TVKDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TVKContext;
-      const textureHandle: TGLuint;
+      const textureHandle: GLuint;
       textureTarget: TVKTextureTarget;
       const CurrentFormat: boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
+      const intFormat: GLinternalFormat); reintroduce;
   end;
 
 implementation
@@ -294,8 +294,8 @@ end;
 //
 
 procedure TVKTGAImage.AssignFromTexture(textureContext: TVKContext;
-  const textureHandle: TGLuint; textureTarget: TVKTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
+  const textureHandle: GLuint; textureTarget: TVKTextureTarget;
+  const CurrentFormat: boolean; const intFormat: GLinternalFormat);
 begin
 {$MESSAGE Hint 'TVKTGAImage.AssignFromTexture not yet implemented' }
 end;

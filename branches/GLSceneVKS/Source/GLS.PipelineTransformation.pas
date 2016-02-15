@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 
 unit GLS.PipelineTransformation;
@@ -9,8 +9,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLS.OpenGLTokens,
-  GLS.OpenGLAdapter,
+  Winapi.OpenGL,
   GLS.VectorGeometry,
   GLS.VectorTypes,
   GLS.Log;
@@ -104,11 +103,11 @@ type
     property LoadMatricesEnabled: Boolean read FLoadMatricesEnabled write FLoadMatricesEnabled;
   end;
 
+{}
 // Prevent Lazaruses issue with checksumm chenging!
-type
-  TVKCall = function(): TGLExtensionsAndEntryPoints;
-var
-  vLocalGL: TVKCall;
+// type TVKCall = function(): TGLExtensionsAndEntryPoints;
+// var  vLocalGL: TVKCall;
+
 //-------------------------------------------------------------------------
 implementation
 //-------------------------------------------------------------------------
@@ -206,16 +205,15 @@ var
   M: TMatrix;
 begin
   M := GetModelViewMatrix;
-  vLocalGL.LoadMatrixf(PGLFloat(@M));
 end;
 
 procedure TVKTransformation.LoadProjectionMatrix;
 begin
-  with vLocalGL do
+///  with vLocalGL do
   begin
-    MatrixMode(GL_PROJECTION);
-    LoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
-    MatrixMode(GL_MODELVIEW);
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(PGLFloat(@FStack[FStackPos].FProjectionMatrix));
+    glMatrixMode(GL_MODELVIEW);
   end;
 end;
 

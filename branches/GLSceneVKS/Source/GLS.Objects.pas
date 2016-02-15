@@ -54,7 +54,7 @@ type
   TVKDummyCube = class(TVKCameraInvariantObject)
   private
     { Private Declarations }
-    FCubeSize: TGLfloat;
+    FCubeSize: GLfloat;
     FEdgeColor: TVKColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
     FGroupList: TVKListHandle;
@@ -62,7 +62,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetCubeSize(const val: TGLfloat);
+    procedure SetCubeSize(const val: GLfloat);
     procedure SetEdgeColor(const val: TVKColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetAmalgamate(const val: Boolean);
@@ -86,7 +86,7 @@ type
 
   published
     { Published Declarations }
-    property CubeSize: TGLfloat read FCubeSize write SetCubeSize;
+    property CubeSize: GLfloat read FCubeSize write SetCubeSize;
     property EdgeColor: TVKColor read FEdgeColor write SetEdgeColor;
     { If true the dummycube's edges will be visible at runtime. 
       The default behaviour of the dummycube is to be visible at design-time
@@ -131,9 +131,9 @@ type
   TVKPlane = class(TVKSceneObject)
   private
     { Private Declarations }
-    FXOffset, FYOffset: TGLfloat;
-    FXScope, FYScope: TGLfloat;
-    FWidth, FHeight: TGLfloat;
+    FXOffset, FYOffset: GLfloat;
+    FXScope, FYScope: GLfloat;
+    FWidth, FHeight: GLfloat;
     FXTiles, FYTiles: Cardinal;
     FStyle: TVKPlaneStyles;
     FMesh: array of array of TVertexRec;
@@ -141,12 +141,12 @@ type
     { Protected Declarations }
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
-    procedure SetXOffset(const Value: TGLfloat);
-    procedure SetXScope(const Value: TGLfloat);
+    procedure SetXOffset(const Value: GLfloat);
+    procedure SetXScope(const Value: GLfloat);
     function StoreXScope: Boolean;
     procedure SetXTiles(const Value: Cardinal);
-    procedure SetYOffset(const Value: TGLfloat);
-    procedure SetYScope(const Value: TGLfloat);
+    procedure SetYOffset(const Value: GLfloat);
+    procedure SetYScope(const Value: GLfloat);
     function StoreYScope: Boolean;
     procedure SetYTiles(const Value: Cardinal);
     procedure SetStyle(const val: TVKPlaneStyles);
@@ -175,13 +175,13 @@ type
 
   published
     { Public Declarations }
-    property Height: TGLfloat read FHeight write SetHeight;
-    property Width: TGLfloat read FWidth write SetWidth;
-    property XOffset: TGLfloat read FXOffset write SetXOffset;
-    property XScope: TGLfloat read FXScope write SetXScope stored StoreXScope;
+    property Height: GLfloat read FHeight write SetHeight;
+    property Width: GLfloat read FWidth write SetWidth;
+    property XOffset: GLfloat read FXOffset write SetXOffset;
+    property XScope: GLfloat read FXScope write SetXScope stored StoreXScope;
     property XTiles: Cardinal read FXTiles write SetXTiles default 1;
-    property YOffset: TGLfloat read FYOffset write SetYOffset;
-    property YScope: TGLfloat read FYScope write SetYScope stored StoreYScope;
+    property YOffset: GLfloat read FYOffset write SetYOffset;
+    property YScope: GLfloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
     property Style: TVKPlaneStyles read FStyle write SetStyle
       default [psSingleQuad, psTileTexture];
@@ -195,17 +195,17 @@ type
   TVKSprite = class(TVKSceneObject)
   private
     { Private Declarations }
-    FWidth: TGLfloat;
-    FHeight: TGLfloat;
-    FRotation: TGLfloat;
+    FWidth: GLfloat;
+    FHeight: GLfloat;
+    FRotation: GLfloat;
     FAlphaChannel: Single;
     FMirrorU, FMirrorV: Boolean;
 
   protected
     { Protected Declarations }
-    procedure SetWidth(const val: TGLfloat);
-    procedure SetHeight(const val: TGLfloat);
-    procedure SetRotation(const val: TGLfloat);
+    procedure SetWidth(const val: GLfloat);
+    procedure SetHeight(const val: GLfloat);
+    procedure SetRotation(const val: GLfloat);
     procedure SetAlphaChannel(const val: Single);
     function StoreAlphaChannel: Boolean;
     procedure SetMirrorU(const val: Boolean);
@@ -220,19 +220,19 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
-    procedure SetSize(const Width, Height: TGLfloat);
+    procedure SetSize(const Width, Height: GLfloat);
     // : Set width and height to "size"
-    procedure SetSquareSize(const Size: TGLfloat);
+    procedure SetSquareSize(const Size: GLfloat);
 
   published
     { Published Declarations }
     { Sprite Width in 3D world units. }
-    property Width: TGLfloat read FWidth write SetWidth;
+    property Width: GLfloat read FWidth write SetWidth;
     { Sprite Height in 3D world units. }
-    property Height: TGLfloat read FHeight write SetHeight;
+    property Height: GLfloat read FHeight write SetHeight;
     { This the ON-SCREEN rotation of the sprite. 
       Rotatation=0 is handled faster. }
-    property Rotation: TGLfloat read FRotation write SetRotation;
+    property Rotation: GLfloat read FRotation write SetRotation;
     { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
       stored StoreAlphaChannel;
@@ -422,14 +422,14 @@ type
   private
     { Private Declarations }
     FLineColor: TVKColor;
-    FLinePattern: TGLushort;
+    FLinePattern: GLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
 
   protected
     { Protected Declarations }
     procedure SetLineColor(const Value: TVKColor);
-    procedure SetLinePattern(const Value: TGLushort);
+    procedure SetLinePattern(const Value: GLushort);
     procedure SetLineWidth(const val: Single);
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
@@ -458,7 +458,7 @@ type
     { Bitwise line pattern. 
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
-    property LinePattern: TGLushort read FLinePattern write SetLinePattern
+    property LinePattern: GLushort read FLinePattern write SetLinePattern
       default $FFFF;
     { Default width of the lines. }
     property LineWidth: Single read FLineWidth write SetLineWidth
@@ -500,7 +500,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
     procedure AddNode(const coords: TVKCoordinates); overload;
-    procedure AddNode(const X, Y, Z: TGLfloat); overload;
+    procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
 
@@ -600,8 +600,8 @@ type
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
-    function GetCubeWHD(const Index: Integer): TGLfloat;
-    procedure SetCubeWHD(Index: Integer; AValue: TGLfloat);
+    function GetCubeWHD(const Index: Integer): GLfloat;
+    procedure SetCubeWHD(Index: Integer; AValue: GLfloat);
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
@@ -626,11 +626,11 @@ type
 
   published
     { Published Declarations }
-    property CubeWidth: TGLfloat index 0 read GetCubeWHD write SetCubeWHD
+    property CubeWidth: GLfloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeHeight: TGLfloat index 1 read GetCubeWHD write SetCubeWHD
+    property CubeHeight: GLfloat index 1 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeDepth: TGLfloat index 2 read GetCubeWHD write SetCubeWHD
+    property CubeDepth: GLfloat index 2 read GetCubeWHD write SetCubeWHD
       stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
@@ -690,8 +690,8 @@ type
   TVKSphere = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FRadius: TGLfloat;
-    FSlices, FStacks: TGLInt;
+    FRadius: GLfloat;
+    FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
     FStart: TAngleLimit2;
@@ -699,11 +699,11 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: TGLfloat);
-    procedure SetSlices(aValue: TGLInt);
+    procedure SetRadius(const aValue: GLfloat);
+    procedure SetSlices(aValue: GLint);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
-    procedure SetStacks(aValue: TGLInt);
+    procedure SetStacks(aValue: GLint);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
 
@@ -725,9 +725,9 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: TGLfloat read FRadius write SetRadius;
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property Stacks: TGLInt read FStacks write SetStacks default 16;
+    property Radius: GLfloat read FRadius write SetRadius;
+    property Slices: GLint read FSlices write SetSlices default 16;
+    property Stacks: GLint read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
@@ -759,7 +759,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
     procedure AddNode(const coords: TVKCoordinates); overload;
-    procedure AddNode(const X, Y, Z: TGLfloat); overload;
+    procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
 
@@ -785,8 +785,8 @@ type
   TVKSuperellipsoid = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FRadius, FxyCurve, FzCurve: TGLfloat;
-    FSlices, FStacks: TGLInt;
+    FRadius, FxyCurve, FzCurve: GLfloat;
+    FSlices, FStacks: GLint;
     FTop: TAngleLimit1;
     FBottom: TAngleLimit1;
     FStart: TAngleLimit2;
@@ -794,13 +794,13 @@ type
     FTopCap, FBottomCap: TCapType;
     procedure SetBottom(aValue: TAngleLimit1);
     procedure SetBottomCap(aValue: TCapType);
-    procedure SetRadius(const aValue: TGLfloat);
-    procedure SetxyCurve(const aValue: TGLfloat);
-    procedure SetzCurve(const aValue: TGLfloat);
-    procedure SetSlices(aValue: TGLInt);
+    procedure SetRadius(const aValue: GLfloat);
+    procedure SetxyCurve(const aValue: GLfloat);
+    procedure SetzCurve(const aValue: GLfloat);
+    procedure SetSlices(aValue: GLint);
     procedure SetStart(aValue: TAngleLimit2);
     procedure SetStop(aValue: TAngleLimit2);
-    procedure SetStacks(aValue: TGLInt);
+    procedure SetStacks(aValue: GLint);
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
 
@@ -822,11 +822,11 @@ type
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
-    property Radius: TGLfloat read FRadius write SetRadius;
-    property xyCurve: TGLfloat read FxyCurve write SetxyCurve;
-    property zCurve: TGLfloat read FzCurve write SetzCurve;
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property Stacks: TGLInt read FStacks write SetStacks default 16;
+    property Radius: GLfloat read FRadius write SetRadius;
+    property xyCurve: GLfloat read FxyCurve write SetxyCurve;
+    property zCurve: GLfloat read FzCurve write SetzCurve;
+    property Slices: GLint read FSlices write SetSlices default 16;
+    property Stacks: GLint read FStacks write SetStacks default 16;
     property Start: TAngleLimit2 read FStart write SetStart default 0;
     property Stop: TAngleLimit2 read FStop write SetStop default 360;
     property Top: TAngleLimit1 read FTop write SetTop default 90;
@@ -835,7 +835,7 @@ type
 
 
 { Issues OpenGL for a unit-size cube stippled wireframe. }
-procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: TGLfloat;
+procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
 { Issues OpenGL for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
@@ -872,7 +872,7 @@ const
   // CubeWireframeBuildList
   //
 
-procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: TGLfloat;
+procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
 var
   mi, ma: Single;
@@ -895,33 +895,33 @@ begin
   ma := 0.5 * Size;
   mi := -ma;
 
-  GL.Color4fv(@Color);
-  GL.Begin_(GL_LINE_STRIP);
+  glColor4fv(@Color);
+  glBegin(GL_LINE_STRIP);
   // front face
-  GL.Vertex3f(ma, mi, mi);
-  GL.Vertex3f(ma, ma, mi);
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(ma, mi, mi);
+  glVertex3f(ma, mi, mi);
+  glVertex3f(ma, ma, mi);
+  glVertex3f(ma, ma, ma);
+  glVertex3f(ma, mi, ma);
+  glVertex3f(ma, mi, mi);
   // partial up back face
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, mi, ma);
-  GL.Vertex3f(mi, ma, ma);
-  GL.Vertex3f(mi, ma, mi);
+  glVertex3f(mi, mi, mi);
+  glVertex3f(mi, mi, ma);
+  glVertex3f(mi, ma, ma);
+  glVertex3f(mi, ma, mi);
   // right side low
-  GL.Vertex3f(ma, ma, mi);
-  GL.End_;
-  GL.Begin_(GL_LINES);
+  glVertex3f(ma, ma, mi);
+  glEnd;
+  glBegin(GL_LINES);
   // right high
-  GL.Vertex3f(ma, ma, ma);
-  GL.Vertex3f(mi, ma, ma);
+  glVertex3f(ma, ma, ma);
+  glVertex3f(mi, ma, ma);
   // back low
-  GL.Vertex3f(mi, mi, mi);
-  GL.Vertex3f(mi, ma, mi);
+  glVertex3f(mi, mi, mi);
+  glVertex3f(mi, ma, mi);
   // left high
-  GL.Vertex3f(ma, mi, ma);
-  GL.Vertex3f(mi, mi, ma);
-  GL.End_;
+  glVertex3f(ma, mi, ma);
+  glVertex3f(mi, mi, ma);
+  glEnd;
 end;
 
 // DodecahedronBuildList
@@ -958,20 +958,20 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-//    GL.Begin_(GL_TRIANGLE_FAN);
+//    glBegin(GL_TRIANGLE_FAN);
 //    for j := 0 to 4 do
-//      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-//    GL.End_;
+//      glVertex3fv(@vertices[faceIndices^[j]]);
+//    glEnd;
 
-    GL.Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
 
     for j := 1 to 3 do
     begin
-      GL.Vertex3fv(@vertices[faceIndices^[0]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j+1]]);
+      glVertex3fv(@vertices[faceIndices^[0]]);
+      glVertex3fv(@vertices[faceIndices^[j]]);
+      glVertex3fv(@vertices[faceIndices^[j+1]]);
     end;
-    GL.End_;
+    glEnd;
   end;
 end;
 
@@ -1006,10 +1006,10 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-    GL.Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
+      glVertex3fv(@vertices[faceIndices^[j]]);
+    glEnd;
   end;
 end;
 
@@ -1042,10 +1042,10 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-    GL.Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
+      glVertex3fv(@vertices[faceIndices^[j]]);
+    glEnd;
   end;
 end;
 
@@ -1083,10 +1083,10 @@ begin
       vertices[faceIndices^[2]]);
     GL.Normal3fv(@n);
 
-    GL.Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
+      glVertex3fv(@vertices[faceIndices^[j]]);
+    glEnd;
   end;
 end;
 
@@ -1226,7 +1226,7 @@ end;
 // SetCubeSize
 //
 
-procedure TVKDummyCube.SetCubeSize(const val: TGLfloat);
+procedure TVKDummyCube.SetCubeSize(const val: GLfloat);
 begin
   if val <> FCubeSize then
   begin
@@ -1427,14 +1427,14 @@ procedure TVKPlane.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
-    XGL.TexCoord2fv(@ptr^.TexCoord);
-    GL.Vertex3fv(@ptr^.Position);
+    XglTexCoord2fv(@ptr^.TexCoord);
+    glVertex3fv(@ptr^.Position);
   end;
 
 var
-  hw, hh, posXFact, posYFact, pX, pY1: TGLfloat;
-  tx0, tx1, ty0, ty1, texSFact, texTFact: TGLfloat;
-  texS, texT1: TGLfloat;
+  hw, hh, posXFact, posYFact, pX, pY1: GLfloat;
+  tx0, tx1, ty0, ty1, texSFact, texTFact: GLfloat;
+  texS, texT1: GLfloat;
   X, Y: Integer;
   TanLoc, BinLoc: Integer;
   pVertex: PVertexRec;
@@ -1474,20 +1474,20 @@ begin
   if psSingleQuad in FStyle then
   begin
     // single quad plane
-    GL.Begin_(GL_TRIANGLES);
-    xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
-    xgl.TexCoord2f(tx0, ty1);
-    GL.Vertex2f(-hw, hh);
-    xgl.TexCoord2f(tx0, ty0);
-    GL.Vertex2f(-hw, -hh);
+    glBegin(GL_TRIANGLES);
+    xglTexCoord2f(tx1, ty1);
+    glVertex2f(hw, hh);
+    xglTexCoord2f(tx0, ty1);
+    glVertex2f(-hw, hh);
+    xglTexCoord2f(tx0, ty0);
+    glVertex2f(-hw, -hh);
 
-    GL.Vertex2f(-hw, -hh);
-    xgl.TexCoord2f(tx1, ty0);
-    GL.Vertex2f(hw, -hh);
-    xgl.TexCoord2f(tx1, ty1);
-    GL.Vertex2f(hw, hh);
-    GL.End_;
+    glVertex2f(-hw, -hh);
+    xglTexCoord2f(tx1, ty0);
+    glVertex2f(hw, -hh);
+    xglTexCoord2f(tx1, ty1);
+    glVertex2f(hw, hh);
+    glEnd;
     exit;
   end
   else
@@ -1565,7 +1565,7 @@ function TVKPlane.ScreenRect(aBuffer: TVKSceneBuffer): TVKRect;
 var
   v: array [0 .. 3] of TVector;
   buf: TVKSceneBuffer;
-  hw, hh: TGLfloat;
+  hw, hh: GLfloat;
 begin
   buf := aBuffer;
   if Assigned(buf) then
@@ -1611,7 +1611,7 @@ end;
 // SetXOffset
 //
 
-procedure TVKPlane.SetXOffset(const Value: TGLfloat);
+procedure TVKPlane.SetXOffset(const Value: GLfloat);
 begin
   if Value <> FXOffset then
   begin
@@ -1624,7 +1624,7 @@ end;
 // SetXScope
 //
 
-procedure TVKPlane.SetXScope(const Value: TGLfloat);
+procedure TVKPlane.SetXScope(const Value: GLfloat);
 begin
   if Value <> FXScope then
   begin
@@ -1660,7 +1660,7 @@ end;
 // SetYOffset
 //
 
-procedure TVKPlane.SetYOffset(const Value: TGLfloat);
+procedure TVKPlane.SetYOffset(const Value: GLfloat);
 begin
   if Value <> FYOffset then
   begin
@@ -1673,7 +1673,7 @@ end;
 // SetYScope
 //
 
-procedure TVKPlane.SetYScope(const Value: TGLfloat);
+procedure TVKPlane.SetYScope(const Value: GLfloat);
 begin
   if Value <> FYScope then
   begin
@@ -1807,27 +1807,27 @@ begin
 
   if FRotation <> 0 then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
   end;
-  GL.Begin_(GL_QUADS);
-  xgl.TexCoord2f(u1, v1);
-  GL.Vertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1], vx.V[2] + vy.V[2]);
-  xgl.TexCoord2f(u0, v1);
-  GL.Vertex3f(-vx.V[0] + vy.V[0], -vx.V[1] + vy.V[1], -vx.V[2] + vy.V[2]);
-  xgl.TexCoord2f(u0, v0);
-  GL.Vertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
-  xgl.TexCoord2f(u1, v0);
-  GL.Vertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
-  GL.End_;
+  glBegin(GL_QUADS);
+  xglTexCoord2f(u1, v1);
+  glVertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1], vx.V[2] + vy.V[2]);
+  xglTexCoord2f(u0, v1);
+  glVertex3f(-vx.V[0] + vy.V[0], -vx.V[1] + vy.V[1], -vx.V[2] + vy.V[2]);
+  xglTexCoord2f(u0, v0);
+  glVertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
+  xglTexCoord2f(u1, v0);
+  glVertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+  glEnd;
   if FRotation <> 0 then
-    GL.PopMatrix;
+    glPopMatrix;
 end;
 
 // SetWidth
 //
 
-procedure TVKSprite.SetWidth(const val: TGLfloat);
+procedure TVKSprite.SetWidth(const val: GLfloat);
 begin
   if FWidth <> val then
   begin
@@ -1839,7 +1839,7 @@ end;
 // SetHeight
 //
 
-procedure TVKSprite.SetHeight(const val: TGLfloat);
+procedure TVKSprite.SetHeight(const val: GLfloat);
 begin
   if FHeight <> val then
   begin
@@ -1851,7 +1851,7 @@ end;
 // SetRotation
 //
 
-procedure TVKSprite.SetRotation(const val: TGLfloat);
+procedure TVKSprite.SetRotation(const val: GLfloat);
 begin
   if FRotation <> val then
   begin
@@ -1906,7 +1906,7 @@ end;
 // SetSize
 //
 
-procedure TVKSprite.SetSize(const Width, Height: TGLfloat);
+procedure TVKSprite.SetSize(const Width, Height: GLfloat);
 begin
   FWidth := Width;
   FHeight := Height;
@@ -1916,7 +1916,7 @@ end;
 // SetSquareSize
 //
 
-procedure TVKSprite.SetSquareSize(const Size: TGLfloat);
+procedure TVKSprite.SetSquareSize(const Size: GLfloat);
 begin
   FWidth := Size;
   FHeight := Size;
@@ -2157,34 +2157,34 @@ begin
 
   case FColors.Count of
     0:
-      GL.Color4f(1, 1, 1, 1);
+      glColor4f(1, 1, 1, 1);
     1:
-      GL.Color4fv(PGLFloat(FColors.List));
+      glColor4fv(PGLFloat(FColors.List));
   else
     if FColors.Count < n then
       n := FColors.Count;
-    GL.ColorPointer(4, GL_FLOAT, 0, FColors.List);
-    GL.EnableClientState(GL_COLOR_ARRAY);
+    glColorPointer(4, GL_FLOAT, 0, FColors.List);
+    glEnableClientState(GL_COLOR_ARRAY);
   end;
   if FColors.Count < 2 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 
   rci.GLStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
-    GL.VertexPointer(3, GL_FLOAT, 0, @v);
+    glVertexPointer(3, GL_FLOAT, 0, @v);
     n := 1;
   end
   else
-    GL.VertexPointer(3, GL_FLOAT, 0, FPositions.List);
-  GL.EnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, FPositions.List);
+  glEnableClientState(GL_VERTEX_ARRAY);
 
   if NoZWrite then
     rci.GLStates.DepthWriteMask := False;
   rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
-  if GL.EXT_compiled_vertex_array and (n > 64) then
+  if GL_EXT_compiled_vertex_array and (n > 64) then
     GL.LockArrays(0, n);
   case FStyle of
     psSquare:
@@ -2223,13 +2223,13 @@ begin
   else
     Assert(False);
   end;
-  GL.DrawArrays(GL_POINTS, 0, n);
-  if GL.EXT_compiled_vertex_array and (n > 64) then
+  glDrawArrays(GL_POINTS, 0, n);
+  if GL_EXT_compiled_vertex_array and (n > 64) then
     GL.UnlockArrays;
   PointParameters.UnApply;
-  GL.DisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
-    GL.DisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_COLOR_ARRAY);
 end;
 
 // StoreSize
@@ -2363,7 +2363,7 @@ end;
 // SetLinePattern
 //
 
-procedure TVKLineBase.SetLinePattern(const Value: TGLushort);
+procedure TVKLineBase.SetLinePattern(const Value: GLushort);
 begin
   if FLinePattern <> Value then
   begin
@@ -2454,10 +2454,10 @@ begin
         Enable(stBlend);
         SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
-      GL.Color4fv(FLineColor.AsAddress);
+      glColor4fv(FLineColor.AsAddress);
     end
     else
-      GL.Color3fv(FLineColor.AsAddress);
+      glColor3fv(FLineColor.AsAddress);
 
   end;
 end;
@@ -2657,7 +2657,7 @@ end;
 procedure TVKNodedLines.DrawNode(var rci: TVKRenderContextInfo; X, Y, Z: Single;
   Color: TVKColor);
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   GL.Translatef(X, Y, Z);
   case NodesAspect of
     lnaAxes:
@@ -2668,12 +2668,12 @@ begin
       begin
         if FNodeSize <> 1 then
         begin
-          GL.PushMatrix;
+          glPushMatrix;
           GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
           rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
-          GL.PopMatrix;
+          glPopMatrix;
         end
         else
         begin
@@ -2685,7 +2685,7 @@ begin
   else
     Assert(False)
   end;
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // AxisAlignedDimensionsUnscaled
@@ -2719,7 +2719,7 @@ end;
 // AddNode (xyz)
 //
 
-procedure TVKNodedLines.AddNode(const X, Y, Z: TGLfloat);
+procedure TVKNodedLines.AddNode(const X, Y, Z: GLfloat);
 var
   n: TVKNode;
 begin
@@ -2858,7 +2858,7 @@ end;
 procedure TVKLines.BuildList(var rci: TVKRenderContextInfo);
 var
   i, n: Integer;
-  A, B, C: TGLfloat;
+  A, B, C: GLfloat;
   f: Single;
   Spline: TCubicSpline;
   vertexColor: TVector;
@@ -2895,8 +2895,8 @@ begin
     begin
       // map evaluator
       rci.GLStates.PushAttrib([sttEval]);
-      GL.Enable(GL_MAP1_VERTEX_3);
-      GL.Enable(GL_MAP1_COLOR_4);
+      glEnable(GL_MAP1_VERTEX_3);
+      glEnable(GL_MAP1_COLOR_4);
 
       GL.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
       GL.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
@@ -2926,11 +2926,11 @@ begin
     begin
       // lines, cubic splines or bezier
       if FSplineMode = lsmSegments then
-        GL.Begin_(GL_LINES)
+        glBegin(GL_LINES)
       else if FSplineMode = lsmLoop then
-        GL.Begin_(GL_LINE_LOOP)
+        glBegin(GL_LINE_LOOP)
       else
-        GL.Begin_(GL_LINE_STRIP);
+        glBegin(GL_LINE_STRIP);
       if (FDivision < 2) or (FSplineMode in [lsmLines, lsmSegments,
         lsmLoop]) then
       begin
@@ -2941,8 +2941,8 @@ begin
           for i := 0 to Nodes.Count - 1 do
             with TVKLinesNode(Nodes[i]) do
             begin
-              GL.Color4fv(Color.AsAddress);
-              GL.Vertex3f(X, Y, Z);
+              glColor4fv(Color.AsAddress);
+              glVertex3f(X, Y, Z);
             end;
         end
         else
@@ -2950,7 +2950,7 @@ begin
           // single color
           for i := 0 to Nodes.Count - 1 do
             with Nodes[i] do
-              GL.Vertex3f(X, Y, Z);
+              glVertex3f(X, Y, Z);
         end;
       end
       else if FSplineMode = lsmCubicSpline then
@@ -2972,9 +2972,9 @@ begin
               else
                 SetVector(vertexColor, TVKLinesNode(Nodes[Nodes.Count - 1])
                   .Color.Color);
-              GL.Color4fv(@vertexColor);
+              glColor4fv(@vertexColor);
             end;
-            GL.Vertex3f(A, B, C);
+            glVertex3f(A, B, C);
           end;
         finally
           Spline.Free;
@@ -2986,7 +2986,7 @@ begin
         for i := 0 to FDivision do
           GL.EvalCoord1f(i * f);
       end;
-      GL.End_;
+      glEnd;
     end;
     rci.GLStates.Disable(stColorLogicOp);
 
@@ -3034,7 +3034,7 @@ end;
 
 procedure TVKCube.BuildList(var rci: TVKRenderContextInfo);
 var
-  hw, hh, hd, nd: TGLfloat;
+  hw, hh, hd, nd: GLfloat;
   TanLoc, BinLoc: Integer;
 begin
   if FNormalDirection = ndInside then
@@ -3066,16 +3066,16 @@ begin
         VertexAttrib3f(TanLoc, nd, 0, 0);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(-hw * nd, hh * nd, hd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(-hw, -hh, hd);
       Vertex3f(-hw, -hh, hd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(hw * nd, -hh * nd, hd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(hw, hh, hd);
     end;
     if cpBack in FParts then
@@ -3085,16 +3085,16 @@ begin
         VertexAttrib3f(TanLoc, -nd, 0, 0);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(hw, hh, -hd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(hw * nd, -hh * nd, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(-hw, -hh, -hd);
       Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(-hw * nd, hh * nd, -hd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(hw, hh, -hd);
     end;
     if cpLeft in FParts then
@@ -3104,16 +3104,16 @@ begin
         VertexAttrib3f(TanLoc, 0, 0, nd);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(-hw, hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(-hw, hh * nd, -hd * nd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(-hw, -hh, -hd);
       Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(-hw, -hh * nd, hd * nd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(-hw, hh, hd);
     end;
     if cpRight in FParts then
@@ -3123,16 +3123,16 @@ begin
         VertexAttrib3f(TanLoc, 0, 0, -nd);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, nd, 0);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(hw, -hh * nd, hd * nd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(hw, -hh, -hd);
       Vertex3f(hw, -hh, -hd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(hw, hh * nd, -hd * nd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(hw, hh, hd);
     end;
     if cpTop in FParts then
@@ -3142,16 +3142,16 @@ begin
         VertexAttrib3f(TanLoc, nd, 0, 0);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, 0, -nd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(-hw, hh, -hd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(-hw * nd, hh, hd * nd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(hw, hh, hd);
       Vertex3f(hw, hh, hd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(hw * nd, hh, -hd * nd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(-hw, hh, -hd);
     end;
     if cpBottom in FParts then
@@ -3161,16 +3161,16 @@ begin
         VertexAttrib3f(TanLoc, -nd, 0, 0);
       if BinLoc > -1 then
         VertexAttrib3f(BinLoc, 0, 0, nd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(-hw, -hh, -hd);
-      xgl.TexCoord2fv(@XTexPoint);
+      xglTexCoord2fv(@XTexPoint);
       Vertex3f(hw * nd, -hh, -hd * nd);
-      xgl.TexCoord2fv(@XYTexPoint);
+      xglTexCoord2fv(@XYTexPoint);
       Vertex3f(hw, -hh, hd);
       Vertex3f(hw, -hh, hd);
-      xgl.TexCoord2fv(@YTexPoint);
+      xglTexCoord2fv(@YTexPoint);
       Vertex3f(-hw * nd, -hh, hd * nd);
-      xgl.TexCoord2fv(@NullTexPoint);
+      xglTexCoord2fv(@NullTexPoint);
       Vertex3f(-hw, -hh, -hd);
     end;
     End_;
@@ -3183,7 +3183,7 @@ end;
 function TVKCube.GenerateSilhouette(const silhouetteParameters
   : TVKSilhouetteParameters): TVKSilhouette;
 var
-  hw, hh, hd: TGLfloat;
+  hw, hh, hd: GLfloat;
   connectivity: TConnectivity;
   sil: TVKSilhouette;
 begin
@@ -3240,7 +3240,7 @@ end;
 
 // GetCubeWHD
 //
-function TVKCube.GetCubeWHD(const Index: Integer): TGLfloat;
+function TVKCube.GetCubeWHD(const Index: Integer): GLfloat;
 begin
   Result := FCubeSize.V[index];
 end;
@@ -3248,7 +3248,7 @@ end;
 
 // SetCubeWHD
 //
-procedure TVKCube.SetCubeWHD(Index: Integer; AValue: TGLfloat);
+procedure TVKCube.SetCubeWHD(Index: Integer; AValue: GLfloat);
 begin
   if AValue <> FCubeSize.V[index] then
   begin
@@ -3435,7 +3435,7 @@ end;
 
 procedure TVKQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
 const
-  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLenum = (GLU_FLAT,
+  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of GLEnum = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
 begin
   gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -3449,7 +3449,7 @@ end;
 
 procedure TVKQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLenum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_INSIDE, GLU_OUTSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
@@ -3461,7 +3461,7 @@ end;
 procedure TVKQuadricObject.SetInvertedQuadricOrientation
   (quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLenum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_OUTSIDE, GLU_INSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
@@ -3523,24 +3523,24 @@ begin
   AngStop := DegToRadian(1.0 * FStop);
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
-  GL.PushMatrix;
+  glPushMatrix;
   GL.Scalef(Radius, Radius, Radius);
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngTop, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
+    xglTexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
     else
       GL.Normal3f(0, 1, 0);
     if FTopCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      glVertex3f(0, 0, 0)
     else
     begin
-      GL.Vertex3f(0, SinP, 0);
+      glVertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
         N1.V[1] := -N1.V[1];
@@ -3558,12 +3558,12 @@ begin
         if DoReverse then
           NegateVector(N1);
       end;
-      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
+      glVertex3fv(@v1);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    glEnd;
   end;
 
   // main body
@@ -3582,7 +3582,7 @@ begin
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    glBegin(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
 
@@ -3593,7 +3593,7 @@ begin
       V2.V[2] := CosP2 * CosT;
 
       uTexCoord := i * uTexFactor;
-      xgl.TexCoord2f(uTexCoord, vTexCoord0);
+      xglTexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
@@ -3601,9 +3601,9 @@ begin
       end
       else
         GL.Normal3fv(@v1);
-      GL.Vertex3fv(@v1);
+      glVertex3fv(@v1);
 
-      xgl.TexCoord2f(uTexCoord, vTexCoord1);
+      xglTexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
@@ -3611,11 +3611,11 @@ begin
       end
       else
         GL.Normal3fv(@V2);
-      GL.Vertex3fv(@V2);
+      glVertex3fv(@V2);
 
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    glEnd;
     Phi := Phi2;
     Phi2 := Phi2 - StepV;
   end;
@@ -3623,18 +3623,18 @@ begin
   // bottom cap
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngBottom, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
+    xglTexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, 1, 0)
     else
       GL.Normal3f(0, -1, 0);
     if FBottomCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      glVertex3f(0, 0, 0)
     else
     begin
-      GL.Vertex3f(0, SinP, 0);
+      glVertex3f(0, SinP, 0);
       if DoReverse then
         MakeVector(N1, 0, -1, 0)
       else
@@ -3656,16 +3656,16 @@ begin
         if DoReverse then
           NegateVector(N1);
       end;
-      xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
       GL.Normal3fv(@N1);
-      GL.Vertex3fv(@v1);
+      glVertex3fv(@v1);
       Theta := Theta - StepH;
     end;
-    GL.End_;
+    glEnd;
   end;
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
-  GL.PopMatrix;
+  glPopMatrix;
   rci.GLStates.PopAttrib;
 end;
 
@@ -3761,7 +3761,7 @@ end;
 // SetRadius
 //
 
-procedure TVKSphere.SetRadius(const aValue: TGLfloat);
+procedure TVKSphere.SetRadius(const aValue: GLfloat);
 begin
   if aValue <> FRadius then
   begin
@@ -3788,7 +3788,7 @@ end;
 // SetStacks
 //
 
-procedure TVKSphere.SetStacks(aValue: TGLInt);
+procedure TVKSphere.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
   begin
@@ -3987,7 +3987,7 @@ end;
 // AddNode (xyz)
 //
 
-procedure TVKPolygonBase.AddNode(const X, Y, Z: TGLfloat);
+procedure TVKPolygonBase.AddNode(const X, Y, Z: GLfloat);
 var
   n: TVKNode;
 begin
@@ -4080,23 +4080,23 @@ begin
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngTop, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
+    xglTexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, -1, 0)
     else
       GL.Normal3f(0, 1, 0);
 
     if FTopCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      glVertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
       if (Sign(SinP) = 1) or (tc1 = xyCurve) then
         SinPc1 := Power(SinP, xyCurve)
       else
         SinPc1 := -Power(-SinP, xyCurve);
-      GL.Vertex3f(0, SinPc1*Radius, 0);
+      glVertex3f(0, SinPc1*Radius, 0);
 
       N1 := YVector;
       if DoReverse then
@@ -4140,15 +4140,15 @@ begin
         if DoReverse then
           NegateVector(N1);
       end;
-      //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      //    xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xglTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
       GL.Normal3fv(@N1);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      glVertex3fv(@vs);
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    glEnd;
   end;
 
   // main body
@@ -4178,7 +4178,7 @@ begin
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    glBegin(GL_TRIANGLE_STRIP);
     for i := 0 to FSlices do
     begin
       SinCosine(Theta, SinT, CosT);
@@ -4218,7 +4218,7 @@ begin
       V2.Z := CosPc1 * CosTc2;
 
       uTexCoord := i * uTexFactor;
-      xgl.TexCoord2f(uTexCoord, vTexCoord0);
+      xglTexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
@@ -4228,9 +4228,9 @@ begin
         GL.Normal3fv(@v1);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      glVertex3fv(@vs);
 
-      xgl.TexCoord2f(uTexCoord, vTexCoord1);
+      xglTexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
@@ -4240,11 +4240,11 @@ begin
         GL.Normal3fv(@v2);
       vs := v2;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      glVertex3fv(@vs);
 
       Theta := Theta + StepH;
     end;
-    GL.End_;
+    glEnd;
     Phi := Phi2;
     Phi2 := Phi2 - StepV;
   end;
@@ -4252,22 +4252,22 @@ begin
   // bottom cap
   if (FBottom > -90) and (FBottomCap in [ctCenter, ctFlat]) then
   begin
-    GL.Begin_(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngBottom, SinP, CosP);
-    xgl.TexCoord2f(0.5, 0.5);
+    xglTexCoord2f(0.5, 0.5);
     if DoReverse then
       GL.Normal3f(0, 1, 0)
     else
       GL.Normal3f(0, -1, 0);
     if FBottomCap = ctCenter then
-      GL.Vertex3f(0, 0, 0)
+      glVertex3f(0, 0, 0)
     else
     begin { FTopCap = ctFlat }
       if (Sign(SinP) = 1) or (tc1 = xyCurve) then
         SinPc1 := Power(SinP, xyCurve)
       else
         SinPc1 := -Power(-SinP, xyCurve);
-      GL.Vertex3f(0, SinPc1*Radius, 0);
+      glVertex3f(0, SinPc1*Radius, 0);
 
       if DoReverse then
         MakeVector(N1, 0, -1, 0)
@@ -4311,14 +4311,14 @@ begin
           NegateVector(N1);
         GL.Normal3fv(@N1);
       end;
-      //    xgl.TexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      xgl.TexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      //    xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      xglTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
       vs := v1;
       ScaleVector(vs, Radius);
-      GL.Vertex3fv(@vs);
+      glVertex3fv(@vs);
       Theta := Theta - StepH;
     end;
-    GL.End_;
+    glEnd;
   end;
   if DoReverse then
     rci.GLStates.InvertGLFrontFace;
@@ -4417,7 +4417,7 @@ end;
 // SetRadius
 //
 
-procedure TVKSuperellipsoid.SetRadius(const aValue: TGLfloat);
+procedure TVKSuperellipsoid.SetRadius(const aValue: GLfloat);
 begin
   if aValue <> FRadius then
   begin
@@ -4429,7 +4429,7 @@ end;
 // SetxyCurve
 //
 
-procedure TVKSuperellipsoid.SetxyCurve(const aValue: TGLfloat);
+procedure TVKSuperellipsoid.SetxyCurve(const aValue: GLfloat);
 begin
   if aValue <> FxyCurve then
   begin
@@ -4441,7 +4441,7 @@ end;
 // SetzCurve
 //
 
-procedure TVKSuperellipsoid.SetzCurve(const aValue: TGLfloat);
+procedure TVKSuperellipsoid.SetzCurve(const aValue: GLfloat);
 begin
   if aValue <> FzCurve then
   begin
@@ -4468,7 +4468,7 @@ end;
 // SetStacks
 //
 
-procedure TVKSuperellipsoid.SetStacks(aValue: TGLInt);
+procedure TVKSuperellipsoid.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
   begin

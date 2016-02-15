@@ -39,7 +39,7 @@ type
   // TVKUpdateAbleObject
   //
   { An abstract class describing the "update" interface.  }
-  TVKUpdateAbleObject = class(TGLInterfacedPersistent, IGLNotifyAble)
+  TVKUpdateAbleObject = class(GLinterfacedPersistent, IGLNotifyAble)
   private
     { Private Declarations }
     FOwner: TPersistent;

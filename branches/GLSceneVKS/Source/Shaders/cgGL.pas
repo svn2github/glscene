@@ -114,7 +114,7 @@ const
 (*****************************************************************************)
 
 type
-  TCGGLenum = TGLenum;
+  TCGGLenum = GLEnum;
   CGGLenum = TCGGLenum;
 
 const
@@ -254,7 +254,7 @@ procedure cgGLGetParameterArray4d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
 
 procedure cgGLSetParameterPointer(param: PCGparameter; fsize: GLint;
-    _type: TGLenum; stride: GLsizei; const _pointer: Pointer); cdecl; external CgGLlibrary;
+    _type: GLEnum; stride: GLsizei; const _pointer: Pointer); cdecl; external CgGLlibrary;
 
 procedure cgGLEnableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
 procedure cgGLDisableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
@@ -304,11 +304,11 @@ procedure cgGLGetMatrixParameterArraydr(param: PCGparameter;
  *** Texture Parameter Managment Functions
  *****************************************************************************)
 
-procedure cgGLSetTextureParameter(param: PCGparameter; texobj: TGLuint); cdecl; external CgGLlibrary;
-function cgGLGetTextureParameter(param: PCGparameter): TGLuint; cdecl; external CgGLlibrary;
+procedure cgGLSetTextureParameter(param: PCGparameter; texobj: GLuint); cdecl; external CgGLlibrary;
+function cgGLGetTextureParameter(param: PCGparameter): GLuint; cdecl; external CgGLlibrary;
 procedure cgGLEnableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
 procedure cgGLDisableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
-function cgGLGetTextureEnum(param: PCGparameter): TGLenum; cdecl; external CgGLlibrary;
+function cgGLGetTextureEnum(param: PCGparameter): GLEnum; cdecl; external CgGLlibrary;
 procedure cgGLSetManageTextureParameters(ctx: PCGcontext; flag: TCGbool); cdecl; external CgGLlibrary;
 function cgGLGetManageTextureParameters(ctx: PCGcontext): TCGbool; cdecl; external CgGLlibrary;
 

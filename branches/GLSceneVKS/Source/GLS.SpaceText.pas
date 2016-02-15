@@ -419,12 +419,12 @@ var
   textL, maxUnder, maxHeight: Single;
   charScale: Single;
   i, j, k, c: Integer;
-  glBase: TGLuint;
+  glBase: GLuint;
   dirtyLine, cleanLine: WideString;
 begin
   if Length(GetText) > 0 then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
 
     // FAspectRatio ignore
     if FAspectRatio <> 0 then
@@ -435,9 +435,9 @@ begin
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
       stcrAlphaNum:
-        GL.ListBase(TGLuint(Integer(glBase) - 32));
+        GL.ListBase(GLuint(Integer(glBase) - 32));
       stcrNumbers:
-        GL.ListBase(TGLuint(Integer(glBase) - Integer('0')));
+        GL.ListBase(GLuint(Integer(glBase) - Integer('0')));
     else
       GL.ListBase(glBase);
     end;
@@ -445,7 +445,7 @@ begin
     rci.GLStates.PushAttrib([sttPolygon]);
     for i := 0 to FLines.Count - 1 do
     begin
-      GL.PushMatrix;
+      glPushMatrix;
 
       TextMetrics(FLines.Strings[i], textL, maxHeight, maxUnder);
       if (FAdjust.Horz <> haLeft) or (FAdjust.Vert <> vaBaseLine) or
@@ -498,10 +498,10 @@ begin
       else
         GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
           PGLChar(TGLString(FLines.Strings[i])));
-      GL.PopMatrix;
+      glPopMatrix;
     end;
     rci.GLStates.PopAttrib();
-    GL.PopMatrix;
+    glPopMatrix;
   end;
 end;
 
@@ -763,7 +763,7 @@ begin
   else
     begin
       AdjustVector.V[0] := 0;
-      Assert(False, vksErrorEx + vksUnknownType); // Not implemented...
+      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 
@@ -779,7 +779,7 @@ begin
   else
     begin
       AdjustVector.V[1] := 0;
-      Assert(False, vksErrorEx + vksUnknownType); // Not implemented...
+      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 

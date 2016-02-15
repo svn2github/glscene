@@ -186,11 +186,11 @@ begin
         1.0 / FCorrectionScaling,
         1.0 / FCorrectionScaling));
     ARci.GLStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
-    GL.RenderMode(GL_FEEDBACK);
+    glRenderMode(GL_FEEDBACK);
 
     Self.RenderChildren(0, Count - 1, ARci);
 
-    FBuffer.Count := GL.RenderMode(GL_RENDER);
+    FBuffer.Count := glRenderMode(GL_RENDER);
     ARci.PipelineTransformation.Pop;
 
   finally

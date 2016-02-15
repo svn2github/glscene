@@ -1791,10 +1791,10 @@ begin
                 if curManager.TexturingMode <> currentTexturingMode then
                 begin
                   if currentTexturingMode <> 0 then
-                    GL.Disable(currentTexturingMode);
+                    glDisable(currentTexturingMode);
                   currentTexturingMode := curManager.TexturingMode;
                   if currentTexturingMode <> 0 then
-                    GL.Enable(currentTexturingMode);
+                    glEnable(currentTexturingMode);
                 end;
                 curManager.BeginParticles(rci);
               end;
@@ -2930,7 +2930,7 @@ var
   s, c: Single;
 begin
   inherited;
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
   for i := 0 to 2 do
   begin
     Fvx.V[i] := matrix.V[i].V[0] * FParticleSize;
@@ -2995,15 +2995,15 @@ begin
   else
     FVertBuf.Translate(pos);
 
-  GL.Begin_(GL_TRIANGLE_FAN);
-  GL.Color4fv(@inner);
-  GL.Vertex3fv(@pos);
-  GL.Color4fv(@outer);
+  glBegin(GL_TRIANGLE_FAN);
+  glColor4fv(@inner);
+  glVertex3fv(@pos);
+  glColor4fv(@outer);
   for i := 0 to FVertBuf.Count - 1 do
-    GL.Vertex3fv(@vertexList[i]);
+    glVertex3fv(@vertexList[i]);
 
-  GL.Vertex3fv(@vertexList[0]);
-  GL.End_;
+  glVertex3fv(@vertexList[0]);
+  glEnd;
 end;
 
 // EndParticles
@@ -3138,14 +3138,14 @@ begin
       FTexHandle.AllocateHandle;
       FTexHandle.Target := ttTexture2D;
       rci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
-      GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
       rci.GLStates.UnpackAlignment := 4;
       rci.GLStates.UnpackRowLength := 0;
       rci.GLStates.UnpackSkipRows := 0;
       rci.GLStates.UnpackSkipPixels := 0;
 
-      GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-      GL.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
       bmp32 := TVKBitmap32.Create;
       try
@@ -3185,7 +3185,7 @@ var
   s, c, w, h: Single;
 begin
   inherited;
-  GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
+  glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
 
   w := FParticleSize * Sqrt(FAspectRatio);
   h := Sqr(FParticleSize) / w;
@@ -3220,12 +3220,12 @@ procedure TVKBaseSpritePFXManager.BeginParticles(var rci: TVKRenderContextInfo);
 begin
   BindTexture(rci);
   if ColorMode = scmNone then
-    GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE)
   else
-    GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
   ApplyBlendingMode(rci);
   if ColorMode <> scmFade then
-    GL.Begin_(GL_QUADS);
+    glBegin(GL_QUADS);
 end;
 
 // RenderParticle
@@ -3253,14 +3253,14 @@ var
 
   procedure IssueVertices;
   begin
-    GL.TexCoord2fv(@tcs[0]);
-    GL.Vertex3fv(@vertexList[0]);
-    GL.TexCoord2fv(@tcs[1]);
-    GL.Vertex3fv(@vertexList[1]);
-    GL.TexCoord2fv(@tcs[2]);
-    GL.Vertex3fv(@vertexList[2]);
-    GL.TexCoord2fv(@tcs[3]);
-    GL.Vertex3fv(@vertexList[3]);
+    glTexCoord2fv(@tcs[0]);
+    glVertex3fv(@vertexList[0]);
+    glTexCoord2fv(@tcs[1]);
+    glVertex3fv(@vertexList[1]);
+    glTexCoord2fv(@tcs[2]);
+    glVertex3fv(@vertexList[2]);
+    glTexCoord2fv(@tcs[3]);
+    glVertex3fv(@vertexList[3]);
   end;
 
 begin
@@ -3306,26 +3306,26 @@ begin
     scmFade:
       begin
         ComputeColors(lifeTime, inner, outer);
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(@inner);
-        GL.TexCoord2f((tcs^[0].S + tcs^[2].S) * 0.5, (tcs^[0].T + tcs^[2].T) * 0.5);
-        GL.Vertex3fv(@pos);
-        GL.Color4fv(@outer);
+        glBegin(GL_TRIANGLE_FAN);
+        glColor4fv(@inner);
+        glTexCoord2f((tcs^[0].S + tcs^[2].S) * 0.5, (tcs^[0].T + tcs^[2].T) * 0.5);
+        glVertex3fv(@pos);
+        glColor4fv(@outer);
         IssueVertices;
-        GL.TexCoord2fv(@tcs[0]);
-        GL.Vertex3fv(@vertexList[0]);
-        GL.End_;
+        glTexCoord2fv(@tcs[0]);
+        glVertex3fv(@vertexList[0]);
+        glEnd;
       end;
     scmInner:
       begin
         ComputeInnerColor(lifeTime, inner);
-        GL.Color4fv(@inner);
+        glColor4fv(@inner);
         IssueVertices;
       end;
     scmOuter:
       begin
         ComputeOuterColor(lifeTime, outer);
-        GL.Color4fv(@outer);
+        glColor4fv(@outer);
         IssueVertices;
       end;
     scmNone:
@@ -3343,7 +3343,7 @@ end;
 procedure TVKBaseSpritePFXManager.EndParticles(var rci: TVKRenderContextInfo);
 begin
   if ColorMode <> scmFade then
-    GL.End_;
+    glEnd;
   UnApplyBlendingMode(rci);
 end;
 

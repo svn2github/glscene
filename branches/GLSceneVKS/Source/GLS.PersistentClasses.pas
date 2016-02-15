@@ -362,10 +362,10 @@ type
     constructor Create(AOwner: TPersistent); virtual;
   end;
 
-  // TGLInterfacedPersistent
+  // GLinterfacedPersistent
   //
   { TPersistent thet inplements IInterface. }
-  TGLInterfacedPersistent = class(TPersistent, IInterface)
+  GLinterfacedPersistent = class(TPersistent, IInterface)
   protected
     // Implementing IInterface.
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
@@ -373,10 +373,10 @@ type
     function _Release: Integer; stdcall;
   end;
 
-  // TGLInterfacedCollectionItem
+  // GLinterfacedCollectionItem
   //
   { TCollectionItem thet inplements IInterface. }
-  TGLInterfacedCollectionItem = class(TCollectionItem, IInterface)
+  GLinterfacedCollectionItem = class(TCollectionItem, IInterface)
   protected
     // Implementing IInterface.
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
@@ -2244,13 +2244,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLInterfacedPersistent ------------------
+// ------------------ GLinterfacedPersistent ------------------
 // ------------------
 
 // _AddRef
 //
 
-function TGLInterfacedPersistent._AddRef: Integer; stdcall;
+function GLinterfacedPersistent._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2258,7 +2258,7 @@ end;
 // _Release
 //
 
-function TGLInterfacedPersistent._Release: Integer; stdcall;
+function GLinterfacedPersistent._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2266,7 +2266,7 @@ end;
 // QueryInterface
 //
 
-function TGLInterfacedPersistent.QueryInterface(const IID: TGUID;
+function GLinterfacedPersistent.QueryInterface(const IID: TGUID;
   out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
@@ -2276,14 +2276,14 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLInterfacedCollectionItem ------------------
+// ------------------ GLinterfacedCollectionItem ------------------
 // ------------------
 
 
 // _AddRef
 //
 
-function TGLInterfacedCollectionItem._AddRef: Integer; stdcall;
+function GLinterfacedCollectionItem._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2291,7 +2291,7 @@ end;
 // _Release
 //
 
-function TGLInterfacedCollectionItem._Release: Integer; stdcall;
+function GLinterfacedCollectionItem._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2299,7 +2299,7 @@ end;
 // QueryInterface
 //
 
-function TGLInterfacedCollectionItem.QueryInterface(const IID: TGUID;
+function GLinterfacedCollectionItem.QueryInterface(const IID: TGUID;
     out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then

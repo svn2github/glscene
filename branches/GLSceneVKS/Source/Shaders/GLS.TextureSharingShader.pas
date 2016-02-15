@@ -26,7 +26,7 @@ uses
 type
   TVKTextureSharingShader = class;
 
-  TVKTextureSharingShaderMaterial = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVKTextureSharingShaderMaterial = class(GLinterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     FTextureMatrix: TMatrix;
     FNeedToUpdateTextureMatrix: Boolean;

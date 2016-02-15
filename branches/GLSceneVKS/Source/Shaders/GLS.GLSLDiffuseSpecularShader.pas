@@ -194,7 +194,7 @@ begin
         Add('  				   LOG2 ); ');
       end;
     else
-      Assert(False, vksUnknownType);
+      Assert(False, glsUnknownType);
     end;
 
       Add('  fogFactor = clamp(fogFactor, 0.0, 1.0); ');
@@ -581,7 +581,7 @@ begin
   begin
     FMainTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLDiffuseSpecularShaderException.Create(vksErrorEx + vksMatLibNotDefined);
+      raise EGLSLDiffuseSpecularShaderException.Create(glsErrorEx + glsMatLibNotDefined);
   end
   else
   begin

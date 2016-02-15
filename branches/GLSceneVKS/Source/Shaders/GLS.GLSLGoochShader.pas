@@ -213,9 +213,9 @@ begin
   param['DiffuseFactor'].AsVector1f := FDiffuseFactor;
   param['SpecularFactor'].AsVector1f := FSpecularFactor;
 
- // gl.PushAttrib(GL_COLOR_BUFFER_BIT);
+ // glPushAttrib(GL_COLOR_BUFFER_BIT);
   ApplyBlendingModeEx(FBlendingMode);
-//  gl.Enable(GL_BLEND);
+//  glEnable(GL_BLEND);
 //  gl.BlendFunc(cGLBlendFunctionToGLEnum[FBlendSrc],cGLBlendFunctionToGLEnum[FBlendDst]);
 end;
 
@@ -225,7 +225,7 @@ begin
   gl.ActiveTexture(GL_TEXTURE0_ARB);
   GetGLSLProg.EndUseProgramObject;
   UnApplyBlendingModeEx;
- // gl.PopAttrib;
+ // glPopAttrib;
   Result := False;
 end;
 

@@ -138,7 +138,7 @@ type
     property PickableTarget: Boolean read GetPickable write SetPickable
       default False;
     { force texture dimensions when initializing
-      only works with TVKBlankImage and TGLfloatDataImage, otherwise does nothing }
+      only works with TVKBlankImage and GLfloatDataImage, otherwise does nothing }
     property ForceTextureDimensions: Boolean read FForceTextureDimensions
       write SetForceTextureDimentions default True;
 
@@ -399,7 +399,7 @@ begin
     FFbo.DetachTexture(I);
 
   if FMaxSize = 0 then
-    GL.GetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @FMaxSize);
+    glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, @FMaxSize);
   if Width > FMaxSize then
   begin
     FWidth := FMaxSize;
@@ -444,7 +444,7 @@ begin
       exit;
     end;
     if FMaxAttachment = 0 then
-      GL.GetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
+      glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, @FMaxAttachment);
 
     if Assigned(FOnSetTextureTargets) then
     begin
@@ -540,11 +540,11 @@ begin
 
   if FColorAttachment = 0 then
   begin
-    GL.DrawBuffer(GL_NONE);
-    GL.ReadBuffer(GL_NONE);
+    glDrawBuffer(GL_NONE);
+    glReadBuffer(GL_NONE);
   end
   else
-    GL.DrawBuffers(FColorAttachment, @cDrawBuffers);
+    glDrawBuffers(FColorAttachment, @cDrawBuffers);
 
   DoPostInitialize;
   FFbo.Unbind;
@@ -678,7 +678,7 @@ begin
       ARci.GLStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
-    GL.Clear(GetClearBits);
+    glClear(GetClearBits);
 
     FFbo.PreRender;
     // render to fbo

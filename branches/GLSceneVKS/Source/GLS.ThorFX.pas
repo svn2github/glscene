@@ -585,15 +585,15 @@ begin
     if Manager.FCore then
     begin
       rci.GLStates.Disable(stBlend);
-      GL.Color4fv(@Ccol);
-      GL.Begin_(GL_LINE_STRIP);
+      glColor4fv(@Ccol);
+      glBegin(GL_LINE_STRIP);
       for i := 0 to N - 1 do
       begin
         fp := @(Manager.FThorpoints[i]);
         SetVector(Ppos, fp^.Position);
-        GL.Vertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]);
+        glVertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]);
       end;
-      GL.End_;
+      glEnd;
     end; // Core;
 
     // ---Point Glow---
@@ -606,37 +606,37 @@ begin
         SetVector(Ppos, fp^.Position);
         fp := @(Manager.FThorpoints[i]);
         SetVector(Ppos2, fp^.Position);
-        GL.Begin_(GL_TRIANGLE_FAN);
-        GL.Color4fv(@Icol);
-        GL.Vertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]); // middle1
-        GL.Color4fv(@Ocol);
-        GL.Vertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
+        glBegin(GL_TRIANGLE_FAN);
+        glColor4fv(@Icol);
+        glVertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]); // middle1
+        glColor4fv(@Ocol);
+        glVertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
           Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
           Ppos.V[2]); // TopRight
-        GL.Vertex3f(Vx.V[0] * 1.4 + Ppos.V[0],
+        glVertex3f(Vx.V[0] * 1.4 + Ppos.V[0],
           Vx.V[1] * 1.4 + Ppos.V[1], Vx.V[2] * 1.4 + Ppos.V[2]);
         // Right1
-        GL.Vertex3f(Vx.V[0] - Vy.V[0] + Ppos.V[0],
+        glVertex3f(Vx.V[0] - Vy.V[0] + Ppos.V[0],
           Vx.V[1] - Vy.V[1] + Ppos.V[1], Vx.V[2] - Vy.V[2] +
           Ppos.V[2]); // BottomRight
-        GL.Vertex3f(-Vy.V[0] * 1.4 + Ppos.V[0],
+        glVertex3f(-Vy.V[0] * 1.4 + Ppos.V[0],
           -Vy.V[1] * 1.4 + Ppos.V[1], -Vy.V[2] * 1.4 + Ppos.V[2]
           ); // bottom1
-        GL.Vertex3f(-Vx.V[0] - Vy.V[0] + Ppos.V[0],
+        glVertex3f(-Vx.V[0] - Vy.V[0] + Ppos.V[0],
           -Vx.V[1] - Vy.V[1] + Ppos.V[1], -Vx.V[2] - Vy.V[2]
           + Ppos.V[2]); // BottomLeft
-        GL.Vertex3f(-Vx.V[0] * 1.4 + Ppos.V[0],
+        glVertex3f(-Vx.V[0] * 1.4 + Ppos.V[0],
           -Vx.V[1] * 1.4 + Ppos.V[1], -Vx.V[2] * 1.4 + Ppos.V[2]); // left1
-        GL.Vertex3f(-Vx.V[0] + Vy.V[0] + Ppos.V[0],
+        glVertex3f(-Vx.V[0] + Vy.V[0] + Ppos.V[0],
           -Vx.V[1] + Vy.V[1] + Ppos.V[1], -Vx.V[2] + Vy.V[2]
           + Ppos.V[2]); // TopLeft
-        GL.Vertex3f(Vy.V[0] * 1.4 + Ppos.V[0],
+        glVertex3f(Vy.V[0] * 1.4 + Ppos.V[0],
           Vy.V[1] * 1.4 + Ppos.V[1], Vy.V[2] * 1.4 + Ppos.V[2]);
         // top1
-        GL.Vertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
+        glVertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
           Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
           Ppos.V[2]); // TopRight
-        GL.End_;
+        glEnd;
       end; // Glow
     end;
 

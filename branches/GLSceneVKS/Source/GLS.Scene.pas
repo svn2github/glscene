@@ -1767,7 +1767,7 @@ type
     procedure CopyToTexture(aTexture: TVKTexture); overload;
     procedure CopyToTexture(aTexture: TVKTexture; xSrc, ySrc, AWidth, AHeight:
       Integer;
-      xDest, yDest: Integer; glCubeFace: TGLenum = 0); overload;
+      xDest, yDest: Integer; glCubeFace: GLEnum = 0); overload;
     { Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
     { Event reserved for viewer-specific uses.  }
@@ -2210,26 +2210,26 @@ begin
     if rci.bufferDepthTest then
       Enable(stDepthTest);
   end;
-  GL.Begin_(GL_LINES);
-  GL.Color3f(0.5, 0.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(-AxisLen, 0, 0);
-  GL.Color3f(1.0, 0.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(AxisLen, 0, 0);
-  GL.Color3f(0.0, 0.5, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, -AxisLen, 0);
-  GL.Color3f(0.0, 1.0, 0.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, AxisLen, 0);
-  GL.Color3f(0.0, 0.0, 0.5);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, 0, -AxisLen);
-  GL.Color3f(0.0, 0.0, 1.0);
-  GL.Vertex3f(0, 0, 0);
-  GL.Vertex3f(0, 0, AxisLen);
-  GL.End_;
+  glBegin(GL_LINES);
+  glColor3f(0.5, 0.0, 0.0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(-AxisLen, 0, 0);
+  glColor3f(1.0, 0.0, 0.0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(AxisLen, 0, 0);
+  glColor3f(0.0, 0.5, 0.0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, -AxisLen, 0);
+  glColor3f(0.0, 1.0, 0.0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, AxisLen, 0);
+  glColor3f(0.0, 0.0, 0.5);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, 0, -AxisLen);
+  glColor3f(0.0, 0.0, 1.0);
+  glVertex3f(0, 0, 0);
+  glVertex3f(0, 0, AxisLen);
+  glEnd;
 end;
 
 // RegisterInfoForm
@@ -2462,7 +2462,7 @@ begin
       NotifyChange(Self);
   end
   else
-    Assert(False, vksUnBalancedBeginEndUpdate);
+    Assert(False, glsUnBalancedBeginEndUpdate);
 end;
 
 // BuildList
@@ -2630,7 +2630,7 @@ end;
 
 procedure TVKBaseSceneObject.WriteRotations(stream: TStream);
 begin
-  stream.Write(FRotation.AsAddress^, 3 * SizeOf(TGLfloat));
+  stream.Write(FRotation.AsAddress^, 3 * SizeOf(GLfloat));
 end;
 
 // ReadRotations
@@ -2638,7 +2638,7 @@ end;
 
 procedure TVKBaseSceneObject.ReadRotations(stream: TStream);
 begin
-  stream.Read(FRotation.AsAddress^, 3 * SizeOf(TGLfloat));
+  stream.Read(FRotation.AsAddress^, 3 * SizeOf(GLfloat));
 end;
 
 // DrawAxes
@@ -7474,17 +7474,17 @@ begin
               if LightStyle in [lsParallel, lsParallelSpot] then
               begin
                 ModelMatrix := AbsoluteMatrix;
-                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
+                glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, SpotDirection.AsAddress);
               end
               else
               begin
                 ModelMatrix := Parent.AbsoluteMatrix;
-                GL.Lightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
+                glLightfv(GL_LIGHT0 + FLightID, GL_POSITION, Position.AsAddress);
               end;
               if LightStyle in [lsSpot, lsParallelSpot] then
               begin
                 if FSpotCutOff <> 180 then
-                  GL.Lightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
+                  glLightfv(GL_LIGHT0 + FLightID, GL_SPOT_DIRECTION, FSpotDirection.AsAddress);
               end;
             end;
 
@@ -7656,36 +7656,36 @@ begin
   end;
 
   case FFogMode of
-    fmLinear: GL.Fogi(GL_FOG_MODE, GL_LINEAR);
+    fmLinear: glFogi(GL_FOG_MODE, GL_LINEAR);
     fmExp:
       begin
-        GL.Fogi(GL_FOG_MODE, GL_EXP);
-        GL.Fogf(GL_FOG_DENSITY, FFogColor.Alpha);
+        glFogi(GL_FOG_MODE, GL_EXP);
+        glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
       end;
     fmExp2:
       begin
-        GL.Fogi(GL_FOG_MODE, GL_EXP2);
-        GL.Fogf(GL_FOG_DENSITY, FFogColor.Alpha);
+        glFogi(GL_FOG_MODE, GL_EXP2);
+        glFogf(GL_FOG_DENSITY, FFogColor.Alpha);
       end;
   end;
-  GL.Fogfv(GL_FOG_COLOR, FFogColor.AsAddress);
-  GL.Fogf(GL_FOG_START, FFogStart);
-  GL.Fogf(GL_FOG_END, FFogEnd);
+  glFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
+  glFogf(GL_FOG_START, FFogStart);
+  glFogf(GL_FOG_END, FFogEnd);
   if GL.NV_fog_distance then
   begin
     case FogDistance of
       fdDefault:
         begin
           if vImplemDependantFogDistanceDefault = -1 then
-            GL.GetIntegerv(GL_FOG_DISTANCE_MODE_NV,
+            glGetIntegerv(GL_FOG_DISTANCE_MODE_NV,
               @vImplemDependantFogDistanceDefault)
           else
-            GL.Fogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
+            glFogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
         end;
       fdEyePlane:
-        GL.Fogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
+        glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
       fdEyeRadial:
-        GL.Fogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+        glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
     else
       Assert(False);
     end;
@@ -7838,7 +7838,7 @@ begin
       // this one should NOT be replaced with an assert
       if not GL.VERSION_1_1 then
       begin
-        GLSLogger.LogFatalError(vksWrongVersion);
+        GLSLogger.LogFatalError(glsWrongVersion);
         Abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
@@ -7939,17 +7939,17 @@ begin
 
   if not (roForwardContext in ContextOptions) then
   begin
-    GL.LightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, FAmbientColor.AsAddress);
     if roTwoSideLighting in FContextOptions then
-      GL.LightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
+      glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE)
     else
-      GL.LightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-    GL.Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+      glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     case ShadeModel of
-      smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
-      smFlat: GL.ShadeModel(GL_FLAT);
+      smDefault, smSmooth: glShadeModel(GL_SMOOTH);
+      smFlat: glShadeModel(GL_FLAT);
     else
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
     end;
   end;
 
@@ -7964,7 +7964,7 @@ begin
       Disable(stDepthClamp);
     if not (roForwardContext in ContextOptions) then
     begin
-      GL.GetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
+      glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
       SetState((LColorDepth < 8), stDither);
     end;
     ResetAllGLTextureMatrix;
@@ -7980,66 +7980,66 @@ var
 begin
   case Which of
     limClipPlanes:
-      GL.GetIntegerv(GL_MAX_CLIP_PLANES, @Result);
+      glGetIntegerv(GL_MAX_CLIP_PLANES, @Result);
     limEvalOrder:
-      GL.GetIntegerv(GL_MAX_EVAL_ORDER, @Result);
+      glGetIntegerv(GL_MAX_EVAL_ORDER, @Result);
     limLights:
-      GL.GetIntegerv(GL_MAX_LIGHTS, @Result);
+      glGetIntegerv(GL_MAX_LIGHTS, @Result);
     limListNesting:
-      GL.GetIntegerv(GL_MAX_LIST_NESTING, @Result);
+      glGetIntegerv(GL_MAX_LIST_NESTING, @Result);
     limModelViewStack:
-      GL.GetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
+      glGetIntegerv(GL_MAX_MODELVIEW_STACK_DEPTH, @Result);
     limNameStack:
-      GL.GetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
+      glGetIntegerv(GL_MAX_NAME_STACK_DEPTH, @Result);
     limPixelMapTable:
-      GL.GetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
+      glGetIntegerv(GL_MAX_PIXEL_MAP_TABLE, @Result);
     limProjectionStack:
-      GL.GetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
+      glGetIntegerv(GL_MAX_PROJECTION_STACK_DEPTH, @Result);
     limTextureSize:
-      GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
+      glGetIntegerv(GL_MAX_TEXTURE_SIZE, @Result);
     limTextureStack:
-      GL.GetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
+      glGetIntegerv(GL_MAX_TEXTURE_STACK_DEPTH, @Result);
     limViewportDims:
       begin
-        GL.GetDoublev(GL_MAX_VIEWPORT_DIMS, @VP);
+        glGetDoublev(GL_MAX_VIEWPORT_DIMS, @VP);
         if VP[0] > VP[1] then
           Result := Round(VP[0])
         else
           Result := Round(VP[1]);
       end;
     limAccumAlphaBits:
-      GL.GetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
+      glGetIntegerv(GL_ACCUM_ALPHA_BITS, @Result);
     limAccumBlueBits:
-      GL.GetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
+      glGetIntegerv(GL_ACCUM_BLUE_BITS, @Result);
     limAccumGreenBits:
-      GL.GetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
+      glGetIntegerv(GL_ACCUM_GREEN_BITS, @Result);
     limAccumRedBits:
-      GL.GetIntegerv(GL_ACCUM_RED_BITS, @Result);
+      glGetIntegerv(GL_ACCUM_RED_BITS, @Result);
     limAlphaBits:
-      GL.GetIntegerv(GL_ALPHA_BITS, @Result);
+      glGetIntegerv(GL_ALPHA_BITS, @Result);
     limAuxBuffers:
-      GL.GetIntegerv(GL_AUX_BUFFERS, @Result);
+      glGetIntegerv(GL_AUX_BUFFERS, @Result);
     limDepthBits:
-      GL.GetIntegerv(GL_DEPTH_BITS, @Result);
+      glGetIntegerv(GL_DEPTH_BITS, @Result);
     limStencilBits:
-      GL.GetIntegerv(GL_STENCIL_BITS, @Result);
+      glGetIntegerv(GL_STENCIL_BITS, @Result);
     limBlueBits:
-      GL.GetIntegerv(GL_BLUE_BITS, @Result);
+      glGetIntegerv(GL_BLUE_BITS, @Result);
     limGreenBits:
-      GL.GetIntegerv(GL_GREEN_BITS, @Result);
+      glGetIntegerv(GL_GREEN_BITS, @Result);
     limRedBits:
-      GL.GetIntegerv(GL_RED_BITS, @Result);
+      glGetIntegerv(GL_RED_BITS, @Result);
     limIndexBits:
-      GL.GetIntegerv(GL_INDEX_BITS, @Result);
+      glGetIntegerv(GL_INDEX_BITS, @Result);
     limStereo:
-      GL.GetIntegerv(GL_STEREO, @Result);
+      glGetIntegerv(GL_STEREO, @Result);
     limDoubleBuffer:
-      GL.GetIntegerv(GL_DOUBLEBUFFER, @Result);
+      glGetIntegerv(GL_DOUBLEBUFFER, @Result);
     limSubpixelBits:
-      GL.GetIntegerv(GL_SUBPIXEL_BITS, @Result);
+      glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
     limNbTextureUnits:
       if GL.ARB_multitexture then
-        GL.GetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
+        glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
       else
         Result := 1;
   else
@@ -8056,7 +8056,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), vksAlreadyRendering);
+  Assert((not FRendering), glsAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := FViewPort.Width;
@@ -8091,7 +8091,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), vksAlreadyRendering);
+  Assert((not FRendering), glsAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := bmpWidth;
@@ -8166,7 +8166,7 @@ end;
 procedure TVKSceneBuffer.CopyToTexture(aTexture: TVKTexture;
   xSrc, ySrc, AWidth, AHeight: Integer;
   xDest, yDest: Integer;
-  glCubeFace: TGLenum = 0);
+  glCubeFace: GLEnum = 0);
 var
   bindTarget: TVKTextureTarget;
 begin
@@ -8188,10 +8188,10 @@ begin
       bindTarget := aTexture.Image.NativeTextureTarget;
       RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
       if glCubeFace > 0 then
-        GL.CopyTexSubImage2D(glCubeFace,
+        glCopyTexSubImage2D(glCubeFace,
           0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
       else
-        GL.CopyTexSubImage2D(DecodeGLTextureTarget(bindTarget),
+        glCopyTexSubImage2D(DecodeGLTextureTarget(bindTarget),
           0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
     finally
       RenderingContext.Deactivate;
@@ -8213,7 +8213,7 @@ begin
     GetMem(Data, DataSize);
     FRenderingContext.Activate;
     try
-      GL.ReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, Data);
+      glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, Data);
       GL.CheckError;
 
       Stream := TMemoryStream.Create;
@@ -8275,7 +8275,7 @@ begin
   RenderingContext.Activate;
   try
     FFreezeBuffer := AllocMem(FViewPort.Width * FViewPort.Height * 4);
-    GL.ReadPixels(0, 0, FViewport.Width, FViewPort.Height,
+    glReadPixels(0, 0, FViewport.Width, FViewPort.Height,
       GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
     FFreezedViewPort := FViewPort;
   finally
@@ -8303,7 +8303,7 @@ var
   nativeContext: TVKContext;
   aColorBits: Integer;
 begin
-  Assert((not FRendering), vksAlreadyRendering);
+  Assert((not FRendering), glsAlreadyRendering);
   FRendering := True;
   nativeContext := RenderingContext;
   try
@@ -8342,7 +8342,7 @@ begin
         DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
         if nativeContext <> nil then
           FViewport := TRectangle(nativeContext.GLStates.ViewPort);
-        GL.Finish;
+        glFinish;
       finally
         FRenderingContext.Deactivate;
       end;
@@ -8720,7 +8720,7 @@ end;
 
 procedure TVKSceneBuffer.ClearBuffers;
 var
-  bufferBits: TGLBitfield;
+  bufferBits: GLbitfield;
 begin
   if roNoDepthBufferClear in ContextOptions then
     bufferBits := 0
@@ -8738,7 +8738,7 @@ begin
   begin
     bufferBits := bufferBits or GL_STENCIL_BUFFER_BIT;
   end;
-  GL.Clear(BufferBits);
+  glClear(BufferBits);
 end;
 
 // NotifyChange
@@ -8760,7 +8760,7 @@ var
 begin
   if not Assigned(FCamera) then
     Exit;
-  Assert((not FRendering), vksAlreadyRendering);
+  Assert((not FRendering), glsAlreadyRendering);
   Assert(Assigned(PickList));
   FRenderingContext.Activate;
   FRendering := True;
@@ -8837,7 +8837,7 @@ begin
   end;
   FRenderingContext.Activate;
   try
-    GL.ReadPixels(x, FViewPort.Height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE,
+    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE,
       @buf[0]);
   finally
     FRenderingContext.Deactivate;
@@ -8857,7 +8857,7 @@ begin
   end;
   FRenderingContext.Activate;
   try
-    GL.ReadPixels(x, FViewPort.Height - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT,
+    glReadPixels(x, FViewPort.Height - y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT,
       @Result);
   finally
     FRenderingContext.Deactivate;
@@ -9033,12 +9033,12 @@ begin
       RenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
-      GL.MatrixMode(GL_PROJECTION);
-      GL.LoadIdentity;
-      GL.MatrixMode(GL_MODELVIEW);
-      GL.LoadIdentity;
-      GL.RasterPos2f(-1, -1);
-      GL.DrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity;
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity;
+      glRasterPos2f(-1, -1);
+      glDrawPixels(FFreezedViewPort.Width, FFreezedViewPort.Height,
         GL_RGBA, GL_UNSIGNED_BYTE, FFreezeBuffer);
       if not (roNoSwapBuffers in ContextOptions) then
         RenderingContext.SwapBuffers;
@@ -9064,7 +9064,7 @@ begin
         QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
-      GL.ClearError;
+      glClearError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
       FRenderingContext.GLStates.ColorClearValue :=
@@ -9485,24 +9485,24 @@ var
   begin
     GetMem(buf, Width * Height * 4);
     try // float_type
-      GL.ReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
+      glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       case aTexture.MinFilter of
         miNearest, miLinear:
-          GL.TexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       else
         if GL.SGIS_generate_mipmap and (target = GL_TEXTURE_2D) then
         begin
           // hardware-accelerated when supported
-          GL.TexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-          GL.TexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
         end
         else
         begin
-          GL.TexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
-          GL.GenerateMipmap(target);
+          glGenerateMipmap(target);
         end;
       end;
     finally
@@ -9536,7 +9536,7 @@ begin
         handle := aTexture.Handle;
 
       // For MRT
-      GL.ReadBuffer(MRT_BUFFERS[BufferIndex]);
+      glReadBuffer(MRT_BUFFERS[BufferIndex]);
 
       Buffer.RenderingContext.GLStates.TextureBinding[0,
         EncodeGLTextureTarget(target)] := handle;
@@ -9547,9 +9547,9 @@ begin
       if CreateTexture then
         CreateNewTexture
       else
-        GL.CopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
+        glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
 
-      GL.ClearError;
+      glClearError;
     finally
       Buffer.RenderingContext.Deactivate;
     end;

@@ -282,10 +282,10 @@ begin
     psrOpenGL:
       begin
         mrci.GLStates.PushAttrib([sttEnable, sttEval]);
-        //GL.Enable(GL_MAP2_TEXTURE_COORD_3);
-        GL.Enable(GL_MAP2_VERTEX_3);
-        GL.Enable(GL_AUTO_NORMAL);
-        GL.Enable(GL_NORMALIZE);
+        //glEnable(GL_MAP2_TEXTURE_COORD_3);
+        glEnable(GL_MAP2_VERTEX_3);
+        glEnable(GL_AUTO_NORMAL);
+        glEnable(GL_NORMALIZE);
 
         case FBasis of
           psbBezier:
@@ -586,14 +586,14 @@ begin
 
   if FTempTexCoords.Count > 0 then
   begin
-    GL.Enable(GL_MAP2_TEXTURE_COORD_3);
+    glEnable(GL_MAP2_TEXTURE_COORD_3);
     GL.Map2f(GL_MAP2_TEXTURE_COORD_3,
       0, 1, 3, FCountU,
       0, 1, 3 * FCountU, FCountV,
       @FTempTexCoords.List[0]);
   end;
 
-  GL.Enable(GL_MAP2_VERTEX_3);
+  glEnable(GL_MAP2_VERTEX_3);
   GL.Map2f(GL_MAP2_VERTEX_3,
     0, 1, 3, FCountU,
     0, 1, 3 * FCountU, FCountV,

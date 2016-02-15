@@ -801,7 +801,7 @@ begin
                       fp^.Position.V[2] - lastTr.V[2]);
         SetVector(lastTr, fp^.Position);
         innerColor.V[3] := fp^.Alpha * fp^.TimeToLive / Sqr(fp^.LifeLength);
-        GL.Color4fv(@innerColor);
+        glColor4fv(@innerColor);
         Manager.AffParticle3d(Manager.FOuterColor.Color, rci.PipelineTransformation.ViewMatrix);
       end;
 

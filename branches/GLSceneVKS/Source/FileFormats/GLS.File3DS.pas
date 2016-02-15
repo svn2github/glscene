@@ -338,7 +338,7 @@ begin
     else
     begin
       Result := nil;
-      Assert(False, vksErrorEx + vksUnknownType);
+      Assert(False, glsErrorEx + glsUnknownType);
     end;
   end;
 end;
@@ -368,7 +368,7 @@ begin
   else
   begin
     Result := ctScale;
-    Assert(False, vksErrorEx + vksUnknownType);
+    Assert(False, glsErrorEx + glsUnknownType);
   end;
 end;
 
@@ -1347,11 +1347,11 @@ end;
 
 procedure TVKFile3DSMeshObject.BuildList(var ARci: TVKRenderContextInfo);
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   if not FStatic then
     GL.MultMatrixf(@FAnimTransf.ModelMatrix);
   inherited;
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}

@@ -40,7 +40,7 @@ type
     FWidth: Integer;
     FHeight: Integer;
     FStorageValid: Boolean;
-    function GetHandle: TGLuint;
+    function GetHandle: GLuint;
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
   protected
@@ -57,7 +57,7 @@ type
     { Handle to the OpenGL render buffer object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
-    property Handle: TGLuint read GetHandle;
+    property Handle: GLuint read GetHandle;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
   end;
@@ -93,7 +93,7 @@ type
   TVKFrameBuffer = class
   private
     FFrameBufferHandle: TVKFramebufferHandle;
-    FTarget: TGLenum;
+    FTarget: GLEnum;
     FWidth: Integer;
     FHeight: Integer;
     FLayer: Integer;
@@ -111,11 +111,11 @@ type
     procedure SetLevel(const Value: Integer);
   protected
     procedure AttachTexture(
-      const attachment: TGLenum;
-      const textarget: TGLenum;
-      const texture: TGLuint;
-      const level: TGLint;
-      const layer: TGLint); overload;
+      const attachment: GLEnum;
+      const textarget: GLEnum;
+      const texture: GLuint;
+      const level: GLint;
+      const layer: GLint); overload;
     procedure ReattachTextures;
   public
     constructor Create;
@@ -488,13 +488,13 @@ begin
 end;
 
 procedure TVKFrameBuffer.AttachTexture(
-  const attachment: TGLenum;
-  const textarget: TGLenum;
-  const texture: TGLuint;
-  const level: TGLint;
-  const layer: TGLint);
+  const attachment: GLEnum;
+  const textarget: GLEnum;
+  const texture: GLuint;
+  const level: GLint;
+  const layer: GLint);
 var
-  storeDFB: TGLuint;
+  storeDFB: GLuint;
   RC: TVKContext;
 begin
   RC := SafeCurrentGLContext;
@@ -651,7 +651,7 @@ begin
         with FFrameBufferHandle.RenderingContext.GLStates do
           TextureBinding[ActiveTexture, textarget] :=
             FAttachedTexture[n].Handle;
-        GL.GenerateMipmap(DecodeGLTextureTarget(textarget));
+        glGenerateMipmap(DecodeGLTextureTarget(textarget));
       end;
   end;
 end;
@@ -673,11 +673,11 @@ begin
   buffer := TVKSceneBuffer(rci.buffer);
 
   backColor := ConvertWinColor(buffer.BackgroundColor);
-  GL.ClearColor(backColor.V[0], backColor.V[1], backColor.V[2],
+  glClearColor(backColor.V[0], backColor.V[1], backColor.V[2],
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
   rci.GLStates.DepthWriteMask := True;
-  GL.Clear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
+  glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
   Unbind;

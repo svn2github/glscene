@@ -32,7 +32,7 @@ var
   TessExtraVertices: Integer;
   TessVertices: PAffineVectorArray;
 
-procedure DoTessBegin(mode: TGLenum);
+procedure DoTessBegin(mode: GLEnum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -60,7 +60,7 @@ procedure DoTessEnd;
 begin
 end;
 
-procedure DoTessError(errno: TGLenum);
+procedure DoTessError(errno: GLEnum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}

@@ -934,9 +934,9 @@ end;
 //
 procedure TVKCustomBitmapFont.PrepareParams(var ARci: TVKRenderContextInfo);
 const
-  cTextureMagFilter: array [maNearest .. maLinear] of TGLenum = (GL_NEAREST,
+  cTextureMagFilter: array [maNearest .. maLinear] of GLEnum = (GL_NEAREST,
     GL_LINEAR);
-  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of TGLenum =
+  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of GLEnum =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 begin
@@ -1055,8 +1055,8 @@ begin
   end;
 
   // start rendering
-  GL.Color4fv(@aColor);
-  GL.Begin_(GL_QUADS);
+  glColor4fv(@aColor);
+  glBegin(GL_QUADS);
   for i := 1 to Length(aText) do
   begin
     currentChar := WideChar(aText[i]);
@@ -1104,7 +1104,7 @@ begin
         end;
     end;
   end;
-  GL.End_;
+  glEnd;
   // unbind texture
   ARci.GLStates.TextureBinding[0, ttTexture2D] := 0;
   ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;

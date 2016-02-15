@@ -40,7 +40,7 @@ type
   // TVKMaterialMultiProxyMaster
   //
   { MasterObject description for a MultiProxy object. }
-  TVKMaterialMultiProxyMaster = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVKMaterialMultiProxyMaster = class(GLinterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FMasterObject: TVKBaseSceneObject;
@@ -316,7 +316,7 @@ begin
   begin
     FTempLibMaterialName := Value;
     if not (csLoading in OwnerObject.ComponentState) then
-      raise ETexture.Create(vksErrorEx + vksMatLibNotDefined);
+      raise ETexture.Create(glsErrorEx + glsMatLibNotDefined);
   end
   else
   begin

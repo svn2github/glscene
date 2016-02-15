@@ -294,7 +294,7 @@ type
     FUseBlendFunc: Boolean;
     FSeparateBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
-    FAlphaFuncRef: TGLclampf;
+    FAlphaFuncRef: GLclampf;
     FBlendFuncSFactor: TBlendFunction;
     FBlendFuncDFactor: TBlendFunction;
     FAlphaBlendFuncSFactor: TBlendFunction;
@@ -302,7 +302,7 @@ type
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
     procedure SetSeparateBlendFunc(const Value: Boolean);
-    procedure SetAlphaFuncRef(const Value: TGLclampf);
+    procedure SetAlphaFuncRef(const Value: GLclampf);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
     procedure SetBlendFuncDFactor(const Value: TBlendFunction);
     procedure SetBlendFuncSFactor(const Value: TBlendFunction);
@@ -317,7 +317,7 @@ type
       default False;
     property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write
       SetAlphaFuncType default cfGreater;
-    property AlphaFuncRef: TGLclampf read FAlphaFuncRef write SetAlphaFuncRef
+    property AlphaFuncRef: GLclampf read FAlphaFuncRef write SetAlphaFuncRef
       stored StoreAlphaFuncRef;
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc
@@ -878,7 +878,7 @@ end;
 procedure TVKFaceProperties.ApplyNoLighting(var rci: TVKRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  GL.Color4fv(Diffuse.AsAddress);
+  glColor4fv(Diffuse.AsAddress);
 end;
 
 // Assign
@@ -1318,7 +1318,7 @@ begin
     //    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
     //                       // which may choose to override this procedure.
   else
-    Assert(False, vksErrorEx + vksUnknownType);
+    Assert(False, glsErrorEx + glsUnknownType);
   end;
 end;
 
@@ -3469,14 +3469,14 @@ var
   LibMat: TVKLibMaterial;
 begin
   if Self = nil then
-    raise ETexture.Create(vksErrorEx + vksMatLibNotDefined)
+    raise ETexture.Create(glsErrorEx + glsMatLibNotDefined)
   else if LibMatName = '' then
     Result := nil
   else
   begin
     LibMat := LibMaterialByName(LibMatName);
     if LibMat = nil then
-      raise ETexture.CreateFmt(vksErrorEx + vksMaterialNotFoundInMatlibEx,
+      raise ETexture.CreateFmt(glsErrorEx + glsMaterialNotFoundInMatlibEx,
         [LibMatName])
     else
       Result := LibMat.Material.Texture;
@@ -3558,7 +3558,7 @@ begin
   FAlphaBlendFuncDFactor := bfOneMinusSrcAlpha;
 end;
 
-procedure TVKBlendingParameters.SetAlphaFuncRef(const Value: TGLclampf);
+procedure TVKBlendingParameters.SetAlphaFuncRef(const Value: GLclampf);
 begin
   if (FAlphaFuncRef <> Value) then
   begin

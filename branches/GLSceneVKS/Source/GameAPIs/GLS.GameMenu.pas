@@ -260,16 +260,16 @@ begin
         begin
           libMat.Apply(rci);
           repeat
-            GL.Begin_(GL_QUADS);
-            GL.TexCoord2f(0, 0);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y + TitleHeight);
-            GL.TexCoord2f(1, 0);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y + TitleHeight);
-            GL.TexCoord2f(1, 1);
-            GL.Vertex2f(Position.X + TitleWidth div 2, y);
-            GL.TexCoord2f(0, 1);
-            GL.Vertex2f(Position.X - TitleWidth div 2, y);
-            GL.End_;
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, 0);
+            glVertex2f(Position.X - TitleWidth div 2, y + TitleHeight);
+            glTexCoord2f(1, 0);
+            glVertex2f(Position.X + TitleWidth div 2, y + TitleHeight);
+            glTexCoord2f(1, 1);
+            glVertex2f(Position.X + TitleWidth div 2, y);
+            glTexCoord2f(0, 1);
+            glVertex2f(Position.X - TitleWidth div 2, y);
+            glEnd;
           until (not libMat.UnApply(rci));
         end;
       end;

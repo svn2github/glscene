@@ -38,12 +38,12 @@ type
   TVKDisk = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TGLfloat;
-    FSlices, FLoops: TGLInt;
+    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: GLfloat;
+    FSlices, FLoops: GLint;
     procedure SetOuterRadius(const aValue: Single);
     procedure SetInnerRadius(const aValue: Single);
-    procedure SetSlices(aValue: TGLInt);
-    procedure SetLoops(aValue: TGLInt);
+    procedure SetSlices(aValue: GLint);
+    procedure SetLoops(aValue: GLint);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
 
@@ -61,17 +61,17 @@ type
   published
     { Published Declarations }
     { Allows defining a "hole" in the disk. }
-    property InnerRadius: TGLfloat read FInnerRadius write SetInnerRadius;
+    property InnerRadius: GLfloat read FInnerRadius write SetInnerRadius;
     { Number of radial mesh subdivisions. }
-    property Loops: TGLInt read FLoops write SetLoops default 2;
+    property Loops: GLint read FLoops write SetLoops default 2;
     { Outer radius for the disk. 
       If you leave InnerRadius at 0, this is the disk radius. }
-    property OuterRadius: TGLfloat read FOuterRadius write SetOuterRadius;
+    property OuterRadius: GLfloat read FOuterRadius write SetOuterRadius;
     { Number of mesh slices. 
       For instance, if Slices=6, your disk will look like an hexagon. }
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property StartAngle: TGLfloat read FStartAngle write SetStartAngle;
-    property SweepAngle: TGLfloat read FSweepAngle write SetSweepAngle;
+    property Slices: GLint read FSlices write SetSlices default 16;
+    property StartAngle: GLfloat read FStartAngle write SetStartAngle;
+    property SweepAngle: GLfloat read FSweepAngle write SetSweepAngle;
   end;
 
   // TVKCylinderBase
@@ -84,17 +84,17 @@ type
   TVKCylinderBase = class(TVKQuadricObject)
   private
     { Private Declarations }
-    FBottomRadius: TGLfloat;
-    FSlices, FStacks, FLoops: TGLInt;
-    FHeight: TGLfloat;
+    FBottomRadius: GLfloat;
+    FSlices, FStacks, FLoops: GLint;
+    FHeight: GLfloat;
 
   protected
     { Protected Declarations }
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
-    procedure SetSlices(aValue: TGLInt);
-    procedure SetStacks(aValue: TGLInt);
-    procedure SetLoops(aValue: TGLInt);
+    procedure SetSlices(aValue: GLint);
+    procedure SetStacks(aValue: GLint);
+    procedure SetLoops(aValue: GLint);
     function GetTopRadius: Single; virtual;
   public
     { Public Declarations }
@@ -106,12 +106,12 @@ type
       : TVKSilhouetteParameters): TVKSilhouette; override;
   published
     { Published Declarations }
-    property BottomRadius: TGLfloat read FBottomRadius write SetBottomRadius;
-    property Height: TGLfloat read FHeight write SetHeight;
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property Stacks: TGLInt read FStacks write SetStacks default 4;
+    property BottomRadius: GLfloat read FBottomRadius write SetBottomRadius;
+    property Height: GLfloat read FHeight write SetHeight;
+    property Slices: GLint read FSlices write SetSlices default 16;
+    property Stacks: GLint read FStacks write SetStacks default 4;
     { Number of concentric rings for top/bottom disk(s). }
-    property Loops: TGLInt read FLoops write SetLoops default 1;
+    property Loops: GLint read FLoops write SetLoops default 1;
   end;
 
   // TConePart
@@ -165,7 +165,7 @@ type
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FTopRadius: TGLfloat;
+    FTopRadius: GLfloat;
     FAlignment: TCylinderAlignment;
 
   protected
@@ -192,7 +192,7 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
@@ -204,10 +204,10 @@ type
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FRadius: TGLfloat;
-    FSlices: TGLInt;
-    FStacks: TGLInt;
-    FHeight: TGLfloat;
+    FRadius: GLfloat;
+    FSlices: GLint;
+    FStacks: GLint;
+    FHeight: GLfloat;
     FAlignment: TCylinderAlignment;
   protected
     { Protected Declarations }
@@ -231,10 +231,10 @@ type
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
     { Published Declarations }
-    property Height: TGLfloat read FHeight write SetHeight;
-    property Slices: TGLInt read FSlices write SetSlices;
-    property Stacks: TGLInt read FStacks write SetStacks;
-    property Radius: TGLfloat read FRadius write SetRadius;
+    property Height: GLfloat read FHeight write SetHeight;
+    property Slices: GLint read FSlices write SetSlices;
+    property Stacks: GLint read FStacks write SetStacks;
+    property Radius: GLfloat read FRadius write SetRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
@@ -253,9 +253,9 @@ type
   private
     { Private Declarations }
     FParts: TAnnulusParts;
-    FBottomInnerRadius: TGLfloat;
-    FTopInnerRadius: TGLfloat;
-    FTopRadius: TGLfloat;
+    FBottomInnerRadius: GLfloat;
+    FTopInnerRadius: GLfloat;
+    FTopRadius: GLfloat;
 
   protected
     { Protected Declarations }
@@ -277,11 +277,11 @@ type
 
   published
     { Published Declarations }
-    property BottomInnerRadius: TGLfloat read FBottomInnerRadius
+    property BottomInnerRadius: GLfloat read FBottomInnerRadius
       write SetBottomInnerRadius;
-    property TopInnerRadius: TGLfloat read FTopInnerRadius
+    property TopInnerRadius: GLfloat read FTopInnerRadius
       write SetTopInnerRadius;
-    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property Parts: TAnnulusParts read FParts write SetParts
       default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
@@ -379,18 +379,18 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
+    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowLineParts read FParts write SetParts
       default [alLine, alTopArrow];
-    property TopArrowHeadHeight: TGLfloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: GLfloat read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLfloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: GLfloat read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLfloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: GLfloat read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLfloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: GLfloat read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -443,21 +443,21 @@ type
 
   published
     { Published Declarations }
-    property ArcRadius: TGLfloat read fArcRadius write SetArcRadius;
-    property StartAngle: TGLfloat read FStartAngle write SetStartAngle;
-    property StopAngle: TGLfloat read FStopAngle write SetStopAngle;
-    property TopRadius: TGLfloat read FTopRadius write SetTopRadius;
+    property ArcRadius: GLfloat read fArcRadius write SetArcRadius;
+    property StartAngle: GLfloat read FStartAngle write SetStartAngle;
+    property StopAngle: GLfloat read FStopAngle write SetStopAngle;
+    property TopRadius: GLfloat read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowArcParts read FParts write SetParts
       default [aaArc, aaTopArrow];
-    property TopArrowHeadHeight: TGLfloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: GLfloat read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLfloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: GLfloat read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLfloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: GLfloat read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLfloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: GLfloat read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -518,7 +518,7 @@ type
   TVKFrustrum = class(TVKSceneObject)
   private
     { Private Declarations }
-    FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLfloat;
+    FApexHeight, FBaseDepth, FBaseWidth, FHeight: GLfloat;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
     procedure SetApexHeight(const aValue: Single);
@@ -539,19 +539,19 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TVKRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-    function TopDepth: TGLfloat;
-    function TopWidth: TGLfloat;
+    function TopDepth: GLfloat;
+    function TopWidth: GLfloat;
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: TGLfloat read FApexHeight write SetApexHeight
+    property ApexHeight: GLfloat read FApexHeight write SetApexHeight
       stored False;
-    property BaseDepth: TGLfloat read FBaseDepth write SetBaseDepth
+    property BaseDepth: GLfloat read FBaseDepth write SetBaseDepth
       stored False;
-    property BaseWidth: TGLfloat read FBaseWidth write SetBaseWidth
+    property BaseWidth: GLfloat read FBaseWidth write SetBaseWidth
       stored False;
-    property Height: TGLfloat read FHeight write SetHeight stored False;
+    property Height: GLfloat read FHeight write SetHeight stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
     property Parts: TFrustrumParts read FParts write SetParts
@@ -689,7 +689,7 @@ end;
 
 function TVKDisk.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TGLfloat;
+  r: GLfloat;
 begin
   r := Abs(FOuterRadius);
   Result := VectorMake(r, r, 0);
@@ -799,7 +799,7 @@ end;
 // SetSlices
 //
 
-procedure TVKCylinderBase.SetSlices(aValue: TGLInt);
+procedure TVKCylinderBase.SetSlices(aValue: GLint);
 begin
   if aValue <> FSlices then
   begin
@@ -811,7 +811,7 @@ end;
 // SetStack
 //
 
-procedure TVKCylinderBase.SetStacks(aValue: TGLInt);
+procedure TVKCylinderBase.SetStacks(aValue: GLint);
 begin
   if aValue <> FStacks then
   begin
@@ -823,7 +823,7 @@ end;
 // SetLoops
 //
 
-procedure TVKCylinderBase.SetLoops(aValue: TGLInt);
+procedure TVKCylinderBase.SetLoops(aValue: GLint);
 begin
   if (aValue >= 1) and (aValue <> FLoops) then
   begin
@@ -949,7 +949,7 @@ procedure TVKCone.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
   GL.Rotated(-90, 1, 0, 0);
@@ -963,7 +963,7 @@ begin
     gluDisk(quadric, 0, BottomRadius, Slices, FLoops);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // SetParts
@@ -995,7 +995,7 @@ end;
 
 function TVKCone.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TGLfloat;
+  r: GLfloat;
 begin
   r := Abs(FBottomRadius);
   Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
@@ -1105,7 +1105,7 @@ procedure TVKCylinder.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
   GL.Rotatef(-90, 1, 0, 0);
@@ -1121,10 +1121,10 @@ begin
     gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if cyTop in FParts then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Translatef(0, 0, FHeight);
     gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
+    glPopMatrix;
   end;
   if cyBottom in FParts then
   begin
@@ -1133,7 +1133,7 @@ begin
     gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // SetTopRadius
@@ -1198,7 +1198,7 @@ end;
 
 function TVKCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLfloat;
+  r, r1: GLfloat;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -1395,7 +1395,7 @@ var
   tmp, nx, ny, nz, start_nx, start_ny, a, ca, sa, l: Single;
   nx2, ny2, nz2: Single;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   GL.Rotatef(-90, 0, 0, 1);
   case Alignment of
     caTop:
@@ -1415,20 +1415,20 @@ begin
   nz := 1;
   if cySides in FParts then
   begin
-    GL.Begin_(GL_TRIANGLE_STRIP);
+    glBegin(GL_TRIANGLE_STRIP);
     for i := 0 to n do
     begin
       GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 1);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, l - 0.5);
+      glTexCoord2f(i / n, 1);
+      glVertex3d(ny * FRadius, nz * FRadius, l - 0.5);
       GL.Normal3d(ny, nz, 0);
-      GL.TexCoord2f(i / n, 0);
-      GL.Vertex3d(ny * FRadius, nz * FRadius, -l - 0.5);
+      glTexCoord2f(i / n, 0);
+      glVertex3d(ny * FRadius, nz * FRadius, -l - 0.5);
       tmp := ca * ny - sa * nz;
       nz := sa * ny + ca * nz;
       ny := tmp;
     end;
-    GL.End_();
+    glEnd();
   end;
   //
   if cyTop in FParts then
@@ -1445,17 +1445,17 @@ begin
       nx2 := start_nx2;
       ny2 := start_ny2;
       nz2 := 0;
-      GL.PushMatrix;
+      glPushMatrix;
       GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       for i := 0 to n do
       begin
         GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, l + nx2 * FRadius);
+        glTexCoord2f(i / n, j / n);
+        glVertex3d(ny2 * FRadius, nz2 * FRadius, l + nx2 * FRadius);
         GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, l + nx * FRadius);
+        glTexCoord2f(i / n, (j - 1) / n);
+        glVertex3d(ny * FRadius, nz * FRadius, l + nx * FRadius);
         tmp := ca * ny - sa * nz;
         nz := sa * ny + ca * nz;
         ny := tmp;
@@ -1463,8 +1463,8 @@ begin
         nz2 := sa * ny2 + ca * nz2;
         ny2 := tmp;
       end;
-      GL.End_();
-      GL.PopMatrix;
+      glEnd();
+      glPopMatrix;
       start_nx := start_nx2;
       start_ny := start_ny2;
     end;
@@ -1484,17 +1484,17 @@ begin
       nx2 := start_nx2;
       ny2 := start_ny2;
       nz2 := 0;
-      GL.PushMatrix;
+      glPushMatrix;
       GL.Translatef(0, 0, -0.5);
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       for i := 0 to n do
       begin
         GL.Normal3d(ny, nz, nx);
-        GL.TexCoord2f(i / n, (j - 1) / n);
-        GL.Vertex3d(ny * FRadius, nz * FRadius, -l + nx * FRadius);
+        glTexCoord2f(i / n, (j - 1) / n);
+        glVertex3d(ny * FRadius, nz * FRadius, -l + nx * FRadius);
         GL.Normal3d(ny2, nz2, nx2);
-        GL.TexCoord2f(i / n, j / n);
-        GL.Vertex3d(ny2 * FRadius, nz2 * FRadius, -l + nx2 * FRadius);
+        glTexCoord2f(i / n, j / n);
+        glVertex3d(ny2 * FRadius, nz2 * FRadius, -l + nx2 * FRadius);
         tmp := ca * ny - sa * nz;
         nz := sa * ny + ca * nz;
         ny := tmp;
@@ -1502,13 +1502,13 @@ begin
         nz2 := sa * ny2 + ca * nz2;
         ny2 := tmp;
       end;
-      GL.End_();
-      GL.PopMatrix;
+      glEnd();
+      glPopMatrix;
       start_nx := start_nx2;
       start_ny := start_ny2;
     end;
   end;
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // SetLength
@@ -1601,7 +1601,7 @@ end;
 
 function TVKCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLfloat;
+  r, r1: GLfloat;
 begin
   r := Abs(FRadius);
   r1 := Abs(FRadius);
@@ -1840,7 +1840,7 @@ procedure TVKAnnulus.BuildList(var rci: TVKRenderContextInfo);
 var
   quadric: PGLUquadricObj;
 begin
-  GL.PushMatrix;
+  glPushMatrix;
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
   GL.Rotatef(-90, 1, 0, 0);
@@ -1849,10 +1849,10 @@ begin
     gluCylinder(quadric, FBottomRadius, FTopRadius, FHeight, FSlices, FStacks);
   if anTop in FParts then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Translatef(0, 0, FHeight);
     gluDisk(quadric, FTopInnerRadius, FTopRadius, FSlices, FLoops);
-    GL.PopMatrix;
+    glPopMatrix;
   end;
   if [anBottom, anInnerSides] * FParts <> [] then
   begin
@@ -1865,7 +1865,7 @@ begin
         FSlices, FStacks);
   end;
   gluDeleteQuadric(quadric);
-  GL.PopMatrix;
+  glPopMatrix;
 end;
 
 // Assign
@@ -1889,7 +1889,7 @@ end;
 
 function TVKAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLfloat;
+  r, r1: GLfloat;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -2106,7 +2106,7 @@ procedure TVKTorus.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   begin
-    XGL.TexCoord2fv(@ptr^.TexCoord);
+    XglTexCoord2fv(@ptr^.TexCoord);
     with GL do
     begin
       Normal3fv(@ptr^.Normal);
@@ -2120,13 +2120,13 @@ procedure TVKTorus.BuildList(var rci: TVKRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLfloat;
-  cosTheta1, sinTheta1: TGLfloat;
-  ringDelta, sideDelta: TGLfloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: GLfloat;
+  cosTheta1, sinTheta1: GLfloat;
+  ringDelta, sideDelta: GLfloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLInt;
+  TanLoc, BinLoc: GLint;
   MeshSize: integer;
   MeshIndex: integer;
   Vertex: TVertexRec;
@@ -2439,7 +2439,7 @@ end;
 
 function TVKTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLfloat;
+  r, r1: GLfloat;
 begin
   r := Abs(FMajorRadius);
   r1 := Abs(FMinorRadius);
@@ -2643,7 +2643,7 @@ begin
   if alTopArrow in Parts then
   begin
     cylHeight := cylHeight - TopArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Translatef(0, 0, Height * 0.5 - TopArrowHeadHeight * headInfluence);
     gluCylinder(quadric, fTopArrowHeadRadius, 0, fTopArrowHeadHeight,
       Slices, Stacks);
@@ -2653,14 +2653,14 @@ begin
       gluDisk(quadric, FTopRadius, fTopArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fTopArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
+    glPopMatrix;
   end;
   // does the bottom arrow part - another cone
   if alBottomArrow in Parts then
   begin
     cylHeight := cylHeight - BottomArrowHeadHeight * headInfluence;
     cylOffset := cylOffset + BottomArrowHeadHeight * headInfluence;
-    GL.PushMatrix;
+    glPushMatrix;
     // make the bottom arrow point in the other direction
     GL.Rotatef(180, 1, 0, 0);
     GL.Translatef(0, 0, Height * 0.5 - BottomArrowHeadHeight * headInfluence);
@@ -2673,22 +2673,22 @@ begin
       gluDisk(quadric, FBottomRadius, fBottomArrowHeadRadius, Slices, FLoops)
     else
       gluDisk(quadric, 0, fBottomArrowHeadRadius, Slices, FLoops);
-    GL.PopMatrix;
+    glPopMatrix;
   end;
   // does the cylinder that makes the line
   if (cylHeight > 0) and (alLine in Parts) then
   begin
-    GL.PushMatrix;
+    glPushMatrix;
     GL.Translatef(0, 0, cylOffset);
     SetNormalQuadricOrientation(quadric);
     gluCylinder(quadric, FBottomRadius, FTopRadius, cylHeight, FSlices,
       FStacks);
     if not(alTopArrow in Parts) then
     begin
-      GL.PushMatrix;
+      glPushMatrix;
       GL.Translatef(0, 0, cylHeight);
       gluDisk(quadric, 0, FTopRadius, FSlices, FLoops);
-      GL.PopMatrix;
+      glPopMatrix;
     end;
     if not(alBottomArrow in Parts) then
     begin
@@ -2696,7 +2696,7 @@ begin
       SetInvertedQuadricOrientation(quadric);
       gluDisk(quadric, 0, FBottomRadius, FSlices, FLoops);
     end;
-    GL.PopMatrix;
+    glPopMatrix;
   end;
   gluDeleteQuadric(quadric);
 end;
@@ -2880,7 +2880,7 @@ procedure TVKArrowArc.BuildList(var rci: TVKRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
-    XGL.TexCoord2fv(@ptr^.TexCoord);
+    XglTexCoord2fv(@ptr^.TexCoord);
     with GL do
     begin
       Normal3fv(@ptr^.Normal);
@@ -2894,13 +2894,13 @@ procedure TVKArrowArc.BuildList(var rci: TVKRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLfloat;
-  cosTheta1, sinTheta1: TGLfloat;
-  ringDelta, sideDelta: TGLfloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: GLfloat;
+  cosTheta1, sinTheta1: GLfloat;
+  ringDelta, sideDelta: GLfloat;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLInt;
+  TanLoc, BinLoc: GLint;
   MeshSize: integer;
   MeshIndex: integer;
   ConeCenter: TVertexRec;
@@ -3406,12 +3406,12 @@ end;
 
 procedure TVKFrustrum.BuildList(var rci: TVKRenderContextInfo);
 var
-  HBW, HBD: TGLfloat; // half of width, half of depth at base
-  HTW, HTD: TGLfloat; // half of width, half of depth at top of frustrum
-  HFH: TGLfloat; // half of height, for align to center
-  Sign: TGLfloat; // +1 or -1
-  angle: TGLfloat; // in radians
-  ASin, ACos: TGLfloat;
+  HBW, HBD: GLfloat; // half of width, half of depth at base
+  HTW, HTD: GLfloat; // half of width, half of depth at top of frustrum
+  HFH: GLfloat; // half of height, for align to center
+  Sign: GLfloat; // +1 or -1
+  angle: GLfloat; // in radians
+  ASin, ACos: GLfloat;
 begin
   if FNormalDirection = ndInside then
     Sign := -1
@@ -3423,7 +3423,7 @@ begin
   HTD := HBD * (FApexHeight - FHeight) / FApexHeight;
   HFH := FHeight * 0.5;
 
-  GL.Begin_(GL_QUADS);
+  glBegin(GL_QUADS);
 
   if [fpFront, fpBack] * FParts <> [] then
   begin
@@ -3433,26 +3433,26 @@ begin
     if fpFront in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, Sign * ASin);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
+      XglTexCoord2fv(@XYTexPoint);
+      glVertex3f(HTW, HFH, HTD);
+      XglTexCoord2fv(@YTexPoint);
+      glVertex3f(-HTW, HFH, HTD);
+      XglTexCoord2fv(@NullTexPoint);
+      glVertex3f(-HBW, -HFH, HBD);
+      XglTexCoord2fv(@XTexPoint);
+      glVertex3f(HBW, -HFH, HBD);
     end;
     if fpBack in FParts then
     begin
       GL.Normal3f(0, Sign * ACos, -Sign * ASin);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
+      XglTexCoord2fv(@YTexPoint);
+      glVertex3f(HTW, HFH, -HTD);
+      XglTexCoord2fv(@NullTexPoint);
+      glVertex3f(HBW, -HFH, -HBD);
+      XglTexCoord2fv(@XTexPoint);
+      glVertex3f(-HBW, -HFH, -HBD);
+      XglTexCoord2fv(@XYTexPoint);
+      glVertex3f(-HTW, HFH, -HTD);
     end;
   end;
 
@@ -3463,55 +3463,55 @@ begin
     if fpLeft in FParts then
     begin
       GL.Normal3f(-Sign * ASin, Sign * ACos, 0);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(-HTW, HFH, HTD);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(-HTW, HFH, -HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(-HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(-HBW, -HFH, HBD);
+      XglTexCoord2fv(@XYTexPoint);
+      glVertex3f(-HTW, HFH, HTD);
+      XglTexCoord2fv(@YTexPoint);
+      glVertex3f(-HTW, HFH, -HTD);
+      XglTexCoord2fv(@NullTexPoint);
+      glVertex3f(-HBW, -HFH, -HBD);
+      XglTexCoord2fv(@XTexPoint);
+      glVertex3f(-HBW, -HFH, HBD);
     end;
     if fpRight in FParts then
     begin
       GL.Normal3f(Sign * ASin, Sign * ACos, 0);
-      XGL.TexCoord2fv(@YTexPoint);
-      GL.Vertex3f(HTW, HFH, HTD);
-      XGL.TexCoord2fv(@NullTexPoint);
-      GL.Vertex3f(HBW, -HFH, HBD);
-      XGL.TexCoord2fv(@XTexPoint);
-      GL.Vertex3f(HBW, -HFH, -HBD);
-      XGL.TexCoord2fv(@XYTexPoint);
-      GL.Vertex3f(HTW, HFH, -HTD);
+      XglTexCoord2fv(@YTexPoint);
+      glVertex3f(HTW, HFH, HTD);
+      XglTexCoord2fv(@NullTexPoint);
+      glVertex3f(HBW, -HFH, HBD);
+      XglTexCoord2fv(@XTexPoint);
+      glVertex3f(HBW, -HFH, -HBD);
+      XglTexCoord2fv(@XYTexPoint);
+      glVertex3f(HTW, HFH, -HTD);
     end;
   end;
 
   if (fpTop in FParts) and (FHeight < FApexHeight) then
   begin
     GL.Normal3f(0, Sign, 0);
-    XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HTW, HFH, -HTD);
-    XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HTW, HFH, HTD);
-    XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HTW, HFH, HTD);
-    XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HTW, HFH, -HTD);
+    XglTexCoord2fv(@YTexPoint);
+    glVertex3f(-HTW, HFH, -HTD);
+    XglTexCoord2fv(@NullTexPoint);
+    glVertex3f(-HTW, HFH, HTD);
+    XglTexCoord2fv(@XTexPoint);
+    glVertex3f(HTW, HFH, HTD);
+    XglTexCoord2fv(@XYTexPoint);
+    glVertex3f(HTW, HFH, -HTD);
   end;
   if fpBottom in FParts then
   begin
     GL.Normal3f(0, -Sign, 0);
-    XGL.TexCoord2fv(@NullTexPoint);
-    GL.Vertex3f(-HBW, -HFH, -HBD);
-    XGL.TexCoord2fv(@XTexPoint);
-    GL.Vertex3f(HBW, -HFH, -HBD);
-    XGL.TexCoord2fv(@XYTexPoint);
-    GL.Vertex3f(HBW, -HFH, HBD);
-    XGL.TexCoord2fv(@YTexPoint);
-    GL.Vertex3f(-HBW, -HFH, HBD);
+    XglTexCoord2fv(@NullTexPoint);
+    glVertex3f(-HBW, -HFH, -HBD);
+    XglTexCoord2fv(@XTexPoint);
+    glVertex3f(HBW, -HFH, -HBD);
+    XglTexCoord2fv(@XYTexPoint);
+    glVertex3f(HBW, -HFH, HBD);
+    XglTexCoord2fv(@YTexPoint);
+    glVertex3f(-HBW, -HFH, HBD);
   end;
 
-  GL.End_;
+  glEnd;
 end;
 
 procedure TVKFrustrum.SetApexHeight(const aValue: Single);
@@ -3586,12 +3586,12 @@ begin
   inherited Assign(Source);
 end;
 
-function TVKFrustrum.TopDepth: TGLfloat;
+function TVKFrustrum.TopDepth: GLfloat;
 begin
   Result := FBaseDepth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-function TVKFrustrum.TopWidth: TGLfloat;
+function TVKFrustrum.TopWidth: GLfloat;
 begin
   Result := FBaseWidth * (FApexHeight - FHeight) / FApexHeight;
 end;

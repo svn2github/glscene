@@ -671,7 +671,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidArchiveFile.CreateFmt(vksUnknownExtension,
+    raise EInvalidArchiveFile.CreateFmt(glsUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 

@@ -29,8 +29,8 @@ type
     procedure SetAsVector(const Value: TVector);
     procedure SetAsAffineVector(const Value: TAffineVector);
     function GetAsAffineVector: TAffineVector;
-    procedure SetCoordinate(AIndex: Integer; AValue: TGLfloat);
-    function GetCoordinate(const Index: Integer): TGLfloat;
+    procedure SetCoordinate(AIndex: Integer; AValue: GLfloat);
+    function GetCoordinate(const Index: Integer): GLfloat;
 
   protected
     { Protected Declarations }
@@ -56,17 +56,17 @@ type
     property AsAffineVector: TAffineVector read GetAsAffineVector
       write SetAsAffineVector;
 
-    property W: TGLfloat index 3 read GetCoordinate write SetCoordinate
+    property W: GLfloat index 3 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
     { Published Declarations }
-    property X: TGLfloat index 0 read GetCoordinate write SetCoordinate
+    property X: GLfloat index 0 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
-    property Y: TGLfloat index 1 read GetCoordinate write SetCoordinate
+    property Y: GLfloat index 1 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
-    property Z: TGLfloat index 2 read GetCoordinate write SetCoordinate
+    property Z: GLfloat index 2 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
   end;
 
@@ -99,7 +99,7 @@ type
     procedure EndUpdate; override;
 
     procedure AddNode(const Coords: TVKCustomCoordinates); overload;
-    procedure AddNode(const X, Y, Z: TGLfloat); overload;
+    procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
     procedure AddXYArc(XRadius, YRadius: Single; StartAngle, StopAngle: Single;
@@ -219,7 +219,7 @@ begin
   GLS.VectorGeometry.SetVector(Result, FCoords);
 end;
 
-function TVKNode.GetCoordinate(const Index: Integer): TGLfloat;
+function TVKNode.GetCoordinate(const Index: Integer): GLfloat;
 begin
   Result := FCoords.V[Index];
 end;
@@ -227,7 +227,7 @@ end;
 // SetCoordinate
 //
 
-procedure TVKNode.SetCoordinate(AIndex: Integer; AValue: TGLfloat);
+procedure TVKNode.SetCoordinate(AIndex: Integer; AValue: GLfloat);
 begin
   FCoords.V[AIndex] := AValue;
   (Collection as TVKNodes).NotifyChange;
@@ -644,9 +644,9 @@ var
   I: Integer;
   Xa, Ya, Za: PFloatArray;
 begin
-  GetMem(Xa, SizeOf(TGLfloat) * Count);
-  GetMem(Ya, SizeOf(TGLfloat) * Count);
-  GetMem(Za, SizeOf(TGLfloat) * Count);
+  GetMem(Xa, SizeOf(GLfloat) * Count);
+  GetMem(Ya, SizeOf(GLfloat) * Count);
+  GetMem(Za, SizeOf(GLfloat) * Count);
   for I := 0 to Count - 1 do
     with Items[I] do
     begin
@@ -672,7 +672,7 @@ begin
   Result := @NewVertices[NbExtraVertices - 1];
 end;
 
-procedure TessError(Errno: TGLenum);
+procedure TessError(Errno: GLEnum);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -685,8 +685,8 @@ procedure TessIssueVertex(VertexData: Pointer);
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
 begin
-  Xgl.TexCoord2fv(VertexData);
-  GL.Vertex3fv(VertexData);
+  XglTexCoord2fv(VertexData);
+  glVertex3fv(VertexData);
 end;
 
 procedure TessCombine(Coords: PDoubleVector; Vertex_data: Pointer;
@@ -715,12 +715,12 @@ begin
   begin
     // Create and initialize the GLU tesselator
     Tess := GluNewTess;
-    GluTessCallback(Tess, GLU_TESS_BEGIN, @GL.Begin_);
+    GluTessCallback(Tess, GLU_TESS_BEGIN, @glBegin);
     if ATextured then
       GluTessCallback(Tess, GLU_TESS_VERTEX, @TessIssueVertex)
     else
-      GluTessCallback(Tess, GLU_TESS_VERTEX, @GL.Vertex3fv);
-    GluTessCallback(Tess, GLU_TESS_END, @GL.End_);
+      GluTessCallback(Tess, GLU_TESS_VERTEX, @glVertex3fv);
+    GluTessCallback(Tess, GLU_TESS_END, @glEnd);
     GluTessCallback(Tess, GLU_TESS_ERROR, @TessError);
     GluTessCallback(Tess, GLU_TESS_COMBINE, @TessCombine);
     NbExtraVertices := 0;

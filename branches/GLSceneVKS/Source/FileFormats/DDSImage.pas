@@ -28,7 +28,6 @@ uses
   GLS.CrossPlatform,
   GLS.VectorGeometry,
   GLS.Graphics,
-  GLS.OpenGLTokens,
   GLS.Context,
   GLS.FileDDS,
   GLS.TextureFormat,

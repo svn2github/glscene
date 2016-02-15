@@ -912,7 +912,7 @@ begin
           end;
         end;
 
-        GL.GetFloatv(GL_MODELVIEW_MATRIX, @mat);
+        glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
         vx.V[0] := mat.V[0].V[0];
         vy.V[0] := mat.V[0].V[1];
         vx.V[1] := mat.V[1].V[0];
@@ -940,26 +940,26 @@ begin
         rci.GLStates.Disable(stLighting);
         if FRotation <> 0 then
         begin
-          GL.MatrixMode(GL_MODELVIEW);
-          GL.PushMatrix;
+          glMatrixMode(GL_MODELVIEW);
+          glPushMatrix;
           GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
         end;
-        GL.Begin_(GL_QUADS);
-        GL.TexCoord2f(u1, v1);
-        GL.Vertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1],
+        glBegin(GL_QUADS);
+        glTexCoord2f(u1, v1);
+        glVertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1],
                     vx.V[2] + vy.V[2]);
-        GL.TexCoord2f(u0, v1);
-        GL.Vertex3f(-vx.V[0] + vy.V[0],
+        glTexCoord2f(u0, v1);
+        glVertex3f(-vx.V[0] + vy.V[0],
                     -vx.V[1] + vy.V[1],
                     -vx.V[2] + vy.V[2]);
-        GL.TexCoord2f(u0, v0);
-        GL.Vertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
-        GL.TexCoord2f(u1, v0);
-        GL.Vertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
-        GL.End_;
+        glTexCoord2f(u0, v0);
+        glVertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
+        glTexCoord2f(u1, v0);
+        glVertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+        glEnd;
         if FRotation <> 0 then
         begin
-          GL.PopMatrix;
+          glPopMatrix;
         end;
         if Assigned(libMat) then
           libMat.UnApply(rci);

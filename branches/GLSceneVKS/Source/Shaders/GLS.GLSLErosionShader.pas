@@ -307,7 +307,7 @@ end;
 function TVKCustomGLSLSimpleErosionShader.DoUnApply(var rci: TVKRenderContextInfo): Boolean;
 begin
   GetGLSLProg.EndUseProgramObject;
-  //gl.PopAttrib;
+  //glPopAttrib;
   Result := False;
 end;
 

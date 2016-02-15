@@ -586,7 +586,7 @@ begin
       AddLine(' - Current SceneViewer has ' +
         Console.FSceneViewer.FramesPerSecondText)
     else
-      AddLine(' - ' + vksErrorEx + vksSceneViewerNotDefined);
+      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -605,7 +605,7 @@ begin
       AddLine(' - ResetPerformanceMonitor for Current SceneViewer completed');
     end
     else
-      AddLine(' - ' + vksErrorEx + vksSceneViewerNotDefined);
+      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -643,7 +643,7 @@ begin
       HandleUnknownCommand(Command.Strings[1]);
   end
   else
-    AddLine(' - ' + vksErrorEx + vksSceneViewerNotDefined);
+    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
 end;
 
 procedure TVKCustomConsole.ProcessInternalCommandViewerAntiAliasing(
@@ -677,7 +677,7 @@ begin
       ConsoleCommand.ShowInvalidNumberOfArgumentsError;
   end
   else
-    AddLine(' - ' + vksErrorEx + vksSceneViewerNotDefined);
+    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
 end;
 
 function TVKCustomConsole.ParseString(str, caract: string): TVKUserInputCommand;

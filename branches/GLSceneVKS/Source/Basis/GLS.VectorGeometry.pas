@@ -731,7 +731,7 @@ procedure VectorArrayLerp(const src1, src2 : PTexPointArray; t : Single; n : Int
 
 
 type
-  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn, itExp);
+  GLinterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan, itLn, itExp);
 
 { There functions that do the same as "Lerp", but add some distortions. }
 function InterpolatePower(const Start, Stop, Delta: Single; const DistortionDegree: Single): Single;
@@ -746,9 +746,9 @@ function InterpolateTan(const Start, Stop, Delta: Single): Single;
 function InterpolateSinAlt(const Start, Stop, Delta: Single): Single;
 
 function InterpolateCombinedFastPower(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single): Single;
-function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
-function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
-function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
 
 
 { Calculates the length of a vector following the equation sqrt(x*x+y*y). }
@@ -3978,7 +3978,7 @@ end;
 
 // InterpolateCombined
 //
-function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombined(const Start, Stop, Delta: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
 begin
   case InterpolationType of
     itLinear: Result := Lerp(Start, Stop, Delta);
@@ -4005,7 +4005,7 @@ end;
 
 // InterpolateCombinedSafe
 //
-function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombinedSafe(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
 var
   ChangeDelta: Single;
 begin
@@ -4020,7 +4020,7 @@ end;
 
 // InterpolateCombinedFast
 //
-function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: TGLInterpolationType): Single;
+function InterpolateCombinedFast(const OriginalStart, OriginalStop, OriginalCurrent: Single; const TargetStart, TargetStop: Single; const DistortionDegree: Single; const InterpolationType: GLinterpolationType): Single;
 var
   ChangeDelta: Single;
 begin

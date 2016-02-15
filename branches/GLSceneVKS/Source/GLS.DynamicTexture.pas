@@ -126,7 +126,7 @@ begin
       ttNoShape: ;
       ttTexture1D: ;
       ttTexture2D:
-        GL.TexImage2D(GL_TEXTURE_2D, 0, TVKTexture(OwnerTexture).OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
+        glTexImage2D(GL_TEXTURE_2D, 0, TVKTexture(OwnerTexture).OpenGLTextureFormat, Width, Height, 0, TextureFormat, GL_UNSIGNED_BYTE, nil);
       ttTexture3D: ;
       ttTexture1DArray: ;
       ttTexture2DArray: ;
@@ -196,7 +196,7 @@ begin
     ttTexture1D: ;
     ttTexture2D:
       begin
-        GL.TexSubImage2D(GL_TEXTURE_2D, 0,
+        glTexSubImage2D(GL_TEXTURE_2D, 0,
           FDirtyRect.Left, FDirtyRect.Top,
           FDirtyRect.Right-FDirtyRect.Left,
           FDirtyRect.Bottom-FDirtyRect.Top,
@@ -260,7 +260,7 @@ end;
 
 function TVKDynamicTextureImage.GetDataFormat: integer;
 var
-  data, color: TGLenum;
+  data, color: GLEnum;
 begin
   FindCompatibleDataFormat(TVKTexture(OwnerTexture).TextureFormatEx, color, data);
   Result := data;
@@ -273,7 +273,7 @@ end;
 
 function TVKDynamicTextureImage.GetTextureFormat: integer;
 var
-  data, color: TGLenum;
+  data, color: GLEnum;
 begin
   FindCompatibleDataFormat(TVKTexture(OwnerTexture).TextureFormatEx, color, data);
   if FUseBGR then
