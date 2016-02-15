@@ -243,41 +243,33 @@ type
    PAGLDevice = ^TAGLDevice;
    TAGLDevice = TGDHandle;
 
-   {
-   ** Macintosh drawable type.
-    }
-
+   {** Macintosh drawable type }
    PAGLDrawable = ^TAGLDrawable;
    TAGLDrawable = TCGrafPtr;
 
-   {
-   ** AGL opaque data.
-    }
-
+   {** AGL opaque data }
    TAGLRendererInfo = Pointer;
-
    TAGLPixelFormat = Pointer;
-
    TAGLContext = Pointer;
-
    TAGLPbuffer = Pointer;
    PAGLPbuffer = ^TAGLPbuffer;
 {$ENDIF}
 
-{$IFDEF SUPPORT_WGL}
 type
   PHGPUNV = ^HGPUNV;
   HGPUNV = THandle;
 
-  PGPUDevice = ^TGPUDevice;
-  TGPUDevice = record
+  HVIDEOINPUTDEVICENV = THandle;
+  PHVIDEOINPUTDEVICENV = ^HVIDEOINPUTDEVICENV;
+
+  PGPUDEVICE = ^TGPUDEVICE;
+  TGPUDEVICE = record
     cb: Cardinal;
     DeviceName: array[0..31] of AnsiChar;
     DeviceString: array[0..127] of AnsiChar;
     Flags: Cardinal;
     rcVirtualScreen: TRect;
   end;
-{$ENDIF}
 
   TDebugProc = procedure(
     source: GLenum;
@@ -287,10 +279,8 @@ type
     length: GLsizei;
     const message: PGLchar;
     userParam: Pointer);
-{$IFDEF MSWINDOWS}stdcall;
-{$ENDIF}{$IFDEF UNIX}cdecl;
-{$ENDIF}
-  TGLDEBUGPROCARB = TDebugProc;
+{$IFDEF MSWINDOWS}stdcall; {$ENDIF}{$IFDEF UNIX}cdecl; {$ENDIF}
+   TGLDEBUGPROCARB = TDebugProc;
 
   TDebugProcAMD = procedure(
     id: GLuint;
