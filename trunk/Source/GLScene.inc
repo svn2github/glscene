@@ -70,6 +70,10 @@
 // This work only on windows platform and with modern compiler (D2009 and FPC}
 {$DEFINE GLS_SERVICE_CONTEXT}
 
+{$IFDEF GLS_MULTITHREAD}
+  {$DEFINE MULTITHREADOPENGL}
+{$ENDIF}
+
 {$IFDEF GLS_SERVICE_CONTEXT}
   // Activate Multithread support
   {$DEFINE GLS_MULTITHREAD}
@@ -110,10 +114,6 @@
     // so need to define MSWINDOWS here to provide Delphi 5 support
     {$DEFINE MSWINDOWS}
   {$ENDIF}
-{$ENDIF}
-
-{$IFDEF GLS_MULTITHREAD}
-  {$DEFINE MULTITHREADOPENGL}
 {$ENDIF}
 
 {$IFDEF LINUX}
