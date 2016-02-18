@@ -44,30 +44,30 @@ uses
   GLColor, GLBaseClasses,  GLRenderContextInfo, GLVectorTypes;
 
 type
-  TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
+  TGLMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
     mmQuads, mmPolygon);
-  TVertexMode = (vmV, vmVN, vmVNC, vmVNCT, vmVNT, vmVT);
+  TGLVertexMode = (vmV, vmVN, vmVNC, vmVNCT, vmVNT, vmVT);
 
 const
-  cMeshModeToGLEnum: array[Low(TMeshMode)..High(TMeshMode)
+  cMeshModeToGLEnum: array[Low(TGLMeshMode)..High(TGLMeshMode)
     ] of TGLEnum = (GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
     GL_QUAD_STRIP, GL_QUADS, GL_POLYGON);
-  cVertexModeToGLEnum: array[Low(TVertexMode)..High(TVertexMode)
+  cVertexModeToGLEnum: array[Low(TGLVertexMode)..High(TGLVertexMode)
     ] of TGLEnum = (GL_V3F, GL_N3F_V3F, GL_C4F_N3F_V3F, GL_T2F_C4F_N3F_V3F,
     GL_T2F_N3F_V3F, GL_T2F_V3F);
 
 type
 
-  TVertexData = packed record
+  TGLVertexData = packed record
     textCoord: TTexPoint;
     color: TVector;
     normal: TAffineVector;
     coord: TVertex;
   end;
 
-  PVertexData = ^TVertexData;
-  TVertexDataArray = array[0..(MAXINT shr 6)] of TVertexData;
-  PVertexDataArray = ^TVertexDataArray;
+  PGLVertexData = ^TGLVertexData;
+  TGLVertexDataArray = array[0..(MAXINT shr 6)] of TGLVertexData;
+  PGLVertexDataArray = ^TGLVertexDataArray;
 
   // TGLVertexList
   //
@@ -76,18 +76,18 @@ type
   TGLVertexList = class(TGLUpdateAbleObject)
   private
     { Private Declarations }
-    FValues: PVertexDataArray;
+    FValues: PGLVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
-    FLockedOldValues: PVertexDataArray;
+    FLockedOldValues: PGLVertexDataArray;
 
   protected
     { Protected Declarations }
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
-    procedure SetVertices(index: Integer; const val: TVertexData);
-    function GetVertices(index: Integer): TVertexData;
+    procedure SetVertices(index: Integer; const val: TGLVertexData);
+    function GetVertices(index: Integer): TGLVertexData;
     procedure SetVertexCoord(index: Integer; const val: TAffineVector);
     function GetVertexCoord(index: Integer): TAffineVector;
     procedure SetVertexNormal(index: Integer; const val: TAffineVector);
@@ -115,9 +115,9 @@ type
       : TGLVertexList;
 
     {  Adds a vertex to the list, fastest method. }
-    procedure AddVertex(const vertexData: TVertexData); overload;
+    procedure AddVertex(const vertexData: TGLVertexData); overload;
     {  Adds a vertex to the list, fastest method for adding a triangle. }
-    procedure AddVertex3(const vd1, vd2, vd3: TVertexData); overload;
+    procedure AddVertex3(const vd1, vd2, vd3: TGLVertexData); overload;
     {  Adds a vertex to the list. 
       Use the NullVector, NullHmgVector or NullTexPoint constants for
       params you don't want to set. }
@@ -135,7 +135,7 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Clear;
 
-    property Vertices[index: Integer]: TVertexData read GetVertices
+    property Vertices[index: Integer]: TGLVertexData read GetVertices
     write SetVertices; default;
     property VertexCoord[index: Integer]: TAffineVector read GetVertexCoord
     write SetVertexCoord;
@@ -194,15 +194,15 @@ type
   private
     { Private Declarations }
     FVertices: TGLVertexList;
-    FMode: TMeshMode;
-    FVertexMode: TVertexMode;
+    FMode: TGLMeshMode;
+    FVertexMode: TGLVertexMode;
     FAxisAlignedDimensionsCache: TVector;
 
   protected
     { Protected Declarations }
-    procedure SetMode(AValue: TMeshMode);
+    procedure SetMode(AValue: TGLMeshMode);
     procedure SetVertices(AValue: TGLVertexList);
-    procedure SetVertexMode(AValue: TVertexMode);
+    procedure SetVertexMode(AValue: TGLVertexMode);
 
     procedure VerticesChanged(Sender: TObject);
 
@@ -220,8 +220,8 @@ type
 
   published
     { Published Declarations }
-    property Mode: TMeshMode read FMode write SetMode;
-    property VertexMode: TVertexMode read FVertexMode write SetVertexMode
+    property Mode: TGLMeshMode read FMode write SetMode;
+    property VertexMode: TGLVertexMode read FVertexMode write SetVertexMode
       default vmVNCT;
   end;
 
@@ -266,7 +266,7 @@ begin
   Assert(Count = list2.Count);
   Result := TGLVertexList.Create(nil);
   Result.Capacity := Count;
-  Move(FValues[0], Result.FValues[0], Count * SizeOf(TVertexData));
+  Move(FValues[0], Result.FValues[0], Count * SizeOf(TGLVertexData));
   // interpolate vertices
   for i := 0 to Count - 1 do
     VectorLerp(FValues^[i].coord, list2.FValues^[i].coord, lerpFactor,
@@ -282,7 +282,7 @@ begin
   FCapacity := val;
   if FCapacity < FCount then
     FCapacity := FCount;
-  ReallocMem(FValues, FCapacity * SizeOf(TVertexData));
+  ReallocMem(FValues, FCapacity * SizeOf(TGLVertexData));
 end;
 
 // SetGrowth
@@ -303,7 +303,7 @@ procedure TGLVertexList.Grow;
 begin
   Assert(not Locked, 'Cannot add to a locked list !');
   FCapacity := FCapacity + FGrowth;
-  ReallocMem(FValues, FCapacity * SizeOf(TVertexData));
+  ReallocMem(FValues, FCapacity * SizeOf(TGLVertexData));
 end;
 
 // GetFirstColor
@@ -367,7 +367,7 @@ begin
     // Only supported with NVidia's right now
     if GL.NV_vertex_array_range and (CurrentGLContext <> nil) then
     begin
-      size := FCount * SizeOf(TVertexData);
+      size := FCount * SizeOf(TGLVertexData);
       if val then
       begin
         // Lock
@@ -409,7 +409,7 @@ procedure TGLVertexList.EnterLockSection;
 begin
   if Locked then
   begin
-    GL.VertexArrayRangeNV(FCount * SizeOf(TVertexData), FValues);
+    GL.VertexArrayRangeNV(FCount * SizeOf(TGLVertexData), FValues);
     GL.EnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
   end;
 end;
@@ -429,7 +429,7 @@ end;
 // SetVertices
 //
 
-procedure TGLVertexList.SetVertices(index: Integer; const val: TVertexData);
+procedure TGLVertexList.SetVertices(index: Integer; const val: TGLVertexData);
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   FValues^[index] := val;
@@ -439,7 +439,7 @@ end;
 // GetVertices
 //
 
-function TGLVertexList.GetVertices(index: Integer): TVertexData;
+function TGLVertexList.GetVertices(index: Integer): TGLVertexData;
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   Result := FValues^[index];
@@ -516,7 +516,7 @@ end;
 // AddVertex (direct)
 //
 
-procedure TGLVertexList.AddVertex(const vertexData: TVertexData);
+procedure TGLVertexList.AddVertex(const vertexData: TGLVertexData);
 begin
   if FCount = FCapacity then
     Grow;
@@ -528,7 +528,7 @@ end;
 // AddVertex3
 //
 
-procedure TGLVertexList.AddVertex3(const vd1, vd2, vd3: TVertexData);
+procedure TGLVertexList.AddVertex3(const vd1, vd2, vd3: TGLVertexData);
 begin
   // extend memory space
   if FCount + 2 >= FCapacity then
@@ -673,13 +673,13 @@ end;
 procedure TGLVertexList.DefineOpenGLArrays;
 begin
   GL.EnableClientState(GL_VERTEX_ARRAY);
-  GL.VertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  GL.VertexPointer(3, GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
     FirstVertex);
   GL.EnableClientState(GL_NORMAL_ARRAY);
-  GL.NormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  GL.NormalPointer(GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TAffineVector),
     FirstNormal);
   xgl.EnableClientState(GL_TEXTURE_COORD_ARRAY);
-  xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
+  xgl.TexCoordPointer(2, GL_FLOAT, SizeOf(TGLVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
 
@@ -692,8 +692,8 @@ begin
   begin
     FCount := TGLVertexList(Source).FCount;
     FCapacity := FCount;
-    ReallocMem(FValues, FCount * SizeOf(TVertexData));
-    Move(TGLVertexList(Source).FValues^, FValues^, FCount * SizeOf(TVertexData));
+    ReallocMem(FValues, FCount * SizeOf(TGLVertexData));
+    Move(TGLVertexList(Source).FValues^, FValues^, FCount * SizeOf(TGLVertexData));
   end
   else
     inherited Assign(Source);
@@ -747,12 +747,12 @@ begin
     FVertices.EnterLockSection;
   case FVertexMode of
     vmV:
-      GL.InterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
+      GL.InterleavedArrays(GL_V3F, SizeOf(TGLVertexData), FVertices.FirstVertex);
     vmVN:
-      GL.InterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData),
+      GL.InterleavedArrays(GL_N3F_V3F, SizeOf(TGLVertexData),
         FVertices.FirstNormal);
     vmVNC:
-      GL.InterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVertexData),
+      GL.InterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TGLVertexData),
         FVertices.FirstColor);
     vmVNT, vmVNCT:
       GL.InterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
@@ -794,7 +794,7 @@ end;
 // SetMode
 //
 
-procedure TGLMesh.SetMode(AValue: TMeshMode);
+procedure TGLMesh.SetMode(AValue: TGLMeshMode);
 begin
   if AValue <> FMode then
   begin
@@ -818,7 +818,7 @@ end;
 // SetVertexMode
 //
 
-procedure TGLMesh.SetVertexMode(AValue: TVertexMode);
+procedure TGLMesh.SetVertexMode(AValue: TGLVertexMode);
 begin
   if AValue <> FVertexMode then
   begin

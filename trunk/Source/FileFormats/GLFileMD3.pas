@@ -51,9 +51,9 @@ var
   numVerts,
   numtris     : Integer;
   MD3File     : TFileMD3;
-  mesh        : TMorphableMeshObject;
+  mesh        : TGLMorphableMeshObject;
   faceGroup   : TFGIndexTexCoordList;
-  morphTarget : TMeshMorphTarget;
+  morphTarget : TGLMeshMorphTarget;
 
   function GetNormalFromMD3Normal(n : array of Byte) : TAffineVector;
   var
@@ -86,7 +86,7 @@ begin
   MD3File.LoadFromStream(aStream);
   try
     for i:=0 to MD3File.ModelHeader.numMeshes-1 do begin
-      mesh:=TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Name:=trim(string(MD3File.MeshData[i].MeshHeader.strName));
       with mesh, MD3File do begin
         Mode:=momFaceGroups;
@@ -115,7 +115,7 @@ begin
 
         // Get the mesh data for each morph frame
         for j:=0 to ModelHeader.numFrames-1 do begin
-          morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
+          morphTarget:=TGLMeshMorphTarget.CreateOwned(MorphTargets);
           morphTarget.Name:=Trim(string(MeshData[i].MeshHeader.strName))+'['+IntToStr(j)+']';
           numVerts:=MeshData[i].MeshHeader.numVertices;
           morphTarget.Vertices.Capacity:=numVerts;

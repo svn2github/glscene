@@ -1802,13 +1802,13 @@ begin
   { GLVectorFileObjects }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
     [TypeInfo(TGLActorAnimationMode), TypeInfo(TGLActorAnimations),
-    TypeInfo(TMeshAutoCenterings), TypeInfo(TActorFrameInterpolation),
+    TypeInfo(TGLMeshAutoCenterings), TypeInfo(TGLActorFrameInterpolation),
     TypeInfo(TGLActorAnimationReference), TypeInfo(TGLActor)]);
   RegisterPropertiesInCategory(sLayoutCategoryName,
-    [TypeInfo(TMeshNormalsOrientation)]);
+    [TypeInfo(TGLMeshNormalsOrientation)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(TMeshAutoCenterings), TypeInfo(TGLActorAnimationReference),
-    TypeInfo(TMeshNormalsOrientation)]);
+    [TypeInfo(TGLMeshAutoCenterings), TypeInfo(TGLActorAnimationReference),
+    TypeInfo(TGLMeshNormalsOrientation)]);
   // TGLFreeForm
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLFreeForm,
     ['UseMeshmaterials']);
@@ -1827,14 +1827,14 @@ begin
 
   { GLMesh }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(TMeshMode), TypeInfo(TVertexMode)]);
+    [TypeInfo(TGLMeshMode), TypeInfo(TGLVertexMode)]);
 
   { GLGraph }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightFieldOptions)]);
+    [TypeInfo(TGLHeightFieldOptions)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(THeightFieldColorMode), TypeInfo(TGLSamplingScale),
-    TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
+    [TypeInfo(TGLHeightFieldColorMode), TypeInfo(TGLSamplingScale),
+    TypeInfo(TGLXYZGridLinesStyle), TypeInfo(TGLXYZGridParts)]);
   // TGLXYZGrid
   RegisterPropertiesInCategory(sOpenGLCategoryName, TGLXYZGrid,
     ['Antialiased']);

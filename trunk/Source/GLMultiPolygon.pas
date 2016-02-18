@@ -16,7 +16,7 @@
        14/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
        18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
-       05/09/03 - EG - TNotifyCollection moved to GLMisc
+       05/09/03 - EG - TGLNotifyCollection moved to GLMisc
        14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
        28/12/01 - EG - Added registration (Philipp Pammler)
        19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
@@ -106,7 +106,7 @@ type
 
   // TGLContours
   //
-  TGLContours = class(TNotifyCollection)
+  TGLContours = class(TGLNotifyCollection)
   private
     function GetItems(index: Integer): TGLContour;
     procedure SetItems(index: Integer; const Value: TGLContour);

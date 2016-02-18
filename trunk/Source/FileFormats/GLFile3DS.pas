@@ -221,8 +221,8 @@ type
   TGLFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
     ctFall, ctHot, ctRoll);
 
-  {TGLFile3DSDummyObject. A 3ds-specific TMorphableMeshObject. }
-  TGLFile3DSDummyObject = class(TMorphableMeshObject)
+  {TGLFile3DSDummyObject. A 3ds-specific TGLMorphableMeshObject. }
+  TGLFile3DSDummyObject = class(TGLMorphableMeshObject)
   private
     FAnimList: TGLFile3DSAnimationKeyList;
     FAnimData: Pointer;
@@ -2163,7 +2163,7 @@ begin
           mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
           //dummy targets
           for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-            TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
+            TGLMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           with mesh do
           begin
@@ -2384,7 +2384,7 @@ begin
           mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
           //dummy targets
           for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-            TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
+            TGLMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           mesh.LoadAnimation(KeyFramer.MeshMotion[I]);
         end;
@@ -2410,7 +2410,7 @@ begin
         lights_mesh := TGLFile3DSOmniLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
+          TGLMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.OmniLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.OmniLightMotion[I]);
       end;
@@ -2421,7 +2421,7 @@ begin
         lights_mesh := TGLFile3DSSpotLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
+          TGLMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.SpotLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.SpotLightMotion[I]);
       end;
@@ -2432,7 +2432,7 @@ begin
         camera_mesh := TGLFile3DSCameraObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
+          TGLMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
       end;

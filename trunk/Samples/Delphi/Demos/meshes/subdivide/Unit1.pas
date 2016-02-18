@@ -141,7 +141,7 @@ begin
 
       IncreaseCoherency(indices, 13);
 
-      with GLActor1.MeshObjects[i] as TMorphableMeshObject do begin
+      with GLActor1.MeshObjects[i] as TGLMorphableMeshObject do begin
 
          bufRemap:=TIntegerList.Create;
          for j:=0 to MorphTargets.Count-1 do begin

@@ -158,9 +158,9 @@ type
 
 var
   I, J, K, NumVerts, Numtris: Integer;
-  Mesh: TMorphableMeshObject;
+  Mesh: TGLMorphableMeshObject;
   FaceGroup: TFGIndexTexCoordList;
-  MorphTarget: TMeshMorphTarget;
+  MorphTarget: TGLMeshMorphTarget;
 
   function UnpackNormal(Pn: TPackedNormal): TAffineVector;
   var
@@ -244,7 +244,7 @@ begin
         SoFromBeginning);
       AStream.Read(Compframetable[0], SizeOf(Word) * Fileheader.NumFrames);
 
-      Mesh := TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
+      Mesh := TGLMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       // easiest way to convert a char array to string ;)
       Mesh.Name := Trim(string(PChar(Surfheader.Name[0])));
       with Mesh do
@@ -273,7 +273,7 @@ begin
         // Get the mesh data for each morph frame
         for J := 0 to Fileheader.NumFrames - 1 do
         begin
-          MorphTarget := TMeshMorphTarget.CreateOwned(MorphTargets);
+          MorphTarget := TGLMeshMorphTarget.CreateOwned(MorphTargets);
           MorphTarget.Name := Trim(string(PChar(Surfheader.Name[0]))) + '[' +
             IntToStr(J) + ']';
           NumVerts := Surfheader.NumVertices;

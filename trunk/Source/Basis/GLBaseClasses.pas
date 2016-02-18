@@ -87,9 +87,9 @@ type
     procedure NotifyChange(Sender: TObject); virtual;
   end;
 
-  // TNotifyCollection
+  // TGLNotifyCollection
   //
-  TNotifyCollection = class(TOwnedCollection)
+  TGLNotifyCollection = class(TOwnedCollection)
   private
     { Private Declarations }
     FOnNotifyChange: TNotifyEvent;
@@ -202,15 +202,15 @@ begin
 end;
 {$IFDEF GLS_REGIONS}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$REGION 'TGLNotifyCollection'}{$ENDIF}
 // ------------------
-// ------------------ TNotifyCollection ------------------
+// ------------------ TGLNotifyCollection ------------------
 // ------------------
 
 // Create
 //
 
-constructor TNotifyCollection.Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
+constructor TGLNotifyCollection.Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
 begin
   inherited Create(AOwner, AItemClass);
   if Assigned(AOwner) and (AOwner is TGLUpdateAbleComponent) then
@@ -220,13 +220,13 @@ end;
 // Update
 //
 
-procedure TNotifyCollection.Update(Item: TCollectionItem);
+procedure TGLNotifyCollection.Update(Item: TCollectionItem);
 begin
   inherited;
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TNotifyCollection'}{$ENDIF}
+{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLNotifyCollection'}{$ENDIF}
 
 end.
 

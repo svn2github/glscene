@@ -64,15 +64,15 @@ procedure TGLMD2VectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    MD2File : TFileMD2;
-   mesh : TMorphableMeshObject;
+   mesh : TGLMorphableMeshObject;
    faceGroup : TFGIndexTexCoordList;
-   morphTarget : TMeshMorphTarget;
+   morphTarget : TGLMeshMorphTarget;
 begin
    MD2File:=TFileMD2.Create;
    MD2File.LoadFromStream(aStream);
    try
       // retrieve mesh data
-      mesh:=TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TGLMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       with mesh, MD2File do begin
          Mode:=momFaceGroups;
          faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
@@ -89,7 +89,7 @@ begin
          end;
          // retrieve frames data (morph targets)
          for i:=0 to iFrames-1 do begin
-            morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
+            morphTarget:=TGLMeshMorphTarget.CreateOwned(MorphTargets);
             with morphTarget do begin
                Name:='Frame'+IntToStr(i);
                Vertices.Capacity:=iVertices;

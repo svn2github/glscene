@@ -90,19 +90,19 @@ type
     property Step: Single read FStep write SetStep;
   end;
 
-  THeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
+  TGLHeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
     var Color: TColorVector; var TexPoint: TTexPoint) of object;
-  THeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
+  TGLHeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
     var z: Single; var Color: TColorVector; var TexPoint: TTexPoint) of object;
 
-  // THeightFieldOptions
+  // TGLHeightFieldOptions
   //
-  THeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
-  THeightFieldOptions = set of THeightFieldOption;
+  TGLHeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
+  TGLHeightFieldOptions = set of TGLHeightFieldOption;
 
   // THeightFieldColorMode
   //
-  THeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
+  TGLHeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
     hfcmAmbientAndDiffuse);
 
   // TGLHeightField
@@ -119,22 +119,22 @@ type
   TGLHeightField = class(TGLSceneObject)
   private
     { Private Declarations }
-    FOnGetHeight: THeightFieldGetHeightEvent;
-    FOnGetHeight2: THeightFieldGetHeight2Event;
+    FOnGetHeight: TGLHeightFieldGetHeightEvent;
+    FOnGetHeight2: TGLHeightFieldGetHeight2Event;
     FXSamplingScale: TGLSamplingScale;
     FYSamplingScale: TGLSamplingScale;
-    FOptions: THeightFieldOptions;
+    FOptions: TGLHeightFieldOptions;
     FTriangleCount: Integer;
-    FColorMode: THeightFieldColorMode;
+    FColorMode: TGLHeightFieldColorMode;
 
   protected
     { Protected Declarations }
     procedure SetXSamplingScale(const val: TGLSamplingScale);
     procedure SetYSamplingScale(const val: TGLSamplingScale);
-    procedure SetOptions(const val: THeightFieldOptions);
-    procedure SetOnGetHeight(const val: THeightFieldGetHeightEvent);
-    procedure SetOnGetHeight2(const val: THeightFieldGetHeight2Event);
-    procedure SetColorMode(const val: THeightFieldColorMode);
+    procedure SetOptions(const val: TGLHeightFieldOptions);
+    procedure SetOnGetHeight(const val: TGLHeightFieldGetHeightEvent);
+    procedure SetOnGetHeight2(const val: TGLHeightFieldGetHeight2Event);
+    procedure SetColorMode(const val: TGLHeightFieldColorMode);
 
     procedure DefaultHeightField(const x, y: Single; var z: Single;
       var Color: TColorVector; var TexPoint: TTexPoint);
@@ -159,39 +159,39 @@ type
     property YSamplingScale: TGLSamplingScale read FYSamplingScale
       write SetYSamplingScale;
     {  Define if and how per vertex color is used. }
-    property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode
+    property ColorMode: TGLHeightFieldColorMode read FColorMode write SetColorMode
       default hfcmNone;
-    property Options: THeightFieldOptions read FOptions write SetOptions
+    property Options: TGLHeightFieldOptions read FOptions write SetOptions
       default [hfoTwoSided];
 
     {  Primary event to return heights. }
-    property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
+    property OnGetHeight: TGLHeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
-    {  Alternate this event to return heights. 
+    {  Alternate this event to return heights.
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
-    property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
+    property OnGetHeight2: TGLHeightFieldGetHeight2Event read FOnGetHeight2
       write SetOnGetHeight2;
   end;
 
   // TXYZGridParts
   //
-  TXYZGridPart = (gpX, gpY, gpZ);
-  TXYZGridParts = set of TXYZGridPart;
+  TGLXYZGridPart = (gpX, gpY, gpZ);
+  TGLXYZGridParts = set of TGLXYZGridPart;
 
   // TXYZGridLinesStyle
   //
-  {  Rendering Style for grid lines. 
+  {  Rendering Style for grid lines.
     - glsLine : a single line is used for each grid line (from Min to Max),
     this provides the fastest rendering
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
-  TXYZGridLinesStyle = (glsLine, glsSegments);
+  TGLXYZGridLinesStyle = (glsLine, glsSegments);
 
   // TGLXYZGrid
   //
-  {  An XYZ Grid object. 
+  {  An XYZ Grid object.
     Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
   private
@@ -199,16 +199,16 @@ type
     FXSamplingScale: TGLSamplingScale;
     FYSamplingScale: TGLSamplingScale;
     FZSamplingScale: TGLSamplingScale;
-    FParts: TXYZGridParts;
-    FLinesStyle: TXYZGridLinesStyle;
+    FParts: TGLXYZGridParts;
+    FLinesStyle: TGLXYZGridLinesStyle;
 
   protected
     { Protected Declarations }
     procedure SetXSamplingScale(const val: TGLSamplingScale);
     procedure SetYSamplingScale(const val: TGLSamplingScale);
     procedure SetZSamplingScale(const val: TGLSamplingScale);
-    procedure SetParts(const val: TXYZGridParts);
-    procedure SetLinesStyle(const val: TXYZGridLinesStyle);
+    procedure SetParts(const val: TGLXYZGridParts);
+    procedure SetLinesStyle(const val: TGLXYZGridLinesStyle);
     procedure SetLinesSmoothing(const val: Boolean);
 
   public
@@ -228,10 +228,10 @@ type
       write SetYSamplingScale;
     property ZSamplingScale: TGLSamplingScale read FZSamplingScale
       write SetZSamplingScale;
-    property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
-    property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
+    property Parts: TGLXYZGridParts read FParts write SetParts default [gpX, gpY];
+    property LinesStyle: TGLXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    {  Adjusts lines smoothing (or antialiasing). 
+    {  Adjusts lines smoothing (or antialiasing).
       Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;
@@ -446,7 +446,7 @@ var
   invXStep, invYStep: Single;
   row: packed array [0 .. 2] of PRowData;
   rowTop, rowMid, rowBottom: PRowData;
-  func: THeightFieldGetHeightEvent;
+  func: TGLHeightFieldGetHeightEvent;
 
   procedure IssuePoint(var x, y: Single; const pt: TRowData);
   begin
@@ -620,7 +620,7 @@ end;
 // SetOptions
 //
 
-procedure TGLHeightField.SetOptions(const val: THeightFieldOptions);
+procedure TGLHeightField.SetOptions(const val: TGLHeightFieldOptions);
 begin
   if FOptions <> val then
   begin
@@ -632,7 +632,7 @@ end;
 // SetOnGetHeight
 //
 
-procedure TGLHeightField.SetOnGetHeight(const val: THeightFieldGetHeightEvent);
+procedure TGLHeightField.SetOnGetHeight(const val: TGLHeightFieldGetHeightEvent);
 begin
   FOnGetHeight := val;
   StructureChanged;
@@ -642,7 +642,7 @@ end;
 //
 
 procedure TGLHeightField.SetOnGetHeight2(const val
-  : THeightFieldGetHeight2Event);
+  : TGLHeightFieldGetHeight2Event);
 begin
   FOnGetHeight2 := val;
   StructureChanged;
@@ -651,7 +651,7 @@ end;
 // SetColorMode
 //
 
-procedure TGLHeightField.SetColorMode(const val: THeightFieldColorMode);
+procedure TGLHeightField.SetColorMode(const val: TGLHeightFieldColorMode);
 begin
   if val <> FColorMode then
   begin
@@ -751,7 +751,7 @@ end;
 // SetParts
 //
 
-procedure TGLXYZGrid.SetParts(const val: TXYZGridParts);
+procedure TGLXYZGrid.SetParts(const val: TGLXYZGridParts);
 begin
   if FParts <> val then
   begin
@@ -763,7 +763,7 @@ end;
 // SetLinesStyle
 //
 
-procedure TGLXYZGrid.SetLinesStyle(const val: TXYZGridLinesStyle);
+procedure TGLXYZGrid.SetLinesStyle(const val: TGLXYZGridLinesStyle);
 begin
   if FLinesStyle <> val then
   begin

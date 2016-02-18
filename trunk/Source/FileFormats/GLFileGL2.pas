@@ -24,13 +24,13 @@ uses
 
 type
 
-  TGLGLMVectorFile = class (TGLVectorFile)
+  TGLMVectorFile = class (TGLVectorFile)
     public
       class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
   end;
 
-  TGLGLAVectorFile = class (TGLVectorFile)
+  TGLAVectorFile = class (TGLVectorFile)
     public
       class function Capabilities : TGLDataFileCapabilities; override;
       procedure LoadFromStream(aStream : TStream); override;
@@ -51,19 +51,19 @@ implementation
 // ------------------------------------------------------------------
 
 // ------------------
-// ------------------ TGLGLMVectorFile ------------------
+// ------------------ TGLMVectorFile ------------------
 // ------------------
 
 // Capabilities
 //
-class function TGLGLMVectorFile.Capabilities : TGLDataFileCapabilities;
+class function TGLMVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
 // LoadFromStream
 //
-procedure TGLGLMVectorFile.LoadFromStream(aStream : TStream);
+procedure TGLMVectorFile.LoadFromStream(aStream : TStream);
 var
   GLMFile     : TFileGLM;
   i,j,k,s,c,d : integer;
@@ -163,19 +163,19 @@ end;
 
 
 // ------------------
-// ------------------ TGLGLAVectorFile ------------------
+// ------------------ TGLAVectorFile ------------------
 // ------------------
 
 // Capabilities
 //
-class function TGLGLAVectorFile.Capabilities : TGLDataFileCapabilities;
+class function TGLAVectorFile.Capabilities : TGLDataFileCapabilities;
 begin
   Result:=[dfcRead];
 end;
 
 // LoadFromStream
 //
-procedure TGLGLAVectorFile.LoadFromStream(aStream : TStream);
+procedure TGLAVectorFile.LoadFromStream(aStream : TStream);
 var
   GLAFile  : TFileGLA;
   i,j      : Integer;
@@ -258,8 +258,8 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-   RegisterVectorFileFormat('glm', 'Ghoul2 (GLM) model files', TGLGLMVectorFile);
-   RegisterVectorFileFormat('glx', 'Ghoul2 (GLX) model files', TGLGLMVectorFile);
-   RegisterVectorFileFormat('gla', 'Ghoul2 (GLA) animation files', TGLGLAVectorFile);
+   RegisterVectorFileFormat('glm', 'Ghoul2 (GLM) model files', TGLMVectorFile);
+   RegisterVectorFileFormat('glx', 'Ghoul2 (GLX) model files', TGLMVectorFile);
+   RegisterVectorFileFormat('gla', 'Ghoul2 (GLA) animation files', TGLAVectorFile);
 
 end.

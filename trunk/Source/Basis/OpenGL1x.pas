@@ -5,7 +5,7 @@
    OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
    a more "pragmatic" approach :) 
 
-   This unit is based on OpenGL12.pas orginally written by Mike Lischke,
+   This unit is based on OpenGL12.pas originally written by Mike Lischke,
    please refer to OpenGL12.pas header. 
 
    History :  

@@ -6,8 +6,7 @@ uses
   System.SysUtils, System.Classes, System.UITypes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
-
-  //GLScene
+  //GLS
   GLScene, GLObjects, GLTexture, GLBumpShader,
   GLVectorFileObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
@@ -21,7 +20,6 @@ type
     GLMaterialLibrary1: TGLMaterialLibrary;
     Camera: TGLCamera;
     WhiteLight: TGLLightSource;
-    Bunny: TGLFreeForm;
     RedLight: TGLLightSource;
     BlueLight: TGLLightSource;
     GLBumpShader1: TGLBumpShader;
@@ -42,6 +40,7 @@ type
     ComboBox2: TComboBox;
     Label2: TLabel;
     LabelFPS: TLabel;
+    Bunny: TGLFreeForm;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
