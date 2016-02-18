@@ -783,7 +783,7 @@ begin
   if FLocation < 0 then
     FLocation := glGetAttribLocation(
       CurrentGLContext.GLStates.CurrentProgram,
-      PGLChar(TGLString(FName)));
+      PGLChar(String(FName)));
   Result := FLocation;
 end;
 

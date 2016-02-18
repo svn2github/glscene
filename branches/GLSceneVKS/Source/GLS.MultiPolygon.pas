@@ -81,7 +81,7 @@ type
 
   // TVKContours
   //
-  TVKContours = class(TNotifyCollection)
+  TVKContours = class(TVKNotifyCollection)
   private
     function GetItems(index: Integer): TVKContour;
     procedure SetItems(index: Integer; const Value: TVKContour);

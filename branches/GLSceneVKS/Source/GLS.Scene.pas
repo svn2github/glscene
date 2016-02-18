@@ -4513,7 +4513,7 @@ begin
 {$IFDEF GLS_OPENGL_DEBUG}
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(
-      Length(Name) + Length('.Render'), PGLChar(TGLString(Name + '.Render')));
+      Length(Name) + Length('.Render'), PGLChar(String(Name + '.Render')));
 {$ENDIF}
   if (ARci.drawState = dsPicking) and not FPickable then
     exit;

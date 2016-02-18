@@ -729,41 +729,41 @@ type
 
   TVKMeshObjectListClass = class of TVKMeshObjectList;
 
-  TMeshMorphTargetList = class;
+  TVKMeshMorphTargetList = class;
 
-  // TMeshMorphTarget
+  // TVKMeshMorphTarget
   //
   { A morph target, stores alternate lists of vertices and normals. }
-  TMeshMorphTarget = class(TBaseMeshObject)
+  TVKMeshMorphTarget = class(TBaseMeshObject)
   private
     { Private Declarations }
-    FOwner: TMeshMorphTargetList;
+    FOwner: TVKMeshMorphTargetList;
 
   protected
     { Protected Declarations }
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TMeshMorphTargetList);
+    constructor CreateOwned(AOwner: TVKMeshMorphTargetList);
     destructor Destroy; override;
 
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
-    property Owner: TMeshMorphTargetList read FOwner;
+    property Owner: TVKMeshMorphTargetList read FOwner;
   end;
 
-  // TMeshMorphTargetList
+  // TVKMeshMorphTargetList
   //
-  { A list of TMeshMorphTarget objects. }
-  TMeshMorphTargetList = class(TPersistentObjectList)
+  { A list of TVKMeshMorphTarget objects. }
+  TVKMeshMorphTargetList = class(TPersistentObjectList)
   private
     { Private Declarations }
     FOwner: TPersistent;
 
   protected
     { Protected Declarations }
-    function GetMeshMorphTarget(Index: Integer): TMeshMorphTarget;
+    function GeTVKMeshMorphTarget(Index: Integer): TVKMeshMorphTarget;
 
   public
     { Public Declarations }
@@ -776,19 +776,19 @@ type
 
     property Owner: TPersistent read FOwner;
     procedure Clear; override;
-    property Items[Index: Integer]: TMeshMorphTarget read GetMeshMorphTarget;
+    property Items[Index: Integer]: TVKMeshMorphTarget read GeTVKMeshMorphTarget;
       default;
   end;
 
-  // TMorphableMeshObject
+  // TVKMorphableMeshObject
   //
   { Mesh object with support for morph targets. 
      The morph targets allow to change vertices and normals according to pre-
      existing "morph targets". }
-  TMorphableMeshObject = class(TVKMeshObject)
+  TVKMorphableMeshObject = class(TVKMeshObject)
   private
     { Private Declarations }
-    FMorphTargets: TMeshMorphTargetList;
+    FMorphTargets: TVKMeshMorphTargetList;
 
   protected
     { Protected Declarations }
@@ -809,7 +809,7 @@ type
     procedure Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
       lerpFactor: Single); virtual;
 
-    property MorphTargets: TMeshMorphTargetList read FMorphTargets;
+    property MorphTargets: TVKMeshMorphTargetList read FMorphTargets;
   end;
 
   // TVertexBoneWeight
@@ -834,7 +834,7 @@ type
        VerticeBoneWeightCount properties, you can also add vertex by vertex
        by using the AddWeightedBone method. 
        When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
-  TVKSkeletonMeshObject = class(TMorphableMeshObject)
+  TVKSkeletonMeshObject = class(TVKMorphableMeshObject)
   private
     { Private Declarations }
     FVerticesBonesWeights: PVerticesBoneWeights;
@@ -5170,8 +5170,8 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    if Items[i] is TMorphableMeshObject then
-      TMorphableMeshObject(Items[i]).MorphTo(morphTargetIndex);
+    if Items[i] is TVKMorphableMeshObject then
+      TVKMorphableMeshObject(Items[i]).MorphTo(morphTargetIndex);
 end;
 
 // Lerp
@@ -5183,8 +5183,8 @@ var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    if Items[i] is TMorphableMeshObject then
-      TMorphableMeshObject(Items[i]).Lerp(morphTargetIndex1, morphTargetIndex2,
+    if Items[i] is TVKMorphableMeshObject then
+      TVKMorphableMeshObject(Items[i]).Lerp(morphTargetIndex1, morphTargetIndex2,
         lerpFactor);
 end;
 
@@ -5197,8 +5197,8 @@ var
 begin
   Result := MaxInt;
   for i := 0 to Count - 1 do
-    if Items[i] is TMorphableMeshObject then
-      with TMorphableMeshObject(Items[i]) do
+    if Items[i] is TVKMorphableMeshObject then
+      with TVKMorphableMeshObject(Items[i]) do
         if Result > MorphTargets.Count then
           Result := MorphTargets.Count;
   if Result = MaxInt then
@@ -5395,13 +5395,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TMeshMorphTarget ------------------
+// ------------------ TVKMeshMorphTarget ------------------
 // ------------------
 
 // CreateOwned
 //
 
-constructor TMeshMorphTarget.CreateOwned(AOwner: TMeshMorphTargetList);
+constructor TVKMeshMorphTarget.CreateOwned(AOwner: TVKMeshMorphTargetList);
 begin
   FOwner := AOwner;
   Create;
@@ -5412,7 +5412,7 @@ end;
 // Destroy
 //
 
-destructor TMeshMorphTarget.Destroy;
+destructor TVKMeshMorphTarget.Destroy;
 begin
   if Assigned(FOwner) then
     FOwner.Remove(Self);
@@ -5422,7 +5422,7 @@ end;
 // WriteToFiler
 //
 
-procedure TMeshMorphTarget.WriteToFiler(writer: TVirtualWriter);
+procedure TVKMeshMorphTarget.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
   with writer do
@@ -5435,7 +5435,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TMeshMorphTarget.ReadFromFiler(reader: TVirtualReader);
+procedure TVKMeshMorphTarget.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
 begin
@@ -5451,13 +5451,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TMeshMorphTargetList ------------------
+// ------------------ TVKMeshMorphTargetList ------------------
 // ------------------
 
 // CreateOwned
 //
 
-constructor TMeshMorphTargetList.CreateOwned(AOwner: TPersistent);
+constructor TVKMeshMorphTargetList.CreateOwned(AOwner: TPersistent);
 begin
   FOwner := AOwner;
   Create;
@@ -5466,7 +5466,7 @@ end;
 // Destroy
 //
 
-destructor TMeshMorphTargetList.Destroy;
+destructor TVKMeshMorphTargetList.Destroy;
 begin
   Clear;
   inherited;
@@ -5475,7 +5475,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TMeshMorphTargetList.ReadFromFiler(reader: TVirtualReader);
+procedure TVKMeshMorphTargetList.ReadFromFiler(reader: TVirtualReader);
 var
   i: Integer;
 begin
@@ -5487,7 +5487,7 @@ end;
 // Translate
 //
 
-procedure TMeshMorphTargetList.Translate(const delta: TAffineVector);
+procedure TVKMeshMorphTargetList.Translate(const delta: TAffineVector);
 var
   i: Integer;
 begin
@@ -5498,7 +5498,7 @@ end;
 // Clear
 //
 
-procedure TMeshMorphTargetList.Clear;
+procedure TVKMeshMorphTargetList.Clear;
 var
   i: Integer;
 begin
@@ -5511,32 +5511,32 @@ begin
   inherited;
 end;
 
-// GetMeshMorphTarget
+// GeTVKMeshMorphTarget
 //
 
-function TMeshMorphTargetList.GetMeshMorphTarget(Index: Integer):
-  TMeshMorphTarget;
+function TVKMeshMorphTargetList.GeTVKMeshMorphTarget(Index: Integer):
+  TVKMeshMorphTarget;
 begin
-  Result := TMeshMorphTarget(List^[Index]);
+  Result := TVKMeshMorphTarget(List^[Index]);
 end;
 
 // ------------------
-// ------------------ TMorphableMeshObject ------------------
+// ------------------ TVKMorphableMeshObject ------------------
 // ------------------
 
 // Create
 //
 
-constructor TMorphableMeshObject.Create;
+constructor TVKMorphableMeshObject.Create;
 begin
   inherited;
-  FMorphTargets := TMeshMorphTargetList.CreateOwned(Self);
+  FMorphTargets := TVKMeshMorphTargetList.CreateOwned(Self);
 end;
 
 // Destroy
 //
 
-destructor TMorphableMeshObject.Destroy;
+destructor TVKMorphableMeshObject.Destroy;
 begin
   FMorphTargets.Free;
   inherited;
@@ -5545,7 +5545,7 @@ end;
 // WriteToFiler
 //
 
-procedure TMorphableMeshObject.WriteToFiler(writer: TVirtualWriter);
+procedure TVKMorphableMeshObject.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
   with writer do
@@ -5558,7 +5558,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TMorphableMeshObject.ReadFromFiler(reader: TVirtualReader);
+procedure TVKMorphableMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
 begin
@@ -5576,7 +5576,7 @@ end;
 // Clear;
 //
 
-procedure TMorphableMeshObject.Clear;
+procedure TVKMorphableMeshObject.Clear;
 begin
   inherited;
   FMorphTargets.Clear;
@@ -5585,7 +5585,7 @@ end;
 // Translate
 //
 
-procedure TMorphableMeshObject.Translate(const delta: TAffineVector);
+procedure TVKMorphableMeshObject.Translate(const delta: TAffineVector);
 begin
   inherited;
   MorphTargets.Translate(delta);
@@ -5595,7 +5595,7 @@ end;
 // MorphTo
 //
 
-procedure TMorphableMeshObject.MorphTo(morphTargetIndex: Integer);
+procedure TVKMorphableMeshObject.MorphTo(morphTargetIndex: Integer);
 begin
   if (morphTargetIndex = 0) and (MorphTargets.Count = 0) then
     Exit;
@@ -5618,11 +5618,11 @@ end;
 // Lerp
 //
 
-procedure TMorphableMeshObject.Lerp(morphTargetIndex1, morphTargetIndex2:
+procedure TVKMorphableMeshObject.Lerp(morphTargetIndex1, morphTargetIndex2:
   Integer;
   lerpFactor: Single);
 var
-  mt1, mt2: TMeshMorphTarget;
+  mt1, mt2: TVKMeshMorphTarget;
 begin
   Assert((Cardinal(morphTargetIndex1) < Cardinal(MorphTargets.Count))
     and (Cardinal(morphTargetIndex2) < Cardinal(MorphTargets.Count)));
@@ -9133,8 +9133,8 @@ initialization
 
   RegisterClasses([TVKFreeForm, TVKActor, TVKSkeleton, TVKSkeletonFrame,
     TVKSkeletonBone,
-    TVKSkeletonMeshObject, TVKMeshObject, TVKSkeletonFrameList, TMeshMorphTarget,
-      TMorphableMeshObject, TVKFaceGroup, TFGVertexIndexList,
+    TVKSkeletonMeshObject, TVKMeshObject, TVKSkeletonFrameList, TVKMeshMorphTarget,
+      TVKMorphableMeshObject, TVKFaceGroup, TFGVertexIndexList,
       TFGVertexNormalTexIndexList, TVKAnimationControler,
       TFGIndexTexCoordList, TVKSkeletonCollider, TVKSkeletonColliderList]);
 

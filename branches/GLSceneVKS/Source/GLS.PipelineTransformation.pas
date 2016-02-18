@@ -105,7 +105,7 @@ type
 
 {}
 // Prevent Lazaruses issue with checksumm chenging!
-// type TVKCall = function(): TGLExtensionsAndEntryPoints;
+// type TVKCall = function(): TVKExtensionsAndEntryPoints;
 // var  vLocalGL: TVKCall;
 
 //-------------------------------------------------------------------------

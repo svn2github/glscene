@@ -52,16 +52,16 @@ procedure TVKFileDAE.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    DAEFile : TVKFileDAE;
-   mesh : TMorphableMeshObject;
+   mesh : TVKMorphableMeshObject;
    faceGroup : TFGIndexTexCoordList;
-   morphTarget : TMeshMorphTarget;
+   morphTarget : TVKMeshMorphTarget;
 begin
    { TODO : E2035 Not enough actual parameters }
    (*DAEFile:=TVKFileDAE.Create();*)
    DAEFile.LoadFromStream(aStream);
    try
       // retrieve mesh data
-      mesh:=TMorphableMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TVKMorphableMeshObject.CreateOwned(Owner.MeshObjects);
       with mesh, DAEFile do begin
          Mode:=momFaceGroups;
          faceGroup:=TFGIndexTexCoordList.CreateOwned(FaceGroups);
@@ -83,7 +83,7 @@ begin
          { TODO : E2003 Undeclared identifier: 'iFrames' }
          (*
          for i:=0 to iFrames-1 do begin
-            morphTarget:=TMeshMorphTarget.CreateOwned(MorphTargets);
+            morphTarget:=TVKMeshMorphTarget.CreateOwned(MorphTargets);
             with morphTarget do begin
                Name:='Frame'+IntToStr(i);
                Vertices.Capacity:=iVertices;

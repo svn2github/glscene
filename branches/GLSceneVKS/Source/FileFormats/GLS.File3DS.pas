@@ -182,8 +182,8 @@ type
   TVKFile3DSAnimKeysClassType = (ctScale, ctRot, ctPos, ctCol, ctTPos,
     ctFall, ctHot, ctRoll);
 
-  { TVKFile3DSDummyObject. A 3ds-specific TMorphableMeshObject. }
-  TVKFile3DSDummyObject = class(TMorphableMeshObject)
+  { TVKFile3DSDummyObject. A 3ds-specific TVKMorphableMeshObject. }
+  TVKFile3DSDummyObject = class(TVKMorphableMeshObject)
   private
     FAnimList: TVKFile3DSAnimationKeyList;
     FAnimData: Pointer;
@@ -2124,7 +2124,7 @@ begin
           mesh.Name := string(PMesh3DS(Objects.Mesh[I])^.NameStr);
           //dummy targets
           for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-            TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
+            TVKMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           with mesh do
           begin
@@ -2345,7 +2345,7 @@ begin
           mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
           //dummy targets
           for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-            TMeshMorphTarget.CreateOwned(mesh.MorphTargets);
+            TVKMeshMorphTarget.CreateOwned(mesh.MorphTargets);
 
           mesh.LoadAnimation(KeyFramer.MeshMotion[I]);
         end;
@@ -2371,7 +2371,7 @@ begin
         lights_mesh := TVKFile3DSOmniLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
+          TVKMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.OmniLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.OmniLightMotion[I]);
       end;
@@ -2382,7 +2382,7 @@ begin
         lights_mesh := TVKFile3DSSpotLightObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
+          TVKMeshMorphTarget.CreateOwned(lights_mesh.MorphTargets);
         lights_mesh.LoadData(Owner, Objects.SpotLight[I]);
         lights_mesh.LoadAnimation(KeyFramer.SpotLightMotion[I]);
       end;
@@ -2393,7 +2393,7 @@ begin
         camera_mesh := TVKFile3DSCameraObject.CreateOwned(Owner.MeshObjects);
         // Dummy targets for it.
         for x := KeyFramer.Settings.Seg.SegBegin to KeyFramer.Settings.Seg.SegEnd do
-          TMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
+          TVKMeshMorphTarget.CreateOwned(camera_mesh.MorphTargets);
         camera_mesh.LoadData(Owner, Objects.Camera[I]);
         camera_mesh.LoadAnimation(KeyFramer.CameraMotion[I]);
       end;

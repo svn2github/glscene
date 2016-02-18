@@ -497,7 +497,7 @@ begin
       end
       else
         GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
-          PGLChar(TGLString(FLines.Strings[i])));
+          PGLChar(String(FLines.Strings[i])));
       glPopMatrix;
     end;
     rci.GLStates.PopAttrib();

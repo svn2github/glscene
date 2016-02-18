@@ -130,7 +130,7 @@ type
     procedure SetLayer(const Value: TVKContextLayer);
   protected
     { Protected Declarations }
-    ///FGL: TGLExtensionsAndEntryPoints;
+    ///FGL: TVKExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TVKStateCache;
     FTransformation: TVKTransformation;
@@ -239,7 +239,7 @@ type
 
     function RenderOutputDevice: Pointer; virtual; abstract;
     { Access to OpenGL command and extension. }
-    ///property GL: TGLExtensionsAndEntryPoints read FGL; depricated
+    ///property GL: TVKExtensionsAndEntryPoints read FGL; depricated
     property MultitextureCoordinator: TAbstractMultitextureCoordinator read GetXGL;
     property IsPraparationNeed: Boolean read FIsPraparationNeed;
   end;
@@ -1241,12 +1241,12 @@ type
 
 var
   vContextClasses: TList;
-  ///GLwithoutContext: TGLExtensionsAndEntryPoints;
+  ///GLwithoutContext: TVKExtensionsAndEntryPoints;
   vServiceWindow: TForm;
   OldInitProc: Pointer;
 
 threadvar
-  ///vGL: TGLExtensionsAndEntryPoints;
+  ///vGL: TVKExtensionsAndEntryPoints;
   vCurrentGLContext: TVKContext;
   vMainThread: Boolean;
 
@@ -1322,7 +1322,7 @@ begin
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
   FGLStates := TVKStateCache.Create;
-  ///FGL := TGLExtensionsAndEntryPoints.Create;
+  ///FGL := TVKExtensionsAndEntryPoints.Create;
   FTransformation := TVKTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);

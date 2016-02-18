@@ -49,24 +49,24 @@ type
   HVIDEOINPUTDEVICENV = THandle;
   PHVIDEOINPUTDEVICENV = ^HVIDEOINPUTDEVICENV;
 
-  TGLVectord3  = array[0..2] of GLdouble;
-  TGLArrayd3 = TGLVectord3;
+  TVKVectord3  = array[0..2] of GLdouble;
+  TVKArrayd3 = TVKVectord3;
 
 type
    // GLU types
-   TGLUNurbs = record end;
-   TGLUQuadric = record end;
-   TGLUTesselator = record end;
+   TVKUNurbs = record end;
+   TVKUQuadric = record end;
+   TVKUTesselator = record end;
 
-   PGLUNurbs = ^TGLUNurbs;
-   PGLUQuadric = ^TGLUQuadric;
-   PGLUTesselator=  ^TGLUTesselator;
+   PGLUNurbs = ^TVKUNurbs;
+   PGLUQuadric = ^TVKUQuadric;
+   PGLUTesselator=  ^TVKUTesselator;
 
    // backwards compatibility
-   TGLUNurbsObj = TGLUNurbs;
-   TGLUQuadricObj = TGLUQuadric;
-   TGLUTesselatorObj = TGLUTesselator;
-   TGLUTriangulatorObj = TGLUTesselator;
+   TVKUNurbsObj = TVKUNurbs;
+   TVKUQuadricObj = TVKUQuadric;
+   TVKUTesselatorObj = TVKUTesselator;
+   TVKUTriangulatorObj = TVKUTesselator;
 
    PGLUNurbsObj = PGLUNurbs;
    PGLUQuadricObj = PGLUQuadric;
@@ -637,7 +637,7 @@ var
 type
   EOpenGLError = class(Exception);
 
-  TGLExtensionsAndEntryPoints = class
+  TVKExtensionsAndEntryPoints = class
   private
     FBuffer: string;
     FInitialized: boolean;
@@ -857,13 +857,13 @@ type
     ACreatePixelFormat: function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     AChoosePixelFormat : function(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl;
     ADestroyPixelFormat: procedure(pix: TAGLPixelFormat); cdecl;
-    ADescribePixelFormat : function(pix: TAGLPixelFormat; attrib: TGLint; value: PGLint): TGLBoolean; cdecl;
-    AGetCGLPixelFormat : function(pix: TAGLPixelFormat; cgl_pix: Pointer): TGLboolean; cdecl;
+    ADescribePixelFormat : function(pix: TAGLPixelFormat; attrib: GLint; value: PGLint): GLboolean; cdecl;
+    AGetCGLPixelFormat : function(pix: TAGLPixelFormat; cgl_pix: Pointer): GLboolean; cdecl;
     ADisplaysOfPixelFormat : function(pix: TAGLPixelFormat; ndevs: PGLint): CGDirectDisplayID; cdecl;
     ANextPixelFormat : function(pix: TAGLPixelFormat): TAGLPixelFormat; cdecl;
     // Managing context
     ACreateContext: function(pix: TAGLPixelFormat; share: TAGLContext): TAGLContext; cdecl;
-    ACopyContext : function(src: TAGLContext; dst: TAGLContext; mask: TGLuint): TGLBoolean; cdecl;
+    ACopyContext : function(src: TAGLContext; dst: TAGLContext; mask: GLuint): GLboolean; cdecl;
     ADestroyContext: function(ctx: TAGLContext): GLboolean; cdecl;
     AUpdateContext: function(ctx: TAGLContext): GLboolean; cdecl;
     ASetCurrentContext : function(ctx: TAGLContext): GLboolean; cdecl;
@@ -874,43 +874,43 @@ type
     ACreatePBuffer : function(Width: GLint; Height: GLint; target: GLenum; internalFormat: GLenum;
       max_level: longint; pbuffer: PAGLPbuffer): GLboolean; cdecl;
     ADestroyPBuffer : function(pbuffer: TAGLPbuffer): GLboolean; cdecl;
-    ADescribePBuffer : function(pbuffer: TAGLPbuffer; width, height: PGLint; target: PGLenum; internalFormat: PGLenum; max_level: PGLint): TGLBoolean; cdecl;
+    ADescribePBuffer : function(pbuffer: TAGLPbuffer; width, height: PGLint; target: PGLenum; internalFormat: PGLenum; max_level: PGLint): GLboolean; cdecl;
     AGetPBuffer : function(ctx: TAGLContext; out pbuffer: TAGLPbuffer; face, level, screen: PGLint): GLboolean; cdecl;
     ASetPBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; face: GLint; level: GLint; screen: GLint): GLboolean; cdecl;
-    ATexImagePBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; source: GLint): TGLBoolean; cdecl;
+    ATexImagePBuffer : function(ctx: TAGLContext; pbuffer: TAGLPbuffer; source: GLint): GLboolean; cdecl;
     // Managing Drawable Objects
     ASetDrawable: function(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; // deprecated
     AGetDrawable: function(ctx: TAGLContext): TAGLDrawable; cdecl; // deprecated
     ASetFullScreen: function(ctx: TAGLContext; Width: GLsizei; Height: GLsizei; freq: GLsizei;
       device: GLint): GLboolean; cdecl;
-    ASetOffScreen : function(ctx: TAGLContext; width, height, rowbytes: TGLsizei; out baseaddr: Pointer): GLboolean; cdecl;
+    ASetOffScreen : function(ctx: TAGLContext; width, height, rowbytes: GLsizei; out baseaddr: Pointer): GLboolean; cdecl;
     // Getting and Setting Context Options
-    AEnable : function(ctx: TAGLContext; pname: TGLenum): GLboolean; cdecl;
-    ADisable : function(ctx: TAGLContext; pname: TGLenum): GLboolean; cdecl;
-    AIsEnabled : function(ctx: TAGLContext; pname: TGLenum): GLboolean; cdecl;
+    AEnable : function(ctx: TAGLContext; pname: GLenum): GLboolean; cdecl;
+    ADisable : function(ctx: TAGLContext; pname: GLenum): GLboolean; cdecl;
+    AIsEnabled : function(ctx: TAGLContext; pname: GLenum): GLboolean; cdecl;
     ASetInteger : function(ctx: TAGLContext; pname: GLenum; params: PGLint): GLboolean; cdecl;
     AGetInteger : function(ctx: TAGLContext; pname: GLenum; params: PGLint): GLboolean; cdecl;
     // Getting and Setting Global Information
-    AConfigure : function(pname: TGLenum; param: TGLuint): TGLboolean; cdecl;
+    AConfigure : function(pname: GLenum; param: GLuint): GLboolean; cdecl;
     AGetVersion : procedure(major: PGLint; minor: PGLint); cdecl;
     AResetLibrary : procedure(); cdecl;
     // Getting Renderer Information
     ADescribeRenderer : function(rend: TAGLRendererInfo; prop: GLint; value: PGLint): GLboolean; cdecl;
     ADestroyRendererInfo : procedure(rend: TAGLRendererInfo); cdecl;
     ANextRendererInfo : function(rend: TAGLRendererInfo): TAGLRendererInfo; cdecl;
-    AQueryRendererInfoForCGDirectDisplayIDs : function(dspIDs: CGDirectDisplayID; ndev: TGLint): TAGLRendererInfo; cdecl;
+    AQueryRendererInfoForCGDirectDisplayIDs : function(dspIDs: CGDirectDisplayID; ndev: GLint): TAGLRendererInfo; cdecl;
     // Managing Virtual Screens
     AGetVirtualScreen : function(ctx: TAGLContext): GLint; cdecl;
-    ASetVirtualScreen : function(ctx: TAGLContext; screen: TGLint): TGLboolean; cdecl;
+    ASetVirtualScreen : function(ctx: TAGLContext; screen: GLint): GLboolean; cdecl;
     // Getting and Setting Windows
-    ASetWindowRef : function(ctx: TAGLContext; window: WindowRef): TGLBoolean; cdecl;
-    AGetWindowRef : function(ctx: TAGLContext): TGLint; cdecl;
+    ASetWindowRef : function(ctx: TAGLContext; window: WindowRef): GLboolean; cdecl;
+    AGetWindowRef : function(ctx: TAGLContext): GLint; cdecl;
     // Getting and Setting HIView Objects
-    ASetHIViewRef : function(ctx: TAGLContext; hiview: HIViewRef): TGLboolean; cdecl;
+    ASetHIViewRef : function(ctx: TAGLContext; hiview: HIViewRef): GLboolean; cdecl;
     AGetHIViewRef : function(ctx: TAGLContext): HIViewRef; cdecl;
     // Getting Error Information
-    AGetError : function(): TGLenum; cdecl;
-    AErrorString : function(code: TGLenum): PGLChar; cdecl;
+    AGetError : function(): GLenum; cdecl;
+    AErrorString : function(code: GLenum): PGLChar; cdecl;
 {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
@@ -1143,39 +1143,39 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
 // GLX 1.0
 function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
 function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
-function glXChooseVisual(dpy: PDisplay; screen: TGLint;
+function glXChooseVisual(dpy: PDisplay; screen: GLint;
   attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
 function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo;
-  shareList: GLXContext; direct: TGLboolean): GLXContext; cdecl; external opengl32;
+  shareList: GLXContext; direct: GLboolean): GLXContext; cdecl; external opengl32;
 procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
 function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable;
-  ctx: GLXContext): TGLboolean; cdecl; external opengl32;
-procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: TGLuint);
+  ctx: GLXContext): GLboolean; cdecl; external opengl32;
+procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: GLuint);
   cdecl; external opengl32;
 procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
 function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
   pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
 procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap);
   cdecl; external opengl32;
-function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): TGLboolean;
+function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): GLboolean;
   cdecl; external opengl32;
-function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): TGLboolean;
+function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): GLboolean;
   cdecl; external opengl32;
-function glXIsDirect(dpy: PDisplay; ctx: GLXContext): TGLboolean;
+function glXIsDirect(dpy: PDisplay; ctx: GLXContext): GLboolean;
   cdecl; external opengl32;
-function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: TGLint;
-  Value: PGLint): TGLint; cdecl; external opengl32;
+function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: GLint;
+  Value: PGLint): GLint; cdecl; external opengl32;
 function glXGetCurrentContext: GLXContext; cdecl; external opengl32;
 function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
 procedure glXWaitGL; cdecl; external opengl32;
 procedure glXWaitX; cdecl; external opengl32;
-procedure glXUseXFont(font: XFont; First: TGLint; Count: TGLint; list: TGLint);
+procedure glXUseXFont(font: XFont; First: GLint; Count: GLint; list: GLint);
   cdecl; external opengl32;
-function glXQueryExtensionsString(dpy: PDisplay; screen: TGLint): PGLChar;
+function glXQueryExtensionsString(dpy: PDisplay; screen: GLint): PGLChar;
   cdecl; external opengl32;
-function glXQueryServerString(dpy: PDisplay; screen: TGLint; Name: TGLint): PGLChar;
+function glXQueryServerString(dpy: PDisplay; screen: GLint; Name: GLint): PGLChar;
   cdecl; external opengl32;
-function glXGetClientString(dpy: PDisplay; Name: TGLint): PGLChar;
+function glXGetClientString(dpy: PDisplay; Name: GLint): PGLChar;
   cdecl; external opengl32;
 function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
 {$ENDIF}
@@ -1363,7 +1363,7 @@ begin
     GLSLogger.LogDebug(string(message));
 end;
 
-constructor TGLExtensionsAndEntryPoints.Create;
+constructor TVKExtensionsAndEntryPoints.Create;
 begin
   FInitialized := False;
 end;
@@ -1379,7 +1379,7 @@ begin
   Abort;
 end;
 
-function TGLExtensionsAndEntryPoints.GetAddress(ProcName: string): Pointer;
+function TVKExtensionsAndEntryPoints.GetAddress(ProcName: string): Pointer;
 var
   vName: string;
 begin
@@ -1388,11 +1388,11 @@ begin
   {$IFDEF DARWIN}
   if Result = nil then
   begin
-    Result := AGLGetProcAddress(PGLChar(TGLString(vName)));
+    Result := AGLGetProcAddress(PGLChar(String(vName)));
     if Result = nil then
     begin
       vName := glPrefix + ProcName + 'APPLE';
-      Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+      Result := GLGetProcAddress(PGLChar(String(vName)));
   {$ENDIF}
   if Result = nil then
   begin
@@ -1438,7 +1438,7 @@ begin
 {$ENDIF}
 end;
 
-function TGLExtensionsAndEntryPoints.GetAddressAlt(ProcName1, ProcName2:
+function TVKExtensionsAndEntryPoints.GetAddressAlt(ProcName1, ProcName2:
   string): Pointer;
 begin
   Result := GetAddress(ProcName1);
@@ -1446,7 +1446,7 @@ begin
     Result := GetAddress(ProcName2);
 end;
 
-function TGLExtensionsAndEntryPoints.GetAddressNoSuffixes(ProcName: string): Pointer;
+function TVKExtensionsAndEntryPoints.GetAddressNoSuffixes(ProcName: string): Pointer;
 var
   vName: string;
 begin
@@ -1462,12 +1462,12 @@ begin
 {$ENDIF}
 end;
 
-function TGLExtensionsAndEntryPoints.GetCapAddress: Pointer;
+function TVKExtensionsAndEntryPoints.GetCapAddress: Pointer;
 begin
   Result := @glCap;
 end;
 
-procedure TGLExtensionsAndEntryPoints.CheckError;
+procedure TVKExtensionsAndEntryPoints.CheckError;
 var
   glError: GLuint;
   Count: word;
@@ -1500,7 +1500,7 @@ begin
     end;
 end;
 
-procedure TGLExtensionsAndEntryPoints.ClearError;
+procedure TVKExtensionsAndEntryPoints.ClearError;
 var
   n: integer;
 begin
@@ -1509,7 +1509,7 @@ begin
     Inc(n);
 end;
 
-function TGLExtensionsAndEntryPoints.CheckExtension(const Extension: string): boolean;
+function TVKExtensionsAndEntryPoints.CheckExtension(const Extension: string): boolean;
 var
   ExtPos: integer;
 begin
@@ -1526,7 +1526,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLExtensionsAndEntryPoints.Initialize(ATemporary: boolean);
+procedure TVKExtensionsAndEntryPoints.Initialize(ATemporary: boolean);
 var
   i: integer;
   numExt: GLint;
@@ -1897,7 +1897,7 @@ begin
   FInitialized := True;
 end;
 
-procedure TGLExtensionsAndEntryPoints.Close;
+procedure TVKExtensionsAndEntryPoints.Close;
 begin
   if FDebug then
     if GL_ARB_debug_output then
@@ -2177,7 +2177,7 @@ end;
 // ReadWGLImplementationProperties
 
 
-procedure TGLExtensionsAndEntryPoints.ReadWGLImplementationProperties;
+procedure TVKExtensionsAndEntryPoints.ReadWGLImplementationProperties;
 begin
   // ARB wgl extensions
   if Assigned(wglGetExtensionsStringARB) then
@@ -2209,7 +2209,7 @@ end;
 // ReadWGLExtensions
 
 
-procedure TGLExtensionsAndEntryPoints.ReadWGLExtensions;
+procedure TVKExtensionsAndEntryPoints.ReadWGLExtensions;
 begin
   // ARB wgl extensions
 
@@ -2287,7 +2287,7 @@ end;
 // ReadGLXImplementationProperties
 
 
-procedure TGLExtensionsAndEntryPoints.ReadGLXImplementationProperties;
+procedure TVKExtensionsAndEntryPoints.ReadGLXImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
   dpy: PDisplay;
@@ -2344,7 +2344,7 @@ end;
 // ReadGLXExtensions
 
 
-procedure TGLExtensionsAndEntryPoints.ReadGLXExtensions;
+procedure TVKExtensionsAndEntryPoints.ReadGLXExtensions;
 begin
   // ARB glx extensions
 
@@ -2472,7 +2472,7 @@ end;
 // ReadAGLImplementationProperties
 
 
-procedure TGLExtensionsAndEntryPoints.ReadAGLImplementationProperties;
+procedure TVKExtensionsAndEntryPoints.ReadAGLImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
 begin
@@ -2503,7 +2503,7 @@ begin
   A_ycbcr_422 := CheckExtension('GL_APPLE_ycbcr_422');
 end;
 
-procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
+procedure TVKExtensionsAndEntryPoints.ReadAGLExtensions;
 begin
   // Managing pixel format object
   ACreatePixelFormat := AGLGetProcAddress('aglCreatePixelFormat');
@@ -2567,7 +2567,7 @@ end;
 {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
-procedure TGLExtensionsAndEntryPoints.ReadEGLImplementationProperties;
+procedure TVKExtensionsAndEntryPoints.ReadEGLImplementationProperties;
 var
   MajorVersion, MinorVersion: integer;
 begin
@@ -2596,7 +2596,7 @@ begin
   OES_vertex_half_float := CheckExtension('GL_OES_vertex_half_float');
 end;
 
-procedure TGLExtensionsAndEntryPoints.ReadEGLExtensions;
+procedure TVKExtensionsAndEntryPoints.ReadEGLExtensions;
 begin
   EGetError := EGLGetProcAddress('eglGetError');
   EGetDisplay := EGLGetProcAddress('eglGetDisplay');

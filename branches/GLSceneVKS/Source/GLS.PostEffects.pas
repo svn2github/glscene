@@ -79,7 +79,7 @@ type
 
 
   TVKPostEffectColor = record
-    R, G, B, A: TGLubyte;
+    R, G, B, A: GLubyte;
   end;
 
   TVKPostEffectBuffer = array of TVKPostEffectColor;
@@ -185,7 +185,7 @@ end;
 procedure TVKPostEffect.MakeGrayEffect;
 var
   I:    Longword;
-  gray: TGLubyte;
+  gray: GLubyte;
 begin
   for I := 0 to High(FRenderBuffer) do
   begin

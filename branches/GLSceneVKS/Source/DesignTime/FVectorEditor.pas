@@ -18,7 +18,7 @@ uses
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Utils;
 
 type
-  TGLVectorEditorForm = class(TForm)
+  TVKVectorEditorForm = class(TForm)
     SBPlusX: TSpeedButton;
     SBPlusY: TSpeedButton;
     SBPlusZ: TSpeedButton;
@@ -62,9 +62,9 @@ type
   end;
 
 var
-  vGLVectorEditorForm: TGLVectorEditorForm;
+  vGLVectorEditorForm: TVKVectorEditorForm;
 
-function GLVectorEditorForm: TGLVectorEditorForm;
+function GLVectorEditorForm: TVKVectorEditorForm;
 procedure ReleaseVectorEditorForm;
 
 
@@ -72,10 +72,10 @@ implementation
 
 {$R *.fmx}
 
-function GLVectorEditorForm: TGLVectorEditorForm;
+function GLVectorEditorForm: TVKVectorEditorForm;
 begin
   if not Assigned(vGLVectorEditorForm) then
-    vGLVectorEditorForm := TGLVectorEditorForm.Create(nil);
+    vGLVectorEditorForm := TVKVectorEditorForm.Create(nil);
   Result := vGLVectorEditorForm;
 end;
 
@@ -91,7 +91,7 @@ end;
 
 { TVectorEditorForm }
 
-function TGLVectorEditorForm.Execute(var x, y, z: Single): Boolean;
+function TVKVectorEditorForm.Execute(var x, y, z: Single): Boolean;
 begin
   // setup dialog fields
   vx := x;
@@ -110,35 +110,35 @@ begin
   end;
 end;
 
-procedure TGLVectorEditorForm.SBPlusXClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBPlusXClick(Sender: TObject);
 begin
   EDx.Text := '1';
   EDy.Text := '0';
   EDz.Text := '0';
 end;
 
-procedure TGLVectorEditorForm.SBPlusYClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBPlusYClick(Sender: TObject);
 begin
   EDx.Text := '0';
   EDy.Text := '1';
   EDz.Text := '0';
 end;
 
-procedure TGLVectorEditorForm.SBPlusZClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBPlusZClick(Sender: TObject);
 begin
   EDx.Text := '0';
   EDy.Text := '0';
   EDz.Text := '1';
 end;
 
-procedure TGLVectorEditorForm.SBUnitClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBUnitClick(Sender: TObject);
 begin
   EDx.Text := '1';
   EDy.Text := '1';
   EDz.Text := '1';
 end;
 
-procedure TGLVectorEditorForm.SBInvertClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBInvertClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
@@ -150,28 +150,28 @@ begin
   EDz.Text := FloatToStr(v.z);
 end;
 
-procedure TGLVectorEditorForm.SBMinusXClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBMinusXClick(Sender: TObject);
 begin
   EDx.Text := '-1';
   EDy.Text := '0';
   EDz.Text := '0';
 end;
 
-procedure TGLVectorEditorForm.SBMinusYClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBMinusYClick(Sender: TObject);
 begin
   EDx.Text := '0';
   EDy.Text := '-1';
   EDz.Text := '0';
 end;
 
-procedure TGLVectorEditorForm.SBMinusZClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBMinusZClick(Sender: TObject);
 begin
   EDx.Text := '0';
   EDy.Text := '0';
   EDz.Text := '-1';
 end;
 
-procedure TGLVectorEditorForm.SBNormalizeClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBNormalizeClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
@@ -186,14 +186,14 @@ begin
   EDz.Text := FloatToStr(v.z);
 end;
 
-procedure TGLVectorEditorForm.SBNullClick(Sender: TObject);
+procedure TVKVectorEditorForm.SBNullClick(Sender: TObject);
 begin
   EDx.Text := '0';
   EDy.Text := '0';
   EDz.Text := '0';
 end;
 
-procedure TGLVectorEditorForm.TestInput(edit: TEdit; imError: TImage;
+procedure TVKVectorEditorForm.TestInput(edit: TEdit; imError: TImage;
   var dest: Single);
 begin
   if Visible then

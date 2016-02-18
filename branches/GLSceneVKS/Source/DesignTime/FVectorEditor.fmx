@@ -1,4 +1,4 @@
-object GLVectorEditorForm: TGLVectorEditorForm
+object GLVectorEditorForm: TVKVectorEditorForm
   Left = 0
   Top = 0
   Caption = 'XYZ Editor'

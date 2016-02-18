@@ -20,7 +20,7 @@ uses
   FMX.Controls.Presentation;
 
 type
-  TGLLibMaterialPicker = class(TForm)
+  TVKLibMaterialPicker = class(TForm)
     Label1: TLabel;
     Label2: TLabel;
     LBMaterials: TListBox;
@@ -40,7 +40,7 @@ type
       materialLibrary: TVKAbstractMaterialLibrary): Boolean;
   end;
 
-function GLLibMaterialPicker: TGLLibMaterialPicker;
+function GLLibMaterialPicker: TVKLibMaterialPicker;
 procedure ReleaseLibMaterialPicker;
 
 implementation
@@ -48,12 +48,12 @@ implementation
 {$R *.fmx}
 
 var
-  vGLLibMaterialPicker: TGLLibMaterialPicker;
+  vGLLibMaterialPicker: TVKLibMaterialPicker;
 
-function GLLibMaterialPicker: TGLLibMaterialPicker;
+function GLLibMaterialPicker: TVKLibMaterialPicker;
 begin
   if not Assigned(vGLLibMaterialPicker) then
-    vGLLibMaterialPicker := TGLLibMaterialPicker.Create(nil);
+    vGLLibMaterialPicker := TVKLibMaterialPicker.Create(nil);
   Result := vGLLibMaterialPicker;
 end;
 
@@ -68,17 +68,17 @@ end;
 
 { TLibMaterialPicker }
 
-procedure TGLLibMaterialPicker.CBBackgroundChange(Sender: TObject);
+procedure TVKLibMaterialPicker.CBBackgroundChange(Sender: TObject);
 begin
   //
 end;
 
-procedure TGLLibMaterialPicker.CBObjectChange(Sender: TObject);
+procedure TVKLibMaterialPicker.CBObjectChange(Sender: TObject);
 begin
   //
 end;
 
-function TGLLibMaterialPicker.Execute(var materialName: TVKLibMaterialName;
+function TVKLibMaterialPicker.Execute(var materialName: TVKLibMaterialName;
   materialLibrary: TVKAbstractMaterialLibrary): Boolean;
 begin
   with LBMaterials do
@@ -101,14 +101,14 @@ begin
   end;
 end;
 
-procedure TGLLibMaterialPicker.LBMaterialsClick(Sender: TObject);
+procedure TVKLibMaterialPicker.LBMaterialsClick(Sender: TObject);
 begin
   with LBMaterials do
     if ItemIndex >= 0 then
       MPPreview.LibMaterial := TVKAbstractLibMaterial(Items.Objects[ItemIndex]);
 end;
 
-procedure TGLLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
+procedure TVKLibMaterialPicker.LBMaterialsDblClick(Sender: TObject);
 begin
  /// BBOk.Click;
 end;

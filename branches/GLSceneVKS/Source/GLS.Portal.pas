@@ -44,7 +44,7 @@ type
    // TSectorMeshObject
    //
    { A portal renderer sector.  }
-   TSectorMeshObject = class (TMorphableMeshObject)
+   TSectorMeshObject = class (TVKMorphableMeshObject)
       private
          { Private Declarations }
          FRenderDone : Boolean;

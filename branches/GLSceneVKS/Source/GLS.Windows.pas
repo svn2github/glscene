@@ -572,7 +572,7 @@ type
     property Locked: Boolean read FLocked write FLocked default False;
   end;
 
-  TGLStringGrid = class(TVKFocusControl)
+  StringGrid = class(TVKFocusControl)
   private
     FSelCol, FSelRow: Integer;
     FRowSelect: Boolean;
@@ -3401,7 +3401,7 @@ begin
   end;
 end;
 
-function TGLStringGrid.GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
+function StringGrid.GetCell(X, Y: Integer; out oCol, oRow: Integer): Boolean;
 
 var
   ClientRect: TRectangle;
@@ -3466,7 +3466,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.InternalMouseDown(Shift: TShiftState; Button:
+procedure StringGrid.InternalMouseDown(Shift: TShiftState; Button:
   TVKMouseButton; X, Y: Integer);
 
 var
@@ -3481,7 +3481,7 @@ begin
   inherited;
 end;
 
-procedure TGLStringGrid.SetColumns(const val: TStrings);
+procedure StringGrid.SetColumns(const val: TStrings);
 var
   XC: Integer;
 begin
@@ -3490,13 +3490,13 @@ begin
     Columns.Objects[XC] := TObject(ColumnSize);
 end;
 
-procedure TGLStringGrid.SetColSelect(const val: Boolean);
+procedure StringGrid.SetColSelect(const val: Boolean);
 begin
   FColSelect := Val;
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.GetRow(index: Integer): TStringList;
+function StringGrid.GetRow(index: Integer): TStringList;
 
 begin
   if (index >= 0) and (index < FRows.Count) then
@@ -3505,7 +3505,7 @@ begin
     Result := nil;
 end;
 
-procedure TGLStringGrid.SetRow(index: Integer; const val: TStringList);
+procedure StringGrid.SetRow(index: Integer; const val: TStringList);
 
 begin
   if (index >= 0) then
@@ -3517,13 +3517,13 @@ begin
   end;
 end;
 
-function TGLStringGrid.GetRowCount: Integer;
+function StringGrid.GetRowCount: Integer;
 
 begin
   Result := FRows.count;
 end;
 
-procedure TGLStringGrid.SetRowCount(const val: Integer);
+procedure StringGrid.SetRowCount(const val: Integer);
 
 var
   XC: Integer;
@@ -3555,7 +3555,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetSelCol(const val: Integer);
+procedure StringGrid.SetSelCol(const val: Integer);
 begin
   if FSelCol <> Val then
   begin
@@ -3564,7 +3564,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetSelRow(const val: Integer);
+procedure StringGrid.SetSelRow(const val: Integer);
 begin
   if FSelRow <> Val then
   begin
@@ -3573,33 +3573,33 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetRowSelect(const val: Boolean);
+procedure StringGrid.SetRowSelect(const val: Boolean);
 begin
   FRowSelect := Val;
   NotifyChange(Self);
 end;
 
-procedure TGLStringGrid.SetDrawHeader(const val: Boolean);
+procedure StringGrid.SetDrawHeader(const val: Boolean);
 
 begin
   FDrawHeader := Val;
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.GetHeaderColor: TColor;
+function StringGrid.GetHeaderColor: TColor;
 
 begin
   Result := ConvertColorVector(FHeaderColor);
 end;
 
-procedure TGLStringGrid.SetHeaderColor(const val: TColor);
+procedure StringGrid.SetHeaderColor(const val: TColor);
 
 begin
   FHeaderColor := ConvertWinColor(val);
   GUIRedraw := True;
 end;
 
-procedure TGLStringGrid.SetMarginSize(const val: Integer);
+procedure StringGrid.SetMarginSize(const val: Integer);
 
 begin
   if FMarginSize <> val then
@@ -3609,7 +3609,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetColumnSize(const val: Integer);
+procedure StringGrid.SetColumnSize(const val: Integer);
 
 var
   XC: Integer;
@@ -3624,7 +3624,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetRowHeight(const val: Integer);
+procedure StringGrid.SetRowHeight(const val: Integer);
 
 begin
   if FRowHeight <> val then
@@ -3634,7 +3634,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetScrollbar(const val: TVKScrollbar);
+procedure StringGrid.SetScrollbar(const val: TVKScrollbar);
 
 begin
   if FScrollbar <> Val then
@@ -3647,7 +3647,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetGuiLayout(NewGui: TVKGuiLayout);
+procedure StringGrid.SetGuiLayout(NewGui: TVKGuiLayout);
 
 begin
   inherited;
@@ -3656,7 +3656,7 @@ begin
       Scrollbar.GuiLayout := NewGui;
 end;
 
-constructor TGLStringGrid.Create(AOwner: TComponent);
+constructor StringGrid.Create(AOwner: TComponent);
 
 begin
   inherited;
@@ -3670,7 +3670,7 @@ begin
   FDrawHeader := True;
 end;
 
-destructor TGLStringGrid.Destroy;
+destructor StringGrid.Destroy;
 
 begin
   Scrollbar := nil;
@@ -3680,13 +3680,13 @@ begin
   FColumns.Free;
 end;
 
-procedure TGLStringGrid.Clear;
+procedure StringGrid.Clear;
 
 begin
   RowCount := 0;
 end;
 
-procedure TGLStringGrid.Notification(AComponent: TComponent; Operation:
+procedure StringGrid.Notification(AComponent: TComponent; Operation:
   TOperation);
 
 begin
@@ -3697,7 +3697,7 @@ begin
   inherited;
 end;
 
-procedure TGLStringGrid.NotifyChange(Sender: TObject);
+procedure StringGrid.NotifyChange(Sender: TObject);
 
 begin
   if Sender = Scrollbar then
@@ -3708,7 +3708,7 @@ begin
   inherited;
 end;
 
-procedure TGLStringGrid.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
+procedure StringGrid.InternalRender(var rci: TVKRenderContextInfo; renderSelf,
   renderChildren: Boolean);
 
   function CellSelected(X, Y: Integer): Boolean;
@@ -3814,13 +3814,13 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.OnStringListChange(Sender: TObject);
+procedure StringGrid.OnStringListChange(Sender: TObject);
 
 begin
   NotifyChange(Self);
 end;
 
-function TGLStringGrid.Add(Data: array of string): Integer;
+function StringGrid.Add(Data: array of string): Integer;
 var
   XC: Integer;
 begin
@@ -3830,7 +3830,7 @@ begin
     Row[Result].Add(Data[XC]);
 end;
 
-function TGLStringGrid.Add(const Data: string): Integer;
+function StringGrid.Add(const Data: string): Integer;
 begin
   Result := Add([Data]);
   if Assigned(Scrollbar) then
@@ -3840,7 +3840,7 @@ begin
   end;
 end;
 
-procedure TGLStringGrid.SetText(Data: string);
+procedure StringGrid.SetText(Data: string);
 
 var
   Posi: Integer;
@@ -3890,7 +3890,7 @@ end;
 
 initialization
   RegisterClasses([TVKBaseControl, TVKPopupMenu, TVKForm, TVKPanel, TVKButton,
-    TVKCheckBox, TVKEdit, TVKLabel, TVKAdvancedLabel, TVKScrollbar, TGLStringGrid,
+    TVKCheckBox, TVKEdit, TVKLabel, TVKAdvancedLabel, TVKScrollbar, StringGrid,
     TVKCustomControl]);
 end.
 

@@ -15,7 +15,7 @@ uses
   FMX.Controls.Presentation;
 
 type
-  TGLShaderUniformEditorForm = class(TForm)
+  TVKShaderUniformEditorForm = class(TForm)
     Label1: TLabel;
     LBUniforms: TListBox;
     Label2: TLabel;
@@ -75,7 +75,7 @@ type
   end;
 
 
-function GLShaderUniformEditorForm: TGLShaderUniformEditorForm;
+function GLShaderUniformEditorForm: TVKShaderUniformEditorForm;
 procedure ReleaseShaderUniformEditor;
 
 implementation
@@ -83,12 +83,12 @@ implementation
 {$R *.fmx}
 
 var
-  vGLShaderUniformEditor: TGLShaderUniformEditorForm;
+  vGLShaderUniformEditor: TVKShaderUniformEditorForm;
 
-  function GLShaderUniformEditorForm: TGLShaderUniformEditorForm;
+  function GLShaderUniformEditorForm: TVKShaderUniformEditorForm;
 begin
   if not Assigned(vGLShaderUniformEditor) then
-    vGLShaderUniformEditor := TGLShaderUniformEditorForm.Create(nil);
+    vGLShaderUniformEditor := TVKShaderUniformEditorForm.Create(nil);
   Result := vGLShaderUniformEditor;
 end;
 
@@ -103,7 +103,7 @@ end;
 
 { TShaderUniformEditor }
 
-procedure TGLShaderUniformEditorForm.AddUniform(AValue: IShaderParameter);
+procedure TVKShaderUniformEditorForm.AddUniform(AValue: IShaderParameter);
 begin
   if AValue <> nil then
   begin
@@ -112,7 +112,7 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.AutoSetBoxChange(Sender: TObject);
+procedure TVKShaderUniformEditorForm.AutoSetBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -120,7 +120,7 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.Clear;
+procedure TVKShaderUniformEditorForm.Clear;
 var
   I: Integer;
 begin
@@ -144,7 +144,7 @@ begin
   AlphaGroup.Index := -1;
 end;
 
-procedure TGLShaderUniformEditorForm.Execute;
+procedure TVKShaderUniformEditorForm.Execute;
 var
   I: Integer;
   str: AnsiString;
@@ -160,12 +160,12 @@ begin
   ShowModal;
 end;
 
-procedure TGLShaderUniformEditorForm.FormDestroy(Sender: TObject);
+procedure TVKShaderUniformEditorForm.FormDestroy(Sender: TObject);
 begin
   FUniformList := nil;
 end;
 
-procedure TGLShaderUniformEditorForm.LBUniformsClick(Sender: TObject);
+procedure TVKShaderUniformEditorForm.LBUniformsClick(Sender: TObject);
 var
   SV: TSwizzleVector;
   IParam: IShaderParameter;
@@ -207,13 +207,13 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.LBUniformsKeyDown(Sender: TObject; var Key: Word;
+procedure TVKShaderUniformEditorForm.LBUniformsKeyDown(Sender: TObject; var Key: Word;
   var KeyChar: Char; Shift: TShiftState);
 begin
   LBUniformsClick(Self);
 end;
 
-procedure TGLShaderUniformEditorForm.SamplerBoxChange(Sender: TObject);
+procedure TVKShaderUniformEditorForm.SamplerBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -222,7 +222,7 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.TextureBoxChange(Sender: TObject);
+procedure TVKShaderUniformEditorForm.TextureBoxChange(Sender: TObject);
 begin
   if LBUniforms.ItemIndex >= 0 then
   begin
@@ -231,7 +231,7 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.ColorGroupClick(Sender: TObject);
+procedure TVKShaderUniformEditorForm.ColorGroupClick(Sender: TObject);
 var
   SV: TSwizzleVector;
 begin
@@ -245,12 +245,12 @@ begin
   end;
 end;
 
-procedure TGLShaderUniformEditorForm.AddTextureName(const S: string);
+procedure TVKShaderUniformEditorForm.AddTextureName(const S: string);
 begin
   TextureBox.Items.Add(S);
 end;
 
-procedure TGLShaderUniformEditorForm.AddSamplerName(const S: string);
+procedure TVKShaderUniformEditorForm.AddSamplerName(const S: string);
 begin
   SamplerBox.Items.Add(S);
 end;

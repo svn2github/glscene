@@ -1,4 +1,4 @@
-object GLLibMaterialPicker: TGLLibMaterialPicker
+object GLLibMaterialPicker: TVKLibMaterialPicker
   Left = 0
   Top = 0
   Caption = 'LibMaterial Picker'

@@ -24,10 +24,10 @@ type
   TVKBlurPreset = (pNone, pGlossy, pBeastView, pOceanDepth, pDream, pOverBlur, pAdvancedBlur);
   TVKBlurkind = (bNone, bSimple, bAdvanced);
   TRGBPixel = record
-    R, G, B: TGLubyte;
+    R, G, B: GLubyte;
   end;
   TRGBPixelBuffer = array of TRGBPixel;
-  TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TVKBitmap32; var DoBlur: boolean) of object;
+  TVKAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TVKBitmap32; var DoBlur: boolean) of object;
 
   EGLMotionBlurException = class(Exception);
 
@@ -45,7 +45,7 @@ type
     FRenderWidth: Integer;
     FPreset: TVKBlurPreset;
     FTargetObject: TVKbaseSceneObject;
-    FOnAdvancedBlurImagePrepareEvent: TGLAdvancedBlurImagePrepareEvent;
+    FOnAdvancedBlurImagePrepareEvent: TVKAdvancedBlurImagePrepareEvent;
     FBlur: TVKBlurKind;
     Pixelbuffer: TRGBPixelBuffer;
     FAdvancedBlurPasses: integer;
@@ -68,7 +68,7 @@ type
     function StoreBlurTop: Boolean;
     function StoreBlurLeft: Boolean;
     procedure SetTargetObject(const Value: TVKbaseSceneObject);
-    procedure SetOnAdvancedBlurImagePrepareEvent(const Value: TGLAdvancedBlurImagePrepareEvent);
+    procedure SetOnAdvancedBlurImagePrepareEvent(const Value: TVKAdvancedBlurImagePrepareEvent);
     procedure SetBlur(const Value: TVKBlurKind);
     procedure SetAdvancedBlurPasses(const Value: integer);
     procedure SetOnAfterTargetRender(const Value: TNotifyEvent);
@@ -103,7 +103,7 @@ type
     property AdvancedBlurHiClamp: byte read FAdvancedBlurHiClamp write SetAdvancedBlurHiClamp;
     property BlurSelf: boolean read FBlurSelf write SetBlurSelf;
     property RenderBackgroundColor: TColor read FRenderBackgroundColor write SetRenderBackgroundColor;
-    property OnAdvancedBlurImagePrepareEvent: TGLAdvancedBlurImagePrepareEvent read FOnAdvancedBlurImagePrepareEvent write SetOnAdvancedBlurImagePrepareEvent;
+    property OnAdvancedBlurImagePrepareEvent: TVKAdvancedBlurImagePrepareEvent read FOnAdvancedBlurImagePrepareEvent write SetOnAdvancedBlurImagePrepareEvent;
     property OnBeforeTargetRender: TNotifyEvent read FOnBeforeTargetRender write SetOnBeforeTargetRender;
     property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
   end;
@@ -125,7 +125,7 @@ type
     anyone knows another way to fix this issue - please post it on the glscene
     newsgroup.
   }
-  TGLMotionBlur = class(TVKCustomSceneObject, IGLInitializable)
+  TVKMotionBlur = class(TVKCustomSceneObject, IGLInitializable)
   private
     FIntensity: Single;
     function StoreIntensity: Boolean;
@@ -142,7 +142,7 @@ type
     // The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
 
-    // From TGLBaseSceneObject.
+    // From TVKBaseSceneObject.
     property Visible;
     property OnProgress;
     property Behaviours;
@@ -595,7 +595,7 @@ begin
   FBlurSelf := Value;
 end;
 
-procedure TVKBlur.SetOnAdvancedBlurImagePrepareEvent(const Value: TGLAdvancedBlurImagePrepareEvent);
+procedure TVKBlur.SetOnAdvancedBlurImagePrepareEvent(const Value: TVKAdvancedBlurImagePrepareEvent);
 begin
   FOnAdvancedBlurImagePrepareEvent := Value;
 end;
@@ -723,18 +723,18 @@ begin
   Result := Abs(FBlurTop - 0.01) > EPS;
 end;
 
-{ TGLMotionBlur }
+{ TVKMotionBlur }
 
-procedure TGLMotionBlur.Assign(Source: TPersistent);
+procedure TVKMotionBlur.Assign(Source: TPersistent);
 begin
   inherited;
-  if Source is TGLMotionBlur then
+  if Source is TVKMotionBlur then
   begin
-    FIntensity := TGLMotionBlur(Source).FIntensity;
+    FIntensity := TVKMotionBlur(Source).FIntensity;
   end;
 end;
 
-constructor TGLMotionBlur.Create(aOwner: TComponent);
+constructor TVKMotionBlur.Create(aOwner: TComponent);
 begin
   inherited Create(aOwner);
   Material.FrontProperties.Diffuse.Initialize(clrBlack);
@@ -744,7 +744,7 @@ begin
   FIntensity := 0.975;
 end;
 
-procedure TGLMotionBlur.DoOnAddedToParent;
+procedure TVKMotionBlur.DoOnAddedToParent;
 begin
   inherited;
   // Request to be initialized on next render.
@@ -752,7 +752,7 @@ begin
     Scene.InitializableObjects.Add(Self);
 end;
 
-procedure TGLMotionBlur.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
+procedure TVKMotionBlur.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf, ARenderChildren: Boolean);
 begin
   if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
     (ARci.drawState = dsPicking)) then
@@ -799,7 +799,7 @@ begin
     Self.RenderChildren(0, Count - 1, ARci);
 end;
 
-procedure TGLMotionBlur.InitializeObject(ASender: TObject;
+procedure TVKMotionBlur.InitializeObject(ASender: TObject;
   const ARci: TVKRenderContextInfo);
 begin
   // If extension is not supported, silently disable this component.
@@ -808,12 +808,12 @@ begin
       Visible := False;
 end;
 
-function TGLMotionBlur.StoreIntensity: Boolean;
+function TVKMotionBlur.StoreIntensity: Boolean;
 begin
   Result := Abs(FIntensity - 0.975) > EPS;
 end;
 
-function TGLMotionBlur.SupportsRequiredExtensions: Boolean;
+function TVKMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
   Result :=
     GL.ARB_texture_rectangle or GL_EXT_texture_rectangle or GL.NV_texture_rectangle;
@@ -829,7 +829,7 @@ initialization
 
      // class registrations
   RegisterClass(TVKBlur);
-  RegisterClass(TGLMotionBlur);
+  RegisterClass(TVKMotionBlur);
 
 end.
 

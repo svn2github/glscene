@@ -203,9 +203,9 @@ Type
   //*****************************************************************************
   //Компонента VCL для работы с архивами.
 
-  { TGLSArchiveManager }
+  { TVKSArchiveManager }
 
-  TGLSArchiveManager = class(TComponent)
+  TVKSArchiveManager = class(TComponent)
     Private
       FArchives: TLibArchives;
       Procedure SetArchives(aValue: TLibArchives);
@@ -239,7 +239,7 @@ Type
 
   //Получение активного менеджера архивов
   //Внимание!!! Работает только для одного Менеджера Архивов
-  function GetArchiveManager: TGLSArchiveManager;
+  function GetArchiveManager: TVKSArchiveManager;
 
   // GLS.ApplicationFileIO
   //Эти функции служат для автоматизации загрузки
@@ -258,7 +258,7 @@ implementation
 
 var
   vArchiveFileFormats: TVKArchiveFileFormatsList;
-  vArchiveManager: TGLSArchiveManager;
+  vArchiveManager: TVKSArchiveManager;
 
 function GetArchiveFileFormats: TVKArchiveFileFormatsList;
 begin
@@ -280,7 +280,7 @@ begin
     vArchiveFileFormats.Remove(AClass);
 end;
 
-function GetArchiveManager: TGLSArchiveManager;
+function GetArchiveManager: TVKSArchiveManager;
 begin
    Result := vArchiveManager;
 end;
@@ -712,9 +712,9 @@ end;
 
 //******************************************************************************
 
-{ TGLSArchiveManager }
+{ TVKSArchiveManager }
 
-constructor TGLSArchiveManager.Create(AOwner: TComponent);
+constructor TVKSArchiveManager.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FArchives := TLibArchives.Create(self);
@@ -723,29 +723,29 @@ begin
   vAFIOFileStreamExists := ArcFileStreamExists;
 end;
 
-destructor TGLSArchiveManager.Destroy;
+destructor TVKSArchiveManager.Destroy;
 begin
   vArchiveManager := nil;
   FArchives.Free;
   inherited Destroy;
 end;
 
-procedure TGLSArchiveManager.SetArchives(aValue: TLibArchives);
+procedure TVKSArchiveManager.SetArchives(aValue: TLibArchives);
 begin
   FArchives.Assign(aValue);
 end;
 
-function TGLSArchiveManager.GetArchiveByFileName(const aName: string): TLibArchive;
+function TVKSArchiveManager.GetArchiveByFileName(const aName: string): TLibArchive;
 begin
   Result := FArchives.GetArchiveByFileName(AName);
 end;
 
-function TGLSArchiveManager.GetFileNameOfArchive(const aArchive: TLibArchive): string;
+function TVKSArchiveManager.GetFileNameOfArchive(const aArchive: TLibArchive): string;
 begin
   Result := FArchives.GetFileNameOfArchive(aArchive)
 end;
 
-function TGLSArchiveManager.GetContent(aContentName: string): TStream;
+function TVKSArchiveManager.GetContent(aContentName: string): TStream;
 var
   i: integer;
 begin
@@ -759,7 +759,7 @@ begin
       end;
 end;
 
-function TGLSArchiveManager.ContentExists(aContentName: string): boolean;
+function TVKSArchiveManager.ContentExists(aContentName: string): boolean;
 var
   i: integer;
 begin
@@ -773,27 +773,27 @@ begin
         end;
 end;
 
-function TGLSArchiveManager.OpenArchive(aFileName: string): TLibArchive;
+function TVKSArchiveManager.OpenArchive(aFileName: string): TLibArchive;
 begin
   Result := FArchives.Add;
   Result.LoadFromFile(aFileName);
 end;
 
-function TGLSArchiveManager.OpenArchive(aFileName, aAchiverType: string
+function TVKSArchiveManager.OpenArchive(aFileName, aAchiverType: string
   ): TLibArchive;
 begin
   Result := FArchives.Add;
   Result.LoadFromFile(aFileName, aAchiverType);
 end;
 
-procedure TGLSArchiveManager.CloseArchive(aArchive: TLibArchive);
+procedure TVKSArchiveManager.CloseArchive(aArchive: TLibArchive);
 begin
   FArchives.Delete(FArchives.IndexOf(aArchive));
 end;
 
 initialization
 
-  RegisterClasses([TGLSArchiveManager, TLibArchives]);
+  RegisterClasses([TVKSArchiveManager, TLibArchives]);
 
 finalization
 

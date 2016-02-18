@@ -2205,7 +2205,7 @@ begin
   RegisterSceneObject(TVKAdvancedLabel, 'GLAdvancedLabel', glsOCGuiObjects,
     HInstance);
   RegisterSceneObject(TVKScrollbar, 'GLScrollbar', glsOCGuiObjects, HInstance);
-  RegisterSceneObject(TGLStringGrid, 'GLStringGrid', glsOCGuiObjects,
+  RegisterSceneObject(StringGrid, 'GLStringGrid', glsOCGuiObjects,
     HInstance);
   RegisterSceneObject(TVKCustomControl, 'GLBitmapControl', glsOCGuiObjects,
     HInstance);
