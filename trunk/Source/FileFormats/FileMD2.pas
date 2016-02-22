@@ -51,7 +51,7 @@ type
   end;
 
   TMD2TriangleVertex = record
-    V: array[0..2] of byte;
+    Vert: array[0..2] of byte;
     LightnormalIndex: byte;
   end;
 
@@ -207,9 +207,9 @@ begin
       FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
     // fill the vertices list
      for J := 0 to FiVertices - 1 do begin
-       fVertexList[i][J].X := Frame^.Vertices[J].V[0] * Frame^.Scale.V[0] + Frame^.Translate.V[0];
-       fVertexList[i][J].Y := Frame^.Vertices[J].V[1] * Frame^.Scale.V[1] + Frame^.Translate.V[1];
-       fVertexList[i][J].Z := Frame^.Vertices[J].V[2] * Frame^.Scale.V[2] + Frame^.Translate.V[2];
+       fVertexList[i][J].X := Frame^.Vertices[J].Vert[0] * Frame^.Scale.X + Frame^.Translate.X;
+       fVertexList[i][J].Y := Frame^.Vertices[J].Vert[1] * Frame^.Scale.Y + Frame^.Translate.Y;
+       fVertexList[i][J].Z := Frame^.Vertices[J].Vert[2] * Frame^.Scale.Z + Frame^.Translate.Z;
      end;
   end;
 end;

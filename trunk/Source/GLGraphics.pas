@@ -299,9 +299,7 @@ type
 {$IFDEF GLS_Graphics32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
 {$ENDIF}
-{$IFDEF GLS_PngImage_SUPPORT}
     procedure AssignFromPngImage(aPngImage: TPngImage);
-{$ENDIF}
 
   public
     { Public Declarations }

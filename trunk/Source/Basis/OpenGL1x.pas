@@ -670,7 +670,6 @@ var
   WGL_I3D_image_buffer,
   WGL_I3D_swap_frame_lock,
   WGL_I3D_swap_frame_usage,
-
   WGL_NV_copy_image,
   WGL_NV_DX_interop,
   WGL_NV_DX_interop2,

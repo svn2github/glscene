@@ -161,3 +161,9 @@
   {$DEFINE GLS_REGIONS}
 {$ENDIF}
 
+{$define GLS_DEPRECATED}
+{
+  This defines if the compiler should use deprecated stuff or not.
+  by default headers use deprecated stuff.
+}
+
