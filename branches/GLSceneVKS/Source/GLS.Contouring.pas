@@ -9,12 +9,21 @@ unit GLS.Contouring;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils, 
+  System.Classes, 
+  System.Math,
   System.Generics.Collections,
-
   //GLS
-  GLS.VectorGeometry, GLS.VectorLists, GLS.Objects, GLS.MultiPolygon,  GLS.Coordinates,
-  GLS.Types, GLS.Color, GLS.Spline, GLS.SpaceText, GLS.VectorTypes,
+  GLS.VectorGeometry, 
+  GLS.VectorLists, 
+  GLS.Objects, 
+  GLS.MultiPolygon,  
+  GLS.Coordinates,
+  GLS.Types, 
+  GLS.Color, 
+  GLS.Spline, 
+  GLS.SpaceText, 
+  GLS.VectorTypes,
   GLS.VectorFileObjects;
 
 {$I GLScene.inc}

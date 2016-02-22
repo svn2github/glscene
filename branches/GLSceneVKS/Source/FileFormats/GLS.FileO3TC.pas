@@ -9,10 +9,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
   GLS.CrossPlatform,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,
@@ -184,9 +187,9 @@ begin
       end;
     O3_TC_ATI3DC_ATI2N:
       begin
-        fColorFormat := GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI;
+        fColorFormat := GL_COMPRESSED_LUMINANCE_ALPHA;
         fInternalFormat := tfCOMPRESSED_LUMINANCE_ALPHA_3DC;
-        fDataType := GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI;
+        fDataType := GL_COMPRESSED_LUMINANCE_ALPHA_ARB;
         fElementSize := 16;
       end;
   else
@@ -213,7 +216,7 @@ var
 begin
   if not ((fColorFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT)
     or (fColorFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)
-    or (fColorFormat = GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI)) then
+    or (fColorFormat = GL_COMPRESSED_LUMINANCE_ALPHA_ARB)) then
     raise
       EInvalidRasterFile.Create('These image format do not match the O3TC format specification.');
   // Setup Header
@@ -245,7 +248,7 @@ begin
       O3_TC_RGB_S3TC_DXT1;
     GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: ChunkHeader.InternalPixelFormat :=
       O3_TC_RGBA_S3TC_DXT5;
-    GL_COMPRESSED_LUMINANCE_ALPHA_3DC_ATI: ChunkHeader.InternalPixelFormat :=
+    GL_COMPRESSED_LUMINANCE_ALPHA_ARB: ChunkHeader.InternalPixelFormat :=
       O3_TC_ATI3DC_ATI2N;
   end;
   ChunkHeader.Size := DataSize;
@@ -398,7 +401,7 @@ begin
 
       if fLevelCount = 0 then
         fLevelCount := 1;
-      GL.CheckError;
+      CheckOpenGLError;
     end;
   finally
     if contextActivate then

@@ -9,11 +9,13 @@ interface
 {$I cuda.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
+  //GLS
   GLS.CrossPlatform,
   GLS.CUDAAPI,
   GLS.CUDA,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.State,
   GLS.Scene,
@@ -909,16 +911,16 @@ begin
         case Attributes[I].GLSLType of
 
             GLSLType1F:
-              glVertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 1, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLType2F:
-              glVertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 2, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLType3F:
-              glVertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 3, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLType4F:
-              glVertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLType1I:
               glVertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
@@ -945,13 +947,13 @@ begin
               glVertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
 
             GLSLTypeMat2F:
-              glVertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 4, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLTypeMat3F:
-              glVertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 9, GL_FLOAT, 0, 0, pointer(Offset));
 
             GLSLTypeMat4F:
-              glVertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
+              glVertexAttribPointer(L, 16, GL_FLOAT, 0, 0, pointer(Offset));
 
         end; // of case
       end;
@@ -959,13 +961,12 @@ begin
     end;
 
     // Enable engagement attributes array
-    with GL do
     begin
       for I := GLS_VERTEX_ATTR_NUM - 1 downto 0 do
         if EnabledLocations[I] then
-          EnableVertexAttribArray(I)
+          glEnableVertexAttribArray(I)
         else
-          DisableVertexAttribArray(I);
+          glDisableVertexAttribArray(I);
     end;
 
     FVAO.UnBind;

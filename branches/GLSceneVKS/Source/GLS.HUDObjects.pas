@@ -238,7 +238,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     rci.GLStates.Disable(stDepthTest);
-    rci.GLStates.DepthWriteMask := False;
+    rci.GLStates.DepthWriteMask := GLboolean(False);
 
     // precalc coordinates
     vx := -Width * 0.5 * f;
@@ -272,13 +272,13 @@ begin
     // issue quad
     glBegin(GL_QUADS);
     glNormal3fv(@YVector);
-    xglTexCoord2f(u0, v0);
+    glTexCoord2f(u0, v0);
     glVertex2f(vx, vy1);
-    xglTexCoord2f(u1, v0);
+    glTexCoord2f(u1, v0);
     glVertex2f(vx1, vy1);
-    xglTexCoord2f(u1, v1);
+    glTexCoord2f(u1, v1);
     glVertex2f(vx1, vy);
-    xglTexCoord2f(u0, v1);
+    glTexCoord2f(u0, v1);
     glVertex2f(vx, vy);
     glEnd;
 

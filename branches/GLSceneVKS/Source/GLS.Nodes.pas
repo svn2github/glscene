@@ -738,7 +738,7 @@ begin
         for I := Count - 1 downto 0 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), Items[I].AsAddress);
+          gluTessVertex(Tess, @DblVector, Items[I].AsAddress);
         end;
       end
       else
@@ -746,7 +746,7 @@ begin
         for I := 0 to Count - 1 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), Items[I].AsAddress);
+          gluTessVertex(Tess, @DblVector, Items[I].AsAddress);
         end;
       end;
     end
@@ -763,7 +763,7 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), SplinePos);
+          gluTessVertex(Tess, @DblVector, SplinePos);
         end;
       end
       else
@@ -773,7 +773,7 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), SplinePos);
+          gluTessVertex(Tess, @DblVector, SplinePos);
         end;
       end;
       Spline.Free;

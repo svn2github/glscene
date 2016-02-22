@@ -2911,7 +2911,7 @@ procedure TODEElementBox.Render(var rci : TVKRenderContextInfo);
 begin
   glPushMatrix;
 
-  GL.MultMatrixf(@FLocalMatrix);
+  glMultMatrixf(@FLocalMatrix);
 
   glBegin(GL_LINE_LOOP);
     glVertex3f(-FBoxWidth/2,-FBoxHeight/2,-FBoxDepth/2);
@@ -3105,7 +3105,7 @@ var
 begin
   glPushMatrix;
 
-  GL.MultMatrixf(@FLocalMatrix);
+  glMultMatrixf(@FLocalMatrix);
   glScalef(Radius, Radius, Radius);
 
   FTop:=90;
@@ -3272,7 +3272,7 @@ var
 begin
   glPushMatrix;
 
-  GL.MultMatrixf(@FLocalMatrix);
+  glMultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;
@@ -3453,7 +3453,7 @@ var
 begin
   glPushMatrix;
 
-  GL.MultMatrixf(@FLocalMatrix);
+  glMultMatrixf(@FLocalMatrix);
 
   Stacks:=8;
   Slices:=16;

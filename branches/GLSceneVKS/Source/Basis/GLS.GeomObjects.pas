@@ -1,7 +1,7 @@
 //
 // GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ 
+{
   Geometric objects.
  }
 unit GLS.GeomObjects;
@@ -11,12 +11,13 @@ unit GLS.GeomObjects;
 interface
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
-
+  //GLS
+  GLS.OpenGLAdapter,
   GLS.Scene,
   GLS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.OpenGLAdapter,
   GLS.Context,
   GLS.Objects,
   GLS.Silhouette,
@@ -586,7 +587,7 @@ end;
 
 procedure TVKDisk.BuildList(var rci: TVKRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
 begin
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
@@ -947,7 +948,7 @@ end;
 
 procedure TVKCone.BuildList(var rci: TVKRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric();
@@ -1103,7 +1104,7 @@ end;
 
 procedure TVKCylinder.BuildList(var rci: TVKRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
@@ -1838,7 +1839,7 @@ end;
 
 procedure TVKAnnulus.BuildList(var rci: TVKRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
 begin
   glPushMatrix;
   quadric := gluNewQuadric;
@@ -2106,15 +2107,14 @@ procedure TVKTorus.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   begin
-    XglTexCoord2fv(@ptr^.TexCoord);
-    with GL do
+    glTexCoord2fv(@ptr^.TexCoord);
     begin
-      Normal3fv(@ptr^.Normal);
+      glNormal3fv(@ptr^.Normal);
       if L1 > -1 then
-        VertexAttrib3fv(L1, @ptr.Tangent);
+        glVertexAttrib3fv(L1, @ptr.Tangent);
       if L2 > -1 then
-        VertexAttrib3fv(L2, @ptr.Binormal);
-      Vertex3fv(@ptr^.Position);
+        glVertexAttrib3fv(L2, @ptr.Binormal);
+      glVertex3fv(@ptr^.Position);
     end;
   end;
 
@@ -2274,13 +2274,12 @@ begin
     end;
   end;
 
-  with GL do
   begin
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
         PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
         PGLChar(BinormalAttributeName));
     end
     else
@@ -2623,7 +2622,7 @@ end;
 
 procedure TVKArrowLine.BuildList(var rci: TVKRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
   cylHeight, cylOffset, headInfluence: Single;
 begin
   case HeadStackingStyle of
@@ -2637,7 +2636,7 @@ begin
   cylHeight := Height;
   cylOffset := -FHeight * 0.5;
   // create a new quadric
-  quadric := gluNewQuadric;
+  quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
   // does the top arrow part - the cone
   if alTopArrow in Parts then
@@ -2880,15 +2879,14 @@ procedure TVKArrowArc.BuildList(var rci: TVKRenderContextInfo);
   procedure EmitVertex(ptr: PVertexRec; L1, L2: integer);
   // {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
-    XglTexCoord2fv(@ptr^.TexCoord);
-    with GL do
+    glTexCoord2fv(@ptr^.TexCoord);
     begin
-      Normal3fv(@ptr^.Normal);
+      glNormal3fv(@ptr^.Normal);
       if L1 > -1 then
-        VertexAttrib3fv(L1, @ptr.Tangent);
+        glVertexAttrib3fv(L1, @ptr.Tangent);
       if L2 > -1 then
-        VertexAttrib3fv(L2, @ptr.Binormal);
-      Vertex3fv(@ptr^.Position);
+        glVertexAttrib3fv(L2, @ptr.Binormal);
+      glVertex3fv(@ptr^.Position);
     end;
   end;
 
@@ -2993,13 +2991,12 @@ begin
         Theta := Theta1;
       end;
       MeshIndex := FStacks + 1;
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3094,13 +3091,12 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3175,13 +3171,12 @@ begin
       ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3261,13 +3256,12 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3340,13 +3334,12 @@ begin
       ConeCenter.Tangent := FMesh[MeshIndex][0].Tangent;
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
-      with GL do
       begin
-        if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
-          TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3433,25 +3426,25 @@ begin
     if fpFront in FParts then
     begin
       glNormal3f(0, Sign * ACos, Sign * ASin);
-      XglTexCoord2fv(@XYTexPoint);
+      glTexCoord2fv(@XYTexPoint);
       glVertex3f(HTW, HFH, HTD);
-      XglTexCoord2fv(@YTexPoint);
+      glTexCoord2fv(@YTexPoint);
       glVertex3f(-HTW, HFH, HTD);
-      XglTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@NullTexPoint);
       glVertex3f(-HBW, -HFH, HBD);
-      XglTexCoord2fv(@XTexPoint);
+      glTexCoord2fv(@XTexPoint);
       glVertex3f(HBW, -HFH, HBD);
     end;
     if fpBack in FParts then
     begin
       glNormal3f(0, Sign * ACos, -Sign * ASin);
-      XglTexCoord2fv(@YTexPoint);
+      glTexCoord2fv(@YTexPoint);
       glVertex3f(HTW, HFH, -HTD);
-      XglTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@NullTexPoint);
       glVertex3f(HBW, -HFH, -HBD);
-      XglTexCoord2fv(@XTexPoint);
+      glTexCoord2fv(@XTexPoint);
       glVertex3f(-HBW, -HFH, -HBD);
-      XglTexCoord2fv(@XYTexPoint);
+      glTexCoord2fv(@XYTexPoint);
       glVertex3f(-HTW, HFH, -HTD);
     end;
   end;
@@ -3463,25 +3456,25 @@ begin
     if fpLeft in FParts then
     begin
       glNormal3f(-Sign * ASin, Sign * ACos, 0);
-      XglTexCoord2fv(@XYTexPoint);
+      glTexCoord2fv(@XYTexPoint);
       glVertex3f(-HTW, HFH, HTD);
-      XglTexCoord2fv(@YTexPoint);
+      glTexCoord2fv(@YTexPoint);
       glVertex3f(-HTW, HFH, -HTD);
-      XglTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@NullTexPoint);
       glVertex3f(-HBW, -HFH, -HBD);
-      XglTexCoord2fv(@XTexPoint);
+      glTexCoord2fv(@XTexPoint);
       glVertex3f(-HBW, -HFH, HBD);
     end;
     if fpRight in FParts then
     begin
       glNormal3f(Sign * ASin, Sign * ACos, 0);
-      XglTexCoord2fv(@YTexPoint);
+      glTexCoord2fv(@YTexPoint);
       glVertex3f(HTW, HFH, HTD);
-      XglTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@NullTexPoint);
       glVertex3f(HBW, -HFH, HBD);
-      XglTexCoord2fv(@XTexPoint);
+      glTexCoord2fv(@XTexPoint);
       glVertex3f(HBW, -HFH, -HBD);
-      XglTexCoord2fv(@XYTexPoint);
+      glTexCoord2fv(@XYTexPoint);
       glVertex3f(HTW, HFH, -HTD);
     end;
   end;
@@ -3489,25 +3482,25 @@ begin
   if (fpTop in FParts) and (FHeight < FApexHeight) then
   begin
     glNormal3f(0, Sign, 0);
-    XglTexCoord2fv(@YTexPoint);
+    glTexCoord2fv(@YTexPoint);
     glVertex3f(-HTW, HFH, -HTD);
-    XglTexCoord2fv(@NullTexPoint);
+    glTexCoord2fv(@NullTexPoint);
     glVertex3f(-HTW, HFH, HTD);
-    XglTexCoord2fv(@XTexPoint);
+    glTexCoord2fv(@XTexPoint);
     glVertex3f(HTW, HFH, HTD);
-    XglTexCoord2fv(@XYTexPoint);
+    glTexCoord2fv(@XYTexPoint);
     glVertex3f(HTW, HFH, -HTD);
   end;
   if fpBottom in FParts then
   begin
     glNormal3f(0, -Sign, 0);
-    XglTexCoord2fv(@NullTexPoint);
+    glTexCoord2fv(@NullTexPoint);
     glVertex3f(-HBW, -HFH, -HBD);
-    XglTexCoord2fv(@XTexPoint);
+    glTexCoord2fv(@XTexPoint);
     glVertex3f(HBW, -HFH, -HBD);
-    XglTexCoord2fv(@XYTexPoint);
+    glTexCoord2fv(@XYTexPoint);
     glVertex3f(HBW, -HFH, HBD);
-    XglTexCoord2fv(@YTexPoint);
+    glTexCoord2fv(@YTexPoint);
     glVertex3f(-HBW, -HFH, HBD);
   end;
 

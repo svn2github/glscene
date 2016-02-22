@@ -32,10 +32,21 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  //GLS 
-  GLS.Material, GLS.Graphics, GLS.Utils, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.Context, GLS.VectorLists, GLS.Color, GLS.RenderContextInfo, GLS.State,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Material,
+  GLS.Graphics,
+  GLS.Utils,
+  GLS.VectorGeometry,
+  GLS.Context,
+  GLS.VectorLists,
+  GLS.Color,
+  GLS.RenderContextInfo,
+  GLS.State,
   GLS.TextureFormat;
 
 type
@@ -545,13 +556,13 @@ begin
 
   // Set the light position to program.local[0]
   glGetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.X);
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.X);
+  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.X);
 
   // Set the light attenutation to program.local[1]
   lightAtten.X := rci.GLStates.LightConstantAtten[FLightIDs[0]];
   lightAtten.Y := rci.GLStates.LightLinearAtten[FLightIDs[0]];
   lightAtten.Z := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.X);
+  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.X);
 
   case FBumpMethod of
     bmDot3TexCombiner:
@@ -578,7 +589,7 @@ begin
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
         glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_PREVIOUS_ARB);
-        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_ARB);
+        glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_CONSTANT_COLOR_EXT);
 
         with rci.GLStates do
         begin
@@ -596,11 +607,11 @@ begin
         lightSpecular := rci.GLStates.LightSpecular[FLightIDs[0]];
         lightAtten.X := rci.GLStates.LightConstantAtten[FLightIDs[0]];
 
-        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0,
+        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0,
           @lightDiffuse.X);
-        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1,
+        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1,
           @lightSpecular.X);
-        GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 2,
+        glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2,
           @lightAtten.X);
       end;
 

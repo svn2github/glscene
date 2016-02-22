@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
  Applies a blur effect over the viewport.<p>
@@ -12,12 +12,29 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.UITypes, Winapi.OpenGL,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
   FMX.Graphics,
-  //GLS 
-  GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
-  GLS.HudObjects, GLS.Color, GLS.Graphics, GLS.Context, Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.VectorGeometry,
+  GLS.Objects,
+  GLS.BitmapFont,
+  GLS.Texture,
+  GLS.Material,
+  GLS.HudObjects,
+  GLS.Color,
+  GLS.Graphics,
+  GLS.Context,
+  GLS.XOpenGL,
+  GLS.State,
+  GLS.TextureFormat,
+  GLS.BaseClasses,
+  GLS.RenderContextInfo;
 
 type
 
@@ -432,9 +449,9 @@ begin
   end;
   if ARci.ignoreMaterials then
     Exit;
-  GL.CheckError;
+  CheckOpenGLError;
   Material.Apply(ARci);
-  GL.CheckError;
+  CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
       ARci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
@@ -457,7 +474,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     ARci.GLStates.Disable(stDepthTest);
-    ARci.GLStates.DepthWriteMask := False;
+    ARci.GLStates.DepthWriteMask := GLboolean(False);
 
     // calculate offsets in order to keep the quad a square centered in the view
     if ARci.viewPortSize.cx > ARci.viewPortSize.cy then
@@ -769,7 +786,7 @@ begin
     glPushMatrix;
     glLoadIdentity;
     Disable(stDepthTest);
-    DepthWriteMask := False;
+    DepthWriteMask := 0;
 
     glBegin(GL_QUADS);
     glTexCoord2f(0.0, ARci.viewPortSize.cy);

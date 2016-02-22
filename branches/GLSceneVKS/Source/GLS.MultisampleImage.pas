@@ -33,12 +33,12 @@ type
     FBitmap: TVKBitmap32;
     FSamplesCount: Integer;
     FWidth, FHeight, FDepth: Integer;
-    FFixedSamplesLocation: Boolean;
+    FFixedSamplesLocation: GLboolean;
     procedure SetWidth(val: Integer);
     procedure SetHeight(val: Integer);
     procedure SetDepth(val: Integer);
     procedure SetSamplesCount(val: Integer);
-    procedure SetFixedSamplesLocation(val: Boolean);
+    procedure SetFixedSamplesLocation(val: GLboolean);
   protected
     { Protected Declarations }
     function GetWidth: Integer; override;
@@ -73,7 +73,7 @@ type
     property Depth: Integer read GetDepth write SetDepth default 0;
     property SamplesCount: Integer read FSamplesCount write SetSamplesCount
       default 0;
-    property FixedSamplesLocation: Boolean read FFixedSamplesLocation write
+    property FixedSamplesLocation: GLboolean read FFixedSamplesLocation write
       SetFixedSamplesLocation;
   end;
 
@@ -212,7 +212,7 @@ end;
 // SetFixedSamplesLocation
 //
 
-procedure TVKMultisampleImage.SetFixedSamplesLocation(val: Boolean);
+procedure TVKMultisampleImage.SetFixedSamplesLocation(val: GLboolean);
 begin
   if val <> FFixedSamplesLocation then
   begin

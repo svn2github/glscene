@@ -11,11 +11,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  GLS.Scene,  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,  GLS.XOpenGL, GLS.VectorGeometry,
-  GLS.Material, GLS.Objects, GLS.VectorLists, GLS.Color,  GLS.BaseClasses,
-  GLS.RenderContextInfo, GLS.State, GLS.VectorTypes;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.Scene,
+  GLS.Context,
+  GLS.XOpenGL,
+  GLS.VectorGeometry,
+  GLS.Material,
+  GLS.Objects,
+  GLS.VectorLists,
+  GLS.Color,
+  GLS.BaseClasses,
+  GLS.RenderContextInfo,
+  GLS.State,
+  GLS.VectorTypes;
 
 type
 
@@ -429,7 +441,7 @@ var
       if ColorMode <> hfcmNone then
         glColor4fv(@color);
       if hfoTextureCoordinates in Options then
-        xglTexCoord2fv(@texPoint);
+        glTexCoord2fv(@texPoint);
       glVertex4f(x, y, z, 1);
     end;
   end;

@@ -15,12 +15,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.ShellApi,
-
-  System.Types, System.UITypes,
-  System.Classes, System.SysUtils, System.StrUtils,
-  FMX.Types, FMX.Objects, FMX.Consts, FMX.Graphics, FMX.Controls,
-  FMX.Forms, FMX.Dialogs;
+  Winapi.Windows,
+  Winapi.ShellApi,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.SysUtils,
+  System.StrUtils,
+  FMX.Types,
+  FMX.Objects,
+  FMX.Consts,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Dialogs;
 
 type
   THalfFloat = type Word;
@@ -45,10 +53,10 @@ type
   PGLRect = ^TVKRect;
   TDelphiColor = TColorRec;
 
-  TVKPicture = TImage;  // in VCL TPicture
-  TVKGraphic = TBitmap; // in VCL  TGraphic
+  TVKPicture = TImage;  // in VCL is TPicture
+  TVKGraphic = TBitmap; // in VCL is TGraphic
   TVKBitmap = TBitmap;
-  TGraphicClass = class of TBitmap; // in VCL class of TGraphic
+  TGraphicClass = class of TBitmap; // in VCL is class of TGraphic
 
   TVKTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
 
@@ -151,7 +159,7 @@ var
 function GLPoint(const x, y: Integer): TVKPoint;
 { Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TVKRect;{$NODEFINE GLRect}
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TVKRect;
 { Increases or decreases the width and height of the specified rectangle. 
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
@@ -304,9 +312,9 @@ begin
   Result := r or (g shl 8) or (b shl 16);
 end;
 
-// GLRect
+// GetGLRect
 //
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TVKRect;
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TVKRect;
 begin
   Result.Left := aLeft;
   Result.Top := aTop;
@@ -430,7 +438,7 @@ var
   BitmapData : TBitmapData;
 begin
   aBitmap.Map(TMapAccess.ReadWrite, BitmapData);
-  Result := BitmapData.GetScanline(aRow); //in VCL Result := aBitmap.ScanLine[aRow];
+  Result := BitmapData.GetScanline(aRow); //in VCL the Result := aBitmap.ScanLine[aRow];
 end;
 
 procedure FixPathDelimiter(var S: string);

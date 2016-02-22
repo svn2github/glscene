@@ -147,18 +147,18 @@ begin
         end;
       end;
     end;
-    GL.MapGrid2f(GRD, 0, 1, GRD, 0, 1);
-    GL.Map2f(GL_MAP2_TEXTURE_COORD_2, 0, 1, 2, 2, 0, 1, 4, 2, @Tex[0, 0, 0]);
-    GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @P[0, 0, 0]);
-    GL.EvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-    GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @Q[0, 0, 0]);
-    GL.EvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+    glMapGrid2f(GRD, 0, 1, GRD, 0, 1);
+    glMap2f(GL_MAP2_TEXTURE_COORD_2, 0, 1, 2, 2, 0, 1, 4, 2, @Tex[0, 0, 0]);
+    glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @P[0, 0, 0]);
+    glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+    glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @Q[0, 0, 0]);
+    glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
     if I < 6 then
     begin
-      GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @R[0, 0, 0]);
-      GL.EvalMesh2(GL_FILL, 0, GRD, 0, GRD);
-      GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @S[0, 0, 0]);
-      GL.EvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @R[0, 0, 0]);
+      glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
+      glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, 4, 0, 1, 12, 4, @S[0, 0, 0]);
+      glEvalMesh2(GL_FILL, 0, GRD, 0, GRD);
     end;
   end;
   glDisable(GL_AUTO_NORMAL);

@@ -11,9 +11,12 @@ unit GLS.FileHDR;
 interface
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext, 
+  //GLS
+  GLS.OpenGLAdapter,
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,
@@ -293,7 +296,7 @@ begin
     end
     else
       fLevelCount := 1;
-    GL.CheckError;
+    CheckOpenGLError;
   finally
     if contextActivate then
     begin

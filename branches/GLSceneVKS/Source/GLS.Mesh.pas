@@ -341,10 +341,9 @@ procedure TVKVertexList.SetLocked(val: Boolean);
 var
   size: Integer;
 begin
-
   if val <> Locked then
   begin
-    // Only supported with NVidia's right now
+    //! Only supported with NVidia's right now
     if GL_NV_vertex_array_range and (CurrentGLContext <> nil) then
     begin
       size := FCount * SizeOf(TVertexData);
@@ -352,12 +351,12 @@ begin
       begin
         // Lock
         FLockedOldValues := FValues;
-{$IFDEF MSWINDOWS}
+        {$IFDEF MSWINDOWS}
         FValues := FGL.wglAllocateMemoryNV(size, 0, 0, 0.5);
-{$ENDIF}
-{$IFDEF LINUX}
+        {$ENDIF}
+        {$IFDEF LINUX}
         FValues := FGL.glxAllocateMemoryNV(size, 0, 0, 0.5);
-{$ENDIF}
+        {$ENDIF}
         if FValues = nil then
         begin
           FValues := FLockedOldValues;
@@ -369,12 +368,12 @@ begin
       else
       begin
         // Unlock
-{$IFDEF MSWINDOWS}
-        wglFreeMemoryNV(FValues);
-{$ENDIF}
-{$IFDEF LINUX}
-        glxFreeMemoryNV(FValues);
-{$ENDIF}
+        {$IFDEF MSWINDOWS}
+        FGL.wglFreeMemoryNV(0, 0, 0, 0); //<-FGL.wglFreeMemoryNV(FValues);
+        {$ENDIF}
+        {$IFDEF LINUX}
+        FGL.glxFreeMemoryNV(FValues);
+        {$ENDIF}
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
       end;
@@ -658,8 +657,8 @@ begin
   glEnableClientState(GL_NORMAL_ARRAY);
   glNormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstNormal);
-  xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  xglTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
 
@@ -727,17 +726,17 @@ begin
     FVertices.EnterLockSection;
   case FVertexMode of
     vmV:
-      GL.InterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
+      glInterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
     vmVN:
-      GL.InterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData),
+      glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData),
         FVertices.FirstNormal);
     vmVNC:
-      GL.InterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVertexData),
+      glInterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVertexData),
         FVertices.FirstColor);
     vmVNT, vmVNCT:
-      GL.InterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
+      glInterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);
     vmVT:
-      GL.InterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
+      glInterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
   else
     Assert(False, glsInterleaveNotSupported);
   end;

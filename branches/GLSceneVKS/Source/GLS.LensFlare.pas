@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   Lens flare object. 
- 
+   Lens flare object.
+
 }
 unit GLS.LensFlare;
 
@@ -12,11 +12,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  GLS.Scene, GLS.VectorGeometry, GLS.Objects, Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.Context, GLS.Color, GLS.BaseClasses, GLS.RenderContextInfo, 
-  GLS.State, GLS.VectorTypes, GLS.Utils, GLS.TextureFormat;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.VectorGeometry,
+  GLS.Objects,
+  GLS.Context,
+  GLS.Color,
+  GLS.BaseClasses,
+  GLS.RenderContextInfo,
+  GLS.State,
+  GLS.VectorTypes,
+  GLS.Utils,
+  GLS.TextureFormat;
 
 type
 
@@ -351,7 +363,7 @@ begin
     Disable(stFog);
     Disable(stColorMaterial);
     Disable(stCullFace);
-    DepthWriteMask := False;
+    DepthWriteMask := GLboolean(False);
     Enable(stBlend);
     SetBlendFunc(bfSrcAlpha, bfOne);
     Disable(stAlphaTest);
@@ -590,19 +602,19 @@ begin
 
   if AutoZTest then
   begin
-    if dynamicSize and (GL.HP_occlusion_test or
-      TVKOcclusionQueryHandle.IsSupported) then
+    if dynamicSize and (GL_HP_occlusion_test or
+      (TVKOcclusionQueryHandle.IsSupported = 1)) then
     begin
       // hardware-based occlusion test is possible
       FlareIsNotOccluded := True;
 
       rci.GLStates.SetColorMask([]);
       rci.GLStates.Disable(stAlphaTest);
-      rci.GLStates.DepthWriteMask := False;
+      rci.GLStates.DepthWriteMask := GLboolean(False);
       rci.GLStates.Enable(stDepthTest);
       rci.GLStates.DepthFunc := cfLEqual;
 
-      if TVKOcclusionQueryHandle.IsSupported then
+      if TVKOcclusionQueryHandle.IsSupported > 0 then
       begin
         // preferred method, doesn't stall rendering too badly
         if not Assigned(FOcclusionQuery) then
@@ -627,7 +639,7 @@ begin
       glVertex3f(posVector.X, posVector.Y - 2, 1);
       glEnd;
 
-      if TVKOcclusionQueryHandle.IsSupported then
+      if TVKOcclusionQueryHandle.IsSupported > 0 then
         FOcclusionQuery.EndQuery
       else
       begin
@@ -792,7 +804,7 @@ begin
 
   activeBuffer.RenderingContext.PipelineTransformation.Pop;
 
-  GL.CheckError;
+  CheckOpenGLError;
 end;
 
 // SetGlowGradient

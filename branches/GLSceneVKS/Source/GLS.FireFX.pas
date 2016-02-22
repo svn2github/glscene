@@ -605,27 +605,26 @@ begin
     vx.V[i] := mat.V[i].X * FParticleSize;
     vy.V[i] := mat.V[i].Y * FParticleSize;
   end;
-  with GL do
   begin
     glBegin(GL_TRIANGLE_FAN);
-    Vertex3fv(@NullVector);
-    Color4f(Color2.X, Color2.Y, Color2.Z, 0.0);
-    Vertex3f(-vx.X, -vx.Y, -vx.Z);
+    glVertex3fv(@NullVector);
+    glColor4f(Color2.X, Color2.Y, Color2.Z, 0.0);
+    glVertex3f(-vx.X, -vx.Y, -vx.Z);
     // those things should be composited in the model view matrix
-    Vertex3f(-0.5 * vx.X + FFireEvaporation * vy.X,
+    glVertex3f(-0.5 * vx.X + FFireEvaporation * vy.X,
       -0.5 * vx.Y + FFireEvaporation * vy.Y,
       -0.5 * vx.Z + FFireEvaporation * vy.Z);
-    Vertex3f(+0.5 * vx.X + FFireEvaporation * vy.X,
+    glVertex3f(+0.5 * vx.X + FFireEvaporation * vy.X,
       +0.5 * vx.Y + FFireEvaporation * vy.Y,
       +0.5 * vx.Z + FFireEvaporation * vy.Z);
-    Vertex3f(+vx.X, +vx.Y, +vx.Z);
-    Vertex3f(+0.5 * vx.X - FFireEvaporation * vy.X,
+    glVertex3f(+vx.X, +vx.Y, +vx.Z);
+    glVertex3f(+0.5 * vx.X - FFireEvaporation * vy.X,
       +0.5 * vx.Y - FFireEvaporation * vy.Y,
       +0.5 * vx.Z - FFireEvaporation * vy.Z);
-    Vertex3f(-0.5 * vx.X - FFireEvaporation * vy.X,
+    glVertex3f(-0.5 * vx.X - FFireEvaporation * vy.X,
       -0.5 * vx.Y - FFireEvaporation * vy.Y,
       -0.5 * vx.Z - FFireEvaporation * vy.Z);
-    Vertex3f(-vx.X, -vx.Y, -vx.Z);
+    glVertex3f(-vx.X, -vx.Y, -vx.Z);
     glEnd;
   end;
 end;
@@ -775,7 +774,7 @@ begin
   rci.GLStates.Disable(stAlphaTest);
   rci.GLStates.Enable(stDepthTest);
   rci.GLStates.DepthFunc := cfLEqual;
-  rci.GLStates.DepthWriteMask := not Manager.NoZWrite;
+  rci.GLStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
 
   n := Manager.NP;
 

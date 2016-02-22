@@ -12,22 +12,40 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
-
-  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorGeometry,  GLS.Texture,
-  GLS.Material, GLS.Mesh, GLS.VectorLists, GLS.PersistentClasses, GLS.Octree, GLS.GeometryBB,
-  GLS.ApplicationFileIO, GLS.Silhouette, GLS.Context, GLS.Color, GLS.RenderContextInfo,
-  GLS.Coordinates, GLS.BaseClasses, GLS.TextureFormat;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.VectorGeometry,
+  GLS.Texture,
+  GLS.Material,
+  GLS.Mesh,
+  GLS.VectorLists,
+  GLS.PersistentClasses,
+  GLS.Octree,
+  GLS.GeometryBB,
+  GLS.ApplicationFileIO,
+  GLS.Silhouette,
+  GLS.Context,
+  GLS.Color,
+  GLS.RenderContextInfo,
+  GLS.Coordinates,
+  GLS.BaseClasses,
+  GLS.TextureFormat;
 
 type
 
   TVKMeshObjectList = class;
   TVKFaceGroups = class;
 
-  // TMeshAutoCentering
+  // TVKMeshAutoCentering
   //
-  TMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter, macRestorePosition);
-  TMeshAutoCenterings = set of TMeshAutoCentering;
+  TVKMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter, macRestorePosition);
+  TVKMeshAutoCenterings = set of TVKMeshAutoCentering;
 
   // TVKMeshObjectMode
   //
@@ -35,10 +53,10 @@ type
 
   // TBaseMeshObject
   //
-  { A base class for mesh objects. 
+  { A base class for mesh objects.
      The class introduces a set of vertices and normals for the object but
      does no rendering of its own. }
-  TBaseMeshObject = class(TPersistentObject)
+  TVKBaseMeshObject = class(TPersistentObject)
   private
     { Private Declarations }
     FName: string;
@@ -147,7 +165,7 @@ type
     property TransformMode: TVKSkeletonFrameTransform read FTransformMode write
       FTransformMode;
 
-    { Calculate or retrieves an array of local bone matrices. 
+    { Calculate or retrieves an array of local bone matrices.
        This array is calculated on the first call after creation, and the
        first call following a FlushLocalMatrixList. Subsequent calls return
        the same arrays. }
@@ -508,7 +526,7 @@ type
   { Base mesh class. 
      Introduces base methods and properties for mesh objects. 
      Subclasses are named "TMOxxx". }
-  TVKMeshObject = class(TBaseMeshObject)
+  TVKMeshObject = class(TVKBaseMeshObject)
   private
     { Private Declarations }
     FOwner: TVKMeshObjectList;
@@ -734,7 +752,7 @@ type
   // TVKMeshMorphTarget
   //
   { A morph target, stores alternate lists of vertices and normals. }
-  TVKMeshMorphTarget = class(TBaseMeshObject)
+  TVKMeshMorphTarget = class(TVKBaseMeshObject)
   private
     { Private Declarations }
     FOwner: TVKMeshMorphTargetList;
@@ -1180,7 +1198,7 @@ type
     FUseMeshMaterials: Boolean;
     FOverlaySkeleton: Boolean;
     FIgnoreMissingTextures: Boolean;
-    FAutoCentering: TMeshAutoCenterings;
+    FAutoCentering: TVKMeshAutoCenterings;
     FAutoScaling: TVKCoordinates;
     FMaterialLibraryCachesPrepared: Boolean;
     FConnectivity: TObject;
@@ -1310,7 +1328,7 @@ type
        no effect on already loaded mesh data or when adding from a file/stream. 
        If you want to alter mesh data, use direct manipulation methods
        (on the TVKMeshObjects). }
-    property AutoCentering: TMeshAutoCenterings read FAutoCentering write
+    property AutoCentering: TVKMeshAutoCenterings read FAutoCentering write
       FAutoCentering default [];
 
     { Scales vertices to a AutoScaling. 
@@ -2029,7 +2047,7 @@ end;
 // Create
 //
 
-constructor TBaseMeshObject.Create;
+constructor TVKBaseMeshObject.Create;
 begin
   FVertices := TAffineVectorList.Create;
   FNormals := TAffineVectorList.Create;
@@ -2040,7 +2058,7 @@ end;
 // Destroy
 //
 
-destructor TBaseMeshObject.Destroy;
+destructor TVKBaseMeshObject.Destroy;
 begin
   FNormals.Free;
   FVertices.Free;
@@ -2050,13 +2068,13 @@ end;
 // Assign
 //
 
-procedure TBaseMeshObject.Assign(Source: TPersistent);
+procedure TVKBaseMeshObject.Assign(Source: TPersistent);
 begin
-  if Source is TBaseMeshObject then
+  if Source is TVKBaseMeshObject then
   begin
-    FName := TBaseMeshObject(Source).Name;
-    FVertices.Assign(TBaseMeshObject(Source).FVertices);
-    FNormals.Assign(TBaseMeshObject(Source).FNormals);
+    FName := TVKBaseMeshObject(Source).Name;
+    FVertices.Assign(TVKBaseMeshObject(Source).FVertices);
+    FNormals.Assign(TVKBaseMeshObject(Source).FNormals);
   end
   else
     inherited; // Die!
@@ -2065,7 +2083,7 @@ end;
 // WriteToFiler
 //
 
-procedure TBaseMeshObject.WriteToFiler(writer: TVirtualWriter);
+procedure TVKBaseMeshObject.WriteToFiler(writer: TVirtualWriter);
 begin
   inherited WriteToFiler(writer);
   with writer do
@@ -2081,7 +2099,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TBaseMeshObject.ReadFromFiler(reader: TVirtualReader);
+procedure TVKBaseMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
   archiveVersion: Integer;
 begin
@@ -2105,7 +2123,7 @@ end;
 // Clear
 //
 
-procedure TBaseMeshObject.Clear;
+procedure TVKBaseMeshObject.Clear;
 begin
   FNormals.Clear;
   FVertices.Clear;
@@ -2114,7 +2132,7 @@ end;
 // ContributeToBarycenter
 //
 
-procedure TBaseMeshObject.ContributeToBarycenter(var currentSum: TAffineVector;
+procedure TVKBaseMeshObject.ContributeToBarycenter(var currentSum: TAffineVector;
   var nb: Integer);
 begin
   AddVector(currentSum, FVertices.Sum);
@@ -2124,7 +2142,7 @@ end;
 // Translate
 //
 
-procedure TBaseMeshObject.Translate(const delta: TAffineVector);
+procedure TVKBaseMeshObject.Translate(const delta: TAffineVector);
 begin
   FVertices.Translate(delta);
 end;
@@ -2132,7 +2150,7 @@ end;
 // BuildNormals
 //
 
-procedure TBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
+procedure TVKBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
   TVKMeshObjectMode;
   normalIndices: TIntegerList = nil);
 var
@@ -2272,7 +2290,7 @@ end;
 // ExtractTriangles
 //
 
-function TBaseMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
+function TVKBaseMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
 begin
   Result := TAffineVectorList.Create;
@@ -2287,7 +2305,7 @@ end;
 // SetVertices
 //
 
-procedure TBaseMeshObject.SetVertices(const val: TAffineVectorList);
+procedure TVKBaseMeshObject.SetVertices(const val: TAffineVectorList);
 begin
   FVertices.Assign(val);
 end;
@@ -2295,7 +2313,7 @@ end;
 // SetNormals
 //
 
-procedure TBaseMeshObject.SetNormals(const val: TAffineVectorList);
+procedure TVKBaseMeshObject.SetNormals(const val: TAffineVectorList);
 begin
   FNormals.Assign(val);
 end;
@@ -3537,7 +3555,7 @@ end;
 procedure TVKSkeleton.MorphMesh(normalize: Boolean);
 var
   i: Integer;
-  mesh: TBaseMeshObject;
+  mesh: TVKBaseMeshObject;
 begin
   if Owner.MeshObjects.Count > 0 then
   begin
@@ -3587,7 +3605,7 @@ end;
 procedure TVKSkeleton.StartRagDoll; // ragdoll
 var
   i: Integer;
-  mesh: TBaseMeshObject;
+  mesh: TVKBaseMeshObject;
 begin
   if FRagDollEnabled then
     Exit
@@ -3611,7 +3629,7 @@ end;
 procedure TVKSkeleton.StopRagDoll; // ragdoll
 var
   i: Integer;
-  mesh: TBaseMeshObject;
+  mesh: TVKBaseMeshObject;
 begin
   FRagDollEnabled := False;
   if Owner.MeshObjects.Count > 0 then
@@ -4604,11 +4622,11 @@ begin
       begin
         if FUseVBO then
           FTexCoordsVBO[0].Bind;
-        xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[3]);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector), lists[3]);
       end
       else
-        xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       if GL_ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
@@ -4637,7 +4655,7 @@ begin
     begin
       glDisableClientState(GL_NORMAL_ARRAY);
       glDisableClientState(GL_COLOR_ARRAY);
-      xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     end;
 
     if Vertices.Count > 0 then
@@ -4652,24 +4670,24 @@ begin
 
     if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
-      GL.LockArrays(0, vertices.Count);
+      glLockArraysEXT(0, vertices.Count);
 
     FLastLightMapIndex := -1;
     FArraysDeclared := True;
     FLightMapArrayEnabled := False;
     if mrci.drawState <> dsPicking then
-      FLastXOpenGLTexMapping := xglGetBitWiseMapping;
+      FLastXOpenGLTexMapping := XGL.GetBitWiseMapping;
   end
   else
   begin
     if not mrci.ignoreMaterials and not (mrci.drawState = dsPicking) then
       if TexCoords.Count > 0 then
       begin
-        currentMapping := xglGetBitWiseMapping;
+        currentMapping := XGL.GetBitWiseMapping;
         if FLastXOpenGLTexMapping <> currentMapping then
         begin
-          xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
-          xglTexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector),
+          XGL.EnableClientState(GL_TEXTURE_COORD_ARRAY);
+          XGL.TexCoordPointer(2, GL_FLOAT, SizeOf(TAffineVector),
             TexCoords.List);
           FLastXOpenGLTexMapping := currentMapping;
         end;
@@ -4689,7 +4707,7 @@ begin
     DisableLightMapArray(mrci);
     if GL_EXT_compiled_vertex_array and (LightMapTexCoords.Count = 0) and not
       FUseVBO then
-      GL.UnLockArrays;
+        glUnlockArraysEXT;
     if Vertices.Count > 0 then
       glDisableClientState(GL_VERTEX_ARRAY);
     if not mrci.ignoreMaterials then
@@ -4699,7 +4717,7 @@ begin
       if (Colors.Count > 0) and (not mrci.ignoreMaterials) then
         glDisableClientState(GL_COLOR_ARRAY);
       if TexCoords.Count > 0 then
-        xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       if GL_ARB_multitexture then
       begin
         if LightMapTexCoords.Count > 0 then
@@ -4926,7 +4944,7 @@ begin
     Include(FValidBuffers, vbTexCoordsEx);
   end;
 
-  GL.CheckError;
+  CheckOpenGLError;
 end;
 
 procedure TVKMeshObject.BuildList(var mrci: TVKRenderContextInfo);
@@ -4973,7 +4991,7 @@ begin
             if gotTexCoordsEx[0] then
               glMultiTexCoord4fv(GL_TEXTURE0, @TexCoordsEx[0].List[i])
             else if gotTexCoords then
-              xglTexCoord2fv(@TexCoords.List[i]);
+              glTexCoord2fv(@TexCoords.List[i]);
             for j := 1 to FTexCoordsEx.Count - 1 do
               if gotTexCoordsEx[j] then
                 glMultiTexCoord4fv(GL_TEXTURE0 + j,
@@ -4982,7 +5000,7 @@ begin
           else
           begin
             if gotTexCoords then
-              xglTexCoord2fv(@TexCoords.List[i]);
+              glTexCoord2fv(@TexCoords.List[i]);
           end;
           glVertex3fv(@Vertices.List[i]);
         end;
@@ -5729,7 +5747,7 @@ begin
   FBonesPerVertex := 0;
   ResizeVerticesBonesWeights;
   for i := 0 to FBoneMatrixInvertedMeshes.Count - 1 do
-    TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
   FBoneMatrixInvertedMeshes.Clear;
 end;
 
@@ -5938,19 +5956,19 @@ end;
 procedure TVKSkeletonMeshObject.PrepareBoneMatrixInvertedMeshes;
 var
   i, k, boneIndex: Integer;
-  invMesh: TBaseMeshObject;
+  invMesh: TVKBaseMeshObject;
   invMat: TMatrix;
   bone: TVKSkeletonBone;
   p: TVector;
 begin
   // cleanup existing stuff
   for i := 0 to FBoneMatrixInvertedMeshes.Count - 1 do
-    TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
   FBoneMatrixInvertedMeshes.Clear;
   // calculate
   for k := 0 to BonesPerVertex - 1 do
   begin
-    invMesh := TBaseMeshObject.Create;
+    invMesh := TVKBaseMeshObject.Create;
     FBoneMatrixInvertedMeshes.Add(invMesh);
     invMesh.Vertices := Vertices;
     invMesh.Normals := Normals;
@@ -5978,19 +5996,19 @@ end;
 procedure TVKSkeletonMeshObject.BackupBoneMatrixInvertedMeshes; // ragdoll
 var
   i: Integer;
-  bm: TBaseMeshObject;
+  bm: TVKBaseMeshObject;
 begin
   // cleanup existing stuff
   for i := 0 to FBackupInvertedMeshes.Count - 1 do
-    TBaseMeshObject(FBackupInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBackupInvertedMeshes[i]).Free;
   FBackupInvertedMeshes.Clear;
   // copy current stuff
   for i := 0 to FBoneMatrixInvertedMeshes.Count - 1 do
   begin
-    bm := TBaseMeshObject.Create;
-    bm.Assign(TBaseMeshObject(FBoneMatrixInvertedMeshes[i]));
+    bm := TVKBaseMeshObject.Create;
+    bm.Assign(TVKBaseMeshObject(FBoneMatrixInvertedMeshes[i]));
     FBackupInvertedMeshes.Add(bm);
-    TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
   end;
   FBoneMatrixInvertedMeshes.Clear;
 end;
@@ -5998,19 +6016,19 @@ end;
 procedure TVKSkeletonMeshObject.RestoreBoneMatrixInvertedMeshes; // ragdoll
 var
   i: Integer;
-  bm: TBaseMeshObject;
+  bm: TVKBaseMeshObject;
 begin
   // cleanup existing stuff
   for i := 0 to FBoneMatrixInvertedMeshes.Count - 1 do
-    TBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBoneMatrixInvertedMeshes[i]).Free;
   FBoneMatrixInvertedMeshes.Clear;
   // restore the backup
   for i := 0 to FBackupInvertedMeshes.Count - 1 do
   begin
-    bm := TBaseMeshObject.Create;
-    bm.Assign(TBaseMeshObject(FBackupInvertedMeshes[i]));
+    bm := TVKBaseMeshObject.Create;
+    bm.Assign(TVKBaseMeshObject(FBackupInvertedMeshes[i]));
     FBoneMatrixInvertedMeshes.Add(bm);
-    TBaseMeshObject(FBackupInvertedMeshes[i]).Free;
+    TVKBaseMeshObject(FBackupInvertedMeshes[i]).Free;
   end;
   FBackupInvertedMeshes.Clear;
 end;
@@ -6028,7 +6046,7 @@ var
   tempvert,
     tempnorm: TAffineVector;
 begin
-  with TBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do
+  with TVKBaseMeshObject(FBoneMatrixInvertedMeshes[0]) do
   begin
     refVertices := Vertices;
     refNormals := Normals;
@@ -6058,7 +6076,7 @@ begin
       Normals.List^[i] := NullVector;
       for j := 0 to BonesPerVertex - 1 do
       begin
-        with TBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do
+        with TVKBaseMeshObject(FBoneMatrixInvertedMeshes[j]) do
         begin
           refVertices := Vertices;
           refNormals := Normals;
@@ -6703,7 +6721,7 @@ begin
     if Assigned(colorPool) then
       glColor4fv(@colorPool[vertexIdxList^[i]]);
     if Assigned(texCoordPool) then
-      xglTexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
+      glTexCoord2fv(@texCoordPool[texCoordIdxList^[i]]);
     glVertex3fv(@vertexPool[vertexIdxList^[i]]);
   end;
 
@@ -6829,7 +6847,7 @@ begin
     normalPool := Owner.Owner.Normals.List;
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      xglTexCoord2fv(@texCoordPool[i]);
+      glTexCoord2fv(@texCoordPool[i]);
       k := indicesPool[i];
       if gotColor then
         glColor4fv(@colorPool[k]);
@@ -6841,14 +6859,14 @@ begin
   begin
     for i := 0 to VertexIndices.Count - 1 do
     begin
-      xglTexCoord2fv(@texCoordPool[i]);
+      glTexCoord2fv(@texCoordPool[i]);
       if gotColor then
         glColor4fv(@colorPool[indicesPool[i]]);
       glVertex3fv(@vertexPool[indicesPool[i]]);
     end;
   end;
   glEnd;
-  GL.CheckError;
+  CheckOpenGLError;
 end;
 
 // AddToTriangles

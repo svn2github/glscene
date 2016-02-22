@@ -584,10 +584,10 @@ type
 
    procedure IssueQuad(col, row : Integer);
    begin
-      xglTexCoord2f(col, row);      glVertex2f(col, row);
-      xglTexCoord2f(col+1, row);    glVertex2f(col+1, row);
-      xglTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
-      xglTexCoord2f(col, row+1);    glVertex2f(col, row+1);
+      glTexCoord2f(col, row);      glVertex2f(col, row);
+      glTexCoord2f(col+1, row);    glVertex2f(col+1, row);
+      glTexCoord2f(col+1, row+1);  glVertex2f(col+1, row+1);
+      glTexCoord2f(col, row+1);    glVertex2f(col, row+1);
    end;
 
 var
@@ -600,7 +600,7 @@ begin
    // initialize infos
    glNormal3fv(@ZVector);
    if FNoZWrite then
-      rci.GLStates.DepthWriteMask := False;
+      rci.GLStates.DepthWriteMask := 0;  //False
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
       for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
@@ -656,7 +656,7 @@ begin
       end;
    end;
    if FNoZWrite then
-      rci.GLStates.DepthWriteMask := True;
+      rci.GLStates.DepthWriteMask := 1; //True
 end;
 
 //-------------------------------------------------------------

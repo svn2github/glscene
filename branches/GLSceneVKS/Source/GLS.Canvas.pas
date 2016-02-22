@@ -331,7 +331,7 @@ begin
   mat := IdentityHmgMatrix;
   mat.Y.Y := -1;
   mat.W.Y := FBufferSizeY;
-  GL.MultMatrixf(@mat);
+  glMultMatrixf(@mat);
 end;
 
 // SetPenColor

@@ -218,7 +218,7 @@ begin
   matrix[14] := pos[2];
   matrix[15] := 1;
   glPushMatrix();
-  GL.MultMatrixf(@matrix);
+  glMultMatrixf(@matrix);
 end;
 
 (*$WARNINGS OFF*)

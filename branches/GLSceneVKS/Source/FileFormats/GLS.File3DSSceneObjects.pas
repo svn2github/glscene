@@ -311,8 +311,8 @@ begin
   FTargetPos.Free;
   for I := 0 to 1 do
   begin
-    gluDeleteQuadric(FQuadCyl[I]);
-    gluDeleteQuadric(FQuadDisk[I]);
+    gluDeleteQuadric(@FQuadCyl[I]);
+    gluDeleteQuadric(@FQuadDisk[I]);
   end;
 end;
 
@@ -407,11 +407,11 @@ end;
 
 procedure TVKFile3DSFreeForm.BuildList(var rci: TVKRenderContextInfo);
 begin
-  GL.MultMatrixf(@FTransfMat);
-  GL.MultMatrixf(@FScaleMat);
+  glMultMatrixf(@FTransfMat);
+  glMultMatrixf(@FScaleMat);
 
   glPushMatrix;
-  GL.MultMatrixf(@FRefMat);
+  glMultMatrixf(@FRefMat);
   inherited;
   glPopMatrix;
 

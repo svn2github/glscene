@@ -389,11 +389,11 @@ begin
     try
       // There's a more direct way for loading images into the image list, but
       // the image quality suffers too much
-{$IFDEF WIN32}
+     {$IFDEF WIN32}
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_cross');
       FOverlayIndex := AddMasked(bmp, Pixels[0, 0]);
       Overlay(FOverlayIndex, 0); // used as indicator for disabled objects
-{$ENDIF}
+      {$ENDIF}
       GLLoadBitmapFromInstance(ResourceModule, bmp, 'gls_root');
       { TODO : E2003 Undeclared identifier: 'AddMasked' }
       (*FSceneRootIndex := AddMasked(bmp, Pixels[0, 0]);*)

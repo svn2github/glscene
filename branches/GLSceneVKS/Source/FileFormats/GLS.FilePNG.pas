@@ -9,9 +9,17 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  GLS.CrossPlatform, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Graphics,
-  GLS.TextureFormat, GLS.ApplicationFileIO;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.Graphics,
+  GLS.TextureFormat,
+  GLS.ApplicationFileIO;
 
 type
 
@@ -153,7 +161,7 @@ begin
     end
     else
       fLevelCount := 1;
-    GL.CheckError;
+    CheckOpenGLError;
   finally
     if contextActivate then
     begin

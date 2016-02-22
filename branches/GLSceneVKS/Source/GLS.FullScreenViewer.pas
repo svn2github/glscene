@@ -12,12 +12,24 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Messages, Winapi.Windows,
-  System.Classes, System.SysUtils,
-  FMX.Types, FMX.Forms, FMX.Controls, FMX.Menus,
-
-  GLS.Scene, GLS.SceneViewer, GLS.Context, GLS.SceneContext, Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.Crossplatform,  GLS.OpenGLAdapter, GLS.Screen;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  Winapi.Messages,
+  Winapi.Windows,
+  System.Classes,
+  System.SysUtils,
+  FMX.Types,
+  FMX.Forms,
+  FMX.Controls,
+  FMX.Menus,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.SceneViewer,
+  GLS.Context,
+  GLS.SceneContext,
+  GLS.Crossplatform,
+  GLS.Screen;
 
 type
 

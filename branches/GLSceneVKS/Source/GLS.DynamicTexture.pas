@@ -139,7 +139,7 @@ begin
     end;
   end;
 
-  GL.CheckError;
+  CheckOpenGLError;
   
   if assigned(FPBO) then
   begin
@@ -152,7 +152,7 @@ begin
     FData:= FBuffer;
   end;
 
-  GL.CheckError;
+  CheckOpenGLError;
 
   FDirtyRect:= GLRect(0, 0, Width, Height);
 end;
@@ -218,7 +218,7 @@ begin
 
   FData:= nil;
 
-  GL.CheckError;
+  CheckOpenGLError;
 end;
 
 procedure TVKDynamicTextureImage.FreeBuffer;

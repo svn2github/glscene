@@ -742,7 +742,7 @@ begin
   glPushMatrix;
   glLoadIdentity;
   rci.GLStates.Disable(stDepthTest);
-  rci.GLStates.DepthWriteMask := False;
+  rci.GLStates.DepthWriteMask := 0; //False;
 end;
 
 procedure TVKBaseComponent.RenderFooter(var rci: TVKRenderContextInfo; renderSelf,

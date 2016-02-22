@@ -2290,16 +2290,16 @@ begin
     if (not Material.Texture.Disabled) and (Material.Texture.MappingMode =
       tmmUser) then
       if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-        xgl.MapTexCoordToDual
+        XGL.MapTexCoordToDual
       else
-        xgl.MapTexCoordToMain
+        XGL.MapTexCoordToMain
     else if libMatTexture2.Material.Texture.MappingMode = tmmUser then
-      xgl.MapTexCoordToSecond
+      XGL.MapTexCoordToSecond
     else
-      xgl.MapTexCoordToMain;
+      XGL.MapTexCoordToMain;
 
   end;
- 
+
   if Assigned(FShader) then
   begin
     case Shader.ShaderStyle of
@@ -2334,7 +2334,7 @@ begin
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not
         libMatTexture2.TextureMatrixIsIdentity));
-      xgl.MapTexCoordToMain;
+      XGL.MapTexCoordToMain;
     end;
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then

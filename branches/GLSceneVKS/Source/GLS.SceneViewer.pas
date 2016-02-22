@@ -206,7 +206,7 @@ type
     property Touch;
   end;
 
-(* procedure SetupVSync(const AVSyncMode : TVSyncMode); *)
+procedure SetupVSync(const AVSyncMode : TVSyncMode);
 
 var
  Handle: HWND;
@@ -215,30 +215,29 @@ var
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
-// ------------------------------------------------------------------
 // ------------------
 // ------------------ TVKSceneViewerFMX ------------------
 // ------------------
 
-(*
+
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 var
   I: Integer;
 begin
   if WGL_EXT_swap_control then
   begin
-    I := FGL.wglGetSwapIntervalEXT;
+  {!  TODO
+    I := wglGetSwapIntervalEXT;
     case AVSyncMode of
-      vsmSync  : if I <> 1 then FGL.wglSwapIntervalEXT(1);
-      vsmNoSync: if I <> 0 then FGL.wglSwapIntervalEXT(0);
+      vsmSync  : if I <> 1 then  wglSwapIntervalEXT(1);
+      vsmNoSync: if I <> 0 then  wglSwapIntervalEXT(0);
     else
        Assert(False);
     end;
+    }
   end;
 end;
-*)
+
 
 // Create
 //
@@ -562,7 +561,7 @@ end;
 //
 procedure TVKSceneViewer.DoBeforeRender(Sender: TObject);
 begin
-///  SetupVSync(VSync); //<-TODO
+  SetupVSync(VSync);
 end;
 
 // DoBufferChange

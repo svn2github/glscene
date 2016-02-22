@@ -36,12 +36,12 @@
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
 
+// Activate Multithread support
+{.$DEFINE GLS_MULTITHREAD}
+
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
 // This work only on windows platform and with modern compiler (XE2 and FPC or higher}
 {$DEFINE GLS_SERVICE_CONTEXT}
-
-// Activate Multithread support
-{$DEFINE GLS_MULTITHREAD}
 
 {$IFDEF GLS_MULTITHREAD}
   {$DEFINE MULTITHREADOPENGL}
@@ -100,7 +100,7 @@
   {$UNDEF GLS_X11_SUPPORT}
 {$ENDIF}
 
-{$IFDEF Linux}
+{$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE GLS_X11_SUPPORT}
@@ -126,7 +126,7 @@
   {$DEFINE GLS_REGIONS}
 {$ENDIF}
 
-{$define GLS_DEPRECATED}
+{$DEFINE GLS_DEPRECATED}
 {
   This defines if the compiler should use deprecated stuff or not.
   by default headers use deprecated stuff.

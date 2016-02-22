@@ -1,8 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   Imposter building and rendering implementation for GLScene.  
+   Imposter building and rendering implementation for GLScene.
 }
 unit GLS.Imposter;
 
@@ -11,18 +11,32 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLS.Scene, GLS.Context, GLS.VectorTypes, GLS.VectorGeometry,
-  GLS.PersistentClasses, GLS.CrossPlatform, GLS.Graphics, GLS.Color,
-  GLS.RenderContextInfo, GLS.Coordinates, GLS.BaseClasses, GLS.State, GLS.TextureFormat,
-  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Utils;
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.Context,
+  GLS.VectorTypes,
+  GLS.VectorGeometry,
+  GLS.PersistentClasses,
+  GLS.CrossPlatform,
+  GLS.Graphics,
+  GLS.Color,
+  GLS.RenderContextInfo,
+  GLS.Coordinates,
+  GLS.BaseClasses,
+  GLS.State,
+  GLS.TextureFormat,
+  GLS.Utils;
 
 type
   // TImposterOptions
   //
-  { Imposter rendering options. 
-     Following options are supported: 
+  { Imposter rendering options.
+     Following options are supported:
       impoBlended : the imposters are transparently blended during renders,
      this will smooth their edges but requires them to be rendered sorted
      from back to front
@@ -506,12 +520,11 @@ begin
     i := GL_CLAMP_TO_EDGE
   else
     i := GL_CLAMP;
-  with GL do
   begin
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, i);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, i);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   end;
 end;
 
@@ -1437,7 +1450,7 @@ begin
     InitializeImpostorTexture(FTextureSize);
   end;
 
-  GL.PixelTransferf(GL_ALPHA_SCALE, FSamplesAlphaScale);
+  glPixelTransferf(GL_ALPHA_SCALE, FSamplesAlphaScale);
 
   // Now render each sample
   curSample := 0;
@@ -1451,7 +1464,7 @@ begin
       cameraOffset := cameraDirection;
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
-      rci.GLStates.DepthWriteMask := True;
+      rci.GLStates.DepthWriteMask := 1;
       glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
@@ -1460,7 +1473,7 @@ begin
       rci.PipelineTransformation.ViewMatrix := MatrixMultiply(
         CreateTranslationMatrix(FBuildOffset.AsVector), LM);
       impostoredObject.Render(rci);
-      GL.CheckError;
+      CheckOpenGLError;
 
       xDest := (curSample mod FSamplesPerAxis.X) * SampleSize;
       yDest := (curSample div FSamplesPerAxis.X) * SampleSize;
@@ -1475,7 +1488,7 @@ begin
   end;
 
   // Restore buffer stuff
-  GL.PixelTransferf(GL_ALPHA_SCALE, 1);
+  glPixelTransferf(GL_ALPHA_SCALE, 1);
   rci.PipelineTransformation.Pop;
 
   glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);

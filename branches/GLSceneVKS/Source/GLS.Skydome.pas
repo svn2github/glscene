@@ -942,16 +942,13 @@ var
   f: Single;
 begin
   // setup states
-  with rci.GLStates do
-  begin
-    Disable(stLighting);
-    Disable(stDepthTest);
-    Disable(stFog);
-    Disable(stCullFace);
-    Disable(stBlend);
-    DepthWriteMask := False;
-    PolygonMode := pmFill;
-  end;
+  rci.GLStates.Disable(stLighting); // 8
+  rci.GLStates.Disable(stDepthTest);
+  rci.GLStates.Disable(stFog);
+  rci.GLStates.Disable(stCullFace);
+  rci.GLStates.Disable(stBlend); // 2
+  rci.GLStates.DepthWriteMask := 0;
+  rci.GLStates.PolygonMode := pmFill;
 
   f := rci.rcci.farClippingDistance * 0.90;
   glScalef(f, f, f);
@@ -1148,7 +1145,7 @@ begin
     Disable(stCullFace);
     Disable(stBlend);
     Disable(stAlphaTest);
-    DepthWriteMask := False;
+    DepthWriteMask := 0;
     PolygonMode := pmFill;
   end;
 
@@ -1160,7 +1157,7 @@ begin
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
   // restore
-  rci.GLStates.DepthWriteMask := True;
+  rci.GLStates.DepthWriteMask := GLboolean(True);
 end;
 
 // OnColorChanged

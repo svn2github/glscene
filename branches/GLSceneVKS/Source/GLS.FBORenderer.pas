@@ -14,12 +14,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  GLS.VectorGeometry, GLS.Scene, GLS.Texture, GLS.Context,
-  GLS.FBO, GLS.Color, GLS.Material, GLS.RenderContextInfo,
-  GLS.State, Winapi.OpenGL, Winapi.OpenGLext,  GLS.TextureFormat,
-  GLS.VectorTypes, GLS.MultisampleImage, GLS.Log;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.VectorGeometry,
+  GLS.Scene,
+  GLS.Texture,
+  GLS.Context,
+  GLS.FBO,
+  GLS.Color,
+  GLS.Material,
+  GLS.RenderContextInfo,
+  GLS.State,
+  GLS.TextureFormat,
+  GLS.VectorTypes,
+  GLS.MultisampleImage,
+  GLS.Log;
 
 type
   TVKEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -437,7 +450,7 @@ begin
 
   if FUseLibraryAsMultiTarget or Assigned(FOnSetTextureTargets) then
   begin
-    if not(GL_ARB_draw_buffers or GL.ATI_draw_buffers) then
+    if not(GL_ARB_draw_buffers or GL_ATI_draw_buffers) then
     begin
       GLSLogger.LogError('Hardware do not support MRT');
       Active := False;
@@ -549,7 +562,7 @@ begin
   DoPostInitialize;
   FFbo.Unbind;
 
-  GL.CheckError;
+  CheckOpenGLError;
   ClearStructureChanged;
 end;
 
@@ -605,7 +618,7 @@ begin
   if (ARci.drawState = dsPicking) and not PickableTarget then
     exit;
 
-  if not TVKFramebufferHandle.IsSupported then
+  if TVKFramebufferHandle.IsSupported = 0 then
   begin
     GLSLogger.LogError('Framebuffer not supported - deactivated');
     Active := False;
@@ -660,7 +673,7 @@ begin
     else
       ARci.GLStates.SetColorMask([]);
 
-    ARci.GLStates.DepthWriteMask := HasDepth;
+    ARci.GLStates.DepthWriteMask := GLboolean(HasDepth);
 
     if HasStencil then
       ARci.GLStates.Enable(stStencilTest)

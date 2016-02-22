@@ -15,8 +15,11 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext, 
+  //GLS
+  GLS.OpenGLAdapter,
   GLS.Scene,
   GLS.Context,
   GLS.State,
@@ -336,7 +339,7 @@ procedure TVKFrameBuffer.AttachDepthBuffer(DepthBuffer: TVKDepthRBO);
     // forces initialization
     DepthBuffer.Bind;
     DepthBuffer.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, DepthBuffer.Handle);
   end;
 
@@ -449,7 +452,7 @@ procedure TVKFrameBuffer.AttachStencilBuffer(StencilBuffer: TVKStencilRBO);
     // forces initialization
     StencilBuffer.Bind;
     StencilBuffer.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+    glFramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
       GL_RENDERBUFFER_EXT, StencilBuffer.Handle);
   end;
 
@@ -576,7 +579,7 @@ end;
 procedure TVKFrameBuffer.DetachDepthBuffer;
 begin
   Bind;
-  GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
+  glFramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
   FDRBO := nil;
@@ -585,7 +588,7 @@ end;
 procedure TVKFrameBuffer.DetachStencilBuffer;
 begin
   Bind;
-  GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+  glFramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
     GL_RENDERBUFFER, 0);
   Unbind;
   FSRBO := nil;
@@ -595,7 +598,7 @@ function TVKFrameBuffer.GetStatus: TVKFramebufferStatus;
 var
   status: cardinal;
 begin
-  status := GL.CheckFramebufferStatus(FTarget);
+  status := glCheckFramebufferStatus(FTarget);
 
   case status of
     GL_FRAMEBUFFER_COMPLETE_EXT: Result := fsComplete;
@@ -676,7 +679,7 @@ begin
   glClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
-  rci.GLStates.DepthWriteMask := True;
+  rci.GLStates.DepthWriteMask := 1;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
@@ -737,7 +740,7 @@ begin
   begin
     FDRBO.Bind;
     FDRBO.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
+    glFramebufferRenderbuffer(FTarget, GL_DEPTH_ATTACHMENT_EXT,
       GL_RENDERBUFFER_EXT, FDRBO.Handle);
     bEmpty := False;
   end;
@@ -746,7 +749,7 @@ begin
   begin
     FSRBO.Bind;
     FSRBO.Unbind;
-    GL.FramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
+    glFramebufferRenderbuffer(FTarget, GL_STENCIL_ATTACHMENT,
       GL_RENDERBUFFER_EXT, FSRBO.Handle);
     bEmpty := False;
   end;

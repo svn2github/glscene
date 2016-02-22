@@ -175,7 +175,7 @@ begin
     end;
 
     FBuffer.Count := FMaxBufferSize div SizeOf(Single);
-    GL.FeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
+    glFeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
     ARci.GLStates.Disable(stCullFace);
     ARci.ignoreMaterials := FMode < fm3DColor;
     ARci.PipelineTransformation.Push;

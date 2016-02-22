@@ -16,10 +16,19 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   //GLS
-  GLS.Scene, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Silhouette,
-  GLS.CrossPlatform, GLS.PersistentClasses, GLS.GeometryBB, GLS.Color,
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.VectorGeometry,
+  GLS.Context,
+  GLS.Silhouette,
+  GLS.CrossPlatform,
+  GLS.PersistentClasses,
+  GLS.GeometryBB,
+  GLS.Color,
   GLS.RenderContextInfo;
 
 type
@@ -523,7 +532,7 @@ begin
   end;
 
   with clipRect do
-    GL.Scissor(Round(Left), Round(Top), Round(Right - Left), Round(Bottom -
+    glScissor(Round(Left), Round(Top), Round(Right - Left), Round(Bottom -
       Top));
   Result := True;
 end;
@@ -882,7 +891,7 @@ begin
 
       ARci.ignoreBlendingRequests := True;
       ARci.ignoreDepthRequests := True;
-      DepthWriteMask := False;
+      DepthWriteMask := 0;
       Enable(stDepthTest);
       SetBlendFunc(bfSrcAlpha, bfOne);
       Disable(stAlphaTest);
@@ -985,7 +994,7 @@ begin
               begin
                 // z-fail
                 if GL_EXT_compiled_vertex_array then
-                  GL.LockArrays(0, sil.Vertices.Count);
+                  glLockArraysEXT(0, sil.Vertices.Count);
 
                 CullFaceMode := cmFront;
                 SetStencilOp(soKeep, soIncr, soKeep);
@@ -1016,7 +1025,7 @@ begin
                 end;
 
                 if GL_EXT_compiled_vertex_array then
-                  GL.UnlockArrays;
+                  glUnlockArraysEXT;
               end
               else
               begin

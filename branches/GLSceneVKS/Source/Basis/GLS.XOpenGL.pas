@@ -38,72 +38,42 @@ type
   public
     // Explicit texture coordinates specification
     TexCoord2f: procedure(s, t: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexCoord2fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexCoord3f: procedure(s, t, r: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexCoord3fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexCoord4f: procedure(s, t, r, q: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexCoord4fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
 
     // TexGen texture coordinates specification
     TexGenf: procedure(coord, pname: GLEnum; param: GLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexGenfv: procedure(coord, pname: GLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexGeni: procedure(coord, pname: GLEnum; param: GLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     TexGeniv: procedure(coord, pname: GLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
 
     // Vertex Arrays texture coordinates specification
     TexCoordPointer: procedure(size: GLint; atype: GLEnum; stride: GLsizei;
       data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     EnableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     DisableClientState: procedure(aarray: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
 
     // Misc
     Enable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
     Disable: procedure(cap: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF unix} cdecl;{$ENDIF}
 
     constructor Create(AOwner: TVKContext); override;
 
@@ -120,7 +90,7 @@ type
     procedure MapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
     procedure MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 
-    { Defers Map calls execution until EndUpdate is met. 
+    { Defers Map calls execution until EndUpdate is met.
        Calls to Begin/EndUpdate may be nested. }
     procedure BeginUpdate;
     { Applies Map calls if there were any since BeginUpdate was invoked. 

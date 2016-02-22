@@ -565,7 +565,7 @@ procedure tessIssueVertex(vertexData: Pointer);
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
 begin
-  xglTexCoord2fv(vertexData);
+  glTexCoord2fv(vertexData);
   glVertex3fv(vertexData);
 end;
 
@@ -598,7 +598,7 @@ end;
 procedure TMultiPolygonBase.RetrieveOutline(List: TPolygonList);
 var
   i, n: Integer;
-  tess: PGLUTesselator;
+  tess: GLUTesselator;
 
   procedure TesselatePath(contour: TVKContour; inverted: Boolean);
 
@@ -610,7 +610,7 @@ var
       vVertexPool.GetNewVector(Pointer(p));
       p^ := v;
       SetVector(dblVector, v);
-      gluTessVertex(tess, dblVector, p);
+      gluTessVertex(tess, @dblVector, p);
     end;
 
   var
@@ -711,7 +711,7 @@ procedure TMultiPolygonBase.RenderTesselatedPolygon(textured: Boolean;
   normal: PAffineVector;
   invertNormals: Boolean);
 var
-  tess: PGLUTesselator;
+  tess: GLUTesselator;
 
   procedure IssueVertex(v: TAffineVector);
   var
@@ -721,7 +721,7 @@ var
     vVertexPool.GetNewVector(Pointer(p));
     p^ := v;
     SetVector(dblVector, v);
-    gluTessVertex(tess, dblVector, p);
+    gluTessVertex(tess, @dblVector, p);
   end;
 
 var

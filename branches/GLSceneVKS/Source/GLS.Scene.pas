@@ -9094,7 +9094,6 @@ begin
       FRenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
-      ClearOpenGLError;
       // render
       DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
 

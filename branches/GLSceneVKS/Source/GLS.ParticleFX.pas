@@ -1762,7 +1762,7 @@ begin
     rci.GLStates.DepthFunc := cfLEqual;
     if not FZWrite then
     begin
-      rci.GLStates.DepthWriteMask := False;
+      rci.GLStates.DepthWriteMask := 0;
     end;
     if not FZTest then
       rci.GLStates.Disable(stDepthTest);
@@ -1813,7 +1813,7 @@ begin
       rci.PipelineTransformation.Pop;
     end;
     rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-    rci.GLStates.DepthWriteMask := True;
+    rci.GLStates.DepthWriteMask := 1;
   finally
     // cleanup
     for regionIdx := cPFXNbRegions - 1 downto 0 do

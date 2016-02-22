@@ -85,7 +85,7 @@ end;
 
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TVKBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 var
-  Tess: PGLUTesselator;
+  Tess: GLUTesselator;
   i: Integer;
   dblVector: TAffineDblVector;
 begin
@@ -127,7 +127,7 @@ begin
     for i := Vertexes.Count - 1 downto 0 do
     begin
       SetVector(dblVector, Vertexes.Items[i]);
-      gluTessVertex(tess, dblVector, Vertexes.ItemAddress[i]);
+      gluTessVertex(tess, @dblVector, Vertexes.ItemAddress[i]);
     end;
   end
   else
@@ -135,7 +135,7 @@ begin
     for i := 0 to Vertexes.Count - 1 do
     begin
       SetVector(dblVector, Vertexes.Items[i]);
-      gluTessVertex(tess, dblVector, Vertexes.ItemAddress[i]);
+      gluTessVertex(tess, @dblVector, Vertexes.ItemAddress[i]);
     end;
   end;
   gluTessEndContour(tess);

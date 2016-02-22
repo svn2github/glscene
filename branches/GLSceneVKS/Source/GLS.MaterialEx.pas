@@ -21,15 +21,35 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.OpenGL, Winapi.OpenGLext,
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLS.RenderContextInfo, GLS.BaseClasses, GLS.Context, GLS.VectorTypes,
-  GLS.Material, GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry,
-  GLS.Graphics, GLS.PersistentClasses, GLS.CrossPlatform, GLS.State,
-  GLS.TextureFormat, GLS.XCollection, GLS.TextureCombiners,  
-  GLS.GLSLParameter, GLS.ApplicationFileIO, GLS.Strings, GLS.ImageUtils,
-  GLS.Utils, GLS.XOpenGL, GLS.Log;
+  GLS.OpenGLAdapter,
+  GLS.RenderContextInfo,
+  GLS.BaseClasses,
+  GLS.Context,
+  GLS.VectorTypes,
+  GLS.Material,
+  GLS.Texture,
+  GLS.Color,
+  GLS.Coordinates,
+  GLS.VectorGeometry,
+  GLS.Graphics,
+  GLS.PersistentClasses,
+  GLS.CrossPlatform,
+  GLS.State,
+  GLS.TextureFormat,
+  GLS.XCollection,
+  GLS.TextureCombiners,
+  GLS.GLSLParameter,
+  GLS.ApplicationFileIO,
+  GLS.Strings,
+  GLS.ImageUtils,
+  GLS.Utils,
+  GLS.XOpenGL,
+  GLS.Log;
 
 
 type
@@ -2025,7 +2045,7 @@ begin
     // Check streaming support
     if not IsDesignTime then
     begin
-      FUseStreaming := FUseStreaming and TVKUnpackPBOHandle.IsSupported;
+      FUseStreaming := FUseStreaming and (TVKUnpackPBOHandle.IsSupported > 0) ;
       FUseStreaming := FUseStreaming and IsServiceContextAvaible;
       FUseStreaming := FUseStreaming and (LTarget = ttTexture2D);
     end;
@@ -2073,9 +2093,8 @@ var
   LCompression: TVKTextureCompression;
   glFormat: GLEnum;
 begin
-  with GL do
   begin
-    if ARB_texture_compression then
+    if GL_ARB_texture_compression then
     begin
       if Compression = tcDefault then
         if vDefaultTextureCompression = tcDefault then
@@ -2115,7 +2134,7 @@ begin
       FHeight,
       FDepth);
 
-    if GetError <> GL_NO_ERROR then
+    if glGetError <> GL_NO_ERROR then
     begin
       ClearOpenGLError;
       CurrentGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
@@ -2231,16 +2250,15 @@ begin
         end;
 
       ssLoaded:
-        with GL do
         begin
           LImage.LevelPixelBuffer[Level].AllocateHandle;
           LImage.LevelPixelBuffer[Level].Bind;
           glInternalFormat := InternalFormatToOpenGLFormat(FInternalFormat);
           case transferMethod of
-            0: TexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
-            1: CompressedTexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[Level], nil);
-            2: TextureImage2D(FHandle.Handle, GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
-            3: CompressedTextureImage2D(FHandle.Handle, GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[Level], nil);
+            0: glTexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
+            1: glCompressedTexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[Level], nil);
+            2: glTextureImage2DEXT(FHandle.Handle, GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
+            3: glCompressedTextureImage2DEXT(FHandle.Handle, GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[Level], nil);
           end;
           LImage.LevelPixelBuffer[Level].UnBind;
           LImage.LevelStreamingState[Level] := ssTransfered;
@@ -2260,10 +2278,9 @@ begin
   end; // for level
 
   if bContinueStreaming then
-  with GL do
   begin
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, FMaxLevel);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, FBaseLevel);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, FMaxLevel);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, FBaseLevel);
   end;
 
 
@@ -2281,7 +2298,7 @@ begin
       FLODBiasFract := FLODBiasFract + (OldBaseLevel - FBaseLevel);
 
     if FApplicableSampler.IsValid then
-      GL.SamplerParameterf(FApplicableSampler.Handle.Handle,
+      glSamplerParameterf(FApplicableSampler.Handle.Handle,
         GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract)
     else
       // To refrash texture parameters when sampler object not supported
@@ -2768,49 +2785,48 @@ begin
   if IsDesignTime and FDefferedInit then
     exit;
   try
-    if FHandle.IsSupported then
+    if FHandle.IsSupported > 0 then
     begin
       FHandle.AllocateHandle;
       ID := FHandle.Handle;
       if FHandle.IsDataNeedUpdate then
-        with Sender.GL do
         begin
-          SamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR,
+          glSamplerParameterfv(ID, GL_TEXTURE_BORDER_COLOR,
             FBorderColor.AsAddress);
-          SamplerParameteri(ID, GL_TEXTURE_WRAP_S, cTextureWrapMode[FWrap[0]]);
-          SamplerParameteri(ID, GL_TEXTURE_WRAP_T, cTextureWrapMode[FWrap[1]]);
-          SamplerParameteri(ID, GL_TEXTURE_WRAP_R, cTextureWrapMode[FWrap[2]]);
-          SamplerParameterf(ID, GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract);
-          SamplerParameteri(ID, GL_TEXTURE_MIN_FILTER,
+          glSamplerParameteri(ID, GL_TEXTURE_WRAP_S, cTextureWrapMode[FWrap[0]]);
+          glSamplerParameteri(ID, GL_TEXTURE_WRAP_T, cTextureWrapMode[FWrap[1]]);
+          glSamplerParameteri(ID, GL_TEXTURE_WRAP_R, cTextureWrapMode[FWrap[2]]);
+          glSamplerParameterf(ID, GL_TEXTURE_LOD_BIAS, FLODBias + FLODBiasFract);
+          glSamplerParameteri(ID, GL_TEXTURE_MIN_FILTER,
             cTextureMinFilter[FMinFilter]);
-          SamplerParameteri(ID, GL_TEXTURE_MAG_FILTER,
+          glSamplerParameteri(ID, GL_TEXTURE_MAG_FILTER,
             cTextureMagFilter[FMagFilter]);
 
-          if EXT_texture_filter_anisotropic then
+          if GL_EXT_texture_filter_anisotropic then
           begin
             if FFilteringQuality = tfAnisotropic then
-              SamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+              glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT,
                 CurrentGLContext.GLStates.MaxTextureAnisotropy)
             else
-              SamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+              glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
 
-          SamplerParameteri(ID, GL_TEXTURE_COMPARE_MODE,
+          glSamplerParameteri(ID, GL_TEXTURE_COMPARE_MODE,
             cTextureCompareMode[FCompareMode]);
-          SamplerParameteri(ID, GL_TEXTURE_COMPARE_FUNC,
+          glSamplerParameteri(ID, GL_TEXTURE_COMPARE_FUNC,
             cGLComparisonFunctionToGLEnum[FCompareFunc]);
 
-          if EXT_texture_sRGB_decode then
+          if GL_EXT_texture_sRGB_decode then
           begin
             if FDecodeSRGB then
-              SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
+              glSamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
             else
-              SamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
+              glSamplerParameteri(ID, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
-{$IFDEF GLS_OPENGL_DEBUG}
+          {$IFDEF GLS_OPENGL_DEBUG}
           CheckError;
-{$ENDIF}
+          {$ENDIF}
 
           FHandle.NotifyDataUpdated;
         end;
@@ -2939,7 +2955,7 @@ end;
 
 procedure TVKTextureSampler.UnApply(var ARci: TVKRenderContextInfo);
 begin
-  if FHandle.IsSupported then
+  if FHandle.IsSupported > 0 then
     with ARci.GLStates do
       SamplerBinding[ActiveTexture] := 0;
 end;
@@ -3024,7 +3040,7 @@ procedure TVKTextureCombiner.DoOnPrepare(Sender: TVKContext);
 begin
   if IsDesignTime and FDefferedInit then
     exit;
-  if Sender.GL_ARB_multitexture then
+  if GL_ARB_multitexture then
   begin
     FHandle.AllocateHandle;
     if FHandle.IsDataNeedUpdate then
@@ -3480,7 +3496,7 @@ begin
         GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
 
-    with GL, ARci.GLStates do
+    with ARci.GLStates do
     begin
       if Assigned(FLibCombiner) and (Length(FLibCombiner.FCommandCache) > 0)
         then
@@ -3488,30 +3504,30 @@ begin
         for N := 0 to High(FLibCombiner.FCommandCache) do
         begin
           ActiveTexture := FLibCombiner.FCommandCache[N].ActiveUnit;
-          TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-          TexEnvi(GL_TEXTURE_ENV,
+          glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+          glTexEnvi(GL_TEXTURE_ENV,
             FLibCombiner.FCommandCache[N].Arg1,
             FLibCombiner.FCommandCache[N].Arg2);
         end;
       end;
-      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, cTextureMode[FTextureMode]);
       ActiveTexture := 0;
 
     end;
 
     XGL.BeginUpdate;
     if U > 3 then
-      XGL.MapTexCoordToArbitrary(U)
+      xgl.MapTexCoordToArbitrary(U)
     else if (FTexProps[0].Enabled)
       and (FTexProps[0].MappingMode = tmmUser) then
       if FTexProps[1].MappingMode = tmmUser then
-        XGL.MapTexCoordToDual
+        xgl.MapTexCoordToDual
       else
-        XGL.MapTexCoordToMain
+        xgl.MapTexCoordToMain
     else if FTexProps[1].MappingMode = tmmUser then
-      XGL.MapTexCoordToSecond
+      xgl.MapTexCoordToSecond
     else
-      XGL.MapTexCoordToMain;
+      xgl.MapTexCoordToMain;
     XGL.EndUpdate;
 
   end;
@@ -3704,37 +3720,36 @@ var
   glTarget: GLEnum;
 begin
   if Assigned(FLibTexture) then
-    with GL do
     begin
       FLibTexture.FApplicableSampler := FLibSampler;
       FLibTexture.Apply(ARci);
 
       // Apply swizzling if possible
       glTarget := DecodeGLTextureTarget(FLibTexture.Shape);
-      if ARB_texture_swizzle or EXT_texture_swizzle then
+      if GL_ARB_texture_swizzle or GL_EXT_texture_swizzle then
       begin
         if FSwizzling.FSwizzles[0] <> FLibTexture.FSwizzles[0] then
         begin
           FLibTexture.FSwizzles[0] := FSwizzling.FSwizzles[0];
-          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_R,
+          glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_R,
             cTextureSwizzle[FSwizzling.FSwizzles[0]]);
         end;
         if FSwizzling.FSwizzles[1] <> FLibTexture.FSwizzles[1] then
         begin
           FLibTexture.FSwizzles[1] := FSwizzling.FSwizzles[1];
-          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_G,
+          glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_G,
             cTextureSwizzle[FSwizzling.FSwizzles[1]]);
         end;
         if FSwizzling.FSwizzles[2] <> FLibTexture.FSwizzles[2] then
         begin
           FLibTexture.FSwizzles[2] := FSwizzling.FSwizzles[2];
-          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_B,
+          glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_B,
             cTextureSwizzle[FSwizzling.FSwizzles[2]]);
         end;
         if FSwizzling.FSwizzles[3] <> FLibTexture.FSwizzles[3] then
         begin
           FLibTexture.FSwizzles[3] := FSwizzling.FSwizzles[3];
-          TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_A,
+          glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_A,
             cTextureSwizzle[FSwizzling.FSwizzles[3]]);
         end;
       end;
@@ -3746,41 +3761,41 @@ begin
         else if FLibTexture.FLastSampler <> FLibSampler then
         begin
           // Sampler object not supported, lets use texture states
-          TexParameterfv(glTarget, GL_TEXTURE_BORDER_COLOR,
+          glTexParameterfv(glTarget, GL_TEXTURE_BORDER_COLOR,
             FLibSampler.BorderColor.AsAddress);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_S,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_S,
             cTextureWrapMode[FLibSampler.WrapX]);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_T,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_T,
             cTextureWrapMode[FLibSampler.WrapY]);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_R,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_R,
             cTextureWrapMode[FLibSampler.WrapZ]);
-          TexParameterf(glTarget, GL_TEXTURE_LOD_BIAS, FLibSampler.LODBias +
+          glTexParameterf(glTarget, GL_TEXTURE_LOD_BIAS, FLibSampler.LODBias +
             FLibSampler.FLODBiasFract);
-          TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER,
+          glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER,
             cTextureMinFilter[FLibSampler.MinFilter]);
-          TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER,
+          glTexParameteri(glTarget, GL_TEXTURE_MAG_FILTER,
             cTextureMagFilter[FLibSampler.MagFilter]);
 
-          if EXT_texture_filter_anisotropic then
+          if GL_EXT_texture_filter_anisotropic then
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
-              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+              glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
                 CurrentGLContext.GLStates.MaxTextureAnisotropy)
             else
-              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+              glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
 
-          TexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE,
+          glTexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE,
             cTextureCompareMode[FLibSampler.CompareMode]);
-          TexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC,
+          glTexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC,
             cGLComparisonFunctionToGLEnum[FLibSampler.CompareFunc]);
 
-          if EXT_texture_sRGB_decode then
+          if GL_EXT_texture_sRGB_decode then
           begin
             if FLibSampler.sRGB_Encode then
-              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
+              glTexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
             else
-              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT,
+              glTexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
 
@@ -3796,7 +3811,7 @@ begin
         glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, FEnvColor.AsAddress);
         ApplyMappingMode;
         if ARci.currentMaterialLevel = mlFixedFunction then
-          XGL.MapTexCoordToMain;
+          xgl.MapTexCoordToMain;
       end;
     end;
 end;
@@ -3805,9 +3820,8 @@ procedure TVKTextureProperties.ApplyMappingMode;
 var
   R_Dim: Boolean;
 begin
-  with GL do
   begin
-    R_Dim := ARB_texture_cube_map or EXT_texture3D;
+    R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
     case MappingMode of
 
@@ -3815,74 +3829,74 @@ begin
 
       tmmObjectLinear:
         begin
-          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-          TexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
-          TexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
-          Enable(GL_TEXTURE_GEN_S);
-          Enable(GL_TEXTURE_GEN_T);
+          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+          glTexGenfv(GL_S, GL_OBJECT_PLANE, @MappingSCoordinates.DirectVector);
+          glTexGenfv(GL_T, GL_OBJECT_PLANE, @MappingTCoordinates.DirectVector);
+          glEnable(GL_TEXTURE_GEN_S);
+          glEnable(GL_TEXTURE_GEN_T);
 
           if R_Dim then
           begin
-            TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-            TexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
-            TexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
-            TexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
-            Enable(GL_TEXTURE_GEN_R);
-            Enable(GL_TEXTURE_GEN_Q);
+            glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+            glTexGeni(GL_Q, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+            glTexGenfv(GL_R, GL_OBJECT_PLANE, @MappingRCoordinates.DirectVector);
+            glTexGenfv(GL_Q, GL_OBJECT_PLANE, @MappingQCoordinates.DirectVector);
+            glEnable(GL_TEXTURE_GEN_R);
+            glEnable(GL_TEXTURE_GEN_Q);
           end;
         end;
 
       tmmEyeLinear:
         begin
-          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
-          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
+          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_EYE_LINEAR);
           // specify planes in eye space, not world space
-          MatrixMode(GL_MODELVIEW);
-          PushMatrix;
-          LoadIdentity;
-          TexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
-          TexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
-          Enable(GL_TEXTURE_GEN_S);
-          Enable(GL_TEXTURE_GEN_T);
+          glMatrixMode(GL_MODELVIEW);
+          glPushMatrix;
+          glLoadIdentity;
+          glTexGenfv(GL_S, GL_EYE_PLANE, @MappingSCoordinates.DirectVector);
+          glTexGenfv(GL_T, GL_EYE_PLANE, @MappingTCoordinates.DirectVector);
+          glEnable(GL_TEXTURE_GEN_S);
+          glEnable(GL_TEXTURE_GEN_T);
           if R_Dim then
           begin
-            TexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
-            TexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
-            Enable(GL_TEXTURE_GEN_R);
-            Enable(GL_TEXTURE_GEN_Q);
+            glTexGenfv(GL_R, GL_EYE_PLANE, @MappingRCoordinates.DirectVector);
+            glTexGenfv(GL_Q, GL_EYE_PLANE, @MappingQCoordinates.DirectVector);
+            glEnable(GL_TEXTURE_GEN_R);
+            glEnable(GL_TEXTURE_GEN_Q);
           end;
-          PopMatrix;
+          glPopMatrix;
         end;
 
       tmmSphere:
         begin
-          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
-          Enable(GL_TEXTURE_GEN_S);
-          Enable(GL_TEXTURE_GEN_T);
+          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+          glEnable(GL_TEXTURE_GEN_S);
+          glEnable(GL_TEXTURE_GEN_T);
         end;
 
       tmmCubeMapReflection, tmmCubeMapCamera:
         if R_Dim then
         begin
-          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-          TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
-          Enable(GL_TEXTURE_GEN_S);
-          Enable(GL_TEXTURE_GEN_T);
-          Enable(GL_TEXTURE_GEN_R);
+          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
+          glEnable(GL_TEXTURE_GEN_S);
+          glEnable(GL_TEXTURE_GEN_T);
+          glEnable(GL_TEXTURE_GEN_R);
         end;
 
       tmmCubeMapNormal, tmmCubeMapLight0:
         if R_Dim then
         begin
-          TexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-          TexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-          TexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
-          Enable(GL_TEXTURE_GEN_S);
-          Enable(GL_TEXTURE_GEN_T);
-          Enable(GL_TEXTURE_GEN_R);
+          glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
+          glEnable(GL_TEXTURE_GEN_S);
+          glEnable(GL_TEXTURE_GEN_T);
+          glEnable(GL_TEXTURE_GEN_R);
         end;
     end;
   end;
@@ -4283,14 +4297,13 @@ end;
 procedure TVKTextureProperties.UnApplyMappingMode;
 begin
   if MappingMode <> tmmUser then
-    with GL do
     begin
-      Disable(GL_TEXTURE_GEN_S);
-      Disable(GL_TEXTURE_GEN_T);
-      if EXT_texture3D or ARB_texture_cube_map then
+      glDisable(GL_TEXTURE_GEN_S);
+      glDisable(GL_TEXTURE_GEN_T);
+      if GL_EXT_texture3D or GL_ARB_texture_cube_map then
       begin
-        Disable(GL_TEXTURE_GEN_R);
-        Disable(GL_TEXTURE_GEN_Q);
+        glDisable(GL_TEXTURE_GEN_R);
+        glDisable(GL_TEXTURE_GEN_Q);
       end;
     end;
 end;
@@ -4370,7 +4383,7 @@ begin
   if not IsDesignTime and FDefferedInit then
     exit;
   try
-    if FHandle[FShaderType].IsSupported then
+    if FHandle[FShaderType].IsSupported > 0 then
     begin
       FHandle[FShaderType].AllocateHandle;
       if FHandle[FShaderType].IsDataNeedUpdate then
@@ -4747,7 +4760,7 @@ var
 begin
   if FEnabled then
     try
-      if IsSupported and FHandle.IsSupported then
+      if IsSupported and (FHandle.IsSupported > 0) then
       begin
         FHandle.AllocateHandle;
         if FHandle.IsDataNeedUpdate then
@@ -4773,17 +4786,15 @@ begin
             if Assigned(FShaders[T]) then
               FHandle.AttachObject(FShaders[T].Handle);
           ID := FHandle.Handle;
-
-          with GL do
           begin
             // Can be override by layouts in shader
             if Assigned(FShaders[shtGeometry]) then
             begin
-              ProgramParameteri(ID, GL_GEOMETRY_INPUT_TYPE_EXT,
+              glProgramParameteri(ID, GL_GEOMETRY_INPUT_TYPE_EXT,
                 cGLgsInTypes[FShaders[shtGeometry].GeometryInput]);
-              ProgramParameteri(ID, GL_GEOMETRY_OUTPUT_TYPE_EXT,
+              glProgramParameteri(ID, GL_GEOMETRY_OUTPUT_TYPE_EXT,
                 cGLgsOutTypes[FShaders[shtGeometry].GeometryOutput]);
-              ProgramParameteri(ID, GL_GEOMETRY_VERTICES_OUT_EXT,
+              glProgramParameteri(ID, GL_GEOMETRY_VERTICES_OUT_EXT,
                 FShaders[shtGeometry].GeometryVerticesOut);
             end;
 
@@ -4793,7 +4804,7 @@ begin
               // Get final values
               if Assigned(FShaders[shtGeometry]) then
               begin
-                GetProgramiv(ID, GL_GEOMETRY_INPUT_TYPE_EXT, @AType);
+                glGetProgramiv(ID, GL_GEOMETRY_INPUT_TYPE_EXT, @AType);
                 case AType of
                   GL_POINTS: FShaders[shtGeometry].FGeometryInput := gsInPoints;
                   GL_LINES: FShaders[shtGeometry].FGeometryInput := gsInLines;
@@ -4804,7 +4815,7 @@ begin
                   GL_TRIANGLES_ADJACENCY_EXT:
                     FShaders[shtGeometry].FGeometryInput := gsInAdjTriangles;
                 end;
-                GetProgramiv(ID, GL_GEOMETRY_OUTPUT_TYPE_EXT, @AType);
+                glGetProgramiv(ID, GL_GEOMETRY_OUTPUT_TYPE_EXT, @AType);
                 case AType of
                   GL_POINTS: FShaders[shtGeometry].FGeometryOutput :=
                     gsOutPoints;
@@ -4813,7 +4824,7 @@ begin
                   GL_TRIANGLE_STRIP: FShaders[shtGeometry].FGeometryOutput :=
                     sOutTriangleStrip;
                 end;
-                GetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @I);
+                glGetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @I);
                 if I > 0 then
                   FShaders[shtGeometry].FGeometryVerticesOut := I;
                 ClearOpenGLError;
@@ -4825,7 +4836,7 @@ begin
               glGetProgramiv(ID, GL_ACTIVE_UNIFORMS, @C);
               for I := 0 to C - 1 do
               begin
-                GetActiveUniform(
+                glGetActiveUniform(
                   ID,
                   GLuint(I),
                   Length(buff),
@@ -4833,7 +4844,7 @@ begin
                   @Size,
                   @AType,
                   @buff[0]);
-                Loc := GetUniformLocation(ID, @buff[0]);
+                Loc := glGetUniformLocation(ID, @buff[0]);
                 if Loc < 0 then
                   continue;
                 UName := Copy(string(buff), 0, Len);
@@ -4955,7 +4966,7 @@ begin
                       if LUniform.FType = GLSLData then
                       begin
                         if (LUniform is TVKShaderUniformDSA)
-                          and not EXT_direct_state_access then
+                          and not GL_EXT_direct_state_access then
                         begin
                           LUniform2 := LUniform;
                           LUniform := TVKShaderUniform.Create(Self);
@@ -4987,7 +4998,7 @@ begin
                   end
                   else
                   begin
-                    if EXT_direct_state_access then
+                    if GL_EXT_direct_state_access then
                       LUniform := TVKShaderUniformDSA.Create(Self)
                     else
                       LUniform := TVKShaderUniform.Create(Self);
@@ -5252,9 +5263,7 @@ begin
 end;
 
 procedure BeginPatch(mode: GLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS}stdcall{$ELSE}cdecl{$ENDIF};
 begin
   if mode = GL_PATCHES then
     vStoreBegin(GL_PATCHES)
@@ -5264,14 +5273,13 @@ begin
     or (mode = GL_QUADS) then
   begin
     if mode = GL_QUADS then
-      GL.PatchParameteri(GL_PATCH_VERTICES, 4)
+      glPatchParameteri(GL_PATCH_VERTICES, 4)
     else
-      GL.PatchParameteri(GL_PATCH_VERTICES, 3);
+      glPatchParameteri(GL_PATCH_VERTICES, 3);
     vStoreBegin(GL_PATCHES);
   end
   else
   begin
-    glBegin := vStoreBegin;
     GLSLogger.LogError('glBegin called with unsupported primitive for tessellation');
     Abort;
   end;
@@ -5282,7 +5290,7 @@ begin
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
   begin
     vStoreBegin := glBegin;
-    glBegin := BeginPatch;
+    ///? glBegin := BeginPatch;
     ARci.amalgamating := True;
   end;
   inherited;
@@ -5292,7 +5300,7 @@ procedure TVKShaderModel5.UnApply(var ARci: TVKRenderContextInfo);
 begin
   inherited;
   if Assigned(FShaders[shtControl]) or Assigned(FShaders[shtEvaluation]) then
-    glBegin := vStoreBegin;
+    //? glBegin := vStoreBegin;
   ARci.amalgamating := False;
 end;
 
@@ -5654,7 +5662,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
       begin
         if TextureBinding[I, FTarget] = ID then
         begin
-          GL.Uniform1i(FLocation, I);
+          glUniform1i(FLocation, I);
           ActiveTexture := I;
           Result := True;
           exit;
@@ -5666,7 +5674,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
         if TextureBinding[I, FTarget] = 0 then
         begin
           TextureBinding[I, FTarget] := ID;
-          GL.Uniform1i(FLocation, I);
+          glUniform1i(FLocation, I);
           ActiveTexture := I;
           Result := True;
           exit;
@@ -5687,7 +5695,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
 
       TextureBinding[J, FTarget] := ID;
       ActiveTexture := J;
-      GL.Uniform1i(FLocation, J);
+      glUniform1i(FLocation, J);
       Result := True;
       exit;
     end;
@@ -5701,35 +5709,34 @@ begin
   begin
     if FindHotActiveUnit and Assigned(FLibTexture) and Assigned(FLibSampler)
       then
-      with GL do
       begin
         // Apply swizzling if possible
         glTarget := DecodeGLTextureTarget(FLibTexture.Shape);
-        if ARB_texture_swizzle or EXT_texture_swizzle then
+        if GL_ARB_texture_swizzle or GL_EXT_texture_swizzle then
         begin
 
           if FSwizzling[0] <> FLibTexture.FSwizzles[0] then
           begin
             FLibTexture.FSwizzles[0] := FSwizzling[0];
-            TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_R,
+            glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_R,
               cTextureSwizzle[FSwizzling[0]]);
           end;
           if FSwizzling[1] <> FLibTexture.FSwizzles[1] then
           begin
             FLibTexture.FSwizzles[1] := FSwizzling[1];
-            TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_G,
+            glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_G,
               cTextureSwizzle[FSwizzling[1]]);
           end;
           if FSwizzling[2] <> FLibTexture.FSwizzles[2] then
           begin
             FLibTexture.FSwizzles[2] := FSwizzling[2];
-            TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_B,
+            glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_B,
               cTextureSwizzle[FSwizzling[2]]);
           end;
           if FSwizzling[3] <> FLibTexture.FSwizzles[3] then
           begin
             FLibTexture.FSwizzles[3] := FSwizzling[3];
-            TexParameteri(glTarget, GL_TEXTURE_SWIZZLE_A,
+            glTexParameteri(glTarget, GL_TEXTURE_SWIZZLE_A,
               cTextureSwizzle[FSwizzling[3]]);
           end;
         end;
@@ -5739,41 +5746,41 @@ begin
         else if FLibTexture.FLastSampler <> FLibSampler then
         begin
           // Sampler object not supported, lets use texture states
-          TexParameterfv(glTarget, GL_TEXTURE_BORDER_COLOR,
+          glTexParameterfv(glTarget, GL_TEXTURE_BORDER_COLOR,
             FLibSampler.BorderColor.AsAddress);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_S,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_S,
             cTextureWrapMode[FLibSampler.WrapX]);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_T,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_T,
             cTextureWrapMode[FLibSampler.WrapY]);
-          TexParameteri(glTarget, GL_TEXTURE_WRAP_R,
+          glTexParameteri(glTarget, GL_TEXTURE_WRAP_R,
             cTextureWrapMode[FLibSampler.WrapZ]);
-          TexParameterf(glTarget, GL_TEXTURE_LOD_BIAS, FLibSampler.LODBias +
+          glTexParameterf(glTarget, GL_TEXTURE_LOD_BIAS, FLibSampler.LODBias +
             FLibSampler.FLODBiasFract);
-          TexParameteri(glTarget, GL_TEXTURE_MIN_FILTER,
+          glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER,
             cTextureMinFilter[FLibSampler.MinFilter]);
-          TexParameteri(glTarget, GL_TEXTURE_MAG_FILTER,
+          glTexParameteri(glTarget, GL_TEXTURE_MAG_FILTER,
             cTextureMagFilter[FLibSampler.MagFilter]);
 
-          if EXT_texture_filter_anisotropic then
+          if GL_EXT_texture_filter_anisotropic then
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
-              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
+              glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
                 CurrentGLContext.GLStates.MaxTextureAnisotropy)
             else
-              TexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
+              glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
 
-          TexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE,
+          glTexParameteri(glTarget, GL_TEXTURE_COMPARE_MODE,
             cTextureCompareMode[FLibSampler.CompareMode]);
-          TexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC,
+          glTexParameteri(glTarget, GL_TEXTURE_COMPARE_FUNC,
             cGLComparisonFunctionToGLEnum[FLibSampler.CompareFunc]);
 
-          if EXT_texture_sRGB_decode then
+          if GL_EXT_texture_sRGB_decode then
           begin
             if FLibSampler.sRGB_Encode then
-              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
+              glTexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT, GL_DECODE_EXT)
             else
-              TexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT,
+              glTexParameteri(glTarget, GL_TEXTURE_SRGB_DECODE_EXT,
                 GL_SKIP_DECODE_EXT);
           end;
 
@@ -6317,7 +6324,7 @@ end;
 procedure TVKShaderUniform.SetFloat(const Value: GLfloat);
 begin
   PushProgram;
-  GL.Uniform1f(FLocation, Value);
+  glUniform1f(FLocation, Value);
   PopProgram;
 end;
 
@@ -6325,63 +6332,63 @@ procedure TVKShaderUniform.SetFloatArray(const Values: PGLFloat;
   Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1fv(FLocation, Count, Values);
+  glUniform1fv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetInt(const Value: Integer);
 begin
   PushProgram;
-  GL.Uniform1i(FLocation, Value);
+  glUniform1i(FLocation, Value);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1iv(FLocation, Count, Values);
+  glUniform1iv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIVec2(const Value: TVector2i);
 begin
   PushProgram;
-  GL.Uniform2i(FLocation, Value.X, Value.Y);
+  glUniform2i(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIVec3(const Value: TVector3i);
 begin
   PushProgram;
-  GL.Uniform3i(FLocation, Value.X, Value.Y, Value.Z);
+  glUniform3i(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIVec4(const Value: TVector4i);
 begin
   PushProgram;
-  GL.Uniform4i(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  glUniform4i(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetMat2(const Value: TMatrix2f);
 begin
   PushProgram;
-  GL.UniformMatrix2fv(FLocation, 1, False, @Value);
+  glUniformMatrix2fv(FLocation, 1, GLboolean(False), @Value);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetMat3(const Value: TMatrix3f);
 begin
   PushProgram;
-  GL.UniformMatrix2fv(FLocation, 1, False, @Value);
+  glUniformMatrix2fv(FLocation, 1, 0, @Value);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetMat4(const Value: TMatrix4f);
 begin
   PushProgram;
-  GL.UniformMatrix4fv(FLocation, 1, False, @Value);
+  glUniformMatrix4fv(FLocation, 1, 0, @Value);
   PopProgram;
 end;
 
@@ -6393,56 +6400,56 @@ end;
 procedure TVKShaderUniform.SetUInt(const Value: GLuint);
 begin
   PushProgram;
-  GL.Uniform1ui(FLocation, Value);
+  glUniform1ui(FLocation, Value);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUIntArray(const Values: PGLUInt; Count: Integer);
 begin
   PushProgram;
-  GL.Uniform1uiv(FLocation, Count, Values);
+  glUniform1uiv(FLocation, Count, Values);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUVec2(const Value: TVector2ui);
 begin
   PushProgram;
-  GL.Uniform2ui(FLocation, Value.X, Value.Y);
+  glUniform2ui(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUVec3(const Value: TVector3ui);
 begin
   PushProgram;
-  GL.Uniform3ui(FLocation, Value.X, Value.Y, Value.Z);
+  glUniform3ui(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUVec4(const Value: TVector4ui);
 begin
   PushProgram;
-  GL.Uniform4ui(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  glUniform4ui(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec2(const Value: TVector2f);
 begin
   PushProgram;
-  GL.Uniform2f(FLocation, Value.X, Value.Y);
+  glUniform2f(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec3(const Value: TVector3f);
 begin
   PushProgram;
-  GL.Uniform3f(FLocation, Value.X, Value.Y, Value.Z);
+  glUniform3f(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec4(const Value: TVector4f);
 begin
   PushProgram;
-  GL.Uniform4f(FLocation, Value.X, Value.Y, Value.Z, Value.W);
+  glUniform4f(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
@@ -6463,96 +6470,96 @@ end;
 
 procedure TVKShaderUniformDSA.SetFloat(const Value: GLfloat);
 begin
-  GL.ProgramUniform1f(GetProgram, FLocation, Value);
+  glProgramUniform1f(GetProgram, FLocation, Value);
 end;
 
 procedure TVKShaderUniformDSA.SetFloatArray(const Values: PGLFloat;
   Count: Integer);
 begin
-  GL.ProgramUniform1fv(GetProgram, FLocation, Count, Values);
+  glProgramUniform1fv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TVKShaderUniformDSA.SetInt(const Value: Integer);
 begin
-  GL.ProgramUniform1i(GetProgram, FLocation, Value);
+  glProgramUniform1i(GetProgram, FLocation, Value);
 end;
 
 procedure TVKShaderUniformDSA.SetIntArray(const Values: PGLInt; Count: Integer);
 begin
-  GL.ProgramUniform1iv(GetProgram, FLocation, Count, Values);
+  glProgramUniform1iv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TVKShaderUniformDSA.SetIVec2(const Value: TVector2i);
 begin
-  GL.ProgramUniform2i(GetProgram, FLocation, Value.X, Value.Y);
+  glProgramUniform2i(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetIVec3(const Value: TVector3i);
 begin
-  GL.ProgramUniform3i(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  glProgramUniform3i(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetIVec4(const Value: TVector4i);
 begin
-  GL.ProgramUniform4i(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  glProgramUniform4i(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
 procedure TVKShaderUniformDSA.SetMat2(const Value: TMatrix2f);
 begin
-  GL.ProgramUniformMatrix2fv(GetProgram, FLocation, 1, False, @Value);
+  glProgramUniformMatrix2fv(GetProgram, FLocation, 1, 0, @Value);
 end;
 
 procedure TVKShaderUniformDSA.SetMat3(const Value: TMatrix3f);
 begin
-  GL.ProgramUniformMatrix3fv(GetProgram, FLocation, 1, False, @Value);
+  glProgramUniformMatrix3fv(GetProgram, FLocation, 1, 0, @Value);
 end;
 
 procedure TVKShaderUniformDSA.SetMat4(const Value: TMatrix4f);
 begin
-  GL.ProgramUniformMatrix4fv(GetProgram, FLocation, 1, False, @Value);
+  glProgramUniformMatrix4fv(GetProgram, FLocation, 1, 0, @Value);
 end;
 
 procedure TVKShaderUniformDSA.SetUInt(const Value: GLuint);
 begin
-  GL.ProgramUniform1ui(GetProgram, FLocation, Value);
+  glProgramUniform1ui(GetProgram, FLocation, Value);
 end;
 
 procedure TVKShaderUniformDSA.SetUIntArray(const Values: PGLUInt;
   Count: Integer);
 begin
-  GL.ProgramUniform1uiv(GetProgram, FLocation, Count, Values);
+  glProgramUniform1uiv(GetProgram, FLocation, Count, Values);
 end;
 
 procedure TVKShaderUniformDSA.SetUVec2(const Value: TVector2ui);
 begin
-  GL.ProgramUniform2ui(GetProgram, FLocation, Value.X, Value.Y);
+  glProgramUniform2ui(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetUVec3(const Value: TVector3ui);
 begin
-  GL.ProgramUniform3ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  glProgramUniform3ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetUVec4(const Value: TVector4ui);
 begin
-  GL.ProgramUniform4ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  glProgramUniform4ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
 procedure TVKShaderUniformDSA.SetVec2(const Value: TVector2f);
 begin
-  GL.ProgramUniform2f(GetProgram, FLocation, Value.X, Value.Y);
+  glProgramUniform2f(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetVec3(const Value: TVector3f);
 begin
-  GL.ProgramUniform3f(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
+  glProgramUniform3f(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetVec4(const Value: TVector4f);
 begin
-  GL.ProgramUniform4f(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+  glProgramUniform4f(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
     Value.W);
 end;
 
@@ -6738,7 +6745,7 @@ begin
 
   // Check target support
   if FOnlyWrite and (LTarget = ttTexture2DMultisample)
-    and not Sender.GL_EXT_framebuffer_multisample then
+    and not GL_EXT_framebuffer_multisample then
   begin
     FIsValid := False;
     exit;
@@ -6795,7 +6802,7 @@ begin
 
   if FOnlyWrite and ((LTarget = ttTexture2D) or (LTarget =
     ttTexture2DMultisample))
-    and FRenderBufferHandle.IsSupported then
+    and (FRenderBufferHandle.IsSupported > 0) then
   begin
     if LTarget = ttTexture2D then
       FRenderBufferHandle.SetStorage(glFormat, w, h)
@@ -7274,7 +7281,7 @@ begin
   if FDefferedInit and not IsDesignTime then
     exit;
   try
-    if FHandle.IsSupported then
+    if FHandle.IsSupported > 0 then
     begin
       FHandle.AllocateHandle;
       if FHandle.IsDataNeedUpdate then

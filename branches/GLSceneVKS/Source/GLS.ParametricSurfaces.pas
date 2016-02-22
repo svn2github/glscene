@@ -290,41 +290,41 @@ begin
         case FBasis of
           psbBezier:
             begin
-              GL.MapGrid2f(FResolution, 1, 0, FResolution, 0, 1);
-              GL.Map2f(GL_MAP2_TEXTURE_COORD_3,
+              glMapGrid2f(FResolution, 1, 0, FResolution, 0, 1);
+              glMap2f(GL_MAP2_TEXTURE_COORD_3,
                 0, 1, 3, FOrderU,
                 0, 1, 3 * FCountU, FOrderV,
                 @FWeightedControlPoints.List[0]);
-              GL.Map2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FWeightedControlPoints.List[0]);
-              GL.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
+              glMap2f(GL_MAP2_VERTEX_3, 0, 1, 3, FCountU, 0, 1, 3 * FCountU, FCountV, @FWeightedControlPoints.List[0]);
+              glEvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
             end;
 
           psbBSpline:
             begin
-              NurbsRenderer := gluNewNurbsRenderer;
-              gluNurbsProperty(NurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
+              NurbsRenderer := @gluNewNurbsRenderer;
+              gluNurbsProperty(@NurbsRenderer, GLU_DISPLAY_MODE, GLU_FILL);
 
-              gluNurbsProperty(NurbsRenderer, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
-              gluNurbsProperty(NurbsRenderer, GLU_U_STEP, FResolution);
-              gluNurbsProperty(NurbsRenderer, GLU_V_STEP, FResolution);
+              gluNurbsProperty(@NurbsRenderer, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
+              gluNurbsProperty(@NurbsRenderer, GLU_U_STEP, FResolution);
+              gluNurbsProperty(@NurbsRenderer, GLU_V_STEP, FResolution);
 
-              gluBeginSurface(NurbsRenderer);
-              gluNurbsSurface(NurbsRenderer,
+              gluBeginSurface(@NurbsRenderer);
+              gluNurbsSurface(@NurbsRenderer,
                 FKnotsU.Count, @FKnotsU.List[0],
                 FKnotsV.Count, @FKnotsV.List[0],
                 3, FCountU * 3,
                 @FWeightedControlPoints.List[0],
                 FOrderU, FOrderV,
                 GL_MAP2_TEXTURE_COORD_3);
-              gluNurbsSurface(NurbsRenderer,
+              gluNurbsSurface(@NurbsRenderer,
                 FKnotsU.Count, @FKnotsU.List[0],
                 FKnotsV.Count, @FKnotsV.List[0],
                 3, FCountU * 3,
                 @FWeightedControlPoints.List[0],
                 FOrderU, FOrderV,
                 GL_MAP2_VERTEX_3);
-              gluEndSurface(NurbsRenderer);
-              gluDeleteNurbsRenderer(NurbsRenderer);
+              gluEndSurface(@NurbsRenderer);
+              gluDeleteNurbsRenderer(@NurbsRenderer);
             end;
 
         end;
@@ -582,24 +582,24 @@ begin
   mrci.GLStates.Enable(stAutoNormal);
   mrci.GLStates.Enable(stNormalize);
 
-  GL.MapGrid2f(FResolution, MaxU, MinU, FResolution, MinV, MaxV);
+  glMapGrid2f(FResolution, MaxU, MinU, FResolution, MinV, MaxV);
 
   if FTempTexCoords.Count > 0 then
   begin
     glEnable(GL_MAP2_TEXTURE_COORD_3);
-    GL.Map2f(GL_MAP2_TEXTURE_COORD_3,
+    glMap2f(GL_MAP2_TEXTURE_COORD_3,
       0, 1, 3, FCountU,
       0, 1, 3 * FCountU, FCountV,
       @FTempTexCoords.List[0]);
   end;
 
   glEnable(GL_MAP2_VERTEX_3);
-  GL.Map2f(GL_MAP2_VERTEX_3,
+  glMap2f(GL_MAP2_VERTEX_3,
     0, 1, 3, FCountU,
     0, 1, 3 * FCountU, FCountV,
     @FTempControlPoints.List[0]);
 
-  GL.EvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
+  glEvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
 
   mrci.GLStates.PopAttrib;
 end;

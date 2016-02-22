@@ -14,10 +14,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   FMX.Types,
-
-  GLS.VectorGeometry, GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorLists,
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.VectorGeometry, GLS.Scene, GLS.VectorLists,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.BaseClasses,
   GLS.Context, GLS.RenderContextInfo, GLS.VectorTypes;
 
@@ -455,7 +458,7 @@ var
    i : Integer;
    il : TIntegerList;
 begin
-   glPushClientAttrib(GL_CLIENT_VERTEX_ARRAY_BIT);
+   glPushClientAttribDefaultEXT(GL_CLIENT_VERTEX_ARRAY_BIT);
 
    glEnableClientState(GL_VERTEX_ARRAY);
    glVertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
@@ -467,7 +470,7 @@ begin
    end else glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
    if GL_EXT_compiled_vertex_array then
-      GL.LockArrays(0, FPlaneQuadVertices.Count);
+      glLockArraysEXT(0, FPlaneQuadVertices.Count);
 
    for i:=0 to FPlaneQuadIndices.Count-1 do begin
       il:=TIntegerList(FPlaneQuadIndices[i]);
@@ -475,7 +478,7 @@ begin
    end;
 
    if GL_EXT_compiled_vertex_array then
-      GL.UnLockArrays;
+      glUnlockArraysEXT;
 
    glPopClientAttrib;
 end;

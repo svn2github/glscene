@@ -1349,7 +1349,7 @@ procedure TVKFile3DSMeshObject.BuildList(var ARci: TVKRenderContextInfo);
 begin
   glPushMatrix;
   if not FStatic then
-    GL.MultMatrixf(@FAnimTransf.ModelMatrix);
+    glMultMatrixf(@FAnimTransf.ModelMatrix);
   inherited;
   glPopMatrix;
 end;

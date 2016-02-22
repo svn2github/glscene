@@ -199,11 +199,11 @@ begin
             SetGLColorWriting(False);
 
           Enable(stDepthTest);
-          DepthWriteMask := False;
+          DepthWriteMask := 0;
 
           BuildList(ARci);
 
-          DepthWriteMask := True;
+          DepthWriteMask := GLboolean(True);
           if (moUseStencil in MirrorOptions) then
           begin
             SetStencilFunc(cfEqual, 1, 1);
@@ -228,7 +228,7 @@ begin
           glEnable(GL_CLIP_PLANE0);
           SetPlane(clipPlane, PlaneMake(AffineVectorMake(AbsolutePosition),
             VectorNegate(AffineVectorMake(AbsoluteDirection))));
-          GL.ClipPlane(GL_CLIP_PLANE0, @clipPlane);
+          glClipPlane(GL_CLIP_PLANE0, @clipPlane);
         end;
 
         // Mirror lights
@@ -305,7 +305,7 @@ end;
 procedure TVKMirror.BuildList(var ARci: TVKRenderContextInfo);
 var
   hw, hh: GLfloat;
-  quadric: PGLUquadricObj;
+  quadric: GLUquadricObj;
 begin
   if msRect = FShape then
   begin

@@ -162,7 +162,7 @@ begin
     end
     else
       fLevelCount := 1;
-    GL.CheckError;
+    CheckOpenGLError;
   finally
     if contextActivate then
     begin

@@ -949,16 +949,15 @@ begin
     UnpackSkipPixels := 0;
   end;
 
-  with GL do
   begin
-    Hint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
       cTextureMinFilter[FMinFilter]);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
       cTextureMagFilter[FMagFilter]);
   end;
 end;
@@ -1083,22 +1082,21 @@ begin
         continue; // not found
       pch := @FChars[chi];
       if pch.w > 0 then
-        with GL do
         begin
           GetICharTexCoords(ARci, chi, TopLeft, BottomRight);
           vBottomRight.X := vTopLeft.X + pch.w;
 
-          TexCoord2fv(@TopLeft);
-          Vertex4fv(@vTopLeft);
+          glTexCoord2fv(@TopLeft);
+          glVertex4fv(@vTopLeft);
 
-          TexCoord2f(TopLeft.S, BottomRight.t);
-          Vertex2f(vTopLeft.X, vBottomRight.Y);
+          glTexCoord2f(TopLeft.S, BottomRight.t);
+          glVertex2f(vTopLeft.X, vBottomRight.Y);
 
-          TexCoord2fv(@BottomRight);
-          Vertex4fv(@vBottomRight);
+          glTexCoord2fv(@BottomRight);
+          glVertex4fv(@vBottomRight);
 
-          TexCoord2f(BottomRight.S, TopLeft.t);
-          Vertex2f(vBottomRight.X, vTopLeft.Y);
+          glTexCoord2f(BottomRight.S, TopLeft.t);
+          glVertex2f(vBottomRight.X, vTopLeft.Y);
 
           vTopLeft.X := vTopLeft.X + pch.w + HSpace;
         end;
@@ -1241,12 +1239,11 @@ begin
   BottomRight.t := 1 - (ci.t + CharHeight) / FTextureHeight;
 
   if t <> FLastTexture then
-    with GL do
     begin
       FLastTexture := t;
       glEnd;
       ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
-      TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       glBegin(GL_QUADS);
     end;
 end;

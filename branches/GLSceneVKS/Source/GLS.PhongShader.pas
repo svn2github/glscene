@@ -12,9 +12,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
+  GLS.OpenGLAdapter,
+  GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, GLS.Context,
   GLS.AsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
 
 type
@@ -243,11 +247,11 @@ begin
   begin
     glGetLightfv(GL_LIGHT0+lightID, GL_POSITION, @LightParam);
     LightParam := LightParam;
-    GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
+    glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @LightParam);
     LightParam := LightDiffuse[lightID];
-    GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
+    glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, @LightParam);
     LightParam := LightSpecular[lightID];
-    GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
+    glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, @LightParam);
   end;
 end;
 

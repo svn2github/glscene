@@ -18,7 +18,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-
+  //GLS
+  GLS.OpenGLAdapter,
   GLS.ApplicationFileIO,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.VectorGeometry,
   GLS.Scene,  GLS.VectorFileObjects, GLS.VectorLists,  GLS.Texture,  GLS.Color,
@@ -356,7 +357,7 @@ var
         begin
           idx := TexCoordIndices.List^[Index];
           if idx <> -1 then
-            xglTexCoord2fv(@TexCoordPool^[idx]);
+            glTexCoord2fv(@TexCoordPool^[idx]);
         end;
 
         glVertex3fv(@VertexPool^[VertexIndices.List^[Index]]);

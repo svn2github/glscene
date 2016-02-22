@@ -14,13 +14,13 @@ interface
 {$I GLScene.inc}
 
 uses
- {$IFDEF MSWINDOWS}Winapi.Windows, {$ENDIF}
+  Winapi.Windows,
+  Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
   GLS.CrossPlatform,
   GLS.VectorGeometry,
-  GLS.Graphics,
-  GLS.OpenGLTokens;
+  GLS.Graphics;
 
 type
 

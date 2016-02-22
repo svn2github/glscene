@@ -3,7 +3,6 @@
 //
 {
    A shader that allows texture combiner setup. 
-               
 }
 unit GLS.TexCombineShader;
 
@@ -12,13 +11,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //GLS
+  GLS.OpenGLAdapter,
   GLS.Texture,
   GLS.Material,
   GLS.RenderContextInfo,
   GLS.TextureCombiners,
-  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.XOpenGL,
   GLS.Context,
   GLS.CrossPlatform,
@@ -78,9 +80,9 @@ type
     property LibMaterial4Name: TVKLibMaterialName read FLibMaterial4Name write SetLibMaterial4Name;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------
 // ------------------ TVKTexCombineShader ------------------

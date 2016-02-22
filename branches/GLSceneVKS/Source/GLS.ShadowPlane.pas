@@ -157,7 +157,7 @@ procedure TVKShadowPlane.DoRender(var ARci: TVKRenderContextInfo;
 var
   oldProxySubObject, oldIgnoreMaterials: Boolean;
   shadowMat: TMatrix;
-  sr: TVKRect;
+  sr, ds: TVKRect;
   CurrentBuffer: TVKSceneBuffer;
   ModelMat: TMatrix;
 begin
@@ -179,8 +179,9 @@ begin
         begin
           sr := ScreenRect(CurrentBuffer);
           InflateGLRect(sr, 1, 1);
-          IntersectGLRect(sr, GLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy));
-          GL.Scissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
+          ds := GetGLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+          IntersectGLRect(sr, ds);
+          glScissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
           Enable(stScissorTest);
         end;
 
@@ -197,7 +198,7 @@ begin
         if (spoTransparent in ShadowOptions) then
         begin
           SetGLColorWriting(False);
-          DepthWriteMask := False;
+          DepthWriteMask := GLboolean(False);
           BuildList(ARci);
           SetGLColorWriting(True);
         end

@@ -1,8 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  GLScene's brute-force terrain renderer. 
+  GLScene's brute-force terrain renderer.
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
@@ -15,11 +15,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context,
-  GLS.ROAMPatch, GLS.VectorLists, GLS.RenderContextInfo, Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.XOpenGL, GLS.Utils, GLS.VectorTypes;
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.HeightData,
+  GLS.Material,
+  GLS.VectorGeometry,
+  GLS.Context,
+  GLS.ROAMPatch,
+  GLS.VectorLists,
+  GLS.RenderContextInfo,
+  GLS.XOpenGL,
+  GLS.Utils,
+  GLS.VectorTypes;
 
 const
   cTilesHashSize = 255;
@@ -34,12 +46,12 @@ type
   TMaxCLODTrianglesReachedEvent = procedure(var rci: TVKRenderContextInfo)
     of object;
 
-  TTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
-  TTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
+  TVKTerrainHighResStyle = (hrsFullGeometry, hrsTesselated);
+  TVKTerrainOcclusionTesselate = (totTesselateAlways, totTesselateIfVisible);
 
-  TTileManagementFlag = (tmClearUsedFlags, tmMarkUsedTiles,
+  TVKTileManagementFlag = (tmClearUsedFlags, tmMarkUsedTiles,
     tmReleaseUnusedTiles, tmAllocateNewTiles, tmWaitForPreparing);
-  TTileManagementFlags = set of TTileManagementFlag;
+  TVKTileManagementFlags = set of TVKTileManagementFlag;
 
   // TVKTerrainRenderer
 
@@ -69,9 +81,12 @@ type
     FOnHeightDataPostRender: THeightDataPostRenderEvent;
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
 
-    FQualityStyle: TTerrainHighResStyle;
+    FQualityStyle: TVKTerrainHighResStyle;
     FOcclusionFrameSkip: Integer;
-    FOcclusionTesselate: TTerrainOcclusionTesselate;
+    FOcclusionTesselate: TVKTerrainOcclusionTesselate;
+
+    FContourInterval: Integer;
+    FContourWidth: Integer;
 
   protected
     { Protected Declarations }
@@ -81,17 +96,17 @@ type
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
-      canAllocate: boolean = True): THeightData; overload;
-    function HashedTile(const xLeft, yTop: Integer; canAllocate: boolean = True)
+      canAllocate: Boolean = True): THeightData; overload;
+    function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True)
       : THeightData; overload;
 
     procedure SetHeightDataSource(const val: THeightDataSource);
-    procedure SetTileSize(const val: Integer);
-    procedure SetTilesPerTexture(const val: single);
-    procedure SetCLODPrecision(const val: Integer);
-    procedure SetMaterialLibrary(const val: TVKMaterialLibrary);
-    procedure SetQualityStyle(const val: TTerrainHighResStyle);
-    procedure SetOcclusionFrameSkip(val: Integer);
+    procedure SetTileSize(const Val: Integer);
+    procedure SetTilesPerTexture(const Val: single);
+    procedure SetCLODPrecision(const Val: Integer);
+    procedure SetMaterialLibrary(const Val: TVKMaterialLibrary);
+    procedure SetQualityStyle(const Val: TVKTerrainHighResStyle);
+    procedure SetOcclusionFrameSkip(Val: Integer);
 
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
@@ -99,15 +114,15 @@ type
 
     procedure ReleaseAllTiles; dynamic;
     procedure OnTileDestroyed(Sender: TObject); virtual;
-    function GetPreparedPatch(const tilePos, eyePos: TAffineVector;
-      texFactor: single; hdList: TList): TVKROAMPatch;
+    function GetPreparedPatch(const TilePos, EyePos: TAffineVector;
+      TexFactor: Single; HDList: TList): TVKROAMPatch;
 
   public
     { Public Declarations }
 
     { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
-    TileManagement: TTileManagementFlags;
+    TileManagement: TVKTileManagementFlags;
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -142,13 +157,13 @@ type
     property MaterialLibrary: TVKMaterialLibrary read FMaterialLibrary
       write SetMaterialLibrary;
 
-    { Quality distance hint. 
+    {  Quality distance hint. 
       This parameter gives an hint to the terrain renderer at which distance
       the terrain quality can be degraded to favor speed. The distance is
       expressed in absolute coordinates units. 
       All tiles closer than this distance are rendered according to
       QualityStyle and with a static resolution. }
-    property QualityDistance: single read FQualityDistance
+    property QualityDistance: Single read FQualityDistance
       write FQualityDistance;
     { Determines how high-res tiles (closer than QualityDistance) are rendered. 
       hrsFullGeometry (default value) means that the high-res tiles are rendered
@@ -156,36 +171,36 @@ type
       the tiles will be tesselated once, with the best output for the
       CLODPrecision, and the result of that tesselation will be reused
       in further frames without any adpative tesselation. }
-    property QualityStyle: TTerrainHighResStyle read FQualityStyle
+    property QualityStyle: TVKTerrainHighResStyle read FQualityStyle
       write SetQualityStyle default hrsFullGeometry;
-    { Maximum number of CLOD triangles per scene. 
+    {  Maximum number of CLOD triangles per scene. 
       Triangles in high-resolution tiles (closer than QualityDistance) do
       not count toward this limit. }
     property MaxCLODTriangles: Integer read FMaxCLODTriangles
       write FMaxCLODTriangles default 65536;
-    { Precision of CLOD tiles. 
+    {  Precision of CLOD tiles. 
       The lower the value, the higher the precision and triangle count.
-      Large values will result in coarse terrain. 
+      Large values will result in coarse terrain.
       high-resolution tiles (closer than QualityDistance) ignore this setting. }
     property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision
       default 100;
-    { Numbers of frames to skip for a tile when occlusion testing found it invisible. 
+    {  Numbers of frames to skip for a tile when occlusion testing found it invisible. 
       Occlusion testing can help reduce CPU, T&L and fillrate requirements
       when tiles are occluded, either by the terrain itself (tiles behind
       a mountain or a cliff) or by geometry that was rendered before the
       terrain (large buildings). If there is little occlusion in your scene
       (such as in top down or high-altitude view), turning occlusion on
-      may have a slightly negative effect on framerate. 
+      may have a slightly negative effect on framerate.
       It works by turning off rendering of tiles for the specified number
       of frames if it has been found invisible, after FrameSkip number
       of frames have been skipped, it will be rendered again, and a new
       occlusion testing made. This makes occlusion-testing a frame-to-frame
       coherency optimization, and as such, shouldn't be used for static
-      rendering (ie. leave value to its default of zero). 
+      rendering (ie. leave value to its default of zero).
       This optimization requires the hardware to support GL_NV_occlusion_query. }
     property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
       write SetOcclusionFrameSkip default 0;
-    { Determines if and how occlusion testing affects tesselation. 
+    {  Determines if and how occlusion testing affects tesselation. 
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
       of an ivisible tile can have a slight effect on the tesselation
@@ -194,11 +209,11 @@ type
       the QualityDistance, so that glitches will apear farther away
       (this will mean increasing your triangle count though, so you'll
       trade CPU power against T&L power). }
-    property OcclusionTesselate: TTerrainOcclusionTesselate
+    property OcclusionTesselate: TVKTerrainOcclusionTesselate
       read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
 
-    { Allows to specify terrain bounds. 
+    {  Allows to specify terrain bounds. 
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
       terrain area. }
@@ -210,23 +225,32 @@ type
       OnHeightDataPostRender. }
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
-    { Invoked for each heightData not culled out by the terrain renderer. 
+    {  Invoked for each heightData not culled out by the terrain renderer. 
       The list holds THeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
     property OnHeightDataPostRender: THeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
-    { Invoked whenever the MaxCLODTriangles limit was reached during last rendering. 
+    {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering. 
       This forced the terrain renderer to resize the buffer, which affects performance.
       If this event is fired frequently, one should increase MaxCLODTriangles.
-    }
+     }
     property OnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent
       read FOnMaxCLODTrianglesReached write FOnMaxCLODTrianglesReached;
+
+     {  Distance between contours - zero (default) for no contours  PGS }
+    property ContourInterval: Integer read FContourInterval
+      write FContourInterval default 0;
+
+     {  Width of contour lines }
+    property ContourWidth: Integer read FContourWidth
+      write FContourWidth default 1;
+
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -269,7 +293,7 @@ begin
 end;
 
 // Destroy
-
+//
 destructor TVKTerrainRenderer.Destroy;
 var
   i: Integer;
@@ -287,7 +311,7 @@ begin
 end;
 
 // Notification
-
+//
 procedure TVKTerrainRenderer.Notification(AComponent: TComponent;
   Operation: TOperation);
 begin
@@ -302,7 +326,7 @@ begin
 end;
 
 // DestroyHandle
-
+//
 procedure TVKTerrainRenderer.DestroyHandle;
 begin
   inherited;
@@ -312,13 +336,13 @@ begin
 end;
 
 // RayCastIntersect
-
+//
 function TVKTerrainRenderer.RayCastIntersect(const rayStart, rayVector: TVector;
-  intersectPoint: PVector = nil; intersectNormal: PVector = nil): boolean;
+  intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
 var
   p1, d, p2, p3: TVector;
-  step, i, h, minH, maxH, p1height: single;
-  startedAbove: boolean;
+  step, i, h, minH, maxH, p1height: Single;
+  startedAbove: Boolean;
   failSafe: Integer;
   AbsX, AbsY, AbsZ: TVector;
 begin
@@ -470,20 +494,20 @@ end;
 procedure TVKTerrainRenderer.BuildList(var rci: TVKRenderContextInfo);
 var
   vEye, vEyeDirection: TVector;
-  tilePos, absTilePos, observer: TAffineVector;
-  deltaX, nbX, iX: Integer;
-  deltaY, nbY, iY: Integer;
-  n, rpIdxDelta, accumCount: Integer;
-  f, tileRadius, tileGroundRadius, texFactor, tileDist, qDist: single;
-  patch, prevPatch: TVKROAMPatch;
-  patchList, rowList, prevRow, buf: TList;
-  postRenderPatchList, postRenderHeightDataList: TList;
+  TilePos, AbsTilePos, Observer: TAffineVector;
+  DeltaX, nbX, iX: Integer;
+  DeltaY, nbY, iY: Integer;
+  n, rpIdxDelta, AccumCount: Integer;
+  f, TileRadius, TileGroundRadius, TexFactor, TileDist, qDist: Single;
+  Patch, PrevPatch: TVKROAMPatch;
+  PatchList, RowList, prevRow, buf: TList;
+  PostRenderPatchList, postRenderHeightDataList: TList;
   rcci: TRenderContextClippingInfo;
-  currentMaterialName: string;
-  maxTilePosX, maxTilePosY, minTilePosX, minTilePosY: single;
-  t_l, t_t, t_r, t_b: single;
+  CurrentMaterialName: String;
+  MaxTilePosX, MaxTilePosY, MinTilePosX, MinTilePosY: Single;
+  t_l, t_t, t_r, t_b: Single;
 
-  procedure ApplyMaterial(const materialName: string);
+  procedure ApplyMaterial(const materialName: String);
   begin
     if (MaterialLibrary = nil) or (currentMaterialName = materialName) then
       Exit;
@@ -508,7 +532,7 @@ var
       Material.Apply(rci)
     else
       MaterialLibrary.ApplyMaterial(materialName, rci);
-    currentMaterialName := materialName;
+    CurrentMaterialName := MaterialName;
   end;
 
 begin
@@ -583,7 +607,7 @@ begin
   FBufferVertices.Capacity := n;
   FBufferTexPoints.Capacity := n;
 
-  xglPushState;
+  XGL.PushState;
   try
     if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
@@ -594,14 +618,14 @@ begin
     glScalef(1, 1, 1 / 128);
     glTranslatef(-0.5 * TileSize, -0.5 * TileSize, 0);
     glEnableClientState(GL_VERTEX_ARRAY);
-    xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 
     glVertexPointer(3, GL_FLOAT, 0, FBufferVertices.list);
-    xglTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
+    glTexCoordPointer(2, GL_FLOAT, 0, FBufferTexPoints.list);
   finally
-    xglPopState;
+    XGL.PopState;
   end;
 
   HeightDataSource.Data.LockList; // Lock out the HDS thread while rendering
@@ -760,7 +784,7 @@ begin
   TVKROAMPatch.FlushAccum(FBufferVertices, FBufferVertexIndices,
     FBufferTexPoints);
 
-  xglPushState;
+  XGL.PushState;
   try
     if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
@@ -768,9 +792,9 @@ begin
       xgl.MapTexCoordToMain;
 
     glDisableClientState(GL_VERTEX_ARRAY);
-    xglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    XGL.DisableClientState(GL_TEXTURE_COORD_ARRAY);
   finally
-    xglPopState;
+    XGL.PopState;
   end;
 
   ApplyMaterial('');
@@ -879,19 +903,19 @@ end;
 // HashedTile
 
 function TVKTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: Boolean = True): THeightData;
 var
-  xLeft, yTop: Integer;
+  XLeft, YTop: Integer;
 begin
-  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
-  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
+  XLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
+  YTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
 // HashedTile
 
 function TVKTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
-  canAllocate: boolean = True): THeightData;
+  canAllocate: Boolean = True): THeightData;
 var
   i: Integer;
   hd: THeightData;
@@ -906,8 +930,8 @@ begin
     begin
       if hd.DontUse then
       begin
-        hashList.Remove(hd);
         // This tile has now been replaced. Remove it from the hash-table.
+        HashList.Remove(hd);
       end
       else
       begin
@@ -931,31 +955,31 @@ begin
 end;
 
 // GetPreparedPatch
-
+//
 function TVKTerrainRenderer.GetPreparedPatch(const tilePos,
-  eyePos: TAffineVector; texFactor: single; hdList: TList): TVKROAMPatch;
+  EyePos: TAffineVector; TexFactor: Single; HDList: TList): TVKROAMPatch;
 var
-  tile: THeightData;
-  patch: TVKROAMPatch;
-  xLeft, yTop: Integer;
-  canAllocate: boolean;
+  Tile: THeightData;
+  Patch: TVKROAMPatch;
+  XLeft, YTop: Integer;
+  CanAllocate: Boolean;
 begin
-  canAllocate := tmAllocateNewTiles in TileManagement;
-  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * TileSize;
-  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * TileSize;
-  tile := HashedTile(xLeft, yTop, canAllocate);
+  CanAllocate := tmAllocateNewTiles in TileManagement;
+  XLeft := Round(TilePos.X * FinvTileSize - 0.5) * TileSize;
+  YTop := Round(TilePos.Y * FinvTileSize - 0.5) * TileSize;
+  Tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
   if not Assigned(tile) then
     Exit;
 
   if (tmClearUsedFlags in TileManagement) // Tile cache management option
   then
-    tile.Tag := 1; // mark tile as used
+    Tile.Tag := 1; // mark tile as used
   if Assigned(hdList) then
     hdList.Add(tile);
 
   // if tile.DataState=hdsNone then begin
-  if tile.DataState <> hdsReady then
+  if Tile.DataState <> hdsReady then
   begin
     Result := nil; // if the tile is still not hdsReady, then skip it
   end
@@ -965,40 +989,42 @@ begin
     if not Assigned(patch) then
     begin
       // spawn ROAM patch
-      patch := TVKROAMPatch.Create;
-      tile.ObjectTag := patch;
-      patch.HeightData := tile;
-      patch.VertexScale := XYZVector;
-      patch.VertexOffset := tilePos;
-      patch.OcclusionSkip := OcclusionFrameSkip;
-      case tile.TextureCoordinatesMode of
+      Patch := TVKROAMPatch.Create;
+      Patch.ContourInterval := ContourInterval;
+      Patch.ContourWidth := ContourWidth;
+      Tile.ObjectTag := patch;
+      Patch.HeightData := tile;
+      Patch.VertexScale := XYZVector;
+      Patch.VertexOffset := tilePos;
+      Patch.OcclusionSkip := OcclusionFrameSkip;
+      case Tile.TextureCoordinatesMode of
         tcmWorld:
           begin
-            patch.TextureScale := AffineVectorMake(texFactor, -texFactor,
+            Patch.TextureScale := AffineVectorMake(TexFactor, -TexFactor,
               texFactor);
-            patch.TextureOffset := AffineVectorMake(xLeft * texFactor,
-              1 - yTop * texFactor, 0);
+            Patch.TextureOffset := AffineVectorMake(XLeft * TexFactor,
+              1 - YTop * texFactor, 0);
           end;
         tcmLocal:
           begin
-            with tile.TextureCoordinatesScale do
-              patch.TextureScale := AffineVectorMake(texFactor * S,
+            with Tile.TextureCoordinatesScale do
+              Patch.TextureScale := AffineVectorMake(texFactor * S,
                 -texFactor * t, texFactor);
-            with tile.TextureCoordinatesOffset do
-              patch.TextureOffset := AffineVectorMake(0 + S, 1 + t, 0);
+            with Tile.TextureCoordinatesOffset do
+              Patch.TextureOffset := AffineVectorMake(0 + S, 1 + t, 0);
           end;
       else
         Assert(False);
       end;
-      patch.ComputeVariance(FCLODPrecision);
+      Patch.ComputeVariance(FCLODPrecision);
     end;
-    patch.ObserverPosition := VectorSubtract(eyePos, tilePos);
+    Patch.ObserverPosition := VectorSubtract(eyePos, tilePos);
     Result := patch;
   end;
 end;
 
 // SetHeightDataSource
-
+//
 procedure TVKTerrainRenderer.SetHeightDataSource(const val: THeightDataSource);
 begin
   if FHeightDataSource <> val then
@@ -1017,7 +1043,7 @@ begin
 end;
 
 // SetTileSize
-
+//
 procedure TVKTerrainRenderer.SetTileSize(const val: Integer);
 begin
   if val <> FTileSize then
@@ -1033,7 +1059,7 @@ begin
 end;
 
 // SetTilesPerTexture
-
+//
 procedure TVKTerrainRenderer.SetTilesPerTexture(const val: single);
 begin
   if val <> FTilesPerTexture then
@@ -1044,7 +1070,7 @@ begin
 end;
 
 // SetCLODPrecision
-
+//
 procedure TVKTerrainRenderer.SetCLODPrecision(const val: Integer);
 var
   i, k: Integer;
@@ -1086,7 +1112,7 @@ end;
 
 // SetQualityStyle
 
-procedure TVKTerrainRenderer.SetQualityStyle(const val: TTerrainHighResStyle);
+procedure TVKTerrainRenderer.SetQualityStyle(const val: TVKTerrainHighResStyle);
 begin
   if val <> FQualityStyle then
   begin

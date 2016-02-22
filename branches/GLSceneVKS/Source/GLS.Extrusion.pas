@@ -553,12 +553,12 @@ var
     bottomTPNext := bottomTPBase;
     glBegin(GL_TRIANGLE_STRIP);
     glNormal3fv(@topNormal);
-    xglTexCoord2fv(@topTPBase);
+    glTexCoord2fv(@topTPBase);
     glVertex3fv(@topBase);
     while alpha < stopAlpha do
     begin
       glNormal3fv(@bottomNormal);
-      xglTexCoord2fv(@bottomTPBase);
+      glTexCoord2fv(@bottomTPBase);
       glVertex3fv(@bottomBase);
       nextAlpha := alpha + deltaAlpha;
       topTPNext.S := topTPNext.S + deltaS;
@@ -574,7 +574,7 @@ var
       CalcNormal(@topNext, @bottomNext, normal);
       SetLocalNormals;
       inc(i);
-      xglTexCoord2fv(@topTPNext);
+      glTexCoord2fv(@topTPNext);
       glNormal3fv(@topNormal);
       glVertex3fv(@topNext);
       alpha := nextAlpha;
@@ -584,7 +584,7 @@ var
       bottomTPBase := bottomTPNext;
     end;
     glNormal3fv(@bottomNormal);
-    xglTexCoord2fv(@bottomTPBase);
+    glTexCoord2fv(@bottomTPBase);
     glVertex3fv(@bottomBase);
     glEnd;
     firstStep := False;
@@ -693,7 +693,7 @@ begin
       end;
       if (rspInside in FParts) and (rspOutside in FParts) then
         FTriangleCount := FTriangleCount * 2;
-      xglTexCoord2fv(@NullTexPoint);
+      glTexCoord2fv(@NullTexPoint);
       // release lastNormals buffer (if smoothing)
       if FNormals = nsSmooth then
         FreeMem(lastNormals);
@@ -1160,13 +1160,12 @@ const
   var
     i: Integer;
   begin
-    with GL do
     begin
       if NodesColorMode <> pncmNone then
-        Color4fv(@row^.color);
+        glColor4fv(@row^.color);
       // it was necessary to change build process to generate textcoords
       glBegin(GL_TRIANGLE_STRIP);
-      Normal3fv(@normal);
+      glNormal3fv(@normal);
 
       case TexCoordMode of
         ptcmDefault, ptcmManual:
@@ -1175,25 +1174,25 @@ const
             begin
               for i := 0 to High(row^.node) - 1 do
               begin
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-                Vertex3fv(@row^.node[i].pos);
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-                Vertex3fv(@center);
+                glTexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
+                glVertex3fv(@row^.node[i].pos);
+                glTexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
+                glVertex3fv(@center);
               end;
-              TexCoord2f(TextCoordTileS, 1);
-              Vertex3fv(@row^.node[High(row^.node)].pos);
+              glTexCoord2f(TextCoordTileS, 1);
+              glVertex3fv(@row^.node[High(row^.node)].pos);
             end
             else
             begin
               for i := High(row^.node) downto 1 do
               begin
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
-                Vertex3fv(@row^.node[i].pos);
-                TexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
-                Vertex3fv(@center);
+                glTexCoord2f(i / (High(row^.node)) * TextCoordTileS, 0);
+                glVertex3fv(@row^.node[i].pos);
+                glTexCoord2f(i / (High(row^.node)) * TextCoordTileS, 1);
+                glVertex3fv(@center);
               end;
-              TexCoord2f(0, 0);
-              Vertex3fv(@row^.node[0].pos);
+              glTexCoord2f(0, 0);
+              glVertex3fv(@row^.node[0].pos);
             end;
           end;
       end;
@@ -1374,37 +1373,36 @@ const
   var
     j: Integer;
   begin
-    with GL do
     begin
       glBegin(GL_TRIANGLE_STRIP);
       if outside then
       begin
         if NodesColorMode <> pncmNone then
-          Color4fv(@curRow^.color);
+          glColor4fv(@curRow^.color);
 
-        TexCoord2f(0, curRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@curRow^.node[0].normal);
-        Vertex3fv(@curRow^.node[0].pos);
+        glTexCoord2f(0, curRow^.textcoordT * TextCoordTileT);
+        glNormal3fv(@curRow^.node[0].normal);
+        glVertex3fv(@curRow^.node[0].pos);
         for j := 0 to Slices - 1 do
         begin
           if NodesColorMode <> pncmNone then
-            Color4fv(@prevRow^.color);
-          TexCoord2f(j / Slices * TextCoordTileS, prevRow^.textcoordT *
+            glColor4fv(@prevRow^.color);
+          glTexCoord2f(j / Slices * TextCoordTileS, prevRow^.textcoordT *
             TextCoordTileT);
-          Normal3fv(@prevRow^.node[j].normal);
-          Vertex3fv(@prevRow^.node[j].pos);
+          glNormal3fv(@prevRow^.node[j].normal);
+          glVertex3fv(@prevRow^.node[j].pos);
           if NodesColorMode <> pncmNone then
-            Color4fv(@curRow^.color);
-          TexCoord2f((j + 1) / Slices * TextCoordTileS, curRow^.textcoordT *
+            glColor4fv(@curRow^.color);
+          glTexCoord2f((j + 1) / Slices * TextCoordTileS, curRow^.textcoordT *
             TextCoordTileT);
-          Normal3fv(@curRow^.node[j + 1].normal);
-          Vertex3fv(@curRow^.node[j + 1].pos);
+          glNormal3fv(@curRow^.node[j + 1].normal);
+          glVertex3fv(@curRow^.node[j + 1].pos);
         end;
         if NodesColorMode <> pncmNone then
-          Color4fv(@prevRow^.color);
-        TexCoord2f(TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@prevRow^.node[Slices].normal);
-        Vertex3fv(@prevRow^.node[Slices].pos);
+          glColor4fv(@prevRow^.color);
+        glTexCoord2f(TextCoordTileS, prevRow^.textcoordT * TextCoordTileT);
+        glNormal3fv(@prevRow^.node[Slices].normal);
+        glVertex3fv(@prevRow^.node[Slices].pos);
       end
       else
       begin
@@ -1414,31 +1412,31 @@ const
           prevRow.node[j].innormal := VectorNegate(prevRow.node[j].normal);
         end;
         if NodesColorMode <> pncmNone then
-          Color4fv(@prevRow^.color);
+          glColor4fv(@prevRow^.color);
 
-        TexCoord2f(0, prevRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@prevRow^.node[0].innormal);
-        Vertex3fv(@prevRow^.node[0].pos);
+        glTexCoord2f(0, prevRow^.textcoordT * TextCoordTileT);
+        glNormal3fv(@prevRow^.node[0].innormal);
+        glVertex3fv(@prevRow^.node[0].pos);
         for j := 0 to Slices - 1 do
         begin
           if NodesColorMode <> pncmNone then
-            Color4fv(@curRow^.color);
-          TexCoord2f(j / Slices * TextCoordTileS, curRow^.textcoordT *
+            glColor4fv(@curRow^.color);
+          glTexCoord2f(j / Slices * TextCoordTileS, curRow^.textcoordT *
             TextCoordTileT);
-          Normal3fv(@curRow^.node[j].innormal);
-          Vertex3fv(@curRow^.node[j].pos);
+          glNormal3fv(@curRow^.node[j].innormal);
+          glVertex3fv(@curRow^.node[j].pos);
           if NodesColorMode <> pncmNone then
-            Color4fv(@prevRow^.color);
-          TexCoord2f((j + 1) / Slices * TextCoordTileS, prevRow^.textcoordT *
+            glColor4fv(@prevRow^.color);
+          glTexCoord2f((j + 1) / Slices * TextCoordTileS, prevRow^.textcoordT *
             TextCoordTileT);
-          Normal3fv(@prevRow^.node[j + 1].innormal);
-          Vertex3fv(@prevRow^.node[j + 1].pos);
+          glNormal3fv(@prevRow^.node[j + 1].innormal);
+          glVertex3fv(@prevRow^.node[j + 1].pos);
         end;
         if NodesColorMode <> pncmNone then
-          Color4fv(@curRow^.color);
-        TexCoord2f(TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
-        Normal3fv(@curRow^.node[Slices].innormal);
-        Vertex3fv(@curRow^.node[Slices].pos);
+          glColor4fv(@curRow^.color);
+        glTexCoord2f(TextCoordTileS, curRow^.textcoordT * TextCoordTileT);
+        glNormal3fv(@curRow^.node[Slices].innormal);
+        glVertex3fv(@curRow^.node[Slices].pos);
       end;
       glEnd;
     end;
@@ -1741,18 +1739,18 @@ var
     bottomTPNext := bottomTPBase;
     glBegin(GL_TRIANGLE_STRIP);
     glNormal3fv(@normTop);
-    xglTexCoord2fv(@topTPBase);
+    glTexCoord2fv(@topTPBase);
     glVertex3fv(@topBase);
     for step := 1 to FStacks do
     begin
       glNormal3fv(@normBottom);
-      xglTexCoord2fv(@bottomTPBase);
+      glTexCoord2fv(@bottomTPBase);
       glVertex3fv(@bottomBase);
       topNext.Z := step * DeltaZ;
       bottomNext.Z := topNext.Z;
       topTPNext.T := topNext.Z;
       bottomTPNext.T := bottomNext.Z;
-      xglTexCoord2fv(@topTPNext);
+      glTexCoord2fv(@topTPNext);
       glNormal3fv(@normTop);
       glVertex3fv(@topNext);
       topBase := topNext;
@@ -1761,7 +1759,7 @@ var
       bottomTPBase := bottomTPNext;
     end;
     glNormal3fv(@normBottom);
-    xglTexCoord2fv(@bottomTPBase);
+    glTexCoord2fv(@bottomTPBase);
     glVertex3fv(@bottomBase);
     glEnd;
   end;
@@ -1811,7 +1809,7 @@ begin
           end;
         end;
     end;
-    xglTexCoord2fv(@NullTexPoint);
+    glTexCoord2fv(@NullTexPoint);
   end;
   // tessellate start/stop polygons
   if (espStartPolygon in FParts) or (espStopPolygon in FParts) then

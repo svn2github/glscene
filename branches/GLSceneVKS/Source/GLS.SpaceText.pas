@@ -435,11 +435,11 @@ begin
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
       stcrAlphaNum:
-        GL.ListBase(GLuint(Integer(glBase) - 32));
+        glListBase(GLuint(Integer(glBase) - 32));
       stcrNumbers:
-        GL.ListBase(GLuint(Integer(glBase) - Integer('0')));
+        glListBase(GLuint(Integer(glBase) - Integer('0')));
     else
-      GL.ListBase(glBase);
+      glListBase(glBase);
     end;
 
     rci.GLStates.PushAttrib([sttPolygon]);
@@ -493,10 +493,10 @@ begin
           end;
         end;
         if k > 1 then
-          GL.CallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
+          glCallLists(k - 1, GL_UNSIGNED_SHORT, PWideChar(cleanLine))
       end
       else
-        GL.CallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
+        glCallLists(Length(FLines.Strings[i]), GL_UNSIGNED_BYTE,
           PGLChar(String(FLines.Strings[i])));
       glPopMatrix;
     end;
@@ -855,7 +855,7 @@ procedure TFontManager.VirtualHandleDestroy(sender: TVKVirtualHandle;
   var handle: Cardinal);
 begin
   if handle <> 0 then
-    GL.DeleteLists(handle, sender.Tag);
+    glDeleteLists(handle, sender.Tag);
 end;
 
 // FindFond
@@ -938,7 +938,7 @@ begin
       AFont.Style := FStyles;
       { TODO : E2003 Undeclared identifier: 'handle' }
       (*SelectObject(MemDC, AFont.handle);*)
-      FCurrentBase := GL.GenLists(nbLists);
+      FCurrentBase := glGenLists(nbLists);
       if FCurrentBase = 0 then
         raise Exception.Create('FontManager: no more display lists available');
       NewEntry^.FVirtualHandle.AllocateHandle;
