@@ -30,7 +30,7 @@ uses
   GLS.CrossPlatform,
   GLS.Utils,
   GLS.VectorGeometry,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.ApplicationFileIO,
   GLS.VectorTypes;
 

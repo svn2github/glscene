@@ -193,7 +193,7 @@ procedure TSCVerletSphere.AlignCollider;
 begin
   inherited;
   if Assigned(FVerletConstraint) then
-    TVCSphere(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix.V[3]);
+    TVCSphere(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix.W);
 end;
 
 // SetRadius
@@ -264,8 +264,8 @@ procedure TSCVerletCapsule.AlignCollider;
 begin
   inherited;
   if Assigned(FVerletConstraint) then begin
-    TVCCapsule(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix.V[3]);
-    TVCCapsule(FVerletConstraint).Axis:=AffineVectorMake(GlobalMatrix.V[1]);
+    TVCCapsule(FVerletConstraint).Location:=AffineVectorMake(GlobalMatrix.W);
+    TVCCapsule(FVerletConstraint).Axis:=AffineVectorMake(GlobalMatrix.Y);
   end;
 end;
 

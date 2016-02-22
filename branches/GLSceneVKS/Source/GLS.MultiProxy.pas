@@ -12,7 +12,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.OpenGLTokens, GLS.Context,  GLS.Scene, GLS.VectorGeometry, GLS.Silhouette,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,  GLS.Scene, GLS.VectorGeometry, GLS.Silhouette,
   GLS.RenderContextInfo, GLS.BaseClasses, GLS.VectorTypes;
 
 type

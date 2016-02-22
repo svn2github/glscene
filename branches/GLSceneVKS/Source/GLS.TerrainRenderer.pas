@@ -18,7 +18,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLS.Scene, GLS.HeightData, GLS.Material, GLS.VectorGeometry, GLS.Context,
-  GLS.ROAMPatch, GLS.VectorLists, GLS.RenderContextInfo, GLS.OpenGLTokens,
+  GLS.ROAMPatch, GLS.VectorLists, GLS.RenderContextInfo, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.XOpenGL, GLS.Utils, GLS.VectorTypes;
 
 const
@@ -451,7 +451,7 @@ begin
   if Assigned(HeightDataSource) then
   begin
     pLocal := AbsoluteToLocal(p);
-    Result := HeightDataSource.InterpolatedHeight(pLocal.V[0], pLocal.V[1],
+    Result := HeightDataSource.InterpolatedHeight(pLocal.X, pLocal.Y,
       TileSize + 1) * Scale.Z * (1 / 128);
   end
   else
@@ -522,9 +522,9 @@ begin
   vEye := VectorTransform(rci.cameraPosition, InvAbsoluteMatrix);
   vEyeDirection := VectorTransform(rci.cameraDirection, InvAbsoluteMatrix);
   SetVector(observer, vEye);
-  vEye.V[0] := Round(vEye.V[0] * FinvTileSize - 0.5) * TileSize +
+  vEye.X := Round(vEye.X * FinvTileSize - 0.5) * TileSize +
     TileSize * 0.5;
-  vEye.V[1] := Round(vEye.V[1] * FinvTileSize - 0.5) * TileSize +
+  vEye.Y := Round(vEye.Y * FinvTileSize - 0.5) * TileSize +
     TileSize * 0.5;
   tileGroundRadius := Sqr(TileSize * 0.5 * Scale.X) +
     Sqr(TileSize * 0.5 * Scale.Y);
@@ -532,13 +532,13 @@ begin
   tileGroundRadius := Sqrt(tileGroundRadius);
   // now, we render a quad grid centered on eye position
   SetVector(tilePos, vEye);
-  tilePos.V[2] := 0;
+  tilePos.Z := 0;
   f := (rci.rcci.farClippingDistance + tileGroundRadius) / Scale.X;
   f := Round(f * FinvTileSize + 1.0) * TileSize;
-  maxTilePosX := vEye.V[0] + f;
-  maxTilePosY := vEye.V[1] + f;
-  minTilePosX := vEye.V[0] - f;
-  minTilePosY := vEye.V[1] - f;
+  maxTilePosX := vEye.X + f;
+  maxTilePosY := vEye.Y + f;
+  minTilePosX := vEye.X - f;
+  minTilePosY := vEye.Y - f;
 
   if Assigned(FOnGetTerrainBounds) then
   begin
@@ -585,14 +585,14 @@ begin
 
   xglPushState;
   try
-    if GL.ARB_multitexture then
+    if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
 
     glPushMatrix;
-    GL.Scalef(1, 1, 1 / 128);
-    GL.Translatef(-0.5 * TileSize, -0.5 * TileSize, 0);
+    glScalef(1, 1, 1 / 128);
+    glTranslatef(-0.5 * TileSize, -0.5 * TileSize, 0);
     glEnableClientState(GL_VERTEX_ARRAY);
     xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -624,14 +624,14 @@ begin
   AbsoluteMatrix; // makes sure it is available
 
   // determine orientation (to render front-to-back)
-  if vEyeDirection.V[0] >= 0 then
+  if vEyeDirection.X >= 0 then
     deltaX := TileSize
   else
   begin
     deltaX := -TileSize;
     minTilePosX := maxTilePosX;
   end;
-  if vEyeDirection.V[1] >= 0 then
+  if vEyeDirection.Y >= 0 then
     deltaY := TileSize
   else
   begin
@@ -641,10 +641,10 @@ begin
 
   tileRadius := tileRadius;
 
-  tilePos.V[1] := minTilePosY;
+  tilePos.Y := minTilePosY;
   for iY := 0 to nbY - 1 do
   begin
-    tilePos.V[0] := minTilePosX;
+    tilePos.X := minTilePosX;
     prevPatch := nil;
     n := 0;
     for iX := 0 to nbX do
@@ -710,10 +710,10 @@ begin
         prevPatch := nil;
         rowList.Add(nil);
       end;
-      tilePos.V[0] := tilePos.V[0] + deltaX;
+      tilePos.X := tilePos.X + deltaX;
       Inc(n);
     end;
-    tilePos.V[1] := tilePos.V[1] + deltaY;
+    tilePos.Y := tilePos.Y + deltaY;
     buf := prevRow;
     prevRow := rowList;
     rowList := buf;
@@ -762,7 +762,7 @@ begin
 
   xglPushState;
   try
-    if GL.ARB_multitexture then
+    if GL_ARB_multitexture then
       xgl.MapTexCoordToDual
     else
       xgl.MapTexCoordToMain;
@@ -883,8 +883,8 @@ function TVKTerrainRenderer.HashedTile(const tilePos: TAffineVector;
 var
   xLeft, yTop: Integer;
 begin
-  xLeft := Round(tilePos.V[0] * FinvTileSize - 0.5) * (TileSize);
-  yTop := Round(tilePos.V[1] * FinvTileSize - 0.5) * (TileSize);
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * (TileSize);
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * (TileSize);
   Result := HashedTile(xLeft, yTop, canAllocate);
 end;
 
@@ -941,8 +941,8 @@ var
   canAllocate: boolean;
 begin
   canAllocate := tmAllocateNewTiles in TileManagement;
-  xLeft := Round(tilePos.V[0] * FinvTileSize - 0.5) * TileSize;
-  yTop := Round(tilePos.V[1] * FinvTileSize - 0.5) * TileSize;
+  xLeft := Round(tilePos.X * FinvTileSize - 0.5) * TileSize;
+  yTop := Round(tilePos.Y * FinvTileSize - 0.5) * TileSize;
   tile := HashedTile(xLeft, yTop, canAllocate);
   Result := nil;
   if not Assigned(tile) then

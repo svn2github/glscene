@@ -17,7 +17,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Scene, GLS.VectorGeometry, GLS.XCollection, GLS.OpenGLTokens, GLS.Spline, GLS.Objects,
+  GLS.Scene, GLS.VectorGeometry, GLS.XCollection, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Spline, GLS.Objects,
   GLS.CrossPlatform, GLS.Strings, GLS.BaseClasses, GLS.VectorTypes;
 
 type
@@ -1086,23 +1086,23 @@ begin
 
     for I := 0 to FNodes.Count - 1 do
     begin
-      PFloatArray(x)[I]  := Nodes[I].FPosition.V[0];
-      PFloatArray(y)[I]  := Nodes[I].FPosition.V[1];
-      PFloatArray(z)[I]  := Nodes[I].FPosition.V[2];
-      PFloatArray(p)[I]  := Nodes[I].FRotation.V[0];
-      PFloatArray(t)[I]  := Nodes[I].FRotation.V[1];
-      PFloatArray(r)[I]  := Nodes[I].FRotation.V[2];
-      PFloatArray(sx)[I] := Nodes[I].FScale.V[0];
-      PFloatArray(sy)[I] := Nodes[I].FScale.V[1];
-      PFloatArray(sz)[I] := Nodes[I].FScale.V[2];
+      PFloatArray(x)[I]  := Nodes[I].FPosition.X;
+      PFloatArray(y)[I]  := Nodes[I].FPosition.Y;
+      PFloatArray(z)[I]  := Nodes[I].FPosition.Z;
+      PFloatArray(p)[I]  := Nodes[I].FRotation.X;
+      PFloatArray(t)[I]  := Nodes[I].FRotation.Y;
+      PFloatArray(r)[I]  := Nodes[I].FRotation.Z;
+      PFloatArray(sx)[I] := Nodes[I].FScale.X;
+      PFloatArray(sy)[I] := Nodes[I].FScale.Y;
+      PFloatArray(sz)[I] := Nodes[I].FScale.Z;
 
-      PFloatArray(dx)[I] := Nodes[I].FDirection.V[0];
-      PFloatArray(dy)[I] := Nodes[I].FDirection.V[1];
-      PFloatArray(dz)[I] := Nodes[I].FDirection.V[2];
+      PFloatArray(dx)[I] := Nodes[I].FDirection.X;
+      PFloatArray(dy)[I] := Nodes[I].FDirection.Y;
+      PFloatArray(dz)[I] := Nodes[I].FDirection.Z;
 
-      PFloatArray(ux)[I] := Nodes[I].FUp.V[0];
-      PFloatArray(uy)[I] := Nodes[I].FUp.V[1];
-      PFloatArray(uz)[I] := Nodes[I].FUp.V[2];
+      PFloatArray(ux)[I] := Nodes[I].FUp.X;
+      PFloatArray(uy)[I] := Nodes[I].FUp.Y;
+      PFloatArray(uz)[I] := Nodes[I].FUp.Z;
 
     end;
     MotionSplineControl   := TCubicSpline.Create(x, y, z, nil, FNodes.Count);

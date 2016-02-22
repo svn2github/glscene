@@ -19,7 +19,7 @@ uses
   GLS.Scene, GLS.VectorGeometry, GLS.Context, GLS.CrossPlatform,
   GLS.Texture, GLS.State, GLS.Utils, GLS.Graphics, GLS.Color, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.TextureFormat,
-  GLS.OpenGLTokens, GLS.XOpenGL, GLS.VectorTypes;
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.XOpenGL, GLS.VectorTypes;
 
 type
 {$IFNDEF GLS_UNICODE_SUPPORT}
@@ -1032,17 +1032,17 @@ begin
   CheckTexture(ARci);
   // precalcs
   if Assigned(aPosition) then
-    MakePoint(vTopLeft, aPosition.V[0] + AlignmentAdjustement(1),
-      aPosition.V[1] + LayoutAdjustement, 0)
+    MakePoint(vTopLeft, aPosition.X + AlignmentAdjustement(1),
+      aPosition.Y + LayoutAdjustement, 0)
   else
     MakePoint(vTopLeft, AlignmentAdjustement(1), LayoutAdjustement, 0);
   deltaV := -(CharHeight + VSpace);
   if aReverseY then
-    vBottomRight.V[1] := vTopLeft.V[1] + CharHeight
+    vBottomRight.Y := vTopLeft.Y + CharHeight
   else
-    vBottomRight.V[1] := vTopLeft.V[1] - CharHeight;
-  vBottomRight.V[2] := 0;
-  vBottomRight.V[3] := 1;
+    vBottomRight.Y := vTopLeft.Y - CharHeight;
+  vBottomRight.Z := 0;
+  vBottomRight.W := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
   with ARci.GLStates do
@@ -1066,17 +1066,17 @@ begin
       #13:
         begin
           if Assigned(aPosition) then
-            vTopLeft.V[0] := aPosition.V[0] + AlignmentAdjustement(i + 1)
+            vTopLeft.X := aPosition.X + AlignmentAdjustement(i + 1)
           else
-            vTopLeft.V[0] := AlignmentAdjustement(i + 1);
-          vTopLeft.V[1] := vTopLeft.V[1] + deltaV;
+            vTopLeft.X := AlignmentAdjustement(i + 1);
+          vTopLeft.Y := vTopLeft.Y + deltaV;
           if aReverseY then
-            vBottomRight.V[1] := vTopLeft.V[1] + CharHeight
+            vBottomRight.Y := vTopLeft.Y + CharHeight
           else
-            vBottomRight.V[1] := vTopLeft.V[1] - CharHeight;
+            vBottomRight.Y := vTopLeft.Y - CharHeight;
         end;
       #32:
-        vTopLeft.V[0] := vTopLeft.V[0] + spaceDeltaH;
+        vTopLeft.X := vTopLeft.X + spaceDeltaH;
     else
       chi := CharacterToTileIndex(currentChar);
       if chi < 0 then
@@ -1086,21 +1086,21 @@ begin
         with GL do
         begin
           GetICharTexCoords(ARci, chi, TopLeft, BottomRight);
-          vBottomRight.V[0] := vTopLeft.V[0] + pch.w;
+          vBottomRight.X := vTopLeft.X + pch.w;
 
           TexCoord2fv(@TopLeft);
           Vertex4fv(@vTopLeft);
 
           TexCoord2f(TopLeft.S, BottomRight.t);
-          Vertex2f(vTopLeft.V[0], vBottomRight.V[1]);
+          Vertex2f(vTopLeft.X, vBottomRight.Y);
 
           TexCoord2fv(@BottomRight);
           Vertex4fv(@vBottomRight);
 
           TexCoord2f(BottomRight.S, TopLeft.t);
-          Vertex2f(vBottomRight.V[0], vTopLeft.V[1]);
+          Vertex2f(vBottomRight.X, vTopLeft.Y);
 
-          vTopLeft.V[0] := vTopLeft.V[0] + pch.w + HSpace;
+          vTopLeft.X := vTopLeft.X + pch.w + HSpace;
         end;
     end;
   end;
@@ -1244,10 +1244,10 @@ begin
     with GL do
     begin
       FLastTexture := t;
-      End_;
+      glEnd;
       ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
       TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-      Begin_(GL_QUADS);
+      glBegin(GL_QUADS);
     end;
 end;
 

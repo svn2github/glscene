@@ -100,7 +100,7 @@ interface
 
 uses
   Winapi.Windows,
-  GLS.OpenGLTokens, Cg;
+  Winapi.OpenGL, Winapi.OpenGLext,  Cg;
 
 const
   {$IFDEF MSWINDOWS}

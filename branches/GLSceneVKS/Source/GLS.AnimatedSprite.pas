@@ -14,7 +14,7 @@ uses
   //GLS
   GLS.Scene,
   GLS.Context,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.VectorGeometry,
   GLS.Material,
   GLS.PersistentClasses,
@@ -913,12 +913,12 @@ begin
         end;
 
         glGetFloatv(GL_MODELVIEW_MATRIX, @mat);
-        vx.V[0] := mat.V[0].V[0];
-        vy.V[0] := mat.V[0].V[1];
-        vx.V[1] := mat.V[1].V[0];
-        vy.V[1] := mat.V[1].V[1];
-        vx.V[2] := mat.V[2].V[0];
-        vy.V[2] := mat.V[2].V[1];
+        vx.X := mat.X.X;
+        vy.X := mat.X.Y;
+        vx.Y := mat.Y.X;
+        vy.Y := mat.Y.Y;
+        vx.Z := mat.Z.X;
+        vy.Z := mat.Z.Y;
         ScaleVector(vx, w * VectorLength(vx));
         ScaleVector(vy, h * VectorLength(vy));
 
@@ -942,20 +942,20 @@ begin
         begin
           glMatrixMode(GL_MODELVIEW);
           glPushMatrix;
-          GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
+          glRotatef(FRotation, mat.X.Z, mat.Y.Z, mat.Z.Z);
         end;
         glBegin(GL_QUADS);
         glTexCoord2f(u1, v1);
-        glVertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1],
-                    vx.V[2] + vy.V[2]);
+        glVertex3f(vx.X + vy.X, vx.Y + vy.Y,
+                    vx.Z + vy.Z);
         glTexCoord2f(u0, v1);
-        glVertex3f(-vx.V[0] + vy.V[0],
-                    -vx.V[1] + vy.V[1],
-                    -vx.V[2] + vy.V[2]);
+        glVertex3f(-vx.X + vy.X,
+                    -vx.Y + vy.Y,
+                    -vx.Z + vy.Z);
         glTexCoord2f(u0, v0);
-        glVertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
+        glVertex3f(-vx.X - vy.X, -vx.Y - vy.Y, -vx.Z - vy.Z);
         glTexCoord2f(u1, v0);
-        glVertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+        glVertex3f(vx.X - vy.X, vx.Y - vy.Y, vx.Z - vy.Z);
         glEnd;
         if FRotation <> 0 then
         begin

@@ -12,7 +12,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.XCollection, GLS.VectorGeometry,
-  GLS.OpenGLTokens, GLS.Context, GLS.VectorLists, GLS.VectorTypes,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.VectorLists, GLS.VectorTypes,
   GLS.Cadencer, GLS.Color, GLS.BaseClasses, GLS.Coordinates,
   GLS.RenderContextInfo, GLS.Manager, GLS.State, GLS.TextureFormat;
 
@@ -346,18 +346,18 @@ begin
   SetVector(nvec, FTarget.x, FTarget.y, FTarget.z);
   len := VectorLength(nvec);
   NormalizeVector(nvec);
-  a := ArcCosine(nvec.V[2]);
-  b := ArcTangent2(nvec.V[0], nvec.V[1]);
+  a := ArcCosine(nvec.Z);
+  b := ArcTangent2(nvec.X, nvec.Y);
 
   N := 0;
   While (N < Maxpoints) do
   begin
     dist := N / Maxpoints * len;
     vec := FThorpoints^[N].Position;
-    vec.V[2] := dist;
+    vec.Z := dist;
 
     if Assigned(OnCalcPoint) then
-      OnCalcPoint(Self, N, vec.V[0], vec.V[1], vec.V[2]);
+      OnCalcPoint(Self, N, vec.X, vec.Y, vec.Z);
     // Let user mess around with point position
 
     SetVector(axs, 1, 0, 0); // Rotate up
@@ -563,8 +563,8 @@ begin
     mat := rci.PipelineTransformation.ModelViewMatrix;
     for m := 0 to 2 do
     begin
-      vx.V[m] := mat.V[m].V[0] * Manager.GlowSize;
-      vy.V[m] := mat.V[m].V[1] * Manager.GlowSize;
+      vx.V[m] := mat.V[m].X * Manager.GlowSize;
+      vy.V[m] := mat.V[m].Y * Manager.GlowSize;
     end;
 
     SetVector(InnerColor, Manager.FInnerColor.color);
@@ -591,7 +591,7 @@ begin
       begin
         fp := @(Manager.FThorpoints[i]);
         SetVector(Ppos, fp^.Position);
-        glVertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]);
+        glVertex3f(Ppos.X, Ppos.Y, Ppos.Z);
       end;
       glEnd;
     end; // Core;
@@ -608,34 +608,34 @@ begin
         SetVector(Ppos2, fp^.Position);
         glBegin(GL_TRIANGLE_FAN);
         glColor4fv(@Icol);
-        glVertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]); // middle1
+        glVertex3f(Ppos.X, Ppos.Y, Ppos.Z); // middle1
         glColor4fv(@Ocol);
-        glVertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
-          Ppos.V[2]); // TopRight
-        glVertex3f(Vx.V[0] * 1.4 + Ppos.V[0],
-          Vx.V[1] * 1.4 + Ppos.V[1], Vx.V[2] * 1.4 + Ppos.V[2]);
+        glVertex3f(Vx.X + Vy.X + Ppos.X,
+          Vx.Y + Vy.Y + Ppos.Y, Vx.Z + Vy.Z +
+          Ppos.Z); // TopRight
+        glVertex3f(Vx.X * 1.4 + Ppos.X,
+          Vx.Y * 1.4 + Ppos.Y, Vx.Z * 1.4 + Ppos.Z);
         // Right1
-        glVertex3f(Vx.V[0] - Vy.V[0] + Ppos.V[0],
-          Vx.V[1] - Vy.V[1] + Ppos.V[1], Vx.V[2] - Vy.V[2] +
-          Ppos.V[2]); // BottomRight
-        glVertex3f(-Vy.V[0] * 1.4 + Ppos.V[0],
-          -Vy.V[1] * 1.4 + Ppos.V[1], -Vy.V[2] * 1.4 + Ppos.V[2]
+        glVertex3f(Vx.X - Vy.X + Ppos.X,
+          Vx.Y - Vy.Y + Ppos.Y, Vx.Z - Vy.Z +
+          Ppos.Z); // BottomRight
+        glVertex3f(-Vy.X * 1.4 + Ppos.X,
+          -Vy.Y * 1.4 + Ppos.Y, -Vy.Z * 1.4 + Ppos.Z
           ); // bottom1
-        glVertex3f(-Vx.V[0] - Vy.V[0] + Ppos.V[0],
-          -Vx.V[1] - Vy.V[1] + Ppos.V[1], -Vx.V[2] - Vy.V[2]
-          + Ppos.V[2]); // BottomLeft
-        glVertex3f(-Vx.V[0] * 1.4 + Ppos.V[0],
-          -Vx.V[1] * 1.4 + Ppos.V[1], -Vx.V[2] * 1.4 + Ppos.V[2]); // left1
-        glVertex3f(-Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          -Vx.V[1] + Vy.V[1] + Ppos.V[1], -Vx.V[2] + Vy.V[2]
-          + Ppos.V[2]); // TopLeft
-        glVertex3f(Vy.V[0] * 1.4 + Ppos.V[0],
-          Vy.V[1] * 1.4 + Ppos.V[1], Vy.V[2] * 1.4 + Ppos.V[2]);
+        glVertex3f(-Vx.X - Vy.X + Ppos.X,
+          -Vx.Y - Vy.Y + Ppos.Y, -Vx.Z - Vy.Z
+          + Ppos.Z); // BottomLeft
+        glVertex3f(-Vx.X * 1.4 + Ppos.X,
+          -Vx.Y * 1.4 + Ppos.Y, -Vx.Z * 1.4 + Ppos.Z); // left1
+        glVertex3f(-Vx.X + Vy.X + Ppos.X,
+          -Vx.Y + Vy.Y + Ppos.Y, -Vx.Z + Vy.Z
+          + Ppos.Z); // TopLeft
+        glVertex3f(Vy.X * 1.4 + Ppos.X,
+          Vy.Y * 1.4 + Ppos.Y, Vy.Z * 1.4 + Ppos.Z);
         // top1
-        glVertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
-          Ppos.V[2]); // TopRight
+        glVertex3f(Vx.X + Vy.X + Ppos.X,
+          Vx.Y + Vy.Y + Ppos.Y, Vx.Z + Vy.Z +
+          Ppos.Z); // TopRight
         glEnd;
       end; // Glow
     end;

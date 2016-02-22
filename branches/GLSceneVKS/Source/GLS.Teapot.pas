@@ -14,7 +14,7 @@ interface
 uses
   System.Classes,
    
-  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context,
+  GLS.Scene, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
   GLS.RenderContextInfo, GLS.VectorTypes;
 
 type

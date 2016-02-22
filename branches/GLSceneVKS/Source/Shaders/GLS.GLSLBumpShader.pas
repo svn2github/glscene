@@ -25,7 +25,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.VectorTypes,
-  GLS.Cadencer, GLS.Strings, GLS.OpenGLTokens, GLS.CustomShader, GLS.Color,
+  GLS.Cadencer, GLS.Strings, Winapi.OpenGL, Winapi.OpenGLext,  GLS.CustomShader, GLS.Color,
   GLS.RenderContextInfo, GLS.Material, GLS.GLSLShader;
 
 type

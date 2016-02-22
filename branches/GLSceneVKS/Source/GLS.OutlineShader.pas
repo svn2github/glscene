@@ -22,7 +22,7 @@ uses
   System.Classes,
   //GLS
   GLS.Material, GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo,
-  GLS.OpenGLTokens, GLS.Context, GLS.State, GLS.TextureFormat;
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.State, GLS.TextureFormat;
 
 type
 

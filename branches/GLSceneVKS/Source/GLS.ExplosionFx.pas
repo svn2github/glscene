@@ -25,7 +25,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLS.OpenGLTokens, GLS.VectorGeometry, GLS.Scene, GLS.VectorFileObjects,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorGeometry, GLS.Scene, GLS.VectorFileObjects,
   GLS.VectorTypes, GLS.VectorLists, GLS.XCollection, GLS.Coordinates,
   GLS.RenderContextInfo, GLS.Context, GLS.State;
 
@@ -214,9 +214,9 @@ begin
     else
       FDirList.Add(FDirection.AsVector);
   // calculate the center (position) of the triangle so it rotates around its center
-    posi.V[0] := (p1.V[0] + p2.V[0] + p3.V[0]) / 3;
-    posi.V[1] := (p1.V[1] + p2.V[1] + p3.V[1]) / 3;
-    posi.V[2] := (p1.V[2] + p2.V[2] + p3.V[2]) / 3;
+    posi.X := (p1.X + p2.X + p3.X) / 3;
+    posi.Y := (p1.Y + p2.Y + p3.Y) / 3;
+    posi.Z := (p1.Z + p2.Z + p3.Z) / 3;
     FPosList.add(posi);
   // random rotation (in degrees)
     FRotList.Add(DegToRadian(3.0*Random), DegToRadian(3.0*Random), DegToRadian(3.0*Random));
@@ -252,9 +252,9 @@ begin
     SetVector(p3, FTriList.Items[Face * 3 + 2]);
   // rotate the face
     mat := IdentityHmgMatrix;
-    mat := MatrixMultiply(mat, CreateRotationMatrixX(FRotList.Items[face].V[0]));
-    mat := MatrixMultiply(mat, CreateRotationMatrixY(FRotList.Items[face].V[1]));
-    mat := MatrixMultiply(mat, CreateRotationMatrixZ(FRotList.Items[face].V[2]));
+    mat := MatrixMultiply(mat, CreateRotationMatrixX(FRotList.Items[face].X));
+    mat := MatrixMultiply(mat, CreateRotationMatrixY(FRotList.Items[face].Y));
+    mat := MatrixMultiply(mat, CreateRotationMatrixZ(FRotList.Items[face].Z));
     SubtractVector(p1, FPosList.Items[Face]);  // use of procedure is faster: PhP
     SubtractVector(p2, FPosList.Items[Face]);  // -''-
     SubtractVector(p3, FPosList.Items[Face]);  // -''-
@@ -266,7 +266,7 @@ begin
     AddVector(p3, FPosList.Items[Face]);  // -''-
   // move the face in the direction it is heading
     SetVector(dir, FDirList.Items[Face]);
-    GL.Normal3f(dir.V[0], dir.V[1], dir.V[2]);
+    glNormal3f(dir.X, dir.Y, dir.Z);
     ScaleVector(dir, Speed);
     AddVector(p1, dir);
     AddVector(p2, dir);
@@ -279,9 +279,9 @@ begin
     FTrilist.Items[face * 3 +1] := p2;
     FTrilist.Items[face * 3 +2] := p3;
 
-    glVertex3f(p1.V[0], p1.V[1], p1.V[2]);
-    glVertex3f(p2.V[0], p2.V[1], p2.V[2]);
-    glVertex3f(p3.V[0], p3.V[1], p3.V[2]);
+    glVertex3f(p1.X, p1.Y, p1.Z);
+    glVertex3f(p2.X, p2.Y, p2.Z);
+    glVertex3f(p3.X, p3.Y, p3.Z);
   end;
   glEnd;
   rci.GLStates.Enable(stCullFace);

@@ -14,7 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.OpenGLTokens, GLS.Context, 
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, 
   GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat, GLS.GLSLParameter;
 
 type
@@ -287,8 +287,8 @@ end;
 
 function TVKCustomGLSLShader.ShaderSupported: Boolean;
 begin
-  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
-             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
+  Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
+             GL_ARB_vertex_shader and GL_ARB_fragment_shader);
 end;
 
 function TVKCustomGLSLShader.GetActiveAttribs: TVKActiveAttribArray;
@@ -523,32 +523,32 @@ end;
 
 procedure TVKGLSLShaderParameter.SetAsVector2f(const Value: TVector2f);
 begin
-  GL.Uniform2f(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2f(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsVector2i(const Value: TVector2i);
 begin
-  GL.Uniform2i(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2i(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsVector3f(const Value: TVector3f);
 begin
-  GL.Uniform3f(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3f(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsVector3i(const Value: TVector3i);
 begin
-  GL.Uniform3i(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3i(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsVector4f(const Value: TVector4f);
 begin
-  GL.Uniform4f(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4f(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
-  GL.Uniform4i(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 function TVKGLSLShaderParameter.GetAsUniformBuffer: GLenum;
@@ -573,7 +573,7 @@ end;
 
 procedure TVKGLSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
 begin
-  GL.Uniform2ui(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2ui(FParameterID, Value.X, Value.Y);
 end;
 
 function TVKGLSLShaderParameter.GetAsVector3ui: TVector3ui;
@@ -583,7 +583,7 @@ end;
 
 procedure TVKGLSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
 begin
-  GL.Uniform3ui(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3ui(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 function TVKGLSLShaderParameter.GetAsVector4ui: TVector4ui;
@@ -593,7 +593,7 @@ end;
 
 procedure TVKGLSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
 begin
-  GL.Uniform4ui(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4ui(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TVKGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);

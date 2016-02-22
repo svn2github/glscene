@@ -34,7 +34,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS 
-  GLS.Material, GLS.Graphics, GLS.Utils, GLS.VectorGeometry, GLS.OpenGLTokens,
+  GLS.Material, GLS.Graphics, GLS.Utils, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context, GLS.VectorLists, GLS.Color, GLS.RenderContextInfo, GLS.State,
   GLS.TextureFormat;
 
@@ -544,14 +544,14 @@ begin
   FVertexProgramHandle.Bind;
 
   // Set the light position to program.local[0]
-  glGetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.V[0]);
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.V[0]);
+  glGetLightfv(GL_LIGHT0 + FLightIDs[0], GL_POSITION, @lightPos.X);
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @lightPos.X);
 
   // Set the light attenutation to program.local[1]
-  lightAtten.V[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
-  lightAtten.V[1] := rci.GLStates.LightLinearAtten[FLightIDs[0]];
-  lightAtten.V[2] := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.V[0]);
+  lightAtten.X := rci.GLStates.LightConstantAtten[FLightIDs[0]];
+  lightAtten.Y := rci.GLStates.LightLinearAtten[FLightIDs[0]];
+  lightAtten.Z := rci.GLStates.LightQuadraticAtten[FLightIDs[0]];
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 1, @lightAtten.X);
 
   case FBumpMethod of
     bmDot3TexCombiner:
@@ -570,10 +570,10 @@ begin
           rci.GLStates.TextureBinding[1, ttTexture2D] := dummyHandle;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
         glGetMaterialfv(GL_FRONT, GL_DIFFUSE, @materialDiffuse);
-        lightDiffuse.V[0] := lightDiffuse.V[0] * materialDiffuse.V[0];
-        lightDiffuse.V[1] := lightDiffuse.V[1] * materialDiffuse.V[1];
-        lightDiffuse.V[2] := lightDiffuse.V[2] * materialDiffuse.V[2];
-        lightDiffuse.V[3] := lightDiffuse.V[3] * materialDiffuse.V[3];
+        lightDiffuse.X := lightDiffuse.X * materialDiffuse.X;
+        lightDiffuse.Y := lightDiffuse.Y * materialDiffuse.Y;
+        lightDiffuse.Z := lightDiffuse.Z * materialDiffuse.Z;
+        lightDiffuse.W := lightDiffuse.W * materialDiffuse.W;
         glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @lightDiffuse);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
         glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
@@ -594,14 +594,14 @@ begin
         FFragmentProgramHandle.Bind;
         lightDiffuse := rci.GLStates.LightDiffuse[FLightIDs[0]];
         lightSpecular := rci.GLStates.LightSpecular[FLightIDs[0]];
-        lightAtten.V[0] := rci.GLStates.LightConstantAtten[FLightIDs[0]];
+        lightAtten.X := rci.GLStates.LightConstantAtten[FLightIDs[0]];
 
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 0,
-          @lightDiffuse.V[0]);
+          @lightDiffuse.X);
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 1,
-          @lightSpecular.V[0]);
+          @lightSpecular.X);
         GL.ProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, 2,
-          @lightAtten.V[0]);
+          @lightAtten.X);
       end;
 
   else
@@ -627,7 +627,7 @@ begin
 
   success := False;
   try
-    if not GL.ARB_multitexture then
+    if not GL_ARB_multitexture then
       raise Exception.Create('This shader requires GL_ARB_multitexture.');
     if (maxTextures < 3)
       and ((BumpMethod <> bmDot3TexCombiner) or (BumpSpace = bsTangentExternal)) then
@@ -699,9 +699,9 @@ begin
 
       glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
       glGetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
-      ambient.V[0] := ambient.V[0] * LMaterialAmbient.V[0];
-      ambient.V[1] := ambient.V[1] * LMaterialAmbient.V[1];
-      ambient.V[2] := ambient.V[2] * LMaterialAmbient.V[2];
+      ambient.X := ambient.X * LMaterialAmbient.X;
+      ambient.Y := ambient.Y * LMaterialAmbient.Y;
+      ambient.Z := ambient.Z * LMaterialAmbient.Z;
       glColor3fv(@ambient);
 
       FAmbientPass := True;
@@ -782,9 +782,9 @@ begin
 
       glGetFloatv(GL_LIGHT_MODEL_AMBIENT, @ambient);
       glGetMaterialfv(GL_FRONT, GL_AMBIENT, @LMaterialAmbient);
-      ambient.V[0] := ambient.V[0] * LMaterialAmbient.V[0];
-      ambient.V[1] := ambient.V[1] * LMaterialAmbient.V[1];
-      ambient.V[2] := ambient.V[2] * LMaterialAmbient.V[2];
+      ambient.X := ambient.X * LMaterialAmbient.X;
+      ambient.Y := ambient.Y * LMaterialAmbient.Y;
+      ambient.Z := ambient.Z * LMaterialAmbient.Z;
       glColor3fv(@ambient);
 
       FAmbientPass := True;

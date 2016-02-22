@@ -1,8 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   Base classes and structures for GLScene.  
+   Base classes and structures for GLScene.
 }
 
 unit GLS.Scene;
@@ -13,20 +13,43 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.UITypes,
-  FMX.Graphics,  FMX.Controls, FMX.Types,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Types,
   //GLS
-  GLS.OpenGLTokens, GLS.Context, GLS.VectorGeometry, GLS.XCollection, 
-  GLS.Silhouette, GLS.PersistentClasses, GLS.State, GLS.Graphics, 
-  GLS.GeometryBB, GLS.CrossPlatform, GLS.VectorLists, GLS.Texture, 
-  GLS.Color, GLS.BaseClasses, GLS.Coordinates, GLS.RenderContextInfo, 
-  GLS.Material, GLS.TextureFormat, GLS.Selection, GLS.Strings, 
-  GLS.XOpenGL, GLS.VectorTypes, GLS.ApplicationFileIO, GLS.Utils, GLS.Log;
-
+  GLS.OpenGLAdapter,
+  GLS.Context,
+  GLS.VectorGeometry,
+  GLS.XCollection,
+  GLS.Silhouette,
+  GLS.PersistentClasses,
+  GLS.State,
+  GLS.Graphics,
+  GLS.GeometryBB,
+  GLS.CrossPlatform,
+  GLS.VectorLists,
+  GLS.Texture,
+  GLS.Color,
+  GLS.BaseClasses,
+  GLS.Coordinates,
+  GLS.RenderContextInfo,
+  GLS.Material,
+  GLS.TextureFormat,
+  GLS.Selection,
+  GLS.Strings,
+  GLS.XOpenGL,
+  GLS.VectorTypes,
+  GLS.ApplicationFileIO,
+  GLS.Utils,
+  GLS.Log;
 
 
 type
-
   // TVKProxyObjectOption
   //
   { Defines which features are taken from the master object. }
@@ -41,8 +64,8 @@ type
 
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
-  GLSCENE_REVISION = '$Revision: 6530$';
-  GLSCENE_VERSION = '1.3.0.%s';
+  GLSCENE_REVISION = '$Revision: 6850$';
+  GLSCENE_VERSION = '1.5.0.%s';
 
 type
 
@@ -67,7 +90,7 @@ type
   //
   { Options for the rendering context. 
      roSoftwareMode: force software rendering.
-     roDoubleBuffer: enables double-buffering. 
+     roDoubleBuffer: enables double-buffering.
      roRenderToWindows: ignored (legacy). 
      roTwoSideLighting: enables two-side lighting model. 
      roStereo: enables stereo support in the driver (dunno if it works,
@@ -342,7 +365,7 @@ type
     { See InvAbsoluteMatrix. }
     function InvAbsoluteMatrixAsAddress: PMatrix;
 
-    { The object's absolute matrix by composing all local matrices. 
+    { The object's absolute matrix by composing all local matrices.
        Multiplying a local coordinate with this matrix gives an absolute coordinate. }
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix write
       SetAbsoluteMatrix;
@@ -417,7 +440,7 @@ type
     function DistanceTo(const pt: TAffineVector): Single; overload;
     function DistanceTo(const pt: TVector): Single; overload;
 
-    { Calculates the object's barycenter in absolute coordinates. 
+    { Calculates the object's barycenter in absolute coordinates.
        Default behaviour is to consider Barycenter=AbsolutePosition
        (whatever the number of children). 
        SubClasses where AbsolutePosition is not the barycenter should
@@ -1092,7 +1115,7 @@ type
 
   // TLightStyle
   //
-  { Defines the various styles for lightsources. 
+  { Defines the various styles for lightsources.
       
       lsSpot : a spot light, oriented and with a cutoff zone (note that if
         cutoff is 180, the spot is rendered as an omni source)
@@ -1467,7 +1490,7 @@ type
 
     { Saves the scene to a file (recommended extension : .GLS) }
     procedure SaveToFile(const fileName: string);
-    { Load the scene from a file. 
+    { Load the scene from a file.
        Existing objects/lights/cameras are freed, then the file is loaded. 
        Delphi's IDE is not handling this behaviour properly yet, ie. if
        you load a scene in the IDE, objects will be properly loaded, but
@@ -1817,7 +1840,7 @@ type
     procedure PushProjectionMatrix(const newMatrix: TMatrix); deprecated;
     procedure PopProjectionMatrix;  deprecated;
 
-    { Converts a screen pixel coordinate into 3D coordinates for orthogonal projection. 
+    { Converts a screen pixel coordinate into 3D coordinates for orthogonal projection.
        This function accepts standard canvas coordinates, with (0,0) being
        the top left corner, and returns, when the camera is in orthogonal
        mode, the corresponding 3D world point that is in the camera's plane. }
@@ -1917,7 +1940,7 @@ type
       default clMainPlane;
   published
     { Published Declarations }
-    { Fog environment options. 
+    { Fog environment options.
        See TVKFogEnvironment. }
     property FogEnvironment: TVKFogEnvironment read FFogEnvironment write
       SetGLFogEnvironment stored StoreFog;
@@ -1967,7 +1990,7 @@ type
        Default is highest available (below and including 24 bits) }
     property DepthPrecision: TVKDepthPrecision read FDepthPrecision write
       SetDepthPrecision default dpDefault;
-    { Color buffer depth. 
+    { Color buffer depth.
        Default depth buffer is highest available (below and including 24 bits) }
     property ColorDepth: TVKColorDepth read FColorDepth write SetColorDepth
       default cdDefault;
@@ -2205,7 +2228,7 @@ begin
     Enable(stLineStipple);
     LineStippleFactor := 1;
     LineStipplePattern := Pattern;
-    DepthWriteMask := True;
+    DepthWriteMask := 1;
     DepthFunc := cfLEqual;
     if rci.bufferDepthTest then
       Enable(stDepthTest);
@@ -2786,10 +2809,10 @@ procedure TVKBaseSceneObject.RebuildMatrix;
 begin
   if ocTransformation in Changes then
   begin
-    VectorScale(LeftVector, Scale.X, FLocalMatrix^.V[0]);
-    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.V[1]);
-    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.V[2]);
-    SetVector(FLocalMatrix^.V[3], FPosition.AsVector);
+    VectorScale(LeftVector, Scale.X, FLocalMatrix^.X);
+    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.Y);
+    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.Z);
+    SetVector(FLocalMatrix^.W, FPosition.AsVector);
     Exclude(FChanges, ocTransformation);
     Include(FChanges, ocAbsoluteMatrix);
     Include(FChanges, ocInvAbsoluteMatrix);
@@ -2904,7 +2927,7 @@ end;
 
 function TVKBaseSceneObject.GetAbsoluteDirection: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[2]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Z);
 end;
 
 // SetAbsoluteDirection
@@ -2923,11 +2946,11 @@ end;
 
 function TVKBaseSceneObject.GetAbsoluteScale: TVector;
 begin
-  Result.V[0] := AbsoluteMatrixAsAddress^.V[0].V[0];
-  Result.V[1] := AbsoluteMatrixAsAddress^.V[1].V[1];
-  Result.V[2] := AbsoluteMatrixAsAddress^.V[2].V[2];
+  Result.X := AbsoluteMatrixAsAddress^.X.X;
+  Result.Y := AbsoluteMatrixAsAddress^.Y.Y;
+  Result.Z := AbsoluteMatrixAsAddress^.Z.Z;
 
-  Result.V[3] := 0;
+  Result.W := 0;
 end;
 
 // SetAbsoluteScale
@@ -2946,7 +2969,7 @@ end;
 
 function TVKBaseSceneObject.GetAbsoluteUp: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[1]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Y);
 end;
 
 // SetAbsoluteUp
@@ -2965,7 +2988,7 @@ end;
 
 function TVKBaseSceneObject.AbsoluteRight: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[0]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.X);
 end;
 
 // AbsoluteLeft
@@ -2981,7 +3004,7 @@ end;
 
 function TVKBaseSceneObject.GetAbsolutePosition: TVector;
 begin
-  Result := AbsoluteMatrixAsAddress^.V[3];
+  Result := AbsoluteMatrixAsAddress^.W;
 end;
 
 // SetAbsolutePosition
@@ -3000,7 +3023,7 @@ end;
 
 function TVKBaseSceneObject.AbsolutePositionAsAddress: PVector;
 begin
-  Result := @AbsoluteMatrixAsAddress^.V[3];
+  Result := @AbsoluteMatrixAsAddress^.W;
 end;
 
 // AbsoluteXVector
@@ -3009,7 +3032,7 @@ end;
 function TVKBaseSceneObject.AbsoluteXVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[0])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.X)^);
 end;
 
 // AbsoluteYVector
@@ -3018,7 +3041,7 @@ end;
 function TVKBaseSceneObject.AbsoluteYVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[1])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Y)^);
 end;
 
 // AbsoluteZVector
@@ -3027,7 +3050,7 @@ end;
 function TVKBaseSceneObject.AbsoluteZVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[2])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Z)^);
 end;
 
 // AbsoluteToLocal (hmg)
@@ -3151,10 +3174,10 @@ end;
 
 function TVKBaseSceneObject.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5;
-  Result.V[1] := 0.5;
-  Result.V[2] := 0.5;
-  Result.V[3] := 0;
+  Result.X := 0.5;
+  Result.Y := 0.5;
+  Result.Z := 0.5;
+  Result.W := 0;
 end;
 
 // AxisAlignedBoundingBox
@@ -3302,9 +3325,9 @@ var
 begin
   dim := AxisAlignedDimensions;
   localPt := VectorTransform(point, InvAbsoluteMatrix);
-  Result := (Abs(localPt.V[0] * Scale.X) <= dim.V[0]) and
-            (Abs(localPt.V[1] * Scale.Y) <= dim.V[1]) and
-            (Abs(localPt.V[2] * Scale.Z) <= dim.V[2]);
+  Result := (Abs(localPt.X * Scale.X) <= dim.X) and
+            (Abs(localPt.Y * Scale.Y) <= dim.Y) and
+            (Abs(localPt.Z * Scale.Z) <= dim.Z);
 end;
 
 // CalculateBoundingBoxPersonalUnscaled
@@ -3591,10 +3614,10 @@ end;
 procedure TVKBaseSceneObject.ResetRotations;
 begin
   FillChar(FLocalMatrix^, SizeOf(TMatrix), 0);
-  FLocalMatrix^.V[0].V[0] := Scale.DirectX;
-  FLocalMatrix^.V[1].V[1] := Scale.DirectY;
-  FLocalMatrix^.V[2].V[2] := Scale.DirectZ;
-  SetVector(FLocalMatrix^.V[3], Position.DirectVector);
+  FLocalMatrix^.X.X := Scale.DirectX;
+  FLocalMatrix^.Y.Y := Scale.DirectY;
+  FLocalMatrix^.Z.Z := Scale.DirectZ;
+  SetVector(FLocalMatrix^.W, Position.DirectVector);
   FRotation.DirectVector := NullHmgPoint;
   FDirection.DirectVector := ZHmgVector;
   FUp.DirectVector := YHmgVector;
@@ -3765,11 +3788,11 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadianToDeg(ArcTangent2(rightVector.V[1],
-              VectorLength(rightVector.V[0],
-                           rightVector.V[2])));
-    if rightVector.V[0] < 0 then
-      if rightVector.V[1] < 0 then
+    r := -RadianToDeg(ArcTangent2(rightVector.Y,
+              VectorLength(rightVector.X,
+                           rightVector.Z)));
+    if rightVector.X < 0 then
+      if rightVector.Y < 0 then
         r := 180 - r
       else
         r := -180 - r;
@@ -4789,12 +4812,12 @@ end;
 procedure TVKBaseSceneObject.SetMatrix(const aValue: TMatrix);
 begin
   FLocalMatrix^ := aValue;
-  FDirection.DirectVector := VectorNormalize(FLocalMatrix^.V[2]);
-  FUp.DirectVector := VectorNormalize(FLocalMatrix^.V[1]);
-  Scale.SetVector(VectorLength(FLocalMatrix^.V[0]),
-    VectorLength(FLocalMatrix^.V[1]),
-    VectorLength(FLocalMatrix^.V[2]), 0);
-  FPosition.DirectVector := FLocalMatrix^.V[3];
+  FDirection.DirectVector := VectorNormalize(FLocalMatrix^.Z);
+  FUp.DirectVector := VectorNormalize(FLocalMatrix^.Y);
+  Scale.SetVector(VectorLength(FLocalMatrix^.X),
+    VectorLength(FLocalMatrix^.Y),
+    VectorLength(FLocalMatrix^.Z), 0);
+  FPosition.DirectVector := FLocalMatrix^.W;
   TransformationChanged;
 end;
 
@@ -4946,7 +4969,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsolutePosition;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // GetAbsoluteAffineDirection
@@ -4957,7 +4980,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsoluteDirection;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // GetAbsoluteAffineUp
@@ -4968,7 +4991,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsoluteUp;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // SetAbsoluteAffinePosition
@@ -5051,7 +5074,7 @@ end;
 procedure TVKBaseSceneObject.SetAbsoluteAffineScale(
   const Value: TAffineVector);
 begin
-  SetAbsoluteScale(VectorMake(Value, GetAbsoluteScale.V[3]));
+  SetAbsoluteScale(VectorMake(Value, GetAbsoluteScale.W));
 end;
 
 // ------------------
@@ -5725,14 +5748,14 @@ begin
       csInfinitePerspective:
         begin
           mat := IdentityHmgMatrix;
-          mat.V[0].V[0] := 2 * FNearPlane / (vRight - vLeft);
-          mat.V[1].V[1] := 2 * FNearPlane / (vTop - vBottom);
-          mat.V[2].V[0] := (vRight + vLeft) / (vRight - vLeft);
-          mat.V[2].V[1] := (vTop + vBottom) / (vTop - vBottom);
-          mat.V[2].V[2] := cEpsilon - 1;
-          mat.V[2].V[3] := -1;
-          mat.V[3].V[2] := FNearPlane * (cEpsilon - 2);
-          mat.V[3].V[3] := 0;
+          mat.X.X := 2 * FNearPlane / (vRight - vLeft);
+          mat.Y.Y := 2 * FNearPlane / (vTop - vBottom);
+          mat.Z.X := (vRight + vLeft) / (vRight - vLeft);
+          mat.Z.Y := (vTop + vBottom) / (vTop - vBottom);
+          mat.Z.Z := cEpsilon - 1;
+          mat.Z.W := -1;
+          mat.W.Z := FNearPlane * (cEpsilon - 2);
+          mat.W.W := 0;
         end;
       csOrthogonal:
         begin
@@ -5765,8 +5788,8 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z := -RadianToDeg(ArcTangent2(RightVector.V[1],
-      VectorLength(RightVector.V[0], RightVector.V[2])));
+    FRotation.Z := -RadianToDeg(ArcTangent2(RightVector.Y,
+      VectorLength(RightVector.X, RightVector.Z)));
   end;
 end;
 
@@ -6046,7 +6069,7 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[0], screenY.V[1]);
+  d := VectorLength(screenY.X, screenY.Y);
   if d <= 1e-10 then
     d := ratio
   else
@@ -6054,10 +6077,10 @@ begin
   // and here, we're done
   dxr := deltaX * d;
   dyr := deltaY * d;
-  Result.V[0] := screenY.V[1] * dxr + screenY.V[0] * dyr;
-  Result.V[1] := screenY.V[1] * dyr - screenY.V[0] * dxr;
-  Result.V[2] := 0;
-  Result.V[3] := 0;
+  Result.X := screenY.Y * dxr + screenY.X * dyr;
+  Result.Y := screenY.Y * dyr - screenY.X * dxr;
+  Result.Z := 0;
+  Result.W := 0;
 end;
 
 // ScreenDeltaToVectorXZ
@@ -6074,17 +6097,17 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[0], screenY.V[2]);
+  d := VectorLength(screenY.X, screenY.Z);
   if d <= 1e-10 then
     d := ratio
   else
     d := ratio / d;
   dxr := deltaX * d;
   dzr := deltaY * d;
-  Result.V[0] := -screenY.V[2] * dxr + screenY.V[0] * dzr;
-  Result.V[1] := 0;
-  Result.V[2] := screenY.V[2] * dzr + screenY.V[0] * dxr;
-  Result.V[3] := 0;
+  Result.X := -screenY.Z * dxr + screenY.X * dzr;
+  Result.Y := 0;
+  Result.Z := screenY.Z * dzr + screenY.X * dxr;
+  Result.W := 0;
 end;
 
 // ScreenDeltaToVectorYZ
@@ -6101,17 +6124,17 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[1], screenY.V[2]);
+  d := VectorLength(screenY.Y, screenY.Z);
   if d <= 1e-10 then
     d := ratio
   else
     d := ratio / d;
   dyr := deltaX * d;
   dzr := deltaY * d;
-  Result.V[0] := 0;
-  Result.V[1] := screenY.V[2] * dyr + screenY.V[1] * dzr;
-  Result.V[2] := screenY.V[2] * dzr - screenY.V[1] * dyr;
-  Result.V[3] := 0;
+  Result.X := 0;
+  Result.Y := screenY.Z * dyr + screenY.Y * dzr;
+  Result.Z := screenY.Z * dzr - screenY.Y * dyr;
+  Result.W := 0;
 end;
 
 // PointInFront
@@ -7490,9 +7513,9 @@ begin
 
             lPos := lightSource.AbsolutePosition;
             if LightStyle in [lsParallel, lsParallelSpot] then
-              lPos.V[3] := 0.0
+              lPos.W := 0.0
             else
-              lPos.V[3] := 1.0;
+              lPos.W := 1.0;
             LightPosition[FLightID] := lPos;
             LightSpotDirection[FLightID] := lightSource.SpotDirection.AsAffineVector;
 
@@ -7671,19 +7694,19 @@ begin
   glFogfv(GL_FOG_COLOR, FFogColor.AsAddress);
   glFogf(GL_FOG_START, FFogStart);
   glFogf(GL_FOG_END, FFogEnd);
-  if GL.NV_fog_distance then
+  if GL_NV_fog_distance then
   begin
     case FogDistance of
       fdDefault:
         begin
           if vImplemDependantFogDistanceDefault = -1 then
-            glGetIntegerv(GL_FOG_DISTANCE_MODE_NV,
+            glGetIntegerv(Cardinal(GL_NV_fog_distance), //GL_FOG_DISTANCE_MODE_NV,
               @vImplemDependantFogDistanceDefault)
           else
-            glFogi(GL_FOG_DISTANCE_MODE_NV, vImplemDependantFogDistanceDefault);
+            glFogi(Cardinal(GL_NV_fog_distance), vImplemDependantFogDistanceDefault);
         end;
       fdEyePlane:
-        glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
+        glFogi(Cardinal(GL_NV_fog_distance), GL_EYE_PLANE_ABSOLUTE_NV);
       fdEyeRadial:
         glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
     else
@@ -7836,7 +7859,7 @@ begin
     FRenderingContext.Activate;
     try
       // this one should NOT be replaced with an assert
-      if not GL.VERSION_1_1 then
+      if (GL_VERSION < 1.1) then
       begin
         GLSLogger.LogFatalError(glsWrongVersion);
         Abort;
@@ -7960,7 +7983,7 @@ begin
     SetState(FaceCulling, stCullFace);
     SetState(Lighting, stLighting);
     SetState(FogEnable, stFog);
-    if GL.ARB_depth_clamp then
+    if GL_ARB_depth_clamp then
       Disable(stDepthClamp);
     if not (roForwardContext in ContextOptions) then
     begin
@@ -8038,7 +8061,7 @@ begin
     limSubpixelBits:
       glGetIntegerv(GL_SUBPIXEL_BITS, @Result);
     limNbTextureUnits:
-      if GL.ARB_multitexture then
+      if GL_ARB_multitexture then
         glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @Result)
       else
         Result := 1;
@@ -8214,7 +8237,7 @@ begin
     FRenderingContext.Activate;
     try
       glReadPixels(0, 0, Width, Height, GL_RGBA, GL_FLOAT, Data);
-      GL.CheckError;
+      glGetError;
 
       Stream := TMemoryStream.Create;
       try
@@ -8592,7 +8615,7 @@ function TVKSceneBuffer.ScreenToVector(const aPoint: TVector): TVector;
 begin
   SetVector(Result, VectorSubtract(ScreenToWorld(aPoint),
     FCameraAbsolutePosition));
-  Result.V[3] := 0;
+  Result.W := 0;
 end;
 
 // ScreenToVector
@@ -8602,9 +8625,9 @@ function TVKSceneBuffer.ScreenToVector(const x, y: Integer): TVector;
 var
   av: TAffineVector;
 begin
-  av.V[0] := x;
-  av.V[1] := y;
-  av.V[2] := 0;
+  av.X := x;
+  av.Y := y;
+  av.Z := 0;
   SetVector(Result, ScreenToVector(av));
 end;
 
@@ -8633,7 +8656,7 @@ begin
     SetVector(v, ScreenToVector(aScreenPoint));
     Result := RayCastPlaneIntersect(FCameraAbsolutePosition,
       v, planePoint, planeNormal, @intersectPoint);
-    intersectPoint.V[3] := 1;
+    intersectPoint.W := 1;
   end
   else
     Result := False;
@@ -8648,7 +8671,7 @@ function TVKSceneBuffer.ScreenVectorIntersectWithPlaneXY(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, 0, z),
     ZHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // ScreenVectorIntersectWithPlaneYZ
@@ -8660,7 +8683,7 @@ function TVKSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(x, 0, 0),
     XHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // ScreenVectorIntersectWithPlaneXZ
@@ -8672,7 +8695,7 @@ function TVKSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, y, 0),
     YHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // PixelRayToWorld
@@ -8695,17 +8718,17 @@ begin
   //------------------------
   //z:=1-(fp/d-1)/(fp/np-1);  //calc from world depth to z-buffer value
   //------------------------
-  vec.V[0] := x;
-  vec.V[1] := FViewPort.Height - y;
-  vec.V[2] := 0;
+  vec.X := x;
+  vec.Y := FViewPort.Height - y;
+  vec.Z := 0;
   vec := ScreenToVector(vec);
   NormalizeVector(vec);
   SetVector(cam, Camera.AbsolutePosition);
   //targ:=Camera.TargetObject.Position.AsAffineVector;
   //SubtractVector(targ,cam);
-  pix.V[0] := FViewPort.Width * 0.5;
-  pix.V[1] := FViewPort.Height * 0.5;
-  pix.V[2] := 0;
+  pix.X := FViewPort.Width * 0.5;
+  pix.Y := FViewPort.Height * 0.5;
+  pix.Z := 0;
   targ := self.ScreenToVector(pix);
 
   camAng := VectorAngleCosine(targ, vec);
@@ -8727,7 +8750,7 @@ begin
   else
   begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
-    CurrentGLContext.GLStates.DepthWriteMask := True;
+    CurrentGLContext.GLStates.DepthWriteMask := Byte(True);
   end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
   begin
@@ -8898,11 +8921,11 @@ begin
   fp := np + dov; // Far plane distance
   dst := (np * fp) / (fp - z * dov);
   //calculate from z-buffer value to frustrum depth
-  coord.V[0] := x;
-  coord.V[1] := y;
+  coord.X := x;
+  coord.Y := y;
   vec := self.ScreenToVector(coord); //get the pixel vector
-  coord.V[0] := FViewPort.Width div 2;
-  coord.V[1] := FViewPort.Height div 2;
+  coord.X := FViewPort.Width div 2;
+  coord.Y := FViewPort.Height div 2;
   norm := self.ScreenToVector(coord); //get the absolute camera direction
   camAng := VectorAngleCosine(norm, vec);
   Result := dst / camAng; //compensate for flat frustrum face
@@ -9020,6 +9043,7 @@ end;
 procedure TVKSceneBuffer.Render(baseObject: TVKBaseSceneObject);
 var
   perfCounter, framePerf: Int64;
+
 begin
   if FRendering then
     Exit;
@@ -9064,13 +9088,13 @@ begin
         QueryPerformanceCounter(FFirstPerfCounter);
 
       FRenderDPI := 96; // default value for screen
-      glClearError;
+      ClearOpenGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
       FRenderingContext.GLStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
-      GL.CheckError;
+      ClearOpenGLError;
       // render
       DoBaseRender(FViewport, RenderDPI, dsRendering, baseObject);
 
@@ -9084,7 +9108,7 @@ begin
       Dec(perfCounter, FFirstPerfCounter);
       if perfCounter > 0 then
         FFramesPerSecond := (FFrameCount * vCounterFrequency) / perfCounter;
-      GL.CheckError;
+      CheckOpenGLError;
     finally
       FRenderingContext.Deactivate;
     end;
@@ -9129,7 +9153,7 @@ begin
     rci.cameraPosition := FCameraAbsolutePosition;
     rci.cameraDirection := FLastDirection;
     NormalizeVector(rci.cameraDirection);
-    rci.cameraDirection.V[3] := 0;
+    rci.cameraDirection.W := 0;
     rightVector := VectorCrossProduct(rci.cameraDirection, Up.AsVector);
     rci.cameraUp := VectorCrossProduct(rightVector, rci.cameraDirection);
     NormalizeVector(rci.cameraUp);
@@ -9491,7 +9515,7 @@ var
           glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       else
-        if GL.SGIS_generate_mipmap and (target = GL_TEXTURE_2D) then
+        if GL_SGIS_generate_mipmap and (target = GL_TEXTURE_2D) then
         begin
           // hardware-accelerated when supported
           glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
@@ -9549,7 +9573,7 @@ begin
       else
         glCopyTexSubImage2D(target, 0, xDest, yDest, xSrc, ySrc, Width, Height);
 
-      glClearError;
+      ClearOpenGLError;
     finally
       Buffer.RenderingContext.Deactivate;
     end;

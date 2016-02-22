@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   All color types, constants and utilities should go here 
-  
+   All color types, constants and utilities should go here
+
 }
 unit GLS.Color;
 
@@ -12,6 +12,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
   System.SysUtils, System.Classes, System.Types, System.UITypes,
 
   FMX.Dialogs, FMX.Graphics,
@@ -59,7 +60,7 @@ type
          procedure NotifyChange(Sender : TObject); override;
 			procedure Assign(Source : TPersistent); override;
 			procedure Initialize(const color : TColorVector);
-			function AsAddress : PSingle;
+			function AsAddress : PGLfloat;
 
          procedure RandomColor;
          procedure SetColor(red, green, blue : Single; alpha : Single = 1); overload;
@@ -478,9 +479,9 @@ end;
 function ConvertColorVector(const aColor: TColorVector; intensity: Single): TColor;
 begin
   intensity := 255 * intensity;
-  Result := RGB(Round(intensity * aColor.V[0]),
-    Round(intensity * aColor.V[1]),
-    Round(intensity * aColor.V[2]));
+  Result := RGB(Round(intensity * aColor.X),
+    Round(intensity * aColor.Y),
+    Round(intensity * aColor.Z));
 end;
 
 // ConvertRGBColor
@@ -491,19 +492,19 @@ var
 begin
   // convert 0..255 range into 0..1 range
   n := High(AColor);
-  Result.V[0] := AColor[0] * (1 / 255);
+  Result.X := AColor[0] * (1 / 255);
   if n > 0 then
-    Result.V[1] := AColor[1] * (1 / 255)
+    Result.Y := AColor[1] * (1 / 255)
   else
-    Result.V[1] := 0;
+    Result.Y := 0;
   if n > 1 then
-    Result.V[2] := AColor[2] * (1 / 255)
+    Result.Z := AColor[2] * (1 / 255)
   else
-    Result.V[2] := 0;
+    Result.Z := 0;
   if n > 2 then
-    Result.V[3] := AColor[3] * (1 / 255)
+    Result.W := AColor[3] * (1 / 255)
   else
-    Result.V[3] := 1;
+    Result.W := 1;
 end;
 
 // ------------------
@@ -644,7 +645,7 @@ end;
 
 // AsAddress
 //
-function TVKColor.AsAddress: PSingle;
+function TVKColor.AsAddress: PGLfloat;
 begin
 	Result:=@FColor;
 end;
@@ -662,10 +663,10 @@ end;
 //
 procedure TVKColor.SetColor(red, green, blue : Single; alpha : Single = 1);
 begin
-   FColor.V[0]:=red;
-   FColor.V[1]:=Green;
-   FColor.V[2]:=blue;
-   FColor.V[3]:=alpha;
+   FColor.X:=red;
+   FColor.Y:=Green;
+   FColor.Z:=blue;
+   FColor.W:=alpha;
    NotifyChange(Self);
 end;
 
@@ -701,7 +702,7 @@ begin
       if Result.V[H]<0 then  // normalize H
          Result.V[H]:=Result.V[H]+360;
    end;
-   Result.V[3]:=Alpha;
+   Result.W:=Alpha;
 end;
 
 // SetHSVA
@@ -716,9 +717,9 @@ const
 begin
    if hsva.V[S]=0 then begin
       // gray (ignore hue)
-      FColor.V[0]:=hsva.V[V];
-      FColor.V[1]:=hsva.V[V];
-      FColor.V[2]:=hsva.V[V];
+      FColor.X:=hsva.V[V];
+      FColor.Y:=hsva.V[V];
+      FColor.Z:=hsva.V[V];
    end else begin
       hTemp:=hsva.V[H]*(1/60);
       f:=Frac(hTemp);
@@ -729,38 +730,38 @@ begin
 
       case Trunc(hTemp) mod 6 of
          0 : begin
-            FColor.V[0]:=hsva.V[V];
-            FColor.V[1]:=t;
-            FColor.V[2]:=p;
+            FColor.X:=hsva.V[V];
+            FColor.Y:=t;
+            FColor.Z:=p;
          end;
          1 : begin
-            FColor.V[0]:=q;
-            FColor.V[1]:=hsva.V[V];
-            FColor.V[2]:=p;
+            FColor.X:=q;
+            FColor.Y:=hsva.V[V];
+            FColor.Z:=p;
          end;
          2 : begin
-            FColor.V[0]:=p;
-            FColor.V[1]:=hsva.V[V];
-            FColor.V[2]:=t;
+            FColor.X:=p;
+            FColor.Y:=hsva.V[V];
+            FColor.Z:=t;
          end;
          3 : begin
-            FColor.V[0]:=p;
-            FColor.V[1]:=q;
-            FColor.V[2]:=hsva.V[V];
+            FColor.X:=p;
+            FColor.Y:=q;
+            FColor.Z:=hsva.V[V];
          end;
          4 : begin
-            FColor.V[0]:=t;
-            FColor.V[1]:=p;
-            FColor.V[2]:=hsva.V[V];
+            FColor.X:=t;
+            FColor.Y:=p;
+            FColor.Z:=hsva.V[V];
          end;
          5 : begin
-            FColor.V[0]:=hsva.V[V];
-            FColor.V[1]:=p;
-            FColor.V[2]:=q;
+            FColor.X:=hsva.V[V];
+            FColor.Y:=p;
+            FColor.Z:=q;
          end;
       end
    end;
-   FColor.V[3]:=hsva.V[3];
+   FColor.W:=hsva.W;
    NotifyChange(Self);
 end;
 
@@ -803,23 +804,23 @@ begin
          workCopy:=Trim(workCopy);
          delimiter:=Pos(' ', workCopy);
          if (Length(workCopy)>0) and (delimiter>0) then begin
-            Result.V[0]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+            Result.X:=StrToFloat(Copy(workCopy, 1, delimiter-1));
             System.Delete(workCopy, 1, delimiter);
             workCopy:=TrimLeft(workCopy);
             delimiter:=Pos(' ',workCopy);
             if (Length(workCopy)>0) and (delimiter>0) then begin
-               Result.V[1]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+               Result.Y:=StrToFloat(Copy(workCopy, 1, delimiter-1));
                System.Delete(workCopy, 1, delimiter);
                workCopy:=TrimLeft(workCopy);
                delimiter:=Pos(' ', workCopy);
                if (Length(workCopy)>0) and (delimiter>0) then begin
-                  Result.V[2]:=StrToFloat(Copy(workCopy, 1, delimiter-1));
+                  Result.Z:=StrToFloat(Copy(workCopy, 1, delimiter-1));
                   System.Delete(workCopy, 1, delimiter);
                   workCopy:=TrimLeft(workCopy);
-                  Result.V[3]:=StrToFloat(workCopy);
-               end else Result.V[2]:=StrToFloat(workCopy);
-            end else Result.V[1]:=StrToFloat(workCopy);
-         end else Result.V[0]:=StrToFloat(workCopy);
+                  Result.W:=StrToFloat(workCopy);
+               end else Result.Z:=StrToFloat(workCopy);
+            end else Result.Y:=StrToFloat(workCopy);
+         end else Result.X:=StrToFloat(workCopy);
       except
          ShowMessage('Wrong vector format. Use: ''<red green blue alpha>''!');
          Abort;
@@ -838,15 +839,15 @@ var I : Integer;
 begin
   for I:=0 to Count-1 do
     with TColorEntry(Items[I]^) do
-      if (Abs(Color.V[0]-AColor.V[0]) < MinDiff) and
-         (Abs(Color.V[1]-AColor.V[1]) < MinDiff) and
-         (Abs(Color.V[2]-AColor.V[2]) < MinDiff) and
-         (Abs(Color.V[3]-AColor.V[3]) < MinDiff) then Break;
+      if (Abs(Color.X-AColor.X) < MinDiff) and
+         (Abs(Color.Y-AColor.Y) < MinDiff) and
+         (Abs(Color.Z-AColor.Z) < MinDiff) and
+         (Abs(Color.W-AColor.W) < MinDiff) then Break;
   if I < Count then
     Result:=string(TColorEntry(Items[I]^).Name)
   else
-    Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor.V[0],AColor.V[1],
-                   AColor.V[2],AColor.V[3]]);
+    Result:=Format('<%.3f %.3f %.3f %.3f>',[AColor.X,AColor.Y,
+                   AColor.Z,AColor.W]);
 end;
 
 // Destroy

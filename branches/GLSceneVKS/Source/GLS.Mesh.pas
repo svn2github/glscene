@@ -19,7 +19,7 @@ uses
   System.SysUtils,
   //GLS
   GLS.Strings,  GLS.XOpenGL,  GLS.Context,  GLS.Scene,
-  GLS.VectorGeometry,  GLS.OpenGLTokens,  GLS.OpenGLAdapter,  GLS.State,
+  GLS.VectorGeometry,  Winapi.OpenGL, Winapi.OpenGLext,   GLS.OpenGLAdapter,  GLS.State,
   GLS.Color, GLS.BaseClasses,  GLS.RenderContextInfo, GLS.VectorTypes;
 
 type
@@ -62,6 +62,7 @@ type
 
   protected
     { Protected Declarations }
+    FGL: TVKExtensionsAndEntryPoints;
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
@@ -344,7 +345,7 @@ begin
   if val <> Locked then
   begin
     // Only supported with NVidia's right now
-    if GL.NV_vertex_array_range and (CurrentGLContext <> nil) then
+    if GL_NV_vertex_array_range and (CurrentGLContext <> nil) then
     begin
       size := FCount * SizeOf(TVertexData);
       if val then
@@ -352,10 +353,10 @@ begin
         // Lock
         FLockedOldValues := FValues;
 {$IFDEF MSWINDOWS}
-        FValues := GL.WAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := FGL.wglAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
 {$IFDEF LINUX}
-        FValues := GL.XAllocateMemoryNV(size, 0, 0, 0.5);
+        FValues := FGL.glxAllocateMemoryNV(size, 0, 0, 0.5);
 {$ENDIF}
         if FValues = nil then
         begin
@@ -369,10 +370,10 @@ begin
       begin
         // Unlock
 {$IFDEF MSWINDOWS}
-        GL.WFreeMemoryNV(FValues);
+        wglFreeMemoryNV(FValues);
 {$ENDIF}
 {$IFDEF LINUX}
-        GL.XFreeMemoryNV(FValues);
+        glxFreeMemoryNV(FValues);
 {$ENDIF}
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
@@ -655,7 +656,7 @@ begin
   glVertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstVertex);
   glEnableClientState(GL_NORMAL_ARRAY);
-  GL.NormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  glNormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
     FirstNormal);
   xglEnableClientState(GL_TEXTURE_COORD_ARRAY);
   xglTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
@@ -692,7 +693,7 @@ begin
   FVertices.AddVertex(YVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(ZVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.OnNotifyChange := VerticesChanged;
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   FVertexMode := vmVNCT;
   // should change this later to default to vmVN. But need to
 end; // change GLMeshPropform so that it greys out unused vertex info
@@ -904,12 +905,12 @@ function TVKMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     Vertices.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache.V[0] := MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-    FAxisAlignedDimensionsCache.V[1] := MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-    FAxisAlignedDimensionsCache.V[2] := MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
+    FAxisAlignedDimensionsCache.X := MaxFloat(Abs(dMin.X), Abs(dMax.X));
+    FAxisAlignedDimensionsCache.Y := MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+    FAxisAlignedDimensionsCache.Z := MaxFloat(Abs(dMin.Z), Abs(dMax.Z));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -919,7 +920,7 @@ end;
 
 procedure TVKMesh.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 

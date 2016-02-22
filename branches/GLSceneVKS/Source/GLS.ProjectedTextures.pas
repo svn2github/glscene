@@ -16,7 +16,7 @@ uses
 
   GLS.Scene,
   GLS.Texture,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.VectorGeometry,
   GLS.XOpenGL,
   GLS.RenderContextInfo,

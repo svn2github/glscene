@@ -14,7 +14,7 @@ uses
   System.Classes, System.SysUtils, System.Math,
   //GLS
   GLS.Scene, GLS.Objects, GLS.VectorFileObjects, GLS.Texture, GLS.ApplicationFileIO,
-  GLS.VectorGeometry, File3DS, Types3DS, GLS.OpenGLTokens, GLS.Context, GLS.PersistentClasses,
+  GLS.VectorGeometry, File3DS, Types3DS, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.PersistentClasses,
   GLS.Strings, GLS.File3DSSceneObjects, GLS.CrossPlatform, GLS.VectorTypes, GLS.VectorLists,
   GLS.RenderContextInfo, GLS.Material;
 
@@ -382,13 +382,13 @@ begin
   halfAngle := (angle) / 2;
   invAxisLengthMult := 1 / VectorLength(axis) * sin(halfAngle);
 
-  v.V[0] := axis.V[0] * invAxisLengthMult;
-  v.V[1] := axis.V[1] * invAxisLengthMult;
-  v.V[2] := axis.V[2] * invAxisLengthMult;
-  v.V[3] := cos(halfAngle);
+  v.X := axis.X * invAxisLengthMult;
+  v.Y := axis.Y * invAxisLengthMult;
+  v.Z := axis.Z * invAxisLengthMult;
+  v.W := cos(halfAngle);
 
   Result.ImagPart := AffineVectorMake(v);
-  Result.RealPart := v.V[3];
+  Result.RealPart := v.W;
 end;
 
 // QuaternionToRotateMatrix
@@ -400,38 +400,38 @@ var
   m: TMatrix;
 begin
   quat := VectorMake(Quaternion.ImagPart);
-  quat.V[3] := Quaternion.RealPart;
+  quat.W := Quaternion.RealPart;
 
-  x2 := quat.V[0] + quat.V[0];
-  y2 := quat.V[1] + quat.V[1];
-  z2 := quat.V[2] + quat.V[2];
-  xx := quat.V[0] * x2;
-  xy := quat.V[0] * y2;
-  xz := quat.V[0] * z2;
-  yy := quat.V[1] * y2;
-  yz := quat.V[1] * z2;
-  zz := quat.V[2] * z2;
-  wx := quat.V[3] * x2;
-  wy := quat.V[3] * y2;
-  wz := quat.V[3] * z2;
+  x2 := quat.X + quat.X;
+  y2 := quat.Y + quat.Y;
+  z2 := quat.Z + quat.Z;
+  xx := quat.X * x2;
+  xy := quat.X * y2;
+  xz := quat.X * z2;
+  yy := quat.Y * y2;
+  yz := quat.Y * z2;
+  zz := quat.Z * z2;
+  wx := quat.W * x2;
+  wy := quat.W * y2;
+  wz := quat.W * z2;
 
-  m.V[0].V[0] := 1.0 - (yy + zz);
-  m.V[0].V[1] := xy - wz;
-  m.V[0].V[2] := xz + wy;
-  m.V[1].V[0] := xy + wz;
-  m.V[1].V[1] := 1.0 - (xx + zz);
-  m.V[1].V[2] := yz - wx;
-  m.V[2].V[0] := xz - wy;
-  m.V[2].V[1] := yz + wx;
-  m.V[2].V[2] := 1.0 - (xx + yy);
+  m.X.X := 1.0 - (yy + zz);
+  m.X.Y := xy - wz;
+  m.X.Z := xz + wy;
+  m.Y.X := xy + wz;
+  m.Y.Y := 1.0 - (xx + zz);
+  m.Y.Z := yz - wx;
+  m.Z.X := xz - wy;
+  m.Z.Y := yz + wx;
+  m.Z.Z := 1.0 - (xx + yy);
 
-  m.V[0].V[3] := 0;
-  m.V[1].V[3] := 0;
-  m.V[2].V[3] := 0;
-  m.V[3].V[0] := 0;
-  m.V[3].V[1] := 0;
-  m.V[3].V[2] := 0;
-  m.V[3].V[3] := 1;
+  m.X.W := 0;
+  m.Y.W := 0;
+  m.Z.W := 0;
+  m.W.X := 0;
+  m.W.Y := 0;
+  m.W.Z := 0;
+  m.W.W := 1;
 
   Result := m;
 end;
@@ -598,16 +598,16 @@ begin
     begin
       AffVect := FScale[I];
 
-      if (AffVect.V[0] < 0) or (AffVect.V[1] < 0) or (AffVect.V[2] < 0) then
+      if (AffVect.X < 0) or (AffVect.Y < 0) or (AffVect.Z < 0) then
         Sign := -1
       else
         Sign:= 1;
 
       AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
 
-      FScale[I].V[0] := Sign * Abs(AffVect.V[0]);
-      FScale[I].V[1] := Sign * Abs(AffVect.V[1]);
-      FScale[I].V[2] := Sign * Abs(AffVect.V[2]);
+      FScale[I].X := Sign * Abs(AffVect.X);
+      FScale[I].Y := Sign * Abs(AffVect.Y);
+      FScale[I].Z := Sign * Abs(AffVect.Z);
     end;
 
   end;
@@ -684,15 +684,15 @@ begin
 
     if vGLFile3DS_FixDefaultUpAxisY then
     begin
-      AffVect.V[0] := FRot[I].X;
-      AffVect.V[1] := FRot[I].Y;
-      AffVect.V[2] := FRot[I].Z;
+      AffVect.X := FRot[I].X;
+      AffVect.Y := FRot[I].Y;
+      AffVect.Z := FRot[I].Z;
 
       AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
 
-      FRot[I].X := AffVect.V[0];
-      FRot[I].Y := AffVect.V[1];
-      FRot[I].Z := AffVect.V[2];
+      FRot[I].X := AffVect.X;
+      FRot[I].Y := AffVect.Y;
+      FRot[I].Z := AffVect.Z;
     end;
 
 
@@ -762,8 +762,8 @@ procedure TVKFile3DSPositionAnimationKeys.Apply(var DataTransf: TVKFile3DSAnimat
   const AFrame: real);
 begin
   if FNumKeys > 0 then
-    DataTransf.ModelMatrix.V[3] :=
-      VectorAdd(DataTransf.ModelMatrix.V[3], VectorMake(InterpolateValue(FPos, AFrame)));
+    DataTransf.ModelMatrix.W :=
+      VectorAdd(DataTransf.ModelMatrix.W, VectorMake(InterpolateValue(FPos, AFrame)));
 end;
 
 procedure TVKFile3DSPositionAnimationKeys.Assign(Source: TPersistent);
@@ -1222,9 +1222,9 @@ begin
   inherited GetExtents(min, max);
   if not FStatic then
   begin
-    if not IsInfinite(min.V[0]) then
+    if not IsInfinite(min.X) then
       min := VectorTransform(min, FAnimTransf.ModelMatrix);
-    if not IsInfinite(max.V[0]) then
+    if not IsInfinite(max.X) then
       max := VectorTransform(max, FAnimTransf.ModelMatrix);
   end;
 end;
@@ -1321,20 +1321,20 @@ begin
         Mat := ModelMatrix;
         ModelMatrix := MatrixMultiply(Mat, RotMat);
 
-        AffVect.V[0] := Pivot.X;
-        AffVect.V[1] := Pivot.Y;
-        AffVect.V[2] := Pivot.Z;
+        AffVect.X := Pivot.X;
+        AffVect.Y := Pivot.Y;
+        AffVect.Z := Pivot.Z;
 
         AffVect := VectorRotateAroundX(AffVect, cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE);
 
-        Pivot.X := AffVect.V[0];
-        Pivot.Y := AffVect.V[1];
-        Pivot.Z := AffVect.V[2];
+        Pivot.X := AffVect.X;
+        Pivot.Y := AffVect.Y;
+        Pivot.Z := AffVect.Z;
       end;
 
-      ModelMatrix.V[3].V[0] := ModelMatrix.V[3].V[0] - Pivot.X;
-      ModelMatrix.V[3].V[1] := ModelMatrix.V[3].V[1] - Pivot.Y;
-      ModelMatrix.V[3].V[2] := ModelMatrix.V[3].V[2] - Pivot.Z;
+      ModelMatrix.W.X := ModelMatrix.W.X - Pivot.X;
+      ModelMatrix.W.Y := ModelMatrix.W.Y - Pivot.Y;
+      ModelMatrix.W.Z := ModelMatrix.W.Z - Pivot.Z;
 
     end;
   end;
@@ -1426,7 +1426,7 @@ begin
   end;
 
   inherited;
-  FLightSrc.Position.SetPoint(FAnimTransf.ModelMatrix.V[3]);
+  FLightSrc.Position.SetPoint(FAnimTransf.ModelMatrix.W);
   FLightSrc.Diffuse.Color := FAnimTransf.Color;
 end;
 
@@ -1595,7 +1595,7 @@ begin
     FCameraSrcName := '';
   end;
 
-  FCameraSrc.Position.SetPoint(FAnimTransf.ModelMatrix.V[3]);
+  FCameraSrc.Position.SetPoint(FAnimTransf.ModelMatrix.W);
   FCameraSrc.RollAngle := FAnimTransf.Roll;
   FTargetObj.Position.SetPoint(FAnimTransf.TargetPos);
 end;
@@ -1890,38 +1890,38 @@ var
       begin
         with Mesh[Index]^ do
         begin
-          Result.V[0].V[0] := LocMatrix[0];
-          Result.V[0].V[1] := LocMatrix[1];
-          Result.V[0].V[2] := LocMatrix[2];
-          Result.V[0].V[3] := 0;
-          Result.V[1].V[0] := LocMatrix[3];
-          Result.V[1].V[1] := LocMatrix[4];
-          Result.V[1].V[2] := LocMatrix[5];
-          Result.V[1].V[3] := 0;
-          Result.V[2].V[0] := LocMatrix[6];
-          Result.V[2].V[1] := LocMatrix[7];
-          Result.V[2].V[2] := LocMatrix[8];
-          Result.V[2].V[3] := 0;
-          Result.V[3].V[0] := LocMatrix[9];
-          Result.V[3].V[1] := LocMatrix[10];
-          Result.V[3].V[2] := LocMatrix[11];
-          Result.V[3].V[3] := 1;
+          Result.X.X := LocMatrix[0];
+          Result.X.Y := LocMatrix[1];
+          Result.X.Z := LocMatrix[2];
+          Result.X.W := 0;
+          Result.Y.X := LocMatrix[3];
+          Result.Y.Y := LocMatrix[4];
+          Result.Y.Z := LocMatrix[5];
+          Result.Y.W := 0;
+          Result.Z.X := LocMatrix[6];
+          Result.Z.Y := LocMatrix[7];
+          Result.Z.Z := LocMatrix[8];
+          Result.Z.W := 0;
+          Result.W.X := LocMatrix[9];
+          Result.W.Y := LocMatrix[10];
+          Result.W.Z := LocMatrix[11];
+          Result.W.W := 1;
         end;
         InvertMatrix(Result);
 
         // If the matrix is not normalized, ie the third column is not equal to the vector product of the first two columns,
         // it means that it is necessary to turn to-pi around the axis Y.
         m := Result;
-        v4 := m.V[3];
-        factor := VectorLength(m.V[0]);
+        v4 := m.W;
+        factor := VectorLength(m.X);
         NormalizeMatrix(m);
         ScaleMatrix(m, factor);
-        m.V[3] := v4;
+        m.W := v4;
 
-        v4 := VectorAbs(VectorSubtract(Result.V[2], m.V[2]));
-        boolY := (v4.V[0] > abs(Result.V[2].V[0])) and
-                 (v4.V[1] > abs(Result.V[2].V[1])) and
-                 (v4.V[2] > abs(Result.V[2].V[2]));
+        v4 := VectorAbs(VectorSubtract(Result.Z, m.Z));
+        boolY := (v4.X > abs(Result.Z.X)) and
+                 (v4.Y > abs(Result.Z.Y)) and
+                 (v4.Z > abs(Result.Z.Z));
 
 
         if boolY then
@@ -2333,7 +2333,7 @@ begin
           end;
           if hasLightMap then
             for j := 0 to mesh.TexCoords.Count - 1 do
-              mesh.LightMapTexCoords.Add(mesh.TexCoords[j].V[0], mesh.TexCoords[j].V[1]);
+              mesh.LightMapTexCoords.Add(mesh.TexCoords[j].X, mesh.TexCoords[j].Y);
         end;
 
       // Adding non-mesh objects (for example, dummies).

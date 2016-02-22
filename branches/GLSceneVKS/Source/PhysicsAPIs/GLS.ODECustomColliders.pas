@@ -29,7 +29,7 @@ uses
   GLS.TerrainRenderer,
   GLS.Graph,
   GLS.XCollection,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.Texture,
   GLS.Color,
@@ -652,13 +652,13 @@ begin
       with TContactPoint(FContactList[i]) do
       begin
         contact.depth := Depth;
-        contact.pos[0] := Position.V[0];
-        contact.pos[1] := Position.V[1];
-        contact.pos[2] := Position.V[2];
+        contact.pos[0] := Position.X;
+        contact.pos[1] := Position.Y;
+        contact.pos[2] := Position.Z;
         contact.pos[3] := 1;
-        contact.normal[0] := -Normal.V[0];
-        contact.normal[1] := -Normal.V[1];
-        contact.normal[2] := -Normal.V[2];
+        contact.normal[0] := -Normal.X;
+        contact.normal[1] := -Normal.Y;
+        contact.normal[2] := -Normal.Z;
         contact.normal[3] := 0;
       end;
       contact.g1 := o1;
@@ -886,7 +886,7 @@ function TVKODEHeightField.Collide(aPos: TAffineVector;
     begin
       if Assigned(TVKHeightField(Owner.Owner).OnGetHeight) then
       begin
-        TVKHeightField(Owner.Owner).OnGetHeight(pos.V[0], pos.V[1], height, dummy1, dummy2);
+        TVKHeightField(Owner.Owner).OnGetHeight(pos.X, pos.Y, height, dummy1, dummy2);
         Result := True;
       end;
     end;
@@ -902,20 +902,20 @@ begin
   localPos := AbsoluteToLocal(PointMake(aPos));
   if GetHeight(localPos, height) then
   begin
-    Depth := height - localPos.V[2];
+    Depth := height - localPos.Z;
     Result := (Depth > 0);
     if Result then
     begin
-      localPos.V[2] := height;
+      localPos.Z := height;
       cPos := AffineVectorMake(LocalToAbsolute(localPos));
-      temp1.V[0] := localPos.V[0] + cDelta;
-      temp1.V[1] := localPos.V[1];
-      temp1.V[2] := localPos.V[2];
-      GetHeight(PointMake(temp1), temp1.V[2]);
-      temp2.V[0] := localPos.V[0];
-      temp2.V[1] := localPos.V[1] + cDelta;
-      temp2.V[2] := localPos.V[2];
-      GetHeight(PointMake(temp2), temp2.V[2]);
+      temp1.X := localPos.X + cDelta;
+      temp1.Y := localPos.Y;
+      temp1.Z := localPos.Z;
+      GetHeight(PointMake(temp1), temp1.Z);
+      temp2.X := localPos.X;
+      temp2.Y := localPos.Y + cDelta;
+      temp2.Z := localPos.Z;
+      GetHeight(PointMake(temp2), temp2.Z);
       cNorm := CalcPlaneNormal(AffineVectorMake(localPos), temp1, temp2);
       cNorm := AffineVectorMake(LocalToAbsolute(VectorMake(cNorm)));
     end;

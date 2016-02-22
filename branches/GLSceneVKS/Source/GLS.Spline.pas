@@ -281,38 +281,38 @@ end;
 //
 function TCubicSpline.SplineAffineVector(const t : single) : TAffineVector;
 begin
-   Result.V[0]:=MATValeurSpline(MatX, t, FNb);
-   Result.V[1]:=MATValeurSpline(MatY, t, FNb);
-   Result.V[2]:=MATValeurSpline(MatZ, t, FNb);
+   Result.X:=MATValeurSpline(MatX, t, FNb);
+   Result.Y:=MATValeurSpline(MatY, t, FNb);
+   Result.Z:=MATValeurSpline(MatZ, t, FNb);
 end;
 
 // SplineAffineVector
 //
 procedure TCubicSpline.SplineAffineVector(const t : single; var vector : TAffineVector);
 begin
-   vector.V[0]:=MATValeurSpline(MatX, t, FNb);
-   vector.V[1]:=MATValeurSpline(MatY, t, FNb);
-   vector.V[2]:=MATValeurSpline(MatZ, t, FNb);
+   vector.X:=MATValeurSpline(MatX, t, FNb);
+   vector.Y:=MATValeurSpline(MatY, t, FNb);
+   vector.Z:=MATValeurSpline(MatZ, t, FNb);
 end;
 
 // SplineVector
 //
 function TCubicSpline.SplineVector(const t : single) : TVector;
 begin
-   Result.V[0]:=MATValeurSpline(MatX, t, FNb);
-   Result.V[1]:=MATValeurSpline(MatY, t, FNb);
-   Result.V[2]:=MATValeurSpline(MatZ, t, FNb);
-   Result.V[3]:=MATValeurSpline(MatW, t, FNb);
+   Result.X:=MATValeurSpline(MatX, t, FNb);
+   Result.Y:=MATValeurSpline(MatY, t, FNb);
+   Result.Z:=MATValeurSpline(MatZ, t, FNb);
+   Result.W:=MATValeurSpline(MatW, t, FNb);
 end;
 
 // SplineVector
 //
 procedure TCubicSpline.SplineVector(const t : single; var vector : TVector);
 begin
-   vector.V[0]:=MATValeurSpline(MatX, t, FNb);
-   vector.V[1]:=MATValeurSpline(MatY, t, FNb);
-   vector.V[2]:=MATValeurSpline(MatZ, t, FNb);
-   vector.V[3]:=MATValeurSpline(MatW, t, FNb);
+   vector.X:=MATValeurSpline(MatX, t, FNb);
+   vector.Y:=MATValeurSpline(MatY, t, FNb);
+   vector.Z:=MATValeurSpline(MatZ, t, FNb);
+   vector.W:=MATValeurSpline(MatW, t, FNb);
 end;
 
 // SplineSlopeX
@@ -347,9 +347,9 @@ end;
 //
 function TCubicSpline.SplineSlopeVector(const t : single) : TAffineVector;
 begin
-   Result.V[0]:=MATValeurSplineSlope(MatX, t, FNb);
-   Result.V[1]:=MATValeurSplineSlope(MatY, t, FNb);
-   Result.V[2]:=MATValeurSplineSlope(MatZ, t, FNb);
+   Result.X:=MATValeurSplineSlope(MatX, t, FNb);
+   Result.Y:=MATValeurSplineSlope(MatY, t, FNb);
+   Result.Z:=MATValeurSplineSlope(MatZ, t, FNb);
 end;
 
 // SplineIntersecYZ

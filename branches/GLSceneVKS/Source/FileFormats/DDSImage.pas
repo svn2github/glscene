@@ -21,6 +21,7 @@ interface
 
 uses
   Winapi.Windows,
+  Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
   FMX.Graphics,

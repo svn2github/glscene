@@ -713,18 +713,18 @@ begin
   end;
 
   if ((intFormat >= tfRG32UI) and (intFormat <= tfR32F)) then
-    Result := True; //GL.ARB_texture_rg;
+    Result := True; //GL_ARB_texture_rg;
 
   if ((intFormat >= tfCOMPRESSED_RED_RGTC1) and (intFormat <=
     tfCOMPRESSED_SIGNED_RG_RGTC2)) then
   begin
-    Result := True; //GL.ARB_texture_compression_rgtc;
+    Result := True; //GL_ARB_texture_compression_rgtc;
     Exit;
   end;
 
   if ((intFormat >= tfR8_SNORM) and (intFormat <= tfRGBA16_SNORM)) then
   begin
-    Result := True; //GL.VERSION_3_1;
+    Result := True; //GL_VERSION_3_1;
     Exit;
   end
 end;

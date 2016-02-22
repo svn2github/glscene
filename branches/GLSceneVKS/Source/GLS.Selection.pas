@@ -9,9 +9,10 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
   System.SysUtils, System.Classes,
-   
-  GLS.OpenGLTokens, GLS.Context, GLS.VectorLists, GLS.VectorGeometry,
+  //GLS
+  GLS.Context, GLS.VectorLists, GLS.VectorGeometry,
   GLS.BaseClasses, GLS.PersistentClasses;
 
  const
@@ -279,7 +280,7 @@ end;
 
 class function TVKSelectRenderModeTechnique.IsSupported: Boolean;
 begin
-  Result := GL.VERSION_1_1;
+  Result := GL_VERSION = 1.1;
 end;
 
 procedure TVKSelectRenderModeTechnique.Start;

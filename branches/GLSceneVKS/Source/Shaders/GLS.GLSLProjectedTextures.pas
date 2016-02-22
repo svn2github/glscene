@@ -390,8 +390,8 @@ var
   emitter: TVKSLTextureEmitter;
   OldSeparator: char;
 begin
-  ShaderSupported := (GL.ARB_shader_objects and GL.ARB_vertex_program and
-    GL.ARB_vertex_shader and GL.ARB_fragment_shader);
+  ShaderSupported := (GL_ARB_shader_objects and GL_ARB_vertex_program and
+    GL_ARB_vertex_shader and GL_ARB_fragment_shader);
 
   if not ShaderSupported then
     exit;

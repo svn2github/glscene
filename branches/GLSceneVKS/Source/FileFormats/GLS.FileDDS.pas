@@ -521,7 +521,6 @@ begin
 
     if fLevelCount < 1 then
       fLevelCount := 1;
-    CheckOpenGLError;
   finally
     if contextActivate then
     begin

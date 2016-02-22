@@ -13,7 +13,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLS.VectorGeometry, GLS.VectorLists, GLS.VectorTypes, GLS.Texture, GLS.Strings,
-  GLS.Cadencer, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.Context, GLS.BaseClasses,
+  GLS.Cadencer, Winapi.OpenGL, Winapi.OpenGLext,  GLS.CrossPlatform, GLS.Context, GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.Material, GLS.TextureFormat,
 
   // CG
@@ -1318,8 +1318,8 @@ end;
 //
 function TCustomCgShader.ShaderSupported: Boolean;
 begin
-  Result := (GL.ARB_shader_objects and GL.ARB_vertex_program and
-             GL.ARB_vertex_shader and GL.ARB_fragment_shader);
+  Result := (GL_ARB_shader_objects and GL_ARB_vertex_program and
+             GL_ARB_vertex_shader and GL_ARB_fragment_shader);
 end;
 
 

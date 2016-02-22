@@ -23,7 +23,7 @@ uses
   System.Classes, System.UITypes, System.SysUtils,
   FMX.Dialogs, FMX.Graphics, FMX.Controls,
    
-  GLS.Scene, GLS.OpenGLTokens, GLS.Texture, GLS.Context, GLS.VectorGeometry, GLS.Strings,
+  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Texture, GLS.Context, GLS.VectorGeometry, GLS.Strings,
   GLS.RenderContextInfo, GLS.State;
 
 type
@@ -428,9 +428,9 @@ begin
 
     // FAspectRatio ignore
     if FAspectRatio <> 0 then
-      GL.Scalef(FAspectRatio, 1, 1);
+      glScalef(FAspectRatio, 1, 1);
     if FOblique <> 0 then
-      GL.Rotatef(FOblique, 0, 0, 1);
+      glRotatef(FOblique, 0, 0, 1);
 
     glBase := FTextFontEntry^.FVirtualHandle.handle;
     case FCharacterRange of
@@ -454,29 +454,29 @@ begin
         if FTextHeight <> 0 then
         begin
           charScale := FTextHeight / maxHeight;
-          GL.Scalef(charScale, charScale, 1);
+          glScalef(charScale, charScale, 1);
         end;
         case FAdjust.Horz of
           haLeft:
             ; // nothing
           haCenter:
-            GL.Translatef(-textL * 0.5, 0, 0);
+            glTranslatef(-textL * 0.5, 0, 0);
           haRight:
-            GL.Translatef(-textL, 0, 0);
+            glTranslatef(-textL, 0, 0);
         end;
         case FAdjust.Vert of
           vaBaseLine:
             ; // nothing;
           vaBottom:
-            GL.Translatef(0, abs(maxUnder), 0);
+            glTranslatef(0, abs(maxUnder), 0);
           vaCenter:
-            GL.Translatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
+            glTranslatef(0, abs(maxUnder) * 0.5 - maxHeight * 0.5, 0);
           vaTop:
-            GL.Translatef(0, -maxHeight, 0);
+            glTranslatef(0, -maxHeight, 0);
         end;
       end;
 
-      GL.Translatef(0, -i * (maxHeight + FAspectRatio), 0);
+      glTranslatef(0, -i * (maxHeight + FAspectRatio), 0);
       if FCharacterRange = stcrWide then
       begin
         dirtyLine := FLines.Strings[i];
@@ -755,36 +755,36 @@ begin
 
   case FAdjust.FHorz of
     haLeft:
-      AdjustVector.V[0] := lWidth / 2;
+      AdjustVector.X := lWidth / 2;
     haCenter:
-      AdjustVector.V[0] := 0; // Nothing.
+      AdjustVector.X := 0; // Nothing.
     haRight:
-      AdjustVector.V[0] := -lWidth / 2;
+      AdjustVector.X := -lWidth / 2;
   else
     begin
-      AdjustVector.V[0] := 0;
+      AdjustVector.X := 0;
       Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 
   case FAdjust.FVert of
     vaTop:
-      AdjustVector.V[1] := -(abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+      AdjustVector.Y := -(abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
     vaCenter:
-      AdjustVector.V[1] := 0; // Nothing.
+      AdjustVector.Y := 0; // Nothing.
     vaBottom:
-      AdjustVector.V[1] := (abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
+      AdjustVector.Y := (abs(lHeightMin) * 0.5 + lHeightMax * 0.5);
     vaBaseLine:
-      AdjustVector.V[1] := -(abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
+      AdjustVector.Y := -(abs(lHeightMin) * 0.5 - lHeightMax * 0.5);
   else
     begin
-      AdjustVector.V[1] := 0;
+      AdjustVector.Y := 0;
       Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
     end;
   end;
 
-  AdjustVector.V[2] := -(FExtrusion / 2);
-  AdjustVector.V[3] := 1;
+  AdjustVector.Z := -(FExtrusion / 2);
+  AdjustVector.W := 1;
   Result := LocalToAbsolute(AdjustVector);
 end;
 
@@ -803,10 +803,10 @@ begin
   else
     charScale := FTextHeight / lHeightMax;
 
-  Result.V[0] := lWidth / 2 * charScale;
-  Result.V[1] := (lHeightMax + abs(lHeightMin)) / 2 * charScale;
-  Result.V[2] := FExtrusion / 2;
-  Result.V[3] := 0;
+  Result.X := lWidth / 2 * charScale;
+  Result.Y := (lHeightMax + abs(lHeightMin)) / 2 * charScale;
+  Result.Z := FExtrusion / 2;
+  Result.W := 0;
 end;
 
 // ------------------

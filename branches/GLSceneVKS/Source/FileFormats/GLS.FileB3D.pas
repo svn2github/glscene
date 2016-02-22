@@ -304,8 +304,8 @@ begin
 
         end;
 
-        RotQuat := QuaternionMake([Node^.Rotation.V[2], Node^.Rotation.V[1],
-          Node^.Rotation.V[3]], Node^.Rotation.V[0]);
+        RotQuat := QuaternionMake([Node^.Rotation.Z, Node^.Rotation.Y,
+          Node^.Rotation.W], Node^.Rotation.X);
         RotMat := QuaternionToMatrix(RotQuat);
         Mo.Vertices.TransformAsVectors(RotMat);
 
@@ -313,14 +313,14 @@ begin
           mo.SetScale( Node^.Scale[1], Node^.Scale[0], Node^.Scale[2]);
         }
         if Pos('ENT_', UpperCase(Mo.Name)) = 0 then
-          V := AffineVectorMake(Node^.Position.V[1],
-            Node^.Position.V[0], Node^.Position.V[2])
+          V := AffineVectorMake(Node^.Position.Y,
+            Node^.Position.X, Node^.Position.Z)
         else
         begin
           V := AffineVectorMake(0.0, 0.0, 0.0);
         end;
 
-        V1 := AffineVectorMake(Node^.Scale.V[1], Node^.Scale.V[0], Node^.Scale.V[2]);
+        V1 := AffineVectorMake(Node^.Scale.Y, Node^.Scale.X, Node^.Scale.Z);
         Matrix := CreateScaleAndTranslationMatrix(VectorMake(V1), VectorMake(V));
         Mo.Vertices.TransformAsPoints(Matrix);
       end;

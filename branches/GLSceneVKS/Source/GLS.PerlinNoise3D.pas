@@ -132,18 +132,18 @@ var
    wx, wy, wz : Single;
    vy0, vy1, vz0, vz1 : Single;
 begin
-   ix:=Floor(v.V[0]);
-   fx0:=v.V[0]-ix;
+   ix:=Floor(v.X);
+   fx0:=v.X-ix;
    fx1:=fx0-1;
    wx:=Smooth(fx0);
 
-   iy:=Floor(v.V[1]);
-   fy0:=v.V[1]-iy;
+   iy:=Floor(v.Y);
+   fy0:=v.Y-iy;
    fy1:=fy0-1;
    wy:=Smooth(fy0);
 
-   iz:=Floor(v.V[2]);
-   fz0:=v.V[2]-iz;
+   iz:=Floor(v.Z);
+   fz0:=v.Z-iz;
    fz1:=fz0-1;
    wz:=Smooth(fz0);
 

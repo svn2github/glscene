@@ -546,9 +546,9 @@ begin
   Node^.level := level;
   Count := 0;
   Inc(Count, ReadString(aStream, Node^.name, 255));
-  Inc(Count, aStream.Read(Node^.position.V[0], sizeof(TAffineVector)));
-  Inc(Count, aStream.Read(Node^.scale.V[0], sizeof(TAffineVector)));
-  Inc(Count, aStream.Read(Node^.rotation.V[0], sizeof(TVector)));
+  Inc(Count, aStream.Read(Node^.position.X, sizeof(TAffineVector)));
+  Inc(Count, aStream.Read(Node^.scale.X, sizeof(TAffineVector)));
+  Inc(Count, aStream.Read(Node^.rotation.X, sizeof(TVector)));
   while Count<aChunk.length do
   begin
     Inc(Count, aStream.Read(C, sizeof(TB3DChunk)));

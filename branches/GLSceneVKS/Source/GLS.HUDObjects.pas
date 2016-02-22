@@ -20,7 +20,7 @@ uses
   GLS.CrossPlatform,
   GLS.Color,
   GLS.RenderContextInfo,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.State,
   GLS.XOpenGL;
@@ -229,11 +229,11 @@ begin
       f := 1
     else
       f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
+    glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+    glTranslatef(f * Position.X - rci.viewPortSize.cx * 0.5,
       rci.viewPortSize.cy * 0.5 - f * Position.Y, Position.Z);
     if Rotation <> 0 then
-      GL.Rotatef(Rotation, 0, 0, 1);
+      glRotatef(Rotation, 0, 0, 1);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
@@ -271,7 +271,7 @@ begin
 
     // issue quad
     glBegin(GL_QUADS);
-    GL.Normal3fv(@YVector);
+    glNormal3fv(@YVector);
     xglTexCoord2f(u0, v0);
     glVertex2f(vx, vy1);
     xglTexCoord2f(u1, v0);
@@ -421,12 +421,12 @@ begin
     glPushMatrix;
     glLoadMatrixf(@TVKSceneBuffer(rci.buffer).BaseProjectionMatrix);
     f := rci.renderDPI / 96;
-    GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
-    GL.Translatef(X * f - rci.viewPortSize.cx / 2, rci.viewPortSize.cy / 2 -
+    glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+    glTranslatef(X * f - rci.viewPortSize.cx / 2, rci.viewPortSize.cy / 2 -
       Y * f, Z);
     if FRotation <> 0 then
-      GL.Rotatef(FRotation, 0, 0, 1);
-    GL.Scalef(Scale.DirectX * f, Scale.DirectY * f, 1);
+      glRotatef(FRotation, 0, 0, 1);
+    glScalef(Scale.DirectX * f, Scale.DirectY * f, 1);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
@@ -492,8 +492,8 @@ var
   Temp: TAffineVector;
 begin
   Temp := TVKSceneBuffer(rci.buffer).WorldToScreen(Self.AbsoluteAffinePosition);
-  Temp.V[1] := rci.viewPortSize.cy - Temp.V[1];
-  RenderTextAtPosition(Temp.V[0], Temp.V[1], Temp.V[2], rci);
+  Temp.Y := rci.viewPortSize.cy - Temp.Y;
+  RenderTextAtPosition(Temp.X, Temp.Y, Temp.Z, rci);
   if Count > 0 then
     Self.renderChildren(0, Count - 1, rci);
 end;

@@ -186,7 +186,7 @@ begin
    DivideVector(v, obj2.AxisAlignedDimensionsUnscaled);
 //   ScaleVector(v,obj2.Scale.AsVector);
 //   ScaleVector();
-   v.V[3]:=0;
+   v.W:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1{Sqr(obj2.BoundingSphereRadius)});  //DanB - since radius*radius = 1/2*1/2 = 1/4 for unit sphere
 end;
@@ -226,7 +226,7 @@ begin
    aad:=VectorAdd(obj2.AxisAlignedDimensions, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
       ScaleVector(v,obj2.Scale.AsVector);  //by DanB
-   v.V[3]:=0;
+   v.W:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
 end;
@@ -241,49 +241,49 @@ begin
    // v gives the vector from obj2 to obj1 expressed in obj2's local system
    v := VectorTransform(obj1.AbsolutePosition, obj2.InvAbsoluteMatrix);
    // because of symmetry we can make abs(v)
-   v.V[0] := abs(v.V[0]);
-   v.V[1] := abs(v.V[1]);
-   v.V[2] := abs(v.V[2]);
+   v.X := abs(v.X);
+   v.Y := abs(v.Y);
+   v.Z := abs(v.Z);
    ScaleVector(v,obj2.Scale.AsVector);  //by DanB
 
    aad := obj2.AxisAlignedDimensions; // should be abs at all!
 
    VectorSubtract(v, aad, v); // v holds the distance in each axis
-   v.V[3] := 0;
+   v.W := 0;
 
    r := obj1.BoundingSphereRadius{UnScaled};
    r2 := Sqr(r);
-   if (v.V[0]>0) then begin
-     if (v.V[1]>0) then begin
-       if (v.V[2]>0) then begin
+   if (v.X>0) then begin
+     if (v.Y>0) then begin
+       if (v.Z>0) then begin
          // v is outside axis parallel projection, so use distance to edge point
          result := (VectorNorm(v)<=r2);
        end else begin
          // v is inside z axis projection, but outside x-y projection
-         result := (VectorNorm(v.V[0],v.V[1])<=r2);
+         result := (VectorNorm(v.X,v.Y)<=r2);
        end
      end else begin
-       if (v.V[2]>0) then begin
+       if (v.Z>0) then begin
          // v is inside y axis projection, but outside x-z projection
-         result := (VectorNorm(v.V[0],v.V[2])<=r2);
+         result := (VectorNorm(v.X,v.Z)<=r2);
        end else begin
          // v is inside y-z axis projection, but outside x projection
-         result := (v.V[0]<=r);
+         result := (v.X<=r);
        end
      end
    end else begin
-     if (v.V[1]>0) then begin
-       if (v.V[2]>0) then begin
+     if (v.Y>0) then begin
+       if (v.Z>0) then begin
          // v is inside x axis projection, but outside y-z projection
-         result := (VectorNorm(v.V[1],v.V[2])<=r2);
+         result := (VectorNorm(v.Y,v.Z)<=r2);
        end else begin
          // v is inside x-z projection, but outside y projection
-         result := (v.V[1]<=r);
+         result := (v.Y<=r);
        end
      end else begin
-       if (v.V[2]>0) then begin
+       if (v.Z>0) then begin
          // v is inside x-y axis projection, but outside z projection
-         result := (v.V[2]<=r);
+         result := (v.Z<=r);
        end else begin
          // v is inside all axes parallel projection, so it is inside cube
          result := true;
@@ -311,13 +311,13 @@ begin
    // calc local vector, and rescale to unit dimensions
    //VectorSubstract(pt, obj2.AbsolutePosition, v1);
    DivideVector(v1, obj2.AxisAlignedDimensions);
-   v1.V[3]:=0;
+   v1.W:=0;
    // express in local coordinates (for obj1)
    v2:=VectorTransform(obj2.AbsolutePosition, obj1.InvAbsoluteMatrix);
    // calc local vector, and rescale to unit dimensions
    //VectorSubstract(pt, obj1.AbsolutePosition, v2);
    DivideVector(v2, obj1.AxisAlignedDimensions);
-   v2.V[3]:=0;
+   v2.W:=0;
    // if sum of norms is below 2, collision
    Result:=(VectorNorm(v1)+VectorNorm(v2)<=2);
 end;
@@ -335,7 +335,7 @@ begin
    // calc local vector, and rescale to unit dimensions
    aad:=VectorAdd(obj2.AxisAlignedDimensionsUnscaled, obj1.BoundingSphereRadius);
    DivideVector(v, aad);
-   v.V[3]:=0;
+   v.W:=0;
    // if norm is below 1, collision
    Result:=(VectorNorm(v)<=1);
 
@@ -359,14 +359,14 @@ end;
 procedure InitArray(v:TVector; var pt:array of TVector);
 // calculate the cube edge points from the axis aligned dimension
 begin
-  pt[0] := VectorMake(-v.V[0],-v.V[1],-v.V[2],1);
-  pt[1] := VectorMake( v.V[0],-v.V[1],-v.V[2],1);
-  pt[2] := VectorMake( v.V[0], v.V[1],-v.V[2],1);
-  pt[3] := VectorMake(-v.V[0], v.V[1],-v.V[2],1);
-  pt[4] := VectorMake(-v.V[0],-v.V[1], v.V[2],1);
-  pt[5] := VectorMake( v.V[0],-v.V[1], v.V[2],1);
-  pt[6] := VectorMake( v.V[0], v.V[1], v.V[2],1);
-  pt[7] := VectorMake(-v.V[0], v.V[1], v.V[2],1);
+  pt[0] := VectorMake(-v.X,-v.Y,-v.Z,1);
+  pt[1] := VectorMake( v.X,-v.Y,-v.Z,1);
+  pt[2] := VectorMake( v.X, v.Y,-v.Z,1);
+  pt[3] := VectorMake(-v.X, v.Y,-v.Z,1);
+  pt[4] := VectorMake(-v.X,-v.Y, v.Z,1);
+  pt[5] := VectorMake( v.X,-v.Y, v.Z,1);
+  pt[6] := VectorMake( v.X, v.Y, v.Z,1);
+  pt[7] := VectorMake(-v.X, v.Y, v.Z,1);
 end;
 
 function DoCubesIntersectPrim(obj1, obj2 : TVKBaseSceneObject) : Boolean;
@@ -723,7 +723,7 @@ end;
       d : Extended;
    begin
       //  Z-axis sort
-      d:=(TCollisionNode(Item2).AABB.min.V[2]-TCollisionNode(Item1).AABB.min.V[2]);
+      d:=(TCollisionNode(Item2).AABB.min.Z-TCollisionNode(Item1).AABB.min.Z);
       if d>0 then Result:=-1 else if d<0 then Result:=1 else Result:=0;
    end;
 
@@ -753,7 +753,7 @@ begin
        obj1:=cli1.OwnerBaseSceneObject;
        //TODO:  need to do different things for different objects, especially points (to improve speed)
        box1:=obj1.AxisAlignedBoundingBoxUnscaled;         //get obj1 axis-aligned bounding box
-       if box1.min.V[2]>=box1.max.V[2] then continue;          //check for case where no bb exists
+       if box1.min.Z>=box1.max.Z then continue;          //check for case where no bb exists
        AABBTransform(box1,obj1.AbsoluteMatrix);           //& transform it to world axis
        CollisionNode1:=TCollisionNode.Create(cli1,box1);
        NodeList.Add(CollisionNode1);
@@ -772,7 +772,7 @@ begin
           cli2:=CollisionNode2.Collision;
 
           //Check BBox1 and BBox2 overlap in the z-direction
-          if (CollisionNode2.AABB.min.V[2]>CollisionNode1.AABB.max.V[2]) then
+          if (CollisionNode2.AABB.min.Z>CollisionNode1.AABB.max.Z) then
             Break;
 
           grp2:=cli2.GroupIndex;

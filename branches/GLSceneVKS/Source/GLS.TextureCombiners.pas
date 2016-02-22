@@ -14,7 +14,7 @@ interface
 uses
   System.SysUtils, System.Classes,
 
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context;
 
 type
@@ -165,7 +165,7 @@ begin
     sourceValue := GL_CONSTANT_COLOR_ARB
   else if Copy(arg, 1, 3) = 'tex' then
   begin
-    TCAssertCheck(GL.ARB_texture_env_crossbar or GL.NV_texture_env_combine4,
+    TCAssertCheck(GL_ARB_texture_env_crossbar or GL_NV_texture_env_combine4,
       'Requires GL_ARB_texture_env_crossbar or NV_texture_env_combine4');
     n := StrToIntDef(Copy(arg, 4, MaxInt), -1);
     if n in [0..7] then
@@ -287,7 +287,7 @@ begin
       begin
         // DOT3 operator
         TCAssertCheck(sl.Count = 2, 'Invalid parameter count');
-        TCAssertCheck(GL.ARB_texture_env_dot3, 'Requires GL_ARB_texture_env_dot3');
+        TCAssertCheck(GL_ARB_texture_env_dot3, 'Requires GL_ARB_texture_env_dot3');
         operEnum := GL_DOT3_RGB_ARB;
         arg1 := sl[0];
         arg2 := sl[1];
@@ -338,7 +338,7 @@ var
   sl: TStringList;
 begin
   vCommandCache := nil;
-  TCAssertCheck(GL.ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
+  TCAssertCheck(GL_ARB_texture_env_combine, 'Requires GL_ARB_texture_env_combine support');
   sl := TStringList.Create;
   try
     sl.Assign(tcCode);

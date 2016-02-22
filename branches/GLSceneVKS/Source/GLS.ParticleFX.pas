@@ -18,7 +18,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Types, System.Math,
 
-  GLS.Scene, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.State,
+  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.CrossPlatform, GLS.State,
   GLS.VectorTypes, GLS.PersistentClasses, GLS.VectorGeometry,
   GLS.XCollection, GLS.Material, GLS.Cadencer, GLS.VectorLists,
   GLS.Graphics, GLS.Context, GLS.Color, GLS.BaseClasses,
@@ -941,20 +941,20 @@ begin
   case dispersion of
     sdmFast:
       begin
-        v.V[0] := (Random - 0.5) * p.V[0];
-        v.V[1] := (Random - 0.5) * p.V[1];
-        v.V[2] := (Random - 0.5) * p.V[2];
+        v.X := (Random - 0.5) * p.X;
+        v.Y := (Random - 0.5) * p.Y;
+        v.Z := (Random - 0.5) * p.Z;
       end;
   else
     fsq := Sqr(0.5);
     repeat
-      v.V[0] := (Random - 0.5);
-      v.V[1] := (Random - 0.5);
-      v.V[2] := (Random - 0.5);
+      v.X := (Random - 0.5);
+      v.Y := (Random - 0.5);
+      v.Z := (Random - 0.5);
     until VectorNorm(v) <= fsq;
-    v.V[0] := v.V[0] * p.V[0];
-    v.V[1] := v.V[1] * p.V[1];
-    v.V[2] := v.V[2] * p.V[2];
+    v.X := v.X * p.X;
+    v.Y := v.Y * p.Y;
+    v.Z := v.Z * p.Z;
   end;
 end;
 
@@ -990,7 +990,7 @@ end;
 
 function TVKParticle.GetVelocity(const Index: Integer): Single;
 begin
-  Result := FVelocity.V[0];
+  Result := FVelocity.X;
 end;
 
 procedure TVKParticle.WriteVelocity(const Index: Integer; const aValue: Single);
@@ -2933,8 +2933,8 @@ begin
   glGetFloatv(GL_MODELVIEW_MATRIX, @matrix);
   for i := 0 to 2 do
   begin
-    Fvx.V[i] := matrix.V[i].V[0] * FParticleSize;
-    Fvy.V[i] := matrix.V[i].V[1] * FParticleSize;
+    Fvx.V[i] := matrix.V[i].X * FParticleSize;
+    Fvy.V[i] := matrix.V[i].Y * FParticleSize;
   end;
   FVertices := TAffineVectorList.Create;
   FVertices.Capacity := FNbSides;
@@ -3192,9 +3192,9 @@ begin
 
   for i := 0 to 2 do
   begin
-    Fvx.V[i] := matrix.V[i].V[0] * w;
-    Fvy.V[i] := matrix.V[i].V[1] * h;
-    Fvz.V[i] := matrix.V[i].V[2];
+    Fvx.V[i] := matrix.V[i].X * w;
+    Fvy.V[i] := matrix.V[i].Y * h;
+    Fvz.V[i] := matrix.V[i].Z;
   end;
 
   FVertices := TAffineVectorList.Create;

@@ -14,7 +14,7 @@ interface
 uses
   System.Classes,
   //GLS
-  GLS.Scene, GLS.CrossPlatform, GLS.BaseClasses, GLS.State, GLS.OpenGLTokens, GLS.OpenGL1x, 
+  GLS.Scene, GLS.CrossPlatform, GLS.BaseClasses, GLS.State, Winapi.OpenGL, Winapi.OpenGLext,  GLS.OpenGL1x, 
   GLS.Context, GLS.RenderContextInfo, GLS.Coordinates, GLS.VectorGeometry, GLS.VectorTypes,
   GLS.TextureFormat, GLS.Color, GLS.Texture, GLS.Material,
   GLSL.Shader, GLS.CustomShader;

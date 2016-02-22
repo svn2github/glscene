@@ -1664,9 +1664,9 @@ end;
 constructor TVFGravity.Create(const aOwner : TVKVerletWorld);
 begin
    inherited;
-   FGravity.V[0]:=0;
-   FGravity.V[1]:=-9.81;
-   FGravity.V[2]:=0;
+   FGravity.X:=0;
+   FGravity.Y:=-9.81;
+   FGravity.Z:=0;
 end;
 
 // AddForceToNode
@@ -1738,9 +1738,9 @@ begin
   if FWindMagnitude<>0 then
   begin
     Chaos := FWindMagnitude * FWindChaos;
-    FCurrentWindBurst.V[0] := FWindDirection.V[0] * FWindMagnitude + Chaos * (random-0.5) * 2;
-    FCurrentWindBurst.V[1] := FWindDirection.V[1] * FWindMagnitude + Chaos * (random-0.5) * 2;
-    FCurrentWindBurst.V[2] := FWindDirection.V[2] * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.X := FWindDirection.X * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.Y := FWindDirection.Y * FWindMagnitude + Chaos * (random-0.5) * 2;
+    FCurrentWindBurst.Z := FWindDirection.Z * FWindMagnitude + Chaos * (random-0.5) * 2;
 
     s := VectorSubtract(s, FCurrentWindBurst);
   end;
@@ -1762,9 +1762,9 @@ begin
   inherited;
 
   FDragCoeff := 0.001;
-  FWindDirection.V[0] := 0;
-  FWindDirection.V[1] := 0;
-  FWindDirection.V[2] := 0;
+  FWindDirection.X := 0;
+  FWindDirection.Y := 0;
+  FWindDirection.Z := 0;
   FWindMagnitude := 0;
   FWindChaos := 0;
 end;
@@ -1962,9 +1962,9 @@ begin
    natZ:=NullVector;
    for i:=0 to Nodes.Count-1 do begin
       delta:=VectorSubtract(Nodes[i].Location, barycenter);
-      CombineVector(natX, delta, FNodeParams[i].V[0]);
-      CombineVector(natY, delta, FNodeParams[i].V[1]);
-      CombineVector(natZ, delta, FNodeParams[i].V[2]);
+      CombineVector(natX, delta, FNodeParams[i].X);
+      CombineVector(natY, delta, FNodeParams[i].Y);
+      CombineVector(natZ, delta, FNodeParams[i].Z);
    end;
 end;
 
@@ -1984,18 +1984,18 @@ begin
    for i:=0 to Nodes.Count-1 do begin
       FNodeCoords[i]:=VectorSubtract(Nodes[i].Location, barycenter);
       d:=Nodes[i].Weight/VectorLength(FNodeCoords[i]);
-      FNodeParams[i].V[0]:=FNodeCoords[i].V[0]*d;
-      FNodeParams[i].V[1]:=FNodeCoords[i].V[1]*d;
-      FNodeParams[i].V[2]:=FNodeCoords[i].V[2]*d;
+      FNodeParams[i].X:=FNodeCoords[i].X*d;
+      FNodeParams[i].Y:=FNodeCoords[i].Y*d;
+      FNodeParams[i].Z:=FNodeCoords[i].Z*d;
    end;
 
-   ComputeNaturals(barycenter, FNatMatrix.V[0], FNatMatrix.V[1], FNatMatrix.V[2]);
+   ComputeNaturals(barycenter, FNatMatrix.X, FNatMatrix.Y, FNatMatrix.Z);
 
-   FNatMatrix.V[2]:=VectorCrossProduct(FNatMatrix.V[0], FNatMatrix.V[1]);
-   FNatMatrix.V[1]:=VectorCrossProduct(FNatMatrix.V[2], FNatMatrix.V[0]);
-   NormalizeVector(FNatMatrix.V[0]);
-   NormalizeVector(FNatMatrix.V[1]);
-   NormalizeVector(FNatMatrix.V[2]);
+   FNatMatrix.Z:=VectorCrossProduct(FNatMatrix.X, FNatMatrix.Y);
+   FNatMatrix.Y:=VectorCrossProduct(FNatMatrix.Z, FNatMatrix.X);
+   NormalizeVector(FNatMatrix.X);
+   NormalizeVector(FNatMatrix.Y);
+   NormalizeVector(FNatMatrix.Z);
 
    FInvNatMatrix:=FNatMatrix;
 //   TransposeMatrix(FInvNatMatrix);
@@ -2051,7 +2051,7 @@ begin
    nrjAdjust:=NullVector;
    for i:=0 to Nodes.Count-1 do begin
       delta:=VectorCombine3(natural[0], natural[1], natural[2],
-                            FNodeCoords[i].V[0], FNodeCoords[i].V[1], FNodeCoords[i].V[2]);
+                            FNodeCoords[i].X, FNodeCoords[i].Y, FNodeCoords[i].Z);
       deltas[i]:=VectorSubtract(VectorAdd(barycenter, delta), Nodes[i].Location);
       nrjAdjust:=VectorAdd(nrjBase, VectorCrossProduct(VectorSubtract(Nodes[i].Location, barycenter),
                                                        deltas[i]));
@@ -2267,7 +2267,7 @@ var
     x := (x-0.5)*2;
     y := (y-0.5)*2;
     z := (z-0.5)*2;
-    MakeVector(Corners[CornerID], FHalfSides.V[0]*x, FHalfSides.V[1]*y, FHalfSides.V[2]*z);
+    MakeVector(Corners[CornerID], FHalfSides.X*x, FHalfSides.Y*y, FHalfSides.Z*z);
     AddVector(Corners[CornerID], FLocation);
   end;
 
@@ -2287,9 +2287,9 @@ var
 
     CenteraEdge := VectorSubtract(aEdgeClosest, FLocation);
 
-    if (abs(CenteraEdge.V[0])<FHalfSides.V[0]) and
-       (abs(CenteraEdge.V[1])<FHalfSides.V[1]) and
-       (abs(CenteraEdge.V[2])<FHalfSides.V[2]) then
+    if (abs(CenteraEdge.X)<FHalfSides.X) and
+       (abs(CenteraEdge.Y)<FHalfSides.Y) and
+       (abs(CenteraEdge.Z)<FHalfSides.Z) then
     begin
       // The distance to move the edge is the difference between CenterCubeEdge and
       // CenteraEdge
@@ -2314,14 +2314,14 @@ begin
 
   // If both edges are on the same side of _any_ box side, the edge can't
   // cut the box
-  if ((EdgeRelative[0].V[0]> FHalfSides.V[0]) and (EdgeRelative[1].V[0] >FHalfSides.V[0])) or
-     ((EdgeRelative[0].V[0]<-FHalfSides.V[0]) and (EdgeRelative[1].V[0]<-FHalfSides.V[0])) or
+  if ((EdgeRelative[0].X> FHalfSides.X) and (EdgeRelative[1].X >FHalfSides.X)) or
+     ((EdgeRelative[0].X<-FHalfSides.X) and (EdgeRelative[1].X<-FHalfSides.X)) or
 
-     ((EdgeRelative[0].V[1]> FHalfSides.V[1]) and (EdgeRelative[1].V[1]> FHalfSides.V[1])) or
-     ((EdgeRelative[0].V[1]<-FHalfSides.V[1]) and (EdgeRelative[1].V[1]<-FHalfSides.V[1])) or
+     ((EdgeRelative[0].Y> FHalfSides.Y) and (EdgeRelative[1].Y> FHalfSides.Y)) or
+     ((EdgeRelative[0].Y<-FHalfSides.Y) and (EdgeRelative[1].Y<-FHalfSides.Y)) or
 
-     ((EdgeRelative[0].V[2]> FHalfSides.V[2]) and (EdgeRelative[1].V[2]> FHalfSides.V[2])) or
-     ((EdgeRelative[0].V[2]<-FHalfSides.V[2]) and (EdgeRelative[1].V[2]<-FHalfSides.V[2])) then
+     ((EdgeRelative[0].Z> FHalfSides.Z) and (EdgeRelative[1].Z> FHalfSides.Z)) or
+     ((EdgeRelative[0].Z<-FHalfSides.Z) and (EdgeRelative[1].Z<-FHalfSides.Z)) then
   begin
     exit;
   end;
@@ -2388,18 +2388,18 @@ begin
 
    p:=VectorSubtract(aNode.FLocation, FLocation);
 
-   absP.V[0]:=FHalfSides.V[0]-Abs(p.V[0]);
-   absP.V[1]:=FHalfSides.V[1]-Abs(p.V[1]);
-   absP.V[2]:=FHalfSides.V[2]-Abs(p.V[2]);
+   absP.X:=FHalfSides.X-Abs(p.X);
+   absP.Y:=FHalfSides.Y-Abs(p.Y);
+   absP.Z:=FHalfSides.Z-Abs(p.Z);
 
-   if (PInteger(@absP.V[0])^<=0) or (PInteger(@absP.V[1])^<=0) or(PInteger(@absP.V[2])^<=0) then
+   if (PInteger(@absP.X)^<=0) or (PInteger(@absP.Y)^<=0) or(PInteger(@absP.Z)^<=0) then
       Exit;
 
-   if absP.V[0]<absP.V[1] then
-      if absP.V[0]<absP.V[2] then
+   if absP.X<absP.Y then
+      if absP.X<absP.Z then
          smallestSide:=0
       else smallestSide:=2
-   else if absP.V[1]<absP.V[2] then
+   else if absP.Y<absP.Z then
       smallestSide:=1
    else smallestSide:=2;
 

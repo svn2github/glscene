@@ -867,7 +867,7 @@ end;
 function TVKColorProperty.ColorToBorderColor(aColor: TColorVector;
   selected: Boolean): TColor;
 begin
-  if (aColor.V[0] > 0.75) or (aColor.V[1] > 0.75) or (aColor.V[2] > 0.75) then
+  if (aColor.X > 0.75) or (aColor.Y > 0.75) or (aColor.Z > 0.75) then
     Result := clBlack
   else if selected then
     Result := clWhite

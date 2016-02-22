@@ -10,9 +10,12 @@ unit GLS.Material;
 interface
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes, System.SysUtils, System.Types,
   //GLS
-  GLS.RenderContextInfo, GLS.BaseClasses, GLS.OpenGLTokens, GLS.Context,
+  GLS.OpenGLAdapter,
+  GLS.RenderContextInfo, GLS.BaseClasses, GLS.Context,
   GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry, GLS.PersistentClasses,
   GLS.CrossPlatform, GLS.State, GLS.TextureFormat, GLS.Strings, GLS.XOpenGL,
   GLS.ApplicationFileIO, GLS.Graphics, GLS.Utils, GLS.Log;
@@ -226,7 +229,7 @@ type
   private
     { Private Declarations }
     FDepthTest: boolean;
-    FDepthWrite: boolean;
+    FDepthWrite: GLboolean;
     FZNear, FZFar: Single;
     FCompareFunc: TDepthfunction;
     FDepthClamp: Boolean;
@@ -236,7 +239,7 @@ type
     procedure SetZFar(Value: Single);
     procedure SetCompareFunc(Value: TVKDepthCompareFunc);
     procedure SetDepthTest(Value: boolean);
-    procedure SetDepthWrite(Value: boolean);
+    procedure SetDepthWrite(Value: GLboolean);
     procedure SetDepthClamp(Value: boolean);
 
     function StoreZNear: Boolean;
@@ -270,8 +273,7 @@ type
        testing through the osIgnoreDepthBuffer of their ObjectStyle property. }
     property DepthTest: boolean read FDepthTest write SetDepthTest default True;
     { If True, object will not write to Z-Buffer. }
-    property DepthWrite: boolean read FDepthWrite write SetDepthWrite default
-      True;
+    property DepthWrite: GLboolean read FDepthWrite write SetDepthWrite default 1;
     { Enable clipping depth to the near and far planes }
     property DepthClamp: Boolean read FDepthClamp write SetDepthClamp default
       False;
@@ -952,7 +954,7 @@ constructor TVKDepthProperties.Create(AOwner: TPersistent);
 begin
   inherited Create(AOwner);
   FDepthTest := True;
-  FDepthWrite := True;
+  FDepthWrite := 1;
   FZNear := 0;
   FZFar := 1;
   FCompareFunc := cfLequal;
@@ -970,11 +972,10 @@ begin
     DepthWriteMask := FDepthWrite;
     DepthFunc := FCompareFunc;
     SetDepthRange(FZNear, FZFar);
-    if GL.ARB_depth_clamp then
-      if FDepthClamp then
-        Enable(stDepthClamp)
-      else
-        Disable(stDepthClamp);
+    if FDepthClamp then
+       Enable(stDepthClamp)
+     else
+       Disable(stDepthClamp);
   end;
 end;
 
@@ -1029,7 +1030,7 @@ begin
   end;
 end;
 
-procedure TVKDepthProperties.SetDepthWrite(Value: boolean);
+procedure TVKDepthProperties.SetDepthWrite(Value: GLboolean);
 begin
   if Value <> FDepthWrite then
   begin
@@ -2249,7 +2250,7 @@ begin
   end
   else
     ARci.GLStates.CurrentProgram := 0;
-  if (Texture2Name <> '') and GL.ARB_multitexture and (not
+  if (Texture2Name <> '') and GL_ARB_multitexture and (not
     xgl.SecondTextureUnitForbidden) then
   begin
     if not Assigned(libMatTexture2) then
@@ -2282,7 +2283,7 @@ begin
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci,
-        @libMatTexture2.FTextureMatrix.V[0].V[0])
+        @libMatTexture2.FTextureMatrix.X.X)
     else
       libMatTexture2.Material.Texture.ApplyAsTexture2(ARci);
 
@@ -2328,7 +2329,7 @@ begin
 
   if not Result then
   begin
-    if Assigned(libMatTexture2) and GL.ARB_multitexture and (not
+    if Assigned(libMatTexture2) and GL_ARB_multitexture and (not
       xgl.SecondTextureUnitForbidden) then
     begin
       libMatTexture2.Material.Texture.UnApplyAsTexture2(ARci, (not
@@ -2422,7 +2423,7 @@ end;
 
 procedure TVKLibMaterial.SetTextureMatrix(const Value: TMatrix);
 begin
-  FTextureMatrixIsIdentity := CompareMem(@Value.V[0], @IdentityHmgMatrix.V[0], SizeOf(TMatrix));
+  FTextureMatrixIsIdentity := CompareMem(@Value.X, @IdentityHmgMatrix.X, SizeOf(TMatrix));
   FTextureMatrix := Value;
   FTextureOverride := True;
   NotifyUsers;

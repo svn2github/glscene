@@ -11,7 +11,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Graphics, GLS.TextureFormat,
   GLS.ApplicationFileIO;
 
 type

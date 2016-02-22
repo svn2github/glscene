@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  Cross-platform context. 
-   
+  Cross-platform context.
+
 }
 unit GLS.SceneContext;
 
@@ -14,14 +14,17 @@ interface
 uses
   Winapi.Windows,
   Winapi.Messages,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
   System.Classes,
   FMX.Forms,
 ///  FMX.Platform.Win,
-
+  GLS.OpenGLAdapter,
   GLS.Context,
   GLS.CrossPlatform,
   GLS.State,
+  GLS.Strings,
   GLS.Log,
   GLS.VectorGeometry;
 
@@ -386,7 +389,7 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not FGL.WChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
+    if not FGL.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
       PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
@@ -409,7 +412,7 @@ begin
 
   if float then
   begin // float_type
-    if GL.W_ATI_pixel_format_float then
+    if WGL_ATI_pixel_format_float then
     begin // NV40 uses ATI_float, with linear filtering
       AddIAttrib(WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_FLOAT_ATI);
     end
@@ -434,7 +437,7 @@ begin
     AddIAttrib(WGL_ACCUM_BITS_ARB, AccumBits);
   if AuxBuffers > 0 then
     AddIAttrib(WGL_AUX_BUFFERS_ARB, AuxBuffers);
-  if (AntiAliasing <> aaDefault) and GL.W_ARB_multisample then
+  if (AntiAliasing <> aaDefault) and WGL_ARB_multisample then
   begin
     if AntiAliasing = aaNone then
       AddIAttrib(WGL_SAMPLE_BUFFERS_ARB, GL_FALSE)
@@ -559,7 +562,7 @@ begin
   FDC := aDC;
 
   if not wglMakeCurrent(FDC, FRC) then
-    raise EGLContext.Create(Format(cContextActivationFailed,
+    raise EGLContext.Create(Format(glsContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FLegacyContextsOnly then
@@ -577,7 +580,7 @@ begin
       end;
     end;
     FGL.DebugMode := False;
-    FglInitialize;
+    FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -610,37 +613,37 @@ begin
     // Initialize forward context
     if GLStates.ForwardContext then
     begin
-      if FGL.VERSION_4_2 then
+      if GL_VERSION_4_2 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
       end
-      else if FGL.VERSION_4_1 then
+      else if GL_VERSION_4_1 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
       end
-      else if FGL.VERSION_4_0 then
+      else if GL_VERSION_4_0 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
       end
-      else if FGL.VERSION_3_3 then
+      else if GL_VERSION_3_3 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
       end
-      else if FGL.VERSION_3_2 then
+      else if GL_VERSION_3_2 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
       end
-      else if FGL.VERSION_3_1 then
+      else if GL_VERSION_3_1 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
       end
-      else if FGL.VERSION_3_0 then
+      else if GL_VERSION_3_0 then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
@@ -653,7 +656,7 @@ begin
     end
     else if rcoOGL_ES in Options then
     begin
-      if FGL.W_EXT_create_context_es2_profile then
+      if WGL_EXT_create_context_es2_profile then
       begin
         AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
         AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
@@ -684,7 +687,7 @@ begin
     FRC := 0;
     if Assigned(FShareContext) then
     begin
-      FRC := FGL.WCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
+      FRC := FGL.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
       if FRC <> 0 then
       begin
         FSharedContexts.Add(FShareContext);
@@ -696,7 +699,7 @@ begin
 
     if FRC = 0 then
     begin
-      FRC := FGL.WCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
+      FRC := FGL.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
         if GLStates.ForwardContext then
@@ -713,12 +716,12 @@ begin
 
     if not wglMakeCurrent(FDC, FRC) then
     begin
-      GLSLogger.LogErrorFmt(cContextActivationFailed,
+      GLSLogger.LogErrorFmt(glsContextActivationFailed,
         [GetLastError, SysErrorMessage(GetLastError)]);
       Abort;
     end;
 
-    FglInitialize;
+    FGL.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
@@ -838,8 +841,8 @@ begin
       try
         DoActivate;
         try
-          FglClearError;
-          if FGL.W_ARB_pixel_format then
+          ClearOpenGLError;
+          if WGL_ARB_pixel_format then
           begin
             // New pixel format selection via wglChoosePixelFormatARB
             ClearIAttribs;
@@ -851,7 +854,7 @@ begin
             ChooseWGLFormat(ADeviceHandle, 32, @iFormats, nbFormats);
             if nbFormats > 0 then
             begin
-              if FGL.W_ARB_multisample and (AntiAliasing in [aaNone, aaDefault])
+              if WGL_ARB_multisample and (AntiAliasing in [aaNone, aaDefault])
               then
               begin
                 // Pick first non AntiAliased for aaDefault and aaNone modes
@@ -860,7 +863,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FGL.WGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
+                  FGL.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
                     1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     break;
@@ -956,7 +959,7 @@ begin
     end;
   end;
 
-  if not FLegacyContextsOnly and FGL.W_ARB_create_context and
+  if not FLegacyContextsOnly and WGL_ARB_create_context and
     (FAcceleration = chaHardware) then
     CreateNewContext(ADeviceHandle)
   else
@@ -993,7 +996,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create(cUnableToCreateLegacyContext + #13#10 + E.ClassName
+      raise Exception.Create(glsUnableToCreateLegacyContext + #13#10 + E.ClassName
         + ': ' + E.message);
     end;
   end;
@@ -1029,8 +1032,8 @@ begin
     try
       DoActivate;
       try
-        FglClearError;
-        if FGL.W_ARB_pixel_format and FGL.W_ARB_pbuffer then
+        ClearOpenGLError;
+        if WGL_ARB_pixel_format and WGL_ARB_pbuffer then
         begin
           ClearIAttribs;
           AddIAttrib(WGL_DRAW_TO_PBUFFER_ARB, 1);
@@ -1040,53 +1043,53 @@ begin
               ('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := FGL.WCreatePbufferARB(tempDC, iFormats[0], Width,
+          localHPBuffer := FGL.wglCreatePbufferARB(tempDC, iFormats[0], Width,
             Height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
             raise EPBuffer.Create('Unabled to create pbuffer.');
           try
-            localDC := FGL.WGetPbufferDCARB(localHPBuffer);
+            localDC := FGL.wglGetPbufferDCARB(localHPBuffer);
             if localDC = 0 then
               raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
-              if FGL.W_ARB_create_context then
+              if WGL_ARB_create_context then
               begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
                 if GLStates.ForwardContext then
                 begin
-                  if FGL.VERSION_4_2 then
+                  if GL_VERSION_4_2 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
                   end
-                  else if FGL.VERSION_4_1 then
+                  else if GL_VERSION_4_1 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
                   end
-                  else if FGL.VERSION_4_0 then
+                  else if GL_VERSION_4_0 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 4);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
                   end
-                  else if FGL.VERSION_3_3 then
+                  else if GL_VERSION_3_3 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 3);
                   end
-                  else if FGL.VERSION_3_2 then
+                  else if GL_VERSION_3_2 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 2);
                   end
-                  else if FGL.VERSION_3_1 then
+                  else if GL_VERSION_3_1 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 1);
                   end
-                  else if FGL.VERSION_3_0 then
+                  else if GL_VERSION_3_0 then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 3);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
@@ -1100,7 +1103,7 @@ begin
                 end
                 else if rcoOGL_ES in Options then
                 begin
-                  if FGL.W_EXT_create_context_es2_profile then
+                  if WGL_EXT_create_context_es2_profile then
                   begin
                     AddIAttrib(WGL_CONTEXT_MAJOR_VERSION_ARB, 2);
                     AddIAttrib(WGL_CONTEXT_MINOR_VERSION_ARB, 0);
@@ -1128,7 +1131,7 @@ begin
                     AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
                 end;
 
-                localRC := FGL.WCreateContextAttribsARB(localDC, 0,
+                localRC := FGL.wglCreateContextAttribsARB(localDC, 0,
                   @FiAttribs[0]);
                 if localRC = 0 then
 {$IFDEF GLS_LOGGING}
@@ -1158,17 +1161,17 @@ begin
               end;
 
             except
-              FGL.WReleasePBufferDCARB(localHPBuffer, localDC);
+              FGL.wglReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
             end;
           except
-            FGL.WDestroyPBufferARB(localHPBuffer);
+            FGL.wglDestroyPBufferARB(localHPBuffer);
             raise;
           end;
         end
         else
           raise EPBuffer.Create('WGL_ARB_pbuffer support required.');
-        FGL.CheckError;
+        CheckOpenGLError;
       finally
         DoDeactivate;
       end;
@@ -1195,7 +1198,7 @@ begin
   end;
 
   Activate;
-  FglInitialize;
+  FGL.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
     GLStates.MultisampleFilterHint := hintNicest
@@ -1206,7 +1209,7 @@ begin
 
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
-    FglDrawBuffers(BufferCount, @MRT_BUFFERS);
+    glDrawBuffers(BufferCount, @MRT_BUFFERS);
 
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
   begin
@@ -1254,7 +1257,7 @@ begin
       Result := False;
   end
   else
-    raise Exception.Create(cIncompatibleContexts);
+    raise Exception.Create(glsIncompatibleContexts);
 end;
 
 // DoDestroyContext
@@ -1266,14 +1269,14 @@ begin
 
   if FHPBUFFER <> 0 then
   begin
-    FGL.WReleasePBufferDCARB(FHPBUFFER, FDC);
-    FGL.WDestroyPBufferARB(FHPBUFFER);
+    FGL.wglReleasePBufferDCARB(FHPBUFFER, FDC);
+    FGL.wglDestroyPBufferARB(FHPBUFFER);
     FHPBUFFER := 0;
   end;
 
   if FRC <> 0 then
     if not wglDeleteContext(FRC) then
-      GLSLogger.LogErrorFmt(cDeleteContextFailed,
+      GLSLogger.LogErrorFmt(glsDeleteContextFailed,
         [GetLastError, SysErrorMessage(GetLastError)]);
 
   FRC := 0;
@@ -1287,13 +1290,13 @@ procedure TVKWin32Context.DoActivate;
 begin
   if not wglMakeCurrent(FDC, FRC) then
   begin
-    GLSLogger.LogErrorFmt(cContextActivationFailed,
+    GLSLogger.LogErrorFmt(glsContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]);
     Abort;
   end;
 
   if not FGL.IsInitialized then
-    FglInitialize(CurrentGLContext = nil);
+    FGL.Initialize(CurrentGLContext = nil);
 end;
 
 // Deactivate
@@ -1302,7 +1305,7 @@ procedure TVKWin32Context.DoDeactivate;
 begin
   if not wglMakeCurrent(0, 0) then
   begin
-    GLSLogger.LogErrorFmt(cContextDeactivationFailed,
+    GLSLogger.LogErrorFmt(glsContextDeactivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]);
     Abort;
   end;

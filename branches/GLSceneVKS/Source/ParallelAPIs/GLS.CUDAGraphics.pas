@@ -13,7 +13,7 @@ uses
   GLS.CrossPlatform,
   GLS.CUDAAPI,
   GLS.CUDA,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.State,
   GLS.Scene,

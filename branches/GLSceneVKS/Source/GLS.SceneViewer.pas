@@ -1,8 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   GLScene cross-platform viewer. 
+   GLScene cross-platform viewer.
 }
 
 unit GLS.SceneViewer;
@@ -10,13 +10,23 @@ unit GLS.SceneViewer;
 interface
 
 uses
-  Winapi.Windows, WinApi.Messages,
-  System.Classes, System.SysUtils, System.Types,
-
-  FMX.Graphics, FMX.Forms, FMX.Controls, FMX.Dialogs.Win,
+  Winapi.Windows,
+  WinApi.Messages,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  FMX.Graphics,
+  FMX.Forms,
+  FMX.Controls,
+  FMX.Dialogs.Win,
   FMX.Viewport3D,
-
-  GLS.Scene, GLS.SceneContext,  GLS.Context;
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.Scene,
+  GLS.SceneContext,
+  GLS.Context;
 
 type
   TCreateParams = record
@@ -38,7 +48,7 @@ type
   { Component where the GLScene objects get rendered. 
      This component delimits the area where OpenGL renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
-     camera property). This component can also render to a file or to a bitmap. 
+     camera property). This component can also render to a file or to a bitmap.
      It is primarily a windowed component, but it can handle full-screen
      operations : simply make this component fit the whole screen (use a
      borderless form). 
@@ -196,7 +206,7 @@ type
     property Touch;
   end;
 
-procedure SetupVSync(const AVSyncMode : TVSyncMode);
+(* procedure SetupVSync(const AVSyncMode : TVSyncMode); *)
 
 var
  Handle: HWND;
@@ -212,21 +222,23 @@ implementation
 // ------------------ TVKSceneViewerFMX ------------------
 // ------------------
 
+(*
 procedure SetupVSync(const AVSyncMode : TVSyncMode);
 var
   I: Integer;
 begin
-  if GL.W_EXT_swap_control then
+  if WGL_EXT_swap_control then
   begin
-    I := GL.WGetSwapIntervalEXT;
+    I := FGL.wglGetSwapIntervalEXT;
     case AVSyncMode of
-      vsmSync  : if I <> 1 then GL.WSwapIntervalEXT(1);
-      vsmNoSync: if I <> 0 then GL.WSwapIntervalEXT(0);
+      vsmSync  : if I <> 1 then FGL.wglSwapIntervalEXT(1);
+      vsmNoSync: if I <> 0 then FGL.wglSwapIntervalEXT(0);
     else
        Assert(False);
     end;
   end;
 end;
+*)
 
 // Create
 //
@@ -550,7 +562,7 @@ end;
 //
 procedure TVKSceneViewer.DoBeforeRender(Sender: TObject);
 begin
-  SetupVSync(VSync);
+///  SetupVSync(VSync); //<-TODO
 end;
 
 // DoBufferChange

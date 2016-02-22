@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-   Handles all the color and texture stuff. 
-    
+   Handles all the color and texture stuff.
+
 }
 unit GLS.Texture;
 
@@ -12,10 +12,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes, System.SysUtils, System.Types,
   FMX.Graphics, FMX.Objects,
   //GLS
-  GLS.Strings, GLS.CrossPlatform, GLS.BaseClasses, GLS.OpenGLTokens,
+  GLS.OpenGLAdapter,
+  GLS.Strings, GLS.CrossPlatform, GLS.BaseClasses,
   GLS.VectorGeometry, GLS.Graphics, GLS.Context, GLS.State, GLS.Color, GLS.Coordinates,
   GLS.RenderContextInfo, GLS.TextureFormat, GLS.ApplicationFileIO, GLS.Utils;
 
@@ -2864,7 +2867,7 @@ procedure TVKTexture.ApplyMappingMode;
 var
   R_Dim: Boolean;
 begin
-  R_Dim := GL.ARB_texture_cube_map or GL_EXT_texture3D;
+  R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
   case MappingMode of
     tmmUser: ; // nothing to do, but checked first (common case)
     tmmObjectLinear:
@@ -2914,7 +2917,7 @@ begin
         glEnable(GL_TEXTURE_GEN_S);
         glEnable(GL_TEXTURE_GEN_T);
       end;
-    tmmCubeMapReflection, tmmCubeMapCamera: if GL.ARB_texture_cube_map then
+    tmmCubeMapReflection, tmmCubeMapCamera: if GL_ARB_texture_cube_map then
       begin
         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP);
@@ -2923,7 +2926,7 @@ begin
         glEnable(GL_TEXTURE_GEN_T);
         glEnable(GL_TEXTURE_GEN_R);
       end;
-    tmmCubeMapNormal, tmmCubeMapLight0: if GL.ARB_texture_cube_map then
+    tmmCubeMapNormal, tmmCubeMapLight0: if GL_ARB_texture_cube_map then
       begin
         glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
         glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_NORMAL_MAP);
@@ -2946,7 +2949,7 @@ begin
   begin
     glDisable(GL_TEXTURE_GEN_S);
     glDisable(GL_TEXTURE_GEN_T);
-    if GL_EXT_texture3D or GL.ARB_texture_cube_map then
+    if GL_EXT_texture3D or GL_ARB_texture_cube_map then
     begin
       glDisable(GL_TEXTURE_GEN_R);
       glDisable(GL_TEXTURE_GEN_Q);
@@ -2988,10 +2991,10 @@ procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
         end;
       tmmCubeMapCamera:
         begin
-          m.V[0] := VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
-          m.V[1] := VectorNegate(rci.cameraDirection);
-          m.V[2] := rci.cameraUp;
-          m.V[3] := WHmgPoint;
+          m.X := VectorCrossProduct(rci.cameraUp, rci.cameraDirection);
+          m.Y := VectorNegate(rci.cameraDirection);
+          m.Z := rci.cameraUp;
+          m.W := WHmgPoint;
           mm := rci.PipelineTransformation.ViewMatrix;
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
@@ -3271,7 +3274,7 @@ function TVKTexture.OpenGLTextureFormat: Integer;
 var
   texComp: TVKTextureCompression;
 begin
-  if GL.ARB_texture_compression then
+  if GL_ARB_texture_compression then
   begin
     if Compression = tcDefault then
       if vDefaultTextureCompression = tcDefault then
@@ -3375,7 +3378,7 @@ begin
     if FImageGamma <> 1.0 then
       bitmap32.GammaCorrection(FImageGamma);
 
-    if GL.ARB_texture_compression
+    if GL_ARB_texture_compression
       and (TextureFormat <> tfExtended) then
     begin
       if Compression = tcDefault then
@@ -3418,7 +3421,7 @@ begin
 
   if glGetError <> GL_NO_ERROR then
   begin
-    glClearError;
+    ClearOpenGLError;
     SetTextureErrorImage;
   end
   else
@@ -3468,7 +3471,7 @@ begin
     or (target = GL_TEXTURE_2D_MULTISAMPLE_ARRAY) then
     Exit;
 
-  R_Dim := GL.ARB_texture_cube_map or GL_EXT_texture3D;
+  R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
   with CurrentGLContext.GLStates do
   begin
@@ -3480,7 +3483,7 @@ begin
 
   glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, FBorderColor.AsAddress);
 
-  if (GL.VERSION_1_2 or GL_EXT_texture_edge_clamp) then
+  if (GL_VERSION_1_2 or GL_EXT_texture_edge_clamp) then
   begin
     if FTextureWrap = twSeparate then
     begin
@@ -3509,7 +3512,7 @@ begin
   lMinFilter := FMinFilter;
   // Down paramenter to rectangular texture supported
   if (target = GL_TEXTURE_RECTANGLE)
-    or not (GL_EXT_texture_lod or GL.SGIS_texture_lod) then
+    or not (GL_EXT_texture_lod or GL_SGIS_texture_lod) then
   begin
     if lMinFilter in [miNearestMipmapNearest, miNearestMipmapLinear] then
       lMinFilter := miNearest;
@@ -3689,7 +3692,7 @@ begin
     if FTextureMatrixIsIdentity then
       glLoadIdentity
     else
-      glLoadMatrixf(@FTextureMatrix.V[0].V[0]);
+      glLoadMatrixf(@FTextureMatrix.X.X);
     glMatrixMode(GL_MODELVIEW);
     rci.GLStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
@@ -3855,7 +3858,7 @@ var
   i, texUnits: Integer;
   units: Cardinal;
 begin
-  if not GL.ARB_multitexture then
+  if not GL_ARB_multitexture then
     exit;
 
   units := 0;
@@ -3882,7 +3885,7 @@ procedure TVKTextureEx.UnApply(var rci: TVKRenderContextInfo);
 var
   i: Integer;
 begin
-  if not GL.ARB_multitexture then
+  if not GL_ARB_multitexture then
     exit;
   for i := 0 to Count - 1 do
     Items[i].UnApply(rci);

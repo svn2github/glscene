@@ -25,7 +25,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.VectorGeometry, GLS.VectorLists, GLS.Scene, GLS.VectorFileObjects,
-  GLS.Texture, GLS.RenderContextInfo, GLS.Context, GLS.State, GLS.OpenGLTokens,
+  GLS.Texture, GLS.RenderContextInfo, GLS.Context, GLS.State, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.MeshUtils, GLS.VectorTypes;
 
 type
@@ -256,38 +256,38 @@ begin
       begin
         for j := 0 to 2 do
         begin
-          vertex.V[0] := FBuffer[i];
+          vertex.X := FBuffer[i];
           Inc(i);
-          vertex.V[1] := FBuffer[i];
+          vertex.Y := FBuffer[i];
           Inc(i);
-          vertex.V[2] := FBuffer[i];
+          vertex.Z := FBuffer[i];
           Inc(i);
           if FMode = fm4DColorTexture then
             Inc(i);
           if ColorBuffered then
           begin
-            color.V[0] := FBuffer[i];
+            color.X := FBuffer[i];
             Inc(i);
-            color.V[1] := FBuffer[i];
+            color.Y := FBuffer[i];
             Inc(i);
-            color.V[2] := FBuffer[i];
+            color.Z := FBuffer[i];
             Inc(i);
-            color.V[3] := FBuffer[i];
+            color.W := FBuffer[i];
             Inc(i);
           end;
           if TexCoordBuffered then
           begin
-            texcoord.V[0] := FBuffer[i];
+            texcoord.X := FBuffer[i];
             Inc(i);
-            texcoord.V[1] := FBuffer[i];
+            texcoord.Y := FBuffer[i];
             Inc(i);
-            texcoord.V[2] := FBuffer[i];
+            texcoord.Z := FBuffer[i];
             Inc(i);
-            texcoord.V[3] := FBuffer[i];
+            texcoord.W := FBuffer[i];
             Inc(i);
           end;
 
-          vertex.V[2] := 2 * vertex.V[2] - 1;
+          vertex.Z := 2 * vertex.Z - 1;
           ScaleVector(vertex, FCorrectionScaling);
 
           tempVertices.Add(AffineVectorMake(vertex));

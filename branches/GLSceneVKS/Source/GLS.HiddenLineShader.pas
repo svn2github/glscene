@@ -17,7 +17,7 @@ interface
 uses
   System.Classes,
   //GLS
-  GLS.Material, GLS.OpenGLTokens, GLS.CrossPlatform, GLS.Scene, GLS.Color,
+  GLS.Material, Winapi.OpenGL, Winapi.OpenGLext,  GLS.CrossPlatform, GLS.Scene, GLS.Color,
   GLS.BaseClasses, GLS.RenderContextInfo, GLS.State, GLS.Context;
 
 type

@@ -18,7 +18,7 @@ uses
 
   GLS.VectorGeometry, GLS.Scene, GLS.Texture, GLS.Context,
   GLS.FBO, GLS.Color, GLS.Material, GLS.RenderContextInfo,
-  GLS.State, GLS.OpenGLTokens, GLS.TextureFormat,
+  GLS.State, Winapi.OpenGL, Winapi.OpenGLext,  GLS.TextureFormat,
   GLS.VectorTypes, GLS.MultisampleImage, GLS.Log;
 
 type
@@ -437,7 +437,7 @@ begin
 
   if FUseLibraryAsMultiTarget or Assigned(FOnSetTextureTargets) then
   begin
-    if not(GL.ARB_draw_buffers or GL.ATI_draw_buffers) then
+    if not(GL_ARB_draw_buffers or GL.ATI_draw_buffers) then
     begin
       GLSLogger.LogError('Hardware do not support MRT');
       Active := False;
@@ -670,7 +670,7 @@ begin
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
-      backColor.V[3] := buffer.BackgroundAlpha;
+      backColor.W := buffer.BackgroundAlpha;
       ARci.GLStates.ColorClearValue := backColor;
     end
     else

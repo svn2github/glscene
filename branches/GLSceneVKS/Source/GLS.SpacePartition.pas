@@ -1417,15 +1417,15 @@ begin
   Location := AABB.Min;
 
   // Upper / Lower
-  if Location.V[1] < FBSphere.Center.V[1] then
+  if Location.Y < FBSphere.Center.Y then
     ChildNodeIndex := 4;
 
   // Left / Right
-  if Location.V[2] < FBSphere.Center.V[2] then
+  if Location.Z < FBSphere.Center.Z then
     ChildNodeIndex := ChildNodeIndex or 2;
 
   // Fore / Back
-  if Location.V[0] > FBSphere.Center.V[0] then
+  if Location.X > FBSphere.Center.X then
     ChildNodeIndex := ChildNodeIndex or 1;
 
   Assert((ChildNodeIndex >= 0) and (ChildNodeIndex <= 8),
@@ -1894,10 +1894,10 @@ end;
 
 function TSPQuadtreeNode.AABBFitsInNode(const AAABB: TAABB): Boolean;
 begin
-  Result := (AAABB.Min.V[0] >= FAABB.Min.V[0]) and
-    (AAABB.Min.V[2] >= FAABB.Min.V[2]) and
-    (AAABB.Max.V[0] <= FAABB.Max.V[0]) and
-    (AAABB.Max.V[2] <= FAABB.Max.V[2]);
+  Result := (AAABB.Min.X >= FAABB.Min.X) and
+    (AAABB.Min.Z >= FAABB.Min.Z) and
+    (AAABB.Max.X <= FAABB.Max.X) and
+    (AAABB.Max.Z <= FAABB.Max.Z);
 end;
 
 function TSPQuadtreeNode.AABBIntersectsNode(const AAABB: TAABB): Boolean;
@@ -1931,15 +1931,15 @@ begin
   // Establish a baseline
   if Leaves.Count > 0 then
   begin
-    NewMin := Leaves[0].FCachedAABB.Min.V[1];
-    NewMax := Leaves[0].FCachedAABB.Max.V[1];
+    NewMin := Leaves[0].FCachedAABB.Min.Y;
+    NewMax := Leaves[0].FCachedAABB.Max.Y;
   end
   else
 
     if FChildCount > 0 then
   begin
-    NewMin := FChildren[0].AABB.Min.V[1];
-    NewMax := FChildren[0].AABB.Max.V[1];
+    NewMin := FChildren[0].AABB.Min.Y;
+    NewMax := FChildren[0].AABB.Max.Y;
   end
   else
   begin
@@ -1950,20 +1950,20 @@ begin
 
   for I := 0 to Leaves.Count - 1 do
   begin
-    NewMin := Min(NewMin, Leaves[I].FCachedAABB.Min.V[1]);
-    NewMax := Max(NewMax, Leaves[I].FCachedAABB.Max.V[1]);
+    NewMin := Min(NewMin, Leaves[I].FCachedAABB.Min.Y);
+    NewMax := Max(NewMax, Leaves[I].FCachedAABB.Max.Y);
   end;
 
   for I := 0 to FChildCount - 1 do
   begin
-    NewMin := Min(NewMin, FChildren[I].AABB.Min.V[1]);
-    NewMax := Max(NewMax, FChildren[I].AABB.Max.V[1]);
+    NewMin := Min(NewMin, FChildren[I].AABB.Min.Y);
+    NewMax := Max(NewMax, FChildren[I].AABB.Max.Y);
   end;
 
-  if (AABB.Max.V[1] <> NewMax) and (AABB.Min.V[1] <> NewMin) then
+  if (AABB.Max.Y <> NewMax) and (AABB.Min.Y <> NewMin) then
   begin
-    FAABB.Max.V[1] := NewMax;
-    FAABB.Min.V[1] := NewMin;
+    FAABB.Max.Y := NewMax;
+    FAABB.Min.Y := NewMin;
 
     // Make sure the parent updates it's bounds as well
     if Assigned(Parent) then
@@ -1982,8 +1982,8 @@ begin
     FChildren[ChildNodeIndex] := FSectoredSpacePartition.CreateNewNode(Self);
 
     // Y is ignored so it's set to a very large number
-    AABB.Min.V[1] := FAABB.Min.V[1];
-    AABB.Max.V[1] := FAABB.Max.V[1];
+    AABB.Min.Y := FAABB.Min.Y;
+    AABB.Max.Y := FAABB.Max.Y;
 
     // Generate new extents based on parent's extents
     if ((ChildNodeIndex and 1) > 0) then
@@ -1997,24 +1997,24 @@ begin
 
     if X = 0 then
     begin
-      AABB.Min.V[0] := FAABB.Min.V[0] + (FAABB.Max.V[0] + FAABB.Min.V[0]) / 2 * X;
-      AABB.Max.V[0] := (FAABB.Max.V[0] + FAABB.Min.V[0]) / 2 * (1 + X);
+      AABB.Min.X := FAABB.Min.X + (FAABB.Max.X + FAABB.Min.X) / 2 * X;
+      AABB.Max.X := (FAABB.Max.X + FAABB.Min.X) / 2 * (1 + X);
     end
     else
     begin
-      AABB.Min.V[0] := (FAABB.Max.V[0] + FAABB.Min.V[0]) / 2;
-      AABB.Max.V[0] := FAABB.Max.V[0];
+      AABB.Min.X := (FAABB.Max.X + FAABB.Min.X) / 2;
+      AABB.Max.X := FAABB.Max.X;
     end;
 
     if Z = 0 then
     begin
-      AABB.Min.V[2] := FAABB.Min.V[2];
-      AABB.Max.V[2] := (FAABB.Max.V[2] + FAABB.Min.V[2]) / 2;
+      AABB.Min.Z := FAABB.Min.Z;
+      AABB.Max.Z := (FAABB.Max.Z + FAABB.Min.Z) / 2;
     end
     else
     begin
-      AABB.Min.V[2] := (FAABB.Max.V[2] + FAABB.Min.V[2]) / 2;
-      AABB.Max.V[2] := FAABB.Max.V[2];
+      AABB.Min.Z := (FAABB.Max.Z + FAABB.Min.Z) / 2;
+      AABB.Max.Z := FAABB.Max.Z;
     end;
 
     FChildren[ChildNodeIndex].AABB := AABB;
@@ -2036,11 +2036,11 @@ begin
   Location := AABB.Min;
 
   // Fore / Back
-  if Location.V[0] > FBSphere.Center.V[0] then
+  if Location.X > FBSphere.Center.X then
     ChildNodeIndex := ChildNodeIndex or 1;
 
   // Left / Right
-  if Location.V[2] > FBSphere.Center.V[2] then
+  if Location.Z > FBSphere.Center.Z then
     ChildNodeIndex := ChildNodeIndex or 2;
 
   Assert(ChildNodeIndex < ChildCount, 'Bad ChildNodeIndex!');

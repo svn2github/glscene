@@ -21,7 +21,7 @@ interface
 
 uses
   System.Classes,
-  GLS.OpenGLTokens,  GLS.Context,  GLS.Objects,  GLS.Scene, GLS.MultiPolygon,
+  Winapi.OpenGL, Winapi.OpenGLext,   GLS.Context,  GLS.Objects,  GLS.Scene, GLS.MultiPolygon,
   GLS.Color, GLS.VectorGeometry, GLS.RenderContextInfo, GLS.Nodes,
   GLS.State, GLS.VectorTypes;
 
@@ -477,12 +477,12 @@ var
     tb: TAffineVector;
     mx, mz: Single;
   begin
-    mx := ptBottom^.V[0] + ptTop^.V[0];
-    mz := ptBottom^.V[2] + ptTop^.V[2];
+    mx := ptBottom^.X + ptTop^.X;
+    mz := ptBottom^.Z + ptTop^.Z;
     VectorSubtract(ptBottom^, ptTop^, tb);
-    normal.V[0] := -tb.V[1] * mx;
-    normal.V[1] := mx * tb.V[0] + mz * tb.V[2];
-    normal.V[2] := -mz * tb.V[1];
+    normal.X := -tb.Y * mx;
+    normal.Y := mx * tb.X + mz * tb.Z;
+    normal.Z := -mz * tb.Y;
     NormalizeVector(normal);
   end;
 
@@ -542,8 +542,8 @@ var
     VectorRotateAroundY(ptBottom^, alpha, bottomBase);
     if gotYDeltaOffset then
     begin
-      topBase.V[1] := topBase.V[1] + yOffset;
-      bottomBase.V[1] := bottomBase.V[1] + yOffset;
+      topBase.Y := topBase.Y + yOffset;
+      bottomBase.Y := bottomBase.Y + yOffset;
       yOffset := yOffset + deltaYOffset;
     end;
     CalcNormal(@topBase, @bottomBase, normal);
@@ -552,12 +552,12 @@ var
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
     glBegin(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@topNormal);
+    glNormal3fv(@topNormal);
     xglTexCoord2fv(@topTPBase);
     glVertex3fv(@topBase);
     while alpha < stopAlpha do
     begin
-      GL.Normal3fv(@bottomNormal);
+      glNormal3fv(@bottomNormal);
       xglTexCoord2fv(@bottomTPBase);
       glVertex3fv(@bottomBase);
       nextAlpha := alpha + deltaAlpha;
@@ -567,15 +567,15 @@ var
       VectorRotateAroundY(ptBottom^, nextAlpha, bottomNext);
       if gotYDeltaOffset then
       begin
-        topNext.V[1] := topNext.V[1] + yOffset;
-        bottomNext.V[1] := bottomNext.V[1] + yOffset;
+        topNext.Y := topNext.Y + yOffset;
+        bottomNext.Y := bottomNext.Y + yOffset;
         yOffset := yOffset + deltaYOffset
       end;
       CalcNormal(@topNext, @bottomNext, normal);
       SetLocalNormals;
       inc(i);
       xglTexCoord2fv(@topTPNext);
-      GL.Normal3fv(@topNormal);
+      glNormal3fv(@topNormal);
       glVertex3fv(@topNext);
       alpha := nextAlpha;
       topBase := topNext;
@@ -583,7 +583,7 @@ var
       bottomBase := bottomNext;
       bottomTPBase := bottomTPNext;
     end;
-    GL.Normal3fv(@bottomNormal);
+    glNormal3fv(@bottomNormal);
     xglTexCoord2fv(@bottomTPBase);
     glVertex3fv(@bottomBase);
     glEnd;
@@ -702,7 +702,7 @@ begin
     if (rspStartPolygon in FParts) or (rspStopPolygon in FParts) then
     begin
       bary := Nodes.Barycenter;
-      bary.V[1] := 0;
+      bary.Y := 0;
       NormalizeVector(bary);
       // tessellate start polygon
       if rspStartPolygon in FParts then
@@ -764,7 +764,7 @@ var
 begin
   maxRadius := 0;
   maxHeight := 0;
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     for i := 0 to Nodes.Count - 1 do
     begin
@@ -772,9 +772,9 @@ begin
       maxRadius := MaxFloat(maxRadius, Sqr(Nodes[i].X) + Sqr(Nodes[i].Z));
     end;
     maxRadius := sqrt(maxRadius);
-    FAxisAlignedDimensionsCache.V[0] := maxRadius;
-    FAxisAlignedDimensionsCache.V[1] := maxHeight;
-    FAxisAlignedDimensionsCache.V[2] := maxRadius;
+    FAxisAlignedDimensionsCache.X := maxRadius;
+    FAxisAlignedDimensionsCache.Y := maxHeight;
+    FAxisAlignedDimensionsCache.Z := maxRadius;
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -784,7 +784,7 @@ end;
 
 procedure TVKRevolutionSolid.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 
@@ -1165,7 +1165,7 @@ const
       if NodesColorMode <> pncmNone then
         Color4fv(@row^.color);
       // it was necessary to change build process to generate textcoords
-      Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       Normal3fv(@normal);
 
       case TexCoordMode of
@@ -1198,7 +1198,7 @@ const
           end;
       end;
 
-      End_;
+      glEnd;
     end;
   end;
 
@@ -1376,7 +1376,7 @@ const
   begin
     with GL do
     begin
-      Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       if outside then
       begin
         if NodesColorMode <> pncmNone then
@@ -1440,7 +1440,7 @@ const
         Normal3fv(@curRow^.node[Slices].innormal);
         Vertex3fv(@curRow^.node[Slices].pos);
       end;
-      End_;
+      glEnd;
     end;
   end;
 var
@@ -1668,9 +1668,9 @@ var
     {var
       p : TAffineVector;}
   begin
-    normal.V[0] := Bottom.V[1] - Top.V[1];
-    normal.V[1] := Top.V[0] - Bottom.V[0];
-    normal.V[2] := 0;
+    normal.X := Bottom.Y - Top.Y;
+    normal.Y := Top.X - Bottom.X;
+    normal.Z := 0;
     NormalizeVector(normal);
     if FHeight < 0 then
       NegateVector(normal);
@@ -1730,9 +1730,9 @@ var
     dir := VectorNormalize(VectorSubtract(bottomBase, topBase));
 
     topTPBase.S := VectorDotProduct(topBase, dir);
-    topTPBase.T := topBase.V[2];
+    topTPBase.T := topBase.Z;
     bottomTPBase.S := VectorDotProduct(bottomBase, dir);
-    bottomTPBase.T := bottomBase.V[2];
+    bottomTPBase.T := bottomBase.Z;
 
     lastNormal := normal;
     topNext := topBase;
@@ -1740,27 +1740,27 @@ var
     topTPNext := topTPBase;
     bottomTPNext := bottomTPBase;
     glBegin(GL_TRIANGLE_STRIP);
-    GL.Normal3fv(@normTop);
+    glNormal3fv(@normTop);
     xglTexCoord2fv(@topTPBase);
     glVertex3fv(@topBase);
     for step := 1 to FStacks do
     begin
-      GL.Normal3fv(@normBottom);
+      glNormal3fv(@normBottom);
       xglTexCoord2fv(@bottomTPBase);
       glVertex3fv(@bottomBase);
-      topNext.V[2] := step * DeltaZ;
-      bottomNext.V[2] := topNext.V[2];
-      topTPNext.T := topNext.V[2];
-      bottomTPNext.T := bottomNext.V[2];
+      topNext.Z := step * DeltaZ;
+      bottomNext.Z := topNext.Z;
+      topTPNext.T := topNext.Z;
+      bottomTPNext.T := bottomNext.Z;
       xglTexCoord2fv(@topTPNext);
-      GL.Normal3fv(@normTop);
+      glNormal3fv(@normTop);
       glVertex3fv(@topNext);
       topBase := topNext;
       topTPBase := topTPNext;
       bottomBase := bottomNext;
       bottomTPBase := bottomTPNext;
     end;
-    GL.Normal3fv(@normBottom);
+    glNormal3fv(@normBottom);
     xglTexCoord2fv(@bottomTPBase);
     glVertex3fv(@bottomBase);
     glEnd;
@@ -1821,7 +1821,7 @@ begin
     if espStopPolygon in FParts then
     begin
       glPushMatrix;
-      GL.Translatef(0, 0, FHeight);
+      glTranslatef(0, 0, FHeight);
       RenderTesselatedPolygon(true, @normal, invertedNormals);
       glPopMatrix;
     end;
@@ -1846,7 +1846,7 @@ begin
   FNormalDirection := ndOutside;
   FParts := [espOutside];
   MinSmoothAngle := 5;
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
 end;
 
 // Destroy
@@ -1936,12 +1936,12 @@ function TVKExtrusionSolid.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     Contours.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache.V[0] := MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-    FAxisAlignedDimensionsCache.V[1] := MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-    FAxisAlignedDimensionsCache.V[2] := MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2] +
+    FAxisAlignedDimensionsCache.X := MaxFloat(Abs(dMin.X), Abs(dMax.X));
+    FAxisAlignedDimensionsCache.Y := MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+    FAxisAlignedDimensionsCache.Z := MaxFloat(Abs(dMin.Z), Abs(dMax.Z +
       Height));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
@@ -1952,7 +1952,7 @@ end;
 
 procedure TVKExtrusionSolid.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 

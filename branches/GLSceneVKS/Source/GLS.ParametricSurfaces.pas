@@ -38,7 +38,7 @@ uses
   GLS.VectorLists,
   GLS.PersistentClasses,
   GLS.Texture,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.OpenGLAdapter,
   GLS.State,
   GLS.Context,

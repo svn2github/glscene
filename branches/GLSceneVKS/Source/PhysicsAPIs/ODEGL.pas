@@ -18,7 +18,7 @@ uses
   System.SysUtils,
 
   ODEImport,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.VectorGeometry,
   GLS.Scene,
@@ -95,25 +95,25 @@ implementation
 
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: TdMatrix3_As3x4; pos: TdVector3); overload;
 begin
-  m.V[0].V[0] := r[0][0];
-  m.V[0].V[1] := r[0][1];
-  m.V[0].V[2] := r[0][2];
-  m.V[0].V[3] := 0;
-  m.V[1].V[0] := r[1][0];
-  m.V[1].V[1] := r[1][1];
-  m.V[1].V[2] := r[1][2];
-  m.V[1].V[3] := 0;
-  m.V[2].V[0] := r[2][0];
-  m.V[2].V[1] := r[2][1];
-  m.V[2].V[2] := r[2][2];
-  m.V[2].V[3] := 0;
-  m.V[3] := NullHmgPoint;
+  m.X.X := r[0][0];
+  m.X.Y := r[0][1];
+  m.X.Z := r[0][2];
+  m.X.W := 0;
+  m.Y.X := r[1][0];
+  m.Y.Y := r[1][1];
+  m.Y.Z := r[1][2];
+  m.Y.W := 0;
+  m.Z.X := r[2][0];
+  m.Z.Y := r[2][1];
+  m.Z.Z := r[2][2];
+  m.Z.W := 0;
+  m.W := NullHmgPoint;
 
   TransposeMatrix(m);
-  m.V[3].V[0] := pos[0];
-  m.V[3].V[1] := pos[1];
-  m.V[3].V[2] := pos[2];
-  m.V[3].V[3] := 1; //}
+  m.W.X := pos[0];
+  m.W.Y := pos[1];
+  m.W.Z := pos[2];
+  m.W.W := 1; //}
 end;
 
 procedure ODERToGLSceneMatrix(var m: TMatrix; R: PdMatrix3; pos: PdVector3);
@@ -136,25 +136,25 @@ begin
 
   // sides
   glBegin(GL_TRIANGLE_STRIP);
-  GL.Normal3f(-1, 0, 0);
+  glNormal3f(-1, 0, 0);
   glVertex3f(-lx, -ly, -lz);
   glVertex3f(-lx, -ly, lz);
   glVertex3f(-lx, ly, -lz);
   glVertex3f(-lx, ly, lz);
-  GL.Normal3f(0, 1, 0);
+  glNormal3f(0, 1, 0);
   glVertex3f(lx, ly, -lz);
   glVertex3f(lx, ly, lz);
-  GL.Normal3f(1, 0, 0);
+  glNormal3f(1, 0, 0);
   glVertex3f(lx, -ly, -lz);
   glVertex3f(lx, -ly, lz);
-  GL.Normal3f(0, -1, 0);
+  glNormal3f(0, -1, 0);
   glVertex3f(-lx, -ly, -lz);
   glVertex3f(-lx, -ly, lz);
   glEnd();
 
   // top face
   glBegin(GL_TRIANGLE_FAN);
-  GL.Normal3f(0, 0, 1);
+  glNormal3f(0, 0, 1);
   glVertex3f(-lx, -ly, lz);
   glVertex3f(lx, -ly, lz);
   glVertex3f(lx, ly, lz);
@@ -163,7 +163,7 @@ begin
 
   // bottom face
   glBegin(GL_TRIANGLE_FAN);
-  GL.Normal3f(0, 0, -1);
+  glNormal3f(0, 0, -1);
   glVertex3f(-lx, -ly, -lz);
   glVertex3f(-lx, ly, -lz);
   glVertex3f(lx, ly, -lz);
@@ -174,15 +174,15 @@ end;
 function GLSceneMatrixToODER(m: TMatrix): TdMatrix3;
 begin
   TransposeMatrix(m);
-  Result[0] := m.V[0].V[0];
-  Result[1] := m.V[0].V[1];
-  Result[2] := m.V[0].V[2];
-  Result[4] := m.V[1].V[0];
-  Result[5] := m.V[1].V[1];
-  Result[6] := m.V[1].V[2];
-  Result[8] := m.V[2].V[0];
-  Result[9] := m.V[2].V[1];
-  Result[10] := m.V[2].V[2];
+  Result[0] := m.X.X;
+  Result[1] := m.X.Y;
+  Result[2] := m.X.Z;
+  Result[4] := m.Y.X;
+  Result[5] := m.Y.Y;
+  Result[6] := m.Y.Z;
+  Result[8] := m.Z.X;
+  Result[9] := m.Z.Y;
+  Result[10] := m.Z.Z;
 end;
 
 procedure dsDrawBox(pos: PdVector3; R: PdMatrix3; Sides: TdVector3);
@@ -225,75 +225,75 @@ end;
 
 function ConvertdVector3ToVector3f(R: TdVector3): TVector3f;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
 end;
 
 function ConvertdVector3ToVector3f(R: PdVector3): TVector3f;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
 end;
 
 function ConvertdVector3ToVector4f(R: TdVector3): TVector4f; overload;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
-  result.V[3] := 0;
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
+  result.W := 0;
 end;
 
 function ConvertdVector3ToVector4f(R: PdVector3): TVector4f; overload;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
-  result.V[3] := 0;
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
+  result.W := 0;
 end;
 
 function ConvertdVector3ToAffineVector(R: PdVector3): TAffineVector; overload;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
 end;
 
 function ConvertdVector3ToAffineVector(R: TdVector3): TAffineVector; overload;
 begin
-  result.V[0] := R[0];
-  result.V[1] := R[1];
-  result.V[2] := R[2];
+  result.X := R[0];
+  result.Y := R[1];
+  result.Z := R[2];
 end;
 
 function ConvertVector3fTodVector3(R: TVector3f): TdVector3;
 begin
-  result[0] := R.V[0];
-  result[1] := R.V[1];
-  result[2] := R.V[2];
+  result[0] := R.X;
+  result[1] := R.Y;
+  result[2] := R.Z;
 end;
 
 function ConvertVector3fToPdVector3(R: TVector3f): PdVector3;
 begin
-  result[0] := R.V[0];
-  result[1] := R.V[1];
-  result[2] := R.V[2];
+  result[0] := R.X;
+  result[1] := R.Y;
+  result[2] := R.Z;
 end;
 
 function ConvertVector4fTodVector3(R: TVector4f): TdVector3;
 begin
-  result[0] := R.V[0];
-  result[1] := R.V[1];
-  result[2] := R.V[2];
+  result[0] := R.X;
+  result[1] := R.Y;
+  result[2] := R.Z;
   result[3] := 0;
 end;
 
 function ConvertVector4fToPdVector3(R: TVector4f): PdVector3;
 begin
-  result[0] := R.V[0];
-  result[1] := R.V[1];
-  result[2] := R.V[2];
+  result[0] := R.X;
+  result[1] := R.Y;
+  result[2] := R.Z;
   result[3] := 0;
 end;
 
@@ -358,7 +358,7 @@ var
 begin
   m := GLMatrixFromGeom(Geom);
 
-  result := VectorNormalize(m.V[2]);
+  result := VectorNormalize(m.Z);
 end;
 
 procedure PositionSceneObject(GLBaseSceneObject: TVKBaseSceneObject; Geom: PdxGeom);
@@ -391,24 +391,24 @@ var
 begin
   v := GLBaseSceneObject.AbsolutePosition;
 
-  dGeomSetPosition(Geom, v.V[0], v.V[1], v.V[2]);
+  dGeomSetPosition(Geom, v.X, v.Y, v.Z);
 
   R := dGeomGetRotation(Geom);
   pos := dgeomGetPosition(Geom);
 
   m := GLBaseSceneObject.AbsoluteMatrix;
-  R[0] := m.V[0].V[0];
-  R[4] := m.V[0].V[1];
-  R[8] := m.V[0].V[2];
-  R[1] := m.V[1].V[0];
-  R[5] := m.V[1].V[1];
-  R[9] := m.V[1].V[2];
-  R[2] := m.V[2].V[0];
-  R[6] := m.V[2].V[1];
-  R[10] := m.V[2].V[2];
-  pos[0] := m.V[3].V[0];
-  pos[1] := m.V[3].V[1];
-  pos[2] := m.V[3].V[2]; //}
+  R[0] := m.X.X;
+  R[4] := m.X.Y;
+  R[8] := m.X.Z;
+  R[1] := m.Y.X;
+  R[5] := m.Y.Y;
+  R[9] := m.Y.Z;
+  R[2] := m.Z.X;
+  R[6] := m.Z.Y;
+  R[10] := m.Z.Z;
+  pos[0] := m.W.X;
+  pos[1] := m.W.Y;
+  pos[2] := m.W.Z; //}
 
   dGeomSetRotation(Geom, R^);
 end;
@@ -477,9 +477,9 @@ begin
       begin
         Vertex :=
           GLBaseMesh.LocalToAbsolute(GLBaseMesh.MeshObjects[i].Vertices[j]);
-        Vertices^[p, 0] := Vertex.V[0];
-        Vertices^[p, 1] := Vertex.V[1];
-        Vertices^[p, 2] := Vertex.V[2];
+        Vertices^[p, 0] := Vertex.X;
+        Vertices^[p, 1] := Vertex.Y;
+        Vertices^[p, 2] := Vertex.Z;
         Vertices^[p, 3] := 0;
         inc(p);
       end;
@@ -566,11 +566,11 @@ begin
   Direction := Plane.AbsoluteDirection;
   Pos := Plane.AbsolutePosition;
 
-  d := (Direction.V[0] * Pos.V[0] +
-        Direction.V[1] * Pos.V[1] +
-        Direction.V[2] * Pos.V[2]);
+  d := (Direction.X * Pos.X +
+        Direction.Y * Pos.Y +
+        Direction.Z * Pos.Z);
 
-  result := dCreatePlane(space, Direction.V[0], Direction.V[1], Direction.V[2], d);
+  result := dCreatePlane(space, Direction.X, Direction.Y, Direction.Z, d);
 end;
 
 function RandomColorVector: TVector;

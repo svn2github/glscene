@@ -17,7 +17,7 @@ uses
   GLS.Scene,
   GLS.Material,
   GLS.VectorGeometry,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.XOpenGL,
   GLS.RenderContextInfo, 
   GLS.VectorTypes;
@@ -191,25 +191,25 @@ begin
 
   glPushMatrix;
   f := ARci.rcci.farClippingDistance * 0.5;
-  GL.Scalef(f, f, f);
+  glScalef(f, f, f);
 
   try
     case Style of
       sbsFull: ;
       sbsTopHalf, sbsTopHalfClamped:
         begin
-          GL.Translatef(0, 0.5, 0);
-          GL.Scalef(1, 0.5, 1);
+          glTranslatef(0, 0.5, 0);
+          glScalef(1, 0.5, 1);
         end;
       sbsBottomHalf:
         begin
-          GL.Translatef(0, -0.5, 0);
-          GL.Scalef(1, 0.5, 1);
+          glTranslatef(0, -0.5, 0);
+          glScalef(1, 0.5, 1);
         end;
       sbTopTwoThirds:
         begin
-          GL.Translatef(0, 1 / 3, 0);
-          GL.Scalef(1, 2 / 3, 1);
+          glTranslatef(0, 1 / 3, 0);
+          glScalef(1, 2 / 3, 1);
         end;
     end;
 

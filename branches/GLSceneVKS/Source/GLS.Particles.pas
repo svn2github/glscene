@@ -16,7 +16,7 @@ uses
 
   GLS.Scene,
   GLS.VectorGeometry,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.Color,
   GLS.BaseClasses,
@@ -219,7 +219,7 @@ begin
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do
-    glColor3f(Color.V[0], Color.V[1], Color.V[2]);
+    glColor3f(Color.X, Color.Y, Color.Z);
   glBegin(GL_LINE_STRIP);
   // front face
   glVertex3f(ma, mi, mi);

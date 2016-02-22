@@ -1729,9 +1729,9 @@ begin
       dy := (Height(x, y) - Height(x, y - 1))
   else
     dy := (Height(x, y + 1) - Height(x, y));
-  Result.V[0] := dx * scale.V[1] * scale.V[2];
-  Result.V[1] := dy * scale.V[0] * scale.V[2];
-  Result.V[2] := scale.V[0] * scale.V[1];
+  Result.X := dx * scale.Y * scale.Z;
+  Result.Y := dy * scale.X * scale.Z;
+  Result.Z := scale.X * scale.Y;
   NormalizeVector(Result);
 end;
 
@@ -1748,9 +1748,9 @@ begin
   Hxy := Height(x, y);
   dx := Height(x + 1, y) - Hxy;
   dy := Height(x, y + 1) - Hxy;
-  Result.V[0] := dx * scale.V[1] * scale.V[2]; // Result[0]:=dx/scale[0];
-  Result.V[1] := dy * scale.V[0] * scale.V[2]; // Result[1]:=dy/scale[1];
-  Result.V[2] := 1 * scale.V[0] * scale.V[1]; // Result[2]:=1 /scale[2];
+  Result.X := dx * scale.Y * scale.Z; // Result[0]:=dx/scale[0];
+  Result.Y := dy * scale.X * scale.Z; // Result[1]:=dy/scale[1];
+  Result.Z := 1 * scale.X * scale.Y; // Result[2]:=1 /scale[2];
   NormalizeVector(Result);
 end;
 

@@ -10,9 +10,11 @@ interface
 {$M-}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.Classes,
   //GLS
-  GLS.OpenGLTokens, GLS.VectorTypes, GLS.TextureFormat, GLS.RenderContextInfo;
+  GLS.VectorTypes, GLS.TextureFormat, GLS.RenderContextInfo;
 
 type
 

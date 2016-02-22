@@ -1462,7 +1462,7 @@ end;
 //
 function TAffineVectorList.Add(const item: TVector2f): Integer;
 begin
-  Result := Add(AffineVectorMake(item.V[0], item.V[1], 0));
+  Result := Add(AffineVectorMake(item.X, item.Y, 0));
 end;
 
 // Add (texpoint)
@@ -1483,9 +1483,9 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^.V[0] := X;
-  v^.V[1] := Y;
-  v^.V[2] := 0;
+  v^.X := X;
+  v^.Y := Y;
+  v^.Z := 0;
   Inc(FRevision);
 end;
 
@@ -1500,9 +1500,9 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^.V[0] := X;
-  v^.V[1] := Y;
-  v^.V[2] := Z;
+  v^.X := X;
+  v^.Y := Y;
+  v^.Z := Z;
   Inc(FRevision);
 end;
 
@@ -1516,9 +1516,9 @@ begin
   if Result = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^.V[0] := X;
-  v^.V[1] := Y;
-  v^.V[2] := Z;
+  v^.X := X;
+  v^.Y := Y;
+  v^.Z := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1531,9 +1531,9 @@ var
 begin
   Result := FCount;
   v := @List[Result];
-  v^.V[0] := X;
-  v^.V[1] := Y;
-  v^.V[2] := Z;
+  v^.X := X;
+  v^.Y := Y;
+  v^.Z := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1548,9 +1548,9 @@ begin
   if Result = FCapacity then
     SetCapacity(FCapacity + FGrowthDelta);
   v := @List[Result];
-  v^.V[0] := xy^[0];
-  v^.V[1] := xy^[1];
-  v^.V[2] := Z;
+  v^.X := xy^[0];
+  v^.Y := xy^[1];
+  v^.Z := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1563,9 +1563,9 @@ var
 begin
   Result := FCount;
   v := @List[Result];
-  v^.V[0] := xy^[0];
-  v^.V[1] := xy^[1];
-  v^.V[2] := Z;
+  v^.X := xy^[0];
+  v^.Y := xy^[1];
+  v^.Z := Z;
   Inc(FCount);
   Inc(FRevision);
 end;
@@ -1796,7 +1796,7 @@ procedure TAffineVectorList.Scale(factor: Single);
 begin
   if (Count > 0) and (factor <> 1) then
   begin
-    ScaleFloatArray(@FList[0].V[0], Count * 3, factor);
+    ScaleFloatArray(@FList[0].X, Count * 3, factor);
     Inc(FRevision);
   end;
 end;
@@ -1878,11 +1878,11 @@ begin
   while FCount > FCapacity do
     SetCapacity(FCapacity + FGrowthDelta);
   PAffineVector(@FList[FCount - 3])^ := i1;
-  FList^[FCount - 3].V[3] := w;
+  FList^[FCount - 3].W := w;
   PAffineVector(@FList[FCount - 2])^ := i2;
-  FList^[FCount - 2].V[3] := w;
+  FList^[FCount - 2].W := w;
   PAffineVector(@FList[FCount - 1])^ := i3;
-  FList^[FCount - 1].V[3] := w;
+  FList^[FCount - 1].W := w;
 end;
 
 // AddVector

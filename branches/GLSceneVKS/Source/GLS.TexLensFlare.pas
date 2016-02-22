@@ -15,7 +15,7 @@ uses
   System.Classes,
 
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.Texture,
-  GLS.OpenGLTokens, GLS.Context, GLS.RenderContextInfo, GLS.BaseClasses,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.RenderContextInfo, GLS.BaseClasses,
   GLS.State, GLS.VectorTypes;
 
 type
@@ -151,18 +151,18 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := CurrentBuffer.WorldToScreen(v);
-    if (screenPos.V[0] < rci.viewPortSize.cx) and (screenPos.V[0] >= 0)
-      and (screenPos.V[1] < rci.viewPortSize.cy) and (screenPos.V[1] >= 0) then
+    if (screenPos.X < rci.viewPortSize.cx) and (screenPos.X >= 0)
+      and (screenPos.Y < rci.viewPortSize.cy) and (screenPos.Y >= 0) then
     begin
       if FAutoZTest then
       begin
-        depth := CurrentBuffer.GetPixelDepth(Round(ScreenPos.V[0]),
-          Round(rci.viewPortSize.cy - ScreenPos.V[1]));
+        depth := CurrentBuffer.GetPixelDepth(Round(ScreenPos.X),
+          Round(rci.viewPortSize.cy - ScreenPos.Y));
         // but is it behind something?
-        if screenPos.V[2] >= 1 then
+        if screenPos.Z >= 1 then
           flag := (depth >= 1)
         else
-          flag := (depth >= screenPos.V[2]);
+          flag := (depth >= screenPos.Z);
       end
       else
         flag := True;
@@ -174,8 +174,8 @@ begin
     flag := False;
 
   MakeVector(posVector,
-    screenPos.V[0] - rci.viewPortSize.cx / 2,
-    screenPos.V[1] - rci.viewPortSize.cy / 2, 0);
+    screenPos.X - rci.viewPortSize.cx / 2,
+    screenPos.Y - rci.viewPortSize.cy / 2, 0);
 
   // make the glow appear/disappear progressively
 
@@ -196,7 +196,7 @@ begin
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
   glLoadIdentity;
-  GL.Scalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
+  glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
 
   rci.GLStates.Disable(stLighting);
   rci.GLStates.Disable(stDepthTest);
@@ -205,7 +205,7 @@ begin
 
   //Rays and Glow on Same Position
   glPushMatrix;
-  GL.Translatef(posVector.V[0], posVector.V[1], posVector.V[2]);
+  glTranslatef(posVector.X, posVector.Y, posVector.Z);
 
   if not ImgGlow.Disabled and Assigned(ImgGlow.Image) then
   begin
@@ -243,7 +243,7 @@ begin
   if not ImgRing.Disabled and Assigned(ImgRing.Image) then
   begin
     glPushMatrix;
-    GL.Translatef(posVector.V[0] * 1.1, posVector.V[1] * 1.1, posVector.V[2]);
+    glTranslatef(posVector.X * 1.1, posVector.Y * 1.1, posVector.Z);
     ImgRing.Apply(rci);
     glBegin(GL_QUADS);
     glTexCoord2f(0, 0);
@@ -273,7 +273,7 @@ begin
       else
         ScaleVector(V, 0.8 * rnd);
       glPushMatrix;
-      GL.Translatef(v.V[0], v.V[1], v.V[2]);
+      glTranslatef(v.X, v.Y, v.Z);
 
       rnd := random * 0.5 + 0.1;
       glBegin(GL_QUADS);

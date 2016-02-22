@@ -499,8 +499,8 @@ var
       for j := 0 to 3 do
       begin
         Tetrahedron[j] := CubeVertices[MT_CUBESPLIT[i, j]];
-        DataTetra[j] := Data[Trunc(Tetrahedron[j].V[0]), Trunc(Tetrahedron[j].V[1]),
-          Trunc(Tetrahedron[j].V[2])];
+        DataTetra[j] := Data[Trunc(Tetrahedron[j].X), Trunc(Tetrahedron[j].Y),
+          Trunc(Tetrahedron[j].Z)];
       end;
       index := BuildIndex(DataTetra, Isovalue);
       AppendTri();

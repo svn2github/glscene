@@ -16,7 +16,7 @@ uses
   System.Classes,
   System.SysUtils,
   GLS.CrossPlatform,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,

@@ -14,7 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, GLS.OpenGLTokens, GLS.Context,
+  GLS.Texture, GLS.VectorGeometry, GLS.VectorLists, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
   GLS.AsmShader, GLS.RenderContextInfo, GLS.CustomShader, GLS.State;
 
 type
@@ -198,7 +198,7 @@ function TVKPhongShader.ShaderSupported: Boolean;
 var
   MaxTextures: Integer;
 begin
-  Result := inherited ShaderSupported and GL.ARB_multitexture;
+  Result := inherited ShaderSupported and GL_ARB_multitexture;
 
   glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, @MaxTextures);
   Result := Result and (maxTextures > 2);

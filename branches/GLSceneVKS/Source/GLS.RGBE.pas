@@ -109,19 +109,19 @@ begin
     V := Blue;
   if (V < 1E-32) then
   begin
-    RGBE.V[0] := 0;
-    RGBE.V[1] := 0;
-    RGBE.V[2] := 0;
-    RGBE.V[3] := 0;
+    RGBE.X := 0;
+    RGBE.Y := 0;
+    RGBE.Z := 0;
+    RGBE.W := 0;
   end
   else
   begin
     FrExp(V, M, E);
     M := M * 256 / V;
-    RGBE.V[0] := Floor(Red * V);
-    RGBE.V[1] := Floor(Green * V);
-    RGBE.V[2] := Floor(Blue * V);
-    RGBE.V[3] := Floor(E + 128);
+    RGBE.X := Floor(Red * V);
+    RGBE.Y := Floor(Green * V);
+    RGBE.Z := Floor(Blue * V);
+    RGBE.W := Floor(E + 128);
   end;
 end;
 
@@ -132,12 +132,12 @@ procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);
 var
   F: Single;
 begin
-  if RGBE.V[3] <> 0 then // nonzero pixel
+  if RGBE.W <> 0 then // nonzero pixel
   begin
-    F := Ldexp(1.0, RGBE.V[3] - (128 + 8));
-    Red := RGBE.V[0] * F;
-    Green := RGBE.V[1] * F;
-    Blue := RGBE.V[2] * F;
+    F := Ldexp(1.0, RGBE.W - (128 + 8));
+    Red := RGBE.X * F;
+    Green := RGBE.Y * F;
+    Blue := RGBE.Z * F;
   end
   else
   begin
@@ -169,8 +169,8 @@ begin
   while Num_scanlines > 0 do
   begin
     Stream.Read(RgbeTemp, SizeOf(TVector4b));
-    if (RgbeTemp.V[0] <> 2) or (RgbeTemp.V[1] <> 2) or
-      (RgbeTemp.V[2] and $80 <> 0) then
+    if (RgbeTemp.X <> 2) or (RgbeTemp.Y <> 2) or
+      (RgbeTemp.Z and $80 <> 0) then
     begin
       // this file is not run length encoded
       Rgbe2float(Rf, Gf, Bf, RgbeTemp);
@@ -185,7 +185,7 @@ begin
       LoadRGBEpixels(Stream, Dst, Scanline_width * Num_scanlines - 1);
       Exit;
     end;
-    if ((Integer(RgbeTemp.V[2]) shl 8) or RgbeTemp.V[3]) <> Scanline_width
+    if ((Integer(RgbeTemp.Z) shl 8) or RgbeTemp.W) <> Scanline_width
     then
     begin
       if Assigned(Scanline_buffer) then
@@ -204,9 +204,9 @@ begin
       while PtrUInt(Ptr) < PtrUInt(Ptr_end) do
       begin
         Stream.Read(Buf, SizeOf(TVector2b));
-        if Buf.V[0] > 128 then
+        if Buf.X > 128 then
         begin // a run of the same value
-          Count := Buf.V[0] - 128;
+          Count := Buf.X - 128;
           if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
           begin
             FreeMem(Scanline_buffer);
@@ -214,20 +214,20 @@ begin
           end;
           while Count > 0 do
           begin
-            Ptr^ := Buf.V[1];
+            Ptr^ := Buf.Y;
             Dec(Count);
             Inc(Ptr);
           end;
         end
         else
         begin // a non-run
-          Count := Buf.V[0];
+          Count := Buf.X;
           if (Count = 0) or (Count > PtrUInt(Ptr_end) - PtrUInt(Ptr)) then
           begin
             FreeMem(Scanline_buffer);
             raise ERGBEexception.Create('Bad HDR scanline data.');
           end;
-          Ptr^ := Buf.V[1];
+          Ptr^ := Buf.Y;
           Dec(Count);
           Inc(Ptr);
           if Count > 0 then
@@ -240,10 +240,10 @@ begin
     // now convert data from buffer into floats
     for I := 0 to Scanline_width - 1 do
     begin
-      RgbeTemp.V[0] := Scanline_buffer[I];
-      RgbeTemp.V[1] := Scanline_buffer[I + Scanline_width];
-      RgbeTemp.V[2] := Scanline_buffer[I + 2 * Scanline_width];
-      RgbeTemp.V[3] := Scanline_buffer[I + 3 * Scanline_width];
+      RgbeTemp.X := Scanline_buffer[I];
+      RgbeTemp.Y := Scanline_buffer[I + Scanline_width];
+      RgbeTemp.Z := Scanline_buffer[I + 2 * Scanline_width];
+      RgbeTemp.W := Scanline_buffer[I + 3 * Scanline_width];
       Rgbe2float(Rf, Gf, Bf, RgbeTemp);
       Dst^ := Rf;
       Inc(Dst);

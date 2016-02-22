@@ -21,12 +21,13 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL, Winapi.OpenGLext,
   System.Classes, System.SysUtils,
   //GLS
   GLS.RenderContextInfo, GLS.BaseClasses, GLS.Context, GLS.VectorTypes,
   GLS.Material, GLS.Texture, GLS.Color, GLS.Coordinates, GLS.VectorGeometry,
   GLS.Graphics, GLS.PersistentClasses, GLS.CrossPlatform, GLS.State,
-  GLS.TextureFormat, GLS.XCollection, GLS.TextureCombiners, GLS.OpenGLTokens,
+  GLS.TextureFormat, GLS.XCollection, GLS.TextureCombiners,  
   GLS.GLSLParameter, GLS.ApplicationFileIO, GLS.Strings, GLS.ImageUtils,
   GLS.Utils, GLS.XOpenGL, GLS.Log;
 
@@ -2116,7 +2117,7 @@ begin
 
     if GetError <> GL_NO_ERROR then
     begin
-      ClearError;
+      ClearOpenGLError;
       CurrentGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
       GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.Name]);
       Abort;
@@ -3023,7 +3024,7 @@ procedure TVKTextureCombiner.DoOnPrepare(Sender: TVKContext);
 begin
   if IsDesignTime and FDefferedInit then
     exit;
-  if Sender.GL.ARB_multitexture then
+  if Sender.GL_ARB_multitexture then
   begin
     FHandle.AllocateHandle;
     if FHandle.IsDataNeedUpdate then
@@ -4174,7 +4175,7 @@ end;
 
 procedure TVKTextureProperties.SetTextureMatrix(const AValue: TMatrix);
 begin
-  FTextureMatrixIsIdentity := CompareMem(@AValue.V[0], @IdentityHmgMatrix.V[0],
+  FTextureMatrixIsIdentity := CompareMem(@AValue.X, @IdentityHmgMatrix.X,
     SizeOf(TMatrix));
   FTextureMatrix := AValue;
   FTextureOverride := True;
@@ -4815,7 +4816,7 @@ begin
                 GetProgramiv(ID, GL_GEOMETRY_VERTICES_OUT_EXT, @I);
                 if I > 0 then
                   FShaders[shtGeometry].FGeometryVerticesOut := I;
-                ClearError;
+                ClearOpenGLError;
               end;
 
               // Get uniforms
@@ -5237,7 +5238,7 @@ end;
 
 class function TVKShaderModel3.IsSupported: Boolean;
 begin
-  Result := GL.ARB_shader_objects;
+  Result := GL_ARB_shader_objects;
 end;
 
 class function TVKShaderModel4.IsSupported: Boolean;
@@ -5247,7 +5248,7 @@ end;
 
 class function TVKShaderModel5.IsSupported: Boolean;
 begin
-  Result := GL.ARB_gpu_shader5;
+  Result := GL_ARB_gpu_shader5;
 end;
 
 procedure BeginPatch(mode: GLEnum);
@@ -6345,21 +6346,21 @@ end;
 procedure TVKShaderUniform.SetIVec2(const Value: TVector2i);
 begin
   PushProgram;
-  GL.Uniform2i(FLocation, Value.V[0], Value.V[1]);
+  GL.Uniform2i(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIVec3(const Value: TVector3i);
 begin
   PushProgram;
-  GL.Uniform3i(FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3i(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetIVec4(const Value: TVector4i);
 begin
   PushProgram;
-  GL.Uniform4i(FLocation, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4i(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
@@ -6406,42 +6407,42 @@ end;
 procedure TVKShaderUniform.SetUVec2(const Value: TVector2ui);
 begin
   PushProgram;
-  GL.Uniform2ui(FLocation, Value.V[0], Value.V[1]);
+  GL.Uniform2ui(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUVec3(const Value: TVector3ui);
 begin
   PushProgram;
-  GL.Uniform3ui(FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3ui(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetUVec4(const Value: TVector4ui);
 begin
   PushProgram;
-  GL.Uniform4ui(FLocation, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4ui(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec2(const Value: TVector2f);
 begin
   PushProgram;
-  GL.Uniform2f(FLocation, Value.V[0], Value.V[1]);
+  GL.Uniform2f(FLocation, Value.X, Value.Y);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec3(const Value: TVector3f);
 begin
   PushProgram;
-  GL.Uniform3f(FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3f(FLocation, Value.X, Value.Y, Value.Z);
   PopProgram;
 end;
 
 procedure TVKShaderUniform.SetVec4(const Value: TVector4f);
 begin
   PushProgram;
-  GL.Uniform4f(FLocation, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4f(FLocation, Value.X, Value.Y, Value.Z, Value.W);
   PopProgram;
 end;
 
@@ -6483,18 +6484,18 @@ end;
 
 procedure TVKShaderUniformDSA.SetIVec2(const Value: TVector2i);
 begin
-  GL.ProgramUniform2i(GetProgram, FLocation, Value.V[0], Value.V[1]);
+  GL.ProgramUniform2i(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetIVec3(const Value: TVector3i);
 begin
-  GL.ProgramUniform3i(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.ProgramUniform3i(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetIVec4(const Value: TVector4i);
 begin
-  GL.ProgramUniform4i(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2],
-    Value.V[3]);
+  GL.ProgramUniform4i(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+    Value.W);
 end;
 
 procedure TVKShaderUniformDSA.SetMat2(const Value: TMatrix2f);
@@ -6525,34 +6526,34 @@ end;
 
 procedure TVKShaderUniformDSA.SetUVec2(const Value: TVector2ui);
 begin
-  GL.ProgramUniform2ui(GetProgram, FLocation, Value.V[0], Value.V[1]);
+  GL.ProgramUniform2ui(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetUVec3(const Value: TVector3ui);
 begin
-  GL.ProgramUniform3ui(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.ProgramUniform3ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetUVec4(const Value: TVector4ui);
 begin
-  GL.ProgramUniform4ui(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2],
-    Value.V[3]);
+  GL.ProgramUniform4ui(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+    Value.W);
 end;
 
 procedure TVKShaderUniformDSA.SetVec2(const Value: TVector2f);
 begin
-  GL.ProgramUniform2f(GetProgram, FLocation, Value.V[0], Value.V[1]);
+  GL.ProgramUniform2f(GetProgram, FLocation, Value.X, Value.Y);
 end;
 
 procedure TVKShaderUniformDSA.SetVec3(const Value: TVector3f);
 begin
-  GL.ProgramUniform3f(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2]);
+  GL.ProgramUniform3f(GetProgram, FLocation, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TVKShaderUniformDSA.SetVec4(const Value: TVector4f);
 begin
-  GL.ProgramUniform4f(GetProgram, FLocation, Value.V[0], Value.V[1], Value.V[2],
-    Value.V[3]);
+  GL.ProgramUniform4f(GetProgram, FLocation, Value.X, Value.Y, Value.Z,
+    Value.W);
 end;
 
 {$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
@@ -6886,7 +6887,7 @@ begin
 
   if glGetError <> GL_NO_ERROR then
   begin
-    glClearError;
+    ClearOpenGLError;
     GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.Name]);
     exit;
   end

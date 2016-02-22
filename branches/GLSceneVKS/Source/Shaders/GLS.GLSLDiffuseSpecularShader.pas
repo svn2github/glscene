@@ -26,7 +26,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLS.Texture, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Strings,
+  GLS.Texture, GLS.Scene, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Strings,
   GLS.CustomShader, GLS.GLSLShader, GLS.Color, GLS.RenderContextInfo, GLS.Material;
 
 type

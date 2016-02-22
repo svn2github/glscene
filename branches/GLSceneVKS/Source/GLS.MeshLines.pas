@@ -13,7 +13,7 @@ uses
   System.Classes, System.SysUtils,
   //GLS
   GLS.Scene, GLS.Objects, GLS.Texture, GLS.VectorFileObjects, GLS.Coordinates,
-  GLS.OpenGLTokens, GLS.Context, GLS.Material, GLS.Color, GLS.State,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Material, GLS.Color, GLS.State,
   GLS.Nodes, GLS.VectorGeometry, GLS.Spline, GLS.VectorLists, GLS.RenderContextInfo;
 
 type
@@ -577,11 +577,11 @@ var
 begin
   lNodeSize := LineWidth* 0.7;
   glPushMatrix;
-  GL.Translatef(Node.x,Node.y,Node.z);
+  glTranslatef(Node.x,Node.y,Node.z);
   if lNodeSize <>1 then
   begin
     glPushMatrix;
-    GL.Scalef(lNodeSize, lNodeSize, lNodeSize);
+    glScalef(lNodeSize, lNodeSize, lNodeSize);
 ///    rci.GLStates.UnSetGLState(stTexture2D);
     rci.GLStates.UnSetGLState(stColorMaterial);
     rci.GLStates.UnSetGLState(stBlend);

@@ -11,7 +11,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.Texture, GLS.Graphics, GLS.OpenGLTokens,
+  GLS.Texture, GLS.Graphics, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.CrossPlatform, GLS.TextureFormat, GLS.VectorGeometry;
 
 const

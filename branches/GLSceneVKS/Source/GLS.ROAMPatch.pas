@@ -1,9 +1,9 @@
 //
 // GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
-{ 
+{
   Class for managing a ROAM (square) patch.
- 
+
 }
 unit GLS.ROAMPatch;
 
@@ -12,10 +12,17 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   System.SysUtils,
-
-  GLS.VectorGeometry, GLS.HeightData, GLS.VectorLists, GLS.CrossPlatform,
-  GLS.Context, GLS.OpenGLTokens, GLS.XOpenGL;
+  //GLS
+  GLS.OpenGLAdapter,
+  GLS.VectorGeometry,
+  GLS.HeightData,
+  GLS.VectorLists,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.XOpenGL;
 
 type
 
@@ -801,7 +808,7 @@ begin
   if vertexIndices.Count = 0 then
     Exit;
 
-  if GL.ARB_vertex_buffer_object then
+  if GL_ARB_vertex_buffer_object then
   begin
     FVBOVertHandle.AllocateHandle;
     FVBOVertHandle.BindBufferData(vertices.List, vertices.DataSize,
@@ -811,12 +818,12 @@ begin
     FVBOTexHandle.AllocateHandle;
     FVBOTexHandle.BindBufferData(texCoords.List, texCoords.DataSize,
       GL_STREAM_DRAW_ARB);
-    xglTexCoordPointer(2, GL_FLOAT, 0, nil);
+    glTexCoordPointer(2, GL_FLOAT, 0, nil);
 
     glDrawRangeElements(GL_TRIANGLES, 0, vertices.Count - 1,
       vertexIndices.Count, GL_UNSIGNED_INT, vertexIndices.List);
-    GL.BindBuffer(GL_ARRAY_BUFFER_ARB, 0);
-    GL.BindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+    glBindBuffer(GL_ARRAY_BUFFER_ARB, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
   end
   else if GL_EXT_compiled_vertex_array and GL_EXT_draw_range_elements then
   begin

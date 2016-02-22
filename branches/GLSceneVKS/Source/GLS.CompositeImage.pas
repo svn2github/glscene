@@ -13,7 +13,7 @@ interface
 
 uses
   System.Classes,
-  GLS.OpenGLTokens, GLS.Graphics, GLS.Texture, GLS.TextureFormat, GLS.Context;
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Graphics, GLS.Texture, GLS.TextureFormat, GLS.Context;
 
 
 type

@@ -18,7 +18,7 @@ uses
   System.Classes, System.SysUtils,
 
   ODEGL, ODEImport, GLS.Scene, GLS.VectorGeometry, GLS.Texture,
-  GLS.OpenGLTokens, GLS.XOpenGL, GLS.Objects, GLS.XCollection,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.XOpenGL, GLS.Objects, GLS.XCollection,
   GLS.PersistentClasses, GLS.VectorLists, GLS.Color, GLS.Coordinates,
   GLS.RenderContextInfo, GLS.Manager, GLS.State;
 
@@ -2240,11 +2240,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
-  R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
-  R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
+  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
+  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
+  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
+  dBodySetPosition(FBody,Mat.W.X,Mat.W.Y,Mat.W.Z);
 end;
 
 // CalculateMass
@@ -2270,7 +2270,7 @@ var
 begin
   SetAffineVector(pos,FMass.c[0],FMass.c[1],FMass.c[2]);
   NegateVector(pos);
-  dMassTranslate(Fmass,pos.V[0],pos.V[1],pos.V[2]);
+  dMassTranslate(Fmass,pos.X,pos.Y,pos.Z);
 end;
 
 // GetMass
@@ -2321,7 +2321,7 @@ end;
 procedure TVKODEDynamic.AddForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForce(FBody,Force.V[0],Force.V[1],Force.V[2]);
+    dBodyAddForce(FBody,Force.X,Force.Y,Force.Z);
 end;
 
 // AddlForceAtPos
@@ -2329,8 +2329,8 @@ end;
 procedure TVKODEDynamic.AddForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force.V[0],Force.V[1],Force.V[2],
-                        Pos.V[0],Pos.V[1],Pos.V[2]);
+    dBodyAddForceAtPos(FBody,Force.X,Force.Y,Force.Z,
+                        Pos.X,Pos.Y,Pos.Z);
 end;
 
 // AddForceAtRelPos
@@ -2338,7 +2338,7 @@ end;
 procedure TVKODEDynamic.AddForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtRelPos(FBody,Force.V[0],Force.V[1],Force.V[2],Pos.V[0],Pos.V[1],Pos.V[2]);
+    dBodyAddForceAtRelPos(FBody,Force.X,Force.Y,Force.Z,Pos.X,Pos.Y,Pos.Z);
 end;
 
 // AddRelForce
@@ -2346,7 +2346,7 @@ end;
 procedure TVKODEDynamic.AddRelForce(Force : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForce(FBody,Force.V[0],Force.V[1],Force.V[2]);
+    dBodyAddRelForce(FBody,Force.X,Force.Y,Force.Z);
 end;
 
 // AddRelForceAtPos
@@ -2354,8 +2354,8 @@ end;
 procedure TVKODEDynamic.AddRelForceAtPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddForceAtPos(FBody,Force.V[0],Force.V[1],Force.V[2],
-                       Pos.V[0],Pos.V[1],Pos.V[2]);
+    dBodyAddForceAtPos(FBody,Force.X,Force.Y,Force.Z,
+                       Pos.X,Pos.Y,Pos.Z);
 end;
 
 // AddRelForceAtRelPos
@@ -2363,8 +2363,8 @@ end;
 procedure TVKODEDynamic.AddRelForceAtRelPos(Force, Pos : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelForceAtRelPos(FBody,Force.V[0],Force.V[1],Force.V[2],
-                             Pos.V[0],Pos.V[1],Pos.V[2]);
+    dBodyAddRelForceAtRelPos(FBody,Force.X,Force.Y,Force.Z,
+                             Pos.X,Pos.Y,Pos.Z);
 end;
 
 // AddTorque
@@ -2372,7 +2372,7 @@ end;
 procedure TVKODEDynamic.AddTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddTorque(FBody,Torque.V[0],Torque.V[1],Torque.V[2]);
+    dBodyAddTorque(FBody,Torque.X,Torque.Y,Torque.Z);
 end;
 
 // AddRelTorque
@@ -2380,7 +2380,7 @@ end;
 procedure TVKODEDynamic.AddRelTorque(Torque : TAffineVector);
 begin
   if Assigned(FBody) then
-    dBodyAddRelTorque(FBody,Torque.V[0],Torque.V[1],Torque.V[2]);
+    dBodyAddRelTorque(FBody,Torque.X,Torque.Y,Torque.Z);
 end;
 
 
@@ -2709,7 +2709,7 @@ end;
 //
 function TODEElementBase.AbsolutePosition: TAffineVector;
 begin
-  Result:=AffineVectorMake(AbsoluteMatrix.V[3]);
+  Result:=AffineVectorMake(AbsoluteMatrix.W);
 end;
 
 // AlignGeomElementToMatrix
@@ -2719,10 +2719,10 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FGeomElement) then exit;
-  dGeomSetPosition(FGeomElement,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
-  R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
-  R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
-  R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
+  dGeomSetPosition(FGeomElement,Mat.W.X,Mat.W.Y,Mat.W.Z);
+  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
+  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
+  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
   dGeomSetRotation(FGeomElement,R);
   FRealignODE:=False;
 end;
@@ -2754,22 +2754,22 @@ function TODEElementBase.CalculateMass: TdMass;
 var
   R : TdMatrix3;
 begin
-  R[0]:=FLocalMatrix.V[0].V[0];
-  R[1]:=FLocalMatrix.V[1].V[0];
-  R[2]:=FLocalMatrix.V[2].V[0];
+  R[0]:=FLocalMatrix.X.X;
+  R[1]:=FLocalMatrix.Y.X;
+  R[2]:=FLocalMatrix.Z.X;
   R[3]:= 0;
-  R[4]:=FLocalMatrix.V[0].V[1];
-  R[5]:=FLocalMatrix.V[1].V[1];
-  R[6]:=FLocalMatrix.V[2].V[1];
+  R[4]:=FLocalMatrix.X.Y;
+  R[5]:=FLocalMatrix.Y.Y;
+  R[6]:=FLocalMatrix.Z.Y;
   R[7]:= 0;
-  R[8]:=FLocalMatrix.V[0].V[2];
-  R[9]:=FLocalMatrix.V[1].V[2];
-  R[10]:=FLocalMatrix.V[2].V[2];
+  R[8]:=FLocalMatrix.X.Z;
+  R[9]:=FLocalMatrix.Y.Z;
+  R[10]:=FLocalMatrix.Z.Z;
   R[11]:=0;
   dMassRotate(FMass,R);
-  dMassTranslate(FMass,FLocalMatrix.V[3].V[0],
-                       FLocalMatrix.V[3].V[1],
-                       FLocalMatrix.V[3].V[2]);
+  dMassTranslate(FMass,FLocalMatrix.W.X,
+                       FLocalMatrix.W.Y,
+                       FLocalMatrix.W.Z);
   result:=FMass;
 end;
 
@@ -2833,19 +2833,19 @@ end;
 //
 procedure TODEElementBase.RebuildMatrix;
 begin
-  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix.V[0]);
-  SetVector(FLocalMatrix.V[1],FUp.AsVector);
-  SetVector(FLocalMatrix.V[2],FDirection.AsVector);
-  SetVector(FLocalMatrix.V[3],FPosition.AsVector);
+  VectorCrossProduct(FUp.AsVector,FDirection.AsVector,FLocalMatrix.X);
+  SetVector(FLocalMatrix.Y,FUp.AsVector);
+  SetVector(FLocalMatrix.Z,FDirection.AsVector);
+  SetVector(FLocalMatrix.W,FPosition.AsVector);
 end;
 
 // RebuildVectors
 //
 procedure TODEElementBase.RebuildVectors;
 begin
-  FUp.SetVector(FLocalMatrix.V[1].V[0],FLocalMatrix.V[1].V[1],FLocalMatrix.V[1].V[2]);
-  FDirection.SetVector(FLocalMatrix.V[2].V[0],FLocalMatrix.V[2].V[1],FLocalMatrix.V[2].V[2]);
-  FPosition.SetPoint(FLocalMatrix.V[3].V[0],FLocalMatrix.V[3].V[1],FLocalMatrix.V[3].V[2]);
+  FUp.SetVector(FLocalMatrix.Y.X,FLocalMatrix.Y.Y,FLocalMatrix.Y.Z);
+  FDirection.SetVector(FLocalMatrix.Z.X,FLocalMatrix.Z.Y,FLocalMatrix.Z.Z);
+  FPosition.SetPoint(FLocalMatrix.W.X,FLocalMatrix.W.Y,FLocalMatrix.W.Z);
 end;
 
 // SetDensity
@@ -3106,7 +3106,7 @@ begin
   glPushMatrix;
 
   GL.MultMatrixf(@FLocalMatrix);
-  GL.Scalef(Radius, Radius, Radius);
+  glScalef(Radius, Radius, Radius);
 
   FTop:=90;
   FBottom:=-90;
@@ -3309,7 +3309,7 @@ begin
       for i:=0 to Slices do
         glVertex3f(FRadius*cos(i*PI/Slices),0,-(FRadius*sin(i*PI/Slices)+FLength/2));
     glEnd;
-    GL.Rotatef(360/Slices,0,0,1);
+    glRotatef(360/Slices,0,0,1);
   end;
   glPopMatrix;
   glPopMatrix;
@@ -3485,7 +3485,7 @@ begin
       glVertex3f(-FRadius,-FLength/2,0);
       glVertex3f(FRadius,-FLength/2,0);
     glEnd;
-    GL.Rotatef(360/Slices,0,1,0);
+    glRotatef(360/Slices,0,1,0);
   end;
   glPopMatrix;
 
@@ -3824,8 +3824,8 @@ var
   d : Single;
 begin
   if not Assigned(FGeomElement) then exit;
-  d:=VectorDotProduct(Mat.V[2], Mat.V[3]);
-  dGeomPlaneSetParams(FGeomElement,Mat.V[2].V[0],Mat.V[2].V[1],Mat.V[2].V[2],d);
+  d:=VectorDotProduct(Mat.Z, Mat.W);
+  dGeomPlaneSetParams(FGeomElement,Mat.Z.X,Mat.Z.Y,Mat.Z.Z,d);
 end;
 
 

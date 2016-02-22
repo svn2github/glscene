@@ -574,10 +574,10 @@ function TBSPMeshObject.FindNodeByPoint(aPoint: TVector): TFGBSPNode;
       Result := nodeIndex
     else
     begin
-      eval := node.splitPlane.V[0] * aPoint.V[0] +
-              node.splitPlane.V[1] * aPoint.V[1] +
-              node.splitPlane.V[2] * aPoint.V[2] -
-              node.splitPlane.V[3];
+      eval := node.splitPlane.X * aPoint.X +
+              node.splitPlane.Y * aPoint.Y +
+              node.splitPlane.Z * aPoint.Z -
+              node.splitPlane.W;
       if eval >= 0 then
         idx := node.PositiveSubNodeIndex
       else
@@ -1154,19 +1154,19 @@ procedure TFGBSPNode.FixTJunctions(const tJunctionsCandidates: TIntegerList);
       if (k = iA) or (k = iB) or (k = iC) then
         Continue;
       candidate := @vertices[k];
-      if (candidate^.V[0] > boxMin.V[0]) and
-         (candidate^.V[1] > boxMin.V[1]) and
-         (candidate^.V[2] > boxMin.V[2]) and
-         (candidate^.V[0] < boxMax.V[0]) and
-         (candidate^.V[1] < boxMax.V[1]) and
-         (candidate^.V[2] < boxMax.V[2]) then
+      if (candidate^.X > boxMin.X) and
+         (candidate^.Y > boxMin.Y) and
+         (candidate^.Z > boxMin.Z) and
+         (candidate^.X < boxMax.X) and
+         (candidate^.Y < boxMax.Y) and
+         (candidate^.Z < boxMax.Z) then
       begin
         f := candidate^;
         SubtractVector(f, vA^);
         ScaleVector(f, invVector);
-        if (Abs(f.V[0] - f.V[1]) < cTJunctionEpsilon) and
-           (Abs(f.V[0] - f.V[2]) < cTJunctionEpsilon) and
-           (Abs(f.V[1] - f.V[2]) < cTJunctionEpsilon) then
+        if (Abs(f.X - f.Y) < cTJunctionEpsilon) and
+           (Abs(f.X - f.Z) < cTJunctionEpsilon) and
+           (Abs(f.Y - f.Z) < cTJunctionEpsilon) then
         begin
           Result := AddLerpIfDistinct(iA, iB, k);
           Break;

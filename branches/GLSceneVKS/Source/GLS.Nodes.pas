@@ -1,17 +1,18 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
-{ 
-  Nodes are used to describe lines, polygons + more. 
+{
+  Nodes are used to describe lines, polygons + more.
 }
 unit GLS.Nodes;
 
 interface
 
 uses
+  Winapi.OpenGL, Winapi.OpenGLext,
   System.Classes, System.SysUtils,
-   
-  GLS.VectorGeometry, GLS.OpenGLTokens, GLS.OpenGLAdapter,
+  //GLS
+  GLS.VectorGeometry,  GLS.OpenGLAdapter,
   GLS.Context, GLS.BaseClasses,  GLS.Coordinates, GLS.Spline,
   GLS.XOpenGL, GLS.VectorTypes;
 
@@ -53,11 +54,9 @@ type
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. 
       The W component is automatically adjustes depending on style. }
-    property AsAffineVector: TAffineVector read GetAsAffineVector
-      write SetAsAffineVector;
+    property AsAffineVector: TAffineVector read GetAsAffineVector  write SetAsAffineVector;
 
-    property W: GLfloat index 3 read GetCoordinate write SetCoordinate
-      stored StoreCoordinate;
+    property W: GLfloat index 3 read GetCoordinate write SetCoordinate stored StoreCoordinate;
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
@@ -102,8 +101,10 @@ type
     procedure AddNode(const X, Y, Z: GLfloat); overload;
     procedure AddNode(const Value: TVector); overload;
     procedure AddNode(const Value: TAffineVector); overload;
-    procedure AddXYArc(XRadius, YRadius: Single; StartAngle, StopAngle: Single;
-      NbSegments: Integer; const Center: TAffineVector);
+    procedure AddXYArc(XRadius, YRadius: Single; 
+	                   StartAngle, StopAngle: Single;
+					   NbSegments: Integer; 
+					   const Center: TAffineVector);
 
     // : Calculates and returns the barycenter of the nodes
     function Barycenter: TAffineVector;
@@ -409,9 +410,9 @@ begin
     for I := 0 to NbSegments do
     begin
       SinCosine(I * F + StartAngle, S, C);
-      SetVector(Add.FCoords, Center.V[0] + XRadius * C,
-                             Center.V[1] + YRadius * S,
-                             Center.V[2], 1);
+      SetVector(Add.FCoords, Center.X + XRadius * C,
+                             Center.Y + YRadius * S,
+                             Center.Z, 1);
     end;
   finally
     EndUpdate;
@@ -589,9 +590,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V2 := V^.V[2];
-    V^.V[1] := C * V^.V[1] + S * V2;
-    V^.V[2] := C * V2 - S * V^.V[1];
+    V2 := V^.Z;
+    V^.Y := C * V^.Y + S * V2;
+    V^.Z := C * V2 - S * V^.Y;
   end;
   NotifyChange;
 end;
@@ -609,9 +610,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V0 := V^.V[0];
-    V^.V[0] := C * V0 + S * V^.V[2];
-    V^.V[2] := C * V^.V[2] - S * V0;
+    V0 := V^.X;
+    V^.X := C * V0 + S * V^.Z;
+    V^.Z := C * V^.Z - S * V0;
   end;
   NotifyChange;
 end;
@@ -629,9 +630,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V1 := V^.V[1];
-    V^.V[1] := C * V1 + S * V^.V[0];
-    V^.V[0] := C * V^.V[0] - S * V1;
+    V1 := V^.Y;
+    V^.Y := C * V1 + S * V^.X;
+    V^.X := C * V^.X - S * V1;
   end;
   NotifyChange;
 end;
@@ -673,38 +674,33 @@ begin
 end;
 
 procedure TessError(Errno: GLEnum);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   Assert(False, IntToStr(Errno) + ': ' + string(GluErrorString(Errno)));
 end;
 
 procedure TessIssueVertex(VertexData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
-  XglTexCoord2fv(VertexData);
+  glTexCoord2fv(VertexData);
   glVertex3fv(VertexData);
 end;
 
 procedure TessCombine(Coords: PDoubleVector; Vertex_data: Pointer;
   Weight: PGLFloat; var OutData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   OutData := AllocNewVertex;
   SetVector(PAffineVector(OutData)^, Coords^[0], Coords^[1], Coords^[2]);
 end;
 
-procedure TVKNodes.RenderTesselatedPolygon(ATextured: Boolean;
-  ANormal: PAffineVector = nil; ASplineDivisions: Integer = 1;
-  AInvertNormals: Boolean = False);
+procedure TVKNodes.RenderTesselatedPolygon(ATextured: Boolean;  
+                   ANormal: PAffineVector = nil; 
+				   ASplineDivisions: Integer = 1;
+                   AInvertNormals: Boolean = False);
 var
   I: Integer;
-  Tess: PGLUTesselator;
+  Tess: GLUTesselator;
   DblVector: TAffineDblVector;
   Spline: TCubicSpline;
   SplinePos: PAffineVector;
@@ -714,25 +710,25 @@ begin
   if Count > 2 then
   begin
     // Create and initialize the GLU tesselator
-    Tess := GluNewTess;
-    GluTessCallback(Tess, GLU_TESS_BEGIN, @glBegin);
+    Tess := gluNewTess;
+    gluTessCallback(Tess, GLU_TESS_BEGIN, @glBegin);
     if ATextured then
-      GluTessCallback(Tess, GLU_TESS_VERTEX, @TessIssueVertex)
+      gluTessCallback(Tess, GLU_TESS_VERTEX, @TessIssueVertex)
     else
-      GluTessCallback(Tess, GLU_TESS_VERTEX, @glVertex3fv);
-    GluTessCallback(Tess, GLU_TESS_END, @glEnd);
-    GluTessCallback(Tess, GLU_TESS_ERROR, @TessError);
-    GluTessCallback(Tess, GLU_TESS_COMBINE, @TessCombine);
+      gluTessCallback(Tess, GLU_TESS_VERTEX, @glVertex3fv);
+    gluTessCallback(Tess, GLU_TESS_END, @glEnd);
+    gluTessCallback(Tess, GLU_TESS_ERROR, @TessError);
+    gluTessCallback(Tess, GLU_TESS_COMBINE, @TessCombine);
     NbExtraVertices := 0;
     // Issue normal
     if Assigned(ANormal) then
     begin
-      GL.Normal3fv(PGLFloat(ANormal));
-      GluTessNormal(Tess, ANormal^.V[0], ANormal^.V[1], ANormal^.V[2]);
+      glNormal3fv(PGLFloat(ANormal));
+      gluTessNormal(Tess, ANormal^.X, ANormal^.Y, ANormal^.Z);
     end;
     // Issue polygon
-    GluTessBeginPolygon(Tess, nil);
-    GluTessBeginContour(Tess);
+    gluTessBeginPolygon(Tess, nil);
+    gluTessBeginContour(Tess);
     if ASplineDivisions <= 1 then
     begin
       // no spline, use direct coordinates
@@ -742,7 +738,7 @@ begin
         for I := Count - 1 downto 0 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          GluTessVertex(Tess, DblVector, Items[I].AsAddress);
+          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), Items[I].AsAddress);
         end;
       end
       else
@@ -750,7 +746,7 @@ begin
         for I := 0 to Count - 1 do
         begin
           SetVector(DblVector, PAffineVector(Items[I].AsAddress)^);
-          GluTessVertex(Tess, DblVector, Items[I].AsAddress);
+          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), Items[I].AsAddress);
         end;
       end;
     end
@@ -767,7 +763,7 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          GluTessVertex(Tess, DblVector, SplinePos);
+          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), SplinePos);
         end;
       end
       else
@@ -777,17 +773,17 @@ begin
           SplinePos := AllocNewVertex;
           Spline.SplineAffineVector(I * F, SplinePos^);
           SetVector(DblVector, SplinePos^);
-          GluTessVertex(Tess, DblVector, SplinePos);
+          gluTessVertex(Tess, PGLDouble(DblVector.V[I]), SplinePos);
         end;
       end;
       Spline.Free;
     end;
-    GluTessEndContour(Tess);
-    GluTessEndPolygon(Tess);
+    gluTessEndContour(Tess);
+    gluTessEndPolygon(Tess);
     // release stuff
     if Assigned(NewVertices) then
       FreeMem(NewVertices);
-    GluDeleteTess(Tess);
+    gluDeleteTess(Tess);
   end;
 end;
 

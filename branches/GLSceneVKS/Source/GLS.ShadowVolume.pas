@@ -18,7 +18,7 @@ interface
 uses
   System.Classes,
   //GLS
-  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context, GLS.Silhouette,
+  GLS.Scene, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Silhouette,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.GeometryBB, GLS.Color,
   GLS.RenderContextInfo;
 
@@ -889,7 +889,7 @@ begin
       Enable(stStencilTest);
 
       // Disable all client states
-      if GL.ARB_vertex_buffer_object then
+      if GL_ARB_vertex_buffer_object then
       begin
         VertexArrayBinding := 0;
         ArrayBufferBinding := 0;

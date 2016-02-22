@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Scene,
   GLS.Context,
   GLS.State,
@@ -673,7 +673,7 @@ begin
   buffer := TVKSceneBuffer(rci.buffer);
 
   backColor := ConvertWinColor(buffer.BackgroundColor);
-  glClearColor(backColor.V[0], backColor.V[1], backColor.V[2],
+  glClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
   rci.GLStates.DepthWriteMask := True;

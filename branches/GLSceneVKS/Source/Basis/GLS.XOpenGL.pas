@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
    "Alternate" OpenGL functions to handle multi-texturing.
@@ -7,7 +7,7 @@
    coordinates with standard texture specification call.
    Before using any of the xglTexCoordXxxx fonctions, call one of the
    xglMapTexCoordToXxxx functions to establish the redirectors.
-   This unit is Open-Source under MPL 
+   This unit is Open-Source under MPL
 
 }
 unit GLS.XOpenGL;
@@ -17,7 +17,8 @@ interface
 {$I GLScene.inc}
 
 uses
-  GLS.OpenGLTokens,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
   GLS.Context;
 
 type
@@ -942,7 +943,7 @@ begin
   else if MapTexCoordMode <> mtcmSecond then
   begin
     MapTexCoordMode := mtcmSecond;
-    Assert(GL.ARB_multitexture);
+///    Assert(GL_ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Second;
     TexCoord2fv := TexCoord2fv_Second;
@@ -980,7 +981,7 @@ begin
   else if MapTexCoordMode <> mtcmDual then
   begin
     MapTexCoordMode := mtcmDual;
-    Assert(GL.ARB_multitexture);
+///    Assert(GL_ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Dual;
     TexCoord2fv := TexCoord2fv_Dual;
@@ -1029,7 +1030,7 @@ begin
   begin
 
     MapTexCoordMode := mtcmArbitrary;
-    Assert(GL.ARB_multitexture);
+///    Assert(GL_ARB_multitexture);
 
     TexCoord2f := TexCoord2f_Arbitrary;
     TexCoord2fv := TexCoord2fv_Arbitrary;

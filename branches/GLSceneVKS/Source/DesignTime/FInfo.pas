@@ -10,7 +10,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
   
-  GLS.Scene, GLS.OpenGLTokens, GLS.Context;
+  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context;
 
 type
   TInfoForm = class(TForm)
@@ -214,9 +214,9 @@ begin
 
       // Include WGL extensions
 (*
-      if GL.W_ARB_extensions_string then
+      if WGL_ARB_extensions_string then
       begin
-        ExtStr := String(GL.WGetExtensionsStringARB(dc));
+        ExtStr := String(wglGetExtensionsStringARB(dc));
         while Length(ExtStr) > 0 do
         begin
           i := Pos(' ', ExtStr);

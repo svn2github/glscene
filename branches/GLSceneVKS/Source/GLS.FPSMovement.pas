@@ -15,7 +15,7 @@ uses
   System.Classes, System.SysUtils, System.UITypes,
   FMX.Graphics,
 
-  GLS.OpenGLTokens, GLS.Context, GLS.CrossPlatform, GLS.VectorGeometry,
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.CrossPlatform, GLS.VectorGeometry,
   GLS.Scene, GLS.VectorFileObjects, GLS.VectorLists, GLS.XCollection,
   GLS.GeomObjects, GLS.Navigator, GLS.RenderContextInfo, GLS.BaseClasses,
   GLS.Manager, GLS.State;
@@ -843,7 +843,7 @@ begin
 
   // Change in position = velocity * time taken
   if GravityEnabled then
-    newPosition.V[1] := newPosition.V[1] - Manager.MovementScale * 0.5 *
+    newPosition.Y := newPosition.Y - Manager.MovementScale * 0.5 *
       progressTime.deltaTime;
 
   // do some magic!!!  and store new position in newPosition
@@ -889,9 +889,9 @@ begin
   for i := 0 to CollisionStates.count - 1 do
   begin
     CollisionState := TCollisionState(CollisionStates.Items[i]);
-    x := CollisionState.Position.V[0];
-    y := CollisionState.Position.V[1];
-    z := CollisionState.Position.V[2];
+    x := CollisionState.Position.X;
+    y := CollisionState.Position.Y;
+    z := CollisionState.Position.Z;
     glVertex3f(x, y, z);
   end;
   glEnd();
@@ -903,13 +903,13 @@ begin
     t := (Manager.DisplayTime - (tickCount - CollisionState.Time)) /
       Manager.DisplayTime;
     glColor3f(t, t, t);
-    glVertex3f(CollisionState.Contact.intPoint.V[0],
-      CollisionState.Contact.intPoint.V[1], CollisionState.Contact.intPoint.V[2]);
-    glVertex3f(CollisionState.Contact.intPoint.V[0] +
-      CollisionState.Contact.intNormal.V[0], //GLSphere4.Radius,
-      CollisionState.Contact.intPoint.V[1] + CollisionState.Contact.intNormal.V[1],
+    glVertex3f(CollisionState.Contact.intPoint.X,
+      CollisionState.Contact.intPoint.Y, CollisionState.Contact.intPoint.Z);
+    glVertex3f(CollisionState.Contact.intPoint.X +
+      CollisionState.Contact.intNormal.X, //GLSphere4.Radius,
+      CollisionState.Contact.intPoint.Y + CollisionState.Contact.intNormal.Y,
       //GLSphere4.Radius,
-      CollisionState.Contact.intPoint.V[2] + CollisionState.Contact.intNormal.V[2]);
+      CollisionState.Contact.intPoint.Z + CollisionState.Contact.intNormal.Z);
     //GLSphere4.Radius);
   end;
   glEnd();

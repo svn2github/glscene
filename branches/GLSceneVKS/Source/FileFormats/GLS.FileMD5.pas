@@ -115,9 +115,9 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
     rr : Single;
   begin
     with Result do begin
-      ImagPart.V[0]:=ix;
-      ImagPart.V[1]:=iy;
-      ImagPart.V[2]:=iz;
+      ImagPart.X:=ix;
+      ImagPart.Y:=iy;
+      ImagPart.Z:=iz;
       rr:=1-(ix*ix)-(iy*iy)-(iz*iz);
       if rr<0 then RealPart:=0
       else RealPart:=sqrt(rr);
@@ -138,9 +138,9 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
     bonename:=FTempString[0];
     ParentBoneID:=StrToInt(FTempString[1]);
 
-    pos.V[0]:=GLS.Utils.StrToFloatDef(FTempString[2]);
-    pos.V[1]:=GLS.Utils.StrToFloatDef(FTempString[4]);
-    pos.V[2]:=GLS.Utils.StrToFloatDef(FTempString[3]);
+    pos.X:=GLS.Utils.StrToFloatDef(FTempString[2]);
+    pos.Y:=GLS.Utils.StrToFloatDef(FTempString[4]);
+    pos.Z:=GLS.Utils.StrToFloatDef(FTempString[3]);
 
     quat:=QuaternionMakeFromImag(GLS.Utils.StrToFloatDef(FTempString[5]),
                                  GLS.Utils.StrToFloatDef(FTempString[7]),
@@ -158,13 +158,13 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
         bone:=TVKSkeletonBone.CreateOwned(parentBone);
 
         mat:=QuaternionToMatrix(quat);
-        mat.V[3]:=PointMake(pos);
+        mat.W:=PointMake(pos);
         rmat:=QuaternionToMatrix(FFrameQuaternions[ParentBoneID]);
-        rmat.V[3]:=PointMake(FFramePositions[ParentBoneID]);
+        rmat.W:=PointMake(FFramePositions[ParentBoneID]);
         InvertMatrix(rmat);
         mat:=MatrixMultiply(mat, rmat);
 
-        pos:=AffineVectorMake(mat.V[3]);
+        pos:=AffineVectorMake(mat.W);
         quat:=QuaternionFromMatrix(mat);
       end;
       with bone do begin
@@ -374,32 +374,32 @@ procedure TVKMD5VectorFile.LoadFromStream(aStream : TStream);
         j:=0;
 
         if FJointFlags[i] and 1 > 0 then begin
-          pos.V[0]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          pos.X:=GLS.Utils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 2 > 0 then begin
-          pos.V[1]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          pos.Y:=GLS.Utils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 4 > 0 then begin
-          pos.V[2]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          pos.Z:=GLS.Utils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
 
         if FJointFlags[i] and 8 > 0 then begin
-          quat.ImagPart.V[0]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          quat.ImagPart.X:=GLS.Utils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 16 > 0 then begin
-          quat.ImagPart.V[1]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          quat.ImagPart.Y:=GLS.Utils.StrToFloatDef(FTempString[j]);
           Inc(j);
         end;
         if FJointFlags[i] and 32 > 0 then
-          quat.ImagPart.V[2]:=GLS.Utils.StrToFloatDef(FTempString[j]);
+          quat.ImagPart.Z:=GLS.Utils.StrToFloatDef(FTempString[j]);
       end;
 
-      pos:=AffineVectorMake(pos.V[0], pos.V[2], pos.V[1]);
-      quat:=QuaternionMakeFromImag(quat.ImagPart.V[0], quat.ImagPart.V[2], quat.ImagPart.V[1]);
+      pos:=AffineVectorMake(pos.X, pos.Z, pos.Y);
+      quat:=QuaternionMakeFromImag(quat.ImagPart.X, quat.ImagPart.Z, quat.ImagPart.Y);
 
       frame.Position[i]:=pos;
       frame.Quaternion[i]:=quat;

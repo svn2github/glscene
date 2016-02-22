@@ -31,13 +31,20 @@ resourcestring
   glsCadencerNotDefinedEx = 'Cadencer not defined for  the ''%s'' component';
 
   // GLS.Context
-  glsIncompatibleContexts = 'Incompatible contexts';
-  glsDeleteContextFailed = 'Delete context failed';
+  glsCannotAlterAnActiveContext = 'Cannot alter an active context';
   glsContextActivationFailed = 'Context activation failed: %X, %s';
+  glsContextAlreadyCreated = 'Context already created';
   glsContextDeactivationFailed = 'Context deactivation failed';
-  glsUnableToCreateLegacyContext = 'Unable to create legacy context';
-  glsNoActiveRC = 'No active rendering context';
+  glsContextNotCreated = 'Context not created';
+  glsDeleteContextFailed = 'Delete context failed';
   glsFailedToShare = 'DoCreateContext - Failed to share contexts';
+  glsIncompatibleContexts = 'Incompatible contexts';
+  glsInvalidContextRegistration = 'Invalid context registration';
+  glsInvalidNotificationRemoval = 'Invalid notification removal';
+  glsNoActiveRC = 'No active rendering context';
+  glsUnbalancedContexActivations = 'Unbalanced context activations';
+  glsUnableToCreateLegacyContext = 'Unable to create legacy context';
+
 
   //GLS.InitOpenGL
   glsOpenGLError = 'OpenGL error - %s';

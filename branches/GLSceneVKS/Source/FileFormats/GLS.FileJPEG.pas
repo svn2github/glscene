@@ -10,7 +10,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context, GLS.Graphics, GLS.TextureFormat,
+  GLS.CrossPlatform, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.Graphics, GLS.TextureFormat,
   GLS.ApplicationFileIO;
 
 type

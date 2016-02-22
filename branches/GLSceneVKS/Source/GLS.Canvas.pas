@@ -209,7 +209,7 @@ implementation
 //-------------------------------------------------------------
 
 uses
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.VectorTypes;
 
@@ -329,8 +329,8 @@ var
   mat: TMatrix;
 begin
   mat := IdentityHmgMatrix;
-  mat.V[1].V[1] := -1;
-  mat.V[3].V[1] := FBufferSizeY;
+  mat.Y.Y := -1;
+  mat.W.Y := FBufferSizeY;
   GL.MultMatrixf(@mat);
 end;
 
@@ -340,7 +340,7 @@ end;
 procedure TVKCanvas.SetPenColor(const val: TColor);
 begin
   SetVector(FCurrentPenColorVector, ConvertWinColor(val,
-    FCurrentPenColorVector.V[3]));
+    FCurrentPenColorVector.W));
   FPenColor := val;
   glColor4fv(@FCurrentPenColorVector);
 end;
@@ -350,7 +350,7 @@ end;
 
 procedure TVKCanvas.SetPenAlpha(const val: Single);
 begin
-  FCurrentPenColorVector.V[3] := val;
+  FCurrentPenColorVector.W := val;
   glColor4fv(@FCurrentPenColorVector);
 end;
 
@@ -376,8 +376,8 @@ end;
 
 procedure TVKCanvas.MoveTo(const x, y: Integer);
 begin
-  FCurrentPos.V[0] := x;
-  FCurrentPos.V[1] := y;
+  FCurrentPos.X := x;
+  FCurrentPos.Y := y;
 end;
 
 // MoveTo
@@ -385,8 +385,8 @@ end;
 
 procedure TVKCanvas.MoveTo(const x, y: Single);
 begin
-  FCurrentPos.V[0] := x;
-  FCurrentPos.V[1] := y;
+  FCurrentPos.X := x;
+  FCurrentPos.Y := y;
 end;
 
 // MoveToRel
@@ -394,8 +394,8 @@ end;
 
 procedure TVKCanvas.MoveToRel(const x, y: Integer);
 begin
-  FCurrentPos.V[0] := FCurrentPos.V[0] + x;
-  FCurrentPos.V[1] := FCurrentPos.V[1] + y;
+  FCurrentPos.X := FCurrentPos.X + x;
+  FCurrentPos.Y := FCurrentPos.Y + y;
 end;
 
 // MoveToRel
@@ -403,8 +403,8 @@ end;
 
 procedure TVKCanvas.MoveToRel(const x, y: Single);
 begin
-  FCurrentPos.V[0] := FCurrentPos.V[0] + x;
-  FCurrentPos.V[1] := FCurrentPos.V[1] + y;
+  FCurrentPos.X := FCurrentPos.X + x;
+  FCurrentPos.Y := FCurrentPos.Y + y;
 end;
 
 // LineTo
@@ -434,7 +434,7 @@ end;
 
 procedure TVKCanvas.LineToRel(const x, y: Integer);
 begin
-  LineTo(FCurrentPos.V[0] + x, FCurrentPos.V[1] + y);
+  LineTo(FCurrentPos.X + x, FCurrentPos.Y + y);
 end;
 
 // LineToRel
@@ -442,7 +442,7 @@ end;
 
 procedure TVKCanvas.LineToRel(const x, y: Single);
 begin
-  LineTo(FCurrentPos.V[0] + x, FCurrentPos.V[1] + y);
+  LineTo(FCurrentPos.X + x, FCurrentPos.Y + y);
 end;
 
 // Line
@@ -547,7 +547,7 @@ end;
 
 function TVKCanvas.GetPenAlpha: Single;
 begin
-  Result := FCurrentPenColorVector.V[3];
+  Result := FCurrentPenColorVector.W;
 end;
 
 // FillRect (integer)
@@ -692,13 +692,13 @@ procedure TVKCanvas.FillRectGradient(const x1, y1, x2, y2: Single;
   const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
 begin
   StartPrimitive(GL_QUADS);
-  glColor4f(x1y1Color.V[0], x1y1Color.V[1], x1y1Color.V[2], x1y1Color.V[3]);
+  glColor4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
   glVertex2f(x1, y1);
-  glColor4f(x2y1Color.V[0], x2y1Color.V[1], x2y1Color.V[2], x2y1Color.V[3]);
+  glColor4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
   glVertex2f(x2, y1);
-  glColor4f(x2y2Color.V[0], x2y2Color.V[1], x2y2Color.V[2], x2y2Color.V[3]);
+  glColor4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
   glVertex2f(x2, y2);
-  glColor4f(x1y2Color.V[0], x1y2Color.V[1], x1y2Color.V[2], x1y2Color.V[3]);
+  glColor4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
   glVertex2f(x1, y2);
   StopPrimitive;
 
@@ -713,13 +713,13 @@ procedure TVKCanvas.FillRectGradient(const x1, y1, x2, y2: Integer;
   const x1y1Color, x2y1Color, x2y2Color, x1y2Color: TColorVector);
 begin
   StartPrimitive(GL_QUADS);
-  glColor4f(x1y1Color.V[0], x1y1Color.V[1], x1y1Color.V[2], x1y1Color.V[3]);
+  glColor4f(x1y1Color.X, x1y1Color.Y, x1y1Color.Z, x1y1Color.W);
   glVertex2i(x1, y1);
-  glColor4f(x2y1Color.V[0], x2y1Color.V[1], x2y1Color.V[2], x2y1Color.V[3]);
+  glColor4f(x2y1Color.X, x2y1Color.Y, x2y1Color.Z, x2y1Color.W);
   glVertex2i(x2, y1);
-  glColor4f(x2y2Color.V[0], x2y2Color.V[1], x2y2Color.V[2], x2y2Color.V[3]);
+  glColor4f(x2y2Color.X, x2y2Color.Y, x2y2Color.Z, x2y2Color.W);
   glVertex2i(x2, y2);
-  glColor4f(x1y2Color.V[0], x1y2Color.V[1], x1y2Color.V[2], x1y2Color.V[3]);
+  glColor4f(x1y2Color.X, x1y2Color.Y, x1y2Color.Z, x1y2Color.W);
   glVertex2i(x1, y2);
   StopPrimitive;
 
@@ -738,7 +738,7 @@ begin
   glVertex2f(x, y); // really necessary now :)
 
   // then openGL will do a gradient from the center to the edge using the edgeColor
-  glColor4f(edgeColor.V[0], edgeColor.V[1], edgeColor.V[2], edgeColor.V[3]);
+  glColor4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 
@@ -753,7 +753,7 @@ procedure TVKCanvas.FillEllipseGradient(const x, y, xRadius, yRadius: Single; co
 begin
   StartPrimitive(GL_TRIANGLE_FAN);
   glVertex2f(x, y); // really necessary now :)
-  glColor4f(edgeColor.V[0], edgeColor.V[1], edgeColor.V[2], edgeColor.V[3]);
+  glColor4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;
 

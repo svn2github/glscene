@@ -57,9 +57,9 @@ procedure TessellatePolygon(PolyVerts : TAffineVectorList;
   var
     mat : TAffineMatrix;
   begin
-    mat.V[0]:=v0;
-    mat.V[1]:=v1;
-    mat.V[2]:=v2;
+    mat.X:=v0;
+    mat.Y:=v1;
+    mat.Z:=v2;
     Result:=(MatrixDeterminant(mat)<0);
   end;
 
@@ -94,24 +94,24 @@ begin
         next:=i+1;
         if prev<0 then prev:=temp.Count-1;
         if next>temp.Count-1 then next:=0;
-        v.V[0]:=PolyVerts[temp[prev]];
-        v.V[1]:=PolyVerts[temp[i]];
-        v.V[2]:=PolyVerts[temp[next]];
-        if IsTriClockWise(v.V[0], v.V[1], v.V[2]) = PolyCW then begin
+        v.X:=PolyVerts[temp[prev]];
+        v.Y:=PolyVerts[temp[i]];
+        v.Z:=PolyVerts[temp[next]];
+        if IsTriClockWise(v.X, v.Y, v.Z) = PolyCW then begin
           NoPointsInTriangle:=True;
           for j:=0 to temp.Count-1 do begin
             if (j<>i) and (j<>prev) and (j<>next) then begin
-              if PointInTriangle(PolyVerts[temp[j]], v.V[0], v.V[1], v.V[2], PolyCW) then begin
+              if PointInTriangle(PolyVerts[temp[j]], v.X, v.Y, v.Z, PolyCW) then begin
                 NoPointsInTriangle:=False;
                 Break;
               end;
             end;
           end;
 
-          area:=TriangleArea(v.V[0],v.V[1],v.V[2]);
+          area:=TriangleArea(v.X,v.Y,v.Z);
 
           if NoPointsInTriangle and (area>0) then begin
-            d:=VectorDistance2(v.V[0], v.V[2]);
+            d:=VectorDistance2(v.X, v.Z);
             if d<min_dist then begin
               min_dist:=d;
               min_prev:=prev;
@@ -191,13 +191,13 @@ var
 
     with Result.Material.FrontProperties do begin
       if VRMLMaterial.HasDiffuse then
-        Diffuse.Color:=VectorMake(VRMLMaterial.DiffuseColor, Diffuse.Color.V[3]);
+        Diffuse.Color:=VectorMake(VRMLMaterial.DiffuseColor, Diffuse.Color.W);
       if VRMLMaterial.HasAmbient then
-        Ambient.Color:=VectorMake(VRMLMaterial.AmbientColor, Ambient.Color.V[3]);
+        Ambient.Color:=VectorMake(VRMLMaterial.AmbientColor, Ambient.Color.W);
       if VRMLMaterial.HasSpecular then
-        Specular.Color:=VectorMake(VRMLMaterial.SpecularColor, Specular.Color.V[3]);
+        Specular.Color:=VectorMake(VRMLMaterial.SpecularColor, Specular.Color.W);
       if VRMLMaterial.HasEmissive then
-        Emission.Color:=VectorMake(VRMLMaterial.EmissiveColor, Emission.Color.V[3]);
+        Emission.Color:=VectorMake(VRMLMaterial.EmissiveColor, Emission.Color.W);
       if Shininess = 0 then Shininess:=16;
       if VRMLMaterial.HasShininess then
         Shininess:=Floor(128*VRMLMaterial.Shininess);
@@ -418,14 +418,14 @@ var
       if node[i] is TVRMLTransform then begin
         if not VectorEquals(TVRMLTransform(node[i]).Rotation, NullHMGVector) then begin
           axis:=AffineVectorMake(TVRMLTransform(node[i]).Rotation);
-          angle:=TVRMLTransform(node[i]).Rotation.V[3];
+          angle:=TVRMLTransform(node[i]).Rotation.W;
           mat:=MatrixMultiply(CreateRotationMatrix(axis, angle),
                               CreateRotationMatrixZ(Pi/2));
         end else
           mat:=IdentityHMGMatrix;
         for j:=0 to 2 do
           mat.V[j]:=VectorScale(mat.V[j], TVRMLTransform(node[i]).ScaleFactor.V[j]);
-        mat.V[3]:=PointMake(TVRMLTransform(node[i]).Center);
+        mat.W:=PointMake(TVRMLTransform(node[i]).Center);
         currentTransform:=MatrixMultiply(mat, currentTransform);
       end else if node[i] is TVRMLMaterial then begin
         currentMaterial:=AddMaterialToLibrary(TVRMLMaterial(node[i]));

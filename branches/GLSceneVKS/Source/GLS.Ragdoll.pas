@@ -194,13 +194,13 @@ begin
     min := BoneVertex;
     for i:=1 to BoneVertices.Count-1 do begin
       BoneVertex := VectorTransform(BoneVertices[i], invMat);
-      if (BoneVertex.V[0] > max.V[0]) then max.V[0] := BoneVertex.V[0];
-      if (BoneVertex.V[1] > max.V[1]) then max.V[1] := BoneVertex.V[1];
-      if (BoneVertex.V[2] > max.V[2]) then max.V[2] := BoneVertex.V[2];
+      if (BoneVertex.X > max.X) then max.X := BoneVertex.X;
+      if (BoneVertex.Y > max.Y) then max.Y := BoneVertex.Y;
+      if (BoneVertex.Z > max.Z) then max.Z := BoneVertex.Z;
 
-      if (BoneVertex.V[0] < min.V[0]) then min.V[0] := BoneVertex.V[0];
-      if (BoneVertex.V[1] < min.V[1]) then min.V[1] := BoneVertex.V[1];
-      if (BoneVertex.V[2] < min.V[2]) then min.V[2] := BoneVertex.V[2];
+      if (BoneVertex.X < min.X) then min.X := BoneVertex.X;
+      if (BoneVertex.Y < min.Y) then min.Y := BoneVertex.Y;
+      if (BoneVertex.Z < min.Z) then min.Z := BoneVertex.Z;
     end;
 
     FBoundMax := max;
@@ -216,7 +216,7 @@ begin
   FReferenceMatrix := FBoneMatrix;
   mat := MatrixMultiply(bone.GlobalMatrix,FRagdoll.Owner.AbsoluteMatrix);
   //Set Joint position
-  SetAnchor(AffineVectorMake(mat.V[3]));
+  SetAnchor(AffineVectorMake(mat.W));
 
   BoneVertices.Free; // NEW1
 end;
@@ -250,22 +250,22 @@ begin
 
   if (noBounds) then
   begin
-    FOrigin := AffineVectorMake(mat.V[3]);
+    FOrigin := AffineVectorMake(mat.W);
     FSize := AffineVectorMake(0.1,0.1,0.1);
   end else begin
     //Set Origin
     posMat := mat;
-    posMat.V[3] := NullHmgVector;
+    posMat.W := NullHmgVector;
     o := VectorTransform(FBoundBoneDelta, posMat);
-    FOrigin := VectorAdd(AffineVectorMake(mat.V[3]), o);
+    FOrigin := VectorAdd(AffineVectorMake(mat.W), o);
     //Set Size
     FSize := VectorScale(VectorSubtract(FBoundMax, FBoundMin),0.9);
-    FSize.V[0] := FSize.V[0]*VectorLength(mat.V[0]);
-    FSize.V[1] := FSize.V[1]*VectorLength(mat.V[1]);
-    FSize.V[2] := FSize.V[2]*VectorLength(mat.V[2]);
+    FSize.X := FSize.X*VectorLength(mat.X);
+    FSize.Y := FSize.Y*VectorLength(mat.Y);
+    FSize.Z := FSize.Z*VectorLength(mat.Z);
   end;
   //Put the origin in the BoneMatrix
-  FBoneMatrix.V[3] := VectorMake(FOrigin,1);
+  FBoneMatrix.W := VectorMake(FOrigin,1);
 end;
 
 function TVKRagdolBone.GetRagdollBone(Index: Integer): TVKRagdolBone;

@@ -264,7 +264,7 @@ begin
                r:=Owner.Skeleton.Frames[i].Rotation[j];
                str.Add(StringReplace(
                  Format('%3d %.6f %.6f %.6f %.6f %.6f %.6f',
-                        [j,p.V[0],p.V[1],p.V[2],r.V[0],r.V[1],r.V[2]]),
+                        [j,p.X,p.Y,p.Z,r.X,r.Y,r.Z]),
                  ',', '.', [rfReplaceAll]));
             end;
          end;
@@ -288,7 +288,7 @@ begin
                      b:=VerticesBonesWeights^[VertexIndices[3*k+l]]^[0].BoneID;
                      str.Add(StringReplace(
                        Format('%3d %.4f %.4f %.4f %.4f %.4f %.4f %.4f %.4f',
-                              [b,v.V[0],v.V[1],v.V[2],n.V[0],n.V[1],n.V[2],t.V[0],t.V[1]]),
+                              [b,v.X,v.Y,v.Z,n.X,n.Y,n.Z,t.X,t.Y]),
                        ',', '.', [rfReplaceAll]));
                   end;
                end;

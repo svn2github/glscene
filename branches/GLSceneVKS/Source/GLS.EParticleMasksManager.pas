@@ -680,9 +680,9 @@ end;
 procedure TVKEParticleMasksManager.ApplyOrthoGraphic(var Vec: TVector3f; Mask:
   TVKEParticleMask);
 begin
-  Vec.V[0] := (Mask.LX / 2 - Vec.V[0]) / Mask.LX;
-  Vec.V[1] := (Mask.LY / 2 - Vec.V[1]) / Mask.LY;
-  Vec.V[2] := (Mask.LZ / 2 - Vec.V[2]) / Mask.LZ;
+  Vec.X := (Mask.LX / 2 - Vec.X) / Mask.LX;
+  Vec.Y := (Mask.LY / 2 - Vec.Y) / Mask.LY;
+  Vec.Z := (Mask.LZ / 2 - Vec.Z) / Mask.LZ;
 end;
 
 procedure TVKEParticleMasksManager.ApplyRotation(var Vec: TVector3f; Mask:
@@ -708,20 +708,20 @@ end;
 procedure TVKEParticleMasksManager.ApplyScaleAndPosition(var Vec: TVector3f;
   Mask: TVKEParticleMask);
 begin
-  Vec.V[0] := Vec.V[0] * Mask.FScale.DirectX + Mask.FPosition.DirectX;
-  Vec.V[1] := Vec.V[1] * Mask.FScale.DirectY + Mask.FPosition.DirectY;
-  Vec.V[2] := Vec.V[2] * Mask.FScale.DirectZ + Mask.FPosition.DirectZ;
+  Vec.X := Vec.X * Mask.FScale.DirectX + Mask.FPosition.DirectX;
+  Vec.Y := Vec.Y * Mask.FScale.DirectY + Mask.FPosition.DirectY;
+  Vec.Z := Vec.Z * Mask.FScale.DirectZ + Mask.FPosition.DirectZ;
 end;
 
 procedure TVKEParticleMasksManager.ApplyScaleAndPositionTarget(var Vec:
   TVector3f; Mask: TVKEParticleMask; TargetObject: TVKBaseSceneObject);
 begin
-  Vec.V[0] := Vec.V[0] * Mask.FScale.DirectX * TargetObject.Scale.DirectX +
-    Mask.FPosition.DirectX + TargetObject.AbsolutePosition.V[0];
-  Vec.V[1] := Vec.V[1] * Mask.FScale.DirectY * TargetObject.Scale.DirectY +
-    Mask.FPosition.DirectY + TargetObject.AbsolutePosition.V[1];
-  Vec.V[2] := Vec.V[2] * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ +
-    Mask.FPosition.DirectZ + TargetObject.AbsolutePosition.V[2];
+  Vec.X := Vec.X * Mask.FScale.DirectX * TargetObject.Scale.DirectX +
+    Mask.FPosition.DirectX + TargetObject.AbsolutePosition.X;
+  Vec.Y := Vec.Y * Mask.FScale.DirectY * TargetObject.Scale.DirectY +
+    Mask.FPosition.DirectY + TargetObject.AbsolutePosition.Y;
+  Vec.Z := Vec.Z * Mask.FScale.DirectZ * TargetObject.Scale.DirectZ +
+    Mask.FPosition.DirectZ + TargetObject.AbsolutePosition.Z;
 end;
 
 constructor TVKEParticleMasksManager.Create(AOwner: TComponent);

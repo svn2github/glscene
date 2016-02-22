@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes,
-  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLAdapter, GLS.OpenGLTokens,
+  GLS.Scene, GLS.VectorGeometry, GLS.OpenGLAdapter, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context, GLS.Material, GLS.Color, GLS.RenderContextInfo,
   GLS.State, GLS.VectorTypes;
 
@@ -311,7 +311,7 @@ begin
   begin
     hw := FWidth * 0.5;
     hh := FHeight * 0.5;
-    GL.Normal3fv(@ZVector);
+    glNormal3fv(@ZVector);
     glBegin(GL_QUADS);
     glVertex3f(hw, hh, 0);
     glVertex3f(-hw, hh, 0);
@@ -341,7 +341,7 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    GL.Ortho(0, Width, 0, Height, 1, -1);
+    glOrtho(0, Width, 0, Height, 1, -1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
 
@@ -354,16 +354,16 @@ begin
     glBegin(GL_QUADS);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(-Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.X, p.Y, 0.999);
     p := WorldToScreen(VectorTransform(AffineVectorMake(Self.Width * 0.5,
       -Self.Height * 0.5, 0), worldMat));
-    glVertex3f(p.V[0], p.V[1], 0.999);
+    glVertex3f(p.X, p.Y, 0.999);
     glEnd;
 
     with aBuffer.RenderingContext.GLStates do

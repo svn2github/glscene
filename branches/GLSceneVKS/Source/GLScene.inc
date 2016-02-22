@@ -47,6 +47,11 @@
   {$DEFINE MULTITHREADOPENGL}
 {$ENDIF}
 
+{$IFDEF GLS_SERVICE_CONTEXT}
+  // Activate Multithread support
+  {$DEFINE GLS_MULTITHREAD}
+{$ENDIF}
+
 // Activate support of MSWindows
 {.$DEFINE MSWINDOWS}
 
@@ -120,3 +125,10 @@
 {$IFNDEF GLS_NO_REGIONS}
   {$DEFINE GLS_REGIONS}
 {$ENDIF}
+
+{$define GLS_DEPRECATED}
+{
+  This defines if the compiler should use deprecated stuff or not.
+  by default headers use deprecated stuff.
+}
+

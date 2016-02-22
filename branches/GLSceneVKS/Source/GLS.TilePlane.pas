@@ -12,7 +12,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, GLS.Scene, GLS.VectorGeometry, GLS.OpenGLTokens, GLS.Context,
+  System.Classes, GLS.Scene, GLS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
   GLS.Material, GLS.Objects, GLS.CrossPlatform, GLS.PersistentClasses,
   GLS.VectorLists, GLS.RenderContextInfo, GLS.XOpenGL;
 
@@ -598,7 +598,7 @@ var
 begin
    if MaterialLibrary=nil then Exit;
    // initialize infos
-   GL.Normal3fv(@ZVector);
+   glNormal3fv(@ZVector);
    if FNoZWrite then
       rci.GLStates.DepthWriteMask := False;
    if SortByMaterials then begin

@@ -15,29 +15,33 @@ uses
   Winapi.Windows,
   Winapi.OpenGL,
   Winapi.OpenGLext,
-
 {$ENDIF }
-{$IFDEF UNIX}
-  Types, LCLType, dynlibs,
-{$ENDIF}
+
 {$IFDEF GLS_X11_SUPPORT}
   Xlib, X, XUtil,
 {$ENDIF}
+
+{$IFDEF UNIX}
+  Types, LCLType, dynlibs,
+{$ENDIF}
+
 {$IFDEF DARWIN}
   MacOSAll,
 {$ENDIF}
   System.SysUtils,
   GLS.Log,
+  GLS.VectorTypes,
   GLS.VectorGeometry,
-  GLS.Strings,
-  GLS.VectorTypes;
+  GLS.Strings;
 
 type
-  PHGPUNV = ^HGPUNV;
-  HGPUNV = THandle;
+  GLvoid = Pointer;
+  TGLvoid = GLvoid;
+  PGLvoid = Pointer;
+  PPGLvoid = ^PGLvoid;
 
-  PGPUDevice = ^TGPUDevice;
-  TGPUDevice = record
+  PGPUDEVICE = ^TGPUDEVICE;
+  TGPUDEVICE = record
     cb: Cardinal;
     DeviceName: array[0..31] of AnsiChar;
     DeviceString: array[0..127] of AnsiChar;
@@ -45,36 +49,53 @@ type
     rcVirtualScreen: TRect;
   end;
 
+  // WGL_ARB_pbuffer
+  HPBUFFERARB = THandle;
+
+  // WGL_EXT_pbuffer
+  HPBUFFEREXT = THandle;
+
+  // WGL_NV_present_video
+  PHVIDEOOUTPUTDEVICENV = ^HVIDEOOUTPUTDEVICENV;
+  HVIDEOOUTPUTDEVICENV = THandle;
+
+   // WGL_NV_video_output
+  PHPVIDEODEV = ^HPVIDEODEV;
+  HPVIDEODEV = THandle;
+
+   // WGL_NV_gpu_affinity
+  PHPGPUNV = ^HPGPUNV;
+  PHGPUNV = ^HGPUNV;
+
    // WGL_NV_video_capture
   HVIDEOINPUTDEVICENV = THandle;
   PHVIDEOINPUTDEVICENV = ^HVIDEOINPUTDEVICENV;
 
-  TVKVectord3  = array[0..2] of GLdouble;
-  TVKArrayd3 = TVKVectord3;
+  HPGPUNV = THandle;
+  HGPUNV = THandle;
 
 type
    // GLU types
-   TVKUNurbs = record end;
-   TVKUQuadric = record end;
-   TVKUTesselator = record end;
-
-   PGLUNurbs = ^TVKUNurbs;
-   PGLUQuadric = ^TVKUQuadric;
-   PGLUTesselator=  ^TVKUTesselator;
-
+   TGLUNurbs = record
+   end;
+   TGLUQuadric = record
+   end;
+   TGLUTesselator = record
+   end;
+   PGLUNurbs = ^TGLUNurbs;
+   PGLUQuadric = ^TGLUQuadric;
+   PGLUTesselator=  ^TGLUTesselator;
    // backwards compatibility
-   TVKUNurbsObj = TVKUNurbs;
-   TVKUQuadricObj = TVKUQuadric;
-   TVKUTesselatorObj = TVKUTesselator;
-   TVKUTriangulatorObj = TVKUTesselator;
-
+   TGLUNurbsObj = TGLUNurbs;
+   TGLUQuadricObj = TGLUQuadric;
+   TGLUTesselatorObj = TGLUTesselator;
+   TGLUTriangulatorObj = TGLUTesselator;
    PGLUNurbsObj = PGLUNurbs;
    PGLUQuadricObj = PGLUQuadric;
    PGLUTesselatorObj = PGLUTesselator;
    PGLUTriangulatorObj = PGLUTesselator;
 
 var
-  // supported versions
   GL_VERSION_1_0,
   GL_VERSION_1_1,
   GL_VERSION_1_2,
@@ -95,9 +116,7 @@ var
   GL_VERSION_4_5,
   GLU_VERSION_1_1,
   GLU_VERSION_1_2,
-  GLU_VERSION_1_3: Boolean;
-
-  // ARB approved OpenGL extensions in sorted order
+  GLU_VERSION_1_3,
   GL_3DFX_multisample,
   GL_3DFX_tbuffer,
   GL_3DFX_texture_compression_FXT1,
@@ -632,7 +651,659 @@ var
   WGL_NV_video_output,
   WGL_OML_sync_control,
   WIN_draw_range_elements,
-  WIN_swap_hint : Boolean;
+  WIN_swap_hint: Boolean;
+
+const
+  // WGL_3DFX_multisample
+  WGL_SAMPLE_BUFFERS_3DFX = $2060;
+  WGL_SAMPLES_3DFX = $2061;
+
+  // WGL_ARB_buffer_region
+  WGL_FRONT_COLOR_BUFFER_BIT_ARB = $00000001;
+  WGL_BACK_COLOR_BUFFER_BIT_ARB = $00000002;
+  WGL_DEPTH_BUFFER_BIT_ARB = $00000004;
+  WGL_STENCIL_BUFFER_BIT_ARB = $00000008;
+
+  // WGL_ARB_context_flush_control
+  WGL_CONTEXT_RELEASE_BEHAVIOR_ARB = $2097;
+  WGL_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB = 0;
+  WGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB = $2098;
+
+  // WGL_ARB_make_current_read
+  ERROR_INVALID_PIXEL_TYPE_ARB = $2043;
+  ERROR_INCOMPATIBLE_DEVICE_CONTEXTS_ARB = $2054;
+
+  // WGL_ARB_multisample
+  WGL_SAMPLE_BUFFERS_ARB = $2041;
+  WGL_SAMPLES_ARB = $2042;
+
+  // WGL_ARB_pbuffer
+  WGL_DRAW_TO_PBUFFER_ARB = $202D;
+  WGL_MAX_PBUFFER_PIXELS_ARB = $202E;
+  WGL_MAX_PBUFFER_WIDTH_ARB = $202F;
+  WGL_MAX_PBUFFER_HEIGHT_ARB = $2030;
+  WGL_PBUFFER_LARGEST_ARB = $2033;
+  WGL_PBUFFER_WIDTH_ARB = $2034;
+  WGL_PBUFFER_HEIGHT_ARB = $2035;
+  WGL_PBUFFER_LOST_ARB = $2036;
+
+  // WGL_ARB_pixel_format
+  WGL_NUMBER_PIXEL_FORMATS_ARB = $2000;
+  WGL_DRAW_TO_WINDOW_ARB = $2001;
+  WGL_DRAW_TO_BITMAP_ARB = $2002;
+  WGL_ACCELERATION_ARB = $2003;
+  WGL_NEED_PALETTE_ARB = $2004;
+  WGL_NEED_SYSTEM_PALETTE_ARB = $2005;
+  WGL_SWAP_LAYER_BUFFERS_ARB = $2006;
+  WGL_SWAP_METHOD_ARB = $2007;
+  WGL_NUMBER_OVERLAYS_ARB = $2008;
+  WGL_NUMBER_UNDERLAYS_ARB = $2009;
+  WGL_TRANSPARENT_ARB = $200A;
+  WGL_TRANSPARENT_RED_VALUE_ARB = $2037;
+  WGL_TRANSPARENT_GREEN_VALUE_ARB = $2038;
+  WGL_TRANSPARENT_BLUE_VALUE_ARB = $2039;
+  WGL_TRANSPARENT_ALPHA_VALUE_ARB = $203A;
+  WGL_TRANSPARENT_INDEX_VALUE_ARB = $203B;
+  WGL_SHARE_DEPTH_ARB = $200C;
+  WGL_SHARE_STENCIL_ARB = $200D;
+  WGL_SHARE_ACCUM_ARB = $200E;
+  WGL_SUPPORT_GDI_ARB = $200F;
+  WGL_SUPPORT_OPENGL_ARB = $2010;
+  WGL_DOUBLE_BUFFER_ARB = $2011;
+  WGL_STEREO_ARB = $2012;
+  WGL_PIXEL_TYPE_ARB = $2013;
+  WGL_COLOR_BITS_ARB = $2014;
+  WGL_RED_BITS_ARB = $2015;
+  WGL_RED_SHIFT_ARB = $2016;
+  WGL_GREEN_BITS_ARB = $2017;
+  WGL_GREEN_SHIFT_ARB = $2018;
+  WGL_BLUE_BITS_ARB = $2019;
+  WGL_BLUE_SHIFT_ARB = $201A;
+  WGL_ALPHA_BITS_ARB = $201B;
+  WGL_ALPHA_SHIFT_ARB = $201C;
+  WGL_ACCUM_BITS_ARB = $201D;
+  WGL_ACCUM_RED_BITS_ARB = $201E;
+  WGL_ACCUM_GREEN_BITS_ARB = $201F;
+  WGL_ACCUM_BLUE_BITS_ARB = $2020;
+  WGL_ACCUM_ALPHA_BITS_ARB = $2021;
+  WGL_DEPTH_BITS_ARB = $2022;
+  WGL_STENCIL_BITS_ARB = $2023;
+  WGL_AUX_BUFFERS_ARB = $2024;
+  WGL_NO_ACCELERATION_ARB = $2025;
+  WGL_GENERIC_ACCELERATION_ARB = $2026;
+  WGL_FULL_ACCELERATION_ARB = $2027;
+  WGL_SWAP_EXCHANGE_ARB = $2028;
+  WGL_SWAP_COPY_ARB = $2029;
+  WGL_SWAP_UNDEFINED_ARB = $202A;
+  WGL_TYPE_RGBA_ARB = $202B;
+  WGL_TYPE_COLORINDEX_ARB = $202C;
+
+  // WGL_ARB_pixel_format_float
+  WGL_RGBA_FLOAT_MODE_ARB = $8820;
+  WGL_CLAMP_VERTEX_COLOR_ARB = $891A;
+  WGL_CLAMP_FRAGMENT_COLOR_ARB = $891B;
+  WGL_CLAMP_READ_COLOR_ARB = $891C;
+  WGL_FIXED_ONLY_ARB = $891D;
+
+  // WGL_ARB_render_texture
+  WGL_BIND_TO_TEXTURE_RGB_ARB = $2070;
+  WGL_BIND_TO_TEXTURE_RGBA_ARB = $2071;
+  WGL_TEXTURE_FORMAT_ARB = $2072;
+  WGL_TEXTURE_TARGET_ARB = $2073;
+  WGL_MIPMAP_TEXTURE_ARB = $2074;
+  WGL_TEXTURE_RGB_ARB = $2075;
+  WGL_TEXTURE_RGBA_ARB = $2076;
+  WGL_NO_TEXTURE_ARB = $2077;
+  WGL_TEXTURE_CUBE_MAP_ARB = $2078;
+  WGL_TEXTURE_1D_ARB = $2079;
+  WGL_TEXTURE_2D_ARB = $207A;
+  WGL_MIPMAP_LEVEL_ARB = $207B;
+  WGL_CUBE_MAP_FACE_ARB = $207C;
+  WGL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB = $207D;
+  WGL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB = $207E;
+  WGL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB = $207F;
+  WGL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB = $2080;
+  WGL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB = $2081;
+  WGL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB = $2082;
+  WGL_FRONT_LEFT_ARB = $2083;
+  WGL_FRONT_RIGHT_ARB = $2084;
+  WGL_BACK_LEFT_ARB = $2085;
+  WGL_BACK_RIGHT_ARB = $2086;
+  WGL_AUX0_ARB = $2087;
+  WGL_AUX1_ARB = $2088;
+  WGL_AUX2_ARB = $2089;
+  WGL_AUX3_ARB = $208A;
+  WGL_AUX4_ARB = $208B;
+  WGL_AUX5_ARB = $208C;
+  WGL_AUX6_ARB = $208D;
+  WGL_AUX7_ARB = $208E;
+  WGL_AUX8_ARB = $208F;
+  WGL_AUX9_ARB = $2090;
+
+  // WGL_ARB_robustness_application_isolation
+  WGL_CONTEXT_RESET_ISOLATION_BIT_ARB = $00000008;
+
+  // WGL_ARB_create_context
+  WGL_CONTEXT_DEBUG_BIT_ARB = $00000001;
+  WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = $00000002;
+  WGL_CONTEXT_MAJOR_VERSION_ARB = $2091;
+  WGL_CONTEXT_MINOR_VERSION_ARB = $2092;
+  WGL_CONTEXT_LAYER_PLANE_ARB = $2093;
+  WGL_CONTEXT_FLAGS_ARB = $2094;
+  ERROR_INVALID_VERSION_ARB = $2095;
+
+  // WGL_ARB_create_context_profile
+  WGL_CONTEXT_PROFILE_MASK_ARB = $9126;
+  WGL_CONTEXT_CORE_PROFILE_BIT_ARB = $00000001;
+  WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = $00000002;
+  ERROR_INVALID_PROFILE_ARB = $2096;
+
+  // WGL_ARB_framebuffer_sRGB
+  WGL_FRAMEBUFFER_SRGB_CAPABLE_ARB = $20A9;
+
+  // WGL_ARB_create_context_robustness
+  WGL_CONTEXT_ROBUST_ACCESS_BIT_ARB = $00000004;
+  WGL_LOSE_CONTEXT_ON_RESET_ARB = $8252;
+  WGL_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB = $8256;
+  WGL_NO_RESET_NOTIFICATION_ARB = $8261;
+
+  // WGL_ATI_pixel_format_float
+  WGL_TYPE_RGBA_FLOAT_ATI = $21A0;
+  GL_TYPE_RGBA_FLOAT_ATI = $8820;
+  GL_COLOR_CLEAR_UNCLAMPED_VALUE_ATI = $8835;
+
+  // WGL_AMD_gpu_association
+  WGL_GPU_VENDOR_AMD = $1F00;
+  WGL_GPU_RENDERER_STRING_AMD = $1F01;
+  WGL_GPU_OPENGL_VERSION_STRING_AMD = $1F02;
+  WGL_GPU_FASTEST_TARGET_GPUS_AMD = $21A2;
+  WGL_GPU_RAM_AMD = $21A3;
+  WGL_GPU_CLOCK_AMD = $21A4;
+  WGL_GPU_NUM_PIPES_AMD = $21A5;
+  WGL_GPU_NUM_SIMD_AMD = $21A6;
+  WGL_GPU_NUM_RB_AMD = $21A7;
+  WGL_GPU_NUM_SPI_AMD = $21A8;
+
+  // WGL_EXT_depth_float
+  WGL_DEPTH_FLOAT_EXT = $2040;
+
+  // WGL_EXT_make_current_read
+  ERROR_INVALID_PIXEL_TYPE_EXT = $2043;
+
+  // WGL_EXT_multisample
+  WGL_SAMPLE_BUFFERS_EXT = $2041;
+  WGL_SAMPLES_EXT = $2042;
+
+  // WGL_EXT_pbuffer
+  WGL_DRAW_TO_PBUFFER_EXT = $202D;
+  WGL_MAX_PBUFFER_PIXELS_EXT = $202E;
+  WGL_MAX_PBUFFER_WIDTH_EXT = $202F;
+  WGL_MAX_PBUFFER_HEIGHT_EXT = $2030;
+  WGL_OPTIMAL_PBUFFER_WIDTH_EXT = $2031;
+  WGL_OPTIMAL_PBUFFER_HEIGHT_EXT = $2032;
+  WGL_PBUFFER_LARGEST_EXT = $2033;
+  WGL_PBUFFER_WIDTH_EXT = $2034;
+  WGL_PBUFFER_HEIGHT_EXT = $2035;
+
+  // WGL_EXT_pixel_format
+  WGL_NUMBER_PIXEL_FORMATS_EXT = $2000;
+  WGL_DRAW_TO_WINDOW_EXT = $2001;
+  WGL_DRAW_TO_BITMAP_EXT = $2002;
+  WGL_ACCELERATION_EXT = $2003;
+  WGL_NEED_PALETTE_EXT = $2004;
+  WGL_NEED_SYSTEM_PALETTE_EXT = $2005;
+  WGL_SWAP_LAYER_BUFFERS_EXT = $2006;
+  WGL_SWAP_METHOD_EXT = $2007;
+  WGL_NUMBER_OVERLAYS_EXT = $2008;
+  WGL_NUMBER_UNDERLAYS_EXT = $2009;
+  WGL_TRANSPARENT_EXT = $200A;
+  WGL_TRANSPARENT_VALUE_EXT = $200B;
+  WGL_SHARE_DEPTH_EXT = $200C;
+  WGL_SHARE_STENCIL_EXT = $200D;
+  WGL_SHARE_ACCUM_EXT = $200E;
+  WGL_SUPPORT_GDI_EXT = $200F;
+  WGL_SUPPORT_OPENGL_EXT = $2010;
+  WGL_DOUBLE_BUFFER_EXT = $2011;
+  WGL_STEREO_EXT = $2012;
+  WGL_PIXEL_TYPE_EXT = $2013;
+  WGL_COLOR_BITS_EXT = $2014;
+  WGL_RED_BITS_EXT = $2015;
+  WGL_RED_SHIFT_EXT = $2016;
+  WGL_GREEN_BITS_EXT = $2017;
+  WGL_GREEN_SHIFT_EXT = $2018;
+  WGL_BLUE_BITS_EXT = $2019;
+  WGL_BLUE_SHIFT_EXT = $201A;
+  WGL_ALPHA_BITS_EXT = $201B;
+  WGL_ALPHA_SHIFT_EXT = $201C;
+  WGL_ACCUM_BITS_EXT = $201D;
+  WGL_ACCUM_RED_BITS_EXT = $201E;
+  WGL_ACCUM_GREEN_BITS_EXT = $201F;
+  WGL_ACCUM_BLUE_BITS_EXT = $2020;
+  WGL_ACCUM_ALPHA_BITS_EXT = $2021;
+  WGL_DEPTH_BITS_EXT = $2022;
+  WGL_STENCIL_BITS_EXT = $2023;
+  WGL_AUX_BUFFERS_EXT = $2024;
+  WGL_NO_ACCELERATION_EXT = $2025;
+  WGL_GENERIC_ACCELERATION_EXT = $2026;
+  WGL_FULL_ACCELERATION_EXT = $2027;
+  WGL_SWAP_EXCHANGE_EXT = $2028;
+  WGL_SWAP_COPY_EXT = $2029;
+  WGL_SWAP_UNDEFINED_EXT = $202A;
+  WGL_TYPE_RGBA_EXT = $202B;
+  WGL_TYPE_COLORINDEX_EXT = $202C;
+
+  // WGL_I3D_digital_video_control
+  WGL_DIGITAL_VIDEO_CURSOR_ALPHA_FRAMEBUFFER_I3D = $2050;
+  WGL_DIGITAL_VIDEO_CURSOR_ALPHA_VALUE_I3D = $2051;
+  WGL_DIGITAL_VIDEO_CURSOR_INCLUDED_I3D = $2052;
+  WGL_DIGITAL_VIDEO_GAMMA_CORRECTED_I3D = $2053;
+
+  // WGL_I3D_gamma
+  WGL_GAMMA_TABLE_SIZE_I3D = $204E;
+  WGL_GAMMA_EXCLUDE_DESKTOP_I3D = $204F;
+
+  // WGL_I3D_genlock
+  WGL_GENLOCK_SOURCE_MULTIVIEW_I3D = $2044;
+  WGL_GENLOCK_SOURCE_EXTENAL_SYNC_I3D = $2045;
+  WGL_GENLOCK_SOURCE_EXTENAL_FIELD_I3D = $2046;
+  WGL_GENLOCK_SOURCE_EXTENAL_TTL_I3D = $2047;
+  WGL_GENLOCK_SOURCE_DIGITAL_SYNC_I3D = $2048;
+  WGL_GENLOCK_SOURCE_DIGITAL_FIELD_I3D = $2049;
+  WGL_GENLOCK_SOURCE_EDGE_FALLING_I3D = $204A;
+  WGL_GENLOCK_SOURCE_EDGE_RISING_I3D = $204B;
+  WGL_GENLOCK_SOURCE_EDGE_BOTH_I3D = $204C;
+
+  // WGL_I3D_image_buffer
+  WGL_IMAGE_BUFFER_MIN_ACCESS_I3D = $00000001;
+  WGL_IMAGE_BUFFER_LOCK_I3D = $00000002;
+
+  // WGL_NV_float_buffer
+  WGL_FLOAT_COMPONENTS_NV = $20B0;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_R_NV = $20B1;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RG_NV = $20B2;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGB_NV = $20B3;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_FLOAT_RGBA_NV = $20B4;
+  WGL_TEXTURE_FLOAT_R_NV = $20B5;
+  WGL_TEXTURE_FLOAT_RG_NV = $20B6;
+  WGL_TEXTURE_FLOAT_RGB_NV = $20B7;
+  WGL_TEXTURE_FLOAT_RGBA_NV = $20B8;
+
+  // WGL_NV_render_depth_texture
+  WGL_BIND_TO_TEXTURE_DEPTH_NV = $20A3;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_DEPTH_NV = $20A4;
+  WGL_DEPTH_TEXTURE_FORMAT_NV = $20A5;
+  WGL_TEXTURE_DEPTH_COMPONENT_NV = $20A6;
+  WGL_DEPTH_COMPONENT_NV = $20A7;
+
+  // WGL_NV_render_texture_rectangle
+  WGL_BIND_TO_TEXTURE_RECTANGLE_RGB_NV = $20A0;
+  WGL_BIND_TO_TEXTURE_RECTANGLE_RGBA_NV = $20A1;
+  WGL_TEXTURE_RECTANGLE_NV = $20A2;
+
+  // WGL_NV_present_video
+  WGL_NUM_VIDEO_SLOTS_NV = $20F0;
+
+  // WGL_NV_video_output
+  WGL_BIND_TO_VIDEO_RGB_NV = $20C0;
+  WGL_BIND_TO_VIDEO_RGBA_NV = $20C1;
+  WGL_BIND_TO_VIDEO_RGB_AND_DEPTH_NV = $20C2;
+  WGL_VIDEO_OUT_COLOR_NV = $20C3;
+  WGL_VIDEO_OUT_ALPHA_NV = $20C4;
+  WGL_VIDEO_OUT_DEPTH_NV = $20C5;
+  WGL_VIDEO_OUT_COLOR_AND_ALPHA_NV = $20C6;
+  WGL_VIDEO_OUT_COLOR_AND_DEPTH_NV = $20C7;
+  WGL_VIDEO_OUT_FRAME = $20C8;
+  WGL_VIDEO_OUT_FIELD_1 = $20C9;
+  WGL_VIDEO_OUT_FIELD_2 = $20CA;
+  WGL_VIDEO_OUT_STACKED_FIELDS_1_2 = $20CB;
+  WGL_VIDEO_OUT_STACKED_FIELDS_2_1 = $20CC;
+
+  // WGL_NV_gpu_affinity
+  WGL_ERROR_INCOMPATIBLE_AFFINITY_MASKS_NV = $20D0;
+  WGL_ERROR_MISSING_AFFINITY_MASK_NV = $20D1;
+
+  // WGL_NV_video_capture
+  WGL_UNIQUE_ID_NV = $20CE;
+  WGL_NUM_VIDEO_CAPTURE_SLOTS_NV = $20CF;
+
+  // WGL_NV_multisample_coverage
+  WGL_COVERAGE_SAMPLES_NV = $2042;
+  WGL_COLOR_SAMPLES_NV = $20B9;
+
+  // WGL_EXT_create_context_es2_profile
+  WGL_CONTEXT_ES2_PROFILE_BIT_EXT = $00000004;
+
+  // WGL_NV_DX_interop
+  WGL_ACCESS_READ_ONLY_NV        = $00000000;
+  WGL_ACCESS_READ_WRITE_NV       = $00000001;
+  WGL_ACCESS_WRITE_DISCARD_NV    = $00000002;
+
+  // WIN_draw_range_elements
+  GL_MAX_ELEMENTS_VERTICES_WIN = $80E8;
+  GL_MAX_ELEMENTS_INDICES_WIN = $80E9;
+
+  // GLX 1.1 and later:
+  GLX_VENDOR = 1;
+  GLX_VERSION = 2;
+  GLX_EXTENSIONS = 3;
+
+  GLX_USE_GL = 1;
+  GLX_BUFFER_SIZE = 2;
+  GLX_LEVEL = 3;
+  GLX_RGBA = 4;
+  GLX_DOUBLEBUFFER = 5;
+  GLX_STEREO = 6;
+  GLX_AUX_BUFFERS = 7;
+  GLX_RED_SIZE = 8;
+  GLX_GREEN_SIZE = 9;
+  GLX_BLUE_SIZE = 10;
+  GLX_ALPHA_SIZE = 11;
+  GLX_DEPTH_SIZE = 12;
+  GLX_STENCIL_SIZE = 13;
+  GLX_ACCUM_RED_SIZE = 14;
+  GLX_ACCUM_GREEN_SIZE = 15;
+  GLX_ACCUM_BLUE_SIZE = 16;
+  GLX_ACCUM_ALPHA_SIZE = 17;
+
+  // GLX_VERSION_1_3
+  GLX_WINDOW_BIT = $00000001;
+  GLX_PIXMAP_BIT = $00000002;
+  GLX_PBUFFER_BIT = $00000004;
+  GLX_RGBA_BIT = $00000001;
+  GLX_COLOR_INDEX_BIT = $00000002;
+  GLX_PBUFFER_CLOBBER_MASK = $08000000;
+  GLX_FRONT_LEFT_BUFFER_BIT = $00000001;
+  GLX_FRONT_RIGHT_BUFFER_BIT = $00000002;
+  GLX_BACK_LEFT_BUFFER_BIT = $00000004;
+  GLX_BACK_RIGHT_BUFFER_BIT = $00000008;
+  GLX_AUX_BUFFERS_BIT = $00000010;
+  GLX_DEPTH_BUFFER_BIT = $00000020;
+  GLX_STENCIL_BUFFER_BIT = $00000040;
+  GLX_ACCUM_BUFFER_BIT = $00000080;
+  GLX_CONFIG_CAVEAT = $20;
+  GLX_X_VISUAL_TYPE = $22;
+  GLX_TRANSPARENT_TYPE = $23;
+  GLX_TRANSPARENT_INDEX_VALUE = $24;
+  GLX_TRANSPARENT_RED_VALUE = $25;
+  GLX_TRANSPARENT_GREEN_VALUE = $26;
+  GLX_TRANSPARENT_BLUE_VALUE = $27;
+  GLX_TRANSPARENT_ALPHA_VALUE = $28;
+  GLX_DONT_CARE = $FFFFFFFF;
+  GLX_NONE = $8000;
+  GLX_SLOW_CONFIG = $8001;
+  GLX_TRUE_COLOR = $8002;
+  GLX_DIRECT_COLOR = $8003;
+  GLX_PSEUDO_COLOR = $8004;
+  GLX_STATIC_COLOR = $8005;
+  GLX_GRAY_SCALE = $8006;
+  GLX_STATIC_GRAY = $8007;
+  GLX_TRANSPARENT_RGB = $8008;
+  GLX_TRANSPARENT_INDEX = $8009;
+  GLX_VISUAL_ID = $800B;
+  GLX_SCREEN = $800C;
+  GLX_NON_CONFORMANT_CONFIG = $800D;
+  GLX_DRAWABLE_TYPE = $8010;
+  GLX_RENDER_TYPE = $8011;
+  GLX_X_RENDERABLE = $8012;
+  GLX_FBCONFIG_ID = $8013;
+  GLX_RGBA_TYPE = $8014;
+  GLX_COLOR_INDEX_TYPE = $8015;
+  GLX_MAX_PBUFFER_WIDTH = $8016;
+  GLX_MAX_PBUFFER_HEIGHT = $8017;
+  GLX_MAX_PBUFFER_PIXELS = $8018;
+  GLX_PRESERVED_CONTENTS = $801B;
+  GLX_LARGEST_PBUFFER = $801C;
+  GLX_WIDTH = $801D;
+  GLX_HEIGHT = $801E;
+  GLX_EVENT_MASK = $801F;
+  GLX_DAMAGED = $8020;
+  GLX_SAVED = $8021;
+  GLX_WINDOW = $8022;
+  GLX_PBUFFER = $8023;
+  GLX_PBUFFER_HEIGHT = $8040;
+  GLX_PBUFFER_WIDTH = $8041;
+
+  // GLX_VERSION_1_4
+  GLX_SAMPLE_BUFFERS = 100000;
+  GLX_SAMPLES = 100001;
+
+  // GLX_ARB_multisample
+  GLX_SAMPLE_BUFFERS_ARB = 100000;
+  GLX_SAMPLES_ARB = 100001;
+
+  // GLX_ARB_robustness_application_isolation
+  GLX_CONTEXT_RESET_ISOLATION_BIT_ARB = $00000008;
+
+  // GLX_ARB_fbconfig_float
+  GLX_RGBA_FLOAT_TYPE_ARB = $20B9;
+  GLX_RGBA_FLOAT_BIT_ARB = $00000004;
+
+  // GLX_ARB_context_flush_control
+  GLX_CONTEXT_RELEASE_BEHAVIOR_ARB = $2097;
+  GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB = 0;
+  GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB = $2098;
+
+  // GLX_ARB_create_context
+  GLX_CONTEXT_DEBUG_BIT_ARB = $00000001;
+  GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB = $00000002;
+  GLX_CONTEXT_MAJOR_VERSION_ARB = $2091;
+  GLX_CONTEXT_MINOR_VERSION_ARB = $2092;
+  GLX_CONTEXT_FLAGS_ARB = $2094;
+
+  // GLX_ARB_create_context_profile
+  GLX_CONTEXT_CORE_PROFILE_BIT_ARB = $00000001;
+  GLX_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB = $00000002;
+  GLX_CONTEXT_PROFILE_MASK_ARB = $9126;
+
+  // GLX_ARB_vertex_buffer_object
+  GLX_CONTEXT_ALLOW_BUFFER_BYTE_ORDER_MISMATCH_ARB = $2095;
+
+  // GLX_ARB_framebuffer_sRGB
+  GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB = $20B2;
+
+  // GLX_ARB_create_context_robustness
+  GLX_CONTEXT_ROBUST_ACCESS_BIT_ARB = $00000004;
+  GLX_LOSE_CONTEXT_ON_RESET_ARB = $8252;
+  GLX_CONTEXT_RESET_NOTIFICATION_STRATEGY_ARB = $8256;
+  GLX_NO_RESET_NOTIFICATION_ARB = $8261;
+
+  // GLX_EXT_visual_info
+  GLX_X_VISUAL_TYPE_EXT = $22;
+  GLX_TRANSPARENT_TYPE_EXT = $23;
+  GLX_TRANSPARENT_INDEX_VALUE_EXT = $24;
+  GLX_TRANSPARENT_RED_VALUE_EXT = $25;
+  GLX_TRANSPARENT_GREEN_VALUE_EXT = $26;
+  GLX_TRANSPARENT_BLUE_VALUE_EXT = $27;
+  GLX_TRANSPARENT_ALPHA_VALUE_EXT = $28;
+  GLX_NONE_EXT = $8000;
+  GLX_TRUE_COLOR_EXT = $8002;
+  GLX_DIRECT_COLOR_EXT = $8003;
+  GLX_PSEUDO_COLOR_EXT = $8004;
+  GLX_STATIC_COLOR_EXT = $8005;
+  GLX_GRAY_SCALE_EXT = $8006;
+  GLX_STATIC_GRAY_EXT = $8007;
+  GLX_TRANSPARENT_RGB_EXT = $8008;
+  GLX_TRANSPARENT_INDEX_EXT = $8009;
+
+  // GLX_EXT_visual_rating
+  GLX_VISUAL_CAVEAT_EXT = $20;
+  GLX_SLOW_VISUAL_EXT = $8001;
+  GLX_NON_CONFORMANT_VISUAL_EXT = $800D;
+  (* reuse GLX_NONE_EXT *)
+
+  // GLX_EXT_import_context
+  GLX_SHARE_CONTEXT_EXT = $800A;
+  GLX_VISUAL_ID_EXT = $800B;
+  GLX_SCREEN_EXT = $800C;
+
+  // GLX_EXT_fbconfig_packed_float
+
+  GLX_RGBA_UNSIGNED_FLOAT_TYPE_EXT = $20B1;
+  GLX_RGBA_UNSIGNED_FLOAT_BIT_EXT = $00000008;
+
+  // GLX_EXT_framebuffer_sRGB
+  (* GLX_FRAMEBUFFER_SRGB_CAPABLE_EXT = $20B2; *)
+
+  // GLX_EXT_texture_from_pixmap
+  GLX_TEXTURE_1D_BIT_EXT = $00000001;
+  GLX_TEXTURE_2D_BIT_EXT = $00000002;
+  GLX_TEXTURE_RECTANGLE_BIT_EXT = $00000004;
+  GLX_BIND_TO_TEXTURE_RGB_EXT = $20D0;
+  GLX_BIND_TO_TEXTURE_RGBA_EXT = $20D1;
+  GLX_BIND_TO_MIPMAP_TEXTURE_EXT = $20D2;
+  GLX_BIND_TO_TEXTURE_TARGETS_EXT = $20D3;
+  GLX_Y_INVERTED_EXT = $20D4;
+  GLX_TEXTURE_FORMAT_EXT = $20D5;
+  GLX_TEXTURE_TARGET_EXT = $20D6;
+  GLX_MIPMAP_TEXTURE_EXT = $20D7;
+  GLX_TEXTURE_FORMAT_NONE_EXT = $20D8;
+  GLX_TEXTURE_FORMAT_RGB_EXT = $20D9;
+  GLX_TEXTURE_FORMAT_RGBA_EXT = $20DA;
+  GLX_TEXTURE_1D_EXT = $20DB;
+  GLX_TEXTURE_2D_EXT = $20DC;
+  GLX_TEXTURE_RECTANGLE_EXT = $20DD;
+  GLX_FRONT_LEFT_EXT = $20DE;
+  GLX_FRONT_RIGHT_EXT = $20DF;
+  GLX_BACK_LEFT_EXT = $20E0;
+  GLX_BACK_RIGHT_EXT = $20E1;
+  GLX_FRONT_EXT = GLX_FRONT_LEFT_EXT;
+  GLX_BACK_EXT = GLX_BACK_LEFT_EXT;
+  GLX_AUX0_EXT = $20E2;
+  GLX_AUX1_EXT = $20E3;
+  GLX_AUX2_EXT = $20E4;
+  GLX_AUX3_EXT = $20E5;
+  GLX_AUX4_EXT = $20E6;
+  GLX_AUX5_EXT = $20E7;
+  GLX_AUX6_EXT = $20E8;
+  GLX_AUX7_EXT = $20E9;
+  GLX_AUX8_EXT = $20EA;
+  GLX_AUX9_EXT = $20EB;
+
+  // GLX_EXT_swap_control
+  GLX_SWAP_INTERVAL_EXT = $20F1;
+  GLX_MAX_SWAP_INTERVAL_EXT = $20F2;
+
+  // GLX_EXT_create_context_es2_profile
+  GLX_CONTEXT_ES2_PROFILE_BIT_EXT = $00000004;
+
+  // GL_EXT_Late_Swaps
+  GLX_LATE_SWAPS_TEAR_EXT         = $20F3;
+
+  // GLU
+  GLU_INVALID_ENUM = 100900;
+  GLU_INVALID_VALUE = 100901;
+  GLU_OUT_OF_MEMORY = 100902;
+  GLU_INCOMPATIBLE_GL_VERSION = 100903;
+  GLU_VERSION = 100800;
+  GLU_EXTENSIONS = 100801;
+  GLU_TRUE = GL_TRUE;
+  GLU_FALSE = GL_FALSE;
+  GLU_SMOOTH = 100000;
+  GLU_FLAT = 100001;
+  GLU_NONE = 100002;
+  GLU_POINT = 100010;
+  GLU_LINE = 100011;
+  GLU_FILL = 100012;
+  GLU_SILHOUETTE = 100013;
+  GLU_OUTSIDE = 100020;
+  GLU_INSIDE = 100021;
+  GLU_TESS_MAX_COORD = 1.0E150;
+  GLU_TESS_WINDING_RULE = 100140;
+  GLU_TESS_BOUNDARY_ONLY = 100141;
+  GLU_TESS_TOLERANCE = 100142;
+  GLU_TESS_WINDING_ODD = 100130;
+  GLU_TESS_WINDING_NONZERO = 100131;
+  GLU_TESS_WINDING_POSITIVE = 100132;
+  GLU_TESS_WINDING_NEGATIVE = 100133;
+  GLU_TESS_WINDING_ABS_GEQ_TWO = 100134;
+  GLU_TESS_BEGIN = 100100;
+  GLU_TESS_VERTEX = 100101;
+  GLU_TESS_END = 100102;
+  GLU_TESS_ERROR = 100103;
+  GLU_TESS_EDGE_FLAG = 100104;
+  GLU_TESS_COMBINE = 100105;
+  GLU_TESS_BEGIN_DATA = 100106;
+  GLU_TESS_VERTEX_DATA = 100107;
+  GLU_TESS_END_DATA = 100108;
+  GLU_TESS_ERROR_DATA = 100109;
+  GLU_TESS_EDGE_FLAG_DATA = 100110;
+  GLU_TESS_COMBINE_DATA = 100111;
+  GLU_TESS_ERROR1 = 100151;
+  GLU_TESS_ERROR2 = 100152;
+  GLU_TESS_ERROR3 = 100153;
+  GLU_TESS_ERROR4 = 100154;
+  GLU_TESS_ERROR5 = 100155;
+  GLU_TESS_ERROR6 = 100156;
+  GLU_TESS_ERROR7 = 100157;
+  GLU_TESS_ERROR8 = 100158;
+  GLU_TESS_MISSING_BEGIN_POLYGON = GLU_TESS_ERROR1;
+  GLU_TESS_MISSING_BEGIN_CONTOUR = GLU_TESS_ERROR2;
+  GLU_TESS_MISSING_END_POLYGON = GLU_TESS_ERROR3;
+  GLU_TESS_MISSING_END_CONTOUR = GLU_TESS_ERROR4;
+  GLU_TESS_COORD_TOO_LARGE = GLU_TESS_ERROR5;
+  GLU_TESS_NEED_COMBINE_CALLBACK = GLU_TESS_ERROR6;
+  GLU_AUTO_LOAD_MATRIX = 100200;
+  GLU_CULLING = 100201;
+  GLU_SAMPLING_TOLERANCE = 100203;
+  GLU_DISPLAY_MODE = 100204;
+  GLU_PARAMETRIC_TOLERANCE = 100202;
+  GLU_SAMPLING_METHOD = 100205;
+  GLU_U_STEP = 100206;
+  GLU_V_STEP = 100207;
+  GLU_PATH_LENGTH = 100215;
+  GLU_PARAMETRIC_ERROR = 100216;
+  GLU_DOMAIN_DISTANCE = 100217;
+  GLU_MAP1_TRIM_2 = 100210;
+  GLU_MAP1_TRIM_3 = 100211;
+  GLU_OUTLINE_POLYGON = 100240;
+  GLU_OUTLINE_PATCH = 100241;
+  GLU_NURBS_ERROR1 = 100251;
+  GLU_NURBS_ERROR2 = 100252;
+  GLU_NURBS_ERROR3 = 100253;
+  GLU_NURBS_ERROR4 = 100254;
+  GLU_NURBS_ERROR5 = 100255;
+  GLU_NURBS_ERROR6 = 100256;
+  GLU_NURBS_ERROR7 = 100257;
+  GLU_NURBS_ERROR8 = 100258;
+  GLU_NURBS_ERROR9 = 100259;
+  GLU_NURBS_ERROR10 = 100260;
+  GLU_NURBS_ERROR11 = 100261;
+  GLU_NURBS_ERROR12 = 100262;
+  GLU_NURBS_ERROR13 = 100263;
+  GLU_NURBS_ERROR14 = 100264;
+  GLU_NURBS_ERROR15 = 100265;
+  GLU_NURBS_ERROR16 = 100266;
+  GLU_NURBS_ERROR17 = 100267;
+  GLU_NURBS_ERROR18 = 100268;
+  GLU_NURBS_ERROR19 = 100269;
+  GLU_NURBS_ERROR20 = 100270;
+  GLU_NURBS_ERROR21 = 100271;
+  GLU_NURBS_ERROR22 = 100272;
+  GLU_NURBS_ERROR23 = 100273;
+  GLU_NURBS_ERROR24 = 100274;
+  GLU_NURBS_ERROR25 = 100275;
+  GLU_NURBS_ERROR26 = 100276;
+  GLU_NURBS_ERROR27 = 100277;
+  GLU_NURBS_ERROR28 = 100278;
+  GLU_NURBS_ERROR29 = 100279;
+  GLU_NURBS_ERROR30 = 100280;
+  GLU_NURBS_ERROR31 = 100281;
+  GLU_NURBS_ERROR32 = 100282;
+  GLU_NURBS_ERROR33 = 100283;
+  GLU_NURBS_ERROR34 = 100284;
+  GLU_NURBS_ERROR35 = 100285;
+  GLU_NURBS_ERROR36 = 100286;
+  GLU_NURBS_ERROR37 = 100287;
+  GLU_CW = 100120;
+  GLU_CCW = 100121;
+  GLU_INTERIOR = 100122;
+  GLU_EXTERIOR = 100123;
+  GLU_UNKNOWN = 100124;
+  GLU_BEGIN = GLU_TESS_BEGIN;
+  GLU_VERTEX = GLU_TESS_VERTEX;
+  GLU_END = GLU_TESS_END;
+  GLU_ERROR = GLU_TESS_ERROR;
+  GLU_EDGE_FLAG = GLU_TESS_EDGE_FLAG;
 
 type
   EOpenGLError = class(Exception);
@@ -644,82 +1315,30 @@ type
     FDebug: boolean;
     FDebugIds: PGLuint;
     function CheckExtension(const Extension: string): boolean;
-{$IFDEF SUPPORT_WGL}
+    {$IFDEF SUPPORT_WGL}
     procedure ReadWGLExtensions;
     procedure ReadWGLImplementationProperties;
-{$ENDIF}
-{$IFDEF SUPPORT_GLX}
+    {$ENDIF}
+    {$IFDEF SUPPORT_GLX}
     procedure ReadGLXExtensions;
     procedure ReadGLXImplementationProperties;
-{$ENDIF}
-{$IFDEF DARWIN}
+    {$ENDIF}
+    {$IFDEF DARWIN}
     procedure ReadAGLExtensions;
     procedure ReadAGLImplementationProperties;
-{$ENDIF}
-{$IFDEF EGL_SUPPORT}
+    {$ENDIF}
+    {$IFDEF EGL_SUPPORT}
     procedure ReadEGLExtensions;
     procedure ReadEGLImplementationProperties;
-{$ENDIF}
+    {$ENDIF}
     function GetAddress(ProcName: string): Pointer;
     function GetAddressNoSuffixes(ProcName: string): Pointer;
     function GetAddressAlt(ProcName1, ProcName2: string): Pointer;
     function GetCapAddress: Pointer;
   public
 
-{$IFDEF SUPPORT_WGL}
-    wglCreateBufferRegionARB: function(DC: HDC; iLayerPlane: Integer; uType: GLenum) : Integer; stdcall;
-    wglDeleteBufferRegionARB: procedure(hRegion: Integer); stdcall;
-    wglSaveBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer): BOOL; stdcall;
-    wglRestoreBufferRegionARB: function(hRegion: Integer; x, y, width, height: Integer;
-                                      xSrc, ySrc: Integer): BOOL; stdcall;
-    wglGetExtensionsStringARB: function(DC: HDC): PGLChar; stdcall;
-    wglGetPixelFormatAttribivARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: GLenum;
-                     const piAttributes: PGLint; piValues : PGLint) : BOOL; stdcall;
-    wglGetPixelFormatAttribfvARB: function(DC: HDC; iPixelFormat, iLayerPlane: Integer; nAttributes: GLenum;
-                     const piAttributes: PGLint; piValues: PGLFloat) : BOOL; stdcall;
-    wglChoosePixelFormatARB: function(DC: HDC; const piAttribIList: PGLint; const pfAttribFList: PGLFloat;
-                     nMaxFormats: GLuint; piFormats: PGLint; nNumFormats: PGLenum) : BOOL; stdcall;
-    wglMakeContextCurrentARB: function(hDrawDC: HDC; hReadDC: HDC; _hglrc: HGLRC): BOOL; stdcall;
-    wglGetCurrentReadDCARB: function(): HDC; stdcall;
-    wglCreatePbufferARB: function(DC: HDC; iPixelFormat: GLInt; iWidth, iHeight : GLInt;
-                       const piAttribList: PGLint) : GLInt; stdcall;
-    wglGetPbufferDCARB: function(hPbuffer: GLInt) : HDC; stdcall;
-    wglReleasePbufferDCARB: function(hPbuffer: GLInt; DC: HDC) : Integer; stdcall;
-    wglDestroyPbufferARB: function(hPbuffer: GLInt): BOOL; stdcall;
-    wglQueryPbufferARB: function(hPbuffer: GLInt; iAttribute : Integer;
-                      piValue: PGLint) : BOOL; stdcall;
-    wglBindTexImageARB: function(hPbuffer: GLInt; iBuffer: Integer): BOOL; stdcall;
-    wglReleaseTexImageARB: function(hpBuffer: GLInt; iBuffer: Integer): BOOL; stdcall;
-    wglSetPbufferAttribARB: function(hpBuffer: GLInt; const piAttribList: PGLint): BOOL; stdcall;
-    wglCreateContextAttribsARB: function(DC: HDC; hShareContext: HGLRC;
-           attribList: PGLint):HGLRC; stdcall;
-    wglSwapIntervalEXT: function(interval : Integer) : BOOL; stdcall;
-    wglGetSwapIntervalEXT: function(): GLint; stdcall;
-    wglEnumGpusNV: function(iGpuIndex: Cardinal; var hGpu: HGPUNV): Boolean; stdcall;
-    wglEnumGpuDevicesNV: function(hGpu: HGPUNV; iDeviceIndex: Cardinal; lpGpuDevice: PGPU_DEVICE): Boolean; stdcall;
-    wglCreateAffinityDCNV: function(const phGpuList: PHGPUNV): HDC; stdcall;
-    wglEnumGpusFromAffinityDCNV: function(hAffinityDC: HDC; iGpuIndex: Cardinal; hGpu: PHGPUNV): Boolean; stdcall;
-    wglDeleteDCNV: function(hDC: HDC): Boolean; stdcall;
-    wglBindVideoCaptureDeviceNV: function(uVideoSlot: Cardinal; hDevice: HVIDEOINPUTDEVICENV): Boolean; stdcall;
-    wglEnumerateVideoCaptureDevicesNV: function(hDc: HDC; phDeviceList: PHVIDEOINPUTDEVICENV): Cardinal; stdcall;
-    wglLockVideoCaptureDeviceNV: function(hDc: HDC; hDevice: HVIDEOINPUTDEVICENV): Boolean; stdcall;
-    wglQueryVideoCaptureDeviceNV: function(hDc: HDC; hDevice: HVIDEOINPUTDEVICENV; iAttribute: Integer; piValue: PInteger): Boolean; stdcall;
-    wglReleaseVideoCaptureDeviceNV: function(hDc: HDC; hDevice: HVIDEOINPUTDEVICENV): Boolean; stdcall;
-    wglCopyImageSubDataNV: function(hSrcRc: HGLRC; srcName: GLuint; srcTarget: GLenum; srcLevel: GLint; srcX: GLint; srcY: GLint; srcZ: GLint; hDstRC: HGLRC; dstName: GLuint; dstTarget: GLenum; dstLevel: GLint; dstX: GLint; dstY: GLint;
-          dstZ: GLint; width: GLsizei; height: GLsizei; depth: GLsizei): Boolean; stdcall;
-    wglDXSetResourceShareHandleNV: function(dxObject : Pointer; hareHandle : Cardinal) : Boolean; stdcall;
-    wglDXOpenDeviceNV: function(dxDevice : Pointer) : Cardinal; stdcall;
-    wglDXCloseDeviceNV: function(hDevice : Cardinal) : Boolean; stdcall;
-    wglDXRegisterObjectNV: function(hDevice : Cardinal; dxObject : Pointer; name : GLUInt; _type : GLEnum; access : GLenum) : Cardinal; stdcall;
-    wglDXUnregisterObjectNV: function(hDevice : Cardinal; hObject : Cardinal) : Boolean; stdcall;
-    wglDXObjectAccessNV: function(hObject : Cardinal; access : GLenum) : Boolean; stdcall;
-    wglDXLockObjectsNV: function(hDevice : Cardinal; count : GLint; hObjects : PCardinal) : Boolean; stdcall;
-    wglDXUnlockObjectsNV: function (hDevice : Cardinal; count : GLint; hObjects : PCardinal) : Boolean; stdcall;
-    wglAllocateMemoryNV: procedure(size: GLsizei; readfreq: GLfloat; writefreq: GLfloat; priority: GLfloat); stdcall;
-    wglFreeMemoryNV: procedure(_pointer: Pointer); stdcall;
-{$ENDIF}
 
-{$IFDEF SUPPORT_GLX}
+    {$IFDEF SUPPORT_GLX}
     //---------------------------------------------------------------------
     // function and procedure definitions for
     // ARB approved GLX extensions
@@ -762,9 +1381,9 @@ type
     // GLX 1.4
     // X_ARB_create_context (EXT #56)
     XCreateContextAttribsARB: PFNGLXCREATECONTEXTATTRIBSARBPROC;
-{$ENDIF}
+    {$ENDIF}
 
-{$IFDEF SUPPORT_GLX}
+    {$IFDEF SUPPORT_GLX}
     // ###########################################################
     // function and procedure definitions for
     // Vendor/EXT GLX extensions
@@ -844,9 +1463,9 @@ type
     XReleaseVideoCaptureDeviceNV: PFNGLXRELEASEVIDEOCAPTUREDEVICENVPROC;
     XSwapIntervalEXT: PFNGLXSWAPINTERVALEXTPROC;
     XCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
-{$ENDIF}
+   {$ENDIF}
 
-{$IFDEF DARWIN}
+   {$IFDEF DARWIN}
     // AGL extension checks
     A_aux_depth_stencil,A_client_storage,A_element_array,A_fence,A_float_pixels,
     A_flush_buffer_range,A_flush_render,A_object_purgeable,A_packed_pixels,
@@ -911,9 +1530,9 @@ type
     // Getting Error Information
     AGetError : function(): GLenum; cdecl;
     AErrorString : function(code: GLenum): PGLChar; cdecl;
-{$ENDIF}
+   {$ENDIF}
 
-{$IFDEF EGL_SUPPORT}
+   {$IFDEF EGL_SUPPORT}
     OES_depth24,
     OES_depth32,
     OES_depth_texture,
@@ -933,252 +1552,127 @@ type
     OES_vertex_array_object,
     OES_vertex_half_float: Boolean;
 
-{ Functions }
+    { Functions }
     EGetError : function:EGLint;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetDisplay : function(display_id:EGLNativeDisplayType):EGLDisplay;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EInitialize : function(dpy:EGLDisplay; major:pEGLint; minor:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ETerminate : function(dpy:EGLDisplay):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EQueryString : function(dpy:EGLDisplay; name:EGLint):pchar;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetConfigs : function(dpy:EGLDisplay; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EChooseConfig : function(dpy:EGLDisplay; attrib_list:pEGLint; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetConfigAttrib : function(dpy:EGLDisplay; config:EGLConfig; attribute:EGLint; value:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECreateWindowSurface : function(dpy:EGLDisplay; config:EGLConfig; win:EGLNativeWindowType; attrib_list:pEGLint):EGLSurface;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECreatePbufferSurface : function(dpy:EGLDisplay; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECreatePixmapSurface : function(dpy:EGLDisplay; config:EGLConfig; pixmap:EGLNativePixmapType; attrib_list:pEGLint):EGLSurface;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EDestroySurface : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EQuerySurface : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EBindAPI : function(api:EGLenum):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EQueryAPI : function:EGLenum;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EWaitClient : function:EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EReleaseThread : function:EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECreatePbufferFromClientBuffer : function(dpy:EGLDisplay; buftype:EGLenum; buffer:EGLClientBuffer; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ESurfaceAttrib : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:EGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EBindTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EReleaseTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ESwapInterval : function(dpy:EGLDisplay; interval:EGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECreateContext : function(dpy:EGLDisplay; config:EGLConfig; share_context:EGLContext; attrib_list:pEGLint):EGLContext;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EDestroyContext : function(dpy:EGLDisplay; ctx:EGLContext):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EMakeCurrent : function(dpy:EGLDisplay; draw:EGLSurface; read:EGLSurface; ctx:EGLContext):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetCurrentContext : function:EGLContext;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetCurrentSurface : function(readdraw:EGLint):EGLSurface;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EGetCurrentDisplay : function:EGLDisplay;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EQueryContext : function(dpy:EGLDisplay; ctx:EGLContext; attribute:EGLint; value:pEGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EWaitGL : function:EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     EWaitNative : function(engine:EGLint):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ESwapBuffers : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
     ECopyBuffers : function(dpy:EGLDisplay; surface:EGLSurface; target:EGLNativePixmapType):EGLBoolean;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+    {$ENDIF EGL_SUPPORT}
 
-{$ENDIF EGL_SUPPORT}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+    {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
+    {$IFDEF GLS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
     // locate functions and procedures for
     // GLU extensions
     // ###########################################################
-
-    UNurbsCallbackDataEXT:
-    procedure(nurb: PGLUnurbs; userData: Pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
-    UNewNurbsTessellatorEXT:
-    function: PGLUnurbs;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
-    UDeleteNurbsTessellatorEXT:
-    procedure(nurb: PGLUnurbs);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
+    (*
+    gluNurbsCallbackDataEXT: procedure(nurb: PGLUnurbs; userData: Pointer);
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+    gluNewNurbsTessellatorEXT: function: PGLUnurbs;
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+    gluDeleteNurbsTessellatorEXT: procedure(nurb: PGLUnurbs);
+    {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+    *)
     constructor Create;
     procedure Initialize(ATemporary: boolean = False);
     procedure Close;
-    procedure CheckError;
-    procedure ClearError;
+    procedure CheckOpenGLError;
+    procedure ClearOpenGLError;
     property IsInitialized: boolean read FInitialized;
     property DebugMode: boolean read FDebug write FDebug;
   end;
 
-{$IFDEF SUPPORT_WGL}
-function wglGetProcAddress(ProcName: PGLChar): Pointer; stdcall; external opengl32;
-function wglCopyContext(p1: HGLRC; p2: HGLRC; p3: cardinal): BOOL;
-  stdcall; external opengl32;
-function wglCreateContext(DC: HDC): HGLRC; stdcall; external opengl32;
-function wglCreateLayerContext(p1: HDC; p2: integer): HGLRC; stdcall; external opengl32;
-function wglDeleteContext(p1: HGLRC): BOOL; stdcall; external opengl32;
-function wglDescribeLayerPlane(p1: HDC; p2, p3: integer; p4: cardinal;
-  var p5: TLayerPlaneDescriptor): BOOL; stdcall; external opengl32;
-function wglGetCurrentContext: HGLRC; stdcall; external opengl32;
-function wglGetCurrentDC: HDC; stdcall; external opengl32;
-function wglGetLayerPaletteEntries(p1: HDC; p2, p3, p4: integer; var pcr): integer;
-  stdcall; external opengl32;
-function wglMakeCurrent(DC: HDC; p2: HGLRC): BOOL; stdcall; external opengl32;
-function wglRealizeLayerPalette(p1: HDC; p2: integer; p3: BOOL): BOOL;
-  stdcall; external opengl32;
-function wglSetLayerPaletteEntries(p1: HDC; p2, p3, p4: integer; var pcr): integer;
-  stdcall; external opengl32;
-function wglShareLists(p1, p2: HGLRC): BOOL; stdcall; external opengl32;
-function wglSwapLayerBuffers(p1: HDC; p2: cardinal): BOOL; stdcall; external opengl32;
-function wglSwapMultipleBuffers(p1: UINT; const p2: PWGLSwap): DWORD;
-  stdcall; external opengl32;
-function wglUseFontBitmapsA(DC: HDC; p2, p3, p4: DWORD): BOOL; stdcall;
-  external opengl32;
-function wglUseFontOutlinesA(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
-  p7: integer; p8: PGlyphMetricsFloat): BOOL; stdcall; external opengl32;
-function wglUseFontBitmapsW(DC: HDC; p2, p3, p4: DWORD): BOOL; stdcall;
-  external opengl32;
-function wglUseFontOutlinesW(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
-  p7: integer; p8: PGlyphMetricsFloat): BOOL; stdcall; external opengl32;
-function wglUseFontBitmaps(DC: HDC; p2, p3, p4: DWORD): BOOL; stdcall;
-  external opengl32 Name 'wglUseFontBitmapsA';
-function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
-  p7: integer; p8: PGlyphMetricsFloat): BOOL; stdcall;
-  external opengl32 Name 'wglUseFontOutlinesA';
-{$ENDIF}
-
-{$IFDEF SUPPORT_GLX}
-// GLX 1.0
-function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
-function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
-function glXChooseVisual(dpy: PDisplay; screen: GLint;
-  attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
-function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo;
-  shareList: GLXContext; direct: GLboolean): GLXContext; cdecl; external opengl32;
-procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
-function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable;
-  ctx: GLXContext): GLboolean; cdecl; external opengl32;
-procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: GLuint);
-  cdecl; external opengl32;
-procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
-function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
-  pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
-procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap);
-  cdecl; external opengl32;
-function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): GLboolean;
-  cdecl; external opengl32;
-function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): GLboolean;
-  cdecl; external opengl32;
-function glXIsDirect(dpy: PDisplay; ctx: GLXContext): GLboolean;
-  cdecl; external opengl32;
-function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: GLint;
-  Value: PGLint): GLint; cdecl; external opengl32;
-function glXGetCurrentContext: GLXContext; cdecl; external opengl32;
-function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
-procedure glXWaitGL; cdecl; external opengl32;
-procedure glXWaitX; cdecl; external opengl32;
-procedure glXUseXFont(font: XFont; First: GLint; Count: GLint; list: GLint);
-  cdecl; external opengl32;
-function glXQueryExtensionsString(dpy: PDisplay; screen: GLint): PGLChar;
-  cdecl; external opengl32;
-function glXQueryServerString(dpy: PDisplay; screen: GLint; Name: GLint): PGLChar;
-  cdecl; external opengl32;
-function glXGetClientString(dpy: PDisplay; Name: GLint): PGLChar;
-  cdecl; external opengl32;
-function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
-{$ENDIF}
+  {$IFDEF SUPPORT_GLX}
+  // GLX 1.0
+  function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
+  function glXGetProcAddressARB(const Name: PAnsiChar): Pointer; cdecl; external opengl32;
+  function glXChooseVisual(dpy: PDisplay; screen: GLint; attribList: PGLint): PXVisualInfo; cdecl; external opengl32;
+  function glXCreateContext(dpy: PDisplay; vis: PXVisualInfo; shareList: GLXContext; direct: GLboolean): GLXContext; cdecl; external opengl32;
+  procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl; external opengl32;
+  function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext): GLboolean; cdecl; external opengl32;
+  procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext; mask: GLuint); cdecl; external opengl32;
+  procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl; external opengl32;
+  function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
+    pixmap: GLXPixmap): GLXPixmap; cdecl; external opengl32;
+  procedure glXDestroyGLXPixmap(dpy: PDisplay; pixmap: GLXPixmap); cdecl; external opengl32;
+  function glXQueryExtension(dpy: PDisplay; errorb: PGLint; event: PGLint): GLboolean; cdecl; external opengl32;
+  function glXQueryVersion(dpy: PDisplay; maj: PGLint; min: PGLint): GLboolean; cdecl; external opengl32;
+  function glXIsDirect(dpy: PDisplay; ctx: GLXContext): GLboolean; cdecl; external opengl32;
+  function glXGetConfig(dpy: PDisplay; visual: PXVisualInfo; attrib: GLint; Value: PGLint): GLint; cdecl; external opengl32;
+  function glXGetCurrentContext: GLXContext; cdecl; external opengl32;
+  function glXGetCurrentDrawable: GLXDrawable; cdecl; external opengl32;
+  procedure glXWaitGL; cdecl; external opengl32;
+  procedure glXWaitX; cdecl; external opengl32;
+  procedure glXUseXFont(font: XFont; First: GLint; Count: GLint; list: GLint); cdecl; external opengl32;
+  function glXQueryExtensionsString(dpy: PDisplay; screen: GLint): PGLChar; cdecl; external opengl32;
+  function glXQueryServerString(dpy: PDisplay; screen: GLint; Name: GLint): PGLChar; cdecl; external opengl32;
+  function glXGetClientString(dpy: PDisplay; Name: GLint): PGLChar; cdecl; external opengl32;
+  function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
+  {$ENDIF}
 
 {$IFDEF DARWIN}
 function aglChoosePixelFormat(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl; external libAGL;
@@ -1299,13 +1793,10 @@ begin
   {$IFDEF SUPPORT_GLX}
   if @glXGetProcAddress <> nil then
     Result := glXGetProcAddress(ProcName);
-
   if Result <> nil then
     exit;
-
   if @glXGetProcAddressARB <> nil then
     Result := glXGetProcAddressARB(ProcName);
-
   if Result <> nil then
     exit;
   {$ENDIF}
@@ -1330,7 +1821,6 @@ end;
 {$ENDIF}
 
 {$ENDIF DARWIN}
-
 {$ENDIF UNIX}
 
 function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
@@ -1343,9 +1833,7 @@ var
 
 procedure DebugCallBack(Source: GLenum; type_: GLenum; id: GLuint;
   severity: GLenum; length: GLSizei; const message: PGLChar; userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   {$IFDEF GLS_LOGGING}
    if length > 0 then
@@ -1355,28 +1843,69 @@ end;
 
 procedure DebugCallBackAMD(id: GLuint; category: GLenum; severity: GLenum;
   length: GLSizei; message: PGLChar; userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   if length > 0 then
     GLSLogger.LogDebug(string(message));
 end;
 
-constructor TVKExtensionsAndEntryPoints.Create;
+procedure TVKExtensionsAndEntryPoints.ClearOpenGLError;
+var
+  n: integer;
 begin
-  FInitialized := False;
+  n := 0;
+  while (glGetError <> GL_NO_ERROR) and (n < 6) do
+    Inc(n);
 end;
 
-procedure glCap;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+
+procedure TVKExtensionsAndEntryPoints.CheckOpenGLError;
+var
+  glError: GLuint;
+  Count: word;
 begin
- {$IFDEF GLS_LOGGING}
+  try
+    glError := glGetError();
+    if glError <> GL_NO_ERROR then
+    begin
+      Count := 0;
+      try
+        while (glGetError <> GL_NO_ERROR) and (Count < 6) do
+          Inc(Count);
+      except
+      end;
+      if not (GL_ARB_debug_output) then
+        case glError of
+          GL_INVALID_ENUM:
+            GLSLogger.LogError(format(glsOpenGLError, ['Invalid enum']));
+          GL_INVALID_VALUE:
+            GLSLogger.LogError(format(glsOpenGLError, ['Invalid value']));
+          GL_INVALID_OPERATION:
+            GLSLogger.LogError(format(glsOpenGLError, ['Invalid Operation']));
+          GL_OUT_OF_MEMORY:
+            GLSLogger.LogError(format(glsOpenGLError, ['Out of memory']));
+        end;
+    end;
+  except
+    GLSLogger.LogError(format(glsOpenGLError, ['Exception in glGetError']));
+  end;
+end;
+
+procedure GLCap;
+{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+begin
+  {$IFDEF GLS_LOGGING}
   GLSLogger.LogError('Call OpenGL function with undefined entry point');
   {$ENDIF}
   Abort;
+end;
+
+// TVKExtensionsAndEntryPoints
+//
+
+constructor TVKExtensionsAndEntryPoints.Create;
+begin
+  FInitialized := False;
 end;
 
 function TVKExtensionsAndEntryPoints.GetAddress(ProcName: string): Pointer;
@@ -1467,47 +1996,6 @@ begin
   Result := @glCap;
 end;
 
-procedure TVKExtensionsAndEntryPoints.CheckError;
-var
-  glError: GLuint;
-  Count: word;
-begin
-  if FInitialized then
-    try
-      glError := glGetError();
-      if glError <> GL_NO_ERROR then
-      begin
-        Count := 0;
-        try
-          while (glGetError <> GL_NO_ERROR) and (Count < 6) do
-            Inc(Count);
-        except
-        end;
-        if not (FDebug and GL_ARB_debug_output) then
-          case glError of
-            GL_INVALID_ENUM:
-              GLSLogger.LogError(format(glsOpenGLError, ['Invalid enum']));
-            GL_INVALID_VALUE:
-              GLSLogger.LogError(format(glsOpenGLError, ['Invalid value']));
-            GL_INVALID_OPERATION:
-              GLSLogger.LogError(format(glsOpenGLError, ['Invalid Operation']));
-            GL_OUT_OF_MEMORY:
-              GLSLogger.LogError(format(glsOpenGLError, ['Out of memory']));
-          end;
-      end;
-    except
-      GLSLogger.LogError(format(glsOpenGLError, ['Exception in glGetError']));
-    end;
-end;
-
-procedure TVKExtensionsAndEntryPoints.ClearError;
-var
-  n: integer;
-begin
-  n := 0;
-  while (glGetError <> GL_NO_ERROR) and (n < 6) do
-    Inc(n);
-end;
 
 function TVKExtensionsAndEntryPoints.CheckExtension(const Extension: string): boolean;
 var
@@ -1536,28 +2024,28 @@ var
   params: PGLint;
 begin
   GLSLogger.LogNotice('Getting OpenGL entry points and extension');
-{$IFDEF SUPPORT_WGL}
+  {$IFDEF SUPPORT_WGL}
   ReadWGLExtensions;
   ReadWGLImplementationProperties;
-{$ENDIF}
-{$IFDEF SUPPORT_GLX}
+  {$ENDIF}
+  {$IFDEF SUPPORT_GLX}
   ReadGLXExtensions;
   ReadGLXImplementationProperties;
-{$ENDIF}
-{$IFDEF DARWIN}
+ {$ENDIF}
+  {$IFDEF DARWIN}
   ReadAGLExtensions;
   ReadAGLImplementationProperties;
-{$ENDIF}
-{$IFDEF EGL_SUPPORT}
+  {$ENDIF}
+  {$IFDEF EGL_SUPPORT}
   ReadEGLExtensions;
   ReadEGLImplementationProperties;
-{$ENDIF}
-  glGetString(name); // := GetAddress('GetString');
-  glGetStringi := GetAddress('GetStringi');
-  glGetIntegerv(pname, params); // : = GetAddress('GetIntegerv');
-  glGetError; // := GetAddress('GetError');
+  {$ENDIF}
+  GetString := GetAddress('GetString');
+  GetStringi := GetAddress('GetStringi');
+  GetIntegerv : = GetAddress('GetIntegerv');
+  GetError := GetAddress('glGetError');
   // determine OpenGL versions supported
-  FBuffer := string(glGetString(GL_VERSION));
+  FBuffer := string(GetString(GL_VERSION));
   TrimAndSplitVersionString(FBuffer, MajorVersion, MinorVersion);
   GL_VERSION_1_0 := True;
   GL_VERSION_1_1 := IsVersionMet(1, 1, MajorVersion, MinorVersion);
@@ -1806,9 +2294,7 @@ begin
   GL_HP_occlusion_test := CheckExtension('GL_HP_occlusion_test');
   GL_IBM_rasterpos_clip := CheckExtension('GL_IBM_rasterpos_clip');
   GL_KTX_buffer_region := CheckExtension('GL_KTX_buffer_region');
-
   GL_MESA_resize_buffers := CheckExtension('GL_MESA_resize_buffers');
-
   GL_NV_blend_square := CheckExtension('GL_NV_blend_square');
   GL_NV_conditional_render := CheckExtension('GL_NV_conditional_render');
   GL_NV_copy_image := CheckExtension('GL_NV_copy_image');
@@ -1837,7 +2323,6 @@ begin
   GL_NV_vertex_buffer_unified_memory :=
     CheckExtension('GL_NV_vertex_buffer_unified_memory');
   GL_NV_vertex_program := CheckExtension('GL_NV_vertex_program');
-
   GL_SGI_color_matrix := CheckExtension('GL_SGI_color_matrix');
   GL_SGIS_generate_mipmap := CheckExtension('GL_SGIS_generate_mipmap');
   GL_SGIS_multisample := CheckExtension('GL_SGIS_multisample');
@@ -1860,7 +2345,7 @@ begin
   GL_AMDX_debug_output := CheckExtension('AMDX_debug_output');
   GL_ARB_debug_output := CheckExtension('GL_ARB_debug_output');
 
-{$IFDEF LINUX}
+  {$IFDEF LINUX}
   VDPAUInitNV := GetAddressNoSuffixes('VDPAUInitNV');
   VDPAUFiniNV := GetAddressNoSuffixes('VDPAUFiniNV');
   VDPAURegisterVideoSurfaceNV := GetAddressNoSuffixes('VDPAURegisterVideoSurfaceNV');
@@ -1871,7 +2356,7 @@ begin
   VDPAUSurfaceAccessNV := GetAddressNoSuffixes('VDPAUSurfaceAccessNV');
   VDPAUMapSurfacesNV := GetAddressNoSuffixes('VDPAUMapSurfacesNV');
   VDPAUUnmapSurfacesNV := GetAddressNoSuffixes('VDPAUUnmapSurfacesNV');
-{$ENDIF LINUX}
+  {$ENDIF LINUX}
 
   if FDebug then
     if GL_ARB_debug_output then
@@ -1882,18 +2367,13 @@ begin
     end
     else if GL_AMDX_debug_output then
     begin
-    {
-      glDebugMessageCallbackAMDX(DebugCallBackAMD, nil);
-      glDebugMessageEnableAMDX(0, 0, 0, FDebugIds, True);
-     }
+      glDebugMessageCallbackAMD(nil, nil); ///glDebugMessageCallbackAMD(DebugCallBackAMD, nil);
+      glDebugMessageEnableAMD(0, 0, 0, FDebugIds, GLboolean(True));
     end
     else
       FDebug := False;
 
   SetLength(FBuffer, 0);
-
-  InitOpenGLext;  //< Winapi.OpenGLext
-
   FInitialized := True;
 end;
 
@@ -1908,10 +2388,8 @@ begin
     else
     if GL_AMDX_debug_output then
     begin
-      {
-      glDebugMessageCallbackAMDX(nil, nil);
-      glDebugMessageEnableAMDX(0, 0, 0, FDebugIds, False);
-      }
+      glDebugMessageCallbackAMD(nil, nil);
+      glDebugMessageEnableAMD(0, 0, 0, FDebugIds, GLboolean(False));
     end;
 
   GL_VERSION_1_0 := False;
@@ -2174,40 +2652,9 @@ begin
 end;
 
 {$IFDEF SUPPORT_WGL}
-// ReadWGLImplementationProperties
-
-
-procedure TVKExtensionsAndEntryPoints.ReadWGLImplementationProperties;
-begin
-  // ARB wgl extensions
-  if Assigned(wglGetExtensionsStringARB) then
-    FBuffer := string(wglGetExtensionsStringARB(wglGetCurrentDC))
-  else
-    FBuffer := '';
-  WGL_ARB_buffer_region := CheckExtension('WGL_ARB_buffer_region');
-  WGL_ARB_create_context := CheckExtension('WGL_ARB_create_context');
-  WGL_ARB_create_context_profile := CheckExtension('WGL_ARB_create_context_profile');
-  WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
-  WGL_ARB_framebuffer_sRGB := CheckExtension('WGL_ARB_framebuffer_sRGB');
-  WGL_ARB_make_current_read := CheckExtension('WGL_ARB_make_current_read');
-  WGL_ARB_multisample := CheckExtension('WGL_ARB_multisample');
-  WGL_ARB_pbuffer := CheckExtension('WGL_ARB_pbuffer');
-  WGL_ARB_pixel_format := CheckExtension('WGL_ARB_pixel_format');
-  WGL_ARB_pixel_format_float := CheckExtension('WGL_ARB_pixel_format_float');
-  WGL_ARB_render_texture := CheckExtension('WGL_ARB_render_texture');
-  // Vendor/EXT wgl extensions
-  WGL_ATI_pixel_format_float := CheckExtension('WGL_ATI_pixel_format_float');
-  WGL_EXT_framebuffer_sRGB := CheckExtension('WGL_EXT_framebuffer_sRGB');
-  WGL_EXT_pixel_format_packed_float := CheckExtension('WGL_EXT_pixel_format_packed_float');
-  WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
-  WGL_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
-  WGL_NV_DX_interop := CheckExtension('WGL_NV_DX_interop');
-  WGL_NV_DX_interop2 := CheckExtension('WGL_NV_DX_interop2');
-  WGL_EXT_create_context_es2_profile := CheckExtension('WGL_EXT_create_context_es2_profile');
-end;
 
 // ReadWGLExtensions
-
+//
 
 procedure TVKExtensionsAndEntryPoints.ReadWGLExtensions;
 begin
@@ -2281,11 +2728,45 @@ begin
   wglDXLockObjectsNV := GLGetProcAddress('wglDXLockObjectsNV');
   wglDXUnlockObjectsNV := GLGetProcAddress('wglDXUnlockObjectsNV');
 end;
-
 {$ENDIF}
+
+
+// ReadWGLImplementationProperties
+//
+
+procedure TVKExtensionsAndEntryPoints.ReadWGLImplementationProperties;
+begin
+  // ARB wgl extensions
+  if Assigned(wglGetExtensionsStringARB) then
+    FBuffer := string(wglGetExtensionsStringARB(wglGetCurrentDC))
+  else
+    FBuffer := '';
+  WGL_ARB_buffer_region := CheckExtension('WGL_ARB_buffer_region');
+  WGL_ARB_create_context := CheckExtension('WGL_ARB_create_context');
+  WGL_ARB_create_context_profile := CheckExtension('WGL_ARB_create_context_profile');
+  WGL_ARB_extensions_string := CheckExtension('WGL_ARB_extensions_string');
+  WGL_ARB_framebuffer_sRGB := CheckExtension('WGL_ARB_framebuffer_sRGB');
+  WGL_ARB_make_current_read := CheckExtension('WGL_ARB_make_current_read');
+  WGL_ARB_multisample := CheckExtension('WGL_ARB_multisample');
+  WGL_ARB_pbuffer := CheckExtension('WGL_ARB_pbuffer');
+  WGL_ARB_pixel_format := CheckExtension('WGL_ARB_pixel_format');
+  WGL_ARB_pixel_format_float := CheckExtension('WGL_ARB_pixel_format_float');
+  WGL_ARB_render_texture := CheckExtension('WGL_ARB_render_texture');
+  // Vendor/EXT wgl extensions
+  WGL_ATI_pixel_format_float := CheckExtension('WGL_ATI_pixel_format_float');
+  WGL_EXT_framebuffer_sRGB := CheckExtension('WGL_EXT_framebuffer_sRGB');
+  WGL_EXT_pixel_format_packed_float := CheckExtension('WGL_EXT_pixel_format_packed_float');
+  WGL_EXT_swap_control := CheckExtension('WGL_EXT_swap_control');
+  WGL_NV_gpu_affinity := CheckExtension('WGL_NV_gpu_affinity');
+  WGL_NV_DX_interop := CheckExtension('WGL_NV_DX_interop');
+  WGL_NV_DX_interop2 := CheckExtension('WGL_NV_DX_interop2');
+  WGL_EXT_create_context_es2_profile := CheckExtension('WGL_EXT_create_context_es2_profile');
+end;
+
+
 {$IFDEF SUPPORT_GLX}
 // ReadGLXImplementationProperties
-
+//
 
 procedure TVKExtensionsAndEntryPoints.ReadGLXImplementationProperties;
 var
@@ -2342,7 +2823,6 @@ begin
 end;
 
 // ReadGLXExtensions
-
 
 procedure TVKExtensionsAndEntryPoints.ReadGLXExtensions;
 begin
@@ -2470,7 +2950,7 @@ end;
 
 {$IFDEF DARWIN}
 // ReadAGLImplementationProperties
-
+//
 
 procedure TVKExtensionsAndEntryPoints.ReadAGLImplementationProperties;
 var
@@ -2657,7 +3137,7 @@ begin
       Delete(Buffer, 1, Separator);
       Separator := Pos('.', Buffer) + 1;
       // Find first non-numeric character after version number
-      while (Separator <= Length(Buffer)) and 
+      while (Separator <= Length(Buffer)) and
 	    (AnsiChar(Buffer[Separator]) in ['0'..'9']) do
         Inc(Separator);
       // delete trailing characters not belonging to the version string
@@ -2684,7 +3164,7 @@ end;
 
 // InitOpenGL
 //
-function InitOpenGL : Boolean;
+function InitOpenGL: Boolean;
 begin
 {$IFNDEF EGL_SUPPORT}
   if (GLHandle = INVALID_MODULEHANDLE) or (GLUHandle = INVALID_MODULEHANDLE) then
@@ -2701,6 +3181,9 @@ begin
   EGL2Handle := LoadLibrary(PChar(libGLES2));
   Result := Result and (EGL2Handle <> INVALID_MODULEHANDLE);
 {$ENDIF}
+
+///  InitOpenGLext;  //< Winapi.OpenGLext
+
 end;
 
 // InitOpenGLFromLibrary
@@ -2710,18 +3193,18 @@ begin
   Result := False;
   CloseOpenGL;
 
-   GLHandle:=LoadLibrary(PChar(GLName));
-   GLUHandle:=LoadLibrary(PChar(GLUName));
+  GLHandle := LoadLibrary(PChar(GLName));
+  GLUHandle := LoadLibrary(PChar(GLUName));
 
-   {$IFDEF Linux}   // make it work when mesa-dev is not installed and only libGL.so.1 is available
-   if (GLHandle=INVALID_MODULEHANDLE) then
-         GLHandle:=LoadLibrary(PChar(GLName+'.1'));
-  if (GLUHandle=INVALID_MODULEHANDLE) then
-         GLUHandle:=LoadLibrary(PChar(GLUName+'.1'));
+{$IFDEF Linux}   // make it work when mesa-dev is not installed and only libGL.so.1 is available
+  if (GLHandle=INVALID_MODULEHANDLE) then
+         GLHandle := LoadLibrary(PChar(GLName+'.1'));
+  if (GLUHandle = INVALID_MODULEHANDLE) then
+         GLUHandle := LoadLibrary(PChar(GLUName+'.1'));
 {$ENDIF}
 {$IFDEF DARWIN}
-  AGLHandle := LoadLibrary(PChar(libAGL));
-  dlHandle := LoadLibrary(PChar(libdl));
+   AGLHandle := LoadLibrary(PChar(libAGL));
+   dlHandle := LoadLibrary(PChar(libdl));
 {$ENDIF}
 
   if (GLHandle <> INVALID_MODULEHANDLE) and (GLUHandle <> INVALID_MODULEHANDLE) then

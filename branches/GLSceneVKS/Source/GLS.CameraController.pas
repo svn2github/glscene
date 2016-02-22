@@ -683,7 +683,7 @@ begin
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
       FJobList.FController.FCameraTarget.AbsolutePosition,
-      FRotateSpeed.V[0] * FDeltaTime, FRotateSpeed.V[1] * FDeltaTime);
+      FRotateSpeed.X * FDeltaTime, FRotateSpeed.Y * FDeltaTime);
   end
     else
   begin
@@ -973,7 +973,7 @@ begin
     FJobList.FController.FCamera.AbsolutePosition := MoveObjectAround(
       FJobList.FController.FCamera.AbsolutePosition, FCameraUpVector,
       FJobList.FController.FCameraTarget.AbsolutePosition,
-      FRotateSpeed.V[0] * FDeltaTime, FRotateSpeed.V[1] * FDeltaTime);
+      FRotateSpeed.X * FDeltaTime, FRotateSpeed.Y * FDeltaTime);
 
     if FNeedToRecalculateZoom then
       RestoreDistanceToTarget();

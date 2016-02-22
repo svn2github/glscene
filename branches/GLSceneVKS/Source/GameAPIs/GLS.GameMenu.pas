@@ -15,7 +15,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.Scene, GLS.Material, GLS.BitmapFont, GLS.CrossPlatform, GLS.Color,
-  GLS.RenderContextInfo, GLS.Canvas, GLS.OpenGLTokens, GLS.Context;
+  GLS.RenderContextInfo, GLS.Canvas, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context;
 
 type
 

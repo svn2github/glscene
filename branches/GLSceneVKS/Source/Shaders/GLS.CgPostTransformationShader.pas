@@ -17,7 +17,7 @@ uses
    
   System.Classes, System.SysUtils,
   //GLS
-  GLS.Texture,  GLS.Cadencer, GLS.Context, GLS.OpenGLTokens, GLS.Scene,
+  GLS.Texture,  GLS.Cadencer, GLS.Context, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Scene,
   GLS.CustomShader, GLS.RenderContextInfo, GLS.TextureFormat,
 
   // CG Shaders

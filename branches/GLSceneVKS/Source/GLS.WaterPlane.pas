@@ -17,7 +17,7 @@ uses
   System.Classes,
   FMX.Types,
 
-  GLS.VectorGeometry, GLS.Scene, GLS.OpenGLTokens, GLS.VectorLists,
+  GLS.VectorGeometry, GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorLists,
   GLS.CrossPlatform, GLS.PersistentClasses, GLS.BaseClasses,
   GLS.Context, GLS.RenderContextInfo, GLS.VectorTypes;
 
@@ -225,8 +225,8 @@ var
    vv : TVector;
 begin
    vv:=AbsoluteToLocal(PointMake(x, y, z));
-   CreateRippleAtGridPos(Round((vv.V[0]+0.5)*Resolution),
-                         Round((vv.V[2]+0.5)*Resolution));
+   CreateRippleAtGridPos(Round((vv.X+0.5)*Resolution),
+                         Round((vv.Z+0.5)*Resolution));
 end;
 
 // CreateRippleAtWorldPos
@@ -236,8 +236,8 @@ var
    vv : TVector;
 begin
    vv:=AbsoluteToLocal(PointMake(pos));
-   CreateRippleAtGridPos(Round((vv.V[0]+0.5)*Resolution),
-                         Round((vv.V[2]+0.5)*Resolution));
+   CreateRippleAtGridPos(Round((vv.X+0.5)*Resolution),
+                         Round((vv.Z+0.5)*Resolution));
 end;
 
 // CreateRippleRandom
@@ -274,9 +274,9 @@ begin
    end;
 
    FPlaneQuadNormals.Count:=resSqr;
-   v.V[0]:=0;
-   v.V[1]:=2048;
-   v.V[2]:=0;
+   v.X:=0;
+   v.Y:=2048;
+   v.Z:=0;
    for i:=0 to FPlaneQuadNormals.Count-1 do
       FPlaneQuadNormals.List[i]:=v;
 
@@ -403,7 +403,7 @@ begin
       if lockList[ij]=0 then begin
          posList[ij]:=posList[ij]-coeff*velList[ij];
          velList[ij]:=velList[ij]*FViscosity;
-         FPlaneQuadVertices.List[ij].V[1]:=posList[ij]*f;
+         FPlaneQuadVertices.List[ij].Y:=posList[ij]*f;
       end;
    end;
 end;
@@ -425,8 +425,8 @@ begin
       for j:=1 to Resolution-2 do begin
          Inc(ij);
          pv:=@normList[ij];
-         pv.V[0]:=posList[ij+1]-posList[ij-1];
-         pv.V[2]:=posList[ij+Resolution]-posList[ij-Resolution];
+         pv.X:=posList[ij+1]-posList[ij-1];
+         pv.Z:=posList[ij+Resolution]-posList[ij-Resolution];
       end;
    end;
 end;
@@ -460,7 +460,7 @@ begin
    glEnableClientState(GL_VERTEX_ARRAY);
    glVertexPointer(3, GL_FLOAT, 0, FPlaneQuadVertices.List);
    glEnableClientState(GL_NORMAL_ARRAY);
-   GL.NormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
+   glNormalPointer(GL_FLOAT, 0, FPlaneQuadNormals.List);
    if wpoTextured in Options then begin
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glTexCoordPointer(2, GL_FLOAT, 0, FPlaneQuadTexCoords.List);
@@ -497,9 +497,9 @@ end;
 //
 function TVKWaterPlane.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result.V[0]:=0.5*Abs(Resolution);
-  Result.V[1]:=0;
-  Result.V[2]:=0.5*Abs(FResolution);
+  Result.X:=0.5*Abs(Resolution);
+  Result.Y:=0;
+  Result.Z:=0.5*Abs(FResolution);
 end;
 
 

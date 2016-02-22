@@ -15,7 +15,7 @@ uses
   System.Classes, System.Math,
    
   GLS.ParticleFX, GLS.Graphics, GLS.CrossPlatform,
-  GLS.PerlinNoise3D, GLS.OpenGLTokens, GLS.VectorGeometry;
+  GLS.PerlinNoise3D, Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorGeometry;
 
 type
 

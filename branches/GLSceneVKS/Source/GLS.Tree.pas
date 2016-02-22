@@ -27,7 +27,7 @@ uses
    System.Classes, System.SysUtils,
 
    GLS.Scene, GLS.Material, GLS.VectorGeometry, GLS.VectorLists,
-   GLS.OpenGLTokens, GLS.VectorFileObjects, GLS.ApplicationFileIO,
+   Winapi.OpenGL, Winapi.OpenGLext,  GLS.VectorFileObjects, GLS.ApplicationFileIO,
    GLS.RenderContextInfo, GLS.XOpenGL, GLS.Context, GLS.VectorTypes;
 
 type
@@ -327,11 +327,11 @@ begin
    radius:=Owner.LeafSize;
    Inc(FCount);
 
-   pos:=matrix.V[3];
-   Matrix.V[3]:=NullHMGPoint;
+   pos:=matrix.W;
+   Matrix.W:=NullHMGPoint;
    Matrix:=Roll(matrix, FCount/10);
    NormalizeMatrix(matrix);
-   Matrix.V[3]:=pos;
+   Matrix.W:=pos;
 
    FVertices.Add(VectorTransform(PointMake(0, -radius, 0), matrix));
    FVertices.Add(VectorTransform(PointMake(0, radius, 0), matrix));
@@ -361,7 +361,7 @@ begin
    xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    for i:=0 to (FVertices.Count div 4)-1 do begin
-      GL.Normal3fv(@FNormals.List[i]);
+      glNormal3fv(@FNormals.List[i]);
       glDrawArrays(GL_QUADS, 4*i, 4);
    end;
 
@@ -376,7 +376,7 @@ begin
    rci.GLStates.InvertGLFrontFace;
    for i:=0 to (FVertices.Count div 4)-1 do begin
       n:=VectorNegate(FNormals[i]);
-      GL.Normal3fv(@n);
+      glNormal3fv(@n);
       glDrawArrays(GL_QUADS, 4*i, 4);
    end;
    rci.GLStates.InvertGLFrontFace;
@@ -678,7 +678,7 @@ begin
       Owner.Leaves.Vertices.Translate(delta);
    end;
 
-   Owner.FAxisAlignedDimensionsCache.V[0]:=-1;
+   Owner.FAxisAlignedDimensionsCache.X:=-1;
 end;
 
 // BuildList
@@ -695,7 +695,7 @@ begin
       libMat.Apply(rci);
 
    glVertexPointer(3, GL_FLOAT, 0, @FVertices.List[0]);
-   GL.NormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
+   glNormalPointer(GL_FLOAT, 0, @FNormals.List[0]);
    xglTexCoordPointer(3, GL_FLOAT, 0, @FTexCoords.List[0]);
 
    glEnableClientState(GL_VERTEX_ARRAY);
@@ -858,7 +858,7 @@ end;
 //
 procedure TVKTree.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0]:=-1;
+  FAxisAlignedDimensionsCache.X:=-1;
   inherited;
 end;
 
@@ -884,7 +884,7 @@ procedure TVKTree.BuildMesh(GLBaseMesh : TVKBaseMesh);
       NormalizeMatrix(mat);
       if MatrixDecompose(mat,trans) then begin
          SetVector(rot,trans[ttRotateX],trans[ttRotateY],trans[ttRotateZ]);
-         SetVector(pos,mat.V[3]);
+         SetVector(pos,mat.W);
       end else begin
          rot:=NullVector;
         pos:=NullVector;
@@ -1343,13 +1343,13 @@ begin
      bmax:=NullVector;
    end;
 
-   min.V[0]:=MinFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
-   min.V[1]:=MinFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
-   min.V[2]:=MinFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
+   min.X:=MinFloat([lmin.X, lmax.X, bmin.X, bmax.X]);
+   min.Y:=MinFloat([lmin.Y, lmax.Y, bmin.Y, bmax.Y]);
+   min.Z:=MinFloat([lmin.Z, lmax.Z, bmin.Z, bmax.Z]);
 
-   max.V[0]:=MaxFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
-   max.V[1]:=MaxFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
-   max.V[2]:=MaxFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
+   max.X:=MaxFloat([lmin.X, lmax.X, bmin.X, bmax.X]);
+   max.Y:=MaxFloat([lmin.Y, lmax.Y, bmin.Y, bmax.Y]);
+   max.Z:=MaxFloat([lmin.Z, lmax.Z, bmin.Z, bmax.Z]);
 end;
 
 // AxisAlignedDimensionsUnscaled
@@ -1358,11 +1358,11 @@ function TVKTree.AxisAlignedDimensionsUnscaled : TVector;
 var
    dMin, dMax : TAffineVector;
 begin
-   if FAxisAlignedDimensionsCache.V[0]<0 then begin
+   if FAxisAlignedDimensionsCache.X<0 then begin
       GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache.V[0]:=MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-      FAxisAlignedDimensionsCache.V[1]:=MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-      FAxisAlignedDimensionsCache.V[2]:=MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
+      FAxisAlignedDimensionsCache.X:=MaxFloat(Abs(dMin.X), Abs(dMax.X));
+      FAxisAlignedDimensionsCache.Y:=MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+      FAxisAlignedDimensionsCache.Z:=MaxFloat(Abs(dMin.Z), Abs(dMax.Z));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
 end;

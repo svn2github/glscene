@@ -16,7 +16,9 @@ uses
   System.Classes,
   System.SysUtils,
   //GLS
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.CrossPlatform;
+  GLS.VectorGeometry,
+  GLS.VectorTypes,
+  GLS.CrossPlatform;
 
 const
   MAX_MD2_TRIANGLES = 4096;
@@ -40,7 +42,7 @@ type
   end;
 
   TMD2TriangleVertex = record
-    V: array[0..2] of byte;
+    Vert: array[0..2] of byte;
     LightnormalIndex: byte;
   end;
 
@@ -172,15 +174,15 @@ begin
   for I := 0 to Header.Num_VertexIndices - 1 do begin
     aStream.Read(Triangle, SizeOf(TMD2Triangle));
      with fIndexList[I] do begin
-      A := Triangle.VertexIndex.V[2];
-      B := Triangle.VertexIndex.V[1];
-      C := Triangle.VertexIndex.V[0];
-      A_S := TextureCoords[Triangle.TextureCoordIndex.V[2]].V[0] / Header.SkinWidth;
-      A_T := TextureCoords[Triangle.TextureCoordIndex.V[2]].V[1] / Header.SkinHeight;
-      B_S := TextureCoords[Triangle.TextureCoordIndex.V[1]].V[0] / Header.SkinWidth;
-      B_T := TextureCoords[Triangle.TextureCoordIndex.V[1]].V[1] / Header.SkinHeight;
-      C_S := TextureCoords[Triangle.TextureCoordIndex.V[0]].V[0] / Header.SkinWidth;
-      C_T := TextureCoords[Triangle.TextureCoordIndex.V[0]].V[1] / Header.SkinHeight;
+      A := Triangle.VertexIndex.Z;
+      B := Triangle.VertexIndex.Y;
+      C := Triangle.VertexIndex.X;
+      A_S := TextureCoords[Triangle.TextureCoordIndex.Z].X / Header.SkinWidth;
+      A_T := TextureCoords[Triangle.TextureCoordIndex.Z].Y / Header.SkinHeight;
+      B_S := TextureCoords[Triangle.TextureCoordIndex.Y].X / Header.SkinWidth;
+      B_T := TextureCoords[Triangle.TextureCoordIndex.Y].Y / Header.SkinHeight;
+      C_S := TextureCoords[Triangle.TextureCoordIndex.X].X / Header.SkinWidth;
+      C_T := TextureCoords[Triangle.TextureCoordIndex.X].Y / Header.SkinHeight;
     end;
   end;
   for I := 0 to Header.Num_Frames - 1 do begin
@@ -196,9 +198,9 @@ begin
       FrameNames.AddObject(FrameName, TObject(PtrUInt(I)));
     // fill the vertices list
      for J := 0 to FiVertices - 1 do begin
-       fVertexList[i][J].X := Frame^.Vertices[J].V[0] * Frame^.Scale.V[0] + Frame^.Translate.V[0];
-       fVertexList[i][J].Y := Frame^.Vertices[J].V[1] * Frame^.Scale.V[1] + Frame^.Translate.V[1];
-       fVertexList[i][J].Z := Frame^.Vertices[J].V[2] * Frame^.Scale.V[2] + Frame^.Translate.V[2];
+       fVertexList[i][J].X := Frame^.Vertices[J].Vert[0] * Frame^.Scale.X + Frame^.Translate.X;
+       fVertexList[i][J].Y := Frame^.Vertices[J].Vert[1] * Frame^.Scale.Y + Frame^.Translate.Y;
+       fVertexList[i][J].Z := Frame^.Vertices[J].Vert[2] * Frame^.Scale.Z + Frame^.Translate.Z;
      end;
   end;
 end;

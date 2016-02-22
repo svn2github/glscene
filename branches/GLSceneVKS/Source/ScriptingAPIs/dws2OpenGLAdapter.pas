@@ -15,6 +15,7 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
   System.Classes, System.Variants,
   dws2Exprs, dws2Symbols, dws2Comp;
 
@@ -37,7 +38,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, GLS.OpenGLTokens, GLS.OpenGLAdapter, GLS.Context, GLS.VectorGeometry;
+  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  GLS.OpenGLAdapter, GLS.Context, GLS.VectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)
@@ -1054,7 +1055,7 @@ begin
   TglCullFace.Create(SymbolTable, 'glCullFace', ['mode', 'Cardinal'], '');
   TglFrontFace.Create(SymbolTable, 'glFrontFace', ['mode', 'Cardinal'], '');
   TglPolygonMode.Create(SymbolTable, 'glPolygonMode', ['face', 'Cardinal', 'mode', 'Cardinal'], '');
-  TglBegin.Create(SymbolTable, 'glBegin', ['mode', 'Cardinal'], '');
+  TglBegin(.Create(SymbolTable, 'glBegin(', ['mode', 'Cardinal'], '');
   TglEnd.Create(SymbolTable, 'glEnd', [], '');
   TglColor3f.Create(SymbolTable, 'glColor3f', ['red', 'Float', 'green', 'Float', 'blue', 'Float'], '');
   TglColor4f.Create(SymbolTable, 'glColor4f', ['red', 'Float', 'green', 'Float', 'blue', 'Float', 'alpha', 'Float'], '');
@@ -2175,7 +2176,7 @@ begin
   x:=Info['x'];
   y:=Info['y'];
   z:=Info['z'];
-  GL.Translatef(x,y,z);
+  glTranslatef(x,y,z);
 end;
 
 // ----------
@@ -2190,7 +2191,7 @@ begin
   x:=Info['x'];
   y:=Info['y'];
   z:=Info['z'];
-  GL.Rotatef(angle,x,y,z);
+  glRotatef(angle,x,y,z);
 end;
 
 // ----------
@@ -2204,7 +2205,7 @@ begin
   x:=Info['x'];
   y:=Info['y'];
   z:=Info['z'];
-  GL.Scalef(x,y,z);
+  glScalef(x,y,z);
 end;
 
 // ----------
@@ -2257,10 +2258,10 @@ begin
 end;
 
 // ----------
-// ---------- TglBegin ----------
+// ---------- TglBegin( ----------
 // ----------
 
-procedure TglBegin.Execute;
+procedure TglBegin(.Execute;
 var
   mode : Cardinal;
 begin
@@ -2317,7 +2318,7 @@ begin
   x:=Info['x'];
   y:=Info['y'];
   z:=Info['z'];
-  GL.Normal3f(x, y, z);
+  glNormal3f(x, y, z);
 end;
 
 // ----------
@@ -2526,7 +2527,7 @@ var
 begin
   sfactor:=Info['sfactor'];
   dfactor:=Info['dfactor'];
-  GL.BlendFunc(sfactor, dfactor);
+  glBlendFunc(sfactor, dfactor);
 end;
 
 // ----------
@@ -2538,7 +2539,7 @@ var
   func : Cardinal;
 begin
   func:=Info['func'];
-  GL.DepthFunc(func);
+  DepthFunc(func);
 end;
 
 // ----------
@@ -2550,7 +2551,7 @@ var
   flag : Byte;
 begin
   flag:=Info['flag'];
-  GL.DepthMask(BYTEBOOL(flag));
+  glDepthMask(BYTEBOOL(flag));
 end;
 
 // ----------

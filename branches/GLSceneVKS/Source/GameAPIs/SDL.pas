@@ -1533,7 +1533,7 @@ function SDL_TABLESIZE(table: PAnsiChar): Integer;
 // Public functions
 function SDL_GetError: PAnsiChar; cdecl; external LibName;
 procedure SDL_SetError(fmt: PAnsiChar); cdecl; external LibName;
-procedure SDL_ClearError; cdecl; external LibName;
+procedure SDL_ClearOpenGLError; cdecl; external LibName;
 
 {$IFNDEF MSWINDOWS}
 procedure SDL_Error(Code: TSDL_errorcode); cdecl; external LibName;

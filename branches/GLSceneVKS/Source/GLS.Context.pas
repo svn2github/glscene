@@ -130,7 +130,7 @@ type
     procedure SetLayer(const Value: TVKContextLayer);
   protected
     { Protected Declarations }
-    ///FGL: TVKExtensionsAndEntryPoints;
+    FGL: TVKExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TVKStateCache;
     FTransformation: TVKTransformation;
@@ -148,7 +148,7 @@ type
     procedure DoActivate; virtual; abstract;
     procedure DoDeactivate; virtual; abstract;
     class function ServiceContext: TVKContext;
-
+    procedure MakeGLCurrent;
     function GetXGL: TAbstractMultitextureCoordinator;
   public
     { Public Declarations }
@@ -1214,14 +1214,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-resourcestring
-  cCannotAlterAnActiveContext = 'Cannot alter an active context';
-  cInvalidContextRegistration = 'Invalid context registration';
-  cInvalidNotificationRemoval = 'Invalid notification removal';
-  cContextAlreadyCreated = 'Context already created';
-  cContextNotCreated = 'Context not created';
-  cUnbalancedContexActivations = 'Unbalanced context activations';
-
 type
   // TServiceContextThread
   //
@@ -1241,12 +1233,19 @@ type
 
 var
   vContextClasses: TList;
-  ///GLwithoutContext: TVKExtensionsAndEntryPoints;
+  GLwithoutContext: TVKExtensionsAndEntryPoints;
   vServiceWindow: TForm;
+{$IFDEF GLS_SERVICE_CONTEXT}
   OldInitProc: Pointer;
+{$ENDIF}
 
+
+{$IFNDEF GLS_MULTITHREAD}
+var
+{$ELSE}
 threadvar
-  ///vGL: TVKExtensionsAndEntryPoints;
+{$ENDIF}
+  vGL: TVKExtensionsAndEntryPoints;
   vCurrentGLContext: TVKContext;
   vMainThread: Boolean;
 
@@ -1322,7 +1321,7 @@ begin
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
   FGLStates := TVKStateCache.Create;
-  ///FGL := TVKExtensionsAndEntryPoints.Create;
+  FGL := TVKExtensionsAndEntryPoints.Create;
   FTransformation := TVKTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
   GLContextManager.RegisterContext(Self);
@@ -1338,7 +1337,7 @@ begin
     DestroyContext;
   GLContextManager.UnRegisterContext(Self);
   FGLStates.Free;
-  ///FGL.Free;
+  FGL.Free;
   FXGL.Free;
   FTransformation.Free;
   FSharedContexts.Free;
@@ -1352,7 +1351,7 @@ end;
 procedure TVKContext.SetColorBits(const aColorBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FColorBits := aColorBits;
 end;
@@ -1363,7 +1362,7 @@ end;
 procedure TVKContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FAlphaBits := aAlphaBits;
 end;
@@ -1374,7 +1373,7 @@ end;
 procedure TVKContext.SetDepthBits(const val: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FDepthBits := val;
 end;
@@ -1382,7 +1381,7 @@ end;
 procedure TVKContext.SetLayer(const Value: TVKContextLayer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FLayer := Value;
 end;
@@ -1393,7 +1392,7 @@ end;
 procedure TVKContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FStencilBits := aStencilBits;
 end;
@@ -1404,7 +1403,7 @@ end;
 procedure TVKContext.SetAccumBits(const aAccumBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FAccumBits := aAccumBits;
 end;
@@ -1415,7 +1414,7 @@ end;
 procedure TVKContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FAuxBuffers := aAuxBuffers;
 end;
@@ -1426,7 +1425,7 @@ end;
 procedure TVKContext.SetOptions(const aOptions: TVKRCOptions);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FOptions := aOptions;
 end;
@@ -1437,7 +1436,7 @@ end;
 procedure TVKContext.SetAntiAliasing(const val: TVKAntiAliasing);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FAntiAliasing := val;
 end;
@@ -1448,7 +1447,7 @@ end;
 procedure TVKContext.SetAcceleration(const val: TVKContextAcceleration);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(glsCannotAlterAnActiveContext)
   else
     FAcceleration := val;
 end;
@@ -1482,7 +1481,7 @@ end;
 procedure TVKContext.CreateContext(ADeviceHandle: THandle);
 begin
   if IsValid then
-    raise EGLContext.Create(cContextAlreadyCreated);
+    raise EGLContext.Create(glsContextAlreadyCreated);
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1494,7 +1493,7 @@ procedure TVKContext.CreateMemoryContext(OutputDevice: THandle;
   Width, Height: Integer; BufferCount: integer);
 begin
   if IsValid then
-    raise EGLContext.Create(cContextAlreadyCreated);
+    raise EGLContext.Create(glsContextAlreadyCreated);
   DoCreateMemoryContext(OutputDevice, Width, Height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1722,7 +1721,7 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(cContextNotCreated);
+      raise EGLContext.Create(glsContextNotCreated);
 
     vContextActivationFailureOccurred := False;
     try
@@ -1748,14 +1747,14 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(cContextNotCreated);
+      raise EGLContext.Create(glsContextNotCreated);
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
     ///vGL := GLwithoutContext;
   end
   else if FActivationCount < 0 then
-    raise EGLContext.Create(cUnbalancedContexActivations);
+    raise EGLContext.Create(glsUnbalancedContexActivations);
 {$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
@@ -1794,6 +1793,11 @@ end;
 class function TVKContext.ServiceContext: TVKContext;
 begin
   Result := GLContextManager.FServiceContext;
+end;
+
+procedure TVKContext.MakeGLCurrent;
+begin
+  vGL := FGL;
 end;
 
 function TVKContext.GetXGL: TAbstractMultitextureCoordinator;
@@ -2607,7 +2611,7 @@ end;
 
 class function TVKTimerQueryHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL_EXT_timer_query or GL.ARB_timer_query;
+  Result := 1; //GL_EXT_timer_query or GL_ARB_timer_query;
 end;
 
 // Time
@@ -2643,7 +2647,7 @@ end;
 
 class function TVKPrimitiveQueryHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.VERSION_3_0 or higher;
+  Result := 1; //GL_VERSION_3_0 or higher;
 end;
 
 // PrimitivesGenerated
@@ -2885,7 +2889,7 @@ end;
 
 class function TVKPackPBOHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_pixel_buffer_object;
+  Result := 1; //GL_ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2915,7 +2919,7 @@ end;
 
 class function TVKUnpackPBOHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_pixel_buffer_object;
+  Result := 1; //GL_ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2981,7 +2985,7 @@ end;
 
 class function TVKTransformFeedbackBufferHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL_EXT_transform_feedback or GL.VERSION_3_0;
+  Result := 1; //GL_EXT_transform_feedback or GL_VERSION_3_0;
 end;
 
 // ------------------
@@ -3379,7 +3383,7 @@ end;
 
 class function TVKFramebufferHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL_EXT_framebuffer_object or GL.ARB_framebuffer_object;
+  Result := 1; //GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
 end;
 
 // Transferable
@@ -3468,7 +3472,7 @@ end;
 
 class function TVKRenderbufferHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL_EXT_framebuffer_object or GL.ARB_framebuffer_object;
+  Result := 1; //GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
 end;
 
 // ------------------
@@ -3564,7 +3568,7 @@ end;
 
 class function TVKARBVertexProgramHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_vertex_program;
+  Result := 1; //GL_ARB_vertex_program;
 end;
 
 class function TVKARBFragmentProgramHandle.GetTarget: GLEnum;
@@ -3574,7 +3578,7 @@ end;
 
 class function TVKARBFragmentProgramHandle.IsSupported: GLBoolean;
 begin
-  Result := 1; //GL.ARB_vertex_program;
+  Result := 1; //GL_ARB_vertex_program;
 end;
 
 class function TVKARBGeometryProgramHandle.GetTarget: GLEnum;
@@ -3584,7 +3588,7 @@ end;
 
 class function TVKARBGeometryProgramHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.NV_geometry_program4;
+  Result := 1; //GL_NV_geometry_program4;
 end;
 
 // ------------------
@@ -3630,7 +3634,7 @@ end;
 
 class function TVKSLHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_shader_objects;
+  Result := 1; //GL_ARB_shader_objects;
 end;
 
 // ------------------
@@ -3697,7 +3701,7 @@ end;
 
 class function TVKVertexShaderHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_vertex_shader;
+  Result := 1; //GL_ARB_vertex_shader;
 end;
 
 // ------------------
@@ -3739,7 +3743,7 @@ end;
 
 class function TVKFragmentShaderHandle.IsSupported: GLboolean;
 begin
-  Result := 1; //GL.ARB_fragment_shader;
+  Result := 1; //GL_ARB_fragment_shader;
 end;
 
 // ------------------
@@ -4433,7 +4437,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) >= 0 then
-        raise EGLContext.Create(cInvalidContextRegistration)
+        raise EGLContext.Create(glsInvalidContextRegistration)
       else
         Add(aContext);
     finally
@@ -4449,7 +4453,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) < 0 then
-        raise EGLContext.Create(cInvalidContextRegistration)
+        raise EGLContext.Create(glsInvalidContextRegistration)
       else
         Remove(aContext);
     finally
@@ -4543,7 +4547,7 @@ begin
       Inc(i);
     end;
     if not found then
-      raise EGLContext.Create(cInvalidNotificationRemoval);
+      raise EGLContext.Create(glsInvalidNotificationRemoval);
   finally
     UnLock;
   end;

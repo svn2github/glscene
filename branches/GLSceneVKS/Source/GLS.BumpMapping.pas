@@ -70,15 +70,15 @@ var
       v.X:=v.Y; t.X:=t.Y;
       v.Y:=vt;   t.Y:=tt;
     end;
-    if t.V[0].V[sortidx]<t.V[2].V[sortidx] then begin
-      vt:=v.V[0];   tt:=t.V[0];
-      v.V[0]:=v.V[2]; t.V[0]:=t.V[2];
-      v.V[2]:=vt;   t.V[2]:=tt;
+    if t.X.V[sortidx]<t.Z.V[sortidx] then begin
+      vt:=v.X;   tt:=t.X;
+      v.X:=v.Z; t.X:=t.Z;
+      v.Z:=vt;   t.Z:=tt;
     end;
-    if t.V[1].V[sortidx]<t.V[2].V[sortidx] then begin
-      vt:=v.V[1];   tt:=t.V[1];
-      v.V[1]:=v.V[2]; t.V[1]:=t.V[2];
-      v.V[2]:=vt;   t.V[2]:=tt;
+    if t.Y.V[sortidx]<t.Z.V[sortidx] then begin
+      vt:=v.Y;   tt:=t.Y;
+      v.Y:=v.Z; t.Y:=t.Z;
+      v.Z:=vt;   t.Z:=tt;
     end;
   end;
 
@@ -95,33 +95,33 @@ begin
       // Compute tangent
       SortVertexData(1);
 
-      if (t.V[2].V[1]-t.V[0].V[1]) = 0 then interp:=1
-      else interp:=(t.V[1].V[1]-t.V[0].V[1])/(t.V[2].V[1]-t.V[0].V[1]);
+      if (t.Z.Y-t.X.Y) = 0 then interp:=1
+      else interp:=(t.Y.Y-t.X.Y)/(t.Z.Y-t.X.Y);
 
-      vt:=VectorLerp(v.V[0],v.V[2],interp);
-      interp:=t.V[0].V[0]+(t.V[2].V[0]-t.V[0].V[0])*interp;
-      vt:=VectorSubtract(vt,v.V[1]);
-      if t.V[1].V[0]<interp then vt:=VectorNegate(vt);
+      vt:=VectorLerp(v.X,v.Z,interp);
+      interp:=t.X.X+(t.Z.X-t.X.X)*interp;
+      vt:=VectorSubtract(vt,v.Y);
+      if t.Y.X<interp then vt:=VectorNegate(vt);
       dot:=VectorDotProduct(vt,n.V[j]);
-      vt.V[0]:=vt.V[0]-n.V[j].V[0]*dot;
-      vt.V[1]:=vt.V[1]-n.V[j].V[1]*dot;
-      vt.V[2]:=vt.V[2]-n.V[j].V[2]*dot;
+      vt.X:=vt.X-n.V[j].X*dot;
+      vt.Y:=vt.Y-n.V[j].Y*dot;
+      vt.Z:=vt.Z-n.V[j].Z*dot;
       Tangents.Add(VectorNormalize(vt));
 
       // Compute Bi-Normal
       SortVertexData(0);
 
-      if (t.V[2].V[0]-t.V[0].V[0]) = 0 then interp:=1
-      else interp:=(t.V[1].V[0]-t.V[0].V[0])/(t.V[2].V[0]-t.V[0].V[0]);
+      if (t.Z.X-t.X.X) = 0 then interp:=1
+      else interp:=(t.Y.X-t.X.X)/(t.Z.X-t.X.X);
 
-      vt:=VectorLerp(v.V[0],v.V[2],interp);
-      interp:=t.V[0].V[1]+(t.V[2].V[1]-t.V[0].V[1])*interp;
-      vt:=VectorSubtract(vt,v.V[1]);
-      if t.V[1].V[1]<interp then vt:=VectorNegate(vt);
+      vt:=VectorLerp(v.X,v.Z,interp);
+      interp:=t.X.Y+(t.Z.Y-t.X.Y)*interp;
+      vt:=VectorSubtract(vt,v.Y);
+      if t.Y.Y<interp then vt:=VectorNegate(vt);
       dot:=VectorDotProduct(vt,n.V[j]);
-      vt.V[0]:=vt.V[0]-n.V[j].V[0]*dot;
-      vt.V[1]:=vt.V[1]-n.V[j].V[1]*dot;
-      vt.V[2]:=vt.V[2]-n.V[j].V[2]*dot;
+      vt.X:=vt.X-n.V[j].X*dot;
+      vt.Y:=vt.Y-n.V[j].Y*dot;
+      vt.Z:=vt.Z-n.V[j].Z*dot;
       BiNormals.Add(VectorNormalize(vt));
     end;
   end;
@@ -140,12 +140,12 @@ var
 begin
   Colors.Count:=Vertices.Count;
   for i:=0 to Vertices.Count-1 do begin
-    mat.V[0]:=Tangents[i];
-    mat.V[1]:=BiNormals[i];
-    mat.V[2]:=Normals[i];
+    mat.X:=Tangents[i];
+    mat.Y:=BiNormals[i];
+    mat.Z:=Normals[i];
     TransposeMatrix(mat);
     vec:=VectorNormalize(VectorTransform(VectorSubtract(Light,Vertices[i]),mat));
-    vec.V[0]:=-vec.V[0];
+    vec.X:=-vec.X;
     Colors[i]:=VectorMake(VectorAdd(VectorScale(vec,0.5),0.5),1);
   end;
 end;
@@ -265,12 +265,12 @@ var
   n,n1,n2,n3 : TAffineVector;
 begin
   for i:=0 to (TexCoords.Count div 3) - 1 do begin
-    x1:=Round(TexCoords[3*i].V[0]*(Width-1));
-    y1:=Round((1-TexCoords[3*i].V[1])*(Height-1));
-    x2:=Round(TexCoords[3*i+1].V[0]*(Width-1));
-    y2:=Round((1-TexCoords[3*i+1].V[1])*(Height-1));
-    x3:=Round(TexCoords[3*i+2].V[0]*(Width-1));
-    y3:=Round((1-TexCoords[3*i+2].V[1])*(Height-1));
+    x1:=Round(TexCoords[3*i].X*(Width-1));
+    y1:=Round((1-TexCoords[3*i].Y)*(Height-1));
+    x2:=Round(TexCoords[3*i+1].X*(Width-1));
+    y2:=Round((1-TexCoords[3*i+1].Y)*(Height-1));
+    x3:=Round(TexCoords[3*i+2].X*(Width-1));
+    y3:=Round((1-TexCoords[3*i+2].Y)*(Height-1));
     n1:=Normals[3*i];
     n2:=Normals[3*i+1];
     n3:=Normals[3*i+2];
@@ -378,16 +378,16 @@ begin
 
   // Transform the object space normals into tangent space
   for i:=0 to (LoTexCoords.Count div 3) - 1 do begin
-    x1:=Round(LoTexCoords[3*i].V[0]*(Width-1));
-    y1:=Round((1-LoTexCoords[3*i].V[1])*(Height-1));
-    x2:=Round(LoTexCoords[3*i+1].V[0]*(Width-1));
-    y2:=Round((1-LoTexCoords[3*i+1].V[1])*(Height-1));
-    x3:=Round(LoTexCoords[3*i+2].V[0]*(Width-1));
-    y3:=Round((1-LoTexCoords[3*i+2].V[1])*(Height-1));
+    x1:=Round(LoTexCoords[3*i].X*(Width-1));
+    y1:=Round((1-LoTexCoords[3*i].Y)*(Height-1));
+    x2:=Round(LoTexCoords[3*i+1].X*(Width-1));
+    y2:=Round((1-LoTexCoords[3*i+1].Y)*(Height-1));
+    x3:=Round(LoTexCoords[3*i+2].X*(Width-1));
+    y3:=Round((1-LoTexCoords[3*i+2].Y)*(Height-1));
 
-    m1.V[0]:=Tangents[3*i];   m1.V[1]:=BiNormals[3*i];   m1.V[2]:=LoNormals[3*i];
-    m2.V[0]:=Tangents[3*i+1]; m2.V[1]:=BiNormals[3*i+1]; m2.V[2]:=LoNormals[3*i+1];
-    m3.V[0]:=Tangents[3*i+2]; m3.V[1]:=BiNormals[3*i+2]; m3.V[2]:=LoNormals[3*i+2];
+    m1.X:=Tangents[3*i];   m1.Y:=BiNormals[3*i];   m1.Z:=LoNormals[3*i];
+    m2.X:=Tangents[3*i+1]; m2.Y:=BiNormals[3*i+1]; m2.Z:=LoNormals[3*i+1];
+    m3.X:=Tangents[3*i+2]; m3.Y:=BiNormals[3*i+2]; m3.Z:=LoNormals[3*i+2];
     TransposeMatrix(m1);
     TransposeMatrix(m2);
     TransposeMatrix(m3);
@@ -420,7 +420,7 @@ begin
         for x:=xs to xe-1 do begin
           n:=NormalToTangentSpace(NormalMap[x+y*Width],x,y,x1,y1,x2,y2,x3,y3,m1,m2,m3);
           NormalizeVector(n);
-          n.V[0]:=-n.V[0];
+          n.X:=-n.X;
           NormalMap[x+y*Width]:=n;
         end;
       end;
@@ -434,7 +434,7 @@ begin
         for x:=xs to xe-1 do begin
           n:=NormalToTangentSpace(NormalMap[x+y*Width],x,y,x1,y1,x2,y2,x3,y3,m1,m2,m3);
           NormalizeVector(n);
-          n.V[0]:=-n.V[0];
+          n.X:=-n.X;
           NormalMap[x+y*Width]:=n;
         end;
       end;

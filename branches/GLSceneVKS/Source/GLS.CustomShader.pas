@@ -17,7 +17,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.Cadencer, GLS.OpenGLTokens, GLS.Scene,
+  GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture, GLS.Cadencer, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Scene,
   GLS.Strings, GLS.CrossPlatform, GLS.Context, GLS.RenderContextInfo, GLS.Material,
   GLS.VectorLists, GLS.TextureFormat, GLS.GLSLParameter;
 
@@ -399,16 +399,16 @@ begin
   glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    GL.Ortho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
+    glOrtho(0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1);
     glDisable(GL_DEPTH_TEST);
-    GL.DepthMask(False);
+    glDepthMask(GLboolean(False));
     glBegin(GL_QUADS);
       glTexCoord2f(0.0, ViewPortSize.cy);             glVertex2f(0, 0);
       glTexCoord2f(0.0, 0.0);                         glVertex2f(0, ViewPortSize.cy);
       glTexCoord2f(ViewPortSize.cx, 0.0);             glVertex2f(ViewPortSize.cx, ViewPortSize.cy);
       glTexCoord2f(ViewPortSize.cx, ViewPortSize.cy); glVertex2f(ViewPortSize.cx, 0);
     glEnd;
-    GL.DepthMask(True);
+    glDepthMask(GLboolean(True));
     glEnable(GL_DEPTH_TEST);
     glMatrixMode(GL_PROJECTION);
     glPopMatrix;
@@ -431,14 +431,14 @@ begin
   glMatrixMode( GL_PROJECTION );
   glPushMatrix;
     glLoadIdentity;
-    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    glOrtho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
       glLoadIdentity;
       glDisable(GL_DEPTH_TEST);
-      GL.DepthMask( FALSE );
+      glDepthMask(GLboolean(False));
       DrawTexturedScreenQuad3;
-      GL.DepthMask( TRUE );
+      glDepthMask(GLboolean(True));
       glEnable(GL_DEPTH_TEST);
     glPopMatrix;
     glMatrixMode( GL_PROJECTION );
@@ -451,19 +451,19 @@ begin
   glMatrixMode( GL_PROJECTION );
   glPushMatrix;
     glLoadIdentity;
-    GL.Ortho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
+    glOrtho( 0, ViewPortSize.cx, ViewPortSize.cy, 0, 0, 1 );
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
       glLoadIdentity;
       glDisable(GL_DEPTH_TEST);
-      GL.DepthMask( FALSE );
+      glDepthMask(GLboolean(FALSE));
       DrawTexturedScreenQuad4(ViewPortSize);;
-      GL.DepthMask( TRUE );
+      glDepthMask(GLboolean(True));
       glEnable(GL_DEPTH_TEST);
     glPopMatrix;
-    glMatrixMode( GL_PROJECTION );
+    glMatrixMode(GL_PROJECTION );
   glPopMatrix;
-  glMatrixMode( GL_MODELVIEW );
+  glMatrixMode(GL_MODELVIEW );
 end;
 
 procedure DrawTexturedScreenQuad3;

@@ -16,7 +16,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS
-  GLS.OpenGLTokens,  GLS.Context,
+  Winapi.OpenGL, Winapi.OpenGLext,   GLS.Context,
   GLS.VectorGeometry, GLS.VectorTypes, GLS.Texture,
   GLS.CustomShader, GLS.RenderContextInfo;
 
@@ -227,9 +227,9 @@ end;
 function TVKCustomAsmShader.ShaderSupported: Boolean;
 begin
   Result :=
-    (VertexProgram.Enabled and TVKARBVertexProgramHandle.IsSupported) or
-    (FragmentProgram.Enabled and TVKARBFragmentProgramHandle.IsSupported) or
-    (GeometryProgram.Enabled and TVKARBGeometryProgramHandle.IsSupported);
+    (VertexProgram.Enabled) or
+    (FragmentProgram.Enabled) or
+    (GeometryProgram.Enabled);
 end;
 
 procedure TVKCustomAsmShader.ApplyShaderPrograms;

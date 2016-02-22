@@ -331,7 +331,7 @@ begin
   if not FSDLWin.Active then
     raise Exception.Create('SDLWindow open failed.');
 
-  FglInitialize;
+  FGL.Initialize;
   MakeGLCurrent;
 end;
 
@@ -368,7 +368,7 @@ end;
 procedure TVKSDLContext.DoActivate;
 begin
   if not FGL.IsInitialized then
-    FglInitialize;
+    FGL.Initialize;
 end;
 
 // Deactivate

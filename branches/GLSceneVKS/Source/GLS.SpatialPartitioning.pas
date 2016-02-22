@@ -12,7 +12,7 @@ interface
 
 uses
   GLS.SceneViewer, GLS.SpacePartition, GLS.Scene, GLS.VectorGeometry,
-  GLS.OpenGLTokens, GLS.GeometryBB, GLS.RenderContextInfo, GLS.State;
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.GeometryBB, GLS.RenderContextInfo, GLS.State;
 
 type
   { Object for holding glscene objects in a spatial partitioning }
@@ -63,28 +63,28 @@ begin
   rci.GLStates.LineWidth := w;
 
   glBegin(GL_LINE_STRIP);
-  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
+  glVertex3f(AABB.min.X, AABB.min.Y, AABB.min.Z);
+  glVertex3f(AABB.min.X, AABB.max.Y, AABB.min.Z);
+  glVertex3f(AABB.max.X, AABB.max.Y, AABB.min.Z);
+  glVertex3f(AABB.max.X, AABB.min.Y, AABB.min.Z);
+  glVertex3f(AABB.min.X, AABB.min.Y, AABB.min.Z);
 
-  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
-  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
-  glVertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.min.X, AABB.min.Y, AABB.max.Z);
+  glVertex3f(AABB.min.X, AABB.max.Y, AABB.max.Z);
+  glVertex3f(AABB.max.X, AABB.max.Y, AABB.max.Z);
+  glVertex3f(AABB.max.X, AABB.min.Y, AABB.max.Z);
+  glVertex3f(AABB.min.X, AABB.min.Y, AABB.max.Z);
   glEnd;
 
   glBegin(GL_LINES);
-  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.min.X, AABB.max.Y, AABB.min.Z);
+  glVertex3f(AABB.min.X, AABB.max.Y, AABB.max.Z);
 
-  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.max.X, AABB.max.Y, AABB.min.Z);
+  glVertex3f(AABB.max.X, AABB.max.Y, AABB.max.Z);
 
-  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  glVertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
+  glVertex3f(AABB.max.X, AABB.min.Y, AABB.min.Z);
+  glVertex3f(AABB.max.X, AABB.min.Y, AABB.max.Z);
   glEnd;
 end;
 

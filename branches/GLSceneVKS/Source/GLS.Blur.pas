@@ -16,7 +16,7 @@ uses
   FMX.Graphics,
   //GLS 
   GLS.Scene, GLS.VectorGeometry, GLS.Objects, GLS.BitmapFont, GLS.Texture, GLS.Material,
-  GLS.HudObjects, GLS.Color, GLS.Graphics, GLS.Context, GLS.OpenGLTokens,
+  GLS.HudObjects, GLS.Color, GLS.Graphics, GLS.Context, Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.XOpenGL, GLS.State, GLS.TextureFormat, GLS.BaseClasses, GLS.RenderContextInfo;
 
 type
@@ -446,13 +446,13 @@ begin
       f := 1
     else
       f := ARci.renderDPI / 96;
-    GL.Scalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
+    glScalef(2 / ARci.viewPortSize.cx, 2 / ARci.viewPortSize.cy, 1);
 
     // center of viewport:
-    GL.Translatef(0, 0, Position.Z);
+    glTranslatef(0, 0, Position.Z);
 
     if Rotation <> 0 then
-      GL.Rotatef(Rotation, 0, 0, 1);
+      glRotatef(Rotation, 0, 0, 1);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
@@ -495,7 +495,7 @@ begin
 
     // issue quad
     glBegin(GL_QUADS);
-    GL.Normal3fv(@YVector);
+    glNormal3fv(@YVector);
     glTexCoord2f(0, 0);
     glVertex2f(vx, vy1);
     glTexCoord2f(XTiles, 0);
@@ -764,7 +764,7 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    GL.Ortho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
+    glOrtho(0, ARci.viewPortSize.cx, ARci.viewPortSize.cy, 0, 0, 1);
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
     glLoadIdentity;
@@ -816,7 +816,7 @@ end;
 function TVKMotionBlur.SupportsRequiredExtensions: Boolean;
 begin
   Result :=
-    GL.ARB_texture_rectangle or GL_EXT_texture_rectangle or GL.NV_texture_rectangle;
+    GL_ARB_texture_rectangle or GL_EXT_texture_rectangle or GL_NV_texture_rectangle;
 end;
 
 // ------------------------------------------------------------------

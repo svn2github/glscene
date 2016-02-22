@@ -14,7 +14,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Math, System.UITypes,
 
-  GLS.Scene, GLS.HUDObjects, GLS.Material, GLS.OpenGLTokens, GLS.Context,
+  GLS.Scene, GLS.HUDObjects, GLS.Material, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
   GLS.BitmapFont, GLS.WindowsFont, GLS.VectorGeometry, GLS.Gui,
   GLS.CrossPlatform, GLS.Color, GLS.RenderContextInfo, GLS.BaseClasses,
   GLS.Objects, GLS.State, GLS.Utils;
@@ -733,11 +733,11 @@ begin
     f := 1
   else
     f := rci.renderDPI / 96;
-  GL.Scalef(f * 2 / rci.viewPortSize.cx, f * 2 / rci.viewPortSize.cy, 1);
-  GL.Translatef(f * Position.X - rci.viewPortSize.cx * 0.5,
+  glScalef(f * 2 / rci.viewPortSize.cx, f * 2 / rci.viewPortSize.cy, 1);
+  glTranslatef(f * Position.X - rci.viewPortSize.cx * 0.5,
     rci.viewPortSize.cy * 0.5 - f * Position.Y, 0);
   if Rotation <> 0 then
-    GL.Rotatef(Rotation, 0, 0, 1);
+    glRotatef(Rotation, 0, 0, 1);
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
   glLoadIdentity;
@@ -1776,10 +1776,10 @@ var
 begin
   if Assigned(BitmapFont) then
   begin
-    Position.V[0] := Round(X);
-    Position.V[1] := Round(Y);
-    Position.V[2] := 0;
-    Position.V[3] := 0;
+    Position.X := Round(X);
+    Position.Y := Round(Y);
+    Position.Z := 0;
+    Position.W := 0;
     BitmapFont.RenderString(rci, Data, taLeftJustify, tlTop, Color, @Position);
   end;
 end;
@@ -1791,11 +1791,11 @@ var
 begin
   if Assigned(BitmapFont) then
   begin
-    Position.V[0] := Round(((X2 + X1 -
+    Position.X := Round(((X2 + X1 -
       BitmapFont.CalcStringWidth(Data)) * 0.5));
-    Position.V[1] := Round(-((Y2 + Y1 - GetFontHeight) * 0.5)) + 2;
-    Position.V[2] := 0;
-    Position.V[3] := 0;
+    Position.Y := Round(-((Y2 + Y1 - GetFontHeight) * 0.5)) + 2;
+    Position.Z := 0;
+    Position.W := 0;
     BitmapFont.RenderString(rci, Data, taLeftJustify, tlTop, Color, @Position);
   end;
 end;
@@ -2337,7 +2337,7 @@ begin
     FGuiComponent.RenderToArea(0, 0, Width, Height, FRenderStatus, FReBuildGui);
 
     ATitleColor := FTitleColor;
-    ATitleColor.V[3] := AlphaChannel;
+    ATitleColor.W := AlphaChannel;
 
     WriteTextAt(rci, ((FRenderStatus[GLAlTop].X2 + FRenderStatus[GLAlTop].X1 -
       BitmapFont.CalcStringWidth(Caption)) * 0.5),
@@ -2755,7 +2755,7 @@ begin
     begin
       TextColor := FDefaultColor;
     end;
-    TextColor.V[3] := AlphaChannel;
+    TextColor.W := AlphaChannel;
 
     WriteTextAt(rci, FRenderStatus[GLALCenter].X1,
       FRenderStatus[GLALCenter].Y1,
@@ -2981,40 +2981,40 @@ begin
     case Alignment of
       taLeftJustify:
         begin
-          TekstPos.V[0] := 0;
+          TekstPos.X := 0;
         end;
       taCenter:
         begin
-          TekstPos.V[0] := Width / 2;
+          TekstPos.X := Width / 2;
         end;
       taRightJustify:
         begin
-          TekstPos.V[0] := Width;
+          TekstPos.X := Width;
         end;
     end;
 
     case TextLayout of
       tlTop:
         begin
-          TekstPos.V[1] := 0;
+          TekstPos.Y := 0;
         end;
       tlCenter:
         begin
-          TekstPos.V[1] := Round(-Height / 2);
+          TekstPos.Y := Round(-Height / 2);
         end;
       tlBottom:
         begin
-          TekstPos.V[1] := -Height;
+          TekstPos.Y := -Height;
         end;
     end;
 
-    TekstPos.V[2] := 0;
-    TekstPos.V[3] := 0;
+    TekstPos.Z := 0;
+    TekstPos.W := 0;
 
     Tekst := Caption;
 
     TextColor := FDefaultColor;
-    TextColor.V[3] := AlphaChannel;
+    TextColor.W := AlphaChannel;
 
     BitmapFont.RenderString(rci, Tekst, FAlignment, FTextLayout, TextColor,
       @TekstPos);

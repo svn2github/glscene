@@ -13,7 +13,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Scene,  GLS.OpenGLTokens, GLS.Context,  GLS.XOpenGL, GLS.VectorGeometry,
+  GLS.Scene,  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,  GLS.XOpenGL, GLS.VectorGeometry,
   GLS.Material, GLS.Objects, GLS.VectorLists, GLS.Color,  GLS.BaseClasses,
   GLS.RenderContextInfo, GLS.State, GLS.VectorTypes;
 
@@ -425,7 +425,7 @@ var
   begin
     with pt do
     begin
-      GL.Normal3fv(@normal);
+      glNormal3fv(@normal);
       if ColorMode <> hfcmNone then
         glColor4fv(@color);
       if hfoTextureCoordinates in Options then

@@ -15,7 +15,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   //GLS   
-  GLS.Scene, GLS.BitmapFont, GLS.Material, GLS.CrossPlatform, GLS.OpenGLTokens, GLS.Context,
+  GLS.Scene, GLS.BitmapFont, GLS.Material, GLS.CrossPlatform, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context,
   GLS.PersistentClasses, GLS.VectorGeometry, GLS.Coordinates, GLS.BaseClasses;
 
 type

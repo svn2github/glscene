@@ -16,7 +16,7 @@ uses
   System.Classes, System.SysUtils,
 
   GLS.VectorFileObjects, GLS.VerletTypes, GLS.VectorTypes, GLS.VectorLists,
-  GLS.VectorGeometry, GLS.Texture, GLS.OpenGLTokens, GLS.RenderContextInfo,
+  GLS.VectorGeometry, GLS.Texture, Winapi.OpenGL, Winapi.OpenGLext,  GLS.RenderContextInfo,
   GLS.State, GLS.Context;
 
 

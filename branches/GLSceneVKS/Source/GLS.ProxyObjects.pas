@@ -16,7 +16,7 @@ uses
 
   GLS.Scene, GLS.VectorGeometry, GLS.Texture, GLS.VectorFileObjects,
   GLS.Strings, GLS.RenderContextInfo, GLS.BaseClasses, GLS.Material,
-  GLS.OpenGLTokens, GLS.Context, GLS.VectorTypes;
+  Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context, GLS.VectorTypes;
 
 type
   EGLProxyException = class(Exception);

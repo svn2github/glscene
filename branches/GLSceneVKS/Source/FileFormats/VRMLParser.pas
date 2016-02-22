@@ -362,9 +362,9 @@ end;
 constructor TVRMLTransform.Create;
 begin
   inherited;
-  FScaleFactor.V[0]:=1;
-  FScaleFactor.V[1]:=1;
-  FScaleFactor.V[2]:=1;
+  FScaleFactor.X:=1;
+  FScaleFactor.Y:=1;
+  FScaleFactor.Z:=1;
 end;
 
 
@@ -466,19 +466,19 @@ end;
 //
 function TVRMLParser.ReadVector3f : TVector3f;
 begin
-  Result.V[0]:=ReadSingle;
-  Result.V[1]:=ReadSingle;
-  Result.V[2]:=ReadSingle;
+  Result.X:=ReadSingle;
+  Result.Y:=ReadSingle;
+  Result.Z:=ReadSingle;
 end;
 
 // ReadVector4f
 //
 function TVRMLParser.ReadVector4f : TVector4f;
 begin
-  Result.V[0]:=ReadSingle;
-  Result.V[1]:=ReadSingle;
-  Result.V[2]:=ReadSingle;
-  Result.V[3]:=ReadSingle;
+  Result.X:=ReadSingle;
+  Result.Y:=ReadSingle;
+  Result.Z:=ReadSingle;
+  Result.W:=ReadSingle;
 end;
 
 // ReadPointArray

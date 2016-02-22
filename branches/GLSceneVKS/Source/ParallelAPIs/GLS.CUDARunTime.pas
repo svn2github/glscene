@@ -50,7 +50,7 @@ uses
   GLS.CrossPlatform,
   GLS.CL_Platform,
   GLS.CUDAAPI,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Log;
 
 

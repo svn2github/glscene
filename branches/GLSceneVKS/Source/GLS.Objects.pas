@@ -19,12 +19,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
   //GLS
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.Scene, GLS.OpenGLAdapter,
-  GLS.OpenGLTokens, GLS.VectorLists, GLS.CrossPlatform, GLS.Context,
-  GLS.Silhouette, GLS.Color, GLS.RenderContextInfo, GLS.BaseClasses,
-  GLS.Nodes, GLS.Coordinates;
+  GLS.OpenGLAdapter,
+  GLS.VectorGeometry,
+  GLS.VectorTypes,
+  GLS.Scene,
+  GLS.VectorLists,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.Silhouette,
+  GLS.Color,
+  GLS.RenderContextInfo,
+  GLS.BaseClasses,
+  GLS.Nodes,
+  GLS.Coordinates;
 
 type
 
@@ -661,9 +674,9 @@ type
     { Protected Declarations }
     procedure SetNormals(aValue: TNormalSmoothing);
     procedure SetNormalDirection(aValue: TNormalDirection);
-    procedure SetupQuadricParams(quadric: PGLUquadricObj);
-    procedure SetNormalQuadricOrientation(quadric: PGLUquadricObj);
-    procedure SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
+    procedure SetupQuadricParams(quadric: GLUquadricObj);
+    procedure SetNormalQuadricOrientation(quadric: GLUquadricObj);
+    procedure SetInvertedQuadricOrientation(quadric: GLUquadricObj);
 
   public
     { Public Declarations }
@@ -956,7 +969,7 @@ begin
 
     n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+    glNormal3fv(@n);
 
 //    glBegin(GL_TRIANGLE_FAN);
 //    for j := 0 to 4 do
@@ -1004,7 +1017,7 @@ begin
 
     n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+    glNormal3fv(@n);
 
     glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
@@ -1040,7 +1053,7 @@ begin
 
     n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+    glNormal3fv(@n);
 
     glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
@@ -1081,7 +1094,7 @@ begin
 
     n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
       vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
+    glNormal3fv(@n);
 
     glBegin(GL_TRIANGLES);
     for j := 0 to 2 do
@@ -1319,9 +1332,9 @@ end;
 
 function TVKPlane.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5 * Abs(FWidth);
-  Result.V[1] := 0.5 * Abs(FHeight);
-  Result.V[2] := 0;
+  Result.X := 0.5 * Abs(FWidth);
+  Result.Y := 0.5 * Abs(FHeight);
+  Result.Z := 0;
 end;
 
 // RayCastIntersect
@@ -1335,15 +1348,15 @@ var
 begin
   locRayStart := AbsoluteToLocal(rayStart);
   locRayVector := AbsoluteToLocal(rayVector);
-  if locRayStart.V[2] >= 0 then
+  if locRayStart.Z >= 0 then
   begin
     // ray start over plane
-    if locRayVector.V[2] < 0 then
+    if locRayVector.Z < 0 then
     begin
-      t := locRayStart.V[2] / locRayVector.V[2];
-      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
-      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
-      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      t := locRayStart.Z / locRayVector.Z;
+      ip.X := locRayStart.X - t * locRayVector.X;
+      ip.Y := locRayStart.Y - t * locRayVector.Y;
+      if (Abs(ip.X) <= 0.5 * Width) and (Abs(ip.Y) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1358,12 +1371,12 @@ begin
   else
   begin
     // ray start below plane
-    if locRayVector.V[2] > 0 then
+    if locRayVector.Z > 0 then
     begin
-      t := locRayStart.V[2] / locRayVector.V[2];
-      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
-      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
-      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      t := locRayStart.Z / locRayVector.Z;
+      ip.X := locRayStart.X - t * locRayVector.X;
+      ip.Y := locRayStart.Y - t * locRayVector.Y;
+      if (Abs(ip.X) <= 0.5 * Width) and (Abs(ip.Y) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1377,8 +1390,8 @@ begin
   end;
   if Result and Assigned(intersectPoint) then
   begin
-    ip.V[2] := 0;
-    ip.V[3] := 1;
+    ip.Z := 0;
+    ip.W := 1;
     intersectPoint^ := LocalToAbsolute(ip);
   end;
 end;
@@ -1427,7 +1440,7 @@ procedure TVKPlane.BuildList(var rci: TVKRenderContextInfo);
 
   procedure EmitVertex(ptr: PVertexRec); {$IFDEF GLS_INLINE}inline;{$ENDIF}
   begin
-    XglTexCoord2fv(@ptr^.TexCoord);
+    glTexCoord2fv(@ptr^.TexCoord);
     glVertex3fv(@ptr^.Position);
   end;
 
@@ -1442,17 +1455,16 @@ begin
   hw := FWidth * 0.5;
   hh := FHeight * 0.5;
 
-  with GL do
   begin
-    Normal3fv(@ZVector);
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    glNormal3fv(@ZVector);
+    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
       if TanLoc > -1 then
-        VertexAttrib3fv(TanLoc, @XVector);
+        glVertexAttrib3fv(TanLoc, @XVector);
       if BinLoc > -1 then
-        VertexAttrib3fv(BinLoc, @YVector);
+        glVertexAttrib3fv(BinLoc, @YVector);
     end;
   end;
   // determine tex coords extents
@@ -1475,17 +1487,17 @@ begin
   begin
     // single quad plane
     glBegin(GL_TRIANGLES);
-    xglTexCoord2f(tx1, ty1);
+    glTexCoord2f(tx1, ty1);
     glVertex2f(hw, hh);
-    xglTexCoord2f(tx0, ty1);
+    glTexCoord2f(tx0, ty1);
     glVertex2f(-hw, hh);
-    xglTexCoord2f(tx0, ty0);
+    glTexCoord2f(tx0, ty0);
     glVertex2f(-hw, -hh);
 
     glVertex2f(-hw, -hh);
-    xglTexCoord2f(tx1, ty0);
+    glTexCoord2f(tx1, ty0);
     glVertex2f(hw, -hh);
-    xglTexCoord2f(tx1, ty1);
+    glTexCoord2f(tx1, ty1);
     glVertex2f(hw, hh);
     glEnd;
     exit;
@@ -1515,9 +1527,8 @@ begin
     end;
   end;
 
-  with GL do
   begin
-    Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
     for Y := 0 to FYTiles-1 do
     begin
       for X := 0 to FXTiles-1 do
@@ -1541,7 +1552,7 @@ begin
         EmitVertex(pVertex);
       end;
     end;
-    End_;
+    glEnd;
   end;
 end;
 
@@ -1577,10 +1588,10 @@ begin
     v[2] := LocalToAbsolute(PointMake(hw, hh, 0));
     v[3] := LocalToAbsolute(PointMake(-hw, hh, 0));
     buf.WorldToScreen(@v[0], 4);
-    Result.Left := Round(MinFloat([v[0].V[0], v[1].V[0], v[2].V[0], v[3].V[0]]));
-    Result.Right := Round(MaxFloat([v[0].V[0], v[1].V[0], v[2].V[0], v[3].V[0]]));
-    Result.Top := Round(MinFloat([v[0].V[1], v[1].V[1], v[2].V[1], v[3].V[1]]));
-    Result.Bottom := Round(MaxFloat([v[0].V[1], v[1].V[1], v[2].V[1], v[3].V[1]]));
+    Result.Left := Round(MinFloat([v[0].X, v[1].X, v[2].X, v[3].X]));
+    Result.Right := Round(MaxFloat([v[0].X, v[1].X, v[2].X, v[3].X]));
+    Result.Top := Round(MinFloat([v[0].Y, v[1].Y, v[2].Y, v[3].Y]));
+    Result.Bottom := Round(MaxFloat([v[0].Y, v[1].Y, v[2].Y, v[3].Y]));
   end
   else
     FillChar(Result, SizeOf(TVKRect), 0);
@@ -1751,11 +1762,11 @@ end;
 
 function TVKSprite.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5 * Abs(FWidth);
-  Result.V[1] := 0.5 * Abs(FHeight);
+  Result.X := 0.5 * Abs(FWidth);
+  Result.Y := 0.5 * Abs(FHeight);
   // Sprites turn with the camera and can be considered to have the same depth
   // as width
-  Result.V[2] := 0.5 * Abs(FWidth);
+  Result.Z := 0.5 * Abs(FWidth);
 end;
 
 // BuildList
@@ -1776,12 +1787,12 @@ begin
   // (dunno how they are named in english)
   w := FWidth * 0.5;
   h := FHeight * 0.5;
-  vx.V[0] := mat.V[0].V[0];
-  vy.V[0] := mat.V[0].V[1];
-  vx.V[1] := mat.V[1].V[0];
-  vy.V[1] := mat.V[1].V[1];
-  vx.V[2] := mat.V[2].V[0];
-  vy.V[2] := mat.V[2].V[1];
+  vx.X := mat.X.X;
+  vy.X := mat.X.Y;
+  vx.Y := mat.Y.X;
+  vy.Y := mat.Y.Y;
+  vx.Z := mat.Z.X;
+  vy.Z := mat.Z.Y;
   ScaleVector(vx, w / VectorLength(vx));
   ScaleVector(vy, h / VectorLength(vy));
   if FMirrorU then
@@ -1808,17 +1819,17 @@ begin
   if FRotation <> 0 then
   begin
     glPushMatrix;
-    GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
+    glRotatef(FRotation, mat.X.Z, mat.Y.Z, mat.Z.Z);
   end;
   glBegin(GL_QUADS);
-  xglTexCoord2f(u1, v1);
-  glVertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1], vx.V[2] + vy.V[2]);
-  xglTexCoord2f(u0, v1);
-  glVertex3f(-vx.V[0] + vy.V[0], -vx.V[1] + vy.V[1], -vx.V[2] + vy.V[2]);
-  xglTexCoord2f(u0, v0);
-  glVertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
-  xglTexCoord2f(u1, v0);
-  glVertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+  glTexCoord2f(u1, v1);
+  glVertex3f(vx.X + vy.X, vx.Y + vy.Y, vx.Z + vy.Z);
+  glTexCoord2f(u0, v1);
+  glVertex3f(-vx.X + vy.X, -vx.Y + vy.Y, -vx.Z + vy.Z);
+  glTexCoord2f(u0, v0);
+  glVertex3f(-vx.X - vy.X, -vx.Y - vy.Y, -vx.Z - vy.Z);
+  glTexCoord2f(u1, v0);
+  glVertex3f(vx.X - vy.X, vx.Y - vy.Y, vx.Z - vy.Z);
   glEnd;
   if FRotation <> 0 then
     glPopMatrix;
@@ -2008,12 +2019,12 @@ end;
 
 procedure TVKPointParameters.Apply;
 begin
-  if Enabled and GL.ARB_point_parameters then
+  if Enabled and GL_ARB_point_parameters then
   begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB,
+    glPointParameterf(GL_POINT_SIZE_MIN_ARB, FMinSize);
+    glPointParameterf(GL_POINT_SIZE_MAX_ARB, FMaxSize);
+    glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, FFadeTresholdSize);
+    glPointParameterfv(GL_DISTANCE_ATTENUATION_EXT,
       FDistanceAttenuation.AsAddress);
   end;
 end;
@@ -2023,12 +2034,12 @@ end;
 
 procedure TVKPointParameters.UnApply;
 begin
-  if Enabled and GL.ARB_point_parameters then
+  if Enabled and GL_ARB_point_parameters then
   begin
-    GL.PointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
-    GL.PointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
-    GL.PointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
-    GL.PointParameterfv(GL_DISTANCE_ATTENUATION_ARB, @XVector);
+    glPointParameterf(GL_POINT_SIZE_MIN_ARB, 0);
+    glPointParameterf(GL_POINT_SIZE_MAX_ARB, 128);
+    glPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1);
+    glPointParameterfv(GL_DISTANCE_ATTENUATION_EXT, @XVector);
   end;
 end;
 
@@ -2181,11 +2192,11 @@ begin
   glEnableClientState(GL_VERTEX_ARRAY);
 
   if NoZWrite then
-    rci.GLStates.DepthWriteMask := False;
+    rci.GLStates.DepthWriteMask := GLboolean(False);
   rci.GLStates.PointSize := FSize;
   PointParameters.Apply;
   if GL_EXT_compiled_vertex_array and (n > 64) then
-    GL.LockArrays(0, n);
+    glLockArraysEXT(0, n);
   case FStyle of
     psSquare:
       begin
@@ -2225,7 +2236,7 @@ begin
   end;
   glDrawArrays(GL_POINTS, 0, n);
   if GL_EXT_compiled_vertex_array and (n > 64) then
-    GL.UnlockArrays;
+    glUnlockArraysEXT;
   PointParameters.UnApply;
   glDisableClientState(GL_VERTEX_ARRAY);
   if FColors.Count > 1 then
@@ -2658,7 +2669,7 @@ procedure TVKNodedLines.DrawNode(var rci: TVKRenderContextInfo; X, Y, Z: Single;
   Color: TVKColor);
 begin
   glPushMatrix;
-  GL.Translatef(X, Y, Z);
+  glTranslatef(X, Y, Z);
   case NodesAspect of
     lnaAxes:
       AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
@@ -2669,7 +2680,7 @@ begin
         if FNodeSize <> 1 then
         begin
           glPushMatrix;
-          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
+          glScalef(FNodeSize, FNodeSize, FNodeSize);
           rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
@@ -2864,7 +2875,7 @@ var
   vertexColor: TVector;
   nodeBuffer: array of TAffineVector;
   colorBuffer: array of TVector;
-  nurbsRenderer: PGLUNurbs;
+  nurbsRenderer: GLUNurbsObj;
 begin
   if Nodes.Count > 1 then
   begin
@@ -2898,8 +2909,8 @@ begin
       glEnable(GL_MAP1_VERTEX_3);
       glEnable(GL_MAP1_COLOR_4);
 
-      GL.Map1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
-      GL.Map1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
+      glMap1f(GL_MAP1_VERTEX_3, 0, 1, 3, Nodes.Count, @nodeBuffer[0]);
+      glMap1f(GL_MAP1_COLOR_4, 0, 1, 4, Nodes.Count, @colorBuffer[0]);
     end;
 
     // start drawing the line
@@ -2984,7 +2995,7 @@ begin
       begin
         f := 1 / FDivision;
         for i := 0 to FDivision do
-          GL.EvalCoord1f(i * f);
+          glEvalCoord1f(i * f);
       end;
       glEnd;
     end;
@@ -3045,12 +3056,11 @@ begin
   hh := FCubeSize.Y * 0.5;
   hd := FCubeSize.Z * 0.5;
 
-  with GL do
   begin
-    if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
     end
     else
     begin
@@ -3058,122 +3068,122 @@ begin
       BinLoc := -1;
     end;
 
-    Begin_(GL_TRIANGLES);
+    glBegin(GL_TRIANGLES);
     if cpFront in FParts then
     begin
-      Normal3f(0, 0, nd);
+      glNormal3f(0, 0, nd);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, nd, 0, 0);
+        glVertexAttrib3f(TanLoc, nd, 0, 0);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh, hd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(-hw * nd, hh * nd, hd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, hd);
-      Vertex3f(-hw, -hh, hd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(hw * nd, -hh * nd, hd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh, hd);
+        glVertexAttrib3f(BinLoc, 0, nd, 0);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(hw, hh, hd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(-hw * nd, hh * nd, hd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(-hw, -hh, hd);
+      glVertex3f(-hw, -hh, hd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(hw * nd, -hh * nd, hd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(hw, hh, hd);
     end;
     if cpBack in FParts then
     begin
-      Normal3f(0, 0, -nd);
+      glNormal3f(0, 0, -nd);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, -nd, 0, 0);
+        glVertexAttrib3f(TanLoc, -nd, 0, 0);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(hw * nd, -hh * nd, -hd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      Vertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw * nd, hh * nd, -hd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, -hd);
+        glVertexAttrib3f(BinLoc, 0, nd, 0);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(hw, hh, -hd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(hw * nd, -hh * nd, -hd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(-hw, -hh, -hd);
+      glVertex3f(-hw, -hh, -hd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(-hw * nd, hh * nd, -hd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(hw, hh, -hd);
     end;
     if cpLeft in FParts then
     begin
-      Normal3f(-nd, 0, 0);
+      glNormal3f(-nd, 0, 0);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, 0, 0, nd);
+        glVertexAttrib3f(TanLoc, 0, 0, nd);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw, hh, hd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh * nd, -hd * nd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      Vertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(-hw, -hh * nd, hd * nd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(-hw, hh, hd);
+        glVertexAttrib3f(BinLoc, 0, nd, 0);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(-hw, hh, hd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(-hw, hh * nd, -hd * nd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(-hw, -hh, -hd);
+      glVertex3f(-hw, -hh, -hd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(-hw, -hh * nd, hd * nd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(-hw, hh, hd);
     end;
     if cpRight in FParts then
     begin
-      Normal3f(nd, 0, 0);
+      glNormal3f(nd, 0, 0);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, 0, 0, -nd);
+        glVertexAttrib3f(TanLoc, 0, 0, -nd);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, nd, 0);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, hd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(hw, -hh * nd, hd * nd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(hw, -hh, -hd);
-      Vertex3f(hw, -hh, -hd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, hh * nd, -hd * nd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(hw, hh, hd);
+        glVertexAttrib3f(BinLoc, 0, nd, 0);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(hw, hh, hd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(hw, -hh * nd, hd * nd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(hw, -hh, -hd);
+      glVertex3f(hw, -hh, -hd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(hw, hh * nd, -hd * nd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(hw, hh, hd);
     end;
     if cpTop in FParts then
     begin
-      Normal3f(0, nd, 0);
+      glNormal3f(0, nd, 0);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, nd, 0, 0);
+        glVertexAttrib3f(TanLoc, nd, 0, 0);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, 0, -nd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh, -hd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw * nd, hh, hd * nd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(hw, hh, hd);
-      Vertex3f(hw, hh, hd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(hw * nd, hh, -hd * nd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(-hw, hh, -hd);
+        glVertexAttrib3f(BinLoc, 0, 0, -nd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(-hw, hh, -hd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(-hw * nd, hh, hd * nd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(hw, hh, hd);
+      glVertex3f(hw, hh, hd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(hw * nd, hh, -hd * nd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(-hw, hh, -hd);
     end;
     if cpBottom in FParts then
     begin
-      Normal3f(0, -nd, 0);
+      glNormal3f(0, -nd, 0);
       if TanLoc > -1 then
-        VertexAttrib3f(TanLoc, -nd, 0, 0);
+        glVertexAttrib3f(TanLoc, -nd, 0, 0);
       if BinLoc > -1 then
-        VertexAttrib3f(BinLoc, 0, 0, nd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
-      xglTexCoord2fv(@XTexPoint);
-      Vertex3f(hw * nd, -hh, -hd * nd);
-      xglTexCoord2fv(@XYTexPoint);
-      Vertex3f(hw, -hh, hd);
-      Vertex3f(hw, -hh, hd);
-      xglTexCoord2fv(@YTexPoint);
-      Vertex3f(-hw * nd, -hh, hd * nd);
-      xglTexCoord2fv(@NullTexPoint);
-      Vertex3f(-hw, -hh, -hd);
+        glVertexAttrib3f(BinLoc, 0, 0, nd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(-hw, -hh, -hd);
+      glTexCoord2fv(@XTexPoint);
+      glVertex3f(hw * nd, -hh, -hd * nd);
+      glTexCoord2fv(@XYTexPoint);
+      glVertex3f(hw, -hh, hd);
+      glVertex3f(hw, -hh, hd);
+      glTexCoord2fv(@YTexPoint);
+      glVertex3f(-hw * nd, -hh, hd * nd);
+      glTexCoord2fv(@NullTexPoint);
+      glVertex3f(-hw, -hh, -hd);
     end;
-    End_;
+    glEnd;
   end;
 end;
 
@@ -3340,7 +3350,7 @@ begin
         FCubeSize.V[i mod 3]) / (p[i].X * rv.X +
                                  p[i].Y * rv.Y +
                                  p[i].Z * rv.Z);
-      MakePoint(r, rs.V[0] + t * rv.X, rs.Y +
+      MakePoint(r, rs.X + t * rv.X, rs.Y +
                              t * rv.Y, rs.Z +
                              t * rv.Z);
       if (Abs(r.X) <= eSize.X) and
@@ -3367,7 +3377,7 @@ procedure TVKCube.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
-    (FCubeSize.V[0] <> 1) or (FCubeSize.V[1] <> 1) or (FCubeSize.V[2] <> 1));
+    (FCubeSize.X <> 1) or (FCubeSize.Y <> 1) or (FCubeSize.Z <> 1));
 end;
 
 // ReadData
@@ -3433,7 +3443,7 @@ end;
 // SetupQuadricParams
 //
 
-procedure TVKQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
+procedure TVKQuadricObject.SetupQuadricParams(quadric: GLUquadricObj);
 const
   cNormalSmoothinToEnum: array [nsFlat .. nsNone] of GLEnum = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
@@ -3441,13 +3451,13 @@ begin
   gluQuadricDrawStyle(quadric, GLU_FILL);
   gluQuadricNormals(quadric, cNormalSmoothinToEnum[FNormals]);
   SetNormalQuadricOrientation(quadric);
-  gluQuadricTexture(quadric, True);
+  gluQuadricTexture(quadric, GLboolean(True));
 end;
 
 // SetNormalQuadricOrientation
 //
 
-procedure TVKQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
+procedure TVKQuadricObject.SetNormalQuadricOrientation(quadric: GLUquadricObj);
 const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_INSIDE, GLU_OUTSIDE);
@@ -3459,7 +3469,7 @@ end;
 //
 
 procedure TVKQuadricObject.SetInvertedQuadricOrientation
-  (quadric: PGLUquadricObj);
+  (quadric: GLUquadricObj);
 const
   cNormalDirectionToEnum: array [ndInside .. ndOutside] of GLEnum =
     (GLU_OUTSIDE, GLU_INSIDE);
@@ -3524,18 +3534,18 @@ begin
   StepH := (AngStop - AngStart) / FSlices;
   StepV := (AngTop - AngBottom) / FStacks;
   glPushMatrix;
-  GL.Scalef(Radius, Radius, Radius);
+  glScalef(Radius, Radius, Radius);
 
   // top cap
   if (FTop < 90) and (FTopCap in [ctCenter, ctFlat]) then
   begin
     glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngTop, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    glTexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, -1, 0)
+      glNormal3f(0, -1, 0)
     else
-      GL.Normal3f(0, 1, 0);
+      glNormal3f(0, 1, 0);
     if FTopCap = ctCenter then
       glVertex3f(0, 0, 0)
     else
@@ -3543,23 +3553,23 @@ begin
       glVertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
-        N1.V[1] := -N1.V[1];
+        N1.Y := -N1.Y;
     end;
-    v1.V[1] := SinP;
+    v1.Y := SinP;
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
       SinCosine(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      v1.V[2] := CosP * CosT;
+      v1.X := CosP * SinT;
+      v1.Z := CosP * CosT;
       if FTopCap = ctCenter then
       begin
         N1 := VectorPerpendicular(YVector, v1);
         if DoReverse then
           NegateVector(N1);
       end;
-      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
+      glTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      glNormal3fv(@N1);
       glVertex3fv(@v1);
       Theta := Theta + StepH;
     end;
@@ -3577,8 +3587,8 @@ begin
     Theta := AngStart;
     SinCosine(Phi, SinP, CosP);
     SinCosine(Phi2, SinP2, CosP2);
-    v1.V[1] := SinP;
-    V2.V[1] := SinP2;
+    v1.Y := SinP;
+    V2.Y := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
@@ -3587,30 +3597,30 @@ begin
     begin
 
       SinCosine(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      V2.V[0] := CosP2 * SinT;
-      v1.V[2] := CosP * CosT;
-      V2.V[2] := CosP2 * CosT;
+      v1.X := CosP * SinT;
+      V2.X := CosP2 * SinT;
+      v1.Z := CosP * CosT;
+      V2.Z := CosP2 * CosT;
 
       uTexCoord := i * uTexFactor;
-      xglTexCoord2f(uTexCoord, vTexCoord0);
+      glTexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
-        GL.Normal3fv(@N1);
+        glNormal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v1);
+        glNormal3fv(@v1);
       glVertex3fv(@v1);
 
-      xglTexCoord2f(uTexCoord, vTexCoord1);
+      glTexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
-        GL.Normal3fv(@N1);
+        glNormal3fv(@N1);
       end
       else
-        GL.Normal3fv(@V2);
+        glNormal3fv(@V2);
       glVertex3fv(@V2);
 
       Theta := Theta + StepH;
@@ -3625,11 +3635,11 @@ begin
   begin
     glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngBottom, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    glTexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, 1, 0)
+      glNormal3f(0, 1, 0)
     else
-      GL.Normal3f(0, -1, 0);
+      glNormal3f(0, -1, 0);
     if FBottomCap = ctCenter then
       glVertex3f(0, 0, 0)
     else
@@ -3643,21 +3653,21 @@ begin
         NegateVector(N1); 
       end;
     end;
-    v1.V[1] := SinP;
+    v1.Y := SinP;
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
       SinCosine(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      v1.V[2] := CosP * CosT;
+      v1.X := CosP * SinT;
+      v1.Z := CosP * CosT;
       if FBottomCap = ctCenter then
       begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
         if DoReverse then
           NegateVector(N1);
       end;
-      xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
+      glTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
+      glNormal3fv(@N1);
       glVertex3fv(@v1);
       Theta := Theta - StepH;
     end;
@@ -3690,7 +3700,7 @@ begin
       SetVector(intersectPoint^, LocalToAbsolute(i1));
     if Assigned(intersectNormal) then
     begin
-      i1.V[3] := 0; // vector transform
+      i1.W := 0; // vector transform
       SetVector(intersectNormal^, LocalToAbsolute(i1));
     end;
   end
@@ -3873,10 +3883,10 @@ end;
 
 function TVKSphere.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := Abs(FRadius);
-  Result.V[1] := Result.V[0];
-  Result.V[2] := Result.V[0];
-  Result.V[3] := 0;
+  Result.X := Abs(FRadius);
+  Result.Y := Result.X;
+  Result.Z := Result.X;
+  Result.W := 0;
 end;
 
 // ------------------
@@ -4082,11 +4092,11 @@ begin
   begin
     glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngTop, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    glTexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, -1, 0)
+      glNormal3f(0, -1, 0)
     else
-      GL.Normal3f(0, 1, 0);
+      glNormal3f(0, 1, 0);
 
     if FTopCap = ctCenter then
       glVertex3f(0, 0, 0)
@@ -4141,8 +4151,8 @@ begin
           NegateVector(N1);
       end;
       //    xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      xglTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
-      GL.Normal3fv(@N1);
+      glTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      glNormal3fv(@N1);
       vs := v1;
       ScaleVector(vs, Radius);
       glVertex3fv(@vs);
@@ -4218,26 +4228,26 @@ begin
       V2.Z := CosPc1 * CosTc2;
 
       uTexCoord := i * uTexFactor;
-      xglTexCoord2f(uTexCoord, vTexCoord0);
+      glTexCoord2f(uTexCoord, vTexCoord0);
       if DoReverse then
       begin
         N1 := VectorNegate(v1);
-        GL.Normal3fv(@N1);
+        glNormal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v1);
+        glNormal3fv(@v1);
       vs := v1;
       ScaleVector(vs, Radius);
       glVertex3fv(@vs);
 
-      xglTexCoord2f(uTexCoord, vTexCoord1);
+      glTexCoord2f(uTexCoord, vTexCoord1);
       if DoReverse then
       begin
         N1 := VectorNegate(V2);
-        GL.Normal3fv(@N1);
+        glNormal3fv(@N1);
       end
       else
-        GL.Normal3fv(@v2);
+        glNormal3fv(@v2);
       vs := v2;
       ScaleVector(vs, Radius);
       glVertex3fv(@vs);
@@ -4254,11 +4264,11 @@ begin
   begin
     glBegin(GL_TRIANGLE_FAN);
     SinCosine(AngBottom, SinP, CosP);
-    xglTexCoord2f(0.5, 0.5);
+    glTexCoord2f(0.5, 0.5);
     if DoReverse then
-      GL.Normal3f(0, 1, 0)
+      glNormal3f(0, 1, 0)
     else
-      GL.Normal3f(0, -1, 0);
+      glNormal3f(0, -1, 0);
     if FBottomCap = ctCenter then
       glVertex3f(0, 0, 0)
     else
@@ -4309,10 +4319,10 @@ begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
         if DoReverse then
           NegateVector(N1);
-        GL.Normal3fv(@N1);
+        glNormal3fv(@N1);
       end;
       //    xglTexCoord2f(SinT * 0.5 + 0.5, CosT * 0.5 + 0.5);
-      xglTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
+      glTexCoord2f(SinTc2 * 0.5 + 0.5, CosTc2 * 0.5 + 0.5);
       vs := v1;
       ScaleVector(vs, Radius);
       glVertex3fv(@vs);

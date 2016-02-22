@@ -12,7 +12,7 @@ uses
   System.Classes,
   System.SysUtils,
   GLS.CrossPlatform,
-  GLS.OpenGLTokens,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   GLS.Context,
   GLS.Graphics,
   GLS.TextureFormat,
@@ -365,7 +365,7 @@ begin
           if bCompressed then
           begin
 
-            if GL.NV_texture_compression_vtc and IsVolume then
+            if GL_NV_texture_compression_vtc and IsVolume then
             begin
               if level = 0 then
                 GetMem(vtcBuffer, GetLevelSizeInByte(0));
