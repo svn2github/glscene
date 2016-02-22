@@ -39,7 +39,7 @@ __published:	// IDE-managed Components
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ComboBox1Change(TObject *Sender);
-	void __fastcall GLPostEffect1CustomEffect(TObject *Sender, TRenderContextInfo &rci,
+	void __fastcall GLPostEffect1CustomEffect(TObject *Sender, TGLRenderContextInfo &rci,
           TGLPostEffectBuffer &Buffer);
 
 private:	// User declarations

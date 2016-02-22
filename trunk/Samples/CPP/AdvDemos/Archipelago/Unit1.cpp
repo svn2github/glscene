@@ -401,7 +401,7 @@ void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx,
 
 // ---------------------------------------------------------------------------
 void __fastcall TForm1::TerrainRendererHeightDataPostRender
-	(TRenderContextInfo &rci, TList *&HeightDatas) {
+	(TGLRenderContextInfo &rci, TList *&HeightDatas) {
 	int i, x, y, s, s2;
 	float t;
 	THeightData *hd;
@@ -505,7 +505,7 @@ void __fastcall TForm1::DOWakeProgress(TObject *Sender, const double deltaTime,
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TForm1::DOWakeRender(TObject *Sender, TRenderContextInfo &rci) {
+void __fastcall TForm1::DOWakeRender(TObject *Sender, TGLRenderContextInfo &rci) {
 	int i, n;
 	Glvectortypes::TVector3f p;
 	Glvectorgeometry::TVector sbp;

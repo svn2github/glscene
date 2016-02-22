@@ -43,9 +43,9 @@ __published:	// IDE-managed Components
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall CheckBox1Click(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
-	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall GLFBORenderer1AfterRender(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall GLFBORenderer2AfterRender(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall GLFBORenderer1AfterRender(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall GLFBORenderer2AfterRender(TObject *Sender, TGLRenderContextInfo &rci);
 	void __fastcall RBClick(TObject *Sender);
 	void __fastcall SBClick(TObject *Sender);
 

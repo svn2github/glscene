@@ -92,7 +92,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shi
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
    int x, y;

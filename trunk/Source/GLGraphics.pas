@@ -88,7 +88,10 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.SyncObjs, System.Math,
+  System.Classes,
+  System.SysUtils,
+  System.SyncObjs,
+  System.Math,
   VCL.Graphics,
   VCL.Imaging.Pngimage,
 {$IFDEF GLS_Graphics32_SUPPORT}
@@ -2650,10 +2653,10 @@ var
   AlphaScan: VCL.Imaging.Pngimage.pByteArray;
   Pixel: Integer;
 begin
-{$IFDEF GLS_PngImage_RESIZENEAREST}
+//{$IFDEF GLS_PngImage_RESIZENEAREST}
   if (aPngImage.Width and 3) > 0 then
     aPngImage.Resize((aPngImage.Width and $FFFC) + 4, aPngImage.Height);
-{$ENDIF}
+//{$ENDIF}
   UnMipmap;
   FLOD[0].Width := aPngImage.Width;
   FLOD[0].Height := aPngImage.Height;

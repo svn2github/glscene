@@ -80,7 +80,7 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject * Sender,
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLUserShader1DoApply(TObject * Sender,
-                                             TRenderContextInfo & rci)
+                                             TGLRenderContextInfo & rci)
 {
   // Here is the shader trick: the same cubemap is used in reflection mode
   // for the pond, and in normal mode for the environment sphere
@@ -107,7 +107,7 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject * Sender,
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLUserShader1DoUnApply(TObject * Sender, int Pass,
-											   TRenderContextInfo & rci,
+											   TGLRenderContextInfo & rci,
 											   bool & Continue)
 {
   rci.GLStates->UnSetGLState(stBlend);
@@ -123,7 +123,7 @@ void __fastcall TForm1::GLSceneViewer1BeforeRender(TObject * Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLDirectOpenGL1Render(TObject * Sender,
-											  TRenderContextInfo & rci)
+											  TGLRenderContextInfo & rci)
 {
   reflectionToggle = true;      // toggle for pond/water plane
 }

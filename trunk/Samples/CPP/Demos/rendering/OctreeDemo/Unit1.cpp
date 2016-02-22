@@ -181,7 +181,7 @@ void __fastcall TForm1::RenderOctreeNode(TSectorNode* Node)
 
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   TAABB* AABB;

@@ -58,7 +58,7 @@ __published:	// IDE-managed Components
 	void __fastcall GLSceneViewer1BeforeRender(TObject *Sender);
 	void __fastcall FormResize(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall PrepareShadowMappingRender(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall PrepareShadowMappingRender(TObject *Sender, TGLRenderContextInfo &rci);
 
 private:	// User declarations
 	TMatrix FBiasMatrix;

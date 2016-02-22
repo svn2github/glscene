@@ -47,7 +47,7 @@ __published:	// IDE-managed Components
 	void __fastcall BURectsClick(TObject *Sender);
 	void __fastcall BUPointsClick(TObject *Sender);
 	void __fastcall BUTextOutClick(TObject *Sender);
-	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci);
 
 private:	// User declarations
 	void PaintTheBox();

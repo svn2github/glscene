@@ -33,7 +33,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
    GLMaterialLibrary->AddTextureMaterial("stone","walkway.jpg")->Material->FaceCulling = fcNoCull;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::DirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::DirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
    TGLLibMaterial *material;

@@ -49,7 +49,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 	img->Picture[CmtNZ]->LoadFromFile("cm_front.jpg");
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::DOInitializeRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::DOInitializeRender(TObject *Sender, TGLRenderContextInfo &rci)
 {
 	if (! ((GL_SHADER_OBJECT_ARB) &&
 			(GL_VERTEX_PROGRAM_ARB) &&
@@ -90,7 +90,7 @@ void __fastcall TForm1::DOInitializeRender(TObject *Sender, TRenderContextInfo &
 	throw Exception(programObject->InfoLog());
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   Glvectorgeometry::TVector camPos;
@@ -102,7 +102,7 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender, TRenderContextInfo
 ///  programObject->Uniform4f["EyePos"] = camPos;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass, TRenderContextInfo &rci,
+void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass, TGLRenderContextInfo &rci,
           bool &Continue)
 {
   programObject->EndUseProgramObject();
@@ -151,7 +151,7 @@ const int
   int nbVerts;
 
 
-void __fastcall TForm1::DOOceanPlaneRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::DOOceanPlaneRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   int x, y;

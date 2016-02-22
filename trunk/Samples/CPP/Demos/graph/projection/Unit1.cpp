@@ -34,7 +34,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 			  (float)(Random()-0.5)*5, (float)(Random()-0.5)*5);
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::DirectOpenGLRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::DirectOpenGLRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
    int i;

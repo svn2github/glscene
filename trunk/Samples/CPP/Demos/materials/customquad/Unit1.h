@@ -41,7 +41,7 @@ __published:	// IDE-managed Components
 	TGLMaterialLibrary *GLMaterialLibrary;
 	TGLCadencer *GLCadencer1;
 	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall DirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall DirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci);
 private:	// User declarations
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);

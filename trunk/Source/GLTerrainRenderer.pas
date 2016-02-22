@@ -52,10 +52,21 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
+  System.Classes, 
+  System.SysUtils, 
+  System.Types,
   // GLS
-  GLScene, GLHeightData, GLMaterial, GLVectorGeometry, GLContext, GLROAMPatch,
-  GLVectorLists, GLRenderContextInfo, OpenGLTokens, XOpenGL, GLUtils, 
+  GLScene, 
+  GLHeightData, 
+  GLMaterial, 
+  GLVectorGeometry, 
+  GLContext, 
+  GLROAMPatch,
+  GLVectorLists, 
+  GLRenderContextInfo, 
+  OpenGLTokens, 
+  XOpenGL, 
+  GLUtils, 
   GLVectorTypes;
 
 const

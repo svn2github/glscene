@@ -40,7 +40,7 @@
 // Also, Define "Auto" Resize To Nearest 8 Multiple Size
 // PNG is supported by Delphi since Dephi 2009
 {$DEFINE GLS_PngImage_SUPPORT}
-{$DEFINE GLS_PngImage_RESIZENEAREST}
+{.$DEFINE GLS_PngImage_RESIZENEAREST}
 
 
 // Activate support for some optimizations by disabling checks that occur very often
@@ -66,8 +66,11 @@
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
 
+// Activate Multithread support
+{.$DEFINE GLS_MULTITHREAD}
+
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
-// This work only on windows platform and with modern compiler (D2009 and FPC}
+// This work only on windows platform and with modern compiler (XE2 and FPC or higher}
 {$DEFINE GLS_SERVICE_CONTEXT}
 
 {$IFDEF GLS_MULTITHREAD}
@@ -92,7 +95,7 @@
 {.$DEFINE ANDROID}
 
 // Activate support of Linux
-{.$DEFINE MSWINDOWS}
+{.$DEFINE LINUX}
 
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}
@@ -106,14 +109,6 @@
 {$IFDEF WIN64}
   {$DEFINE GLS_NO_ASM}
   {$DEFINE GEOMETRY_NO_ASM}
-{$ENDIF}
-
-{$IFNDEF MSWINDOWS}
-  {$IFDEF WIN32}
-    // MSWINDOWS wasn't defined in Delphi 5, but WIN32 was
-    // so need to define MSWINDOWS here to provide Delphi 5 support
-    {$DEFINE MSWINDOWS}
-  {$ENDIF}
 {$ENDIF}
 
 {$IFDEF LINUX}
@@ -135,7 +130,7 @@
   {$UNDEF GLS_X11_SUPPORT}
 {$ENDIF}
 
-{$IFDEF Linux}
+{$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE GLS_X11_SUPPORT}
@@ -161,7 +156,7 @@
   {$DEFINE GLS_REGIONS}
 {$ENDIF}
 
-{$define GLS_DEPRECATED}
+{$DEFINE GLS_DEPRECATED}
 {
   This defines if the compiler should use deprecated stuff or not.
   by default headers use deprecated stuff.

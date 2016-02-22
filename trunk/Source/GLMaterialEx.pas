@@ -5248,9 +5248,7 @@ begin
 end;
 
 procedure BeginPatch(mode: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall{$ELSE}cdecl{$ENDIF};
 begin
   if mode = GL_PATCHES then
     vStoreBegin(GL_PATCHES)

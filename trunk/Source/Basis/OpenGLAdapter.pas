@@ -5,6 +5,7 @@
   OpenGL adapter
 
   History :
+  23/02/16 - PW - Updated to support OpenGL 4.5
   24/10/13 - Yar - Added OpenGL 4.3, 4.4
   08/09/11 - Yar - Added WGL_NV_DX_interop
   21/08/11 - Yar - Added OpenGL ES
@@ -2329,8 +2330,8 @@ procedure gluEndPolygon(tess: PGLUtesselator);
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 
 {$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
-function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
-function GLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressGLLib(ProcName: PGLChar): Pointer;
+function GetProcAddressGLS(ProcName: PGLChar): Pointer;
 
 procedure CloseOpenGL;
 function InitOpenGL: boolean;
@@ -2370,7 +2371,7 @@ var
   EGL2Handle: HINST;
 {$ENDIF}
 
-function GLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressGLS(ProcName: PGLChar): Pointer;
 begin
 {$IFNDEF EGL_SUPPORT}
   Result := wglGetProcAddress(ProcName);
@@ -2381,7 +2382,7 @@ end;
 
 {$IFDEF EGL_SUPPORT}
 
-function EGLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressEGL(ProcName: PGLChar): Pointer;
 begin
   Result := getProcAddress(EGLHandle, ProcName);
 end;
@@ -2429,7 +2430,7 @@ begin
 end;
 {$ENDIF}
 
-function GLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressGLS(ProcName: PGLChar): Pointer;
 begin
 {$IFNDEF EGL_SUPPORT}
 {$IFDEF SUPPORT_GLX}
@@ -2453,14 +2454,14 @@ end;
 
 {$IFDEF DARWIN}
 
-function AGLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressAGL(ProcName: PGLChar): Pointer;
 begin
   Result := getProcAddress(AGLHandle, ProcName);
 end;
 {$ELSE}
 {$IFDEF EGL_SUPPORT}
 
-function EGLGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressEGL(ProcName: PGLChar): Pointer;
 begin
   Result := getProcAddress(EGLHandle, ProcName);
 end;
@@ -2468,7 +2469,7 @@ end;
 {$ENDIF DARWIN}
 {$ENDIF UNIX}
 
-function GLLibGetProcAddress(ProcName: PGLChar): Pointer;
+function GetProcAddressGLLib(ProcName: PGLChar): Pointer;
 begin
   Result := getProcAddress(GLHandle, ProcName);
 end;
@@ -2520,40 +2521,40 @@ var
   vName: string;
 begin
   vName := glPrefix + ProcName;
-  Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
 {$IFDEF DARWIN}
   if Result = nil then
   begin
-    Result := AGLGetProcAddress(PGLChar(TGLString(vName)));
+    Result := GetProcAddressAGL(PGLChar(TGLString(vName)));
     if Result = nil then
     begin
       vName := glPrefix + ProcName + 'APPLE';
-      Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+      Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
 {$ENDIF}
       if Result = nil then
       begin
         vName := glPrefix + ProcName + 'ARB';
-        Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+        Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
         if Result = nil then
         begin
           vName := glPrefix + ProcName;
-          Result := GLLibGetProcAddress(PGLChar(TGLString(vName)));
+          Result := GetProcAddressGLLib(PGLChar(TGLString(vName)));
           if Result = nil then
           begin
             vName := glPrefix + ProcName + 'EXT';
-            Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+            Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
             if Result = nil then
             begin
               vName := glPrefix + ProcName + 'NV';
-              Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+              Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
               if Result = nil then
               begin
                 vName := glPrefix + ProcName + 'ATI';
-                Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+                Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
                 if Result = nil then
                 begin
                   vName := glPrefix + ProcName + 'OES';
-                  Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+                  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
                   if Result = nil then
                     Result := @glCap;
                 end;
@@ -2588,7 +2589,7 @@ var
   vName: string;
 begin
   vName := glPrefix + ProcName;
-  Result := GLGetProcAddress(PGLChar(TGLString(vName)));
+  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
   if Result = nil then
     Result := @glCap;
 {$IFDEF GLS_OPENGL_DEBUG}
@@ -5561,39 +5562,39 @@ begin
   // ###########################################################
 
   // WGL_buffer_region (ARB #4)
-  WCreateBufferRegionARB := GLGetProcAddress('wglCreateBufferRegionARB');
-  WDeleteBufferRegionARB := GLGetProcAddress('wglDeleteBufferRegionARB');
-  WSaveBufferRegionARB := GLGetProcAddress('wglSaveBufferRegionARB');
-  WRestoreBufferRegionARB := GLGetProcAddress('wglRestoreBufferRegionARB');
+  WCreateBufferRegionARB := GetProcAddressGLS('wglCreateBufferRegionARB');
+  WDeleteBufferRegionARB := GetProcAddressGLS('wglDeleteBufferRegionARB');
+  WSaveBufferRegionARB := GetProcAddressGLS('wglSaveBufferRegionARB');
+  WRestoreBufferRegionARB := GetProcAddressGLS('wglRestoreBufferRegionARB');
 
   // WGL_ARB_extensions_string (ARB #8)
-  WGetExtensionsStringARB := GLGetProcAddress('wglGetExtensionsStringARB');
+  WGetExtensionsStringARB := GetProcAddressGLS('wglGetExtensionsStringARB');
 
   // WGL_ARB_pixel_format (ARB #9)
   WGetPixelFormatAttribivARB :=
-    GLGetProcAddress('wglGetPixelFormatAttribivARB');
+    GetProcAddressGLS('wglGetPixelFormatAttribivARB');
   WGetPixelFormatAttribfvARB :=
-    GLGetProcAddress('wglGetPixelFormatAttribfvARB');
-  WChoosePixelFormatARB := GLGetProcAddress('wglChoosePixelFormatARB');
+    GetProcAddressGLS('wglGetPixelFormatAttribfvARB');
+  WChoosePixelFormatARB := GetProcAddressGLS('wglChoosePixelFormatARB');
 
   // WGL_make_current_read (ARB #10)
-  WMakeContextCurrentARB := GLGetProcAddress('wglMakeContextCurrentARB');
-  WGetCurrentReadDCARB := GLGetProcAddress('wglGetCurrentReadDCARB');
+  WMakeContextCurrentARB := GetProcAddressGLS('wglMakeContextCurrentARB');
+  WGetCurrentReadDCARB := GetProcAddressGLS('wglGetCurrentReadDCARB');
 
   // WGL_ARB_pbuffer (ARB #11)
-  WCreatePbufferARB := GLGetProcAddress('wglCreatePbufferARB');
-  WGetPbufferDCARB := GLGetProcAddress('wglGetPbufferDCARB');
-  WReleasePbufferDCARB := GLGetProcAddress('wglReleasePbufferDCARB');
-  WDestroyPbufferARB := GLGetProcAddress('wglDestroyPbufferARB');
-  WQueryPbufferARB := GLGetProcAddress('wglQueryPbufferARB');
+  WCreatePbufferARB := GetProcAddressGLS('wglCreatePbufferARB');
+  WGetPbufferDCARB := GetProcAddressGLS('wglGetPbufferDCARB');
+  WReleasePbufferDCARB := GetProcAddressGLS('wglReleasePbufferDCARB');
+  WDestroyPbufferARB := GetProcAddressGLS('wglDestroyPbufferARB');
+  WQueryPbufferARB := GetProcAddressGLS('wglQueryPbufferARB');
 
   // WGL_ARB_render_texture (ARB #20)
-  WBindTexImageARB := GLGetProcAddress('wglBindTexImageARB');
-  WReleaseTexImageARB := GLGetProcAddress('wglReleaseTexImageARB');
-  WSetPbufferAttribARB := GLGetProcAddress('wglSetPbufferAttribARB');
+  WBindTexImageARB := GetProcAddressGLS('wglBindTexImageARB');
+  WReleaseTexImageARB := GetProcAddressGLS('wglReleaseTexImageARB');
+  WSetPbufferAttribARB := GetProcAddressGLS('wglSetPbufferAttribARB');
 
   // WGL_ARB_create_context (ARB #55)
-  WCreateContextAttribsARB := GLGetProcAddress('wglCreateContextAttribsARB');
+  WCreateContextAttribsARB := GetProcAddressGLS('wglCreateContextAttribsARB');
 
   // ###########################################################
   // locating functions and procedures for
@@ -5601,30 +5602,30 @@ begin
   // ###########################################################
 
   // WGL_EXT_swap_control (EXT #172)
-  WSwapIntervalEXT := GLGetProcAddress('wglSwapIntervalEXT');
-  WGetSwapIntervalEXT := GLGetProcAddress('wglGetSwapIntervalEXT');
+  WSwapIntervalEXT := GetProcAddressGLS('wglSwapIntervalEXT');
+  WGetSwapIntervalEXT := GetProcAddressGLS('wglGetSwapIntervalEXT');
 
   // GL_NV_vertex_array_range (EXT #190)
-  WAllocateMemoryNV := GLGetProcAddress('wglAllocateMemoryNV');
-  WFreeMemoryNV := GLGetProcAddress('wglFreeMemoryNV');
+  WAllocateMemoryNV := GetProcAddressGLS('wglAllocateMemoryNV');
+  WFreeMemoryNV := GetProcAddressGLS('wglFreeMemoryNV');
 
   // WGL_NV_gpu_affinity
-  WEnumGpusNV := GLGetProcAddress('wglEnumGpusNV');
-  WEnumGpuDevicesNV := GLGetProcAddress('wglEnumGpuDevicesNV');
-  WCreateAffinityDCNV := GLGetProcAddress('wglCreateAffinityDCNV');
-  WEnumGpusFromAffinityDCNV := GLGetProcAddress('wglEnumGpusFromAffinityDCNV');
-  WDeleteDCNV := GLGetProcAddress('wglDeleteDCNV');
+  WEnumGpusNV := GetProcAddressGLS('wglEnumGpusNV');
+  WEnumGpuDevicesNV := GetProcAddressGLS('wglEnumGpuDevicesNV');
+  WCreateAffinityDCNV := GetProcAddressGLS('wglCreateAffinityDCNV');
+  WEnumGpusFromAffinityDCNV := GetProcAddressGLS('wglEnumGpusFromAffinityDCNV');
+  WDeleteDCNV := GetProcAddressGLS('wglDeleteDCNV');
 
   // WGL_NV_DX_interop
   WDXSetResourceShareHandleNV :=
-    GLGetProcAddress('wglDXSetResourceShareHandleNV');
-  WDXOpenDeviceNV := GLGetProcAddress('wglDXOpenDeviceNV');
-  WDXCloseDeviceNV := GLGetProcAddress('wglDXCloseDeviceNV');
-  WDXRegisterObjectNV := GLGetProcAddress('wglDXRegisterObjectNV');
-  WDXUnregisterObjectNV := GLGetProcAddress('wglDXUnregisterObjectNV');
-  WDXObjectAccessNV := GLGetProcAddress('wglDXObjectAccessNV');
-  WDXLockObjectsNV := GLGetProcAddress('wglDXLockObjectsNV');
-  WDXUnlockObjectsNV := GLGetProcAddress('wglDXUnlockObjectsNV');
+    GetProcAddressGLS('wglDXSetResourceShareHandleNV');
+  WDXOpenDeviceNV := GetProcAddressGLS('wglDXOpenDeviceNV');
+  WDXCloseDeviceNV := GetProcAddressGLS('wglDXCloseDeviceNV');
+  WDXRegisterObjectNV := GetProcAddressGLS('wglDXRegisterObjectNV');
+  WDXUnregisterObjectNV := GetProcAddressGLS('wglDXUnregisterObjectNV');
+  WDXObjectAccessNV := GetProcAddressGLS('wglDXObjectAccessNV');
+  WDXLockObjectsNV := GetProcAddressGLS('wglDXLockObjectsNV');
+  WDXUnlockObjectsNV := GetProcAddressGLS('wglDXUnlockObjectsNV');
 end;
 
 {$ENDIF}
@@ -5701,30 +5702,30 @@ begin
   // ###########################################################
 
   // GLX 1.3 and later
-  XChooseFBConfig := GLGetProcAddress('glXChooseFBConfig');
-  XGetFBConfigAttrib := GLGetProcAddress('glXGetFBConfigAttrib');
-  XGetFBConfigs := GLGetProcAddress('glXGetFBConfigs');
-  XGetVisualFromFBConfig := GLGetProcAddress('glXGetVisualFromFBConfig');
-  XCreateWindow := GLGetProcAddress('glXCreateWindow');
-  XDestroyWindow := GLGetProcAddress('glXDestroyWindow');
-  XCreatePixmap := GLGetProcAddress('glXCreatePixmap');
-  XDestroyPixmap := GLGetProcAddress('glXDestroyPixmap');
-  XCreatePbuffer := GLGetProcAddress('glXCreatePbuffer');
-  XDestroyPbuffer := GLGetProcAddress('glXDestroyPbuffer');
-  XQueryDrawable := GLGetProcAddress('glXQueryDrawable');
-  XCreateNewContext := GLGetProcAddress('glXCreateNewContext');
-  XMakeContextCurrent := GLGetProcAddress('glXMakeContextCurrent');
-  XGetCurrentReadDrawable := GLGetProcAddress('glXGetCurrentReadDrawable');
-  XQueryContext := GLGetProcAddress('glXQueryContext');
-  XSelectEvent := GLGetProcAddress('glXSelectEvent');
-  XGetSelectedEvent := GLGetProcAddress('glXGetSelectedEvent');
-  XBindTexImageARB := GLGetProcAddress('glXBindTexImageARB');
-  XReleaseTexImageARB := GLGetProcAddress('glXReleaseTexImageARB');
-  XDrawableAttribARB := GLGetProcAddress('glxDrawableAttribARB');
+  XChooseFBConfig := GetProcAddressGLS('glXChooseFBConfig');
+  XGetFBConfigAttrib := GetProcAddressGLS('glXGetFBConfigAttrib');
+  XGetFBConfigs := GetProcAddressGLS('glXGetFBConfigs');
+  XGetVisualFromFBConfig := GetProcAddressGLS('glXGetVisualFromFBConfig');
+  XCreateWindow := GetProcAddressGLS('glXCreateWindow');
+  XDestroyWindow := GetProcAddressGLS('glXDestroyWindow');
+  XCreatePixmap := GetProcAddressGLS('glXCreatePixmap');
+  XDestroyPixmap := GetProcAddressGLS('glXDestroyPixmap');
+  XCreatePbuffer := GetProcAddressGLS('glXCreatePbuffer');
+  XDestroyPbuffer := GetProcAddressGLS('glXDestroyPbuffer');
+  XQueryDrawable := GetProcAddressGLS('glXQueryDrawable');
+  XCreateNewContext := GetProcAddressGLS('glXCreateNewContext');
+  XMakeContextCurrent := GetProcAddressGLS('glXMakeContextCurrent');
+  XGetCurrentReadDrawable := GetProcAddressGLS('glXGetCurrentReadDrawable');
+  XQueryContext := GetProcAddressGLS('glXQueryContext');
+  XSelectEvent := GetProcAddressGLS('glXSelectEvent');
+  XGetSelectedEvent := GetProcAddressGLS('glXGetSelectedEvent');
+  XBindTexImageARB := GetProcAddressGLS('glXBindTexImageARB');
+  XReleaseTexImageARB := GetProcAddressGLS('glXReleaseTexImageARB');
+  XDrawableAttribARB := GetProcAddressGLS('glxDrawableAttribARB');
 
   // GLX 1.4
   // GLX_ARB_create_context (EXT #56)
-  XCreateContextAttribsARB := GLGetProcAddress('glXCreateContextAttribsARB');
+  XCreateContextAttribsARB := GetProcAddressGLS('glXCreateContextAttribsARB');
 
   // ###########################################################
   // locating functions and procedures for
@@ -5732,95 +5733,95 @@ begin
   // ###########################################################
 
   // WGL_EXT_swap_control (EXT #172)
-  XSwapIntervalSGI := GLGetProcAddress('glXSwapIntervalSGI');
-  XGetVideoSyncSGI := GLGetProcAddress('glXGetVideoSyncSGI');
-  XWaitVideoSyncSGI := GLGetProcAddress('glXWaitVideoSyncSGI');
-  XFreeContextEXT := GLGetProcAddress('glXFreeContextEXT');
-  XGetContextIDEXT := GLGetProcAddress('glXGetContextIDEXT');
-  XGetCurrentDisplayEXT := GLGetProcAddress('glXGetCurrentDisplayEXT');
-  XImportContextEXT := GLGetProcAddress('glXImportContextEXT');
-  XQueryContextInfoEXT := GLGetProcAddress('glXQueryContextInfoEXT');
-  XCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
-  XCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
-  XReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
-  XSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
+  XSwapIntervalSGI := GetProcAddressGLS('glXSwapIntervalSGI');
+  XGetVideoSyncSGI := GetProcAddressGLS('glXGetVideoSyncSGI');
+  XWaitVideoSyncSGI := GetProcAddressGLS('glXWaitVideoSyncSGI');
+  XFreeContextEXT := GetProcAddressGLS('glXFreeContextEXT');
+  XGetContextIDEXT := GetProcAddressGLS('glXGetContextIDEXT');
+  XGetCurrentDisplayEXT := GetProcAddressGLS('glXGetCurrentDisplayEXT');
+  XImportContextEXT := GetProcAddressGLS('glXImportContextEXT');
+  XQueryContextInfoEXT := GetProcAddressGLS('glXQueryContextInfoEXT');
+  XCopySubBufferMESA := GetProcAddressGLS('glXCopySubBufferMESA');
+  XCreateGLXPixmapMESA := GetProcAddressGLS('glXCreateGLXPixmapMESA');
+  XReleaseBuffersMESA := GetProcAddressGLS('glXReleaseBuffersMESA');
+  XSet3DfxModeMESA := GetProcAddressGLS('glXSet3DfxModeMESA');
 
-  XBindTexImageEXT := GLGetProcAddress('glXBindTexImageEXT');
-  XReleaseTexImageEXT := GLGetProcAddress('glXReleaseTexImageEXT');
+  XBindTexImageEXT := GetProcAddressGLS('glXBindTexImageEXT');
+  XReleaseTexImageEXT := GetProcAddressGLS('glXReleaseTexImageEXT');
 
   // GLX 1.4
-  XMakeCurrentReadSGI := GLGetProcAddress('glXMakeCurrentReadSGI');
+  XMakeCurrentReadSGI := GetProcAddressGLS('glXMakeCurrentReadSGI');
   XGetCurrentReadDrawableSGI :=
-    GLGetProcAddress('glXGetCurrentReadDrawableSGI');
-  XGetFBConfigAttribSGIX := GLGetProcAddress('glXGetFBConfigAttribSGIX');
-  XChooseFBConfigSGIX := GLGetProcAddress('glXChooseFBConfigSGIX');
+    GetProcAddressGLS('glXGetCurrentReadDrawableSGI');
+  XGetFBConfigAttribSGIX := GetProcAddressGLS('glXGetFBConfigAttribSGIX');
+  XChooseFBConfigSGIX := GetProcAddressGLS('glXChooseFBConfigSGIX');
   XCreateGLXPixmapWithConfigSGIX :=
-    GLGetProcAddress('glXCreateGLXPixmapWithConfigSGIX');
+    GetProcAddressGLS('glXCreateGLXPixmapWithConfigSGIX');
   XCreateContextWithConfigSGIX :=
-    GLGetProcAddress('glXCreateContextWithConfigSGIX');
+    GetProcAddressGLS('glXCreateContextWithConfigSGIX');
   XGetVisualFromFBConfigSGIX :=
-    GLGetProcAddress('glXGetVisualFromFBConfigSGIX');
+    GetProcAddressGLS('glXGetVisualFromFBConfigSGIX');
   XGetFBConfigFromVisualSGIX :=
-    GLGetProcAddress('glXGetFBConfigFromVisualSGIX');
-  XCreateGLXPbufferSGIX := GLGetProcAddress('glXCreateGLXPbufferSGIX');
-  XDestroyGLXPbufferSGIX := GLGetProcAddress('glXDestroyGLXPbufferSGIX');
-  XQueryGLXPbufferSGIX := GLGetProcAddress('glXQueryGLXPbufferSGIX');
-  XSelectEventSGIX := GLGetProcAddress('glXSelectEventSGIX');
-  XGetSelectedEventSGIX := GLGetProcAddress('glXGetSelectedEventSGIX');
-  XCushionSGI := GLGetProcAddress('glXCushionSGI');
-  XBindChannelToWindowSGIX := GLGetProcAddress('glXBindChannelToWindowSGIX');
-  XChannelRectSGIX := GLGetProcAddress('glXChannelRectSGIX');
-  XQueryChannelRectSGIX := GLGetProcAddress('glXQueryChannelRectSGIX');
-  XQueryChannelDeltasSGIX := GLGetProcAddress('glXQueryChannelDeltasSGIX');
-  XChannelRectSyncSGIX := GLGetProcAddress('glXChannelRectSyncSGIX');
-  XJoinSwapGroupSGIX := GLGetProcAddress('glXJoinSwapGroupSGIX');
-  XBindSwapBarrierSGIX := GLGetProcAddress('glXBindSwapBarrierSGIX');
-  XQueryMaxSwapBarriersSGIX := GLGetProcAddress('glXQueryMaxSwapBarriersSGIX');
+    GetProcAddressGLS('glXGetFBConfigFromVisualSGIX');
+  XCreateGLXPbufferSGIX := GetProcAddressGLS('glXCreateGLXPbufferSGIX');
+  XDestroyGLXPbufferSGIX := GetProcAddressGLS('glXDestroyGLXPbufferSGIX');
+  XQueryGLXPbufferSGIX := GetProcAddressGLS('glXQueryGLXPbufferSGIX');
+  XSelectEventSGIX := GetProcAddressGLS('glXSelectEventSGIX');
+  XGetSelectedEventSGIX := GetProcAddressGLS('glXGetSelectedEventSGIX');
+  XCushionSGI := GetProcAddressGLS('glXCushionSGI');
+  XBindChannelToWindowSGIX := GetProcAddressGLS('glXBindChannelToWindowSGIX');
+  XChannelRectSGIX := GetProcAddressGLS('glXChannelRectSGIX');
+  XQueryChannelRectSGIX := GetProcAddressGLS('glXQueryChannelRectSGIX');
+  XQueryChannelDeltasSGIX := GetProcAddressGLS('glXQueryChannelDeltasSGIX');
+  XChannelRectSyncSGIX := GetProcAddressGLS('glXChannelRectSyncSGIX');
+  XJoinSwapGroupSGIX := GetProcAddressGLS('glXJoinSwapGroupSGIX');
+  XBindSwapBarrierSGIX := GetProcAddressGLS('glXBindSwapBarrierSGIX');
+  XQueryMaxSwapBarriersSGIX := GetProcAddressGLS('glXQueryMaxSwapBarriersSGIX');
   XQueryHyperpipeNetworkSGIX :=
-    GLGetProcAddress('glXQueryHyperpipeNetworkSGIX');
+    GetProcAddressGLS('glXQueryHyperpipeNetworkSGIX');
 
-  XHyperpipeConfigSGIX := GLGetProcAddress('glXHyperpipeConfigSGIX');
-  XQueryHyperpipeConfigSGIX := GLGetProcAddress('glXQueryHyperpipeConfigSGIX');
+  XHyperpipeConfigSGIX := GetProcAddressGLS('glXHyperpipeConfigSGIX');
+  XQueryHyperpipeConfigSGIX := GetProcAddressGLS('glXQueryHyperpipeConfigSGIX');
   XDestroyHyperpipeConfigSGIX :=
-    GLGetProcAddress('glXDestroyHyperpipeConfigSGIX');
-  XBindHyperpipeSGIX := GLGetProcAddress('glXBindHyperpipeSGIX');
+    GetProcAddressGLS('glXDestroyHyperpipeConfigSGIX');
+  XBindHyperpipeSGIX := GetProcAddressGLS('glXBindHyperpipeSGIX');
   XQueryHyperpipeBestAttribSGIX :=
-    GLGetProcAddress('glXQueryHyperpipeBestAttribSGIX');
-  XHyperpipeAttribSGIX := GLGetProcAddress('glXHyperpipeAttribSGIX');
-  XQueryHyperpipeAttribSGIX := GLGetProcAddress('glXQueryHyperpipeAttribSGIX');
-  XGetAGPOffsetMESA := GLGetProcAddress('glXGetAGPOffsetMESA');
-  XEnumerateVideoDevicesNV := GLGetProcAddress('glXEnumerateVideoDevicesNV');
-  XBindVideoDeviceNV := GLGetProcAddress('glXBindVideoDeviceNV');
-  XGetVideoDeviceNV := GLGetProcAddress('glXGetVideoDeviceNV');
-  XCopySubBufferMESA := GLGetProcAddress('glXCopySubBufferMESA');
-  XReleaseBuffersMESA := GLGetProcAddress('glXReleaseBuffersMESA');
-  XCreateGLXPixmapMESA := GLGetProcAddress('glXCreateGLXPixmapMESA');
-  XSet3DfxModeMESA := GLGetProcAddress('glXSet3DfxModeMESA');
+    GetProcAddressGLS('glXQueryHyperpipeBestAttribSGIX');
+  XHyperpipeAttribSGIX := GetProcAddressGLS('glXHyperpipeAttribSGIX');
+  XQueryHyperpipeAttribSGIX := GetProcAddressGLS('glXQueryHyperpipeAttribSGIX');
+  XGetAGPOffsetMESA := GetProcAddressGLS('glXGetAGPOffsetMESA');
+  XEnumerateVideoDevicesNV := GetProcAddressGLS('glXEnumerateVideoDevicesNV');
+  XBindVideoDeviceNV := GetProcAddressGLS('glXBindVideoDeviceNV');
+  XGetVideoDeviceNV := GetProcAddressGLS('glXGetVideoDeviceNV');
+  XCopySubBufferMESA := GetProcAddressGLS('glXCopySubBufferMESA');
+  XReleaseBuffersMESA := GetProcAddressGLS('glXReleaseBuffersMESA');
+  XCreateGLXPixmapMESA := GetProcAddressGLS('glXCreateGLXPixmapMESA');
+  XSet3DfxModeMESA := GetProcAddressGLS('glXSet3DfxModeMESA');
 
-  XAllocateMemoryNV := GLGetProcAddress('glXAllocateMemoryNV');
-  XFreeMemoryNV := GLGetProcAddress('glXFreeMemoryNV');
+  XAllocateMemoryNV := GetProcAddressGLS('glXAllocateMemoryNV');
+  XFreeMemoryNV := GetProcAddressGLS('glXFreeMemoryNV');
 
-  XReleaseVideoDeviceNV := GLGetProcAddress('glXReleaseVideoDeviceNV');
-  XBindVideoImageNV := GLGetProcAddress('glXBindVideoImageNV');
-  XReleaseVideoImageNV := GLGetProcAddress('glXReleaseVideoImageNV');
-  XSendPbufferToVideoNV := GLGetProcAddress('glXSendPbufferToVideoNV');
-  XGetVideoInfoNV := GLGetProcAddress('glXGetVideoInfoNV');
-  XJoinSwapGroupNV := GLGetProcAddress('glXJoinSwapGroupNV');
-  XBindSwapBarrierNV := GLGetProcAddress('glXBindSwapBarrierNV');
-  XQuerySwapGroupNV := GLGetProcAddress('glXQuerySwapGroupNV');
-  XQueryMaxSwapGroupsNV := GLGetProcAddress('glXQueryMaxSwapGroupsNV');
-  XQueryFrameCountNV := GLGetProcAddress('glXQueryFrameCountNV');
-  XResetFrameCountNV := GLGetProcAddress('glXResetFrameCountNV');
-  XBindVideoCaptureDeviceNV := GLGetProcAddress('glXBindVideoCaptureDeviceNV');
+  XReleaseVideoDeviceNV := GetProcAddressGLS('glXReleaseVideoDeviceNV');
+  XBindVideoImageNV := GetProcAddressGLS('glXBindVideoImageNV');
+  XReleaseVideoImageNV := GetProcAddressGLS('glXReleaseVideoImageNV');
+  XSendPbufferToVideoNV := GetProcAddressGLS('glXSendPbufferToVideoNV');
+  XGetVideoInfoNV := GetProcAddressGLS('glXGetVideoInfoNV');
+  XJoinSwapGroupNV := GetProcAddressGLS('glXJoinSwapGroupNV');
+  XBindSwapBarrierNV := GetProcAddressGLS('glXBindSwapBarrierNV');
+  XQuerySwapGroupNV := GetProcAddressGLS('glXQuerySwapGroupNV');
+  XQueryMaxSwapGroupsNV := GetProcAddressGLS('glXQueryMaxSwapGroupsNV');
+  XQueryFrameCountNV := GetProcAddressGLS('glXQueryFrameCountNV');
+  XResetFrameCountNV := GetProcAddressGLS('glXResetFrameCountNV');
+  XBindVideoCaptureDeviceNV := GetProcAddressGLS('glXBindVideoCaptureDeviceNV');
   XEnumerateVideoCaptureDevicesNV :=
-    GLGetProcAddress('glXEnumerateVideoCaptureDevicesNV');
-  XLockVideoCaptureDeviceNV := GLGetProcAddress('glxLockVideoCaptureDeviceNV');
+    GetProcAddressGLS('glXEnumerateVideoCaptureDevicesNV');
+  XLockVideoCaptureDeviceNV := GetProcAddressGLS('glxLockVideoCaptureDeviceNV');
   XQueryVideoCaptureDeviceNV :=
-    GLGetProcAddress('glXQueryVideoCaptureDeviceNV');
+    GetProcAddressGLS('glXQueryVideoCaptureDeviceNV');
   XReleaseVideoCaptureDeviceNV :=
-    GLGetProcAddress('glXReleaseVideoCaptureDeviceNV');
-  XSwapIntervalEXT := GLGetProcAddress('glXSwapIntervalEXT');
-  XCopyImageSubDataNV := GLGetProcAddress('glXCopyImageSubDataNV');
+    GetProcAddressGLS('glXReleaseVideoCaptureDeviceNV');
+  XSwapIntervalEXT := GetProcAddressGLS('glXSwapIntervalEXT');
+  XCopyImageSubDataNV := GetProcAddressGLS('glXCopyImageSubDataNV');
 end;
 
 {$ENDIF}
@@ -5862,64 +5863,64 @@ end;
 procedure TGLExtensionsAndEntryPoints.ReadAGLExtensions;
 begin
   // Managing pixel format object
-  ACreatePixelFormat := AGLGetProcAddress('aglCreatePixelFormat');
-  AChoosePixelFormat := AGLGetProcAddress('aglChoosePixelFormat');
-  ADestroyPixelFormat := AGLGetProcAddress('aglDestroyPixelFormat');
-  ADescribePixelFormat := AGLGetProcAddress('aglDescribePixelFormat');
-  ADestroyPixelFormat := AGLGetProcAddress('aglDestroyPixelFormat');
-  AGetCGLPixelFormat := AGLGetProcAddress('aglGetCGLPixelFormat');
-  ADisplaysOfPixelFormat := AGLGetProcAddress('aglDisplaysOfPixelFormat');
-  ANextPixelFormat := AGLGetProcAddress('aglNextPixelFormat');
+  aglCreatePixelFormat := GetProcAddressAGL('aglCreatePixelFormat');
+  aglChoosePixelFormat := GetProcAddressAGL('aglChoosePixelFormat');
+  aglDestroyPixelFormat := GetProcAddressAGL('aglDestroyPixelFormat');
+  aglDescribePixelFormat := GetProcAddressAGL('aglDescribePixelFormat');
+  aglDestroyPixelFormat := GetProcAddressAGL('aglDestroyPixelFormat');
+  aglGetCGLPixelFormat := GetProcAddressAGL('aglGetCGLPixelFormat');
+  aglDisplaysOfPixelFormat := GetProcAddressAGL('aglDisplaysOfPixelFormat');
+  aglNextPixelFormat := GetProcAddressAGL('aglNextPixelFormat');
   // Managing context
-  ACreateContext := AGLGetProcAddress('aglCreateContext');
-  ACopyContext := AGLGetProcAddress('aglCopyContext');
-  ADestroyContext := AGLGetProcAddress('aglDestroyContext');
-  AUpdateContext := AGLGetProcAddress('aglUpdateContext');
-  ASetCurrentContext := AGLGetProcAddress('aglSetCurrentContext');
-  AGetCGLContext := AGLGetProcAddress('aglGetCGLContext');
-  AGetCurrentContext := AGLGetProcAddress('aglGetCurrentContext');
-  ASwapBuffers := AGLGetProcAddress('aglSwapBuffers');
-  AUpdateContext := AGLGetProcAddress('aglUpdateContext');
+  aglCreateContext := GetProcAddressAGL('aglCreateContext');
+  aglCopyContext := GetProcAddressAGL('aglCopyContext');
+  aglDestroyContext := GetProcAddressAGL('aglDestroyContext');
+  aglUpdateContext := GetProcAddressAGL('aglUpdateContext');
+  aglSetCurrentContext := GetProcAddressAGL('aglSetCurrentContext');
+  aglGetCGLContext := GetProcAddressAGL('aglGetCGLContext');
+  aglGetCurrentContext := GetProcAddressAGL('aglGetCurrentContext');
+  aglSwapBuffers := GetProcAddressAGL('aglSwapBuffers');
+  aglUpdateContext := GetProcAddressAGL('aglUpdateContext');
   // Managing Pixel Buffers
-  ACreatePBuffer := AGLGetProcAddress('aglCreatePBuffer');
-  ADestroyPBuffer := AGLGetProcAddress('aglDestroyPBuffer');
-  ADescribePBuffer := AGLGetProcAddress('aglDescribePBuffer');
-  AGetPBuffer := AGLGetProcAddress('aglGetPBuffer');
-  ASetPBuffer := AGLGetProcAddress('aglSetPBuffer');
-  ATexImagePBuffer := AGLGetProcAddress('aglTexImagePBuffer');
+  aglCreatePBuffer := GetProcAddressAGL('aglCreatePBuffer');
+  aglDestroyPBuffer := GetProcAddressAGL('aglDestroyPBuffer');
+  aglDescribePBuffer := GetProcAddressAGL('aglDescribePBuffer');
+  aglGetPBuffer := GetProcAddressAGL('aglGetPBuffer');
+  aglSetPBuffer := GetProcAddressAGL('aglSetPBuffer');
+  aglTexImagePBuffer := GetProcAddressAGL('aglTexImagePBuffer');
   // Managing Drawable Objects
-  ASetDrawable := AGLGetProcAddress('aglSetDrawable'); // deprecated
-  AGetDrawable := AGLGetProcAddress('aglGetDrawable'); // deprecated
-  ASetFullScreen := AGLGetProcAddress('aglSetFullScreen');
-  ASetOffScreen := AGLGetProcAddress('aglSetOffScreen');
+  aglSetDrawable := GetProcAddressAGL('aglSetDrawable'); // deprecated
+  aglGetDrawable := GetProcAddressAGL('aglGetDrawable'); // deprecated
+  aglSetFullScreen := GetProcAddressAGL('aglSetFullScreen');
+  aglSetOffScreen := GetProcAddressAGL('aglSetOffScreen');
   // Getting and Setting Context Options
-  AEnable := AGLGetProcAddress('aglEnable');
-  ADisable := AGLGetProcAddress('aglDisable');
-  AIsEnabled := AGLGetProcAddress('aglIsEnabled');
-  ASetInteger := AGLGetProcAddress('aglSetInteger');
-  AGetInteger := AGLGetProcAddress('aglGetInteger');
+  aglEnable := GetProcAddressAGL('aglEnable');
+  aglDisable := GetProcAddressAGL('aglDisable');
+  aglIsEnabled := GetProcAddressAGL('aglIsEnabled');
+  aglSetInteger := GetProcAddressAGL('aglSetInteger');
+  aglGetInteger := GetProcAddressAGL('aglGetInteger');
   // Getting and Setting Global Information
-  AConfigure := AGLGetProcAddress('aglConfigure');
-  AGetVersion := AGLGetProcAddress('aglGetVersion');
-  AResetLibrary := AGLGetProcAddress('aglResetLibrary');
+  aglConfigure := GetProcAddressAGL('aglConfigure');
+  aglGetVersion := GetProcAddressAGL('aglGetVersion');
+  aglResetLibrary := GetProcAddressAGL('aglResetLibrary');
   // Getting Renderer Information
-  ADescribeRenderer := AGLGetProcAddress('aglDescribeRenderer');
-  ADestroyRendererInfo := AGLGetProcAddress('aglDestroyRendererInfo');
-  ANextRendererInfo := AGLGetProcAddress('aglNextRendererInfo');
-  AQueryRendererInfoForCGDirectDisplayIDs :=
-    AGLGetProcAddress('aglQueryRendererInfoForCGDirectDisplayIDs');
+  aglDescribeRenderer := GetProcAddressAGL('aglDescribeRenderer');
+  aglDestroyRendererInfo := GetProcAddressAGL('aglDestroyRendererInfo');
+  aglNextRendererInfo := GetProcAddressAGL('aglNextRendererInfo');
+  aglQueryRendererInfoForCGDirectDisplayIDs :=
+    GetProcAddressAGL('aglQueryRendererInfoForCGDirectDisplayIDs');
   // Managing Virtual Screens
-  AGetVirtualScreen := AGLGetProcAddress('aglGetVirtualScreen');
-  ASetVirtualScreen := AGLGetProcAddress('aglSetVirtualScreen');
+  aglGetVirtualScreen := GetProcAddressAGL('aglGetVirtualScreen');
+  aglSetVirtualScreen := GetProcAddressAGL('aglSetVirtualScreen');
   // Getting and Setting Windows
-  ASetWindowRef := AGLGetProcAddress('aglSetWindowRef');
-  AGetWindowRef := AGLGetProcAddress('aglGetWindowRef');
+  aglSetWindowRef := GetProcAddressAGL('aglSetWindowRef');
+  aglGetWindowRef := GetProcAddressAGL('aglGetWindowRef');
   // Getting and Setting HIView Objects
-  ASetHIViewRef := AGLGetProcAddress('aglSetHIViewRef');
-  AGetHIViewRef := AGLGetProcAddress('aglGetHIViewRef');
+  aglSetHIViewRef := GetProcAddressAGL('aglSetHIViewRef');
+  aglGetHIViewRef := GetProcAddressAGL('aglGetHIViewRef');
   // Getting Error Information
-  AGetError := AGLGetProcAddress('aglGetError');
-  AErrorString := AGLGetProcAddress('aglErrorString');
+  aglGetError := GetProcAddressAGL('aglGetError');
+  aglErrorString := GetProcAddressAGL('aglErrorString');
 end;
 {$ENDIF}
 {$IFDEF EGL_SUPPORT}
@@ -5956,38 +5957,38 @@ end;
 
 procedure TGLExtensionsAndEntryPoints.ReadEGLExtensions;
 begin
-  EGetError := EGLGetProcAddress('eglGetError');
-  EGetDisplay := EGLGetProcAddress('eglGetDisplay');
-  EInitialize := EGLGetProcAddress('eglInitialize');
-  ETerminate := EGLGetProcAddress('eglTerminate');
-  EQueryString := EGLGetProcAddress('eglQueryString');
-  EGetConfigs := EGLGetProcAddress('eglGetConfigs');
-  EChooseConfig := EGLGetProcAddress('eglChooseConfig');
-  EGetConfigAttrib := EGLGetProcAddress('eglGetConfigAttrib');
-  ECreatePixmapSurface := EGLGetProcAddress('eglCreatePixmapSurface');
-  EDestroySurface := EGLGetProcAddress('eglDestroySurface');
-  EQuerySurface := EGLGetProcAddress('eglQuerySurface');
-  EBindAPI := EGLGetProcAddress('eglBindAPI');
-  EQueryAPI := EGLGetProcAddress('eglQueryAPI');
-  EWaitClient := EGLGetProcAddress('eglWaitClient');
-  EReleaseThread := EGLGetProcAddress('eglReleaseThread');
-  ECreatePbufferFromClientBuffer :=
-    EGLGetProcAddress('eglCreatePbufferFromClientBuffer');
-  ESurfaceAttrib := EGLGetProcAddress('eglSurfaceAttrib');
-  EBindTexImage := EGLGetProcAddress('eglBindTexImage');
-  EReleaseTexImage := EGLGetProcAddress('eglReleaseTexImage');
-  ESwapInterval := EGLGetProcAddress('eglSwapInterval');
-  ECreateContext := EGLGetProcAddress('eglCreateContext');
-  EDestroyContext := EGLGetProcAddress('eglDestroyContext');
-  EMakeCurrent := EGLGetProcAddress('eglMakeCurrent');
-  EGetCurrentContext := EGLGetProcAddress('eglGetCurrentContext');
-  EGetCurrentSurface := EGLGetProcAddress('eglGetCurrentSurface');
-  EGetCurrentDisplay := EGLGetProcAddress('eglGetCurrentDisplay');
-  EQueryContext := EGLGetProcAddress('eglQueryContext');
-  EWaitGL := EGLGetProcAddress('eglWaitGL');
-  EWaitNative := EGLGetProcAddress('eglWaitNative');
-  ESwapBuffers := EGLGetProcAddress('eglSwapBuffers');
-  ECopyBuffers := EGLGetProcAddress('eglCopyBuffers');
+  eglGetError := GetProcAddressEGL('eglGetError');
+  eglGetDisplay := GetProcAddressEGL('eglGetDisplay');
+  eglInitialize := GetProcAddressEGL('eglInitialize');
+  eglTerminate := GetProcAddressEGL('eglTerminate');
+  eglQueryString := GetProcAddressEGL('eglQueryString');
+  eglGetConfigs := GetProcAddressEGL('eglGetConfigs');
+  eglChooseConfig := GetProcAddressEGL('eglChooseConfig');
+  eglGetConfigAttrib := GetProcAddressEGL('eglGetConfigAttrib');
+  eglCreatePixmapSurface := GetProcAddressEGL('eglCreatePixmapSurface');
+  eglDestroySurface := GetProcAddressEGL('eglDestroySurface');
+  eglQuerySurface := GetProcAddressEGL('eglQuerySurface');
+  eglBindAPI := GetProcAddressEGL('eglBindAPI');
+  eglQueryAPI := GetProcAddressEGL('eglQueryAPI');
+  eglWaitClient := GetProcAddressEGL('eglWaitClient');
+  eglReleaseThread := GetProcAddressEGL('eglReleaseThread');
+  eglCreatePbufferFromClientBuffer :=
+    GetProcAddressEGL('eglCreatePbufferFromClientBuffer');
+  eglSurfaceAttrib := GetProcAddressEGL('eglSurfaceAttrib');
+  eglBindTexImage := GetProcAddressEGL('eglBindTexImage');
+  eglReleaseTexImage := GetProcAddressEGL('eglReleaseTexImage');
+  eglSwapInterval := GetProcAddressEGL('eglSwapInterval');
+  eglCreateContext := GetProcAddressEGL('eglCreateContext');
+  eglDestroyContext := GetProcAddressEGL('eglDestroyContext');
+  eglMakeCurrent := GetProcAddressEGL('eglMakeCurrent');
+  eglGetCurrentContext := GetProcAddressEGL('eglGetCurrentContext');
+  eglGetCurrentSurface := GetProcAddressEGL('eglGetCurrentSurface');
+  eglGetCurrentDisplay := GetProcAddressEGL('eglGetCurrentDisplay');
+  eglQueryContext := GetProcAddressEGL('eglQueryContext');
+  eglWaitGL := GetProcAddressEGL('eglWaitGL');
+  eglWaitNative := GetProcAddressEGL('eglWaitNative');
+  eglSwapBuffers := GetProcAddressEGL('eglSwapBuffers');
+  eglCopyBuffers := GetProcAddressEGL('eglCopyBuffers');
 end;
 {$ENDIF}
 
@@ -6177,7 +6178,7 @@ end;
 
 function IsMesaGL: boolean;
 begin
-  Result := GLGetProcAddress('glResizeBuffersMESA') <> nil;
+  Result := GetProcAddressGLS('glResizeBuffersMESA') <> nil;
 end;
 
 initialization

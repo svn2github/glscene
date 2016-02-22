@@ -54,8 +54,8 @@ public:
         TColorVector BackgroundColor, LineColor;
         int PassCount;
 
-	void __fastcall DoApply(TRenderContextInfo &rci, System::TObject* Sender);
-	bool __fastcall DoUnApply(TRenderContextInfo &rci);
+	void __fastcall DoApply(TGLRenderContextInfo &rci, System::TObject* Sender);
+	bool __fastcall DoUnApply(TGLRenderContextInfo &rci);
 };
 
 class TOutLineShader : public TGLShader
@@ -71,8 +71,8 @@ public:
         float OutlineWidth, OldlineWidth;
         int PassCount;
 
-	void __fastcall DoApply(TRenderContextInfo &rci, System::TObject* Sender);
-	bool __fastcall DoUnApply(TRenderContextInfo &rci);
+	void __fastcall DoApply(TGLRenderContextInfo &rci, System::TObject* Sender);
+	bool __fastcall DoUnApply(TGLRenderContextInfo &rci);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;

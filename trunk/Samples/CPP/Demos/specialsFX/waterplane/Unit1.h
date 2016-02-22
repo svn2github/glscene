@@ -51,13 +51,13 @@ __published:                   // IDE-managed Components
   void __fastcall GLSceneViewer1MouseMove(TObject * Sender,
                                           TShiftState Shift, int X, int Y);
   void __fastcall GLUserShader1DoApply(TObject * Sender,
-                                       TRenderContextInfo & rci);
+                                       TGLRenderContextInfo & rci);
   void __fastcall GLUserShader1DoUnApply(TObject * Sender, int Pass,
-                                         TRenderContextInfo & rci,
+                                         TGLRenderContextInfo & rci,
                                          bool & Continue);
   void __fastcall GLSceneViewer1BeforeRender(TObject * Sender);
   void __fastcall GLDirectOpenGL1Render(TObject * Sender,
-                                        TRenderContextInfo & rci);
+                                        TGLRenderContextInfo & rci);
   void __fastcall GLCadencer1Progress(TObject * Sender,
                                       const double deltaTime,
                                       const double newTime);

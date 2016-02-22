@@ -176,7 +176,7 @@ begin
 
   GL.CheckError;
 
-  FDirtyRect:= GLRect(0, 0, Width, Height);
+  FDirtyRect:= GetGLRect(0, 0, Width, Height);
 end;
 
 constructor TGLDynamicTextureImage.Create(AOwner: TPersistent);

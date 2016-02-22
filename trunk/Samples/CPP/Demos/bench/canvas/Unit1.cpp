@@ -113,7 +113,7 @@ void TForm1::Bench()
 
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
    int i, x, y;

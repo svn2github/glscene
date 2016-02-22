@@ -98,7 +98,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
 
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
-	  TRenderContextInfo &rci)
+	  TGLRenderContextInfo &rci)
 {
   TVector3f vec,VecCol1,VecCol2;
   TGLLibMaterial *libMat;
@@ -150,7 +150,7 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass,
-      TRenderContextInfo &rci, bool &Continue)
+      TGLRenderContextInfo &rci, bool &Continue)
 {
   GLSLProg[CurrShad]->EndUseProgramObject();
 }
@@ -205,7 +205,7 @@ void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
-	  TRenderContextInfo &rci)
+	  TGLRenderContextInfo &rci)
 {
   bool Continue;
   TGLExtensionsAndEntryPoints *GL;

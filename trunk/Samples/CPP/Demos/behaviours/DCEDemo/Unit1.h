@@ -76,7 +76,7 @@ __published:	// IDE-managed Components
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall PlayerBehaviours0Collision(TObject *Sender,
 	  TGLBaseSceneObject *ObjectCollided, TDCECollision &CollisionInfo);
-	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci);
 	void __fastcall FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift);
 
 

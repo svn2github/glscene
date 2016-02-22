@@ -52,7 +52,7 @@ __published:	// IDE-managed Components
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall Button_ResetOctreeSizeClick(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
-	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci);
 
 
 private:	// User declarations

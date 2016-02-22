@@ -16,12 +16,21 @@ unit GLContouring;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils, 
+  System.Classes, 
+  System.Math,
   System.Generics.Collections,
-
   //GLS
-  GLVectorGeometry, GLVectorLists, GLObjects, GLMultiPolygon,  GLCoordinates,
-  GLTypes, GLColor, GLSpline, GLspaceText, GLVectorTypes,
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLObjects, 
+  GLMultiPolygon,  
+  GLCoordinates,
+  GLTypes, 
+  GLColor, 
+  GLSpline, 
+  GLspaceText, 
+  GLVectorTypes,
   GLVectorFileObjects;
 
 

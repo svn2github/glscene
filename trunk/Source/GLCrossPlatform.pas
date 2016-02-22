@@ -7,6 +7,7 @@
    in the core GLScene units, and have all moved here instead.
 
   History :
+       22/02/16 - PW - Changed GLRect to GetGLRect to exclude conflict with Winapi.OpenGL
        20/01/15 - PW -  Dropped support for GLS_DELPHI_XE2_DOWN compilers
        10/11/12 - PW - Added CPP compatibility: restored $NODEFINE to remove
                           redeclarations of RGB, GLPoint, GLRect and some other types
@@ -237,8 +238,8 @@ var
 function GLPoint(const x, y: Integer): TGLPoint;
 {Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;{$NODEFINE GLRect}
-{Increases or decreases the width and height of the specified rectangle. 
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
+{ Increases or decreases the width and height of the specified rectangle. 
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
@@ -413,8 +414,7 @@ end;
 
 // GLRect
 //
-
-function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
+function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
 begin
   Result.Left := aLeft;
   Result.Top := aTop;
@@ -791,8 +791,7 @@ end;
 
 function GetDecimalSeparator: Char;
 begin
-  Result :=
-   FormatSettings.DecimalSeparator;
+  Result := FormatSettings.DecimalSeparator;
 end;
 
 procedure SetDecimalSeparator(AValue: Char);

@@ -50,9 +50,9 @@ __published:	// IDE-managed Components
         void __fastcall GLCadencer1Progress(TObject *Sender,
           const double deltaTime, const double newTime);
         void __fastcall GLUserShader1DoApply(TObject *Sender,
-          TRenderContextInfo &rci);
+          TGLRenderContextInfo &rci);
         void __fastcall GLUserShader1DoUnApply(TObject *Sender, int Pass,
-          TRenderContextInfo &rci, bool &Continue);
+          TGLRenderContextInfo &rci, bool &Continue);
         void __fastcall Timer1Timer(TObject *Sender);
         void __fastcall GLSceneViewer1MouseDown(TObject *Sender,
           TMouseButton Button, TShiftState Shift, int X, int Y);
@@ -61,7 +61,7 @@ __published:	// IDE-managed Components
         void __fastcall FormCreate(TObject *Sender);
         void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
         void __fastcall GLDOInitializeRender(TObject *Sender,
-          TRenderContextInfo &rci);
+          TGLRenderContextInfo &rci);
 	void __fastcall FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
           TPoint &MousePos, bool &Handled);
 private:	// User declarations

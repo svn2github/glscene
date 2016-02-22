@@ -8,13 +8,13 @@
    Based on David McDuffee's document from www.wotsit.org 
 
    History :  
-            07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
-            20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
+      07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
+      20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
 	    07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
                               in Lazarus (thanks Predator)
 	    08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
 	    21/11/02 - Egg - Creation
-	 
+
 }
 unit TGA;
 
@@ -23,14 +23,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  GLCrossPlatform;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLCrossPlatform,
+  GLGraphics;
+
 
 type
 
 	// TTGAImage
 	//
-   {TGA image load/save capable class for Delphi. 
+   {TGA image load/save capable class for Delphi.
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
         TTGAImage = class (TGLBitmap)
@@ -62,9 +66,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLGraphics;
 
 type
 

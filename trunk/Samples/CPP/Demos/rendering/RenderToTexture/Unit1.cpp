@@ -56,7 +56,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaT
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   N++;
@@ -70,7 +70,7 @@ void __fastcall TForm1::GLDirectOpenGL1Render(TObject *Sender, TRenderContextInf
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLFBORenderer1AfterRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLFBORenderer1AfterRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   GLCube1->Material->LibMaterialName = GLFBORenderer1->ColorTextureName;
@@ -78,7 +78,7 @@ void __fastcall TForm1::GLFBORenderer1AfterRender(TObject *Sender, TRenderContex
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TForm1::GLFBORenderer2AfterRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::GLFBORenderer2AfterRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   GLCube1->Material->LibMaterialName = GLFBORenderer2->ColorTextureName;

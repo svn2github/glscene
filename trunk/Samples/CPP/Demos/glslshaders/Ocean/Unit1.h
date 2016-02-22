@@ -53,9 +53,9 @@ __published:	// IDE-managed Components
 	TGLCamera *CameraCubeMap;
 	TGLSimpleNavigation *GLSimpleNavigation1;
 	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall DOInitializeRender(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall GLUserShader1DoApply(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall GLUserShader1DoUnApply(TObject *Sender, int Pass, TRenderContextInfo &rci,
+	void __fastcall DOInitializeRender(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall GLUserShader1DoApply(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall GLUserShader1DoUnApply(TObject *Sender, int Pass, TGLRenderContextInfo &rci,
           bool &Continue);
 	void __fastcall GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift, int X,
           int Y);
@@ -64,7 +64,7 @@ __published:	// IDE-managed Components
           int X, int Y);
 	void __fastcall GLHeightField1GetHeight(const float x, const float y, float &z,
           TVector4f &color, TTexPoint &texPoint);
-	void __fastcall DOOceanPlaneRender(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall DOOceanPlaneRender(TObject *Sender, TGLRenderContextInfo &rci);
 	void __fastcall GLSceneViewer1BeforeRender(TObject *Sender);
 
 

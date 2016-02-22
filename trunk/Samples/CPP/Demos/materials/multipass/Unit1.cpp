@@ -56,7 +56,7 @@ __fastcall THiddenLineShader::~THiddenLineShader(void)
 {
 }  
 //---------------------------------------------------------------------------
-void __fastcall THiddenLineShader::DoApply(TRenderContextInfo &rci, System::TObject* Sender)
+void __fastcall THiddenLineShader::DoApply(TGLRenderContextInfo &rci, System::TObject* Sender)
 {
   // new object getting rendered, 1st pass
   PassCount = 1;
@@ -73,7 +73,7 @@ void __fastcall THiddenLineShader::DoApply(TRenderContextInfo &rci, System::TObj
   glPolygonOffset(1, 2);
 }
 //---------------------------------------------------------------------------
-bool __fastcall THiddenLineShader::DoUnApply(TRenderContextInfo &rci)
+bool __fastcall THiddenLineShader::DoUnApply(TGLRenderContextInfo &rci)
 {
   bool result;
 
@@ -118,7 +118,7 @@ __fastcall TOutLineShader::~TOutLineShader(void)
 {
 }
 //---------------------------------------------------------------------------
-void __fastcall TOutLineShader::DoApply(TRenderContextInfo &rci, System::TObject* Sender)
+void __fastcall TOutLineShader::DoApply(TGLRenderContextInfo &rci, System::TObject* Sender)
 {
    PassCount = 1;
    glPushAttrib(GL_ENABLE_BIT);
@@ -141,7 +141,7 @@ void __fastcall TOutLineShader::DoApply(TRenderContextInfo &rci, System::TObject
    glColor3fv(&LineColor.V[0]);
 }
 //---------------------------------------------------------------------------
-bool __fastcall TOutLineShader::DoUnApply(TRenderContextInfo &rci)
+bool __fastcall TOutLineShader::DoUnApply(TGLRenderContextInfo &rci)
 {
   bool result;
 

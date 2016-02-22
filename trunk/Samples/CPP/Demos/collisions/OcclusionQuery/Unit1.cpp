@@ -57,7 +57,7 @@ void __fastcall TForm1::GLSceneViewer1BeforeRender(TObject *Sender)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::OGLBeginQueriesRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::OGLBeginQueriesRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   // Generate the queries, if not already created
@@ -77,7 +77,7 @@ void __fastcall TForm1::OGLBeginQueriesRender(TObject *Sender, TRenderContextInf
 
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::OGLEndQueriesRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::OGLEndQueriesRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   TGLQueryHandle *lQuery;

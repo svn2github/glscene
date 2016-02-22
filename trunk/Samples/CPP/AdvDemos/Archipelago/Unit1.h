@@ -75,8 +75,8 @@ __published:	// IDE-managed Components
 	void __fastcall GLCustomHDS1StartPreparingData(THeightData *heightData);
 	void __fastcall GLSceneViewerBeforeRender(TObject *Sender);
 	void __fastcall DOWakeProgress(TObject *Sender, const double deltaTime, const double newTime);
-	void __fastcall DOWakeRender(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall TerrainRendererHeightDataPostRender(TRenderContextInfo &rci, TList *&HeightDatas);
+	void __fastcall DOWakeRender(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall TerrainRendererHeightDataPostRender(TGLRenderContextInfo &rci, TList *&HeightDatas);
 	void __fastcall FormCreate(TObject *Sender);
 
 private:	// User declarations

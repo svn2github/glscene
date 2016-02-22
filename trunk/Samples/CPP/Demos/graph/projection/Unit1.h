@@ -35,7 +35,7 @@ __published:	// IDE-managed Components
 	TGLPlane *GLPlane;
 	TGLXYZGrid *GLXYZGrid1;
 	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall DirectOpenGLRender(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall DirectOpenGLRender(TObject *Sender, TGLRenderContextInfo &rci);
 	void __fastcall SceneViewerMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
 		  int X, int Y);
 	void __fastcall SceneViewerMouseMove(TObject *Sender, TShiftState Shift, int X,

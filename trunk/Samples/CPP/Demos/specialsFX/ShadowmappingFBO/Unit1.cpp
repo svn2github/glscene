@@ -34,7 +34,7 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 }
 
 //---------------------------------------------------------------------------
-void __fastcall TForm1::PrepareShadowMappingRender(TObject *Sender, TRenderContextInfo &rci)
+void __fastcall TForm1::PrepareShadowMappingRender(TObject *Sender, TGLRenderContextInfo &rci)
 
 {
   // prepare shadow mapping matrix

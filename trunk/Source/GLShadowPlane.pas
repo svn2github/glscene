@@ -177,7 +177,7 @@ procedure TGLShadowPlane.DoRender(var ARci: TGLRenderContextInfo;
 var
   oldProxySubObject, oldIgnoreMaterials: Boolean;
   shadowMat: TMatrix;
-  sr: TGLRect;
+  sr, ds: TGLRect;
   CurrentBuffer: TGLSceneBuffer;
   ModelMat: TMatrix;
 begin
@@ -199,7 +199,8 @@ begin
         begin
           sr := ScreenRect(CurrentBuffer);
           InflateGLRect(sr, 1, 1);
-          IntersectGLRect(sr, GLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy));
+          ds := GetGLRect(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
+          IntersectGLRect(sr, ds);
           GL.Scissor(sr.Left, sr.Top, sr.Right - sr.Left, sr.Bottom - sr.Top);
           Enable(stScissorTest);
         end;

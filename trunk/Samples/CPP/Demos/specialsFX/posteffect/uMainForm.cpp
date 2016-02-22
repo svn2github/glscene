@@ -63,7 +63,7 @@ void __fastcall TMainForm::ComboBox1Change(TObject *Sender)
   }
 }
 //---------------------------------------------------------------------------
-void __fastcall TMainForm::GLPostEffect1CustomEffect(TObject *Sender, TRenderContextInfo &rci,
+void __fastcall TMainForm::GLPostEffect1CustomEffect(TObject *Sender, TGLRenderContextInfo &rci,
           TGLPostEffectBuffer &Buffer)
 {
   int i;

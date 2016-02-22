@@ -49,8 +49,8 @@ __published:	// IDE-managed Components
 	void __fastcall FormDestroy(TObject *Sender);
 	void __fastcall GLCadencer1Progress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall GLSceneViewer1BeforeRender(TObject *Sender);
-	void __fastcall OGLBeginQueriesRender(TObject *Sender, TRenderContextInfo &rci);
-	void __fastcall OGLEndQueriesRender(TObject *Sender, TRenderContextInfo &rci);
+	void __fastcall OGLBeginQueriesRender(TObject *Sender, TGLRenderContextInfo &rci);
+	void __fastcall OGLEndQueriesRender(TObject *Sender, TGLRenderContextInfo &rci);
 	void __fastcall Timer1Timer(TObject *Sender);
 
 
