@@ -27,17 +27,17 @@ type
   // TNewTilePreparedEvent
   //
   TNewTilePreparedEvent = procedure(Sender: TVKBumpmapHDS;
-    heightData: THeightData; normalMapMaterial: TVKLibMaterial) of object;
+    heightData: TVKHeightData; normalMapMaterial: TVKLibMaterial) of object;
 
   // TVKBumpmapHDS
   //
   { An Height Data Source that generates elevation bumpmaps automatically. 
     The HDS must be connected to another HDS, which will provide the elevation
     data, and to a MaterialLibrary where bumpmaps will be placed. }
-  TVKBumpmapHDS = class(THeightDataSourceFilter)
+  TVKBumpmapHDS = class(TVKHeightDataSourceFilter)
   private
     { Private Declarations }
-    // FElevationHDS : THeightDataSource;
+    // FElevationHDS : TVKHeightDataSource;
     FBumpmapLibrary: TVKMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
     FBumpScale: Single;
@@ -55,14 +55,14 @@ type
     { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    procedure Release(aHeightData: THeightData); override;
+    procedure Release(aHeightData: TVKHeightData); override;
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
-    procedure GenerateNormalMap(heightData: THeightData; normalMap: TVKBitmap32;
+    procedure GenerateNormalMap(heightData: TVKHeightData; normalMap: TVKBitmap32;
       scale: Single);
     procedure TrimTextureCache(MaxTextureCount: Integer);
-    // procedure  TileTextureCoordinates(heightData : THeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
-    procedure PreparingData(heightData: THeightData); override;
+    // procedure  TileTextureCoordinates(heightData : TVKHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
+    procedure PreparingData(heightData: TVKHeightData); override;
   published
     { Published Declarations }
     property BumpmapLibrary: TVKMaterialLibrary read FBumpmapLibrary
@@ -82,9 +82,9 @@ type
     property MaxPoolSize;
     { If MaxTextures>0 then the Bumpmap library is trimmed down to size whenever
       the texture count is larger than MaxTextures. The oldest, unused texture is trimmed first.
-      However, if you used THeightData.MaterialName, instead of THeightData.LibMaterial,
-      then the THeightData component does not register the texture as being used.
-      So, if you use THeightData.MaterialName then make sure MaxTextures=0.
+      However, if you used TVKHeightData.MaterialName, instead of TVKHeightData.LibMaterial,
+      then the TVKHeightData component does not register the texture as being used.
+      So, if you use TVKHeightData.MaterialName then make sure MaxTextures=0.
       If MaxTextures=0 or if treads(GLS.AsyncHDS) are used, then the texture cache
       is NOT trimmed automatically.
       You will have to manually trim the cache from the main thread, by
@@ -147,7 +147,7 @@ end;
 // Release
 //
 
-procedure TVKBumpmapHDS.Release(aHeightData: THeightData);
+procedure TVKBumpmapHDS.Release(aHeightData: TVKHeightData);
 var
   libMat: TVKLibMaterial;
 begin
@@ -162,8 +162,8 @@ end;
 //
 // This will repeatedly delete the oldest unused texture from the TVKMaterialLibrary,
 // until the texture count drops to MaxTextureCount.
-// DONT use this if you used THeightData.MaterialName to link your terrain textures.
-// Either use with THeightData.LibMaterial, or manually delete unused Normal-Map textures.
+// DONT use this if you used TVKHeightData.MaterialName to link your terrain textures.
+// Either use with TVKHeightData.LibMaterial, or manually delete unused Normal-Map textures.
 //
 
 procedure TVKBumpmapHDS.TrimTextureCache(MaxTextureCount: Integer);
@@ -204,9 +204,9 @@ end;
 // PreparingData
 //
 
-procedure TVKBumpmapHDS.PreparingData(heightData: THeightData);
+procedure TVKBumpmapHDS.PreparingData(heightData: TVKHeightData);
 var
-  TmpHD: THeightData;
+  TmpHD: TVKHeightData;
   libMat: TVKLibMaterial;
   bmp32: TVKBitmap32;
   MatName: string;
@@ -271,11 +271,11 @@ end;
 // GenerateNormalMap
 //
 
-procedure TVKBumpmapHDS.GenerateNormalMap(heightData: THeightData;
+procedure TVKBumpmapHDS.GenerateNormalMap(heightData: TVKHeightData;
   normalMap: TVKBitmap32; scale: Single);
 var
   MapSize: Integer;
-  HD: THeightData;
+  HD: TVKHeightData;
   X, Y: Integer;
   scaleVec: TAffineVector;
   vec: TAffineVector;

@@ -75,19 +75,19 @@ type
     property Step: Single read FStep write SetStep;
   end;
 
-  THeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
+  TVKHeightFieldGetHeightEvent = procedure(const x, y: Single; var z: Single;
     var Color: TColorVector; var TexPoint: TTexPoint) of object;
-  THeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
+  TVKHeightFieldGetHeight2Event = procedure(Sender: TObject; const x, y: Single;
     var z: Single; var Color: TColorVector; var TexPoint: TTexPoint) of object;
 
-  // THeightFieldOptions
+  // TVKHeightFieldOptions
   //
-  THeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
-  THeightFieldOptions = set of THeightFieldOption;
+  TVKHeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
+  TVKHeightFieldOptions = set of TVKHeightFieldOption;
 
-  // THeightFieldColorMode
+  // TVKHeightFieldColorMode
   //
-  THeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
+  TVKHeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
     hfcmAmbientAndDiffuse);
 
   // TVKHeightField
@@ -104,22 +104,22 @@ type
   TVKHeightField = class(TVKSceneObject)
   private
     { Private Declarations }
-    FOnGetHeight: THeightFieldGetHeightEvent;
-    FOnGetHeight2: THeightFieldGetHeight2Event;
+    FOnGetHeight: TVKHeightFieldGetHeightEvent;
+    FOnGetHeight2: TVKHeightFieldGetHeight2Event;
     FXSamplingScale: TVKSamplingScale;
     FYSamplingScale: TVKSamplingScale;
-    FOptions: THeightFieldOptions;
+    FOptions: TVKHeightFieldOptions;
     FTriangleCount: Integer;
-    FColorMode: THeightFieldColorMode;
+    FColorMode: TVKHeightFieldColorMode;
 
   protected
     { Protected Declarations }
     procedure SetXSamplingScale(const val: TVKSamplingScale);
     procedure SetYSamplingScale(const val: TVKSamplingScale);
-    procedure SetOptions(const val: THeightFieldOptions);
-    procedure SetOnGetHeight(const val: THeightFieldGetHeightEvent);
-    procedure SetOnGetHeight2(const val: THeightFieldGetHeight2Event);
-    procedure SetColorMode(const val: THeightFieldColorMode);
+    procedure SetOptions(const val: TVKHeightFieldOptions);
+    procedure SetOnGetHeight(const val: TVKHeightFieldGetHeightEvent);
+    procedure SetOnGetHeight2(const val: TVKHeightFieldGetHeight2Event);
+    procedure SetColorMode(const val: TVKHeightFieldColorMode);
 
     procedure DefaultHeightField(const x, y: Single; var z: Single;
       var Color: TColorVector; var TexPoint: TTexPoint);
@@ -144,18 +144,18 @@ type
     property YSamplingScale: TVKSamplingScale read FYSamplingScale
       write SetYSamplingScale;
     { Define if and how per vertex color is used. }
-    property ColorMode: THeightFieldColorMode read FColorMode write SetColorMode
+    property ColorMode: TVKHeightFieldColorMode read FColorMode write SetColorMode
       default hfcmNone;
-    property Options: THeightFieldOptions read FOptions write SetOptions
+    property Options: TVKHeightFieldOptions read FOptions write SetOptions
       default [hfoTwoSided];
 
     { Primary event to return heights. }
-    property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
+    property OnGetHeight: TVKHeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
     { Alternate this event to return heights. 
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
-    property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
+    property OnGetHeight2: TVKHeightFieldGetHeight2Event read FOnGetHeight2
       write SetOnGetHeight2;
   end;
 
@@ -431,7 +431,7 @@ var
   invXStep, invYStep: Single;
   row: packed array [0 .. 2] of PRowData;
   rowTop, rowMid, rowBottom: PRowData;
-  func: THeightFieldGetHeightEvent;
+  func: TVKHeightFieldGetHeightEvent;
 
   procedure IssuePoint(var x, y: Single; const pt: TRowData);
   begin
@@ -605,7 +605,7 @@ end;
 // SetOptions
 //
 
-procedure TVKHeightField.SetOptions(const val: THeightFieldOptions);
+procedure TVKHeightField.SetOptions(const val: TVKHeightFieldOptions);
 begin
   if FOptions <> val then
   begin
@@ -617,7 +617,7 @@ end;
 // SetOnGetHeight
 //
 
-procedure TVKHeightField.SetOnGetHeight(const val: THeightFieldGetHeightEvent);
+procedure TVKHeightField.SetOnGetHeight(const val: TVKHeightFieldGetHeightEvent);
 begin
   FOnGetHeight := val;
   StructureChanged;
@@ -627,7 +627,7 @@ end;
 //
 
 procedure TVKHeightField.SetOnGetHeight2(const val
-  : THeightFieldGetHeight2Event);
+  : TVKHeightFieldGetHeight2Event);
 begin
   FOnGetHeight2 := val;
   StructureChanged;
@@ -636,7 +636,7 @@ end;
 // SetColorMode
 //
 
-procedure TVKHeightField.SetColorMode(const val: THeightFieldColorMode);
+procedure TVKHeightField.SetColorMode(const val: TVKHeightFieldColorMode);
 begin
   if val <> FColorMode then
   begin

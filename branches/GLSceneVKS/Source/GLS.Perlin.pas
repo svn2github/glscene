@@ -104,10 +104,10 @@ Type
     Procedure Generate; override;
     Function GetPerlinValue_2D(x, y: Double): Double;
     Procedure MakeBitmap(Param: TVKBitmap);
-    Procedure SetHeightData(heightData: THeightData);
+    Procedure SetHeightData(heightData: TVKHeightData);
   End;
 
-  TVKPerlinHDS = class(THeightDataSource)
+  TVKPerlinHDS = class(TVKHeightDataSource)
   private
     FInterpolation: TVKPerlinInterpolation;
     FSmoothing: TVKPerlinInterpolation;
@@ -121,7 +121,7 @@ Type
     MaxValue, MinValue: Double;
     Stall: Boolean;
     Constructor Create(AOwner: TComponent); override;
-    procedure StartPreparingData(heightData: THeightData); override;
+    procedure StartPreparingData(heightData: TVKHeightData); override;
     procedure WaitFor;
     property Lines: TStrings read FLines;
     property LinesChanged: Boolean read FLinesChanged write FLinesChanged;
@@ -137,7 +137,7 @@ Type
     property YStart: Integer read FYStart write FYStart;
   End;
 
-  TVKPerlinHDSThread = class(THeightDataThread)
+  TVKPerlinHDSThread = class(TVKHeightDataThread)
     Perlin: TVK2DPerlin;
     PerlinSource: TVKPerlinHDS;
     Procedure OpdateOutSide;
@@ -590,7 +590,7 @@ Begin
   End;
 End;
 
-Procedure TVK2DPerlin.SetHeightData(heightData: THeightData);
+Procedure TVK2DPerlin.SetHeightData(heightData: TVKHeightData);
 
 Var
   XC, YC: Integer;
@@ -655,7 +655,7 @@ Begin
   MaxThreads := 1;
 End;
 
-procedure TVKPerlinHDS.StartPreparingData(heightData: THeightData);
+procedure TVKPerlinHDS.StartPreparingData(heightData: TVKHeightData);
 
 Var
   Perlin: TVK2DPerlin;
@@ -710,7 +710,7 @@ procedure TVKPerlinHDS.WaitFor;
 
 Var
   HDList: TList;
-  HD: THeightData;
+  HD: TVKHeightData;
   XC: Integer;
 Begin
   Repeat
@@ -719,7 +719,7 @@ Begin
       HD := Nil;
       For XC := 0 to HDList.Count - 1 do
       Begin
-        HD := THeightData(HDList[XC]);
+        HD := TVKHeightData(HDList[XC]);
         If HD.DataState <> hdsReady then
           Break;
       End;

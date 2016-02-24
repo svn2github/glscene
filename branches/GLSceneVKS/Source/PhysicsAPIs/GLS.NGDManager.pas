@@ -33,7 +33,7 @@ type
   PNGDFloat = ^NGDFloat;
 
   { Record }
-  THeightField = record
+  TVKHeightField = record
     heightArray: array of Word;
     width: Integer;
     depth: Integer;
@@ -257,7 +257,7 @@ type
     FConvexCollisionTolerance: Single; // Default=0.01 1%
     FFileCollision: string;
     FNGDSurfaceItem: TNGDSurfaceItem;
-    FHeightFieldOptions: THeightField;
+    FHeightFieldOptions: TVKHeightField;
   protected
     { Protected Declarations }
     procedure Initialize; virtual;
@@ -274,7 +274,7 @@ type
     procedure Render; virtual;
     procedure SetNGDNewtonCollisions(const Value: TNGDNewtonCollisions);
     procedure SetNGDSurfaceItem(const Value: TNGDSurfaceItem);
-    procedure SetHeightFieldOptions(const Value: THeightField);
+    procedure SetHeightFieldOptions(const Value: TVKHeightField);
 
     function GetPrimitiveCollision(): PNewtonCollision;
     function GetConvexCollision(): PNewtonCollision;
@@ -314,7 +314,7 @@ type
     property NewtonBodyAABB: TAABB read GetNewtonBodyAABB;
     procedure Serialize(filename: string);
     procedure DeSerialize(filename: string);
-    property HeightFieldOptions: THeightField read FHeightFieldOptions write
+    property HeightFieldOptions: TVKHeightField read FHeightFieldOptions write
       SetHeightFieldOptions;
 
   published
@@ -1945,7 +1945,7 @@ begin
       NewtonBodySetContinuousCollisionMode(FNewtonBody, Ord(Value));
 end;
 
-procedure TVKNGDBehaviour.SetHeightFieldOptions(const Value: THeightField);
+procedure TVKNGDBehaviour.SetHeightFieldOptions(const Value: TVKHeightField);
 begin
   FHeightFieldOptions := Value;
   Reinitialize;

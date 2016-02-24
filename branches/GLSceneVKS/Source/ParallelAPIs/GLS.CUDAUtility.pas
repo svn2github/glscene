@@ -11,7 +11,7 @@ interface
 
 {$IFDEF MSWINDOWS}
 uses
-  Windows;
+  Winapi.Windows;
 {$ENDIF}
 
 

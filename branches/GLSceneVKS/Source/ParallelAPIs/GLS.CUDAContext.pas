@@ -9,14 +9,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
+  System.Classes,
+  System.SysUtils,
+  //GLS
   GLS.BaseClasses,
-  GLS.CUDAAPI,
   GLS.CUDARunTime,
-  GLS.CL_Platform,
   GLS.Context,
   GLS.Generics,
+  GLS.CL_Platform,
+  GLS.CUDAAPI,
   GLS.Log;
 
 type

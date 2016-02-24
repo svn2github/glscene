@@ -4,9 +4,9 @@
 {
    Implements a HDS Filter that generates HeightData tiles in a seperate thread. 
 
-   This component is a THeightDataSourceFilter, which uses a THeightDataSourceThread,
+   This component is a TVKHeightDataSourceFilter, which uses a TVKHeightDataSourceThread,
    to asyncronously search the HeightData cache for any queued tiles.
-   When found, it then prepares the queued tile in its own THeightDataThread.
+   When found, it then prepares the queued tile in its own TVKHeightDataThread.
 
    This allows the GUI to remain responsive, and prevents freezes when new tiles are
    being prepared.  Although this keeps the framerate up, it may cause holes in the
@@ -29,7 +29,7 @@ uses
 type
   TVKAsyncHDS = class;
   TIdleEvent = procedure(Sender:TVKAsyncHDS;TilesUpdated:boolean) of object;
-  TNewTilePreparedEvent = procedure (Sender : TVKAsyncHDS; heightData : THeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
+  TNewTilePreparedEvent = procedure (Sender : TVKAsyncHDS; heightData : TVKHeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
 
   // TUseDirtyTiles
   //
@@ -51,7 +51,7 @@ type
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
 
-	 TVKAsyncHDS = class (THeightDataSourceFilter)
+	 TVKAsyncHDS = class (TVKHeightDataSourceFilter)
 	   private
 	      { Private Declarations }
        FOnIdleEvent :TIdleEvent;
@@ -65,10 +65,10 @@ type
 	      { Public Declarations }
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
-      procedure BeforePreparingData(heightData : THeightData); override;
-      procedure StartPreparingData(heightData : THeightData); override;
+      procedure BeforePreparingData(heightData : TVKHeightData); override;
+      procedure StartPreparingData(heightData : TVKHeightData); override;
       procedure ThreadIsIdle; override;
-      procedure NewTilePrepared(heightData:THeightData);
+      procedure NewTilePrepared(heightData:TVKHeightData);
       function  ThreadCount:integer;
       procedure WaitFor(TimeOut:integer=2000);
       //procedure NotifyChange(Sender : TObject); override;
@@ -83,10 +83,10 @@ type
       property Active;             //set to false, to ignore new queued tiles.(Partially processed tiles will still be completed)
   end;
 
-  TVKAsyncHDThread = class(THeightDataThread)
+  TVKAsyncHDThread = class(TVKHeightDataThread)
     public
       Owner : TVKAsyncHDS;
-      HDS   : THeightDataSource;
+      HDS   : TVKHeightDataSource;
       Procedure Execute; override;
       Procedure Sync;
   end;
@@ -123,7 +123,7 @@ end;
 
 // BeforePreparingData
 //
-procedure TVKAsyncHDS.BeforePreparingData(heightData : THeightData);
+procedure TVKAsyncHDS.BeforePreparingData(heightData : TVKHeightData);
 begin
   if FUseDirtyTiles=dtNever then begin
     if heightData.OldVersion<>nil then begin
@@ -136,9 +136,9 @@ end;
 
 // StartPreparingData
 //
-procedure TVKAsyncHDS.StartPreparingData(heightData : THeightData);
+procedure TVKAsyncHDS.StartPreparingData(heightData : TVKHeightData);
 var HDThread : TVKAsyncHDThread;
-    HDS:THeightDataSource;
+    HDS:TVKHeightDataSource;
 begin
   HDS:=HeightDataSource;
   //---if there is no linked HDS then return an empty tile--
@@ -172,7 +172,7 @@ end;
 procedure TVKAsyncHDS.ThreadIsIdle;
 var i:integer;
     lst:TList;
-    HD:THeightData;
+    HD:TVKHeightData;
 begin
   //----------- dtUntilAllReplaced -------------
   //Switch to the new version of ALL dirty tiles
@@ -182,7 +182,7 @@ begin
         i:=lst.Count;
         while(i>0) do begin
           dec(i);
-          HD:=THeightData(lst.Items[i]);
+          HD:=TVKHeightData(lst.Items[i]);
           if (HD.DataState in [hdsReady,hdsNone])
             and(Hd.DontUse)and(HD.OldVersion<>nil) then begin
             HD.DontUse:=false;
@@ -200,8 +200,8 @@ end;
 
 //OnNewTilePrepared event
 //
-procedure TVKAsyncHDS.NewTilePrepared(heightData:THeightData);
-var HD:THeightData;
+procedure TVKAsyncHDS.NewTilePrepared(heightData:TVKHeightData);
+var HD:TVKHeightData;
 begin
   if assigned(HeightDataSource) then HeightDataSource.AfterPreparingData(HeightData);
   with self.Data.LockList do begin
@@ -228,12 +228,12 @@ end;
 function TVKAsyncHDS.ThreadCount:integer;
 var lst: Tlist;
     i,TdCtr:integer;
-    HD:THeightData;
+    HD:TVKHeightData;
 begin
   lst:=self.Data.LockList;
   i:=0;TdCtr:=0;
   while(i<lst.Count)and(TdCtr<self.MaxThreads) do begin
-    HD:=THeightData(lst.Items[i]);
+    HD:=TVKHeightData(lst.Items[i]);
     if HD.Thread<>nil then Inc(TdCtr);
     inc(i);
   end;

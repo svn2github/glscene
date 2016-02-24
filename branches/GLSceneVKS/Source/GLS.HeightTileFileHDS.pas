@@ -20,13 +20,13 @@ type
 	// TVKHeightTileFileHDS
 	//
    { An Height Data Source for the HTF format.  }
-	TVKHeightTileFileHDS = class (THeightDataSource)
+	TVKHeightTileFileHDS = class (TVKHeightDataSource)
 	   private
 	      { Private Declarations }
          FInfiniteWrap : Boolean;
          FInverted     : Boolean;
          FHTFFileName : String;
-         FHTF : THeightTileFile;
+         FHTF : TVKHeightTileFile;
          FMinElevation : Integer;
 
 	   protected
@@ -40,10 +40,10 @@ type
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure StartPreparingData(HeightData : THeightData); override;
+         procedure StartPreparingData(HeightData : TVKHeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
-         function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
+         function OpenHTF:TVKHeightTileFile; //gives you direct access to the HTF object
 
 	   published
 	      { Published Declarations }
@@ -133,20 +133,20 @@ end;
 // OpenHTF
 // Tries to open the assigned HeightTileFile.
 //
-function TVKHeightTileFileHDS.OpenHTF:THeightTileFile;
+function TVKHeightTileFileHDS.OpenHTF:TVKHeightTileFile;
 begin
   if not Assigned(FHTF) then begin
     if FHTFFileName='' then FHTF:=nil
-      else FHTF:=THeightTileFile.Create(FHTFFileName);
+      else FHTF:=TVKHeightTileFile.Create(FHTFFileName);
   end;
   result:=FHTF;
 end;
 
 // StartPreparingData
 //
-procedure TVKHeightTileFileHDS.StartPreparingData(HeightData : THeightData);
+procedure TVKHeightTileFileHDS.StartPreparingData(HeightData : TVKHeightData);
 var
-   oldType : THeightDataType;
+   oldType : TVKHeightDataType;
    htfTile : PHeightTile;
    htfTileInfo : PHeightTileInfo;
    x, y : Integer;

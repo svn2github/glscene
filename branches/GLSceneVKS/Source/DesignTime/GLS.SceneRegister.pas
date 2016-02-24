@@ -1745,9 +1745,9 @@ begin
 
   { GLS.Graph }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightFieldOptions)]);
+    [TypeInfo(TVKHeightFieldOptions)]);
   RegisterPropertiesInCategory(sVisualCategoryName,
-    [TypeInfo(THeightFieldColorMode), TypeInfo(TVKSamplingScale),
+    [TypeInfo(TVKHeightFieldColorMode), TypeInfo(TVKSamplingScale),
     TypeInfo(TXYZGridLinesStyle), TypeInfo(TXYZGridParts)]);
   // TVKXYZGrid
   RegisterPropertiesInCategory(sOpenGLCategoryName, TVKXYZGrid,
@@ -1807,7 +1807,7 @@ begin
 
   { GLS.TerrainRenderer }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightDataSource)]);
+    [TypeInfo(TVKHeightDataSource)]);
   // TVKTerrainRenderer
   RegisterPropertiesInCategory(sVisualCategoryName, TVKTerrainRenderer,
     ['*CLOD*', 'QualityDistance', 'Tile*']);

@@ -46,11 +46,12 @@ interface
 uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
 {$ENDIF}
-  GLS.CrossPlatform,
   GLS.CL_Platform,
   GLS.CUDAAPI,
-  Winapi.OpenGL, Winapi.OpenGLext, 
+  GLS.CrossPlatform,
   GLS.Log;
 
 

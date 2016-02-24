@@ -11,13 +11,28 @@ interface
 {$I cuda.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  GLS.PersistentClasses, GLS.BaseClasses, GLS.CrossPlatform, GLS.Context,
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists, GLS.Graphics,
-  GLS.CL_Platform, GLS.CUDAApi, GLS.CUDARuntime, GLS.CUDAParser,
-  GLS.CUDAFourierTransform, GLS.CUDACompiler, GLS.CUDAContext,
-  GLS.CUDADataAccess, GLS.Strings, GLS.Utils, GLS.Log;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLS.PersistentClasses,
+  GLS.BaseClasses,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.VectorGeometry,
+  GLS.VectorTypes,
+  GLS.VectorLists,
+  GLS.Graphics,
+  GLS.CUDARuntime,
+  GLS.CUDAParser,
+  GLS.CUDAFourierTransform,
+  GLS.CUDACompiler,
+  GLS.CUDAContext,
+  GLS.CUDADataAccess,
+  GLS.Strings,
+  GLS.Utils,
+  GLS.CL_Platform,
+  GLS.CUDAApi,
+  GLS.Log;
 
 type
 

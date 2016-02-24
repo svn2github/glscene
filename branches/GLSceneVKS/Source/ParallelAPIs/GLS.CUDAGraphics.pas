@@ -14,7 +14,6 @@ uses
   System.Classes,
   //GLS
   GLS.CrossPlatform,
-  GLS.CUDAAPI,
   GLS.CUDA,
   GLS.Context,
   GLS.State,
@@ -24,6 +23,7 @@ uses
   GLS.Texture,
   GLS.GLSLShader,
   GLS.GLSLParameter,
+  GLS.CUDAAPI,
   GLS.RenderContextInfo;
 
 type

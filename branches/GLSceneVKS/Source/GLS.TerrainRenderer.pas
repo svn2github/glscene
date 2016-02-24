@@ -41,7 +41,7 @@ type
   TGetTerrainBoundsEvent = procedure(var l, t, r, b: single) of object;
   TPatchPostRenderEvent = procedure(var rci: TVKRenderContextInfo;
     const patches: TList) of object;
-  THeightDataPostRenderEvent = procedure(var rci: TVKRenderContextInfo;
+  TVKHeightDataPostRenderEvent = procedure(var rci: TVKRenderContextInfo;
     var HeightDatas: TList) of object;
   TMaxCLODTrianglesReachedEvent = procedure(var rci: TVKRenderContextInfo)
     of object;
@@ -60,13 +60,13 @@ type
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
     terrain renderers. 
-    The Terrain heightdata is retrieved directly from a THeightDataSource, and
+    The Terrain heightdata is retrieved directly from a TVKHeightDataSource, and
     expressed as z=f(x, y) data. }
   // TVKTerrainRenderer = class (TVKSceneObject)
   TVKTerrainRenderer = class(TVKSceneObject)
   private
     { Private Declarations }
-    FHeightDataSource: THeightDataSource;
+    FHeightDataSource: TVKHeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: single;
     FLastTriangleCount: Integer;
@@ -78,7 +78,7 @@ type
     FMaterialLibrary: TVKMaterialLibrary;
     FOnGetTerrainBounds: TGetTerrainBoundsEvent;
     FOnPatchPostRender: TPatchPostRenderEvent;
-    FOnHeightDataPostRender: THeightDataPostRenderEvent;
+    FOnHeightDataPostRender: TVKHeightDataPostRenderEvent;
     FOnMaxCLODTrianglesReached: TMaxCLODTrianglesReachedEvent;
 
     FQualityStyle: TVKTerrainHighResStyle;
@@ -96,11 +96,11 @@ type
     procedure ReleaseAllUnusedTiles;
     procedure MarkHashedTileAsUsed(const tilePos: TAffineVector);
     function HashedTile(const tilePos: TAffineVector;
-      canAllocate: Boolean = True): THeightData; overload;
+      canAllocate: Boolean = True): TVKHeightData; overload;
     function HashedTile(const xLeft, yTop: Integer; canAllocate: Boolean = True)
-      : THeightData; overload;
+      : TVKHeightData; overload;
 
-    procedure SetHeightDataSource(const val: THeightDataSource);
+    procedure SetHeightDataSource(const val: TVKHeightDataSource);
     procedure SetTileSize(const Val: Integer);
     procedure SetTilesPerTexture(const Val: single);
     procedure SetCLODPrecision(const Val: Integer);
@@ -143,7 +143,7 @@ type
   published
     { Published Declarations }
     { Specifies the HeightData provider component. }
-    property HeightDataSource: THeightDataSource read FHeightDataSource
+    property HeightDataSource: TVKHeightDataSource read FHeightDataSource
       write SetHeightDataSource;
     { Size of the terrain tiles. 
       Must be a power of two. }
@@ -226,10 +226,10 @@ type
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
     {  Invoked for each heightData not culled out by the terrain renderer. 
-      The list holds THeightData objects and allows per-patch
+      The list holds TVKHeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
-    property OnHeightDataPostRender: THeightDataPostRenderEvent
+    property OnHeightDataPostRender: TVKHeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
     {  Invoked whenever the MaxCLODTriangles limit was reached during last rendering. 
       This forced the terrain renderer to resize the buffer, which affects performance.
@@ -431,14 +431,14 @@ end;
 procedure TVKTerrainRenderer.ReleaseAllTiles;
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TVKHeightData;
 begin
   for i := 0 to cTilesHashSize do
     with FTilesHash[i] do
     begin
       for k := Count - 1 downto 0 do
       begin
-        hd := THeightData(Items[k]);
+        hd := TVKHeightData(Items[k]);
         OnTileDestroyed(hd);
         hd.OnDestroy := nil;
         hd.Release;
@@ -453,7 +453,7 @@ procedure TVKTerrainRenderer.OnTileDestroyed(Sender: TObject);
 var
   list: TList;
 begin
-  with Sender as THeightData do
+  with Sender as TVKHeightData do
   begin
     if ObjectTag <> nil then
     begin
@@ -837,7 +837,7 @@ begin
     begin
       zero := 0;
       for j := Count - 1 downto 0 do
-        THeightData(Items[j]).Tag := zero;
+        TVKHeightData(Items[j]).Tag := zero;
     end;
 end;
 
@@ -847,14 +847,14 @@ procedure TVKTerrainRenderer.ReleaseAllUnusedTiles;
 var
   i, j: Integer;
   hashList: TList;
-  hd: THeightData;
+  hd: TVKHeightData;
 begin
   for i := 0 to cTilesHashSize do
   begin
     hashList := FTilesHash[i];
     for j := hashList.Count - 1 downto 0 do
     begin
-      hd := THeightData(hashList.Items[j]);
+      hd := TVKHeightData(hashList.Items[j]);
       if hd.Tag = 0 then
       begin
         hashList.Delete(j);
@@ -888,7 +888,7 @@ end;
 
 procedure TVKTerrainRenderer.MarkHashedTileAsUsed(const tilePos: TAffineVector);
 var
-  hd: THeightData;
+  hd: TVKHeightData;
   canAllocate: boolean;
 begin
   if not(tmMarkUsedTiles in TileManagement) then
@@ -903,7 +903,7 @@ end;
 // HashedTile
 
 function TVKTerrainRenderer.HashedTile(const tilePos: TAffineVector;
-  canAllocate: Boolean = True): THeightData;
+  canAllocate: Boolean = True): TVKHeightData;
 var
   XLeft, YTop: Integer;
 begin
@@ -915,17 +915,17 @@ end;
 // HashedTile
 
 function TVKTerrainRenderer.HashedTile(const xLeft, yTop: Integer;
-  canAllocate: Boolean = True): THeightData;
+  canAllocate: Boolean = True): TVKHeightData;
 var
   i: Integer;
-  hd: THeightData;
+  hd: TVKHeightData;
   hashList: TList;
 begin
   // is the tile already in our list?
   hashList := FTilesHash[HashKey(xLeft, yTop)];
   for i := hashList.Count - 1 downto 0 do
   begin
-    hd := THeightData(hashList.Items[i]);
+    hd := TVKHeightData(hashList.Items[i]);
     if (hd.xLeft = xLeft) and (hd.yTop = yTop) then
     begin
       if hd.DontUse then
@@ -959,7 +959,7 @@ end;
 function TVKTerrainRenderer.GetPreparedPatch(const tilePos,
   EyePos: TAffineVector; TexFactor: Single; HDList: TList): TVKROAMPatch;
 var
-  Tile: THeightData;
+  Tile: TVKHeightData;
   Patch: TVKROAMPatch;
   XLeft, YTop: Integer;
   CanAllocate: Boolean;
@@ -1025,7 +1025,7 @@ end;
 
 // SetHeightDataSource
 //
-procedure TVKTerrainRenderer.SetHeightDataSource(const val: THeightDataSource);
+procedure TVKTerrainRenderer.SetHeightDataSource(const val: TVKHeightDataSource);
 begin
   if FHeightDataSource <> val then
   begin
@@ -1074,7 +1074,7 @@ end;
 procedure TVKTerrainRenderer.SetCLODPrecision(const val: Integer);
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TVKHeightData;
 begin
   if val <> FCLODPrecision then
   begin
@@ -1087,7 +1087,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(Items[k]);
+          hd := TVKHeightData(Items[k]);
           if Assigned(hd.ObjectTag) then
           begin
             (hd.ObjectTag as TVKROAMPatch).Free;
@@ -1126,7 +1126,7 @@ end;
 procedure TVKTerrainRenderer.SetOcclusionFrameSkip(val: Integer);
 var
   i, k: Integer;
-  hd: THeightData;
+  hd: TVKHeightData;
 begin
   if val < 0 then
     val := 0;
@@ -1138,7 +1138,7 @@ begin
       begin
         for k := Count - 1 downto 0 do
         begin
-          hd := THeightData(Items[k]);
+          hd := TVKHeightData(Items[k]);
           if hd.ObjectTag <> nil then
             TVKROAMPatch(hd.ObjectTag).OcclusionSkip := OcclusionFrameSkip;
         end;

@@ -13,11 +13,15 @@ interface
 {$I cuda.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes, System.UITypes,
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.SysUtils, 
+  System.Classes, System.UITypes,
   FMX.Forms, FMX.Dialogs,
 
-  GLS.CUDAParser, GLS.ApplicationFileIO, GLS.Log;
+  GLS.CUDAParser, 
+  GLS.ApplicationFileIO, 
+  GLS.Log;
 
 type
   TVKSCUDACompilerOutput = (codeUndefined, codePtx, codeCubin, codeGpu);

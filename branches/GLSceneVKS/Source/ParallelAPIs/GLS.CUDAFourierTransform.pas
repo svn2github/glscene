@@ -45,7 +45,10 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-  GLS.VectorTypes, GLS.CUDAAPI, GLS.CUDARunTime, GLS.Log;
+  GLS.VectorTypes,
+  GLS.CUDAAPI,
+  GLS.CUDARunTime,
+  GLS.Log;
 
 
 const

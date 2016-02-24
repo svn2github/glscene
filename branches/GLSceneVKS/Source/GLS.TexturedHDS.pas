@@ -29,24 +29,24 @@ uses
   System.Classes, GLS.CrossPlatform, GLS.HeightData, GLS.Material;
 
 type
-	TVKTexturedHDS = class (THeightDataSource)
+	TVKTexturedHDS = class (TVKHeightDataSource)
 	   private
 	      { Private Declarations }
          FOnStartPreparingData : TStartPreparingDataEvent;
          FOnMarkDirty : TMarkDirtyEvent;
-         FHeightDataSource : THeightDataSource;
+         FHeightDataSource : TVKHeightDataSource;
          FMaterialLibrary  : TVKMaterialLibrary;
          FWholeTilesOnly   : Boolean;
          FTileSize         : integer;
          FTilesPerTexture  : integer;
 	   protected
 	      { Protected Declarations }
-         procedure SetHeightDataSource(val:THeightDataSource);
+         procedure SetHeightDataSource(val:TVKHeightDataSource);
 	   public
 	      { Public Declarations }
   	     constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure StartPreparingData(heightData : THeightData); override;
+         procedure StartPreparingData(heightData : TVKHeightData); override;
          procedure MarkDirty(const area : TVKRect); override;
 
 	   published
@@ -54,7 +54,7 @@ type
          property MaxPoolSize;
          property OnStartPreparingData : TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
          property OnMarkDirtyEvent : TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;
-         property HeightDataSource : THeightDataSource  read FHeightDataSource write SetHeightDataSource;
+         property HeightDataSource : TVKHeightDataSource  read FHeightDataSource write SetHeightDataSource;
          property MaterialLibrary  : TVKMaterialLibrary read FMaterialLibrary  write FMaterialLibrary;
          property WholeTilesOnly   : Boolean read FWholeTilesOnly write FWholeTilesOnly;
                   {This should match TileSize in TVKTerrainRenderer}
@@ -96,12 +96,12 @@ begin
 end;
 
 
-procedure TVKTexturedHDS.StartPreparingData(heightData : THeightData);
-var HDS:THeightDataSource;
-    htfHD:THeightData;
+procedure TVKTexturedHDS.StartPreparingData(heightData : TVKHeightData);
+var HDS:TVKHeightDataSource;
+    htfHD:TVKHeightData;
     MatLib:TVKMaterialLibrary;
     Mat:TVKLibMaterial;
-    HD:THeightData;
+    HD:TVKHeightData;
     MatInx:integer;
     tileL,tileR,tileT,tileB:single;
     found:boolean;
@@ -173,7 +173,7 @@ begin
   inherited;
 end;
 
-procedure TVKTexturedHDS.SetHeightDataSource(val:THeightDataSource);
+procedure TVKTexturedHDS.SetHeightDataSource(val:TVKHeightDataSource);
 begin
   if val=self then FHeightDataSource:=nil
               else FHeightDataSource:=val;

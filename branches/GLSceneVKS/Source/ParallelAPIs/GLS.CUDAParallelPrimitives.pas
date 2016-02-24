@@ -16,7 +16,7 @@ unit GLS.CUDAParallelPrimitives;
 interface
 
 uses
-  GLS.CLPlatform;
+  GLS.CL_Platform;
 
 {$I cuda.inc}
 

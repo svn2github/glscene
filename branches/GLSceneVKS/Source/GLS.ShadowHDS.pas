@@ -30,9 +30,9 @@ uses
 
 type
    TVKShadowHDS = class;
-   TNewTilePreparedEvent = procedure (Sender : TVKShadowHDS; heightData : THeightData;
+   TNewTilePreparedEvent = procedure (Sender : TVKShadowHDS; heightData : TVKHeightData;
                                       ShadowMapMaterial : TVKLibMaterial) of object;
-   TThreadBmp32 = procedure (Sender : TVKShadowHDS; heightData : THeightData; bmp32:TVKBitmap32) of object;
+   TThreadBmp32 = procedure (Sender : TVKShadowHDS; heightData : TVKHeightData; bmp32:TVKBitmap32) of object;
 
 
 	// TVKShadowHDS
@@ -40,7 +40,7 @@ type
    { An Height Data Source that generates terrain shadow maps automatically. 
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
-	 TVKShadowHDS = class (THeightDataSourceFilter)
+	 TVKShadowHDS = class (TVKHeightDataSourceFilter)
 	   private
 	      { Private Declarations }
          FTileSize:integer;
@@ -59,7 +59,7 @@ type
          FSoftRange:cardinal;
          FDiffuse:single;
          FAmbient:single;
-         OwnerHDS:THeightDataSource; //The owner of the tile
+         OwnerHDS:TVKHeightDataSource; //The owner of the tile
 	   protected
 	      { Protected Declarations }
          procedure SetShadowmapLibrary(const val : TVKMaterialLibrary);
@@ -75,26 +75,26 @@ type
          function  CalcStep:TAffineVector;
          function  CalcScale:TAffineVector;
          function  WrapDist(Lx,Ly:single):integer;
-         procedure LocalToWorld(Lx,Ly:single;HD:THeightData;var Wx:single;var Wy:single);
-         procedure WorldToLocal(wx,wy:single;var HD:THeightData;var lx:single; var ly:single);
+         procedure LocalToWorld(Lx,Ly:single;HD:TVKHeightData;var Wx:single;var Wy:single);
+         procedure WorldToLocal(wx,wy:single;var HD:TVKHeightData;var lx:single; var ly:single);
 
 	   public
 	      { Public Declarations }
          SkipGenerate:boolean;  //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
 	        constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
-         //procedure   Release(aHeightData : THeightData); override;
+         //procedure   Release(aHeightData : TVKHeightData); override;
          procedure   TrimTextureCache(MaxTextureCount:integer=0);
          procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
 
-         procedure   BeforePreparingData(heightData : THeightData); override;
-         procedure   PreparingData(heightData : THeightData); override;
-         procedure   AfterPreparingData(heightData : THeightData); override;
+         procedure   BeforePreparingData(heightData : TVKHeightData); override;
+         procedure   PreparingData(heightData : TVKHeightData); override;
+         procedure   AfterPreparingData(heightData : TVKHeightData); override;
 
-         procedure   GenerateShadowMap(heightData:THeightData; ShadowMap:TVKBitmap32; scale:Single);
-         function    RayCastShadowHeight(HD:THeightData;localX,localY:single):single;  overload;
-         procedure   RayCastLine(HeightData:THeightData;Lx,Ly:single;ShadowMap:TVKBitmap32);
-         function    Shade(HeightData:THeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
+         procedure   GenerateShadowMap(heightData:TVKHeightData; ShadowMap:TVKBitmap32; scale:Single);
+         function    RayCastShadowHeight(HD:TVKHeightData;localX,localY:single):single;  overload;
+         procedure   RayCastLine(HeightData:TVKHeightData;Lx,Ly:single;ShadowMap:TVKBitmap32);
+         function    Shade(HeightData:TVKHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 	   published
 
 	      { Published Declarations }
@@ -165,7 +165,7 @@ end;
 // Release
 //
 {
-procedure TVKShadowHDS.Release(aHeightData : THeightData);
+procedure TVKShadowHDS.Release(aHeightData : TVKHeightData);
 var libMat : TVKLibMaterial;
 begin
   HeightDataSource.Data.LockList;
@@ -182,8 +182,8 @@ end;
 //
 // This will repeatedly delete the oldest unused texture from the TVKMaterialLibrary,
 // until the texture count drops to MaxTextureCount.
-// DONT use this if you used THeightData.MaterialName to link your terrain textures.
-// Either use with THeightData.LibMaterial, or manually delete unused LightMap textures.
+// DONT use this if you used TVKHeightData.MaterialName to link your terrain textures.
+// Either use with TVKHeightData.LibMaterial, or manually delete unused LightMap textures.
 //
 procedure TVKShadowHDS.TrimTextureCache(MaxTextureCount:integer);  //Thread-safe Version
 begin
@@ -282,8 +282,8 @@ end;
 // BeforePreparingData
 // Prepare a blank texture for this tile's lightmap, from the main thread
 //
-procedure TVKShadowHDS.BeforePreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TVKShadowHDS.BeforePreparingData(heightData : TVKHeightData);
+var HD    : TVKHeightData;
     libMat: TVKLibMaterial;
     MatName:string;
 begin
@@ -309,8 +309,8 @@ end;
 
 // Calculate the lightmap from the HD thread, using the attached blank texture
 //
-procedure TVKShadowHDS.PreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TVKShadowHDS.PreparingData(heightData : TVKHeightData);
+var HD    : TVKHeightData;
     libMat: TVKLibMaterial;
     bmp32 : TVKBitmap32;
 begin
@@ -354,7 +354,7 @@ begin
   //----------------------------------------------------
 end;
 
-procedure TVKShadowHDS.AfterPreparingData(heightData : THeightData);
+procedure TVKShadowHDS.AfterPreparingData(heightData : TVKHeightData);
 begin
   if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,heightData,heightData.LibMaterial);
 end;
@@ -363,8 +363,8 @@ end;
 {
 //  PreparingData
 //
-procedure TVKShadowHDS.PreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TVKShadowHDS.PreparingData(heightData : TVKHeightData);
+var HD    : TVKHeightData;
     libMat: TVKLibMaterial;
     bmp32 : TVKBitmap32;
     MatName:string;
@@ -427,8 +427,8 @@ begin
 end;
 }
 
-procedure TVKShadowHDS.GenerateShadowMap(heightData:THeightData; ShadowMap:TVKBitmap32; scale:Single);
-var HD : THeightData;
+procedure TVKShadowHDS.GenerateShadowMap(heightData:TVKHeightData; ShadowMap:TVKBitmap32; scale:Single);
+var HD : TVKHeightData;
     x,y:integer;   //in local space
     sx,sy:single;
 begin
@@ -465,8 +465,8 @@ end;
 //  while testing for any intersections with the terrain.
 //  It returns the height of the shadow. There is no shadow if the shadow height is equal to terrain height.
 //  This is slow, but only needs to be done for pixels along the tile edge, facing the light.
-function TVKShadowHDS.RayCastShadowHeight(HD:THeightData;localX,localY:single):single;
-var tmpHD:THeightData;
+function TVKShadowHDS.RayCastShadowHeight(HD:TVKHeightData;localX,localY:single):single;
+var tmpHD:TVKHeightData;
     wx,wy:single;
     lx,ly:single;
     h:single;
@@ -510,8 +510,8 @@ end;
 //  LocalToWorld
 //  Converts local tile coordinates to world coordinages. Even if the coordinates are off the tile.
 //
-procedure TVKShadowHDS.LocalToWorld(Lx,Ly:single;HD:THeightData;var Wx:single;var Wy:single);
-var HDS:THeightDataSource;
+procedure TVKShadowHDS.LocalToWorld(Lx,Ly:single;HD:TVKHeightData;var Wx:single;var Wy:single);
+var HDS:TVKHeightDataSource;
 begin
   HDS:=self.HeightDataSource;
   wx:=Lx+HD.XLeft;
@@ -527,8 +527,8 @@ end;
 //WorldToLocal
 //Takes World coordinates and returns the correct tile, and converted local coordinates
 //
-procedure TVKShadowHDS.WorldToLocal(Wx,Wy:single;var HD:THeightData;var lx:single; var ly:single);
-var HDS:THeightDataSource;
+procedure TVKShadowHDS.WorldToLocal(Wx,Wy:single;var HD:TVKHeightData;var lx:single; var ly:single);
+var HDS:TVKHeightDataSource;
     xleft,ytop:integer;
     size:integer;
 begin
@@ -549,9 +549,9 @@ begin
 end;
 //----------------------------------------------------------
 
-procedure TVKShadowHDS.RayCastLine(HeightData:THeightData;Lx,Ly:single;ShadowMap:TVKBitmap32);
+procedure TVKShadowHDS.RayCastLine(HeightData:TVKHeightData;Lx,Ly:single;ShadowMap:TVKBitmap32);
 var sh,h:single;
-    HD:THeightData;
+    HD:TVKHeightData;
     Size:integer;
     nmRow : PGLPixel32Array;
     ctr:integer;
@@ -644,8 +644,8 @@ end;
 // AmbientLight = Relative to Angle between surface Normal and sky (Directly up)
 //                ie. Vertical walls are darker because they see less sky.
 // DiffuseLight = Relative to Angle between surface Normal, and Sun vector.
-function TVKShadowHDS.Shade(HeightData:THeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
-var HD:THeightData;
+function TVKShadowHDS.Shade(HeightData:TVKHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
+var HD:TVKHeightData;
     nv:TAffineVector;
     dot:single;
     sunVec:TAffineVector;

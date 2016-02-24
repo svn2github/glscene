@@ -9,13 +9,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
+  System.Classes,
+  System.SysUtils,
+  //GLS
   GLS.CUDAContext,
   GLS.CUDA,
-  GLS.CUDAAPI,
   GLS.CUDAFourierTransform,
   GLS.Strings,
+  GLS.CUDAAPI,
   GLS.Log;
 
 type

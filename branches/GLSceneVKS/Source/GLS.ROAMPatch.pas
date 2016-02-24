@@ -52,7 +52,7 @@ type
   private
     { Private Declarations }
     FID: Integer;
-    FHeightData: THeightData; // Referred, not owned
+    FHeightData: TVKHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
     FTLNode, FBRNode: Integer;
     FTLVariance, FBRVariance: array of cardinal;
@@ -76,7 +76,7 @@ type
 
   protected
     { Protected Declarations }
-    procedure SetHeightData(Val: THeightData);
+    procedure SetHeightData(Val: TVKHeightData);
     procedure SetOcclusionSkip(Val: Integer);
 
     procedure RenderROAM(Vertices: TAffineVectorList;
@@ -122,7 +122,7 @@ type
       back to zero. }
     class procedure FlushAccum(Vertices: TAffineVectorList;
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
-    property HeightData: THeightData read FHeightData write SetHeightData;
+    property HeightData: TVKHeightData read FHeightData write SetHeightData;
     property VertexScale: TAffineVector read FVertexScale write FVertexScale;
     property VertexOffset: TAffineVector read FVertexOffset write FVertexOffset;
 
@@ -444,7 +444,7 @@ end;
 
 // SetHeightData
 //
-procedure TVKROAMPatch.SetHeightData(Val: THeightData);
+procedure TVKROAMPatch.SetHeightData(Val: TVKHeightData);
 begin
   FHeightData := Val;
   FPatchSize := FHeightData.Size - 1;
