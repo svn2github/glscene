@@ -2,13 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { 
-  Conversion of OpenCL header file: cl_platform.h to Delphi,
-  from http://www.khronos.org/registry/cl/. 
-
-  History :
-     05/02/16 - PW - Updated from OpenCL 1.1 to 2.1
-     01/11/09 - DanB - Creation
-
+  Conversion of OpenCL header file: cl_platform.h to CL_Platform.pas,
+  from http://www.khronos.org/registry/cl/.
 }
 // *****************************************************************************
 // * Copyright (c) 2008-2013 The Khronos Group Inc.

@@ -60,7 +60,7 @@ __published:                   // IDE-managed Components
   TLabel *LABumpIntensity;
   void __fastcall FormShow(TObject * Sender);
   void __fastcall GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
-                                               THeightData * heightData,
+                                               TGLHeightData * heightData,
                                                TGLLibMaterial *
                                                normalMapMaterial);
   void __fastcall GLCadencer1Progress(TObject * Sender,

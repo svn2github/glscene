@@ -55,7 +55,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    htf : THeightTileFile;
+    htf : TGLHeightTileFile;
     bmpTile : TBitmap32;
     curX, curY, mx, my : Integer;
     procedure PrepareBitmap;
@@ -188,7 +188,7 @@ begin
   OpenDialog.InitialDir := GetCurrentDir;
   if OpenDialog.Execute then begin
      htf.Free;
-     htf:=THeightTileFile.Create(OpenDialog.FileName);
+     htf:=TGLHeightTileFile.Create(OpenDialog.FileName);
      Caption:='HTFViewer - '+ExtractFileName(OpenDialog.FileName);
      curX:=0;
      curY:=0;
@@ -306,7 +306,7 @@ begin
       if Assigned(tileInfo) then begin
          tileIdx:=htf.IndexOfTile(tileInfo);
          StatusBar.Panels[3].Text:=' Tile: '+IntToStr(tileIdx);
-         n:=htf.TileCompressedSize(tileIdx)+SizeOf(THeightTileInfo);
+         n:=htf.TileCompressedSize(tileIdx)+SizeOf(TGLHeightTileInfo);
          StatusBar.Panels[4].Text:=Format(' %.2f kB (%.0f %%)',
                                           [n/1024, 100-100*n/(htf.TileSize*htf.TileSize*2)]);
          StatusBar.Panels[5].Text:=Format(' Tile average: %d, range: [%d; %d])',

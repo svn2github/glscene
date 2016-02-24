@@ -72,7 +72,7 @@ __published:	// IDE-managed Components
 	void __fastcall Timer1Timer(TObject *Sender);
 	void __fastcall FormKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall GLCustomHDS1MarkDirtyEvent(const TRect &area);
-	void __fastcall GLCustomHDS1StartPreparingData(THeightData *heightData);
+	void __fastcall GLCustomHDS1StartPreparingData(TGLHeightData *heightData);
 	void __fastcall GLSceneViewerBeforeRender(TObject *Sender);
 	void __fastcall DOWakeProgress(TObject *Sender, const double deltaTime, const double newTime);
 	void __fastcall DOWakeRender(TObject *Sender, TGLRenderContextInfo &rci);
@@ -95,7 +95,7 @@ public:		// User declarations
 	void ResetMousePos(void);
 	float WaterPhase(const float px, const float py);
 	float WaterHeight(const float px, const float py);
-	void IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx, int ry);
+	void IssuePoint(TGLHeightData *hd, int x, int y, int s2, float t, int rx, int ry);
 };
 //---------------------------------------------------------------------------
 extern PACKAGE TForm1 *Form1;

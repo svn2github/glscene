@@ -49,23 +49,23 @@ type
    PShortIntArray = ^TShortIntArray;
    PShortInt = ^ShortInt;
 
-   // THeightTileInfo
+   // TGLHeightTileInfo
    //
-   THeightTileInfo = packed record
+   TGLHeightTileInfo = packed record
       left, top, width, height : Integer;
       min, max, average : SmallInt;
       fileOffset : Int64;   // offset to tile data in the file
    end;
-   PHeightTileInfo = ^THeightTileInfo;
+   PHeightTileInfo = ^TGLHeightTileInfo;
    PPHeightTileInfo = ^PHeightTileInfo;
 
-   // THeightTile
+   // TGLHeightTile
    //
-   THeightTile = packed record
-      info : THeightTileInfo;
+   TGLHeightTile = packed record
+      info : TGLHeightTileInfo;
       data : array of SmallInt;
    end;
-   PHeightTile = ^THeightTile;
+   PHeightTile = ^TGLHeightTile;
 
    // THTFHeader
    //
@@ -83,21 +83,21 @@ const
 
 type
 
-   // THeightTileFile
+   // TGLHeightTileFile
    //
    {Interfaces a Tiled file }
-   THeightTileFile = class (TObject)
+   TGLHeightTileFile = class (TObject)
       private
          { Private Declarations }
          FFile : TStream;
          FHeader : THTFHeader;
-         FTileIndex : packed array of THeightTileInfo;
+         FTileIndex : packed array of TGLHeightTileInfo;
          FTileMark : array of Cardinal;
          FLastMark : Cardinal;
          FHashTable : array [0..cHTFHashTableSize] of array of Integer;
          FQuadTable : array [0..cHTFQuadTableSize, 0..cHTFQuadTableSize] of array of Integer;
          FCreating : Boolean;
-         FHeightTile : THeightTile;
+         FHeightTile : TGLHeightTile;
          FInBuf : array of ShortInt;
 
       protected
@@ -213,12 +213,12 @@ end;
 {$ENDIF}
 
 // ------------------
-// ------------------ THeightTileFile ------------------
+// ------------------ TGLHeightTileFile ------------------
 // ------------------
 
 // CreateNew
 //
-constructor THeightTileFile.CreateNew(const fileName : String;
+constructor TGLHeightTileFile.CreateNew(const fileName : String;
                                 aSizeX, aSizeY, aTileSize : Integer);
 begin
    with FHeader do begin
@@ -235,7 +235,7 @@ end;
 
 // Create
 //
-constructor THeightTileFile.Create(const fileName : String);
+constructor TGLHeightTileFile.Create(const fileName : String);
 var
    n, i, key, qx, qy : Integer;
 begin
@@ -248,7 +248,7 @@ begin
    FFile.Position:=TileIndexOffset;
    FFile.Read(n, 4);
    SetLength(FTileIndex, n);
-   FFile.Read(FTileIndex[0], SizeOf(THeightTileInfo)*n);
+   FFile.Read(FTileIndex[0], SizeOf(TGLHeightTileInfo)*n);
    // Prepare HashTable & QuadTable
    for n:=0 to High(FTileIndex) do begin
       with FTileIndex[n] do begin
@@ -275,7 +275,7 @@ end;
 
 // Destroy
 //
-destructor THeightTileFile.Destroy;
+destructor TGLHeightTileFile.Destroy;
 var
    n : Integer;
 begin
@@ -284,7 +284,7 @@ begin
       // write tile index
       n:=Length(FTileIndex);
       FFile.Write(n, 4);
-      FFile.Write(FTileIndex[0], SizeOf(THeightTileInfo)*n);
+      FFile.Write(FTileIndex[0], SizeOf(TGLHeightTileInfo)*n);
       // write data size
       FFile.Position:=0;
       FFile.Write(FHeader, SizeOf(FHeader));
@@ -295,21 +295,21 @@ end;
 
 // QuadTableX
 //
-function THeightTileFile.QuadTableX(x : Integer) : Integer;
+function TGLHeightTileFile.QuadTableX(x : Integer) : Integer;
 begin
    Result:=((x*(cHTFQuadTableSize+1)) div (SizeX+1)) and cHTFQuadTableSize;
 end;
 
 // QuadTableY
 //
-function THeightTileFile.QuadTableY(y : Integer) : Integer;
+function TGLHeightTileFile.QuadTableY(y : Integer) : Integer;
 begin
    Result:=((y*(cHTFQuadTableSize+1)) div (SizeY+1)) and cHTFQuadTableSize;
 end;
 
 // PackTile
 //
-procedure THeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
+procedure TGLHeightTileFile.PackTile(aWidth, aHeight : Integer; src : PSmallIntArray);
 var
    packWidth : Integer;
 
@@ -462,7 +462,7 @@ end;
 
 // UnPackTile
 //
-procedure THeightTileFile.UnPackTile(source : PShortIntArray);
+procedure TGLHeightTileFile.UnPackTile(source : PShortIntArray);
 var
    unpackWidth, tileWidth : Cardinal;
    src : PShortInt;
@@ -584,7 +584,7 @@ end;
 
 // GetTileIndex
 //
-function THeightTileFile.GetTileIndex(aLeft, aTop : Integer) : Integer;
+function TGLHeightTileFile.GetTileIndex(aLeft, aTop : Integer) : Integer;
 var
    i, key, n : Integer;
    p : PIntegerArray;
@@ -609,7 +609,7 @@ end;
 
 // GetTile
 //
-function THeightTileFile.GetTile(aLeft, aTop : Integer;
+function TGLHeightTileFile.GetTile(aLeft, aTop : Integer;
                                  pTileInfo : PPHeightTileInfo = nil) : PHeightTile;
 var
    i, n : Integer;
@@ -644,7 +644,7 @@ end;
 
 // CompressTile
 //
-procedure THeightTileFile.CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
+procedure TGLHeightTileFile.CompressTile(aLeft, aTop, aWidth, aHeight : Integer;
                                        aData : PSmallIntArray);
 begin
    Assert(aWidth<=TileSize);
@@ -663,7 +663,7 @@ end;
 
 // ExtractRow
 //
-procedure THeightTileFile.ExtractRow(x, y, len : Integer; dest : PSmallIntArray);
+procedure TGLHeightTileFile.ExtractRow(x, y, len : Integer; dest : PSmallIntArray);
 var
    rx : Integer;
    n : Cardinal;
@@ -686,7 +686,7 @@ end;
 
 // TileInfo
 //
-function THeightTileFile.XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
+function TGLHeightTileFile.XYTileInfo(anX, anY : Integer) : PHeightTileInfo;
 var
    tileList : TList;
 begin
@@ -703,7 +703,7 @@ end;
 
 // XYHeight
 //
-function THeightTileFile.XYHeight(anX, anY : Integer) : SmallInt;
+function TGLHeightTileFile.XYHeight(anX, anY : Integer) : SmallInt;
 var
    tileInfo : PHeightTileInfo;
    tile : PHeightTile;
@@ -725,7 +725,7 @@ end;
 
 // TilesInRect
 //
-procedure THeightTileFile.TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
+procedure TGLHeightTileFile.TilesInRect(aLeft, aTop, aRight, aBottom : Integer;
                                       destList : TList);
 var
    i, n, qx, qy, idx : Integer;
@@ -762,27 +762,27 @@ end;
 
 // TileCount
 //
-function THeightTileFile.TileCount : Integer;
+function TGLHeightTileFile.TileCount : Integer;
 begin
 	Result:=Length(FTileIndex);
 end;
 
 // GetTiles
 //
-function THeightTileFile.GetTiles(index : Integer) : PHeightTileInfo;
+function TGLHeightTileFile.GetTiles(index : Integer) : PHeightTileInfo;
 begin
    Result:=@FTileIndex[index];
 end;
 
 // IndexOfTile
 //
-function THeightTileFile.IndexOfTile(aTile : PHeightTileInfo) : Integer;
+function TGLHeightTileFile.IndexOfTile(aTile : PHeightTileInfo) : Integer;
 var
    c : PtrUInt;
 begin
    c:=PtrUInt(aTile)-PtrUInt(@FTileIndex[0]);
-   if (c mod SizeOf(THeightTileInfo))=0 then begin
-      Result:=(c div SizeOf(THeightTileInfo));
+   if (c mod SizeOf(TGLHeightTileInfo))=0 then begin
+      Result:=(c div SizeOf(TGLHeightTileInfo));
       if (Result<0) or (Result>High(FTileIndex)) then
          Result:=-1;
    end else Result:=-1;
@@ -790,7 +790,7 @@ end;
 
 // TileCompressedSize
 //
-function THeightTileFile.TileCompressedSize(tileIndex : Integer) : Integer;
+function TGLHeightTileFile.TileCompressedSize(tileIndex : Integer) : Integer;
 begin
    if tileIndex<High(FTileIndex) then
       Result:=FTileIndex[tileIndex+1].fileOffset-FTileIndex[tileIndex].fileOffset

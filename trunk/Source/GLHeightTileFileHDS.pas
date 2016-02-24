@@ -33,13 +33,13 @@ type
 	// TGLHeightTileFileHDS
 	//
    {An Height Data Source for the HTF format.  }
-	TGLHeightTileFileHDS = class (THeightDataSource)
+	TGLHeightTileFileHDS = class (TGLHeightDataSource)
 	   private
 	      { Private Declarations }
          FInfiniteWrap : Boolean;
          FInverted     : Boolean;
          FHTFFileName : String;
-         FHTF : THeightTileFile;
+         FHTF : TGLHeightTileFile;
          FMinElevation : Integer;
 
 	   protected
@@ -53,10 +53,10 @@ type
 	      { Public Declarations }
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
-         procedure StartPreparingData(HeightData : THeightData); override;
+         procedure StartPreparingData(HeightData : TGLHeightData); override;
          function Width :integer;    override;
          function Height:integer;    override;
-         function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
+         function OpenHTF:TGLHeightTileFile; //gives you direct access to the HTF object
 
 	   published
 	      { Published Declarations }
@@ -146,20 +146,20 @@ end;
 // OpenHTF
 // Tries to open the assigned HeightTileFile.
 //
-function TGLHeightTileFileHDS.OpenHTF:THeightTileFile;
+function TGLHeightTileFileHDS.OpenHTF:TGLHeightTileFile;
 begin
   if not Assigned(FHTF) then begin
     if FHTFFileName='' then FHTF:=nil
-      else FHTF:=THeightTileFile.Create(FHTFFileName);
+      else FHTF:=TGLHeightTileFile.Create(FHTFFileName);
   end;
   result:=FHTF;
 end;
 
 // StartPreparingData
 //
-procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : THeightData);
+procedure TGLHeightTileFileHDS.StartPreparingData(HeightData : TGLHeightData);
 var
-   oldType : THeightDataType;
+   oldType : TGLHeightDataType;
    htfTile : PHeightTile;
    htfTileInfo : PHeightTileInfo;
    x, y : Integer;

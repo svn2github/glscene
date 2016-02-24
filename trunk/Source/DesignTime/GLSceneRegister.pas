@@ -1893,7 +1893,7 @@ begin
 
   { GLTerrainRenderer }
   RegisterPropertiesInCategory(sOpenGLCategoryName,
-    [TypeInfo(THeightDataSource)]);
+    [TypeInfo(TGLHeightDataSource)]);
   // TGLTerrainRenderer
   RegisterPropertiesInCategory(sVisualCategoryName, TGLTerrainRenderer,
     ['*CLOD*', 'QualityDistance', 'Tile*']);

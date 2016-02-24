@@ -74,11 +74,11 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 // The beef : this event does all the interesting elevation data stuff
 //
 
-void __fastcall TForm1::GLCustomHDSStartPreparingData(THeightData *HeightData)
+void __fastcall TForm1::GLCustomHDSStartPreparingData(TGLHeightData *HeightData)
 {
    int x, y;
    TByteRaster rasterLine;
-   THeightDataType oldType;
+   TGLHeightDataType oldType;
    TByteVector * b;
    float d, dy;
 

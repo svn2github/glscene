@@ -45,7 +45,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLCustomHDS1MarkDirtyEvent(const area: TRect);
-    procedure GLCustomHDS1StartPreparingData(heightData: THeightData);
+    procedure GLCustomHDS1StartPreparingData(heightData: TGLHeightData);
     procedure GLSceneViewerBeforeRender(Sender: TObject);
     procedure DOWakeProgress(Sender: TObject; const deltaTime,
       newTime: Double);
@@ -332,9 +332,9 @@ begin
   GLHeightTileFileHDS1.MarkDirty(area);
 end;
 
-procedure TForm1.GLCustomHDS1StartPreparingData(heightData: THeightData);
+procedure TForm1.GLCustomHDS1StartPreparingData(heightData: TGLHeightData);
 var
-  htfHD: THeightData;
+  htfHD: TGLHeightData;
   i, j, n: Integer;
   offset: TTexPoint;
 begin
@@ -397,7 +397,7 @@ procedure TForm1.TerrainRendererHeightDataPostRender(
 var
   i, x, y, s, s2: Integer;
   t: Single;
-  hd: THeightData;
+  hd: TGLHeightData;
 const
   r = 0.75;
   g = 0.75;
@@ -447,7 +447,7 @@ begin
 
       for i := 0 to heightDatas.Count - 1 do
       begin
-        hd := THeightData(heightDatas.List[i]);
+        hd := TGLHeightData(heightDatas.List[i]);
         if (hd.DataState = hdsReady) and (hd.HeightMin > cWaterLevel) then
           continue;
         x := hd.XLeft;

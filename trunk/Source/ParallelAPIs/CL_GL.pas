@@ -2,13 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Conversion of OpenCL header file: cl_gl.h to Delphi,
+   Conversion of OpenCL header file: cl_gl.h to CL_GL.pas,
    from http://www.khronos.org/registry/cl/.
-
-    History :
-       07/02/16 - PW - Updated from OpenCL 1.1 to 2.1
-       05/03/11 - Yar - Rename size_t to Tsize_t
-       01/11/09 - DanB - Creation
 }
 ///*****************************************************************************
 // * Copyright (c) 2008-2013 The Khronos Group Inc.
@@ -41,7 +36,8 @@ uses
   Winapi.OpenGL,
   CL,
   CL_Platform;
-  
+
+
 {$I cl.inc}
 
 type

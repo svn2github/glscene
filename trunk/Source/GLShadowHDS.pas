@@ -48,9 +48,9 @@ uses
 
 type
    TGLShadowHDS = class;
-   TNewTilePreparedEvent = procedure (Sender : TGLShadowHDS; heightData : THeightData;
+   TNewTilePreparedEvent = procedure (Sender : TGLShadowHDS; heightData : TGLHeightData;
                                       ShadowMapMaterial : TGLLibMaterial) of object;
-   TThreadBmp32 = procedure (Sender : TGLShadowHDS; heightData : THeightData; bmp32:TGLBitmap32) of object;
+   TThreadBmp32 = procedure (Sender : TGLShadowHDS; heightData : TGLHeightData; bmp32:TGLBitmap32) of object;
 
 
 	// TGLShadowHDS
@@ -58,7 +58,7 @@ type
    {An Height Data Source that generates terrain shadow maps automatically. 
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
-	 TGLShadowHDS = class (THeightDataSourceFilter)
+	 TGLShadowHDS = class (TGLHeightDataSourceFilter)
 	   private
 	      { Private Declarations }
          FTileSize:integer;
@@ -77,7 +77,7 @@ type
          FSoftRange:cardinal;
          FDiffuse:single;
          FAmbient:single;
-         OwnerHDS:THeightDataSource; //The owner of the tile
+         OwnerHDS:TGLHeightDataSource; //The owner of the tile
 	   protected
 	      { Protected Declarations }
          procedure SetShadowmapLibrary(const val : TGLMaterialLibrary);
@@ -93,26 +93,26 @@ type
          function  CalcStep:TAffineVector;
          function  CalcScale:TAffineVector;
          function  WrapDist(Lx,Ly:single):integer;
-         procedure LocalToWorld(Lx,Ly:single;HD:THeightData;var Wx:single;var Wy:single);
-         procedure WorldToLocal(wx,wy:single;var HD:THeightData;var lx:single; var ly:single);
+         procedure LocalToWorld(Lx,Ly:single;HD:TGLHeightData;var Wx:single;var Wy:single);
+         procedure WorldToLocal(wx,wy:single;var HD:TGLHeightData;var lx:single; var ly:single);
 
 	   public
 	      { Public Declarations }
          SkipGenerate:boolean;  //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
 	        constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
-         //procedure   Release(aHeightData : THeightData); override;
+         //procedure   Release(aHeightData : TGLHeightData); override;
          procedure   TrimTextureCache(MaxTextureCount:integer=0);
          procedure   Notification(AComponent: TComponent; Operation: TOperation); override;
 
-         procedure   BeforePreparingData(heightData : THeightData); override;
-         procedure   PreparingData(heightData : THeightData); override;
-         procedure   AfterPreparingData(heightData : THeightData); override;
+         procedure   BeforePreparingData(heightData : TGLHeightData); override;
+         procedure   PreparingData(heightData : TGLHeightData); override;
+         procedure   AfterPreparingData(heightData : TGLHeightData); override;
 
-         procedure   GenerateShadowMap(heightData:THeightData; ShadowMap:TGLBitmap32; scale:Single);
-         function    RayCastShadowHeight(HD:THeightData;localX,localY:single):single;  overload;
-         procedure   RayCastLine(HeightData:THeightData;Lx,Ly:single;ShadowMap:TGLBitmap32);
-         function    Shade(HeightData:THeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
+         procedure   GenerateShadowMap(heightData:TGLHeightData; ShadowMap:TGLBitmap32; scale:Single);
+         function    RayCastShadowHeight(HD:TGLHeightData;localX,localY:single):single;  overload;
+         procedure   RayCastLine(HeightData:TGLHeightData;Lx,Ly:single;ShadowMap:TGLBitmap32);
+         function    Shade(HeightData:TGLHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 	   published
 
 	      { Published Declarations }
@@ -182,7 +182,7 @@ end;
 // Release
 //
 {
-procedure TGLShadowHDS.Release(aHeightData : THeightData);
+procedure TGLShadowHDS.Release(aHeightData : TGLHeightData);
 var libMat : TGLLibMaterial;
 begin
   HeightDataSource.Data.LockList;
@@ -199,8 +199,8 @@ end;
 //
 // This will repeatedly delete the oldest unused texture from the TGLMaterialLibrary,
 // until the texture count drops to MaxTextureCount.
-// DONT use this if you used THeightData.MaterialName to link your terrain textures.
-// Either use with THeightData.LibMaterial, or manually delete unused LightMap textures.
+// DONT use this if you used TGLHeightData.MaterialName to link your terrain textures.
+// Either use with TGLHeightData.LibMaterial, or manually delete unused LightMap textures.
 //
 procedure TGLShadowHDS.TrimTextureCache(MaxTextureCount:integer);  //Thread-safe Version
 begin
@@ -299,8 +299,8 @@ end;
 // BeforePreparingData
 // Prepare a blank texture for this tile's lightmap, from the main thread
 //
-procedure TGLShadowHDS.BeforePreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TGLShadowHDS.BeforePreparingData(heightData : TGLHeightData);
+var HD    : TGLHeightData;
     libMat: TGLLibMaterial;
     MatName:string;
 begin
@@ -326,8 +326,8 @@ end;
 
 // Calculate the lightmap from the HD thread, using the attached blank texture
 //
-procedure TGLShadowHDS.PreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TGLShadowHDS.PreparingData(heightData : TGLHeightData);
+var HD    : TGLHeightData;
     libMat: TGLLibMaterial;
     bmp32 : TGLBitmap32;
 begin
@@ -371,7 +371,7 @@ begin
   //----------------------------------------------------
 end;
 
-procedure TGLShadowHDS.AfterPreparingData(heightData : THeightData);
+procedure TGLShadowHDS.AfterPreparingData(heightData : TGLHeightData);
 begin
   if Assigned(FOnNewTilePrepared) then FOnNewTilePrepared(Self,heightData,heightData.LibMaterial);
 end;
@@ -380,8 +380,8 @@ end;
 {
 //  PreparingData
 //
-procedure TGLShadowHDS.PreparingData(heightData : THeightData);
-var HD    : THeightData;
+procedure TGLShadowHDS.PreparingData(heightData : TGLHeightData);
+var HD    : TGLHeightData;
     libMat: TGLLibMaterial;
     bmp32 : TGLBitmap32;
     MatName:string;
@@ -444,8 +444,8 @@ begin
 end;
 }
 
-procedure TGLShadowHDS.GenerateShadowMap(heightData:THeightData; ShadowMap:TGLBitmap32; scale:Single);
-var HD : THeightData;
+procedure TGLShadowHDS.GenerateShadowMap(heightData:TGLHeightData; ShadowMap:TGLBitmap32; scale:Single);
+var HD : TGLHeightData;
     x,y:integer;   //in local space
     sx,sy:single;
 begin
@@ -482,8 +482,8 @@ end;
 //  while testing for any intersections with the terrain.
 //  It returns the height of the shadow. There is no shadow if the shadow height is equal to terrain height.
 //  This is slow, but only needs to be done for pixels along the tile edge, facing the light.
-function TGLShadowHDS.RayCastShadowHeight(HD:THeightData;localX,localY:single):single;
-var tmpHD:THeightData;
+function TGLShadowHDS.RayCastShadowHeight(HD:TGLHeightData;localX,localY:single):single;
+var tmpHD:TGLHeightData;
     wx,wy:single;
     lx,ly:single;
     h:single;
@@ -527,8 +527,8 @@ end;
 //  LocalToWorld
 //  Converts local tile coordinates to world coordinages. Even if the coordinates are off the tile.
 //
-procedure TGLShadowHDS.LocalToWorld(Lx,Ly:single;HD:THeightData;var Wx:single;var Wy:single);
-var HDS:THeightDataSource;
+procedure TGLShadowHDS.LocalToWorld(Lx,Ly:single;HD:TGLHeightData;var Wx:single;var Wy:single);
+var HDS:TGLHeightDataSource;
 begin
   HDS:=self.HeightDataSource;
   wx:=Lx+HD.XLeft;
@@ -544,8 +544,8 @@ end;
 //WorldToLocal
 //Takes World coordinates and returns the correct tile, and converted local coordinates
 //
-procedure TGLShadowHDS.WorldToLocal(Wx,Wy:single;var HD:THeightData;var lx:single; var ly:single);
-var HDS:THeightDataSource;
+procedure TGLShadowHDS.WorldToLocal(Wx,Wy:single;var HD:TGLHeightData;var lx:single; var ly:single);
+var HDS:TGLHeightDataSource;
     xleft,ytop:integer;
     size:integer;
 begin
@@ -566,9 +566,9 @@ begin
 end;
 //----------------------------------------------------------
 
-procedure TGLShadowHDS.RayCastLine(HeightData:THeightData;Lx,Ly:single;ShadowMap:TGLBitmap32);
+procedure TGLShadowHDS.RayCastLine(HeightData:TGLHeightData;Lx,Ly:single;ShadowMap:TGLBitmap32);
 var sh,h:single;
-    HD:THeightData;
+    HD:TGLHeightData;
     Size:integer;
     nmRow : PGLPixel32Array;
     ctr:integer;
@@ -661,8 +661,8 @@ end;
 // AmbientLight = Relative to Angle between surface Normal and sky (Directly up)
 //                ie. Vertical walls are darker because they see less sky.
 // DiffuseLight = Relative to Angle between surface Normal, and Sun vector.
-function TGLShadowHDS.Shade(HeightData:THeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
-var HD:THeightData;
+function TGLShadowHDS.Shade(HeightData:TGLHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
+var HD:TGLHeightData;
     nv:TAffineVector;
     dot:single;
     sunVec:TAffineVector;

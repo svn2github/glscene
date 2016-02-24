@@ -16,15 +16,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //GLS
   GLBaseClasses,
-  GLSCUDAApi,
-  GLSCUDARunTime,
   GLContext,
   GLSGenerics,
   GLSLog,
-  //OpenCL
+  //Parallel
+  GLSCUDARunTime,
+  GLSCUDAApi,
   CL_Platform;
 
 type

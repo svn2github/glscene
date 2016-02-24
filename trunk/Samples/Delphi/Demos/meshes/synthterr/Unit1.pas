@@ -32,7 +32,7 @@ type
       newTime: Double);
     procedure FormCreate(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
-    procedure GLCustomHDSStartPreparingData(heightData: THeightData);
+    procedure GLCustomHDSStartPreparingData(heightData: TGLHeightData);
   private
     { Private declarations }
   public
@@ -106,11 +106,11 @@ end;
 // The beef : this event does all the interesting elevation data stuff
 //
 
-procedure TForm1.GLCustomHDSStartPreparingData(heightData: THeightData);
+procedure TForm1.GLCustomHDSStartPreparingData(heightData: TGLHeightData);
 var
    y, x : Integer;
    rasterLine : PByteArray;
-   oldType : THeightDataType;
+   oldType : TGLHeightDataType;
    b : Byte;
    d, dy : Single;
 begin

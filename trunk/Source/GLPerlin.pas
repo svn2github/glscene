@@ -112,10 +112,10 @@ Type
     Procedure Generate; override;
     Function GetPerlinValue_2D(x, y: Double): Double;
     Procedure MakeBitmap(Param: TGLBitmap);
-    Procedure SetHeightData(heightData: THeightData);
+    Procedure SetHeightData(heightData: TGLHeightData);
   End;
 
-  TGLPerlinHDS = class(THeightDataSource)
+  TGLPerlinHDS = class(TGLHeightDataSource)
   private
     FInterpolation: TGLPerlinInterpolation;
     FSmoothing: TGLPerlinInterpolation;
@@ -129,7 +129,7 @@ Type
     MaxValue, MinValue: Double;
     Stall: Boolean;
     Constructor Create(AOwner: TComponent); override;
-    procedure StartPreparingData(heightData: THeightData); override;
+    procedure StartPreparingData(heightData: TGLHeightData); override;
     procedure WaitFor;
     property Lines: TStrings read FLines;
     property LinesChanged: Boolean read FLinesChanged write FLinesChanged;
@@ -145,7 +145,7 @@ Type
     property YStart: Integer read FYStart write FYStart;
   End;
 
-  TGLPerlinHDSThread = class(THeightDataThread)
+  TGLPerlinHDSThread = class(TGLHeightDataThread)
     Perlin: TGL2DPerlin;
     PerlinSource: TGLPerlinHDS;
     Procedure OpdateOutSide;
@@ -598,7 +598,7 @@ Begin
   End;
 End;
 
-Procedure TGL2DPerlin.SetHeightData(heightData: THeightData);
+Procedure TGL2DPerlin.SetHeightData(heightData: TGLHeightData);
 
 Var
   XC, YC: Integer;
@@ -663,7 +663,7 @@ Begin
   MaxThreads := 1;
 End;
 
-procedure TGLPerlinHDS.StartPreparingData(heightData: THeightData);
+procedure TGLPerlinHDS.StartPreparingData(heightData: TGLHeightData);
 
 Var
   Perlin: TGL2DPerlin;
@@ -718,7 +718,7 @@ procedure TGLPerlinHDS.WaitFor;
 
 Var
   HDList: TList;
-  HD: THeightData;
+  HD: TGLHeightData;
   XC: Integer;
 Begin
   Repeat
@@ -727,7 +727,7 @@ Begin
       HD := Nil;
       For XC := 0 to HDList.Count - 1 do
       Begin
-        HD := THeightData(HDList[XC]);
+        HD := TGLHeightData(HDList[XC]);
         If HD.DataState <> hdsReady then
           Break;
       End;

@@ -130,11 +130,9 @@
         <DCCReference Include="GLSceneVCL_RunTime.dcp"/>
         <DCCReference Include="..\Source\ParallelAPIs\CL.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\CL_GL.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAApi.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDARuntime.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAUtility.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\GLSCUDA.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDACompiler.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAContext.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAFFTPlan.pas"/>
@@ -143,6 +141,8 @@
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDADataAccess.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAParallelPrimitives.pas"/>
         <DCCReference Include="..\Source\ParallelAPIs\CL_Platform.pas"/>
+        <DCCReference Include="..\Source\ParallelAPIs\GLSCUDA.pas"/>
+        <DCCReference Include="..\Source\ParallelAPIs\GLSCUDAApi.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -182,7 +182,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -496,16 +505,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

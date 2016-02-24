@@ -522,7 +522,7 @@ procedure TMainForm.ACProcessExecute(Sender: TObject);
 var
    x, y, wx, wy, ts, tx, ty, i, j, overlap : Integer;
    n, maxN : Cardinal;
-   htf : THeightTileFile;
+   htf : TGLHeightTileFile;
    buf : array of SmallInt;
    f : file of Byte;
 begin
@@ -534,7 +534,7 @@ begin
    overlap:=StrToInt(EDTileOverlap.Text);
    Parse;
    SetLength(buf, ts*ts);
-   htf:=THeightTileFile.CreateNew(EDHTFName.Text, wx, wy, ts);
+   htf:=TGLHeightTileFile.CreateNew(EDHTFName.Text, wx, wy, ts);
    htf.DefaultZ:=defaultZ;
    ProgressBar.Max:=1000;
    maxN:=Ceil(wx/ts)*Ceil(wy/ts);
@@ -598,7 +598,7 @@ var
 begin
    viewer:=TViewerForm.Create(nil);
    try
-      Viewer.htf:=THeightTileFile.Create(EDHTFName.Text);                   //R
+      Viewer.htf:=TGLHeightTileFile.Create(EDHTFName.Text);                   //R
       Viewer.Caption:='HTFViewer - '+ExtractFileName(EDHTFName.Text);       //R
 
       viewer.ShowModal;

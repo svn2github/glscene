@@ -297,9 +297,9 @@ void __fastcall TForm1::GLCustomHDS1MarkDirtyEvent(const TRect &area) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TForm1::GLCustomHDS1StartPreparingData(THeightData *heightData)
+void __fastcall TForm1::GLCustomHDS1StartPreparingData(TGLHeightData *heightData)
 {
-	THeightData *htfHD;
+	TGLHeightData *htfHD;
 	int i, j, n;
 	TTexPoint offset;
 
@@ -373,7 +373,7 @@ float TForm1::WaterHeight(const float px, const float py) {
 }
 
 // ---------------------------------------------------------------------------
-void TForm1::IssuePoint(THeightData *hd, int x, int y, int s2, float t, int rx,
+void TForm1::IssuePoint(TGLHeightData *hd, int x, int y, int s2, float t, int rx,
 	int ry) {
 	const float r = 0.75;
 	const float g = 0.75;
@@ -404,7 +404,7 @@ void __fastcall TForm1::TerrainRendererHeightDataPostRender
 	(TGLRenderContextInfo &rci, TList *&HeightDatas) {
 	int i, x, y, s, s2;
 	float t;
-	THeightData *hd;
+	TGLHeightData *hd;
 
 	if (WaterPlane) {
 		t = GLCadencer->CurrentTime;
@@ -424,7 +424,7 @@ void __fastcall TForm1::TerrainRendererHeightDataPostRender
 			glNormal3f(0, 0, 1);
 
 			for (i = 0; i < HeightDatas->Count; i++) {
-				hd = (THeightData*)(HeightDatas->List[i]);
+				hd = (TGLHeightData*)(HeightDatas->List[i]);
 
 				if ((hd->DataState == hdsReady) && (hd->HeightMin >
 					cWaterLevel))

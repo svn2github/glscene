@@ -20,13 +20,13 @@
    its data in a specific format, the code revolving around DataType is there
    for that purpose If you are in an application specific context, this phase
    may be unnecessary (just prepare the data in the format you were asked).<br>
-   The THeightData you receive is empty, meaning you've got to allocate it first
+   The TGLHeightData you receive is empty, meaning you've got to allocate it first
    (with the Allocate method), and then fill it using one of the various properties
-   (see THeightData).<br>
+   (see TGLHeightData).<br>
    The material is specified by the MaterialName property (the material library
    being linked at the TGLTerrainRenderer level). Materials used can be dynamic
    between frames, but must remain coherent throughout a frame, and for as long
-   as the THeightData where you specified the material remains alive.
+   as the TGLHeightData where you specified the material remains alive.
 }
 program synthterr;
 

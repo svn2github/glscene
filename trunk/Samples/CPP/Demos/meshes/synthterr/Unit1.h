@@ -41,7 +41,7 @@ __published:	// IDE-managed Components
 	TGLMaterialLibrary *GLMaterialLibrary1;
 	TGLCustomHDS *GLCustomHDS;
 	void __fastcall FormCreate(TObject *Sender);
-	void __fastcall GLCustomHDSStartPreparingData(THeightData *HeightData);
+	void __fastcall GLCustomHDSStartPreparingData(TGLHeightData *HeightData);
 	void __fastcall GLSceneViewer1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
           int X, int Y);
 	void __fastcall GLSceneViewer1MouseMove(TObject *Sender, TShiftState Shift, int X,

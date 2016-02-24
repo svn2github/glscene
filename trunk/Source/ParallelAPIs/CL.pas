@@ -2,15 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Conversion of OpenCL header file: cl.h to Delphi,
+   Conversion of OpenCL header file: cl.h to CL.pas,
    from http://www.khronos.org/registry/cl/.
-
-    History :
-       05/02/16 - PW - Updated from OpenCL 1.1 to 2.1
-       05/03/11 - Yar - Rename size_t to Tsize_t
-       20/01/10 - Yar - Recast to dynamic library
-       01/11/09 - DanB - Creation
-    
 }
 // *****************************************************************************
 // * Copyright (c) 2008-2015 The Khronos Group Inc.
@@ -40,7 +33,7 @@ unit CL;
 interface
 
 uses
-  {$IFDEF MSWINDOWS} Winapi.Windows,{$ENDIF}
+  Winapi.Windows,
   CL_Platform;
 
 {$I cl.inc}
@@ -207,7 +200,6 @@ type
 
   //* Error Codes *//
 const
-
   CL_SUCCESS =                                     0;
   CL_DEVICE_NOT_FOUND =                           -1;
   CL_DEVICE_NOT_AVAILABLE =                       -2;
@@ -1503,8 +1495,8 @@ var
 
 function InitOpenCL: Boolean;
 procedure CloseOpenCL;
-function InitOpenCLFromLibrary(const CLName: WideString): Boolean;
-function IsOpenCLInitialized: Boolean;
+function InitFromLibraryOpenCL(const CLName: WideString): Boolean;
+function IsInitializedOpenCL: Boolean;
 
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
@@ -1528,7 +1520,7 @@ var
   CLHandle: TLibHandle;
 {$ENDIF}
 
-function GetOpenCLProcAddress(ProcName: PAnsiChar): Pointer;
+function GetProcAddressOpenCL(ProcName: PAnsiChar): Pointer;
 begin
   result := GetProcAddress(Cardinal(CLHandle), ProcName);
 end;
@@ -1539,7 +1531,7 @@ end;
 function InitOpenCL: Boolean;
 begin
   if CLHandle = INVALID_MODULEHANDLE then
-    Result := InitOpenCLFromLibrary(LibOpenCL)
+    Result := InitFromLibraryOpenCL(LibOpenCL)
   else
     Result := True;
 end;
@@ -1559,7 +1551,7 @@ end;
 // InitOpenCLFromLibrary
 //
 
-function InitOpenCLFromLibrary(const CLName: WideString): Boolean;
+function InitFromLibraryOpenCL(const CLName: WideString): Boolean;
 begin
   Result := False;
   CloseOpenCL;
@@ -1567,105 +1559,105 @@ begin
   if CLHandle = INVALID_MODULEHANDLE then
     Exit;
 
-  clGetPlatformIDs:=GetOpenCLProcAddress('clGetPlatformIDs');
-  clGetPlatformInfo:=GetOpenCLProcAddress('clGetPlatformInfo');
-  clGetDeviceIDs:=GetOpenCLProcAddress('clGetDeviceIDs');
-  clGetDeviceInfo:=GetOpenCLProcAddress('clGetDeviceInfo');
-  clCreateSubDevices:=GetOpenCLProcAddress('clCreateSubDevices');
-  clRetainDevice:=GetOpenCLProcAddress('clRetainDevice');
-  clReleaseDevice:=GetOpenCLProcAddress('clReleaseDevice');
-  clSetDefaultDeviceCommandQueue:=GetOpenCLProcAddress('clSetDefaultDeviceCommandQueue');
-  clGetDeviceAndHostTimer:=GetOpenCLProcAddress('clGetDeviceAndHostTimer');
-  clGetHostTimer:=GetOpenCLProcAddress('clGetHostTimer');
-  clCreateContext:=GetOpenCLProcAddress('clCreateContext');
-  clCreateContextFromType:=GetOpenCLProcAddress('clCreateContextFromType');
-  clRetainContext:=GetOpenCLProcAddress('clRetainContext');
-  clReleaseContext:=GetOpenCLProcAddress('clReleaseContext');
-  clGetContextInfo:=GetOpenCLProcAddress('clGetContextInfo');
-  clCreateCommandQueue:=GetOpenCLProcAddress('clCreateCommandQueue');
-  clRetainCommandQueue:=GetOpenCLProcAddress('clRetainCommandQueue');
-  clReleaseCommandQueue:=GetOpenCLProcAddress('clReleaseCommandQueue');
-  clGetCommandQueueInfo:=GetOpenCLProcAddress('clGetCommandQueueInfo');
-  clCreateBuffer:=GetOpenCLProcAddress('clCreateBuffer');
-  clCreateSubBuffer:=GetOpenCLProcAddress('clCreateSubBuffer');
-  clCreateImage:=GetOpenCLProcAddress('clCreateImage');
-  clCreatePipe:=GetOpenCLProcAddress('clCreatePipe');
-  clRetainMemObject:=GetOpenCLProcAddress('clRetainMemObject');
-  clReleaseMemObject:=GetOpenCLProcAddress('clReleaseMemObject');
-  clGetSupportedImageFormats:=GetOpenCLProcAddress('clGetSupportedImageFormats');
-  clGetMemObjectInfo:=GetOpenCLProcAddress('clGetMemObjectInfo');
-  clGetImageInfo:=GetOpenCLProcAddress('clGetImageInfo');
-  clGetPipeInfo:=GetOpenCLProcAddress('clGetPipeInfo');
-  clSetMemObjectDestructorCallback:=GetOpenCLProcAddress('clSetMemObjectDestructorCallback');
-  clSVMAlloc:=GetOpenCLProcAddress('clSVMAlloc');
-  clSVMFree:=GetOpenCLProcAddress('clSVMFree');
-  clCreateSamplerWithProperties:=GetOpenCLProcAddress('clCreateSamplerWithProperties');
-  clRetainSampler:=GetOpenCLProcAddress('clRetainSampler');
-  clReleaseSampler:=GetOpenCLProcAddress('clReleaseSampler');
-  clGetSamplerInfo:=GetOpenCLProcAddress('clGetSamplerInfo');
-  clCreateProgramWithSource:=GetOpenCLProcAddress('clCreateProgramWithSource');
-  clCreateProgramWithBinary:=GetOpenCLProcAddress('clCreateProgramWithBinary');
-  clCreateProgramWithBuiltInKernels:=GetOpenCLProcAddress('clCreateProgramWithBuiltInKernels');
-  clCreateProgramWithIL:=GetOpenCLProcAddress('clCreateProgramWithIL');
-  clRetainProgram:=GetOpenCLProcAddress('clRetainProgram');
-  clReleaseProgram:=GetOpenCLProcAddress('clReleaseProgram');
-  clBuildProgram:=GetOpenCLProcAddress('clBuildProgram');
-  clCompileProgram:=GetOpenCLProcAddress('clCompileProgram');
-  clLinkProgram:=GetOpenCLProcAddress('clLinkProgram');
-  clUnloadPlatformCompiler:=GetOpenCLProcAddress('clUnloadPlatformCompiler');
-  clGetProgramInfo:=GetOpenCLProcAddress('clGetProgramInfo');
-  clGetProgramBuildInfo:=GetOpenCLProcAddress('clGetProgramBuildInfo');
-  clCreateKernel:=GetOpenCLProcAddress('clCreateKernel');
-  clCreateKernelsInProgram:=GetOpenCLProcAddress('clCreateKernelsInProgram');
-  clCloneKernel:=GetOpenCLProcAddress('clCloneKernel');
-  clRetainKernel:=GetOpenCLProcAddress('clRetainKernel');
-  clReleaseKernel:=GetOpenCLProcAddress('clReleaseKernel');
-  clSetKernelArg:=GetOpenCLProcAddress('clSetKernelArg');
-  clSetKernelArgSVMPointer:=GetOpenCLProcAddress('clSetKernelArgSVMPointer');
-  clSetKernelExecInfo:=GetOpenCLProcAddress('clSetKernelExecInfo');
-  clGetKernelInfo:=GetOpenCLProcAddress('clGetKernelInfo');
-  clGetKernelArgInfo:=GetOpenCLProcAddress('clGetKernelArgInfo');
-  clGetKernelWorkGroupInfo:=GetOpenCLProcAddress('clGetKernelWorkGroupInfo');
-  clGetKernelSubGroupInfo:=GetOpenCLProcAddress('clGetKernelSubGroupInfo');
-  clWaitForEvents:=GetOpenCLProcAddress('clWaitForEvents');
-  clGetEventInfo:=GetOpenCLProcAddress('clGetEventInfo');
-  clCreateUserEvent:=GetOpenCLProcAddress('clCreateUserEvent');
-  clRetainEvent:=GetOpenCLProcAddress('clRetainEvent');
-  clReleaseEvent:=GetOpenCLProcAddress('clReleaseEvent');
-  clSetUserEventStatus:=GetOpenCLProcAddress('clSetUserEventStatus');
-  clSetEventCallback:=GetOpenCLProcAddress('clSetEventCallback');
-  clGetEventProfilingInfo:=GetOpenCLProcAddress('clGetEventProfilingInfo');
-  clFlush:=GetOpenCLProcAddress('clFlush');
-  clFinish:=GetOpenCLProcAddress('clFinish');
-  clEnqueueReadBuffer:=GetOpenCLProcAddress('clEnqueueReadBuffer');
-  clEnqueueReadBufferRect:=GetOpenCLProcAddress('clEnqueueReadBufferRect');
-  clEnqueueWriteBuffer:=GetOpenCLProcAddress('clEnqueueWriteBuffer');
-  clEnqueueWriteBufferRect:=GetOpenCLProcAddress('clEnqueueWriteBufferRect');
-  clEnqueueFillBuffer:=GetOpenCLProcAddress('clEnqueueFillBuffer');  
-  clEnqueueCopyBuffer:=GetOpenCLProcAddress('clEnqueueCopyBuffer');
-  clEnqueueCopyBufferRect:=GetOpenCLProcAddress('clEnqueueCopyBufferRect');
-  clEnqueueReadImage:=GetOpenCLProcAddress('clEnqueueReadImage');
-  clEnqueueWriteImage:=GetOpenCLProcAddress('clEnqueueWriteImage');
-  clEnqueueFillImage:=GetOpenCLProcAddress('clEnqueueFillImage');
-  clEnqueueCopyImage:=GetOpenCLProcAddress('clEnqueueCopyImage');
-  clEnqueueCopyImageToBuffer:=GetOpenCLProcAddress('clEnqueueCopyImageToBuffer');
-  clEnqueueCopyBufferToImage:=GetOpenCLProcAddress('clEnqueueCopyBufferToImage');
-  clEnqueueMapBuffer:=GetOpenCLProcAddress('clEnqueueMapBuffer');
-  clEnqueueMapImage:=GetOpenCLProcAddress('clEnqueueMapImage');
-  clEnqueueUnmapMemObject:=GetOpenCLProcAddress('clEnqueueUnmapMemObject');
-  clEnqueueMigrateMemObjects:=GetOpenCLProcAddress('clEnqueueMigrateMemObjects');
-  clEnqueueNDRangeKernel:=GetOpenCLProcAddress('clEnqueueNDRangeKernel');
-  clEnqueueNativeKernel:=GetOpenCLProcAddress('clEnqueueNativeKernel');
-  clEnqueueMarkerWithWaitList:=GetOpenCLProcAddress('clEnqueueMarkerWithWaitList');
-  clEnqueueBarrierWithWaitList:=GetOpenCLProcAddress('clEnqueueBarrierWithWaitList');
-  clEnqueueSVMFree:=GetOpenCLProcAddress('clEnqueueSVMFree');
-  clEnqueueSVMMemcpy:=GetOpenCLProcAddress('clEnqueueSVMMemcpy');
-  clEnqueueSVMMap:=GetOpenCLProcAddress('clEnqueueSVMMap');
-  clEnqueueSVMUnmap:=GetOpenCLProcAddress('clEnqueueSVMUnmap');
-  clEnqueueSVMmigrateMem:=GetOpenCLProcAddress('clEnqueueSVMmigrateMem');
-  clEnqueueWaitForEvents:=GetOpenCLProcAddress('clEnqueueWaitForEvents');
-  clEnqueueBarrier:=GetOpenCLProcAddress('clEnqueueBarrier');
-  clGetExtensionFunctionAddressForPlatform:=GetOpenCLProcAddress('clGetExtensionFunctionAddressForPlatform');
+  clGetPlatformIDs:=GetProcAddressOpenCL('clGetPlatformIDs');
+  clGetPlatformInfo:=GetProcAddressOpenCL('clGetPlatformInfo');
+  clGetDeviceIDs:=GetProcAddressOpenCL('clGetDeviceIDs');
+  clGetDeviceInfo:=GetProcAddressOpenCL('clGetDeviceInfo');
+  clCreateSubDevices:=GetProcAddressOpenCL('clCreateSubDevices');
+  clRetainDevice:=GetProcAddressOpenCL('clRetainDevice');
+  clReleaseDevice:=GetProcAddressOpenCL('clReleaseDevice');
+  clSetDefaultDeviceCommandQueue:=GetProcAddressOpenCL('clSetDefaultDeviceCommandQueue');
+  clGetDeviceAndHostTimer:=GetProcAddressOpenCL('clGetDeviceAndHostTimer');
+  clGetHostTimer:=GetProcAddressOpenCL('clGetHostTimer');
+  clCreateContext:=GetProcAddressOpenCL('clCreateContext');
+  clCreateContextFromType:=GetProcAddressOpenCL('clCreateContextFromType');
+  clRetainContext:=GetProcAddressOpenCL('clRetainContext');
+  clReleaseContext:=GetProcAddressOpenCL('clReleaseContext');
+  clGetContextInfo:=GetProcAddressOpenCL('clGetContextInfo');
+  clCreateCommandQueue:=GetProcAddressOpenCL('clCreateCommandQueue');
+  clRetainCommandQueue:=GetProcAddressOpenCL('clRetainCommandQueue');
+  clReleaseCommandQueue:=GetProcAddressOpenCL('clReleaseCommandQueue');
+  clGetCommandQueueInfo:=GetProcAddressOpenCL('clGetCommandQueueInfo');
+  clCreateBuffer:=GetProcAddressOpenCL('clCreateBuffer');
+  clCreateSubBuffer:=GetProcAddressOpenCL('clCreateSubBuffer');
+  clCreateImage:=GetProcAddressOpenCL('clCreateImage');
+  clCreatePipe:=GetProcAddressOpenCL('clCreatePipe');
+  clRetainMemObject:=GetProcAddressOpenCL('clRetainMemObject');
+  clReleaseMemObject:=GetProcAddressOpenCL('clReleaseMemObject');
+  clGetSupportedImageFormats:=GetProcAddressOpenCL('clGetSupportedImageFormats');
+  clGetMemObjectInfo:=GetProcAddressOpenCL('clGetMemObjectInfo');
+  clGetImageInfo:=GetProcAddressOpenCL('clGetImageInfo');
+  clGetPipeInfo:=GetProcAddressOpenCL('clGetPipeInfo');
+  clSetMemObjectDestructorCallback:=GetProcAddressOpenCL('clSetMemObjectDestructorCallback');
+  clSVMAlloc:=GetProcAddressOpenCL('clSVMAlloc');
+  clSVMFree:=GetProcAddressOpenCL('clSVMFree');
+  clCreateSamplerWithProperties:=GetProcAddressOpenCL('clCreateSamplerWithProperties');
+  clRetainSampler:=GetProcAddressOpenCL('clRetainSampler');
+  clReleaseSampler:=GetProcAddressOpenCL('clReleaseSampler');
+  clGetSamplerInfo:=GetProcAddressOpenCL('clGetSamplerInfo');
+  clCreateProgramWithSource:=GetProcAddressOpenCL('clCreateProgramWithSource');
+  clCreateProgramWithBinary:=GetProcAddressOpenCL('clCreateProgramWithBinary');
+  clCreateProgramWithBuiltInKernels:=GetProcAddressOpenCL('clCreateProgramWithBuiltInKernels');
+  clCreateProgramWithIL:=GetProcAddressOpenCL('clCreateProgramWithIL');
+  clRetainProgram:=GetProcAddressOpenCL('clRetainProgram');
+  clReleaseProgram:=GetProcAddressOpenCL('clReleaseProgram');
+  clBuildProgram:=GetProcAddressOpenCL('clBuildProgram');
+  clCompileProgram:=GetProcAddressOpenCL('clCompileProgram');
+  clLinkProgram:=GetProcAddressOpenCL('clLinkProgram');
+  clUnloadPlatformCompiler:=GetProcAddressOpenCL('clUnloadPlatformCompiler');
+  clGetProgramInfo:=GetProcAddressOpenCL('clGetProgramInfo');
+  clGetProgramBuildInfo:=GetProcAddressOpenCL('clGetProgramBuildInfo');
+  clCreateKernel:=GetProcAddressOpenCL('clCreateKernel');
+  clCreateKernelsInProgram:=GetProcAddressOpenCL('clCreateKernelsInProgram');
+  clCloneKernel:=GetProcAddressOpenCL('clCloneKernel');
+  clRetainKernel:=GetProcAddressOpenCL('clRetainKernel');
+  clReleaseKernel:=GetProcAddressOpenCL('clReleaseKernel');
+  clSetKernelArg:=GetProcAddressOpenCL('clSetKernelArg');
+  clSetKernelArgSVMPointer:=GetProcAddressOpenCL('clSetKernelArgSVMPointer');
+  clSetKernelExecInfo:=GetProcAddressOpenCL('clSetKernelExecInfo');
+  clGetKernelInfo:=GetProcAddressOpenCL('clGetKernelInfo');
+  clGetKernelArgInfo:=GetProcAddressOpenCL('clGetKernelArgInfo');
+  clGetKernelWorkGroupInfo:=GetProcAddressOpenCL('clGetKernelWorkGroupInfo');
+  clGetKernelSubGroupInfo:=GetProcAddressOpenCL('clGetKernelSubGroupInfo');
+  clWaitForEvents:=GetProcAddressOpenCL('clWaitForEvents');
+  clGetEventInfo:=GetProcAddressOpenCL('clGetEventInfo');
+  clCreateUserEvent:=GetProcAddressOpenCL('clCreateUserEvent');
+  clRetainEvent:=GetProcAddressOpenCL('clRetainEvent');
+  clReleaseEvent:=GetProcAddressOpenCL('clReleaseEvent');
+  clSetUserEventStatus:=GetProcAddressOpenCL('clSetUserEventStatus');
+  clSetEventCallback:=GetProcAddressOpenCL('clSetEventCallback');
+  clGetEventProfilingInfo:=GetProcAddressOpenCL('clGetEventProfilingInfo');
+  clFlush:=GetProcAddressOpenCL('clFlush');
+  clFinish:=GetProcAddressOpenCL('clFinish');
+  clEnqueueReadBuffer:=GetProcAddressOpenCL('clEnqueueReadBuffer');
+  clEnqueueReadBufferRect:=GetProcAddressOpenCL('clEnqueueReadBufferRect');
+  clEnqueueWriteBuffer:=GetProcAddressOpenCL('clEnqueueWriteBuffer');
+  clEnqueueWriteBufferRect:=GetProcAddressOpenCL('clEnqueueWriteBufferRect');
+  clEnqueueFillBuffer:=GetProcAddressOpenCL('clEnqueueFillBuffer');
+  clEnqueueCopyBuffer:=GetProcAddressOpenCL('clEnqueueCopyBuffer');
+  clEnqueueCopyBufferRect:=GetProcAddressOpenCL('clEnqueueCopyBufferRect');
+  clEnqueueReadImage:=GetProcAddressOpenCL('clEnqueueReadImage');
+  clEnqueueWriteImage:=GetProcAddressOpenCL('clEnqueueWriteImage');
+  clEnqueueFillImage:=GetProcAddressOpenCL('clEnqueueFillImage');
+  clEnqueueCopyImage:=GetProcAddressOpenCL('clEnqueueCopyImage');
+  clEnqueueCopyImageToBuffer:=GetProcAddressOpenCL('clEnqueueCopyImageToBuffer');
+  clEnqueueCopyBufferToImage:=GetProcAddressOpenCL('clEnqueueCopyBufferToImage');
+  clEnqueueMapBuffer:=GetProcAddressOpenCL('clEnqueueMapBuffer');
+  clEnqueueMapImage:=GetProcAddressOpenCL('clEnqueueMapImage');
+  clEnqueueUnmapMemObject:=GetProcAddressOpenCL('clEnqueueUnmapMemObject');
+  clEnqueueMigrateMemObjects:=GetProcAddressOpenCL('clEnqueueMigrateMemObjects');
+  clEnqueueNDRangeKernel:=GetProcAddressOpenCL('clEnqueueNDRangeKernel');
+  clEnqueueNativeKernel:=GetProcAddressOpenCL('clEnqueueNativeKernel');
+  clEnqueueMarkerWithWaitList:=GetProcAddressOpenCL('clEnqueueMarkerWithWaitList');
+  clEnqueueBarrierWithWaitList:=GetProcAddressOpenCL('clEnqueueBarrierWithWaitList');
+  clEnqueueSVMFree:=GetProcAddressOpenCL('clEnqueueSVMFree');
+  clEnqueueSVMMemcpy:=GetProcAddressOpenCL('clEnqueueSVMMemcpy');
+  clEnqueueSVMMap:=GetProcAddressOpenCL('clEnqueueSVMMap');
+  clEnqueueSVMUnmap:=GetProcAddressOpenCL('clEnqueueSVMUnmap');
+  clEnqueueSVMmigrateMem:=GetProcAddressOpenCL('clEnqueueSVMmigrateMem');
+  clEnqueueWaitForEvents:=GetProcAddressOpenCL('clEnqueueWaitForEvents');
+  clEnqueueBarrier:=GetProcAddressOpenCL('clEnqueueBarrier');
+  clGetExtensionFunctionAddressForPlatform:=GetProcAddressOpenCL('clGetExtensionFunctionAddressForPlatform');
 
   Result := True;
 end;
@@ -1673,7 +1665,7 @@ end;
 // IsOpenCLInitialized
 //
 
-function IsOpenCLInitialized: Boolean;
+function IsInitializedOpenCL: Boolean;
 begin
   Result := (CLHandle <> INVALID_MODULEHANDLE);
 end;

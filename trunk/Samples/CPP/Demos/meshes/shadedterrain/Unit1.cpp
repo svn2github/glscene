@@ -52,7 +52,7 @@ void __fastcall TForm1::FormShow(TObject * Sender)
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
-													 THeightData * heightData,
+													 TGLHeightData * heightData,
 													 TGLLibMaterial *
 													 normalMapMaterial)
 {

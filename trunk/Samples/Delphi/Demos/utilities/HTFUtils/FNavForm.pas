@@ -20,7 +20,7 @@ type
     FPickX, FPickY : Integer;
   public
     { Public declarations }
-    function Execute(htf : THeightTileFile) : Boolean;
+    function Execute(htf : TGLHeightTileFile) : Boolean;
 
     property PickX : Integer read FPickX;
     property PickY : Integer read FPickY;
@@ -36,7 +36,7 @@ implementation
 uses
   FViewerForm;
 
-function TNavForm.Execute(htf : THeightTileFile) : Boolean;
+function TNavForm.Execute(htf : TGLHeightTileFile) : Boolean;
 var
    i, x, y, w, s, wx, wy : Integer;
 begin

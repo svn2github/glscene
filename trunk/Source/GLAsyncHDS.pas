@@ -4,9 +4,9 @@
 {
    Implements a HDS Filter that generates HeightData tiles in a seperate thread. 
 
-   This component is a THeightDataSourceFilter, which uses a THeightDataSourceThread,
+   This component is a TGLHeightDataSourceFilter, which uses a TGLHeightDataSourceThread,
    to asyncronously search the HeightData cache for any queued tiles.
-   When found, it then prepares the queued tile in its own THeightDataThread.
+   When found, it then prepares the queued tile in its own TGLHeightDataThread.
 
    This allows the GUI to remain responsive, and prevents freezes when new tiles are
    being prepared.  Although this keeps the framerate up, it may cause holes in the
@@ -43,7 +43,7 @@ uses
 type
   TGLAsyncHDS = class;
   TIdleEvent = procedure(Sender:TGLAsyncHDS;TilesUpdated:boolean) of object;
-  TNewTilePreparedEvent = procedure (Sender : TGLAsyncHDS; heightData : THeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
+  TNewTilePreparedEvent = procedure (Sender : TGLAsyncHDS; heightData : TGLHeightData) of object; //a tile was updated (called INSIDE the sub-thread?)
 
   // TUseDirtyTiles
   //
@@ -65,7 +65,7 @@ type
   TUseDirtyTiles=(dtNever,dtUntilReplaced,dtUntilAllReplaced);
 
 
-	 TGLAsyncHDS = class (THeightDataSourceFilter)
+	 TGLAsyncHDS = class (TGLHeightDataSourceFilter)
 	   private
 	      { Private Declarations }
        FOnIdleEvent :TIdleEvent;
@@ -79,10 +79,10 @@ type
 	      { Public Declarations }
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
-      procedure BeforePreparingData(heightData : THeightData); override;
-      procedure StartPreparingData(heightData : THeightData); override;
+      procedure BeforePreparingData(heightData : TGLHeightData); override;
+      procedure StartPreparingData(heightData : TGLHeightData); override;
       procedure ThreadIsIdle; override;
-      procedure NewTilePrepared(heightData:THeightData);
+      procedure NewTilePrepared(heightData:TGLHeightData);
       function  ThreadCount:integer;
       procedure WaitFor(TimeOut:integer=2000);
       //procedure NotifyChange(Sender : TObject); override;
@@ -97,10 +97,10 @@ type
       property Active;             //set to false, to ignore new queued tiles.(Partially processed tiles will still be completed)
   end;
 
-  TGLAsyncHDThread = class(THeightDataThread)
+  TGLAsyncHDThread = class(TGLHeightDataThread)
     public
       Owner : TGLAsyncHDS;
-      HDS   : THeightDataSource;
+      HDS   : TGLHeightDataSource;
       Procedure Execute; override;
       Procedure Sync;
   end;
@@ -136,7 +136,7 @@ end;
 
 // BeforePreparingData
 //
-procedure TGLAsyncHDS.BeforePreparingData(heightData : THeightData);
+procedure TGLAsyncHDS.BeforePreparingData(heightData : TGLHeightData);
 begin
   if FUseDirtyTiles=dtNever then begin
     if heightData.OldVersion<>nil then begin
@@ -149,9 +149,9 @@ end;
 
 // StartPreparingData
 //
-procedure TGLAsyncHDS.StartPreparingData(heightData : THeightData);
+procedure TGLAsyncHDS.StartPreparingData(heightData : TGLHeightData);
 var HDThread : TGLAsyncHDThread;
-    HDS:THeightDataSource;
+    HDS:TGLHeightDataSource;
 begin
   HDS:=HeightDataSource;
   //---if there is no linked HDS then return an empty tile--
@@ -185,7 +185,7 @@ end;
 procedure TGLAsyncHDS.ThreadIsIdle;
 var i:integer;
     lst:TList;
-    HD:THeightData;
+    HD:TGLHeightData;
 begin
   //----------- dtUntilAllReplaced -------------
   //Switch to the new version of ALL dirty tiles
@@ -195,7 +195,7 @@ begin
         i:=lst.Count;
         while(i>0) do begin
           dec(i);
-          HD:=THeightData(lst.Items[i]);
+          HD:=TGLHeightData(lst.Items[i]);
           if (HD.DataState in [hdsReady,hdsNone])
             and(Hd.DontUse)and(HD.OldVersion<>nil) then begin
             HD.DontUse:=false;
@@ -213,8 +213,8 @@ end;
 
 //OnNewTilePrepared event
 //
-procedure TGLAsyncHDS.NewTilePrepared(heightData:THeightData);
-var HD:THeightData;
+procedure TGLAsyncHDS.NewTilePrepared(heightData:TGLHeightData);
+var HD:TGLHeightData;
 begin
   if assigned(HeightDataSource) then HeightDataSource.AfterPreparingData(HeightData);
   with self.Data.LockList do begin
@@ -241,12 +241,12 @@ end;
 function TGLAsyncHDS.ThreadCount:integer;
 var lst: Tlist;
     i,TdCtr:integer;
-    HD:THeightData;
+    HD:TGLHeightData;
 begin
   lst:=self.Data.LockList;
   i:=0;TdCtr:=0;
   while(i<lst.Count)and(TdCtr<self.MaxThreads) do begin
-    HD:=THeightData(lst.Items[i]);
+    HD:=TGLHeightData(lst.Items[i]);
     if HD.Thread<>nil then Inc(TdCtr);
     inc(i);
   end;

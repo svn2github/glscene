@@ -102,8 +102,8 @@ object Form1: TForm1
       WordWrap = True
     end
     object TrackBar1: TTrackBar
-      Left = 8
-      Top = 240
+      Left = 10
+      Top = 256
       Width = 137
       Height = 34
       TabOrder = 4

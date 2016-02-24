@@ -1,18 +1,6 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ 
-  CUDA api implementation for GLScene
-
-   History :  
-   13/12/13 - PW - Added IFDEF GLS_LOGGING
-   07/02/11 - Yar - Added debug mode
-   08/04/10 - Yar - Corrected parameters of cuMemcpyDtoH, cuMemcpyAtoH
-   02/03/10 - Yar - Added missing constants, correct parameters of some functions
-   28/01/10 - Yar - Creation
-   
-}
-
 /// *
 // * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
 // *
@@ -55,9 +43,9 @@ interface
 {$I cuda.inc}
 
 uses
-{$IFDEF MSWINDOWS}Winapi.Windows,{$ENDIF}
-  GLCrossPlatform,
+  Winapi.Windows,
   CL_Platform,
+  GLCrossPlatform,
   GLSLog;
 
 const
@@ -434,11 +422,11 @@ type
   *)
 
   TcudaFuncAttributes = record
-    sharedSizeBytes: Tsize_t;
+    sharedSizeBytes: TSize_t;
     /// < Size of shared memory in bytes
-    constSizeBytes: Tsize_t;
+    constSizeBytes: TSize_t;
     /// < Size of constant memory in bytes
-    localSizeBytes: Tsize_t;
+    localSizeBytes: TSize_t;
     /// < Size of local memory in bytes
     maxThreadsPerBlock: Integer;
     /// < Maximum number of threads per block
@@ -771,7 +759,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceTotalMem = function(bytes: Psize_t; dev: TCUdevice): TCUresult;
+  TcuDeviceTotalMem = function(bytes: PSize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
@@ -780,7 +768,7 @@ type
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
 {$ENDIF}
-  TcuDeviceGetAttribute = function(pi: Psize_t; attrib: TCUdevice_attribute;
+  TcuDeviceGetAttribute = function(pi: PSize_t; attrib: TCUdevice_attribute;
     dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS}stdcall;
 {$ENDIF}{$IFDEF UNIX}cdecl;
@@ -1757,7 +1745,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceTotalMemShell(bytes: Psize_t; dev: TCUdevice): TCUresult;
+function cuDeviceTotalMemShell(bytes: PSize_t; dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -1780,7 +1768,7 @@ begin
       Get_CUDA_API_Error_String(Result)])
 end;
 
-function cuDeviceGetAttributeShell(pi: Psize_t; attrib: TCUdevice_attribute;
+function cuDeviceGetAttributeShell(pi: PSize_t; attrib: TCUdevice_attribute;
   dev: TCUdevice): TCUresult;
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -3064,7 +3052,7 @@ end;
 
 {$ENDIF GLS_CUDA_DEBUG_MODE}
 
-function CUDAGetProcAddress(ProcName: PAnsiChar): Pointer;
+function GetProcAddressCUDA(ProcName: PAnsiChar): Pointer;
 var
   Alt: AnsiString;
 begin
@@ -3104,382 +3092,382 @@ begin
   if CUDAHandle = INVALID_MODULEHANDLE then
     Exit;
 {$IFNDEF GLS_CUDA_DEBUG_MODE}
-  cuInit := CUDAGetProcAddress(cuInitName);
-  cuDriverGetVersion := CUDAGetProcAddress(cuDriverGetVersionName);
-  cuDeviceGet := CUDAGetProcAddress(cuDeviceGet_Name);
-  cuDeviceGetCount := CUDAGetProcAddress(cuDeviceGetCountName);
-  cuDeviceGetName := CUDAGetProcAddress(cuDeviceGetNameName);
-  cuDeviceComputeCapability := CUDAGetProcAddress
+  cuInit := GetProcAddressCUDA(cuInitName);
+  cuDriverGetVersion := GetProcAddressCUDA(cuDriverGetVersionName);
+  cuDeviceGet := GetProcAddressCUDA(cuDeviceGet_Name);
+  cuDeviceGetCount := GetProcAddressCUDA(cuDeviceGetCountName);
+  cuDeviceGetName := GetProcAddressCUDA(cuDeviceGetNameName);
+  cuDeviceComputeCapability := GetProcAddressCUDA
     (cuDeviceComputeCapabilityName);
-  cuDeviceTotalMem := CUDAGetProcAddress(cuDeviceTotalMemName);
-  cuDeviceGetProperties := CUDAGetProcAddress(cuDeviceGetPropertiesName);
-  cuDeviceGetAttribute := CUDAGetProcAddress(cuDeviceGetAttributeName);
-  cuCtxCreate := CUDAGetProcAddress(cuCtxCreateName);
-  cuCtxDestroy := CUDAGetProcAddress(cuCtxDestroyName);
-  cuCtxAttach := CUDAGetProcAddress(cuCtxAttachName);
-  cuCtxDetach := CUDAGetProcAddress(cuCtxDetachName);
-  cuCtxPushCurrent := CUDAGetProcAddress(cuCtxPushCurrentName);
-  cuCtxPopCurrent := CUDAGetProcAddress(cuCtxPopCurrentName);
-  cuCtxGetDevice := CUDAGetProcAddress(cuCtxGetDeviceName);
-  cuCtxSynchronize := CUDAGetProcAddress(cuCtxSynchronizeName);
-  cuModuleLoad := CUDAGetProcAddress(cuModuleLoadName);
-  cuModuleLoadData := CUDAGetProcAddress(cuModuleLoadDataName);
-  cuModuleLoadDataEx := CUDAGetProcAddress(cuModuleLoadDataExName);
-  cuModuleLoadFatBinary := CUDAGetProcAddress(cuModuleLoadFatBinaryName);
-  cuModuleUnload := CUDAGetProcAddress(cuModuleUnloadName);
-  cuModuleGetFunction := CUDAGetProcAddress(cuModuleGetFunctionName);
-  cuModuleGetGlobal := CUDAGetProcAddress(cuModuleGetGlobalName);
-  cuModuleGetTexRef := CUDAGetProcAddress(cuModuleGetTexRefName);
-  cuMemGetInfo := CUDAGetProcAddress(cuMemGetInfoName);
-  cuMemAlloc := CUDAGetProcAddress(cuMemAllocName);
-  cuMemAllocPitch := CUDAGetProcAddress(cuMemAllocPitchName);
-  cuMemFree := CUDAGetProcAddress(cuMemFreeName);
-  cuMemGetAddressRange := CUDAGetProcAddress(cuMemGetAddressRangeName);
-  cuMemAllocHost := CUDAGetProcAddress(cuMemAllocHostName);
-  cuMemFreeHost := CUDAGetProcAddress(cuMemFreeHostName);
-  cuMemHostAlloc := CUDAGetProcAddress(cuMemHostAllocName);
-  cuMemHostGetDevicePointer := CUDAGetProcAddress
+  cuDeviceTotalMem := GetProcAddressCUDA(cuDeviceTotalMemName);
+  cuDeviceGetProperties := GetProcAddressCUDA(cuDeviceGetPropertiesName);
+  cuDeviceGetAttribute := GetProcAddressCUDA(cuDeviceGetAttributeName);
+  cuCtxCreate := GetProcAddressCUDA(cuCtxCreateName);
+  cuCtxDestroy := GetProcAddressCUDA(cuCtxDestroyName);
+  cuCtxAttach := GetProcAddressCUDA(cuCtxAttachName);
+  cuCtxDetach := GetProcAddressCUDA(cuCtxDetachName);
+  cuCtxPushCurrent := GetProcAddressCUDA(cuCtxPushCurrentName);
+  cuCtxPopCurrent := GetProcAddressCUDA(cuCtxPopCurrentName);
+  cuCtxGetDevice := GetProcAddressCUDA(cuCtxGetDeviceName);
+  cuCtxSynchronize := GetProcAddressCUDA(cuCtxSynchronizeName);
+  cuModuleLoad := GetProcAddressCUDA(cuModuleLoadName);
+  cuModuleLoadData := GetProcAddressCUDA(cuModuleLoadDataName);
+  cuModuleLoadDataEx := GetProcAddressCUDA(cuModuleLoadDataExName);
+  cuModuleLoadFatBinary := GetProcAddressCUDA(cuModuleLoadFatBinaryName);
+  cuModuleUnload := GetProcAddressCUDA(cuModuleUnloadName);
+  cuModuleGetFunction := GetProcAddressCUDA(cuModuleGetFunctionName);
+  cuModuleGetGlobal := GetProcAddressCUDA(cuModuleGetGlobalName);
+  cuModuleGetTexRef := GetProcAddressCUDA(cuModuleGetTexRefName);
+  cuMemGetInfo := GetProcAddressCUDA(cuMemGetInfoName);
+  cuMemAlloc := GetProcAddressCUDA(cuMemAllocName);
+  cuMemAllocPitch := GetProcAddressCUDA(cuMemAllocPitchName);
+  cuMemFree := GetProcAddressCUDA(cuMemFreeName);
+  cuMemGetAddressRange := GetProcAddressCUDA(cuMemGetAddressRangeName);
+  cuMemAllocHost := GetProcAddressCUDA(cuMemAllocHostName);
+  cuMemFreeHost := GetProcAddressCUDA(cuMemFreeHostName);
+  cuMemHostAlloc := GetProcAddressCUDA(cuMemHostAllocName);
+  cuMemHostGetDevicePointer := GetProcAddressCUDA
     (cuMemHostGetDevicePointerName);
-  cuMemHostGetFlags := CUDAGetProcAddress(cuMemHostGetFlagsName);
-  cuMemcpyHtoD := CUDAGetProcAddress(cuMemcpyHtoDName);
-  cuMemcpyDtoH := CUDAGetProcAddress(cuMemcpyDtoHName);
-  cuMemcpyDtoD := CUDAGetProcAddress(cuMemcpyDtoDName);
-  cuMemcpyDtoDAsync := CUDAGetProcAddress(cuMemcpyDtoDAsyncName);
-  cuMemcpyDtoA := CUDAGetProcAddress(cuMemcpyDtoAName);
-  cuMemcpyAtoD := CUDAGetProcAddress(cuMemcpyAtoDName);
-  cuMemcpyHtoA := CUDAGetProcAddress(cuMemcpyHtoAName);
-  cuMemcpyAtoH := CUDAGetProcAddress(cuMemcpyAtoHName);
-  cuMemcpyAtoA := CUDAGetProcAddress(cuMemcpyAtoAName);
-  cuMemcpy2D := CUDAGetProcAddress(cuMemcpy2DName);
-  cuMemcpy2DUnaligned := CUDAGetProcAddress(cuMemcpy2DUnalignedName);
-  cuMemcpy3D := CUDAGetProcAddress(cuMemcpy3DName);
-  cuMemcpyHtoDAsync := CUDAGetProcAddress(cuMemcpyHtoDAsyncName);
-  cuMemcpyDtoHAsync := CUDAGetProcAddress(cuMemcpyDtoHAsyncName);
-  cuMemcpyHtoAAsync := CUDAGetProcAddress(cuMemcpyHtoAAsyncName);
-  cuMemcpyAtoHAsync := CUDAGetProcAddress(cuMemcpyAtoHAsyncName);
-  cuMemcpy2DAsync := CUDAGetProcAddress(cuMemcpy2DAsyncName);
-  cuMemcpy3DAsync := CUDAGetProcAddress(cuMemcpy3DAsyncName);
-  cuMemsetD8 := CUDAGetProcAddress(cuMemsetD8Name);
-  cuMemsetD16 := CUDAGetProcAddress(cuMemsetD16Name);
-  cuMemsetD32 := CUDAGetProcAddress(cuMemsetD32Name);
-  cuMemsetD2D8 := CUDAGetProcAddress(cuMemsetD2D8Name);
-  cuMemsetD2D16 := CUDAGetProcAddress(cuMemsetD2D16Name);
-  cuMemsetD2D32 := CUDAGetProcAddress(cuMemsetD2D32Name);
-  cuFuncSetBlockShape := CUDAGetProcAddress(cuFuncSetBlockShapeName);
-  cuFuncSetSharedSize := CUDAGetProcAddress(cuFuncSetSharedSizeName);
-  cuFuncGetAttribute := CUDAGetProcAddress(cuFuncGetAttributeName);
-  cuArrayCreate := CUDAGetProcAddress(cuArrayCreateName);
-  cuArrayGetDescriptor := CUDAGetProcAddress(cuArrayGetDescriptorName);
-  cuArrayDestroy := CUDAGetProcAddress(cuArrayDestroyName);
-  cuArray3DCreate := CUDAGetProcAddress(cuArray3DCreateName);
-  cuArray3DGetDescriptor := CUDAGetProcAddress(cuArray3DGetDescriptorName);
-  cuTexRefCreate := CUDAGetProcAddress(cuTexRefCreateName);
-  cuTexRefDestroy := CUDAGetProcAddress(cuTexRefDestroyName);
-  cuTexRefSetArray := CUDAGetProcAddress(cuTexRefSetArrayName);
-  cuTexRefSetAddress := CUDAGetProcAddress(cuTexRefSetAddressName);
-  cuTexRefSetAddress2D := CUDAGetProcAddress(cuTexRefSetAddress2DName);
-  cuTexRefSetFormat := CUDAGetProcAddress(cuTexRefSetFormatName);
-  cuTexRefSetAddressMode := CUDAGetProcAddress(cuTexRefSetAddressModeName);
-  cuTexRefSetFilterMode := CUDAGetProcAddress(cuTexRefSetFilterModeName);
-  cuTexRefSetFlags := CUDAGetProcAddress(cuTexRefSetFlagsName);
-  cuTexRefGetAddress := CUDAGetProcAddress(cuTexRefGetAddressName);
-  cuTexRefGetArray := CUDAGetProcAddress(cuTexRefGetArrayName);
-  cuTexRefGetAddressMode := CUDAGetProcAddress(cuTexRefGetAddressModeName);
-  cuTexRefGetFilterMode := CUDAGetProcAddress(cuTexRefGetFilterModeName);
-  cuTexRefGetFormat := CUDAGetProcAddress(cuTexRefGetFormatName);
-  cuTexRefGetFlags := CUDAGetProcAddress(cuTexRefGetFlagsName);
-  cuParamSetSize := CUDAGetProcAddress(cuParamSetSizeName);
-  cuParamSeti := CUDAGetProcAddress(cuParamSetiName);
-  cuParamSetf := CUDAGetProcAddress(cuParamSetfName);
-  cuParamSetv := CUDAGetProcAddress(cuParamSetvName);
-  cuParamSetTexRef := CUDAGetProcAddress(cuParamSetTexRefName);
-  cuLaunch := CUDAGetProcAddress(cuLaunchName);
-  cuLaunchGrid := CUDAGetProcAddress(cuLaunchGridName);
-  cuLaunchGridAsync := CUDAGetProcAddress(cuLaunchGridAsyncName);
-  cuEventCreate := CUDAGetProcAddress(cuEventCreateName);
-  cuEventRecord := CUDAGetProcAddress(cuEventRecordName);
-  cuEventQuery := CUDAGetProcAddress(cuEventQueryName);
-  cuEventSynchronize := CUDAGetProcAddress(cuEventSynchronizeName);
-  cuEventDestroy := CUDAGetProcAddress(cuEventDestroyName);
-  cuEventElapsedTime := CUDAGetProcAddress(cuEventElapsedTimeName);
-  cuStreamCreate := CUDAGetProcAddress(cuStreamCreateName);
-  cuStreamQuery := CUDAGetProcAddress(cuStreamQueryName);
-  cuStreamSynchronize := CUDAGetProcAddress(cuStreamSynchronizeName);
-  cuStreamDestroy := CUDAGetProcAddress(cuStreamDestroyName);
-  cuGLCtxCreate := CUDAGetProcAddress(cuGLCtxCreateName);
-  cuGraphicsGLRegisterBuffer := CUDAGetProcAddress
+  cuMemHostGetFlags := GetProcAddressCUDA(cuMemHostGetFlagsName);
+  cuMemcpyHtoD := GetProcAddressCUDA(cuMemcpyHtoDName);
+  cuMemcpyDtoH := GetProcAddressCUDA(cuMemcpyDtoHName);
+  cuMemcpyDtoD := GetProcAddressCUDA(cuMemcpyDtoDName);
+  cuMemcpyDtoDAsync := GetProcAddressCUDA(cuMemcpyDtoDAsyncName);
+  cuMemcpyDtoA := GetProcAddressCUDA(cuMemcpyDtoAName);
+  cuMemcpyAtoD := GetProcAddressCUDA(cuMemcpyAtoDName);
+  cuMemcpyHtoA := GetProcAddressCUDA(cuMemcpyHtoAName);
+  cuMemcpyAtoH := GetProcAddressCUDA(cuMemcpyAtoHName);
+  cuMemcpyAtoA := GetProcAddressCUDA(cuMemcpyAtoAName);
+  cuMemcpy2D := GetProcAddressCUDA(cuMemcpy2DName);
+  cuMemcpy2DUnaligned := GetProcAddressCUDA(cuMemcpy2DUnalignedName);
+  cuMemcpy3D := GetProcAddressCUDA(cuMemcpy3DName);
+  cuMemcpyHtoDAsync := GetProcAddressCUDA(cuMemcpyHtoDAsyncName);
+  cuMemcpyDtoHAsync := GetProcAddressCUDA(cuMemcpyDtoHAsyncName);
+  cuMemcpyHtoAAsync := GetProcAddressCUDA(cuMemcpyHtoAAsyncName);
+  cuMemcpyAtoHAsync := GetProcAddressCUDA(cuMemcpyAtoHAsyncName);
+  cuMemcpy2DAsync := GetProcAddressCUDA(cuMemcpy2DAsyncName);
+  cuMemcpy3DAsync := GetProcAddressCUDA(cuMemcpy3DAsyncName);
+  cuMemsetD8 := GetProcAddressCUDA(cuMemsetD8Name);
+  cuMemsetD16 := GetProcAddressCUDA(cuMemsetD16Name);
+  cuMemsetD32 := GetProcAddressCUDA(cuMemsetD32Name);
+  cuMemsetD2D8 := GetProcAddressCUDA(cuMemsetD2D8Name);
+  cuMemsetD2D16 := GetProcAddressCUDA(cuMemsetD2D16Name);
+  cuMemsetD2D32 := GetProcAddressCUDA(cuMemsetD2D32Name);
+  cuFuncSetBlockShape := GetProcAddressCUDA(cuFuncSetBlockShapeName);
+  cuFuncSetSharedSize := GetProcAddressCUDA(cuFuncSetSharedSizeName);
+  cuFuncGetAttribute := GetProcAddressCUDA(cuFuncGetAttributeName);
+  cuArrayCreate := GetProcAddressCUDA(cuArrayCreateName);
+  cuArrayGetDescriptor := GetProcAddressCUDA(cuArrayGetDescriptorName);
+  cuArrayDestroy := GetProcAddressCUDA(cuArrayDestroyName);
+  cuArray3DCreate := GetProcAddressCUDA(cuArray3DCreateName);
+  cuArray3DGetDescriptor := GetProcAddressCUDA(cuArray3DGetDescriptorName);
+  cuTexRefCreate := GetProcAddressCUDA(cuTexRefCreateName);
+  cuTexRefDestroy := GetProcAddressCUDA(cuTexRefDestroyName);
+  cuTexRefSetArray := GetProcAddressCUDA(cuTexRefSetArrayName);
+  cuTexRefSetAddress := GetProcAddressCUDA(cuTexRefSetAddressName);
+  cuTexRefSetAddress2D := GetProcAddressCUDA(cuTexRefSetAddress2DName);
+  cuTexRefSetFormat := GetProcAddressCUDA(cuTexRefSetFormatName);
+  cuTexRefSetAddressMode := GetProcAddressCUDA(cuTexRefSetAddressModeName);
+  cuTexRefSetFilterMode := GetProcAddressCUDA(cuTexRefSetFilterModeName);
+  cuTexRefSetFlags := GetProcAddressCUDA(cuTexRefSetFlagsName);
+  cuTexRefGetAddress := GetProcAddressCUDA(cuTexRefGetAddressName);
+  cuTexRefGetArray := GetProcAddressCUDA(cuTexRefGetArrayName);
+  cuTexRefGetAddressMode := GetProcAddressCUDA(cuTexRefGetAddressModeName);
+  cuTexRefGetFilterMode := GetProcAddressCUDA(cuTexRefGetFilterModeName);
+  cuTexRefGetFormat := GetProcAddressCUDA(cuTexRefGetFormatName);
+  cuTexRefGetFlags := GetProcAddressCUDA(cuTexRefGetFlagsName);
+  cuParamSetSize := GetProcAddressCUDA(cuParamSetSizeName);
+  cuParamSeti := GetProcAddressCUDA(cuParamSetiName);
+  cuParamSetf := GetProcAddressCUDA(cuParamSetfName);
+  cuParamSetv := GetProcAddressCUDA(cuParamSetvName);
+  cuParamSetTexRef := GetProcAddressCUDA(cuParamSetTexRefName);
+  cuLaunch := GetProcAddressCUDA(cuLaunchName);
+  cuLaunchGrid := GetProcAddressCUDA(cuLaunchGridName);
+  cuLaunchGridAsync := GetProcAddressCUDA(cuLaunchGridAsyncName);
+  cuEventCreate := GetProcAddressCUDA(cuEventCreateName);
+  cuEventRecord := GetProcAddressCUDA(cuEventRecordName);
+  cuEventQuery := GetProcAddressCUDA(cuEventQueryName);
+  cuEventSynchronize := GetProcAddressCUDA(cuEventSynchronizeName);
+  cuEventDestroy := GetProcAddressCUDA(cuEventDestroyName);
+  cuEventElapsedTime := GetProcAddressCUDA(cuEventElapsedTimeName);
+  cuStreamCreate := GetProcAddressCUDA(cuStreamCreateName);
+  cuStreamQuery := GetProcAddressCUDA(cuStreamQueryName);
+  cuStreamSynchronize := GetProcAddressCUDA(cuStreamSynchronizeName);
+  cuStreamDestroy := GetProcAddressCUDA(cuStreamDestroyName);
+  cuGLCtxCreate := GetProcAddressCUDA(cuGLCtxCreateName);
+  cuGraphicsGLRegisterBuffer := GetProcAddressCUDA
     (cuGraphicsGLRegisterBufferName);
-  cuGraphicsGLRegisterImage := CUDAGetProcAddress
+  cuGraphicsGLRegisterImage := GetProcAddressCUDA
     (cuGraphicsGLRegisterImageName);
-  cuWGLGetDevice := CUDAGetProcAddress(cuWGLGetDeviceName);
+  cuWGLGetDevice := GetProcAddressCUDA(cuWGLGetDeviceName);
   cuGraphicsUnregisterResource :=
-    CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
+    GetProcAddressCUDA(cuGraphicsUnregisterResourceName);
   cuGraphicsSubResourceGetMappedArray :=
-    CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
+    GetProcAddressCUDA(cuGraphicsSubResourceGetMappedArrayName);
   cuGraphicsResourceGetMappedPointer :=
-    CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
+    GetProcAddressCUDA(cuGraphicsResourceGetMappedPointerName);
   cuGraphicsResourceSetMapFlags :=
-    CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
-  cuGraphicsMapResources := CUDAGetProcAddress(cuGraphicsMapResourcesName);
-  cuGraphicsUnmapResources := CUDAGetProcAddress(cuGraphicsUnmapResourcesName);
-  cuGLInit := CUDAGetProcAddress(cuGLInitName);
-  cuGLRegisterBufferObject := CUDAGetProcAddress(cuGLRegisterBufferObjectName);
-  cuGLMapBufferObject := CUDAGetProcAddress(cuGLMapBufferObjectName);
-  cuGLUnmapBufferObject := CUDAGetProcAddress(cuGLUnmapBufferObjectName);
-  cuGLUnregisterBufferObject := CUDAGetProcAddress
+    GetProcAddressCUDA(cuGraphicsResourceSetMapFlagsName);
+  cuGraphicsMapResources := GetProcAddressCUDA(cuGraphicsMapResourcesName);
+  cuGraphicsUnmapResources := GetProcAddressCUDA(cuGraphicsUnmapResourcesName);
+  cuGLInit := GetProcAddressCUDA(cuGLInitName);
+  cuGLRegisterBufferObject := GetProcAddressCUDA(cuGLRegisterBufferObjectName);
+  cuGLMapBufferObject := GetProcAddressCUDA(cuGLMapBufferObjectName);
+  cuGLUnmapBufferObject := GetProcAddressCUDA(cuGLUnmapBufferObjectName);
+  cuGLUnregisterBufferObject := GetProcAddressCUDA
     (cuGLUnregisterBufferObjectName);
   cuGLSetBufferObjectMapFlags :=
-    CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
-  cuGLMapBufferObjectAsync := CUDAGetProcAddress(cuGLMapBufferObjectAsyncName);
-  cuGLUnmapBufferObjectAsync := CUDAGetProcAddress
+    GetProcAddressCUDA(cuGLSetBufferObjectMapFlagsName);
+  cuGLMapBufferObjectAsync := GetProcAddressCUDA(cuGLMapBufferObjectAsyncName);
+  cuGLUnmapBufferObjectAsync := GetProcAddressCUDA
     (cuGLUnmapBufferObjectAsyncName);
 {$ELSE}
-  cuInit_ := CUDAGetProcAddress(cuInitName);
+  cuInit_ := GetProcAddressCUDA(cuInitName);
   cuInit := cuInitShell;
-  cuDriverGetVersion_ := CUDAGetProcAddress(cuDriverGetVersionName);
+  cuDriverGetVersion_ := GetProcAddressCUDA(cuDriverGetVersionName);
   cuDriverGetVersion := cuDriverGetVersionShell;
-  cuDeviceGet_ := CUDAGetProcAddress(cuDeviceGet_Name);
+  cuDeviceGet_ := GetProcAddressCUDA(cuDeviceGet_Name);
   cuDeviceGet := cuDeviceGetShell;
-  cuDeviceGetCount_ := CUDAGetProcAddress(cuDeviceGetCountName);
+  cuDeviceGetCount_ := GetProcAddressCUDA(cuDeviceGetCountName);
   cuDeviceGetCount := cuDeviceGetCountShell;
-  cuDeviceGetName_ := CUDAGetProcAddress(cuDeviceGetNameName);
+  cuDeviceGetName_ := GetProcAddressCUDA(cuDeviceGetNameName);
   cuDeviceGetName := cuDeviceGetNameShell;
-  cuDeviceComputeCapability_ := CUDAGetProcAddress
+  cuDeviceComputeCapability_ := GetProcAddressCUDA
     (cuDeviceComputeCapabilityName);
   cuDeviceComputeCapability := cuDeviceComputeCapabilityShell;
-  cuDeviceTotalMem_ := CUDAGetProcAddress(cuDeviceTotalMemName);
+  cuDeviceTotalMem_ := GetProcAddressCUDA(cuDeviceTotalMemName);
   cuDeviceTotalMem := cuDeviceTotalMemShell;
-  cuDeviceGetProperties_ := CUDAGetProcAddress(cuDeviceGetPropertiesName);
+  cuDeviceGetProperties_ := GetProcAddressCUDA(cuDeviceGetPropertiesName);
   cuDeviceGetProperties := cuDeviceGetPropertiesShell;
-  cuDeviceGetAttribute_ := CUDAGetProcAddress(cuDeviceGetAttributeName);
+  cuDeviceGetAttribute_ := GetProcAddressCUDA(cuDeviceGetAttributeName);
   cuDeviceGetAttribute := cuDeviceGetAttributeShell;
-  cuCtxCreate_ := CUDAGetProcAddress(cuCtxCreateName);
+  cuCtxCreate_ := GetProcAddressCUDA(cuCtxCreateName);
   cuCtxCreate := cuCtxCreateShell;
-  cuCtxDestroy_ := CUDAGetProcAddress(cuCtxDestroyName);
+  cuCtxDestroy_ := GetProcAddressCUDA(cuCtxDestroyName);
   cuCtxDestroy := cuCtxDestroyShell;
-  cuCtxAttach_ := CUDAGetProcAddress(cuCtxAttachName);
+  cuCtxAttach_ := GetProcAddressCUDA(cuCtxAttachName);
   cuCtxAttach := cuCtxAttachShell;
-  cuCtxDetach_ := CUDAGetProcAddress(cuCtxDetachName);
+  cuCtxDetach_ := GetProcAddressCUDA(cuCtxDetachName);
   cuCtxDetach := cuCtxDetachShell;
-  cuCtxPushCurrent_ := CUDAGetProcAddress(cuCtxPushCurrentName);
+  cuCtxPushCurrent_ := GetProcAddressCUDA(cuCtxPushCurrentName);
   cuCtxPushCurrent := cuCtxPushCurrentShell;
-  cuCtxPopCurrent_ := CUDAGetProcAddress(cuCtxPopCurrentName);
+  cuCtxPopCurrent_ := GetProcAddressCUDA(cuCtxPopCurrentName);
   cuCtxPopCurrent := cuCtxPopCurrentShell;
-  cuCtxGetDevice_ := CUDAGetProcAddress(cuCtxGetDeviceName);
+  cuCtxGetDevice_ := GetProcAddressCUDA(cuCtxGetDeviceName);
   cuCtxGetDevice := cuCtxGetDeviceShell;
-  cuCtxSynchronize_ := CUDAGetProcAddress(cuCtxSynchronizeName);
+  cuCtxSynchronize_ := GetProcAddressCUDA(cuCtxSynchronizeName);
   cuCtxSynchronize := cuCtxSynchronizeShell;
-  cuModuleLoad_ := CUDAGetProcAddress(cuModuleLoadName);
+  cuModuleLoad_ := GetProcAddressCUDA(cuModuleLoadName);
   cuModuleLoad := cuModuleLoadShell;
-  cuModuleLoadData_ := CUDAGetProcAddress(cuModuleLoadDataName);
+  cuModuleLoadData_ := GetProcAddressCUDA(cuModuleLoadDataName);
   cuModuleLoadData := cuModuleLoadDataShell;
-  cuModuleLoadDataEx_ := CUDAGetProcAddress(cuModuleLoadDataExName);
+  cuModuleLoadDataEx_ := GetProcAddressCUDA(cuModuleLoadDataExName);
   cuModuleLoadDataEx := cuModuleLoadDataExShell;
-  cuModuleLoadFatBinary_ := CUDAGetProcAddress(cuModuleLoadFatBinaryName);
+  cuModuleLoadFatBinary_ := GetProcAddressCUDA(cuModuleLoadFatBinaryName);
   cuModuleLoadFatBinary := cuModuleLoadFatBinaryShell;
-  cuModuleUnload_ := CUDAGetProcAddress(cuModuleUnloadName);
+  cuModuleUnload_ := GetProcAddressCUDA(cuModuleUnloadName);
   cuModuleUnload := cuModuleUnloadShell;
-  cuModuleGetFunction_ := CUDAGetProcAddress(cuModuleGetFunctionName);
+  cuModuleGetFunction_ := GetProcAddressCUDA(cuModuleGetFunctionName);
   cuModuleGetFunction := cuModuleGetFunctionShell;
-  cuModuleGetGlobal_ := CUDAGetProcAddress(cuModuleGetGlobalName);
+  cuModuleGetGlobal_ := GetProcAddressCUDA(cuModuleGetGlobalName);
   cuModuleGetGlobal := cuModuleGetGlobalShell;
-  cuModuleGetTexRef_ := CUDAGetProcAddress(cuModuleGetTexRefName);
+  cuModuleGetTexRef_ := GetProcAddressCUDA(cuModuleGetTexRefName);
   cuModuleGetTexRef := cuModuleGetTexRefShell;
-  cuMemGetInfo_ := CUDAGetProcAddress(cuMemGetInfoName);
+  cuMemGetInfo_ := GetProcAddressCUDA(cuMemGetInfoName);
   cuMemGetInfo := cuMemGetInfoShell;
-  cuMemAlloc_ := CUDAGetProcAddress(cuMemAllocName);
+  cuMemAlloc_ := GetProcAddressCUDA(cuMemAllocName);
   cuMemAlloc := cuMemAllocShell;
-  cuMemAllocPitch_ := CUDAGetProcAddress(cuMemAllocPitchName);
+  cuMemAllocPitch_ := GetProcAddressCUDA(cuMemAllocPitchName);
   cuMemAllocPitch := cuMemAllocPitchShell;
-  cuMemFree_ := CUDAGetProcAddress(cuMemFreeName);
+  cuMemFree_ := GetProcAddressCUDA(cuMemFreeName);
   cuMemFree := cuMemFreeShell;
-  cuMemGetAddressRange_ := CUDAGetProcAddress(cuMemGetAddressRangeName);
+  cuMemGetAddressRange_ := GetProcAddressCUDA(cuMemGetAddressRangeName);
   cuMemGetAddressRange := cuMemGetAddressRangeShell;
-  cuMemAllocHost_ := CUDAGetProcAddress(cuMemAllocHostName);
+  cuMemAllocHost_ := GetProcAddressCUDA(cuMemAllocHostName);
   cuMemAllocHost := cuMemAllocHostShell;
-  cuMemFreeHost_ := CUDAGetProcAddress(cuMemFreeHostName);
+  cuMemFreeHost_ := GetProcAddressCUDA(cuMemFreeHostName);
   cuMemFreeHost := cuMemFreeHostShell;
-  cuMemHostAlloc_ := CUDAGetProcAddress(cuMemHostAllocName);
+  cuMemHostAlloc_ := GetProcAddressCUDA(cuMemHostAllocName);
   cuMemHostAlloc := cuMemHostAllocShell;
-  cuMemHostGetDevicePointer_ := CUDAGetProcAddress
+  cuMemHostGetDevicePointer_ := GetProcAddressCUDA
     (cuMemHostGetDevicePointerName);
   cuMemHostGetDevicePointer := cuMemHostGetDevicePointerShell;
-  cuMemHostGetFlags_ := CUDAGetProcAddress(cuMemHostGetFlagsName);
+  cuMemHostGetFlags_ := GetProcAddressCUDA(cuMemHostGetFlagsName);
   cuMemHostGetFlags := cuMemHostGetFlagsShell;
-  cuMemcpyHtoD_ := CUDAGetProcAddress(cuMemcpyHtoDName);
+  cuMemcpyHtoD_ := GetProcAddressCUDA(cuMemcpyHtoDName);
   cuMemcpyHtoD := cuMemcpyHtoDShell;
-  cuMemcpyDtoH_ := CUDAGetProcAddress(cuMemcpyDtoHName);
+  cuMemcpyDtoH_ := GetProcAddressCUDA(cuMemcpyDtoHName);
   cuMemcpyDtoH := cuMemcpyDtoHShell;
-  cuMemcpyDtoD_ := CUDAGetProcAddress(cuMemcpyDtoDName);
+  cuMemcpyDtoD_ := GetProcAddressCUDA(cuMemcpyDtoDName);
   cuMemcpyDtoD := cuMemcpyDtoDShell;
-  cuMemcpyDtoDAsync_ := CUDAGetProcAddress(cuMemcpyDtoDAsyncName);
+  cuMemcpyDtoDAsync_ := GetProcAddressCUDA(cuMemcpyDtoDAsyncName);
   cuMemcpyDtoDAsync := cuMemcpyDtoDAsyncShell;
-  cuMemcpyDtoA_ := CUDAGetProcAddress(cuMemcpyDtoAName);
+  cuMemcpyDtoA_ := GetProcAddressCUDA(cuMemcpyDtoAName);
   cuMemcpyDtoA := cuMemcpyDtoAShell;
-  cuMemcpyAtoD_ := CUDAGetProcAddress(cuMemcpyAtoDName);
+  cuMemcpyAtoD_ := GetProcAddressCUDA(cuMemcpyAtoDName);
   cuMemcpyAtoD := cuMemcpyAtoDShell;
-  cuMemcpyHtoA_ := CUDAGetProcAddress(cuMemcpyHtoAName);
+  cuMemcpyHtoA_ := GetProcAddressCUDA(cuMemcpyHtoAName);
   cuMemcpyHtoA := cuMemcpyHtoAShell;
-  cuMemcpyAtoH_ := CUDAGetProcAddress(cuMemcpyAtoHName);
+  cuMemcpyAtoH_ := GetProcAddressCUDA(cuMemcpyAtoHName);
   cuMemcpyAtoH := cuMemcpyAtoHShell;
-  cuMemcpyAtoA_ := CUDAGetProcAddress(cuMemcpyAtoAName);
+  cuMemcpyAtoA_ := GetProcAddressCUDA(cuMemcpyAtoAName);
   cuMemcpyAtoA := cuMemcpyAtoAShell;
-  cuMemcpy2D_ := CUDAGetProcAddress(cuMemcpy2DName);
+  cuMemcpy2D_ := GetProcAddressCUDA(cuMemcpy2DName);
   cuMemcpy2D := cuMemcpy2DShell;
-  cuMemcpy2DUnaligned_ := CUDAGetProcAddress(cuMemcpy2DUnalignedName);
+  cuMemcpy2DUnaligned_ := GetProcAddressCUDA(cuMemcpy2DUnalignedName);
   cuMemcpy2DUnaligned := cuMemcpy2DUnalignedShell;
-  cuMemcpy3D_ := CUDAGetProcAddress(cuMemcpy3DName);
+  cuMemcpy3D_ := GetProcAddressCUDA(cuMemcpy3DName);
   cuMemcpy3D := cuMemcpy3DShell;
-  cuMemcpyHtoDAsync_ := CUDAGetProcAddress(cuMemcpyHtoDAsyncName);
+  cuMemcpyHtoDAsync_ := GetProcAddressCUDA(cuMemcpyHtoDAsyncName);
   cuMemcpyHtoDAsync := cuMemcpyHtoDAsyncShell;
-  cuMemcpyDtoHAsync_ := CUDAGetProcAddress(cuMemcpyDtoHAsyncName);
+  cuMemcpyDtoHAsync_ := GetProcAddressCUDA(cuMemcpyDtoHAsyncName);
   cuMemcpyDtoHAsync := cuMemcpyDtoHAsyncShell;
-  cuMemcpyHtoAAsync_ := CUDAGetProcAddress(cuMemcpyHtoAAsyncName);
+  cuMemcpyHtoAAsync_ := GetProcAddressCUDA(cuMemcpyHtoAAsyncName);
   cuMemcpyHtoAAsync := cuMemcpyHtoAAsyncShell;
-  cuMemcpyAtoHAsync_ := CUDAGetProcAddress(cuMemcpyAtoHAsyncName);
+  cuMemcpyAtoHAsync_ := GetProcAddressCUDA(cuMemcpyAtoHAsyncName);
   cuMemcpyAtoHAsync := cuMemcpyAtoHAsyncShell;
-  cuMemcpy2DAsync_ := CUDAGetProcAddress(cuMemcpy2DAsyncName);
+  cuMemcpy2DAsync_ := GetProcAddressCUDA(cuMemcpy2DAsyncName);
   cuMemcpy2DAsync := cuMemcpy2DAsyncShell;
-  cuMemcpy3DAsync_ := CUDAGetProcAddress(cuMemcpy3DAsyncName);
+  cuMemcpy3DAsync_ := GetProcAddressCUDA(cuMemcpy3DAsyncName);
   cuMemcpy3DAsync := cuMemcpy3DAsyncShell;
-  cuMemsetD8_ := CUDAGetProcAddress(cuMemsetD8Name);
+  cuMemsetD8_ := GetProcAddressCUDA(cuMemsetD8Name);
   cuMemsetD8 := cuMemsetD8Shell;
-  cuMemsetD16_ := CUDAGetProcAddress(cuMemsetD16Name);
+  cuMemsetD16_ := GetProcAddressCUDA(cuMemsetD16Name);
   cuMemsetD16 := cuMemsetD16Shell;
-  cuMemsetD32_ := CUDAGetProcAddress(cuMemsetD32Name);
+  cuMemsetD32_ := GetProcAddressCUDA(cuMemsetD32Name);
   cuMemsetD32 := cuMemsetD32Shell;
-  cuMemsetD2D8_ := CUDAGetProcAddress(cuMemsetD2D8Name);
+  cuMemsetD2D8_ := GetProcAddressCUDA(cuMemsetD2D8Name);
   cuMemsetD2D8 := cuMemsetD2D8Shell;
-  cuMemsetD2D16_ := CUDAGetProcAddress(cuMemsetD2D16Name);
+  cuMemsetD2D16_ := GetProcAddressCUDA(cuMemsetD2D16Name);
   cuMemsetD2D16 := cuMemsetD2D16Shell;
-  cuMemsetD2D32_ := CUDAGetProcAddress(cuMemsetD2D32Name);
+  cuMemsetD2D32_ := GetProcAddressCUDA(cuMemsetD2D32Name);
   cuMemsetD2D32 := cuMemsetD2D32Shell;
-  cuFuncSetBlockShape_ := CUDAGetProcAddress(cuFuncSetBlockShapeName);
+  cuFuncSetBlockShape_ := GetProcAddressCUDA(cuFuncSetBlockShapeName);
   cuFuncSetBlockShape := cuFuncSetBlockShapeShell;
-  cuFuncSetSharedSize_ := CUDAGetProcAddress(cuFuncSetSharedSizeName);
+  cuFuncSetSharedSize_ := GetProcAddressCUDA(cuFuncSetSharedSizeName);
   cuFuncSetSharedSize := cuFuncSetSharedSizeShell;
-  cuFuncGetAttribute_ := CUDAGetProcAddress(cuFuncGetAttributeName);
+  cuFuncGetAttribute_ := GetProcAddressCUDA(cuFuncGetAttributeName);
   cuFuncGetAttribute := cuFuncGetAttributeShell;
-  cuArrayCreate_ := CUDAGetProcAddress(cuArrayCreateName);
+  cuArrayCreate_ := GetProcAddressCUDA(cuArrayCreateName);
   cuArrayCreate := cuArrayCreateShell;
-  cuArrayGetDescriptor_ := CUDAGetProcAddress(cuArrayGetDescriptorName);
+  cuArrayGetDescriptor_ := GetProcAddressCUDA(cuArrayGetDescriptorName);
   cuArrayGetDescriptor := cuArrayGetDescriptorShell;
-  cuArrayDestroy_ := CUDAGetProcAddress(cuArrayDestroyName);
+  cuArrayDestroy_ := GetProcAddressCUDA(cuArrayDestroyName);
   cuArrayDestroy := cuArrayDestroyShell;
-  cuArray3DCreate_ := CUDAGetProcAddress(cuArray3DCreateName);
+  cuArray3DCreate_ := GetProcAddressCUDA(cuArray3DCreateName);
   cuArray3DCreate := cuArray3DCreateShell;
-  cuArray3DGetDescriptor_ := CUDAGetProcAddress(cuArray3DGetDescriptorName);
+  cuArray3DGetDescriptor_ := GetProcAddressCUDA(cuArray3DGetDescriptorName);
   cuArray3DGetDescriptor := cuArray3DGetDescriptorShell;
-  cuTexRefCreate_ := CUDAGetProcAddress(cuTexRefCreateName);
+  cuTexRefCreate_ := GetProcAddressCUDA(cuTexRefCreateName);
   cuTexRefCreate := cuTexRefCreateShell;
-  cuTexRefDestroy_ := CUDAGetProcAddress(cuTexRefDestroyName);
+  cuTexRefDestroy_ := GetProcAddressCUDA(cuTexRefDestroyName);
   cuTexRefDestroy := cuTexRefDestroyShell;
-  cuTexRefSetArray_ := CUDAGetProcAddress(cuTexRefSetArrayName);
+  cuTexRefSetArray_ := GetProcAddressCUDA(cuTexRefSetArrayName);
   cuTexRefSetArray := cuTexRefSetArrayShell;
-  cuTexRefSetAddress_ := CUDAGetProcAddress(cuTexRefSetAddressName);
+  cuTexRefSetAddress_ := GetProcAddressCUDA(cuTexRefSetAddressName);
   cuTexRefSetAddress := cuTexRefSetAddressShell;
-  cuTexRefSetAddress2D_ := CUDAGetProcAddress(cuTexRefSetAddress2DName);
+  cuTexRefSetAddress2D_ := GetProcAddressCUDA(cuTexRefSetAddress2DName);
   cuTexRefSetAddress2D := cuTexRefSetAddress2DShell;
-  cuTexRefSetFormat_ := CUDAGetProcAddress(cuTexRefSetFormatName);
+  cuTexRefSetFormat_ := GetProcAddressCUDA(cuTexRefSetFormatName);
   cuTexRefSetFormat := cuTexRefSetFormatShell;
-  cuTexRefSetAddressMode_ := CUDAGetProcAddress(cuTexRefSetAddressModeName);
+  cuTexRefSetAddressMode_ := GetProcAddressCUDA(cuTexRefSetAddressModeName);
   cuTexRefSetAddressMode := cuTexRefSetAddressModeShell;
-  cuTexRefSetFilterMode_ := CUDAGetProcAddress(cuTexRefSetFilterModeName);
+  cuTexRefSetFilterMode_ := GetProcAddressCUDA(cuTexRefSetFilterModeName);
   cuTexRefSetFilterMode := cuTexRefSetFilterModeShell;
-  cuTexRefSetFlags_ := CUDAGetProcAddress(cuTexRefSetFlagsName);
+  cuTexRefSetFlags_ := GetProcAddressCUDA(cuTexRefSetFlagsName);
   cuTexRefSetFlags := cuTexRefSetFlagsShell;
-  cuTexRefGetAddress_ := CUDAGetProcAddress(cuTexRefGetAddressName);
+  cuTexRefGetAddress_ := GetProcAddressCUDA(cuTexRefGetAddressName);
   cuTexRefGetAddress := cuTexRefGetAddressShell;
-  cuTexRefGetArray_ := CUDAGetProcAddress(cuTexRefGetArrayName);
+  cuTexRefGetArray_ := GetProcAddressCUDA(cuTexRefGetArrayName);
   cuTexRefGetArray := cuTexRefGetArrayShell;
-  cuTexRefGetAddressMode_ := CUDAGetProcAddress(cuTexRefGetAddressModeName);
+  cuTexRefGetAddressMode_ := GetProcAddressCUDA(cuTexRefGetAddressModeName);
   cuTexRefGetAddressMode := cuTexRefGetAddressModeShell;
-  cuTexRefGetFilterMode_ := CUDAGetProcAddress(cuTexRefGetFilterModeName);
+  cuTexRefGetFilterMode_ := GetProcAddressCUDA(cuTexRefGetFilterModeName);
   cuTexRefGetFilterMode := cuTexRefGetFilterModeShell;
-  cuTexRefGetFormat_ := CUDAGetProcAddress(cuTexRefGetFormatName);
+  cuTexRefGetFormat_ := GetProcAddressCUDA(cuTexRefGetFormatName);
   cuTexRefGetFormat := cuTexRefGetFormatShell;
-  cuTexRefGetFlags_ := CUDAGetProcAddress(cuTexRefGetFlagsName);
+  cuTexRefGetFlags_ := GetProcAddressCUDA(cuTexRefGetFlagsName);
   cuTexRefGetFlags := cuTexRefGetFlagsShell;
-  cuParamSetSize_ := CUDAGetProcAddress(cuParamSetSizeName);
+  cuParamSetSize_ := GetProcAddressCUDA(cuParamSetSizeName);
   cuParamSetSize := cuParamSetSizeShell;
-  cuParamSeti_ := CUDAGetProcAddress(cuParamSetiName);
+  cuParamSeti_ := GetProcAddressCUDA(cuParamSetiName);
   cuParamSeti := cuParamSetiShell;
-  cuParamSetf_ := CUDAGetProcAddress(cuParamSetfName);
+  cuParamSetf_ := GetProcAddressCUDA(cuParamSetfName);
   cuParamSetf := cuParamSetfShell;
-  cuParamSetv_ := CUDAGetProcAddress(cuParamSetvName);
+  cuParamSetv_ := GetProcAddressCUDA(cuParamSetvName);
   cuParamSetv := cuParamSetvShell;
-  cuParamSetTexRef_ := CUDAGetProcAddress(cuParamSetTexRefName);
+  cuParamSetTexRef_ := GetProcAddressCUDA(cuParamSetTexRefName);
   cuParamSetTexRef := cuParamSetTexRefShell;
-  cuLaunch_ := CUDAGetProcAddress(cuLaunchName);
+  cuLaunch_ := GetProcAddressCUDA(cuLaunchName);
   cuLaunch := cuLaunchShell;
-  cuLaunchGrid_ := CUDAGetProcAddress(cuLaunchGridName);
+  cuLaunchGrid_ := GetProcAddressCUDA(cuLaunchGridName);
   cuLaunchGrid := cuLaunchGridShell;
-  cuLaunchGridAsync_ := CUDAGetProcAddress(cuLaunchGridAsyncName);
+  cuLaunchGridAsync_ := GetProcAddressCUDA(cuLaunchGridAsyncName);
   cuLaunchGridAsync := cuLaunchGridAsyncShell;
-  cuEventCreate_ := CUDAGetProcAddress(cuEventCreateName);
+  cuEventCreate_ := GetProcAddressCUDA(cuEventCreateName);
   cuEventCreate := cuEventCreateShell;
-  cuEventRecord_ := CUDAGetProcAddress(cuEventRecordName);
+  cuEventRecord_ := GetProcAddressCUDA(cuEventRecordName);
   cuEventRecord := cuEventRecordShell;
-  cuEventQuery_ := CUDAGetProcAddress(cuEventQueryName);
+  cuEventQuery_ := GetProcAddressCUDA(cuEventQueryName);
   cuEventQuery := cuEventQueryShell;
-  cuEventSynchronize_ := CUDAGetProcAddress(cuEventSynchronizeName);
+  cuEventSynchronize_ := GetProcAddressCUDA(cuEventSynchronizeName);
   cuEventSynchronize := cuEventSynchronizeShell;
-  cuEventDestroy_ := CUDAGetProcAddress(cuEventDestroyName);
+  cuEventDestroy_ := GetProcAddressCUDA(cuEventDestroyName);
   cuEventDestroy := cuEventDestroyShell;
-  cuEventElapsedTime_ := CUDAGetProcAddress(cuEventElapsedTimeName);
+  cuEventElapsedTime_ := GetProcAddressCUDA(cuEventElapsedTimeName);
   cuEventElapsedTime := cuEventElapsedTimeShell;
-  cuStreamCreate_ := CUDAGetProcAddress(cuStreamCreateName);
+  cuStreamCreate_ := GetProcAddressCUDA(cuStreamCreateName);
   cuStreamCreate := cuStreamCreateShell;
-  cuStreamQuery_ := CUDAGetProcAddress(cuStreamQueryName);
+  cuStreamQuery_ := GetProcAddressCUDA(cuStreamQueryName);
   cuStreamQuery := cuStreamQueryShell;
-  cuStreamSynchronize_ := CUDAGetProcAddress(cuStreamSynchronizeName);
+  cuStreamSynchronize_ := GetProcAddressCUDA(cuStreamSynchronizeName);
   cuStreamSynchronize := cuStreamSynchronizeShell;
-  cuStreamDestroy_ := CUDAGetProcAddress(cuStreamDestroyName);
+  cuStreamDestroy_ := GetProcAddressCUDA(cuStreamDestroyName);
   cuStreamDestroy := cuStreamDestroyShell;
-  cuGLCtxCreate_ := CUDAGetProcAddress(cuGLCtxCreateName);
+  cuGLCtxCreate_ := GetProcAddressCUDA(cuGLCtxCreateName);
   cuGLCtxCreate := cuGLCtxCreateShell;
   cuGraphicsGLRegisterBuffer_ :=
-    CUDAGetProcAddress(cuGraphicsGLRegisterBufferName);
+    GetProcAddressCUDA(cuGraphicsGLRegisterBufferName);
   cuGraphicsGLRegisterBuffer := cuGraphicsGLRegisterBufferShell;
-  cuGraphicsGLRegisterImage_ := CUDAGetProcAddress
+  cuGraphicsGLRegisterImage_ := GetProcAddressCUDA
     (cuGraphicsGLRegisterImageName);
   cuGraphicsGLRegisterImage := cuGraphicsGLRegisterImageShell;
-  cuWGLGetDevice_ := CUDAGetProcAddress(cuWGLGetDeviceName);
+  cuWGLGetDevice_ := GetProcAddressCUDA(cuWGLGetDeviceName);
   cuWGLGetDevice := cuWGLGetDeviceShell;
   cuGraphicsUnregisterResource_ :=
-    CUDAGetProcAddress(cuGraphicsUnregisterResourceName);
+    GetProcAddressCUDA(cuGraphicsUnregisterResourceName);
   cuGraphicsUnregisterResource := cuGraphicsUnregisterResourceShell;
   cuGraphicsSubResourceGetMappedArray_ :=
-    CUDAGetProcAddress(cuGraphicsSubResourceGetMappedArrayName);
+    GetProcAddressCUDA(cuGraphicsSubResourceGetMappedArrayName);
   cuGraphicsSubResourceGetMappedArray :=
     cuGraphicsSubResourceGetMappedArrayShell;
   cuGraphicsResourceGetMappedPointer_ :=
-    CUDAGetProcAddress(cuGraphicsResourceGetMappedPointerName);
+    GetProcAddressCUDA(cuGraphicsResourceGetMappedPointerName);
   cuGraphicsResourceGetMappedPointer := cuGraphicsResourceGetMappedPointerShell;
   cuGraphicsResourceSetMapFlags_ :=
-    CUDAGetProcAddress(cuGraphicsResourceSetMapFlagsName);
+    GetProcAddressCUDA(cuGraphicsResourceSetMapFlagsName);
   cuGraphicsResourceSetMapFlags := cuGraphicsResourceSetMapFlagsShell;
-  cuGraphicsMapResources_ := CUDAGetProcAddress(cuGraphicsMapResourcesName);
+  cuGraphicsMapResources_ := GetProcAddressCUDA(cuGraphicsMapResourcesName);
   cuGraphicsMapResources := cuGraphicsMapResourcesShell;
-  cuGraphicsUnmapResources_ := CUDAGetProcAddress(cuGraphicsUnmapResourcesName);
+  cuGraphicsUnmapResources_ := GetProcAddressCUDA(cuGraphicsUnmapResourcesName);
   cuGraphicsUnmapResources := cuGraphicsUnmapResourcesShell;
-  cuGLInit := CUDAGetProcAddress(cuGLInitName);
-  cuGLRegisterBufferObject_ := CUDAGetProcAddress(cuGLRegisterBufferObjectName);
+  cuGLInit := GetProcAddressCUDA(cuGLInitName);
+  cuGLRegisterBufferObject_ := GetProcAddressCUDA(cuGLRegisterBufferObjectName);
   cuGLRegisterBufferObject := cuGLRegisterBufferObjectShell;
-  cuGLMapBufferObject_ := CUDAGetProcAddress(cuGLMapBufferObjectName);
+  cuGLMapBufferObject_ := GetProcAddressCUDA(cuGLMapBufferObjectName);
   cuGLMapBufferObject := cuGLMapBufferObjectShell;
-  cuGLUnmapBufferObject_ := CUDAGetProcAddress(cuGLUnmapBufferObjectName);
+  cuGLUnmapBufferObject_ := GetProcAddressCUDA(cuGLUnmapBufferObjectName);
   cuGLUnmapBufferObject := cuGLUnmapBufferObjectShell;
   cuGLUnregisterBufferObject_ :=
-    CUDAGetProcAddress(cuGLUnregisterBufferObjectName);
+    GetProcAddressCUDA(cuGLUnregisterBufferObjectName);
   cuGLUnregisterBufferObject := cuGLUnregisterBufferObjectShell;
   cuGLSetBufferObjectMapFlags_ :=
-    CUDAGetProcAddress(cuGLSetBufferObjectMapFlagsName);
+    GetProcAddressCUDA(cuGLSetBufferObjectMapFlagsName);
   cuGLSetBufferObjectMapFlags := cuGLSetBufferObjectMapFlagsShell;
-  cuGLMapBufferObjectAsync_ := CUDAGetProcAddress(cuGLMapBufferObjectAsyncName);
+  cuGLMapBufferObjectAsync_ := GetProcAddressCUDA(cuGLMapBufferObjectAsyncName);
   cuGLMapBufferObjectAsync := cuGLMapBufferObjectAsyncShell;
   cuGLUnmapBufferObjectAsync_ :=
-    CUDAGetProcAddress(cuGLUnmapBufferObjectAsyncName);
+    GetProcAddressCUDA(cuGLUnmapBufferObjectAsyncName);
   cuGLUnmapBufferObjectAsync := cuGLUnmapBufferObjectAsyncShell;
 {$ENDIF GLS_CUDA_DEBUG_MODE}
   cuDriverGetVersion(V);

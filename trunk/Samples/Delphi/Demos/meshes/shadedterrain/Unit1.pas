@@ -54,7 +54,7 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
-      heightData: THeightData; normalMapMaterial: TGLLibMaterial);
+      heightData: TGLHeightData; normalMapMaterial: TGLLibMaterial);
     procedure TBSubSamplingChange(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure TBIntensityChange(Sender: TObject);
@@ -119,7 +119,7 @@ begin
 end;
 
 procedure TForm1.GLBumpmapHDS1NewTilePrepared(Sender: TGLBumpmapHDS;
-  heightData: THeightData; normalMapMaterial: TGLLibMaterial);
+  heightData: TGLHeightData; normalMapMaterial: TGLLibMaterial);
 var
   n: TVector;
 begin

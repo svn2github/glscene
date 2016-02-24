@@ -100,7 +100,7 @@ type
   TGLHeightFieldOption = (hfoTextureCoordinates, hfoTwoSided);
   TGLHeightFieldOptions = set of TGLHeightFieldOption;
 
-  // THeightFieldColorMode
+  // TGLHeightFieldColorMode
   //
   TGLHeightFieldColorMode = (hfcmNone, hfcmEmission, hfcmAmbient, hfcmDiffuse,
     hfcmAmbientAndDiffuse);
