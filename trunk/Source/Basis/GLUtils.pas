@@ -34,11 +34,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.UITypes,
-  VCL.Graphics, VCL.Controls, VCL.Dialogs, VCL.ExtDlgs,
-
-  // GLS
-  GLVectorGeometry, GLCrossPlatform;
+  System.Classes, 
+  System.SysUtils, 
+  System.UITypes,
+  VCL.Graphics, 
+  VCL.Controls, 
+  VCL.Dialogs, 
+  VCL.ExtDlgs,
+  GLStrings,
+  GLVectorGeometry, 
+  GLCrossPlatform;
 
 type
   EGLUtilsException = class(Exception);
@@ -131,9 +136,6 @@ uses
 
 var
   vSqrt255: TSqrt255Array;
-
-resourcestring
-  gluInvalidColor = '''%s'' is not a valid color format!';
 
   // WordToIntegerArray
   //
@@ -348,7 +350,7 @@ end;
 function StringToColorAdvanced(const Str: string): TColor;
 begin
   if not TryStringToColorAdvanced(Str, Result) then
-    raise EGLUtilsException.CreateResFmt(@gluInvalidColor, [Str]);
+    raise EGLUtilsException.CreateResFmt(@strInvalidColor, [Str]);
 end;
 
 // TryStringToColorAdvanced

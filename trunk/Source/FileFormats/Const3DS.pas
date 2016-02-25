@@ -15,37 +15,6 @@ interface
 uses 
   Types3DS;
 
-resourcestring
-  // error messages
-  Error3DS_NO_MEM = 'Not enough memory to complete operation.';
-  Error3DS_INVALID_ARG = 'The argument passed to the function is invalid.'#13+
-                         'Usually caused by a nil pointer or an out of range numeric argument.';
-  Error3DS_INVALID_DATA = 'The structure passed as an argument to the function has'#13+
-                          'invalid or out of range data in its fields.';
-  Error3DS_INVALID_CHUNK = 'An invalid Chunk structure was encountered while reading'#13+
-                           'the database. Usually caused by a corrupt database or file.';
-  Error3DS_INVALID_DATABASE = 'The database passed as an argument has not be created yet.';
-  Error3DS_WRONG_DATABASE = 'The database passed as an argument is the wrong kind of'#13+
-                            'database for this function.';
-  Error3DS_UNFOUND_CHUNK = 'The database is missing important file chunks needed to'#13+
-                           'fill out the requested structure. Usually caused by a corrupt database or file.';
-  Error3DS_WRONG_OBJECT = 'The Name passed to the functions exists but is not the type of object asked for.'#13+
-                          'For example asking for a mesh object with the GetCameraByName3DS function.';
-  Error3DS_NO_SUCH_FILE = 'The FileName passed as an argument for reading does not exist.';
-  Error3DS_INIT_FAILED = 'Failed to initialize structure passed as an argument.';
-  Error3DS_OPENING_FILE = 'Could not open requested file.';
-  Error3DS_CLOSING_FILE = 'Could not close requested file.';
-  Error3DS_READING_FILE = 'Error occured while reading file.';
-  Error3DS_CREATING_DATABASE = 'Error occured while creating database.';
-  Error3DS_READING_DATABASE = 'Error occured while reading database.';
-  Error3DS_WRITING_DATABASE = 'Error occured while writing database.';
-  Error3DS_WRITING_FILE = 'Error occured while writing file.';
-  Error3DS_STRING_TOO_LONG = 'String encountered in file structure or as an argument was longer than expected.'#13+
-                             'Possibly caused by an uninitialed pointer corrupt file or database.';
-  Error3DS_GET_FAIL = 'Failed to get new data from database.';
-  Error3DS_PUT_FAIL = 'Failed to add new data to the database.';
-  Error3DS_INVALID_INDEX = 'Invalid index %d.';
-
 // ---------------- Constants for commonly used structures --------------------
 
 const // Flags used by the flag field of the Mesh3DS structure

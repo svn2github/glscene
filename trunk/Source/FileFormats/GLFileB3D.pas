@@ -17,7 +17,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLVectorFileObjects, GLApplicationFileIO, GLTexture, GLTextureFormat,
   GLMaterial, GLVectorTypes, GLVectorGeometry, GLVectorLists,
   FileB3D;

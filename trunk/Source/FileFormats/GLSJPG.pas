@@ -18,7 +18,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  //GLS
+  GLStrings,
   GLCrossPlatform;
 
 type
@@ -894,9 +894,6 @@ procedure jpeg_finish_compress(cinfo: j_compress_ptr); external;
 function jpeg_resync_to_restart(cinfo: j_decompress_ptr; desired: integer)
   : LongBool; external;
 
-resourcestring
-  sJPEGError = 'JPEG error #%d';
-
 procedure InvalidOperation(const Msg: string); near;
 begin
   raise EInvalidGraphicOperation.Create(Msg);
@@ -904,7 +901,7 @@ end;
 
 procedure JpegError(cinfo: j_common_ptr);
 begin
-  raise EJPEG.CreateFmt(sJPEGError,[cinfo^.err^.msg_code]);
+  raise EJPEG.CreateFmt(strError,[cinfo^.err^.msg_code]);
 end;
 
 procedure EmitMessage(cinfo: j_common_ptr; msg_level: Integer);

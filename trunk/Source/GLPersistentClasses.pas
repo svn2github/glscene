@@ -49,7 +49,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  GLCrossPlatform;
+  GLCrossPlatform,
+  GLStrings;
 
 type
 
@@ -439,11 +440,6 @@ implementation
 uses
   GLApplicationFileIO;
 
-resourcestring
-  cInvalidFileSignature = 'Invalid file signature';
-  cUnknownArchiveVersion = ' : unknown archive version ';
-  cBrokenObjectListArchive = 'Broken ObjectList archive';
-  cListIndexError = 'Invalid list index';
 
 const
   cDefaultListGrowthDelta = 16;
@@ -465,7 +461,8 @@ const
 
 procedure RaiseFilerException(aClass: TClass; archiveVersion: Integer);
 begin
-  raise EFilerException.Create(aClass.ClassName + cUnknownArchiveVersion + IntToStr(archiveVersion));
+  raise EFilerException.Create(aClass.ClassName +
+                 strUnknownArchiveVersion + IntToStr(archiveVersion));
 end;
 
 // UTF8ToWideString
@@ -737,7 +734,7 @@ end;
 
 procedure TPersistentObject.RaiseFilerException(const archiveVersion: Integer);
 begin
-  raise EFilerException.Create(ClassName + cUnknownArchiveVersion + IntToStr(archiveVersion)); //:IGNORE
+  raise EFilerException.Create(ClassName + strUnknownArchiveVersion + IntToStr(archiveVersion)); //:IGNORE
 end;
 
 // QueryInterface
@@ -809,7 +806,7 @@ begin
       SetLength(sig, Length(FileSignature));
       rd.Read(sig[1], Length(FileSignature));
       if sig <> AnsiString(FileSignature) then
-        raise EInvalidFileSignature.Create(cInvalidFileSignature);
+        raise EInvalidFileSignature.Create(strInvalidFileSignature);
     end;
     ReadFromFiler(rd);
   finally
@@ -1058,7 +1055,7 @@ end;
 
 procedure TPersistentObjectList.Error;
 begin
-  raise EListError.Create(cListIndexError);
+  raise EListError.Create(strListIndexError);
 end;
 
 // Get
@@ -1509,7 +1506,7 @@ begin
                 Add(obj);
               end;
           else
-            raise Exception.Create(cBrokenObjectListArchive);
+            raise Exception.Create(strBrokenObjectListArchive);
           end;
         ReadListEnd;
       end

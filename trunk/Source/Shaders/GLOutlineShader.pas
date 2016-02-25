@@ -34,7 +34,7 @@ interface
 
 uses
   System.Classes, 
-  //GLS
+   
   GLMaterial,  GLContext, OpenGLTokens,
   GLCrossPlatform, GLColor, GLRenderContextInfo;
 

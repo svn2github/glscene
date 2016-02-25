@@ -1043,7 +1043,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, GlsErrorEx + GlsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
 
   end;
@@ -1226,7 +1226,7 @@ var
     else
       begin
         PickObj := nil;
-        Assert(False, GlsErrorEx + GlsUnknownType);
+        Assert(False, strErrorEx + strUnknownType);
       end;
     end;
 
@@ -1608,7 +1608,7 @@ begin
       end;
   else
     begin
-      Assert(False, GlsErrorEx + GlsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
 
   end;

@@ -19,7 +19,7 @@ uses
   System.Types,
   Vcl.Dialogs,
   Vcl.Graphics,
-  //GLS
+   
   GLVectorGeometry;
 
 // Set these as applicable

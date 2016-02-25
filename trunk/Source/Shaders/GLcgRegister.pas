@@ -20,11 +20,12 @@ uses
   DesignIntf,
   DesignEditors,
   VCLEditors,
-  // GLS
   GLMaterial,
   GLSceneRegister,
-  // CG
-  Cg, CgGL, GLCgShader, GLCgBombShader;
+  Cg,
+  CgGL,
+  GLCgShader,
+  GLCgBombShader;
 
 procedure Register;
 

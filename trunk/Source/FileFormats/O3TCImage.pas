@@ -24,7 +24,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLCrossPlatform,
   GLVectorGeometry,
   GLGraphics,

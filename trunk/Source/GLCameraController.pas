@@ -50,7 +50,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math, System.Contnrs, System.Types,
-  //GLS
+   
   GLScene, GLVectorGeometry,
   GLSmoothNavigator,GLVectorTypes;
 

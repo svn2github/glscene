@@ -24,7 +24,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Types,
-  //GLS
+   
   GLSoundFileObjects, GLScene, GLXCollection, GLVectorGeometry,
   GLCadencer, GLBaseClasses, GLCrossPlatform, GLUtils;
 

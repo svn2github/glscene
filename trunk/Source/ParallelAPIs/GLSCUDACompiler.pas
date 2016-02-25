@@ -28,7 +28,9 @@ uses
   System.Classes,
   Vcl.Forms,
   VCL.Dialogs,
+  GLStrings,
   GLSCUDAParser,
+  GLApplicationFileIO,
   GLSLog;
 
 
@@ -148,15 +150,6 @@ implementation
 //------------------------------------------------------------------
 //------------------------------------------------------------------
 
-uses
-  GLApplicationFileIO;
-
-resourcestring
-  cudasSourceFileNotFound = 'Source file not found';
-  cudasSuccessCompilation = 'Successful compilation:' + #10#13 + '%s';
-  cudasFailCompilation = 'NVCC failed to compile:' + #10#13 + '%s';
-  cudasFailCreatePipe = 'Unable to create Pipe';
-  cudasFailRunNVCC = 'Unable to run process (NVCC)';
 
 // ------------------
 // ------------------ TGLSCUDACompiler ------------------
@@ -275,9 +268,9 @@ begin
   if not FileExists(FSourceCodeFile) then
   begin
     if csDesigning in ComponentState then
-      MessageDlg(cudasSourceFileNotFound, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
+      MessageDlg(strSourceFileNotFound, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
     else
-      GLSLogger.LogError(cudasSourceFileNotFound);
+      GLSLogger.LogError(strSourceFileNotFound);
     exit(false);
   end;
   CodeSource := TStringList.Create;
@@ -397,9 +390,9 @@ begin
       else
       begin
         if csDesigning in ComponentState then
-          MessageDlg(cudasFailRunNVCC, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
+          MessageDlg(strFailRunNVCC, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
-          GLSLogger.LogError(cudasFailRunNVCC);
+          GLSLogger.LogError(strFailRunNVCC);
       end;
 
       pathfile := tempFile + '.' + tempFileExt;
@@ -413,7 +406,7 @@ begin
         DeleteFile(pathfile);
         Result := true;
         FConsoleContent := string(StrPas(Buffer));
-        msg := Format(cudasSuccessCompilation, [FConsoleContent]);
+        msg := Format(strSuccessCompilation, [FConsoleContent]);
         if csDesigning in ComponentState then
           MessageDlg(msg, TMsgDlgType.mtInformation, [TMsgDlgBtn.mbOK], 0)
         else
@@ -421,7 +414,7 @@ begin
       end
       else
       begin
-        msg := Format(cudasFailCompilation, [StrPas(Buffer)]);
+        msg := Format(strFailCompilation, [StrPas(Buffer)]);
         if csDesigning in ComponentState then
           MessageDlg(msg, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
         else
@@ -436,9 +429,9 @@ begin
     else
     begin
       if csDesigning in ComponentState then
-        MessageDlg(cudasFailCreatePipe, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
+        MessageDlg(strFailCreatePipe, TMsgDlgType.mtError, [TMsgDlgBtn.mbOK], 0)
       else
-        GLSLogger.LogError(cudasFailCreatePipe);
+        GLSLogger.LogError(strFailCreatePipe);
     end;
 
     pathfile := tempFile + '.cu';

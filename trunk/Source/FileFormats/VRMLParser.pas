@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Types,
-  //GLS
+   
   GLVectorTypes, GLVectorLists, GLUtils;
 
 type

@@ -18,7 +18,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLVectorFileObjects, GLVectorGeometry,
   GLVectorLists, GLApplicationFileIO;
 

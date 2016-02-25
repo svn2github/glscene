@@ -24,7 +24,7 @@ uses
   Winapi.MMSystem,
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLSound, GLSoundFileObjects;
 
 type

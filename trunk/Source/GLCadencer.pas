@@ -48,7 +48,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages,
   System.Classes, System.SysUtils, System.Types, VCL.Forms,
-  //GLS
+   
   GLScene, GLCrossPlatform, GLBaseClasses;
 
 //**************************************

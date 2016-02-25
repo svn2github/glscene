@@ -51,7 +51,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Types,
-  //GLS
+   
   GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLCrossPlatform, GLDCEMisc, GLEllipseCollision,
   GLTerrainRenderer, GLCoordinates, GLBaseClasses,

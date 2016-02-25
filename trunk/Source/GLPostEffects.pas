@@ -205,7 +205,7 @@ begin
       pepBlur:        MakeBlurEffect(rci);
       pepCustom:      DoOnCustomEffect(rci, FRenderBuffer);
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
     GL.DrawPixels(rci.viewPortSize.cx, rci.viewPortSize.cy, GL_RGBA, GL_UNSIGNED_BYTE, FRenderBuffer);
   end;
@@ -371,7 +371,7 @@ begin
 
   if RealOwner <> nil then
     if FPostShaderInterface.GetTextureTarget <> RealOwner.TempTextureTarget then
-      raise EGLPostShaderHolderException.Create(glsErrorEx + 'TextureTarget is not compatible!');
+      raise EGLPostShaderHolderException.Create(strErrorEx + 'TextureTarget is not compatible!');
   // If RealOwner = nil, we ignore this case and hope it will turn out ok...
 
   FShader := Value;

@@ -30,7 +30,7 @@ uses
   System.Classes,
   System.SysUtils,
   {$IFDEF MSWINDOWS}MMSystem,{$ENDIF}
-  //GLS
+   
   GLApplicationFileIO, GLCrossPlatform;
 
 type

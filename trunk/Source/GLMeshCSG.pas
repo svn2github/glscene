@@ -27,7 +27,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //GLS
+   
   GLScene, GLVectorTypes, GLVectorFileObjects,
   GLVectorGeometry, GLBSP, GLVectorLists;
 

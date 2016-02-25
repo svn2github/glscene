@@ -48,18 +48,29 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  WinApi.Windows, WinApi.Messages, System.Classes, System.UITypes, System.Types,
-  VCL.Dialogs, VCL.Graphics, VCL.Controls,
-
-  // GLS
-  GLScene, OpenGLTokens, GLTexture, GLContext, GLVectorGeometry, GLStrings,
-  GLRenderContextInfo, GLState;
+  WinApi.Windows,
+  WinApi.Messages,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
+  System.Types,
+  VCL.Dialogs,
+  VCL.Graphics,
+  VCL.Controls,
+  GLScene,
+  OpenGLTokens,
+  GLTexture,
+  GLContext,
+  GLVectorGeometry,
+  GLStrings,
+  GLRenderContextInfo,
+  GLState;
 
 type
 
   // TSpaceTextCharRange
   //
-  TSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
+  TGLSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
 
   // TGLTextHorzAdjust
   //
@@ -121,13 +132,13 @@ type
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
-    FCharacterRange: TSpaceTextCharRange;
+    FCharacterRange: TGLSpaceTextCharRange;
     FAdjust: TGLTextAdjust;
     FAspectRatio: Single;
     FOblique: Single;
     FTextHeight: Single;
     FLines: TStringList;
-    procedure SetCharacterRange(const val: TSpaceTextCharRange);
+    procedure SetCharacterRange(const val: TGLSpaceTextCharRange);
     procedure SetAllowedDeviation(const val: Single);
     procedure SetExtrusion(AValue: Single);
     procedure SetFont(AFont: TFont);
@@ -184,7 +195,7 @@ type
       write SetAllowedDeviation;
     {  Character range to convert. 
       Converting less characters saves time and memory... }
-    property CharacterRange: TSpaceTextCharRange read FCharacterRange
+    property CharacterRange: TGLSpaceTextCharRange read FCharacterRange
       write SetCharacterRange default stcrDefault;
     property AspectRatio: Single read FAspectRatio write SetAspectRatio;
     property TextHeight: Single read FTextHeight write SetTextHeight;
@@ -235,9 +246,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  SysUtils;
 
 const
   cFontManagerMsg = 'GLScene FontManagerMessage';
@@ -633,7 +641,7 @@ end;
 // SetCharacterRange
 //
 
-procedure TGLSpaceText.SetCharacterRange(const val: TSpaceTextCharRange);
+procedure TGLSpaceText.SetCharacterRange(const val: TGLSpaceTextCharRange);
 begin
   if FCharacterRange <> val then
   begin
@@ -795,7 +803,7 @@ begin
   else
     begin
       AdjustVector.V[0] := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, strErrorEx + strUnknownType); // Not implemented...
     end;
   end;
 
@@ -811,7 +819,7 @@ begin
   else
     begin
       AdjustVector.V[1] := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, strErrorEx + strUnknownType); // Not implemented...
     end;
   end;
 

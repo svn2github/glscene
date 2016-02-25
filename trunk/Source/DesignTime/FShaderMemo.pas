@@ -35,7 +35,7 @@ uses
   VCL.ExtCtrls,
   VCL.StdCtrls,
   VCL.Graphics,
-  //GLS
+   
   GLSMemo;
 
 type

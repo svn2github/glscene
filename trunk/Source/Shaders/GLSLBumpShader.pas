@@ -80,10 +80,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  // GLS
-  GLTexture, GLScene, GLVectorGeometry, GLVectorTypes, GLCadencer, GLStrings,
-  OpenGLTokens, GLSLShader, GLCustomShader, GLColor, GLRenderContextInfo,
+  System.Classes,
+  System.SysUtils,
+  GLTexture,
+  GLScene,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLCadencer,
+  GLStrings,
+  OpenGLTokens,
+  GLSLShader,
+  GLCustomShader,
+  GLColor,
+  GLRenderContextInfo,
   GLMaterial;
 
 type
@@ -737,7 +746,7 @@ begin
   begin
     FNormalTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -760,7 +769,7 @@ begin
   begin
     FSpecularTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -804,7 +813,7 @@ begin
   begin
     FMainTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -938,7 +947,7 @@ end;
 procedure TGLCustomGLSLMLBumpShaderMT.SetLightSources(
   const Value: TGLLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], strErrorEx + strShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;
@@ -1094,7 +1103,7 @@ end;
 procedure TGLCustomGLSLMLBumpShader.SetLightSources(
   const Value: TGLLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], strErrorEx + strShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;

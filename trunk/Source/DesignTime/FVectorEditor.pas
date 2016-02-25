@@ -21,7 +21,7 @@ uses
   System.Classes, System.SysUtils,
   VCL.Forms, VCL.ComCtrls, VCL.StdCtrls, VCL.ToolWin,
   VCL.ExtCtrls, VCL.Buttons, VCL.Graphics, VCL.Controls,
-  //GLS
+   
   GLVectorGeometry, GLUtils, GLVectorTypes;
 
 type

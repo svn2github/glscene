@@ -36,7 +36,7 @@ interface
 uses 
   System.Classes, 
   System.SysUtils,
-  //GLS
+   
   Types3DS, GLCrossPlatform;
 
 type

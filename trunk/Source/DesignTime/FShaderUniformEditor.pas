@@ -3,9 +3,9 @@
 //
 {
    Uniform editor for shaders
-   History :  
+   History :
      23/03/11 - Yar - Creation
-  
+
 }
 
 unit FShaderUniformEditor;
@@ -15,11 +15,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils, System.Variants, System.Classes,
-  VCL.Graphics, VCL.Controls, VCL.Forms,
-  VCL.Dialogs, VCL.StdCtrls, VCL.ExtCtrls, VCL.Buttons,
-  //GLS
-  GLSLParameter, GLTextureFormat, GLVectorGeometry;
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  VCL.Graphics,
+  VCL.Controls,
+  VCL.Forms,
+  VCL.Dialogs,
+  VCL.StdCtrls,
+  VCL.ExtCtrls,
+  VCL.Buttons,
+  GLStrings,
+  GLSLParameter,
+  GLTextureFormat,
+  GLVectorGeometry;
 
 type
   TGLShaderUniformEditor = class(TForm)
@@ -122,9 +131,9 @@ begin
   AutoSetBox.Items.Clear;
   TextureBox.Items.Clear;
   SamplerBox.Items.Clear;
-  AutoSetBox.Items.Add(rstrNothing);
-  TextureBox.Items.Add(rstrNothing);
-  SamplerBox.Items.Add(rstrNothing);
+  AutoSetBox.Items.Add(strNothing);
+  TextureBox.Items.Add(strNothing);
+  SamplerBox.Items.Add(strNothing);
   AutoSetBox.ItemIndex := 0;
   TextureBox.ItemIndex := 0;
   SamplerBox.ItemIndex := 0;
@@ -163,7 +172,7 @@ begin
   if LBUniforms.ItemIndex >= 0 then
   begin
     AutoSetBox.Items.Clear;
-    AutoSetBox.Items.Add(rstrNothing);
+    AutoSetBox.Items.Add(strNothing);
     IParam := FUniformList[LBUniforms.ItemIndex];
     if IParam.GLSLSamplerType <> GLSLSamplerUndefined then
     begin

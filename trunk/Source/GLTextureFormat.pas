@@ -618,7 +618,7 @@ begin
   else
     begin
       Result := false;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 end;
@@ -943,7 +943,7 @@ begin
   else
     begin
       Result := ttTexture2d;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 end;

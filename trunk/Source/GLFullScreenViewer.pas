@@ -31,7 +31,7 @@ uses
   Winapi.Windows, Winapi.Messages, 
   System.Classes, System.SysUtils,
   VCL.Forms, VCL.Controls, VCL.Menus,
-  //GLS
+   
   OpenGLTokens, OpenGLAdapter,
   GLViewer, GLScene, GLContext;
 

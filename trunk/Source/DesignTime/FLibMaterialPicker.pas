@@ -21,7 +21,7 @@ interface
 uses
   System.Classes, 
   VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
-  //GLS
+   
   FRMaterialPreview,  GLViewer,
   GLMaterial;
 

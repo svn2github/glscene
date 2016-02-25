@@ -24,7 +24,7 @@ interface
 
 uses
   System.Classes, 
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLMaterial,
   GLObjects, GLCrossPlatform, GLPersistentClasses, GLVectorLists,
   GLRenderContextInfo, XOpenGL;

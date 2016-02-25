@@ -33,7 +33,7 @@ uses
   VCL.Graphics,
   VCL.Controls,
   VCL.Menus,
-  //GLS
+   
   GLCrossPlatform,
   GLScene;
 

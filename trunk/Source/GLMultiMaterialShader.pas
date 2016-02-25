@@ -29,7 +29,7 @@ interface
 
 uses
    System.Classes, 
-   //GLS
+    
    GLMaterial, GLRenderContextInfo, GLState;
 
 type

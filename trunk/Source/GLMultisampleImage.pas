@@ -21,7 +21,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   OpenGLTokens,
   GLContext,
   GLTexture,

@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLPersistentClasses, GLApplicationFileIO;
 
 Type
@@ -677,7 +677,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidArchiveFile.CreateFmt(glsUnknownExtension,
+    raise EInvalidArchiveFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 

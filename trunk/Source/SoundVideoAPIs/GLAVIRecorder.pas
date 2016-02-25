@@ -34,7 +34,7 @@ uses
   Winapi.Windows, WinApi.Messages,
   System.Classes, System.SysUtils, System.UITypes,
   VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
-  //GLS
+   
   GLGraphics, GLSVfw, GLScene, GLViewer;
 
 type

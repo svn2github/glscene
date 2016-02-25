@@ -55,7 +55,11 @@ interface
 
 uses
   {$IFDEF MSWINDOWS} Windows, {$ENDIF}
-  GLVectorTypes, GLSCUDAApi, GLSCUDARunTime, GLSLog;
+  GLVectorTypes, 
+  GLSCUDAApi, 
+  GLSCUDARunTime, 
+  GLStrings,
+  GLSLog;
 
 
 const
@@ -250,10 +254,13 @@ function InitCUFFTFromLibrary(const LibName: WideString): Boolean;
 function IsCUFFTInitialized: Boolean;
 function Get_CUDA_FFT_Error_String(AError: TcufftResult): string;
 
+//---------------------------------------------------------
+//---------------------------------------------------------
+//---------------------------------------------------------
 implementation
-
-resourcestring
-  cudasFFTFuncRetErr = '%s return error: %s';
+//---------------------------------------------------------
+//---------------------------------------------------------
+//---------------------------------------------------------
 
 const
   cufftPlan1dName = 'cufftPlan1d';
@@ -305,7 +312,7 @@ function cufftPlan1dShell(out plan: TcufftHandle; nx: Integer;
 begin
   Result := cufftPlan1d_(plan, nx, atype, batch);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftPlan1dName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftPlan1dName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -317,7 +324,7 @@ function cufftPlan2dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
 begin
   Result := cufftPlan2d_(plan, nx, ny, atype);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftPlan2dName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftPlan2dName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -329,7 +336,7 @@ function cufftPlan3dShell(out plan: TcufftHandle; nx: Integer; ny: Integer;
 begin
   Result := cufftPlan3d_(plan, nx, ny, nz, atype);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftPlan3dName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftPlan3dName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -340,7 +347,7 @@ function cufftDestroyShell(plan: TcufftHandle): TcufftResult;
 begin
   Result := cufftDestroy_(plan);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftDestroyName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftDestroyName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -355,7 +362,7 @@ begin
   Result := cufftPlanMany_(plan, rank, n, inembed, istride, idist, onembed,
     ostride, odist, ctype, batch);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftPlanManyName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftPlanManyName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -367,7 +374,7 @@ function cufftExecC2CShell(plan: TcufftHandle; idata: PcufftComplex;
 begin
   Result := cufftExecC2C_(plan, idata, odata, direction);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecC2CName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecC2CName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -379,7 +386,7 @@ function cufftExecR2CShell(plan: TcufftHandle; idata: PcufftReal;
 begin
   Result := cufftExecR2C_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecR2CName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecR2CName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -391,7 +398,7 @@ function cufftExecC2RShell(plan: TcufftHandle; idata: PcufftComplex;
 begin
   Result := cufftExecC2R_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecC2RName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecC2RName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -403,7 +410,7 @@ function cufftExecZ2ZShell(plan: TcufftHandle; idata: PcufftDoubleComplex;
 begin
   Result := cufftExecZ2Z_(plan, idata, odata, direction);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecZ2ZName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecZ2ZName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -415,7 +422,7 @@ function cufftExecD2ZShell(plan: TcufftHandle; idata: PcufftDoubleReal;
 begin
   Result := cufftExecD2Z_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecD2ZName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecD2ZName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -427,7 +434,7 @@ function cufftExecZ2DShell(plan: TcufftHandle; idata: PcufftDoubleComplex;
 begin
   Result := cufftExecZ2D_(plan, idata, odata);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftExecZ2DName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftExecZ2DName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -438,7 +445,7 @@ function cufftSetStreamShell(p: TcufftHandle; stream: Integer): TcufftResult;
 begin
   Result := cufftSetStream_(p, stream);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftSetStreamName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftSetStreamName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 
@@ -450,7 +457,7 @@ function cufftSetCompatibilityModeShell(plan: TcufftHandle;
 begin
   Result := cufftSetCompatibilityMode_(plan, mode);
   if Result <> CUFFT_SUCCESS then
-    GLSLogger.LogErrorFmt(cudasFFTFuncRetErr, [cufftSetCompatibilityModeName,
+    GLSLogger.LogErrorFmt(strFFTFuncRetErr, [cufftSetCompatibilityModeName,
       Get_CUDA_FFT_Error_String(Result)]);
 end;
 

@@ -200,7 +200,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Types, System.Math,
-  //GLS
+   
   GLScene, OpenGLTokens, GLVectorGeometry, GLTexture,
   GLMaterial, GLMesh, GLVectorLists, GLPersistentClasses, GLOctree, GLGeometryBB,
   GLApplicationFileIO, GLSilhouette, GLContext, GLColor, GLRenderContextInfo,
@@ -2114,7 +2114,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidVectorFile.CreateFmt(glsUnknownExtension,
+    raise EInvalidVectorFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 

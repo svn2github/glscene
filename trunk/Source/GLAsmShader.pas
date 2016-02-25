@@ -29,7 +29,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext,
   GLCustomShader, GLRenderContextInfo;
 

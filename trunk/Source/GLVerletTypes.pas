@@ -54,7 +54,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Types,
-  //GLS
+   
   GLCrossPlatform, GLVectorGeometry, GLVectorLists, GLSpacePartition,
   GLGeometryBB, GLVectorTypes;
 

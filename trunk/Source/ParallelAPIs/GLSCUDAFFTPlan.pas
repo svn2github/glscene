@@ -21,7 +21,6 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
-  //GLS
   GLSCUDAContext,
   GLSCUDA,
   GLSCUDAApi,
@@ -82,11 +81,13 @@ type
       default fftRealToComplex;
   end;
 
+//---------------------------------------------------------------------  
+//---------------------------------------------------------------------  
+//---------------------------------------------------------------------  
 implementation
-
-resourcestring
-  cudasRequireFreeThread = 'CUFFT functions require context-free thread';
-  cudasBadPlanSize = 'MemData size less then Plan size.';
+//---------------------------------------------------------------------  
+//---------------------------------------------------------------------  
+//---------------------------------------------------------------------  
 
 constructor TCUDAFFTPlan.Create(AOwner: TComponent);
 begin
@@ -152,7 +153,7 @@ begin
       LType := CUFFT_Z2Z;
   else
     begin
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
       LType := CUFFT_R2C;
     end;
   end;
@@ -307,7 +308,7 @@ var
     if (LSrcSize * FSize > ASrc.DataSize)
       or (LDstSize * FPaddedSize > ADst.DataSize) then
     begin
-      GLSLogger.LogError(cudasBadPlanSize);
+      GLSLogger.LogError(strBadPlanSize);
       Abort;
     end;
   end;
@@ -317,7 +318,7 @@ var
     if (LSrcSize * FPaddedSize > ASrc.DataSize)
       or (LDstSize * FSize > ADst.DataSize) then
     begin
-      GLSLogger.LogError(cudasBadPlanSize);
+      GLSLogger.LogError(strBadPlanSize);
       Abort;
     end;
   end;
@@ -328,7 +329,7 @@ begin
 
   if CUDAContextManager.GetCurrentThreadContext <> nil then
   begin
-    GLSLogger.LogError(cudasRequireFreeThread);
+    GLSLogger.LogError(strRequireFreeThread);
     Abort;
   end;
 

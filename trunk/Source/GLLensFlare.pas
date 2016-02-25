@@ -52,7 +52,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  //GLS
+   
   GLScene, GLVectorGeometry, GLObjects, OpenGLTokens,
   GLContext, GLColor, GLBaseClasses, GLRenderContextInfo, GLState,
   GLVectorTypes, GLUtils, GLTextureFormat;

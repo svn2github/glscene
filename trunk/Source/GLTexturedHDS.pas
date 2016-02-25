@@ -33,7 +33,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLCrossPlatform, GLHeightData, GLMaterial;
 
 type

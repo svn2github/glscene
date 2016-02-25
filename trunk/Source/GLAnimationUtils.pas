@@ -20,7 +20,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //GLS
+   
   GLCrossPlatform, GLVectorTypes, GLVectorGeometry;
 
 type

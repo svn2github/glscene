@@ -30,7 +30,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLTokens, GLMaterial,
   GLPersistentClasses, GLXCollection, GLCrossPlatform, GLRenderContextInfo,
   GLBaseClasses, GLContext, GLState;

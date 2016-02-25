@@ -39,7 +39,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLSilhouette,
   GLCrossPlatform, GLPersistentClasses, GLGeometryBB, GLColor,
   GLRenderContextInfo;

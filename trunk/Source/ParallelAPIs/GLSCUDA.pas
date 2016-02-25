@@ -503,20 +503,13 @@ function GetChannelTypeAndNum(AType: TCUDAType): TChannelTypeAndNum;
 procedure RegisterCUDAComponentNameChangeEvent(ANotifyEvent: TNotifyEvent);
 procedure DeRegisterCUDAComponentNameChangeEvent;
 
-resourcestring
-  cudasModuleAbsent = 'Module is absent.';
-  cudasInvalidParamType = 'Invalid parameter type.';
-  cudasOnlyHostData = 'Only host data or mapped device or array data can writen/readen';
-  cudasOutOfRange = 'Indexes out of range';
-  cudasInvalidValue = 'Invalid value';
-  cudasWrongParamSetup =
-    'Function''s parameters must be sutup in OnParameterSetup event';
-  cudasLaunchFailed = 'Kernel function "%s" launch failed.';
-  cudasFuncNotConnected = '%s.Launch: Kernel function not connected';
-  cudasFailMap = 'Unable to map %s - already mapped';
-  cudasFailUnmap = 'Unable to unmap %s - not mapped.';
-
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
 
 
 const
@@ -964,7 +957,7 @@ begin
         [Self.ClassName]);
   end
   else
-    GLSLogger.LogErrorFmt(glsFailedOpenFile, [AFilename]);
+    GLSLogger.LogErrorFmt(strFailedOpenFile, [AFilename]);
 end;
 
 // LoadFromSource
@@ -1297,7 +1290,7 @@ begin
 
   if not(FMaster is TCUDAModule) then
   begin
-    GLSLogger.LogError(cudasModuleAbsent);
+    GLSLogger.LogError(strModuleAbsent);
     Abort;
   end;
 
@@ -1384,7 +1377,7 @@ procedure TCUDAFunction.SetParam(Value: Integer);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSeti(FHandle, ParamOffset, PCardinal(@Value)^);
@@ -1397,7 +1390,7 @@ procedure TCUDAFunction.SetParam(Value: Cardinal);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSeti(FHandle, ParamOffset, Value);
@@ -1410,7 +1403,7 @@ procedure TCUDAFunction.SetParam(Value: Single);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetf(FHandle, ParamOffset, Value);
@@ -1423,7 +1416,7 @@ procedure TCUDAFunction.SetParam(Value: TVector2i);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector2i));
@@ -1436,7 +1429,7 @@ procedure TCUDAFunction.SetParam(Value: TVector3i);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector3i));
@@ -1449,7 +1442,7 @@ procedure TCUDAFunction.SetParam(Value: TVector4i);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector4i));
@@ -1462,7 +1455,7 @@ procedure TCUDAFunction.SetParam(Value: TVector2f);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector2f));
@@ -1475,7 +1468,7 @@ procedure TCUDAFunction.SetParam(Value: TVector3f);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector3f));
@@ -1488,7 +1481,7 @@ procedure TCUDAFunction.SetParam(Value: TVector4f);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSetv(FHandle, ParamOffset, Value, SizeOf(TVector4f));
@@ -1501,7 +1494,7 @@ procedure TCUDAFunction.SetParam(MemData: TCUDAMemData);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSeti(FHandle, ParamOffset, Cardinal(MemData.RawData));
@@ -1516,7 +1509,7 @@ var
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   HTexRef := TexRef.Handle;
@@ -1529,7 +1522,7 @@ procedure TCUDAFunction.SetParam(Ptr: Pointer);
 begin
   if not FLaunching then
   begin
-    GLSLogger.LogError(cudasWrongParamSetup);
+    GLSLogger.LogError(strWrongParamSetup);
     Abort;
   end;
   FStatus := cuParamSeti(FHandle, ParamOffset, Cardinal(Ptr));
@@ -1545,13 +1538,13 @@ procedure TCUDAFunction.Launch(Grided: Boolean = true);
 begin
   if not(FMaster is TCUDAModule) then
   begin
-    GLSLogger.LogError(cudasModuleAbsent);
+    GLSLogger.LogError(strModuleAbsent);
     Abort;
   end;
 
   if not Assigned(FHandle) then
   begin
-    GLSLogger.LogErrorFmt(cudasFuncNotConnected, [Self.ClassName]);
+    GLSLogger.LogErrorFmt(strFuncNotConnected, [Self.ClassName]);
     Abort;
   end;
 
@@ -1590,7 +1583,7 @@ begin
 
   if FStatus <> CUDA_SUCCESS then
   begin
-    GLSLogger.LogErrorFmt(cudasLaunchFailed, [Self.Name]);
+    GLSLogger.LogErrorFmt(strLaunchFailed, [Self.Name]);
     Abort;
   end;
 end;
@@ -1718,7 +1711,7 @@ var
 begin
   if (FMemoryType <> mtHost) and not FMapping then
   begin
-    GLSLogger.LogError(cudasOnlyHostData);
+    GLSLogger.LogError(strOnlyHostData);
     Abort;
   end;
 
@@ -1729,7 +1722,7 @@ begin
   size := ElementSize * X;
   if size > DataSize then
   begin
-    GLSLogger.LogError(cudasOutOfRange);
+    GLSLogger.LogError(strOutOfRange);
     Abort;
   end;
   Inc(ptr, size);
@@ -1743,7 +1736,7 @@ var
 begin
   if (FMemoryType <> mtHost) and not FMapping then
   begin
-    GLSLogger.LogError(cudasOnlyHostData);
+    GLSLogger.LogError(strOnlyHostData);
     Abort;
   end;
 
@@ -1754,7 +1747,7 @@ begin
   size := ElementSize * (X + fWidth*Y);
   if size > DataSize then
   begin
-    GLSLogger.LogError(cudasOutOfRange);
+    GLSLogger.LogError(strOutOfRange);
     Abort;
   end;
   Inc(ptr, size);
@@ -1768,7 +1761,7 @@ var
 begin
   if (FMemoryType <> mtHost) and not FMapping then
   begin
-    GLSLogger.LogError(cudasOnlyHostData);
+    GLSLogger.LogError(strOnlyHostData);
     Abort;
   end;
 
@@ -1779,7 +1772,7 @@ begin
   size := ElementSize * (X + fWidth*(Y  + Z * fHeight));
   if size > DataSize then
   begin
-    GLSLogger.LogError(cudasOutOfRange);
+    GLSLogger.LogError(strOutOfRange);
     Abort;
   end;
   Inc(ptr, size);
@@ -1826,7 +1819,7 @@ procedure TCUDAMemData.UnMap;
 begin
   if not FMapping then
   begin
-    GLSLogger.LogErrorFmt(cudasFailUnmap, [Name]);
+    GLSLogger.LogErrorFmt(strFailUnmap, [Name]);
     Abort;
   end;
 
@@ -2484,7 +2477,7 @@ var
 begin
   if FMapping then
   begin
-    GLSLogger.LogErrorFmt(cudasFailMap, [Name]);
+    GLSLogger.LogErrorFmt(strFailMap, [Name]);
     Abort;
   end;
 
@@ -2588,7 +2581,7 @@ var
 begin
   if not(FMaster is TCUDAModule) then
   begin
-    GLSLogger.LogError(cudasModuleAbsent);
+    GLSLogger.LogError(strModuleAbsent);
     Abort;
   end;
 
@@ -2986,7 +2979,7 @@ var
 begin
   if not(FMaster is TCUDAModule) then
   begin
-    GLSLogger.LogError(cudasModuleAbsent);
+    GLSLogger.LogError(strModuleAbsent);
     Abort;
   end;
 

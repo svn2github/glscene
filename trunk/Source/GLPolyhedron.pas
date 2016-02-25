@@ -17,7 +17,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLScene, GLVectorGeometry, GLRenderContextInfo;
 
 type

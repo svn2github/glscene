@@ -33,9 +33,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, Vcl.Forms,
-  //GLS
-  GLSound, GLScene, Bass, GLVectorGeometry;
+  System.Classes, 
+  System.SysUtils, 
+  Vcl.Forms,  
+  GLSound, 
+  GLScene, 
+  Bass, 
+  GLVectorGeometry;
 
 type
 

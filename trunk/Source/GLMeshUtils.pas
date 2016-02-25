@@ -31,7 +31,7 @@ interface
 
 uses
   System.Classes,  System.SysUtils,
-  //GLS
+   
   GLPersistentClasses, GLVectorLists, GLVectorGeometry, GLVectorTypes;
 
 {Converts a triangle strips into a triangle list. 

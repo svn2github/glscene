@@ -16,13 +16,26 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants, System.Classes, System.Win.Registry,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ImgList, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin,
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.SysUtils, 
+  System.Variants, 
+  System.Classes, 
+  System.Win.Registry,
+  System.ImageList,
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms, 
+  Vcl.Dialogs,
+  Vcl.ImgList, 
+  Vcl.StdCtrls, 
+  Vcl.ComCtrls, 
+  Vcl.ToolWin,
   DesignIntf, VCLEditors,
-  //GLS
-  GLSCUDA, GLSCUDAFFTPlan, GLSCUDAGraphics, System.ImageList;
+  GLStrings,
+  GLSCUDA, 
+  GLSCUDAFFTPlan, 
+  GLSCUDAGraphics;
 
 type
   TGLSCUDAEditorForm = class(TForm)
@@ -68,9 +81,6 @@ implementation
 //--------------------------------------------------------
 
 {$R *.dfm}
-
-resourcestring
-  cCUDAEditor = 'GLScene CUDA Component Editor';
 
 const
   cRegistryKey = 'Software\GLScene\GLSCUDAEditor';
@@ -227,7 +237,7 @@ begin
   if Assigned(FCUDA) then
   begin
     FCUDA.FreeNotification(Self);
-    Caption := cCUDAEditor + ' : ' + FCUDA.Name;
+    Caption := strCUDAEditor + ' : ' + FCUDA.Name;
     for i := 0 to FCUDA.ItemsCount - 1 do
     begin
       child := FCUDA.Items[i];
@@ -235,7 +245,7 @@ begin
     end;
   end
   else
-    Caption := cCUDAEditor;
+    Caption := strCUDAEditor;
 end;
 
 procedure TGLSCUDAEditorForm.Notification(AComponent: TComponent; Operation:

@@ -453,7 +453,7 @@ begin
     abmOneMinusSrcAlpha:
       StateCache.SetBlendFunc(bfDstAlpha, bfOneMinusSrcAlpha);
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
   StateCache.Enable(stAlphaTest);
 end;

@@ -22,7 +22,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ActnList,
   Vcl.ToolsAPI,
-  //GLS
+   
   GLScene,
   GLSGenerics;
 

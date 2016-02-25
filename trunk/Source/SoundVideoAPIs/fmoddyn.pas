@@ -1,12 +1,6 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{ History:
-  Yar - 19/06/11 - Fixed names of entry points in Windows (thanks to Johannes Pretorius, Bugtracker ID = 3319369)
-  DaStr - 07/11/09 - Added $I GLScene.inc for Delhi 5 compatibility
-  Improved FPC compatibility (thanks Predator) (BugtrackerID = 2893580)
-}
-unit fmoddyn;
 { ============================================================================================ }
 { FMOD Main header file. Copyright (c), FireLight Technologies Pty, Ltd. 1999-2003. }
 { =========================================================================================== }
@@ -14,7 +8,7 @@ unit fmoddyn;
   NOTE: For the demos to run you must have either fmod.dll (in Windows)
   or libfmod-3.75.so (in Linux) installed.
 
-  In Windows, copy the fmod.dll file found in the api directory to either of
+  In Winapi.Windows, copy the fmod.dll file found in the api directory to either of
   the following locations (in order of preference)
   - your application directory
   - Windows\System (95/98) or WinNT\System32 (NT/2000/XP)
@@ -28,14 +22,17 @@ unit fmoddyn;
 }
 { =============================================================================================== }
 
+unit fmoddyn;
+
 interface
 
 {$I GLScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
-  Windows,
+  Winapi.Windows,
 {$ENDIF}
+  GLS.Log,
   fmodtypes;
 
 // ===============================================================================================
@@ -827,16 +824,22 @@ var
   FMUSIC_GetUserData: function(Module: PFMusicModule): integer;
 {$IFDEF UNIX} cdecl {$ELSE} stdcall {$ENDIF};
 
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 implementation
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
+//----------------------------------------------------------------------
 
-uses
 {$IFDEF UNIX}
 {$IFDEF LINUX}
-  Libc,
+uses
+  Libc;
 {$ENDIF}
-  dynlibs,
+uses
+  dynlibs;
 {$ENDIF}
-  GLSLog;
 
 const
 {$IFDEF LINUX}
@@ -1526,15 +1529,15 @@ var
 
 initialization
 
-  { Save the current FPU state and then disable FPU exceptions }
-  Saved8087CW := Default8087CW;
-  Set8087CW($133F); { Disable all fpu exceptions }
+{ Save the current FPU state and then disable FPU exceptions }
+Saved8087CW := Default8087CW;
+Set8087CW($133F); { Disable all fpu exceptions }
 
 finalization
 
-  { Make sure the library is unloaded }
-  FMOD_Unload;
-  { Reset the FPU to the previous state }
-  Set8087CW(Saved8087CW);
+{ Make sure the library is unloaded }
+FMOD_Unload;
+{ Reset the FPU to the previous state }
+Set8087CW(Saved8087CW);
 
 end.

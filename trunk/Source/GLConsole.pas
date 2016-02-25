@@ -623,7 +623,7 @@ begin
       AddLine(' - Current SceneViewer has ' +
         Console.FSceneViewer.FramesPerSecondText)
     else
-      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+      AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -642,7 +642,7 @@ begin
       AddLine(' - ResetPerformanceMonitor for Current SceneViewer completed');
     end
     else
-      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+      AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -680,7 +680,7 @@ begin
       HandleUnknownCommand(Command.Strings[1]);
   end
   else
-    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+    AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
 end;
 
 procedure TGLCustomConsole.ProcessInternalCommandViewerAntiAliasing(
@@ -714,7 +714,7 @@ begin
       ConsoleCommand.ShowInvalidNumberOfArgumentsError;
   end
   else
-    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+    AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
 end;
 
 function TGLCustomConsole.ParseString(str, caract: string): TGLUserInputCommand;

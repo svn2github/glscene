@@ -45,7 +45,7 @@
 // Unit : GLGizmoEx  RC 2.0
 //------------------------------------------------------------------------------
 // Modified by     : Rustam Asmandiarov aka Predator
-//   Web Site        : http://GLScene.ru
+//   Web Site        : http: cene.ru
 //   EMail           : Predator_Rust@_#_antispam_#_@mail.ru
 //   Date            : 07/10/2009
 // - The code fully new made for convenience to work with objects
@@ -3016,7 +3016,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, glsUnknownType);
+      Assert(False, strUnknownType);
     end;
   end;
 end;

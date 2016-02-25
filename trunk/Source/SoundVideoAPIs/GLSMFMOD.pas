@@ -37,7 +37,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLSound, GLScene, GLVectorGeometry,
   FMod, FmodTypes, FmodPresets;
 

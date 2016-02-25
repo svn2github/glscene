@@ -27,7 +27,7 @@ interface
 
 uses
   System.SysUtils,
-  //GLS
+   
   OpenGLTokens,
   GLScene,
   GLContext,

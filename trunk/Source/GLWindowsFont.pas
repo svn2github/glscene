@@ -40,7 +40,7 @@ uses
   System.UITypes,
   VCL.Graphics,
 
-  //GLS
+   
   GLScene,
   GLTexture,
   GLBitmapFont,

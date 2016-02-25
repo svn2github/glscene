@@ -41,7 +41,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-  //GLS
+   
   GLVectorTypes, GLVectorGeometry,  GLGeometryBB, GLPersistentClasses;
 
 const

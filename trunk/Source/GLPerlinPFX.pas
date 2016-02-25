@@ -23,7 +23,7 @@ interface
 
 uses
   System.Classes, System.Math,
-  //GLS
+   
   GLParticleFX, GLGraphics, GLCrossPlatform,
   GLPerlinNoise3D, OpenGLTokens, GLVectorGeometry;
 

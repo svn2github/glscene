@@ -25,7 +25,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLContext,
   GLSDLWindow,
   GLScene,

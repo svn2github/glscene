@@ -2,15 +2,15 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  PNG files loading implementation 
-  History :  
+  PNG files loading implementation
+  History :
          23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
          31/05/10 - Yar - Fixes for Linux x64
          08/05/10 - Yar - Removed check for residency in AssignFromTexture
          22/04/10 - Yar - Fixes after GLState revision
          16/03/10 - Yar - Improved FPC compatibility
          05/03/10 - Yar - Creation
-    
+
 }
 unit GLFilePNG;
 
@@ -19,10 +19,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  //GLS
-  GLCrossPlatform, OpenGLTokens, GLContext, GLGraphics,
-  GLTextureFormat, GLApplicationFileIO;
+  System.Classes,
+  System.SysUtils,
+  GLStrings,
+  GLCrossPlatform,
+  OpenGLTokens,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
+  GLApplicationFileIO;
 
 type
 
@@ -48,9 +53,6 @@ implementation
 
 uses
   LIBPNG;
-
-resourcestring
-  sLIBPNGerror = 'LIBPNG error';
 
 // ------------------
 // ------------------ TGLPNGImage ------------------
@@ -115,14 +117,14 @@ begin
   png_ptr := _png_create_read_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
 
   if not Assigned(png_ptr) then
-    raise EInvalidRasterFile.Create(sLIBPNGerror);
+    raise EInvalidRasterFile.Create(strErrorLIB);
 
   info_ptr := _png_create_info_struct(png_ptr);
 
   if not Assigned(png_ptr) then
   begin
     _png_destroy_read_struct(@png_ptr, nil, nil);
-    raise EInvalidRasterFile.Create(sLIBPNGerror);
+    raise EInvalidRasterFile.Create(strErrorLIB);
   end;
 
   UnMipmap;
@@ -268,13 +270,13 @@ begin
   png_ptr := _png_create_write_struct(ZLIB_VERSION, nil, pngErrorFn, pngWarnFn);
 
   if not Assigned(png_ptr) then
-    raise EInvalidRasterFile.Create(sLIBPNGerror);
+    raise EInvalidRasterFile.Create(strErrorLIB);
 
   info_ptr := _png_create_info_struct(png_ptr);
   if not Assigned(png_ptr) then
   begin
     _png_destroy_write_struct(@png_ptr, nil);
-    raise EInvalidRasterFile.Create(sLIBPNGerror);
+    raise EInvalidRasterFile.Create(strErrorLIB);
   end;
 
   try

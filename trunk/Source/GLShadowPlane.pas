@@ -35,7 +35,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLScene,
   GLVectorGeometry,
   GLObjects,

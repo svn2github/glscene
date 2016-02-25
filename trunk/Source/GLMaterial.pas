@@ -49,12 +49,27 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Types,
-  //GLS
-  GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
-  GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
-  GLCrossPlatform, GLState, GLTextureFormat, GLStrings, XOpenGL,
-  GLApplicationFileIO, GLGraphics, GLUtils, GLSLog;
+  System.Classes, 
+  System.SysUtils, 
+  System.Types,
+  GLRenderContextInfo, 
+  GLBaseClasses, 
+  OpenGLTokens, 
+  GLContext,
+  GLTexture, 
+  GLColor, 
+  GLCoordinates, 
+  GLVectorGeometry, 
+  GLPersistentClasses,
+  GLCrossPlatform, 
+  GLState, 
+  GLTextureFormat, 
+  GLStrings, 
+  XOpenGL,
+  GLApplicationFileIO, 
+  GLGraphics, 
+  GLUtils, 
+  GLSLog;
 
 {$UNDEF GLS_MULTITHREAD}
 type
@@ -837,10 +852,6 @@ implementation
 // ------------------------------------------------------------------------------
 
 
-resourcestring
-  strCyclicRefMat = 'Cyclic reference detected in material "%s"';
-
-
   // Dummy methods for CPP
   //
 procedure TGLShader.DoApply
@@ -1352,7 +1363,7 @@ begin
     //    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
     //                       // which may choose to override this procedure.
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
 end;
 
@@ -3501,14 +3512,14 @@ var
   LibMat: TGLLibMaterial;
 begin
   if Self = nil then
-    raise ETexture.Create(glsErrorEx + glsMatLibNotDefined)
+    raise ETexture.Create(strErrorEx + strMatLibNotDefined)
   else if LibMatName = '' then
     Result := nil
   else
   begin
     LibMat := LibMaterialByName(LibMatName);
     if LibMat = nil then
-      raise ETexture.CreateFmt(glsErrorEx + glsMaterialNotFoundInMatlibEx,
+      raise ETexture.CreateFmt(strErrorEx + strMaterialNotFoundInMatlibEx,
         [LibMatName])
     else
       Result := LibMat.Material.Texture;

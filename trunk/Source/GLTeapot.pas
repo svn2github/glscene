@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLTokens, GLContext,
   GLRenderContextInfo, GLVectorTypes;
 

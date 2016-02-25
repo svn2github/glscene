@@ -26,7 +26,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLVectorGeometry, GLVectorTypes, GLCrossPlatform;
 
 const

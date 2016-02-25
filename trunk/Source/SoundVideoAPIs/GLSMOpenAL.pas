@@ -35,7 +35,7 @@ interface
 uses
    System.Classes, System.SysUtils,
    Vcl.Forms, Vcl.Dialogs,
-   //GLS
+    
    GLScene, GLSound, GLSoundFileObjects;
 
 type

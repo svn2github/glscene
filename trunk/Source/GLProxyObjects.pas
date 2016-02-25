@@ -596,7 +596,7 @@ begin
               end;
             pamNone: CurrentFrameDelta := 0;
           else
-            Assert(False, glsUnknownType);
+            Assert(False, strUnknownType);
           end;
 
           SetCurrentFrameDirect(FCurrentFrame);
@@ -861,7 +861,7 @@ begin
   begin
     FTempLibMaterialName := Value;
     if not (csLoading in ComponentState) then
-      raise ETexture.Create(glsErrorEx + glsMatLibNotDefined);
+      raise ETexture.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -990,7 +990,7 @@ begin
   begin
     FTempLibMaterialName := Value;
     if not (csLoading in ComponentState) then
-      raise ETexture.Create(glsErrorEx + glsMatLibNotDefined);
+      raise ETexture.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin

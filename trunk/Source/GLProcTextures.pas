@@ -35,7 +35,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform,
   GLTextureFormat, GLVectorGeometry;
 

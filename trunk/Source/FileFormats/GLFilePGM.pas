@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
   GLApplicationFileIO;
 
@@ -47,9 +47,6 @@ implementation
 
 uses
   GLSCUDAUtility;
-
-resourcestring
-  cCUTILFailed = 'Can not initialize cutil32.dll';
 
   // ------------------
   // ------------------ TGLPGMImage ------------------

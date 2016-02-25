@@ -20,7 +20,7 @@ uses
   System.Classes, System.SysUtils, System.ImageList,
   VCL.Forms, VCL.Dialogs, VCL.StdCtrls,
   VCL.Controls, VCL.Buttons, Vcl.ExtCtrls, Vcl.ImgList, Vcl.ComCtrls, Vcl.ToolWin,
-  //GLS
+   
   GLPlugInIntf, GLPlugInManager;
 
 type

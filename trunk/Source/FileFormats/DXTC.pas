@@ -26,7 +26,7 @@ interface
 
 uses
    System.SysUtils, 
-   //GLS
+    
    GLCrossPlatform, OpenGLTokens, GLTextureFormat;
 
 const

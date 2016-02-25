@@ -12,7 +12,7 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
   VCL.ExtDlgs, VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
-  //GLS
+   
   GLCrossPlatform,  GLBaseClasses,  GLGui;
 
 type

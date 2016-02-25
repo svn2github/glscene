@@ -36,7 +36,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.Math,
-  //GLS
+   
   GLCrossPlatform, GLVectorFileObjects,
   GLVectorTypes, GLMaterial, GLColor, GLTexture,
   GLVectorGeometry, GLVectorLists, GLApplicationFileIO;

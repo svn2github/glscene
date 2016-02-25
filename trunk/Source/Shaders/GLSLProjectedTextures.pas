@@ -48,7 +48,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLCrossPlatform, GLScene, GLTexture, GLVectorGeometry, GLContext,
   GLColor, GLRenderContextInfo, GLTextureFormat, GLVectorTypes;
 

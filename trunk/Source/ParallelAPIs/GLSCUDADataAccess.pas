@@ -15,6 +15,7 @@ interface
 
 uses
   System.SysUtils,
+  GLStrings,
   GLCrossPlatform,
   GLSLog;
 
@@ -64,8 +65,6 @@ procedure SetElementAccessAddress(AValue: PByte; ASize: Cardinal);
 function GetElementAccessAddress: PByte;
 function GetElementAccessSize: Cardinal;
 
-resourcestring
-  cudasSizeMismatch = 'Element size mismatch';
 
 //-----------------------------------------------
 //-----------------------------------------------
@@ -100,7 +99,7 @@ class procedure GCUDAHostElementAccess<TScalar>.CheckElementSize(ACNum: Cardinal
 begin
   if GetElementAccessSize <> ACNum * SizeOf(TScalar) then
   begin
-    GLSLogger.LogError(cudasSizeMismatch);
+    GLSLogger.LogError(strSizeMismatch);
     Abort;
   end;
 end;

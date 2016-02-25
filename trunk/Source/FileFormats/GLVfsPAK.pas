@@ -36,7 +36,7 @@ interface
 
 uses
   System.Classes, System.Contnrs, System.SysUtils,
-  //GLS
+   
   GLApplicationFileIO
 {$IFDEF GLS_LZRW_SUPPORT},LZRW1{$ENDIF};
 

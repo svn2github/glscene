@@ -17,7 +17,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  GLStrings,
   OpenGLTokens, 
   GLVectorTypes, 
   GLTextureFormat, 
@@ -253,9 +253,6 @@ const
      GL_TRIANGLES_ADJACENCY_EXT);
   cGLgsOutTypes: array[TGLgsOutTypes] of GLenum =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
-
-resourcestring
-  rstrNothing = '*nothing*';
 
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TGLRenderContextInfo) of object;

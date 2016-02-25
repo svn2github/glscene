@@ -38,7 +38,8 @@ uses
   System.Classes,
   System.SysUtils,
   File3DS,
-  Types3DS;
+  Types3DS,
+  GLStrings;
 
 // functions to retrieve global settings of a specific 3DS database
 function GetAtmosphere(const Source: TFile3DS; var DB: TDatabase3DS): TAtmosphere3DS;
@@ -2774,7 +2775,7 @@ procedure InitChunk(var Chunk: PChunk3DS);
 begin
   New(Chunk);
   if Chunk = nil then
-    ShowError(Error3DS_NO_MEM);
+    ShowError(strError3DS_NO_MEM);
 
   // set default values
   with Chunk^ do
@@ -2797,7 +2798,7 @@ begin
   begin
     List := AllocMem(SizeOf(TChunklist3DS));
     if List = nil then
-      ShowError(Error3DS_NO_MEM);
+      ShowError(strError3DS_NO_MEM);
   end;
 
   List^.Count := Count;
@@ -2806,7 +2807,7 @@ begin
   begin
     List^.List := AllocMem(Count * SizeOf(TChunkListEntry3DS));
     if List^.List = nil then
-      ShowError(Error3DS_NO_MEM);
+      ShowError(strError3DS_NO_MEM);
   end;
 end;
 
@@ -2874,7 +2875,7 @@ var
 
 begin
   if Chunk = nil then
-    ShowError(ERROR3DS_INVALID_ARG);
+    ShowError(strERROR3DS_INVALID_ARG);
 
   InitChunk(Result);
   with Result^ do
@@ -3206,10 +3207,10 @@ function FindMatEntryByIndex(Source: TFile3DS; DB: TDatabase3DS;
 
 begin
   if DB.TopChunk = nil then
-    ShowError(Error3DS_INVALID_DATABASE);
+    ShowError(strError3DS_INVALID_DATABASE);
   if (DB.TopChunk^.Tag <> MLIBMAGIC) and (DB.TopChunk^.Tag <> M3DMAGIC) and
     (DB.TopChunk^.Tag <> CMAGIC) then
-    ShowError(Error3DS_WRONG_DATABASE);
+    ShowError(strError3DS_WRONG_DATABASE);
 
   UpdateMatEntryList(Source, DB);
   if Index < DB.MatList^.Count then
@@ -3544,7 +3545,7 @@ var
 
 begin
   if MatEntry^.Tag <> MAT_ENTRY then
-    ShowError(Error3DS_INVALID_CHUNK);
+    ShowError(strError3DS_INVALID_CHUNK);
   InitMaterial(Result);
 
   with Result do
@@ -3823,7 +3824,7 @@ begin
           MAT_DECAL:
             ; // don't know what do to with it
           else
-            ShowError(Error3DS_INVALID_CHUNK)
+            ShowError(strError3DS_INVALID_CHUNK)
         end;
       Current := Current^.Sibling;
     end; // while Assigned(Current) do
@@ -3940,7 +3941,7 @@ begin
   if Assigned(Chunk) then
     Result := ReadMatEntryChunk(Source, Chunk)
   else
-    ShowErrorFormatted(Error3DS_INVALID_INDEX, [Index]);
+    ShowErrorFormatted(strError3DS_INVALID_INDEX, [Index]);
 end;
 
 //----------------- mesh object handling ------------------------------------------------------------------------------
@@ -4075,7 +4076,7 @@ begin
           // allocate the new block of memory
           VertexArray := AllocMem(NVertices * SizeOf(TPoint3DS));
           if VertexArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
 
           // this is done by AllocMem already
           // initialize the new block
@@ -4086,7 +4087,7 @@ begin
           // just resize it
           ReallocMem(VertexArray, SizeOf(TPoint3DS) * NVertices);
           if VertexArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4101,7 +4102,7 @@ begin
         begin
           TextArray := Allocmem(NTextVerts * SizeOf(TTexVert3DS));
           if TextArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
 
           for I := 0 to NTextVerts - 1 do
             TextArray^[I] := DefTextVert3DS;
@@ -4110,7 +4111,7 @@ begin
         begin
           Reallocmem(TextArray, SizeOf(TTexVert3DS) * NTextVerts);
           if TextArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4125,7 +4126,7 @@ begin
         begin
           FaceArray := AllocMem(NFaces * SizeOf(TFace3DS));
           if FaceArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
 
           for I := 0 to NFaces - 1 do
             FaceArray^[I] := DefFace3DS;
@@ -4134,7 +4135,7 @@ begin
         begin
           ReallocMem(FaceArray, SizeOf(TFace3DS) * NFaces);
           if FaceArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4149,7 +4150,7 @@ begin
         begin
           MatArray := AllocMem(NMats * SizeOf(TObjmat3DS));
           if MatArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
 
           for I := 0 to NMats - 1 do
             MatArray^[I] := DefObjMat3DS;
@@ -4158,7 +4159,7 @@ begin
         begin
           ReallocMem(MatArray, SizeOf(TObjmat3DS) * NMats);
           if MatArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4173,7 +4174,7 @@ begin
         begin
           SmoothArray := AllocMem(NFaces * SizeOf(integer));
           if SmoothArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
 
           // done by AllocMem
           // for I := 0 to NFaces - 1 do SmoothArray[I] := 0;
@@ -4182,7 +4183,7 @@ begin
         begin
           ReallocMem(SmoothArray, SizeOf(integer) * NFaces);
           if SmoothArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4197,13 +4198,13 @@ begin
         begin
           ProcData := AllocMem(ProcSize * SizeOf(byte));
           if ProcData = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end
         else
         begin
           ReallocMem(ProcData, SizeOf(byte) * ProcSize);
           if ProcData = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4218,13 +4219,13 @@ begin
         begin
           VFlagArray := AllocMem(NVertices * SizeOf(word));
           if VFlagArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end
         else
         begin
           ReallocMem(VFlagArray, SizeOf(word) * NVertices);
           if VFlagArray = nil then
-            ShowError(Error3DS_NO_MEM);
+            ShowError(strError3DS_NO_MEM);
         end;
       end;
     end;
@@ -4293,7 +4294,7 @@ var
 begin
   NTriChunk := FindNextChunk(Chunk^.Children, N_TRI_OBJECT);
   if NTriChunk = nil then
-    ShowError(Error3DS_WRONG_OBJECT);
+    ShowError(strError3DS_WRONG_OBJECT);
 
   Result := InitMeshObj(0, 0, 0);
 
@@ -4457,9 +4458,9 @@ begin
   FillChar(Result, SizeOf(Result), 0);
 
   if DB.TopChunk = nil then
-    ShowError(Error3DS_INVALID_DATABASE);
+    ShowError(strError3DS_INVALID_DATABASE);
   if (DB.TopChunk^.Tag <> M3DMAGIC) and (DB.TopChunk^.Tag <> CMAGIC) then
-    ShowError(Error3DS_WRONG_DATABASE);
+    ShowError(strError3DS_WRONG_DATABASE);
 
   // update the index to named objects if the list has changed recently
   UpdateNamedObjectList(Source, DB);
@@ -4628,7 +4629,7 @@ var
 begin
   DLite := FindNextChunk(Chunk^.Children, N_DIRECT_LIGHT);
   if DLite = nil then
-    ShowError(Error3DS_WRONG_OBJECT);
+    ShowError(strError3DS_WRONG_OBJECT);
 
   DLite := FindChunk(Chunk^.Children, N_DIRECT_LIGHT);
   SpotChunk := FindChunk(Chunk, DL_SPOTLIGHT);
@@ -4790,9 +4791,9 @@ begin
   FillChar(Result, SizeOf(Result), 0);
 
   if (DB.TopChunk = nil) then
-    ShowError(Error3DS_INVALID_DATABASE);
+    ShowError(strError3DS_INVALID_DATABASE);
   if not (DB.TopChunk^.Tag = M3DMAGIC) and not (DB.TopChunk^.Tag = CMAGIC) then
-    ShowError(Error3DS_WRONG_DATABASE);
+    ShowError(strError3DS_WRONG_DATABASE);
 
   // update the list if it's changed recently
   UpdateNamedObjectList(Source, DB);
@@ -4838,9 +4839,9 @@ begin
   FillChar(Result, SizeOf(Result), 0);
 
   if (DB.TopChunk = nil) then
-    ShowError(Error3DS_INVALID_DATABASE);
+    ShowError(strError3DS_INVALID_DATABASE);
   if not (DB.TopChunk^.Tag = M3DMAGIC) and not (DB.TopChunk^.Tag = CMAGIC) then
-    ShowError(Error3DS_WRONG_DATABASE);
+    ShowError(strError3DS_WRONG_DATABASE);
 
   // update the list if it's changed recently
   UpdateNamedObjectList(Source, DB);
@@ -4928,11 +4929,11 @@ var
 
 begin
   if Chunk^.Tag <> NAMED_OBJECT then
-    ShowError(Error3DS_WRONG_OBJECT);
+    ShowError(strError3DS_WRONG_OBJECT);
 
   Camera := FindNextChunk(Chunk^.Children, N_CAMERA);
   if Camera = nil then
-    ShowError(Error3DS_WRONG_OBJECT);
+    ShowError(strError3DS_WRONG_OBJECT);
 
   with Result do
   begin
@@ -5084,9 +5085,9 @@ begin
   FillChar(Result, SizeOf(Result), 0);
 
   if DB.TopChunk = nil then
-    ShowError(Error3DS_INVALID_DATABASE);
+    ShowError(strError3DS_INVALID_DATABASE);
   if (DB.TopChunk^.Tag <> M3DMAGIC) and (DB.TopChunk^.Tag <> CMAGIC) then
-    ShowError(Error3DS_WRONG_DATABASE);
+    ShowError(strError3DS_WRONG_DATABASE);
 
   InitKFSets(Result);
   Result.Anim := GetKeyInfo(Source, DB);
@@ -5493,7 +5494,7 @@ var
 
 begin
   if AmbientChunk = nil then
-    ShowError(ERROR3DS_INVALID_ARG);
+    ShowError(strERROR3DS_INVALID_ARG);
   FillChar(Result, SizeOf(Result), 0);
 
   // get information from chunks
@@ -5781,7 +5782,7 @@ begin
   HideData := nil;
 
   if MeshChunk^.Tag <> OBJECT_NODE_TAG then
-    ShowError(ERROR3DS_WRONG_OBJECT);
+    ShowError(strERROR3DS_WRONG_OBJECT);
 
   ObjTag := CopyChunk(MeshChunk);
 

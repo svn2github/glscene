@@ -29,7 +29,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLBaseClasses,
   GLSLog;
 

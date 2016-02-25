@@ -55,6 +55,8 @@ uses
   System.Classes,
   System.SysUtils,
   System.Win.Registry,
+  System.ImageList, 
+  System.Actions, 
   VCL.ActnList,
   VCL.Controls,
   VCL.Forms,
@@ -70,14 +72,13 @@ uses
   DesignIntf,
   VCLEditors,
 
-  // GLS
   GLScene,
   GLViewer,
   GLSceneRegister,
   GLStrings,
   FInfo,
   GLXCollection,
-  GLCrossPlatform, System.ImageList, System.Actions;
+  GLCrossPlatform;
 
 const
   SCENE_SELECTED = 0;
@@ -263,9 +264,6 @@ implementation
 
 {$R *.dfm}
 
-resourcestring
-  cGLSceneEditor = 'GLScene Editor';
-
 const
   cRegistryKey = 'Software\GLScene\GLSceneEditor';
 
@@ -366,10 +364,10 @@ begin
   begin
     FScene.FreeNotification(Self);
     ReadScene;
-    Caption := cGLSceneEditor + ' : ' + FScene.Name;
+    Caption := strGLSceneEditor + ' : ' + FScene.Name;
   end
   else
-    Caption := cGLSceneEditor;
+    Caption := strGLSceneEditor;
   TreeChange(Self, nil);
   if Assigned(FScene) then
   begin
@@ -414,14 +412,14 @@ begin
   with Tree.Items do
   begin
     // first add the scene root
-    CurrentNode := Add(nil, glsSceneRoot);
+    CurrentNode := Add(nil, strSceneRoot);
     with CurrentNode do
     begin
       ImageIndex := ObjectManager.SceneRootIndex;
       SelectedIndex := ImageIndex;
     end;
     // and the root for all objects
-    FObjectNode := AddChild(CurrentNode, glsObjectRoot);
+    FObjectNode := AddChild(CurrentNode, strObjectRoot);
     FSceneObjects := FObjectNode;
     with FObjectNode do
     begin

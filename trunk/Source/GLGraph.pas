@@ -39,7 +39,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLScene, OpenGLTokens, GLContext, XOpenGL, GLVectorGeometry,
   GLMaterial, GLObjects, GLVectorLists, GLColor, GLBaseClasses,
   GLRenderContextInfo, GLState, GLVectorTypes;
@@ -187,7 +187,7 @@ type
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
-  TGLXYZGridLinesStyle = (glsLine, glsSegments);
+  TGLXYZGridLinesStyle = (strLine, glsSegments);
 
   // TGLXYZGrid
   //

@@ -18,7 +18,7 @@ interface
 uses
   System.Classes, System.SysUtils,
   DesignIntf, DesignEditors, StrEdit, ToolsAPI,
-  //GLS
+   
   GLSceneRegister;
 
 procedure Register;

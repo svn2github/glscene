@@ -22,7 +22,7 @@ interface
 uses
   WinApi.Windows, System.Classes, System.SysUtils, VCL.Forms, VCL.StdCtrls,
   VCL.ComCtrls, VCL.ExtCtrls, VCL.Dialogs, VCL.Controls, VCL.Graphics,
-  //GLS
+   
   GLVectorGeometry, GLColor, GLTexture, GLCrossPlatform, GLVectorTypes;
 
 type

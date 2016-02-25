@@ -22,7 +22,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLVectorFileObjects, GLVectorGeometry, GLApplicationFileIO,
   FileOCT;
 

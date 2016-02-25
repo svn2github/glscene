@@ -23,13 +23,22 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Actions, System.ImageList,
-  VCL.Forms, VCL.ImgList, VCL.Controls, VCL.ActnList, VCL.Menus,
-  VCL.ComCtrls, VCL.ToolWin, VCL.Dialogs,
+  System.Classes, 
+  System.SysUtils, 
+  System.Actions, 
+  System.ImageList,
+  VCL.Forms, 
+  VCL.ImgList, 
+  VCL.Controls, 
+  VCL.ActnList, 
+  VCL.Menus,
+  VCL.ComCtrls, 
+  VCL.ToolWin, 
+  VCL.Dialogs,
 
   DesignIntf,
 
-  //GLS
+  GLStrings,
   GLScene,
   GLBehaviours,
   GLMaterialEx,
@@ -100,9 +109,6 @@ implementation
 
 {$R *.dfm}
 
-resourcestring
-  cXCollectionEditor = 'XCollection editor';
-
 var
   vGLXCollectionEditorForm: TGLXCollectionEditorForm;
 
@@ -167,7 +173,7 @@ begin
   else
   begin
     // ownerComponent:=nil;
-    Caption := cXCollectionEditor;
+    Caption := strXCollectionEditor;
   end;
   PrepareListView;
 end;

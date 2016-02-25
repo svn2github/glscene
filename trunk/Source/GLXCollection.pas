@@ -39,7 +39,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Types,
-  // GLS
+  GLStrings,
   GLCrossPlatform,
   GLPersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
@@ -191,9 +191,6 @@ type
 
     property archiveVersion: integer read FArchiveVersion;
   end;
-
-resourcestring
-  cUnknownArchiveVersion = 'Unknown archive version : ';
 
   {  Registers an event to be called when an XCollection is destroyed. }
 procedure RegisterXCollectionDestroyEvent(notifyEvent: TNotifyEvent);
@@ -467,7 +464,7 @@ end;
 
 procedure TGLXCollectionItem.RaiseFilerException(const archiveVersion: integer);
 begin
-  raise EFilerException.Create(ClassName + cUnknownArchiveVersion +
+  raise EFilerException.Create(ClassName + strUnknownArchiveVersion +
     IntToStr(archiveVersion));
 end;
 

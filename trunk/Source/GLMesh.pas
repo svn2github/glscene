@@ -27,7 +27,7 @@
    18/06/00 - EG - Creation from split of GLObjects,
                     TGLVertexList now uses TVertexData,
                     Rewrite of TGLMesh.CalcNormals (smaller & faster)
-   
+
 }
 unit GLMesh;
 
@@ -36,12 +36,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  //GLS
-  GLStrings,  XOpenGL,  GLContext,  GLScene,
-  GLVectorGeometry,  OpenGLTokens,  OpenGLAdapter,  GLState,
-  GLColor, GLBaseClasses,  GLRenderContextInfo, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  GLStrings,
+  XOpenGL,
+  GLContext,
+  GLScene,
+  GLVectorGeometry,
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLState,
+  GLColor,
+  GLBaseClasses,
+  GLRenderContextInfo,
+  GLVectorTypes;
 
 type
   TGLMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
@@ -759,7 +767,7 @@ begin
     vmVT:
       GL.InterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
   else
-    Assert(False, glsInterleaveNotSupported);
+    Assert(False, strInterleaveNotSupported);
   end;
   if FVertexMode in [vmVNC, vmVNCT] then
   begin

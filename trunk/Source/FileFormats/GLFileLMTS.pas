@@ -40,7 +40,7 @@ uses
   System.Classes, 
   System.SysUtils,
   VCL.Graphics,
-  //GLS
+   
   GLVectorFileObjects, GLApplicationFileIO, GLVectorLists, GLVectorGeometry,
   GLTexture, GLPersistentClasses, GLGraphics, GLMaterial;
 

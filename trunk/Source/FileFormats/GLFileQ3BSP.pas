@@ -23,7 +23,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry,
   GLVectorTypes, GLVectorLists, Q3BSP, GLBSP, GLTexture,
   GLGraphics, GLCrossPlatform, GLState, GLUtils,

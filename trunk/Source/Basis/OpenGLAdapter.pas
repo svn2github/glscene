@@ -48,6 +48,7 @@ uses
 {$IFDEF DARWIN}
   MacOSAll,
 {$ENDIF}
+  GLStrings, 
   GLSLog,
   OpenGLTokens,
   GLVectorGeometry,
@@ -2349,10 +2350,13 @@ procedure TrimAndSplitVersionString(buffer: string; var max, min: integer);
 function IsVersionMet(MajorVersion, MinorVersion, actualMajorVersion,
   actualMinorVersion: integer): boolean;
 
+//------------------------------------------------------------------  
+//------------------------------------------------------------------  
+//------------------------------------------------------------------  
 implementation
-
-resourcestring
-  rstrOpenGLError = 'OpenGL error - %s';
+//------------------------------------------------------------------  
+//------------------------------------------------------------------  
+//------------------------------------------------------------------  
 
 const
   glPrefix = 'gl';
@@ -2624,18 +2628,18 @@ begin
         if not(FDebug and ARB_debug_output) then
           case glError of
             GL_INVALID_ENUM:
-              GLSLogger.LogError(format(rstrOpenGLError, ['Invalid enum']));
+              GLSLogger.LogError(format(strOpenGLError, ['Invalid enum']));
             GL_INVALID_VALUE:
-              GLSLogger.LogError(format(rstrOpenGLError, ['Invalid value']));
+              GLSLogger.LogError(format(strOpenGLError, ['Invalid value']));
             GL_INVALID_OPERATION:
-              GLSLogger.LogError(format(rstrOpenGLError,
+              GLSLogger.LogError(format(strOpenGLError,
                 ['Invalid Operation']));
             GL_OUT_OF_MEMORY:
-              GLSLogger.LogError(format(rstrOpenGLError, ['Out of memory']));
+              GLSLogger.LogError(format(strOpenGLError, ['Out of memory']));
           end;
       end;
     except
-      GLSLogger.LogError(format(rstrOpenGLError, ['Exception in glGetError']));
+      GLSLogger.LogError(format(strOpenGLError, ['Exception in glGetError']));
     end;
 end;
 

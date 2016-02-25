@@ -14,9 +14,13 @@ interface
 {$I GLScene.inc}
 
 uses
-  WinApi.Windows, WinApi.Messages,
-  System.SysUtils, System.Classes, System.UITypes,
-  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
+  WinApi.Windows,
+  WinApi.Messages,
+  System.SysUtils,
+  System.Classes,
+  System.UITypes,
+  VCL.Graphics,
+  VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
   VCL.StdCtrls, VCL.ExtCtrls;
 
 

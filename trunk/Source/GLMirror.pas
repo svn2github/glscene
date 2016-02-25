@@ -34,7 +34,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLAdapter, OpenGLTokens, GLContext,
   GLMaterial, GLColor, GLRenderContextInfo, GLState, GLVectorTypes;
 

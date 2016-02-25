@@ -76,10 +76,10 @@ uses
   System.Math, // Samevalue isZero to compare single
   System.Types,
   NewtonImport, NewtonImport_JointLibrary, // Newton
-  //GLS
+   
   GLVectorGeometry, // PVector TVector TMatrix PMatrix NullHmgVector...
   GLVectorLists, // TaffineVectorList for Tree
-  GLXCollection, // GLS TGLXCollection file function
+  GLXCollection, // TGLXCollection file function
   GLBaseClasses, GLScene, GLManager, GLCrossPlatform, GLCoordinates, //
   GLObjects, GLGeomObjects, GLVectorFileObjects, // cube cone freeform...
   GLColor, GLGeometryBB, // For show debug

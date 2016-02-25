@@ -82,7 +82,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLApplicationFileIO,
   GLCrossPlatform, GLPersistentClasses, GLVectorGeometry,
   GLScene,  GLVectorFileObjects, GLVectorLists,  GLTexture,  GLColor,

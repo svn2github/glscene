@@ -37,7 +37,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
-
+  GLStrings,
   GLCrossPlatform,
   OpenGLTokens,
   GLTextureFormat,
@@ -91,10 +91,13 @@ procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFo
 
 procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 implementation
-
-resourcestring
-  strInvalidType = 'Invalid data type';
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 const
   cSuperBlack: TIntermediateFormat = (R: 0.0; G: 0.0; B: 0.0; A: 0.0);

@@ -350,15 +350,36 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.Math,
-  VCL.Graphics,  VCL.Controls,
-
-  // GLS
-  OpenGLTokens, GLContext, GLVectorGeometry, GLXCollection, GLSilhouette,
-  GLPersistentClasses, GLState, GLGraphics, GLGeometryBB, GLCrossPlatform,
-  GLVectorLists, GLTexture, GLColor, GLBaseClasses, GLCoordinates,
-  GLRenderContextInfo, GLMaterial, GLTextureFormat, GLSelection,
-  GLStrings, XOpenGL, GLVectorTypes, GLApplicationFileIO, GLUtils, GLSLog;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  VCL.Graphics,
+  VCL.Controls,
+  GLStrings,
+  OpenGLTokens,
+  GLContext,
+  GLVectorGeometry,
+  GLXCollection,
+  GLSilhouette,
+  GLPersistentClasses,
+  GLState,
+  GLGraphics,
+  GLGeometryBB,
+  GLCrossPlatform,
+  GLVectorLists,
+  GLTexture,
+  GLColor,
+  GLBaseClasses,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLMaterial,
+  GLTextureFormat,
+  GLSelection,
+  XOpenGL,
+  GLVectorTypes,
+  GLApplicationFileIO,
+  GLUtils,
+  GLSLog;
 
 
 type
@@ -2798,7 +2819,7 @@ begin
       NotifyChange(Self);
   end
   else
-    Assert(False, glsUnBalancedBeginEndUpdate);
+    Assert(False, strUnBalancedBeginEndUpdate);
 end;
 
 // BuildList
@@ -8174,7 +8195,7 @@ begin
       // this one should NOT be replaced with an assert
       if not GL.VERSION_1_1 then
       begin
-        GLSLogger.LogFatalError(glsWrongVersion);
+        GLSLogger.LogFatalError(strWrongVersion);
         Abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
@@ -8285,7 +8306,7 @@ begin
       smDefault, smSmooth: GL.ShadeModel(GL_SMOOTH);
       smFlat: GL.ShadeModel(GL_FLAT);
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 
@@ -8392,7 +8413,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   aBitmap := TGLBitmap.Create;
   try
     aBitmap.Width := FViewPort.Width;
@@ -8426,7 +8447,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   aBitmap := TGLBitmap.Create;
   try
     aBitmap.Width := bmpWidth;
@@ -8637,7 +8658,7 @@ var
   nativeContext: TGLContext;
   aColorBits: Integer;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   FRendering := True;
   nativeContext := RenderingContext;
   try
@@ -9094,7 +9115,7 @@ var
 begin
   if not Assigned(FCamera) then
     Exit;
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   Assert(Assigned(PickList));
   FRenderingContext.Activate;
   FRendering := True;

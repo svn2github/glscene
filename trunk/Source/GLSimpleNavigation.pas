@@ -355,7 +355,7 @@ begin
             snaRotateTarget: DoRotateTarget;
             snaCustom: FKeyCombinations[I].DoOnCustomAction(Shift, X, Y);
           else
-            Assert(False, glsErrorEx + glsUnknownType);
+            Assert(False, strErrorEx + strUnknownType);
           end;
 
           if FKeyCombinations[I].FExitOnMatch then

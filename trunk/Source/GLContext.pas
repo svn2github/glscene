@@ -85,15 +85,27 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.Types, System.SyncObjs,
-  VCL.Forms, VCL.Controls, VCL.Consts,
+  System.Classes, 
+  System.SysUtils, 
+  System.Types, 
+  System.SyncObjs,
+  VCL.Forms, 
+  VCL.Controls, 
+  VCL.Consts,
 
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
   GLSLog,
-  GLCrossPlatform, OpenGLTokens, OpenGLAdapter,  GLVectorGeometry, GLStrings,
-  GLVectorTypes,  GLState,  GLPipelineTransformation,  GLTextureFormat;
+  GLCrossPlatform, 
+  OpenGLTokens, 
+  OpenGLAdapter,  
+  GLVectorGeometry, 
+  GLStrings,
+  GLVectorTypes,  
+  GLState,  
+  GLPipelineTransformation,  
+  GLTextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -1274,15 +1286,6 @@ function GetServiceWindow: TForm;
 procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 {$ENDIF}
 
-resourcestring
-  cIncompatibleContexts = 'Incompatible contexts';
-  cDeleteContextFailed = 'Delete context failed';
-  cContextActivationFailed = 'Context activation failed: %X, %s';
-  cContextDeactivationFailed = 'Context deactivation failed';
-  cUnableToCreateLegacyContext = 'Unable to create legacy context';
-  cNoActiveRC = 'No active rendering context';
-  glsFailedToShare = 'DoCreateContext - Failed to share contexts';
-
 var
   GLContextManager: TGLContextManager;
   vIgnoreOpenGLErrors: Boolean = False;
@@ -1296,14 +1299,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-resourcestring
-  cCannotAlterAnActiveContext = 'Cannot alter an active context';
-  cInvalidContextRegistration = 'Invalid context registration';
-  cInvalidNotificationRemoval = 'Invalid notification removal';
-  cContextAlreadyCreated = 'Context already created';
-  cContextNotCreated = 'Context not created';
-  cUnbalancedContexActivations = 'Unbalanced context activations';
 
 {$IFDEF GLS_SERVICE_CONTEXT}
 type
@@ -1456,7 +1451,7 @@ end;
 procedure TGLContext.SetColorBits(const aColorBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FColorBits := aColorBits;
 end;
@@ -1467,7 +1462,7 @@ end;
 procedure TGLContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAlphaBits := aAlphaBits;
 end;
@@ -1478,7 +1473,7 @@ end;
 procedure TGLContext.SetDepthBits(const val: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FDepthBits := val;
 end;
@@ -1486,7 +1481,7 @@ end;
 procedure TGLContext.SetLayer(const Value: TGLContextLayer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FLayer := Value;
 end;
@@ -1497,7 +1492,7 @@ end;
 procedure TGLContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FStencilBits := aStencilBits;
 end;
@@ -1508,7 +1503,7 @@ end;
 procedure TGLContext.SetAccumBits(const aAccumBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAccumBits := aAccumBits;
 end;
@@ -1519,7 +1514,7 @@ end;
 procedure TGLContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAuxBuffers := aAuxBuffers;
 end;
@@ -1530,7 +1525,7 @@ end;
 procedure TGLContext.SetOptions(const aOptions: TGLRCOptions);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FOptions := aOptions;
 end;
@@ -1541,7 +1536,7 @@ end;
 procedure TGLContext.SetAntiAliasing(const val: TGLAntiAliasing);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAntiAliasing := val;
 end;
@@ -1552,7 +1547,7 @@ end;
 procedure TGLContext.SetAcceleration(const val: TGLContextAcceleration);
 begin
   if Active then
-    raise EGLContext.Create(cCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAcceleration := val;
 end;
@@ -1586,7 +1581,7 @@ end;
 procedure TGLContext.CreateContext(ADeviceHandle: HDC);
 begin
   if IsValid then
-    raise EGLContext.Create(cContextAlreadyCreated);
+    raise EGLContext.Create(strContextAlreadyCreated);
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1598,7 +1593,7 @@ procedure TGLContext.CreateMemoryContext(outputDevice: HWND;
   width, height: Integer; BufferCount: integer);
 begin
   if IsValid then
-    raise EGLContext.Create(cContextAlreadyCreated);
+    raise EGLContext.Create(strContextAlreadyCreated);
   DoCreateMemoryContext(outputDevice, width, height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1826,7 +1821,7 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(cContextNotCreated);
+      raise EGLContext.Create(strContextNotCreated);
 
     vContextActivationFailureOccurred := False;
     try
@@ -1852,14 +1847,14 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(cContextNotCreated);
+      raise EGLContext.Create(strContextNotCreated);
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
     vGL := GLwithoutContext;
   end
   else if FActivationCount < 0 then
-    raise EGLContext.Create(cUnbalancedContexActivations);
+    raise EGLContext.Create(strUnbalancedContexActivations);
 {$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
@@ -2029,7 +2024,7 @@ begin
 
   Result := FLastHandle.FHandle;
   if not bSucces then
-    GLSLogger.LogError(cNoActiveRC)
+    GLSLogger.LogError(strNoActiveRC)
   else if Assigned(FOnPrepare) then
     GLContextManager.NotifyPreparationNeed;
 end;
@@ -2257,7 +2252,7 @@ begin
     end;
   end
   else
-    GLSLogger.LogError(cNoActiveRC);
+    GLSLogger.LogError(strNoActiveRC);
 end;
 
 function TGLContextHandle.RCItem(AIndex: integer): PGLRCHandle;
@@ -4067,7 +4062,7 @@ end;
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
   Result := GL.GetAttribLocation(GetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['attrib', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['attrib', aName, Name]));
 end;
 
 // GetUniformLocation
@@ -4076,7 +4071,7 @@ end;
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
   Result := GL.GetUniformLocation(GetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['uniform', aName, Name]));
 end;
 
 // GetVaryingLocation
@@ -4085,7 +4080,7 @@ end;
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
   Result := GL.GetVaryingLocation(GetHandle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['varying', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['varying', aName, Name]));
 end;
 
 // AddActiveVarying
@@ -4423,7 +4418,7 @@ end;
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
   Result := GL.GetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform block', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['uniform block', aName, Name]));
 end;
 
 // Create
@@ -4589,7 +4584,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) >= 0 then
-        raise EGLContext.Create(cInvalidContextRegistration)
+        raise EGLContext.Create(strInvalidContextRegistration)
       else
         Add(aContext);
     finally
@@ -4605,7 +4600,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) < 0 then
-        raise EGLContext.Create(cInvalidContextRegistration)
+        raise EGLContext.Create(strInvalidContextRegistration)
       else
         Remove(aContext);
     finally
@@ -4699,7 +4694,7 @@ begin
       Inc(i);
     end;
     if not found then
-      raise EGLContext.Create(cInvalidNotificationRemoval);
+      raise EGLContext.Create(strInvalidNotificationRemoval);
   finally
     UnLock;
   end;

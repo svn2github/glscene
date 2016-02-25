@@ -42,7 +42,7 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
-  //GLS
+   
   GLHeightData, GLGraphics, GLVectorGeometry, GLTexture,
   GLVectorTypes, GLCoordinates, GLMaterial;
 

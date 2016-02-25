@@ -25,7 +25,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+   
   GLCrossPlatform,
   OpenGLTokens,
   GLContext,

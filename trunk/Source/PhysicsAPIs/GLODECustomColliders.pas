@@ -35,7 +35,7 @@
                         Geom collide code now uses Resolution to determine the
                         number of contact points to generate.
      19/11/04 - SG - Changed TGLODETerrainCollider to TGLODEHeightField
-                        which now inherits from TODEBehaviour and works for
+                        which now inherits from TGLODEBehaviour and works for
                         both TGLTerrainRenderer and TGLHeightField objects.
                         Added Capsule, Cylinder and Cone collider code for
                         the heightfield collider.

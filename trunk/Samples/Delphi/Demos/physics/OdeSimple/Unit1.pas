@@ -99,14 +99,10 @@ end;
 procedure TForm1.SpawnClick(Sender: TObject);
 begin
   case ComboBox1.ItemIndex of
-    0:
-      DoSphere;
-    1:
-      DoBox;
-    2:
-      DoCapsule;
-    3:
-      DoCylinder;
+    0: DoSphere;
+    1: DoBox;
+    2: DoCapsule;
+    3: DoCylinder;
     // 4 : DoCone; // CONE IS CURRENTLY UNSUPPOETED FOR ODE 0.9
   end;
 end;

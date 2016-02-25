@@ -15,7 +15,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
+   
   GLStrings, GLPersistentClasses, GLCrossPlatform;
 
 type
