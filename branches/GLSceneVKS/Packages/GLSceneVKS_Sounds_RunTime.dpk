@@ -30,7 +30,8 @@ package GLSceneVKS_Sounds_RunTime;
 {$IMPLICITBUILD ON}
 
 requires
-  rtl;
+  rtl,
+  GLSceneVKS_RunTime;
 
 contains
   Bass in '..\Source\SoundVideoAPIs\Bass.pas',

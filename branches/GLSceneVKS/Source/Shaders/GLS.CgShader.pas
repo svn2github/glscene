@@ -10,11 +10,23 @@ unit GLS.CgShader;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  //GLS
-  GLS.VectorGeometry, GLS.VectorLists, GLS.VectorTypes, GLS.Texture, GLS.Strings,
-  GLS.Cadencer, Winapi.OpenGL, Winapi.OpenGLext,  GLS.CrossPlatform, GLS.Context, GLS.BaseClasses,
-  GLS.RenderContextInfo, GLS.Material, GLS.TextureFormat,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  GLS.OpenGLAdapter,
+  GLS.Strings,
+  GLS.VectorGeometry,
+  GLS.VectorLists,
+  GLS.VectorTypes,
+  GLS.Texture,
+  GLS.Cadencer,
+  GLS.CrossPlatform,
+  GLS.Context,
+  GLS.BaseClasses,
+  GLS.RenderContextInfo,
+  GLS.Material,
+  GLS.TextureFormat,
 
   // CG
   Cg, CgGL;
@@ -1334,7 +1346,7 @@ begin
   if FCadencer = nil then
   begin
     Enabled := False;
-    raise EGLCGShaderException.CreateFmt(glsErrorEx + glsCadencerNotDefinedEx, [ClassName]);
+    raise EGLCGShaderException.CreateFmt(strErrorEx + strCadencerNotDefinedEx, [ClassName]);
   end
   else
     inherited;

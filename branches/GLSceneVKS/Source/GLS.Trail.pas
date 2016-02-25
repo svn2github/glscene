@@ -176,7 +176,7 @@ begin
 
                          end;
                     end;
-     else Assert(False, glsErrorEx + glsUnknownType);
+     else Assert(False, strErrorEx + strUnknownType);
      end;
      v0 := AffinevectorMake(Obj.AbsolutePosition);
      VectorScale(v,width,v);

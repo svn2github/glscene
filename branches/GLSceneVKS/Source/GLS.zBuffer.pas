@@ -27,11 +27,22 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  //GLS
-  GLS.Scene, GLS.VectorGeometry, GLS.Graphics, GLS.Objects, GLS.Context,
-  GLS.SceneViewer, GLS.Color, GLS.RenderContextInfo, GLS.State, GLS.TextureFormat,
-  Winapi.OpenGL, Winapi.OpenGLext,  GLS.XOpenGL, GLS.VectorTypes;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  GLS.Scene,
+  GLS.VectorGeometry,
+  GLS.Graphics,
+  GLS.Objects,
+  GLS.Context,
+  GLS.Win64Viewer,
+  GLS.Color,
+  GLS.RenderContextInfo,
+  GLS.State,
+  GLS.TextureFormat,
+  GLS.XOpenGL,
+  GLS.VectorTypes;
 
 
 type

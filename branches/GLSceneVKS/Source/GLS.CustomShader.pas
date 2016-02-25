@@ -335,7 +335,7 @@ begin
     sfsAuto:     Result := TVKSceneBuffer(rci.buffer).FogEnable;
   else
     Result := False;
-    Assert(False, glsUnknownType);
+    Assert(False, strUnknownType);
   end;
 end;
 
@@ -365,7 +365,7 @@ begin
       bmxDestColorOne: SetBlendFunc(bfDSTCOLOR, bfONE);
       bmxDestAlphaOne: SetBlendFunc(bfDSTALPHA, bfONE);
       else
-        Assert(False, glsErrorEx + glsUnknownType);
+        Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 end;

@@ -247,9 +247,6 @@ const
   cGLgsOutTypes: array[TVKgsOutTypes] of GLenum =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
 
-resourcestring
-  rstrNothing = '*nothing*';
-
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TVKRenderContextInfo) of object;
 

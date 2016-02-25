@@ -1945,7 +1945,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidVectorFile.CreateFmt(glsUnknownExtension,
+    raise EInvalidVectorFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 

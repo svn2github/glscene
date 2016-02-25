@@ -36,9 +36,6 @@ implementation
 uses
   GLS.CUDAUtility;
 
-resourcestring
-  cCUTILFailed = 'Can not initialize cutil32.dll';
-
   // ------------------
   // ------------------ TVKPGMImage ------------------
   // ------------------

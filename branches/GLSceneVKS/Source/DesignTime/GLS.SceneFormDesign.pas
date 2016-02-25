@@ -1,5 +1,5 @@
 ﻿//
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 unit GLS.SceneFormDesign;
 
@@ -11,7 +11,12 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  FMX.Forms{, DesignIntf, DesignEditors, ToolsAPI};
+  FMX.Forms, {DesignIntf, DesignEditors, ToolsAPI}
+  GLS.Strings,
+  GLS.CrossPlatform,
+  GLS.SceneForm,
+  GLS.Scene,
+  GLS.Cadencer;
 
 
 type
@@ -235,13 +240,6 @@ implementation
 //-------------------------------------------------------------------------
 
 {$R *.res}
-
-uses
-  GLS.CrossPlatform,
-  GLS.SceneForm,
-  GLS.Scene,
-  GLS.Cadencer;
-
 
 const
   LineEnding = #10#13;

@@ -316,7 +316,7 @@ begin
   begin
     FTempLibMaterialName := Value;
     if not (csLoading in OwnerObject.ComponentState) then
-      raise ETexture.Create(glsErrorEx + glsMatLibNotDefined);
+      raise ETexture.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin

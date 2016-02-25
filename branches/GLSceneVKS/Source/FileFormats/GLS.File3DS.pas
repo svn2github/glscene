@@ -316,9 +316,6 @@ const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
-resourcestring
-  gls3DSMapNotFound = 'Loading %s map texture failed: %s in %s';
-
 {$IFDEF GLS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
 
 // AnimKeysClassTypeToClass
@@ -338,7 +335,7 @@ begin
     else
     begin
       Result := nil;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 end;
@@ -368,7 +365,7 @@ begin
   else
   begin
     Result := ctScale;
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
 end;
 
@@ -1721,7 +1718,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['diffuse', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['diffuse', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1763,7 +1760,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['opacity', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['opacity', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1803,7 +1800,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['bump', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['bump', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;
@@ -1851,7 +1848,7 @@ var
               on E: ETexture do
               begin
                 if not Owner.IgnoreMissingTextures then
-                  raise EGLFile3DS.CreateFmt(gls3DSMapNotFound,['light', e.Message, matLib.TexturePaths]);
+                  raise EGLFile3DS.CreateFmt(str3DSMapNotFound,['light', e.Message, matLib.TexturePaths]);
               end
               else
                 raise;

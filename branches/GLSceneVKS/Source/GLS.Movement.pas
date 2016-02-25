@@ -1593,7 +1593,7 @@ begin
                 Up.AsVector := Path.CurrentNode.FUp;
               end;
             else
-              Assert(False, glsErrorEx + glsUnknownType);
+              Assert(False, strErrorEx + strUnknownType);
             end
           end;
       end;

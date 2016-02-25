@@ -1365,7 +1365,7 @@ begin
   end
   else
   begin
-    Assert(False, Format(glsFailedOpenFile, [fileName]));
+    Assert(False, Format(strFailedOpenFile, [fileName]));
   end;
 end;
 
@@ -1666,7 +1666,7 @@ begin
     Exit;
   end;
   Picture.Bitmap := nil;
-  raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
+  raise ETexture.CreateFmt(strFailedOpenFile, [fileName]);
 end;
 
 // FriendlyName
@@ -1805,7 +1805,7 @@ begin
         if not FAlreadyWarnedAboutMissingFile then
         begin
           FAlreadyWarnedAboutMissingFile := True;
-          GLOKMessageBox(Format(glsFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),glsError);
+          GLOKMessageBox(Format(strFailedOpenFileFromCurrentDir, [PictureFileName, GetCurrentDir]),strError);
         end;
       end;
       Result := inherited GetBitmap32;
@@ -3403,7 +3403,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, glsErrorEx + glsUnknownType);
+          Assert(False, strErrorEx + strUnknownType);
         end;
         glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
       end

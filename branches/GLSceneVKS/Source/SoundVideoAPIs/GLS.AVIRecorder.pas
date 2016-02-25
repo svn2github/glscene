@@ -15,11 +15,22 @@ interface
 
 uses
   Winapi.Windows,
-  WinApi.Messages, System.Classes, System.SysUtils, System.UITypes,
-  FMX.Controls, FMX.Forms, FMX.Extctrls, FMX.Graphics, FMX.Dialogs,
+  WinApi.Messages,
+  System.Classes,
+  System.SysUtils,
+  System.UITypes,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Extctrls,
+  FMX.Graphics,
+  FMX.Dialogs,
   FMX.Types,
   //GLS
-  GLS.Graphics, GLS.Vfw, GLS.Scene, GLS.SceneViewer, GLS.CrossPlatform;
+  GLS.Graphics,
+  GLS.Vfw,
+  GLS.Scene,
+  GLS.Win64Viewer,
+  GLS.CrossPlatform;
 
 type
   TAVICompressor = (acDefault, acShowDialog, acDivX);

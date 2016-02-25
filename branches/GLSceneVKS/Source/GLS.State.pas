@@ -1210,12 +1210,8 @@ implementation
 //------------------------------------------------------
 
 uses
-  GLS.Context, GLS.Color;
-
-{$IFDEF GLS_CACHE_MISS_CHECK}
-resourcestring
-  glsStateCashMissing = 'States cash missing: ';
-{$ENDIF}
+  GLS.Context, 
+  GLS.Color;
 
   // ------------------
   // ------------------ TVKStateCache ------------------
@@ -1469,7 +1465,7 @@ begin
       Include(FStates, aState);
 {$IFDEF GLS_CACHE_MISS_CHECK}
     if glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogError(glsStateCashMissing + 'Enable');
+      GLSLogger.LogError(strStateCashMissing + 'Enable');
 {$ENDIF}
     glEnable(cGLStateToGLEnum[aState].GLConst);
   end;
@@ -1489,7 +1485,7 @@ begin
       Exclude(FStates, aState);
 {$IFDEF GLS_CACHE_MISS_CHECK}
     if not glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogError(glsStateCashMissing + 'Disable');
+      GLSLogger.LogError(strStateCashMissing + 'Disable');
 {$ENDIF}
     glDisable(cGLStateToGLEnum[aState].GLConst);
     if aState = stColorMaterial then
@@ -2250,10 +2246,10 @@ begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_ALPHA_TEST_FUNC, @I);
   if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'AlphaTest function');
+    GLSLogger.LogError(strStateCashMissing + 'AlphaTest function');
   glGetFloatv(GL_ALPHA_TEST_REF, @E);
   if FAlphaRef <> E then
-    GLSLogger.LogError(glsStateCashMissing + 'AlphaTest reference');
+    GLSLogger.LogError(strStateCashMissing + 'AlphaTest reference');
 {$ENDIF}
   if (FAlphaFunc <> func) or (FAlphaRef <> ref)
     or FInsideList then
@@ -2837,7 +2833,7 @@ begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
   if FStencilClearValue <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil clear value');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil clear value');
 {$ENDIF}
   if (Value <> FStencilClearValue) or FInsideList then
   begin
@@ -2891,14 +2887,14 @@ begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_FUNC, @UI);
   if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil function');
   glGetIntegerv(GL_STENCIL_REF, @I);
   if FStencilRef <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil reference');
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil function');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil reference');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil function');
   glGetIntegerv(GL_STENCIL_VALUE_MASK, @UI);
   if FStencilValueMask <> UI then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil value mask');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil value mask');
 {$ENDIF}
   begin
     if FInsideList then
@@ -2959,13 +2955,13 @@ begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilFail] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil fail');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil fail');
   glGetIntegerv(GL_STENCIL_PASS_DEPTH_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilPassDepthFail] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil zfail');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil zfail');
   glGetIntegerv(GL_STENCIL_PASS_DEPTH_PASS, @I);
   if cGLStencilOpToGLEnum[FStencilPassDepthPass] <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil zpass');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil zpass');
 {$ENDIF}
   if (fail <> FStencilFail) or (zfail <> FStencilPassDepthFail)
     or (zpass <> FStencilPassDepthPass) or FInsideList then
@@ -3028,7 +3024,7 @@ begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_WRITEMASK, @I);
   if FStencilWriteMask <> I then
-    GLSLogger.LogError(glsStateCashMissing + 'Stencil write mask');
+    GLSLogger.LogError(strStateCashMissing + 'Stencil write mask');
 {$ENDIF}
   if (Value <> FStencilWriteMask) or FInsideList then
   begin

@@ -42,12 +42,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, System.UITypes, System.UIConsts,
+  System.Classes,
+  System.SysUtils,
+  System.TypInfo,
+  System.UITypes,
+  System.UIConsts,
   FMX.Graphics,
-
-  GLS.Scene, GLS.Objects, GLS.HUDObjects, GLS.SceneViewer, GLS.BitmapFont,
-  GLS.PersistentClasses, GLS.Context, GLS.Texture, GLS.Utils, GLS.Strings,
-  GLS.CrossPlatform, GLS.Material, GLS.VectorTypes;
+  GLS.Scene,
+  GLS.Objects,
+  GLS.HUDObjects,
+  GLS.Win64Viewer,
+  GLS.BitmapFont,
+  GLS.PersistentClasses,
+  GLS.Context,
+  GLS.Texture,
+  GLS.Utils,
+  GLS.Strings,
+  GLS.CrossPlatform,
+  GLS.Material,
+  GLS.VectorTypes;
 
 const
   CONSOLE_MAX_COMMANDS = 120;
@@ -586,7 +599,7 @@ begin
       AddLine(' - Current SceneViewer has ' +
         Console.FSceneViewer.FramesPerSecondText)
     else
-      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+      AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -605,7 +618,7 @@ begin
       AddLine(' - ResetPerformanceMonitor for Current SceneViewer completed');
     end
     else
-      AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+      AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
   end
   else
     ConsoleCommand.ShowInvalidNumberOfArgumentsError;
@@ -643,7 +656,7 @@ begin
       HandleUnknownCommand(Command.Strings[1]);
   end
   else
-    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+    AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
 end;
 
 procedure TVKCustomConsole.ProcessInternalCommandViewerAntiAliasing(
@@ -677,7 +690,7 @@ begin
       ConsoleCommand.ShowInvalidNumberOfArgumentsError;
   end
   else
-    AddLine(' - ' + glsErrorEx + glsSceneViewerNotDefined);
+    AddLine(' - ' + strErrorEx + strSceneViewerNotDefined);
 end;
 
 function TVKCustomConsole.ParseString(str, caract: string): TVKUserInputCommand;

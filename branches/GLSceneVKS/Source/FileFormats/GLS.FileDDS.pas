@@ -89,7 +89,7 @@ begin
     end;
   end
   else
-    raise EInvalidRasterFile.CreateFmt(glsFileNotFound, [filename]);
+    raise EInvalidRasterFile.CreateFmt(strFileNotFound, [filename]);
 end;
 
 // SaveToFile
@@ -243,7 +243,7 @@ begin
         Dec(fLevelCount, 2);
       end;
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
 
   ReallocMem(fData, DataSize);

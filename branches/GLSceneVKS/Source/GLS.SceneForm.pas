@@ -16,12 +16,11 @@ uses
   FMX.Controls,
   FMX.Forms,
   FMX.Types,
-  //GLS
   GLS.Scene,
   GLS.Context,
   GLS.CrossPlatform,
   GLS.Screen,
-  GLS.SceneViewer;
+  GLS.Win64Viewer;
 
 const
   lcl_major = 0;

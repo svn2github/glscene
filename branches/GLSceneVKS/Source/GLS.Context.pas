@@ -1352,7 +1352,7 @@ end;
 procedure TVKContext.SetColorBits(const aColorBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FColorBits := aColorBits;
 end;
@@ -1363,7 +1363,7 @@ end;
 procedure TVKContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAlphaBits := aAlphaBits;
 end;
@@ -1374,7 +1374,7 @@ end;
 procedure TVKContext.SetDepthBits(const val: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FDepthBits := val;
 end;
@@ -1382,7 +1382,7 @@ end;
 procedure TVKContext.SetLayer(const Value: TVKContextLayer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FLayer := Value;
 end;
@@ -1393,7 +1393,7 @@ end;
 procedure TVKContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FStencilBits := aStencilBits;
 end;
@@ -1404,7 +1404,7 @@ end;
 procedure TVKContext.SetAccumBits(const aAccumBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAccumBits := aAccumBits;
 end;
@@ -1415,7 +1415,7 @@ end;
 procedure TVKContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAuxBuffers := aAuxBuffers;
 end;
@@ -1426,7 +1426,7 @@ end;
 procedure TVKContext.SetOptions(const aOptions: TVKRCOptions);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FOptions := aOptions;
 end;
@@ -1437,7 +1437,7 @@ end;
 procedure TVKContext.SetAntiAliasing(const val: TVKAntiAliasing);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAntiAliasing := val;
 end;
@@ -1448,7 +1448,7 @@ end;
 procedure TVKContext.SetAcceleration(const val: TVKContextAcceleration);
 begin
   if Active then
-    raise EGLContext.Create(glsCannotAlterAnActiveContext)
+    raise EGLContext.Create(strCannotAlterAnActiveContext)
   else
     FAcceleration := val;
 end;
@@ -1482,7 +1482,7 @@ end;
 procedure TVKContext.CreateContext(ADeviceHandle: THandle);
 begin
   if IsValid then
-    raise EGLContext.Create(glsContextAlreadyCreated);
+    raise EGLContext.Create(strContextAlreadyCreated);
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1494,7 +1494,7 @@ procedure TVKContext.CreateMemoryContext(OutputDevice: THandle;
   Width, Height: Integer; BufferCount: integer);
 begin
   if IsValid then
-    raise EGLContext.Create(glsContextAlreadyCreated);
+    raise EGLContext.Create(strContextAlreadyCreated);
   DoCreateMemoryContext(OutputDevice, Width, Height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1722,7 +1722,7 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(glsContextNotCreated);
+      raise EGLContext.Create(strContextNotCreated);
 
     vContextActivationFailureOccurred := False;
     try
@@ -1748,14 +1748,14 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(glsContextNotCreated);
+      raise EGLContext.Create(strContextNotCreated);
     if not vContextActivationFailureOccurred then
       DoDeactivate;
     vCurrentGLContext := nil;
     ///vGL := GLwithoutContext;
   end
   else if FActivationCount < 0 then
-    raise EGLContext.Create(glsUnbalancedContexActivations);
+    raise EGLContext.Create(strUnbalancedContexActivations);
 {$IFDEF GLS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
@@ -3918,7 +3918,7 @@ end;
 function TVKProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
   Result := glGetAttribLocation(GetHandle, PGLChar(aName));
-  Assert(Result >= 0, Format(glsUnknownParam, ['attrib', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['attrib', aName, Name]));
 end;
 
 // GetUniformLocation
@@ -3927,7 +3927,7 @@ end;
 function TVKProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
   Result := glGetUniformLocation(GetHandle, PGLChar(aName));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['uniform', aName, Name]));
 end;
 
 // GetVaryingLocation
@@ -3936,7 +3936,7 @@ end;
 function TVKProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
   Result := glGetVaryingLocationNV(GetHandle, PGLChar(aName));
-  Assert(Result >= 0, Format(glsUnknownParam, ['varying', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['varying', aName, Name]));
 end;
 
 // AddActiveVarying
@@ -4273,7 +4273,7 @@ end;
 function TVKProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
   Result := glGetUniformBlockIndex(Handle, PGLChar(aName));
-  Assert(Result >= 0, Format(glsUnknownParam, ['uniform block', aName, Name]));
+  Assert(Result >= 0, Format(strUnknownParam, ['uniform block', aName, Name]));
 end;
 
 // Create
@@ -4439,7 +4439,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) >= 0 then
-        raise EGLContext.Create(glsInvalidContextRegistration)
+        raise EGLContext.Create(strInvalidContextRegistration)
       else
         Add(aContext);
     finally
@@ -4455,7 +4455,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) < 0 then
-        raise EGLContext.Create(glsInvalidContextRegistration)
+        raise EGLContext.Create(strInvalidContextRegistration)
       else
         Remove(aContext);
     finally
@@ -4549,7 +4549,7 @@ begin
       Inc(i);
     end;
     if not found then
-      raise EGLContext.Create(glsInvalidNotificationRemoval);
+      raise EGLContext.Create(strInvalidNotificationRemoval);
   finally
     UnLock;
   end;

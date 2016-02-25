@@ -428,9 +428,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-resourcestring
-  glsCantConvertImg = '%s: can''t convert image to RGBA8 format';
-
 var
   vRasterFileFormats: TRasterFileFormatsList;
 
@@ -533,7 +530,7 @@ begin
   System.Delete(ext, 1, 1);
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
+    raise EInvalidRasterFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
@@ -564,7 +561,7 @@ begin
 
   Result := FindExt(ext);
   if not Assigned(Result) then
-    raise EInvalidRasterFile.CreateFmt(glsUnknownExtension,
+    raise EInvalidRasterFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
@@ -1423,7 +1420,7 @@ begin
       fDataType, GL_UNSIGNED_BYTE,
       GetWidth, GetHeight);
   except
-    GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
+    GLSLogger.LogError(Format(strCantConvertImg, [ClassName]));
     SetErrorImage;
     FreeMem(newData);
     exit;
@@ -2122,7 +2119,7 @@ begin
       Read(Temp, SizeOf(Integer)); // Version
       if Temp > 0 then
       begin
-        GLSLogger.LogError(Format(glsUnknownArchive, [Self.ClassType, Temp]));
+        GLSLogger.LogError(Format(strUnknownArchive, [Self.ClassType, Temp]));
         Abort;
       end;
       Read(FLOD[0].Width, SizeOf(Integer));
@@ -3341,7 +3338,7 @@ begin
       fData := newData;
     except
       FreeMem(newData);
-      GLSLogger.LogError(Format(glsCantConvertImg, [ClassName]));
+      GLSLogger.LogError(Format(strCantConvertImg, [ClassName]));
       SetErrorImage;
     end;
   end;

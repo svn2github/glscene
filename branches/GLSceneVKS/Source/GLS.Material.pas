@@ -803,10 +803,6 @@ implementation
 // ------------------------------------------------------------------------------
 
 
-resourcestring
-  strCyclicRefMat = 'Cyclic reference detected in material "%s"';
-
-
   // Dummy methods for CPP
   //
 {$IFDEF GLS_CPPB}
@@ -1319,7 +1315,7 @@ begin
     //    fiaGenerateEvent:; // Do nothing. Event creation is left up to user shaders
     //                       // which may choose to override this procedure.
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
 end;
 
@@ -3470,14 +3466,14 @@ var
   LibMat: TVKLibMaterial;
 begin
   if Self = nil then
-    raise ETexture.Create(glsErrorEx + glsMatLibNotDefined)
+    raise ETexture.Create(strErrorEx + strMatLibNotDefined)
   else if LibMatName = '' then
     Result := nil
   else
   begin
     LibMat := LibMaterialByName(LibMatName);
     if LibMat = nil then
-      raise ETexture.CreateFmt(glsErrorEx + glsMaterialNotFoundInMatlibEx,
+      raise ETexture.CreateFmt(strErrorEx + strMaterialNotFoundInMatlibEx,
         [LibMatName])
     else
       Result := LibMat.Material.Texture;

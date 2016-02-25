@@ -1,4 +1,4 @@
-object GLSCUDAEditorForm: TVKSCUDAEditorForm
+object VKSCUDAEditorForm: TVKSCUDAEditorForm
   Left = 0
   Top = 0
   Caption = 'Form1'
@@ -119,5 +119,7 @@ object GLSCUDAEditorForm: TVKSCUDAEditorForm
     DefaultItemStyles.ItemStyle = ''
     DefaultItemStyles.GroupHeaderStyle = ''
     DefaultItemStyles.GroupFooterStyle = ''
+    Viewport.Width = 636.000000000000000000
+    Viewport.Height = 436.000000000000000000
   end
 end

@@ -14,11 +14,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.ShellApi,
-  System.UITypes, System.StrUtils, System.Classes, System.SysUtils,
+  Winapi.Windows,
+  Winapi.ShellApi,
+  System.UITypes,
+  System.StrUtils,
+  System.Classes,
+  System.SysUtils,
   System.SyncObjs,
-  FMX.Dialogs, FMX.Controls,
-
+  FMX.Dialogs,
+  FMX.Controls,
   GLS.CrossPlatform;
 
 type
@@ -275,7 +279,13 @@ function ConstArrayToString(const Elements: array of const): String;
 var
   vIDELogProc: TIDELogProc;
 
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 
 var
   v_GLSLogger: TVKLogSession;

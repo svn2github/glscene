@@ -2033,17 +2033,17 @@ begin
       if not (GL_ARB_debug_output) then
         case glError of
           GL_INVALID_ENUM:
-            GLSLogger.LogError(format(glsOpenGLError, ['Invalid enum']));
+            GLSLogger.LogError(format(strOpenGLError, ['Invalid enum']));
           GL_INVALID_VALUE:
-            GLSLogger.LogError(format(glsOpenGLError, ['Invalid value']));
+            GLSLogger.LogError(format(strOpenGLError, ['Invalid value']));
           GL_INVALID_OPERATION:
-            GLSLogger.LogError(format(glsOpenGLError, ['Invalid Operation']));
+            GLSLogger.LogError(format(strOpenGLError, ['Invalid Operation']));
           GL_OUT_OF_MEMORY:
-            GLSLogger.LogError(format(glsOpenGLError, ['Out of memory']));
+            GLSLogger.LogError(format(strOpenGLError, ['Out of memory']));
         end;
     end;
   except
-    GLSLogger.LogError(format(glsOpenGLError, ['Exception in glGetError']));
+    GLSLogger.LogError(format(strOpenGLError, ['Exception in glGetError']));
   end;
 end;
 

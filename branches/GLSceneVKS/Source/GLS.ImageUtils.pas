@@ -28,10 +28,14 @@ interface
 
 uses
   Winapi.OpenGL,
-    Winapi.OpenGLext,
-  System.SysUtils, System.Classes,  System.Math,
-  //GLS
-  GLS.CrossPlatform, GLS.TextureFormat, GLS.VectorGeometry;
+  Winapi.OpenGLext,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  GLS.Strings,
+  GLS.CrossPlatform,
+  GLS.TextureFormat,
+  GLS.VectorGeometry;
 
 var
   vImageScaleFilterWidth: Integer = 5; // Relative sample radius for filtering
@@ -83,9 +87,6 @@ procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: GLEnum; 
 //----------------------------------------------------------------------------------------
 implementation
 //----------------------------------------------------------------------------------------
-
-resourcestring
-  strInvalidType = 'Invalid data type';
 
 const
   cSuperBlack: TIntermediateFormat = (R: 0.0; G: 0.0; B: 0.0; A: 0.0);

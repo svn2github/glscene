@@ -19,14 +19,31 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.SysUtils, System.Math,
-
-  //GLS
-  GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material,
-  GLS.Strings, GLS.SceneViewer, GLS.GeomObjects, GLS.BitmapFont,
-  GLS.VectorFileObjects, GLS.CrossPlatform,  GLS.Coordinates,
-  GLS.RenderContextInfo, GLS.GeometryBB, GLS.VectorTypes, GLS.Canvas,
-  GLS.PersistentClasses, GLS.Screen, GLS.State, GLS.Selection, Winapi.OpenGL, Winapi.OpenGLext, 
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  GLS.Scene,
+  GLS.Color,
+  GLS.Objects,
+  GLS.VectorGeometry,
+  GLS.Material,
+  GLS.Strings,
+  GLS.Win64Viewer,
+  GLS.GeomObjects,
+  GLS.BitmapFont,
+  GLS.VectorFileObjects,
+  GLS.CrossPlatform,
+  GLS.Coordinates,
+  GLS.RenderContextInfo,
+  GLS.GeometryBB,
+  GLS.VectorTypes,
+  GLS.Canvas,
+  GLS.PersistentClasses,
+  GLS.Screen,
+  GLS.State,
+  GLS.Selection,
   GLS.Context;
 
 
@@ -2969,7 +2986,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, glsUnknownType);
+      Assert(False, strUnknownType);
     end;
   end;
 end;

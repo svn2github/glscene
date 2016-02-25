@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
    Editor of TVKSCUDA
@@ -12,8 +12,9 @@ interface
 uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
-  FMX.ListBox, FMX.Objects, FMX.StdCtrls,
-
+  FMX.ListBox, FMX.Objects, FMX.StdCtrls, FMX.Controls.Presentation,
+  //GLS
+  GLS.Strings,
   GLS.CUDA, GLS.CUDAFFTPlan, GLS.CUDAGraphics;
 
 type
@@ -38,12 +39,15 @@ var
 function GLSCUDAEditorForm: TVKSCUDAEditorForm;
 procedure ReleaseGLSCUDAEditorForm;
 
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 
 {$R *.fmx}
-
-resourcestring
-  cCUDAEditor = 'GLScene CUDA Component Editor';
 
 const
   cRegistryKey = 'Software\GLScene\GLSCUDAEditor';

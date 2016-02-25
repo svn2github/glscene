@@ -11,8 +11,15 @@ unit GLS.SpatialPartitioning;
 interface
 
 uses
-  GLS.SceneViewer, GLS.SpacePartition, GLS.Scene, GLS.VectorGeometry,
-  Winapi.OpenGL, Winapi.OpenGLext,  GLS.GeometryBB, GLS.RenderContextInfo, GLS.State;
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  GLS.Scene,
+  GLS.Win64Viewer,
+  GLS.SpacePartition,
+  GLS.VectorGeometry,
+  GLS.GeometryBB,
+  GLS.RenderContextInfo,
+  GLS.State;
 
 type
   { Object for holding glscene objects in a spatial partitioning }

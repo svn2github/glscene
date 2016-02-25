@@ -2485,7 +2485,7 @@ begin
       NotifyChange(Self);
   end
   else
-    Assert(False, glsUnBalancedBeginEndUpdate);
+    Assert(False, strUnBalancedBeginEndUpdate);
 end;
 
 // BuildList
@@ -7861,7 +7861,7 @@ begin
       // this one should NOT be replaced with an assert
       if (GL_VERSION < 1.1) then
       begin
-        GLSLogger.LogFatalError(glsWrongVersion);
+        GLSLogger.LogFatalError(strWrongVersion);
         Abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
@@ -7972,7 +7972,7 @@ begin
       smDefault, smSmooth: glShadeModel(GL_SMOOTH);
       smFlat: glShadeModel(GL_FLAT);
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
 
@@ -8079,7 +8079,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := FViewPort.Width;
@@ -8114,7 +8114,7 @@ var
   saveAllowed: Boolean;
   fileName: string;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   aBitmap := TVKBitmap.Create;
   try
     aBitmap.Width := bmpWidth;
@@ -8326,7 +8326,7 @@ var
   nativeContext: TVKContext;
   aColorBits: Integer;
 begin
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   FRendering := True;
   nativeContext := RenderingContext;
   try
@@ -8783,7 +8783,7 @@ var
 begin
   if not Assigned(FCamera) then
     Exit;
-  Assert((not FRendering), glsAlreadyRendering);
+  Assert((not FRendering), strAlreadyRendering);
   Assert(Assigned(PickList));
   FRenderingContext.Activate;
   FRendering := True;

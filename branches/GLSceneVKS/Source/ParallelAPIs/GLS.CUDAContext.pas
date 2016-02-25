@@ -11,7 +11,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  GLS.Strings,
   GLS.BaseClasses,
   GLS.CUDARunTime,
   GLS.Context,
@@ -212,18 +212,9 @@ type
     property Contexts[i: Integer]: TCUDAContext read GetContext;
   end;
 
+//--------------------------------------------------------------
 implementation
-
-resourcestring
-  cudasInvalidContextReg = 'Invalid context registration.';
-  cudasContextNotInit = 'Context not initialized';
-  cudasNoDeviceToCreate = 'No device to create CUDA context';
-  cudasThreadBusy =
-    'Unable to create CUDA context - thread is busy by another context';
-  cudasMakeFloatingFail = 'Unable to make context floating after creation';
-  cudasUnbalansedUsage = 'Unbalansed CUDA context usage';
-  cudasInvalidGLContext = 'Unable to create CUDA context with OpenGL interop' +
-    ' - OpenGL context not ready';
+//--------------------------------------------------------------
 
 threadvar
   vStackIndex: Cardinal;
@@ -512,7 +503,7 @@ begin
   begin
     if FContextStacks[I].Count > 0 then
     begin
-      GLSLogger.LogError(cudasUnbalansedUsage);
+      GLSLogger.LogError(strUnbalansedUsage);
       for J := FContextStacks[I].Count - 1 to 0 do
         FContextStacks[I][J].Release;
     end;
@@ -531,7 +522,7 @@ class procedure CUDAContextManager.RegisterContext(aContext: TCUDAContext);
 begin
   if fContextList.IndexOf(aContext) >= 0 then
   begin
-    GLSLogger.LogError(cudasInvalidContextReg);
+    GLSLogger.LogError(strInvalidContextReg);
     Abort;
   end
   else
@@ -545,7 +536,7 @@ class procedure CUDAContextManager.UnRegisterContext(aContext: TCUDAContext);
 begin
   if fContextList.IndexOf(aContext) < 0 then
   begin
-    GLSLogger.LogError(cudasInvalidContextReg);
+    GLSLogger.LogError(strInvalidContextReg);
     Abort;
   end
   else
@@ -682,7 +673,7 @@ begin
   if not Assigned(aContext.FDevice)
     or not aContext.FDevice.FSuitable then
   begin
-    GLSLogger.LogError(cudasNoDeviceToCreate);
+    GLSLogger.LogError(strNoDeviceToCreate);
     Abort;
   end;
 
@@ -690,7 +681,7 @@ begin
   begin
     if cuCtxPopCurrent(cuOldContext) <> CUDA_SUCCESS then
     begin
-      GLSLogger.LogError(cudasThreadBusy);
+      GLSLogger.LogError(strThreadBusy);
       Abort;
     end;
   end
@@ -715,7 +706,7 @@ begin
     end
     else
     begin
-      GLSLogger.LogError(cudasInvalidGLContext);
+      GLSLogger.LogError(strInvalidGLContext);
       UnRegisterContext(aContext);
       Abort;
     end;
@@ -740,7 +731,7 @@ begin
   begin
     LStack := GetThreadStack;
     LStack.Insert(LStack.Count - 1, aContext);
-    GLSLogger.LogWarning(cudasMakeFloatingFail);
+    GLSLogger.LogWarning(strMakeFloatingFail);
   end;
 
   if Assigned(cuOldContext) then
@@ -818,7 +809,7 @@ begin
       begin
         if LContext.fHandle <> cuContext then
         begin
-          GLSLogger.LogError(cudasUnbalansedUsage);
+          GLSLogger.LogError(strUnbalansedUsage);
           Abort;
         end;
       end
@@ -840,7 +831,7 @@ begin
   C := GetThreadStack.Count;
   if C = 0 then
   begin
-    GLSLogger.LogError(cudasUnbalansedUsage);
+    GLSLogger.LogError(strUnbalansedUsage);
     Abort;
   end;
 
@@ -854,7 +845,7 @@ begin
     begin
       if Result.fHandle <> cuContext then
       begin
-        GLSLogger.LogError(cudasUnbalansedUsage);
+        GLSLogger.LogError(strUnbalansedUsage);
         Abort;
       end;
     end
@@ -935,7 +926,7 @@ procedure TCUDAContext.Requires;
 begin
   if not IsValid then
   begin
-    GLSLogger.LogError(cudasContextNotInit);
+    GLSLogger.LogError(strContextNotInit);
     Abort;
   end;
   CUDAContextManager.PushContext(Self);

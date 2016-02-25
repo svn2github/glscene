@@ -43,8 +43,6 @@ type
 
 implementation
 
-resourcestring
-  sLIBPNGerror = 'LIBPNG error';
 
 // ------------------
 // ------------------ TVKPNGImage ------------------

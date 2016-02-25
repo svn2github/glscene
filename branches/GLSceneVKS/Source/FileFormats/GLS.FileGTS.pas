@@ -39,9 +39,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-{$IFDEF Unicode}
-  Sysutils,
-{$ENDIF}
+  System.SysUtils,
   GLS.Utils;
 
 // ------------------

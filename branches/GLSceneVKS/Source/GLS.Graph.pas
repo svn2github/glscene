@@ -172,7 +172,7 @@ type
     - glsSegments : line segments are used between each node of the grid,
     this enhances perspective and quality, at the expense of computing
     power. }
-  TXYZGridLinesStyle = (glsLine, glsSegments);
+  TXYZGridLinesStyle = (strLine, glsSegments);
 
   // TVKXYZGrid
   //

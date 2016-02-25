@@ -124,7 +124,7 @@ begin
         FShaderTwo.Apply(rci, Self);
       end;
   else
-    Assert(False, glsErrorEx + glsUnknownType);
+    Assert(False, strErrorEx + strUnknownType);
   end;
 end;
 
@@ -173,7 +173,7 @@ begin
   else
     begin
       Result := False;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
   end;
   Inc(FCurrentPass);

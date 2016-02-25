@@ -5,7 +5,7 @@
    GLScene cross-platform viewer.
 }
 
-unit GLS.SceneViewer;
+unit GLS.Win64Viewer;
 
 interface
 
@@ -25,7 +25,7 @@ uses
   //GLS
   GLS.OpenGLAdapter,
   GLS.Scene,
-  GLS.SceneContext,
+  GLS.Win64Context,
   GLS.Context;
 
 type

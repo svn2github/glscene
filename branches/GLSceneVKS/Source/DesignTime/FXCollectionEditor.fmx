@@ -1,4 +1,4 @@
-object XCollectionEditor: TVKXCollectionEditor
+object VKXCollectionEditor: TVKXCollectionEditor
   Left = 0
   Top = 0
   Caption = 'Form1'
@@ -29,6 +29,7 @@ object XCollectionEditor: TVKXCollectionEditor
     object Button1: TButton
       Action = ACRemove
       Enabled = True
+      ImageIndex = -1
       Position.X = 64.000000000000000000
       Position.Y = 8.000000000000000000
       Size.Width = 73.000000000000000000
@@ -40,6 +41,7 @@ object XCollectionEditor: TVKXCollectionEditor
     object Button2: TButton
       Action = ACMoveUp
       Enabled = True
+      ImageIndex = -1
       Position.X = 136.000000000000000000
       Position.Y = 8.000000000000000000
       TabOrder = 2
@@ -48,6 +50,7 @@ object XCollectionEditor: TVKXCollectionEditor
     object Button3: TButton
       Action = ACMoveDown
       Enabled = True
+      ImageIndex = -1
       Position.X = 216.000000000000000000
       Position.Y = 8.000000000000000000
       TabOrder = 3

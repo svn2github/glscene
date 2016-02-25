@@ -19,18 +19,29 @@ interface
 {$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
 
 uses
-  Winapi.Windows, WinApi.Messages, 
-  System.Classes, System.UITypes, System.SysUtils,
-  FMX.Dialogs, FMX.Graphics, FMX.Controls,
-   
-  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Texture, GLS.Context, GLS.VectorGeometry, GLS.Strings,
-  GLS.RenderContextInfo, GLS.State;
+  Winapi.Windows, 
+  WinApi.Messages, 
+  Winapi.OpenGL, 
+  Winapi.OpenGLext,
+  System.Classes, 
+  System.UITypes, 
+  System.SysUtils,
+  FMX.Dialogs, 
+  FMX.Graphics, 
+  FMX.Controls, 
+  GLS.Scene, 
+  GLS.Texture, 
+  GLS.Context, 
+  GLS.VectorGeometry, 
+  GLS.Strings,
+  GLS.RenderContextInfo, 
+  GLS.State;
 
 type
 
   // TSpaceTextCharRange
   //
-  TSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
+  TVKSpaceTextCharRange = (stcrDefault, stcrAlphaNum, stcrNumbers, stcrWide);
 
   // TVKTextHorzAdjust
   //
@@ -92,13 +103,13 @@ type
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
-    FCharacterRange: TSpaceTextCharRange;
+    FCharacterRange: TVKSpaceTextCharRange;
     FAdjust: TVKTextAdjust;
     FAspectRatio: Single;
     FOblique: Single;
     FTextHeight: Single;
     FLines: TStringList;
-    procedure SetCharacterRange(const val: TSpaceTextCharRange);
+    procedure SetCharacterRange(const val: TVKSpaceTextCharRange);
     procedure SetAllowedDeviation(const val: Single);
     procedure SetExtrusion(AValue: Single);
     procedure SetFont(AFont: TFont);
@@ -155,7 +166,7 @@ type
       write SetAllowedDeviation;
     { Character range to convert. 
       Converting less characters saves time and memory... }
-    property CharacterRange: TSpaceTextCharRange read FCharacterRange
+    property CharacterRange: TVKSpaceTextCharRange read FCharacterRange
       write SetCharacterRange default stcrDefault;
     property AspectRatio: Single read FAspectRatio write SetAspectRatio;
     property TextHeight: Single read FTextHeight write SetTextHeight;
@@ -601,7 +612,7 @@ end;
 // SetCharacterRange
 //
 
-procedure TVKSpaceText.SetCharacterRange(const val: TSpaceTextCharRange);
+procedure TVKSpaceText.SetCharacterRange(const val: TVKSpaceTextCharRange);
 begin
   if FCharacterRange <> val then
   begin
@@ -763,7 +774,7 @@ begin
   else
     begin
       AdjustVector.X := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, strErrorEx + strUnknownType); // Not implemented...
     end;
   end;
 
@@ -779,7 +790,7 @@ begin
   else
     begin
       AdjustVector.Y := 0;
-      Assert(False, glsErrorEx + glsUnknownType); // Not implemented...
+      Assert(False, strErrorEx + strUnknownType); // Not implemented...
     end;
   end;
 

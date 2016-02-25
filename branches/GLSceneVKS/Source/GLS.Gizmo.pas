@@ -12,12 +12,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  GLS.Scene, GLS.Color, GLS.Objects, GLS.VectorGeometry, GLS.Material, GLS.Strings,
-  GLS.GeomObjects, GLS.BitmapFont, GLS.SceneViewer, GLS.VectorFileObjects,
-  GLS.CrossPlatform, GLS.Coordinates, GLS.RenderContextInfo, GLS.State,
-  GLS.Selection, GLS.VectorTypes;
+  GLS.Scene,
+  GLS.Color,
+  GLS.Objects,
+  GLS.VectorGeometry,
+  GLS.Material,
+  GLS.Strings,
+  GLS.GeomObjects,
+  GLS.BitmapFont,
+  GLS.Win64Viewer,
+  GLS.VectorFileObjects,
+  GLS.CrossPlatform,
+  GLS.Coordinates,
+  GLS.RenderContextInfo,
+  GLS.State,
+  GLS.Selection,
+  GLS.VectorTypes;
 
 type
   TVKGizmoUndoCollection = class;
@@ -988,7 +1001,7 @@ begin
   else
     begin
       Result := nil;
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
 
   end;
@@ -1171,7 +1184,7 @@ var
     else
       begin
         PickObj := nil;
-        Assert(False, glsErrorEx + glsUnknownType);
+        Assert(False, strErrorEx + strUnknownType);
       end;
     end;
 
@@ -1553,7 +1566,7 @@ begin
       end;
   else
     begin
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
 
   end;

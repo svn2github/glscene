@@ -684,7 +684,7 @@ begin
   begin
     FNormalTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -707,7 +707,7 @@ begin
   begin
     FSpecularTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
@@ -751,13 +751,13 @@ begin
   begin
     FMainTextureName := Value;
     if not (csLoading in ComponentState) then
-      raise EGLSLBumpShaderException.Create(glsErrorEx + glsMatLibNotDefined);
+      raise EGLSLBumpShaderException.Create(strErrorEx + strMatLibNotDefined);
   end
   else
   begin
     FMainTexture := FMaterialLibrary.TextureByName(Value);
     FMainTextureName := '';
-  end;  
+  end;
 end;
 
 procedure TVKBaseCustomGLSLBumpShaderMT.SetMaterialLibrary(
@@ -885,7 +885,7 @@ end;
 procedure TVKCustomGLSLMLBumpShaderMT.SetLightSources(
   const Value: TVKLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], strErrorEx + strShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;
@@ -1041,7 +1041,7 @@ end;
 procedure TVKCustomGLSLMLBumpShader.SetLightSources(
   const Value: TVKLightSourceSet);
 begin
-  Assert(Value <> [], glsErrorEx + glsShaderNeedsAtLeastOneLightSource);
+  Assert(Value <> [], strErrorEx + strShaderNeedsAtLeastOneLightSource);
   FLightSources := Value;
   FinalizeShader;
 end;

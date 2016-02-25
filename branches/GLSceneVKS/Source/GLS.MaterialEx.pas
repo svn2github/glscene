@@ -2115,7 +2115,7 @@ begin
           tcHighQuality: TextureCompressionHint := hintNicest;
           tcHighSpeed: TextureCompressionHint := hintFastest;
         else
-          Assert(False, glsErrorEx + glsUnknownType);
+          Assert(False, strErrorEx + strUnknownType);
         end;
         if not GetGenericCompressedFormat(
           FInternalFormat,
@@ -5822,7 +5822,7 @@ begin
   if Assigned(FLibSampler) then
     Result := FLibSampler.Name
   else
-    Result := rstrNothing;
+    Result := strNothing;
 end;
 
 function TVKShaderUniformTexture.GetTextureName: string;
@@ -5830,7 +5830,7 @@ begin
   if Assigned(FLibTexture) then
     Result := FLibTexture.Name
   else
-    Result := rstrNothing;
+    Result := strNothing;
 end;
 
 function TVKShaderUniformTexture.GetTextureSwizzle: TSwizzleVector;
@@ -6026,7 +6026,7 @@ end;
 
 function TVKAbstractShaderUniform.GetSamplerName: string;
 begin
-  Result := rstrNothing;
+  Result := strNothing;
 end;
 
 procedure TVKAbstractShaderUniform.Apply(var ARci: TVKRenderContextInfo);
@@ -6035,12 +6035,12 @@ end;
 
 function TVKAbstractShaderUniform.GetAutoSetMethod: string;
 begin
-  Result := rstrNothing;
+  Result := strNothing;
 end;
 
 function TVKAbstractShaderUniform.GetTextureName: string;
 begin
-  Result := rstrNothing;
+  Result := strNothing;
 end;
 
 function TVKAbstractShaderUniform.GetTextureSwizzle: TSwizzleVector;

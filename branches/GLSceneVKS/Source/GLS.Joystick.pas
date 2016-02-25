@@ -2,7 +2,7 @@
 // GLScene project based on GLScene library, http://glscene.sourceforge.net
 //
 {
-   Component for handling joystick messages 
+   Component for handling joystick messages
 }
 unit GLS.Joystick;
 
@@ -14,7 +14,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, Winapi.MMSystem,
   System.Classes, System.SysUtils,
-  FMX.Forms, FMX.Controls;
+  FMX.Forms, FMX.Controls,
+  GLS.Strings;
 
 type
    TJoystickButton = (jbButton1, jbButton2, jbButton3, jbButton4);
@@ -100,11 +101,6 @@ implementation
 const
   cJoystickIDToNative : array [jidNoJoystick..jidJoystick2] of Byte =
                         (9, JOYSTICKID1, JOYSTICKID2);
-
-resourcestring
-  glsNoJoystickDriver   = 'There''s no joystick driver present';
-  glsConnectJoystick    = 'Joystick is not connected to your system';
-  glsJoystickError      = 'Your system reports a joystick error, can''t do anything about it';
 
 // ------------------
 // ------------------ TJoystick ------------------
@@ -255,11 +251,11 @@ begin
       FCapture:=False;
       if not NoCaptureErrors then begin
          case res of
-            MMSYSERR_NODRIVER : raise Exception.Create(glsNoJoystickDriver);
-            JOYERR_UNPLUGGED :  raise Exception.Create(glsConnectJoystick);
-            JOYERR_NOCANDO :    raise Exception.Create(glsJoystickError);
+            MMSYSERR_NODRIVER : raise Exception.Create(strNoJoystickDriver);
+            JOYERR_UNPLUGGED :  raise Exception.Create(strConnectJoystick);
+            JOYERR_NOCANDO :    raise Exception.Create(strJoystickError);
          else
-            raise Exception.Create(glsJoystickError);
+            raise Exception.Create(strJoystickError);
          end;
       end;
    end else joySetThreshold(cJoystickIDToNative[AJoystick], FThreshold);

@@ -263,13 +263,6 @@ uses
   GLS.TextureFormat,
   GLS.Log;
 
-resourcestring
-  cudasFailToBindArrayToTex = 'Unable to bind CUDA array to OpenGL unmaped t' +
-  'exture';
-  cudasOutOfAttribSize = 'The amount of device''s data less then size of att' +
-  'ribute''s data.';
-  cudasOutOfElementSize = 'The amount of device''s data less then size of in' +
-  'dexes data.';
 
 {$IFDEF GLS_REGION}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
 // ------------------
@@ -431,7 +424,7 @@ var
 begin
   if FMapCounter = 0 then
   begin
-    GLSLogger.LogError(cudasFailToBindArrayToTex);
+    GLSLogger.LogError(strFailToBindArrayToTex);
     Abort;
   end;
 
@@ -645,7 +638,7 @@ begin
     GLSLTypeMat4F: typeSize := 16 * SizeOf(GLFloat);
   else
     begin
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
       typeSize := 0;
     end;
   end;
@@ -695,7 +688,7 @@ begin
 
   if PtrUInt(Result) + GetAttribArraySize(LAttr) > Size then
   begin
-    GLSLogger.LogError(cudasOutOfAttribSize);
+    GLSLogger.LogError(strOutOfAttribSize);
     Abort;
   end;
 
@@ -726,7 +719,7 @@ begin
 
   if GetElementArrayDataSize > Size then
   begin
-    GLSLogger.LogError(cudasOutOfElementSize);
+    GLSLogger.LogError(strOutOfElementSize);
     Abort;
   end;
 
@@ -1043,7 +1036,7 @@ begin
             end;
         end;
     else
-      Assert(False, glsErrorEx + glsUnknownType);
+      Assert(False, strErrorEx + strUnknownType);
     end;
     // Produce indexes
     if (GR.GetElementArrayDataSize > 0)

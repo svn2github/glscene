@@ -3,7 +3,7 @@
 //
 { 
    Scene Editor, for adding + removing scene objects within the Delphi IDE. 
- 
+
 }
 
 unit GLS.SceneEdit;
@@ -131,9 +131,6 @@ implementation
 // ------------------------------------------------------------------
 
 {$R *.fmx}
-
-resourcestring
-  cGLSceneEditor = 'GLSceneVKS Editor';
 
 const
   cRegistryKey = 'Software\GLSceneVKS\GLSceneEdit';

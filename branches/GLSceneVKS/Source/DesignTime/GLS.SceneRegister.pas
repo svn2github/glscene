@@ -33,7 +33,7 @@ uses
   DesignEditors,
   VCLEditors,
   *)
-
+  GLS.Strings,
   GLS.Scene,
   GLS.Context,
   GLS.Color,
@@ -363,10 +363,6 @@ type
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
-
-resourcestring
-  { OpenGL property category }
-  sOpenGLCategoryName = 'OpenGL';
 
 procedure Register;
 

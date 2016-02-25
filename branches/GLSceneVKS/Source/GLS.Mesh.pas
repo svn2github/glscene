@@ -738,7 +738,7 @@ begin
     vmVT:
       glInterleavedArrays(GL_T2F_V3F, 0, FVertices.FirstEntry);
   else
-    Assert(False, glsInterleaveNotSupported);
+    Assert(False, strInterleaveNotSupported);
   end;
   if FVertexMode in [vmVNC, vmVNCT] then
   begin

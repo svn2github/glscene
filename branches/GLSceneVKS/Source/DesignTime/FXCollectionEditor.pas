@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  Edits a TVKXCollection 
-   
+  Edits a TVKXCollection
+
 }
 unit FXCollectionEditor;
 
@@ -14,9 +14,13 @@ uses
   System.Variants, System.Actions, System.TypInfo,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.ListView.Types, FMX.ActnList, FMX.Menus, FMX.ListView,
-
-
-  GLS.Scene, GLS.CrossPlatform, GLS.XCollection, GLS.Behaviours, GLS.MaterialEx;
+  GLS.Strings,
+  GLS.Scene,
+  GLS.CrossPlatform,
+  GLS.XCollection,
+  GLS.Behaviours,
+  GLS.MaterialEx, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
+  FMX.Controls.Presentation;
 
 type
   IDesigner = interface //in designintf -> (IDesigner200)
@@ -79,9 +83,6 @@ implementation
 //------------------------------------------------------------------------
 
 {$R *.fmx}
-
-resourcestring
-  cXCollectionEditor = 'XCollection editor';
 
 var
   vXCollectionEditor: TVKXCollectionEditor;
@@ -148,7 +149,7 @@ begin
   else
   begin
     // ownerComponent:=nil;
-    Caption := cXCollectionEditor;
+    Caption := stcXCollectionEditor;
   end;
   PrepareListView;
 end;

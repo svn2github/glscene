@@ -25,9 +25,9 @@ uses
   //GLS
   GLS.OpenGLAdapter,
   GLS.Scene,
-  GLS.SceneViewer,
   GLS.Context,
-  GLS.SceneContext,
+  GLS.Win64Viewer,
+  GLS.Win64Context,
   GLS.Crossplatform,
   GLS.Screen;
 
