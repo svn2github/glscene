@@ -24,7 +24,6 @@ uses
   FMX.Controls,
   FMX.ExtCtrls,
   FMX.Types,
-  GLS.SceneForm,
   GLS.VectorGeometry,
   GLS.Scene,
   GLS.Win64Viewer,
@@ -94,7 +93,6 @@ type
     FKeyCombinations: TVKSimpleNavigationKeyCombinations;
     FRotateTargetSpeed: Single;
     FOnMouseMove: TMouseMoveEvent;
-    FSceneForm: Boolean;
     procedure ShowFPS(Sender: TObject);
     procedure ViewerMouseMove(Sender: TObject;
       Shift: TShiftState; X, Y: Single);
@@ -179,8 +177,7 @@ begin
 
   FOnMouseMove := nil;
   //Detect form
-  if AOwner is TCustomForm then
-    SetForm(TCustomForm(AOwner));
+  if AOwner is TCustomForm then SetForm(TCustomForm(AOwner));
 
   //Detect SceneViewer
   if FForm <> nil then
@@ -214,7 +211,6 @@ procedure TVKSimpleNavigation.ViewerMouseWheel(Sender: TObject;
   var Handled: Boolean);
 var
   Sign: SmallInt;
-  lCamera: TVKCamera;
 begin
   if (csDesigning in ComponentState) or (WheelDelta = 0) then
     Exit;
@@ -225,30 +221,15 @@ begin
     Sign := -1;
 
   if FGLSceneViewer <> nil then
-    lCamera := FGLSceneViewer.Camera
-  else if FSceneForm then
-    lCamera := TVKSceneForm(FForm).Camera
-  else
-    lCamera := nil;
-
-  if Assigned(lCamera) then
-  begin
-    if lCamera.CameraStyle = csOrthogonal then
-      lCamera.FocalLength := FGLSceneViewer.Camera.FocalLength
-        / Power(FZoomSpeed, Sign * WheelDelta div Abs(WheelDelta))
-    else
-      lCamera.AdjustDistanceToTarget(
-        Power(FZoomSpeed, Sign * WheelDelta div Abs(WheelDelta)));
-  end;
+    if FGLSceneViewer.Camera <> nil then
+      FGLSceneViewer.Camera.AdjustDistanceToTarget(
+                      Power(FZoomSpeed, Sign * WheelDelta div Abs(WheelDelta)));
 
   Handled := snoMouseWheelHandled in FOptions;
 end;
 
 procedure TVKSimpleNavigation.ViewerMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Single);
-
-var
-  lCamera: TVKCamera;
 
   procedure DoZoom;
   var
@@ -258,8 +239,8 @@ var
       Sign := -1
     else
       Sign := 1;
-    lCamera.AdjustDistanceToTarget(
-      Power(FZoomSpeed, Sign * (Y - FOldY) / 20));
+    FGLSceneViewer.Camera.AdjustDistanceToTarget(
+                                    Power(FZoomSpeed, Sign * (Y - FOldY) / 20));
   end;
 
   procedure DoMoveAroundTarget;
@@ -277,8 +258,8 @@ var
     else
       SignY := 1;
 
-    lCamera.MoveAroundTarget(SignX * FMoveAroundTargetSpeed * (FOldY - Y),
-      SignY * FMoveAroundTargetSpeed * (FOldX - X));
+    FGLSceneViewer.Camera.MoveAroundTarget(SignX * FMoveAroundTargetSpeed * (FOldY - Y),
+                                           SignY * FMoveAroundTargetSpeed * (FOldX - X));
   end;
 
   procedure DoRotateTarget;
@@ -296,8 +277,8 @@ var
     else
       SignY := 1;
 
-    lCamera.RotateTarget(SignY * FRotateTargetSpeed * (FOldY - Y),
-      SignX * FRotateTargetSpeed * (FOldX - X));
+    FGLSceneViewer.Camera.RotateTarget(SignY * FRotateTargetSpeed * (FOldY - Y),
+                                       SignX * FRotateTargetSpeed * (FOldX - X));
   end;
 
 var
@@ -308,12 +289,8 @@ begin
     exit;
 
   if FGLSceneViewer <> nil then
-    lCamera := FGLSceneViewer.Camera
-  else if FSceneForm then
-    lCamera := TVKSceneForm(FForm).Camera;
-
-  if Assigned(lCamera) then
-  begin
+    if FGLSceneViewer.Camera <> nil then
+    begin
     if FKeyCombinations.Count <> 0 then
       for I := 0 to FKeyCombinations.Count - 1 do
         if FKeyCombinations[I].FShiftState <= Shift then
@@ -336,8 +313,7 @@ begin
   FOldX := X;
   FOldY := Y;
 
-  if Assigned(FOnMouseMove) then
-    FOnMouseMove(Self, Shift, X, Y);
+  if Assigned(FOnMouseMove) then FOnMouseMove(Self, Shift, X, Y);
 end;
 
 procedure TVKSimpleNavigation.Notification(AComponent: TComponent;
@@ -362,27 +338,13 @@ begin
   begin
     FForm.RemoveFreeNotification(Self);
     TForm(FForm).OnMouseWheel := nil;
-      TForm(FForm).OnMouseMove := nil;
-    FSceneForm := False;
-  end;
-
-  FForm := Value;
-
-  if FForm <> nil then
-  begin
+    TForm(FForm).OnMouseMove := nil;
     if FFormCaption = vFPSString then
       FFormCaption := FForm.Caption + ' - ' + vFPSString;
-    { TODO : E2009 Incompatible types: 'Parameter lists differ' }
-    (*TForm(FForm).OnMouseWheel := ViewerMouseWheel;*)
     FForm.FreeNotification(Self);
-{$IFDEF GLS_MULTITHREAD}
-    if FForm is TVKSceneForm then
-    begin
-      FSceneForm := True;
-      TForm(FForm).OnMouseMove := ViewerMouseMove;
-    end;
-{$ENDIF}
   end;
+  FForm := Value;
+
 end;
 
 procedure TVKSimpleNavigation.SetGLSceneViewer(
@@ -408,31 +370,20 @@ var
   Index: Integer;
   Temp: string;
 begin
-  if (FForm <> nil) and
-    not (csDesigning in ComponentState) and
-    (snoShowFPS in FOptions) then
+  if (FGLSceneViewer <> nil) and
+     (FForm <> nil) and
+     not(csDesigning in ComponentState) and
+     (snoShowFPS in FOptions) then
   begin
     Temp := FFormCaption;
     Index := Pos(vFPSString, Temp);
-    if FForm is TVKSceneForm then
+    if Index <> 0 then
     begin
-      if Index <> 0 then
-      begin
-        Delete(Temp, Index, Length(vFPSString));
-        Insert(Format('%.*f FPS', [1, TVKSceneForm(FForm).Buffer.FramesPerSecond]), Temp, Index);
-      end;
-      TVKSceneForm(FForm).Buffer.ResetPerformanceMonitor;
-    end
-    else if Assigned(FGLSceneViewer) then
-    begin
-      if Index <> 0 then
-      begin
-        Delete(Temp, Index, Length(vFPSString));
-        Insert(Format('%.*f FPS', [1, FGLSceneViewer.Buffer.FramesPerSecond]), Temp, Index);
-      end;
-      FGLSceneViewer.ResetPerformanceMonitor;
+      Delete(Temp, Index, Length(vFPSString));
+      Insert(FGLSceneViewer.FramesPerSecondText, Temp, Index);
     end;
     FForm.Caption := Temp;
+    FGLSceneViewer.ResetPerformanceMonitor;
   end;
 end;
 

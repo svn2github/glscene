@@ -1,8 +1,8 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// GLScene on Vulkan, http://glscene.sourceforge.net
 //
 {
-  Basic editing frame for TVKTexture 
+  Basic editing frame for TVKTexture
 }
 
 { TODO : Replace STImageClass with a dropdown (polymorphism) }
@@ -12,13 +12,24 @@ unit FRTextureEdit;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.TypInfo,
-  System.Classes, System.Variants,
-  FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.TypInfo,
+  System.Classes,
+  System.Variants,
+  FMX.Types,
+  FMX.Graphics,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Dialogs,
+  FMX.StdCtrls,
   FMX.ListBox,
-   
-  GLS.Graphics, GLS.TextureFormat, GLS.Texture, GLS.TextureImageEditors,
-  FMX.Controls.Presentation;
+  FMX.Controls.Presentation,
+  GLS.Graphics,
+  GLS.TextureFormat,
+  GLS.Texture,
+  GLS.TextureImageEditors;
 
 type
   TRTextureEdit = class(TFrame)
@@ -74,7 +85,7 @@ implementation
 //
 constructor TRTextureEdit.Create(AOwner: TComponent);
 var
-  I : Integer;
+  I: Integer;
 begin
   inherited;
   FTexture := TVKTexture.Create(Self);
@@ -108,7 +119,7 @@ end;
 procedure TRTextureEdit.SetTexture(const val: TVKTexture);
 begin
   FTexture.Assign(val);
-  changeing := True;
+  Changeing := True;
   try
     with CBImageClass do
       ItemIndex := Items.IndexOfObject(Pointer(FTexture.Image.ClassType));
@@ -140,7 +151,7 @@ var
   tic: TVKTextureImageClass;
   ti: TVKTextureImage;
 begin
-  if not changeing then
+  if not Changeing then
   begin
     with CBImageClass do
       tic := TVKTextureImageClass(Items.Objects[ItemIndex]);

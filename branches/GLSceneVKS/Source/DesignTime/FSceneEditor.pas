@@ -6,25 +6,40 @@
 
 }
 
-unit GLS.SceneEdit;
+unit FSceneEditor;
 
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes,
-  System.Variants, System.Actions,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Menus,
-  FMX.ActnList, FMX.StdCtrls, FMX.Layouts, FMX.TreeView,
-  FMX.ListView.Types, FMX.ListView,
-
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Variants,
+  System.Actions,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.Menus,
+  FMX.ActnList,
+  FMX.StdCtrls,
+  FMX.Layouts,
+  FMX.TreeView,
+  FMX.ListView.Types,
+  FMX.ListView,
+  FMX.Objects,
+  FMX.ListView.Appearances,
+  FMX.ListView.Adapters.Base,
+  FMX.Controls.Presentation,
   GLS.Scene,
-  GLS.SceneViewer,
+  GLS.Win64Viewer,
   GLS.SceneRegister,
   GLS.Strings,
   FInfo,
   GLS.XCollection,
-  GLS.CrossPlatform, FMX.Objects, FMX.ListView.Appearances,
-  FMX.ListView.Adapters.Base, FMX.Controls.Presentation;
+  GLS.CrossPlatform;
 
 type
   TVKSceneEditorForm = class(TForm)

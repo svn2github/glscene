@@ -10,17 +10,33 @@ unit FXCollectionEditor;
 interface
 
 uses
-  System.SysUtils, System.Types, System.UITypes, System.Classes, System.Rtti,
-  System.Variants, System.Actions, System.TypInfo,
-  FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
-  FMX.ListView.Types, FMX.ActnList, FMX.Menus, FMX.ListView,
+  System.SysUtils,
+  System.Types,
+  System.UITypes,
+  System.Classes,
+  System.Rtti,
+  System.Variants,
+  System.Actions,
+  System.TypInfo,
+  FMX.Types,
+  FMX.Controls,
+  FMX.Forms,
+  FMX.Graphics,
+  FMX.Dialogs,
+  FMX.StdCtrls,
+  FMX.ListView.Types,
+  FMX.ActnList,
+  FMX.Menus,
+  FMX.ListView.Appearances,
+  FMX.ListView.Adapters.Base,
+  FMX.Controls.Presentation,
+  FMX.ListView,
   GLS.Strings,
   GLS.Scene,
   GLS.CrossPlatform,
   GLS.XCollection,
   GLS.Behaviours,
-  GLS.MaterialEx, FMX.ListView.Appearances, FMX.ListView.Adapters.Base,
-  FMX.Controls.Presentation;
+  GLS.MaterialEx;
 
 type
   IDesigner = interface //in designintf -> (IDesigner200)
@@ -77,9 +93,12 @@ type
 function XCollectionEditor: TVKXCollectionEditor;
 procedure ReleaseXCollectionEditor;
 
-
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
 {$R *.fmx}
@@ -149,7 +168,7 @@ begin
   else
   begin
     // ownerComponent:=nil;
-    Caption := stcXCollectionEditor;
+    Caption := strXCollectionEditor;
   end;
   PrepareListView;
 end;
