@@ -143,9 +143,6 @@
             <Form>RTrackBarEdit</Form>
             <DesignClass>TFrame</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Source\DesignTime\FVectorEditor.pas">
-            <Form>GLVectorEditorForm</Form>
-        </DCCReference>
         <DCCReference Include="..\Source\DesignTime\FXCollectionEditor.pas">
             <Form>XCollectionEditor</Form>
         </DCCReference>
@@ -178,7 +175,7 @@
             <Form>GUISkinEditor</Form>
         </DCCReference>
         <DCCReference Include="..\Source\DesignTime\GLS.RegisterXCollection.pas"/>
-        <DCCReference Include="..\Source\DesignTime\GLS.SceneEdit.pas">
+        <DCCReference Include="..\Source\DesignTime\FSceneEditor.pas">
             <Form>GLSceneEditorForm</Form>
         </DCCReference>
         <DCCReference Include="..\Source\DesignTime\GLS.SceneRegister.pas"/>

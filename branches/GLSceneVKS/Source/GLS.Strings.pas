@@ -23,7 +23,7 @@ resourcestring
 
   //
   // SceneEdit
-  strGLSceneEditor = 'GLSceneVKS Editor';
+  strGLSceneEditor = 'GLScene Editor';
 
   //
   // SceneViewer

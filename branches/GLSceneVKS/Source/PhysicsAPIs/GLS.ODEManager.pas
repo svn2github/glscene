@@ -850,10 +850,10 @@ type
 
   end;
 
-  // TODEJointHinge
+  // TGLODEJointHinge
   //
   { ODE hinge joint implementation. }
-  TODEJointHinge = class (TODEJointBase)
+  TGLODEJointHinge = class (TODEJointBase)
     private
       { Private Declarations }
       FAnchor,
@@ -985,10 +985,10 @@ type
 
   end;
 
-  // TODEJointHinge2
+  // TGLODEJointHinge2
   //
   { ODE hinge2 joint implementation. }
-  TODEJointHinge2 = class (TODEJointBase)
+  TGLODEJointHinge2 = class (TODEJointBase)
     private
       { Private Declarations }
       FAnchor,
@@ -4578,12 +4578,12 @@ end;
 
 
 // ---------------
-// --------------- TODEJointHinge ---------------
+// --------------- TGLODEJointHinge ---------------
 // ---------------
 
 // Create
 //
-constructor TODEJointHinge.Create(AOwner : TVKXCollection);
+constructor TGLODEJointHinge.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -4597,7 +4597,7 @@ begin
 end;
 
 // Destroy
-destructor TODEJointHinge.Destroy;
+destructor TGLODEJointHinge.Destroy;
 begin
   FAnchor.Free;
   FAxis.Free;
@@ -4607,7 +4607,7 @@ end;
 
 // Initialize
 //
-procedure TODEJointHinge.Initialize;
+procedure TGLODEJointHinge.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
   FJointID:=dJointCreateHinge(FManager.World,nil);
@@ -4616,7 +4616,7 @@ end;
 
 // WriteToFiler
 //
-procedure TODEJointHinge.WriteToFiler(writer : TWriter);
+procedure TGLODEJointHinge.WriteToFiler(writer : TWriter);
 begin
   inherited;
   with writer do begin
@@ -4629,7 +4629,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointHinge.ReadFromFiler(reader : TReader);
+procedure TGLODEJointHinge.ReadFromFiler(reader : TReader);
 begin
   inherited;
   with reader do begin
@@ -4642,7 +4642,7 @@ end;
 
 // StructureChanged
 //
-procedure TODEJointHinge.StructureChanged;
+procedure TGLODEJointHinge.StructureChanged;
 begin
   AnchorChange(nil);
   AxisChange(nil);
@@ -4651,7 +4651,7 @@ end;
 
 // AnchorChange
 //
-procedure TODEJointHinge.AnchorChange(Sender : TObject);
+procedure TGLODEJointHinge.AnchorChange(Sender : TObject);
 begin
   if IsAttached then
     dJointSetHingeAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -4659,7 +4659,7 @@ end;
 
 // AxisChange
 //
-procedure TODEJointHinge.AxisChange(Sender : TObject);
+procedure TGLODEJointHinge.AxisChange(Sender : TObject);
 var
   vec : TVector;
 begin
@@ -4672,42 +4672,42 @@ end;
 
 // FriendlyName
 //
-class function TODEJointHinge.FriendlyName : String;
+class function TGLODEJointHinge.FriendlyName : String;
 begin
   Result:='Hinge';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointHinge.FriendlyDescription : String;
+class function TGLODEJointHinge.FriendlyDescription : String;
 begin
   Result:='ODE Hinge joint';
 end;
 
 // SetAnchor
 //
-procedure TODEJointHinge.SetAnchor(const Value : TVKCoordinates);
+procedure TGLODEJointHinge.SetAnchor(const Value : TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 // SetAxis
 //
-procedure TODEJointHinge.SetAxis(const Value : TVKCoordinates);
+procedure TGLODEJointHinge.SetAxis(const Value : TVKCoordinates);
 begin
   FAxis.Assign(Value);
 end;
 
 // SetAxisParams
 //
-procedure TODEJointHinge.SetAxisParams(const Value : TODEJointParams);
+procedure TGLODEJointHinge.SetAxisParams(const Value : TODEJointParams);
 begin
   AxisParams.Assign(Value);
 end;
 
 // SetAxisParam
 //
-function TODEJointHinge.SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge.SetAxisParam(Param :  Integer; const Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     dJointSetHingeParam(JointID, Param, Value);
@@ -4718,7 +4718,7 @@ end;
 
 // GetAxisParam
 //
-function TODEJointHinge.GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge.GetAxisParam(Param :  Integer; var Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     Value:=dJointGetHingeParam(JointID, Param);
@@ -4994,12 +4994,12 @@ end;
 
 
 // ---------------
-// --------------- TODEJointHinge2 ---------------
+// --------------- TGLODEJointHinge2 ---------------
 // ---------------
 
 // Create
 //
-constructor TODEJointHinge2.Create(AOwner : TVKXCollection);
+constructor TGLODEJointHinge2.Create(AOwner : TVKXCollection);
 begin
   inherited;
   FAnchor:=TVKCoordinates.CreateInitialized(Self, NullHMGPoint, csPoint);
@@ -5019,7 +5019,7 @@ begin
 end;
 
 // Destroy
-destructor TODEJointHinge2.Destroy;
+destructor TGLODEJointHinge2.Destroy;
 begin
   FAnchor.Free;
   FAxis1.Free;
@@ -5031,7 +5031,7 @@ end;
 
 // Initialize
 //
-procedure TODEJointHinge2.Initialize;
+procedure TGLODEJointHinge2.Initialize;
 begin
   if (not IsODEInitialized) or (FInitialized) then exit;
   FJointID:=dJointCreateHinge2(FManager.World,nil);
@@ -5040,7 +5040,7 @@ end;
 
 // WriteToFiler
 //
-procedure TODEJointHinge2.WriteToFiler(writer : TWriter);
+procedure TGLODEJointHinge2.WriteToFiler(writer : TWriter);
 begin
   inherited;
   with writer do begin
@@ -5055,7 +5055,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TODEJointHinge2.ReadFromFiler(reader : TReader);
+procedure TGLODEJointHinge2.ReadFromFiler(reader : TReader);
 begin
   inherited;
   with reader do begin
@@ -5070,7 +5070,7 @@ end;
 
 // StructureChanged
 //
-procedure TODEJointHinge2.StructureChanged;
+procedure TGLODEJointHinge2.StructureChanged;
 begin
   AnchorChange(nil);
   Axis1Change(nil);
@@ -5081,7 +5081,7 @@ end;
 
 // AnchorChange
 //
-procedure TODEJointHinge2.AnchorChange(Sender : TObject);
+procedure TGLODEJointHinge2.AnchorChange(Sender : TObject);
 begin
   if IsAttached then
     dJointSetHinge2Anchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
@@ -5089,7 +5089,7 @@ end;
 
 // Axis1Change
 //
-procedure TODEJointHinge2.Axis1Change(Sender : TObject);
+procedure TGLODEJointHinge2.Axis1Change(Sender : TObject);
 var
   vec : TVector;
 begin
@@ -5102,7 +5102,7 @@ end;
 
 // Axis2Change
 //
-procedure TODEJointHinge2.Axis2Change(Sender : TObject);
+procedure TGLODEJointHinge2.Axis2Change(Sender : TObject);
 var
   vec : TVector;
 begin
@@ -5115,56 +5115,56 @@ end;
 
 // FriendlyName
 //
-class function TODEJointHinge2.FriendlyName : String;
+class function TGLODEJointHinge2.FriendlyName : String;
 begin
   Result:='Hinge2';
 end;
 
 // FriendlyDescription
 //
-class function TODEJointHinge2.FriendlyDescription : String;
+class function TGLODEJointHinge2.FriendlyDescription : String;
 begin
   Result:='ODE Double Axis Hinge joint implementation';
 end;
 
 // SetAnchor
 //
-procedure TODEJointHinge2.SetAnchor(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAnchor(const Value : TVKCoordinates);
 begin
   FAnchor.Assign(Value);
 end;
 
 // SetAxis1
 //
-procedure TODEJointHinge2.SetAxis1(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAxis1(const Value : TVKCoordinates);
 begin
   FAxis1.Assign(Value);
 end;
 
 // SetAxis2
 //
-procedure TODEJointHinge2.SetAxis2(const Value : TVKCoordinates);
+procedure TGLODEJointHinge2.SetAxis2(const Value : TVKCoordinates);
 begin
   FAxis2.Assign(Value);
 end;
 
 // SetAxis1Params
 //
-procedure TODEJointHinge2.SetAxis1Params(const Value : TODEJointParams);
+procedure TGLODEJointHinge2.SetAxis1Params(const Value : TODEJointParams);
 begin
   Axis1Params.Assign(Value);
 end;
 
 // SetAxis2Params
 //
-procedure TODEJointHinge2.SetAxis2Params(const Value : TODEJointParams);
+procedure TGLODEJointHinge2.SetAxis2Params(const Value : TODEJointParams);
 begin
   Axis2Params.Assign(Value);
 end;
 
 // SetAxis1Param
 //
-function TODEJointHinge2.SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge2.SetAxis1Param(Param :  Integer; const Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     dJointSetHinge2Param(JointID, Param, Value);
@@ -5175,7 +5175,7 @@ end;
 
 // SetAxis2Param
 //
-function TODEJointHinge2.SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
+function TGLODEJointHinge2.SetAxis2Param(Param :  Integer; const Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     dJointSetHinge2Param(JointID, dParamLoStop2+Param, Value);
@@ -5186,7 +5186,7 @@ end;
 
 // GetAxis1Param
 //
-function TODEJointHinge2.GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge2.GetAxis1Param(Param :  Integer; var Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     Value:=dJointGetHinge2Param(JointID, Param);
@@ -5197,7 +5197,7 @@ end;
 
 // GetAxis2Param
 //
-function TODEJointHinge2.GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
+function TGLODEJointHinge2.GetAxis2Param(Param :  Integer; var Value : TdReal) : Boolean;
 begin
   if IsAttached then begin
     Value:=dJointGetHinge2Param(JointID, dParamLoStop2+Param);
@@ -5442,11 +5442,11 @@ initialization
   RegisterXCollectionItemClass(TODEElementTriMesh);
   RegisterXCollectionItemClass(TODEElementPlane);
 
-  RegisterXCollectionItemClass(TODEJointHinge);
+  RegisterXCollectionItemClass(TGLODEJointHinge);
   RegisterXCollectionItemClass(TODEJointBall);
   RegisterXCollectionItemClass(TODEJointSlider);
   RegisterXCollectionItemClass(TODEJointFixed);
-  RegisterXCollectionItemClass(TODEJointHinge2);
+  RegisterXCollectionItemClass(TGLODEJointHinge2);
   RegisterXCollectionItemClass(TODEJointUniversal);
 
 // ------------------------------------------------------------------
@@ -5469,11 +5469,11 @@ finalization
   UnregisterXCollectionItemClass(TODEElementTriMesh);
   UnregisterXCollectionItemClass(TODEElementPlane);
 
-  UnregisterXCollectionItemClass(TODEJointHinge);
+  UnregisterXCollectionItemClass(TGLODEJointHinge);
   UnregisterXCollectionItemClass(TODEJointBall);
   UnregisterXCollectionItemClass(TODEJointSlider);
   UnregisterXCollectionItemClass(TODEJointFixed);
-  UnregisterXCollectionItemClass(TODEJointHinge2);
+  UnregisterXCollectionItemClass(TGLODEJointHinge2);
   UnregisterXCollectionItemClass(TODEJointUniversal);
 
 //  CloseODE;

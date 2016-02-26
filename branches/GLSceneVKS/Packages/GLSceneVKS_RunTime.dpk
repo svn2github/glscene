@@ -206,7 +206,6 @@ contains
   GLS.RenderContextInfo in '..\Source\GLS.RenderContextInfo.pas',
   GLS.Scene in '..\Source\GLS.Scene.pas',
   GLS.Win64Context in '..\Source\GLS.Win64Context.pas',
-  GLS.SceneForm in '..\Source\GLS.SceneForm.pas',
   GLS.Win64Viewer in '..\Source\GLS.Win64Viewer.pas',
   GLS.Screen in '..\Source\GLS.Screen.pas',
   GLS.ScreenSaver in '..\Source\GLS.ScreenSaver.pas',
