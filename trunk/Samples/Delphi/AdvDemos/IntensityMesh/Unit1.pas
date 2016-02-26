@@ -76,7 +76,7 @@ var
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-   mo : TGLMeshObject;
+   mo : TMeshObject;
    fgQuads, fgTris : TFGVertexIndexList;
    i : Integer;
    str : TFileStream;
@@ -94,7 +94,7 @@ begin
    // fill the freeform with our data
 
    // first create a mesh object
-   mo:=TGLMeshObject.CreateOwned(GLFreeForm.MeshObjects);
+   mo:=TMeshObject.CreateOwned(GLFreeForm.MeshObjects);
    mo.Mode:=momFaceGroups;
    // Specify vertex and texcoords data (intensity is stored a texcoord)
    for i:=0 to High(DataNodes) do begin

@@ -108,6 +108,7 @@ object Form1: TForm1
       MaterialLibrary = MaterialLibrary
       CLODPrecision = 5
       OnHeightDataPostRender = TerrainRendererHeightDataPostRender
+      ContourWidth = 0
     end
     object DOWake: TGLDirectOpenGL
       OnProgress = DOWakeProgress
@@ -206,8 +207,14 @@ object Form1: TForm1
     MaxPoolSize = 0
     OnStartPreparingData = GLCustomHDS1StartPreparingData
     OnMarkDirtyEvent = GLCustomHDS1MarkDirtyEvent
-    Left = 176
-    Top = 88
+    Left = 88
+    Top = 152
+  end
+  object GLMemoryViewer1: TGLMemoryViewer
+    Buffer.BackgroundColor = clBlack
+    Buffer.Lighting = False
+    Left = 312
+    Top = 24
   end
   object MLSailBoat: TGLMaterialLibrary
     TexturePaths = 'sailboat'

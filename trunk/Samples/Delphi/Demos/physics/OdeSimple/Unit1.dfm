@@ -1,9 +1,9 @@
 object Form1: TForm1
   Left = 192
   Top = 105
-  Caption = 'ODE Simple'
-  ClientHeight = 466
-  ClientWidth = 686
+  Caption = 'Simple ODE'
+  ClientHeight = 422
+  ClientWidth = 638
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,12 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 153
     Top = 0
-    Width = 533
-    Height = 466
+    Width = 485
+    Height = 422
     Camera = GLCamera1
     Buffer.BackgroundColor = clSkyBlue
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 155.776901245117200000
+    FieldOfView = 153.337402343750000000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -33,7 +33,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 153
-    Height = 466
+    Height = 422
     Align = alLeft
     TabOrder = 1
     object Label1: TLabel
@@ -100,6 +100,7 @@ object Form1: TForm1
       Caption = 'Show HeightField Contacts'
       TabOrder = 3
       WordWrap = True
+      OnClick = CheckBox2Click
     end
     object TrackBar1: TTrackBar
       Left = 10
@@ -157,12 +158,13 @@ object Form1: TForm1
       Options = []
       OnGetHeight = GLHeightField1GetHeight
       BehavioursData = {
-        0458434F4C02010201060C54474C4F4445537461746963020012000000000200
-        0200060D474C4F44454D616E616765723102000500000000006F1283F53F0800
-        000500000000000000FA08400500000000000000000000050000000000000000
-        0000050000000000000000000005000000000000000000000500000000000000
-        0000000500000000000000000000050000000000000000000005000000000000
-        00000000050000000000000000000002000458434F4C02010200}
+        0458434F4C02010201061154474C4F44454865696768744669656C6402001200
+        00000002000200120000000002000500000000006F1283F53F08000005000000
+        00000000FA084005000000000000000000000500000000000000000000050000
+        0000000000000000050000000000000000000005000000000000000000000500
+        0000000000000000000500000000000000000000050000000000000000000005
+        000000000000000000000200050000000000000080FF3F080500000000000000
+        C000400000803F0200}
     end
     object GLPlane1: TGLPlane
       Direction.Coordinates = {000000000000803F0000000000000000}
@@ -200,7 +202,7 @@ object Form1: TForm1
     RenderPoint = GLRenderPoint1
     Visible = False
     VisibleAtRunTime = True
-    Left = 168
-    Top = 40
+    Left = 192
+    Top = 88
   end
 end

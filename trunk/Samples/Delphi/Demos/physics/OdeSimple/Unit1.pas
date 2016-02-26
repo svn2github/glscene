@@ -3,13 +3,28 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  Vcl.ComCtrls, Vcl.ExtCtrls,
-  // GLS
-  GLODEManager, GLScene, GLObjects, GLGeomObjects, GLCadencer,
-  GLWin32Viewer, GLShadowPlane, GLGraph, GLVectorTypes, GLVectorGeometry,
-  GLODECustomColliders, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  System.SysUtils, 
+  System.Classes,
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms, 
+  Vcl.Dialogs, 
+  Vcl.StdCtrls,
+  Vcl.ComCtrls, 
+  Vcl.ExtCtrls,
+  GLODEManager, 
+  GLScene, 
+  GLObjects, 
+  GLGeomObjects, 
+  GLCadencer,
+  GLWin32Viewer, 
+  GLShadowPlane, 
+  GLGraph, GLVectorTypes, 
+  GLVectorGeometry,
+  GLODECustomColliders, 
+  GLCrossPlatform, 
+  GLCoordinates, 
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -26,6 +41,7 @@ type
     ComboBox1: TComboBox;
     Label1: TLabel;
     GLRenderPoint1: TGLRenderPoint;
+    GLHeightField1: TGLHeightField;
     CheckBox1: TCheckBox;
     CheckBox2: TCheckBox;
     TrackBar1: TTrackBar;
@@ -33,20 +49,20 @@ type
     GLPlane1: TGLPlane;
     ComboBox2: TComboBox;
     Label3: TLabel;
-    GLHeightField1: TGLHeightField;
-    procedure GLCadencer1Progress(Sender: TObject;
-      const deltaTime, newTime: Double);
-    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
+    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
+      newTime: Double);
+    procedure GLSceneViewer1MouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure SpawnClick(Sender: TObject);
+    procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
+      var Color: TVector4f; var TexPoint: TTexPoint);
     procedure CheckBox1Click(Sender: TObject);
+    procedure CheckBox2Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure GLHeightField1GetHeight(const x, y: Single; var z: Single;
-      var Color: TVector4f; var TexPoint: TTexPoint);
   private
     { Private declarations }
   public
@@ -68,27 +84,21 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject;
-  const deltaTime, newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime, 
+  newTime: Double);
 begin
   GLODEManager1.Step(deltaTime);
 end;
 
-procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
-  var Color: TVector4f; var TexPoint: TTexPoint);
-begin
-  z := 0.5 * cos(X) * sin(Y);
-end;
-
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; 
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   mx := X;
   my := Y;
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
-  X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; 
+  Shift: TShiftState; X, Y: Integer);
 begin
   if ssLeft in Shift then
     GLCamera1.MoveAroundTarget(my - Y, mx - X);
@@ -230,10 +240,20 @@ end;
   end;
   end;
 }
+procedure TForm1.GLHeightField1GetHeight(const x, y: Single; var z: Single;
+  var Color: TVector4f; var TexPoint: TTexPoint);
+begin
+  z := 0.5 * cos(X) * sin(Y);
+end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);
 begin
-  GLODEManager1.Visible := CheckBox1.Checked;
+  GLODEManager1.Visible:=CheckBox1.Checked;
+end;
+
+procedure TForm1.CheckBox2Click(Sender: TObject);
+begin
+  TGLODEHeightField(GLHeightField1.Behaviours[0]).RenderContacts:=CheckBox2.Checked;
 end;
 
 procedure TForm1.TrackBar1Change(Sender: TObject);

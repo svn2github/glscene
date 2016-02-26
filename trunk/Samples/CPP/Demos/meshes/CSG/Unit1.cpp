@@ -86,13 +86,13 @@ void __fastcall TForm1::ButtonClearClick(TObject *Sender)
 
 void __fastcall TForm1::Button2Click(TObject *Sender)
 {
-  TGLMeshObject *Mesh;
+  TMeshObject *Mesh;
 
   ButtonClearClick(Sender);
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-	Mesh = new  (TGLMeshObject);
+//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+	Mesh = new  (TMeshObject);
 	Mesh->Mode = momFaceGroups;
   }
 // Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
@@ -109,14 +109,14 @@ void __fastcall TForm1::Button2Click(TObject *Sender)
 
 void __fastcall TForm1::Button3Click(TObject *Sender)
 {
-  TGLMeshObject *Mesh;
+  TMeshObject *Mesh;
 
   ButtonClearClick(Sender);
 
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-   Mesh = new (TGLMeshObject);
+//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+   Mesh = new (TMeshObject);
    Mesh->Mode = momFaceGroups;
   }
 // Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
@@ -135,14 +135,14 @@ void __fastcall TForm1::Button3Click(TObject *Sender)
 
 void __fastcall TForm1::Button4Click(TObject *Sender)
 {
-  TGLMeshObject *Mesh;
+  TMeshObject *Mesh;
 
   ButtonClearClick(Sender);
 
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-   Mesh = new (TGLMeshObject);
+//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+   Mesh = new (TMeshObject);
    Mesh->Mode = momFaceGroups;
   }
 // Delphi:  Mesh := GLFreeForm3.MeshObjects[0];
@@ -161,14 +161,14 @@ void __fastcall TForm1::Button4Click(TObject *Sender)
 
 void __fastcall TForm1::Button5Click(TObject *Sender)
 {
-  TGLMeshObject *Mesh;
+  TMeshObject *Mesh;
 
   ButtonClearClick(Sender);
 
   if (GLFreeForm3->MeshObjects->Count == 0)
   {
-//Delphi:  TGLMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
-   Mesh = new (TGLMeshObject);
+//Delphi:  TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
+   Mesh = new (TMeshObject);
    Mesh->Mode = momFaceGroups;
   }
 // Delphi:  Mesh := GLFreeForm3.MeshObjects[0];

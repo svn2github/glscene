@@ -6,7 +6,6 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
   Vcl.Samples.Spin,
-  //GLS
   GLNGDManager, GLObjects, GLScene, GLCoordinates, GLSimpleNavigation, GLCadencer,
   GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLVectorGeometry,
   GLHUDObjects, GLBitmapFont, GLWindowsFont, NewtonImport, GLGeomObjects;

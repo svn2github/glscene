@@ -6,9 +6,8 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  //GLS
   GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLCadencer, GLWin32Viewer,
-  GLCrossPlatform, GLBaseClasses, GLNGDManager, GLGeomObjects, GLBitmapFont,
+  GLColor, GLCrossPlatform, GLBaseClasses, GLNGDManager, GLGeomObjects, GLBitmapFont,
   GLWindowsFont, GLHUDObjects;
 
 type
@@ -50,9 +49,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLColor;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var

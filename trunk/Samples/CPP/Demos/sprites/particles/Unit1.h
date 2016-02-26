@@ -7,7 +7,7 @@
 #include <Controls.hpp>
 #include <StdCtrls.hpp>
 #include <Forms.hpp>
-#include <GLViewer.hpp>    // Pascal unit
+#include <GLWin32Viewer.hpp>    // Pascal unit
 #include <GLVectorGeometry.hpp>   // Pascal unit
 #include <GLBehaviours.hpp>     // Pascal unit
 #include <GLCadencer.hpp>       // Pascal unit
@@ -18,9 +18,9 @@
 #include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
-#include "GLViewer.hpp"
-#include "GLViewer.hpp"
-#include "GLViewer.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLWin32Viewer.hpp"
 #include "GLWin32Viewer.hpp"         // Pascal unit
 //---------------------------------------------------------------------------
 class TForm1:public TForm

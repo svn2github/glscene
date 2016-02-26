@@ -261,7 +261,6 @@ contains
   GLVerletSkeletonColliders in '..\Source\GLVerletSkeletonColliders.pas',
   GLVerletTypes in '..\Source\GLVerletTypes.pas',
   GLVfsPAK in '..\Source\FileFormats\GLVfsPAK.pas',
-  GLViewer in '..\Source\GLViewer.pas',
   GLWaterPlane in '..\Source\GLWaterPlane.pas',
   GLWin32Context in '..\Source\GLWin32Context.pas',
   GLWin32Viewer in '..\Source\GLWin32Viewer.pas',

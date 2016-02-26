@@ -4,16 +4,44 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.StdCtrls, Vcl.Graphics, Vcl.Controls, Vcl.ExtCtrls,
-  Vcl.ComCtrls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
-
-  //GLScene
-  GLScene, GLCadencer, GLObjects, GLTerrainRenderer, GLHeightData, GLHeightTileFileHDS,
-  GLTexture, GLHUDObjects, GLMaterial, GLSkydome, GLWin32Viewer, GLWindowsFont,
-  GLBitmapFont, GLCrossPlatform, GLCoordinates, GLRenderContextInfo, GLColor,
-  GLVectorFileObjects, GLBaseClasses, GLVectorLists, GLVectorTypes,
-  GLVectorGeometry, GLKeyboard, OpenGLTokens, GLContext, GLState, GLTextureFormat;
+  System.SysUtils, 
+  System.Classes, 
+  System.Math,
+  Vcl.StdCtrls, 
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls, 
+  Vcl.Forms, 
+  Vcl.Dialogs, 
+  Vcl.Imaging.Jpeg,
+  GLScene, 
+  GLCadencer, 
+  GLObjects, 
+  GLTerrainRenderer, 
+  GLHeightData, 
+  GLHeightTileFileHDS,
+  GLTexture, 
+  GLHUDObjects, 
+  GLMaterial, 
+  GLSkydome, 
+  GLWin32Viewer, 
+  GLWindowsFont,
+  GLBitmapFont, 
+  GLCrossPlatform, 
+  GLCoordinates, 
+  GLRenderContextInfo, 
+  GLColor,
+  GLVectorFileObjects, 
+  GLBaseClasses, 
+  GLVectorLists, 
+  GLVectorTypes,
+  GLVectorGeometry, 
+  GLKeyboard, 
+  OpenGLTokens, 
+  GLContext, 
+  GLState, 
+  GLTextureFormat;
 
 type
   TForm1 = class(TForm)
@@ -33,6 +61,7 @@ type
     PAProgress: TPanel;
     ProgressBar: TProgressBar;
     Label1: TLabel;
+    GLMemoryViewer1: TGLMemoryViewer;
     MLSailBoat: TGLMaterialLibrary;
     FFSailBoat: TGLFreeForm;
     LSSun: TGLLightSource;
@@ -284,6 +313,91 @@ begin
   FFSailBoat.Move(deltaTime * 2);
 end;
 
+
+procedure TForm1.TerrainRendererHeightDataPostRender(
+  var rci: TGLRenderContextInfo; var HeightDatas: TList);
+var
+  i, x, y, s, s2: Integer;
+  t: Single;
+  hd: TGLHeightData;
+const
+  r = 0.75;
+  g = 0.75;
+  b = 1;
+
+  procedure IssuePoint(rx, ry: Integer);
+  var
+    px, py: Single;
+    alpha, colorRatio, ca, sa: Single;
+  begin
+    px := x + rx + s2;
+    py := y + ry + s2;
+    if hd.DataState = hdsNone then
+    begin
+      alpha := 1;
+    end
+    else
+    begin
+      alpha := (cWaterLevel - hd.SmallIntHeight(rx, ry)) * (1 / cWaterOpaqueDepth);
+      alpha := ClampValue(alpha, 0.5, 1);
+    end;
+    SinCos(WaterPhase(px, py), sa, ca);
+    colorRatio := 1 - alpha * 0.1;
+    GL.Color4f(r * colorRatio, g * colorRatio, b, alpha);
+    GL.TexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
+    GL.Vertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
+  end;
+
+begin
+  if not WaterPlane then
+    Exit;
+  t := GLCadencer.CurrentTime;
+  MaterialLibrary.ApplyMaterial('water', rci);
+  repeat
+    with rci.GLStates do
+    begin
+      if not WasAboveWater then
+        InvertGLFrontFace;
+      Disable(stLighting);
+      Disable(stNormalize);
+      SetStencilFunc(cfAlways, 1, 255);
+      StencilWriteMask := 255;
+      Enable(stStencilTest);
+      SetStencilOp(soKeep, soKeep, soReplace);
+
+      GL.Normal3f(0, 0, 1);
+
+      for i := 0 to heightDatas.Count - 1 do
+      begin
+        hd := TGLHeightData(heightDatas.List[i]);
+        if (hd.DataState = hdsReady) and (hd.HeightMin > cWaterLevel) then
+          continue;
+        x := hd.XLeft;
+        y := hd.YTop;
+        s := hd.Size - 1;
+        s2 := s div 2;
+        GL.Begin_(GL_TRIANGLE_FAN);
+        IssuePoint(s2, s2);
+        IssuePoint(0, 0);
+        IssuePoint(s2, 0);
+        IssuePoint(s, 0);
+        IssuePoint(s, s2);
+        IssuePoint(s, s);
+        IssuePoint(s2, s);
+        IssuePoint(0, s);
+        IssuePoint(0, s2);
+        IssuePoint(0, 0);
+        GL.End_;
+      end;
+      SetStencilOp(soKeep, soKeep, soKeep);
+      Disable(stStencilTest);
+    end;
+
+    if not WasAboveWater then
+      rci.GLStates.InvertGLFrontFace;
+    WaterPolyCount := heightDatas.Count * 8;
+  until not MaterialLibrary.UnApplyMaterial(rci);
+end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   HTFPS.Text := Format('%.1f FPS - %d - %d',
@@ -390,91 +504,6 @@ begin
     PAProgress.Visible := False;
     GLSceneViewer1.BeforeRender := nil;
   end;
-end;
-
-procedure TForm1.TerrainRendererHeightDataPostRender(
-  var rci: TGLRenderContextInfo; var HeightDatas: TList);
-var
-  i, x, y, s, s2: Integer;
-  t: Single;
-  hd: TGLHeightData;
-const
-  r = 0.75;
-  g = 0.75;
-  b = 1;
-
-  procedure IssuePoint(rx, ry: Integer);
-  var
-    px, py: Single;
-    alpha, colorRatio, ca, sa: Single;
-  begin
-    px := x + rx + s2;
-    py := y + ry + s2;
-    if hd.DataState = hdsNone then
-    begin
-      alpha := 1;
-    end
-    else
-    begin
-      alpha := (cWaterLevel - hd.SmallIntHeight(rx, ry)) * (1 / cWaterOpaqueDepth);
-      alpha := ClampValue(alpha, 0.5, 1);
-    end;
-    SinCos(WaterPhase(px, py), sa, ca);
-    colorRatio := 1 - alpha * 0.1;
-    GL.Color4f(r * colorRatio, g * colorRatio, b, alpha);
-    GL.TexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
-    GL.Vertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
-  end;
-
-begin
-  if not WaterPlane then
-    Exit;
-  t := GLCadencer.CurrentTime;
-  MaterialLibrary.ApplyMaterial('water', rci);
-  repeat
-    with rci.GLStates do
-    begin
-      if not WasAboveWater then
-        InvertGLFrontFace;
-      Disable(stLighting);
-      Disable(stNormalize);
-      SetStencilFunc(cfAlways, 1, 255);
-      StencilWriteMask := 255;
-      Enable(stStencilTest);
-      SetStencilOp(soKeep, soKeep, soReplace);
-
-      GL.Normal3f(0, 0, 1);
-
-      for i := 0 to heightDatas.Count - 1 do
-      begin
-        hd := TGLHeightData(heightDatas.List[i]);
-        if (hd.DataState = hdsReady) and (hd.HeightMin > cWaterLevel) then
-          continue;
-        x := hd.XLeft;
-        y := hd.YTop;
-        s := hd.Size - 1;
-        s2 := s div 2;
-        GL.Begin_(GL_TRIANGLE_FAN);
-        IssuePoint(s2, s2);
-        IssuePoint(0, 0);
-        IssuePoint(s2, 0);
-        IssuePoint(s, 0);
-        IssuePoint(s, s2);
-        IssuePoint(s, s);
-        IssuePoint(s2, s);
-        IssuePoint(0, s);
-        IssuePoint(0, s2);
-        IssuePoint(0, 0);
-        GL.End_;
-      end;
-      SetStencilOp(soKeep, soKeep, soKeep);
-      Disable(stStencilTest);
-    end;
-
-    if not WasAboveWater then
-      rci.GLStates.InvertGLFrontFace;
-    WaterPolyCount := heightDatas.Count * 8;
-  until not MaterialLibrary.UnApplyMaterial(rci);
 end;
 
 

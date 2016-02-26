@@ -7,11 +7,9 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
-
-  //GLS
   GLScene, GLVectorFileObjects, GLObjects, GLCadencer, GLTexture, GLWin32Viewer,
   GLFileSMD, GLFile3DS, GLVerletClothify, GLVerletSkeletonColliders,
-  GLShadowVolume, GLKeyboard, OpenGLTokens, GLVectorGeometry,
+  GLShadowVolume, GLKeyboard, GLVectorGeometry,
   GLGeometryBB, GLVerletTypes, GLSpacePartition, GLCrossPlatform, GLMaterial,
   GLBaseClasses, GLRenderContextInfo, GLContext, GLUtils, GLCoordinates;
 
@@ -65,7 +63,7 @@ implementation
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TGLMeshObject;
+   mo : TMeshObject;
    fg : TFGVertexNormalTexIndexList;
 begin
   // update normals
@@ -89,7 +87,7 @@ end;
 procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TGLMeshObject;
+   mo : TMeshObject;
    fg : TFGVertexIndexList;
    n : TAffineVector;
 begin

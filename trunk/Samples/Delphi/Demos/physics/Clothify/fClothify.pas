@@ -132,7 +132,7 @@ end;
 procedure PrepareMeshForNormalsRecalc(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TGLMeshObject;
+   mo : TMeshObject;
    fg : TFGVertexNormalTexIndexList;
 begin
   // update normals
@@ -156,7 +156,7 @@ end;
 procedure RecalcMeshNormals(BaseMesh: TGLBaseMesh);
 var
    i, j, k : Integer;
-   mo : TGLMeshObject;
+   mo : TMeshObject;
    fg : TFGVertexIndexList;
    n : TAffineVector;
 begin

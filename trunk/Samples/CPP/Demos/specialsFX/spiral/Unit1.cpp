@@ -10,7 +10,7 @@
 #pragma link "GLCrossPlatform"
 #pragma link "GLVectorGeometry"
 #pragma link "GLBehaviours"
-#pragma link "GLViewer"
+#pragma link "GLWin32Viewer"
 #pragma link "GLObjects"
 #pragma link "GLScene"
 #pragma link "GLCadencer"
