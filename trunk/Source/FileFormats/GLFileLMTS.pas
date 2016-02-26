@@ -8,7 +8,7 @@
    22/01/10 - Yar - Added GLTextureFormat to uses
    25/07/07 - DaStr - Replaced some types to get rid of compiler warnings
    08/10/08 - DanB - fix for different Char size in Delphi 2009+
-   22/06/08 - DaStr - Fixups after converting TGLMeshObject.LightMapTexCoords
+   22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
    29/05/08 - DaStr - Replaced GLUtils with GLGraphics (BugTracker ID = 1923844)
   Added $I GLScene.inc
@@ -147,7 +147,7 @@ end;
 
 procedure TGLLMTSVectorFile.LoadFromStream(aStream: TStream);
 var
-  MO: TGLMeshObject;
+  MO: TMeshObject;
   FG: TFGVertexIndexList;
   LL: TGLMaterialLibrary;
   ML: TGLMaterialLibrary;
@@ -168,7 +168,7 @@ var
 begin
   owner.MeshObjects.Clear;
 
-  MO := TGLMeshObject.CreateOwned(owner.MeshObjects);
+  MO := TMeshObject.CreateOwned(owner.MeshObjects);
   MO.Mode := momFaceGroups;
 
   vi := Tintegerlist.create;
@@ -447,7 +447,7 @@ end;
 
 procedure TGLLMTSVectorFile.SaveToStream(aStream: TStream);
 var
-  MO: TGLMeshObject;
+  MO: TMeshObject;
   FG: TFGVertexIndexList;
   i, j, k, l, lmstartindex, C, matindex: integer;
   h: TLMTS_Header;

@@ -22,11 +22,23 @@ interface
 
 uses
   System.Classes,
-  VCL.Graphics, VCL.Forms, VCL.StdCtrls, VCL.ComCtrls, Vcl.Controls,
-
-  GLScene, GLObjects, GLTexture, GLHUDObjects, GLViewer, GLTeapot,
-  GLGeomObjects, GLColor, GLWin32Viewer, GLCoordinates,
-  GLCrossPlatform, GLBaseClasses, GLMaterial;
+  VCL.Graphics,
+  VCL.Forms,
+  VCL.StdCtrls,
+  VCL.ComCtrls,
+  Vcl.Controls,
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLHUDObjects,
+  GLWin32Viewer,
+  GLTeapot,
+  GLGeomObjects,
+  GLColor,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLMaterial;
 
 
 type

@@ -7,7 +7,7 @@
 
   History :  
    04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-   22/06/08 - DaStr - Fixups after converting TGLMeshObject.LightMapTexCoords
+   22/06/08 - DaStr - Fixups after converting TMeshObject.LightMapTexCoords
   to TAffineVectorList (thanks Ast) (Bugtracker ID = 2000089)
    06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
    31/03/07 - DaStr - Added $I GLScene.inc
@@ -88,7 +88,7 @@ type
     Stores the geometry information, BSP rendering options and offers some
     basic BSP utility methods. Geometry information is indexed in the facegroups,
     the 1st facegroup (of index 0) being the root node of the BSP tree. }
-  TBSPMeshObject = class(TGLMeshObject)
+  TBSPMeshObject = class(TMeshObject)
   private
     { Private Declarations }
     FRenderSort: TBSPRenderSort;
@@ -100,7 +100,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TGLMeshObjectList);
+    constructor CreateOwned(AOwner: TMeshObjectList);
     destructor Destroy; override;
 
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
@@ -318,7 +318,7 @@ end;
 
 // CreateOwned
 //
-constructor TBSPMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
+constructor TBSPMeshObject.CreateOwned(AOwner: TMeshObjectList);
 begin
   inherited;
   Mode := momFaceGroups;

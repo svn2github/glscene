@@ -30,7 +30,7 @@ uses
   GLVectorGeometry,
   GLVectorTypes,
   GLContext,
-  GLViewer,
+  GLWin32Viewer,
   GLSpacePartition,
   OpenGLTokens,
   GLGeometryBB,

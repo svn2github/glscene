@@ -42,7 +42,7 @@ uses
   GLVectorTypes;
 
 var
-  TessMesh: TGLMeshObject;
+  TessMesh: TMeshObject;
   TessFace: TFGIndexTexCoordList;
   TessExtraVertices: Integer;
   TessVertices: PAffineVectorArray;
@@ -107,7 +107,7 @@ begin
   // Select or Create FaceGroup
   if Mesh.MeshObjects.Count = 0 then
   begin
-    TessMesh := TGLMeshObject.CreateOwned(Mesh.MeshObjects);
+    TessMesh := TMeshObject.CreateOwned(Mesh.MeshObjects);
     Mesh.MeshObjects[0].Mode := momFaceGroups;
   end
   else

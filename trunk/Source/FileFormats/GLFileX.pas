@@ -68,7 +68,7 @@ var
   procedure RecursDXFile(DXNode : TDXNode);
   var
     i,j,k,l,vertcount : integer;
-    mo : TGLMeshObject;
+    mo : TMeshObject;
     mat : TMatrix;
     libmat : TGLLibMaterial;
     fg : TFGVertexNormalTexIndexList;
@@ -82,7 +82,7 @@ var
       end;
 
     if DXNode is TDXMesh then begin
-      mo:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
+      mo:=TMeshObject.CreateOwned(Owner.MeshObjects);
       mo.Mode:=momFaceGroups;
       mo.Vertices.Assign(TDXMesh(DXNode).Vertices);
       mo.Vertices.TransformAsPoints(mat);

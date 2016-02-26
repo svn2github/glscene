@@ -23,12 +23,21 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, System.TypInfo, VCL.Forms, VCL.ComCtrls, VCL.StdCtrls,
-  VCL.Controls, VCL.Buttons,
-
-  FRMaterialPreview, FRColorEditor, FRFaceEditor,
-  GLTexture,  FRTextureEdit,  GLViewer,
-  GLMaterial,  GLState;
+  System.Classes,
+  System.TypInfo,
+  VCL.Forms,
+  VCL.ComCtrls,
+  VCL.StdCtrls,
+  VCL.Controls,
+  VCL.Buttons,
+  GLWin32Viewer,
+  GLState,
+  GLMaterial,
+  GLTexture,
+  FRMaterialPreview,
+  FRColorEditor,
+  FRFaceEditor,
+  FRTextureEdit;
 
 type
   TGLMaterialEditorForm = class(TForm)

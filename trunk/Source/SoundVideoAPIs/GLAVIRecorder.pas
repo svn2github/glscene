@@ -35,7 +35,7 @@ uses
   System.Classes, System.SysUtils, System.UITypes,
   VCL.Controls, VCL.Forms, VCL.Extctrls, VCL.Graphics, VCL.Dialogs,
    
-  GLGraphics, GLSVfw, GLScene, GLViewer;
+  GLGraphics, GLSVfw, GLScene, GLWin32Viewer;
 
 type
   TAVICompressor = (acDefault, acShowDialog, acDivX);

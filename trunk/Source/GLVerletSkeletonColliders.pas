@@ -16,8 +16,10 @@ interface
 
 uses
   System.Classes,
-   
-  GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects, GLVerletTypes,
+  GLPersistentClasses,
+  GLVectorGeometry,
+  GLVectorFileObjects,
+  GLVerletTypes,
   GLVectorTypes;
 
 type

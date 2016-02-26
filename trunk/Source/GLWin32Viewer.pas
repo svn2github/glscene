@@ -2,9 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Win32 specific Scene viewer. 
+   Win32 specific Scene viewer.
 
-   History :  
+   History :
+       23/02/16 - PW - Added SetupVSync from GLViewer to here to exclude circular link
        03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
        28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
        23/08/10 - Yar - Moved TVSyncMode to GLContext
@@ -40,25 +41,32 @@ interface
 {$I GLScene.inc}
 
 uses
-  WinApi.Windows, WinApi.Messages,
-  System.Classes, System.SysUtils, System.Types,
-  VCL.Graphics, VCL.Forms, VCL.Controls,
+  WinApi.Windows,
+  WinApi.Messages,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  VCL.Graphics,
+  VCL.Forms,
+  VCL.Controls,
+  GLScene,
+  GLWin32Context,
+  GLContext;
 
-  // GLS
-  GLScene, GLWin32Context,  GLContext;
+
 
 type
   TTouchEvent = procedure(X, Y, TouchWidth, TouchHeight : integer; TouchID : Cardinal; MultiTouch : boolean) of object;
 
   // TGLSceneViewer
   //
-  {Component where the GLScene objects get rendered. 
+  {Component where the GLScene objects get rendered.
      This component delimits the area where OpenGL renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
-     camera property). This component can also render to a file or to a bitmap. 
+     camera property). This component can also render to a file or to a bitmap.
      It is primarily a windowed component, but it can handle full-screen
      operations : simply make this component fit the whole screen (use a
-     borderless form). 
+     borderless form).
      This viewer also allows to define rendering options such a fog, face culling,
      depth testing, etc. and can take care of framerate calculation.  }
   TGLSceneViewer = class(TWinControl)
@@ -212,15 +220,66 @@ type
 
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+
+procedure SetupVSync(const AVSyncMode : TVSyncMode);
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-uses
-  GLViewer;
+
+procedure SetupVSync(const AVSyncMode : TVSyncMode);
+{$IFDEF MSWINDOWS}
+var
+  I: Integer;
+begin
+  if GL.W_EXT_swap_control then
+  begin
+    I := GL.WGetSwapIntervalEXT;
+    case AVSyncMode of
+      vsmSync  : if I <> 1 then GL.WSwapIntervalEXT(1);
+      vsmNoSync: if I <> 0 then GL.WSwapIntervalEXT(0);
+    else
+       Assert(False);
+    end;
+  end;
+end;
+{$ENDIF}
+{$IFDEF Linux}
+begin
+  if GL.X_SGI_swap_control then
+  begin
+    case AVSyncMode of
+      vsmSync  : GL.XSwapIntervalSGI(GL_True);
+      vsmNoSync: GL.XSwapIntervalSGI(GL_False);
+    else
+       Assert(False);
+    end;
+  end;
+end;
+{$ENDIF}
+{$IFDEF DARWIN}
+var ctx: TAGLContext;
+const ISync: Integer = 0;
+      INoSync: Integer = 1;
+begin
+  if Assigned(GL) then
+  begin
+    ctx := GL.aGetCurrentContext();
+    if Assigned(ctx) then
+      case AVSyncMode of
+        vsmSync  : GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @ISync);
+        vsmNoSync: GL.aSetInteger(ctx, AGL_SWAP_INTERVAL, @INoSync);
+      else
+         Assert(False);
+      end;
+  end;
+end;
+{$ENDIF}
+
 
 // ------------------
 // ------------------ TGLSceneViewer ------------------

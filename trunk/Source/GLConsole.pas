@@ -73,12 +73,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo, Vcl.Graphics,
-
-  // GLS
-  GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
-  GLPersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
-  GLCrossPlatform, GLMaterial, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.TypInfo,
+  Vcl.Graphics,
+  GLScene,
+  GLObjects,
+  GLHUDObjects,
+  GLWin32Viewer,
+  GLBitmapFont,
+  GLPersistentClasses,
+  GLContext,
+  GLTexture,
+  GLUtils,
+  GLStrings,
+  GLCrossPlatform,
+  GLMaterial,
+  GLVectorTypes;
 
 const
   CONSOLE_MAX_COMMANDS = 120;

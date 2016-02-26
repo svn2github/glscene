@@ -165,13 +165,13 @@ var
   temp         : TStrings;
   i,j          : integer;
   libmat       : TGLLibMaterial;
-  mesh         : TGLMeshObject;
+  mesh         : TMeshObject;
   texture,
   textureNoDir : string;
   textureFound,
   meshFound    : Boolean;
 
-  function GetMeshObjectByName(MeshObjects:TGLMeshObjectList; Name:string; var mesh:TGLMeshObject):Boolean;
+  function GetMeshObjectByName(MeshObjects:TMeshObjectList; Name:string; var mesh:TMeshObject):Boolean;
   var
     i : integer;
   begin

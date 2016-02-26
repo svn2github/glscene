@@ -117,13 +117,13 @@ end;
 procedure TGLNMFVectorFile.LoadFromStream(aStream : TStream);
 var
   i,j  : Integer;
-  mesh : TGLMeshObject;
+  mesh : TMeshObject;
   nmf  : TFileNMF;
 begin
   nmf:=TFileNMF.Create;
   try
     nmf.LoadFromStream(aStream);
-    mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode:=momTriangles;
     for i:=0 to nmf.NumTris-1 do begin
       for j:=0 to 2 do begin

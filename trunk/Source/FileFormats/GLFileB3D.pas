@@ -53,7 +53,7 @@ procedure TGLB3DVectorFile.LoadFromStream(AStream: TStream);
 var
   B3d: TFileB3D;
   S: string;
-  Mo: TGLMeshObject;
+  Mo: TMeshObject;
   I, J: Integer;
   FaceGroup: TFGVertexIndexList;
   // lightmapBmp : TGLBitmap;
@@ -229,7 +229,7 @@ begin
     begin
       if Node^.Meshes <> nil then
       begin
-        Mo := TGLMeshObject.CreateOwned(Owner.MeshObjects);
+        Mo := TMeshObject.CreateOwned(Owner.MeshObjects);
 
         SetString(S, Node^.Name, Strlen(Node^.Name));
         // if Pos('16', s)>1 then

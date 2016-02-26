@@ -159,7 +159,7 @@ end;
 //
 procedure TGLVRMLVectorFile.LoadFromStream(aStream : TStream);
 var
-  mesh : TGLMeshObject;
+  mesh : TMeshObject;
   uniqueMatID : Integer;
   currentMaterial : TGLLibMaterial;
   currentTransform : TMatrix;
@@ -451,7 +451,7 @@ var
     // Read node data
     if (node.Name = 'Coordinate3') and (node.Count>0) then begin
       RebuildMesh;
-      mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
       points:=TVRMLSingleArray(node[0]).Values;
       for i:=0 to (points.Count div 3) - 1 do
         mesh.Vertices.Add(points[3*i], points[3*i+1], points[3*i+2]);

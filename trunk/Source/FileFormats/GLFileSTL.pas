@@ -132,7 +132,7 @@ var
   fileContent: TStringList;
   curLine: String;
   i: Integer;
-  mesh: TGLMeshObject;
+  mesh: TMeshObject;
   header: TSTLHeader;
   dataFace: TSTLFace;
   calcNormal: TAffineVector;
@@ -153,7 +153,7 @@ begin
     Inc(i);
   end;
 
-  mesh := TGLMeshObject.CreateOwned(Owner.MeshObjects);
+  mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   try
 
     mesh.Mode := momTriangles;

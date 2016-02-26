@@ -23,16 +23,19 @@ interface
 
 uses
   System.Classes, 
-  GLVectorGeometry, GLVectorLists, GLVectorFileObjects, GLSilhouette;
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLVectorFileObjects, 
+  GLSilhouette;
 
 type
   // TGLFaceGroupConnectivity
   //
   TGLFaceGroupConnectivity = class(TConnectivity)
   private
-    FMeshObject: TGLMeshObject;
+    FMeshObject: TMeshObject;
     FOwnsVertices: boolean;
-    procedure SetMeshObject(const Value: TGLMeshObject);
+    procedure SetMeshObject(const Value: TMeshObject);
 
   public
     procedure Clear; override;
@@ -40,10 +43,10 @@ type
     {  Builds the connectivity information. }
     procedure RebuildEdgeList;
 
-    property MeshObject: TGLMeshObject read FMeshObject write SetMeshObject;
+    property MeshObject: TMeshObject read FMeshObject write SetMeshObject;
 
     constructor Create(APrecomputeFaceNormal: boolean); override;
-    constructor CreateFromMesh(aMeshObject: TGLMeshObject; APrecomputeFaceNormal: boolean);
+    constructor CreateFromMesh(aMeshObject: TMeshObject; APrecomputeFaceNormal: boolean);
     destructor Destroy; override;
   end;
 
@@ -111,7 +114,7 @@ constructor TGLFaceGroupConnectivity.Create(APrecomputeFaceNormal: boolean);
     FOwnsVertices := true;
   end;
 
-procedure TGLFaceGroupConnectivity.SetMeshObject(const Value: TGLMeshObject);
+procedure TGLFaceGroupConnectivity.SetMeshObject(const Value: TMeshObject);
   begin
     Clear;
 
@@ -127,7 +130,7 @@ procedure TGLFaceGroupConnectivity.SetMeshObject(const Value: TGLMeshObject);
     RebuildEdgeList;
   end;
 
-constructor TGLFaceGroupConnectivity.CreateFromMesh(aMeshObject: TGLMeshObject; APrecomputeFaceNormal: boolean);
+constructor TGLFaceGroupConnectivity.CreateFromMesh(aMeshObject: TMeshObject; APrecomputeFaceNormal: boolean);
   begin
     Create(APrecomputeFaceNormal);
 
@@ -237,7 +240,7 @@ constructor TGLBaseMeshConnectivity.CreateFromMesh(aGLBaseMesh: TGLBaseMesh);
 procedure TGLBaseMeshConnectivity.SetGLBaseMesh(const Value: TGLBaseMesh);
   var
     i: integer;
-    MO: TGLMeshObject;
+    MO: TMeshObject;
     Connectivity: TGLFaceGroupConnectivity;
   begin
     Clear(false);

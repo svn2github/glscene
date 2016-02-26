@@ -6,12 +6,12 @@
    for GLScene. 
 
    Notes:
-   The MOParametricSurface is a TGLMeshObject descendant that can be used
+   The MOParametricSurface is a TMeshObject descendant that can be used
    to render parametric surfaces. The Renderer property defines if the
    surface should be rendered using OpenGL mesh evaluators (through GLU
    Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
    routines to generate the mesh vertices and then rendered through the
-   standard TGLMeshObject render routine. Please note that BSplines aren't
+   standard TMeshObject render routine. Please note that BSplines aren't
    correctly handled yet in the CurvesAndSurfaces unit so the output mesh
    in GLScene rendering mode is wrong. I'll have it fixed when I know
    what's going wrong. The GLU Nurbs and glMeshEval Beziers work well
@@ -66,7 +66,7 @@ type
      control point influences on the surface. }
   TParametricSurfaceBasis = (psbBezier, psbBSpline);
 
-  TMOParametricSurface = class(TGLMeshObject)
+  TMOParametricSurface = class(TMeshObject)
   private
     FControlPoints,
       FWeightedControlPoints: TAffineVectorList;

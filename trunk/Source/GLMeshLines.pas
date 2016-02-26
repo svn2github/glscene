@@ -123,7 +123,7 @@ type
   TGLMeshLines = class(TGLFreeForm)
   private
     FLines: TLineCollection;
-    FMesh: TGLMeshObject;
+    FMesh: TMeshObject;
     FLightmapBounds: TLightmapBounds;
     FLightmapIndex: Integer;
     FLightmapMaterialName: String;
@@ -543,7 +543,7 @@ begin
 
   FMeshObjects.Clear;
   lFirstLineDone := False;
-  FMesh := TGLMeshObject.CreateOwned(FMeshObjects);
+  FMesh := TMeshObject.CreateOwned(FMeshObjects);
   FMesh.Mode := momFaceGroups;
   FFaceGroup := TFGVertexIndexList.CreateOwned(FMesh.FaceGroups);
   FFaceGroup.Mode := fgmmTriangleStrip;

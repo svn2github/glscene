@@ -28,12 +28,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages, 
-  System.Classes, System.SysUtils,
-  VCL.Forms, VCL.Controls, VCL.Menus,
-   
-  OpenGLTokens, OpenGLAdapter,
-  GLViewer, GLScene, GLContext;
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Classes,
+  System.SysUtils,
+  VCL.Forms,
+  VCL.Controls,
+  VCL.Menus,
+  GLContext,
+  GLScene,
+  GLWin32Viewer,
+  OpenGLTokens,
+  OpenGLAdapter;
 
 type
 

@@ -66,13 +66,24 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  // GLScene
-  GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
-  GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLState, GLSelection
-, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  GLScene,
+  GLColor,
+  GLObjects,
+  GLVectorGeometry,
+  GLMaterial,
+  GLStrings,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLState,
+  GLSelection,
+  GLVectorTypes;
 
 type
   TGLGizmoUndoCollection = class;

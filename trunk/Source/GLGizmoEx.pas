@@ -67,12 +67,30 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, System.Classes, System.SysUtils, System.Types,
-  // GLS
-  OpenGL1x, GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
-  GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
-  GLCoordinates, GLRenderContextInfo, GLGeometryBB, GLVectorTypes, GLCanvas,
-  GLPersistentClasses, GLScreen, GLState, GLSelection;
+  Winapi.Windows,
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  GLScene,
+  GLColor,
+  GLObjects,
+  GLVectorGeometry,
+  GLMaterial,
+  GLStrings,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLGeometryBB,
+  GLVectorTypes,
+  GLCanvas,
+  GLPersistentClasses,
+  GLScreen,
+  GLState,
+  GLSelection;
 
 type
   TGLGizmoExObjectCollection = class;

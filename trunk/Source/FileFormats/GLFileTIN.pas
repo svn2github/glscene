@@ -61,7 +61,7 @@ procedure TGLTINVectorFile.LoadFromStream(aStream : TStream);
 var
    i, j : Integer;
    sl, tl : TStringList;
-   mesh : TGLMeshObject;
+   mesh : TMeshObject;
    v1, v2, v3, n : TAffineVector;
    ActiveTin : Boolean;
    Id_Tin : Integer;
@@ -77,7 +77,7 @@ begin
   tl := TStringList.Create;
   try
     sl.LoadFromStream(aStream);
-    mesh      := TGLMeshObject.CreateOwned(Owner.MeshObjects);
+    mesh      := TMeshObject.CreateOwned(Owner.MeshObjects);
     mesh.Mode := momTriangles;
     if sl[0]<>'TIN' then    // the file with single TIN described by vertices only
     begin

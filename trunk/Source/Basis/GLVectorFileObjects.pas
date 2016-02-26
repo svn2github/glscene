@@ -9,14 +9,14 @@
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        11/07/12 - YP - Added BarycenterPosition and BarycenterOffset
                           New centering option macRestorePosition
-       02/07/11 - DaStr - Replaced TAABB.Revision with TGLMeshObject.FExtentCacheRevision
+       02/07/11 - DaStr - Replaced TAABB.Revision with TMeshObject.FExtentCacheRevision
        30/06/11 - DaStr - TGLBaseMesh.BarycenterAbsolutePosition() now uses caching
-       23/02/11 - Yar - Added extent caching to TGLMeshObject
+       23/02/11 - Yar - Added extent caching to TMeshObject
        03/12/10 - Yar - Added mesh visibility checking in
-                            TGLMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
+                            TMeshObjectList.ExtractTriangles (thnaks to Sandor Domokos)
        23/08/10 - Yar - Added OpenGLTokens to uses
        23/07/10 - Yar - Bugfixed TGLSkeleton.WriteToFiler (thanks E-Cone)
-       11/06/10 - Yar - Bugfixed binary reading TGLMeshObject for FPC
+       11/06/10 - Yar - Bugfixed binary reading TMeshObject for FPC
                            Replace OpenGL1x functions to OpenGLAdapter.
                            Fixes for Linux x64
        22/04/10 - Yar - Fixes after GLState revision
@@ -29,21 +29,21 @@
                               MeshObject.LightMapTexCoords update
                               (thanks Uwe Raabe) (Bugtracker ID = 2140994)
        03/10/08 - DanB -  Added Delphi 2009 (Unicode) support
-       22/06/08 - DaStr - TGLMeshObject.LightMapTexCoords converted to TAffineVectorList
+       22/06/08 - DaStr - TMeshObject.LightMapTexCoords converted to TAffineVectorList
                               (thanks Ast) (Bugtracker ID = 2000089)
-       07/06/08 - DaStr - Implemented TBaseMeshObject.Assign(), TGLMeshObject.Assign()
+       07/06/08 - DaStr - Implemented TBaseMeshObject.Assign(), TMeshObject.Assign()
        20/05/08 - Mrqzzz - Fixed memory leak in TGLSkeletonMeshObject.Destroy (thanks Dave Gravel)
        17/05/08 - DaStr - Added TGLSkeleton.MorphInvisibleParts
                              (thanks andron13 and Veon (BugtrackerID = 1966020)
                              Added vGLVectorFileObjectsEnableVBOByDefault
        01/05/08 - DaStr - Implemented TGLBaseMesh.BarycenterAbsolutePosition()
                              Bugfixed TGLBaseMesh.AxisAlignedDimensionsUnscaled()
-       06/04/08 - DaStr - TGLMeshObjectList.MorphTo() and Lerp() are now virtual
+       06/04/08 - DaStr - TMeshObjectList.MorphTo() and Lerp() are now virtual
        06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
        16/05/07 - PvD - Applied fixes to skeletonmesh to fix problems with
                             physics engines. (Bugtracker ID = 1719652)
        15/05/07 - LC - Added workaround for ATI bug in TFGVertexIndexList. (Bugtracker ID = 1719611)
-       13/05/07 - LC - Fixed AV bug in TGLMeshObject.BufferArrays (Bugtracker ID = 1718033)
+       13/05/07 - LC - Fixed AV bug in TMeshObject.BufferArrays (Bugtracker ID = 1718033)
        03/04/07 - LC - Added VBO support for TextureEx (Bugtracker ID = 1693378)
        30/03/07 - DaStr - Added $I GLScene.inc
        28/03/07 - DaStr - Added explicit pointer dereferencing
@@ -53,7 +53,7 @@
        25/03/07 - LC - Fixed VBO bug. Bugtracker ID=1687665
        16/03/07 - DaStr - Added explicit pointer dereferencing
                              (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       21/02/07 - DaStr - Added TGLMeshObjectList.BuildTangentSpace, UseVBO
+       21/02/07 - DaStr - Added TMeshObjectList.BuildTangentSpace, UseVBO
                              Added TGLActor.SetCurrentFrameDirect
        19/02/07 - LC - Added some VBO support
        19/10/06 - LC - Fixed bug in TGLActor.SetCurrentFrame. Bugtracker ID=1580511
@@ -70,7 +70,7 @@
        26/11/04 - MRQZZZ - Added "Rendered" property to TGLBaseMesh in order
                               to prevent rendering of the GLBaseMesh but allowing
                               the rendering of it's children
-       25/11/04 - SG - Fixed memory leak in TGLMeshObject (dikoe Kenguru)
+       25/11/04 - SG - Fixed memory leak in TMeshObject (dikoe Kenguru)
        24/11/04 - MF - Added OctreePointInMesh
        03/10/04 - MRQZZZ - Fixed memory leak (FAutoScaling.Free) in TGLBaseMesh.Destroy; (thanks Jan Zizka)
        24/09/04 - SG - Added GetTriangleData/SetTriangleData functions,
@@ -102,10 +102,10 @@
        08/07/03 - EG - Fixed puny bug in skeletal normals transformation
        05/06/03 - SG - Split SMD, MD2, 3DS, PLY, TIN and GTS code into separate units,
                           FileFormats\GLFile???.pas
-       16/05/03 - SG - Fixed OpenGL error caused by glColorMaterial in TGLMeshObject.BuildList
+       16/05/03 - SG - Fixed OpenGL error caused by glColorMaterial in TMeshObject.BuildList
        08/05/03 - DanB - added OctreeAABBIntersect (Matheus Degiovani)
        07/05/03 - SG - Added TGLSMDVectorFile.SaveToFile method and [read,write] capabilities
-       17/04/03 - SG - Added TGLMeshObjectList.FindMeshByName method
+       17/04/03 - SG - Added TMeshObjectList.FindMeshByName method
        01/04/03 - SG - Fixed TGLBaseMesh.Assign
        13/02/03 - DanB - added AxisAlignedDimensionsUnscaled
        03/02/03 - EG - Faster PrepareBuildList logic
@@ -168,7 +168,7 @@
        08/10/00 - EG - Removed TGLOBJVectorFile, use GLFileOBJ instead
        13/08/00 - EG - Enhancements for Portal Rendering support,
                           Added utility methods & triangle fans
-       10/08/00 - EG - Added CurrentAnimation, fixed TGLMeshObject.GetExtents
+       10/08/00 - EG - Added CurrentAnimation, fixed TMeshObject.GetExtents
        21/07/00 - EG - Vastly improved memory use and mechanisms for MD2/TGLActor
        19/07/00 - EG - Introduced enhanced mesh structure
        16/07/00 - EG - Made use of new TGLDataFile class
@@ -208,7 +208,7 @@ uses
 
 type
 
-  TGLMeshObjectList = class;
+  TMeshObjectList = class;
   TGLFaceGroups = class;
 
   // TGLMeshAutoCentering
@@ -216,9 +216,9 @@ type
   TGLMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter, macRestorePosition);
   TGLMeshAutoCenterings = set of TGLMeshAutoCentering;
 
-  // TGLMeshObjectMode
+  // TMeshObjectMode
   //
-  TGLMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
+  TMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
   // TBaseMeshObject
   //
@@ -266,7 +266,7 @@ type
        normals and indices are preserved.
        The only valid modes are currently momTriangles and momTriangleStrip
        (ie. momFaceGroups not supported). }
-    procedure BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode;
+    procedure BuildNormals(vertexIndices: TIntegerList; mode: TMeshObjectMode;
       normalIndices: TIntegerList = nil);
     {Extracts all mesh triangles as a triangles list.
        The resulting list size is a multiple of 3, each group of 3 vertices
@@ -673,39 +673,39 @@ type
       FMorphInvisibleParts;
   end;
 
-  // TGLMeshObjectRenderingOption
+  // TMeshObjectRenderingOption
   //
-  {Rendering options per TGLMeshObject. 
+  {Rendering options per TMeshObject. 
 
    moroGroupByMaterial : if set, the facegroups will be rendered by material
      in batchs, this will optimize rendering by reducing material switches, but
      also implies that facegroups will not be rendered in the order they are in
      the list.
    }
-  TGLMeshObjectRenderingOption = (moroGroupByMaterial);
-  TGLMeshObjectRenderingOptions = set of TGLMeshObjectRenderingOption;
+  TMeshObjectRenderingOption = (moroGroupByMaterial);
+  TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
 
   TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords,
     vbLightMapTexCoords,
     vbTexCoordsEx);
   TVBOBuffers = set of TVBOBuffer;
 
-  // TGLMeshObject
+  // TMeshObject
   //
   {Base mesh class. 
      Introduces base methods and properties for mesh objects. 
      Subclasses are named "TMOxxx". }
-  TGLMeshObject = class(TGLBaseMeshObject)
+  TMeshObject = class(TGLBaseMeshObject)
   private
     { Private Declarations }
-    FOwner: TGLMeshObjectList;
+    FOwner: TMeshObjectList;
     FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
     FLightMapTexCoords: TAffineVectorList; // reserved for 2D surface needs
     FColors: TVectorList;
     FFaceGroups: TGLFaceGroups;
-    FMode: TGLMeshObjectMode;
-    FRenderingOptions: TGLMeshObjectRenderingOptions;
+    FMode: TMeshObjectMode;
+    FRenderingOptions: TMeshObjectRenderingOptions;
     FArraysDeclared: Boolean; // not persistent
     FLightMapArrayEnabled: Boolean; // not persistent
     FLastLightMapIndex: Integer; // not persistent
@@ -753,7 +753,7 @@ type
   public
     { Public Declarations }
     {Creates, assigns Owner and adds to list. }
-    constructor CreateOwned(AOwner: TGLMeshObjectList);
+    constructor CreateOwned(AOwner: TMeshObjectList);
     constructor Create; override;
     destructor Destroy; override;
 
@@ -809,14 +809,14 @@ type
       buildBinormals: Boolean = True;
       buildTangents: Boolean = True);
 
-    property Owner: TGLMeshObjectList read FOwner;
-    property Mode: TGLMeshObjectMode read FMode write FMode;
+    property Owner: TMeshObjectList read FOwner;
+    property Mode: TMeshObjectMode read FMode write FMode;
     property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
     property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords write
       SetLightMapTexCoords;
     property Colors: TVectorList read FColors write SetColors;
     property FaceGroups: TGLFaceGroups read FFaceGroups;
-    property RenderingOptions: TGLMeshObjectRenderingOptions read FRenderingOptions
+    property RenderingOptions: TMeshObjectRenderingOptions read FRenderingOptions
       write FRenderingOptions;
 
     {If set, rendering will use VBO's instead of vertex arrays. }
@@ -850,10 +850,10 @@ type
 
   end;
 
-  // TGLMeshObjectList
+  // TMeshObjectList
   //
-  {A list of TGLMeshObject objects. }
-  TGLMeshObjectList = class(TPersistentObjectList)
+  {A list of TMeshObject objects. }
+  TMeshObjectList = class(TPersistentObjectList)
   private
     { Private Declarations }
     FOwner: TGLBaseMesh;
@@ -863,7 +863,7 @@ type
     procedure SetUseVBO(const Value: Boolean);
   protected
     { Protected Declarations }
-    function GetMeshObject(Index: Integer): TGLMeshObject;
+    function GetMeshObject(Index: Integer): TMeshObject;
 
   public
     { Public Declarations }
@@ -907,14 +907,14 @@ type
     //: Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
-    function FindMeshByName(MeshName: string): TGLMeshObject;
+    function FindMeshByName(MeshName: string): TMeshObject;
 
     property Owner: TGLBaseMesh read FOwner;
     procedure Clear; override;
-    property Items[Index: Integer]: TGLMeshObject read GetMeshObject; default;
+    property Items[Index: Integer]: TMeshObject read GetMeshObject; default;
   end;
 
-  TGLMeshObjectListClass = class of TGLMeshObjectList;
+  TMeshObjectListClass = class of TMeshObjectList;
 
   TGLMeshMorphTargetList = class;
 
@@ -972,7 +972,7 @@ type
   {Mesh object with support for morph targets.
      The morph targets allow to change vertices and normals according to pre-
      existing "morph targets". }
-  TGLMorphableMeshObject = class(TGLMeshObject)
+  TGLMorphableMeshObject = class(TMeshObject)
   private
     { Private Declarations }
     FMorphTargets: TGLMeshMorphTargetList;
@@ -1072,7 +1072,7 @@ type
 
   // TGLFaceGroup
   //
-  {Describes a face group of a TGLMeshObject. 
+  {Describes a face group of a TMeshObject. 
      Face groups should be understood as "a way to use mesh data to render
      a part or the whole mesh object". 
      Subclasses implement the actual behaviours, and should have at least
@@ -1108,7 +1108,7 @@ type
     procedure BuildList(var mrci: TGLRenderContextInfo); virtual; abstract;
 
     {Add to the list the triangles corresponding to the facegroup. 
-       This function is used by TGLMeshObjects ExtractTriangles to retrieve
+       This function is used by TMeshObjects ExtractTriangles to retrieve
        all the triangles in a mesh. }
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
@@ -1267,7 +1267,7 @@ type
   TGLFaceGroups = class(TPersistentObjectList)
   private
     { Private Declarations }
-    FOwner: TGLMeshObject;
+    FOwner: TMeshObject;
 
   protected
     { Protected Declarations }
@@ -1275,7 +1275,7 @@ type
 
   public
     { Public Declarations }
-    constructor CreateOwned(AOwner: TGLMeshObject);
+    constructor CreateOwned(AOwner: TMeshObject);
     destructor Destroy; override;
 
     procedure ReadFromFiler(reader: TVirtualReader); override;
@@ -1283,7 +1283,7 @@ type
     procedure PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
     procedure DropMaterialLibraryCache;
 
-    property Owner: TGLMeshObject read FOwner;
+    property Owner: TMeshObject read FOwner;
     procedure Clear; override;
     property Items[Index: Integer]: TGLFaceGroup read GetFaceGroup; default;
 
@@ -1375,7 +1375,7 @@ type
 
   protected
     { Protected Declarations }
-    FMeshObjects: TGLMeshObjectList; // a list of mesh objects
+    FMeshObjects: TMeshObjectList; // a list of mesh objects
     FSkeleton: TGLSkeleton; // skeleton data & frames
     procedure SetUseMeshMaterials(const val: Boolean);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
@@ -1444,7 +1444,7 @@ type
        It basically caches the connectivity data.}
     procedure BuildSilhouetteConnectivityData;
 
-    property MeshObjects: TGLMeshObjectList read FMeshObjects;
+    property MeshObjects: TMeshObjectList read FMeshObjects;
     property Skeleton: TGLSkeleton read FSkeleton;
 
     {Computes the extents of the mesh.  }
@@ -1496,7 +1496,7 @@ type
        AutoCentering is performed  only  after loading a mesh, it has
        no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
-       (on the TGLMeshObjects). }
+       (on the TMeshObjects). }
     property AutoCentering: TGLMeshAutoCenterings read FAutoCentering write
       FAutoCentering default [];
 
@@ -1504,7 +1504,7 @@ type
        AutoScaling is performed  only  after loading a mesh, it has
        no effect on already loaded mesh data or when adding from a file/stream.
        If you want to alter mesh data, use direct manipulation methods
-       (on the TGLMeshObjects). }
+       (on the TMeshObjects). }
     property AutoScaling: TGLCoordinates read FAutoScaling write FAutoScaling;
 
     {Material library where mesh materials will be stored/retrieved. 
@@ -2320,7 +2320,7 @@ end;
 //
 
 procedure TGLBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
-  TGLMeshObjectMode;
+  TMeshObjectMode;
   normalIndices: TIntegerList = nil);
 var
   i, base: Integer;
@@ -3813,13 +3813,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLMeshObject ------------------
+// ------------------ TMeshObject ------------------
 // ------------------
 
 // CreateOwned
 //
 
-constructor TGLMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
+constructor TMeshObject.CreateOwned(AOwner: TMeshObjectList);
 begin
   FOwner := AOwner;
   Create;
@@ -3830,7 +3830,7 @@ end;
 // Create
 //
 
-constructor TGLMeshObject.Create;
+constructor TMeshObject.Create;
 begin
   FMode := momTriangles;
   FTexCoords := TAffineVectorList.Create;
@@ -3848,7 +3848,7 @@ end;
 // Destroy
 //
 
-destructor TGLMeshObject.Destroy;
+destructor TMeshObject.Destroy;
 var
   i: Integer;
 begin
@@ -3874,34 +3874,34 @@ end;
 // Assign
 //
 
-procedure TGLMeshObject.Assign(Source: TPersistent);
+procedure TMeshObject.Assign(Source: TPersistent);
 var
   I: Integer;
 begin
   inherited Assign(Source);
 
-  if Source is TGLMeshObject then
+  if Source is TMeshObject then
   begin
-    FTexCoords.Assign(TGLMeshObject(Source).FTexCoords);
-    FLightMapTexCoords.Assign(TGLMeshObject(Source).FLightMapTexCoords);
-    FColors.Assign(TGLMeshObject(Source).FColors);
-    FFaceGroups.Assign(TGLMeshObject(Source).FFaceGroups);
-    FMode := TGLMeshObject(Source).FMode;
-    FRenderingOptions := TGLMeshObject(Source).FRenderingOptions;
-    FBinormalsTexCoordIndex := TGLMeshObject(Source).FBinormalsTexCoordIndex;
-    FTangentsTexCoordIndex := TGLMeshObject(Source).FTangentsTexCoordIndex;
+    FTexCoords.Assign(TMeshObject(Source).FTexCoords);
+    FLightMapTexCoords.Assign(TMeshObject(Source).FLightMapTexCoords);
+    FColors.Assign(TMeshObject(Source).FColors);
+    FFaceGroups.Assign(TMeshObject(Source).FFaceGroups);
+    FMode := TMeshObject(Source).FMode;
+    FRenderingOptions := TMeshObject(Source).FRenderingOptions;
+    FBinormalsTexCoordIndex := TMeshObject(Source).FBinormalsTexCoordIndex;
+    FTangentsTexCoordIndex := TMeshObject(Source).FTangentsTexCoordIndex;
 
     // Clear FTexCoordsEx.
     for I := 0 to FTexCoordsEx.Count - 1 do
       TVectorList(FTexCoordsEx[I]).Free;
 
-    FTexCoordsEx.Count := TGLMeshObject(Source).FTexCoordsEx.Count;
+    FTexCoordsEx.Count := TMeshObject(Source).FTexCoordsEx.Count;
 
     // Fill FTexCoordsEx.
     for I := 0 to FTexCoordsEx.Count - 1 do
     begin
       FTexCoordsEx[I] := TVectorList.Create;
-      TVectorList(FTexCoordsEx[I]).Assign(TGLMeshObject(Source).FTexCoordsEx[I]);
+      TVectorList(FTexCoordsEx[I]).Assign(TMeshObject(Source).FTexCoordsEx[I]);
     end;
   end;
 end;
@@ -3909,7 +3909,7 @@ end;
 // WriteToFiler
 //
 
-procedure TGLMeshObject.WriteToFiler(writer: TVirtualWriter);
+procedure TMeshObject.WriteToFiler(writer: TVirtualWriter);
 var
   i: Integer;
 begin
@@ -3935,7 +3935,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TGLMeshObject.ReadFromFiler(reader: TVirtualReader);
+procedure TMeshObject.ReadFromFiler(reader: TVirtualReader);
 var
   i, Count, archiveVersion: Integer;
   lOldLightMapTexCoords: TTexPointList;
@@ -3972,11 +3972,11 @@ begin
 
       FColors.ReadFromFiler(reader);
       FFaceGroups.ReadFromFiler(reader);
-      FMode := TGLMeshObjectMode(ReadInteger);
+      FMode := TMeshObjectMode(ReadInteger);
       size := ReadInteger;
       ro := 0;
       Read(ro, size);
-      FRenderingOptions := TGLMeshObjectRenderingOptions(Byte(ro));
+      FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
       if archiveVersion >= 2 then
       begin
         Count := ReadInteger;
@@ -3993,7 +3993,7 @@ end;
 // Clear;
 //
 
-procedure TGLMeshObject.Clear;
+procedure TMeshObject.Clear;
 var
   i: Integer;
 begin
@@ -4009,7 +4009,7 @@ end;
 // ExtractTriangles
 //
 
-function TGLMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
+function TMeshObject.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
 begin
   case mode of
@@ -4044,7 +4044,7 @@ end;
 // TriangleCount
 //
 
-function TGLMeshObject.TriangleCount: Integer;
+function TMeshObject.TriangleCount: Integer;
 var
   i: Integer;
 begin
@@ -4072,7 +4072,7 @@ end;
 // PrepareMaterialLibraryCache
 //
 
-procedure TGLMeshObject.PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
+procedure TMeshObject.PrepareMaterialLibraryCache(matLib: TGLMaterialLibrary);
 begin
   FaceGroups.PrepareMaterialLibraryCache(matLib);
 end;
@@ -4080,7 +4080,7 @@ end;
 // DropMaterialLibraryCache
 //
 
-procedure TGLMeshObject.DropMaterialLibraryCache;
+procedure TMeshObject.DropMaterialLibraryCache;
 begin
   FaceGroups.DropMaterialLibraryCache;
 end;
@@ -4088,7 +4088,7 @@ end;
 // GetExtents
 //
 
-procedure TGLMeshObject.GetExtents(out min, max: TAffineVector);
+procedure TMeshObject.GetExtents(out min, max: TAffineVector);
 begin
   if FVertices.Revision <> FExtentCacheRevision then
   begin
@@ -4099,7 +4099,7 @@ begin
   max := FExtentCache.max;
 end;
 
-procedure TGLMeshObject.GetExtents(out aabb: TAABB);
+procedure TMeshObject.GetExtents(out aabb: TAABB);
 begin
   if FVertices.Revision <> FExtentCacheRevision then
   begin
@@ -4112,7 +4112,7 @@ end;
 // GetBarycenter
 //
 
-function TGLMeshObject.GetBarycenter: TVector;
+function TMeshObject.GetBarycenter: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
@@ -4127,7 +4127,7 @@ end;
 // Prepare
 //
 
-procedure TGLMeshObject.Prepare;
+procedure TMeshObject.Prepare;
 var
   i: Integer;
 begin
@@ -4139,7 +4139,7 @@ end;
 // PointInObject
 //
 
-function TGLMeshObject.PointInObject(const aPoint: TAffineVector): Boolean;
+function TMeshObject.PointInObject(const aPoint: TAffineVector): Boolean;
 var
   min, max: TAffineVector;
 begin
@@ -4155,7 +4155,7 @@ end;
 // SetTexCoords
 //
 
-procedure TGLMeshObject.SetTexCoords(const val: TAffineVectorList);
+procedure TMeshObject.SetTexCoords(const val: TAffineVectorList);
 begin
   FTexCoords.Assign(val);
 end;
@@ -4163,7 +4163,7 @@ end;
 // SetLightmapTexCoords
 //
 
-procedure TGLMeshObject.SetLightmapTexCoords(const val: TAffineVectorList);
+procedure TMeshObject.SetLightmapTexCoords(const val: TAffineVectorList);
 begin
   FLightMapTexCoords.Assign(val);
 end;
@@ -4171,7 +4171,7 @@ end;
 // SetColors
 //
 
-procedure TGLMeshObject.SetColors(const val: TVectorList);
+procedure TMeshObject.SetColors(const val: TVectorList);
 begin
   FColors.Assign(val);
 end;
@@ -4179,7 +4179,7 @@ end;
 // SetTexCoordsEx
 //
 
-procedure TGLMeshObject.SetTexCoordsEx(index: Integer; const val: TVectorList);
+procedure TMeshObject.SetTexCoordsEx(index: Integer; const val: TVectorList);
 begin
   TexCoordsEx[index].Assign(val);
 end;
@@ -4187,7 +4187,7 @@ end;
 // GetTexCoordsEx
 //
 
-function TGLMeshObject.GetTexCoordsEx(index: Integer): TVectorList;
+function TMeshObject.GetTexCoordsEx(index: Integer): TVectorList;
 var
   i: Integer;
 begin
@@ -4200,7 +4200,7 @@ end;
 // SetBinormals
 //
 
-procedure TGLMeshObject.SetBinormals(const val: TVectorList);
+procedure TMeshObject.SetBinormals(const val: TVectorList);
 begin
   Binormals.Assign(val);
 end;
@@ -4208,7 +4208,7 @@ end;
 // GetBinormals
 //
 
-function TGLMeshObject.GetBinormals: TVectorList;
+function TMeshObject.GetBinormals: TVectorList;
 begin
   Result := TexCoordsEx[BinormalsTexCoordIndex];
 end;
@@ -4216,7 +4216,7 @@ end;
 // SetBinormalsTexCoordIndex
 //
 
-procedure TGLMeshObject.SetBinormalsTexCoordIndex(const val: Integer);
+procedure TMeshObject.SetBinormalsTexCoordIndex(const val: Integer);
 begin
   Assert(val >= 0);
   if val <> FBinormalsTexCoordIndex then
@@ -4228,7 +4228,7 @@ end;
 // SetTangents
 //
 
-procedure TGLMeshObject.SetTangents(const val: TVectorList);
+procedure TMeshObject.SetTangents(const val: TVectorList);
 begin
   Tangents.Assign(val);
 end;
@@ -4236,7 +4236,7 @@ end;
 // GetTangents
 //
 
-function TGLMeshObject.GetTangents: TVectorList;
+function TMeshObject.GetTangents: TVectorList;
 begin
   Result := TexCoordsEx[TangentsTexCoordIndex];
 end;
@@ -4244,7 +4244,7 @@ end;
 // SetTangentsTexCoordIndex
 //
 
-procedure TGLMeshObject.SetTangentsTexCoordIndex(const val: Integer);
+procedure TMeshObject.SetTangentsTexCoordIndex(const val: Integer);
 begin
   Assert(val >= 0);
   if val <> FTangentsTexCoordIndex then
@@ -4256,7 +4256,7 @@ end;
 // GetTriangleData
 //
 
-procedure TGLMeshObject.GetTriangleData(tri: Integer;
+procedure TMeshObject.GetTriangleData(tri: Integer;
   list: TAffineVectorList; var v0, v1, v2: TAffineVector);
 var
   i, LastCount, Count: Integer;
@@ -4336,7 +4336,7 @@ end;
 // GetTriangleData
 //
 
-procedure TGLMeshObject.GetTriangleData(tri: Integer;
+procedure TMeshObject.GetTriangleData(tri: Integer;
   list: TVectorList; var v0, v1, v2: TVector);
 var
   i, LastCount, Count: Integer;
@@ -4416,7 +4416,7 @@ end;
 // SetTriangleData
 //
 
-procedure TGLMeshObject.SetTriangleData(tri: Integer;
+procedure TMeshObject.SetTriangleData(tri: Integer;
   list: TAffineVectorList; const v0, v1, v2: TAffineVector);
 var
   i, LastCount, Count: Integer;
@@ -4496,7 +4496,7 @@ end;
 // SetTriangleData
 //
 
-procedure TGLMeshObject.SetTriangleData(tri: Integer;
+procedure TMeshObject.SetTriangleData(tri: Integer;
   list: TVectorList; const v0, v1, v2: TVector);
 var
   i, LastCount, Count: Integer;
@@ -4573,7 +4573,7 @@ begin
   end;
 end;
 
-procedure TGLMeshObject.SetUseVBO(const Value: boolean);
+procedure TMeshObject.SetUseVBO(const Value: boolean);
 var
   i: integer;
 begin
@@ -4595,7 +4595,7 @@ begin
   FUseVBO := Value;
 end;
 
-procedure TGLMeshObject.SetValidBuffers(Value: TVBOBuffers);
+procedure TMeshObject.SetValidBuffers(Value: TVBOBuffers);
 var
   I: Integer;
 begin
@@ -4619,7 +4619,7 @@ end;
 // BuildTangentSpace
 //
 
-procedure TGLMeshObject.BuildTangentSpace(
+procedure TMeshObject.BuildTangentSpace(
   buildBinormals: Boolean = True;
   buildTangents: Boolean = True);
 var
@@ -4732,7 +4732,7 @@ end;
 // DeclareArraysToOpenGL
 //
 
-procedure TGLMeshObject.DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo;
+procedure TMeshObject.DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo;
   evenIfAlreadyDeclared: Boolean = False);
 var
   i: Integer;
@@ -4867,7 +4867,7 @@ end;
 // DisableOpenGLArrays
 //
 
-procedure TGLMeshObject.DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
+procedure TMeshObject.DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -4935,7 +4935,7 @@ end;
 // EnableLightMapArray
 //
 
-procedure TGLMeshObject.EnableLightMapArray(var mrci: TGLRenderContextInfo);
+procedure TMeshObject.EnableLightMapArray(var mrci: TGLRenderContextInfo);
 begin
   if GL.ARB_multitexture and (not mrci.ignoreMaterials) then
   begin
@@ -4953,7 +4953,7 @@ end;
 // DisableLightMapArray
 //
 
-procedure TGLMeshObject.DisableLightMapArray(var mrci: TGLRenderContextInfo);
+procedure TMeshObject.DisableLightMapArray(var mrci: TGLRenderContextInfo);
 begin
   if GL.ARB_multitexture and FLightMapArrayEnabled then
   begin
@@ -4967,7 +4967,7 @@ end;
 // PrepareMaterials
 //
 
-procedure TGLMeshObject.PrepareBuildList(var mrci: TGLRenderContextInfo);
+procedure TMeshObject.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -4985,7 +4985,7 @@ end;
 // BuildList
 //
 
-procedure TGLMeshObject.BufferArrays;
+procedure TMeshObject.BufferArrays;
 const
   BufferUsage = GL_DYNAMIC_DRAW;
 var
@@ -5116,7 +5116,7 @@ begin
   GL.CheckError;
 end;
 
-procedure TGLMeshObject.BuildList(var mrci: TGLRenderContextInfo);
+procedure TMeshObject.BuildList(var mrci: TGLRenderContextInfo);
 var
   i, j, groupID, nbGroups: Integer;
   gotNormals, gotTexCoords, gotColor: Boolean;
@@ -5261,13 +5261,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TGLMeshObjectList ------------------
+// ------------------ TMeshObjectList ------------------
 // ------------------
 
 // CreateOwned
 //
 
-constructor TGLMeshObjectList.CreateOwned(aOwner: TGLBaseMesh);
+constructor TMeshObjectList.CreateOwned(aOwner: TGLBaseMesh);
 begin
   FOwner := AOwner;
   Create;
@@ -5276,7 +5276,7 @@ end;
 // Destroy
 //
 
-destructor TGLMeshObjectList.Destroy;
+destructor TMeshObjectList.Destroy;
 begin
   Clear;
   inherited;
@@ -5285,10 +5285,10 @@ end;
 // ReadFromFiler
 //
 
-procedure TGLMeshObjectList.ReadFromFiler(reader: TVirtualReader);
+procedure TMeshObjectList.ReadFromFiler(reader: TVirtualReader);
 var
   i: Integer;
-  mesh: TGLMeshObject;
+  mesh: TMeshObject;
 begin
   inherited;
   for i := 0 to Count - 1 do
@@ -5303,30 +5303,30 @@ end;
 // PrepareMaterialLibraryCache
 //
 
-procedure TGLMeshObjectList.PrepareMaterialLibraryCache(matLib:
+procedure TMeshObjectList.PrepareMaterialLibraryCache(matLib:
   TGLMaterialLibrary);
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
+    TMeshObject(List^[i]).PrepareMaterialLibraryCache(matLib);
 end;
 
 // DropMaterialLibraryCache
 //
 
-procedure TGLMeshObjectList.DropMaterialLibraryCache;
+procedure TMeshObjectList.DropMaterialLibraryCache;
 var
   i: Integer;
 begin
   for i := 0 to Count - 1 do
-    TGLMeshObject(List^[i]).DropMaterialLibraryCache;
+    TMeshObject(List^[i]).DropMaterialLibraryCache;
 end;
 
 // PrepareBuildList
 //
 
-procedure TGLMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
+procedure TMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5339,7 +5339,7 @@ end;
 // BuildList
 //
 
-procedure TGLMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
+procedure TMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5352,7 +5352,7 @@ end;
 // MorphTo
 //
 
-procedure TGLMeshObjectList.MorphTo(morphTargetIndex: Integer);
+procedure TMeshObjectList.MorphTo(morphTargetIndex: Integer);
 var
   i: Integer;
 begin
@@ -5364,7 +5364,7 @@ end;
 // Lerp
 //
 
-procedure TGLMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
+procedure TMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
   lerpFactor: Single);
 var
   i: Integer;
@@ -5378,7 +5378,7 @@ end;
 // MorphTargetCount
 //
 
-function TGLMeshObjectList.MorphTargetCount: Integer;
+function TMeshObjectList.MorphTargetCount: Integer;
 var
   i: Integer;
 begin
@@ -5395,7 +5395,7 @@ end;
 // Clear
 //
 
-procedure TGLMeshObjectList.Clear;
+procedure TMeshObjectList.Clear;
 var
   i: Integer;
 begin
@@ -5412,15 +5412,15 @@ end;
 // GetMeshObject
 //
 
-function TGLMeshObjectList.GetMeshObject(Index: Integer): TGLMeshObject;
+function TMeshObjectList.GetMeshObject(Index: Integer): TMeshObject;
 begin
-  Result := TGLMeshObject(List^[Index]);
+  Result := TMeshObject(List^[Index]);
 end;
 
 // GetExtents
 //
 
-procedure TGLMeshObjectList.GetExtents(out min, max: TAffineVector);
+procedure TMeshObjectList.GetExtents(out min, max: TAffineVector);
 var
   i, k: Integer;
   lMin, lMax: TAffineVector;
@@ -5446,7 +5446,7 @@ end;
 // Translate
 //
 
-procedure TGLMeshObjectList.Translate(const delta: TAffineVector);
+procedure TMeshObjectList.Translate(const delta: TAffineVector);
 var
   i: Integer;
 begin
@@ -5457,11 +5457,11 @@ end;
 // ExtractTriangles
 //
 
-function TGLMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
+function TMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
 var
   i: Integer;
-  obj: TGLMeshObject;
+  obj: TMeshObject;
   objTris: TAffineVectorList;
   objTexCoords: TAffineVectorList;
   objNormals: TAffineVectorList;
@@ -5507,7 +5507,7 @@ end;
 // TriangleCount
 //
 
-function TGLMeshObjectList.TriangleCount: Integer;
+function TMeshObjectList.TriangleCount: Integer;
 var
   i: Integer;
 begin
@@ -5519,7 +5519,7 @@ end;
 // Prepare
 //
 
-procedure TGLMeshObjectList.Prepare;
+procedure TMeshObjectList.Prepare;
 var
   i: Integer;
 begin
@@ -5530,7 +5530,7 @@ end;
 // FindMeshByName
 //
 
-function TGLMeshObjectList.FindMeshByName(MeshName: string): TGLMeshObject;
+function TMeshObjectList.FindMeshByName(MeshName: string): TMeshObject;
 var
   i: integer;
 begin
@@ -5546,7 +5546,7 @@ end;
 // BuildTangentSpace
 //
 
-procedure TGLMeshObjectList.BuildTangentSpace(buildBinormals,
+procedure TMeshObjectList.BuildTangentSpace(buildBinormals,
   buildTangents: Boolean);
 var
   I: Integer;
@@ -5559,7 +5559,7 @@ end;
 // GetUseVBO
 //
 
-function TGLMeshObjectList.GetUseVBO: Boolean;
+function TMeshObjectList.GetUseVBO: Boolean;
 var
   I: Integer;
 begin
@@ -5572,7 +5572,7 @@ end;
 // SetUseVBO
 //
 
-procedure TGLMeshObjectList.SetUseVBO(const Value: Boolean);
+procedure TMeshObjectList.SetUseVBO(const Value: Boolean);
 var
   I: Integer;
 begin
@@ -6637,7 +6637,7 @@ procedure TFGVertexIndexList.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
 var
-  mo: TGLMeshObject;
+  mo: TMeshObject;
 begin
   mo := Owner.Owner;
   AddToList(mo.Vertices, aList, VertexIndices);
@@ -7111,7 +7111,7 @@ end;
 // CreateOwned
 //
 
-constructor TGLFaceGroups.CreateOwned(AOwner: TGLMeshObject);
+constructor TGLFaceGroups.CreateOwned(AOwner: TMeshObject);
 begin
   FOwner := AOwner;
   Create;
@@ -7206,7 +7206,7 @@ end;
 
 function TGLFaceGroups.MaterialLibrary: TGLMaterialLibrary;
 var
-  mol: TGLMeshObjectList;
+  mol: TMeshObjectList;
   bm: TGLBaseMesh;
 begin
   if Assigned(Owner) then
@@ -7336,7 +7336,7 @@ constructor TGLBaseMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   if FMeshObjects = nil then
-    FMeshObjects := TGLMeshObjectList.CreateOwned(Self);
+    FMeshObjects := TMeshObjectList.CreateOwned(Self);
   if FSkeleton = nil then
     FSkeleton := TGLSkeleton.CreateOwned(Self);
   FUseMeshMaterials := True;
@@ -7542,7 +7542,7 @@ begin
   SetVector(max, cSmallValue, cSmallValue, cSmallValue);
   for i := 0 to MeshObjects.Count - 1 do
   begin
-    TGLMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
+    TMeshObject(MeshObjects[i]).GetExtents(lMin, lMax);
     for k := 0 to 2 do
     begin
       if lMin.V[k] < min.V[k] then
@@ -7563,7 +7563,7 @@ begin
   Result := NullVector;
   nb := 0;
   for i := 0 to MeshObjects.Count - 1 do
-    TGLMeshObject(MeshObjects[i]).ContributeToBarycenter(Result, nb);
+    TMeshObject(MeshObjects[i]).ContributeToBarycenter(Result, nb);
   if nb > 0 then
     ScaleVector(Result, 1 / nb);
 end;
@@ -8024,13 +8024,13 @@ end;
 procedure TGLBaseMesh.BuildSilhouetteConnectivityData;
 var
   i, j: Integer;
-  mo: TGLMeshObject;
+  mo: TMeshObject;
 begin
   FreeAndNil(FConnectivity);
   // connectivity data works only on facegroups of TFGVertexIndexList class
   for i := 0 to MeshObjects.Count - 1 do
   begin
-    mo := (MeshObjects[i] as TGLMeshObject);
+    mo := (MeshObjects[i] as TMeshObject);
     if mo.Mode <> momFacegroups then
       Exit;
     for j := 0 to mo.FaceGroups.Count - 1 do
@@ -9320,7 +9320,7 @@ initialization
 
   RegisterClasses([TGLFreeForm, TGLActor, TGLSkeleton, TGLSkeletonFrame,
     TGLSkeletonBone,
-    TGLSkeletonMeshObject, TGLMeshObject, TGLSkeletonFrameList, TGLMeshMorphTarget,
+    TGLSkeletonMeshObject, TMeshObject, TGLSkeletonFrameList, TGLMeshMorphTarget,
       TGLMorphableMeshObject, TGLFaceGroup, TFGVertexIndexList,
       TFGVertexNormalTexIndexList, TGLAnimationControler,
       TFGIndexTexCoordList, TGLSkeletonCollider, TGLSkeletonColliderList]);

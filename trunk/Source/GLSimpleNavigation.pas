@@ -48,12 +48,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.TypInfo,
+  System.Classes,
+  System.SysUtils,
+  System.TypInfo,
   System.Math,
-  VCL.Forms, VCL.Controls, VCL.ExtCtrls,
-  // GLS
-  GLSceneForm, GLVectorGeometry, GLScene,
-  GLViewer, GLStrings, GLCrossPlatform;
+  VCL.Forms,
+  VCL.Controls,
+  VCL.ExtCtrls,
+  GLSceneForm,
+  GLVectorGeometry,
+  GLScene,
+  GLWin32Viewer,
+  GLStrings,
+  GLCrossPlatform;
 
 type
 
@@ -72,14 +79,14 @@ type
   TGLSimpleNavigationAction = (snaNone, snaMoveAroundTarget, snaZoom, snaRotateTarget, snaCustom);
 
   TGLSimpleNavigationKeyCombination = class;
-  TSimpleNavigationCustomActionEvent =
+  TGLSimpleNavigationCustomActionEvent =
     procedure(Sender: TGLSimpleNavigationKeyCombination; Shift: TShiftState; X, Y: Integer) of object;
 
   TGLSimpleNavigationKeyCombination = class(TCollectionItem)
   private
     FExitOnMatch: Boolean;
     FAction: TGLSimpleNavigationAction;
-    FOnCustomAction: TSimpleNavigationCustomActionEvent;
+    FOnCustomAction: TGLSimpleNavigationCustomActionEvent;
     FShiftState: TShiftState;
   protected
     function GetDisplayName: string; override;
@@ -91,7 +98,7 @@ type
     property ShiftState: TShiftState read FShiftState write FShiftState default [];
     property ExitOnMatch: Boolean read FExitOnMatch write FExitOnMatch default True;
     property Action: TGLSimpleNavigationAction read FAction write FAction default snaNone;
-    property OnCustomAction: TSimpleNavigationCustomActionEvent read FOnCustomAction write FOnCustomAction;
+    property OnCustomAction: TGLSimpleNavigationCustomActionEvent read FOnCustomAction write FOnCustomAction;
   end;
 
   TGLSimpleNavigationKeyCombinations = class(TOwnedCollection)

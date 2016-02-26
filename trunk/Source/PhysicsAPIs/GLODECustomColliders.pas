@@ -54,8 +54,6 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-
-  // GLS
   GLODEManager,
   ODEGL,
   ODEImport,

@@ -63,14 +63,14 @@ procedure TGLPLYVectorFile.LoadFromStream(aStream : TStream);
 var
    i, nbVertices, nbFaces : Integer;
    sl : TStringList;
-   mesh : TGLMeshObject;
+   mesh : TMeshObject;
    fg : TFGVertexIndexList;
    p : PChar;
 begin
    sl:=TStringList.Create;
    try
       sl.LoadFromStream(aStream{$IFDEF Unicode}, TEncoding.ASCII{$ENDIF});
-      mesh:=TGLMeshObject.CreateOwned(Owner.MeshObjects);
+      mesh:=TMeshObject.CreateOwned(Owner.MeshObjects);
       mesh.Mode:=momFaceGroups;
       if sl[0]<>'ply' then
          raise Exception.Create('Not a valid ply file !');

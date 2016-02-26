@@ -573,7 +573,7 @@ uses
   GLUtils,
   GLVectorFileObjects,
   GLVfsPAK,
-  GLViewer,
+  GLWin32Viewer,
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,

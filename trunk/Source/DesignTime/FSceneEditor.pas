@@ -73,7 +73,7 @@ uses
   VCLEditors,
 
   GLScene,
-  GLViewer,
+  GLWin32Viewer,
   GLSceneRegister,
   GLStrings,
   FInfo,

@@ -20,10 +20,13 @@ interface
 
 uses
   System.Classes, 
-  VCL.Forms, VCL.StdCtrls, VCL.Buttons, VCL.Controls,
-   
-  FRMaterialPreview,  GLViewer,
-  GLMaterial;
+  VCL.Forms,
+  VCL.StdCtrls,
+  VCL.Buttons,
+  VCL.Controls,
+  GLWin32Viewer,
+  GLMaterial,
+  FRMaterialPreview;
 
 type
   TGLLibMaterialPicker = class(TForm)

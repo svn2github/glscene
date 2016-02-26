@@ -374,7 +374,7 @@ var
   itemp: PtrUInt;
   wtemp: word;
   TexCoordID: integer;
-  MO: TGLMeshObject;
+  MO: TMeshObject;
   FaceGroup: TFGVertexNormalTexIndexList;
   Sk_MO: TGLSkeletonMeshObject;
 
@@ -511,7 +511,7 @@ begin
       TGLSkeletonMeshObject(MO).BonesPerVertex := 4;
     end
     else
-      MO := TGLMeshObject.CreateOwned(Owner.MeshObjects);
+      MO := TMeshObject.CreateOwned(Owner.MeshObjects);
     MO.Mode := momFaceGroups;
 
     // Then comes nNumVertices * sizeof (ms3d_vertex_t)

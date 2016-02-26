@@ -23,12 +23,11 @@ uses
   System.Classes,
   VCL.Controls,
   VCL.Forms,
-   
   GLScene,
   GLContext,
   GLCrossPlatform,
   GLScreen,
-  GLViewer;
+  GLWin32Viewer;
 
 const
   lcl_major = 0;

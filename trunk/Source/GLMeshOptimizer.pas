@@ -31,13 +31,13 @@ var
   vDefaultMeshOptimizerOptions: TGLMeshOptimizerOptions = [mooStandardize,
     mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
-procedure OptimizeMesh(aList: TGLMeshObjectList;
+procedure OptimizeMesh(aList: TMeshObjectList;
   options: TGLMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aList: TGLMeshObjectList); overload;
-procedure OptimizeMesh(aMeshObject: TGLMeshObject;
+procedure OptimizeMesh(aList: TMeshObjectList); overload;
+procedure OptimizeMesh(aMeshObject: TMeshObject;
   options: TGLMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aMeshObject: TGLMeshObject); overload;
-procedure FacesSmooth(aMeshObj: TGLMeshObject;
+procedure OptimizeMesh(aMeshObject: TMeshObject); overload;
+procedure FacesSmooth(aMeshObj: TMeshObject;
   aWeldDistance: Single = 0.0000001; aThreshold: Single = 35.0;
   InvertNormals: boolean = false);
 
@@ -55,18 +55,18 @@ uses
 
 // OptimizeMesh (list, default options)
 //
-procedure OptimizeMesh(aList: TGLMeshObjectList);
+procedure OptimizeMesh(aList: TMeshObjectList);
 begin
   OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (list, with options)
 //
-procedure OptimizeMesh(aList: TGLMeshObjectList;
+procedure OptimizeMesh(aList: TMeshObjectList;
   options: TGLMeshOptimizerOptions);
 var
   i, k: Integer;
-  mob, mo: TGLMeshObject;
+  mob, mo: TMeshObject;
   fg: TGLFaceGroup;
   fgvi: TFGVertexIndexList;
 begin
@@ -114,14 +114,14 @@ end;
 
 // OptimizeMesh (object, default options)
 //
-procedure OptimizeMesh(aMeshObject: TGLMeshObject);
+procedure OptimizeMesh(aMeshObject: TMeshObject);
 begin
   OptimizeMesh(aMeshObject, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (object, with options)
 //
-procedure OptimizeMesh(aMeshObject: TGLMeshObject;
+procedure OptimizeMesh(aMeshObject: TMeshObject;
   options: TGLMeshOptimizerOptions);
 var
   i: Integer;
@@ -202,7 +202,7 @@ begin
     aMeshObject.FaceGroups.SortByMaterial;
 end;
 
-procedure FacesSmooth(aMeshObj: TGLMeshObject;
+procedure FacesSmooth(aMeshObj: TMeshObject;
   aWeldDistance: Single = 0.0000001; aThreshold: Single = 35.0;
   InvertNormals: boolean = false);
 Var

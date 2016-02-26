@@ -31,7 +31,7 @@ type
    //
    {A mesh object list that handles portal rendering. 
       The items are treated as being sectors. } 
-   TPortalMeshObjectList = class (TGLMeshObjectList)
+   TPortalMeshObjectList = class (TMeshObjectList)
       private
          { Private Declarations }
 
@@ -60,7 +60,7 @@ type
 
       public
          { Public Declarations }
-         constructor CreateOwned(AOwner : TGLMeshObjectList);
+         constructor CreateOwned(AOwner : TMeshObjectList);
          destructor Destroy; override;
 
          procedure BuildList(var mrci : TGLRenderContextInfo); override;
@@ -167,7 +167,7 @@ end;
 procedure TPortalMeshObjectList.BuildList(var mrci : TGLRenderContextInfo);
 var
    i : Integer;
-   startSector : TGLMeshObject;
+   startSector : TMeshObject;
 begin
    for i:=0 to Count-1 do with TSectorMeshObject(Items[i]) do
       if InheritsFrom(TSectorMeshObject) then RenderDone:=False;
@@ -189,7 +189,7 @@ end;
 
 // CreateOwned
 //
-constructor TSectorMeshObject.CreateOwned(AOwner : TGLMeshObjectList);
+constructor TSectorMeshObject.CreateOwned(AOwner : TMeshObjectList);
 begin
 	inherited;
    Mode:=momFaceGroups;
