@@ -88,8 +88,7 @@ Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName:
 ; Parameters for RAD Studio                        
 ; Environmental Variables, the ValueData needs to be changed from SourceDir to {app}   
 
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Environment Variables"; ValueType: string; ValueName: GLSVCLDIR; ValueData: "D:\GLScene\GLSceneVCL"; Flags: uninsdeletekey                                                                                                        
-
+;Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Environment Variables"; ValueType: string; ValueName: GLSVCLDIR; ValueData: "D:\GLScene\GLSceneVCL"; Flags: uninsdeletekey                                                                                                        
 ;Root: HKLM; Subkey: "Software\Company\Program\Settings"; ValueType: string; ValueName: "InstallPath"; ValueData: "{app}"
 
 ; it's necessary to add environmental variables GLSVCLDIR and GLSVKSDIR to registry in sections
