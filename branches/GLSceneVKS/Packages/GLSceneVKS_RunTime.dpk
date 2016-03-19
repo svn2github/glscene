@@ -271,7 +271,9 @@ contains
   TGA in '..\Source\FileFormats\TGA.pas',
   Types3DS in '..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\Source\FileFormats\Utils3DS.pas',
-  VRMLParser in '..\Source\FileFormats\VRMLParser.pas';
+  VRMLParser in '..\Source\FileFormats\VRMLParser.pas',
+  GLS.VK_Platform in '..\Source\Basis\GLS.VK_Platform.pas',
+  GLS.Vulkan in '..\Source\Basis\GLS.Vulkan.pas';
 
 end.
 
