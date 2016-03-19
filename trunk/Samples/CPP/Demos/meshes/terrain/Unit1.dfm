@@ -14,8 +14,6 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   OnKeyPress = FormKeyPress
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -120,6 +118,7 @@ object Form1: TForm1
       TileSize = 32
       TilesPerTexture = 1.000000000000000000
       QualityDistance = 150.000000000000000000
+      ContourWidth = 0
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}

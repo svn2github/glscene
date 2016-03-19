@@ -201,11 +201,7 @@
                     <VersionInfoKeys Name="CFBundleSignature"/>
                     <VersionInfoKeys Name="CFBundleAllowMixedLocalizations"/>
                     <VersionInfoKeys Name="CFBundleExecutable"/>
-                </VersionInfoKeys>
-                <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE3.bpl">File C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE3.bpl not found</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE2.bpl">File C:\Documents and Settings\All Users.WINDOWS\Документы\RAD Studio\10.0\Bpl\GLCg_DesignTimeXE2.bpl not found</Excluded_Packages>
-                </Excluded_Packages>
+                </VersionInfoKeys>                
                 <ProjectProperties>
                     <ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
                     <ProjectProperties Name="ManagePaths">True</ProjectProperties>
