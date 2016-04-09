@@ -250,13 +250,15 @@ const
   {$EXTERNALSYM VK_MAX_DESCRIPTION_SIZE}
   VK_MAX_DESCRIPTION_SIZE =                             256;
 
-type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
-  TVkPipelineCacheHeaderVersion = (
+type 
+   PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
+   TVkPipelineCacheHeaderVersion = (
     VK_PIPELINE_CACHE_HEADER_VERSION_ONE = 1,
     VK_PIPELINE_CACHE_HEADER_VERSION_BEGIN_RANGE = VK_PIPELINE_CACHE_HEADER_VERSION_ONE,
     VK_PIPELINE_CACHE_HEADER_VERSION_END_RANGE = VK_PIPELINE_CACHE_HEADER_VERSION_ONE,
     VK_PIPELINE_CACHE_HEADER_VERSION_RANGE_SIZE = (VK_PIPELINE_CACHE_HEADER_VERSION_ONE - VK_PIPELINE_CACHE_HEADER_VERSION_ONE + 1),
-    VK_PIPELINE_CACHE_HEADER_VERSION_MAX_ENUM = $7FFFFFFF);
+    VK_PIPELINE_CACHE_HEADER_VERSION_MAX_ENUM = $7FFFFFFF); 
+	
 
   PVkResult = ^TVkResult;
   TVkResult = (
@@ -287,7 +289,8 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_RESULT_BEGIN_RANGE = VK_ERROR_FORMAT_NOT_SUPPORTED,
     VK_RESULT_END_RANGE = VK_INCOMPLETE,
     VK_RESULT_RANGE_SIZE = (VK_INCOMPLETE - VK_ERROR_FORMAT_NOT_SUPPORTED + 1),
-    VK_RESULT_MAX_ENUM = $7FFFFFFF);
+    VK_RESULT_MAX_ENUM = $7FFFFFFF); 
+
 
   PVkStructureType = ^TVkStructureType;
   TVkStructureType = (    VK_STRUCTURE_TYPE_APPLICATION_INFO = 0,
@@ -350,7 +353,7 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR = 1000007000,
     VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR = 1000008000,
     VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
-    VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT = 1000011000,
+    VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT = 1000011000,
     VK_STRUCTURE_TYPE_BEGIN_RANGE = VK_STRUCTURE_TYPE_APPLICATION_INFO,
     VK_STRUCTURE_TYPE_END_RANGE = VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO,
     VK_STRUCTURE_TYPE_RANGE_SIZE = (VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO - VK_STRUCTURE_TYPE_APPLICATION_INFO + 1),
@@ -823,6 +826,7 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkFilter = (
     VK_FILTER_NEAREST = 0,
     VK_FILTER_LINEAR = 1,
+    VK_FILTER_CUBIC_IMG = 1000015000,
     VK_FILTER_BEGIN_RANGE = VK_FILTER_NEAREST,
     VK_FILTER_END_RANGE = VK_FILTER_LINEAR,
     VK_FILTER_RANGE_SIZE = (VK_FILTER_LINEAR - VK_FILTER_NEAREST + 1),
@@ -845,8 +849,8 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = 3,
     VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE = 4,
     VK_SAMPLER_ADDRESS_MODE_BEGIN_RANGE = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    VK_SAMPLER_ADDRESS_MODE_END_RANGE = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
-    VK_SAMPLER_ADDRESS_MODE_RANGE_SIZE = (VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE - VK_SAMPLER_ADDRESS_MODE_REPEAT + 1),
+    VK_SAMPLER_ADDRESS_MODE_END_RANGE = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+    VK_SAMPLER_ADDRESS_MODE_RANGE_SIZE = (VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER - VK_SAMPLER_ADDRESS_MODE_REPEAT + 1),
     VK_SAMPLER_ADDRESS_MODE_MAX_ENUM = $7FFFFFFF);
 
   PVkBorderColor = ^TVkBorderColor;
@@ -953,7 +957,10 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT = $00000200,
     VK_FORMAT_FEATURE_BLIT_SRC_BIT = $00000400,
     VK_FORMAT_FEATURE_BLIT_DST_BIT = $00000800,
-    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = $00001000);
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = $00001000,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG = $00002000,
+    VK_FORMAT_FEATURE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
 
   PVkFormatFeatureFlags = ^TVkFormatFeatureFlags;
@@ -968,7 +975,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT = $00000010,
     VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT = $00000020,
     VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = $00000040,
-    VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = $00000080);
+    VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = $00000080,
+    VK_IMAGE_USAGE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkImageUsageFlags = ^TVkImageUsageFlags;
   TVkImageUsageFlags = TVkFlags;
@@ -979,7 +988,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT = $00000002,
     VK_IMAGE_CREATE_SPARSE_ALIASED_BIT = $00000004,
     VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT = $00000008,
-    VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT = $00000010);
+    VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT = $00000010,
+    VK_IMAGE_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkImageCreateFlags = ^TVkImageCreateFlags;
   TVkImageCreateFlags = TVkFlags;
@@ -992,7 +1003,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_SAMPLE_COUNT_8_BIT = $00000008,
     VK_SAMPLE_COUNT_16_BIT = $00000010,
     VK_SAMPLE_COUNT_32_BIT = $00000020,
-    VK_SAMPLE_COUNT_64_BIT = $00000040);
+    VK_SAMPLE_COUNT_64_BIT = $00000040,
+    VK_SAMPLE_COUNT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkSampleCountFlags = ^TVkSampleCountFlags;
   TVkSampleCountFlags = TVkFlags;
@@ -1002,7 +1015,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_QUEUE_GRAPHICS_BIT = $00000001,
     VK_QUEUE_COMPUTE_BIT = $00000002,
     VK_QUEUE_TRANSFER_BIT = $00000004,
-    VK_QUEUE_SPARSE_BINDING_BIT = $00000008);
+    VK_QUEUE_SPARSE_BINDING_BIT = $00000008,
+    VK_QUEUE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkQueueFlags = ^TVkQueueFlags;
   TVkQueueFlags = TVkFlags;
@@ -1013,14 +1028,18 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = $00000002,
     VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = $00000004,
     VK_MEMORY_PROPERTY_HOST_CACHED_BIT = $00000008,
-    VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = $00000010);
+    VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = $00000010,
+    VK_MEMORY_PROPERTY_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkMemoryPropertyFlags = ^TVkMemoryPropertyFlags;
   TVkMemoryPropertyFlags = TVkFlags;
 
  PVkMemoryHeapFlagBits = ^TVkMemoryHeapFlagBits;
  TVkMemoryHeapFlagBits = (
-    VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = $00000001);
+    VK_MEMORY_HEAP_DEVICE_LOCAL_BIT = $00000001,
+    VK_MEMORY_HEAP_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkMemoryHeapFlags = ^TVkMemoryHeapFlags;
   TVkMemoryHeapFlags = TVkFlags;
@@ -1049,7 +1068,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT = $00002000,
     VK_PIPELINE_STAGE_HOST_BIT = $00004000,
     VK_PIPELINE_STAGE_ALL_GRAPHICS_BIT = $00008000,
-    VK_PIPELINE_STAGE_ALL_COMMANDS_BIT = $00010000);
+    VK_PIPELINE_STAGE_ALL_COMMANDS_BIT = $00010000,
+    VK_PIPELINE_STAGE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkPipelineStageFlags = ^TVkPipelineStageFlags;
   TVkPipelineStageFlags = TVkFlags;
@@ -1062,7 +1083,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_IMAGE_ASPECT_COLOR_BIT = $00000001,
     VK_IMAGE_ASPECT_DEPTH_BIT = $00000002,
     VK_IMAGE_ASPECT_STENCIL_BIT = $00000004,
-    VK_IMAGE_ASPECT_METADATA_BIT = $00000008);
+    VK_IMAGE_ASPECT_METADATA_BIT = $00000008,
+    VK_IMAGE_ASPECT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkImageAspectFlags = ^TVkImageAspectFlags;
   TVkImageAspectFlags = TVkFlags;
@@ -1071,21 +1094,27 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkSparseImageFormatFlagBits = (
     VK_SPARSE_IMAGE_FORMAT_SINGLE_MIPTAIL_BIT = $00000001,
     VK_SPARSE_IMAGE_FORMAT_ALIGNED_MIP_SIZE_BIT = $00000002,
-    VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT = $00000004);
+    VK_SPARSE_IMAGE_FORMAT_NONSTANDARD_BLOCK_SIZE_BIT = $00000004,
+    VK_SPARSE_IMAGE_FORMAT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkSparseImageFormatFlags = ^TVkSparseImageFormatFlags;
   TVkSparseImageFormatFlags = TVkFlags;
 
   PVkSparseMemoryBindFlagBits = ^TVkSparseMemoryBindFlagBits;
   TVkSparseMemoryBindFlagBits = (
-    VK_SPARSE_MEMORY_BIND_METADATA_BIT = $00000001);
+    VK_SPARSE_MEMORY_BIND_METADATA_BIT = $00000001,
+    VK_SPARSE_MEMORY_BIND_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkSparseMemoryBindFlags = ^TVkSparseMemoryBindFlags;
   TVkSparseMemoryBindFlags = TVkFlags;
 
   PVkFenceCreateFlagBits = ^TVkFenceCreateFlagBits;
   TVkFenceCreateFlagBits = (
-    VK_FENCE_CREATE_SIGNALED_BIT = $00000001);
+    VK_FENCE_CREATE_SIGNALED_BIT = $00000001,
+    VK_FENCE_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkFenceCreateFlags = ^TVkFenceCreateFlags;
   TVkFenceCreateFlags = TVkFlags;
@@ -1111,7 +1140,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT = $00000080,
     VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT = $00000100,
     VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT = $00000200,
-    VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT = $00000400);
+    VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT = $00000400,
+    VK_QUERY_PIPELINE_STATISTIC_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkQueryPipelineStatisticFlags = ^TVkQueryPipelineStatisticFlags;
   TVkQueryPipelineStatisticFlags = TVkFlags;
@@ -1121,7 +1152,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_QUERY_RESULT_64_BIT = $00000001,
     VK_QUERY_RESULT_WAIT_BIT = $00000002,
     VK_QUERY_RESULT_WITH_AVAILABILITY_BIT = $00000004,
-    VK_QUERY_RESULT_PARTIAL_BIT = $00000008);
+    VK_QUERY_RESULT_PARTIAL_BIT = $00000008,
+    VK_QUERY_RESULT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkQueryResultFlags = ^TVkQueryResultFlags;
   TVkQueryResultFlags = TVkFlags;
@@ -1130,7 +1163,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkBufferCreateFlagBits = (
     VK_BUFFER_CREATE_SPARSE_BINDING_BIT = $00000001,
     VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT = $00000002,
-    VK_BUFFER_CREATE_SPARSE_ALIASED_BIT = $00000004);
+    VK_BUFFER_CREATE_SPARSE_ALIASED_BIT = $00000004,
+    VK_BUFFER_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkBufferCreateFlags = ^TVkBufferCreateFlags;
   TVkBufferCreateFlags = TVkFlags;
@@ -1145,7 +1180,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = $00000020,
     VK_BUFFER_USAGE_INDEX_BUFFER_BIT = $00000040,
     VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = $00000080,
-    VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = $00000100);
+    VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = $00000100,
+    VK_BUFFER_USAGE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
   PVkBufferUsageFlags = ^TVkBufferUsageFlags;
   TVkBufferUsageFlags = TVkFlags;
@@ -1166,7 +1203,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkPipelineCreateFlagBits = (
     VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT = $00000001,
     VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT = $00000002,
-    VK_PIPELINE_CREATE_DERIVATIVE_BIT = $00000004);
+    VK_PIPELINE_CREATE_DERIVATIVE_BIT = $00000004,
+    VK_PIPELINE_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkPipelineCreateFlags = ^TVkPipelineCreateFlags; 
@@ -1184,7 +1223,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_SHADER_STAGE_FRAGMENT_BIT = $00000010,
     VK_SHADER_STAGE_COMPUTE_BIT = $00000020,
     VK_SHADER_STAGE_ALL_GRAPHICS = $1F,
-    VK_SHADER_STAGE_ALL = $7FFFFFFF);
+    VK_SHADER_STAGE_ALL = $7FFFFFFF,
+    VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkPipelineVertexInputStateCreateFlags = ^TVkPipelineVertexInputStateCreateFlags;
@@ -1207,7 +1248,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_CULL_MODE_NONE = 0,
     VK_CULL_MODE_FRONT_BIT = $00000001,
     VK_CULL_MODE_BACK_BIT = $00000002,
-    VK_CULL_MODE_FRONT_AND_BACK = $3);
+    VK_CULL_MODE_FRONT_AND_BACK = $00000003,
+    VK_CULL_MODE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkCullModeFlags = ^TVkCullModeFlags; 
@@ -1227,7 +1270,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_COLOR_COMPONENT_R_BIT = $00000001,
     VK_COLOR_COMPONENT_G_BIT = $00000002,
     VK_COLOR_COMPONENT_B_BIT = $00000004,
-    VK_COLOR_COMPONENT_A_BIT = $00000008);
+    VK_COLOR_COMPONENT_A_BIT = $00000008,
+    VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkColorComponentFlags = ^TVkColorComponentFlags; 
@@ -1250,7 +1295,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkDescriptorPoolCreateFlagBits = ^TVkDescriptorPoolCreateFlagBits;
   TVkDescriptorPoolCreateFlagBits = (
-    VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT = $00000001);
+    VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT = $00000001,
+    VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkDescriptorPoolCreateFlags = ^TVkDescriptorPoolCreateFlags; 
@@ -1268,7 +1315,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkAttachmentDescriptionFlagBits = ^TVkAttachmentDescriptionFlagBits;
   TVkAttachmentDescriptionFlagBits = (
-    VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT = $00000001);
+    VK_ATTACHMENT_DESCRIPTION_MAY_ALIAS_BIT = $00000001,
+    VK_ATTACHMENT_DESCRIPTION_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
 
   PVkAttachmentDescriptionFlags = ^TVkAttachmentDescriptionFlags; 
@@ -1295,7 +1344,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
     VK_ACCESS_HOST_READ_BIT = $00002000,
     VK_ACCESS_HOST_WRITE_BIT = $00004000,
     VK_ACCESS_MEMORY_READ_BIT = $00008000,
-    VK_ACCESS_MEMORY_WRITE_BIT = $00010000);
+    VK_ACCESS_MEMORY_WRITE_BIT = $00010000,
+    VK_ACCESS_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkAccessFlags = ^TVkAccessFlags; 
@@ -1304,7 +1355,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkDependencyFlagBits = ^TVkDependencyFlagBits;
   TVkDependencyFlagBits = (
-    VK_DEPENDENCY_BY_REGION_BIT = $00000001);
+    VK_DEPENDENCY_BY_REGION_BIT = $00000001,
+    VK_DEPENDENCY_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkDependencyFlags = ^TVkDependencyFlags; 
@@ -1313,7 +1366,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   PVkCommandPoolCreateFlagBits = ^TVkCommandPoolCreateFlagBits;
   TVkCommandPoolCreateFlagBits = (
     VK_COMMAND_POOL_CREATE_TRANSIENT_BIT = $00000001,
-    VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = $00000002);
+    VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT = $00000002,
+    VK_COMMAND_POOL_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkCommandPoolCreateFlags = ^TVkCommandPoolCreateFlags; 
@@ -1322,7 +1377,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkCommandPoolResetFlagBits = ^TVkCommandPoolResetFlagBits;
   TVkCommandPoolResetFlagBits = (
-    VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT = $00000001);
+    VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT = $00000001,
+    VK_COMMAND_POOL_RESET_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
  
   PVkCommandPoolResetFlags = ^TVkCommandPoolResetFlags; 
   TVkCommandPoolResetFlags = TVkFlags;
@@ -1331,7 +1388,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkCommandBufferUsageFlagBits = (
     VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT = $00000001,
     VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT = $00000002,
-    VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = $00000004);
+    VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT = $00000004,
+    VK_COMMAND_BUFFER_USAGE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkCommandBufferUsageFlags = ^TVkCommandBufferUsageFlags; 
@@ -1340,7 +1399,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkQueryControlFlagBits = ^TVkQueryControlFlagBits;
   TVkQueryControlFlagBits = (
-    VK_QUERY_CONTROL_PRECISE_BIT = $00000001);
+    VK_QUERY_CONTROL_PRECISE_BIT = $00000001,
+    VK_QUERY_CONTROL_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
  
   PVkQueryControlFlags = ^TVkQueryControlFlags; 
@@ -1349,7 +1410,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
 
   PVkCommandBufferResetFlagBits = ^TVkCommandBufferResetFlagBits;
   TVkCommandBufferResetFlagBits = (
-    VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT = $00000001);
+    VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT = $00000001,
+    VK_COMMAND_BUFFER_RESET_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
 
 
   PVkCommandBufferResetFlags = ^TVkCommandBufferResetFlags;  
@@ -1359,7 +1422,9 @@ type  PVkPipelineCacheHeaderVersion = ^TVkPipelineCacheHeaderVersion;
   TVkStencilFaceFlagBits = (
     VK_STENCIL_FACE_FRONT_BIT = $00000001,
     VK_STENCIL_FACE_BACK_BIT = $00000002,
-    VK_STENCIL_FRONT_AND_BACK = $3);
+    VK_STENCIL_FRONT_AND_BACK = $00000003,
+    VK_STENCIL_FACE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
+	);
  
   PVkStencilFaceFlags = ^TVkStencilFaceFlags; 
   TVkStencilFaceFlags = TVkFlags;
@@ -2188,77 +2253,77 @@ end;
 
   PVkComputePipelineCreateInfo = ^TVkComputePipelineCreateInfo;
   TVkComputePipelineCreateInfo = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkPipelineCreateFlags;
-    stage: TVkPipelineShaderStageCreateInfo;
-    layout: TVkPipelineLayout;
-    basePipelineHandle: TVkPipeline;
-    basePipelineIndex: int32_t;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkPipelineCreateFlags;
+    stage: 					TVkPipelineShaderStageCreateInfo;
+    layout: 				TVkPipelineLayout;
+    basePipelineHandle: 	TVkPipeline;
+    basePipelineIndex: 		int32_t;
   end;
 
   PVkPushConstantRange = ^TVkPushConstantRange;
   TVkPushConstantRange = record
-    stageFlags: TVkShaderStageFlags;
-    offset: uint32_t;
-    size: uint32_t;
+    stageFlags: 			TVkShaderStageFlags;
+    offset: 				uint32_t;
+    size: 					uint32_t;
   end;
 
   PVkPipelineLayoutCreateInfo = ^TVkPipelineLayoutCreateInfo;
   TVkPipelineLayoutCreateInfo = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkPipelineLayoutCreateFlags;
-    setLayoutCount: uint32_t;
-    pSetLayouts: PVkDescriptorSetLayout;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkPipelineLayoutCreateFlags;
+    setLayoutCount: 		uint32_t;
+    pSetLayouts: 			PVkDescriptorSetLayout;
     pushConstantRangeCount: uint32_t;
-    pPushConstantRanges: PVkPushConstantRange;
+    pPushConstantRanges: 	PVkPushConstantRange;
   end;
 
   PVkSamplerCreateInfo = ^TVkSamplerCreateInfo;
   TVkSamplerCreateInfo = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkSamplerCreateFlags;
-    magFilter: TVkFilter;
-    minFilter: TVkFilter;
-    mipmapMode: TVkSamplerMipmapMode;
-    addressModeU: TVkSamplerAddressMode;
-    addressModeV: TVkSamplerAddressMode;
-    addressModeW: TVkSamplerAddressMode;
-    mipLodBias: Single;
-    anisotropyEnable: TVkBool32;
-    maxAnisotropy: Single;
-    compareEnable: TVkBool32;
-    compareOp: TVkCompareOp;
-    minLod: Single;
-    maxLod: Single;
-    borderColor: TVkBorderColor;
-    unnormalizedCoordinates: TVkBool32;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkSamplerCreateFlags;
+    magFilter: 				TVkFilter;
+    minFilter: 				TVkFilter;
+    mipmapMode: 			TVkSamplerMipmapMode;
+    addressModeU: 			TVkSamplerAddressMode;
+    addressModeV: 			TVkSamplerAddressMode;
+    addressModeW: 			TVkSamplerAddressMode;
+    mipLodBias: 			Single;
+    anisotropyEnable: 		TVkBool32;
+    maxAnisotropy:			Single;
+    compareEnable: 			TVkBool32;
+    compareOp: 				TVkCompareOp;
+    minLod: 				Single;
+    maxLod: 				Single;
+    borderColor: 			TVkBorderColor;
+    unnormalizedCoordinates:TVkBool32;
   end;
 
   PVkDescriptorSetLayoutBinding = ^TVkDescriptorSetLayoutBinding;
   TVkDescriptorSetLayoutBinding = record
-    binding: uint32_t;
-    descriptorType: TVkDescriptorType;
-    descriptorCount: uint32_t;
-    stageFlags: TVkShaderStageFlags;
-    pImmutableSamplers: PVkSampler;
+    binding: 				uint32_t;
+    descriptorType: 		TVkDescriptorType;
+    descriptorCount: 		uint32_t;
+    stageFlags: 			TVkShaderStageFlags;
+    pImmutableSamplers: 	PVkSampler;
   end;
 
   PVkDescriptorSetLayoutCreateInfo = ^TVkDescriptorSetLayoutCreateInfo;
   TVkDescriptorSetLayoutCreateInfo = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkDescriptorSetLayoutCreateFlags;
-    bindingCount: uint32_t;
-    pBindings: PVkDescriptorSetLayoutBinding;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkDescriptorSetLayoutCreateFlags;
+    bindingCount: 			uint32_t;
+    pBindings: 				PVkDescriptorSetLayoutBinding;
   end;
 
   PVkDescriptorPoolSize = ^TVkDescriptorPoolSize;
   TVkDescriptorPoolSize = record
-    type_: TVkDescriptorType;
-    descriptorCount: uint32_t;
+    type_: 					TVkDescriptorType;
+    descriptorCount: 		uint32_t;
   end;
 
   PVkDescriptorPoolCreateInfo = ^TVkDescriptorPoolCreateInfo;
@@ -3682,10 +3747,10 @@ type
   PVkColorSpaceKHR = ^TVkColorSpaceKHR;
   TVkColorSpaceKHR = (
     VK_COLORSPACE_SRGB_NONLINEAR_KHR = 0,
-    VK_COLORSPACE_BEGIN_RANGE = VK_COLORSPACE_SRGB_NONLINEAR_KHR,
-    VK_COLORSPACE_END_RANGE = VK_COLORSPACE_SRGB_NONLINEAR_KHR,
-    VK_COLORSPACE_RANGE_SIZE = (VK_COLORSPACE_SRGB_NONLINEAR_KHR - VK_COLORSPACE_SRGB_NONLINEAR_KHR + 1),
-    VK_COLORSPACE_MAX_ENUM = $7FFFFFFF
+    VK_COLORSPACE_BEGIN_RANGE_KHR = VK_COLORSPACE_SRGB_NONLINEAR_KHR,
+    VK_COLORSPACE_END_RANGE_KHR = VK_COLORSPACE_SRGB_NONLINEAR_KHR,
+    VK_COLORSPACE_RANGE_SIZE_KHR = (VK_COLORSPACE_SRGB_NONLINEAR_KHR - VK_COLORSPACE_SRGB_NONLINEAR_KHR + 1),
+    VK_COLORSPACE_MAX_ENUM_KHR = $7FFFFFFF
   );
 
   PVkPresentModeKHR = ^TVkPresentModeKHR;
@@ -3694,10 +3759,10 @@ type
     VK_PRESENT_MODE_MAILBOX_KHR = 1,
     VK_PRESENT_MODE_FIFO_KHR = 2,
     VK_PRESENT_MODE_FIFO_RELAXED_KHR = 3,
-    VK_PRESENT_MODE_BEGIN_RANGE = VK_PRESENT_MODE_IMMEDIATE_KHR,
-    VK_PRESENT_MODE_END_RANGE = VK_PRESENT_MODE_FIFO_RELAXED_KHR,
-    VK_PRESENT_MODE_RANGE_SIZE = (VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1),
-    VK_PRESENT_MODE_MAX_ENUM = $7FFFFFFF
+    VK_PRESENT_MODE_BEGIN_RANGE_KHR = VK_PRESENT_MODE_IMMEDIATE_KHR,
+    VK_PRESENT_MODE_END_RANGE_KHR = VK_PRESENT_MODE_FIFO_RELAXED_KHR,
+    VK_PRESENT_MODE_RANGE_SIZE_KHR = (VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1),
+    VK_PRESENT_MODE_MAX_ENUM_KHR = $7FFFFFFF
   );
 
   PVkSurfaceTransformFlagBitsKHR = ^TVkSurfaceTransformFlagBitsKHR;
@@ -3858,18 +3923,18 @@ type  PVkSwapchainCreateFlagsKHR = ^TVkSwapchainCreateFlagsKHR;
                 								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkAcquireNextImageKHR = function (
-                                device: TVkDevice;
-                                swapchain: TVkSwapchainKHR;
-                                timeout: uint64_t;
-                                semaphore: TVkSemaphore;
-                                fence: TVkFence;
-                                pImageIndex: Puint32_t): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      device: TVkDevice;
+      swapchain: TVkSwapchainKHR;
+      timeout: uint64_t;
+      semaphore: TVkSemaphore;
+      fence: TVkFence;
+      pImageIndex: Puint32_t): TVkResult;
+	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkQueuePresentKHR = function (
-                                queue: TVkQueue;
-                                const pPresentInfo: PVkPresentInfoKHR): TVkResult;
-                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      queue: TVkQueue;
+      const pPresentInfo: PVkPresentInfoKHR): TVkResult;
+      {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -3903,7 +3968,8 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
     VK_DISPLAY_PLANE_ALPHA_OPAQUE_BIT_KHR = $00000001,
     VK_DISPLAY_PLANE_ALPHA_GLOBAL_BIT_KHR = $00000002,
     VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = $00000004,
-    VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = $00000008
+    VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = $00000008,
+    VK_DISPLAY_PLANE_ALPHA_FLAG_BITS_MAX_ENUM_KHR = $7FFFFFFF
   );
 
   PVkDisplayModeCreateFlagsKHR = ^TVkDisplayModeCreateFlagsKHR;
@@ -3966,36 +4032,36 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
 
   PVkDisplaySurfaceCreateInfoKHR = ^TVkDisplaySurfaceCreateInfoKHR;
   TVkDisplaySurfaceCreateInfoKHR = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkDisplaySurfaceCreateFlagsKHR;
-    displayMode: TVkDisplayModeKHR;
-    planeIndex: uint32_t;
-    planeStackIndex: uint32_t;
-    transform: TVkSurfaceTransformFlagBitsKHR;
-    globalAlpha: Single;
-    alphaMode: TVkDisplayPlaneAlphaFlagBitsKHR;
-    imageExtent: TVkExtent2D;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkDisplaySurfaceCreateFlagsKHR;
+    displayMode: 			TVkDisplayModeKHR;
+    planeIndex: 			uint32_t;
+    planeStackIndex: 		uint32_t;
+    transform: 				TVkSurfaceTransformFlagBitsKHR;
+    globalAlpha: 			Single;
+    alphaMode: 				TVkDisplayPlaneAlphaFlagBitsKHR;
+    imageExtent: 			TVkExtent2D;
   end;
 
   TvkGetPhysicalDeviceDisplayPropertiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 pPropertyCount: Puint32_t;
                                 pProperties: PVkDisplayPropertiesKHR): TVkResult; 
-                								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetPhysicalDeviceDisplayPlanePropertiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 pPropertyCount: Puint32_t;
                                 pProperties: PVkDisplayPlanePropertiesKHR): TVkResult;
-								                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetDisplayPlaneSupportedDisplaysKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 planeIndex: uint32_t;
                                 pDisplayCount: Puint32_t;
                                 pDisplays: PVkDisplayKHR): TVkResult;
-                								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetDisplayModePropertiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
@@ -4003,7 +4069,7 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
                                 pPropertyCount: Puint32_t;
                                 pProperties: PVkDisplayModePropertiesKHR
                                 ): TVkResult;
-								                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkCreateDisplayModeKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
@@ -4011,21 +4077,21 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
                                 const pCreateInfo: PVkDisplayModeCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pMode: PVkDisplayModeKHR): TVkResult; 
-							                 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+							    {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetDisplayPlaneCapabilitiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 mode: TVkDisplayModeKHR;
                                 planeIndex: uint32_t;
                                 pCapabilities: PVkDisplayPlaneCapabilitiesKHR): TVkResult;
-                								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkCreateDisplayPlaneSurfaceKHR = function (
                                 instance: TVkInstance;
                                 const pCreateInfo: PVkDisplaySurfaceCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSurface: PVkSurfaceKHR): TVkResult;
-								                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4056,12 +4122,12 @@ type
   end;
 
   TvkCreateSharedSwapchainsKHR = function (
-                                device: TVkDevice;
-                                swapchainCount: uint32_t;
-                                const pCreateInfos: PVkSwapchainCreateInfoKHR;
-                                const pAllocator: PVkAllocationCallbacks;
-                                pSwapchains: PVkSwapchainKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      device: TVkDevice;
+      swapchainCount: uint32_t;
+      const pCreateInfos: PVkSwapchainCreateInfoKHR;
+      const pAllocator: PVkAllocationCallbacks;
+      pSwapchains: PVkSwapchainKHR): TVkResult; 
+	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4092,18 +4158,18 @@ type
 
 
   TvkCreateXlibSurfaceKHR = function (
-                                instance: TVkInstance;
-                                const pCreateInfo: PVkXlibSurfaceCreateInfoKHR;
-                                const pAllocator: PVkAllocationCallbacks;
-                                pSurface: PVkSurfaceKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      instance: TVkInstance;
+      const pCreateInfo: PVkXlibSurfaceCreateInfoKHR;
+      const pAllocator: PVkAllocationCallbacks;
+      pSurface: PVkSurfaceKHR): TVkResult; 
+	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetPhysicalDeviceXlibPresentationSupportKHR = function (
-                                physicalDevice: TVkPhysicalDevice;
-                                queueFamilyIndex: uint32_t;
-                                dpy: PDisplay;
-                                visualID: TVisualID): TVkBool32; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+        physicalDevice: TVkPhysicalDevice;
+        queueFamilyIndex: uint32_t;
+        dpy: PDisplay;
+        visualID: TVisualID): TVkBool32; 
+		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4125,27 +4191,27 @@ type  TVkXcbSurfaceCreateFlagsKHR = ^TVkXcbSurfaceCreateFlagsKHR;
 
   PVkXcbSurfaceCreateInfoKHR = ^TVkXcbSurfaceCreateInfoKHR;
   TVkXcbSurfaceCreateInfoKHR = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkXcbSurfaceCreateFlagsKHR;
-    connection: Pxcb_connection_t;
-    window: Txcb_window_t;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkXcbSurfaceCreateFlagsKHR;
+    connection: 			Pxcb_connection_t;
+    window: 				Txcb_window_t;
   end;
 
 
   TvkCreateXcbSurfaceKHR = function (
-                                instance: TVkInstance;
-                                const pCreateInfo: PVkXcbSurfaceCreateInfoKHR;
-                                const pAllocator: PVkAllocationCallbacks;
-                                pSurface: PVkSurfaceKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      instance: TVkInstance;
+      const pCreateInfo: PVkXcbSurfaceCreateInfoKHR;
+      const pAllocator: PVkAllocationCallbacks;
+      pSurface: PVkSurfaceKHR): TVkResult; 
+	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetPhysicalDeviceXcbPresentationSupportKHR = function (
-                                physicalDevice: TVkPhysicalDevice;
-                                queueFamilyIndex: uint32_t;
-                                connection: Pxcb_connection_t;
-                                visual_id: xcb_visualid_t): TVkBool32; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      physicalDevice: TVkPhysicalDevice;
+      queueFamilyIndex: uint32_t;
+      connection: Pxcb_connection_t;
+      visual_id: xcb_visualid_t): TVkBool32; 
+	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFDEF VK_NO_PROTOTYPES}
 var
@@ -4168,26 +4234,26 @@ type  PVkWaylandSurfaceCreateFlagsKHR = ^TVkWaylandSurfaceCreateFlagsKHR;
 
   PVkWaylandSurfaceCreateInfoKHR = ^TVkWaylandSurfaceCreateInfoKHR;
   TVkWaylandSurfaceCreateInfoKHR = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkWaylandSurfaceCreateFlagsKHR;
-    display: Pwl_display;
-    surface: Pwl_surface;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkWaylandSurfaceCreateFlagsKHR;
+    display: 				Pwl_display;
+    surface: 				Pwl_surface;
   end;
 
 
   TvkCreateWaylandSurfaceKHR = function (
-                                instance: TVkInstance;
-                                const pCreateInfo: PVkWaylandSurfaceCreateInfoKHR;
-                                const pAllocator: PVkAllocationCallbacks;
-                                pSurface: PVkSurfaceKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+        instance: TVkInstance;
+        const pCreateInfo: PVkWaylandSurfaceCreateInfoKHR;
+        const pAllocator: PVkAllocationCallbacks;
+        pSurface: PVkSurfaceKHR): TVkResult; 
+		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkGetPhysicalDeviceWaylandPresentationSupportKHR = function (
-                                physicalDevice: TVkPhysicalDevice;
-                                queueFamilyIndex: uint32_t;
-                                display: Pwl_display): TVkBool32; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+        physicalDevice: TVkPhysicalDevice;
+        queueFamilyIndex: uint32_t;
+        display: Pwl_display): TVkBool32; 
+		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4210,11 +4276,11 @@ type  PVkMirSurfaceCreateFlagsKHR = ^TVkMirSurfaceCreateFlagsKHR;
 
   PVkMirSurfaceCreateInfoKHR = ^TVkMirSurfaceCreateInfoKHR;
   TVkMirSurfaceCreateInfoKHR = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkMirSurfaceCreateFlagsKHR;
-    connection: PMirConnection;
-    mirSurface: PMirSurface;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkMirSurfaceCreateFlagsKHR;
+    connection: 			PMirConnection;
+    mirSurface: 			PMirSurface;
   end;
 
 
@@ -4287,11 +4353,11 @@ type
 
   PVkWin32SurfaceCreateInfoKHR = ^TVkWin32SurfaceCreateInfoKHR;
   TVkWin32SurfaceCreateInfoKHR = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkWin32SurfaceCreateFlagsKHR;
-    hinstance: HINST;
-    hwnd: HWND;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkWin32SurfaceCreateFlagsKHR;
+    hinstance: 				HINST;
+    hwnd: 					HWND;
   end;
 
   TvkCreateWin32SurfaceKHR = function (
@@ -4323,9 +4389,9 @@ type
   end;
 
 const
-  VK_EXT_DEBUG_REPORT_SPEC_VERSION  = 1;
+  VK_EXT_DEBUG_REPORT_SPEC_VERSION  = 2;
   VK_EXT_DEBUG_REPORT_EXTENSION_NAME: PVkChar = 'VK_EXT_debug_report';
-
+///  VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
 type
   PVkDebugReportObjectTypeEXT = ^TVkDebugReportObjectTypeEXT;
   TVkDebugReportObjectTypeEXT = (
@@ -4357,13 +4423,29 @@ type
     VK_DEBUG_REPORT_OBJECT_TYPE_COMMAND_POOL_EXT = 25,
     VK_DEBUG_REPORT_OBJECT_TYPE_SURFACE_KHR_EXT = 26,
     VK_DEBUG_REPORT_OBJECT_TYPE_SWAPCHAIN_KHR_EXT = 27,
-    VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT = 28
+    VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT = 28,
+    VK_DEBUG_REPORT_OBJECT_TYPE_BEGIN_RANGE_EXT = VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT,
+    VK_DEBUG_REPORT_OBJECT_TYPE_END_RANGE_EXT = VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT,
+    VK_DEBUG_REPORT_OBJECT_TYPE_RANGE_SIZE_EXT = (VK_DEBUG_REPORT_OBJECT_TYPE_DEBUG_REPORT_EXT - VK_DEBUG_REPORT_OBJECT_TYPE_UNKNOWN_EXT + 1),
+    VK_DEBUG_REPORT_OBJECT_TYPE_MAX_ENUM_EXT = $7FFFFFFF
+	
+	
+	
+	
   );
 
   PVkDebugReportErrorEXT = ^TVkDebugReportErrorEXT;
   TVkDebugReportErrorEXT = (
     VK_DEBUG_REPORT_ERROR_NONE_EXT = 0,
-    VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = 1
+    VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT = 1,
+    VK_DEBUG_REPORT_ERROR_BEGIN_RANGE_EXT = VK_DEBUG_REPORT_ERROR_NONE_EXT,
+    VK_DEBUG_REPORT_ERROR_END_RANGE_EXT = VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT,
+    VK_DEBUG_REPORT_ERROR_RANGE_SIZE_EXT = (VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT - VK_DEBUG_REPORT_ERROR_NONE_EXT + 1),
+    VK_DEBUG_REPORT_ERROR_MAX_ENUM_EXT = $7FFFFFFF
+	
+	
+	
+	
   );
 
   PVkDebugReportFlagBitsEXT = ^TVkDebugReportFlagBitsEXT;
@@ -4372,53 +4454,56 @@ type
     VK_DEBUG_REPORT_WARNING_BIT_EXT = $00000002,
     VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT = $00000004,
     VK_DEBUG_REPORT_ERROR_BIT_EXT = $00000008,
-    VK_DEBUG_REPORT_DEBUG_BIT_EXT = $00000010
+    VK_DEBUG_REPORT_DEBUG_BIT_EXT = $00000010,
+    VK_DEBUG_REPORT_FLAG_BITS_MAX_ENUM_EXT = $7FFFFFFF
   );
 
   PVkDebugReportFlagsEXT = ^TVkDebugReportFlagsEXT;
   TVkDebugReportFlagsEXT = TVkFlags;
 
   TvkDebugReportCallback_f_EXT = function (
-                                flags: TVkDebugReportFlagsEXT;
-                                objectType: TVkDebugReportObjectTypeEXT;
-                                object_: uint64_t;
-                                location: size_t;
-                                messageCode: int32_t;
-                                pLayerPrefix: PVkChar;
-                                pMessage: PVkChar;
-                                pUserData: Pointer): TVkBool32; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      flags: 				TVkDebugReportFlagsEXT;
+      objectType: 			TVkDebugReportObjectTypeEXT;
+      object_: 				uint64_t;
+      location: 			size_t;
+      messageCode: 			int32_t;
+      pLayerPrefix: 		PVkChar;
+      pMessage: 			PVkChar;
+      pUserData: Pointer): 	TVkBool32; 
+	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   PVkDebugReportCallbackCreateInfoEXT = ^TVkDebugReportCallbackCreateInfoEXT;  TVkDebugReportCallbackCreateInfoEXT = record
-    sType: TVkStructureType;
-    pNext: Pointer;
-    flags: TVkDebugReportFlagsEXT;
-    pfnCallback: TvkDebugReportCallbackEXT;
-    pUserData: Pointer;
+    sType: 					TVkStructureType;
+    pNext: 					Pointer;
+    flags: 					TVkDebugReportFlagsEXT;
+    pfnCallback: 			TvkDebugReportCallbackEXT;
+    pUserData: 				Pointer;
   end;
 
 
   TvkCreateDebugReportCallbackEXT = function (
-                                instance: TVkInstance;
-                                const pCreateInfo: PVkDebugReportCallbackCreateInfoEXT;
-                                const pAllocator: PVkAllocationCallbacks;
-                                pCallback: PVkDebugReportCallbackEXT): TVkResult; {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     instance: TVkInstance;
+     const pCreateInfo: PVkDebugReportCallbackCreateInfoEXT;
+     const pAllocator: PVkAllocationCallbacks;
+     pCallback: PVkDebugReportCallbackEXT): TVkResult; 
+	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	 
   TvkDestroyDebugReportCallbackEXT = procedure (
-                                instance: TVkInstance;
-                                callback: TVkDebugReportCallbackEXT;
-                                const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     instance: TVkInstance;
+     callback: TVkDebugReportCallbackEXT;
+     const pAllocator: PVkAllocationCallbacks); 
+  	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
   TvkDebugReportMessageEXT = procedure (
-                                instance: TVkInstance;
-                                flags: TVkDebugReportFlagsEXT;
-                                objectType: TVkDebugReportObjectTypeEXT;
-                                object_: uint64_t;
-                                location: size_t;
-                                messageCode: int32_t;
-                                pLayerPrefix: PVkChar;
-                                pMessage: PVkChar); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     instance: TVkInstance;
+     flags: TVkDebugReportFlagsEXT;
+     objectType: TVkDebugReportObjectTypeEXT;
+     object_: uint64_t;
+     location: size_t;
+     messageCode: int32_t;
+     pLayerPrefix: PVkChar;
+     pMessage: PVkChar); 
+	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
