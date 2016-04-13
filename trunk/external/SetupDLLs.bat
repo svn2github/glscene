@@ -58,6 +58,6 @@ rem win64
 copy cutil64.dll %SystemRoot%\System32\
 copy zlib1.dll %SystemRoot%\System32\
 
-pause
+rem pause
 
 cls

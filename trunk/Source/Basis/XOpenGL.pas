@@ -168,7 +168,8 @@ type
     property SecondTextureUnitForbidden: Boolean read FSecondTextureUnitForbidden;
   end;
 
-function xgl(): TGLMultitextureCoordinator;
+function Xgl(): TGLMultitextureCoordinator;
+procedure RemoveXgl(MTC: TAbstractMultitextureCoordinator);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -195,6 +196,12 @@ begin
     vMTC := TGLMultitextureCoordinator(RC.MultitextureCoordinator);
   end;
   Result := vMTC;
+end;
+
+procedure RemoveXgl(MTC: TAbstractMultitextureCoordinator);
+begin
+  if vMTC = MTC then
+    vMTC := nil;
 end;
 
   // ------------------------------------------------------------------
