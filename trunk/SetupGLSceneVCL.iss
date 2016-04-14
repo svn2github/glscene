@@ -69,6 +69,7 @@ Name: "Custom"; Description: "Choose comps"; Flags: iscustom
 
 [Files]
 Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Bpl\*"; DestDir: "{app}\Bpl"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "Dcp\*"; DestDir: "{app}\Dcp"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "external\*"; DestDir: "{app}\external"; Flags: ignoreversion
@@ -82,7 +83,6 @@ Source: "Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recurses
 
 [Registry]
 ; Parameters for GLScene
-;Root: HKLM; Subkey: "Software\GLScene"; ValueType: string; ValueName: userGUID; ValueData: "0123456789"; Flags: createvalueifdoesntexist uninsdeletekey 
 Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: "Version"; ValueData: "1.5"; Flags: createvalueifdoesntexist uninsdeletekey 
 Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupGLSceneVCL.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
 Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
