@@ -31,9 +31,9 @@ del *.db /s
 
 rem delete cpp builder files
 
-del *.hpp /s
-del *.bpi /s
-del *.lib /s
+rem del *.hpp /s
+rem del *.bpi /s
+rem del *.lib /s
 del *.#00 /s
 del *.pch /s
 del *.tds /s
