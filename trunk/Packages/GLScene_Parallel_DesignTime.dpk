@@ -1,7 +1,7 @@
-package GLSceneVCL_Cg_DesignTime;
+package GLScene_Parallel_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneCg.dcr'}
+{$R '..\Resources\GLSceneCUDA.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,19 +26,19 @@ package GLSceneVCL_Cg_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL Cg Shaders'}
+{$DESCRIPTION 'GLScene GPU Computing'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   designide,
-  VclSmp,
-  GLSceneVCL_RunTime,
-  GLSceneVCL_Cg_RunTime,
-  GLSceneVCL_DesignTime;
+  vcl,
+  GLScene_DesignTime,
+  GLScene_Parallel_RunTime;
 
 contains
-  GLCgRegister in '..\Source\Shaders\GLCgRegister.pas';
+  FCUDAEditor in '..\Source\DesignTime\FCUDAEditor.pas' {GLSCUDAEditorForm},
+  GLSParallelRegister in '..\Source\ParallelAPIs\GLSParallelRegister.pas';
 
 end.

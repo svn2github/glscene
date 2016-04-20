@@ -1,4 +1,4 @@
-package GLSceneVCL_Parallel_RunTime;
+package GLScene_Parallel_RunTime;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -25,7 +25,7 @@ package GLSceneVCL_Parallel_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL GPU Computing'}
+{$DESCRIPTION 'GLScene GPU Computing'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -34,7 +34,7 @@ requires
   vclimg,
   vcl,
   xmlrtl,
-  GLSceneVCL_RunTime;
+  GLScene_RunTime;
 
 contains
   CL in '..\Source\ParallelAPIs\CL.pas',

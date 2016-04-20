@@ -1,7 +1,6 @@
-package GLSceneVCL_SDL;
+package GLScene_Cg_RunTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneSDL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,18 +25,22 @@ package GLSceneVCL_SDL;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL SDL Driver'}
+{$DESCRIPTION 'GLScene Cg Shaders'}
+{$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   vcl,
   vclimg,
-  GLSceneVCL_RunTime;
+  xmlrtl,
+  GLScene_RunTime;
 
 contains
-  GLSDL in '..\Source\GameAPIs\GLSDL.pas',
-  GLSDLContext in '..\Source\GameAPIs\GLSDLContext.pas',
-  GLSDLWindow in '..\Source\GameAPIs\GLSDLWindow.pas';
+  cgGL in '..\Source\Shaders\cgGL.pas',
+  cg in '..\Source\Shaders\cg.pas',
+  GLCgShader in '..\Source\Shaders\GLCgShader.pas',
+  GLCgBombShader in '..\Source\Shaders\GLCgBombShader.pas',
+  GLcgPostTransformationShader in '..\Source\Shaders\GLcgPostTransformationShader.pas';
 
 end.

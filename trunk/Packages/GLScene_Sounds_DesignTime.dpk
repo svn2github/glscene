@@ -1,6 +1,9 @@
-package GLSceneVCL_Cg_RunTime;
+package GLScene_Sounds_DesignTime;
 
 {$R *.res}
+{$R '..\Resources\GLSceneBass.dcr'}
+{$R '..\Resources\GLSceneFMod.dcr'}
+{$R '..\Resources\GLSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -25,22 +28,18 @@ package GLSceneVCL_Cg_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL Cg Shaders'}
-{$RUNONLY}
+{$DESCRIPTION 'GLScene Sound Managers'}
+{$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
+  designide,
   vcl,
-  vclimg,
-  xmlrtl,
-  GLSceneVCL_RunTime;
+  GLScene_DesignTime,
+  GLScene_Sounds_RunTime;
 
 contains
-  cgGL in '..\Source\Shaders\cgGL.pas',
-  cg in '..\Source\Shaders\cg.pas',
-  GLCgShader in '..\Source\Shaders\GLCgShader.pas',
-  GLCgBombShader in '..\Source\Shaders\GLCgBombShader.pas',
-  GLcgPostTransformationShader in '..\Source\Shaders\GLcgPostTransformationShader.pas';
+  GLSoundRegister in '..\Source\SoundVideoAPIs\GLSoundRegister.pas';
 
 end.

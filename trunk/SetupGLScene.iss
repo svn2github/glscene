@@ -1,8 +1,8 @@
 ;-----------------------------------------------------------------------------
-; Setup GLSceneVCL script for Inno Setup Compiler
+; Setup GLScene script for Inno Setup Compiler
 ;-----------------------------------------------------------------------------
 
-#define GLSceneName "GLSceneVCL"
+#define GLSceneName "GLScene"
 #define GLSceneVersion "1.4.1"
 #define GLScenePublisher "GLSteam"
 #define GLSceneURL "http://www.glscene.org/"
@@ -11,7 +11,7 @@
 AppId={{8CF5F54E-C1FC-4716-BC82-908867D36AD6}
 AppName={#GLSceneName}
 AppVersion={#GLSceneVersion}
-AppVerName=GLSceneVCL for Win32
+AppVerName=GLScene for Win32
 AppCopyright=Copyright © 2000,2016 GLSteam
 AppPublisher={#GLScenePublisher}
 AppPublisherURL={#GLSceneURL}
@@ -21,10 +21,10 @@ AppUpdatesURL={#GLSceneURL}
 DefaultDirName=D:\GLScene\{#GLSceneName}
 DefaultGroupName={#GLSceneName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=SetupGLSceneVCL_v.1.4.1_for_RAD10_Seattle
+OutputBaseFilename=SetupGLScene_v.1.4.1_for_RAD10
 
 ; Source directory of files
-; SourceDir=D:\Library\GLSceneVCL
+; SourceDir=D:\Library\GLScene
 ; Output directory for setup program
 OutputDir=D:\GLS\Installation   
 
@@ -83,9 +83,9 @@ Source: "Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recurses
 
 [Registry]
 ; Parameters for GLScene
-Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: "Version"; ValueData: "1.5"; Flags: createvalueifdoesntexist uninsdeletekey 
-Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupGLSceneVCL.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
-Root: HKCU; Subkey: "Software\GLScene\GLSceneVCL"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
+Root: HKCU; Subkey: "Software\GLScene\GLScene"; ValueType: string; ValueName: "Version"; ValueData: "1.5"; Flags: createvalueifdoesntexist uninsdeletekey 
+Root: HKCU; Subkey: "Software\GLScene\GLScene"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupGLScene.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
+Root: HKCU; Subkey: "Software\GLScene\GLScene"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
 
 ; Parameters for RAD Studio   
 ; Auto Save
@@ -93,44 +93,44 @@ Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Auto Save"; ValueType: string
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Auto Save"; ValueType: string; ValueName: Editor Files; ValueData: "True"; 
                      
 ; Environmental Variables, the ValueData needs to be changed from SourceDir to {app}   
-; New user variable GLSVCLDIR
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Environment Variables"; ValueType: string; ValueName: GLSVCLDIR; ValueData: "{app}"; Flags: deletevalue 
+; New user variable GLSDIR
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Environment Variables"; ValueType: string; ValueName: GLSDIR; ValueData: "{app}"; Flags: deletevalue 
 ; Path to Bpl packages
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Environment Variables"; ValueType: string; ValueName: Path; ValueData: "{olddata};{app}\Bpl\Win32\;C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\"; 
 
 ; Delphi Options
 ; Library Paths to sources
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Search Path; ValueData: "{olddata};$(GLSVCLDIR)\Dcp\$(Platform);$(GLSVCLDIR)\Source;$(GLSVCLDIR)\Source\Basis;$(GLSVCLDIR)\Source\DesignTime;$(GLSVCLDIR)\Source\FileFormats;$(GLSVCLDIR)\Source\GameAPIs;$(GLSVCLDIR)\Source\ParallelAPIs;$(GLSVCLDIR)\Source\PhysicsAPIs;$(GLSVCLDIR)\Source\ScriptingAPIs;$(GLSVCLDIR)\Source\Shaders;$(GLSVCLDIR)\Source\SoundVideoAPIs";
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Search Path; ValueData: "{olddata};$(GLSDIR)\Dcp\$(Platform);$(GLSVCLDIR)\Source;$(GLSVCLDIR)\Source\Basis;$(GLSVCLDIR)\Source\DesignTime;$(GLSVCLDIR)\Source\FileFormats;$(GLSVCLDIR)\Source\GameAPIs;$(GLSVCLDIR)\Source\ParallelAPIs;$(GLSVCLDIR)\Source\PhysicsAPIs;$(GLSVCLDIR)\Source\ScriptingAPIs;$(GLSVCLDIR)\Source\Shaders;$(GLSVCLDIR)\Source\SoundVideoAPIs";
 
 ; BPL Output Directory
 ; Package DPL Output
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package DPL Output; ValueData: "$(GLSVCLDIR)\Bpl\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package DPL Output; ValueData: "$(GLSDIR)\Bpl\$(Platform)"; Flags: deletevalue
 ; DCP Output Directory
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package DCP Output; ValueData: "$(GLSVCLDIR)\Dcp\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package DCP Output; ValueData: "$(GLSDIR)\Dcp\$(Platform)"; Flags: deletevalue
 ; HPP Output Directory
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: HPP Output Directory; ValueData: "$(GLSVCLDIR)\hpp\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: HPP Output Directory; ValueData: "$(GLSDIR)\hpp\$(Platform)"; Flags: deletevalue
 ; Package BPL Search Path
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package Search Path; ValueData: "$(GLSVCLDIR)\Bpl\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Library\Win32"; ValueType: string; ValueName: Package Search Path; ValueData: "$(GLSDIR)\Bpl\$(Platform)"; Flags: deletevalue
 
 ; C++Builder Options
 ; Include Path to hpp headers
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: IncludePath; ValueData: "{olddata};$(GLSVCLDIR)\hpp\$(Platform)"; 
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: UserIncludePath; ValueData: "$(GLSVCLDIR)\hpp\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: IncludePath; ValueData: "{olddata};$(GLSDIR)\hpp\$(Platform)"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: UserIncludePath; ValueData: "$(GLSDIR)\hpp\$(Platform)"; Flags: deletevalue
 ; Library Path to LIB/BPI files
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: LibraryPath; ValueData: "{olddata};$(GLSVCLDIR)\Dcp\$(Platform)";
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: LibraryPath; ValueData: "{olddata};$(GLSDIR)\Dcp\$(Platform)";
 ; Package BPL output directory 
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: BPLOutput; ValueData: "$(GLSVCLDIR)\Bpl\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: BPLOutput; ValueData: "$(GLSDIR)\Bpl\$(Platform)"; Flags: deletevalue
 ; Package BPI/LIB output directory 
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: BPIOutput; ValueData: "$(GLSVCLDIR)\Dcp\$(Platform)"; Flags: deletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: BPIOutput; ValueData: "$(GLSDIR)\Dcp\$(Platform)"; Flags: deletevalue
 ; Search path
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: SearchPath; ValueData: "{olddata};$(GLSVCLDIR)\Bpl\$(Platform)"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\C++\Paths\Win32"; ValueType: string; ValueName: SearchPath; ValueData: "{olddata};$(GLSDIR)\Bpl\$(Platform)"; 
 
 ; Known Packages
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSVCLDIR)\Bpl\Win32\GLSceneVCL_Cg_DesignTime.bpl; ValueData: "GLSceneVCL Cg Shaders"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSVCLDIR)\Bpl\Win32\GLSceneVCL_Parallel_DesignTime.bpl; ValueData: "GLSceneVCL GPU Computing"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSVCLDIR)\Bpl\Win32\GLSceneVCL_DesignTime.bpl; ValueData: "GLSceneVCL OpenGL 3D library"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSVCLDIR)\Bpl\Win32\GLSceneVCL_Physics_DesignTime.bpl; ValueData: "GLSceneVCL Physics Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSVCLDIR)\Bpl\Win32\GLSceneVCL_Sounds_DesignTime.bpl; ValueData: "GLSceneVCL Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSDIR)\Bpl\Win32\GLSceneVCL_Cg_DesignTime.bpl; ValueData: "GLSceneVCL Cg Shaders"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSDIR)\Bpl\Win32\GLSceneVCL_Parallel_DesignTime.bpl; ValueData: "GLSceneVCL GPU Computing"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSDIR)\Bpl\Win32\GLSceneVCL_DesignTime.bpl; ValueData: "GLSceneVCL OpenGL 3D library"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSDIR)\Bpl\Win32\GLSceneVCL_Physics_DesignTime.bpl; ValueData: "GLSceneVCL Physics Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(GLSDIR)\Bpl\Win32\GLSceneVCL_Sounds_DesignTime.bpl; ValueData: "GLSceneVCL Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
 
 [Code]
 function IsRegularUser(): Boolean;

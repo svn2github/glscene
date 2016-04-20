@@ -1,4 +1,4 @@
-package GLSceneVCL_DesignTime;
+package GLScene_DesignTime;
 
 {$R *.res}
 {$R '..\Resources\GLSceneObjects.dcr'}
@@ -28,7 +28,7 @@ package GLSceneVCL_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL OpenGL 3D library'}
+{$DESCRIPTION 'GLScene OpenGL 3D library'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
@@ -38,7 +38,7 @@ requires
   vclimg,
   vcl,
   VclSmp,
-  GLSceneVCL_RunTime;
+  GLScene_RunTime;
 
 contains
   FRFaceEditor in '..\Source\DesignTime\FRFaceEditor.pas' {RFaceEditor: TFrame},
