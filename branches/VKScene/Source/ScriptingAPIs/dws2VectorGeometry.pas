@@ -1,9 +1,9 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 
 {
-  DelphiWebScriptII symbol creation for GLS.VectorGeometry types
+  DelphiWebScriptII symbol creation for VKS.VectorGeometry types
   and functions. 
     
 }
@@ -27,7 +27,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, GLS.VectorGeometry;
+  dws2Functions, VKS.VectorGeometry;
 
 type
   TVectorMakeFunction = class(TInternalFunction)
@@ -226,7 +226,7 @@ end;
 constructor Tdws2VectorGeometryUnit.Create(AOwner: TComponent);
 begin
   inherited;
-  FUnitName := 'GLS.VectorGeometry';
+  FUnitName := 'VKS.VectorGeometry';
 end;
 
 // ----------

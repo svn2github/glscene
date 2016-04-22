@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 
 {
@@ -12,7 +12,7 @@ unit dws2OpenGLAdapter;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   Winapi.OpenGL,
@@ -38,7 +38,7 @@ procedure Register;
 implementation
 
 uses
-  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  GLS.OpenGLAdapter, GLS.Context, GLS.VectorGeometry;
+  dws2Functions, Winapi.OpenGL, Winapi.OpenGLext,  VKS.OpenGLAdapter, VKS.Context, VKS.VectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)
@@ -2020,8 +2020,8 @@ constructor Tdws2OpenGLUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName := 'OpenGLAdapter';
-  FDependencies.Add('GLS.Context');
-  FDependencies.Add('GLS.VectorGeometry');
+  FDependencies.Add('VKS.Context');
+  FDependencies.Add('VKS.VectorGeometry');
 end;
 
 // ----------

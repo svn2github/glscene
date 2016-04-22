@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
 	Loader for FSRad OCT files. 
@@ -8,11 +8,11 @@ unit FileOCT;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorGeometry, GLS.MeshUtils, GLS.VectorLists;
+  VKS.VectorGeometry, VKS.MeshUtils, VKS.VectorLists;
 
 type
 

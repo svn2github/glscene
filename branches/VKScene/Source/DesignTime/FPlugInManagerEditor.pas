@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Need a short description of what it does here. 
@@ -13,7 +13,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects,
 
-  GLS.PlugInIntf, GLS.PlugInManager, FMX.Memo, FMX.ScrollBox,
+  VKS.PlugInIntf, VKS.PlugInManager, FMX.Memo, FMX.ScrollBox,
   FMX.Controls.Presentation;
 
 type

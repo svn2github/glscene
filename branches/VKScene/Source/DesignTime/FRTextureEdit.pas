@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
   Basic editing frame for TVKTexture
@@ -26,10 +26,10 @@ uses
   FMX.StdCtrls,
   FMX.ListBox,
   FMX.Controls.Presentation,
-  GLS.Graphics,
-  GLS.TextureFormat,
-  GLS.Texture,
-  GLS.TextureImageEditors;
+  VKS.Graphics,
+  VKS.TextureFormat,
+  VKS.Texture,
+  VKS.TextureImageEditors;
 
 type
   TRTextureEdit = class(TFrame)

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
   File streaming class for the B3D loader 
@@ -10,13 +10,13 @@ unit FileB3D;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 {$R-}
 
 uses
   System.Classes, System.SysUtils,
-  //GLS
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.VectorLists;
+  //VKS
+  VKS.VectorGeometry, VKS.VectorTypes, VKS.VectorLists;
 
 
 type

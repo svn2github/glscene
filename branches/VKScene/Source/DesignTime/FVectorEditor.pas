@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Editor for a vector. 
@@ -15,7 +15,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Controls.Presentation, FMX.Edit, FMX.Objects,
    
-  GLS.VectorGeometry, GLS.VectorTypes, GLS.Utils;
+  VKS.VectorGeometry, VKS.VectorTypes, VKS.Utils;
 
 type
   TVKVectorEditorForm = class(TForm)
@@ -142,8 +142,8 @@ procedure TVKVectorEditorForm.SBInvertClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
-  SetVector(v, GLS.Utils.StrToFloatDef(EDx.Text, 0),
-    GLS.Utils.StrToFloatDef(EDy.Text, 0), GLS.Utils.StrToFloatDef(EDz.Text, 0));
+  SetVector(v, VKS.Utils.StrToFloatDef(EDx.Text, 0),
+    VKS.Utils.StrToFloatDef(EDy.Text, 0), VKS.Utils.StrToFloatDef(EDz.Text, 0));
   NegateVector(v);
   EDx.Text := FloatToStr(v.x);
   EDy.Text := FloatToStr(v.y);
@@ -175,8 +175,8 @@ procedure TVKVectorEditorForm.SBNormalizeClick(Sender: TObject);
 var
   v: TAffineVector;
 begin
-  SetVector(v, GLS.Utils.StrToFloatDef(EDx.Text, 0),
-    GLS.Utils.StrToFloatDef(EDy.Text, 0), GLS.Utils.StrToFloatDef(EDz.Text, 0));
+  SetVector(v, VKS.Utils.StrToFloatDef(EDx.Text, 0),
+    VKS.Utils.StrToFloatDef(EDy.Text, 0), VKS.Utils.StrToFloatDef(EDz.Text, 0));
   if VectorLength(v) = 0 then
     v := NullVector
   else

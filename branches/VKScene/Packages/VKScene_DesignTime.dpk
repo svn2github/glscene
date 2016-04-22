@@ -1,4 +1,4 @@
-package GLSceneVKS_DesignTime;
+package VKScene_DesignTime;
 
 {$R *.res}
 {$R '..\Resources\GLSceneObjects.dcr'}
@@ -28,14 +28,14 @@ package GLSceneVKS_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS Vulkan 3D library'}
+{$DESCRIPTION 'VKScene 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  GLSceneVKS_RunTime;
+  VKScene_RunTime;
 
 contains
   FGUILayoutEditor in '..\Source\DesignTime\FGUILayoutEditor.pas' {Layouts_Form},
@@ -52,8 +52,8 @@ contains
   FShaderMemo in '..\Source\DesignTime\FShaderMemo.pas' {VKShaderMemoForm},
   FShaderUniformEditor in '..\Source\DesignTime\FShaderUniformEditor.pas' {GLShaderUniformEditorForm},
   FGuiSkinEditor in '..\Source\DesignTime\FGuiSkinEditor.pas' {GUISkinEditor},
-  GLS.RegisterXCollection in '..\Source\DesignTime\GLS.RegisterXCollection.pas',
+  VKS.RegisterXCollection in '..\Source\DesignTime\VKS.RegisterXCollection.pas',
   FSceneEditor in '..\Source\DesignTime\FSceneEditor.pas' {GLSceneEditorForm},
-  GLS.SceneRegister in '..\Source\DesignTime\GLS.SceneRegister.pas';
+  VKS.SceneRegister in '..\Source\DesignTime\VKS.SceneRegister.pas';
 
 end.

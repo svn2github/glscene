@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 
 unit ODEGL;
@@ -8,7 +8,7 @@ interface
 
 {
   Here are collected random functions and procedures that were found useful when
-  integrating ODE into GLScene. If you don't use GLS.Scene, this unit won't be
+  integrating ODE into GLScene. If you don't use VKS.Scene, this unit won't be
   very useful to you. The unit is not intended as a sorted toolbox, but more
   as a place to put stuff until we figure out how to organize the integration.
   Mattias Fagerlund, 2002-09-26
@@ -19,14 +19,14 @@ uses
 
   ODEImport,
   Winapi.OpenGL, Winapi.OpenGLext, 
-  GLS.Context,
-  GLS.VectorGeometry,
-  GLS.Scene,
-  GLS.VectorTypes,
-  GLS.VectorLists,
-  GLS.Objects,
-  GLS.VerletClothify,
-  GLS.VectorFileObjects;
+  VKS.Context,
+  VKS.VectorGeometry,
+  VKS.Scene,
+  VKS.VectorTypes,
+  VKS.VectorLists,
+  VKS.Objects,
+  VKS.VerletClothify,
+  VKS.VectorFileObjects;
 
 procedure DrawBox(Sides: TdVector3);
 procedure setTransform(pos: TdVector3; R: TdMatrix3);

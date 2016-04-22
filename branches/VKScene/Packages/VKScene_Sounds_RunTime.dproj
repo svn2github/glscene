@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{E917F444-40A8-4C31-9545-90FB1BF06734}</ProjectGuid>
-        <MainSource>GLSceneVKS_Sounds_RunTime.dpk</MainSource>
+        <MainSource>VKScene_Sounds_RunTime.dpk</MainSource>
         <ProjectVersion>18.1</ProjectVersion>
         <FrameworkType>FMX</FrameworkType>
         <Base>True</Base>
@@ -80,7 +80,7 @@
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <GenDll>true</GenDll>
         <GenPackage>true</GenPackage>
-        <SanitizedProjectName>GLSceneVKS_Sounds_RunTime</SanitizedProjectName>
+        <SanitizedProjectName>VKScene_Sounds_RunTime</SanitizedProjectName>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
@@ -126,6 +126,7 @@
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
+        <DCC_Description>VKScene Sound Managers</DCC_Description>
         <DCC_ObjOutput>..\lib</DCC_ObjOutput>
         <DCC_BpiOutput>..\lib</DCC_BpiOutput>
         <DCC_HppOutput>..\include</DCC_HppOutput>
@@ -160,17 +161,17 @@
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="GLSceneVKS_RunTime.dcp"/>
+        <DCCReference Include="VKScene_RunTime.dcp"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\Bass.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\fmod.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\fmoddyn.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\fmoderrors.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\fmodpresets.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\fmodtypes.pas"/>
-        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.SMBASS.pas"/>
-        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.SMFMOD.pas"/>
-        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.SMOpenAL.pas"/>
-        <DCCReference Include="..\Source\SoundVideoAPIs\GLS.SMWaveOut.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\VKS.SMBASS.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\VKS.SMFMOD.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\VKS.SMOpenAL.pas"/>
+        <DCCReference Include="..\Source\SoundVideoAPIs\VKS.SMWaveOut.pas"/>
         <DCCReference Include="..\Source\SoundVideoAPIs\OpenAL.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -190,10 +191,10 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">GLSceneVKS_Sounds_RunTime.dpk</Source>
+                    <Source Name="MainSource">VKScene_Sounds_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\ConvertPack140.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\ConvertPack140.bpl not found</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclDataSnapNativeServer230.bpl">Embarcadero DBExpress DataSnap Native Server Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
@@ -201,12 +202,6 @@
                 </Excluded_Packages>
             </Delphi.Personality>
             <Deployment Version="2">
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\GLSceneVKS_Sounds_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win64">
-                        <RemoteName>GLSceneVKS_Sounds_RunTime.bpl</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -222,15 +217,21 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\GLSceneVKS_Sounds_RunTime.rsm" Configuration="Debug" Class="DebugSymbols">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\VKScene_Sounds_RunTime.rsm" Configuration="Debug" Class="DebugSymbols">
                     <Platform Name="Win64">
-                        <RemoteName>GLSceneVKS_Sounds_RunTime.rsm</RemoteName>
+                        <RemoteName>VKScene_Sounds_RunTime.rsm</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVKS_Sounds_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\VKScene_Sounds_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>GLSceneVKS_Sounds_RunTime.bpl</RemoteName>
+                        <RemoteName>VKScene_Sounds_RunTime.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\Win64\VKScene_Sounds_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>VKScene_Sounds_RunTime.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Editor window for a material (with preview). 
@@ -16,8 +16,8 @@ uses
   
   
   FRMaterialPreview, FRColorEditor, FRFaceEditor,  
-  GLS.Texture, FRTextureEdit,
-  GLS.Material, GLS.State;
+  VKS.Texture, FRTextureEdit,
+  VKS.Material, VKS.State;
 
 type
   TMaterialEditorForm = class(TForm)

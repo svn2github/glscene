@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
 	Simple Quake III BSP file loader. 
@@ -12,7 +12,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  GLS.VectorTypes;
+  VKS.VectorTypes;
 
 const FACE_POLYGON = 1;
 const MAX_TEXTURES = 1000;

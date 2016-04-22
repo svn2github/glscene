@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    DelphiWebScriptII symbol creation for base GLScene classes. 
@@ -15,8 +15,8 @@ interface
 uses
   System.Classes, System.SysUtils,
   dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc, GLS.Scene, GLS.VectorGeometry,
-  GLS.Coordinates;
+  dws2Functions, dws2HelperFunc, VKS.Scene, VKS.VectorGeometry,
+  VKS.Coordinates;
 
 type
   Tdws2GLSceneUnit = class(Tdws2UnitComponent)
@@ -789,7 +789,7 @@ begin
   FUnitName:='GLScene';
   with FDependencies do begin
     Add('Classes');
-    Add('GLS.VectorGeometry');
+    Add('VKS.VectorGeometry');
   end;
 end;
 

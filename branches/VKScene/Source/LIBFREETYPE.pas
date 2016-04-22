@@ -1,17 +1,17 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 
 unit LIBFREETYPE;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF Unix} x, dynlibs, {$ENDIF}
-  GLS.Log, GLS.CrossPlatform;
+  VKS.Log, VKS.CrossPlatform;
 
 type
   FT_Encoding = array[0..3] of char;

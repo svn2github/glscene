@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Material Preview frame. 
@@ -16,8 +16,8 @@ uses
   FMX.Media, FMX.Viewport3D, FMX.ListBox, FMX.Types3D, FMX.Controls3D,
   FMX.Objects3D, FMX.MaterialSources,
 
-  GLS.Scene, GLS.BaseClasses, GLS.SceneViewer, GLS.Material, GLS.Teapot,
-  GLS.HUDObjects, GLS.GeomObjects, GLS.Color, GLS.Coordinates, FMX.Layers3D;
+  VKS.Scene, VKS.BaseClasses, VKS.SceneViewer, VKS.Material, VKS.Teapot,
+  VKS.HUDObjects, VKS.GeomObjects, VKS.Color, VKS.Coordinates, FMX.Layers3D;
 
 type
   TRMaterialPreview = class(TFrame)

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Editor for Gui skin. 
@@ -15,7 +15,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Controls.Presentation, FMX.Edit,
 
-  GLS.Gui, GLS.Texture, GLS.BaseClasses, GLS.Material, System.Math.Vectors,
+  VKS.Gui, VKS.Texture, VKS.BaseClasses, VKS.Material, System.Math.Vectors,
   FMX.Controls3D;
 
 type

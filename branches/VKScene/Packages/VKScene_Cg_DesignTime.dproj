@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{5F1FD18F-76E9-43A8-98DC-80204F258203}</ProjectGuid>
-        <MainSource>GLSceneVKS_Cg_DesignTime.dpk</MainSource>
+        <MainSource>VKScene_Cg_DesignTime.dpk</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>1</TargetedPlatforms>
@@ -55,7 +55,7 @@
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_ImageBase>00400000</DCC_ImageBase>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=;CFBundleName=</VerInfo_Keys>
-        <SanitizedProjectName>GLSceneVKS_Cg_DesignTime</SanitizedProjectName>
+        <SanitizedProjectName>VKScene_Cg_DesignTime</SanitizedProjectName>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>
@@ -110,10 +110,10 @@
         </DelphiCompile>
         <DCCReference Include="..\Resources\GLSceneCg.dcr"/>
         <DCCReference Include="rtl.dcp"/>
-        <DCCReference Include="GLSceneVKS_RunTime.dcp"/>
-        <DCCReference Include="GLSceneVKS_DesignTime.dcp"/>
-        <DCCReference Include="GLSceneVKS_Cg_RunTime.dcp"/>
-        <DCCReference Include="..\Source\Shaders\GLS.CgRegister.pas"/>
+        <DCCReference Include="VKScene_RunTime.dcp"/>
+        <DCCReference Include="VKScene_DesignTime.dcp"/>
+        <DCCReference Include="VKScene_Cg_RunTime.dcp"/>
+        <DCCReference Include="..\Source\Shaders\VKS.CgRegister.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -132,7 +132,7 @@
         <BorlandProject>
             <Delphi.Personality>
                 <Source>
-                    <Source Name="MainSource">GLSceneVKS_Cg_DesignTime.dpk</Source>
+                    <Source Name="MainSource">VKScene_Cg_DesignTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
                     <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\ConvertPack140.bpl">File C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\ConvertPack140.bpl not found</Excluded_Packages>
@@ -167,22 +167,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLSceneVKS_Cg_DesignTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\VKScene_Cg_DesignTime.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
-                        <RemoteName>GLSceneVKS_Cg_DesignTime.bpl</RemoteName>
+                        <RemoteName>VKScene_Cg_DesignTime.bpl</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -496,7 +487,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

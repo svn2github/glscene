@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
     Good for preview picture in OpenDialog,
@@ -11,16 +11,16 @@ unit HDRImage;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   Winapi.Windows,
   Winapi.OpenGL,
   System.Classes,
   System.SysUtils,
-  GLS.CrossPlatform,
-  GLS.VectorGeometry,
-  GLS.Graphics;
+  VKS.CrossPlatform,
+  VKS.VectorGeometry,
+  VKS.Graphics;
 
 type
 
@@ -37,8 +37,8 @@ type
 implementation
 
 uses
-  GLS.FileHDR,
-  GLS.TextureFormat;
+  VKS.FileHDR,
+  VKS.TextureFormat;
 
 // ------------------
 // ------------------ THDRImage ------------------

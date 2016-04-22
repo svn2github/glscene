@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    DXTC (also S3TC) decoding. 
@@ -10,15 +10,15 @@ unit DXTC;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 {$Z4}  // Minimum enum size = dword
 
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.SysUtils,
-  GLS.CrossPlatform,
-  GLS.TextureFormat;
+  VKS.CrossPlatform,
+  VKS.TextureFormat;
 
 const
    DDSD_CAPS        = $00000001;

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 unit FInfo;
 
@@ -10,7 +10,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl, FMX.Layouts, FMX.ListBox, FMX.Memo,
   
-  GLS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  GLS.Context;
+  VKS.Scene, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context;
 
 type
   TInfoForm = class(TForm)

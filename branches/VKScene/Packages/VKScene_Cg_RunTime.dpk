@@ -1,4 +1,4 @@
-package GLSceneVKS_Cg_RunTime;
+package VKScene_Cg_RunTime;
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -25,19 +25,19 @@ package GLSceneVKS_Cg_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVKS Cg Shaders'}
+{$DESCRIPTION 'VKScene Cg Shaders'}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  GLSceneVKS_RunTime;
+  VKScene_RunTime;
 
 contains
   cgGL in '..\Source\Shaders\cgGL.pas',
   cg in '..\Source\Shaders\cg.pas',
-  GLS.CgShader in '..\Source\Shaders\GLS.CgShader.pas',
-  GLS.CgBombShader in '..\Source\Shaders\GLS.CgBombShader.pas',
-  GLS.CgPostTransformationShader in '..\Source\Shaders\GLS.CgPostTransformationShader.pas';
+  VKS.CgShader in '..\Source\Shaders\VKS.CgShader.pas',
+  VKS.CgBombShader in '..\Source\Shaders\VKS.CgBombShader.pas',
+  VKS.CgPostTransformationShader in '..\Source\Shaders\VKS.CgPostTransformationShader.pas';
 
 end.

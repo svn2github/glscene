@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 { 
    Scene Editor, for adding + removing scene objects within the Delphi IDE. 
@@ -33,13 +33,13 @@ uses
   FMX.ListView.Appearances,
   FMX.ListView.Adapters.Base,
   FMX.Controls.Presentation,
-  GLS.Scene,
-  GLS.Win64Viewer,
-  GLS.SceneRegister,
-  GLS.Strings,
+  VKS.Scene,
+  VKS.Win64Viewer,
+  VKS.SceneRegister,
+  VKS.Strings,
   FInfo,
-  GLS.XCollection,
-  GLS.CrossPlatform;
+  VKS.XCollection,
+  VKS.CrossPlatform;
 
 type
   TVKSceneEditorForm = class(TForm)

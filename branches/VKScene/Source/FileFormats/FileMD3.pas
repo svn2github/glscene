@@ -1,5 +1,5 @@
 //
-// GLScene project based on GLScene library, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
   FileMD3 - File loading methods for the MD3 file format
@@ -10,7 +10,7 @@ unit FileMD3;
 interface
 
 uses
-  System.Classes, GLS.VectorTypes;
+  System.Classes, VKS.VectorTypes;
 
 type
   // Quake3 MD3 structure types

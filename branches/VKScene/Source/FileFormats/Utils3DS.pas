@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
    Utility functions for the universal 3DS file reader and writer (TFile3DS).
@@ -11,13 +11,13 @@ unit Utils3DS;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 {$R-}
 
 uses
   System.SysUtils,
   System.Classes,
-  GLS.Strings,
+  VKS.Strings,
   Const3DS,
   File3DS,
   Types3DS;

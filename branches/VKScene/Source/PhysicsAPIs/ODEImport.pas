@@ -165,7 +165,7 @@ uses
   {$ENDIF}
   System.Classes,
 
-  GLS.ModuleLoader;
+  VKS.ModuleLoader;
 
 const
   // ********************************************************************

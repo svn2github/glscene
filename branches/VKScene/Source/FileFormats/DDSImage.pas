@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
     Alternative for DDS unit with more supported formats of flat image:
@@ -17,7 +17,7 @@ unit DDSImage;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   Winapi.Windows,
@@ -25,13 +25,13 @@ uses
   System.Classes,
   System.SysUtils,
   FMX.Graphics,
-  //GLS
-  GLS.CrossPlatform,
-  GLS.VectorGeometry,
-  GLS.Graphics,
-  GLS.Context,
-  GLS.FileDDS,
-  GLS.TextureFormat,
+  //VKS
+  VKS.CrossPlatform,
+  VKS.VectorGeometry,
+  VKS.Graphics,
+  VKS.Context,
+  VKS.FileDDS,
+  VKS.TextureFormat,
   DXTC;
 
 

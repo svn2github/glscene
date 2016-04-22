@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
   MD2 file loader 
@@ -10,15 +10,15 @@ unit FileMD2;
 interface
 
 {$R-}
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
-  GLS.VectorGeometry,
-  GLS.VectorTypes,
-  GLS.CrossPlatform;
+  //VKS
+  VKS.VectorGeometry,
+  VKS.VectorTypes,
+  VKS.CrossPlatform;
 
 const
   MAX_MD2_TRIANGLES = 4096;

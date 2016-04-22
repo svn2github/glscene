@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
  Allows choosing a material in a material library 
@@ -16,7 +16,7 @@ uses
   FMX.Layouts, FMX.ListBox, FMX.Objects, FMX.Media, FMX.Viewport3D,
   FMX.Controls3D, FMX.Objects3D, FMX.Types3D,
 
-  GLS.Material, FMX.MaterialSources, FRMaterialPreview,
+  VKS.Material, FMX.MaterialSources, FRMaterialPreview,
   FMX.Controls.Presentation;
 
 type

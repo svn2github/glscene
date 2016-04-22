@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
    VRML file format parser.
@@ -9,11 +9,11 @@ unit VRMLParser;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorTypes, GLS.VectorLists, GLS.Utils;
+  VKS.VectorTypes, VKS.VectorLists, VKS.Utils;
 
 type
   TVRMLNode = class
@@ -459,7 +459,7 @@ end;
 //
 function TVRMLParser.ReadSingle : Single;
 begin
-  Result:= GLS.Utils.StrToFloatDef(ReadToken,0);
+  Result:= VKS.Utils.StrToFloatDef(ReadToken,0);
 end;
 
 // ReadVector3f
@@ -500,7 +500,7 @@ begin
     if token = '' then
       exit
     else if token <> ']' then
-      TVRMLSingleArray(FCurrentNode).Values.Add(GLS.Utils.StrToFloatDef(token,0));
+      TVRMLSingleArray(FCurrentNode).Values.Add(VKS.Utils.StrToFloatDef(token,0));
   until token = ']';
 
   FCurrentNode:=FCurrentNode.Parent;

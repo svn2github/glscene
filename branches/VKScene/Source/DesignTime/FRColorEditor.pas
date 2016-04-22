@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    RGB+Alpha color editor. 
@@ -13,8 +13,8 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.Colors, FMX.Edit, FMX.Controls.Presentation, FMX.Objects,
 
-  GLS.VectorGeometry, GLS.Color, GLS.Texture, GLS.VectorTypes,
-  GLS.Crossplatform;
+  VKS.VectorGeometry, VKS.Color, VKS.Texture, VKS.VectorTypes,
+  VKS.Crossplatform;
 
 type
   TRColorEditor = class(TFrame)

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
   Editor frame for a TVKFaceProperties. 
@@ -13,8 +13,8 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.Forms, FMX.Dialogs, FMX.StdCtrls,
   FMX.TabControl,
 
-  //GLS
-  FRTrackBarEdit, FRColorEditor, GLS.Material, FMX.Controls.Presentation;
+  //VKS
+  FRTrackBarEdit, FRColorEditor, VKS.Material, FMX.Controls.Presentation;
 
 type
   TRFaceEditor = class(TFrame)

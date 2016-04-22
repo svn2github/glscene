@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 unit SDL;
 {******************************************************************************}
@@ -150,7 +150,7 @@ unit SDL;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}

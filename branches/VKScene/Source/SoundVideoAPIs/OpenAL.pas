@@ -42,7 +42,7 @@ unit openal;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.SysUtils{$IFDEF MSWINDOWS},Winapi.Windows{$ENDIF};

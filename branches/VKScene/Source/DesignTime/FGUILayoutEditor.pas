@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 unit FGUILayoutEditor;
 
@@ -12,7 +12,7 @@ uses
   FMX.Edit, FMX.EditBox, FMX.SpinBox, FMX.Objects,
 
    
-  GLS.Gui;
+  VKS.Gui;
 
 type
   TLayouts_Form = class(TForm)

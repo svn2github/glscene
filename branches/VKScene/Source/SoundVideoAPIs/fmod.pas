@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 { =============================================================================================== }
 { FMOD Main header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.               }
@@ -26,7 +26,7 @@ unit fmod;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   Winapi.Windows,

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 
 unit FShaderUniformEditor;
@@ -11,7 +11,7 @@ uses
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
   FMX.ListBox, FMX.StdCtrls,
 
-  GLS.GLSLParameter, GLS.TextureFormat, GLS.VectorGeometry,
+  VKS.GLSLParameter, VKS.TextureFormat, VKS.VectorGeometry,
   FMX.Controls.Presentation;
 
 type

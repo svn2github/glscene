@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Simple TGA formats supports for Delphi. 
@@ -11,12 +11,12 @@ unit TGA;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
 
-  GLS.Graphics, GLS.CrossPlatform;
+  VKS.Graphics, VKS.CrossPlatform;
 
 type
 

@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
   Edits a TVKXCollection
@@ -31,12 +31,12 @@ uses
   FMX.ListView.Adapters.Base,
   FMX.Controls.Presentation,
   FMX.ListView,
-  GLS.Strings,
-  GLS.Scene,
-  GLS.CrossPlatform,
-  GLS.XCollection,
-  GLS.Behaviours,
-  GLS.MaterialEx;
+  VKS.Strings,
+  VKS.Scene,
+  VKS.CrossPlatform,
+  VKS.XCollection,
+  VKS.Behaviours,
+  VKS.MaterialEx;
 
 type
   IDesigner = interface //in designintf -> (IDesigner200)

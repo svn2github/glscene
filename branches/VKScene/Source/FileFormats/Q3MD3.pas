@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Helper classes and methods for Quake3 MD3 actors 
@@ -11,8 +11,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.ApplicationFileIO, GLS.VectorGeometry, GLS.VectorFileObjects,
-  GLS.VectorLists, GLS.Material, FileMD3;
+  VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.VectorFileObjects,
+  VKS.VectorLists, VKS.Material, FileMD3;
 
 type
   // This class is used to extract the tag transform information

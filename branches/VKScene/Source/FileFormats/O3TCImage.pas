@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
     Good for preview picture in OpenDialog,
@@ -11,7 +11,7 @@ unit O3TCImage;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
 {$IFDEF MSWINDOWS}
@@ -19,10 +19,10 @@ uses
 {$ENDIF}
   System.Classes,
   System.SysUtils,
-  GLS.CrossPlatform,
-  GLS.VectorGeometry,
-  GLS.Graphics,
-  GLS.OpenGLTokens;
+  VKS.CrossPlatform,
+  VKS.VectorGeometry,
+  VKS.Graphics,
+  VKS.OpenGLTokens;
 
 type
 
@@ -37,7 +37,7 @@ implementation
 
 uses
   GLFileO3TC,
-  GLS.TextureFormat;
+  VKS.TextureFormat;
 
 // ------------------
 // ------------------ TO3TCImage ------------------

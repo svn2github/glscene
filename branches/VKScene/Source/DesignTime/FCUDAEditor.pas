@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
    Editor of TVKSCUDA
@@ -13,9 +13,9 @@ uses
   System.SysUtils, System.Types, System.UITypes, System.Classes, System.Variants,
   FMX.Types, FMX.Controls, FMX.Forms, FMX.Graphics, FMX.Dialogs, FMX.Layouts,
   FMX.ListBox, FMX.Objects, FMX.StdCtrls, FMX.Controls.Presentation,
-  //GLS
-  GLS.Strings,
-  GLS.CUDA, GLS.CUDAFFTPlan, GLS.CUDAGraphics;
+  //VKS
+  VKS.Strings,
+  VKS.CUDA, VKS.CUDAFFTPlan, VKS.CUDAGraphics;
 
 type
   TVKSCUDAEditorForm = class(TForm)

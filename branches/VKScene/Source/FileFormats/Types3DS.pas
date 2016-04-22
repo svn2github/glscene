@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Implements the standard Teapot, build from evaluators.
@@ -15,7 +15,7 @@ unit Types3DS;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes; // for TStringList

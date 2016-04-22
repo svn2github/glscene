@@ -1,15 +1,15 @@
 //
-// GLScene project based on GLScene library, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 
 unit LWObjects;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
-  System.Classes, GLS.VectorGeometry;
+  System.Classes, VKS.VectorGeometry;
 
 type
 
@@ -602,7 +602,7 @@ type
 implementation
 
 uses
-  System.SysUtils, GLS.ApplicationFileIO;
+  System.SysUtils, VKS.ApplicationFileIO;
 
 type
   PWord = ^Word;
@@ -912,7 +912,7 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
-{$IFDEF GLS_NO_ASM}
+{$IFDEF VKS_NO_ASM}
   pB: PByte;
   Blo, Bhi: Byte;
 {$ENDIF}
@@ -929,7 +929,7 @@ begin
 
         W := PU2Array(ValueIn)^[i];
 
-{$IFNDEF GLS_NO_ASM}
+{$IFNDEF VKS_NO_ASM}
         asm
           mov ax,w;   { move w into ax register }
           xchg al,ah; { swap lo and hi byte of word }
@@ -959,7 +959,7 @@ begin
 
         L := PU4Array(ValueIn)^[i];
 
-{$IFNDEF GLS_NO_ASM}
+{$IFNDEF VKS_NO_ASM}
         asm
           mov ax,w;   { move w into ax register }
           xchg al,ah; { swap lo and hi byte of word }

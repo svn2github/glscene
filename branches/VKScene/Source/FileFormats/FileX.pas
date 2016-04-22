@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
    Simple X format support for Delphi (Microsoft's favorite format) 
@@ -9,12 +9,12 @@ unit FileX;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorTypes, GLS.VectorGeometry, GLS.VectorLists,
-  GLS.PersistentClasses, GLS.Utils;
+  VKS.VectorTypes, VKS.VectorGeometry, VKS.VectorLists,
+  VKS.PersistentClasses, VKS.Utils;
 
 type
   TDXNode = class;

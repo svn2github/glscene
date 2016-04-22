@@ -27,7 +27,7 @@ unit Bass;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 
 {$IFDEF MSWINDOWS}
 uses
@@ -163,7 +163,7 @@ const
   DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED;    // device driver has been certified by Microsoft
 
   // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
-  {$IFDEF GLS_DELPHI_XE_DOWN}
+  {$IFDEF VKS_DELPHI_XE_DOWN}
   WAVE_FORMAT_1M08       = $00000001;      // 11.025 kHz, Mono,   8-bit
   WAVE_FORMAT_1S08       = $00000002;      // 11.025 kHz, Stereo, 8-bit
   WAVE_FORMAT_1M16       = $00000004;      // 11.025 kHz, Mono,   16-bit

@@ -1,5 +1,5 @@
 //
-// GLScene project based on GLScene library, http://glscene.sourceforge.net
+// VKScene project, http://glscene.sourceforge.net
 //
 {
   Implementation of an universal 3DS file reader (and writer). This is the main file of the
@@ -20,13 +20,13 @@ unit File3DS;
 
 interface
 
-{$I GLScene.inc}
+{$I VKScene.inc}
 {$ALIGN ON}
 {$MINENUMSIZE 4}
 {$RANGECHECKS OFF}
 
 uses 
-  System.Classes, Types3DS, GLS.CrossPlatform;
+  System.Classes, Types3DS, VKS.CrossPlatform;
 
 type
   TFile3DS = class;
@@ -250,8 +250,8 @@ implementation
 
 uses
   System.SysUtils,
-  //GLS
-  Const3DS, Utils3DS, GLS.ApplicationFileIO;
+  //VKS
+  Const3DS, Utils3DS, VKS.ApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin

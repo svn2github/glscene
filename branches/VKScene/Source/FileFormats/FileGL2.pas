@@ -1,5 +1,5 @@
 //
-// GLScene on Vulkan, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net 
 //
 {
 	Ghoul2 (GLM/GLA) file format loading structures 
@@ -12,7 +12,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  GLS.VectorTypes, GLS.VectorGeometry;
+  VKS.VectorTypes, VKS.VectorGeometry;
 
 type
   TVKMHeader = record
