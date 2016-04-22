@@ -1,5 +1,5 @@
 The directory for GLScene's help manuals and po files with translations of captions, text strings and hints 
-from English to other languages using GNU Gettext tools for Delphi, C++ and Lazarus.
+from English to other languages using GNU Gettext tools for Delphi & C++Builder.
 
 ----------------------------------------------------------------------------------------
 
@@ -18,13 +18,13 @@ The po files could be created, edited and used in the next way:
 - Download gnugettext.pas unit from svn page:
   https://dxgettext.svn.sourceforge.net/svnroot/dxgettext/trunk/dxgettext-pachages/dxgettext/dxgettext/freepascal/
 - Include gnugettext.pas into your project's uses clause, set paths to mo files in your program 
-  and make language code selections (note: you can find also the last version of GNUgettext.pas in GLScene\Source\Basis directory)
+  and make language code selections (note: you can find also the last version of GNUgettext.pas in VKScene\Source\Basis directory)
 - Choose the necessary language to build your application and execute your software with localized interface,
   that includes all GLScene's text strings, hints and translated messages.
 
 ---------------------------------------------------------------------------
 
-GLSTeam
+VKSteam
 
 
 

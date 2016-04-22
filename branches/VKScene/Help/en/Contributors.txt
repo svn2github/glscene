@@ -1,6 +1,6 @@
-GLScene on Vulkan 3D library 
+VKScene 3D library 
 Developers and Contributors
-GLS Team 2016
+VKSteam 2016
 
 ===========================
  
