@@ -1,10 +1,10 @@
 [OPTIONS]
 Compatibility=1.1 or later
-Compiled file=GLSGuide.chm
-Contents file=GLSGuide.hhc
+Compiled file=VKSGuide.chm
+Contents file=VKSGuide.hhc
 Default topic=HTML\Installation.htm
 Display compile progress=No
-Index file=GLSGuide.hhk
+Index file=VKSGuide.hhk
 Language=0x419 Русский (Россия)
 
 
