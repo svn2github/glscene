@@ -3110,7 +3110,8 @@ begin
   begin
     // This finds the correct procedure if a virtual jump has been inserted
     // at the procedure address
-    Inc(integer(patchPosition), 2); // skip the jump
+///    Inc(integer(patchPosition), 2); // skip the jump
+    patchPosition := patchPosition + 2;
     patchPosition := pansiChar(Pointer(pointer(patchPosition)^)^);
   end;
   offset := integer(NewProc) - integer(pointer(patchPosition)) - 5;

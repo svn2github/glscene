@@ -25,7 +25,7 @@ package GLScene_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLScene OpenGL 3D library'}
+{$DESCRIPTION 'GLSceneVCL OpenGL 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -195,7 +195,6 @@ contains
   GLSArchiveManager in '..\Source\GLSArchiveManager.pas',
   GLSCrossXML in '..\Source\GLSCrossXML.pas',
   GLSGenerics in '..\Source\GLSGenerics.pas',
-  GLSJPG in '..\Source\FileFormats\GLSJPG.pas',
   GLSLBumpShader in '..\Source\Shaders\GLSLBumpShader.pas',
   GLSLDiffuseSpecularShader in '..\Source\Shaders\GLSLDiffuseSpecularShader.pas',
   GLSLParameter in '..\Source\Shaders\GLSLParameter.pas',
@@ -270,7 +269,6 @@ contains
   GLzBuffer in '..\Source\GLzBuffer.pas',
   GNUgettext in '..\Source\Basis\GNUgettext.pas',
   HDRImage in '..\Source\FileFormats\HDRImage.pas',
-  LIBPNG in '..\Source\FileFormats\LIBPNG.pas',
   LWObjects in '..\Source\FileFormats\LWObjects.pas',
   O3TCImage in '..\Source\FileFormats\O3TCImage.pas',
   OpenGL1x in '..\Source\Basis\OpenGL1x.pas',

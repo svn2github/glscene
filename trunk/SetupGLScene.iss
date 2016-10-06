@@ -56,8 +56,8 @@ WindowStartMaximized=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "Help\en\License.txt"
 Name: "french"; MessagesFile: "compiler:Languages\French.isl"; 
 Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"; LicenseFile: "Help\ru\License.txt"
-Name: "german"; MessagesFile: "compiler:Languages\German.isl"
-Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"; 
+Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"; 
 
 [Types]
 Name: "Full"; Description: "All comps"
@@ -66,6 +66,15 @@ Name: "Custom"; Description: "Choose comps"; Flags: iscustom
 [Components]
 ;Name: "Samples"; Description: "Samples for Delphi&C++Builder"; Types: Full Custom 
 ;Name: "Utilities"; Description: "Utilities for GLScene"; Types: Full Custom 
+
+[Code]
+function IsPackageDir: Boolean;
+begin
+  if DirExist()
+  then
+  begin
+  end;
+end;
 
 [Files]
 Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
@@ -78,9 +87,29 @@ Source: "include\*"; DestDir: "{app}\include"; Flags: ignoreversion recursesubdi
 Source: "lib\*"; DestDir: "{app}\lib"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "Packages\*"; DestDir: "{app}\Packages"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "Resources\*"; DestDir: "{app}\Resources"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Samples\*"; DestDir: "{app}\Samples"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "Samples\*"; DestDir: "{app}\Samples"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "Source\*"; DestDir: "{app}\Source"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recursesubdirs createallsubdirs
+;Source: "Utilities\*"; DestDir: "{app}\Utilities"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Code]
+function IsDadRegistryExist: Boolean;
+begin
+  if RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\16.0') or    
+     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\17.0') or
+     RegKeyExists(HKEY_CURRENT_USER, 'Software\Embarcadero\BDS\18.0')
+  then
+  begin
+    /// "Yes". Update 
+     
+  end  
+  else
+    begin
+      if MsgBox('Do you really want to install GLScene?', mbError, MB_YESNO) = idYes
+      then 
+        /// Full installation
+      else 
+    end;
+end;
 
 [Registry]
 ; Parameters for GLScene
@@ -115,6 +144,9 @@ Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: s
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\17.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_Sounds_DesignTime.bpl; ValueData: "GLSceneVCL Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
 
 [Code]
+
+ 
+
 function IsRegularUser(): Boolean;
 begin
   Result := not (IsAdminLoggedOn or IsPowerUserLoggedOn)

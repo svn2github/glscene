@@ -112,6 +112,7 @@ uses
   VCL.StdCtrls,
   VCL.Graphics,
 
+
   ToolsAPI,
   DesignIntf,
   DesignEditors,
