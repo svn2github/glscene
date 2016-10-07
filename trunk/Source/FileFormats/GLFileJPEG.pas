@@ -20,7 +20,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  VCL.Imaging.Jpeg,
+  Vcl.Imaging.Jpeg,
+  //GLS
   GLCrossPlatform,
   OpenGLTokens,
   GLContext,
@@ -45,8 +46,8 @@ type
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
 
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
@@ -79,7 +80,6 @@ end;
 
 // LoadFromFile
 
-
 procedure TGLJPEGImage.LoadFromFile(const filename: string);
 var
   fs: TStream;
@@ -100,7 +100,6 @@ end;
 
 // SaveToFile
 
-
 procedure TGLJPEGImage.SaveToFile(const filename: string);
 var
   fs: TStream;
@@ -116,18 +115,46 @@ end;
 
 // LoadFromStream
 
-procedure TGLJPEGImage.LoadFromStream(stream: TStream);
+procedure TGLJPEGImage.LoadFromStream(AStream: TStream);
+var
+  JpegImage: TJpegImage;
+
 begin
-  LoadFromStream(stream);
+  try
+    JpegImage := TJPEGImage.Create;
+    JpegImage.LoadFromStream(AStream);
+
+    if JpegImage.Grayscale then
+    begin
+      fColorFormat := GL_LUMINANCE;
+      fInternalFormat := tfLUMINANCE8;
+      fElementSize := 1;
+    end
+    else
+    begin
+      fColorFormat := GL_BGR;
+      fInternalFormat := tfRGB8;
+      fElementSize := 3;
+    end;
+    fDataType := GL_UNSIGNED_BYTE;
+    FLOD[0].Width := JpegImage.Width;
+    FLOD[0].Height := JpegImage.Height;
+    FLOD[0].Depth := 0;
+    fCubeMap := False;
+    fTextureArray := False;
+    ReallocMem(fData, DataSize);
+
+  finally
+    JpegImage.Free;
+  end;
 end;
 
-procedure TGLJPEGImage.SaveToStream(stream: TStream);
+procedure TGLJPEGImage.SaveToStream(AStream: TStream);
 begin
 
 end;
 
 // AssignFromTexture
-
 
 procedure TGLJPEGImage.AssignFromTexture(textureContext: TGLContext;
   const textureHandle: TGLuint; textureTarget: TGLTextureTarget;

@@ -20,8 +20,8 @@ interface
 
 uses
   System.Classes,
-   
-  OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
+  //GLS
+  GLContext, OpenGLTokens, GLGraphics, GLTexture, GLTextureFormat;
 
 type
 
@@ -70,9 +70,6 @@ implementation
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-
-uses
-  GLContext;
 
 // Create
 //
@@ -289,8 +286,7 @@ var
 begin
   if (not Assigned(AStream)) or (AStream.Size - AStream.Position < 200) then
     exit;
-  with GetRasterFileFormats do
-    tempImage := FindFromStream(AStream).Create;
+  tempImage := GetRasterFileFormats.FindFromStream(AStream).Create;
   try
     tempImage.LoadFromStream(AStream);
     if not Assigned(FBitmap) then

@@ -40,8 +40,8 @@ type
 
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
+    procedure LoadFromStream(AStream: TStream); override;
+    procedure SaveToStream(AStream: TStream); override;
 
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
@@ -97,17 +97,41 @@ end;
 // LoadFromStream
 //
 
-procedure TGLPNGImage.LoadFromStream(stream: TStream);
-begin
-  LoadFromStream(stream);
-end;
+procedure TGLPNGImage.LoadFromStream(AStream: TStream);
+var
+  PngImage: TPngImage;
+  sig: array[0..7] of Byte;
+  colorType, bitDepth: Integer;
+  rowBytes: Cardinal;
+  rowPointers: array of PGLUbyte;
+  ii: Integer;
+  use16: Boolean;
 
+begin
+  try
+    PngImage := TPngImage.Create;
+    PngImage.LoadFromStream(AStream);
+
+    UpdateLevelsInfo;
+    ReallocMem(fData, rowBytes * Cardinal(GetHeight));
+
+  finally
+    PngImage.Free;
+  end;
+end;
 // SaveToStream
 //
 
-procedure TGLPNGImage.SaveToStream(stream: TStream);
+procedure TGLPNGImage.SaveToStream(AStream: TStream);
+var
+  PngImage: TPngImage;
 begin
-  SaveToStream(stream);
+  try
+    PngImage := TPngImage.Create;
+    PngImage.SaveToStream(AStream);
+  finally
+    PngImage.Free;
+  end;
 end;
 
 // AssignFromTexture

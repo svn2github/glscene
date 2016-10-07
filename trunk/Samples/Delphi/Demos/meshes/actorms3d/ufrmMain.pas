@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  Vcl.ExtCtrls, Vcl.ComCtrls,
+  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.jpeg,
   //GLS
   GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses, GLScene,
   GLVectorFileObjects, GLObjects, GLUtils, GLCoordinates, GLGeomObjects,
@@ -90,77 +90,6 @@ implementation
 
 {$R *.dfm}
 
-procedure TfrmMain.Actor1EndFrameReached(Sender: TObject);
-begin
-  if (Actor1.AnimationMode = aamNone) then
-  begin
-    btnStartStop.Caption := 'Start';
-    Timer1.Enabled := False;
-    aniPos.Enabled := True;
-  end;
-end;
-
-procedure TfrmMain.aniBoxSelect(Sender: TObject);
-begin
-  Actor1.AnimationMode := aamNone;
-  if (aniBox.ItemIndex <> -1) then
-  begin
-    Chair1.Visible := aniBox.itemindex = 6;
-    Timer1.Enabled := False;
-    aniPos.Enabled := False;
-    Actor1.SwitchToAnimation(aniBox.ItemIndex + 1, false);
-
-    aniPos.Min := 0;
-    aniPos.Max := Actor1.EndFrame - Actor1.StartFrame;
-    aniPos.Position := 0;
-    aniPos.Enabled := True;
-    btnStartStop.Caption := 'Start';
-  end;
-
-end;
-
-procedure TfrmMain.aniPosChange(Sender: TObject);
-begin
-  if (aniPos.Enabled) then
-    Actor1.CurrentFrame := Actor1.StartFrame + aniPos.Position;
-end;
-
-procedure TfrmMain.Button2Click(Sender: TObject);
-begin
-  Actor1.NextFrame;
-end;
-
-procedure TfrmMain.btnStartStopClick(Sender: TObject);
-begin
-  if (Actor1.AnimationMode = aamNone) then
-  begin
-    if (Actor1.CurrentFrame = Actor1.EndFrame) then
-      Actor1.CurrentFrame := Actor1.StartFrame;
-    Actor1.AnimationMode := aamPlayOnce;
-    TButton(Sender).Caption := 'Stop';
-    Timer1.Enabled := True;
-    aniPos.Enabled := False;
-  end
-  else
-  begin
-    Actor1.AnimationMode := aamNone;
-    TButton(Sender).Caption := 'Start';
-    Timer1.Enabled := False;
-    aniPos.Enabled := True;
-  end;
-end;
-
-procedure TfrmMain.Button4Click(Sender: TObject);
-begin
-  Actor1.PrevFrame;
-end;
-
-procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  Actor1.AnimationMode := aamNone;
-  GLCadencer1.Enabled := False;
-  GLSLShader1.Enabled := false;
-end;
 
 procedure TfrmMain.FormCreate(Sender: TObject);
 
@@ -176,16 +105,13 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 
 begin
   SetGLSceneMediaDir();
-  with GLSArchiveManager1.Archives[0] do
-  begin
-    LoadFromFile('ActorMS3D.zlib');
-    LoadTexture('floor_parquet', 'JPG');
-    LoadTexture('Chair', 'PNG');
-    LoadTexture('Hair', 'PNG');
-    LoadTexture('Woman4-Remap-texture', 'PNG');
-    Actor1.LoadFromStream('Woman4.ms3d', GetContent('Main/Woman4.ms3d'));
-    Chair1.LoadFromStream('Chair.ms3d', GetContent('Main/Chair.ms3d'));
-  end;
+  GLSArchiveManager1.Archives[0].LoadFromFile('ActorMS3D.zlib');
+  LoadTexture('floor_parquet', 'JPG');
+  LoadTexture('Chair', 'PNG');
+  LoadTexture('Hair', 'PNG');
+  LoadTexture('Woman4-Remap-texture', 'PNG');
+  Actor1.LoadFromStream('Woman4.ms3d', GLSArchiveManager1.Archives[0].GetContent('Main/Woman4.ms3d'));
+  Chair1.LoadFromStream('Chair.ms3d', GLSArchiveManager1.Archives[0].GetContent('Main/Chair.ms3d'));
   MatLib.TextureByName('Lightspot').Image.LoadFromFile('Flare1.bmp');
 
   Actor1.AnimationMode := aamNone;
@@ -279,6 +205,79 @@ begin
   NormalIzeVector(pv);
   GLCamera2.Direction.AsAffineVector := pv;
 end;
+
+procedure TfrmMain.Actor1EndFrameReached(Sender: TObject);
+begin
+  if (Actor1.AnimationMode = aamNone) then
+  begin
+    btnStartStop.Caption := 'Start';
+    Timer1.Enabled := False;
+    aniPos.Enabled := True;
+  end;
+end;
+
+procedure TfrmMain.aniBoxSelect(Sender: TObject);
+begin
+  Actor1.AnimationMode := aamNone;
+  if (aniBox.ItemIndex <> -1) then
+  begin
+    Chair1.Visible := aniBox.itemindex = 6;
+    Timer1.Enabled := False;
+    aniPos.Enabled := False;
+    Actor1.SwitchToAnimation(aniBox.ItemIndex + 1, false);
+
+    aniPos.Min := 0;
+    aniPos.Max := Actor1.EndFrame - Actor1.StartFrame;
+    aniPos.Position := 0;
+    aniPos.Enabled := True;
+    btnStartStop.Caption := 'Start';
+  end;
+
+end;
+
+procedure TfrmMain.aniPosChange(Sender: TObject);
+begin
+  if (aniPos.Enabled) then
+    Actor1.CurrentFrame := Actor1.StartFrame + aniPos.Position;
+end;
+
+procedure TfrmMain.Button2Click(Sender: TObject);
+begin
+  Actor1.NextFrame;
+end;
+
+procedure TfrmMain.btnStartStopClick(Sender: TObject);
+begin
+  if (Actor1.AnimationMode = aamNone) then
+  begin
+    if (Actor1.CurrentFrame = Actor1.EndFrame) then
+      Actor1.CurrentFrame := Actor1.StartFrame;
+    Actor1.AnimationMode := aamPlayOnce;
+    TButton(Sender).Caption := 'Stop';
+    Timer1.Enabled := True;
+    aniPos.Enabled := False;
+  end
+  else
+  begin
+    Actor1.AnimationMode := aamNone;
+    TButton(Sender).Caption := 'Start';
+    Timer1.Enabled := False;
+    aniPos.Enabled := True;
+  end;
+end;
+
+procedure TfrmMain.Button4Click(Sender: TObject);
+begin
+  Actor1.PrevFrame;
+end;
+
+procedure TfrmMain.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  Actor1.AnimationMode := aamNone;
+  GLCadencer1.Enabled := False;
+  GLSLShader1.Enabled := false;
+end;
+
 
 procedure TfrmMain.GLDirectOpenGL1Render(Sender: TObject;
   var rci: TGLRenderContextInfo);

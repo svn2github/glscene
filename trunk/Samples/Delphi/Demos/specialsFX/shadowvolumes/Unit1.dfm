@@ -129,10 +129,12 @@ object Form1: TForm1
     end
     object CBBlueLight: TCheckBox
       Left = 16
-      Top = 256
+      Top = 257
       Width = 97
       Height = 17
       Caption = 'Blue Light'
+      Checked = True
+      State = cbChecked
       TabOrder = 6
       OnClick = CBBlueLightClick
     end
@@ -142,6 +144,8 @@ object Form1: TForm1
       Width = 97
       Height = 17
       Caption = 'Red Light'
+      Checked = True
+      State = cbChecked
       TabOrder = 7
       OnClick = CBRedLightClick
     end
@@ -154,7 +158,7 @@ object Form1: TForm1
       Max = 21
       Min = 3
       PageSize = 0
-      Position = 3
+      Position = 21
       TabOrder = 8
       OnChange = ScrollBar_ShadowResolutionChange
     end
@@ -316,7 +320,7 @@ object Form1: TForm1
         Up.Coordinates = {0000803F000000000000000000000000}
         BottomRadius = 0.600000023841857900
         Height = 6.000000000000000000
-        TopRadius = 0.800000011920929000
+        TopRadius = 0.800000011920928900
       end
       object GLSphere4: TGLSphere
         Position.Coordinates = {00000000000000000000C0C00000803F}
