@@ -48,23 +48,23 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  SurfaceTrampoline, SurfaceFriction: TNGDSurfaceItem;
-  SurfaceCube2, SurfaceCube3, SurfaceCube4: TNGDSurfaceItem;
-  SurfaceSphere1_Sphere2_Cube1: TNGDSurfaceItem;
+  SurfaceTrampoline, SurfaceFriction: TGLNGDSurfaceItem;
+  SurfaceCube2, SurfaceCube3, SurfaceCube4: TGLNGDSurfaceItem;
+  SurfaceSphere1_Sphere2_Cube1: TGLNGDSurfaceItem;
 
-  ObjectOnTrampoline: TNGDSurfacePair;
-  FrictionOnCube2, FrictionOnCube3, FrictionOnCube4: TNGDSurfacePair;
+  ObjectOnTrampoline: TGLNGDSurfacePair;
+  FrictionOnCube2, FrictionOnCube3, FrictionOnCube4: TGLNGDSurfacePair;
 begin
   // Get each SurfaceItem
   SurfaceTrampoline := GLNGDManager1.NewtonSurfaceItem.Items[0]
-    as TNGDSurfaceItem;
+    as TGLNGDSurfaceItem;
   SurfaceFriction := GLNGDManager1.NewtonSurfaceItem.Items[1]
-    as TNGDSurfaceItem;
-  SurfaceCube2 := GLNGDManager1.NewtonSurfaceItem.Items[2] as TNGDSurfaceItem;
-  SurfaceCube3 := GLNGDManager1.NewtonSurfaceItem.Items[3] as TNGDSurfaceItem;
-  SurfaceCube4 := GLNGDManager1.NewtonSurfaceItem.Items[4] as TNGDSurfaceItem;
+    as TGLNGDSurfaceItem;
+  SurfaceCube2 := GLNGDManager1.NewtonSurfaceItem.Items[2] as TGLNGDSurfaceItem;
+  SurfaceCube3 := GLNGDManager1.NewtonSurfaceItem.Items[3] as TGLNGDSurfaceItem;
+  SurfaceCube4 := GLNGDManager1.NewtonSurfaceItem.Items[4] as TGLNGDSurfaceItem;
   SurfaceSphere1_Sphere2_Cube1 := GLNGDManager1.NewtonSurfaceItem.Items[5]
-    as TNGDSurfaceItem;
+    as TGLNGDSurfaceItem;
 
   // Set them to Behaviours
   GetNGDStatic(Trampoline).NGDSurfaceItem := SurfaceTrampoline;
@@ -78,13 +78,13 @@ begin
 
   // Get each SurfacePair
   ObjectOnTrampoline := GLNGDManager1.NewtonSurfacePair.Items[0]
-    as TNGDSurfacePair;
+    as TGLNGDSurfacePair;
   FrictionOnCube2 := GLNGDManager1.NewtonSurfacePair.Items[1]
-    as TNGDSurfacePair;
+    as TGLNGDSurfacePair;
   FrictionOnCube3 := GLNGDManager1.NewtonSurfacePair.Items[2]
-    as TNGDSurfacePair;
+    as TGLNGDSurfacePair;
   FrictionOnCube4 := GLNGDManager1.NewtonSurfacePair.Items[3]
-    as TNGDSurfacePair;
+    as TGLNGDSurfacePair;
 
   // Set SurfaceItems to SurfacePair
   ObjectOnTrampoline.SetMaterialItems(SurfaceTrampoline,

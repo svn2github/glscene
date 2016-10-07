@@ -9,8 +9,7 @@ uses
   System.SysUtils, System.Classes, System.Math, System.Types,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
-
-  //GLScene
+  //GLS
   GLWin32Viewer, GLCadencer, GLTexture, GLVectorTypes, GLVectorGeometry, GLScene,
   GLObjects, GLTree, TGA, GLKeyboard, GLVectorLists, GLBitmapFont, GLContext,
   GLWindowsFont, GLHUDObjects, GLSkydome, GLImposter, GLParticleFX,

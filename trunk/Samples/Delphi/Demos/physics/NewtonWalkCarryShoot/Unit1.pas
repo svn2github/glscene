@@ -47,7 +47,7 @@ type
     procedure MoveGrab;
   public
     { Publiques declarations }
-    grabJoint: TNGDJoint;
+    grabJoint: TGLNGDJoint;
   end;
 
 var
@@ -109,7 +109,7 @@ begin
   GLCamera1.Parent := GLCamera1.TargetObject;
 
   // Create the PickJoint
-  grabJoint := TNGDJoint.Create(GLNGDManager1.NewtonJoint);
+  grabJoint := TGLNGDJoint.Create(GLNGDManager1.NewtonJoint);
   grabJoint.JointType := nj_KinematicController;
   grabJoint.KinematicControllerOptions.PickModeLinear := True;
   grabJoint.KinematicControllerOptions.LinearFriction := 100;

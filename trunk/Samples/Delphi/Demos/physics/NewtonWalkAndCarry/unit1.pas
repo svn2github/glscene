@@ -80,7 +80,7 @@ var
   Maps_Count: Integer;
   OnAir, OnGround: boolean;
   OnMouse_Click, OnDrop, OnPick: boolean;
-  pickjoint: TNGDJoint;
+  pickjoint: TGLNGDJoint;
 
 implementation
 
@@ -443,7 +443,7 @@ begin
     end;
   *)
 
-  pickjoint := TNGDJoint(GLNGDManager1.NewtonJoint.Items[1]);
+  pickjoint := TGLNGDJoint(GLNGDManager1.NewtonJoint.Items[1]);
 
   OnPick := True;
   GLUserInterface1.MouseLookActivate;

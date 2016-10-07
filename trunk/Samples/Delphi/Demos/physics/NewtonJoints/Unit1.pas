@@ -54,7 +54,7 @@ type
 
   public
     { Public declarations }
-        PickJoint: TNGDJoint;
+        PickJoint: TGLNGDJoint;
     MousePoint: TPoint;
   end;
 
@@ -67,7 +67,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  PickJoint := GLNGDManager1.NewtonJoint.Items[0] as TNGDJoint;
+  PickJoint := GLNGDManager1.NewtonJoint.Items[0] as TGLNGDJoint;
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;

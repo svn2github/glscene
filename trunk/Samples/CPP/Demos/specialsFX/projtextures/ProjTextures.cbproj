@@ -82,7 +82,7 @@
         <PackageImports>rtl.bpi;vcl.bpi;vclx.bpi;$(PackageImports)</PackageImports>
         <BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
         <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLSceneVCL_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
         <BCC_PCHCache>true</BCC_PCHCache>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
@@ -120,7 +120,7 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <LinkPackageStatics>rtl.lib;vcl.lib;GLSceneVCL_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</LinkPackageStatics>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>

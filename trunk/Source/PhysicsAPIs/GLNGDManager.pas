@@ -68,7 +68,7 @@ unit GLNGDManager;
 
 interface
 
-{$I GLScene.inc}
+{.$I GLScene.inc}
 
 uses
   System.Classes, // TComponent Tlist TWriter TReader TPersistent

@@ -89,6 +89,7 @@ object Form1: TForm1
       MaxCLODTriangles = 165536
       CLODPrecision = 15
       OnGetTerrainBounds = TerrainGetTerrainBounds
+      ContourWidth = 0
     end
     object DOClassicWaterPlane: TGLDirectOpenGL
       UseBuildList = False

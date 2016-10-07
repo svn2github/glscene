@@ -38,7 +38,7 @@ type
     point3d, FPaneNormal: TVector;
   public
     { Public declarations }
-    pickjoint: TNGDJoint;
+    pickjoint: TGLNGDJoint;
   end;
 
 var
@@ -50,7 +50,7 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  pickjoint := TNGDJoint(GLNGDManager1.NewtonJoint.Items[0]);
+  pickjoint := TGLNGDJoint(GLNGDManager1.NewtonJoint.Items[0]);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
