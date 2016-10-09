@@ -141,9 +141,8 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
  style='width:90.0%'>
  <tr>
   <td width="100%" style='width:100.0%;padding:.75pt .75pt .75pt .75pt'>
-  <p><span lang=EN-US>The Instruction for installing VKScene library into
-  Embarcadero RAD Studio to work with Delphi &amp; C++Builder includes next
-  steps: </span></p>
+  <p><span lang=EN-US>The Instruction for installing VKScene library into Embarcadero
+  RAD Studio to work with Delphi &amp; C++Builder includes next steps: </span></p>
   </td>
  </tr>
 </table>
@@ -191,70 +190,55 @@ content="Borland, Delphi, OpenGL, GLScene, graphics, tridimensional, 3D, program
   64-bit OS Windows you may need to copy *.dll &nbsp;files to
   C:\Windows\SysWOW64 directory manually.</span></p>
   <p class=MsoListParagraph><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>4.
-  Setup Delphi Library Paths in Options dialog. If you are installing VKScene
-  in RAD Studio for the first time, then it’s necessary to create a new
-  environmental variable VKSCENEDIR as shown in the next screenshot:</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>&nbsp;</span></p>
+  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>4. If
+  you are installing VKScene in RAD Studio for the first time, then it’s
+  necessary to create a new environmental variable VKSCENEDIR as shown in the
+  next screenshot:</span></p>
   <p class=MsoListParagraph style='text-indent:-18.0pt'><img border=0
   width=808 height=597 src="Options_EnvironmentVariables.jpg"></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>Then
-  open Delphi Options Library page</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><img border=0
-  width=806 height=599 src="Options_Delphi_Library.jpg"></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>and
-  add $(VLSCENEDIR)\Source directories to search files by compiler:</span></p>
-  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=428
-  height=356 src="Options_Delphi_LibraryPaths.jpg"><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>&nbsp;</span></p>
-  <p><span lang=EN-US>5. Setup C++ Options for include files. Open Options
-  dialog for Paths and Directories and add $(VKSCENEDIR\include\$(Platform)
-  path into “Ordered list of Include paths” to get header HPP files be found by
-  VKScene’s CPP applications:</span></p>
-  <p><img border=0 width=428 height=356 src="Options_CPP_IncludePath.jpg"></p>
-  <p><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>6. Setup C++ Options for libraries files.
+  <p class=MsoNormal><span lang=EN-US>5. Setup Delphi Library Paths in Options
+  dialog. Open Delphi Options Library page and add $(VKSCENEDIR)\Source
+  directories to search DCP files by compiler:</span></p>
+  <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US>&nbsp;</span><img
+  border=0 width=392 height=368 src="DelphiOptions_LibraryPath_Win32.jpg"></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><span lang=EN-US>And for Win64:</span></p>
+  <p class=MsoNormal style='margin-left:18.0pt'><img border=0 width=394
+  height=317 src="DelphiOptions_LibraryPath_Win64.jpg"><span lang=EN-US>&nbsp;</span></p>
+  <p><span lang=EN-US>6. Setup C++ Options for include files. Open Options
+  dialog for Paths and Directories and add $(VKSCENEDIR\include\Win32 path into
+  “Ordered list of Include paths” to get header HPP files for Win32
+  applications:</span></p>
+  <p><img border=0 width=394 height=376 src="CppOptions_IncludePath_Win32.jpg"></p>
+  <p><span lang=EN-US>And for Win64:</span></p>
+  <p><img border=0 width=396 height=334 src="CppOptions_IncludePath_Win64.jpg"></p>
+  <p class=MsoNormal><span lang=EN-US>7. Setup C++ Options for libraries files.
   Add &nbsp;$(VKSCENEDIR\lib\$(Platform) folder into “Ordered list of Library
-  paths” to get lib/bpi files be found by VKScene’s CPP applications</span></p>
+  paths” to get lib/bpi files be found by VKScene’s CPP applications for Win32:</span></p>
+  <p class=MsoNormal><img border=0 width=388 height=317
+  src="CppOptions_LibPath_Win32.jpg"></p>
+  <p class=MsoNormal><span lang=EN-US>and for Win64:</span></p>
+  <p class=MsoNormal><img border=0 width=396 height=333
+  src="CppOptions_LibPath_Win64.jpg"></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><img border=0 width=428 height=356
-  src="Options_CPP_LibraryPath.jpg"></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>7. Open the VKScene.groupproj file in
-  your directory D:\Library\VKScene\Packages\ using menu item File|Open
+  <p class=MsoNormal><span lang=EN-US>8. Open a groupproj file in your
+  directory D:\Library\VKScene\Packages\ using menu item File|Open
   Project…(Ctrl+F11). In Project Manager window you will find the next list of
-  projects with *.bpl extensions:</span></p>
+  projects with *.bpl extensions for VKScene_Win32:</span></p>
+  <p class=MsoNormal><img border=0 width=271 height=320
+  src="ProjectManager_GLScene_Win32.jpg"></p>
+  <p class=MsoNormal><span lang=EN-US>and for Win64:</span></p>
+  <p class=MsoNormal><span lang=EN-US>&nbsp;</span><img border=0 width=271
+  height=321 src="ProjectManager_GLScene_Win64.jpg"></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><img border=0 width=269 height=392
-  src="ProjectManager_GLScene_groupproj.jpg"></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>8. Check the options of Delphi Compiler
-  to get output C/C++ files into include (HPP files) and library (BPI/LIB
-  pachages) directories for every project in VKScene’s project group
-  (Projects|Options… Shift+Ctrl+F11). By default *dpk options are saved in
-  *dproj files but you can type it manually and choose “Generate all C++Builder
-  files (including package libs)”:</span></p>
+  <p class=MsoNormal><span lang=EN-US>9. Compile VKScene’s packages. Right
+  click mouse button on the first line of VKScene group in Project Manager
+  window and execute “Compile All From Here” command. </span></p>
   <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><img border=0 width=657 height=270
-  src="ProjectOptions_DelphiCompiler_OutputCPP.jpg"></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>9. Compile VKScene’s packages. </span></p>
-  <p class=MsoNormal><span lang=EN-US>Right click mouse button on the first
-  line of VKScene group in Project Manager window and execute “Compile All From
-  Here” command. Then choose to “Install” every DesignTime package of visual
-  components to RAD Studio palette pages. </span></p>
-  <p class=MsoNormal><span lang=EN-US>(Note: the package VKScene_SDL.dpk could
-  be used in run time but weirdly clashes with new development environment in
-  design time, so don’t install it, VKScene_DWS requires additional libraries
-  to be installed).</span></p>
-  <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
-  <p class=MsoNormal><span lang=EN-US>After installation you can start to work
-  with VKScene’s component library and run demos for Delphi and C++Builder in
-  ..VKScene\Samples directory.</span></p>
+  <p class=MsoNormal><span lang=EN-US>10.Then choose to “Install” every
+  DesignTime package of visual components to RAD Studio palette pages. After
+  installation you can start to work with VKScene’s component library and run
+  demos for Delphi and C++Builder in ..VKScene\Samples directory.</span></p>
   </td>
  </tr>
  <tr>
