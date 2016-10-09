@@ -1,8 +1,7 @@
-package VKScene_Physics_DesignTime;
+package VKScene_Parallel_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneODE.dcr'}
-{$R '..\Resources\GLSceneNGD.dcr'}
+{$R '..\..\Resources\GLSceneCUDA.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -27,19 +26,18 @@ package VKScene_Physics_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Physics Managers'}
+{$DESCRIPTION 'VKScene GPU Computing'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  vcl,
-  VKScene_RunTime,
-  VKScene_Physics_RunTime;
+  fmx,
+  VKScene_Parallel_RunTime,
+  VKScene_DesignTime;
 
 contains
-  VKS.ODERegister in '..\Source\PhysicsAPIs\VKS.ODERegister.pas',
-  VKS.NewtonRegister in '..\Source\PhysicsAPIs\VKS.NewtonRegister.pas';
+  FCUDAEditor in '..\..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
+  VKS.ParallelRegister in '..\..\Source\ParallelAPIs\VKS.ParallelRegister.pas';
 
 end.
-

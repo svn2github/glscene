@@ -1,7 +1,9 @@
-package VKScene_Parallel_DesignTime;
+package VKScene_Sounds_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneCUDA.dcr'}
+{$R '..\..\Resources\GLSceneBass.dcr'}
+{$R '..\..\Resources\GLSceneFMod.dcr'}
+{$R '..\..\Resources\GLSceneOpenAL.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -26,18 +28,17 @@ package VKScene_Parallel_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene GPU Computing'}
+{$DESCRIPTION 'VKScene Sound Managers'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
   fmx,
-  VKScene_Parallel_RunTime,
-  VKScene_DesignTime;
+  VKScene_DesignTime,
+  VKScene_Sounds_RunTime;
 
 contains
-  FCUDAEditor in '..\Source\FCUDAEditor.pas' {GLSCUDAEditorForm},
-  VKS.ParallelRegister in '..\Source\ParallelAPIs\VKS.ParallelRegister.pas';
+  VKS.SoundRegister in '..\..\Source\SoundVideoAPIs\VKS.SoundRegister.pas';
 
 end.

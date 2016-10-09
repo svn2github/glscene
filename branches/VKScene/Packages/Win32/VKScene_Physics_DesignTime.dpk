@@ -1,9 +1,8 @@
-package VKScene_Sounds_DesignTime;
+package VKScene_Physics_DesignTime;
 
 {$R *.res}
-{$R '..\Resources\GLSceneBass.dcr'}
-{$R '..\Resources\GLSceneFMod.dcr'}
-{$R '..\Resources\GLSceneOpenAL.dcr'}
+{$R '..\..\Resources\GLSceneODE.dcr'}
+{$R '..\..\Resources\GLSceneNGD.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -28,17 +27,19 @@ package VKScene_Sounds_DesignTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'VKScene Sound Managers'}
+{$DESCRIPTION 'VKScene Physics Managers'}
 {$DESIGNONLY}
 {$IMPLICITBUILD ON}
 
 requires
   rtl,
-  fmx,
-  VKScene_DesignTime,
-  VKScene_Sounds_RunTime;
+  vcl,
+  VKScene_RunTime,
+  VKScene_Physics_RunTime;
 
 contains
-  VKS.SoundRegister in '..\Source\SoundVideoAPIs\VKS.SoundRegister.pas';
+  VKS.ODERegister in '..\..\Source\PhysicsAPIs\VKS.ODERegister.pas',
+  VKS.NewtonRegister in '..\..\Source\PhysicsAPIs\VKS.NewtonRegister.pas';
 
 end.
+

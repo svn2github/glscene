@@ -4,11 +4,11 @@
         <MainSource>VKScene_Parallel_RunTime.dpk</MainSource>
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
-        <TargetedPlatforms>3</TargetedPlatforms>
+        <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Package</AppType>
         <FrameworkType>None</FrameworkType>
         <ProjectVersion>18.1</ProjectVersion>
-        <Platform Condition="'$(Platform)'==''">Win64</Platform>
+        <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -40,6 +40,12 @@
     </PropertyGroup>
     <PropertyGroup Condition="('$(Platform)'=='iOSDevice64' and '$(Cfg_2)'=='true') or '$(Cfg_2_iOSDevice64)'!=''">
         <Cfg_2_iOSDevice64>true</Cfg_2_iOSDevice64>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+        <Cfg_2_Win32>true</Cfg_2_Win32>
         <CfgParent>Cfg_2</CfgParent>
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
@@ -98,13 +104,23 @@
     <PropertyGroup Condition="'$(Cfg_2_iOSDevice64)'!=''">
         <BT_BuildType>Debug</BT_BuildType>
     </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_UnitSearchPath>$(VKSCENEDIR)\Source;$(VKSCENEDIR)\Source\Basis;$(VKSCENEDIR)\Source\DesignTime;$(VKSCENEDIR)\Source\FileFormats;$(VKSCENEDIR)\Source\GameAPIs;$(VKSCENEDIR)\Source\ParallelAPIs;$(VKSCENEDIR)\Source\PhysicsAPIs;$(VKSCENEDIR)\Source\ScriptingAPIs;$(VKSCENEDIR)\Source\Shaders;$(VKSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcpOutput>
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <DCC_DcuOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcuOutput>
+        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <DCC_UnitSearchPath>$(VKSCENEDIR)\Source;$(VKSCENEDIR)\Source\Basis;$(VKSCENEDIR)\Source\DesignTime;$(VKSCENEDIR)\Source\FileFormats;$(VKSCENEDIR)\Source\GameAPIs;$(VKSCENEDIR)\Source\ParallelAPIs;$(VKSCENEDIR)\Source\PhysicsAPIs;$(VKSCENEDIR)\Source\ScriptingAPIs;$(VKSCENEDIR)\Source\Shaders;$(VKSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcpOutput>
         <DCC_Description>VKScene GPU Computing</DCC_Description>
-        <DCC_ObjOutput>..\lib</DCC_ObjOutput>
-        <DCC_HppOutput>..\include</DCC_HppOutput>
-        <DCC_BpiOutput>..\lib</DCC_BpiOutput>
+        <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
+        <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
+        <DCC_BpiOutput>$(VKSCENEDIR)\lib\Win32</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_DcuOutput>$(VKSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
@@ -116,20 +132,20 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="fmx.dcp"/>
         <DCCReference Include="VKScene_RunTime.dcp"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDARunTime.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAFourierTransform.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAUtility.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDA.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDACompiler.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAContext.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAFFTPlan.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAGraphics.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAParser.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDADataAccess.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CL.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CL_GL.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CL_Platform.pas"/>
-        <DCCReference Include="..\Source\ParallelAPIs\VKS.CUDAApi.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDARunTime.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAFourierTransform.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAUtility.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDA.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDACompiler.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAContext.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAFFTPlan.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAGraphics.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAParser.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDADataAccess.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CL.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CL_GL.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CL_Platform.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\VKS.CUDAApi.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
@@ -151,11 +167,10 @@
                     <Source Name="MainSource">VKScene_Parallel_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclDataSnapNativeServer230.bpl">Embarcadero DBExpress DataSnap Native Server Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k230.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp230.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k230.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp230.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
@@ -165,9 +180,9 @@
                 <Platform value="iOSSimulator">False</Platform>
                 <Platform value="OSX32">False</Platform>
                 <Platform value="Win32">True</Platform>
-                <Platform value="Win64">True</Platform>
+                <Platform value="Win64">False</Platform>
             </Platforms>
-            <Deployment Version="2">
+            <Deployment Version="3">
                 <DeployFile LocalName="$(BDS)\Redist\osx32\libcgunwind.1.0.dylib" Class="DependencyModule">
                     <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
@@ -180,6 +195,11 @@
                 </DeployFile>
                 <DeployFile LocalName="$(BDS)\Redist\iossimulator\libPCRE.dylib" Class="DependencyModule">
                     <Platform Name="iOSSimulator">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName="$(BDS)\Redist\osx32\libcgsqlite3.dylib" Class="DependencyModule">
+                    <Platform Name="OSX32">
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
@@ -244,16 +264,19 @@
                     </Platform>
                 </DeployClass>
                 <DeployClass Required="true" Name="ProjectOutput">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                    </Platform>
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="OSX32">
+                    <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
                     </Platform>
-                    <Platform Name="iOSDevice32">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                    </Platform>
+                    <Platform Name="Linux64">
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="OSX32">
                         <Operation>1</Operation>
                     </Platform>
                     <Platform Name="Android">
@@ -305,12 +328,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="AndroidLibnativeX86File">
-                    <Platform Name="Android">
-                        <RemoteDir>library\lib\x86</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="AndroidLibnativeX86File"/>
                 <DeployClass Name="iPhone_Launch320">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>
@@ -517,6 +535,7 @@
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
+                <ProjectRoot Platform="Linux64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
