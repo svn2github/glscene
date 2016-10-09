@@ -1,5 +1,6 @@
 @echo off
 del *.dcu /s
+del *.dcp /s
 del *.ddp /s
 del *.ppu /s
 del *.o /s
@@ -67,8 +68,6 @@ echo delete all .svn directories with subdirectories and files
 for /r %1 %%R in (.svn) do if exist "%%R" (rd /s /q "%%R")
 echo---------------------------------------------------------
 echo delete debug and Platform directories with all subdirectories and files 
-for /r %1 %%R in (Win32) do if exist "%%R" (rd /s /q "%%R")
-for /r %1 %%R in (Win64) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Debug_Build) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Release_Build) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")

@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
+  Position = poScreenCenter
   WindowState = wsMaximized
   OnKeyDown = FormKeyDown
   OnShow = FormShow
