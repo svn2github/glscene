@@ -52,7 +52,7 @@ begin
   finally
     RegIni.Free;
   end;
-
+{
   if RegIni.ValueExists(GeneralSection,'SplashStart') then
     SplashStart := RegIni.ReadBool(GeneralSection,'SplashStart',False)
   else
@@ -62,7 +62,7 @@ begin
     TipOfTheDay := RegIni.ReadBool(GeneralSection,'TipOfTheDay', True)
   else
     TipOfTheDay := False;
-
+}
 end;
 
 initialization

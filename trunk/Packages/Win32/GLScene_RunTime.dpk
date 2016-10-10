@@ -280,6 +280,16 @@ contains
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  XOpenGL in '..\..\Source\Basis\XOpenGL.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
+  GLFileX in '..\..\Source\FileFormats\GLFileX.pas',
+  GLSLErosionShader in '..\..\Source\Shaders\GLSLErosionShader.pas',
+  GLSLFurShader in '..\..\Source\Shaders\GLSLFurShader.pas',
+  GLSLGlassShader in '..\..\Source\Shaders\GLSLGlassShader.pas',
+  GLSLGoochShader in '..\..\Source\Shaders\GLSLGoochShader.pas',
+  GLSLIvoryShader in '..\..\Source\Shaders\GLSLIvoryShader.pas',
+  GLSLLatticeShader in '..\..\Source\Shaders\GLSLLatticeShader.pas',
+  GLSLSemShader in '..\..\Source\Shaders\GLSLSemShader.pas',
+  GLSLToonShader in '..\..\Source\Shaders\GLSLToonShader.pas',
+  GLSLVertexDisplacementShader in '..\..\Source\Shaders\GLSLVertexDisplacementShader.pas';
 
 end.

@@ -18,7 +18,8 @@ interface
 uses
   System.Classes,
   // GLS
-  GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,
+  GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x,
+  GLContext, GLRenderContextInfo,
   GLCoordinates, GLVectorGeometry, GLVectorTypes,
   GLTextureFormat,GLColor, GLTexture, GLMaterial,
   GLSLShader, GLCustomShader;

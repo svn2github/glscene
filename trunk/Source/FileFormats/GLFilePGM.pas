@@ -3,10 +3,10 @@
 //
 {
    PGM image loader
-   History :  
+   History :
      08/05/10 - Yar - Removed check for residency in AssignFromTexture
      04/02/10 - Yar - Creation
-   
+
 }
 unit GLFilePGM;
 
@@ -16,8 +16,8 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-   
-  OpenGLTokens, GLContext, GLGraphics, GLTextureFormat,
+  //GLS
+  OpenGLTokens, GLContext, GLGraphics, GLTextureFormat, GLStrings,
   GLApplicationFileIO;
 
 type
@@ -64,7 +64,7 @@ begin
     if not IsCUTILInitialized then
       if not InitCUTIL then
       begin
-        EInvalidRasterFile.Create(cCUTILFailed);
+        EInvalidRasterFile.Create(strCUTILFailed);
         exit;
       end;
     cutBuffer := nil;
@@ -97,7 +97,7 @@ begin
   if not IsCUTILInitialized then
     if not InitCUTIL then
     begin
-      EInvalidRasterFile.Create(cCUTILFailed);
+      EInvalidRasterFile.Create(strCUTILFailed);
       exit;
     end;
   if not cutSavePGMf(PAnsiChar(AnsiString(filename)), System.PSingle(fData),

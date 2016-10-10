@@ -105,7 +105,7 @@ const
   vLtGreen: TColorVector = (X: 0.05; Y:0.98; Z:0.14; W:0.30);
 
 var
-  vd: array [0 .. 3] of TVertexData;
+  vd: array [0 .. 3] of TGLVertexData;
 
 begin
   vd[0].coord := Vector3fMake(-0.2, -0.4, 0.0);

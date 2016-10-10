@@ -121,26 +121,20 @@ begin
 
   SetCurrentDir(ExtractFilePath(ParamStr(0)));
 
-  with MLTerrain.AddTextureMaterial('Terrain', 'data\volcano_TX_low.jpg') do
-    Texture2Name := 'Detail';
-  with MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg') do
-  begin
-    Material.Texture.TextureMode := tmModulate;
-    TextureScale.SetPoint(128, 128, 128);
-  end;
+ // Load volcano textures
+  MLTerrain.AddTextureMaterial('Terrain', 'data\volcano_TX_low.jpg').Texture2Name := 'Detail';
+  MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg').Material.Texture.TextureMode := tmModulate;
+  MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg').TextureScale.SetPoint(128, 128, 128);
   Terrain.Material.MaterialLibrary := MLTerrain;
   Terrain.Material.LibMaterialName := 'Terrain';
 
   // Load tree textures
-  with MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga') do
-  begin
-    Material.Texture.TextureFormat := tfRGBA;
-    Material.Texture.TextureMode := tmModulate;
-    Material.Texture.MinFilter := miNearestMipmapNearest;
-    Material.BlendingMode := bmAlphaTest50;
-  end;
-  with MLTrees.AddTextureMaterial('Bark', 'data\zbark_016.jpg') do
-    Material.Texture.TextureMode := tmModulate;
+  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.TextureFormat := tfRGBA;
+  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.TextureMode := tmModulate;
+  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.MinFilter := miNearestMipmapNearest;
+  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.BlendingMode := bmAlphaTest50;
+
+  MLTrees.AddTextureMaterial('Bark', 'data\zbark_016.jpg').Material.Texture.TextureMode := tmModulate;
 
   // Create test tree
   Randomize;
@@ -343,7 +337,8 @@ var
   d: Single;
   camPos: TVector;
 begin
-  if not IsVolumeClipped(VectorAdd(aParticle.Position, cTreeCenteringOffset), 30, rci.rcci.frustum) then
+  if not IsVolumeClipped(VectorAdd(aParticle.Position, cTreeCenteringOffset), 30, rci.rcci.frustum)
+  then
   begin
     ;
     VectorSubtract(rci.cameraPosition, aParticle.Position, camPos);

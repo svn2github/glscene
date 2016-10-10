@@ -2,8 +2,6 @@ unit uMainForm;
 
 interface
 
-{$I GLScene.inc}
-
 uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ComCtrls,

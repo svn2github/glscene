@@ -379,6 +379,16 @@
         <DCCReference Include="..\..\Source\FileFormats\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VRMLParser.pas"/>
         <DCCReference Include="..\..\Source\Basis\XOpenGL.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFileX.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLErosionShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLFurShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLGlassShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLGoochShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLIvoryShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLLatticeShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLSemShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLToonShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLVertexDisplacementShader.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

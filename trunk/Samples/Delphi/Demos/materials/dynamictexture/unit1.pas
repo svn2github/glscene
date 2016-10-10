@@ -127,7 +127,7 @@ begin
     // not the complete texture
     // also note that the right/bottom edge is not included
     // in the upload
-    img.DirtyRectangle:= GLRect(
+    img.DirtyRectangle:= Rect(
       img.Width div 4,
       img.Height div 4,
       img.Width * 3 div 4,

@@ -41,7 +41,6 @@ contains
   CL_GL in '..\..\Source\ParallelAPIs\CL_GL.pas',
   GLSCUDARuntime in '..\..\Source\ParallelAPIs\GLSCUDARuntime.pas',
   GLSCUDAFourierTransform in '..\..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas',
-  GLSCUDAUtility in '..\..\Source\ParallelAPIs\GLSCUDAUtility.pas',
   GLSCUDACompiler in '..\..\Source\ParallelAPIs\GLSCUDACompiler.pas',
   GLSCUDAContext in '..\..\Source\ParallelAPIs\GLSCUDAContext.pas',
   GLSCUDAFFTPlan in '..\..\Source\ParallelAPIs\GLSCUDAFFTPlan.pas',

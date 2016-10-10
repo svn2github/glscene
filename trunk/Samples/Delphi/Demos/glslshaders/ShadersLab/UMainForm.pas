@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLSLShaderLab Demo : Demo who show how to use some GLSLShader.
+  GLSLShaderLab Demo : Demo that show how to use some GLSLShader.
   If you want to use your own model, take care that models need to have UV Coordinates
 
   History :
@@ -23,11 +23,10 @@ uses
   // GLS
   GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects,
   GLVectorGeometry, GLTexture, GLContext, GLVectorLists, GLCadencer,
-  GLCoordinates,
-  GLCrossPlatform, GLBaseClasses, GLMeshOptimizer, GLState, GLRenderContextInfo,
-  GLTextureFormat, GLColor, GLKeyBoard, GLGraphics, GLPersistentClasses,
-  GLMeshUtils,
-  GLVectorTypes, GLUtils, GLGeomObjects, GLSimpleNavigation, GLHUDObjects,
+  GLCoordinates, GLCrossPlatform, GLBaseClasses, GLMeshOptimizer, GLState,
+  GLRenderContextInfo, GLTextureFormat, GLColor, GLKeyBoard, GLGraphics,
+  GLPersistentClasses, GLMeshUtils, GLVectorTypes, GLUtils, GLGeomObjects,
+  GLSimpleNavigation, GLHUDObjects,
 
   GLSLFurShader,
   GLSLLatticeShader,

@@ -140,7 +140,6 @@
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDARuntime.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas"/>
-        <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAUtility.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDACompiler.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAContext.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAFFTPlan.pas"/>
@@ -190,16 +189,13 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
+                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\Win64\GLScene_Parallel_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>GLScene_Parallel_RunTime.bpl</RemoteName>
+                        <Overwrite>true</Overwrite>
                     </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                </DeployFile>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -511,7 +507,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>
