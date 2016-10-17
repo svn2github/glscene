@@ -137,30 +137,8 @@ uses
 var
   vSqrt255: TSqrt255Array;
 
-  // WordToIntegerArray
-  //
-{$IFNDEF GEOMETRY_NO_ASM}
-
-procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal); assembler;
-// EAX contains Source
-// EDX contains Dest
-// ECX contains Count
-asm
-              JECXZ @@Finish
-              PUSH ESI
-              PUSH EDI
-              MOV ESI,EAX
-              MOV EDI,EDX
-              XOR EAX,EAX
-@@1:          LODSW
-              STOSD
-              DEC ECX
-              JNZ @@1
-              POP EDI
-              POP ESI
-@@Finish:
-end;
-{$ELSE}
+// WordToIntegerArray
+//
 
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 var
@@ -169,7 +147,6 @@ begin
   for i := 0 to Count - 1 do
     Dest^[i] := Source^[i];
 end;
-{$ENDIF}
 
 // RoundUpToPowerOf2
 //

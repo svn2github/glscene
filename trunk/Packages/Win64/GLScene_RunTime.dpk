@@ -13,8 +13,8 @@ package GLScene_RunTime;
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
 {$OPTIMIZATION OFF}
-{$OVERFLOWCHECKS OFF}
-{$RANGECHECKS OFF}
+{$OVERFLOWCHECKS ON}
+{$RANGECHECKS ON}
 {$REFERENCEINFO ON}
 {$SAFEDIVIDE OFF}
 {$STACKFRAMES ON}
@@ -25,7 +25,7 @@ package GLScene_RunTime;
 {$IMAGEBASE $400000}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
-{$DESCRIPTION 'GLSceneVCL OpenGL 3D library'}
+{$DESCRIPTION 'GLScene OpenGL 3D library'}
 {$RUNONLY}
 {$IMPLICITBUILD ON}
 
@@ -122,6 +122,7 @@ contains
   GLFileTIN in '..\..\Source\FileFormats\GLFileTIN.pas',
   GLFileVRML in '..\..\Source\FileFormats\GLFileVRML.pas',
   GLFileWAV in '..\..\Source\FileFormats\GLFileWAV.pas',
+  GLFileX in '..\..\Source\FileFormats\GLFileX.pas',
   GLFireFX in '..\..\Source\GLFireFX.pas',
   GLFullScreenViewer in '..\..\Source\GLFullScreenViewer.pas',
   GLGLUTesselation in '..\..\Source\GLGLUTesselation.pas',
@@ -131,6 +132,7 @@ contains
   GLGeometryCoordinates in '..\..\Source\Basis\GLGeometryCoordinates.pas',
   GLGizmo in '..\..\Source\GLGizmo.pas',
   GLGizmoEx in '..\..\Source\GLGizmoEx.pas',
+  GLGnuGettext in '..\..\Source\Basis\GLGnuGettext.pas',
   GLGraph in '..\..\Source\GLGraph.pas',
   GLGraphics in '..\..\Source\GLGraphics.pas',
   GLGui in '..\..\Source\GLGui.pas',
@@ -197,12 +199,20 @@ contains
   GLSGenerics in '..\..\Source\GLSGenerics.pas',
   GLSLBumpShader in '..\..\Source\Shaders\GLSLBumpShader.pas',
   GLSLDiffuseSpecularShader in '..\..\Source\Shaders\GLSLDiffuseSpecularShader.pas',
+  GLSLErosionShader in '..\..\Source\Shaders\GLSLErosionShader.pas',
+  GLSLFurShader in '..\..\Source\Shaders\GLSLFurShader.pas',
+  GLSLGlassShader in '..\..\Source\Shaders\GLSLGlassShader.pas',
+  GLSLGoochShader in '..\..\Source\Shaders\GLSLGoochShader.pas',
+  GLSLIvoryShader in '..\..\Source\Shaders\GLSLIvoryShader.pas',
+  GLSLLatticeShader in '..\..\Source\Shaders\GLSLLatticeShader.pas',
   GLSLParameter in '..\..\Source\Shaders\GLSLParameter.pas',
   GLSLPostShaders in '..\..\Source\Shaders\GLSLPostShaders.pas',
   GLSLProjectedTextures in '..\..\Source\Shaders\GLSLProjectedTextures.pas',
+  GLSLSemShader in '..\..\Source\Shaders\GLSLSemShader.pas',
+  GLSLShader in '..\..\Source\Shaders\GLSLShader.pas',
+  GLSLToonShader in '..\..\Source\Shaders\GLSLToonShader.pas',
   GLSLanguage in '..\..\Source\GLSLanguage.pas',
   GLSLog in '..\..\Source\GLSLog.pas',
-  GLSLShader in '..\..\Source\Shaders\GLSLShader.pas',
   GLSMemo in '..\..\Source\GLSMemo.pas',
   GLSRGBE in '..\..\Source\GLSRGBE.pas',
   GLSRedBlackTree in '..\..\Source\GLSRedBlackTree.pas',
@@ -221,6 +231,7 @@ contains
   GLSimpleNavigation in '..\..\Source\GLSimpleNavigation.pas',
   GLSkyBox in '..\..\Source\GLSkyBox.pas',
   GLSkydome in '..\..\Source\GLSkydome.pas',
+  GLSLVertexDisplacementShader in '..\..\Source\Shaders\GLSLVertexDisplacementShader.pas',
   GLSmoothNavigator in '..\..\Source\GLSmoothNavigator.pas',
   GLSound in '..\..\Source\SoundVideoAPIs\GLSound.pas',
   GLSoundFileObjects in '..\..\Source\SoundVideoAPIs\GLSoundFileObjects.pas',
@@ -267,7 +278,6 @@ contains
   GLWindowsFont in '..\..\Source\GLWindowsFont.pas',
   GLXCollection in '..\..\Source\GLXCollection.pas',
   GLzBuffer in '..\..\Source\GLzBuffer.pas',
-  GNUgettext in '..\..\Source\Basis\GNUgettext.pas',
   HDRImage in '..\..\Source\FileFormats\HDRImage.pas',
   LWObjects in '..\..\Source\FileFormats\LWObjects.pas',
   O3TCImage in '..\..\Source\FileFormats\O3TCImage.pas',
@@ -280,16 +290,6 @@ contains
   Types3DS in '..\..\Source\FileFormats\Types3DS.pas',
   Utils3DS in '..\..\Source\FileFormats\Utils3DS.pas',
   VRMLParser in '..\..\Source\FileFormats\VRMLParser.pas',
-  XOpenGL in '..\..\Source\Basis\XOpenGL.pas',
-  GLFileX in '..\..\Source\FileFormats\GLFileX.pas',
-  GLSLErosionShader in '..\..\Source\Shaders\GLSLErosionShader.pas',
-  GLSLFurShader in '..\..\Source\Shaders\GLSLFurShader.pas',
-  GLSLGlassShader in '..\..\Source\Shaders\GLSLGlassShader.pas',
-  GLSLGoochShader in '..\..\Source\Shaders\GLSLGoochShader.pas',
-  GLSLIvoryShader in '..\..\Source\Shaders\GLSLIvoryShader.pas',
-  GLSLLatticeShader in '..\..\Source\Shaders\GLSLLatticeShader.pas',
-  GLSLSemShader in '..\..\Source\Shaders\GLSLSemShader.pas',
-  GLSLToonShader in '..\..\Source\Shaders\GLSLToonShader.pas',
-  GLSLVertexDisplacementShader in '..\..\Source\Shaders\GLSLVertexDisplacementShader.pas';
+  XOpenGL in '..\..\Source\Basis\XOpenGL.pas';
 
 end.

@@ -127,10 +127,10 @@ type
   SInt64 = Int64;
   {$ENDIF}
 
-  {$IFNDEF WIN64}
-    size_t = UInt32;
-  {$ELSE}
+  {$IFDEF WIN64}
     size_t = UInt64;
+  {$ELSE}
+    size_t = UInt32;
   {$ENDIF}
   {$EXTERNALSYM SIZE_T}
 

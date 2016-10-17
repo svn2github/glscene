@@ -6,11 +6,11 @@ uses
   Winapi.Windows,
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
-  //GLS
+  // GLS
   GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
   GLAsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLFileMD2, GLKeyboard;
+  GLFileMD2, GLKeyboard, GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -26,19 +26,19 @@ type
     GLTexturedCelShader: TGLCelShader;
     GLColoredCelShader: TGLCelShader;
     GLTorus1: TGLTorus;
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
   private
     { Private declarations }
   public
     { Public declarations }
-    mx, my, lx, ly : Integer;
+    mx, my, lx, ly: Integer;
   end;
 
 var
@@ -50,59 +50,52 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  r : Single;
-
-  MediaPath : String;
-  I : Integer;
+  r: Single;
 begin
-  MediaPath := ExtractFilePath(ParamStr(0));
-  I := Pos('Samples', MediaPath);
-  if (I <> 0) then
-  begin
-    Delete(MediaPath, I+8, Length(MediaPath)-I);
-    SetCurrentDir(MediaPath+'Media\');
-  end;
-
+  SetGLSceneMediaDir();
   GLActor1.LoadFromFile('waste.md2');
-  r:=GLActor1.BoundingSphereRadius;
-  GLActor1.Scale.SetVector(2.5/r,2.5/r,2.5/r);
-  GLActor1.AnimationMode:=aamLoop;
-  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile('wastecell.jpg');
+  r := GLActor1.BoundingSphereRadius;
+  GLActor1.Scale.SetVector(2.5 / r, 2.5 / r, 2.5 / r);
+  GLActor1.AnimationMode := aamLoop;
+  GLMaterialLibrary1.Materials[0].Material.Texture.Image.LoadFromFile
+    ('wastecell.jpg');
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  mx:=x;
-  my:=y;
-  lx:=x;
-  ly:=y;
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  mx:=x;
-  my:=y;
+  mx := X;
+  my := Y;
+  lx := X;
+  ly := Y;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  mx := X;
+  my := Y;
 end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Form1.Caption:=Format('GLScene Cel Shading - %.2f FPS',[GLSceneViewer1.FramesPerSecond]);
+  Form1.Caption := Format('GLScene Cel Shading - %.2f FPS',
+    [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
-  if IsKeyDown(VK_LBUTTON) then begin
-    GLCamera1.MoveAroundTarget(ly-my,lx-mx);
-    lx:=mx;
-    ly:=my;
+  if IsKeyDown(VK_LBUTTON) then
+  begin
+    GLCamera1.MoveAroundTarget(ly - my, lx - mx);
+    lx := mx;
+    ly := my;
   end;
 
-  GLTorus1.TurnAngle:=15*Sin(newTime*5);
-  GLTorus1.PitchAngle:=15*Cos(newTime*5);
+  GLTorus1.TurnAngle := 15 * Sin(newTime * 5);
+  GLTorus1.PitchAngle := 15 * Cos(newTime * 5);
 end;
 
 end.

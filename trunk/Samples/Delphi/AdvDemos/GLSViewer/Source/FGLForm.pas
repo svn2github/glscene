@@ -19,7 +19,8 @@ uses
   Vcl.Forms,
   Vcl.Graphics,
   Vcl.Menus,
-  Vcl.Actnlist;
+  Vcl.Actnlist,
+  GLGnuGettext;
 
 type
   TGLForm = class(TForm)
@@ -44,9 +45,6 @@ var
   LangID : Word;
 
 implementation
-
-uses
-  Gnugettext;
 
 {$R *.dfm}
 

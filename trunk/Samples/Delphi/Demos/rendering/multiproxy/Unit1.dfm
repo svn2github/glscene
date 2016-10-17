@@ -73,6 +73,8 @@ object Form1: TForm1
       Width = 97
       Height = 17
       Caption = 'Colorize LODs'
+      Checked = True
+      State = cbChecked
       TabOrder = 2
       OnClick = RBUseLODsClick
     end

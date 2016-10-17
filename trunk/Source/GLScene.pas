@@ -6101,8 +6101,7 @@ begin
 
     with CurrentGLContext.PipelineTransformation do
       ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
-
-    FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
+      FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane
   end;
 end;
 

@@ -40,7 +40,7 @@ implementation
 {$R *.dfm}
 
 uses
-  GNUgettext, FMain;
+  GLGnuGettext, FMain;
 
 
 procedure TGLOptions.FormCreate(Sender: TObject);

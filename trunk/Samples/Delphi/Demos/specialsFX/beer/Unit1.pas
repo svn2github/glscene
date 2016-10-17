@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Imaging.Jpeg, Vcl.Controls, Vcl.Forms,
 
-  //GLS
+  // GLS
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLFile3ds, GLCadencer, GLGeomObjects, GLVectorGeometry,
   GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform, GLCoordinates,
@@ -30,8 +30,8 @@ type
     GLPolygonPFXManager1: TGLPolygonPFXManager;
     GLParticleFXRenderer2: TGLParticleFXRenderer;
     procedure FormActivate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure GLSceneViewer1DblClick(Sender: TObject);
@@ -39,7 +39,7 @@ type
     { Private declarations }
   public
     { Public declarations }
-    mx, my : Integer;
+    mx, my: Integer;
   end;
 
 var
@@ -51,30 +51,31 @@ implementation
 
 procedure TForm1.FormActivate(Sender: TObject);
 begin
-   SetGLSceneMediaDir;
-   GLFreeForm1.LoadFromFile('beer.3ds');
-   GLFreeForm1.Material.Texture.Image.LoadFromFile('clouds.jpg');
-   GLShadowPlane1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
-   GetOrCreateSourcePFX(GLDummyCube3).Burst(0, 150);
+  SetGLSceneMediaDir;
+  GLFreeForm1.LoadFromFile('beer.3ds');
+  GLFreeForm1.Material.Texture.Image.LoadFromFile('clouds.jpg');
+  GLShadowPlane1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+  GetOrCreateSourcePFX(GLDummyCube3).Burst(0, 150);
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
-  GLCamera1.MoveAroundTarget(0, 10*deltatime);
+  GLCamera1.MoveAroundTarget(0, 10 * deltaTime);
 end;
 
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
-  Shift: TShiftState; X, Y: Integer);
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
 begin
-   if ssLeft in Shift then
-      GLCamera1.MoveAroundTarget(my-y, mx-x);
-   mx:=x; my:=y;
+  if ssLeft in Shift then
+    GLCamera1.MoveAroundTarget(my - Y, mx - X);
+  mx := X;
+  my := Y;
 end;
 
 procedure TForm1.GLSceneViewer1DblClick(Sender: TObject);
 begin
-   GLCadencer1.Enabled:=not GLCadencer1.Enabled;
+  GLCadencer1.Enabled := not GLCadencer1.Enabled;
 end;
 
 end.

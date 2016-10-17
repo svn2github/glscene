@@ -25,7 +25,7 @@ object Form1: TForm1
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 150.512878417968800000
+    FieldOfView = 150.512878417968700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -46,15 +46,15 @@ object Form1: TForm1
       Caption = 'Shade Method'
     end
     object Label2: TLabel
-      Left = 384
+      Left = 368
       Top = 8
       Width = 72
       Height = 13
       Caption = 'Specular Mode'
     end
     object LabelFPS: TLabel
-      Left = 512
-      Top = 27
+      Left = 514
+      Top = 26
       Width = 20
       Height = 13
       Caption = 'FPS'
@@ -73,8 +73,8 @@ object Form1: TForm1
         'Per-Vertex')
     end
     object GroupBox1: TGroupBox
-      Left = 160
-      Top = 8
+      Left = 161
+      Top = 10
       Width = 169
       Height = 41
       Caption = 'Lights'
@@ -103,7 +103,7 @@ object Form1: TForm1
         OnMouseDown = ShapeMouseDown
       end
       object CheckBox1: TCheckBox
-        Left = 8
+        Left = 9
         Top = 16
         Width = 17
         Height = 17
@@ -113,7 +113,7 @@ object Form1: TForm1
         OnClick = CheckBoxClick
       end
       object CheckBox2: TCheckBox
-        Left = 64
+        Left = 65
         Top = 16
         Width = 17
         Height = 17
@@ -121,7 +121,7 @@ object Form1: TForm1
         OnClick = CheckBoxClick
       end
       object CheckBox3: TCheckBox
-        Left = 120
+        Left = 121
         Top = 16
         Width = 17
         Height = 17
@@ -130,7 +130,7 @@ object Form1: TForm1
       end
     end
     object CheckBox4: TCheckBox
-      Left = 336
+      Left = 458
       Top = 24
       Width = 49
       Height = 17
@@ -140,7 +140,7 @@ object Form1: TForm1
       TabOrder = 2
     end
     object ComboBox2: TComboBox
-      Left = 384
+      Left = 371
       Top = 24
       Width = 73
       Height = 21

@@ -980,7 +980,8 @@ begin
   if Val > FCapacity then
     SetCapacity(Val);
   if (Val > FCount) and (bloSetCountResetsMemory in FOptions) then
-    FillChar(FBaseList[FItemSize * FCount], (Val - FCount) * FItemSize, 0);
+   if (FBaseList[FItemSize * FCount] <= 255) then
+    FillChar(FBaseList[FItemSize * FCount], SizeOf(FBaseList[FItemSize * FCount]), Byte(0));
   FCount := Val;
   Inc(FRevision);
 end;
@@ -2592,7 +2593,6 @@ end;
 //
 
 function IntegerSearch(item: Integer; list: PIntegerVector; Count: Integer): Integer; register;
-{$IFDEF GLS_NO_ASM}
 var i : integer;
 begin
   result:=-1;
@@ -2603,32 +2603,6 @@ begin
     end;
   end;
 end;
-{$ELSE}
-asm
-  push edi;
-
-  test ecx, ecx
-  jz @@NotFound
-
-  mov edi, edx;
-  mov edx, ecx;
-  repne scasd;
-  je @@FoundIt
-
-  @@NotFound:
-  xor eax, eax
-  dec eax
-  jmp @@end;
-
-  @@FoundIt:
-  sub edx, ecx;
-  dec edx;
-  mov eax, edx;
-
-  @@end:
-  pop edi;
-end;
-{$ENDIF}
 
 // IndexOf
 //
@@ -3084,9 +3058,8 @@ end;
 
 // Sum
 //
-
+{$IFDEF GLS_ASM}
 function TSingleList.Sum: Single;
-{$IFNDEF GLS_NO_ASM}
   function ComputeSum(list: PSingleArrayList; nb: Integer): Single; register;
   asm
     fld   dword ptr [eax]
@@ -3095,21 +3068,22 @@ function TSingleList.Sum: Single;
     fadd  dword ptr [eax+edx*4]
     jnz   @@Loop
   end;
-
 begin
   if FCount > 0 then
     Result := ComputeSum(FList, FCount)
   else
     Result := 0;
+end;
 {$ELSE}
+function TSingleList.Sum: Single;
 var
   i: Integer;
 begin
   Result := 0;
   for i := 0 to FCount-1 do
     Result := Result + FList^[i];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // Min
 //
@@ -3434,9 +3408,8 @@ end;
 
 // Sum
 //
-
+{$IFDEF GLS_ASM}
 function TDoubleList.Sum: Double;
-{$IFNDEF GLS_NO_ASM}
   function ComputeSum(list: PDoubleArrayList; nb: Integer): Double; register;
   asm
     fld   dword ptr [eax]
@@ -3451,15 +3424,17 @@ begin
     Result := ComputeSum(FList, FCount)
   else
     Result := 0;
+end;
 {$ELSE}
+function TDoubleList.Sum: Double;
 var
   i: Integer;
 begin
     Result := 0;
     for i := 0 to FCount-1 do
     Result := Result + FList^[i];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // Min
 //
@@ -4217,7 +4192,6 @@ end;
 //
 
 function LongWordSearch(item: LongWord; list: PLongWordVector; Count: Integer): Integer; register;
-{$IFDEF GLS_NO_ASM}
 var i : integer;
 begin
   result:=-1;
@@ -4228,32 +4202,6 @@ begin
     end;
   end;
 end;
-{$ELSE}
-asm
-  push edi;
-
-  test ecx, ecx
-  jz @@NotFound
-
-  mov edi, edx;
-  mov edx, ecx;
-  repne scasd;
-  je @@FoundIt
-
-  @@NotFound:
-  xor eax, eax
-  dec eax
-  jmp @@end;
-
-  @@FoundIt:
-  sub edx, ecx;
-  dec edx;
-  mov eax, edx;
-
-  @@end:
-  pop edi;
-end;
-{$ENDIF}
 
 function TLongWordList.IndexOf(item: Integer): LongWord; register;
 begin

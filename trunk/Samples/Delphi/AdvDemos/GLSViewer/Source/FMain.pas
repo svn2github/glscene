@@ -20,7 +20,7 @@ uses
   GLVectorTypes,
 
   //GLSViewer
-  FGLForm, FGLAbout, GNUgettext, FGLOptions, DGLSViewer;
+  FGLForm, FGLAbout, GLGnuGettext, FGLOptions, DGLSViewer;
 
 type
   TMainForm = class(TGLForm)

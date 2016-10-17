@@ -412,7 +412,7 @@ type
     FSelStartX, FSelStartY,
       FSelEndX, FSelEndY,
       FPrevSelX, FPrevSelY: integer;
-    FScrollBars: TScrollStyle;
+    FScrollBars: System.UITypes.TScrollStyle;
     FScrollBarWidth: integer;
     FGutter: TGLSMemoGutter;
     FGutterWidth: integer;

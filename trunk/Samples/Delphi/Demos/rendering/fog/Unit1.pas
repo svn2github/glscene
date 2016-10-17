@@ -162,6 +162,7 @@ begin
           Cube.CubeHeight := cEdgeLength;
           Cube.CubeDepth := cEdgeLength;
         end;
+  RGFogModeClick(Self);
 end;
 
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;

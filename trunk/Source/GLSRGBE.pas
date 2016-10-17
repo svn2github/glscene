@@ -32,10 +32,9 @@ implementation
 type
   ERGBEexception = class(Exception);
 
-  { Extract exponent and mantissa from X }
+// Extract exponent and mantissa from X
+//
 procedure Frexp(X: Extended; var Mantissa: Extended; var Exponent: Integer);
-{ Mantissa ptr in EAX, Exponent ptr in EDX }
-{$IFDEF GLS_NO_ASM}
 begin
   Exponent := 0;
   if (X <> 0) then
@@ -51,55 +50,12 @@ begin
         Inc(Exponent);
       end;
   Mantissa := X;
-{$ELSE}
-asm
-  FLD     X
-  PUSH    EAX
-  MOV     dword ptr [edx], 0    { if X = 0, return 0 }
-
-  FTST
-  FSTSW   AX
-  FWAIT
-  SAHF
-  JZ      @@Done
-
-  FXTRACT                 // ST(1) = exponent, (pushed) ST = fraction
-  FXCH
-
-  // The FXTRACT instruction normalizes the fraction 1 bit higher than
-  // wanted for the definition of frexp() so we need to tweak the result
-  // by scaling the fraction down and incrementing the exponent.
-
-  FISTP   dword ptr [edx]
-  FLD1
-  FCHS
-  FXCH
-  FSCALE                  // scale fraction
-  INC     dword ptr [edx] // exponent biased to match
-  FSTP ST(1)              // discard -1, leave fraction as TOS
-
-@@Done:
-  POP     EAX
-  FSTP    tbyte ptr [eax]
-  FWAIT
-  {$ENDIF}
 end;
 
+
 function Ldexp(X: Extended; const P: Integer): Extended;
-{$IFDEF GLS_NO_ASM}
 begin
-  Ldexp := X * Intpower(2.0, P);
-{$ELSE}
-{ Result := X * (2^P) }
-asm
-  PUSH    EAX
-  FILD    dword ptr [ESP]
-  FLD     X
-  FSCALE
-  POP     EAX
-  FSTP    ST(1)
-  FWAIT
-  {$ENDIF}
+  Ldexp := X * Intpower(2.0, P); // Result := X * (2^P)
 end;
 
 // standard conversion from float pixels to rgbe pixels

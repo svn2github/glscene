@@ -154,25 +154,27 @@ object MainForm: TMainForm
   end
   object GLSceneViewer: TGLSceneViewer
     Left = 0
-    Top = 57
+    Top = 55
     Width = 668
-    Height = 414
+    Height = 416
     Camera = GLCamera
     BeforeRender = GLSceneViewerBeforeRender
     AfterRender = GLSceneViewerAfterRender
     Buffer.BackgroundColor = 14540253
     Buffer.ContextOptions = [roDoubleBuffer, roRenderToWindow, roTwoSideLighting]
     Buffer.FaceCulling = False
-    FieldOfView = 152.841094970703100000
+    FieldOfView = 152.966857910156300000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove
     OnMouseUp = GLSceneViewerMouseUp
     TabOrder = 1
+    ExplicitTop = 57
+    ExplicitHeight = 414
   end
   object ControlBar: TControlBar
     Left = 0
-    Top = 27
+    Top = 25
     Width = 668
     Height = 30
     Align = alTop
@@ -242,7 +244,7 @@ object MainForm: TMainForm
     Left = 0
     Top = 0
     Width = 668
-    Height = 27
+    Height = 25
     UseSystemFont = False
     ActionManager = ActionManager
     Caption = 'ActionMainMenuBar'
@@ -257,12 +259,13 @@ object MainForm: TMainForm
     Font.Name = 'Segoe UI'
     Font.Style = []
     Spacing = 0
+    ExplicitHeight = 27
   end
   object ImageList: TImageList
     Left = 32
     Top = 232
     Bitmap = {
-      494C01010E009800C00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010E009800C40010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000004000000001002000000000000040
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000424242004242420042424200424242000000
@@ -1875,7 +1878,7 @@ object MainForm: TMainForm
     Left = 120
     Top = 232
     Bitmap = {
-      494C010115001800600010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010115001800640010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000006000000001002000000000000060
       000000000000000000000000000000000000000000007FC8F70089CDF70092D0
       F8009DD5F8002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF002BF6EF00D8EE

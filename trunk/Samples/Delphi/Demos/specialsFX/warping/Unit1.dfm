@@ -12,6 +12,8 @@ object Form1: TForm1
   Font.Style = []
   Menu = MainMenu1
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
@@ -21,7 +23,7 @@ object Form1: TForm1
     Width = 472
     Height = 332
     Camera = GLCamera
-    FieldOfView = 179.654846191406300000
+    FieldOfView = 179.654846191406200000
     Align = alClient
     OnMouseDown = GLSceneViewerMouseDown
     OnMouseMove = GLSceneViewerMouseMove

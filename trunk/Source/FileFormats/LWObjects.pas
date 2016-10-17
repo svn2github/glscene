@@ -945,10 +945,8 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
-{$IFDEF GLS_NO_ASM}
   pB: PByte;
   Blo, Bhi: Byte;
-{$ENDIF}
   L: LongWord;
   i: Integer;
 begin
@@ -959,16 +957,8 @@ begin
 
       while i < Count do
       begin
-
         W := PU2Array(ValueIn)^[i];
 
-{$IFNDEF GLS_NO_ASM}
-        asm
-          mov ax,w;   { move w into ax register }
-          xchg al,ah; { swap lo and hi byte of word }
-          mov w,ax;   { move "swapped" ax back to w }
-        end;
-{$ELSE}
         pB := @W;
         Blo := pB^;
         Inc(pB);
@@ -976,29 +966,16 @@ begin
         pB^ := Blo;
         Dec(pB);
         pB^ := Bhi;
-{$ENDIF}
         PU2Array(ValueIn)^[i] := w;
 
         Inc(i);
-
       end;
-
     end;
 
     4: begin
-
       while i < Count do
       begin
-
         L := PU4Array(ValueIn)^[i];
-
-{$IFNDEF GLS_NO_ASM}
-        asm
-          mov ax,w;   { move w into ax register }
-          xchg al,ah; { swap lo and hi byte of word }
-          mov w,ax;   { move "swapped" ax back to w }
-        end;
-{$ELSE}
         pB := @W;
         Blo := pB^;
         Inc(pB);
@@ -1006,32 +983,23 @@ begin
         pB^ := Blo;
         Dec(pB);
         pB^ := Bhi;
-{$ENDIF}
-
         PU4Array(ValueIn)^[i] := l;
 
         Inc(i);
-
       end;
-
     end;
-
   else
     raise Exception.Create('Lightwave.ReverseByteOrder: Invalid Size = ' + IntToStr(Size));
-
   end;
-
 end;
 
 procedure ReadMotorolaNumber(Stream: TStream; Data: Pointer; ElementSize:
         Integer; Count: Integer = 1);
 begin
-
   Stream.Read(Data^,Count * ElementSize);
 
   if (ElementSize = 2) or (ElementSize = 4) then
     ReverseByteOrder(Data,ElementSize,Count);
-
 end;
 
 function WriteMotorolaNumber(Stream: TStream; Data: Pointer; ElementSize:
@@ -1044,10 +1012,8 @@ begin
   begin
     TempData := AllocMem(ElementSize * Count);
     try
-
       if (ElementSize = 2) or (ElementSize = 4) then
         ReverseByteOrder(TempData,ElementSize,Count);
-
       result := Stream.Write(Data,Count * ElementSize);
     except
       on E: Exception do
@@ -1065,7 +1031,6 @@ var
   Buf: array[0..1] of AnsiChar;
   StrBuf: string;
 begin
-
   Stream.Read(Buf,2);
   StrBuf:='';
   while Buf[1] <> #0 do
@@ -1077,11 +1042,8 @@ begin
   if Buf[0] <> #0 then StrBuf := StrBuf + Char(Buf[0]);
 
   Str := Copy(StrBuf,1,Length(StrBuf));
-
   result := Length(Str) + 1;
-
   result := result + (result mod 2);
-
 end;
 
 

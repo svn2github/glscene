@@ -54,8 +54,21 @@ implementation
 {$R *.dfm}
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  MediaPath : String;
+  I : Integer;
+
 begin
-  SetGLSceneMediaDir();
+ //SetGLSceneMediaDir();
+  MediaPath := ExtractFilePath(ParamStr(0));
+  I := Pos('Samples', MediaPath);
+  if (I <> 0) then
+  begin
+    Delete(MediaPath, I+8, Length(MediaPath)-I);
+    SetCurrentDir(MediaPath+'Media\');
+  end;
+  MediaPath := MediaPath+'Media\';
+  GLMaterialLibrary1.TexturePaths := MediaPath;
   // Add GLBlur to scene
   B := TGLBlur.Create(self);
   GLCube1.AddChild(B);

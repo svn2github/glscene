@@ -76,6 +76,8 @@ object Form1: TForm1
       Width = 73
       Height = 17
       Caption = 'fog on/off'
+      Checked = True
+      State = cbChecked
       TabOrder = 0
       OnClick = CBFogEnableClick
     end
@@ -117,7 +119,7 @@ object Form1: TForm1
       Width = 105
       Height = 73
       Caption = '[ fog mode ]'
-      ItemIndex = 0
+      ItemIndex = 1
       Items.Strings = (
         'fmLinear'
         'fmExp'

@@ -317,7 +317,7 @@ end;
 
 procedure TfrmMain.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
-  with Shader, MatLib do
+  with Shader do
   begin
     SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
     SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));

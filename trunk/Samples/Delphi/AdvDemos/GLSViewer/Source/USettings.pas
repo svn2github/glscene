@@ -11,7 +11,7 @@ uses
   System.Win.Registry, System.IniFiles, System.SysUtils,
   Vcl.Forms, Vcl.Graphics, Vcl.ActnList,
   //
-  GNUGettext;
+  GLGnuGettext;
 
 procedure InitGeneralRegistry;
 

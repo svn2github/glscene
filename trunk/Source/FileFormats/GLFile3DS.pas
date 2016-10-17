@@ -1987,7 +1987,14 @@ var
 
   //----------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF GLS_ASM}
+  function IsVertexMarked(P: Pointer; Index: integer): boolean; assembler;
+           // tests the Index-th bit, returns True if set else False
+  asm
+           BT      [EAX], EDX
+           SETC    AL
+  end;
+{$ELSE}
   function IsVertexMarked(P: PByteArray; Index: word): boolean; inline;
     // tests the Index-th bit, returns True if set else False
   var
@@ -1996,19 +2003,20 @@ var
     DivMod(index, 8, mi, index);
     Result := (((p^[mi] shr Index) and 1) = 1);
   end;
-
-{$ELSE}
-  function IsVertexMarked(P: Pointer; Index: integer): boolean; assembler;
-           // tests the Index-th bit, returns True if set else False
-  asm
-           BT      [EAX], EDX
-           SETC    AL
-  end;
 {$ENDIF}
 
   //---------------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
+{$IFDEF GLS_ASM}
+  function MarkVertex(P: Pointer; Index: integer): boolean; assembler;
+           // sets the Index-th bit and return True if it was already set else False
+  asm
+           BTS     [EAX], EDX
+           SETC    AL
+  end;
+
+{$ELSE}
+
   function MarkVertex(P: PByteArray; Index: word): boolean; inline;
     // sets the Index-th bit and return True if it was already set else False
   var
@@ -2019,18 +2027,9 @@ var
     if not (Result) then
       p^[mi] := p^[mi] or (1 shl index);
   end;
-
-{$ELSE}
-  function MarkVertex(P: Pointer; Index: integer): boolean; assembler;
-           // sets the Index-th bit and return True if it was already set else False
-  asm
-           BTS     [EAX], EDX
-           SETC    AL
-  end;
 {$ENDIF}
 
   //---------------------------------------------------------------------------
-
   // Stores new vertex index (NewIndex) into the smooth index array of vertex ThisIndex
   // using field SmoothingGroup, which must not be 0.
   // For each vertex in the vertex array (also for duplicated vertices) an array of 32 cardinals
@@ -2042,7 +2041,6 @@ var
   //       have more than one group assigned to a face. To make the code fail safe the group ID
   //       is scanned for the lowest bit set.
 
-{$IFDEF GLS_NO_ASM}
   procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal;
     P: PSmoothIndexArray);
   var
@@ -2054,25 +2052,8 @@ var
     p^[ThisIndex, i] := NewIndex;
   end;
 
-{$ELSE}
-  procedure StoreSmoothIndex(ThisIndex, SmoothingGroup, NewIndex: cardinal; P: Pointer);
-  asm
-           PUSH    EBX
-           BSF     EBX, EDX
-           // determine smoothing group index (convert flag into an index)
-           MOV     EDX, [P]                  // get address of index array
-           SHL     EAX, 7                    // ThisIndex * SizeOf(TSmoothIndexEntry)
-           ADD     EAX, EDX
-           LEA     EDX, [4 * EBX + EAX]
-           // Address of array + vertex index + smoothing group index
-           MOV     [EDX], ECX
-           POP     EBX
-  end;
-{$ENDIF}
-
   //---------------------------------------------------------------------------
 
-{$IFDEF GLS_NO_ASM}
   function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal;
     P: PSmoothIndexArray): integer; inline;
     // Retrieves the vertex index for the given index and smoothing group.
@@ -2085,22 +2066,6 @@ var
       Inc(i);
     Result := integer(p^[ThisIndex, i]);
   end;
-
-{$ELSE}
-  function GetSmoothIndex(ThisIndex, SmoothingGroup: cardinal; P: Pointer): integer;
-           // Retrieves the vertex index for the given index and smoothing group.
-           // This redirection is necessary because a vertex might have been duplicated.
-  asm
-           PUSH    EBX
-           BSF     EBX, EDX                  // determine smoothing group index
-           SHL     EAX, 7                    // ThisIndex * SizeOf(TSmoothIndexEntry)
-           ADD     EAX, ECX
-           LEA     ECX, [4 * EBX + EAX]
-           // Address of array + vertex index + smoothing group index
-           MOV     EAX, [ECX]
-           POP     EBX
-  end;
-{$ENDIF}
 
   //---------------------------------------------------------------------------
 

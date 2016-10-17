@@ -223,6 +223,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  Vcl.Imaging.jpeg,
+  Vcl.Imaging.pngimage,
 
   // GLS
   GLCrossPlatform,

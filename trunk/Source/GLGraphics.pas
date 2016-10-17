@@ -9,11 +9,7 @@
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile. 
 
-   Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
-   (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
-   is active in GLScene.inc and recompile. 
-
-   History :  
+   History :
        25/11/11 - YP - Assertion removed from AssignFromBitmap32
        10/05/11 - Yar - Now VerticalReverseOnAssignFromBitmap works for AssignToBitmap
        04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
@@ -897,43 +893,6 @@ end;
 
 // BGR24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
-procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-         dec   ecx
-         jz    @@Last
-@@Loop:
-         mov   eax, [edi]
-         shl   eax, 8
-         or    eax, $FF
-         bswap eax
-         mov   [edx], eax
-         add   edi, 3
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Last:
-         mov   cx, [edi+1]
-         shl   ecx, 16
-         mov   ah, [edi]
-         mov   al, $FF
-         and   eax, $FFFF
-         or    eax, ecx
-         bswap eax
-         mov   [edx], eax
-@@Done:
-         pop   edi
-end;
-{$ELSE}
-
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -947,42 +906,9 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
 
 // RGB24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
-procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-         dec   ecx
-         jz    @@Last
-@@Loop:
-         mov   eax, [edi]
-         or    eax, $FF000000
-         mov   [edx], eax
-         add   edi, 3
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Last:
-         mov   ax, [edi+1]
-         shl   eax, 8
-         mov   al, [edi];
-         or    eax, $FF000000
-         mov   [edx], eax
-@@Done:
-         pop   edi
-end;
-{$ELSE}
-
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -996,35 +922,9 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
 
 // BGRA32ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
-procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
-// EAX stores src
-// EDX stores dest
-// ECX stores pixelCount
-asm
-         push  edi
-         cmp   ecx, 0
-         jle   @@Done
-         mov   edi, eax
-@@Loop:
-         mov   eax, [edi]
-         shl   eax, 8
-         mov   al, [edi+3]
-         bswap eax
-         mov   [edx], eax
-         add   edi, 4
-         add   edx, 4
-         dec   ecx
-         jnz   @@Loop
-@@Done:
-         pop   edi
-end;
-{$ELSE}
 
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
@@ -1039,7 +939,6 @@ begin
     Dec(pixelCount);
   end;
 end;
-{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
@@ -3048,7 +2947,7 @@ type
   T2Pixel32 = packed array[0..1] of TGLPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFDEF GLS_ASM}
   procedure ProcessRow3DNow(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   asm     // 3DNow! version 30% faster
@@ -3126,7 +3025,7 @@ begin
   pDest := @FData[0];
   pLineA := @FData[0];
   pLineB := @FData[Width];
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFDEF GLS_ASM}
   if vSIMD = 1 then
   begin
     for y := 0 to h2 - 1 do

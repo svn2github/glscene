@@ -1,30 +1,8 @@
 //
-// Heavily based on Delphi Free Stuff Include File
-//                  by Brad Stowers: bstowers@pobox.com
-//                  Delphi Free Stuff: http://www.delphifreestuff.com/
+// This unit is part of the GLScene Project, http://glscene.org
 //
-// History:
-// 19/01/15 - PW - Dropped support for XE2_DOWN compilers
-// 10/11/12 - PW - Added support for Delphi and C++Builder with
-//                 GLS_DELPHI and GLS_CPPB defines
-// 02/04/10 - Yar - Added GLS_NO_INLINE option
-// 13/12/09 - DaStr - Added GLS_MULTITHREAD option (thanks Controller)
-// 10/11/09 - DaStr - Added Delphi 2010 support
-// 07/11/09 - DaStr - Improved FPC compatibility (BugtrackerID = 2893580)
-//                    Added GLS_NO_ASM option
-// 12/09/07 - DaStr - Added GLS_DELPHI_OR_CPPB
-// 30/03/07 - DaStr - Added GLS_ENABLE_UNSAFE_WARNINGS
-// 25/03/07 - DaStr - Added UNIX and KYLIX defines
-// 14/01/07 - DaStr - Added GLS_DELPHI/COMPILER_XX_DOWN defines
-// 20/12/06 - DaStr - Added GLS_OPTIMIZATIONS option
-// 08/03/06 - ur - Added Delphi 2006 detection
-// 08/07/04 - LR - BCB5 and BCB6 detection
-// 30/08/02 - EG - Delphi 7 detection
-// 24/01/02 - EG - Linux/Kylix changes (Puthoon)
-// 28/12/01 - EG - Added GLS_Graphics32_SUPPORT
-// 27/07/01 - EG - Renamed and made GLScene-specific
-// 26/06/01 - EG - Added Delphi6 stuff
 //
+// Include File for GLScene
 
 {$DEFINE GLSCENE}
 
@@ -35,29 +13,17 @@
 // Activate support for Alex Denissov's Graphics32 library (http://www.g32.org)
 {.$DEFINE GLS_Graphics32_SUPPORT}
 
-// Activate support for png images (using pngimage.pas library)
-// GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
-// Also, Define "Auto" Resize To Nearest 8 Multiple Size
-// PNG is supported by Delphi since Dephi 2009
-{$DEFINE GLS_PngImage_SUPPORT}
-{.$DEFINE GLS_PngImage_RESIZENEAREST}
-
-
 // Activate support for some optimizations by disabling checks that occur very often
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE GLS_OPTIMIZATIONS}
 
+// Activate assembly routines
+{.$DEFINE GLS_ASM}
 
-// De-Activate assembly routines in GLVectorGeometry.pas
-{.$DEFINE GEOMETRY_NO_ASM}
+// Activate inline directive
+{$DEFINE GLS_INLINE}
 
-// De-Activate assembly routines in other GLS units.
-{.$DEFINE GLS_NO_ASM}
-
-// De-Activate inline directive in GLS units.
-{.$DEFINE GLS_NO_INLINE}
-
-// De-Activate regions in GLS units.
+// De-Activate regions
 {.$DEFINE GLS_NO_REGIONS}
 
 // Activate Logging
@@ -68,6 +34,7 @@
 
 // Activate Multithread support
 {.$DEFINE GLS_MULTITHREAD}
+
 
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
 // This work only on windows platform and with modern compiler (XE2 and FPC or higher}
@@ -81,9 +48,6 @@
   // Activate Multithread support
   {$DEFINE GLS_MULTITHREAD}
 {$ENDIF}
-
-// Activate support of MSWindows
-{.$DEFINE MSWINDOWS}
 
 // Activate support of Mac OS
 {.$DEFINE MACOS}
@@ -104,34 +68,21 @@
 {.$DEFINE GLS_OPENGL_ES}
 
 //
-// Platform Detection
+// Platform Specific
 //
-{$IFDEF WIN64}
-  {$DEFINE GLS_NO_ASM}
-  {$DEFINE GEOMETRY_NO_ASM}
-{$ENDIF}
-
-{$IFDEF LINUX}
-  {$DEFINE GEOMETRY_NO_ASM}
-  {$DEFINE UNIX}
-{$ENDIF}
-
-// .NET
-{$IFDEF CLR}
-  {$DEFINE GEOMETRY_NO_ASM}
-  {$UNSAFECODE ON}
-{$ENDIF}
 
 // by default, GLX is not supported on windows, although windows implementations
 // do exist
 {$IFDEF MSWINDOWS}
-  {$DEFINE SUPPORT_WGL}
   {$UNDEF SUPPORT_GLX}
   {$UNDEF GLS_X11_SUPPORT}
+  {$DEFINE SUPPORT_WGL}
 {$ENDIF}
 
 {$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
+  {$UNDEF GLS_ASM}
+  {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE GLS_X11_SUPPORT}
 {$ENDIF}
@@ -142,14 +93,21 @@
   {$UNDEF GLS_X11_SUPPORT}
 {$ENDIF}
 
-{$UNDEF GLS_UNSUPPORTED}
+// .NET
+{$IFDEF CLR}
+  {$UNDEF GLS_ASM}
+  {$UNSAFECODE ON}
+{$ENDIF}
 
+{$UNDEF GLS_UNSUPPORTED}
 {$IFDEF GLS_UNSUPPORTED}
   Error: unsupported version, requires at least Delphi XE2
 {$ENDIF}
 
-{$IFNDEF GLS_NO_INLINE}
-  {$DEFINE GLS_INLINE}
+{$IFDEF GLS_ASM}
+  {$IFDEF GLS_INLINE}
+    {$DEFINE GLS_INLINE_VICE_ASM}
+  {$ENDIF}
 {$ENDIF}
 
 {$IFNDEF GLS_NO_REGIONS}

@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes, System.UITypes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
-  //GLS
+  // GLS
   GLScene, GLObjects, GLTexture, GLBumpShader,
   GLVectorFileObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
@@ -42,12 +42,12 @@ type
     LabelFPS: TLabel;
     Bunny: TGLFreeForm;
     procedure FormCreate(Sender: TObject);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
     procedure ShapeMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure CheckBoxClick(Sender: TObject);
@@ -60,9 +60,9 @@ type
     { Private declarations }
   public
     { Public declarations }
-    mx, my, dx, dy : Integer;
-    IsInitialized : Boolean;
-    StartHeight : Integer;
+    mx, my, dx, dy: Integer;
+    IsInitialized: Boolean;
+    StartHeight: Integer;
   end;
 
 var
@@ -77,39 +77,40 @@ begin
   SetGLSceneMediaDir();
   // Load the bunny mesh and scale for viewing
   Bunny.LoadFromFile('bunny.glsm');
-  Bunny.Scale.Scale(2/Bunny.BoundingSphereRadius);
+  Bunny.Scale.Scale(2 / Bunny.BoundingSphereRadius);
 
   // Load the normal map
   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
     LoadFromFile('bunnynormals.jpg');
 
   // Link the lights to their toggles
-  CheckBox1.Tag:=Integer(WhiteLight);
-  CheckBox2.Tag:=Integer(RedLight);
-  CheckBox3.Tag:=Integer(BlueLight);
-  Shape1.Tag:=Integer(WhiteLight);
-  Shape2.Tag:=Integer(RedLight);
-  Shape3.Tag:=Integer(BlueLight);
+  CheckBox1.Tag := Integer(WhiteLight);
+  CheckBox2.Tag := Integer(RedLight);
+  CheckBox3.Tag := Integer(BlueLight);
+  Shape1.Tag := Integer(WhiteLight);
+  Shape2.Tag := Integer(RedLight);
+  Shape3.Tag := Integer(BlueLight);
 
-  ComboBox1.ItemIndex:=0;
+  ComboBox1.ItemIndex := 0;
   ComboBox1Change(nil);
 
-  StartHeight:=Height;
+  StartHeight := Height;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
   // Orbit the camera
-  if (dx<>0) or (dy<>0) then begin
+  if (dx <> 0) or (dy <> 0) then
+  begin
     Camera.MoveAroundTarget(dy, dx);
-    dx:=0;
-    dy:=0;
+    dx := 0;
+    dy := 0;
   end;
 
   // Rotate the light sources
   if CheckBox4.Checked then
-    DCLights.Turn(deltaTime*20);
+    DCLights.Turn(deltaTime * 20);
 
   GLSceneViewer1.Invalidate;
 end;
@@ -117,55 +118,62 @@ end;
 procedure TForm1.CheckBoxClick(Sender: TObject);
 begin
   // Light Shining CheckBox
-  TGLLightSource(TCheckBox(Sender).Tag).Shining:=TCheckBox(Sender).Checked;
+  TGLLightSource(TCheckBox(Sender).Tag).Shining := TCheckBox(Sender).Checked;
 end;
 
 procedure TForm1.ShapeMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   // Light Color Dialog
-  ColorDialog1.Color:=TShape(Sender).Brush.Color;
-  if ColorDialog1.Execute then begin
-    TShape(Sender).Brush.Color:=ColorDialog1.Color;
+  ColorDialog1.Color := TShape(Sender).Brush.Color;
+  if ColorDialog1.Execute then
+  begin
+    TShape(Sender).Brush.Color := ColorDialog1.Color;
     with TGLLightSource(TShape(Sender).Tag) do
-      Diffuse.AsWinColor:=ColorDialog1.Color;
+      Diffuse.AsWinColor := ColorDialog1.Color;
   end;
 end;
 
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
   if ComboBox1.Text = 'Per-Vertex' then
-    Bunny.Material.LibMaterialName:=''
-  else if ComboBox1.Text = 'Dot3 Texture Combiner' then begin
-    Bunny.Material.LibMaterialName:='Bump';
-    GLBumpShader1.BumpMethod:=bmDot3TexCombiner;
-  end else if ComboBox1.Text = 'Basic Fragment Program' then begin
-    Bunny.Material.LibMaterialName:='Bump';
-    GLBumpShader1.BumpMethod:=bmBasicARBFP;
+    Bunny.Material.LibMaterialName := ''
+  else if ComboBox1.Text = 'Dot3 Texture Combiner' then
+  begin
+    Bunny.Material.LibMaterialName := 'Bump';
+    GLBumpShader1.BumpMethod := bmDot3TexCombiner;
+  end
+  else if ComboBox1.Text = 'Basic Fragment Program' then
+  begin
+    Bunny.Material.LibMaterialName := 'Bump';
+    GLBumpShader1.BumpMethod := bmBasicARBFP;
   end;
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-  mx:=x;
-  my:=y;
-  dx:=0;
-  dy:=0;
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  if ssLeft in Shift then begin
-    dx:=dx+(mx-x);
-    dy:=dy+(my-y);
-  end else begin
-    dx:=0;
-    dy:=0;
+  mx := X;
+  my := Y;
+  dx := 0;
+  dy := 0;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
+begin
+  if ssLeft in Shift then
+  begin
+    dx := dx + (mx - X);
+    dy := dy + (my - Y);
+  end
+  else
+  begin
+    dx := 0;
+    dy := 0;
   end;
-  mx:=x;
-  my:=y;
+  mx := X;
+  my := Y;
 end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
@@ -176,34 +184,37 @@ end;
 
 procedure TForm1.FormResize(Sender: TObject);
 begin
-  Camera.SceneScale:=Height/StartHeight;
+  Camera.SceneScale := Height / StartHeight;
 end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
-  if IsInitialized then exit;
+  if IsInitialized then
+    exit;
 
-  if  GL.ARB_multitexture
-  and GL.ARB_vertex_program
-  and GL.ARB_texture_env_dot3 then
+  if GL.ARB_multitexture and GL.ARB_vertex_program and GL.ARB_texture_env_dot3
+  then
     ComboBox1.Items.Add('Dot3 Texture Combiner');
-  if  GL.ARB_multitexture
-  and GL.ARB_vertex_program
-  and GL.ARB_fragment_program then begin
+  if GL.ARB_multitexture and GL.ARB_vertex_program and GL.ARB_fragment_program
+  then
+  begin
     ComboBox1.Items.Add('Basic Fragment Program');
-    if GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits]<3 then
-      GLBumpShader1.SpecularMode:=smOff;
+    if GLSceneViewer1.Buffer.LimitOf[limNbTextureUnits] < 3 then
+      GLBumpShader1.SpecularMode := smOff;
   end;
 
-  IsInitialized:=True;
+  IsInitialized := True;
 end;
 
 procedure TForm1.ComboBox2Change(Sender: TObject);
 begin
   case ComboBox2.ItemIndex of
-    0 : GLBumpShader1.SpecularMode:=smOff;
-    1 : GLBumpShader1.SpecularMode:=smBlinn;
-    2 : GLBumpShader1.SpecularMode:=smPhong;
+    0:
+      GLBumpShader1.SpecularMode := smOff;
+    1:
+      GLBumpShader1.SpecularMode := smBlinn;
+    2:
+      GLBumpShader1.SpecularMode := smPhong;
   end;
 end;
 

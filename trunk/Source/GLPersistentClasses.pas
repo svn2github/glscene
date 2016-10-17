@@ -1074,36 +1074,6 @@ end;
 //
 
 function TPersistentObjectList.IndexOf(Item: TObject): Integer;
-{$IFNDEF GLS_NO_ASM}
-var
-  c: Integer;
-  p: ^TObject;
-begin
-  if FCount <= 0 then
-    Result := -1
-  else
-  begin
-    c := FCount;
-    p := @FList^[0];
-    asm
-			mov eax, Item;
-			mov ecx, c;
-			mov edx, ecx;
-			push edi;
-			mov edi, p;
-			repne scasd;
-			je @@FoundIt
-			mov edx, -1;
-			jmp @@SetResult;
-		@@FoundIt:
-			sub edx, ecx;
-			dec edx;
-		@@SetResult:
-			mov Result, edx;
-			pop edi;
-    end;
-  end;
-{$ELSE}
 var
   I: Integer;
 begin
@@ -1119,7 +1089,6 @@ begin
         Exit;
       end;
   end;
-{$ENDIF}
 end;
 
 // Insert
