@@ -169,50 +169,11 @@
   Added overloads for some of the MakeXXXVector funcs,
   Added homogeneous vector consts, VectorSpacing
 
+  Based on Version 2.5 from 04. January 2000 by Dipl. Ing. Mike Lischke
+  (public@lischke-online.de)
+
 }
 unit GLVectorGeometry;
-
-// This unit contains many needed types, functions and procedures for
-// quaternion, vector and matrix arithmetics. It is specifically designed
-// for geometric calculations within R3 (affine vector space)
-// and R4 (homogeneous vector space).
-//
-// Note: The terms 'affine' or 'affine coordinates' are not really correct here
-// because an 'affine transformation' describes generally a transformation which leads
-// to a uniquely solvable system of equations and has nothing to do with the dimensionality
-// of a vector. One could use 'projective coordinates' but this is also not really correct
-// and since I haven't found a better name (or even any correct one), 'affine' is as good
-// as any other one.
-//
-// Identifiers containing no dimensionality (like affine or homogeneous)
-// and no datatype (integer..extended) are supposed as R4 representation
-// with 'single' floating point type (examples are TVector, TMatrix,
-// and TQuaternion). The default data type is 'single' ('GLFloat' for OpenGL)
-// and used in all routines (except conversions and trigonometric functions).
-//
-// Routines with an open array as argument can either take Func([1,2,3,4,..]) or Func(Vect).
-// The latter is prefered, since no extra stack operations is required.
-// Note: Be careful while passing open array elements! If you pass more elements
-// than there's room in the result the behaviour will be unpredictable.
-//
-// If not otherwise stated, all angles are given in radians
-// (instead of degrees). Use RadToDeg or DegToRad to convert between them.
-//
-// Geometry.pas was assembled from different sources (like GraphicGems)
-// and relevant books or based on self written code, respectivly.
-//
-// Note: Some aspects need to be considered when using Delphi and pure
-// assembler code. Delphi esnures that the direction flag is always
-// cleared while entering a function and expects it cleared on return.
-// This is in particular important in routines with (CPU) string commands (MOVSD etc.)
-// The registers EDI, ESI and EBX (as well as the stack management
-// registers EBP and ESP) must not be changed! EAX, ECX and EDX are
-// freely available and mostly used for parameter.
-//
-// Version 2.5
-// last change : 04. January 2000
-//
-// (c) Copyright 1999, Dipl. Ing. Mike Lischke (public@lischke-online.de)
 
 interface
 
@@ -2356,47 +2317,51 @@ end;
 
 // RstVector (affine)
 //
-procedure RstVector(var V: TAffineVector);
 {$IFDEF GLS_ASM}
+procedure RstVector(var V: TAffineVector);
 asm
   xor   edx, edx
   mov   [eax], edx
   mov   [eax+4], edx
   mov   [eax+8], edx
-  {$ELSE}
+end;
+{$ELSE}
+procedure RstVector(var V: TAffineVector);
 begin
   V.X := 0;
   V.Y := 0;
   V.Z := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // RstVector (hmg)
 //
-procedure RstVector(var V: TVector);
 {$IFDEF GLS_ASM}
+procedure RstVector(var V: TVector);
 asm
   xor   edx, edx
   mov   [eax], edx
   mov   [eax+4], edx
   mov   [eax+8], edx
   mov   [eax+12], edx
-  {$ELSE}
+end;
+{$ELSE}
+procedure RstVector(var V: TVector);
 begin
   V.X := 0;
   V.Y := 0;
   V.Z := 0;
   V.W := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAdd (func)
 //
+{$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TVector2f): TVector2f;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FADD DWORD PTR [EDX]
@@ -2404,20 +2369,22 @@ asm
   FLD  DWORD PTR [EAX+4]
   FADD DWORD PTR [EDX+4]
   FSTP DWORD PTR [ECX+4]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAdd(const V1, V2: TVector2f): TVector2f;
 begin
   result.X := V1.X + V2.X;
-  result.Y := V1.V[1] + V2.Y;
-{$ENDIF}
+  result.Y := V1.Y + V2.Y;
 end;
+{$ENDIF}
 
 // VectorAdd (func, affine)
 //
+{$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FADD DWORD PTR [EDX]
@@ -2428,13 +2395,15 @@ asm
   FLD  DWORD PTR [EAX+8]
   FADD DWORD PTR [EDX+8]
   FSTP DWORD PTR [ECX+8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAdd(const V1, V2: TAffineVector): TAffineVector;
 begin
   result.X := V1.X + V2.X;
   result.Y := V1.Y + V2.Y;
   result.Z := V1.Z + V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAdd (proc, affine)
 //
@@ -2493,11 +2462,11 @@ end;
 
 // VectorAdd (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TVector): TVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -2524,22 +2493,24 @@ asm
   FLD  DWORD PTR [EAX+12]
   FADD DWORD PTR [EDX+12]
   FSTP DWORD PTR [ECX+12]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAdd(const V1, V2: TVector): TVector;
 begin
   result.X := V1.X + V2.X;
   result.Y := V1.Y + V2.Y;
   result.Z := V1.Z + V2.Z;
   result.W := V1.W + V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAdd (hmg, proc)
 //
+{$IFDEF GLS_ASM}
 procedure VectorAdd(const V1, V2: TVector; var vr: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -2566,14 +2537,16 @@ asm
   FLD  DWORD PTR [EAX+12]
   FADD DWORD PTR [EDX+12]
   FSTP DWORD PTR [ECX+12]
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorAdd(const V1, V2: TVector; var vr: TVector);
 begin
   vr.X := V1.X + V2.X;
   vr.Y := V1.Y + V2.Y;
   vr.Z := V1.Z + V2.Z;
   vr.W := V1.W + V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAdd (affine, single)
 //
@@ -2606,10 +2579,10 @@ end;
 
 // AddVector (affine)
 //
+{$IFDEF GLS_ASM}
 procedure AddVector(var V1: TAffineVector; const V2: TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FADD DWORD PTR [EDX]
@@ -2620,20 +2593,22 @@ asm
   FLD  DWORD PTR [EAX+8]
   FADD DWORD PTR [EDX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure AddVector(var V1: TAffineVector; const V2: TAffineVector);
 begin
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // AddVector (affine)
 //
+{$IFDEF GLS_ASM}
 procedure AddVector(var V1: TAffineVector; const V2: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FADD DWORD PTR [EDX]
@@ -2644,20 +2619,22 @@ asm
   FLD  DWORD PTR [EAX+8]
   FADD DWORD PTR [EDX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure AddVector(var V1: TAffineVector; const V2: TVector);
 begin
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // AddVector (hmg)
 //
+{$IFDEF GLS_ASM}
 procedure AddVector(var V1: TVector; const V2: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -2683,14 +2660,16 @@ asm
   FLD  DWORD PTR [EAX+12]
   FADD DWORD PTR [EDX+12]
   FSTP DWORD PTR [EAX+12]
+end;
   {$ELSE}
+procedure AddVector(var V1: TVector; const V2: TVector);
 begin
   V1.X := V1.X + V2.X;
   V1.Y := V1.Y + V2.Y;
   V1.Z := V1.Z + V2.Z;
   V1.W := V1.W + V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // AddVector (affine)
 //
@@ -2769,11 +2748,11 @@ end;
 
 // VectorSubtract (func, affine)
 //
+{$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2784,21 +2763,23 @@ asm
   FLD  DWORD PTR [EAX+8]
   FSUB DWORD PTR [EDX+8]
   FSTP DWORD PTR [ECX+8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSubtract(const V1, V2: TAffineVector): TAffineVector;
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (func, 2f)
 //
+{$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TVector2f): TVector2f;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2806,21 +2787,23 @@ asm
   FLD  DWORD PTR [EAX+4]
   FSUB DWORD PTR [EDX+4]
   FSTP DWORD PTR [ECX+4]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSubtract(const V1, V2: TVector2f): TVector2f;
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (proc, affine)
 //
+{$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TAffineVector;
   var result: TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2831,21 +2814,24 @@ asm
   FLD  DWORD PTR [EAX+8]
   FSUB DWORD PTR [EDX+8]
   FSTP DWORD PTR [ECX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorSubtract(const V1, V2: TAffineVector;
+  var result: TAffineVector);
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (proc, affine-hmg)
 //
+{$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TAffineVector; var result: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2858,23 +2844,25 @@ asm
   FSTP DWORD PTR [ECX+8]
   xor   eax, eax
   mov   [ECX+12], eax
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorSubtract(const V1, V2: TAffineVector; var result: TVector);
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract
 //
+{$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1: TVector; V2: TAffineVector;
   var result: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2887,22 +2875,25 @@ asm
   FSTP DWORD PTR [ECX+8]
   mov   edx, [eax+12]
   mov   [ECX+12], edx
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorSubtract(const V1: TVector; V2: TAffineVector;
+  var result: TVector);
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := V1.X;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TVector): TVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -2928,22 +2919,24 @@ asm
   FLD  DWORD PTR [EAX+12]
   FSUB DWORD PTR [EDX+12]
   FSTP DWORD PTR [ECX+12]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSubtract(const V1, V2: TVector): TVector;
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := V1.W - V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (proc, hmg)
 //
+{$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TVector; var result: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -2969,23 +2962,25 @@ asm
   FLD  DWORD PTR [EAX+12]
   FSUB DWORD PTR [EDX+12]
   FSTP DWORD PTR [ECX+12]
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorSubtract(const V1, V2: TVector; var result: TVector);
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
   result.W := V1.W - V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (proc, affine)
 //
+{$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TVector;
   var result: TAffineVector); overload;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -2996,13 +2991,16 @@ asm
   FLD  DWORD PTR [EAX+8]
   FSUB DWORD PTR [EDX+8]
   FSTP DWORD PTR [ECX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorSubtract(const V1, V2: TVector;
+  var result: TAffineVector); overload;
 begin
   result.X := V1.X - V2.X;
   result.Y := V1.Y - V2.Y;
   result.Z := V1.Z - V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSubtract (affine, single)
 //
@@ -3025,10 +3023,10 @@ end;
 
 // SubtractVector (affine)
 //
+{$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TAffineVector; const V2: TAffineVector);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -3039,20 +3037,22 @@ asm
   FLD  DWORD PTR [EAX+8]
   FSUB DWORD PTR [EDX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure SubtractVector(var V1: TAffineVector; const V2: TAffineVector);
 begin
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
   V1.Z := V1.Z - V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // SubtractVector (2f)
 //
+{$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TVector2f; const V2: TVector2f);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -3060,19 +3060,21 @@ asm
   FLD  DWORD PTR [EAX+4]
   FSUB DWORD PTR [EDX+4]
   FSTP DWORD PTR [EAX+4]
-  {$ELSE}
+end;
+{$ELSE}
+procedure SubtractVector(var V1: TVector2f; const V2: TVector2f);
 begin
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // SubtractVector (hmg)
 //
+{$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TVector; const V2: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -3098,23 +3100,25 @@ asm
   FLD  DWORD PTR [EAX+12]
   FSUB DWORD PTR [EDX+12]
   FSTP DWORD PTR [EAX+12]
-  {$ELSE}
+end;
+{$ELSE}
+procedure SubtractVector(var V1: TVector; const V2: TVector);
 begin
   V1.X := V1.X - V2.X;
   V1.Y := V1.Y - V2.Y;
   V1.Z := V1.Z - V2.Z;
   V1.W := V1.W - V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // CombineVector (var)
 //
+{$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   var f: Single);
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EDX]
   FMUL DWORD PTR [ECX]
@@ -3128,22 +3132,25 @@ asm
   FMUL DWORD PTR [ECX]
   FADD DWORD PTR [EAX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
+  var f: Single);
 begin
   vr.X := vr.X + V.X * f;
   vr.Y := vr.Y + V.Y * f;
   vr.Z := vr.Z + V.Z * f;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // CombineVector (pointer)
 //
+{$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   pf: PFloat);
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EDX]
   FMUL DWORD PTR [ECX]
@@ -3157,13 +3164,16 @@ asm
   FMUL DWORD PTR [ECX]
   FADD DWORD PTR [EAX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
+  pf: PFloat);
 begin
   vr.X := vr.X + V.X * pf^;
   vr.Y := vr.Y + V.Y * pf^;
   vr.Z := vr.Z + V.Z * pf^;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // TexPointCombine
 //
@@ -3205,12 +3215,12 @@ end;
 
 // CombineVector
 //
+{$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TVector; const V: TVector;
   var f: Single); overload;
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
-{$IFDEF GLS_ASM}
 asm
   test vSIMD, 1
   jz @@FPU
@@ -3244,23 +3254,26 @@ asm
   FMUL DWORD PTR [ECX]
   FADD DWORD PTR [EAX+12]
   FSTP DWORD PTR [EAX+12]
-  {$ELSE}
+end;
+{$ELSE}
+procedure CombineVector(var vr: TVector; const V: TVector;
+  var f: Single); overload;
 begin
   vr.X := vr.X + V.X * f;
   vr.Y := vr.Y + V.Y * f;
   vr.Z := vr.Z + V.Z * f;
   vr.W := vr.W + V.W * f;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // CombineVector
 //
+{$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TVector; const V: TAffineVector;
   var f: Single); overload;
 // EAX contains address of vr
 // EDX contains address of v
 // ECX contains address of f
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EDX]
   FMUL DWORD PTR [ECX]
@@ -3274,13 +3287,16 @@ asm
   FMUL DWORD PTR [ECX]
   FADD DWORD PTR [EAX+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure CombineVector(var vr: TVector; const V: TAffineVector;
+  var f: Single); overload;
 begin
   vr.X := vr.X + V.X * f;
   vr.Y := vr.Y + V.Y * f;
   vr.Z := vr.Z + V.Z * f;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCombine
 //
@@ -3367,11 +3383,11 @@ end;
 
 // VectorDotProduct (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorDotProduct(const V1, V2: TAffineVector): Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [eax]
   FMUL DWORD PTR [edx]
@@ -3383,6 +3399,7 @@ asm
   faddp
 end;
 {$ELSE}
+function VectorDotProduct(const V1, V2: TAffineVector): Single;
 begin
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
 end;
@@ -3390,11 +3407,11 @@ end;
 
 // VectorDotProduct (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorDotProduct(const V1, V2: TVector): Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FMUL DWORD PTR [EDX]
@@ -3407,20 +3424,22 @@ asm
   FLD DWORD PTR [EAX + 12]
   FMUL DWORD PTR [EDX + 12]
   FADDP
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDotProduct(const V1, V2: TVector): Single;
 begin
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z + V1.W
     * V2.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorDotProduct
 //
+{$IFDEF GLS_ASM}
 function VectorDotProduct(const V1: TVector; const V2: TAffineVector): Single;
 // EAX contains address of V1
 // EDX contains address of V2
 // result is stored in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FMUL DWORD PTR [EDX]
@@ -3430,17 +3449,19 @@ asm
   FLD DWORD PTR [EAX + 8]
   FMUL DWORD PTR [EDX + 8]
   FADDP
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDotProduct(const V1: TVector; const V2: TAffineVector): Single;
 begin
   result := V1.X * V2.X + V1.Y * V2.Y + V1.Z * V2.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointProject (affine)
 //
+{$IFDEF GLS_ASM}
 function PointProject(const p, origin, direction: TAffineVector): Single;
 // EAX -> p, EDX -> origin, ECX -> direction
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax]
   fsub  dword ptr [edx]
@@ -3453,18 +3474,20 @@ asm
   fsub  dword ptr [edx+8]
   fmul  dword ptr [ecx+8]
   fadd
-  {$ELSE}
+end;
+{$ELSE}
+function PointProject(const p, origin, direction: TAffineVector): Single;
 begin
   result := direction.X * (p.X - origin.X) + direction.Y *
     (p.Y - origin.Y) + direction.Z * (p.Z - origin.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointProject (vector)
 //
+{$IFDEF GLS_ASM}
 function PointProject(const p, origin, direction: TVector): Single;
 // EAX -> p, EDX -> origin, ECX -> direction
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax]
   fsub  dword ptr [edx]
@@ -3477,20 +3500,22 @@ asm
   fsub  dword ptr [edx+8]
   fmul  dword ptr [ecx+8]
   fadd
-  {$ELSE}
+end;
+{$ELSE}
+function PointProject(const p, origin, direction: TVector): Single;
 begin
   result := direction.X * (p.X - origin.X) + direction.Y *
     (p.Y - origin.Y) + direction.Z * (p.Z - origin.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCrossProduct
 //
+{$IFDEF GLS_ASM}
 function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax+$4]
   fmul  dword ptr [edx+$8]
@@ -3512,21 +3537,23 @@ asm
   fmul  dword ptr [edx]
   fsubp
   fstp  dword ptr [ecx+$8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
 begin
   result.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   result.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   result.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCrossProduct
 //
+{$IFDEF GLS_ASM}
 function VectorCrossProduct(const V1, V2: TVector): TVector;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax+$4]
   fmul  dword ptr [edx+$8]
@@ -3551,22 +3578,24 @@ asm
 
   xor   eax, eax
   mov   [ecx+$c], eax
-  {$ELSE}
+end;
+{$ELSE}
+function VectorCrossProduct(const V1, V2: TVector): TVector;
 begin
   result.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   result.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   result.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
   result.V[W] := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCrossProduct
 //
+{$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TVector; var vr: TVector);
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax+$4]
   fmul  dword ptr [edx+$8]
@@ -3591,23 +3620,25 @@ asm
 
   xor   eax, eax
   mov   [ecx+$c], eax
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorCrossProduct(const V1, V2: TVector; var vr: TVector);
 begin
   vr.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   vr.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   vr.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
   vr.V[W] := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCrossProduct
 //
+{$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TVector); overload;
 // EAX contains address of V1
 // EDX contains address of V2
 // ECX contains the result
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax+$4]
   fmul  dword ptr [edx+$8]
@@ -3632,19 +3663,21 @@ asm
 
   xor   eax, eax
   mov   [ecx+$c], eax
-  {$ELSE}
+end;
+{$ELSE}
+procedure VectorCrossProduct(const V1, V2: TAffineVector;
+  var vr: TVector); overload;
 begin
   vr.V[X] := V1.V[Y] * V2.V[Z] - V1.V[Z] * V2.V[Y];
   vr.V[Y] := V1.V[Z] * V2.V[X] - V1.V[X] * V2.V[Z];
   vr.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
   vr.V[W] := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorCrossProduct
 //
 {$IFDEF GLS_ASM}
-
 procedure VectorCrossProduct(const V1, V2: TVector;
   var vr: TAffineVector); overload;
 // EAX contains address of V1
@@ -3673,7 +3706,6 @@ asm
   fstp  dword ptr [ecx+$8]
 end;
 {$ELSE}
-
 procedure VectorCrossProduct(const V1, V2: TVector;
   var vr: TAffineVector); overload;
 begin
@@ -3682,10 +3714,10 @@ begin
   vr.V[Z] := V1.V[X] * V2.V[Y] - V1.V[Y] * V2.V[X];
 end;
 {$ENDIF}
+
 // VectorCrossProduct
 //
 {$IFDEF GLS_ASM}
-
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TAffineVector); overload;
 // EAX contains address of V1
@@ -3714,7 +3746,6 @@ asm
   fstp  dword ptr [ecx+$8]
 end;
 {$ELSE}
-
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TAffineVector); overload;
 begin
@@ -4032,11 +4063,11 @@ end;
 
 // VectorLength (array)
 //
+{$IFDEF GLS_ASM}
 function VectorLength(const V: array of Single): Single;
 // EAX contains address of V
 // EDX contains the highest index of V
 // the result is returned in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLDZ                           // initialize sum
 @@Loop:
@@ -4046,7 +4077,9 @@ asm
   SUB  EDX, 1
   JNL  @@Loop
   FSQRT
-  {$ELSE}
+end;
+{$ELSE}
+function VectorLength(const V: array of Single): Single;
 var
   i: Integer;
 begin
@@ -4054,8 +4087,8 @@ begin
   for i := Low(V) to High(V) do
     result := result + Sqr(V[i]);
   result := Sqrt(result);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorLength  (x, y)
 //
@@ -4089,10 +4122,10 @@ end;
 
 // VectorLength
 //
+{$IFDEF GLS_ASM}
 function VectorLength(const V: TVector): Single;
 // EAX contains address of V
 // result is passed in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FMUL ST, ST
@@ -4103,11 +4136,13 @@ asm
   FMUL ST, ST
   FADDP
   FSQRT
-  {$ELSE}
+end;
+{$ELSE}
+function VectorLength(const V: TVector): Single;
 begin
   result := Sqrt(VectorNorm(V));
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNorm
 //
@@ -4118,10 +4153,10 @@ end;
 
 // VectorNorm (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorNorm(const V: TAffineVector): Single;
 // EAX contains address of V
 // result is passed in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX];
   FMUL ST, ST
@@ -4131,18 +4166,20 @@ asm
   FLD DWORD PTR [EAX+8];
   FMUL ST, ST
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNorm(const V: TAffineVector): Single;
 begin
   result := V.X * V.X + V.Y * V.Y + V.Z * V.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNorm (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorNorm(const V: TVector): Single;
 // EAX contains address of V
 // result is passed in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX];
   FMUL ST, ST
@@ -4152,19 +4189,21 @@ asm
   FLD DWORD PTR [EAX+8];
   FMUL ST, ST
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNorm(const V: TVector): Single;
 begin
   result := V.X * V.X + V.Y * V.Y + V.Z * V.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNorm
 //
+{$IFDEF GLS_ASM}
 function VectorNorm(var V: array of Single): Single;
 // EAX contains address of V
 // EDX contains highest index in V
 // result is passed in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLDZ                           // initialize sum
 @@Loop:
@@ -4173,20 +4212,22 @@ asm
   FADDP                          // add previous calculated sum
   SUB  EDX, 1
   JNL  @@Loop
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNorm(var V: array of Single): Single;
 var
   i: Integer;
 begin
   result := 0;
   for i := Low(V) to High(V) do
     result := result + V[i] * V[i];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NormalizeVector (2f)
 //
-procedure NormalizeVector(var V: TVector2f);
 {$IFDEF GLS_ASM}
+procedure NormalizeVector(var V: TVector2f);
 asm
   test vSIMD, 1
 @@FPU:
@@ -4211,7 +4252,9 @@ asm
   FLD  ST
   FMUL DWORD PTR [ECX+4]
   FSTP DWORD PTR [ECX+4]
-  {$ELSE}
+end;
+{$ELSE}
+procedure NormalizeVector(var V: TVector2f);
 var
   invLen: Single;
   vn: Single;
@@ -4223,13 +4266,13 @@ begin
     V.X := V.X * invLen;
     V.Y := V.Y * invLen;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NormalizeVector (affine)
 //
-procedure NormalizeVector(var V: TAffineVector);
 {$IFDEF GLS_ASM}
+procedure NormalizeVector(var V: TAffineVector);
 asm
   test vSIMD, 1
   jz @@FPU
@@ -4284,7 +4327,9 @@ asm
   FSTP DWORD PTR [ECX+4]
   FMUL DWORD PTR [ECX+8]
   FSTP DWORD PTR [ECX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure NormalizeVector(var V: TAffineVector);
 var
   invLen: Single;
   vn: Single;
@@ -4297,8 +4342,8 @@ begin
     V.Y := V.Y * invLen;
     V.Z := V.Z * invLen;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNormalize
 //
@@ -4320,8 +4365,8 @@ end;
 
 // VectorNormalize
 //
-function VectorNormalize(const V: TAffineVector): TAffineVector;
 {$IFDEF GLS_ASM}
+function VectorNormalize(const V: TAffineVector): TAffineVector;
 asm
   test vSIMD, 1
   jz @@FPU
@@ -4376,7 +4421,9 @@ asm
   FSTP DWORD PTR [EDX+4]
   FMUL DWORD PTR [ECX+8]
   FSTP DWORD PTR [EDX+8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNormalize(const V: TAffineVector): TAffineVector;
 var
   invLen: Single;
   vn: Single;
@@ -4391,15 +4438,15 @@ begin
     result.Y := V.Y * invLen;
     result.Z := V.Z * invLen;
   end;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NormalizeVectorArray
 //
+{$IFDEF GLS_ASM}
 procedure NormalizeVectorArray(list: PAffineVectorArray; n: Integer);
 // EAX contains list
 // EDX contains n
-{$IFDEF GLS_ASM}
 asm
   OR    EDX, EDX
   JZ    @@End
@@ -4465,19 +4512,21 @@ asm
   DEC   EDX
   JNZ   @@FPULOOP
 @@End:
-  {$ELSE}
+end;
+{$ELSE}
+procedure NormalizeVectorArray(list: PAffineVectorArray; n: Integer);
 var
   i: Integer;
 begin
   for i := 0 to n - 1 do
     NormalizeVector(list^[i]);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NormalizeVector (hmg)
 //
-procedure NormalizeVector(var V: TVector);
 {$IFDEF GLS_ASM}
+procedure NormalizeVector(var V: TVector);
 asm
   test vSIMD, 1
   jz @@FPU
@@ -4536,7 +4585,9 @@ asm
   FSTP DWORD PTR [ECX+8]
   xor   edx, edx
   mov   [ecx+12], edx
-  {$ELSE}
+end;
+{$ELSE}
+procedure NormalizeVector(var V: TVector);
 var
   invLen: Single;
   vn: Single;
@@ -4550,13 +4601,13 @@ begin
     V.Z := V.Z * invLen;
   end;
   V.W := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNormalize (hmg, func)
 //
-function VectorNormalize(const V: TVector): TVector;
 {$IFDEF GLS_ASM}
+function VectorNormalize(const V: TVector): TVector;
 asm
   test vSIMD, 1
   jz @@FPU
@@ -4615,7 +4666,9 @@ asm
   FSTP DWORD PTR [EDX+8]
   xor   ecx, ecx
   mov   [edx+12], ecx
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNormalize(const V: TVector): TVector;
 var
   invLen: Single;
   vn: Single;
@@ -4631,15 +4684,15 @@ begin
     result.Z := V.Z * invLen;
   end;
   result.W := 0;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAngleCosine
 //
+{$IFDEF GLS_ASM}
 function VectorAngleCosine(const V1, V2: TAffineVector): Single;
 // EAX contains address of Vector1
 // EDX contains address of Vector2
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]           // V1[0]
   FLD ST                        // double V1[0]
@@ -4670,18 +4723,20 @@ asm
   FSQRT                         // sqrt(ST(0))
   FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
   // the result is expected in ST(0), if it's invalid, an error is raised
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAngleCosine(const V1, V2: TAffineVector): Single;
 begin
   result := VectorDotProduct(V1, V2) / (VectorLength(V1) * VectorLength(V2));
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAngleCosine
 //
+{$IFDEF GLS_ASM}
 function VectorAngleCosine(const V1, V2: TVector): Single;
 // EAX contains address of Vector1
 // EDX contains address of Vector2
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]           // V1[0]
   FLD ST                        // double V1[0]
@@ -4712,18 +4767,20 @@ asm
   FSQRT                         // sqrt(ST(0))
   FDIVP                         // ST(0):=Result:=ST(1) / ST(0)
   // the result is expected in ST(0), if it's invalid, an error is raised
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAngleCosine(const V1, V2: TVector): Single;
 begin
   result := VectorDotProduct(V1, V2) / (VectorLength(V1) * VectorLength(V2));
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNegate (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorNegate(const Vector: TAffineVector): TAffineVector;
 // EAX contains address of v
 // EDX contains address of Result
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FCHS
@@ -4734,20 +4791,22 @@ asm
   FLD DWORD PTR [EAX+8]
   FCHS
   FSTP DWORD PTR [EDX+8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNegate(const Vector: TAffineVector): TAffineVector;
 begin
   result.X := -Vector.X;
   result.Y := -Vector.Y;
   result.Z := -Vector.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorNegate (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorNegate(const Vector: TVector): TVector;
 // EAX contains address of v
 // EDX contains address of Result
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FCHS
@@ -4761,20 +4820,22 @@ asm
   FLD DWORD PTR [EAX+12]
   FCHS
   FSTP DWORD PTR [EDX+12]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorNegate(const Vector: TVector): TVector;
 begin
   result.X := -Vector.X;
   result.Y := -Vector.Y;
   result.Z := -Vector.Z;
   result.W := -Vector.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NegateVector
 //
+{$IFDEF GLS_ASM}
 procedure NegateVector(var V: TAffineVector);
 // EAX contains address of v
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FCHS
@@ -4785,19 +4846,21 @@ asm
   FLD DWORD PTR [EAX+8]
   FCHS
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure NegateVector(var V: TAffineVector);
 begin
   V.X := -V.X;
   V.Y := -V.Y;
   V.Z := -V.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NegateVector
 //
+{$IFDEF GLS_ASM}
 procedure NegateVector(var V: TVector);
 // EAX contains address of v
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FCHS
@@ -4811,21 +4874,23 @@ asm
   FLD DWORD PTR [EAX+12]
   FCHS
   FSTP DWORD PTR [EAX+12]
-  {$ELSE}
+end;
+{$ELSE}
+procedure NegateVector(var V: TVector);
 begin
   V.X := -V.X;
   V.Y := -V.Y;
   V.Z := -V.Z;
   V.W := -V.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NegateVector
 //
+{$IFDEF GLS_ASM}
 procedure NegateVector(var V: array of Single);
 // EAX contains address of V
 // EDX contains highest index in V
-{$IFDEF GLS_ASM}
 asm
 @@Loop:
   FLD DWORD PTR [EAX + 4 * EDX]
@@ -4834,19 +4899,21 @@ asm
   FSTP DWORD PTR [EAX + 4 * EDX]
   DEC EDX
   JNS @@Loop
-  {$ELSE}
+end;
+{$ELSE}
+procedure NegateVector(var V: array of Single);
 var
   i: Integer;
 begin
   for i := Low(V) to High(V) do
     V[i] := -V[i];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // ScaleVector (2f)
 //
-procedure ScaleVector(var V: TVector2f; factor: Single);
 {$IFDEF GLS_ASM}
+procedure ScaleVector(var V: TVector2f; factor: Single);
 asm
   FLD  DWORD PTR [EAX]
   FMUL DWORD PTR [EBP+8]
@@ -4854,17 +4921,19 @@ asm
   FLD  DWORD PTR [EAX+4]
   FMUL DWORD PTR [EBP+8]
   FSTP DWORD PTR [EAX+4]
-  {$ELSE}
+end;
+{$ELSE}
+procedure ScaleVector(var V: TVector2f; factor: Single);
 begin
   V.X := V.X * factor;
   V.Y := V.Y * factor;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // ScaleVector (affine)
 //
-procedure ScaleVector(var V: TAffineVector; factor: Single);
 {$IFDEF GLS_ASM}
+procedure ScaleVector(var V: TAffineVector; factor: Single);
 asm
   FLD  DWORD PTR [EAX]
   FMUL DWORD PTR [EBP+8]
@@ -4875,13 +4944,15 @@ asm
   FLD  DWORD PTR [EAX+8]
   FMUL DWORD PTR [EBP+8]
   FSTP DWORD PTR [EAX+8]
-  {$ELSE}
+end;
+{$ELSE}
+procedure ScaleVector(var V: TAffineVector; factor: Single);
 begin
   V.X := V.X * factor;
   V.Y := V.Y * factor;
   V.Z := V.Z * factor;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // ScaleVector (hmg)
 //
@@ -4999,7 +5070,7 @@ asm
   FMUL DWORD PTR [EBP+8]
   FSTP DWORD PTR [EDX+12]
 end;
-  {$ELSE}
+{$ELSE}
 function VectorScale(const V: TVector; factor: Single): TVector;
 begin
   result.X := V.X * factor;
@@ -5139,10 +5210,10 @@ end;
 
 // VectorEquals (hmg vector)
 //
+{$IFDEF GLS_ASM}
 function VectorEquals(const V1, V2: TVector): Boolean;
 // EAX contains address of v1
 // EDX contains highest of v2
-{$IFDEF GLS_ASM}
 asm
   mov ecx, [edx]
   cmp ecx, [eax]
@@ -5161,19 +5232,21 @@ asm
   ret
 @@Diff:
   xor eax, eax
-  {$ELSE}
+end;
+{$ELSE}
+function VectorEquals(const V1, V2: TVector): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z)
     and (V1.W = V2.W);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorEquals (affine vector)
 //
+{$IFDEF GLS_ASM}
 function VectorEquals(const V1, V2: TAffineVector): Boolean;
 // EAX contains address of v1
 // EDX contains highest of v2
-{$IFDEF GLS_ASM}
 asm
   mov ecx, [edx]
   cmp ecx, [eax]
@@ -5190,18 +5263,20 @@ asm
 @@Diff:
   xor eax, eax
 @@End:
-  {$ELSE}
+end;
+{$ELSE}
+function VectorEquals(const V1, V2: TAffineVector): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // AffineVectorEquals (hmg vector)
 //
+{$IFDEF GLS_ASM}
 function AffineVectorEquals(const V1, V2: TVector): Boolean;
 // EAX contains address of v1
 // EDX contains highest of v2
-{$IFDEF GLS_ASM}
 asm
   mov ecx, [edx]
   cmp ecx, [eax]
@@ -5217,11 +5292,13 @@ asm
   ret
 @@Diff:
   xor eax, eax
-  {$ELSE}
+end;
+{$ELSE}
+function AffineVectorEquals(const V1, V2: TVector): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorIsNull (hmg)
 //
@@ -5239,11 +5316,11 @@ end;
 
 // VectorSpacing (texpoint)
 //
+{$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TTexPoint): Single; overload;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5252,19 +5329,21 @@ asm
   FSUB DWORD PTR [EDX+4]
   FABS
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSpacing(const V1, V2: TTexPoint): Single; overload;
 begin
   result := Abs(V2.S - V1.S) + Abs(V2.T - V1.T);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSpacing (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5277,20 +5356,22 @@ asm
   FSUB DWORD PTR [EDX+8]
   FABS
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSpacing(const V1, V2: TAffineVector): Single;
 begin
   result := Abs(V2.X - V1.X) + Abs(V2.Y - V1.Y) +
     Abs(V2.Z - V1.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorSpacing (Hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5307,20 +5388,22 @@ asm
   FSUB DWORD PTR [EDX+12]
   FABS
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorSpacing(const V1, V2: TVector): Single;
 begin
   result := Abs(V2.X - V1.X) + Abs(V2.Y - V1.Y) +
     Abs(V2.Z - V1.Z) + Abs(V2.W - V1.W);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorDistance (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorDistance(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5334,20 +5417,22 @@ asm
   FMUL ST, ST
   FADD
   FSQRT
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDistance(const V1, V2: TAffineVector): Single;
 begin
   result := Sqrt(Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) +
     Sqr(V2.Z - V1.Z));
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorDistance (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorDistance(const V1, V2: TVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result  is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5361,20 +5446,22 @@ asm
   FMUL ST, ST
   FADD
   FSQRT
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDistance(const V1, V2: TVector): Single;
 begin
   result := Sqrt(Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) +
     Sqr(V2.Z - V1.Z));
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorDistance2 (affine)
 //
+{$IFDEF GLS_ASM}
 function VectorDistance2(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5387,20 +5474,22 @@ asm
   FSUB DWORD PTR [EDX+8]
   FMUL ST, ST
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDistance2(const V1, V2: TAffineVector): Single;
 begin
   result := Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) +
     Sqr(V2.Z - V1.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorDistance2 (hmg)
 //
+{$IFDEF GLS_ASM}
 function VectorDistance2(const V1, V2: TVector): Single;
 // EAX contains address of v1
 // EDX contains highest of v2
 // Result is passed on the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EAX]
   FSUB DWORD PTR [EDX]
@@ -5413,12 +5502,14 @@ asm
   FSUB DWORD PTR [EDX+8]
   FMUL ST, ST
   FADD
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDistance2(const V1, V2: TVector): Single;
 begin
   result := Sqr(V2.X - V1.X) + Sqr(V2.Y - V1.Y) +
     Sqr(V2.Z - V1.Z);
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorPerpendicular
 //
@@ -6681,12 +6772,12 @@ end;
 
 // PlaneEvaluatePoint (affine)
 //
+{$IFDEF GLS_ASM}
 function PlaneEvaluatePoint(const plane: THmgPlane;
   const point: TAffineVector): Single;
 // EAX contains address of plane
 // EDX contains address of point
 // result is stored in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FMUL DWORD PTR [EDX]
@@ -6698,21 +6789,24 @@ asm
   FADDP
   FLD DWORD PTR [EAX + 12]
   FADDP
-  {$ELSE}
+end;
+{$ELSE}
+function PlaneEvaluatePoint(const plane: THmgPlane;
+  const point: TAffineVector): Single;
 begin
   result := plane.X * point.X + plane.Y * point.Y + plane.Z *
     point.Z + plane.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PlaneEvaluatePoint (hmg)
 //
+{$IFDEF GLS_ASM}
 function PlaneEvaluatePoint(const plane: THmgPlane;
   const point: TVector): Single;
 // EAX contains address of plane
 // EDX contains address of point
 // result is stored in ST(0)
-{$IFDEF GLS_ASM}
 asm
   FLD DWORD PTR [EAX]
   FMUL DWORD PTR [EDX]
@@ -6724,18 +6818,21 @@ asm
   FADDP
   FLD DWORD PTR [EAX + 12]
   FADDP
-  {$ELSE}
+end;
+{$ELSE}
+function PlaneEvaluatePoint(const plane: THmgPlane;
+  const point: TVector): Single;
 begin
   result := plane.X * point.X + plane.Y * point.Y + plane.Z *
     point.Z + plane.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointIsInHalfSpace
 //
+{$IFDEF GLS_ASM}
 function PointIsInHalfSpace(const point, planePoint,
   planeNormal: TVector): Boolean;
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax]         // 27
   fsub  dword ptr [edx]
@@ -6753,11 +6850,14 @@ asm
   sahf
   setnbe al
   ffree st(0)
+end;
   {$ELSE}
+function PointIsInHalfSpace(const point, planePoint,
+  planeNormal: TVector): Boolean;
 begin
   result := (PointPlaneDistance(point, planePoint, planeNormal) > 0); // 44
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointIsInHalfSpace
 //
@@ -6777,13 +6877,13 @@ end;
 
 // PointPlaneDistance
 //
+{$IFDEF GLS_ASM}
 function PointPlaneDistance(const point, planePoint,
   planeNormal: TVector): Single;
 // EAX contains address of point
 // EDX contains address of planepoint
 // ECX contains address of planeNormal
 // result in St(0)
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax]
   fsub  dword ptr [edx]
@@ -6798,23 +6898,26 @@ asm
   fsub  dword ptr [edx+$8]
   fmul  dword ptr [ecx+$8]
   faddp
-  {$ELSE}
+end;
+{$ELSE}
+function PointPlaneDistance(const point, planePoint,
+  planeNormal: TVector): Single;
 begin
   result := (point.X - planePoint.X) * planeNormal.X +
     (point.Y - planePoint.Y) * planeNormal.Y +
     (point.Z - planePoint.Z) * planeNormal.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointPlaneDistance
 //
+{$IFDEF GLS_ASM}
 function PointPlaneDistance(const point, planePoint,
   planeNormal: TAffineVector): Single;
 // EAX contains address of point
 // EDX contains address of planepoint
 // ECX contains address of planeNormal
 // result in St(0)
-{$IFDEF GLS_ASM}
 asm
   fld   dword ptr [eax]
   fsub  dword ptr [edx]
@@ -6829,13 +6932,16 @@ asm
   fsub  dword ptr [edx+$8]
   fmul  dword ptr [ecx+$8]
   faddp
-  {$ELSE}
+end;
+{$ELSE}
+function PointPlaneDistance(const point, planePoint,
+  planeNormal: TAffineVector): Single;
 begin
   result := (point.X - planePoint.X) * planeNormal.X +
     (point.Y - planePoint.Y) * planeNormal.Y +
     (point.Z - planePoint.Z) * planeNormal.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // PointPlaneDistance
 //
@@ -7698,19 +7804,21 @@ end;
 
 // DegToRadian (single)
 //
+{$IFDEF GLS_ASM}
 function DegToRadian(const Degrees: Single): Single;
 // Result:=Degrees * cPIdiv180;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EBP+8]
   FMUL cPIdiv180
-  {$ELSE}
+end;
+{$ELSE}
+function DegToRadian(const Degrees: Single): Single;
 begin
   result := Degrees * cPIdiv180;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // RadianToDeg (extended)
 //
@@ -7719,21 +7827,23 @@ begin
   result := Radians * (180 / PI);
 end;
 
-// RadToDeg (single)
+// RadianToDeg (single)
 //
+{$IFDEF GLS_ASM}
 function RadianToDeg(const Radians: Single): Single;
 // Result:=Radians * c180divPI;
 // don't laugh, Delphi's compiler manages to make a nightmare of this one
 // with pushs, pops, etc. in its default compile... (this one is twice faster !)
-{$IFDEF GLS_ASM}
 asm
   FLD  DWORD PTR [EBP+8]
   FMUL c180divPI
-  {$ELSE}
+end;
+{$ELSE}
+function RadianToDeg(const Radians: Single): Single;
 begin
   result := Radians * c180divPI;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // NormalizeAngle
 //
@@ -7761,21 +7871,23 @@ end;
 
 // SinCosine (Extended)
 //
+{$IFDEF GLS_ASM}
 procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
 // Theta is passed over the stack
-{$IFDEF GLS_ASM}
 asm
   FLD  Theta
   FSinCos
   FSTP TBYTE PTR [EDX]    // cosine
   FSTP TBYTE PTR [EAX]    // sine
-  {$ELSE}
+end;
+{$ELSE}
+procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 begin
   Math.SinCos(Theta, Sin, Cos);
-{$ENDIF}
 end;
+{$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // SinCosine (Double)
@@ -8110,10 +8222,9 @@ begin
   result := Int(V + 0.5);
 end;
 
-{$IFDEF GLS_ASM}
-
 // Int (Extended)
 //
+{$IFDEF GLS_ASM}
 function Int(V: Extended): Extended;
 asm
   SUB     ESP,4
@@ -8124,7 +8235,6 @@ asm
   FLDCW   [ESP]
   ADD     ESP,4
 end;
-
 // Int (Single)
 //
 function Int(V: Single): Single;
@@ -8530,8 +8640,21 @@ end;
 
 // MinFloat
 //
+{$IFDEF GLS_ASM}
 function MinFloat(const V1, V2, V3: Extended): Extended;
-{$IFDEF GEOMETRY_NO_ASM}
+asm
+  fld  DWORD PTR[v1]
+  fld  DWORD PTR[v2]
+  db $DB,$F1                 /// fcomi   st(0), st(1)
+  db $DB,$C1                 /// fcmovnb st(0), st(1)
+  ffree   st(1)
+  fld  DWORD PTR[v3]
+  db $DB,$F1                 /// fcomi   st(0), st(1)
+  db $DB,$C1                 /// fcmovnb st(0), st(1)
+  ffree   st(1)
+end;
+{$ELSE}
+function MinFloat(const V1, V2, V3: Extended): Extended;
 begin
   if V1 <= V2 then
     if V1 <= V3 then
@@ -8546,19 +8669,7 @@ begin
     result := V3
   else
     result := V1;
-{$ELSE}
-asm
-  fld  DWORD PTR[v1]
-  fld  DWORD PTR[v2]
-  db $DB,$F1                 /// fcomi   st(0), st(1)
-  db $DB,$C1                 /// fcmovnb st(0), st(1)
-  ffree   st(1)
-  fld  DWORD PTR[v3]
-  db $DB,$F1                 /// fcomi   st(0), st(1)
-  db $DB,$C1                 /// fcmovnb st(0), st(1)
-  ffree   st(1)
-  {$ENDIF}
-end;
+{$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat (single)
@@ -8634,83 +8745,73 @@ end;
 
 // MaxFloat
 //
+{$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Single): Single;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 > V2 then
-    result := V1
-  else
-    result := V2;
-{$ELSE}
 asm
   fld  DWORD PTR[v1]
   fld  DWORD PTR[v2]
   db $DB,$F1                 /// fcomi   st(0), st(1)
   db $DA,$C1                 /// fcmovb  st(0), st(1)
   ffree   st(1)
-  {$ENDIF}
 end;
-
+{$ELSE}
+function MaxFloat(const V1, V2: Single): Single;
+begin
+  if V1 > V2 then
+    result := V1
+  else
+    result := V2;
+end;
+{$ENDIF}
 // MaxFloat
 //
+{$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Double): Double;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 > V2 then
-    result := V1
-  else
-    result := V2;
-{$ELSE}
 asm
   fld  DWORD PTR[v1]
   fld  DWORD PTR[v2]
   db $DB,$F1                 /// fcomi   st(0), st(1)
   db $DA,$C1                 /// fcmovb  st(0), st(1)
   ffree   st(1)
-  {$ENDIF}
 end;
+{$ELSE}
+function MaxFloat(const V1, V2: Double): Double;
+begin
+  if V1 > V2 then
+    result := V1
+  else
+    result := V2;
+end;
+{$ENDIF}
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat
 //
+{$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Extended): Extended;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 > V2 then
-    result := V1
-  else
-    result := V2;
-{$ELSE}
 asm
   fld DWORD PTR[v1]
   fld DWORD PTR[v2]
   db $DB,$F1                 /// fcomi   st(0), st(1)
   db $DA,$C1                 /// fcmovb  st(0), st(1)
   ffree   st(1)
-  {$ENDIF}
 end;
+{$ELSE}
+function MaxFloat(const V1, V2: Extended): Extended;
+begin
+  if V1 > V2 then
+    result := V1
+  else
+    result := V2;
+end;
+{$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat
 //
+{$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2, V3: Single): Single;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 >= V2 then
-    if V1 >= V3 then
-      result := V1
-    else if V3 >= V2 then
-      result := V3
-    else
-      result := V2
-  else if V2 >= V3 then
-    result := V2
-  else if V3 >= V1 then
-    result := V3
-  else
-    result := V1;
-{$ELSE}
 asm
   fld DWORD PTR[v1]
   fld DWORD PTR[v2]
@@ -8721,13 +8822,9 @@ asm
   db $DB,$F1                 /// fcomi   st(0), st(1)
   db $DA,$C1                 /// fcmovb  st(0), st(1)
   ffree   st(1)
-  {$ENDIF}
 end;
-
-// MaxFloat
-//
-function MaxFloat(const V1, V2, V3: Double): Double;
-{$IFDEF GEOMETRY_NO_ASM}
+{$ELSE}
+function MaxFloat(const V1, V2, V3: Single): Single;
 begin
   if V1 >= V2 then
     if V1 >= V3 then
@@ -8742,7 +8839,13 @@ begin
     result := V3
   else
     result := V1;
-{$ELSE}
+end;
+{$ENDIF}
+
+// MaxFloat
+//
+{$IFDEF GLS_ASM}
+function MaxFloat(const V1, V2, V3: Double): Double;
 asm
   fld DWORD PTR[v1]
   fld DWORD PTR[v2]
@@ -8753,15 +8856,45 @@ asm
   db $DA,$C2                 /// fcmovb  st(0), st(2)
   ffree   st(2)
   ffree   st(1)
-  {$ENDIF}
 end;
+{$ELSE}
+function MaxFloat(const V1, V2, V3: Double): Double;
+begin
+  if V1 >= V2 then
+    if V1 >= V3 then
+      result := V1
+    else if V3 >= V2 then
+      result := V3
+    else
+      result := V2
+  else if V2 >= V3 then
+    result := V2
+  else if V3 >= V1 then
+    result := V3
+  else
+    result := V1;
+end;
+{$ENDIF}
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
 // MaxFloat
 //
+{$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2, V3: Extended): Extended;
-{$IFDEF GEOMETRY_NO_ASM}
+asm
+  fld DWORD PTR[v1]
+  fld DWORD PTR[v2]
+  fld DWORD PTR[v3]
+  db $DB,$F1                 /// fcomi   st(0), st(1)
+  db $DA,$C1                 /// fcmovb  st(0), st(1)
+  db $DB,$F2                 /// fcomi   st(0), st(2)
+  db $DA,$C2                 /// fcmovb  st(0), st(2)
+  ffree   st(2)
+  ffree   st(1)
+end;
+{$ELSE}
+function MaxFloat(const V1, V2, V3: Extended): Extended;
 begin
   if V1 >= V2 then
     if V1 >= V3 then
@@ -8776,52 +8909,45 @@ begin
     result := V3
   else
     result := V1;
-{$ELSE}
-asm
-  fld DWORD PTR[v1]
-  fld DWORD PTR[v2]
-  fld DWORD PTR[v3]
-  db $DB,$F1                 /// fcomi   st(0), st(1)
-  db $DA,$C1                 /// fcmovb  st(0), st(1)
-  db $DB,$F2                 /// fcomi   st(0), st(2)
-  db $DA,$C2                 /// fcmovb  st(0), st(2)
-  ffree   st(2)
-  ffree   st(1)
-  {$ENDIF}
 end;
+{$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
 // MinInteger (2 int)
 //
+{$IFDEF GLS_ASM}
 function MinInteger(const V1, V2: Integer): Integer;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 < V2 then
-    result := V1
-  else
-    result := V2;
-{$ELSE}
 asm
   cmp   eax, edx
   db $0F,$4F,$C2             /// cmovg eax, edx
-  {$ENDIF}
 end;
-
-// MinInteger (2 card)
-//
-function MinInteger(const V1, V2: Cardinal): Cardinal;
-{$IFDEF GEOMETRY_NO_ASM}
+{$ELSE}
+function MinInteger(const V1, V2: Integer): Integer;
 begin
   if V1 < V2 then
     result := V1
   else
     result := V2;
-{$ELSE}
+end;
+{$ENDIF}
+
+// MinInteger (2 card)
+//
+{$IFDEF GLS_ASM}
+function MinInteger(const V1, V2: Cardinal): Cardinal;
 asm
   cmp   eax, edx
   db $0F,$47,$C2             /// cmova eax, edx
-  {$ENDIF}
 end;
+{$ELSE}
+function MinInteger(const V1, V2: Cardinal): Cardinal;
+begin
+  if V1 < V2 then
+    result := V1
+  else
+    result := V2;
+end;
+{$ENDIF}
 
 // MinInteger
 //
@@ -8863,35 +8989,40 @@ end;
 
 // MaxInteger (2 int)
 //
+{$IFDEF GLS_ASM}
 function MaxInteger(const V1, V2: Integer): Integer;
-{$IFDEF GEOMETRY_NO_ASM}
-begin
-  if V1 > V2 then
-    result := V1
-  else
-    result := V2;
-{$ELSE}
 asm
   cmp   eax, edx
   db $0F,$4C,$C2             /// cmovl eax, edx
-  {$ENDIF}
-end;
 
-// MaxInteger (2 card)
-//
-function MaxInteger(const V1, V2: Cardinal): Cardinal;
-{$IFDEF GEOMETRY_NO_ASM}
+end;
+{$ELSE}
+function MaxInteger(const V1, V2: Integer): Integer;
 begin
   if V1 > V2 then
     result := V1
   else
     result := V2;
-{$ELSE}
+end;
+{$ENDIF}
+
+// MaxInteger (2 card)
+//
+{$IFDEF GLS_ASM}
+function MaxInteger(const V1, V2: Cardinal): Cardinal;
 asm
   cmp   eax, edx
   db $0F,$42,$C2             /// cmovb eax, edx
-  {$ENDIF}
 end;
+{$ELSE}
+function MaxInteger(const V1, V2: Cardinal): Cardinal;
+begin
+  if V1 > V2 then
+    result := V1
+  else
+    result := V2;
+end;
+{$ENDIF}
 
 // MaxInteger
 //
@@ -9046,8 +9177,8 @@ end;
 
 // OffsetFloatArray (raw, raw)
 //
-procedure OffsetFloatArray(valuesDest, valuesDelta: PSingleArray; nb: Integer);
 {$IFDEF GLS_ASM}
+procedure OffsetFloatArray(valuesDest, valuesDelta: PSingleArray; nb: Integer);
 asm
   test  ecx, ecx
   jz    @@End
@@ -9060,14 +9191,16 @@ asm
   jnz   @@FPULoop
 
 @@End:
+end;
   {$ELSE}
+procedure OffsetFloatArray(valuesDest, valuesDelta: PSingleArray; nb: Integer);
 var
   i: Integer;
 begin
   for i := 0 to nb - 1 do
     valuesDest^[i] := valuesDest^[i] + valuesDelta^[i];
-{$ENDIF}
 end;
+{$ENDIF}
 
 // MaxXYZComponent
 //
@@ -9533,9 +9666,9 @@ end;
 
 // VectorDblToFlt
 //
-function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
 // converts a vector containing double sized values into a vector with single sized values
 {$IFDEF GLS_ASM}
+function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
 asm
   FLD  QWORD PTR [EAX]
   FSTP DWORD PTR [EDX]
@@ -9545,7 +9678,9 @@ asm
   FSTP DWORD PTR [EDX + 8]
   FLD  QWORD PTR [EAX + 24]
   FSTP DWORD PTR [EDX + 12]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
 begin
 {$HINTS OFF}
   result.X := V.X;
@@ -9553,14 +9688,14 @@ begin
   result.Z := V.Z;
   result.W := V.W;
 {$HINTS ON}
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAffineDblToFlt
 //
-function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
 // converts a vector containing double sized values into a vector with single sized values
 {$IFDEF GLS_ASM}
+function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
 asm
   FLD  QWORD PTR [EAX]
   FSTP DWORD PTR [EDX]
@@ -9568,21 +9703,23 @@ asm
   FSTP DWORD PTR [EDX + 4]
   FLD  QWORD PTR [EAX + 16]
   FSTP DWORD PTR [EDX + 8]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
 begin
 {$HINTS OFF}
   result.X := V.X;
   result.Y := V.Y;
   result.Z := V.Z;
 {$HINTS ON}
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorAffineFltToDbl
 //
-function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 // converts a vector containing single sized values into a vector with double sized values
 {$IFDEF GLS_ASM}
+function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 asm
   FLD  DWORD PTR [EAX]
   FSTP QWORD PTR [EDX]
@@ -9590,19 +9727,21 @@ asm
   FSTP QWORD PTR [EDX + 8]
   FLD  DWORD PTR [EAX + 8]
   FSTP QWORD PTR [EDX + 16]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 begin
   result.X := V.X;
   result.Y := V.Y;
   result.Z := V.Z;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // VectorFltToDbl
 //
-function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 // converts a vector containing single sized values into a vector with double sized values
 {$IFDEF GLS_ASM}
+function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 asm
   FLD  DWORD PTR [EAX]
   FSTP QWORD PTR [EDX]
@@ -9612,14 +9751,16 @@ asm
   FSTP QWORD PTR [EDX + 16]
   FLD  DWORD PTR [EAX + 12]
   FSTP QWORD PTR [EDX + 24]
-  {$ELSE}
+end;
+{$ELSE}
+function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 begin
   result.X := V.X;
   result.Y := V.Y;
   result.Z := V.Z;
   result.W := V.W;
-{$ENDIF}
 end;
+{$ENDIF}
 
 // ----------------- coordinate system manipulation functions -----------------------------------------------------------
 

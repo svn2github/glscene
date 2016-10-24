@@ -18,7 +18,7 @@
 {.$DEFINE GLS_OPTIMIZATIONS}
 
 // Activate assembly routines
-{.$DEFINE GLS_ASM}
+{$DEFINE GLS_ASM}
 
 // Activate inline directive
 {$DEFINE GLS_INLINE}

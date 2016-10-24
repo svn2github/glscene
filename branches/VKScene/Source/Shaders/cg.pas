@@ -120,7 +120,7 @@ interface
 uses Winapi.Windows;
 {$ENDIF}
 
-{$Include GLScene.inc}
+{$I VKScene.inc}
 
 {$MINENUMSIZE 4}
 

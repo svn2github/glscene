@@ -1,45 +1,45 @@
 ;-----------------------------------------------------------------------------
-; Setup GLScene script for Inno Setup Compiler
+; Setup VKScene script for Inno Setup Compiler
 ;-----------------------------------------------------------------------------
 
-#define GLSceneName "GLScene"
-#define GLSceneVersion "v.1.4.2_for_Win32"
-#define GLScenePublisher "GLSteam"
-#define GLSceneURL "http://www.glscene.org/"
+#define VKSceneName "VKScene"
+#define VKSceneVersion "v.1.0.0_for_Win64"
+#define VKScenePublisher "VKSteam"
+#define VKSceneURL "http://glscene.sourceforge.net"
 
 [Setup]
 AppId={{8CF5F54E-C1FC-4716-BC82-908867D36AD6}
-AppName={#GLSceneName}
-AppVersion={#GLSceneVersion}
-AppVerName=GLScene for Win32
-AppCopyright=Copyright © 2000,2017 GLSteam
-AppPublisher={#GLScenePublisher}
-AppPublisherURL={#GLSceneURL}
-AppSupportURL={#GLSceneURL}
-AppUpdatesURL={#GLSceneURL}
-;DefaultDirName={pf}\{#GLSceneName}
-DefaultDirName=D:\Program Files\{#GLSceneName}
-DefaultGroupName={#GLSceneName}
+AppName={#VKSceneName}
+AppVersion={#VKSceneVersion}
+AppVerName=VKScene for Win64
+AppCopyright=Copyright © 2000,2017 VKSteam
+AppPublisher={#VKScenePublisher}
+AppPublisherURL={#VKSceneURL}
+AppSupportURL={#VKSceneURL}
+AppUpdatesURL={#VKSceneURL}
+;DefaultDirName={pf}\{#VKSceneName}
+DefaultDirName=D:\Program Files\{#VKSceneName}
+DefaultGroupName={#VKSceneName}
 DisableProgramGroupPage=yes
-OutputBaseFilename=SetupGLScene_{#GLSceneVersion}
+OutputBaseFilename=SetupVKScene_{#VKSceneVersion}
 
 ; Source directory of files
-; SourceDir=D:\GLScene
+; SourceDir=D:\VKScene
 ; Output directory for setup program
 OutputDir=D:\GLS\Installation   
 
 InfoBeforeFile=Help\en\Introduction.txt
-InfoAfterFile=Samples\Samples.txt
+InfoAfterFile=Samples\Readme.txt
 
 Compression=lzma
-SetupIconFile=Samples\media\gls.ico
+SetupIconFile=Samples\media\vks.ico
 SolidCompression=yes
 
 ;welcome image
-WizardImageFile=Samples\media\GLSlogo.bmp  
+WizardImageFile=Samples\media\VKSlogo.bmp  
 WizardImageBackColor= clMaroon 
 WizardImageStretch=yes
-WizardSmallImageFile=Samples\media\GLS.bmp
+WizardSmallImageFile=Samples\media\VKScene.bmp
 WizardSmallImageBackColor=clNavy  
 
 ;background
@@ -64,19 +64,20 @@ Name: "Full"; Description: "All comps"
 Name: "Custom"; Description: "Choose comps"; Flags: iscustom
 
 [Components]
-;Name: "Samples"; Description: "Samples for Delphi&C++Builder"; Types: Full Custom 
-;Name: "Utilities"; Description: "Utilities for GLScene"; Types: Full Custom 
+;Name: "Samples"; Description: "Samples"; Types: Full Custom 
+;Name: "Utilities"; Description: "Utilities"; Types: Full Custom 
 
 [Code]
 function IsPackageDir: Boolean;
 begin
-//if DirExist()
+//  if DirExist()
 //  then
 //  begin
 //  end;
 end;
 
 [Files]
+Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "CleanForRelease.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\*"; DestDir: "{app}\bpl"; Flags: ignoreversion
 Source: "external\*"; DestDir: "{app}\external"; Flags: ignoreversion
@@ -110,10 +111,10 @@ begin
 end;
 
 [Registry]
-; Parameters for GLScene
-Root: HKCU; Subkey: "Software\GLScene"; ValueType: string; ValueName: "Version"; ValueData: {#GLSceneVersion}; Flags: createvalueifdoesntexist uninsdeletekey 
-Root: HKCU; Subkey: "Software\GLScene"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupGLScene.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
-Root: HKCU; Subkey: "Software\GLScene"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
+; Parameters for VKScene
+Root: HKCU; Subkey: "Software\VKScene"; ValueType: string; ValueName: "Version"; ValueData: {#VKSceneVersion}; Flags: createvalueifdoesntexist uninsdeletekey 
+Root: HKCU; Subkey: "Software\VKScene"; ValueType: string; ValueName: InslallSettings; ValueData: "{src}\SetupVKScene.exe"; Flags: createvalueifdoesntexist uninsdeletekey 
+Root: HKCU; Subkey: "Software\VKScene"; ValueType: string; ValueName: LibraryDir; ValueData: "{app}"; Flags: createvalueifdoesntexist uninsdeletekey 
 
 ; Parameters for RAD Studio   
 ; Auto Save
@@ -121,25 +122,25 @@ Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Auto Save"; ValueType: string
 Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Auto Save"; ValueType: string; ValueName: Editor Files; ValueData: "True"; 
                      
 ; Environmental Variables, the ValueData needs to be changed from SourceDir to {app}   
-; New user variable GLSCENEDIR
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Environment Variables"; ValueType: string; ValueName: GLSCENEDIR; ValueData: "{app}"; Flags: deletevalue 
+; New user variable VKSCENEDIR
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Environment Variables"; ValueType: string; ValueName: VKSCENEDIR; ValueData: "{app}"; Flags: deletevalue 
 
 ; Delphi Options
 ; Library Paths to sources
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Library\Win32"; ValueType: string; ValueName: Search Path; ValueData: "{olddata};$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs";
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Library\Win32"; ValueType: string; ValueName: Search Path; ValueData: "{olddata};$(VKSCENEDIR)\Source;$(VKSCENEDIR)\Source\Basis;$(VKSCENEDIR)\Source\DesignTime;$(VKSCENEDIR)\Source\FileFormats;$(VKSCENEDIR)\Source\GameAPIs;$(VKSCENEDIR)\Source\ParallelAPIs;$(VKSCENEDIR)\Source\PhysicsAPIs;$(VKSCENEDIR)\Source\ScriptingAPIs;$(VKSCENEDIR)\Source\Shaders;$(VKSCENEDIR)\Source\SoundVideoAPIs";
 
 ; C++Builder Options
 ; Include Path to hpp headers
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\C++\Paths\Win32"; ValueType: string; ValueName: IncludePath; ValueData: "{olddata};$(GLSCENEDIR)\include"; 
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\C++\Paths\Win32"; ValueType: string; ValueName: IncludePath; ValueData: "{olddata};$(VKSCENEDIR)\include"; 
 ; Library Path to LIB/BPI files
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\C++\Paths\Win32"; ValueType: string; ValueName: LibraryPath; ValueData: "{olddata};$(GLSCENEDIR)\lib";
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\C++\Paths\Win32"; ValueType: string; ValueName: LibraryPath; ValueData: "{olddata};$(VKSCENEDIR)\lib";
 
 ; Known Packages
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_Cg_DesignTime.bpl; ValueData: "GLScene Cg Shaders"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_Parallel_DesignTime.bpl; ValueData: "GLScene GPU Computing"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_DesignTime.bpl; ValueData: "GLScene OpenGL 3D library"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_Physics_DesignTime.bpl; ValueData: "GLScene Physics Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
-Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\GLScene_Sounds_DesignTime.bpl; ValueData: "GLScene Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VKScene_Cg_DesignTime.bpl; ValueData: "VKScene Cg Shaders"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VKScene_Parallel_DesignTime.bpl; ValueData: "VKScene GPU Computing"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VKScene_DesignTime.bpl; ValueData: "VKScene OpenGL 3D library"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VKScene_Physics_DesignTime.bpl; ValueData: "VKScene Physics Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
+Root: HKCU; Subkey: "Software\Embarcadero\BDS\18.0\Known Packages"; ValueType: string; ValueName: $(BDSCOMMONDIR)\Bpl\Win32\VKScene_Sounds_DesignTime.bpl; ValueData: "VKScene Sound Managers"; Flags: createvalueifdoesntexist uninsdeletevalue
 
 [Code]
 

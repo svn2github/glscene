@@ -15,16 +15,13 @@
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE VKS_OPTIMIZATIONS}
 
-// De-Activate assembly routines in VKS.VectorGeometry.pas
-{.$DEFINE GEOMETRY_NO_ASM}
+// Activate assembly routines
+{.$DEFINE VKS_ASM}
 
-// De-Activate assembly routines in other GLS units.
-{.$DEFINE VKS_NO_ASM}
+// Activate inline directive
+{.$DEFINE VKS_INLINE}
 
-// De-Activate inline directive in GLS units.
-{.$DEFINE VKS_NO_INLINE}
-
-// De-Activate regions in GLS units.
+// De-Activate regions
 {.$DEFINE VKS_NO_REGIONS}
 
 // Activate Logging
@@ -49,9 +46,6 @@
   {$DEFINE VKS_MULTITHREAD}
 {$ENDIF}
 
-// Activate support of MSWindows
-{.$DEFINE MSWINDOWS}
-
 // Activate support of Mac OS
 {.$DEFINE MACOS}
 
@@ -67,38 +61,23 @@
 // Activate support X Window System
 {.$DEFINE VKS_X11_SUPPORT}
 
-// Activate Vulkan ES
-{.$DEFINE VKS_ES}
 
 //
 // Platform Detection
 //
-{$IFDEF WIN64}
-  {$DEFINE VKS_NO_ASM}
-  {$DEFINE GEOMETRY_NO_ASM}
-{$ENDIF}
-
-{$IFDEF LINUX}
-  {$DEFINE GEOMETRY_NO_ASM}
-  {$DEFINE UNIX}
-{$ENDIF}
-
-// .NET
-{$IFDEF CLR}
-  {$DEFINE GEOMETRY_NO_ASM}
-  {$UNSAFECODE ON}
-{$ENDIF}
 
 // by default, GLX is not supported on windows, although windows implementations
 // do exist
 {$IFDEF MSWINDOWS}
-  {$DEFINE SUPPORT_WGL}
   {$UNDEF SUPPORT_GLX}
   {$UNDEF VKS_X11_SUPPORT}
+  {$DEFINE SUPPORT_WGL}
 {$ENDIF}
 
 {$IFDEF LINUX}
   {$UNDEF SUPPORT_WGL}
+  {$UNDEF VKS_ASM}
+  {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE VKS_X11_SUPPORT}
 {$ENDIF}
@@ -115,8 +94,10 @@
   Error: unsupported version, requires at least RAD XE2
 {$ENDIF}
 
-{$IFNDEF VKS_NO_INLINE}
-  {$DEFINE VKS_INLINE}
+{$IFDEF VKS_ASM}
+  {$IFDEF VKS_INLINE}
+    {$DEFINE VKS_INLINE_VICE_ASM}
+  {$ENDIF}
 {$ENDIF}
 
 {$IFNDEF VKS_NO_REGIONS}

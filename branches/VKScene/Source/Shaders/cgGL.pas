@@ -94,7 +94,7 @@
 
 unit cgGL;
 
-{$Include GLScene.inc}
+{$I VKScene.inc}
 
 interface
 
