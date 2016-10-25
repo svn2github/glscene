@@ -15,8 +15,8 @@
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE VKS_OPTIMIZATIONS}
 
-// Activate assembly routines
-{.$DEFINE VKS_ASM}
+// Activate assembly routines - Warning! Some components not working!!!
+{.$DEFINE GLS_ASM}
 
 // Activate inline directive
 {.$DEFINE VKS_INLINE}

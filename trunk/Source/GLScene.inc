@@ -17,8 +17,8 @@
 // Warning: it will disable some options (like ShowAxis and OptSaveGLStack)
 {.$DEFINE GLS_OPTIMIZATIONS}
 
-// Activate assembly routines
-{$DEFINE GLS_ASM}
+// Activate assembly routines - Warning! Some components not working!!!
+{.$DEFINE GLS_ASM}
 
 // Activate inline directive
 {$DEFINE GLS_INLINE}

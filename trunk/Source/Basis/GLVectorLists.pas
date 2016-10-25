@@ -980,7 +980,6 @@ begin
   if Val > FCapacity then
     SetCapacity(Val);
   if (Val > FCount) and (bloSetCountResetsMemory in FOptions) then
-   if (FBaseList[FItemSize * FCount] <= 255) then
     FillChar(FBaseList[FItemSize * FCount], SizeOf(FBaseList[FItemSize * FCount]), Byte(0));
   FCount := Val;
   Inc(FRevision);
@@ -4220,3 +4219,4 @@ initialization
                    TDoubleList, T4ByteList, TLongWordList]);
 
 end.
+
