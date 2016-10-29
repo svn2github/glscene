@@ -32,7 +32,7 @@ begin
    // don't complain about missing sound support
    vVerboseGLSMErrors:=False;
    Application.Initialize;
-   Application.Title := 'GLScene Christmas 2014';
+   Application.Title := 'GLScene Christmas 2016';
    Application.CreateForm(TMain, Main);
   Application.Run;
 end.

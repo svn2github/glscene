@@ -3814,7 +3814,7 @@ object Form1: TForm1
     Top = 88
   end
   object GLHeightTileFileHDS1: TGLHeightTileFileHDS
-    HTFFileName = 'Islands.htf'
+    HTFFileName = 'Data\Islands.htf'
     InfiniteWrap = False
     MaxPoolSize = 0
     Left = 176
