@@ -298,7 +298,7 @@ begin
   sl := TStringList.Create;
   line := TStringList.Create;
 
-  sl.LoadFromFile('Constellations.dat');
+  sl.LoadFromFile('Data\Constellations.dat');
 
   for i := 0 to sl.Count - 1 do
   begin
@@ -448,8 +448,8 @@ begin
       begin
         GLSceneViewer.Cursor := crHourGlass;
         try
-          if DirectoryExists('HighResPack') then
-            ChDir('HighResPack');
+          if DirectoryExists('Data') then
+            ChDir('Data');
           with GLMaterialLibrary do
           begin
             LoadHighResTexture(Materials[0], 'land_ocean_ice_4096.jpg');

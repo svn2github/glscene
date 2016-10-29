@@ -125,6 +125,8 @@
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <DCC_IOChecking>false</DCC_IOChecking>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_RangeChecking>true</DCC_RangeChecking>
         <DCC_Description>GLScene OpenGL 3D library</DCC_Description>
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
@@ -230,6 +232,7 @@
         <DCCReference Include="..\..\Source\FileFormats\GLFileTIN.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileVRML.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileWAV.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFileX.pas"/>
         <DCCReference Include="..\..\Source\GLFireFX.pas"/>
         <DCCReference Include="..\..\Source\GLFullScreenViewer.pas"/>
         <DCCReference Include="..\..\Source\GLGLUTesselation.pas"/>
@@ -239,6 +242,7 @@
         <DCCReference Include="..\..\Source\Basis\GLGeometryCoordinates.pas"/>
         <DCCReference Include="..\..\Source\GLGizmo.pas"/>
         <DCCReference Include="..\..\Source\GLGizmoEx.pas"/>
+        <DCCReference Include="..\..\Source\Basis\GLGnuGettext.pas"/>
         <DCCReference Include="..\..\Source\GLGraph.pas"/>
         <DCCReference Include="..\..\Source\GLGraphics.pas"/>
         <DCCReference Include="..\..\Source\GLGui.pas"/>
@@ -305,12 +309,20 @@
         <DCCReference Include="..\..\Source\GLSGenerics.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLSLBumpShader.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLSLDiffuseSpecularShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLErosionShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLFurShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLGlassShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLGoochShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLIvoryShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLLatticeShader.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLSLParameter.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLSLPostShaders.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLSLProjectedTextures.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLSemShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLToonShader.pas"/>
         <DCCReference Include="..\..\Source\GLSLanguage.pas"/>
         <DCCReference Include="..\..\Source\GLSLog.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLShader.pas"/>
         <DCCReference Include="..\..\Source\GLSMemo.pas"/>
         <DCCReference Include="..\..\Source\GLSRGBE.pas"/>
         <DCCReference Include="..\..\Source\GLSRedBlackTree.pas"/>
@@ -329,6 +341,7 @@
         <DCCReference Include="..\..\Source\GLSimpleNavigation.pas"/>
         <DCCReference Include="..\..\Source\GLSkyBox.pas"/>
         <DCCReference Include="..\..\Source\GLSkydome.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLSLVertexDisplacementShader.pas"/>
         <DCCReference Include="..\..\Source\GLSmoothNavigator.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\GLSound.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\GLSoundFileObjects.pas"/>
@@ -375,7 +388,6 @@
         <DCCReference Include="..\..\Source\GLWindowsFont.pas"/>
         <DCCReference Include="..\..\Source\GLXCollection.pas"/>
         <DCCReference Include="..\..\Source\GLzBuffer.pas"/>
-        <DCCReference Include="..\..\Source\Basis\GNUgettext.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\HDRImage.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\LWObjects.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\O3TCImage.pas"/>
@@ -389,16 +401,6 @@
         <DCCReference Include="..\..\Source\FileFormats\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VRMLParser.pas"/>
         <DCCReference Include="..\..\Source\Basis\XOpenGL.pas"/>
-        <DCCReference Include="..\..\Source\FileFormats\GLFileX.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLErosionShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLFurShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLGlassShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLGoochShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLIvoryShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLLatticeShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLSemShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLToonShader.pas"/>
-        <DCCReference Include="..\..\Source\Shaders\GLSLVertexDisplacementShader.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

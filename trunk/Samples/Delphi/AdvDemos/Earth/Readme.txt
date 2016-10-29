@@ -59,7 +59,5 @@ Known issues:
   (underclocking), they can put a lot of strain on these during AGP 
   texturing.
 
-Source available from the GLScene Sourceforge CVS (AdvDemos/Earth).
-
 Eric Grange
 http://glscene.org

@@ -1,7 +1,6 @@
 object Form1: TForm1
   Left = 412
   Top = 123
-  BorderStyle = bsSizeToolWin
   Caption = 'Form1'
   ClientHeight = 547
   ClientWidth = 703
@@ -14,6 +13,7 @@ object Form1: TForm1
   KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
   OnMouseWheel = FormMouseWheel
@@ -39,7 +39,6 @@ object Form1: TForm1
     Left = 16
     Top = 16
     object GLSkyDome: TGLSkyDome
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Bands = <
         item
           StartColor.Color = {0000803F0000803F0000803F0000803F}
@@ -68,7 +67,6 @@ object Form1: TForm1
     end
     object DCEarthSystem: TGLDummyCube
       ObjectsSorting = osNone
-      Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object GLCameraControler: TGLCamera
         DepthOfView = 100.000000000000000000

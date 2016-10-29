@@ -112,6 +112,10 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <DCC_IOChecking>false</DCC_IOChecking>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
+        <DCC_RangeChecking>true</DCC_RangeChecking>
+        <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
         <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcuOutput>$(GLSCENEDIR)\lib\Win32</DCC_DcuOutput>
         <DCC_DcpOutput>$(GLSCENEDIR)\lib\Win32</DCC_DcpOutput>

@@ -30,6 +30,8 @@ del *.otares /s
 del *.tvsconfig /s
 del *.stat /s
 del *.db /s
+del *.~dbg /s
+del *.spider /s
 
 rem delete cpp builder files
 

@@ -8,7 +8,7 @@
         <AppType>Application</AppType>
         <FrameworkType>VCL</FrameworkType>
         <ProjectVersion>18.1</ProjectVersion>
-        <Platform Condition="'$(Platform)'==''">Win32</Platform>
+        <Platform Condition="'$(Platform)'==''">Win64</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
         <Base>true</Base>
@@ -72,7 +72,6 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
@@ -95,15 +94,16 @@
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
         <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>

@@ -2,8 +2,6 @@ unit Unit1;
 
 interface
 
-{$I GLScene.inc}
-
 uses
   Winapi.Windows,
   System.SysUtils, System.Classes, System.Math, System.Types,
@@ -106,7 +104,7 @@ implementation
 {$R *.dfm}
 
 const
-  cImposterCacheFile: string = 'data\imposters.bmp';
+  cImposterCacheFile: string = 'imposters.bmp';
   cMapWidth: Integer = 1024;
   cMapHeight: Integer = 1024;
   cBaseSpeed: Single = 50;
@@ -114,27 +112,31 @@ const
 procedure TForm1.FormCreate(Sender: TObject);
 var
   density: TPicture;
+  DataPath : TFileName;
 begin
   // go to 1024x768x32
 //  SetFullscreenMode(GetIndexFromResolution(1024, 768, 32), 85);
   Application.OnDeactivate := FormDeactivate;
 
-  SetCurrentDir(ExtractFilePath(ParamStr(0)));
+  DataPath := ExtractFilePath(ParamStr(0));
+  Delete(DataPath, Length(DataPath) - 12, 12);
+  DataPath := DataPath + 'Data\';
+  SetCurrentDir(DataPath);
 
  // Load volcano textures
-  MLTerrain.AddTextureMaterial('Terrain', 'data\volcano_TX_low.jpg').Texture2Name := 'Detail';
-  MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg').Material.Texture.TextureMode := tmModulate;
-  MLTerrain.AddTextureMaterial('Detail', 'data\detailmap.jpg').TextureScale.SetPoint(128, 128, 128);
+  MLTerrain.AddTextureMaterial('Terrain', 'volcano_TX_low.jpg').Texture2Name := 'Detail';
+  MLTerrain.AddTextureMaterial('Detail', 'detailmap.jpg').Material.Texture.TextureMode := tmModulate;
+  MLTerrain.AddTextureMaterial('Detail', 'detailmap.jpg').TextureScale.SetPoint(128, 128, 128);
   Terrain.Material.MaterialLibrary := MLTerrain;
   Terrain.Material.LibMaterialName := 'Terrain';
 
   // Load tree textures
-  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.TextureFormat := tfRGBA;
-  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.TextureMode := tmModulate;
-  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.Texture.MinFilter := miNearestMipmapNearest;
-  MLTrees.AddTextureMaterial('Leaf', 'data\leaf.tga').Material.BlendingMode := bmAlphaTest50;
+  MLTrees.AddTextureMaterial('Leaf', 'leaf.tga').Material.Texture.TextureFormat := tfRGBA;
+  MLTrees.AddTextureMaterial('Leaf', 'leaf.tga').Material.Texture.TextureMode := tmModulate;
+  MLTrees.AddTextureMaterial('Leaf', 'leaf.tga').Material.Texture.MinFilter := miNearestMipmapNearest;
+  MLTrees.AddTextureMaterial('Leaf', 'leaf.tga').Material.BlendingMode := bmAlphaTest50;
 
-  MLTrees.AddTextureMaterial('Bark', 'data\zbark_016.jpg').Material.Texture.TextureMode := tmModulate;
+  MLTrees.AddTextureMaterial('Bark', 'zbark_016.jpg').Material.Texture.TextureMode := tmModulate;
 
   // Create test tree
   Randomize;
@@ -163,7 +165,7 @@ begin
     densityBitmap.PixelFormat := pf24bit;
     Density := TPicture.Create;
     try
-      Density.LoadFromFile('data\volcano_trees.jpg');
+      Density.LoadFromFile('volcano_trees.jpg');
       densityBitmap.Width := Density.Width;
       densityBitmap.Height := Density.Height;
       densityBitmap.Canvas.Draw(0, 0, Density.Graphic);
@@ -595,10 +597,10 @@ begin
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
 
   tex1Matrix := IdentityHmgMatrix;
-  tex1Matrix.V[0].V[0] := cWaveScale;
-  tex1Matrix.V[1].V[1] := cWaveScale;
-  tex1Matrix.V[3].V[0] := tWave * 0.83;
-  tex1Matrix.V[3].V[1] := tWave * 0.79;
+  tex1Matrix.X.X := cWaveScale;
+  tex1Matrix.Y.Y := cWaveScale;
+  tex1Matrix.W.X := tWave * 0.83;
+  tex1Matrix.W.Y := tWave * 0.79;
   rci.GLStates.SetGLTextureMatrix(tex1Matrix);
 
   if enableTex2DReflection then
@@ -667,8 +669,8 @@ begin
   begin
     reflectionProgram := TGLProgramHandle.CreateAndAllocate;
 
-    reflectionProgram.AddShader(TGLVertexShaderHandle, string(LoadAnsiStringFromFile('data\water_vp.glsl')),True);
-    reflectionProgram.AddShader(TGLFragmentShaderHandle, string(LoadAnsiStringFromFile('data\water_fp.glsl')),True);
+    reflectionProgram.AddShader(TGLVertexShaderHandle, string(LoadAnsiStringFromFile('water_vp.glsl')),True);
+    reflectionProgram.AddShader(TGLFragmentShaderHandle, string(LoadAnsiStringFromFile('water_fp.glsl')),True);
     if not reflectionProgram.LinkProgram then
       raise Exception.Create(reflectionProgram.InfoLog);
     if not reflectionProgram.ValidateProgram then

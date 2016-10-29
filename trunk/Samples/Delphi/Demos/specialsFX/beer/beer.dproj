@@ -70,7 +70,6 @@
         <DCC_ImageBase>00400000</DCC_ImageBase>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -81,7 +80,6 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
-        <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;$(DCC_Namespace)</DCC_Namespace>
@@ -119,20 +117,24 @@
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <DCC_UnitSearchPath>$(GLSCENEDIR)\Source;$(GLSCENEDIR)\Source\Basis;$(GLSCENEDIR)\Source\DesignTime;$(GLSCENEDIR)\Source\FileFormats;$(GLSCENEDIR)\Source\GameAPIs;$(GLSCENEDIR)\Source\ParallelAPIs;$(GLSCENEDIR)\Source\PhysicsAPIs;$(GLSCENEDIR)\Source\ScriptingAPIs;$(GLSCENEDIR)\Source\Shaders;$(GLSCENEDIR)\Source\SoundVideoAPIs;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
         <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
+        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
+        <DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
+        <DCC_RemoteDebug>true</DCC_RemoteDebug>
+        <DCC_MapFile>3</DCC_MapFile>
         <Debugger_DebugSourcePath>D:\Library\GLScene\Source\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <DCC_ExeOutput>$(Platform)\$(Config)</DCC_ExeOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_DcuOutput>$(Platform)\$(Config)</DCC_DcuOutput>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <AppEnableHighDPI>true</AppEnableHighDPI>

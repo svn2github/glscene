@@ -4,7 +4,8 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, 
+  Winapi.OpenGL,
+  System.SysUtils,
   System.Classes, 
   System.Math,
   Vcl.StdCtrls, 
@@ -21,7 +22,7 @@ uses
   GLTerrainRenderer, 
   GLHeightData, 
   GLHeightTileFileHDS,
-  GLTexture, 
+  GLTexture,
   GLHUDObjects, 
   GLMaterial, 
   GLSkydome, 
@@ -83,6 +84,7 @@ type
       var HeightDatas: TList);
   private
     { Private declarations }
+
   public
     { Public declarations }
     FullScreen: Boolean;
@@ -91,6 +93,7 @@ type
     WaterPlane: Boolean;
     WasAboveWater: Boolean;
     HelpOpacity: Single;
+    DataPath : String;
 
     WakeVertices: TAffineVectorList;
     WakeStretch: TAffineVectorList;
@@ -119,11 +122,15 @@ var
   i, j: Integer;
   name: string;
   libMat: TGLLibMaterial;
-  DataPath : String;
 begin
-  DataPath := ExtractFilePath(ParamStr(0))+'Data';
+  DataPath := ExtractFilePath(ParamStr(0));
+  Delete(DataPath, Length(DataPath) - 12, 12); // del Win32\Debug\
+  DataPath := DataPath + 'Data\';
   SetCurrentDir(DataPath);
+
   MaterialLibrary.TexturePaths := DataPath;
+  MLSailBoat.TexturePaths := DataPath;
+
   GLCustomHDS1.MaxPoolSize := 8 * 1024 * 1024;
   GLCustomHDS1.DefaultHeight := cWaterLevel;
 
@@ -343,9 +350,9 @@ const
     end;
     SinCos(WaterPhase(px, py), sa, ca);
     colorRatio := 1 - alpha * 0.1;
-    GL.Color4f(r * colorRatio, g * colorRatio, b, alpha);
-    GL.TexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
-    GL.Vertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
+    glColor4f(r * colorRatio, g * colorRatio, b, alpha);
+    glTexCoord2f(px * 0.01 + 0.002 * sa, py * 0.01 + 0.0022 * ca - t * 0.002);
+    glVertex3f(px, py, cWaterLevel + cWaveAmplitude * sa);
   end;
 
 begin
@@ -365,7 +372,7 @@ begin
       Enable(stStencilTest);
       SetStencilOp(soKeep, soKeep, soReplace);
 
-      GL.Normal3f(0, 0, 1);
+      glNormal3f(0, 0, 1);
 
       for i := 0 to heightDatas.Count - 1 do
       begin
@@ -376,7 +383,7 @@ begin
         y := hd.YTop;
         s := hd.Size - 1;
         s2 := s div 2;
-        GL.Begin_(GL_TRIANGLE_FAN);
+        glBegin(GL_TRIANGLE_FAN);
         IssuePoint(s2, s2);
         IssuePoint(0, 0);
         IssuePoint(s2, 0);
@@ -387,7 +394,7 @@ begin
         IssuePoint(0, s);
         IssuePoint(0, s2);
         IssuePoint(0, 0);
-        GL.End_;
+        glEnd;
       end;
       SetStencilOp(soKeep, soKeep, soKeep);
       Disable(stStencilTest);
@@ -452,8 +459,8 @@ var
   i, j, n: Integer;
   offset: TTexPoint;
 begin
-  with heightData do
-    htfHD := GLHeightTileFileHDS1.GetData(XLeft, YTop, Size, DataType);
+
+  htfHD := GLHeightTileFileHDS1.GetData(heightData.XLeft, heightData.YTop, heightData.Size, heightData.DataType);
   if (htfHD.DataState = hdsNone) then //or (htfHD.HeightMax<=cWaterLevel-cWaterOpaqueDepth) then
     heightData.DataState := hdsNone
   else
@@ -602,7 +609,7 @@ begin
       if not WasAboveWater then
         InvertGLFrontFace;
 
-      GL.Begin_(GL_TRIANGLE_STRIP);
+      glBegin(GL_TRIANGLE_STRIP);
       n := WakeVertices.Count;
       for i := 0 to n - 1 do
       begin
@@ -611,14 +618,14 @@ begin
         if (i and 1) = 0 then
         begin
           c := (i and $FFE) * 0.2 / n;
-          GL.Color3f(c, c, c);
-          GL.TexCoord2f(0, WakeTime[i div 2]);
+          glColor3f(c, c, c);
+          glTexCoord2f(0, WakeTime[i div 2]);
         end
         else
-          GL.TexCoord2f(1, WakeTime[i div 2]);
-        GL.Vertex3f(p.X, WaterHeight(sbp.X, sbp.Y), p.Z);
+          glTexCoord2f(1, WakeTime[i div 2]);
+        glVertex3f(p.X, WaterHeight(sbp.X, sbp.Y), p.Z);
       end;
-      GL.End_;
+      glEnd;
 
       if not WasAboveWater then
         InvertGLFrontFace;

@@ -51,7 +51,7 @@ object Form1: TForm1
       Stacks = 6
       EffectsData = {
         0458434F4C02010201060A54474C424669726546580201020012000000000200
-        02001200000000}
+        02000610474C4669726546584D616E6167657231}
       object GLLightSource2: TGLLightSource
         Ambient.Color = {0000803F0000803F0000803F0000803F}
         ConstAttenuation = 1.000000000000000000
@@ -79,9 +79,9 @@ object Form1: TForm1
     InitialDir.Coordinates = {00000000000000000000000000000000}
     Cadencer = GLCadencer1
     MaxParticles = 96
-    ParticleSize = 0.699999988079071100
+    ParticleSize = 0.699999988079071000
     FireDensity = 0.500000000000000000
-    FireEvaporation = 0.860000014305114800
+    FireEvaporation = 0.860000014305114700
     FireBurst = 1.000000000000000000
     FireRadius = 0.500000000000000000
     Disabled = False

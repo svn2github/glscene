@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnResize = FormResize
   PixelsPerInch = 96
   TextHeight = 13
@@ -121,7 +123,7 @@ object Form1: TForm1
             Direction.Coordinates = {000000000000803F2CBD3BB300000000}
             Position.Coordinates = {0000C03FA4703DBF000000000000803F}
             Up.Coordinates = {000000B32FBD3BB3000080BF00000000}
-            Height = 0.400000005960464400
+            Height = 0.400000005960464500
             Width = 3.000000000000000000
           end
         end
@@ -153,7 +155,7 @@ object Form1: TForm1
     MaxParticles = 128
     ParticleSize = 0.150000005960464500
     FireDensity = 0.600000023841857900
-    FireEvaporation = 0.860000014305114800
+    FireEvaporation = 0.860000014305114700
     ParticleLife = 2
     FireBurst = 1.000000000000000000
     FireRadius = 0.100000001490116100

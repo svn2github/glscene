@@ -77,7 +77,7 @@ object Form1: TForm1
     MaxParticles = 512
     ParticleSize = 0.500000000000000000
     FireDensity = 0.600000023841857900
-    FireEvaporation = 0.860000014305114800
+    FireEvaporation = 0.860000014305114700
     ParticleLife = 1
     FireRadius = 0.500000000000000000
     Disabled = False
@@ -109,7 +109,7 @@ object Form1: TForm1
     InnerColor.Color = {0000803E0000803E0000803E0000803F}
     OuterColor.Color = {0000000000000000000000000000803F}
     FireDensity = 0.600000023841857900
-    FireEvaporation = 0.860000014305114800
+    FireEvaporation = 0.860000014305114700
     FireRadius = 1.000000000000000000
     Disabled = True
     Paused = False
