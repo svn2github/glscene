@@ -2,26 +2,25 @@
 // VKScene project, http://glscene.sourceforge.net 
 //
 {
-  Routines to interact with the screen/desktop. 
+  Routines to interact with the screen/desktop.
 }
 unit VKS.Screen;
 
 interface
 
-{$I VKScene.inc}
-
 uses
-{$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
-{$IFDEF VKS_X11_SUPPORT} x, xlib, xf86vmode, {$ENDIF}
-  System.Classes, System.SysUtils,
-  VKS.VectorGeometry, VKS.CrossPlatform;
+  System.Classes, 
+  System.SysUtils,
+  Winapi.Windows, 
+  FMX.Forms,
+  VKS.VectorGeometry, 
+  VKS.CrossPlatform;
 
 const
   MaxVideoModes = 200;
   lcl_release = 0;
 
 type
-
   TResolution = 0 .. MaxVideoModes;
 
   // window attributes
@@ -70,10 +69,8 @@ procedure ReadVideoModes;
 function SetFullscreenMode(modeIndex: TResolution;
   displayFrequency: Integer = 0): Boolean;
 
-{$IFDEF MSWINDOWS}
 procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
   SrcRect: TRectangle);
-{$ENDIF}
 procedure RestoreDefaultMode;
 
 procedure GLShowCursor(AShow: Boolean);
@@ -85,27 +82,16 @@ function GLGetScreenHeight: Integer;
 var
   vNumberVideoModes: Integer = 0;
   vCurrentVideoMode: Integer = 0;
-{$IFDEF MSWINDOWS}
   vVideoModes: array of TVideoMode;
-{$ENDIF} // Unix
-{$IFDEF VKS_X11_SUPPORT}
-  vDisplay: PDisplay;
-  vScreenModeChanged: Boolean;
-  vVideoModes: array of PXF86VidModeModeInfo;
-  vDesktop: TXF86VidModeModeInfo;
-{$ENDIF}
 
-  // ------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------
 
-uses
-  FMX.Forms;
 
 type
   TLowResMode = packed record
@@ -116,7 +102,6 @@ type
 
 const
   NumberLowResModes = 15;
-{$IFDEF MSWINDOWS}
   LowResModes: array [0 .. NumberLowResModes - 1] of TLowResMode = ((Width: 320;
     Height: 200; ColorDepth: 8), (Width: 320; Height: 200; ColorDepth: 15),
     (Width: 320; Height: 200; ColorDepth: 16), (Width: 320; Height: 200;
@@ -127,7 +112,6 @@ const
     Height: 384; ColorDepth: 8), (Width: 512; Height: 384; ColorDepth: 15),
     (Width: 512; Height: 384; ColorDepth: 16), (Width: 512; Height: 384;
     ColorDepth: 24), (Width: 512; Height: 384; ColorDepth: 32));
-{$ENDIF}
 
   // Assign
   //
@@ -156,9 +140,8 @@ function GetIndexFromResolution(XRes, YRes, BPP: Integer): TResolution;
 var
   I: Integer;
   XDiff, YDiff: Integer;
-{$IFDEF MSWINDOWS}
   CDiff: Integer;
-{$ENDIF}
+
 begin
   ReadVideoModes;
   // prepare result in case we don't find a valid mode
@@ -166,11 +149,8 @@ begin
   // set differences to maximum
   XDiff := 9999;
   YDiff := 9999;
-{$IFDEF MSWINDOWS}
   CDiff := 99;
-{$ENDIF}
   for I := 1 to vNumberVideoModes - 1 do
-{$IFDEF MSWINDOWS}
     with vVideoModes[I] do
     begin
       if (Width >= XRes) and ((Width - XRes) <= XDiff) and (Height >= YRes) and
@@ -183,31 +163,10 @@ begin
         Result := I;
       end;
     end;
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-  with vVideoModes[I]^ do
-  begin
-    if (hDisplay >= XRes) and ((hDisplay - XRes) <= XDiff) and
-      (vDisplay >= YRes) and ((vDisplay - YRes) <= YDiff) then
-    begin
-      XDiff := hDisplay - XRes;
-      YDiff := vDisplay - YRes;
-      Result := I;
-    end;
-  end;
-{$ENDIF}
-{$IFDEF Darwin}
-  begin
-{$MESSAGE Warn 'Needs to be implemented'}
-  end;
-{$ENDIF}
 end;
-
 
 // TryToAddToList
 //
-{$IFDEF MSWINDOWS}
-
 procedure TryToAddToList(deviceMode: TDevMode);
 // Adds a video mode to the list if it's not a duplicate and can actually be set.
 var
@@ -247,314 +206,159 @@ begin
       dmBitsPerPel]);
   end;
   Inc(vNumberVideoModes);
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
+end;
 
-  procedure TryToAddToList(); // Without input parameters.
-  begin
-    XF86VidModeGetAllModeLines(vDisplay, vCurrentVideoMode, @vNumberVideoModes,
-      @vVideoModes[0]);
-{$ENDIF}
-{$IFDEF Darwin}
+// ReadVideoModes
+//
+procedure ReadVideoModes;
+var
+  I, ModeNumber: Integer;
+  done: Boolean;
+  deviceMode: TDevMode;
+  DeskDC: HDC;
+begin
+  if vNumberVideoModes > 0 then
+    Exit;
 
-    procedure TryToAddToList(); // Without input parameters.
-    begin
-{$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
+  SetLength(vVideoModes, MaxVideoModes);
+  vNumberVideoModes := 1;
+
+  // prepare 'default' entry
+  DeskDC := GetDC(0);
+  with vVideoModes[0] do
+    try
+      ColorDepth := GetDeviceCaps(DeskDC, BITSPIXEL) *
+        GetDeviceCaps(DeskDC, PLANES);
+      Width := Screen.Width;
+      Height := Screen.Height;
+      Description := 'default';
+    finally
+      ReleaseDC(0, DeskDC);
     end;
 
-    // ReadVideoModes
-    //
-    procedure ReadVideoModes;
-{$IFDEF MSWINDOWS}
-    var
-      I, ModeNumber: Integer;
-      done: Boolean;
-      deviceMode: TDevMode;
-      DeskDC: HDC;
+  // enumerate all available video modes
+  ModeNumber := 0;
+  repeat
+    done := not EnumDisplaySettings(nil, ModeNumber, deviceMode);
+    TryToAddToList(deviceMode);
+    Inc(ModeNumber);
+  until (done or (vNumberVideoModes >= MaxVideoModes));
+
+  // low-res modes don't always enumerate, ask about them explicitly
+  with deviceMode do
+  begin
+    dmBitsPerPel := 8;
+    dmPelsWidth := 42;
+    dmPelsHeight := 37;
+    dmFields := DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
+    // make sure the driver doesn't just answer yes to all tests
+    if ChangeDisplaySettings(deviceMode, CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL
+    then
     begin
-      if vNumberVideoModes > 0 then
-        Exit;
-
-      SetLength(vVideoModes, MaxVideoModes);
-      vNumberVideoModes := 1;
-
-      // prepare 'default' entry
-      DeskDC := GetDC(0);
-      with vVideoModes[0] do
-        try
-          ColorDepth := GetDeviceCaps(DeskDC, BITSPIXEL) *
-            GetDeviceCaps(DeskDC, PLANES);
-          Width := Screen.Width;
-          Height := Screen.Height;
-          Description := 'default';
-        finally
-          ReleaseDC(0, DeskDC);
-        end;
-
-      // enumerate all available video modes
-      ModeNumber := 0;
-      repeat
-        done := not EnumDisplaySettings(nil, ModeNumber, deviceMode);
-        TryToAddToList(deviceMode);
-        Inc(ModeNumber);
-      until (done or (vNumberVideoModes >= MaxVideoModes));
-
-      // low-res modes don't always enumerate, ask about them explicitly
-      with deviceMode do
+      I := 0;
+      while (I < NumberLowResModes - 1) and
+        (vNumberVideoModes < MaxVideoModes) do
       begin
-        dmBitsPerPel := 8;
-        dmPelsWidth := 42;
-        dmPelsHeight := 37;
+        dmSize := Sizeof(deviceMode);
+        with LowResModes[I] do
+        begin
+          dmBitsPerPel := ColorDepth;
+          dmPelsWidth := Width;
+          dmPelsHeight := Height;
+        end;
         dmFields := DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
-        // make sure the driver doesn't just answer yes to all tests
-        if ChangeDisplaySettings(deviceMode, CDS_TEST or CDS_FULLSCREEN) <> DISP_CHANGE_SUCCESSFUL
-        then
-        begin
-          I := 0;
-          while (I < NumberLowResModes - 1) and
-            (vNumberVideoModes < MaxVideoModes) do
-          begin
-            dmSize := Sizeof(deviceMode);
-            with LowResModes[I] do
-            begin
-              dmBitsPerPel := ColorDepth;
-              dmPelsWidth := Width;
-              dmPelsHeight := Height;
-            end;
-            dmFields := DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
-            TryToAddToList(deviceMode);
-            Inc(I);
-          end;
-        end;
+        TryToAddToList(deviceMode);
+        Inc(I);
       end;
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-      var
-        I, j: Integer;
-      begin
-        SetLength(vVideoModes, MaxVideoModes);
-        // if error usr/bin/ld: cannot find -lXxf86vm
-        // then sudo apt-get install libXxf86vm-dev
+    end;
+  end;
+end;
 
-        // Connect to XServer
-        vDisplay := XOpenDisplay(nil);
-        if not Assigned(vDisplay) Then
-          Assert(False, 'Not conected with X Server');
-        vCurrentVideoMode := DefaultScreen(vDisplay);
+// SetFullscreenMode
+//
+function SetFullscreenMode(modeIndex: TResolution;
+  displayFrequency: Integer = 0): Boolean;
+var
+  deviceMode: TDevMode;
+begin
+  ReadVideoModes;
+  FillChar(deviceMode, Sizeof(deviceMode), 0);
+  with deviceMode do
+  begin
+    dmSize := Sizeof(deviceMode);
+    dmBitsPerPel := vVideoModes[modeIndex].ColorDepth;
+    dmPelsWidth := vVideoModes[modeIndex].Width;
+    dmPelsHeight := vVideoModes[modeIndex].Height;
+    dmFields := DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
+    if displayFrequency > 0 then
+    begin
+      dmFields := dmFields or DM_DISPLAYFREQUENCY;
+      if displayFrequency > vVideoModes[modeIndex].MaxFrequency then
+        displayFrequency := vVideoModes[modeIndex].MaxFrequency;
+      dmDisplayFrequency := displayFrequency;
+    end;
+  end;
+  Result := ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN)
+    = DISP_CHANGE_SUCCESSFUL;
+  if Result then
+    vCurrentVideoMode := modeIndex;
+end;
 
-        // Check support XF86VidMode Extension
-        // {$IF (FPC_VERSION = 2) and (FPC_RELEASE < 5)}
-        // if XF86VidModeQueryExtension( vDisplay, @i, @j )=0 then
-        // {$ELSE}
-        if not XF86VidModeQueryExtension(vDisplay, @I, @j) then
-          // {$IFEND}
-          Assert(False, 'XF86VidMode Extension not support');
+// ReadScreenImage
+//
+procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
+  SrcRect: TRectangle);
+var
+  screenDC: HDC;
+begin
+  screenDC := GetDC(0);
+  try
+    GDIFlush;
+    BitBlt(Dest, DestLeft, DestTop, SrcRect.Width, SrcRect.Height, screenDC,
+      SrcRect.Left, SrcRect.Top, SRCCOPY);
+  finally
+    ReleaseDC(0, screenDC);
+  end;
+end;
 
-        // Get Current Settings
-        if not vScreenModeChanged then
-          if XF86VidModeGetModeLine(vDisplay, vCurrentVideoMode,
-            @vDesktop.dotclock, PXF86VidModeModeLine(PtrUInt(@vDesktop) +
-            Sizeof(vDesktop.dotclock))) then
-            TryToAddToList;
-        XCloseDisplay(vDisplay);
-{$ENDIF}
-{$IFDEF Darwin}
-        begin
-{$MESSAGE Warn 'ReadVideoModes not yet implemented for Darwin platforms'}
-{$ENDIF}
-        end;
+// RestoreDefaultMode
+//
+procedure RestoreDefaultMode;
+var
+  t: PDevMode;
+begin
+  t := nil;
+  ChangeDisplaySettings(t^, CDS_FULLSCREEN);
+end;
 
-        // SetFullscreenMode
-        //
-        function SetFullscreenMode(modeIndex: TResolution;
-          displayFrequency: Integer = 0): Boolean;
-{$IFDEF MSWINDOWS}
-        var
-          deviceMode: TDevMode;
-        begin
-          ReadVideoModes;
-          FillChar(deviceMode, Sizeof(deviceMode), 0);
-          with deviceMode do
-          begin
-            dmSize := Sizeof(deviceMode);
-            dmBitsPerPel := vVideoModes[modeIndex].ColorDepth;
-            dmPelsWidth := vVideoModes[modeIndex].Width;
-            dmPelsHeight := vVideoModes[modeIndex].Height;
-            dmFields := DM_BITSPERPEL or DM_PELSWIDTH or DM_PELSHEIGHT;
-            if displayFrequency > 0 then
-            begin
-              dmFields := dmFields or DM_DISPLAYFREQUENCY;
-              if displayFrequency > vVideoModes[modeIndex].MaxFrequency then
-                displayFrequency := vVideoModes[modeIndex].MaxFrequency;
-              dmDisplayFrequency := displayFrequency;
-            end;
-          end;
-          Result := ChangeDisplaySettings(deviceMode, CDS_FULLSCREEN)
-            = DISP_CHANGE_SUCCESSFUL;
-          if Result then
-            vCurrentVideoMode := modeIndex;
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-          var
-            vSettings: TXF86VidModeModeInfo;
-            wnd: TWindow;
-          begin
-            ReadVideoModes;
-            vDisplay := XOpenDisplay(nil);
-            vSettings := vVideoModes[modeIndex]^;
-            if (vSettings.hDisplay <> vDesktop.hDisplay) and
-              (vSettings.vDisplay <> vDesktop.vDisplay) then
-            begin
+procedure GLShowCursor(AShow: Boolean);
+begin
+  ShowCursor(AShow);
+end;
 
-              // vsettings.vtotal:=vsettings.vdisplay;
-              XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vSettings);
-              XF86VidModeSetViewPort(vDisplay, vCurrentVideoMode, 0, 0);
-              wnd := XDefaultRootWindow(vDisplay);
-              XGrabPointer(vDisplay, wnd, true,
-                PointerMotionMask + ButtonReleaseMask, GrabModeAsync,
-                GrabModeAsync, wnd, none, 0);
-              vScreenModeChanged := true;
-            end
-            else
-            begin
-              // Restore
-              XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vDesktop);
-              vScreenModeChanged := False;
-            end;
-            // Disconnect to XServer else settings not accept
-            XCloseDisplay(vDisplay);
-            Result := vScreenModeChanged;
-{$ENDIF}
-{$IFDEF Darwin}
-            begin
-{$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
-            end;
+procedure GLSetCursorPos(AScreenX, AScreenY: Integer);
+begin
+  SetCursorPos(AScreenX, AScreenY);
+end;
 
-            // ReadScreenImage
-            //
-{$IFDEF MSWINDOWS}
+procedure GLGetCursorPos(var point: TVKPoint);
+begin
+  GetCursorPos(point);
+end;
 
-            procedure ReadScreenImage(Dest: HDC; DestLeft, DestTop: Integer;
-              SrcRect: TRectangle);
-            var
-              screenDC: HDC;
-            begin
-              screenDC := GetDC(0);
-              try
-                GDIFlush;
-                BitBlt(Dest, DestLeft, DestTop, SrcRect.Width, SrcRect.Height,
-                  screenDC, SrcRect.Left, SrcRect.Top, SRCCOPY);
-              finally
-                ReleaseDC(0, screenDC);
-              end;
-            end;
-{$ENDIF}
+function GLGetScreenWidth: Integer;
+begin
+  Result := Screen.Width;
+end;
 
-            // RestoreDefaultMode
-            //
-            procedure RestoreDefaultMode;
-{$IFDEF MSWINDOWS}
-            var
-              t: PDevMode;
-            begin
-              t := nil;
-              ChangeDisplaySettings(t^, CDS_FULLSCREEN);
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-              begin
-                // if vCurrentVideoMode=0 then
-                ReadVideoModes;
-                vDisplay := XOpenDisplay(nil);
-                XF86VidModeSwitchToMode(vDisplay, vCurrentVideoMode, @vDesktop);
-                vScreenModeChanged := False;
-                XCloseDisplay(vDisplay);
-{$ENDIF}
-{$IFDEF Darwin}
-                begin
-{$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
-                end;
+function GLGetScreenHeight: Integer;
+begin
+  Result := Screen.Height;
+end;
 
-                procedure GLShowCursor(AShow: Boolean);
-                begin
-{$IFDEF MSWINDOWS}
-                  ShowCursor(AShow);
-{$ENDIF}
-{$IFDEF UNIX}
-{$MESSAGE Warn 'ShowCursor: Needs to be implemented'}
-                  // Use Form.Cursor:=crNone
-{$ENDIF}
-                end;
-
-                procedure GLSetCursorPos(AScreenX, AScreenY: Integer);
-{$IFDEF MSWINDOWS}
-                begin
-                  SetCursorPos(AScreenX, AScreenY);
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-                  var
-                    dpy: PDisplay;
-                    root: TWindow;
-                  begin
-                    dpy := XOpenDisplay(nil);
-                    root := RootWindow(dpy, DefaultScreen(dpy));
-                    XWarpPointer(dpy, none, root, 0, 0, 0, 0, AScreenX,
-                      AScreenY);
-                    XCloseDisplay(dpy);
-{$ENDIF}
-{$IFDEF Darwin}
-                    begin
-{$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
-                    end;
-
-                    procedure GLGetCursorPos(var point: TVKPoint);
-{$IFDEF MSWINDOWS}
-                    begin
-                      GetCursorPos(point);
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-                      var
-                        dpy: PDisplay;
-                        root, child: TWindow;
-                        rootX, rootY, winX, winY: Integer;
-                        xstate: Word;
-                        Result: Boolean;
-                      begin
-                        point.x := 0;
-                        point.y := 0;
-                        dpy := XOpenDisplay(nil);
-                        Result := LongBool
-                          (XQueryPointer(dpy, XDefaultRootWindow(dpy), @root,
-                          @child, @rootX, @rootY, @winX, @winY, @xstate));
-                        If Result then
-                        begin
-                          point.x := rootX;
-                          point.y := rootY;
-                        end;
-                        XCloseDisplay(dpy);
-{$ENDIF}
-{$IFDEF Darwin}
-                        begin
-{$MESSAGE Warn 'Needs to be implemented'}
-{$ENDIF}
-                        end;
-
-                        function GLGetScreenWidth: Integer;
-                        begin
-                          Result := Screen.Width;
-                        end;
-
-                        function GLGetScreenHeight: Integer;
-                        begin
-                          Result := Screen.Height;
-                        end;
-
-                        // ------------------------------------------------------------------
-                        // ------------------------------------------------------------------
-                        // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 initialization
 
 // ------------------------------------------------------------------
@@ -563,12 +367,7 @@ initialization
 
 finalization
 
-{$IFDEF MSWINDOWS}
 if vCurrentVideoMode <> 0 then
-{$ENDIF}
-{$IFDEF VKS_X11_SUPPORT}
-  if vScreenModeChanged then
-{$ENDIF}
-    RestoreDefaultMode; // set default video mode
+  RestoreDefaultMode; // set default video mode
 
 end.

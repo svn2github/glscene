@@ -12,7 +12,8 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, FMX.Graphics,
+  System.Classes, 
+  FMX.Graphics,
   VKS.CrossPlatform;
 
 {$DEFINE PRF_HACK_PASSES}
