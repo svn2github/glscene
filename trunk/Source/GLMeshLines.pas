@@ -3,9 +3,6 @@
 //
 {
    Line implementation by means of a Triangle strip. 
-
-   History :  
-       05/14/07 - PVD - initial unit proposal (thanks Lord CRC for help)
 }
 
 unit GLMeshLines;
@@ -14,6 +11,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
+  Winapi.OpenGL, Winapi.OpenGLext, 
    
   GLScene, GLObjects, GLTexture, GLVectorFileObjects, GLCoordinates, OpenGLTokens,
   GLContext, GLMaterial, GLColor, GLState, GLNodes, GLVectorGeometry, GLSpline,
