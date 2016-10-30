@@ -1,9 +1,9 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net
 //
 {
-   Prototypes and base implementation of TVKContext. 
-      
+   Prototypes and base implementation of TVKContext.
+
 }
 unit VKS.Context;
 
@@ -24,6 +24,7 @@ uses
   FMX.Forms,
   FMX.Controls,
   FMX.Types,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
   VKS.Generics,
@@ -33,8 +34,7 @@ uses
   VKS.VectorTypes,
   VKS.State,
   VKS.PipelineTransformation,
-  VKS.TextureFormat,
-  VKS.Log;
+  VKS.TextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
@@ -130,9 +130,9 @@ type
     procedure SetLayer(const Value: TVKContextLayer);
   protected
     { Protected Declarations }
-    FGL: TVKExtensionsAndEntryPoints;
-    FXGL: TAbstractMultitextureCoordinator;
-    FGLStates: TVKStateCache;
+    FVK: TVKExtensionsAndEntryPoints;
+    FXVK: TAbstractMultitextureCoordinator;
+    FVKStates: TVKStateCache;
     FTransformation: TVKTransformation;
     FAcceleration: TVKContextAcceleration;
     FLayer: TVKContextLayer;
@@ -157,7 +157,7 @@ type
 
     { An application-side cache of global per-context OpenGL states
        and parameters }
-    property GLStates: TVKStateCache read FGLStates;
+    property VKStates: TVKStateCache read FVKStates;
 
     property PipelineTransformation: TVKTransformation read FTransformation;
 
@@ -1184,25 +1184,25 @@ type
     procedure NotifyPreparationNeed;
   end;
 
-  EGLContext = class(Exception);
+  EVKContext = class(Exception);
 
   EPBuffer = class(Exception);
 
-  EGLShader = class(EGLContext);
+  EGLShader = class(EVKContext);
 
   { Drivers should register themselves via this function. }
-procedure RegisterGLContextClass(aGLContextClass: TVKContextClass);
+procedure RegisterVKContextClass(aVKContextClass: TVKContextClass);
 { The TVKContext that is the currently active context, if any. 
    Returns nil if no context is active. }
-function CurrentGLContext: TVKContext;
-function SafeCurrentGLContext: TVKContext;
+function CurrentVKContext: TVKContext;
+function SafeCurrentVKContext: TVKContext;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
 procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 
 var
-  GLContextManager: TVKContextManager;
+  VKContextManager: TVKContextManager;
   vIgnoreOpenGLErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = false;
   vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
@@ -1246,25 +1246,25 @@ var
 {$ELSE}
 threadvar
 {$ENDIF}
-  vGL: TVKExtensionsAndEntryPoints;
-  vCurrentGLContext: TVKContext;
+  vVK: TVKExtensionsAndEntryPoints;
+  vCurrentVKContext: TVKContext;
   vMainThread: Boolean;
 
-  // CurrentGLContext
+  // CurrentVKContext
   //
 
-function CurrentGLContext: TVKContext;
+function CurrentVKContext: TVKContext;
 begin
-  Result := vCurrentGLContext;
+  Result := vCurrentVKContext;
 end;
 
-function SafeCurrentGLContext: TVKContext;
+function SafeCurrentVKContext: TVKContext;
 begin
-  Result := CurrentGLContext;
+  Result := CurrentVKContext;
   if not Assigned(Result) then
   begin
    {$IFDEF VKS_LOGGING}
-    GLSLogger.LogError(cNoActiveRC);
+    ShowMessages(cNoActiveRC);
    {$ENDIF}
     Abort;
   end;
@@ -1277,7 +1277,7 @@ end;
 
 function IsServiceContextAvaible: Boolean;
 begin
-  Result := GLContextManager.ServiceContext <> nil;
+  Result := VKContextManager.ServiceContext <> nil;
 end;
 
 function GetServiceWindow: TForm;
@@ -1286,14 +1286,14 @@ begin
 end;
 
 
-// RegisterGLContextClass
+// RegisterVKContextClass
 //
 
-procedure RegisterGLContextClass(aGLContextClass: TVKContextClass);
+procedure RegisterVKContextClass(aVKContextClass: TVKContextClass);
 begin
   if not Assigned(vContextClasses) then
     vContextClasses := TList.Create;
-  vContextClasses.Add(aGLContextClass);
+  vContextClasses.Add(aVKContextClass);
 end;
 
 constructor TAbstractMultitextureCoordinator.Create(AOwner: TVKContext);
@@ -1321,11 +1321,11 @@ begin
   FSharedContexts := TThreadList.Create;
   FSharedContexts.Add(Self);
   FAcceleration := chaUnknown;
-  FGLStates := TVKStateCache.Create;
-  FGL := TVKExtensionsAndEntryPoints.Create;
+  FVKStates := TVKStateCache.Create;
+  FVK := TVKExtensionsAndEntryPoints.Create;
   FTransformation := TVKTransformation.Create;
   FTransformation.LoadMatricesEnabled := True;
-  GLContextManager.RegisterContext(Self);
+  VKContextManager.RegisterContext(Self);
   FIsPraparationNeed := True;
 end;
 
@@ -1336,10 +1336,10 @@ destructor TVKContext.Destroy;
 begin
   if IsValid then
     DestroyContext;
-  GLContextManager.UnRegisterContext(Self);
-  FGLStates.Free;
-  FGL.Free;
-  FXGL.Free;
+  VKContextManager.UnRegisterContext(Self);
+  FVKStates.Free;
+  FVK.Free;
+  FXVK.Free;
   FTransformation.Free;
   FSharedContexts.Free;
   FLock.Free;
@@ -1352,7 +1352,7 @@ end;
 procedure TVKContext.SetColorBits(const aColorBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FColorBits := aColorBits;
 end;
@@ -1363,7 +1363,7 @@ end;
 procedure TVKContext.SetAlphaBits(const aAlphaBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FAlphaBits := aAlphaBits;
 end;
@@ -1374,7 +1374,7 @@ end;
 procedure TVKContext.SetDepthBits(const val: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FDepthBits := val;
 end;
@@ -1382,7 +1382,7 @@ end;
 procedure TVKContext.SetLayer(const Value: TVKContextLayer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FLayer := Value;
 end;
@@ -1393,7 +1393,7 @@ end;
 procedure TVKContext.SetStencilBits(const aStencilBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FStencilBits := aStencilBits;
 end;
@@ -1404,7 +1404,7 @@ end;
 procedure TVKContext.SetAccumBits(const aAccumBits: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FAccumBits := aAccumBits;
 end;
@@ -1415,7 +1415,7 @@ end;
 procedure TVKContext.SetAuxBuffers(const aAuxBuffers: Integer);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FAuxBuffers := aAuxBuffers;
 end;
@@ -1426,7 +1426,7 @@ end;
 procedure TVKContext.SetOptions(const aOptions: TVKRCOptions);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FOptions := aOptions;
 end;
@@ -1437,7 +1437,7 @@ end;
 procedure TVKContext.SetAntiAliasing(const val: TVKAntiAliasing);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FAntiAliasing := val;
 end;
@@ -1448,7 +1448,7 @@ end;
 procedure TVKContext.SetAcceleration(const val: TVKContextAcceleration);
 begin
   if Active then
-    raise EGLContext.Create(strCannotAlterAnActiveContext)
+    raise EVKContext.Create(strCannotAlterAnActiveContext)
   else
     FAcceleration := val;
 end;
@@ -1482,7 +1482,7 @@ end;
 procedure TVKContext.CreateContext(ADeviceHandle: THandle);
 begin
   if IsValid then
-    raise EGLContext.Create(strContextAlreadyCreated);
+    raise EVKContext.Create(strContextAlreadyCreated);
   DoCreateContext(ADeviceHandle);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1494,7 +1494,7 @@ procedure TVKContext.CreateMemoryContext(OutputDevice: THandle;
   Width, Height: Integer; BufferCount: integer);
 begin
   if IsValid then
-    raise EGLContext.Create(strContextAlreadyCreated);
+    raise EVKContext.Create(strContextAlreadyCreated);
   DoCreateMemoryContext(OutputDevice, Width, Height, BufferCount);
   Manager.ContextCreatedBy(Self);
 end;
@@ -1507,7 +1507,7 @@ var
   I: Integer;
   LHandle: TVKContextHandle;
 begin
-  if vCurrentGLContext = Self then
+  if vCurrentVKContext = Self then
   begin
 {$IFNDEF VKS_MULTITHREAD}
     for i := Manager.FHandles.Count - 1 downto 0 do
@@ -1655,9 +1655,9 @@ var
   aList: TList;
 begin
 
-  if vCurrentGLContext <> Self then
+  if vCurrentVKContext <> Self then
   begin
-    oldContext := vCurrentGLContext;
+    oldContext := vCurrentVKContext;
     if Assigned(oldContext) then
       oldContext.Deactivate;
   end
@@ -1722,7 +1722,7 @@ begin
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(strContextNotCreated);
+      raise EVKContext.Create(strContextNotCreated);
 
     vContextActivationFailureOccurred := False;
     try
@@ -1731,10 +1731,10 @@ begin
       vContextActivationFailureOccurred := True;
     end;
     ///vGL := FGL;
-    vCurrentGLContext := Self;
+    vCurrentVKContext := Self;
   end
   else
-    Assert(vCurrentGLContext = Self, 'vCurrentGLContext <> Self');
+    Assert(vCurrentVKContext = Self, 'vCurrentVKContext <> Self');
   Inc(FActivationCount);
 end;
 
@@ -1743,19 +1743,19 @@ end;
 
 procedure TVKContext.Deactivate;
 begin
-  Assert(vCurrentGLContext = Self);
+  Assert(vCurrentVKContext = Self);
   Dec(FActivationCount);
   if FActivationCount = 0 then
   begin
     if not IsValid then
-      raise EGLContext.Create(strContextNotCreated);
+      raise EVKContext.Create(strContextNotCreated);
     if not vContextActivationFailureOccurred then
       DoDeactivate;
-    vCurrentGLContext := nil;
+    vCurrentVKContext := nil;
     ///vGL := GLwithoutContext;
   end
   else if FActivationCount < 0 then
-    raise EGLContext.Create(strUnbalancedContexActivations);
+    raise EVKContext.Create(strUnbalancedContexActivations);
 {$IFDEF VKS_MULTITHREAD}
   FLock.Leave;
 {$ENDIF}
@@ -1793,19 +1793,19 @@ end;
 
 class function TVKContext.ServiceContext: TVKContext;
 begin
-  Result := GLContextManager.FServiceContext;
+  Result := VKContextManager.FServiceContext;
 end;
 
 procedure TVKContext.MakeGLCurrent;
 begin
-  vGL := FGL;
+  vVK := FVK;
 end;
 
 function TVKContext.GetXGL: TAbstractMultitextureCoordinator;
 begin
-  if FXGL = nil then
-    FXGL := vMultitextureCoordinatorClass.Create(Self);
-  Result := FXGL;
+  if FXVK = nil then
+    FXVK := vMultitextureCoordinatorClass.Create(Self);
+  Result := FXVK;
 end;
 
 // ------------------
@@ -1823,7 +1823,7 @@ begin
   new(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
-  GLContextManager.FHandles.Add(Self);
+  VKContextManager.FHandles.Add(Self);
 end;
 
 // CreateAndAllocate
@@ -1835,7 +1835,7 @@ begin
   Create;
   AllocateHandle;
   if failIfAllocationFailed and (Handle = 0) then
-    raise EGLContext.Create('Auto-allocation failed');
+    raise EVKContext.Create('Auto-allocation failed');
 end;
 
 // Destroy
@@ -1849,8 +1849,8 @@ begin
   for i := 0 to FHandles.Count-1 do
     Dispose(RCItem(i));
   FHandles.Free;
-  if Assigned(GLContextManager) then
-    GLContextManager.FHandles.Remove(Self);
+  if Assigned(VKContextManager) then
+    VKContextManager.FHandles.Remove(Self);
   inherited Destroy;
 end;
 
@@ -1870,9 +1870,9 @@ begin
   if Result <> 0 then
     exit;
 
-  if vCurrentGLContext = nil then
+  if vCurrentVKContext = nil then
   begin
-///    GLSLogger.LogError('Failed to allocate OpenGL identifier - no active rendering context!');
+///    ShowMessages('Failed to allocate OpenGL identifier - no active rendering context!');
     exit;
   end;
 
@@ -1880,12 +1880,12 @@ begin
   New(FLastHandle);
   FillChar(FLastHandle^, sizeof(FLastHandle^), 0);
   FHandles.Add(FLastHandle);
-  FLastHandle.FRenderingContext := vCurrentGLContext;
+  FLastHandle.FRenderingContext := vCurrentVKContext;
 
   bSucces := False;
   if Transferable then
   begin
-    aList := vCurrentGLContext.FSharedContexts.LockList;
+    aList := vCurrentVKContext.FSharedContexts.LockList;
     try
       for I := aList.Count - 1 downto 0 do
       begin
@@ -1893,16 +1893,16 @@ begin
         if (P.FHandle > 0) then
         begin
           // Copy shared handle
-          //FLastHandle.FRenderingContext := vCurrentGLContext;
+          //FLastHandle.FRenderingContext := vCurrentVKContext;
           FLastHandle.FHandle           := P.FHandle;
           FLastHandle.FChanged          := P.FChanged;
-          Inc(vCurrentGLContext.FOwnedHandlesCount);
+          Inc(vCurrentVKContext.FOwnedHandlesCount);
           bSucces := True;
           break;
         end;
       end;
     finally
-      vCurrentGLContext.FSharedContexts.UnlockList;
+      vCurrentVKContext.FSharedContexts.UnlockList;
     end;
   end;
   if not bSucces then
@@ -1912,14 +1912,14 @@ begin
     bSucces := FLastHandle.FHandle <> 0;
     FLastHandle.FChanged := bSucces;
     if bSucces then
-      Inc(vCurrentGLContext.FOwnedHandlesCount);
+      Inc(vCurrentVKContext.FOwnedHandlesCount);
   end;
 
   Result := FLastHandle.FHandle;
   if not bSucces then
-///    GLSLogger.LogError(cNoActiveRC)
+///    ShowMessages(cNoActiveRC)
   else if Assigned(FOnPrepare) then
-    GLContextManager.NotifyPreparationNeed;
+    VKContextManager.NotifyPreparationNeed;
 end;
 
 function TVKContextHandle.IsAllocatedForContext(AContext: TVKContext = nil): Boolean;
@@ -1932,7 +1932,7 @@ var
   i : integer;
 begin
   if AContext = nil then
-    AContext := vCurrentGLContext;
+    AContext := vCurrentVKContext;
 
   if AContext = FLastHandle.FRenderingContext then
   begin
@@ -1953,16 +1953,16 @@ end;
 
 procedure TVKContextHandle.CheckCurrentRC;
 begin
-  if vCurrentGLContext <> FLastHandle.FRenderingContext then
-    FLastHandle := SearchRC(vCurrentGLContext);
+  if vCurrentVKContext <> FLastHandle.FRenderingContext then
+    FLastHandle := SearchRC(vCurrentVKContext);
 end;
 
 function TVKContextHandle.GetHandle: GLuint;
 begin
 //  CheckCurrentRC;
 //inline doesn't always work... so optimize it here
-  if vCurrentGLContext <> FLastHandle.FRenderingContext then
-    FLastHandle := SearchRC(vCurrentGLContext);
+  if vCurrentVKContext <> FLastHandle.FRenderingContext then
+    FLastHandle := SearchRC(vCurrentVKContext);
 
   Result := FLastHandle.FHandle;
 end;
@@ -1976,7 +1976,7 @@ var
   P : PGLRCHandle;
   I: Integer;
 begin
-  oldContext := vCurrentGLContext;
+  oldContext := vCurrentVKContext;
   if Assigned(oldContext) then
     oldContext.Deactivate;
   try
@@ -1999,8 +1999,8 @@ begin
     FHandles.Count := 1; //delete all in 1 step
     FLastHandle := FHandles[0];
   finally
-    if Assigned(vCurrentGLContext) then
-      vCurrentGLContext.Deactivate;
+    if Assigned(vCurrentVKContext) then
+      vCurrentVKContext.Deactivate;
     if Assigned(oldContext) then
       oldContext.Activate;
   end;
@@ -2016,17 +2016,17 @@ var
   aList: TList;
   bShared: Boolean;
 begin
-  if Assigned(vCurrentGLContext) then
+  if Assigned(vCurrentVKContext) then
   begin
     bShared := False;
     if Transferable then
     begin
-      aList := vCurrentGLContext.FSharedContexts.LockList;
+      aList := vCurrentVKContext.FSharedContexts.LockList;
       try
         for I := FHandles.Count-1 downto 1 do
         begin
           P := RCItem(I);
-          if (P.FRenderingContext <> vCurrentGLContext)
+          if (P.FRenderingContext <> vCurrentVKContext)
             and (P.FHandle <> 0)
             and (aList.IndexOf(P.FRenderingContext) > -1) then
             begin
@@ -2035,14 +2035,14 @@ begin
             end;
         end;
       finally
-        vCurrentGLContext.FSharedContexts.UnLockList;
+        vCurrentVKContext.FSharedContexts.UnLockList;
       end;
     end;
 
     for I := FHandles.Count-1 downto 1 do
     begin
       P := RCItem(I);
-      if (P.FRenderingContext = vCurrentGLContext) and (P.FHandle <> 0) then
+      if (P.FRenderingContext = vCurrentVKContext) and (P.FHandle <> 0) then
       begin
         if not bShared then
           if IsValid(P.FHandle) > 0 then
@@ -2075,7 +2075,7 @@ begin
     begin
       Result := P.FRenderingContext;
       // If handle allocated in active context - return it
-      if (Result = vCurrentGLContext) then
+      if (Result = vCurrentVKContext) then
         exit;
     end;
   end;
@@ -2106,7 +2106,7 @@ var
   I: Integer;
   aList: TList;
 begin
-  if Assigned(vCurrentGLContext) then
+  if Assigned(vCurrentVKContext) then
   begin
     if not Transferable then
     begin
@@ -2119,7 +2119,7 @@ begin
     end
     else
     begin
-      aList := vCurrentGLContext.FSharedContexts.LockList;
+      aList := vCurrentVKContext.FSharedContexts.LockList;
       try
         for I := 0 to aList.Count - 1 do
         begin
@@ -2128,12 +2128,12 @@ begin
               FChanged := False;
         end;
       finally
-        vCurrentGLContext.FSharedContexts.UnlockList;
+        vCurrentVKContext.FSharedContexts.UnlockList;
       end;
     end;
   end
   else
-///    GLSLogger.LogError(cNoActiveRC);
+///    ShowMessages(cNoActiveRC);
 end;
 
 function TVKContextHandle.RCItem(AIndex: integer): PGLRCHandle;
@@ -2148,7 +2148,7 @@ begin
   for I := FHandles.Count-1 downto 1 do
     RCItem(I).FChanged := True;
   if Assigned(FOnPrepare) then
-    GLContextManager.NotifyPreparationNeed;
+    VKContextManager.NotifyPreparationNeed;
 end;
 
 function TVKContextHandle.IsShared: Boolean;
@@ -2162,18 +2162,18 @@ begin
   if not Transferable then
     exit;
   Result := True;
-  aList := vCurrentGLContext.FSharedContexts.LockList;
+  aList := vCurrentVKContext.FSharedContexts.LockList;
   try
     for I := 0 to aList.Count - 1 do
     begin
       vContext := aList[I];
-      if (vContext <> vCurrentGLContext) and
+      if (vContext <> vCurrentVKContext) and
         // at least one context is friendly
         (SearchRC(vContext).FHandle <> 0) then
         exit;
     end;
   finally
-    vCurrentGLContext.FSharedContexts.UnlockList;
+    vCurrentVKContext.FSharedContexts.UnlockList;
   end;
   Result := false;
 end;
@@ -2283,7 +2283,7 @@ end;
 
 procedure TVKListHandle.NewList(mode: Cardinal);
 begin
-  vCurrentGLContext.GLStates.NewList(GetHandle, mode);
+  vCurrentVKContext.VKStates.NewList(GetHandle, mode);
 end;
 
 // EndList
@@ -2291,7 +2291,7 @@ end;
 
 procedure TVKListHandle.EndList;
 begin
-  vCurrentGLContext.GLStates.EndList;
+  vCurrentVKContext.VKStates.EndList;
 end;
 
 // CallList
@@ -2299,7 +2299,7 @@ end;
 
 procedure TVKListHandle.CallList;
 begin
-  vCurrentGLContext.GLStates.CallList(GetHandle);
+  vCurrentVKContext.VKStates.CallList(GetHandle);
 end;
 
 // ------------------
@@ -2330,7 +2330,7 @@ begin
     // reset error status
     glGetError;
     { Unbind identifier from all image selectors. }
-    with GetContext.GLStates do
+    with GetContext.VKStates do
     begin
       for a := 0 to MaxTextureImageUnits - 1 do
         for t := Low(TVKTextureTarget) to High(TVKTextureTarget) do
@@ -2412,8 +2412,8 @@ end;
 
 procedure TVKQueryHandle.BeginQuery;
 begin
-  if vCurrentGLContext.GLStates.CurrentQuery[QueryType] = 0 then
-    vCurrentGLContext.GLStates.BeginQuery(QueryType, GetHandle);
+  if vCurrentVKContext.VKStates.CurrentQuery[QueryType] = 0 then
+    vCurrentVKContext.VKStates.BeginQuery(QueryType, GetHandle);
   Factive := True;
 end;
 
@@ -2467,7 +2467,7 @@ begin
   Factive := False;
   Assert(Handle <> 0);
   //glEndQuery(Target);
-  vCurrentGLContext.GLStates.EndQuery(QueryType);
+  vCurrentVKContext.VKStates.EndQuery(QueryType);
 end;
 
 // IsResultAvailable
@@ -2825,12 +2825,12 @@ end;
 
 procedure TVKVBOArrayBufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.ArrayBufferBinding := Handle;
+  vCurrentVKContext.VKStates.ArrayBufferBinding := Handle;
 end;
 
 procedure TVKVBOArrayBufferHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.ArrayBufferBinding := 0;
+  vCurrentVKContext.VKStates.ArrayBufferBinding := 0;
 end;
 
 // GetTarget
@@ -2847,12 +2847,12 @@ end;
 
 procedure TVKVBOElementArrayHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.ElementBufferBinding := Handle;
+  vCurrentVKContext.VKStates.ElementBufferBinding := Handle;
 end;
 
 procedure TVKVBOElementArrayHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.ElementBufferBinding := 0;
+  vCurrentVKContext.VKStates.ElementBufferBinding := 0;
 end;
 
 // GetTarget
@@ -2869,12 +2869,12 @@ end;
 
 procedure TVKPackPBOHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.PixelPackBufferBinding := Handle;
+  vCurrentVKContext.VKStates.PixelPackBufferBinding := Handle;
 end;
 
 procedure TVKPackPBOHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.PixelPackBufferBinding := 0;
+  vCurrentVKContext.VKStates.PixelPackBufferBinding := 0;
 end;
 
 // GetTarget
@@ -2899,12 +2899,12 @@ end;
 
 procedure TVKUnpackPBOHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.PixelUnpackBufferBinding := Handle;
+  vCurrentVKContext.VKStates.PixelUnpackBufferBinding := Handle;
 end;
 
 procedure TVKUnpackPBOHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.PixelUnpackBufferBinding := 0;
+  vCurrentVKContext.VKStates.PixelUnpackBufferBinding := 0;
 end;
 
 // GetTarget
@@ -2932,12 +2932,12 @@ end;
 
 procedure TVKTransformFeedbackBufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.TransformFeedbackBufferBinding := Handle;
+  vCurrentVKContext.VKStates.TransformFeedbackBufferBinding := Handle;
 end;
 
 procedure TVKTransformFeedbackBufferHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.TransformFeedbackBufferBinding := 0;
+  vCurrentVKContext.VKStates.TransformFeedbackBufferBinding := 0;
 end;
 
 function TVKTransformFeedbackBufferHandle.GetTarget: GLuint;
@@ -2965,19 +2965,19 @@ end;
 procedure TVKTransformFeedbackBufferHandle.BindRange(index: GLuint; offset: GLintptr;
   size: GLsizeiptr);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
     index, offset, size);
 end;
 
 procedure TVKTransformFeedbackBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(Handle, bbtTransformFeedBack,
     index, BufferSize);
 end;
 
 procedure TVKTransformFeedbackBufferHandle.UnBindBase(index: GLuint);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(0, bbtTransformFeedBack,
     index, 0);
 end;
 
@@ -2995,12 +2995,12 @@ end;
 
 procedure TVKTextureBufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.TextureBufferBinding := Handle;
+  vCurrentVKContext.VKStates.TextureBufferBinding := Handle;
 end;
 
 procedure TVKTextureBufferHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.TextureBufferBinding := 0;
+  vCurrentVKContext.VKStates.TextureBufferBinding := 0;
 end;
 
 // GetTarget
@@ -3025,30 +3025,30 @@ end;
 
 procedure TVKUniformBufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.UniformBufferBinding := Handle;
+  vCurrentVKContext.VKStates.UniformBufferBinding := Handle;
 end;
 
 procedure TVKUniformBufferHandle.UnBind;
 begin
-  vCurrentGLContext.GLStates.UniformBufferBinding := 0;
+  vCurrentVKContext.VKStates.UniformBufferBinding := 0;
 end;
 
 procedure TVKUniformBufferHandle.BindRange(index: GLuint; offset: GLintptr;
   size: GLsizeiptr);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(Handle, bbtUniform,
     index, offset, size);
 end;
 
 procedure TVKUniformBufferHandle.BindBase(index: GLuint);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(Handle, bbtUniform,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(Handle, bbtUniform,
     index, BufferSize);
 end;
 
 procedure TVKUniformBufferHandle.UnBindBase(index: GLuint);
 begin
-  vCurrentGLContext.GLStates.SetBufferIndexedBinding(0, bbtUniform,
+  vCurrentVKContext.VKStates.SetBufferIndexedBinding(0, bbtUniform,
     index, 0);
 end;
 
@@ -3110,8 +3110,8 @@ end;
 
 procedure TVKVertexArrayHandle.Bind;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.VertexArrayBinding := Handle;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.VertexArrayBinding := Handle;
 end;
 
 // UnBind
@@ -3119,8 +3119,8 @@ end;
 
 procedure TVKVertexArrayHandle.UnBind;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.VertexArrayBinding := 0;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.VertexArrayBinding := 0;
 end;
 
 // IsSupported
@@ -3181,8 +3181,8 @@ end;
 
 procedure TVKFramebufferHandle.Bind;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.SetFrameBuffer(Handle);
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.SetFrameBuffer(Handle);
 end;
 
 // BindForDrawing
@@ -3190,8 +3190,8 @@ end;
 
 procedure TVKFramebufferHandle.BindForDrawing;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.DrawFrameBuffer := Handle;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.DrawFrameBuffer := Handle;
 end;
 
 // BindForReading
@@ -3199,8 +3199,8 @@ end;
 
 procedure TVKFramebufferHandle.BindForReading;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.ReadFrameBuffer := Handle;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.ReadFrameBuffer := Handle;
 end;
 
 // UnBind
@@ -3208,8 +3208,8 @@ end;
 
 procedure TVKFramebufferHandle.UnBind;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.SetFrameBuffer(0);
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.SetFrameBuffer(0);
 end;
 
 // UnBindForDrawing
@@ -3217,8 +3217,8 @@ end;
 
 procedure TVKFramebufferHandle.UnBindForDrawing;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.DrawFrameBuffer := 0;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.DrawFrameBuffer := 0;
 end;
 
 // UnBindForReading
@@ -3226,8 +3226,8 @@ end;
 
 procedure TVKFramebufferHandle.UnBindForReading;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.ReadFrameBuffer := 0;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.ReadFrameBuffer := 0;
 end;
 
 // Attach1DTexture
@@ -3438,7 +3438,7 @@ end;
 
 procedure TVKRenderbufferHandle.Bind;
 begin
-  vCurrentGLContext.GLStates.RenderBuffer := GetHandle;
+  vCurrentVKContext.VKStates.RenderBuffer := GetHandle;
 end;
 
 // UnBind
@@ -3446,8 +3446,8 @@ end;
 
 procedure TVKRenderbufferHandle.UnBind;
 begin
-  if vCurrentGLContext <> nil then
-    vCurrentGLContext.GLStates.RenderBuffer := 0;
+  if vCurrentVKContext <> nil then
+    vCurrentVKContext.VKStates.RenderBuffer := 0;
 end;
 
 // SetStorage
@@ -3535,7 +3535,7 @@ begin
     else
       P := 2;
     end;
-///    GLSLogger.LogError(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
+///    ShowMessages(Format('%s Program Error - [Pos: %d][Error %s]', [cProgType[P], errPos, FInfoLog]));
     FReady := False;
   end
   else
@@ -3952,8 +3952,8 @@ end;
 
 procedure TVKProgramHandle.UseProgramObject;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.CurrentProgram := Handle;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.CurrentProgram := Handle;
 end;
 
 // GetAttribLocation
@@ -3961,8 +3961,8 @@ end;
 
 procedure TVKProgramHandle.EndUseProgramObject;
 begin
-  Assert(vCurrentGLContext <> nil);
-  vCurrentGLContext.GLStates.CurrentProgram := 0;
+  Assert(vCurrentVKContext <> nil);
+  vCurrentVKContext.VKStates.CurrentProgram := 0;
 end;
 
 // GetUniform1i
@@ -4238,7 +4238,7 @@ procedure TVKProgramHandle.SetUniformTextureHandle(const index: string;
   const TextureIndex: Integer; const TextureTarget: TVKTextureTarget;
   const Value: GLuint);
 begin
-  vCurrentGLContext.GLStates.TextureBinding[0, TextureTarget] := Value;
+  vCurrentVKContext.VKStates.TextureBinding[0, TextureTarget] := Value;
   SetUniform1i(index, TextureIndex);
 end;
 
@@ -4294,7 +4294,7 @@ procedure OnApplicationInitialize;
 begin
   InitProc := OldInitProc;
   Application.Initialize;
-  GLContextManager.CreateServiceContext;
+  VKContextManager.CreateServiceContext;
 end;
 {$ENDIF}
 
@@ -4383,7 +4383,7 @@ begin
     and not FReported then
   begin
     FReported := True;
-    VKS.Log.GLSLogger.LogInfo('Service context queue task depleted');
+    ShowMessage('Service context queue task depleted');
   end;
 end;
 
@@ -4439,7 +4439,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) >= 0 then
-        raise EGLContext.Create(strInvalidContextRegistration)
+        raise EVKContext.Create(strInvalidContextRegistration)
       else
         Add(aContext);
     finally
@@ -4455,7 +4455,7 @@ begin
   with FList.LockList do
     try
       if IndexOf(aContext) < 0 then
-        raise EGLContext.Create(strInvalidContextRegistration)
+        raise EVKContext.Create(strInvalidContextRegistration)
       else
         Remove(aContext);
     finally
@@ -4549,7 +4549,7 @@ begin
       Inc(i);
     end;
     if not found then
-      raise EGLContext.Create(strInvalidNotificationRemoval);
+      raise EVKContext.Create(strInvalidNotificationRemoval);
   finally
     UnLock;
   end;
@@ -4570,14 +4570,14 @@ begin
     FServiceStarter.SetEvent;
     FThread.WaitFor;
     FThread.Destroy;
-    GLSLogger.LogDebug('Service thread destroyed');
+    ShowMessage('Service thread destroyed');
     FServiceStarter.Destroy;
     FThreadTask.Destroy;
   end;
 {$ENDIF}
   if ContextCount = 0 then
   begin
-    GLContextManager := nil;
+    VKContextManager := nil;
     Free;
   end;
 end;
@@ -4634,35 +4634,35 @@ procedure TServiceContextThread.DoCreateServiceContext; stdcall;
 
   procedure Fail;
   begin
-    GLSLogger.LogError(Format('%s: can''t initialize rendering context', [ClassName]));
+    ShowMessage(Format('%s: can''t initialize rendering context', [ClassName]));
     FWindow.Destroy;
     vServiceWindow := nil;
   end;
 
 begin
   try
-    GLContextManager.ServiceContext.Acceleration := chaHardware;
-    GLContextManager.ServiceContext.CreateMemoryContext(FDC, 1, 1, 1);
+    VKContextManager.ServiceContext.Acceleration := chaHardware;
+    VKContextManager.ServiceContext.CreateMemoryContext(FDC, 1, 1, 1);
   except
-    on EGLContext do
+    on EVKContext do
     begin
       Fail;
       exit;
     end;
     on EPBuffer do
     begin
-      GLSLogger.LogWarning(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
+      ShowMessage(Format('%s: can''t initialize memory rendering context. Try initialize common context.', [ClassName]));
       try
         { TODO -oPW : E2250 There is no overloaded version of 'CreateContext' that can be called with these arguments }
-        (*GLContextManager.ServiceContext.CreateContext(FDC);*)
+        (*VKContextManager.ServiceContext.CreateContext(FDC);*)
       except
         Fail;
         exit;
       end;
     end;
   end;
-  GLSLogger.LogNotice('Service context successfuly initialized');
-  GLContextManager.ServiceContext.Activate;
+  ShowMessage('Service context successfuly initialized');
+  VKContextManager.ServiceContext.Activate;
   FWindow.Hide;
   vServiceWindow := nil;
 end;
@@ -4678,7 +4678,7 @@ var
     I: Integer;
   begin
     TaskRec.Task := nil;
-    with GLContextManager.FThreadTask.LockList do
+    with VKContextManager.FThreadTask.LockList do
       try
         for I := 0 to Count - 1 do
         begin
@@ -4690,15 +4690,15 @@ var
           end;
         end;
       finally
-        GLContextManager.FThreadTask.UnlockList;
+        VKContextManager.FThreadTask.UnlockList;
       end;
   end;
 
 begin
-  with GLContextManager do
+  with VKContextManager do
   begin
     vMainThread := False;
-    GLSLogger.LogNotice('Service thread started');
+    ShowMessage('Service thread started');
     Sleep(100);
     try
       while not Terminated do
@@ -4706,14 +4706,14 @@ begin
         NextTask;
         if Assigned(TaskRec.Task) then
         begin
-          with GLContextManager.ServiceContext do
+          with VKContextManager.ServiceContext do
           begin
             if IsValid then
               Activate;
             try
               TaskRec.Task;
             except
-              GLSLogger.LogError('Service thread task raised exception');
+              ShowMessage('Service thread task raised exception');
             end;
             if IsValid then
               Deactivate;
@@ -4722,13 +4722,13 @@ begin
           end;
          end
         else
-          Synchronize(GLContextManager.QueueTaskDepleted);
+          Synchronize(VKContextManager.QueueTaskDepleted);
         ServiceStarter.WaitFor(30000);
       end;
     finally
       ServiceContext.Destroy;
       FServiceContext := nil;
-      GLSLogger.LogNotice('Service thread finished');
+      ShowMessage('Service thread finished');
     end;
   end;
 end;
@@ -4741,10 +4741,10 @@ begin
   if vMainThread then
   begin
     rEvent := nil;
-    if Assigned(GLContextManager.ServiceContext) and Assigned(ATask) then
+    if Assigned(VKContextManager.ServiceContext) and Assigned(ATask) then
     begin
       CheckSynchronize;
-      with GLContextManager.FThreadTask.LockList do
+      with VKContextManager.FThreadTask.LockList do
         try
           TaskRec.Task := ATask;
           if FinishEvent = nil then
@@ -4755,15 +4755,15 @@ begin
           else  // Asynchronous call
             TaskRec.Event := FinishEvent;
           Add(TaskRec);
-          with TServiceContextThread(GLContextManager.FThread) do
+          with TServiceContextThread(VKContextManager.FThread) do
           begin
             FLastTaskStartTime := GLSTime;
             FReported := False;
           end;
         finally
-          GLContextManager.FThreadTask.UnlockList;
+          VKContextManager.FThreadTask.UnlockList;
         end;
-      GLContextManager.ServiceStarter.SetEvent;
+      VKContextManager.ServiceStarter.SetEvent;
     end;
     // Wait task finishing
     if Assigned(rEvent) then
@@ -4778,7 +4778,7 @@ begin
     try
       ATask;
     except
-      GLSLogger.LogError('Service thread task raised exception');
+      ShowMessage('Service thread task raised exception');
     end;
     if Assigned(FinishEvent) then
       FinishEvent.SetEvent;
@@ -4804,11 +4804,11 @@ initialization
   vMainThread := True;
   OldInitProc := InitProc;
   InitProc := @OnApplicationInitialize;
-  GLContextManager := TVKContextManager.Create;
+  VKContextManager := TVKContextManager.Create;
 
 finalization
 
-  GLContextManager.Terminate;
+  VKContextManager.Terminate;
   vContextClasses.Free;
   vContextClasses := nil;
 

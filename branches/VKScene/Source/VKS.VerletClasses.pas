@@ -22,14 +22,14 @@ type
   TVKVerletNode = class(TVerletNode)
   private
     FRelativePosition: TAffineVector;
-    FGLBaseSceneObject: TVKBaseSceneObject;
-    procedure SetGLBaseSceneObject(const Value: TVKBaseSceneObject);
+    FBaseSceneObject: TVKBaseSceneObject;
+    procedure SetBaseSceneObject(const Value: TVKBaseSceneObject);
   protected
     procedure SetLocation(const Value: TAffineVector);override;
   public
     procedure Verlet(const vpt : TVerletProgressTimes); override;
 
-    property GLBaseSceneObject : TVKBaseSceneObject read FGLBaseSceneObject write SetGLBaseSceneObject;
+    property VKBaseSceneObject : TVKBaseSceneObject read FBaseSceneObject write SetBaseSceneObject;
     property RelativePosition : TAffineVector read FRelativePosition write FRelativePosition;
   end;
 
@@ -53,27 +53,27 @@ end;
 
 { TVKVerletNode }
 
-procedure TVKVerletNode.SetGLBaseSceneObject(
+procedure TVKVerletNode.SetBaseSceneObject(
   const Value: TVKBaseSceneObject);
 begin
-  FGLBaseSceneObject := Value;
+  FBaseSceneObject := Value;
 
-  if Assigned(GLBaseSceneObject) and NailedDown then
-    FRelativePosition := AffineVectorMake(GLBaseSceneObject.AbsoluteToLocal(VectorMake(FLocation, 1)));
+  if Assigned(VKBaseSceneObject) and NailedDown then
+    FRelativePosition := AffineVectorMake(VKBaseSceneObject.AbsoluteToLocal(VectorMake(FLocation, 1)));
 end;
 
 procedure TVKVerletNode.SetLocation(const Value: TAffineVector);
 begin
   inherited;
-  if Assigned(GLBaseSceneObject) and NailedDown then
-    FRelativePosition := GLBaseSceneObject.AbsoluteToLocal(Value);
+  if Assigned(VKBaseSceneObject) and NailedDown then
+    FRelativePosition := VKBaseSceneObject.AbsoluteToLocal(Value);
 end;
 
 procedure TVKVerletNode.Verlet(const vpt : TVerletProgressTimes);
 begin
-  if Assigned(GLBaseSceneObject) and NailedDown then
+  if Assigned(VKBaseSceneObject) and NailedDown then
   begin
-    FLocation := GLBaseSceneObject.LocalToAbsolute(FRelativePosition);
+    FLocation := VKBaseSceneObject.LocalToAbsolute(FRelativePosition);
   end else
     inherited;
 end;

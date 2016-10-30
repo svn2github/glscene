@@ -281,7 +281,7 @@ begin
     psrGLScene: inherited;
     psrOpenGL:
       begin
-        mrci.GLStates.PushAttrib([sttEnable, sttEval]);
+        mrci.VKStates.PushAttrib([sttEnable, sttEval]);
         //glEnable(GL_MAP2_TEXTURE_COORD_3);
         glEnable(GL_MAP2_VERTEX_3);
         glEnable(GL_AUTO_NORMAL);
@@ -328,7 +328,7 @@ begin
             end;
 
         end;
-        mrci.GLStates.PopAttrib;
+        mrci.VKStates.PopAttrib;
       end;
   end;
 end;
@@ -578,9 +578,9 @@ begin
 
   AttachOrDetachLightmap(mrci);
 
-  mrci.GLStates.PushAttrib([sttEnable, sttEval]);
-  mrci.GLStates.Enable(stAutoNormal);
-  mrci.GLStates.Enable(stNormalize);
+  mrci.VKStates.PushAttrib([sttEnable, sttEval]);
+  mrci.VKStates.Enable(stAutoNormal);
+  mrci.VKStates.Enable(stNormalize);
 
   glMapGrid2f(FResolution, MaxU, MinU, FResolution, MinV, MaxV);
 
@@ -601,7 +601,7 @@ begin
 
   glEvalMesh2(GL_FILL, 0, FResolution, 0, FResolution);
 
-  mrci.GLStates.PopAttrib;
+  mrci.VKStates.PopAttrib;
 end;
 
 // SetControlPointIndices

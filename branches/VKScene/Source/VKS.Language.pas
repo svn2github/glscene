@@ -98,7 +98,7 @@ implementation
 //-----------------------------------------------------------------------
 
 uses
-  VKS.CrossPlatform, VKS.Log;
+  VKS.CrossPlatform;
 
 { TVKLanguage }
 

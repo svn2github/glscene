@@ -724,7 +724,7 @@ var
 begin
   FGuiLayout.Material.Apply(rci);
   if AlphaChannel <> 1 then
-    rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+    rci.VKStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
   // Prepare matrices
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix;
@@ -741,8 +741,8 @@ begin
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
   glLoadIdentity;
-  rci.GLStates.Disable(stDepthTest);
-  rci.GLStates.DepthWriteMask := 0; //False;
+  rci.VKStates.Disable(stDepthTest);
+  rci.VKStates.DepthWriteMask := 0; //False;
 end;
 
 procedure TVKBaseComponent.RenderFooter(var rci: TVKRenderContextInfo; renderSelf,

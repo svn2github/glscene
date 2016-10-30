@@ -695,11 +695,11 @@ begin
   n := 0;
   lastPointSize10 := -1;
 
-  rci.GLStates.Enable(stPointSmooth);
-  rci.GLStates.Enable(stAlphaTest);
-  rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
-  rci.GLStates.Enable(stBlend);
-  rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VKStates.Enable(stPointSmooth);
+  rci.VKStates.Enable(stAlphaTest);
+  rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
+  rci.VKStates.Enable(stBlend);
+  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
 
   glBegin(GL_POINTS);
   for i := 0 to Count - 1 do
@@ -712,14 +712,14 @@ begin
       begin
         glEnd;
         lastPointSize10 := pointSize10;
-        rci.GLStates.PointSize := pointSize10 * 0.1;
+        rci.VKStates.PointSize := pointSize10 * 0.1;
         glBegin(GL_POINTS);
       end
       else if lastPointSize10 <> 15 then
       begin
         glEnd;
         lastPointSize10 := 15;
-        rci.GLStates.PointSize := 1.5;
+        rci.VKStates.PointSize := 1.5;
         glBegin(GL_POINTS);
       end;
     end;
@@ -742,7 +742,7 @@ begin
   glEnd;
 
   // restore default GLScene AlphaFunc
-  rci.GLStates.SetGLAlphaFunction(cfGreater, 0);
+  rci.VKStates.SetAlphaFunction(cfGreater, 0);
 end;
 
 // AddRandomStars
@@ -942,13 +942,13 @@ var
   f: Single;
 begin
   // setup states
-  rci.GLStates.Disable(stLighting); // 8
-  rci.GLStates.Disable(stDepthTest);
-  rci.GLStates.Disable(stFog);
-  rci.GLStates.Disable(stCullFace);
-  rci.GLStates.Disable(stBlend); // 2
-  rci.GLStates.DepthWriteMask := 0;
-  rci.GLStates.PolygonMode := pmFill;
+  rci.VKStates.Disable(stLighting); // 8
+  rci.VKStates.Disable(stDepthTest);
+  rci.VKStates.Disable(stFog);
+  rci.VKStates.Disable(stCullFace);
+  rci.VKStates.Disable(stBlend); // 2
+  rci.VKStates.DepthWriteMask := 0;
+  rci.VKStates.PolygonMode := pmFill;
 
   f := rci.rcci.farClippingDistance * 0.90;
   glScalef(f, f, f);
@@ -1130,7 +1130,7 @@ var
   f: Single;
 begin
   // setup states
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     CurrentProgram := 0;
     Disable(stLighting);
@@ -1157,7 +1157,7 @@ begin
   Stars.BuildList(rci, (sdoTwinkle in FOptions));
 
   // restore
-  rci.GLStates.DepthWriteMask := GLboolean(True);
+  rci.VKStates.DepthWriteMask := GLboolean(True);
 end;
 
 // OnColorChanged

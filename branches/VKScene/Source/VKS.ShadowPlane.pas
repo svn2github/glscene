@@ -165,7 +165,7 @@ begin
     Exit;
   FRendering := True;
   try
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
       oldProxySubObject := ARci.proxySubObject;
       ARci.proxySubObject := True;
@@ -197,10 +197,10 @@ begin
         // "Render"  plane and stencil mask
         if (spoTransparent in ShadowOptions) then
         begin
-          SetGLColorWriting(False);
+          SetColorWriting(False);
           DepthWriteMask := GLboolean(False);
           BuildList(ARci);
-          SetGLColorWriting(True);
+          SetColorWriting(True);
         end
         else
         begin

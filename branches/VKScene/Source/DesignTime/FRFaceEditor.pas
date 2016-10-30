@@ -35,7 +35,7 @@ type
     FOnChange: TNotifyEvent;
     Updating: Boolean;
     FFaceProperties: TVKFaceProperties;
-    procedure SetGLFaceProperties(const val: TVKFaceProperties);
+    procedure SetFaceProperties(const val: TVKFaceProperties);
     procedure OnColorChange(Sender: TObject);
   public
     { Public declarations }
@@ -44,7 +44,7 @@ type
 
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
     property FaceProperties: TVKFaceProperties read FFaceProperties
-      write SetGLFaceProperties;
+      write SetFaceProperties;
   end;
 
 implementation
@@ -128,9 +128,9 @@ begin
   end;
 end;
 
-// SetGLFaceProperties
+// SetFaceProperties
 //
-procedure TRFaceEditor.SetGLFaceProperties(const val: TVKFaceProperties);
+procedure TRFaceEditor.SetFaceProperties(const val: TVKFaceProperties);
 begin
   Updating := True;
   try

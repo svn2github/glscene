@@ -12,11 +12,10 @@ interface
 {$I VKScene.inc}
 
 uses
-   
   System.Classes, System.SysUtils,
-
-   
-  VKS.Scene, VKS.Texture, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Graphics, VKS.Strings,
+  Winapi.OpenGL, Winapi.OpenGLext,
+  //VKS
+  VKS.Scene, VKS.Texture, VKS.Graphics, VKS.Strings,
   VKS.CustomShader, VKS.Context, VKS.VectorGeometry, VKS.RenderContextInfo,
   VKS.Material, VKS.TextureFormat;
 
@@ -398,14 +397,14 @@ begin
         Assert(Assigned(FShaders[I].FShader));
         if FShaders[I].FShader.Enabled then
         begin
-          rci.GLStates.ActiveTextureEnabled[FTempTextureTarget] := True;
+          rci.VKStates.ActiveTextureEnabled[FTempTextureTarget] := True;
           FShaders[I].FShader.Apply(rci, Self);
           repeat
-            CopyScreenToTexture(rci.viewPortSize, DecodeGLTextureTarget(FTempTextureTarget));
+            CopyScreenToTexture(rci.viewPortSize, DecodeTextureTarget(FTempTextureTarget));
             FShaders[I].FPostShaderInterface.DoUseTempTexture(FTempTexture, FTempTextureTarget);
             DrawTexturedScreenQuad5(rci.viewPortSize);
           until not FShaders[I].FShader.UnApply(rci);
-          rci.GLStates.ActiveTextureEnabled[FTempTextureTarget] := False;
+          rci.VKStates.ActiveTextureEnabled[FTempTextureTarget] := False;
         end;
       end;
     end;

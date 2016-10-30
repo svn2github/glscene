@@ -1,8 +1,8 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net
 //
 {
-  Handles all the material + material library stuff. 
+  Handles all the material + material library stuff.
 }
 
 unit VKS.Material;
@@ -10,15 +10,16 @@ unit VKS.Material;
 interface
 
 uses
-  System.Classes, 
-  System.SysUtils, 
+  System.Classes,
+  System.SysUtils,
   System.Types,
   Winapi.OpenGL,
   Winapi.OpenGLext,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
-  VKS.RenderContextInfo, 
-  VKS.BaseClasses, 
+  VKS.RenderContextInfo,
+  VKS.BaseClasses,
   VKS.Context,
   VKS.Texture, 
   VKS.Color, 
@@ -32,8 +33,7 @@ uses
   VKS.XOpenGL,
   VKS.ApplicationFileIO, 
   VKS.Graphics, 
-  VKS.Utils, 
-  VKS.Log;
+  VKS.Utils;
 
 {$I VKScene.inc}
 {$UNDEF VKS_MULTITHREAD}
@@ -54,7 +54,7 @@ type
 
   // TVKShaderStyle
   //
-  { Define GLShader style application relatively to a material. 
+  { Define VKShader style application relatively to a material.
       ssHighLevel: shader is applied before material application, and unapplied
            after material unapplication
       ssLowLevel: shader is applied after material application, and unapplied
@@ -383,11 +383,11 @@ type
       and specular) and texture mapping. 
       An instance of this class is available for almost all objects in GLScene
       to allow quick definition of material properties. It can link to a
-      TVKLibMaterial (taken for a material library). 
+      TVKLibMaterial (taken for a material library).
       The TVKLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
   TVKMaterial = class(TVKUpdateAbleObject, IGLMaterialLibrarySupported,
-      IGLNotifyAble, IGLTextureNotifyAble)
+      IVKNotifyAble, IVKTextureNotifyAble)
   private
     { Private Declarations }
     FFrontProperties, FBackProperties: TVKFaceProperties;
@@ -503,7 +503,7 @@ type
   TVKAbstractLibMaterial = class(
     TCollectionItem,
     IGLMaterialLibrarySupported,
-    IGLNotifyAble)
+    IVKNotifyAble)
   protected
     { Protected Declarations }
     FUserList: TList;
@@ -559,7 +559,7 @@ type
        Introduces Texture transformations (offset and scale). Those transformations
        are available only for lib materials to minimize the memory cost of basic
        materials (which are used in almost all objects). }
-  TVKLibMaterial = class(TVKAbstractLibMaterial, IGLTextureNotifyAble)
+  TVKLibMaterial = class(TVKAbstractLibMaterial, IVKTextureNotifyAble)
   private
     { Private Declarations }
     FMaterial: TVKMaterial;
@@ -850,9 +850,9 @@ end;
 procedure TVKFaceProperties.Apply(var rci: TVKRenderContextInfo;
   aFace: TCullFaceMode);
 begin
-  with rci.GLStates do
+  with rci.VKStates do
   begin
-    SetGLMaterialColors(aFace,
+    SetMaterialColors(aFace,
     Emission.Color, Ambient.Color, Diffuse.Color, Specular.Color, FShininess);
   end;
 end;
@@ -945,7 +945,7 @@ end;
 
 procedure TVKDepthProperties.Apply(var rci: TVKRenderContextInfo);
 begin
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     if FDepthTest and rci.bufferDepthTest then
       Enable(stDepthTest)
@@ -1504,7 +1504,7 @@ begin
       if IsDesignTime then
         InformationDlg(Format(strCyclicRefMat, [val]))
       else
-        GLSLogger.LogErrorFmt(strCyclicRefMat, [val]);
+        ShowMessage(Format(strCyclicRefMat, [val]));
       exit;
     end;
   end;
@@ -1605,7 +1605,7 @@ begin
   if Assigned(currentLibMaterial) then
     currentLibMaterial.Apply(rci)
   else
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
@@ -1658,33 +1658,33 @@ begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmAdditive:
           begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfSrcAlpha, bfOne);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmAlphaTest50:
           begin
             Disable(stBlend);
             Enable(stAlphaTest);
-            SetGLAlphaFunction(cfGEqual, 0.5);
+            SetAlphaFunction(cfGEqual, 0.5);
           end;
         bmAlphaTest100:
           begin
             Disable(stBlend);
             Enable(stAlphaTest);
-            SetGLAlphaFunction(cfGEqual, 1.0);
+            SetAlphaFunction(cfGEqual, 1.0);
           end;
         bmModulate:
           begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfDstColor, bfZero);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmCustom:
           begin
@@ -1770,9 +1770,9 @@ end;
 
 procedure TVKMaterial.NotifyChange(Sender: TObject);
 var
-  intf: IGLNotifyAble;
+  intf: IVKNotifyAble;
 begin
-  if Supports(Owner, IGLNotifyAble, intf) then
+  if Supports(Owner, IVKNotifyAble, intf) then
     intf.NotifyChange(Self);
 end;
 
@@ -1781,9 +1781,9 @@ end;
 
 procedure TVKMaterial.NotifyTexMapChange(Sender: TObject);
 var
-  intf: IGLTextureNotifyAble;
+  intf: IVKTextureNotifyAble;
 begin
-  if Supports(Owner, IGLTextureNotifyAble, intf) then
+  if Supports(Owner, IVKTextureNotifyAble, intf) then
     intf.NotifyTexMapChange(Self)
   else
     NotifyChange(Self);
@@ -2231,7 +2231,7 @@ begin
     end;
   end
   else
-    ARci.GLStates.CurrentProgram := 0;
+    ARci.VKStates.CurrentProgram := 0;
   if (Texture2Name <> '') and GL_ARB_multitexture and (not
     xgl.SecondTextureUnitForbidden) then
   begin
@@ -2253,14 +2253,14 @@ begin
   begin
     // no multitexturing ("standard" mode)
     if not FTextureMatrixIsIdentity then
-        ARci.GLStates.SetGLTextureMatrix(FTextureMatrix);
+        ARci.VKStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
   end
   else
   begin
     // multitexturing is ON
     if not FTextureMatrixIsIdentity then
-      ARci.GLStates.SetGLTextureMatrix(FTextureMatrix);
+      ARci.VKStates.SetTextureMatrix(FTextureMatrix);
     Material.Apply(ARci);
 
     if not libMatTexture2.FTextureMatrixIsIdentity then
@@ -2321,7 +2321,7 @@ begin
     Material.UnApply(ARci);
     if not Material.Texture.Disabled then
       if not FTextureMatrixIsIdentity then
-        ARci.GLStates.ResetGLTextureMatrix;
+        ARci.VKStates.ResetTextureMatrix;
     if Assigned(FShader) then
     begin
       case Shader.ShaderStyle of
@@ -3508,22 +3508,22 @@ procedure TVKBlendingParameters.Apply(var rci: TVKRenderContextInfo);
 begin
   if FUseAlphaFunc then
   begin
-    rci.GLStates.Enable(stAlphaTest);
-    rci.GLStates.SetGLAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
+    rci.VKStates.Enable(stAlphaTest);
+    rci.VKStates.SetAlphaFunction(FAlphaFuncType, FAlphaFuncRef);
   end
   else
-    rci.GLStates.Disable(stAlphaTest);
+    rci.VKStates.Disable(stAlphaTest);
   if FUseBlendFunc then
   begin
-    rci.GLStates.Enable(stBlend);
+    rci.VKStates.Enable(stBlend);
     if FSeparateBlendFunc then
-      rci.GLStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
+      rci.VKStates.SetBlendFuncSeparate(FBlendFuncSFactor, FBlendFuncDFactor,
         FAlphaBlendFuncSFactor, FAlphaBlendFuncDFactor)
     else
-      rci.GLStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
+      rci.VKStates.SetBlendFunc(FBlendFuncSFactor, FBlendFuncDFactor);
   end
   else
-    rci.GLStates.Disable(stBlend);
+    rci.VKStates.Disable(stBlend);
 end;
 
 constructor TVKBlendingParameters.Create(AOwner: TPersistent);

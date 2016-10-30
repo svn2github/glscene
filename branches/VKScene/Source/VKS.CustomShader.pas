@@ -317,7 +317,7 @@ var
   I: Integer;
 begin
   ALightIDs.Clear;
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     for I := 0 to MaxLights - 1 do
     begin
@@ -351,7 +351,7 @@ end;
 
 procedure ApplyBlendingModeEx(const BlendingMode: TVKBlendingModeEx);
 begin
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     Enable(stBlend);
 
@@ -359,8 +359,8 @@ begin
       bmxOpaque: SetBlendFunc(bfSRCALPHA, bfONE);
       bmxTransparency: SetBlendFunc(bfSRCALPHA, bfONEMINUSSRCALPHA);
       bmxAdditive: SetBlendFunc(bfSRCALPHA, bfONE);
-      bmxAlphaTest50: SetGLAlphaFunction(cfGEQUAL, 0.5);
-      bmxAlphaTest100: SetGLAlphaFunction(cfGEQUAL, 1.0);
+      bmxAlphaTest50: SetAlphaFunction(cfGEQUAL, 0.5);
+      bmxAlphaTest100: SetAlphaFunction(cfGEQUAL, 1.0);
       bmxModulate: SetBlendFunc(bfDSTCOLOR, bfZERO);
       bmxDestColorOne: SetBlendFunc(bfDSTCOLOR, bfONE);
       bmxDestAlphaOne: SetBlendFunc(bfDSTALPHA, bfONE);
@@ -483,11 +483,11 @@ procedure InitTexture(
 var
   glTarget: GLEnum;
 begin
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     TextureBinding[ActiveTexture, TextureTarget] := TextureHandle;
   end;
-  glTarget := DecodeGLTextureTarget(TextureTarget);
+  glTarget := DecodeTextureTarget(TextureTarget);
   glTexParameteri(glTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(glTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(glTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -344,7 +344,7 @@ begin
   if val <> Locked then
   begin
     //! Only supported with NVidia's right now
-    if GL_NV_vertex_array_range and (CurrentGLContext <> nil) then
+    if GL_NV_vertex_array_range and (CurrentVKContext <> nil) then
     begin
       size := FCount * SizeOf(TVertexData);
       if val then
@@ -742,11 +742,11 @@ begin
   end;
   if FVertexMode in [vmVNC, vmVNCT] then
   begin
-    rci.GLStates.Enable(stColorMaterial);
+    rci.VKStates.Enable(stColorMaterial);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80,
+    rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20, clrGray80,
       clrBlack, 0);
-    rci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
+    rci.VKStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80,
       clrBlack, 0);
   end;
   VertexCount := FVertices.Count;
@@ -874,7 +874,7 @@ begin
   else
     Assert(False);
   end;
-{$IFNDEF VKS_NO_ASM}
+{$IFDEF VKS_ASM}
   // clear fpu exception flag
   asm fclex
   end;

@@ -164,7 +164,7 @@ begin
   // (note: simply not writing to depth buffer may not make this not work,
   //  child objects may need the depth buffer to render themselves properly,
   //  this may require depth buffer cleared after that. - DanB)
-  Arci.GLStates.DepthWriteMask := 0;
+  Arci.VKStates.DepthWriteMask := 0;
   Arci.ignoreDepthRequests := true;
   inherited;
   Arci.ignoreDepthRequests := False;
@@ -181,7 +181,7 @@ begin
   if FMaterialLibrary = nil then
     Exit;
 
-  with ARci.GLStates do
+  with ARci.VKStates do
   begin
     oldStates := States;
     Disable(stDepthTest);
@@ -391,11 +391,11 @@ begin
     glPopMatrix;
 
     if stLighting in oldStates then
-      ARci.GLStates.Enable(stLighting);
+      ARci.VKStates.Enable(stLighting);
     if stFog in oldStates then
-      ARci.GLStates.Enable(stFog);
+      ARci.VKStates.Enable(stFog);
     if stDepthTest in oldStates then
-      ARci.GLStates.Enable(stDepthTest);
+      ARci.VKStates.Enable(stDepthTest);
 
   finally
   end;

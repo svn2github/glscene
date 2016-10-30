@@ -176,7 +176,7 @@ begin
 
     FBuffer.Count := FMaxBufferSize div SizeOf(Single);
     glFeedBackBuffer(FMaxBufferSize, atype, @FBuffer.List[0]);
-    ARci.GLStates.Disable(stCullFace);
+    ARci.VKStates.Disable(stCullFace);
     ARci.ignoreMaterials := FMode < fm3DColor;
     ARci.PipelineTransformation.Push;
     ARci.PipelineTransformation.ProjectionMatrix := IdentityHmgMatrix;
@@ -185,7 +185,7 @@ begin
         1.0 / FCorrectionScaling,
         1.0 / FCorrectionScaling,
         1.0 / FCorrectionScaling));
-    ARci.GLStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
+    ARci.VKStates.ViewPort := Vector4iMake(-1, -1, 2, 2);
     glRenderMode(GL_FEEDBACK);
 
     Self.RenderChildren(0, Count - 1, ARci);
@@ -199,7 +199,7 @@ begin
     if ARenderChildren then
       Self.RenderChildren(0, Count - 1, ARci);
   end;
-  ARci.GLStates.ViewPort :=
+  ARci.VKStates.ViewPort :=
     Vector4iMake(0, 0, ARci.viewPortSize.cx, ARci.viewPortSize.cy);
 end;
 

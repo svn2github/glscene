@@ -40,7 +40,7 @@ type
     function for proper operation
       }
 
-  TVKXCollectionItem = class(GLinterfacedPersistent)
+  TVKXCollectionItem = class(TVKInterfacedPersistent)
   private
     { Private Declarations }
     FOwner: TVKXCollection;

@@ -24,9 +24,6 @@
 // De-Activate regions
 {.$DEFINE VKS_NO_REGIONS}
 
-// Activate Logging
-{.$DEFINE VKS_LOGGING}
-
 // Activate Vulkan debug mode
 {.$DEFINE VKS_DEBUG}
 

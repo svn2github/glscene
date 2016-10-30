@@ -18,6 +18,7 @@ uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
   System.SysUtils,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
   VKS.Scene,
@@ -29,8 +30,7 @@ uses
   VKS.MultisampleImage,
   VKS.Graphics,
   VKS.TextureFormat,
-  VKS.VectorTypes,
-  VKS.Log;
+  VKS.VectorTypes;
 
 
 const
@@ -327,7 +327,7 @@ begin
 
   AttachTexture(
     GL_COLOR_ATTACHMENT0_EXT + n,
-    DecodeGLTextureTarget(textarget),
+    DecodeTextureTarget(textarget),
     Texture.Handle,
     FLevel, FLayer);
 end;
@@ -418,7 +418,7 @@ begin
 
   AttachTexture(
     GL_DEPTH_ATTACHMENT,
-    DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+    DecodeTextureTarget(FDepthTexture.Image.NativeTextureTarget),
     FDepthTexture.Handle,
     FLevel,
     FLayer);
@@ -426,7 +426,7 @@ begin
   if FDepthTexture.TextureFormatEx = tfDEPTH24_STENCIL8 then
     AttachTexture(
       GL_STENCIL_ATTACHMENT,
-      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      DecodeTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       FDepthTexture.Handle,
       FLevel,
       FLayer);
@@ -439,7 +439,7 @@ begin
     FTextureMipmap := FTextureMipmap and (not (1 shl MaxColorAttachments));
     AttachTexture(
       GL_DEPTH_ATTACHMENT,
-      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      DecodeTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       0, 0, 0);
     FDepthTexture := nil;
   end;
@@ -500,8 +500,8 @@ var
   storeDFB: GLuint;
   RC: TVKContext;
 begin
-  RC := SafeCurrentGLContext;
-  storeDFB := RC.GLStates.DrawFrameBuffer;
+  RC := SafeCurrentVKContext;
+  storeDFB := RC.VKStates.DrawFrameBuffer;
   if storeDFB <> FFrameBufferHandle.Handle then
     Bind;
 
@@ -543,7 +543,7 @@ begin
     end;
 
   if storeDFB <> FFrameBufferHandle.Handle then
-    RC.GLStates.SetFrameBuffer(storeDFB);
+    RC.VKStates.SetFrameBuffer(storeDFB);
 end;
 
 procedure TVKFrameBuffer.Bind;
@@ -651,10 +651,10 @@ begin
         if FTextureMipmap and (1 shl n) = 0 then
           Continue;
         textarget := FAttachedTexture[n].Image.NativeTextureTarget;
-        with FFrameBufferHandle.RenderingContext.GLStates do
+        with FFrameBufferHandle.RenderingContext.VKStates do
           TextureBinding[ActiveTexture, textarget] :=
             FAttachedTexture[n].Handle;
-        glGenerateMipmap(DecodeGLTextureTarget(textarget));
+        glGenerateMipmap(DecodeTextureTarget(textarget));
       end;
   end;
 end;
@@ -678,8 +678,8 @@ begin
   backColor := ConvertWinColor(buffer.BackgroundColor);
   glClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
-  rci.GLStates.SetColorMask(cAllColorComponents);
-  rci.GLStates.DepthWriteMask := 1;
+  rci.VKStates.SetColorMask(cAllColorComponents);
+  rci.VKStates.DepthWriteMask := 1;
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
   baseObject.Render(rci);
@@ -718,7 +718,7 @@ begin
     begin
       AttachTexture(
         GL_COLOR_ATTACHMENT0_EXT + n,
-        DecodeGLTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
+        DecodeTextureTarget(FAttachedTexture[n].Image.NativeTextureTarget),
         FAttachedTexture[n].Handle,
         FLevel,
         FLayer);
@@ -729,7 +729,7 @@ begin
   begin
     AttachTexture(
       GL_DEPTH_ATTACHMENT,
-      DecodeGLTextureTarget(FDepthTexture.Image.NativeTextureTarget),
+      DecodeTextureTarget(FDepthTexture.Image.NativeTextureTarget),
       FDepthTexture.Handle,
       FLevel,
       FLayer);
@@ -755,7 +755,7 @@ begin
   end;
 
   if not bEmpty and (GetStringStatus(s) <> fsComplete) then
-    GLSLogger.LogErrorFmt('Framebuffer error: %s. Deactivated', [s]);
+    ShowMessage(Format('Framebuffer error: %s. Deactivated', [s]));
 
   Handle.NotifyDataUpdated;
 end;
@@ -767,10 +767,10 @@ begin
   if FLayer <> Value then
   begin
     FLayer := Value;
-    RC := CurrentGLContext;
+    RC := CurrentVKContext;
     if Assigned(RC) then
     begin
-      if RC.GLStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+      if RC.VKStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
         ReattachTextures;
     end;
   end;
@@ -783,10 +783,10 @@ begin
   if FLevel <> Value then
   begin
     FLevel := Value;
-    RC := CurrentGLContext;
+    RC := CurrentVKContext;
     if Assigned(RC) then
     begin
-      if RC.GLStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
+      if RC.VKStates.DrawFrameBuffer = FFrameBufferHandle.Handle then
         ReattachTextures;
     end;
   end;

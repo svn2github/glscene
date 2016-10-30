@@ -11,6 +11,7 @@
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found VKS.GeomObjects.
 
+   
 }
 unit VKS.Objects;
 
@@ -25,10 +26,11 @@ uses
   System.SysUtils,
   System.Math,
   //VKS
-  VKS.OpenGLAdapter,
+
   VKS.VectorGeometry,
   VKS.VectorTypes,
   VKS.Scene,
+  VKS.OpenGLAdapter,
   VKS.VectorLists,
   VKS.CrossPlatform,
   VKS.Context,
@@ -894,17 +896,17 @@ begin
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(22, 'CubeWireframeBuildList');
 {$ENDIF}
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.Enable(stLineSmooth);
+  rci.VKStates.Disable(stLighting);
+  rci.VKStates.Enable(stLineSmooth);
   if stipple then
   begin
-    rci.GLStates.Enable(stLineStipple);
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-    rci.GLStates.LineStippleFactor := 1;
-    rci.GLStates.LineStipplePattern := $CCCC;
+    rci.VKStates.Enable(stLineStipple);
+    rci.VKStates.Enable(stBlend);
+    rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+    rci.VKStates.LineStippleFactor := 1;
+    rci.VKStates.LineStipplePattern := $CCCC;
   end;
-  rci.GLStates.LineWidth := 1;
+  rci.VKStates.LineWidth := 1;
   ma := 0.5 * Size;
   mi := -ma;
 
@@ -1190,16 +1192,16 @@ begin
     begin
       FGroupList.AllocateHandle;
       Assert(FGroupList.Handle <> 0, 'Handle=0 for ' + ClassName);
-      rci.GLStates.NewList(FGroupList.Handle, GL_COMPILE);
+      rci.VKStates.NewList(FGroupList.Handle, GL_COMPILE);
       rci.amalgamating := True;
       try
         inherited;
       finally
         rci.amalgamating := False;
-        rci.GLStates.EndList;
+        rci.VKStates.EndList;
       end;
     end;
-    rci.GLStates.CallList(FGroupList.Handle);
+    rci.VKStates.CallList(FGroupList.Handle);
   end
   else
   begin
@@ -1457,10 +1459,10 @@ begin
 
   begin
     glNormal3fv(@ZVector);
-    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if GL_ARB_shader_objects and (rci.VKStates.CurrentProgram > 0) then
     begin
-      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(BinormalAttributeName));
       if TanLoc > -1 then
         glVertexAttrib3fv(TanLoc, @XVector);
       if BinLoc > -1 then
@@ -1780,7 +1782,7 @@ var
   u0, v0, u1, v1: Integer;
 begin
   if FAlphaChannel <> 1 then
-    rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
+    rci.VKStates.SetMaterialAlphaChannel(GL_FRONT, FAlphaChannel);
 
   mat := rci.PipelineTransformation.ModelViewMatrix;
   // extraction of the "vecteurs directeurs de la matrice"
@@ -2180,7 +2182,7 @@ begin
   if FColors.Count < 2 then
     glDisableClientState(GL_COLOR_ARRAY);
 
-  rci.GLStates.Disable(stLighting);
+  rci.VKStates.Disable(stLighting);
   if n = 0 then
   begin
     v := NullHmgPoint;
@@ -2192,8 +2194,8 @@ begin
   glEnableClientState(GL_VERTEX_ARRAY);
 
   if NoZWrite then
-    rci.GLStates.DepthWriteMask := GLboolean(False);
-  rci.GLStates.PointSize := FSize;
+    rci.VKStates.DepthWriteMask := GLboolean(False);
+  rci.VKStates.PointSize := FSize;
   PointParameters.Apply;
   if GL_EXT_compiled_vertex_array and (n > 64) then
     glLockArraysEXT(0, n);
@@ -2201,35 +2203,35 @@ begin
     psSquare:
       begin
         // square point (simplest method, fastest)
-        rci.GLStates.Disable(stBlend);
+        rci.VKStates.Disable(stBlend);
       end;
     psRound:
       begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfGreater, 0.5);
-        rci.GLStates.Disable(stBlend);
+        rci.VKStates.Enable(stPointSmooth);
+        rci.VKStates.Enable(stAlphaTest);
+        rci.VKStates.SetAlphaFunction(cfGreater, 0.5);
+        rci.VKStates.Disable(stBlend);
       end;
     psSmooth:
       begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        rci.VKStates.Enable(stPointSmooth);
+        rci.VKStates.Enable(stAlphaTest);
+        rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
+        rci.VKStates.Enable(stBlend);
+        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
     psSmoothAdditive:
       begin
-        rci.GLStates.Enable(stPointSmooth);
-        rci.GLStates.Enable(stAlphaTest);
-        rci.GLStates.SetGLAlphaFunction(cfNotEqual, 0.0);
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        rci.VKStates.Enable(stPointSmooth);
+        rci.VKStates.Enable(stAlphaTest);
+        rci.VKStates.SetAlphaFunction(cfNotEqual, 0.0);
+        rci.VKStates.Enable(stBlend);
+        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
     psSquareAdditive:
       begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+        rci.VKStates.Enable(stBlend);
+        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
       end;
   else
     Assert(False);
@@ -2435,7 +2437,7 @@ end;
 
 procedure TVKLineBase.SetupLineStyle(var rci: TVKRenderContextInfo);
 begin
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     Disable(stLighting);
     if FLinePattern <> $FFFF then
@@ -2681,14 +2683,14 @@ begin
         begin
           glPushMatrix;
           glScalef(FNodeSize, FNodeSize, FNodeSize);
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+          rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
           glPopMatrix;
         end
         else
         begin
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
+          rci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20,
             Color.Color, clrBlack, 0);
           DodecahedronBuildList;
         end;
@@ -2882,11 +2884,11 @@ begin
     // first, we setup the line color & stippling styles
     SetupLineStyle(rci);
     if rci.bufferDepthTest then
-      rci.GLStates.Enable(stDepthTest);
+      rci.VKStates.Enable(stDepthTest);
     if loColorLogicXor in Options then
     begin
-      rci.GLStates.Enable(stColorLogicOp);
-      rci.GLStates.LogicOpMode := loXOr;
+      rci.VKStates.Enable(stColorLogicOp);
+      rci.VKStates.LogicOpMode := loXOr;
     end;
     // Set up the control point buffer for Bezier splines and NURBS curves.
     // If required this could be optimized by storing a cached node buffer.
@@ -2905,7 +2907,7 @@ begin
     if FSplineMode = lsmBezierSpline then
     begin
       // map evaluator
-      rci.GLStates.PushAttrib([sttEval]);
+      rci.VKStates.PushAttrib([sttEval]);
       glEnable(GL_MAP1_VERTEX_3);
       glEnable(GL_MAP1_COLOR_4);
 
@@ -2999,10 +3001,10 @@ begin
       end;
       glEnd;
     end;
-    rci.GLStates.Disable(stColorLogicOp);
+    rci.VKStates.Disable(stColorLogicOp);
 
     if FSplineMode = lsmBezierSpline then
-      rci.GLStates.PopAttrib;
+      rci.VKStates.PopAttrib;
     if Length(nodeBuffer) > 0 then
     begin
       SetLength(nodeBuffer, 0);
@@ -3013,8 +3015,8 @@ begin
     begin
       if not rci.ignoreBlendingRequests then
       begin
-        rci.GLStates.Enable(stBlend);
-        rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+        rci.VKStates.Enable(stBlend);
+        rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       end;
 
       for i := 0 to Nodes.Count - 1 do
@@ -3057,10 +3059,10 @@ begin
   hd := FCubeSize.Z * 0.5;
 
   begin
-    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if GL_ARB_shader_objects and (rci.VKStates.CurrentProgram > 0) then
     begin
-      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(TangentAttributeName));
+      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram, PGLChar(BinormalAttributeName));
     end
     else
     begin
@@ -3522,9 +3524,9 @@ var
   DoReverse: Boolean;
 begin
   DoReverse := (FNormalDirection = ndInside);
-  rci.GLStates.PushAttrib([sttPolygon]);
+  rci.VKStates.PushAttrib([sttPolygon]);
   if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
+    rci.VKStates.InvertFrontFace;
 
   // common settings
   AngTop := DegToRadian(1.0 * FTop);
@@ -3674,9 +3676,9 @@ begin
     glEnd;
   end;
   if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
+    rci.VKStates.InvertFrontFace;
   glPopMatrix;
-  rci.GLStates.PopAttrib;
+  rci.VKStates.PopAttrib;
 end;
 
 // RayCastIntersect
@@ -4069,7 +4071,7 @@ var
 begin
   DoReverse := (FNormalDirection = ndInside);
   if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
+    rci.VKStates.InvertFrontFace;
 
   // common settings
   AngTop := DegToRadian(1.0 * FTop);
@@ -4331,7 +4333,7 @@ begin
     glEnd;
   end;
   if DoReverse then
-    rci.GLStates.InvertGLFrontFace;
+    rci.VKStates.InvertFrontFace;
 end;
 
 // RayCastIntersect

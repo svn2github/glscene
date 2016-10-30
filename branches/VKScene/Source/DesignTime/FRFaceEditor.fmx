@@ -30,13 +30,21 @@ object RFaceEditor: TRFaceEditor
     TabIndex = 2
     TabOrder = 2
     TabPosition = PlatformDefault
+    Sizes = (
+      401s
+      148s
+      401s
+      148s
+      401s
+      148s
+      401s
+      148s)
     object TIAmbient: TTabItem
       CustomIcon = <
         item
         end>
       IsSelected = False
-      Size.Width = 65.000000000000000000
-      Size.Height = 26.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -45,17 +53,29 @@ object RFaceEditor: TRFaceEditor
       ExplicitSize.cy = 24.000000000000000000
       inline CEAmbiant: TRColorEditor
         Align = Client
-        Size.Width = 50.000000000000000000
-        Size.Height = 50.000000000000000000
+        Size.Width = 401.000000000000000000
+        Size.Height = 148.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 50.000000000000000000
-          Size.Height = 50.000000000000000000
+          Size.Width = 401.000000000000000000
+          Size.Height = 148.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 44.000000000000000000
-          Size.Height = 44.000000000000000000
+          Size.Width = 395.000000000000000000
+          Size.Height = 142.000000000000000000
+        end
+        inherited Label1: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label2: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label3: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label4: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
         end
       end
     end
@@ -64,8 +84,7 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Width = 57.000000000000000000
-      Size.Height = 26.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -74,17 +93,29 @@ object RFaceEditor: TRFaceEditor
       ExplicitSize.cy = 24.000000000000000000
       inline CEDiffuse: TRColorEditor
         Align = Client
-        Size.Width = 50.000000000000000000
-        Size.Height = 50.000000000000000000
+        Size.Width = 401.000000000000000000
+        Size.Height = 148.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 50.000000000000000000
-          Size.Height = 50.000000000000000000
+          Size.Width = 401.000000000000000000
+          Size.Height = 148.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 44.000000000000000000
-          Size.Height = 44.000000000000000000
+          Size.Width = 395.000000000000000000
+          Size.Height = 142.000000000000000000
+        end
+        inherited Label1: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label2: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label3: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label4: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
         end
       end
     end
@@ -93,8 +124,7 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = True
-      Size.Width = 66.000000000000000000
-      Size.Height = 26.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -104,16 +134,28 @@ object RFaceEditor: TRFaceEditor
       inline CEEmission: TRColorEditor
         Align = Client
         Size.Width = 401.000000000000000000
-        Size.Height = 127.000000000000000000
+        Size.Height = 148.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
           Size.Width = 401.000000000000000000
-          Size.Height = 127.000000000000000000
+          Size.Height = 148.000000000000000000
         end
         inherited Panel1: TPanel
           Size.Width = 395.000000000000000000
-          Size.Height = 121.000000000000000000
+          Size.Height = 142.000000000000000000
+        end
+        inherited Label1: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label2: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label3: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label4: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
         end
       end
     end
@@ -122,8 +164,7 @@ object RFaceEditor: TRFaceEditor
         item
         end>
       IsSelected = False
-      Size.Width = 66.000000000000000000
-      Size.Height = 26.000000000000000000
+      Size.Height = 5.000000000000000000
       Size.PlatformDefault = False
       StyleLookup = ''
       TabOrder = 0
@@ -132,17 +173,29 @@ object RFaceEditor: TRFaceEditor
       ExplicitSize.cy = 24.000000000000000000
       inline CESpecular: TRColorEditor
         Align = Client
-        Size.Width = 50.000000000000000000
-        Size.Height = 50.000000000000000000
+        Size.Width = 401.000000000000000000
+        Size.Height = 148.000000000000000000
         Size.PlatformDefault = False
         TabOrder = 0
         inherited ColorEditorPaintBox: TPaintBox
-          Size.Width = 50.000000000000000000
-          Size.Height = 50.000000000000000000
+          Size.Width = 401.000000000000000000
+          Size.Height = 148.000000000000000000
         end
         inherited Panel1: TPanel
-          Size.Width = 44.000000000000000000
-          Size.Height = 44.000000000000000000
+          Size.Width = 395.000000000000000000
+          Size.Height = 142.000000000000000000
+        end
+        inherited Label1: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label2: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label3: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
+        end
+        inherited Label4: TLabel
+          TextSettings.Font.StyleExt = {00070000000000000004000000}
         end
       end
     end

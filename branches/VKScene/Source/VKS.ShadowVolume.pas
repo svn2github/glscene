@@ -864,7 +864,7 @@ begin
     end;
 
     // render the shadow volumes
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
 
       if Mode = svmAccurate then
@@ -956,7 +956,7 @@ begin
         end
         else
         begin
-          SetGLColorWriting(False);
+          SetColorWriting(False);
           Disable(stBlend);
         end;
         Enable(stCullFace);
@@ -1060,7 +1060,7 @@ begin
         LightDiffuse[LightID] := lightSource.Diffuse.Color;
         LightSpecular[LightID] := lightSource.Specular.Color;
 
-        SetGLColorWriting(True);
+        SetColorWriting(True);
         SetStencilOp(soKeep, soKeep, soKeep);
 
         Enable(stBlend);
@@ -1110,7 +1110,7 @@ begin
 
       // restore OpenGL state
       glLightModelfv(GL_LIGHT_MODEL_AMBIENT, @ARci.sceneAmbientColor);
-      Scene.SetupLights(ARci.GLStates.MaxLights);
+      Scene.SetupLights(ARci.VKStates.MaxLights);
       Disable(stStencilTest);
       SetPolygonOffset(0, 0);
       ARci.ignoreBlendingRequests := False;

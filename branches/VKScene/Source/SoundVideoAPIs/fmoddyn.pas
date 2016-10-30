@@ -29,10 +29,11 @@ interface
 {$I VKScene.inc}
 
 uses
+  System.SysUtils,
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  VKS.Log,
+  FMX.Dialogs,
   fmodtypes;
 
 // ===============================================================================================
@@ -870,7 +871,7 @@ function GetAddress(Handle: TFMODModuleHandle; FuncName: PChar): Pointer;
 begin
   Result := GetProcAddress(Handle, FuncName);
   if not Assigned(Result) then
-    GLSLogger.LogErrorFmt('Failed to find "%s" in "%s"', [FuncName, FMOD_DLL]);
+    ShowMessage(Format('Failed to find "%s" in "%s"', [FuncName, FMOD_DLL]));
 end;
 
 function FMOD_Load(LibName: PChar): boolean;

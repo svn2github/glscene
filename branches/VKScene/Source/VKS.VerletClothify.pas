@@ -567,8 +567,8 @@ var
 begin
   if EdgeList.Count>0 then
   begin
-    rci.GLStates.Disable(stLighting);
-    rci.GLStates.LineWidth := 3;
+    rci.VKStates.Disable(stLighting);
+    rci.VKStates.LineWidth := 3;
     glColor3f(1,1,1);
 
     glBegin(GL_LINES);

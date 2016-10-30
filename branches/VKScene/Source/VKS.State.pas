@@ -2,7 +2,7 @@
 // VKScene project, http://glscene.sourceforge.net 
 //
 {
-   Tools for managing an application-side cache of OpenGL state. 
+   Tools for managing an application-side cache of Vulkan state.
     
 }
 
@@ -29,8 +29,9 @@ interface
 uses
   Winapi.OpenGL,
   Winapi.OpenGLext,
-  System.Classes, System.SysUtils,
-   
+  System.Classes,
+  System.SysUtils,
+
   VKS.CrossPlatform,
   VKS.VectorTypes,
   VKS.VectorGeometry,
@@ -189,10 +190,10 @@ type
 
   // TVKStateCache
   //
-  { Manages an application-side cache of OpenGL states and parameters. 
+  { Manages an application-side cache of Vulkan states and parameters.
      Purpose of this class is to eliminate redundant state and parameter
      changes, and there will typically be no more than one state cache per
-     OpenGL context. }
+     Vulkan context. }
   TVKStateCache = class
   private
     { Private Declarations }
@@ -578,18 +579,18 @@ type
     procedure PerformEnable(const aState: TVKState);
     procedure PerformDisable(const aState: TVKState);
 
-    procedure SetGLState(const aState : TVKState); deprecated;
-    procedure UnSetGLState(const aState : TVKState); deprecated;
-    procedure ResetGLPolygonMode; deprecated;
-    procedure ResetGLMaterialColors; deprecated;
-    procedure ResetGLTexture(const TextureUnit: Integer); deprecated;
-    procedure ResetGLCurrentTexture; deprecated;
-    procedure ResetGLFrontFace; deprecated;
+    procedure SetVKState(const aState : TVKState); deprecated;
+    procedure UnSetVKState(const aState : TVKState); deprecated;
+    procedure ResetPolygonMode; deprecated;
+    procedure ResetMaterialColors; deprecated;
+    procedure ResetTexture(const TextureUnit: Integer); deprecated;
+    procedure ResetCurrentTexture; deprecated;
+    procedure ResetFrontFace; deprecated;
     procedure SetGLFrontFaceCW; deprecated;
     procedure ResetAll; deprecated;
 
     { Adjusts material colors for a face. }
-    procedure SetGLMaterialColors(const aFace: TCullFaceMode;
+    procedure SetMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
 
@@ -605,10 +606,10 @@ type
       read GetMaterialShininess;
 
     { Adjusts material alpha channel for a face. }
-    procedure SetGLMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
+    procedure SetMaterialAlphaChannel(const aFace: GLEnum; const alpha: GLfloat);
 
     { Adjusts material diffuse color for a face. }
-    procedure SetGLMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
+    procedure SetMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
 
     { Lighting states }
     property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
@@ -641,7 +642,7 @@ type
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
 
     { Blending states }
-    procedure SetGLAlphaFunction(func: TComparisonFunction; ref: GLclampf);
+    procedure SetAlphaFunction(func: TComparisonFunction; ref: GLclampf);
 
     // Vertex Array Data state
     { The currently bound array buffer (calling glVertexAttribPointer
@@ -1087,17 +1088,17 @@ type
     { Call display list. }
     procedure CallList(list: GLuint);
 
-    { Defines the OpenGL texture matrix. 
+    { Defines the Vulkan texture matrix.
        Assumed texture mode is GL_MODELVIEW. }
-    procedure SetGLTextureMatrix(const matrix: TMatrix);
-    procedure ResetGLTextureMatrix;
-    procedure ResetAllGLTextureMatrix;
+    procedure SetTextureMatrix(const matrix: TMatrix);
+    procedure ResetTextureMatrix;
+    procedure ResetAllTextureMatrix;
 
     // note: needs to change to per draw-buffer
-    procedure SetGLColorWriting(flag: Boolean);
+    procedure SetColorWriting(flag: Boolean);
 
     { Inverts front face winding (CCW/CW). }
-    procedure InvertGLFrontFace;
+    procedure InvertFrontFace;
 
     // read only properties
     property States: TVKStates read FStates;
@@ -1110,8 +1111,8 @@ type
 
 type
   TStateRecord = record
-    GLConst: GLEnum;
-    GLDeprecated: Boolean;
+    VKConst: GLEnum;
+    VKDeprecated: Boolean;
   end;
 
 const
@@ -1126,30 +1127,30 @@ const
 
 {$WARN SYMBOL_DEPRECATED ON}
   cGLStateToGLEnum: array[TVKState] of TStateRecord =
-    ((GLConst: GL_ALPHA_TEST; GLDeprecated: True),
-    (GLConst: GL_AUTO_NORMAL; GLDeprecated: True),
-    (GLConst: GL_BLEND; GLDeprecated: False),
-    (GLConst: GL_COLOR_MATERIAL; GLDeprecated: True),
-    (GLConst: GL_CULL_FACE; GLDeprecated: False),
-    (GLConst: GL_DEPTH_TEST; GLDeprecated: False),
-    (GLConst: GL_DITHER; GLDeprecated: False),
-    (GLConst: GL_FOG; GLDeprecated: True),
-    (GLConst: GL_LIGHTING; GLDeprecated: True),
-    (GLConst: GL_LINE_SMOOTH; GLDeprecated: True),
-    (GLConst: GL_LINE_STIPPLE; GLDeprecated: True),
-    (GLConst: GL_INDEX_LOGIC_OP; GLDeprecated: True),
-    (GLConst: GL_COLOR_LOGIC_OP; GLDeprecated: False),
-    (GLConst: GL_NORMALIZE; GLDeprecated: True),
-    (GLConst: GL_POINT_SMOOTH; GLDeprecated: True),
-    (GLConst: GL_POINT_SPRITE; GLDeprecated: True),
-    (GLConst: GL_POLYGON_SMOOTH; GLDeprecated: True),
-    (GLConst: GL_POLYGON_STIPPLE; GLDeprecated: True),
-    (GLConst: GL_SCISSOR_TEST; GLDeprecated: False),
-    (GLConst: GL_STENCIL_TEST; GLDeprecated: False),
-    (GLConst: GL_POLYGON_OFFSET_POINT; GLDeprecated: False),
-    (GLConst: GL_POLYGON_OFFSET_LINE; GLDeprecated: False),
-    (GLConst: GL_POLYGON_OFFSET_FILL; GLDeprecated: False),
-    (GLConst: GL_DEPTH_CLAMP; GLDeprecated: False)
+    ((VKConst: GL_ALPHA_TEST; VKDeprecated: True),
+    (VKConst: GL_AUTO_NORMAL; VKDeprecated: True),
+    (VKConst: GL_BLEND; VKDeprecated: False),
+    (VKConst: GL_COLOR_MATERIAL; VKDeprecated: True),
+    (VKConst: GL_CULL_FACE; VKDeprecated: False),
+    (VKConst: GL_DEPTH_TEST; VKDeprecated: False),
+    (VKConst: GL_DITHER; VKDeprecated: False),
+    (VKConst: GL_FOG; VKDeprecated: True),
+    (VKConst: GL_LIGHTING; VKDeprecated: True),
+    (VKConst: GL_LINE_SMOOTH; VKDeprecated: True),
+    (VKConst: GL_LINE_STIPPLE; VKDeprecated: True),
+    (VKConst: GL_INDEX_LOGIC_OP; VKDeprecated: True),
+    (VKConst: GL_COLOR_LOGIC_OP; VKDeprecated: False),
+    (VKConst: GL_NORMALIZE; VKDeprecated: True),
+    (VKConst: GL_POINT_SMOOTH; VKDeprecated: True),
+    (VKConst: GL_POINT_SPRITE; VKDeprecated: True),
+    (VKConst: GL_POLYGON_SMOOTH; VKDeprecated: True),
+    (VKConst: GL_POLYGON_STIPPLE; VKDeprecated: True),
+    (VKConst: GL_SCISSOR_TEST; VKDeprecated: False),
+    (VKConst: GL_STENCIL_TEST; VKDeprecated: False),
+    (VKConst: GL_POLYGON_OFFSET_POINT; VKDeprecated: False),
+    (VKConst: GL_POLYGON_OFFSET_LINE; VKDeprecated: False),
+    (VKConst: GL_POLYGON_OFFSET_FILL; VKDeprecated: False),
+    (VKConst: GL_DEPTH_CLAMP; VKDeprecated: False)
     );
 
   cGLTexTypeToGLEnum: array[TVKTextureTarget] of GLEnum =
@@ -1455,7 +1456,7 @@ end;
 //
 procedure TVKStateCache.Enable(const aState: TVKState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
     exit;
   if not (aState in FStates) or FInsideList then
   begin
@@ -1464,10 +1465,10 @@ begin
     else
       Include(FStates, aState);
 {$IFDEF VKS_CACHE_MISS_CHECK}
-    if glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogError(strStateCashMissing + 'Enable');
+    if glIsEnabled(cGLStateToGLEnum[aState].VKConst) then
+      ShowMessages(strStateCashMissing + 'Enable');
 {$ENDIF}
-    glEnable(cGLStateToGLEnum[aState].GLConst);
+    glEnable(cGLStateToGLEnum[aState].VKConst);
   end;
 end;
 
@@ -1475,7 +1476,7 @@ end;
 //
 procedure TVKStateCache.Disable(const aState: TVKState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
     exit;
   if (aState in FStates) or FInsideList then
   begin
@@ -1484,10 +1485,10 @@ begin
     else
       Exclude(FStates, aState);
 {$IFDEF VKS_CACHE_MISS_CHECK}
-    if not glIsEnabled(cGLStateToGLEnum[aState].GLConst) then
-      GLSLogger.LogError(strStateCashMissing + 'Disable');
+    if not glIsEnabled(cGLStateToGLEnum[aState].VKConst) then
+      ShowMessages(strStateCashMissing + 'Disable');
 {$ENDIF}
-    glDisable(cGLStateToGLEnum[aState].GLConst);
+    glDisable(cGLStateToGLEnum[aState].VKConst);
     if aState = stColorMaterial then
       if FInsideList then
         Include(FListStates[FCurrentList], sttLighting)
@@ -1513,20 +1514,20 @@ end;
 
 procedure TVKStateCache.PerformEnable(const aState: TVKState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
     exit;
   Include(FStates, aState);
-  glEnable(cGLStateToGLEnum[aState].GLConst);
+  glEnable(cGLStateToGLEnum[aState].VKConst);
 end;
 
 // PerformDisable
 //
 procedure TVKStateCache.PerformDisable(const aState: TVKState);
 begin
-  if cGLStateToGLEnum[aState].GLDeprecated and FForwardContext then
+  if cGLStateToGLEnum[aState].VKDeprecated and FForwardContext then
     exit;
   Exclude(FStates, aState);
-  glDisable(cGLStateToGLEnum[aState].GLConst);
+  glDisable(cGLStateToGLEnum[aState].VKConst);
 end;
 
 procedure TVKStateCache.PopAttrib;
@@ -1555,7 +1556,7 @@ end;
 // SetGLMaterialColors
 //
 
-procedure TVKStateCache.SetGLMaterialColors(const aFace: TCullFaceMode;
+procedure TVKStateCache.SetMaterialColors(const aFace: TCullFaceMode;
   const emission, ambient, diffuse, specular: TVector;
   const shininess: Integer);
 var
@@ -1611,7 +1612,7 @@ end;
 // SetGLMaterialAlphaChannel
 //
 
-procedure TVKStateCache.SetGLMaterialAlphaChannel(const aFace: GLEnum; const
+procedure TVKStateCache.SetMaterialAlphaChannel(const aFace: GLEnum; const
   alpha: GLfloat);
 var
   i: Integer;
@@ -1646,7 +1647,7 @@ begin
   end;
 end;
 
-procedure TVKStateCache.SetGLMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
+procedure TVKStateCache.SetMaterialDiffuseColor(const aFace: GLEnum; const diffuse: TVector);
 var
   i: Integer;
 begin
@@ -2235,7 +2236,7 @@ begin
   end;
 end;
 
-procedure TVKStateCache.SetGLAlphaFunction(func: TComparisonFunction;
+procedure TVKStateCache.SetAlphaFunction(func: TComparisonFunction;
   ref: GLclampf);
 {$IFDEF VKS_CACHE_MISS_CHECK}
 var I: GLuint; E: Single;
@@ -2246,10 +2247,10 @@ begin
 {$IFDEF VKS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_ALPHA_TEST_FUNC, @I);
   if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
-    GLSLogger.LogError(strStateCashMissing + 'AlphaTest function');
+    ShowMessages(strStateCashMissing + 'AlphaTest function');
   glGetFloatv(GL_ALPHA_TEST_REF, @E);
   if FAlphaRef <> E then
-    GLSLogger.LogError(strStateCashMissing + 'AlphaTest reference');
+    ShowMessages(strStateCashMissing + 'AlphaTest reference');
 {$ENDIF}
   if (FAlphaFunc <> func) or (FAlphaRef <> ref)
     or FInsideList then
@@ -2415,7 +2416,7 @@ end;
 // SetGLTextureMatrix
 //
 
-procedure TVKStateCache.SetGLTextureMatrix(const matrix: TMatrix);
+procedure TVKStateCache.SetTextureMatrix(const matrix: TMatrix);
 begin
   if FForwardContext then
     exit;
@@ -2431,7 +2432,7 @@ end;
 // ResetGLTextureMatrix
 //
 
-procedure TVKStateCache.ResetGLTextureMatrix;
+procedure TVKStateCache.ResetTextureMatrix;
 begin
   if FForwardContext then
     exit;
@@ -2444,7 +2445,7 @@ end;
 // ResetAllGLTextureMatrix
 //
 
-procedure TVKStateCache.ResetAllGLTextureMatrix;
+procedure TVKStateCache.ResetAllTextureMatrix;
 var
   I: Integer;
   lastActiveTexture: GLuint;
@@ -2833,7 +2834,7 @@ begin
 {$IFDEF VKS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
   if FStencilClearValue <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil clear value');
+    ShowMessages(strStateCashMissing + 'Stencil clear value');
 {$ENDIF}
   if (Value <> FStencilClearValue) or FInsideList then
   begin
@@ -2887,14 +2888,14 @@ begin
 {$IFDEF VKS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_FUNC, @UI);
   if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil function');
+    ShowMessages(strStateCashMissing + 'Stencil function');
   glGetIntegerv(GL_STENCIL_REF, @I);
   if FStencilRef <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil reference');
-    GLSLogger.LogError(strStateCashMissing + 'Stencil function');
+    ShowMessages(strStateCashMissing + 'Stencil reference');
+    ShowMessages(strStateCashMissing + 'Stencil function');
   glGetIntegerv(GL_STENCIL_VALUE_MASK, @UI);
   if FStencilValueMask <> UI then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil value mask');
+    ShowMessages(strStateCashMissing + 'Stencil value mask');
 {$ENDIF}
   begin
     if FInsideList then
@@ -2955,13 +2956,13 @@ begin
 {$IFDEF VKS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilFail] <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil fail');
+    ShowMessages(strStateCashMissing + 'Stencil fail');
   glGetIntegerv(GL_STENCIL_PASS_DEPTH_FAIL, @I);
   if cGLStencilOpToGLEnum[FStencilPassDepthFail] <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil zfail');
+    ShowMessages(strStateCashMissing + 'Stencil zfail');
   glGetIntegerv(GL_STENCIL_PASS_DEPTH_PASS, @I);
   if cGLStencilOpToGLEnum[FStencilPassDepthPass] <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil zpass');
+    ShowMessages(strStateCashMissing + 'Stencil zpass');
 {$ENDIF}
   if (fail <> FStencilFail) or (zfail <> FStencilPassDepthFail)
     or (zpass <> FStencilPassDepthPass) or FInsideList then
@@ -3024,7 +3025,7 @@ begin
 {$IFDEF VKS_CACHE_MISS_CHECK}
   glGetIntegerv(GL_STENCIL_WRITEMASK, @I);
   if FStencilWriteMask <> I then
-    GLSLogger.LogError(strStateCashMissing + 'Stencil write mask');
+    ShowMessages(strStateCashMissing + 'Stencil write mask');
 {$ENDIF}
   if (Value <> FStencilWriteMask) or FInsideList then
   begin
@@ -3069,7 +3070,7 @@ procedure TVKStateCache.SetActiveTextureEnabled(Target: TVKTextureTarget;
 var
   glTarget: GLEnum;
 begin
-  glTarget := DecodeGLTextureTarget(Target);
+  glTarget := DecodeTextureTarget(Target);
   if FForwardContext or not IsTargetSupported(glTarget) then
     exit;
   if (Value <> FActiveTextureEnabling[FActiveTexture][Target])
@@ -3661,7 +3662,7 @@ end;
 // SetGLColorIgnoring
 //
 
-procedure TVKStateCache.SetGLColorWriting(flag: Boolean);
+procedure TVKStateCache.SetColorWriting(flag: Boolean);
 begin
   if (FColorWriting <> flag) or FInsideList then
   begin
@@ -3676,7 +3677,7 @@ end;
 // InvertGLFrontFace
 //
 
-procedure TVKStateCache.InvertGLFrontFace;
+procedure TVKStateCache.InvertFrontFace;
 begin
   if FFrontFace = fwCounterClockWise then
     FrontFace := fwClockWise
@@ -3686,14 +3687,14 @@ end;
 
 // SetGLState
 //
-procedure TVKStateCache.SetGLState(const aState : TVKState);
+procedure TVKStateCache.SetVKState(const aState : TVKState);
 begin
 	Enable(aState);
 end;
 
 // UnSetGLState
 //
-procedure TVKStateCache.UnSetGLState(const aState : TVKState);
+procedure TVKStateCache.UnSetVKState(const aState : TVKState);
 begin
 	Disable(aState);
 end;
@@ -3701,7 +3702,7 @@ end;
 // ResetGLPolygonMode
 //
 
-procedure TVKStateCache.ResetGLPolygonMode;
+procedure TVKStateCache.ResetPolygonMode;
 begin
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   FPolygonMode := pmFill;
@@ -3711,7 +3712,7 @@ end;
 // ResetGLMaterialColors
 //
 
-procedure TVKStateCache.ResetGLMaterialColors;
+procedure TVKStateCache.ResetMaterialColors;
 begin
   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, @clrGray20);
   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, @clrGray80);
@@ -3726,7 +3727,7 @@ end;
 // ResetGLTexture
 //
 
-procedure TVKStateCache.ResetGLTexture(const TextureUnit: Integer);
+procedure TVKStateCache.ResetTexture(const TextureUnit: Integer);
 var
   t: TVKTextureTarget;
   glTarget: GLEnum;
@@ -3734,7 +3735,7 @@ begin
   glActiveTexture(GL_TEXTURE0 + TextureUnit);
   for t := Low(TVKTextureTarget) to High(TVKTextureTarget) do
   begin
-    glTarget := DecodeGLTextureTarget(t);
+    glTarget := DecodeTextureTarget(t);
     if IsTargetSupported(glTarget) then
     begin
       glBindTexture(glTarget, 0);
@@ -3748,7 +3749,7 @@ end;
 // ResetGLCurrentTexture
 //
 
-procedure TVKStateCache.ResetGLCurrentTexture;
+procedure TVKStateCache.ResetCurrentTexture;
 var
   a: GLint;
   t: TVKTextureTarget;
@@ -3759,7 +3760,7 @@ begin
     glActiveTexture(GL_TEXTURE0 + a);
     for t := Low(TVKTextureTarget) to High(TVKTextureTarget) do
     begin
-      glTarget := DecodeGLTextureTarget(t);
+      glTarget := DecodeTextureTarget(t);
       if IsTargetSupported(glTarget) then
       begin
         glBindTexture(glTarget, 0);
@@ -3772,7 +3773,7 @@ end;
 // ResetGLFrontFace
 //
 
-procedure TVKStateCache.ResetGLFrontFace;
+procedure TVKStateCache.ResetFrontFace;
 begin
   glFrontFace(GL_CCW);
   FFrontFace := fwCounterClockWise;
@@ -3794,10 +3795,10 @@ end;
 procedure TVKStateCache.ResetAll;
 begin
  {$WARN SYMBOL_DEPRECATED OFF}
-  ResetGLPolygonMode;
-  ResetGLMaterialColors;
-  ResetGLCurrentTexture;
-  ResetGLFrontFace;
+  ResetPolygonMode;
+  ResetMaterialColors;
+  ResetCurrentTexture;
+  ResetFrontFace;
  {$WARN SYMBOL_DEPRECATED ON}
 end;
 

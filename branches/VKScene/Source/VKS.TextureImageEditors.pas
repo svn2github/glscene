@@ -3,7 +3,6 @@
 //
 {
   Standard texture image editors for standard texture image classes. 
-    
 }
 unit VKS.TextureImageEditors;
 
@@ -66,10 +65,10 @@ type
 
 
 //: Invokes the editor for the given TVKTextureImage
-function EditGLTextureImage(aTexImage : TVKTextureImage) : Boolean;
-procedure RegisterGLTextureImageEditor(aTexImageClass : TVKTextureImageClass;
+function EditTextureImage(aTexImage : TVKTextureImage) : Boolean;
+procedure RegisterTextureImageEditor(aTexImageClass : TVKTextureImageClass;
                                        texImageEditor : TVKTextureImageEditorClass);
-procedure UnRegisterGLTextureImageEditor(texImageEditor : TVKTextureImageEditorClass);
+procedure UnRegisterTextureImageEditor(texImageEditor : TVKTextureImageEditorClass);
 
 
 //------------------------------------------------------------------------------
@@ -83,9 +82,9 @@ implementation
 var
    vTIEClass, vTIEEditor : TList;
 
-// EditGLTextureImage
+// EditTextureImage
 //
-function EditGLTextureImage(aTexImage : TVKTextureImage) : Boolean;
+function EditTextureImage(aTexImage : TVKTextureImage) : Boolean;
 var
    i : Integer;
    editor : TVKTextureImageEditorClass;
@@ -102,9 +101,9 @@ begin
    Result:=False;
 end;
 
-// RegisterGLTextureImageEditor
+// RegisterTextureImageEditor
 //
-procedure RegisterGLTextureImageEditor(aTexImageClass : TVKTextureImageClass;
+procedure RegisterTextureImageEditor(aTexImageClass : TVKTextureImageClass;
                                        texImageEditor : TVKTextureImageEditorClass);
 begin
    if not Assigned(vTIEClass) then begin
@@ -115,9 +114,9 @@ begin
    vTIEEditor.Add(texImageEditor);
 end;
 
-// UnRegisterGLTextureImageEditor
+// UnRegisterTextureImageEditor
 //
-procedure UnRegisterGLTextureImageEditor(texImageEditor : TVKTextureImageEditorClass);
+procedure UnRegisterTextureImageEditor(texImageEditor : TVKTextureImageEditorClass);
 var
    i : Integer;
 begin
@@ -247,17 +246,17 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-  RegisterGLTextureImageEditor(TVKBlankImage, TVKBlankTIE);
-	RegisterGLTextureImageEditor(TVKPersistentImage, TVKPersistentTIE);
-	RegisterGLTextureImageEditor(TVKPicFileImage, TVKPicFileTIE);
-  RegisterGLTextureImageEditor(TVKProcTextureNoise, TVKProcTextureNoiseTIE);
+  RegisterTextureImageEditor(TVKBlankImage, TVKBlankTIE);
+	RegisterTextureImageEditor(TVKPersistentImage, TVKPersistentTIE);
+	RegisterTextureImageEditor(TVKPicFileImage, TVKPicFileTIE);
+  RegisterTextureImageEditor(TVKProcTextureNoise, TVKProcTextureNoiseTIE);
 
 finalization
 
-  UnRegisterGLTextureImageEditor(TVKBlankTIE);
-	UnRegisterGLTextureImageEditor(TVKPersistentTIE);
-	UnRegisterGLTextureImageEditor(TVKPicFileTIE);
-  UnRegisterGLTextureImageEditor(TVKProcTextureNoiseTIE);
+  UnRegisterTextureImageEditor(TVKBlankTIE);
+	UnRegisterTextureImageEditor(TVKPersistentTIE);
+	UnRegisterTextureImageEditor(TVKPicFileTIE);
+  UnRegisterTextureImageEditor(TVKProcTextureNoiseTIE);
 
   FreeAndNil(vTIEClass);
   FreeAndNil(vTIEEditor);

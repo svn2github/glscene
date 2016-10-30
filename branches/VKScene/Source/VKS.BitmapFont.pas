@@ -838,7 +838,7 @@ begin
   // only check when really used
   if FTextureWidth = 0 then
   begin
-    FTextureWidth := ARci.GLStates.MaxTextureSize;
+    FTextureWidth := ARci.VKStates.MaxTextureSize;
     if FTextureWidth > 512 then
       FTextureWidth := 512;
     if FTextureWidth < 64 then
@@ -846,7 +846,7 @@ begin
   end;
   if FTextureHeight = 0 then
   begin
-    FTextureHeight := ARci.GLStates.MaxTextureSize;
+    FTextureHeight := ARci.VKStates.MaxTextureSize;
     if FTextureHeight > 512 then
       FTextureHeight := 512;
     if FTextureHeight < 64 then
@@ -883,7 +883,7 @@ begin
     t.AllocateHandle;
     // texture registration
     t.Target := ttTexture2D;
-    ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
+    ARci.VKStates.TextureBinding[0, ttTexture2D] := t.Handle;
 
     // copy data
     { TODO : E2003 Undeclared identifier: 'Draw', need to use DrawBitmap() }
@@ -941,7 +941,7 @@ const
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 begin
 
-  with ARci.GLStates do
+  with ARci.VKStates do
   begin
     UnpackAlignment := 4;
     UnpackRowLength := 0;
@@ -1044,7 +1044,7 @@ begin
   vBottomRight.W := 1;
   spaceDeltaH := GetCharWidth(#32) + HSpaceFix + HSpace;
   // set states
-  with ARci.GLStates do
+  with ARci.VKStates do
   begin
     ActiveTextureEnabled[ttTexture2D] := true;
     Disable(stLighting);
@@ -1104,8 +1104,8 @@ begin
   end;
   glEnd;
   // unbind texture
-  ARci.GLStates.TextureBinding[0, ttTexture2D] := 0;
-  ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+  ARci.VKStates.TextureBinding[0, ttTexture2D] := 0;
+  ARci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
 // TextOut
@@ -1242,7 +1242,7 @@ begin
     begin
       FLastTexture := t;
       glEnd;
-      ARci.GLStates.TextureBinding[0, ttTexture2D] := t.Handle;
+      ARci.VKStates.TextureBinding[0, ttTexture2D] := t.Handle;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       glBegin(GL_QUADS);
     end;
@@ -1401,14 +1401,14 @@ procedure TVKFlatText.DoRender(var rci: TVKRenderContextInfo;
 begin
   if Assigned(FBitmapFont) and (Text <> '') then
   begin
-    rci.GLStates.PolygonMode := pmFill;
+    rci.VKStates.PolygonMode := pmFill;
     if FModulateColor.Alpha <> 1 then
     begin
-      rci.GLStates.Enable(stBlend);
-      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      rci.VKStates.Enable(stBlend);
+      rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     end;
     if ftoTwoSided in FOptions then
-      rci.GLStates.Disable(stCullFace);
+      rci.VKStates.Disable(stCullFace);
     FBitmapFont.RenderString(rci, Text, FAlignment, FLayout,
       FModulateColor.Color);
   end;

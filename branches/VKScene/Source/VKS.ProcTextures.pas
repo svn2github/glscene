@@ -736,7 +736,7 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  RegisterGLTextureImageClass(TVKProcTextureNoise);
+  RegisterTextureImageClass(TVKProcTextureNoise);
 
 finalization
 

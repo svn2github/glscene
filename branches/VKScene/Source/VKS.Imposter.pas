@@ -515,7 +515,7 @@ begin
 
   FTexture.AllocateHandle;
   FTexture.Target := ttTexture2D;
-  rci.GLStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
+  rci.VKStates.TextureBinding[0, ttTexture2D] := FTexture.Handle;
   if GL_EXT_texture_edge_clamp then
     i := GL_CLAMP_TO_EDGE
   else
@@ -537,7 +537,7 @@ var
   filter: GLEnum;
   fx, fy, yOffset, cosAlpha, dynScale: Single;
 begin
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     Disable(stLighting);
     Disable(stCullFace);
@@ -546,7 +546,7 @@ begin
     if impoAlphaTest in Builder.ImposterOptions then
     begin
       Enable(stAlphaTest);
-      SetGLAlphaFunction(cfGEqual, Builder.AlphaTreshold);
+      SetAlphaFunction(cfGEqual, Builder.AlphaTreshold);
     end
     else
       Disable(stAlphaTest);
@@ -653,7 +653,7 @@ end;
 procedure TImposter.EndRender(var rci: TVKRenderContextInfo);
 begin
   glEnd;
-  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
 end;
 
 // RenderOnce
@@ -1421,23 +1421,23 @@ begin
   if ImposterReference <> irCenter then
     radius := radius * 0.5;
 
-  Assert((rci.GLStates.ViewPort.Z >= SampleSize) and (rci.GLStates.ViewPort.W >= SampleSize),
+  Assert((rci.VKStates.ViewPort.Z >= SampleSize) and (rci.VKStates.ViewPort.W >= SampleSize),
     'ViewPort too small to render imposter samples!');
 
   // Setup the buffer in a suitable fashion for our needs
   with FBackColor do
-    rci.GLStates.ColorClearValue := Color;
+    rci.VKStates.ColorClearValue := Color;
   if Lighting = siblNoLighting then
-    rci.GLStates.Disable(stLighting);
+    rci.VKStates.Disable(stLighting);
 
   rci.PipelineTransformation.Push;
-  fx := radius * rci.GLStates.ViewPort.Z / SampleSize;
-  fy := radius * rci.GLStates.ViewPort.W / SampleSize;
+  fx := radius * rci.VKStates.ViewPort.Z / SampleSize;
+  fy := radius * rci.VKStates.ViewPort.W / SampleSize;
   yOffset := cReferenceToPos[ImposterReference] * radius;
   rci.PipelineTransformation.ProjectionMatrix :=
     CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5);
-  xSrc := (rci.GLStates.ViewPort.Z - SampleSize) div 2;
-  ySrc := (rci.GLStates.ViewPort.W - SampleSize) div 2;
+  xSrc := (rci.VKStates.ViewPort.Z - SampleSize) div 2;
+  ySrc := (rci.VKStates.ViewPort.W - SampleSize) div 2;
 
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then
@@ -1464,12 +1464,12 @@ begin
       cameraOffset := cameraDirection;
       RotateVector(cameraOffset, YHmgVector, (c2PI * i) / corona.Samples);
       ScaleVector(cameraOffset, -radius * 2);
-      rci.GLStates.DepthWriteMask := 1;
+      rci.VKStates.DepthWriteMask := 1;
       glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
 
       LM := CreateLookAtMatrix(cameraOffset, NullHmgVector, YHmgVector);
       if Lighting = siblStaticLighting then
-        (rci.scene as TVKScene).SetupLights(rci.GLStates.MaxLights);
+        (rci.scene as TVKScene).SetupLights(rci.VKStates.MaxLights);
       rci.PipelineTransformation.ViewMatrix := MatrixMultiply(
         CreateTranslationMatrix(FBuildOffset.AsVector), LM);
       impostoredObject.Render(rci);
@@ -1478,7 +1478,7 @@ begin
       xDest := (curSample mod FSamplesPerAxis.X) * SampleSize;
       yDest := (curSample div FSamplesPerAxis.X) * SampleSize;
 
-      rci.GLStates.TextureBinding[0, ttTexture2D] :=
+      rci.VKStates.TextureBinding[0, ttTexture2D] :=
         destImposter.Texture.Handle;
       glCopyTexSubImage2D(GL_TEXTURE_2D, 0, xDest, yDest, xSrc, ySrc,
         SampleSize, SampleSize);
@@ -1493,7 +1493,7 @@ begin
 
   glClear(GL_COLOR_BUFFER_BIT + GL_DEPTH_BUFFER_BIT);
   if Lighting = siblStaticLighting then
-    (rci.scene as TVKScene).SetupLights(rci.GLStates.MaxLights);
+    (rci.scene as TVKScene).SetupLights(rci.VKStates.MaxLights);
 end;
 
 // ComputeOptimalTextureSize
@@ -1506,7 +1506,7 @@ var
   requiredSurface, currentSurface, bestSurface: Integer;
 begin
   nbSamples := Coronas.SampleCount;
-  if CurrentGLContext = nil then
+  if CurrentVKContext = nil then
     maxTexSize := 16 * 1024
   else
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, @maxTexSize);

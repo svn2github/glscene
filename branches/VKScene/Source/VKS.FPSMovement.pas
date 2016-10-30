@@ -883,7 +883,7 @@ var
 begin
   // caption:= IntToStr(CollisionStates.Count);
   glColor3f(1, 1, 1);
-  rci.GLStates.Disable(stLighting);
+  rci.VKStates.Disable(stLighting);
   // draw position trail
   glBegin(GL_LINE_STRIP);
   for i := 0 to CollisionStates.count - 1 do

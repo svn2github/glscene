@@ -848,7 +848,7 @@ procedure VectorArrayLerp(const src1, src2: PTexPointArray; T: Single;
   n: Integer; dest: PTexPointArray); overload;
 
 type
-  TGLInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan,
+  TVKInterpolationType = (itLinear, itPower, itSin, itSinAlt, itTan,
     itLn, itExp);
 
   { There functions that do the same as "Lerp", but add some distortions. }
@@ -872,14 +872,14 @@ function InterpolateCombinedFastPower(const OriginalStart, OriginalStop,
 function InterpolateCombinedSafe(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 function InterpolateCombinedFast(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 function InterpolateCombined(const start, stop, delta: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 
 { Calculates the length of a vector following the equation sqrt(x*x+y*y). }
 function VectorLength(const X, Y: Single): Single; overload;
@@ -1704,7 +1704,7 @@ function IntersectTriangleBox(const p1, p2, p3, aMinExtent,
 
 { Compute intersection between a Sphere and a box.
   Up, Direction and Right must be normalized!
-  Use CubDepht, CubeHeight and CubeWidth to scale TGLCube. }
+  Use CubDepht, CubeHeight and CubeWidth to scale TVKCube. }
 function IntersectSphereBox(const SpherePos: TVector;
   const SphereRadius: Single; const BoxMatrix: TMatrix;
   const BoxScale: TAffineVector; intersectPoint: PAffineVector = nil;
@@ -3785,7 +3785,7 @@ end;
 //
 function InterpolateCombined(const start, stop, delta: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 begin
   case InterpolationType of
     itLinear:
@@ -3826,7 +3826,7 @@ end;
 function InterpolateCombinedSafe(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 var
   ChangeDelta: Single;
 begin
@@ -3846,7 +3846,7 @@ end;
 function InterpolateCombinedFast(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
-  const InterpolationType: TGLInterpolationType): Single;
+  const InterpolationType: TVKInterpolationType): Single;
 var
   ChangeDelta: Single;
 begin
@@ -10039,7 +10039,7 @@ function IntersectSphereBox(const SpherePos: TVector;
   const SphereRadius: Single; const BoxMatrix: TMatrix;
   // Up Direction and Right must be normalized!
   // Use CubDepht, CubeHeight and CubeWidth
-  // for scale TGLCube.
+  // for scale TVKCube.
   const BoxScale: TAffineVector; intersectPoint: PAffineVector = nil;
   normal: PAffineVector = nil; depth: PSingle = nil): Boolean;
 

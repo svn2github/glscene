@@ -2540,23 +2540,10 @@ end;
 
 // IntegerSearch
 //
-
+{$IFDEF VKS_ASM}
 function IntegerSearch(item: Integer; list: PIntegerVector; Count: Integer): Integer; register;
-{$IFDEF VKS_NO_ASM}
-var i : integer;
-begin
-  result:=-1;
-  for i := 0 to Count-1 do begin
-    if list^[i]=item then begin
-      result:=i;
-      break;
-    end;
-  end;
-end;
-{$ELSE}
 asm
   push edi;
-
   test ecx, ecx
   jz @@NotFound
 
@@ -2577,6 +2564,18 @@ asm
 
   @@end:
   pop edi;
+end;
+{$ELSE}
+function IntegerSearch(item: Integer; list: PIntegerVector; Count: Integer): Integer; register;
+var i : integer;
+begin
+  result:=-1;
+  for i := 0 to Count-1 do begin
+    if list^[i]=item then begin
+      result:=i;
+      break;
+    end;
+  end;
 end;
 {$ENDIF}
 
@@ -4165,20 +4164,8 @@ end;
 
 // LongWordSearch
 //
-
+{$IFDEF VKS_ASM}
 function LongWordSearch(item: LongWord; list: PLongWordVector; Count: Integer): Integer; register;
-{$IFDEF VKS_NO_ASM}
-var i : integer;
-begin
-  result:=-1;
-  for i := 0 to Count-1 do begin
-    if list^[i]=item then begin
-      result:=i;
-      break;
-    end;
-  end;
-end;
-{$ELSE}
 asm
   push edi;
 
@@ -4202,6 +4189,19 @@ asm
 
   @@end:
   pop edi;
+end;
+{$ELSE}
+function LongWordSearch(item: LongWord; list: PLongWordVector; Count: Integer): Integer; register;
+var
+  i : integer;
+begin
+  result:=-1;
+  for i := 0 to Count-1 do begin
+    if list^[i]=item then begin
+      result:=i;
+      break;
+    end;
+  end;
 end;
 {$ENDIF}
 

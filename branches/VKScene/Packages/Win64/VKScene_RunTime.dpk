@@ -154,7 +154,6 @@ contains
   VKS.Language in '..\..\Source\VKS.Language.pas',
   VKS.LensFlare in '..\..\Source\VKS.LensFlare.pas',
   VKS.LinePFX in '..\..\Source\VKS.LinePFX.pas',
-  VKS.Log in '..\..\Source\VKS.Log.pas',
   VKS.Manager in '..\..\Source\VKS.Manager.pas',
   VKS.Material in '..\..\Source\VKS.Material.pas',
   VKS.MaterialEx in '..\..\Source\VKS.MaterialEx.pas',

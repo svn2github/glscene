@@ -1298,11 +1298,11 @@ begin
     begin
       case BlendingMode of
         bmAdditive:
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
         bmTransparency:
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       else // bmOpaque
-        rci.GLStates.Disable(stBlend);
+        rci.VKStates.Disable(stBlend);
       end;
     end
     else
@@ -1310,13 +1310,13 @@ begin
       case BlendingMode of
         bmAdditive:
           begin
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-            rci.GLStates.Enable(stBlend);
+            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+            rci.VKStates.Enable(stBlend);
           end;
         bmTransparency:
           begin
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            rci.GLStates.Enable(stBlend);
+            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            rci.VKStates.Enable(stBlend);
           end;
       else
         // bmOpaque, do nothing
@@ -1337,11 +1337,11 @@ begin
     begin
       case Renderer.BlendingMode of
         bmAdditive:
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
         bmTransparency:
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
       else // bmOpaque
-        rci.GLStates.Disable(stBlend);
+        rci.VKStates.Disable(stBlend);
       end;
     end
     else
@@ -1349,13 +1349,13 @@ begin
       case Renderer.BlendingMode of
         bmAdditive:
           begin
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-            rci.GLStates.Enable(stBlend);
+            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+            rci.VKStates.Enable(stBlend);
           end;
         bmTransparency:
           begin
-            rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            rci.GLStates.Enable(stBlend);
+            rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+            rci.VKStates.Enable(stBlend);
           end;
       else
         // bmOpaque, do nothing
@@ -1739,33 +1739,33 @@ begin
     rci.PipelineTransformation.Push;
     rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
 
-    rci.GLStates.Disable(stCullFace);
-    rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
+    rci.VKStates.Disable(stCullFace);
+    rci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
     currentTexturingMode := 0;
-    rci.GLStates.Disable(stLighting);
-    rci.GLStates.PolygonMode := pmFill;
+    rci.VKStates.Disable(stLighting);
+    rci.VKStates.PolygonMode := pmFill;
 
     case FBlendingMode of
       bmAdditive:
         begin
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-          rci.GLStates.Enable(stBlend);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+          rci.VKStates.Enable(stBlend);
         end;
       bmTransparency:
         begin
-          rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-          rci.GLStates.Enable(stBlend);
+          rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+          rci.VKStates.Enable(stBlend);
         end;
     else
       // bmOpaque, do nothing
     end;
-    rci.GLStates.DepthFunc := cfLEqual;
+    rci.VKStates.DepthFunc := cfLEqual;
     if not FZWrite then
     begin
-      rci.GLStates.DepthWriteMask := 0;
+      rci.VKStates.DepthWriteMask := 0;
     end;
     if not FZTest then
-      rci.GLStates.Disable(stDepthTest);
+      rci.VKStates.Disable(stDepthTest);
 
     try
       // Initialize managers
@@ -1812,8 +1812,8 @@ begin
     finally
       rci.PipelineTransformation.Pop;
     end;
-    rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-    rci.GLStates.DepthWriteMask := 1;
+    rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+    rci.VKStates.DepthWriteMask := 1;
   finally
     // cleanup
     for regionIdx := cPFXNbRegions - 1 downto 0 do
@@ -3137,12 +3137,12 @@ begin
     begin
       FTexHandle.AllocateHandle;
       FTexHandle.Target := ttTexture2D;
-      rci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+      rci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
       glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-      rci.GLStates.UnpackAlignment := 4;
-      rci.GLStates.UnpackRowLength := 0;
-      rci.GLStates.UnpackSkipRows := 0;
-      rci.GLStates.UnpackSkipPixels := 0;
+      rci.VKStates.UnpackAlignment := 4;
+      rci.VKStates.UnpackRowLength := 0;
+      rci.VKStates.UnpackSkipRows := 0;
+      rci.VKStates.UnpackSkipPixels := 0;
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -3162,7 +3162,7 @@ begin
     else
     begin
 
-      rci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+      rci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
     end;
   end;
 end;

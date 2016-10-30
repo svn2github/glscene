@@ -10,9 +10,10 @@ interface
 
 uses
   Winapi.OpenGL,
+  System.Sysutils,
+  FMX.Dialogs,
   VKS.VectorGeometry,
-  VKS.VectorTypes,
-  VKS.Log;
+  VKS.VectorTypes;
 
 const
   MAX_MATRIX_STACK_DEPTH = 128;
@@ -141,8 +142,8 @@ var
 begin
   if FStackPos > MAX_MATRIX_STACK_DEPTH then
   begin
-    GLSLogger.LogWarningFmt('Transformation stack overflow, more then %d values',
-      [MAX_MATRIX_STACK_DEPTH]);
+    ShowMessage(Format('Transformation stack overflow, more then %d values',
+      [MAX_MATRIX_STACK_DEPTH]));
   end;
   prevPos := FStackPos;
   Inc(FStackPos);
@@ -167,7 +168,7 @@ procedure TVKTransformation.Pop;
 begin
   if FStackPos = 0 then
   begin
-    GLSLogger.LogError('Transformation stack underflow');
+    ShowMessage('Transformation stack underflow');
     exit;
   end;
 
@@ -185,7 +186,7 @@ var
 begin
   if FStackPos = 0 then
   begin
-    GLSLogger.LogError('Transformation stack underflow');
+    ShowMessage('Transformation stack underflow');
     exit;
   end;
   prevPos := FStackPos - 1;

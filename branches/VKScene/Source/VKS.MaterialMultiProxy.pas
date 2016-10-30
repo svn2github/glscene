@@ -40,7 +40,7 @@ type
   // TVKMaterialMultiProxyMaster
   //
   { MasterObject description for a MultiProxy object. }
-  TVKMaterialMultiProxyMaster = class(GLinterfacedCollectionItem, IGLMaterialLibrarySupported)
+  TVKMaterialMultiProxyMaster = class(TVKInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
     { Private Declarations }
     FMasterObject: TVKBaseSceneObject;

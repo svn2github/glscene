@@ -540,11 +540,11 @@ begin
   // ...should be removed when absolute coords will be handled directly
   // in the point system (and will also make a better flame effect)
 
-  rci.GLStates.Disable(stCullFace);
-  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-  rci.GLStates.Enable(stBlend);
+  rci.VKStates.Disable(stCullFace);
+  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VKStates.Disable(stLighting);
+  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VKStates.Enable(stBlend);
 
   N := Manager.NP;
 
@@ -570,13 +570,13 @@ begin
     SetVector(InnerColor, Manager.FInnerColor.color);
 
     // ---------------
-    rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-    rci.GLStates.Enable(stBlend);
-    rci.GLStates.Enable(stLineSmooth);
-    rci.GLStates.Disable(stLighting);
+    rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+    rci.VKStates.Enable(stBlend);
+    rci.VKStates.Enable(stLineSmooth);
+    rci.VKStates.Disable(stLighting);
     // Stops particles at same distanceform overwriting each-other
-    rci.GLStates.DepthFunc := cfLEqual;
-    rci.GLStates.LineWidth := 3;
+    rci.VKStates.DepthFunc := cfLEqual;
+    rci.VKStates.LineWidth := 3;
     Icol := Manager.FInnerColor.color;
     Ocol := Manager.FOuterColor.color;
     Ccol := Manager.FCoreColor.color;
@@ -584,7 +584,7 @@ begin
     // ---Core Line---
     if Manager.FCore then
     begin
-      rci.GLStates.Disable(stBlend);
+      rci.VKStates.Disable(stBlend);
       glColor4fv(@Ccol);
       glBegin(GL_LINE_STRIP);
       for i := 0 to N - 1 do
@@ -599,7 +599,7 @@ begin
     // ---Point Glow---
     if Manager.FGlow then
     begin
-      rci.GLStates.Enable(stBlend);
+      rci.VKStates.Enable(stBlend);
       for i := N - 1 downto 0 do
       begin
         fp := PThorpoint(objList[i]);

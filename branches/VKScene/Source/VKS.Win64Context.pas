@@ -19,25 +19,25 @@ uses
   System.SysUtils,
   System.Classes,
   FMX.Forms,
+  FMX.Dialogs,
 ///  FMX.Platform.Win,
   VKS.OpenGLAdapter,
   VKS.Context,
   VKS.CrossPlatform,
   VKS.State,
   VKS.Strings,
-  VKS.Log,
   VKS.VectorGeometry;
 
 type
   // TGSceneContext
   //
-  { A context driver for standard Windows OpenGL (via MS OpenGL). }
-  TVKWin32Context = class(TVKContext)
+  { A context driver for standard Windows Vulkan }
+  TVKWinContext = class(TVKContext)
   protected
     { Protected Declarations }
     FDC: HDC;
     FRC: HGLRC;
-    FShareContext: TVKWin32Context;
+    FShareContext: TVKWinContext;
     FHPBUFFER: Integer;
     FiAttribs: packed array of Integer;
     FfAttribs: packed array of Single;
@@ -217,7 +217,7 @@ end;
 
 // Create
 //
-constructor TVKWin32Context.Create;
+constructor TVKWinContext.Create;
 begin
   inherited Create;
   ClearIAttribs;
@@ -226,7 +226,7 @@ end;
 
 // Destroy
 //
-destructor TVKWin32Context.Destroy;
+destructor TVKWinContext.Destroy;
 begin
   inherited Destroy;
 end;
@@ -269,7 +269,7 @@ end;
 
 // ClearIAttribs
 //
-procedure TVKWin32Context.ClearIAttribs;
+procedure TVKWinContext.ClearIAttribs;
 begin
   SetLength(FiAttribs, 1);
   FiAttribs[0] := 0;
@@ -277,7 +277,7 @@ end;
 
 // AddIAttrib
 //
-procedure TVKWin32Context.AddIAttrib(attrib, value: Integer);
+procedure TVKWinContext.AddIAttrib(attrib, value: Integer);
 var
   n: Integer;
 begin
@@ -290,7 +290,7 @@ end;
 
 // ChangeIAttrib
 //
-procedure TVKWin32Context.ChangeIAttrib(attrib, newValue: Integer);
+procedure TVKWinContext.ChangeIAttrib(attrib, newValue: Integer);
 var
   i: Integer;
 begin
@@ -309,7 +309,7 @@ end;
 
 // DropIAttrib
 //
-procedure TVKWin32Context.DropIAttrib(attrib: Integer);
+procedure TVKWinContext.DropIAttrib(attrib: Integer);
 var
   i: Integer;
 begin
@@ -333,7 +333,7 @@ end;
 
 // ClearFAttribs
 //
-procedure TVKWin32Context.ClearFAttribs;
+procedure TVKWinContext.ClearFAttribs;
 begin
   SetLength(FfAttribs, 1);
   FfAttribs[0] := 0;
@@ -341,7 +341,7 @@ end;
 
 // AddFAttrib
 //
-procedure TVKWin32Context.AddFAttrib(attrib, value: Single);
+procedure TVKWinContext.AddFAttrib(attrib, value: Single);
 var
   n: Integer;
 begin
@@ -354,7 +354,7 @@ end;
 
 // DestructionEarlyWarning
 //
-procedure TVKWin32Context.DestructionEarlyWarning(sender: TObject);
+procedure TVKWinContext.DestructionEarlyWarning(sender: TObject);
 begin
   if IsValid then
     DestroyContext;
@@ -362,7 +362,7 @@ end;
 
 // ChooseWGLFormat
 //
-procedure TVKWin32Context.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
+procedure TVKWinContext.ChooseWGLFormat(DC: HDC; nMaxFormats: Cardinal;
   piFormats: PInteger; var nNumFormats: Integer; BufferCount: Integer);
 const
   cAAToSamples: array [aaNone .. csa16xHQ] of Integer = (1, 2, 2, 4, 4, 6, 8,
@@ -371,7 +371,7 @@ const
 
   procedure ChoosePixelFormat;
   begin
-    if not FGL.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
+    if not FVK.wglChoosePixelFormatARB(DC, @FiAttribs[0], @FfAttribs[0], 32,
       PGLint(piFormats), @nNumFormats) then
       nNumFormats := 0;
   end;
@@ -519,7 +519,7 @@ begin
   end;
 end;
 
-procedure TVKWin32Context.CreateOldContext(aDC: HDC);
+procedure TVKWinContext.CreateOldContext(aDC: HDC);
 begin
   if not FLegacyContextsOnly then
   begin
@@ -544,7 +544,7 @@ begin
   FDC := aDC;
 
   if not wglMakeCurrent(FDC, FRC) then
-    raise EGLContext.Create(Format(strContextActivationFailed,
+    raise EVKContext.Create(Format(strContextActivationFailed,
       [GetLastError, SysErrorMessage(GetLastError)]));
 
   if not FLegacyContextsOnly then
@@ -561,29 +561,29 @@ begin
         PropagateSharedContext;
       end;
     end;
-    FGL.DebugMode := False;
-    FGL.Initialize;
+    FVK.DebugMode := False;
+    FVK.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
-      GLStates.MultisampleFilterHint := hintNicest
+      VKStates.MultisampleFilterHint := hintNicest
     else
-      GLStates.MultisampleFilterHint := hintDontCare;
+      VKStates.MultisampleFilterHint := hintDontCare;
 
     if rcoDebug in Options then
-      GLSLogger.LogWarning(strDriverNotSupportDebugRC);
+      ShowMessage(strDriverNotSupportDebugRC);
     if rcoOGL_ES in Options then
-      GLSLogger.LogWarning(strDriverNotSupportOESRC);
-    if GLStates.ForwardContext then
-      GLSLogger.LogWarning(strDriverNotSupportFRC);
-    GLStates.ForwardContext := False;
+      ShowMessage(strDriverNotSupportOESRC);
+    if VKStates.ForwardContext then
+      ShowMessage(strDriverNotSupportFRC);
+    VKStates.ForwardContext := False;
   end
   else
-    GLSLogger.LogInfo(strTmpRC_Created);
+    ShowMessage(strTmpRC_Created);
 end;
 
-procedure TVKWin32Context.CreateNewContext(aDC: HDC);
+procedure TVKWinContext.CreateNewContext(aDC: HDC);
 var
   bSuccess, bOES: Boolean;
 begin
@@ -593,7 +593,7 @@ begin
   try
     ClearIAttribs;
     // Initialize forward context
-    if GLStates.ForwardContext then
+    if VKStates.ForwardContext then
     begin
       if GL_VERSION_4_2 then
       begin
@@ -634,7 +634,7 @@ begin
         Abort;
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
       if rcoOGL_ES in Options then
-        GLSLogger.LogWarning(strOESvsForwardRC);
+        ShowMessage(strOESvsForwardRC);
     end
     else if rcoOGL_ES in Options then
     begin
@@ -646,13 +646,13 @@ begin
         bOES := True;
       end
       else
-        GLSLogger.LogError(strDriverNotSupportOESRC);
+        ShowMessage(strDriverNotSupportOESRC);
     end;
 
     if rcoDebug in Options then
     begin
       AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-      FGL.DebugMode := True;
+      FVK.DebugMode := True;
     end;
 
     case Layer of
@@ -669,27 +669,27 @@ begin
     FRC := 0;
     if Assigned(FShareContext) then
     begin
-      FRC := FGL.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
+      FRC := FVK.wglCreateContextAttribsARB(aDC, FShareContext.RC, @FiAttribs[0]);
       if FRC <> 0 then
       begin
         FSharedContexts.Add(FShareContext);
         PropagateSharedContext;
       end
       else
-        GLSLogger.LogWarning(strFailedToShare)
+        ShowMessage(strFailedToShare)
     end;
 
     if FRC = 0 then
     begin
-      FRC := FGL.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
+      FRC := FVK.wglCreateContextAttribsARB(aDC, 0, @FiAttribs[0]);
       if FRC = 0 then
       begin
-        if GLStates.ForwardContext then
-          GLSLogger.LogErrorFmt(strForwardContextFailed,
-            [GetLastError, SysErrorMessage(GetLastError)])
+        if VKStates.ForwardContext then
+          ShowMessage(Format(strForwardContextFailed,
+            [GetLastError, SysErrorMessage(GetLastError)]))
         else
-          GLSLogger.LogErrorFmt(strBackwardContextFailed,
-            [GetLastError, SysErrorMessage(GetLastError)]);
+          ShowMessage(Format(strBackwardContextFailed,
+            [GetLastError, SysErrorMessage(GetLastError)]));
         Abort;
       end;
     end;
@@ -698,34 +698,34 @@ begin
 
     if not wglMakeCurrent(FDC, FRC) then
     begin
-      GLSLogger.LogErrorFmt(strContextActivationFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]);
+      ShowMessage(Format(strContextActivationFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]));
       Abort;
     end;
 
-    FGL.Initialize;
+    FVK.Initialize;
     MakeGLCurrent;
     // If we are using AntiAliasing, adjust filtering hints
     if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
       // Hint for nVidia HQ modes (Quincunx etc.)
-      GLStates.MultisampleFilterHint := hintNicest
+      VKStates.MultisampleFilterHint := hintNicest
     else
-      GLStates.MultisampleFilterHint := hintDontCare;
+      VKStates.MultisampleFilterHint := hintDontCare;
 
-    if GLStates.ForwardContext then
-      GLSLogger.LogInfo(strFRC_created);
+    if VKStates.ForwardContext then
+      ShowMessage(strFRC_created);
     if bOES then
-      GLSLogger.LogInfo(strOESRC_created);
+      ShowMessage(strOESRC_created);
     bSuccess := True;
   finally
-    GLStates.ForwardContext := GLStates.ForwardContext and bSuccess;
-    PipelineTransformation.LoadMatricesEnabled := not GLStates.ForwardContext;
+    VKStates.ForwardContext := VKStates.ForwardContext and bSuccess;
+    PipelineTransformation.LoadMatricesEnabled := not VKStates.ForwardContext;
   end;
 end;
 
 // DoCreateContext
 //
-procedure TVKWin32Context.DoCreateContext(ADeviceHandle: THandle);
+procedure TVKWinContext.DoCreateContext(ADeviceHandle: THandle);
 const
   cMemoryDCs = [OBJ_MEMDC, OBJ_METADC, OBJ_ENHMETADC];
   cBoolToInt: array [False .. True] of Integer = (GL_FALSE, GL_TRUE);
@@ -739,7 +739,7 @@ var
   tempDC: HDC;
   localDC: HDC;
   localRC: HGLRC;
-  sharedRC: TVKWin32Context;
+  sharedRC: TVKWinContext;
 
   function CurrentPixelFormatIsHardwareAccelerated: Boolean;
   var
@@ -845,7 +845,7 @@ begin
                 begin
                   pixelFormat := iFormats[i];
                   iValue := GL_FALSE;
-                  FGL.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
+                  FVK.wglGetPixelFormatAttribivARB(ADeviceHandle, pixelFormat, 0,
                     1, @iAttrib, @iValue);
                   if iValue = GL_FALSE then
                     break;
@@ -868,7 +868,7 @@ begin
         sharedRC := FShareContext;
         DoDestroyContext;
         FShareContext := sharedRC;
-        GLSLogger.LogInfo('Temporary rendering context destroyed');
+        ShowMessage('Temporary rendering context destroyed');
       end;
     finally
       ReleaseDC(0, tempDC);
@@ -937,7 +937,7 @@ begin
       (FAcceleration = chaHardware) then
     begin
       FAcceleration := chaSoftware;
-      GLSLogger.LogWarning(strFailHWRC);
+      ShowMessage(strFailHWRC);
     end;
   end;
 
@@ -952,21 +952,20 @@ begin
     // Share identifiers with other context if it deffined
     if (ServiceContext <> nil) and (Self <> ServiceContext) then
     begin
-      if wglShareLists(TVKWin32Context(ServiceContext).FRC, FRC) then
+      if wglShareLists(TVKWinContext(ServiceContext).FRC, FRC) then
       begin
         FSharedContexts.Add(ServiceContext);
         PropagateSharedContext;
       end
       else
-        GLSLogger.LogWarning
-          ('DoCreateContext - Failed to share contexts with resource context');
+        ShowMessage('DoCreateContext - Failed to share contexts with resource context');
     end;
   end;
 end;
 
 // SpawnLegacyContext
 //
-procedure TVKWin32Context.SpawnLegacyContext(aDC: HDC);
+procedure TVKWinContext.SpawnLegacyContext(aDC: HDC);
 begin
   try
     FLegacyContextsOnly := True;
@@ -986,7 +985,7 @@ end;
 
 // DoCreateMemoryContext
 //
-procedure TVKWin32Context.DoCreateMemoryContext(OutputDevice: THandle;
+procedure TVKWinContext.DoCreateMemoryContext(OutputDevice: THandle;
   Width, Height: Integer; BufferCount: Integer);
 var
   nbFormats: Integer;
@@ -996,7 +995,7 @@ var
   localRC: HGLRC;
   localDC, tempDC: HDC;
   tempWnd: HWND;
-  shareRC: TVKWin32Context;
+  shareRC: TVKWinContext;
   pfDescriptor: TPixelFormatDescriptor;
   bOES: Boolean;
 begin
@@ -1025,12 +1024,12 @@ begin
               ('Format not supported for pbuffer operation.');
           iPBufferAttribs[0] := 0;
 
-          localHPBuffer := FGL.wglCreatePbufferARB(tempDC, iFormats[0], Width,
+          localHPBuffer := FVK.wglCreatePbufferARB(tempDC, iFormats[0], Width,
             Height, @iPBufferAttribs[0]);
           if localHPBuffer = 0 then
             raise EPBuffer.Create('Unabled to create pbuffer.');
           try
-            localDC := FGL.wglGetPbufferDCARB(localHPBuffer);
+            localDC := FVK.wglGetPbufferDCARB(localHPBuffer);
             if localDC = 0 then
               raise EPBuffer.Create('Unabled to create pbuffer''s DC.');
             try
@@ -1039,7 +1038,7 @@ begin
                 // Modern creation style
                 ClearIAttribs;
                 // Initialize forward context
-                if GLStates.ForwardContext then
+                if VKStates.ForwardContext then
                 begin
                   if GL_VERSION_4_2 then
                   begin
@@ -1081,7 +1080,7 @@ begin
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB,
                     WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB);
                   if rcoOGL_ES in Options then
-                    GLSLogger.LogWarning(strOESvsForwardRC);
+                    ShowMessage(strOESvsForwardRC);
                 end
                 else if rcoOGL_ES in Options then
                 begin
@@ -1093,13 +1092,13 @@ begin
                       WGL_CONTEXT_ES2_PROFILE_BIT_EXT);
                   end
                   else
-                    GLSLogger.LogError(strDriverNotSupportOESRC);
+                    ShowMessage(strDriverNotSupportOESRC);
                 end;
 
                 if rcoDebug in Options then
                 begin
                   AddIAttrib(WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB);
-                  FGL.DebugMode := True;
+                  FVK.DebugMode := True;
                 end;
 
                 case Layer of
@@ -1113,12 +1112,12 @@ begin
                     AddIAttrib(WGL_CONTEXT_LAYER_PLANE_ARB, 2);
                 end;
 
-                localRC := FGL.wglCreateContextAttribsARB(localDC, 0,
+                localRC := FVK.wglCreateContextAttribsARB(localDC, 0,
                   @FiAttribs[0]);
                 if localRC = 0 then
 {$IFDEF VKS_LOGGING}
                 begin
-                  if GLStates.ForwardContext then
+                  if VKStates.ForwardContext then
                     GLSLogger.LogErrorFmt(cForwardContextFailed,
                       [GetLastError, SysErrorMessage(GetLastError)])
                   else
@@ -1136,18 +1135,18 @@ begin
                 localRC := wglCreateContext(localDC);
                 if localRC = 0 then
                 begin
-                  GLSLogger.LogErrorFmt(strBackwardContextFailed,
-                    [GetLastError, SysErrorMessage(GetLastError)]);
+                  ShowMessage(Format(strBackwardContextFailed,
+                    [GetLastError, SysErrorMessage(GetLastError)]));
                   Abort;
                 end;
               end;
 
             except
-              FGL.wglReleasePBufferDCARB(localHPBuffer, localDC);
+              FVK.wglReleasePBufferDCARB(localHPBuffer, localDC);
               raise;
             end;
           except
-            FGL.wglDestroyPBufferARB(localHPBuffer);
+            FVK.wglDestroyPBufferARB(localHPBuffer);
             raise;
           end;
         end
@@ -1176,18 +1175,18 @@ begin
     (FAcceleration = chaHardware) then
   begin
     FAcceleration := chaSoftware;
-    GLSLogger.LogWarning(strFailHWRC);
+    ShowMessage(strFailHWRC);
   end;
 
   Activate;
-  FGL.Initialize;
+  FVK.Initialize;
   // If we are using AntiAliasing, adjust filtering hints
   if AntiAliasing in [aa2xHQ, aa4xHQ, csa8xHQ, csa16xHQ] then
-    GLStates.MultisampleFilterHint := hintNicest
+    VKStates.MultisampleFilterHint := hintNicest
   else if AntiAliasing in [aa2x, aa4x, csa8x, csa16x] then
-    GLStates.MultisampleFilterHint := hintFastest
+    VKStates.MultisampleFilterHint := hintFastest
   else
-    GLStates.MultisampleFilterHint := hintDontCare;
+    VKStates.MultisampleFilterHint := hintDontCare;
 
   // Specific which color buffers are to be drawn into
   if BufferCount > 1 then
@@ -1195,20 +1194,19 @@ begin
 
   if (ServiceContext <> nil) and (Self <> ServiceContext) then
   begin
-    if wglShareLists(TVKWin32Context(ServiceContext).FRC, FRC) then
+    if wglShareLists(TVKWinContext(ServiceContext).FRC, FRC) then
     begin
       FSharedContexts.Add(ServiceContext);
       PropagateSharedContext;
     end
     else
-      GLSLogger.LogWarning
-        ('DoCreateContext - Failed to share contexts with resource context');
+      ShowMessage('DoCreateContext - Failed to share contexts with resource context');
   end;
 
   if Assigned(FShareContext) and (FShareContext.RC <> 0) then
   begin
     if not wglShareLists(FShareContext.RC, FRC) then
-      GLSLogger.LogWarning(strFailedToShare)
+      ShowMessage(strFailedToShare)
     else
     begin
       FSharedContexts.Add(FShareContext);
@@ -1218,21 +1216,21 @@ begin
 
   Deactivate;
 
-  if GLStates.ForwardContext then
-    GLSLogger.LogInfo('PBuffer ' + strFRC_created);
+  if VKStates.ForwardContext then
+    ShowMessage('PBuffer ' + strFRC_created);
   if bOES then
-    GLSLogger.LogInfo('PBuffer ' + strOESRC_created);
-  if not(GLStates.ForwardContext or bOES) then
-    GLSLogger.LogInfo(strPBufferRC_created);
+    ShowMessage('PBuffer ' + strOESRC_created);
+  if not(VKStates.ForwardContext or bOES) then
+    ShowMessage(strPBufferRC_created);
 end;
 
 // DoShareLists
 //
-function TVKWin32Context.DoShareLists(aContext: TVKContext): Boolean;
+function TVKWinContext.DoShareLists(aContext: TVKContext): Boolean;
 begin
-  if aContext is TVKWin32Context then
+  if aContext is TVKWinContext then
   begin
-    FShareContext := TVKWin32Context(aContext);
+    FShareContext := TVKWinContext(aContext);
     if FShareContext.RC <> 0 then
       Result := wglShareLists(FShareContext.RC, RC)
     else
@@ -1244,22 +1242,22 @@ end;
 
 // DoDestroyContext
 //
-procedure TVKWin32Context.DoDestroyContext;
+procedure TVKWinContext.DoDestroyContext;
 begin
   if vUseWindowTrackingHook then
     UnTrackWindow(WindowFromDC(FDC));
 
   if FHPBUFFER <> 0 then
   begin
-    FGL.wglReleasePBufferDCARB(FHPBUFFER, FDC);
-    FGL.wglDestroyPBufferARB(FHPBUFFER);
+    FVK.wglReleasePBufferDCARB(FHPBUFFER, FDC);
+    FVK.wglDestroyPBufferARB(FHPBUFFER);
     FHPBUFFER := 0;
   end;
 
   if FRC <> 0 then
     if not wglDeleteContext(FRC) then
-      GLSLogger.LogErrorFmt(strDeleteContextFailed,
-        [GetLastError, SysErrorMessage(GetLastError)]);
+      ShowMessage(Format(strDeleteContextFailed,
+        [GetLastError, SysErrorMessage(GetLastError)]));
 
   FRC := 0;
   FDC := 0;
@@ -1268,41 +1266,41 @@ end;
 
 // DoActivate
 //
-procedure TVKWin32Context.DoActivate;
+procedure TVKWinContext.DoActivate;
 begin
   if not wglMakeCurrent(FDC, FRC) then
   begin
-    GLSLogger.LogErrorFmt(strContextActivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]);
+    ShowMessage(Format(strContextActivationFailed,
+      [GetLastError, SysErrorMessage(GetLastError)]));
     Abort;
   end;
 
-  if not FGL.IsInitialized then
-    FGL.Initialize(CurrentGLContext = nil);
+  if not FVK.IsInitialized then
+    FVK.Initialize(CurrentVKContext = nil);
 end;
 
 // Deactivate
 //
-procedure TVKWin32Context.DoDeactivate;
+procedure TVKWinContext.DoDeactivate;
 begin
   if not wglMakeCurrent(0, 0) then
   begin
-    GLSLogger.LogErrorFmt(strContextDeactivationFailed,
-      [GetLastError, SysErrorMessage(GetLastError)]);
+    ShowMessage(Format(strContextDeactivationFailed,
+      [GetLastError, SysErrorMessage(GetLastError)]));
     Abort;
   end;
 end;
 
 // IsValid
 //
-function TVKWin32Context.IsValid: Boolean;
+function TVKWinContext.IsValid: Boolean;
 begin
   Result := (FRC <> 0);
 end;
 
 // SwapBuffers
 //
-procedure TVKWin32Context.SwapBuffers;
+procedure TVKWinContext.SwapBuffers;
 begin
   if (FDC <> 0) and (rcoDoubleBuffered in Options) then
     if FSwapBufferSupported then
@@ -1325,7 +1323,7 @@ end;
 
 // RenderOutputDevice
 //
-function TVKWin32Context.RenderOutputDevice: Pointer;
+function TVKWinContext.RenderOutputDevice: Pointer;
 begin
   Result := Pointer(FDC);
 end;
@@ -1339,6 +1337,6 @@ initialization
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-RegisterGLContextClass(TVKWin32Context);
+RegisterVKContextClass(TVKWinContext);
 
 end.

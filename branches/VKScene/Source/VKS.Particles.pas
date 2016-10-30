@@ -208,14 +208,14 @@ procedure TVKParticles.BuildList(var ARci: TVKRenderContextInfo);
 var
   mi, ma: Single;
 begin
-  ARci.GLStates.Disable(stLighting);
-  ARci.GLStates.Enable(stLineStipple);
-  ARci.GLStates.Enable(stLineSmooth);
-  ARci.GLStates.Enable(stBlend);
-  ARci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-  ARci.GLStates.LineWidth := 1;
-  ARci.GLStates.LineStippleFactor := 1;
-  ARci.GLStates.LineStipplePattern := $AAAA;
+  ARci.VKStates.Disable(stLighting);
+  ARci.VKStates.Enable(stLineStipple);
+  ARci.VKStates.Enable(stLineSmooth);
+  ARci.VKStates.Enable(stBlend);
+  ARci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+  ARci.VKStates.LineWidth := 1;
+  ARci.VKStates.LineStippleFactor := 1;
+  ARci.VKStates.LineStipplePattern := $AAAA;
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do

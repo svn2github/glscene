@@ -1434,7 +1434,7 @@ type
   TVKActorOptions = set of TVKActorOption;
 
 const
-  cDefaultGLActorOptions = [aoSkeletonNormalizeNormals];
+  cDefaultActorOptions = [aoSkeletonNormalizeNormals];
 
 type
 
@@ -1446,10 +1446,10 @@ type
 
   // TVKActorAnimation
   //
-    { An actor animation sequence. 
+    { An actor animation sequence.
        An animation sequence is a named set of contiguous frames that can be used
        for animating an actor. The referred frames can be either morph or skeletal
-       frames (choose which via the Reference property). 
+       frames (choose which via the Reference property).
        An animation can be directly "played" by the actor by selecting it with
        SwitchAnimation, and can also be "blended" via a TVKAnimationControler. }
   TVKActorAnimation = class(TCollectionItem)
@@ -1732,7 +1732,7 @@ type
     property Interval: Integer read FInterval write FInterval;
     { Actor and animation miscellanious options. }
     property Options: TVKActorOptions read FOptions write SetOptions default
-      cDefaultGLActorOptions;
+      cDefaultActorOptions;
 
     { Triggered after each CurrentFrame change. }
     property OnFrameChanged: TNotifyEvent read FOnFrameChanged write
@@ -2823,8 +2823,8 @@ var
   i: Integer;
 begin
   // root node setups and restore OpenGL stuff
-  mrci.GLStates.Disable(stColorMaterial);
-  mrci.GLStates.Disable(stLighting);
+  mrci.VKStates.Disable(stColorMaterial);
+  mrci.VKStates.Disable(stLighting);
   glColor3f(1, 1, 1);
   // render root-bones
   for i := 0 to Count - 1 do
@@ -2918,7 +2918,7 @@ var
   i: Integer;
 begin
   // point for self
-  mrci.GLStates.PointSize := 5;
+  mrci.VKStates.PointSize := 5;
   glBegin(GL_POINTS);
   IssueColor(Color);
   glVertex3fv(@GlobalMatrix.W.X);
@@ -4580,7 +4580,7 @@ begin
     // inside a display list
     FUseVBO := FUseVBO
       and GL_ARB_vertex_buffer_object
-      and not mrci.GLStates.InsideList;
+      and not mrci.VKStates.InsideList;
 
     if not FUseVBO then
     begin
@@ -4773,9 +4773,9 @@ begin
     Assert(FArraysDeclared);
     if not FLightMapArrayEnabled then
     begin
-      mrci.GLStates.ActiveTexture := 1;
-      mrci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
-      mrci.GLStates.ActiveTexture := 0;
+      mrci.VKStates.ActiveTexture := 1;
+      mrci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
+      mrci.VKStates.ActiveTexture := 0;
       FLightMapArrayEnabled := True;
     end;
   end;
@@ -4788,9 +4788,9 @@ procedure TVKMeshObject.DisableLightMapArray(var mrci: TVKRenderContextInfo);
 begin
   if GL_ARB_multitexture and FLightMapArrayEnabled then
   begin
-    mrci.GLStates.ActiveTexture := 1;
-    mrci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-    mrci.GLStates.ActiveTexture := 0;
+    mrci.VKStates.ActiveTexture := 1;
+    mrci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+    mrci.VKStates.ActiveTexture := 0;
     FLightMapArrayEnabled := False;
   end;
 end;
@@ -4961,10 +4961,10 @@ begin
   gotColor := (Vertices.Count = Colors.Count);
   if gotColor then
   begin
-    mrci.GLStates.Enable(stColorMaterial);
+    mrci.VKStates.Enable(stColorMaterial);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    mrci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
-    mrci.GLStates.SetGLMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+    mrci.VKStates.SetMaterialColors(cmFront, clrBlack, clrGray20, clrGray80, clrBlack, 0);
+    mrci.VKStates.SetMaterialColors(cmBack, clrBlack, clrGray20, clrGray80, clrBlack, 0);
   end;
   case Mode of
     momTriangles, momTriangleStrip: if Vertices.Count > 0 then
@@ -5070,15 +5070,15 @@ begin
             end;
           end;
           // restore faceculling
-          if (stCullFace in mrci.GLStates.States) then
+          if (stCullFace in mrci.VKStates.States) then
           begin
             if not mrci.bufferFaceCull then
-              mrci.GLStates.Disable(stCullFace);
+              mrci.VKStates.Disable(stCullFace);
           end
           else
           begin
             if mrci.bufferFaceCull then
-              mrci.GLStates.Enable(stCullFace);
+              mrci.VKStates.Enable(stCullFace);
           end;
         end
         else
@@ -6185,10 +6185,10 @@ begin
     with lightMap do
     begin
       Assert(Image.NativeTextureTarget = ttTexture2D);
-      mrci.GLStates.TextureBinding[1, ttTexture2D] := Handle;
+      mrci.VKStates.TextureBinding[1, ttTexture2D] := Handle;
       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-      mrci.GLStates.ActiveTexture := 0;
+      mrci.VKStates.ActiveTexture := 0;
     end;
 end;
 
@@ -7696,7 +7696,7 @@ begin
     // set winding
     case FNormalsOrientation of
       mnoDefault: ; // nothing
-      mnoInvert: rci.GLStates.InvertGLFrontFace;
+      mnoInvert: rci.VKStates.InvertFrontFace;
     else
       Assert(False);
     end;
@@ -7724,7 +7724,7 @@ begin
           or UseMeshMaterials then
           BuildList(rci)
         else
-          rci.GLStates.CallList(GetHandle(rci));
+          rci.VKStates.CallList(GetHandle(rci));
       until not Material.UnApply(rci);
       rci.materialLibrary := nil;
     end
@@ -7733,10 +7733,10 @@ begin
       if (osDirectDraw in ObjectStyle) or rci.amalgamating then
         BuildList(rci)
       else
-        rci.GLStates.CallList(GetHandle(rci));
+        rci.VKStates.CallList(GetHandle(rci));
     end;
     if FNormalsOrientation <> mnoDefault then
-      rci.GLStates.InvertGLFrontFace;
+      rci.VKStates.InvertFrontFace;
   end;
   if Assigned(LightmapLibrary) then
     xgl.AllowSecondTextureUnit;
@@ -8628,7 +8628,7 @@ begin
   FInterval := 100; // 10 animation frames per second
   FAnimations := TVKActorAnimations.Create(Self);
   FControlers := nil; // created on request
-  FOptions := cDefaultGLActorOptions;
+  FOptions := cDefaultActorOptions;
 end;
 
 // Destroy
@@ -8961,7 +8961,7 @@ begin
   inherited;
   if OverlaySkeleton then
   begin
-    rci.GLStates.Disable(stDepthTest);
+    rci.VKStates.Disable(stDepthTest);
     Skeleton.RootBones.BuildList(rci);
   end;
 end;

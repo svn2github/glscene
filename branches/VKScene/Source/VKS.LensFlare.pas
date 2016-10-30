@@ -608,11 +608,11 @@ begin
       // hardware-based occlusion test is possible
       FlareIsNotOccluded := True;
 
-      rci.GLStates.SetColorMask([]);
-      rci.GLStates.Disable(stAlphaTest);
-      rci.GLStates.DepthWriteMask := GLboolean(False);
-      rci.GLStates.Enable(stDepthTest);
-      rci.GLStates.DepthFunc := cfLEqual;
+      rci.VKStates.SetColorMask([]);
+      rci.VKStates.Disable(stAlphaTest);
+      rci.VKStates.DepthWriteMask := GLboolean(False);
+      rci.VKStates.Enable(stDepthTest);
+      rci.VKStates.DepthFunc := cfLEqual;
 
       if TVKOcclusionQueryHandle.IsSupported > 0 then
       begin
@@ -647,8 +647,8 @@ begin
         glGetBooleanv(GL_OCCLUSION_TEST_RESULT_HP, @FFlareIsNotOccluded)
       end;
 
-      rci.GLStates.DepthFunc := cfLEqual;
-      rci.GLStates.SetColorMask(cAllColorComponents);
+      rci.VKStates.DepthFunc := cfLEqual;
+      rci.VKStates.SetColorMask(cAllColorComponents);
     end
     else
     begin
@@ -669,7 +669,7 @@ begin
     oldSeed := RandSeed;
     RandSeed := Seed;
 
-    SetupRenderingOptions(rci.GLStates);
+    SetupRenderingOptions(rci.VKStates);
 
     if [feGlow, feStreaks, feRays, feRing] * Elements <> [] then
     begin
@@ -689,7 +689,7 @@ begin
       end;
 
       if feStreaks in Elements then
-        RenderStreaks(rci.GLStates);
+        RenderStreaks(rci.VKStates);
 
       // Rays (random-length lines from the origin):
       if feRays in Elements then
@@ -700,8 +700,8 @@ begin
           if GL.GREMEDY_string_marker then
             GL.StringMarkerGREMEDY(19, 'LensFlare.RaysQuad');
         {$ENDIF}
-          rci.GLStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
-          rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
+          rci.VKStates.TextureBinding[0, ttTexture2D] := FTexRays.Handle;
+          rci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
           glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
           glBegin(GL_QUADS);
@@ -715,10 +715,10 @@ begin
           glVertex2f(-FCurrSize, FCurrSize);
           glEnd;
 
-          rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
+          rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
         end
         else
-          RenderRays(rci.GLStates, FCurrSize);
+          RenderRays(rci.VKStates, FCurrSize);
       end;
 
       if feRing in Elements then
@@ -762,7 +762,7 @@ begin
     Exit;
   with activeBuffer.RenderingContext do
   begin
-    stateCache := GLStates;
+    stateCache := VKStates;
     PipelineTransformation.Push;
     PipelineTransformation.ProjectionMatrix := CreateOrthoMatrix(0, activeBuffer.Width, 0, activeBuffer.Height, -1, 1);
     PipelineTransformation.ViewMatrix := IdentityHmgMatrix;

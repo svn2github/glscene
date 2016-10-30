@@ -11,9 +11,10 @@ interface
 
 uses
   System.Classes, System.SysUtils,
+  Winapi.OpenGL, Winapi.OpenGLext, 
   //VKS
   VKS.Scene, VKS.Objects, VKS.Texture, VKS.VectorFileObjects, VKS.Coordinates,
-  Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context, VKS.Material, VKS.Color, VKS.State,
+  VKS.Context, VKS.Material, VKS.Color, VKS.State,
   VKS.Nodes, VKS.VectorGeometry, VKS.Spline, VKS.VectorLists, VKS.RenderContextInfo;
 
 type
@@ -582,22 +583,22 @@ begin
   begin
     glPushMatrix;
     glScalef(lNodeSize, lNodeSize, lNodeSize);
-///    rci.GLStates.UnSetGLState(stTexture2D);
-    rci.GLStates.UnSetGLState(stColorMaterial);
-    rci.GLStates.UnSetGLState(stBlend);
+///    rci.VKStates.UnSetVKState(stTexture2D);
+    rci.VKStates.UnSetVKState(stColorMaterial);
+    rci.VKStates.UnSetVKState(stBlend);
     if Node = FSelectedNode then
-      rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
+      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
-      rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
+      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
     glPopMatrix;
   end
   else
   begin
     if Node = FSelectedNode then
-      rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
+      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrYellow, clrBlack, 0)
     else
-      rci.GLStates.SetGLMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
+      rci.VKStates.SetMaterialColors(cmFRONT, clrBlack, clrGray20, clrGreen, clrBlack, 0);
     DrawCircle(lNodeSize);
   end;
   glPopMatrix;

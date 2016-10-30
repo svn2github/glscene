@@ -324,7 +324,7 @@ begin
 
     ttTexture2DMultisample:
       glTexImage2DMultisample(
-        DecodeGLTextureTarget(target),
+        DecodeTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),
         Width,
@@ -333,7 +333,7 @@ begin
 
     ttTexture2DMultisampleArray:
       glTexImage3DMultisample(
-        DecodeGLTextureTarget(target),
+        DecodeTextureTarget(target),
         SamplesCount,
         InternalFormatToOpenGLFormat(AInternalFormat),
         Width,
@@ -346,6 +346,6 @@ end;
 {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
-  RegisterGLTextureImageClass(TVKMultisampleImage);
+  RegisterTextureImageClass(TVKMultisampleImage);
 
 end.

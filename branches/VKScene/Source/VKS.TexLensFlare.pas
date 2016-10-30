@@ -198,10 +198,10 @@ begin
   glLoadIdentity;
   glScalef(2 / rci.viewPortSize.cx, 2 / rci.viewPortSize.cy, 1);
 
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.Disable(stDepthTest);
-  rci.GLStates.Enable(stBlend);
-  rci.GLStates.SetBlendFunc(bfOne, bfOne);
+  rci.VKStates.Disable(stLighting);
+  rci.VKStates.Disable(stDepthTest);
+  rci.VKStates.Enable(stBlend);
+  rci.VKStates.SetBlendFunc(bfOne, bfOne);
 
   //Rays and Glow on Same Position
   glPushMatrix;

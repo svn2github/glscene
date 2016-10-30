@@ -33,6 +33,7 @@ uses
   System.UITypes,
   System.Math,
   FMX.Graphics,
+  FMX.Dialogs,
 {$IFDEF VKS_Graphics32_SUPPORT}
   GR32,
 {$ENDIF}
@@ -46,8 +47,7 @@ uses
   VKS.Color,
   VKS.TextureFormat,
   VKS.VectorGeometry,
-  VKS.Strings,
-  VKS.Log;
+  VKS.Strings;
 
 type
 
@@ -838,8 +838,7 @@ end;
 
 // BGR24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
+{$IFDEF GLS_ASM}
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
 // EDX stores dest
@@ -874,7 +873,6 @@ asm
          pop   edi
 end;
 {$ELSE}
-
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -892,8 +890,7 @@ end;
 
 // RGB24ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
+{$IFDEF GLS_ASM}
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
 // EDX stores dest
@@ -923,7 +920,6 @@ asm
          pop   edi
 end;
 {$ELSE}
-
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -941,8 +937,7 @@ end;
 
 // BGRA32ToRGBA32
 //
-{$IFNDEF GEOMETRY_NO_ASM}
-
+{$IFDEF GLS_ASM}
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer); register;
 // EAX stores src
 // EDX stores dest
@@ -966,7 +961,6 @@ asm
          pop   edi
 end;
 {$ELSE}
-
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -1420,7 +1414,7 @@ begin
       fDataType, GL_UNSIGNED_BYTE,
       GetWidth, GetHeight);
   except
-    GLSLogger.LogError(Format(strCantConvertImg, [ClassName]));
+    ShowMessage(Format(strCantConvertImg, [ClassName]));
     SetErrorImage;
     FreeMem(newData);
     exit;
@@ -1613,7 +1607,7 @@ begin
     end;
     }
     // Check maximum dimension
-    maxSize := CurrentGLContext.GLStates.MaxTextureSize;
+    maxSize := CurrentVkContext.VKStates.MaxTextureSize;
     if w > maxSize then
       w := maxSize;
     if h > maxSize then
@@ -1654,7 +1648,7 @@ begin
       TVKImage(Self).FBlank := bBlank;
 
     glHandle := AHandle.Handle;
-    glTarget := DecodeGLTextureTarget(AHandle.Target);
+    glTarget := DecodeTextureTarget(AHandle.Target);
 
     // Hardware mipmap autogeneration
     aMipmapGen := aMipmapGen and IsTargetSupportMipmap(glTarget);
@@ -1921,7 +1915,7 @@ var
 
 begin
   Result := False;
-  LContext := CurrentGLContext;
+  LContext := CurrentVKContext;
   if LContext = nil then
   begin
     LContext := AHandle.RenderingContext;
@@ -1936,10 +1930,10 @@ begin
     exit;
   end;
 
-  glTarget := DecodeGLTextureTarget(AHandle.Target);
+  glTarget := DecodeTextureTarget(AHandle.Target);
 
   try
-    LContext.GLStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
+    LContext.VKStates.TextureBinding[0, AHandle.Target] := AHandle.Handle;
 
     FLevelCount := 0;
     glGetTexParameteriv(glTarget, GL_TEXTURE_MAX_LEVEL, @texLod);
@@ -2119,7 +2113,7 @@ begin
       Read(Temp, SizeOf(Integer)); // Version
       if Temp > 0 then
       begin
-        GLSLogger.LogError(Format(strUnknownArchive, [Self.ClassType, Temp]));
+        ShowMessage(Format(strUnknownArchive, [Self.ClassType, Temp]));
         Abort;
       end;
       Read(FLOD[0].Width, SizeOf(Integer));
@@ -2667,7 +2661,7 @@ var
 begin
   UnMipmap;
 
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     oldTex := TextureBinding[ActiveTexture, ttTexture2D];
     TextureBinding[ActiveTexture, ttTexture2D] := textureHandle;
@@ -2699,7 +2693,7 @@ var
 begin
   if Assigned(textureHandle) and (textureHandle.Handle <> 0) then
   begin
-    oldContext := CurrentGLContext;
+    oldContext := CurrentVKContext;
     contextActivate := (oldContext <> textureHandle.RenderingContext);
     if contextActivate then
     begin
@@ -3001,7 +2995,7 @@ type
   T2Pixel32 = packed array[0..1] of TVKPixel32;
   P2Pixel32 = ^T2Pixel32;
 
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFDEF GLS_ASM}
   procedure ProcessRow3DNow(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   asm     // 3DNow! version 30% faster
@@ -3040,7 +3034,6 @@ type
       db $0F,$0E               /// femms
   end;
 {$ENDIF}
-
   procedure ProcessRowPascal(pDest: PGLPixel32; pLineA, pLineB: P2Pixel32; n:
     Integer);
   var
@@ -3079,7 +3072,7 @@ begin
   pDest := @FData[0];
   pLineA := @FData[0];
   pLineB := @FData[Width];
-{$IFNDEF GEOMETRY_NO_ASM}
+{$IFDEF GLS_ASM}
   if vSIMD = 1 then
   begin
     for y := 0 to h2 - 1 do
@@ -3133,7 +3126,7 @@ procedure TVKImage.DrawPixels(const x, y: Single);
 begin
   if fBlank or IsEmpty then
     Exit;
-  Assert(not CurrentGLContext.GLStates.ForwardContext);
+  Assert(not CurrentVKContext.VKStates.ForwardContext);
   glRasterPos2f(x, y);
   glDrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
@@ -3338,7 +3331,7 @@ begin
       fData := newData;
     except
       FreeMem(newData);
-      GLSLogger.LogError(Format(strCantConvertImg, [ClassName]));
+      ShowMessage(Format(strCantConvertImg, [ClassName]));
       SetErrorImage;
     end;
   end;

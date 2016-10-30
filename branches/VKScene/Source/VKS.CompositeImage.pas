@@ -324,7 +324,7 @@ begin
 end;
 
 initialization
-  RegisterGLTextureImageClass(TVKCompositeImage);
+  RegisterTextureImageClass(TVKCompositeImage);
 
 end.
 

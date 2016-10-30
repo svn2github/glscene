@@ -165,9 +165,10 @@ implementation
 const
    cFileVersion = 'HTF100';
 
-{$IFNDEF VKS_NO_ASM}
+
 // FillSmallInt
 //
+{$IFDEF VKS_ASM}
 procedure FillSmallInt(p : PSmallInt; count : Integer; v : SmallInt); register;
 // EAX contains p
 // EDX contains count

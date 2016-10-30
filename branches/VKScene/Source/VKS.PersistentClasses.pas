@@ -20,8 +20,9 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
-  VKS.Strings,
-  VKS.CrossPlatform;
+
+  VKS.CrossPlatform,
+  VKS.Strings;
 
 type
 
@@ -363,10 +364,10 @@ type
     constructor Create(AOwner: TPersistent); virtual;
   end;
 
-  // GLinterfacedPersistent
+  // TVKInterfacedPersistent
   //
   { TPersistent thet inplements IInterface. }
-  GLinterfacedPersistent = class(TPersistent, IInterface)
+  TVKInterfacedPersistent = class(TPersistent, IInterface)
   protected
     // Implementing IInterface.
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
@@ -374,10 +375,10 @@ type
     function _Release: Integer; stdcall;
   end;
 
-  // GLinterfacedCollectionItem
+  // TVKInterfacedCollectionItem
   //
   { TCollectionItem thet inplements IInterface. }
-  GLinterfacedCollectionItem = class(TCollectionItem, IInterface)
+  TVKInterfacedCollectionItem = class(TCollectionItem, IInterface)
   protected
     // Implementing IInterface.
     function QueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
@@ -1046,36 +1047,6 @@ end;
 //
 
 function TPersistentObjectList.IndexOf(Item: TObject): Integer;
-{$IFNDEF VKS_NO_ASM}
-var
-  c: Integer;
-  p: ^TObject;
-begin
-  if FCount <= 0 then
-    Result := -1
-  else
-  begin
-    c := FCount;
-    p := @FList^[0];
-    asm
-			mov eax, Item;
-			mov ecx, c;
-			mov edx, ecx;
-			push edi;
-			mov edi, p;
-			repne scasd;
-			je @@FoundIt
-			mov edx, -1;
-			jmp @@SetResult;
-		@@FoundIt:
-			sub edx, ecx;
-			dec edx;
-		@@SetResult:
-			mov Result, edx;
-			pop edi;
-    end;
-  end;
-{$ELSE}
 var
   I: Integer;
 begin
@@ -1091,7 +1062,6 @@ begin
         Exit;
       end;
   end;
-{$ENDIF}
 end;
 
 // Insert
@@ -2239,13 +2209,13 @@ begin
 end;
 
 // ------------------
-// ------------------ GLinterfacedPersistent ------------------
+// ------------------ TVKInterfacedPersistent ------------------
 // ------------------
 
 // _AddRef
 //
 
-function GLinterfacedPersistent._AddRef: Integer; stdcall;
+function TVKInterfacedPersistent._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2253,7 +2223,7 @@ end;
 // _Release
 //
 
-function GLinterfacedPersistent._Release: Integer; stdcall;
+function TVKInterfacedPersistent._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2261,7 +2231,7 @@ end;
 // QueryInterface
 //
 
-function GLinterfacedPersistent.QueryInterface(const IID: TGUID;
+function TVKInterfacedPersistent.QueryInterface(const IID: TGUID;
   out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then
@@ -2271,14 +2241,14 @@ begin
 end;
 
 // ------------------
-// ------------------ GLinterfacedCollectionItem ------------------
+// ------------------ TVKInterfacedCollectionItem ------------------
 // ------------------
 
 
 // _AddRef
 //
 
-function GLinterfacedCollectionItem._AddRef: Integer; stdcall;
+function TVKInterfacedCollectionItem._AddRef: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2286,7 +2256,7 @@ end;
 // _Release
 //
 
-function GLinterfacedCollectionItem._Release: Integer; stdcall;
+function TVKInterfacedCollectionItem._Release: Integer; stdcall;
 begin
   Result := -1; //ignore
 end;
@@ -2294,7 +2264,7 @@ end;
 // QueryInterface
 //
 
-function GLinterfacedCollectionItem.QueryInterface(const IID: TGUID;
+function TVKInterfacedCollectionItem.QueryInterface(const IID: TGUID;
     out Obj): HResult; stdcall;
 begin
   if GetInterface(IID, Obj) then

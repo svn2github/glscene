@@ -258,8 +258,8 @@ function GetGenericCompressedFormat(const intFormat: GLinternalFormat;
 function GetUncompressedFormat(const intFormat: GLinternalFormat;
   out internalFormat: GLinternalFormat; out colorFormat: GLEnum): Boolean;
 
-function DecodeGLTextureTarget(const TextureTarget: TVKTextureTarget): GLEnum;
-function EncodeGLTextureTarget(const glTarget: GLEnum): TVKTextureTarget;
+function DecodeTextureTarget(const TextureTarget: TVKTextureTarget): GLEnum;
+function EncodeTextureTarget(const glTarget: GLEnum): TVKTextureTarget;
 function IsTargetSupportMipmap(const TextureTarget: TVKTextureTarget): Boolean; overload;
 function IsTargetSupportMipmap(const glTarget: GLEnum): Boolean; overload;
 
@@ -581,7 +581,7 @@ end;
 
 function IsTargetSupported(target: TVKTextureTarget): Boolean;
 begin
-  Result := IsTargetSupported(DecodeGLTextureTarget(target));
+  Result := IsTargetSupported(DecodeTextureTarget(target));
 end;
 
 function IsTargetSupported(glTarget: GLEnum): Boolean;
@@ -894,7 +894,7 @@ begin
   Result := colorFormat <> 0;
 end;
 
-function DecodeGLTextureTarget(const TextureTarget: TVKTextureTarget): Cardinal;
+function DecodeTextureTarget(const TextureTarget: TVKTextureTarget): Cardinal;
 const
   cTargetToEnum: array[TVKTextureTarget] of GLEnum =
   (
@@ -916,7 +916,7 @@ begin
   Result := cTargetToEnum[TextureTarget];
 end;
 
-function EncodeGLTextureTarget(const glTarget: GLEnum): TVKTextureTarget;
+function EncodeTextureTarget(const glTarget: GLEnum): TVKTextureTarget;
 begin
   case glTarget of
     GL_TEXTURE_1D: Result := ttTexture1d;

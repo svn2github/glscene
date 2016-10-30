@@ -912,30 +912,17 @@ end;
 procedure ReverseByteOrder(ValueIn: Pointer; Size: Integer; Count: Integer = 1);
 var
   W: Word;
-{$IFDEF VKS_NO_ASM}
   pB: PByte;
   Blo, Bhi: Byte;
-{$ENDIF}
   L: LongWord;
   i: Integer;
 begin
   i:=0;
-
   case Size of
     2: begin
-
       while i < Count do
       begin
-
         W := PU2Array(ValueIn)^[i];
-
-{$IFNDEF VKS_NO_ASM}
-        asm
-          mov ax,w;   { move w into ax register }
-          xchg al,ah; { swap lo and hi byte of word }
-          mov w,ax;   { move "swapped" ax back to w }
-        end;
-{$ELSE}
         pB := @W;
         Blo := pB^;
         Inc(pB);
@@ -943,29 +930,18 @@ begin
         pB^ := Blo;
         Dec(pB);
         pB^ := Bhi;
-{$ENDIF}
+
         PU2Array(ValueIn)^[i] := w;
 
         Inc(i);
-
       end;
 
     end;
 
     4: begin
-
       while i < Count do
       begin
-
         L := PU4Array(ValueIn)^[i];
-
-{$IFNDEF VKS_NO_ASM}
-        asm
-          mov ax,w;   { move w into ax register }
-          xchg al,ah; { swap lo and hi byte of word }
-          mov w,ax;   { move "swapped" ax back to w }
-        end;
-{$ELSE}
         pB := @W;
         Blo := pB^;
         Inc(pB);
@@ -973,14 +949,10 @@ begin
         pB^ := Blo;
         Dec(pB);
         pB^ := Bhi;
-{$ENDIF}
 
         PU4Array(ValueIn)^[i] := l;
-
         Inc(i);
-
       end;
-
     end;
 
   else

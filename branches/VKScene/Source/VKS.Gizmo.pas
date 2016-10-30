@@ -894,7 +894,7 @@ procedure TVKGizmo.DirectGlDisable(Sender: TObject;
   var Rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    Rci.GLStates.Disable(StDepthTest);
+    Rci.VKStates.Disable(StDepthTest);
 end;
 
 procedure TVKGizmo.SetLabelFont(const Value: TVKCustomBitmapFont);
@@ -917,7 +917,7 @@ end;
 procedure TVKGizmo.DirectGlEnable(Sender: TObject; var Rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    Rci.GLStates.Enable(StDepthTest);
+    Rci.VKStates.Enable(StDepthTest);
 end;
 
 function TVKGizmo.GetPickedObjectPoint(const Obj: TVKBaseSceneObject): TVector;

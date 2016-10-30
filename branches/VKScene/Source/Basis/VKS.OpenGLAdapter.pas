@@ -11,11 +11,11 @@ interface
 {$I VKScene.inc}
 
 uses
-{$IFDEF MSWINDOWS}
+  System.SysUtils,
   Winapi.Windows,
   Winapi.OpenGL,
   Winapi.OpenGLext,
-{$ENDIF }
+  FMX.Dialogs,
 
 {$IFDEF VKS_X11_SUPPORT}
   Xlib, X, XUtil,
@@ -28,18 +28,11 @@ uses
 {$IFDEF DARWIN}
   MacOSAll,
 {$ENDIF}
-  System.SysUtils,
-  VKS.Log,
   VKS.VectorTypes,
   VKS.VectorGeometry,
   VKS.Strings;
 
 type
-  GLvoid = Pointer;
-  TGLvoid = GLvoid;
-  PGLvoid = Pointer;
-  PPGLvoid = ^PGLvoid;
-
   PGPUDEVICE = ^TGPUDEVICE;
   TGPUDEVICE = record
     cb: Cardinal;
@@ -1989,7 +1982,7 @@ var
 
 procedure DebugCallBack(Source: GLenum; type_: GLenum; id: GLuint;
   severity: GLenum; length: GLSizei; const message: PGLChar; userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   {$IFDEF VKS_LOGGING}
    if length > 0 then
@@ -1999,10 +1992,10 @@ end;
 
 procedure DebugCallBackAMD(id: GLuint; category: GLenum; severity: GLenum;
   length: GLSizei; message: PGLChar; userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   if length > 0 then
-    GLSLogger.LogDebug(string(message));
+    {ShowMessage(string(message))};
 end;
 
 procedure ClearOpenGLError;
@@ -2032,27 +2025,21 @@ begin
       end;
       if not (GL_ARB_debug_output) then
         case glError of
-          GL_INVALID_ENUM:
-            GLSLogger.LogError(format(strOpenGLError, ['Invalid enum']));
-          GL_INVALID_VALUE:
-            GLSLogger.LogError(format(strOpenGLError, ['Invalid value']));
-          GL_INVALID_OPERATION:
-            GLSLogger.LogError(format(strOpenGLError, ['Invalid Operation']));
-          GL_OUT_OF_MEMORY:
-            GLSLogger.LogError(format(strOpenGLError, ['Out of memory']));
+          GL_INVALID_ENUM: ShowMessage('Invalid enum');
+          GL_INVALID_VALUE: ShowMessage('Invalid value');
+          GL_INVALID_OPERATION: ShowMessage('Invalid Operation');
+          GL_OUT_OF_MEMORY: ShowMessage('Out of memory');
         end;
     end;
   except
-    GLSLogger.LogError(format(strOpenGLError, ['Exception in glGetError']));
+    ShowMessage('Exception in glGetError');
   end;
 end;
 
 procedure GLCap;
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
-  {$IFDEF VKS_LOGGING}
-  GLSLogger.LogError('Call OpenGL function with undefined entry point');
-  {$ENDIF}
+  ShowMessage('Call Vulkan function with undefined entry point');
   Abort;
 end;
 
@@ -2179,7 +2166,7 @@ var
   pname: GLenum;
   params: PGLint;
 begin
-  GLSLogger.LogNotice('Getting OpenGL entry points and extension');
+  ShowMessage('Getting OpenGL entry points and extension');
   {$IFDEF SUPPORT_WGL}
   ReadWGLExtensions;
   ReadWGLImplementationProperties;
@@ -2220,17 +2207,16 @@ begin
 
   if vNotInformed then
   begin
-    GLSLogger.LogNotice('');
-    GLSLogger.LogInfo('OpenGL rendering context information:');
-    GLSLogger.LogInfo(format('Renderer     : %s', [glGetString(GL_RENDERER)]));
-    GLSLogger.LogInfo(format('Vendor       : %s', [glGetString(GL_VENDOR)]));
-    GLSLogger.LogInfo(format('Version      : %s', [glGetString(GL_VERSION)]));
+    ShowMessage('');
+    ShowMessage('Vulkan rendering context information:');
+    ShowMessage(format('Renderer     : %s', [glGetString(GL_RENDERER)]));
+    ShowMessage(format('Vendor       : %s', [glGetString(GL_VENDOR)]));
+    ShowMessage(format('Version      : %s', [glGetString(GL_VERSION)]));
     if GL_VERSION_2_0 then
-      GLSLogger.LogInfo(format('GLSL version : %s',
-        [glGetString(GL_SHADING_LANGUAGE_VERSION)]))
+      ShowMessage(format('GLSL version : %s', [glGetString(GL_SHADING_LANGUAGE_VERSION)]))
     else
-      GLSLogger.LogWarning('GLSL version : not supported');
-    GLSLogger.LogNotice('');
+      ShowMessage('GLSL version : not supported');
+    ShowMessage('');
     vNotInformed := False;
   end;
 

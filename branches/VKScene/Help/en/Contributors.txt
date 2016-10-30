@@ -1,9 +1,7 @@
-VKScene 3D library 
-Developers and Contributors
-VKSteam 2016
-
+Contributors and Developers
+of VKScene 3D library 
+based  on GLScene
 ===========================
- 
 Aaron Hochwimmer,
 Adirex,
 Airatz,
@@ -58,3 +56,5 @@ Uwe Raabe,
 YarUnderoaker,
 Zsolt Laky
 
+==================
+VKSteam 2017

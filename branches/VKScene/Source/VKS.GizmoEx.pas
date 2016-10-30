@@ -642,9 +642,9 @@ end;
 procedure TVKGizmoExUIArrowLine.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -658,9 +658,9 @@ end;
 procedure TVKGizmoExUIDisk.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -673,9 +673,9 @@ end;
 procedure TVKGizmoExUISphere.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -688,9 +688,9 @@ end;
 procedure TVKGizmoExUIPolyGon.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -703,9 +703,9 @@ end;
 procedure TVKGizmoExUIFrustrum.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -718,9 +718,9 @@ end;
 procedure TVKGizmoExUITorus.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -733,9 +733,9 @@ end;
 procedure TVKGizmoExUILines.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -748,9 +748,9 @@ end;
 procedure TVKGizmoExUIFlatText.BuildList(var rci: TVKRenderContextInfo);
 begin
   if FNoZWrite then
-    rci.GLStates.Disable(stDepthTest)
+    rci.VKStates.Disable(stDepthTest)
   else
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
   inherited;
 end;
 
@@ -2185,7 +2185,7 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
   begin
     if not Assigned(FLabelFont) and (Text = '') then
       Exit;
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
     FLayout := VKS.CrossPlatform.tlCenter;
     FAlignment := taCenter;
 
@@ -2203,18 +2203,18 @@ procedure TVKGizmoEx.InternalRender(Sender: TObject; var rci: TVKRenderContextIn
           wm.V[I].V[J] := 0;
     glLoadMatrixf(@wm);
 
-    rci.GLStates.PolygonMode := pmFill;
+    rci.VKStates.PolygonMode := pmFill;
     glScalef(Scale.X, Scale.Y, Scale.Z);
     glTranslatef(Position.X, Position.Y, Position.Z);
 
 
     if Color.W <> 1 then
     begin
-      rci.GLStates.Enable(stBlend);
-      rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+      rci.VKStates.Enable(stBlend);
+      rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
     end;
-    rci.GLStates.Disable(stDepthTest);
-    rci.GLStates.Disable(stCullFace);
+    rci.VKStates.Disable(stDepthTest);
+    rci.VKStates.Disable(stCullFace);
 
     FLabelFont.RenderString(rci, Text, FAlignment, FLayout, Color);
     glPopMatrix;
@@ -2229,17 +2229,17 @@ begin
 
   if FShowBoundingBox and (FSelectedObjects.Count - 1 >= 0) then
   begin
-    rci.GLStates.Disable(stLighting);
+    rci.VKStates.Disable(stLighting);
     if FAntiAliasedLines then
-      rci.GLStates.Enable(stLineSmooth);
+      rci.VKStates.Enable(stLineSmooth);
 
     if (FGizmoThickness >= 0.5) and (FGizmoThickness <= 7) then
-      rci.GLStates.LineWidth := FGizmoThickness
+      rci.VKStates.LineWidth := FGizmoThickness
     else
-      rci.GLStates.LineWidth := 1;
+      rci.VKStates.LineWidth := 1;
 
     glColorMaterial(GL_FRONT, GL_EMISSION);
-    rci.GLStates.Enable(stColorMaterial);
+    rci.VKStates.Enable(stColorMaterial);
 
     glColor4fv(@FBoundingBoxColor.Color);
 
@@ -2247,7 +2247,7 @@ begin
       ShowBoundingBox(TVKBaseSceneObject(FSelectedObjects.Hit[I]));
 
   end;
-  rci.GLStates.Disable(stColorMaterial);
+  rci.VKStates.Disable(stColorMaterial);
 end;
 
 procedure TVKGizmoEx.SetReferenceCoordSystem(aValue: TVKGizmoExReferenceCoordinateSystem);

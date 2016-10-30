@@ -11,7 +11,7 @@ interface
 uses
 {$IFDEF MSWINDOWS} Winapi.Windows, {$ENDIF}
 {$IFDEF Unix} x, dynlibs, {$ENDIF}
-  VKS.Log, VKS.CrossPlatform;
+  VKS.CrossPlatform;
 
 type
   FT_Encoding = array[0..3] of char;

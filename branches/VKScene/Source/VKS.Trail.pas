@@ -105,7 +105,7 @@ implementation
 constructor TVKTrail.Create(AOwner: TComponent);
 begin
  inherited Create(AOwner);
- vertices.Clear;    // inherited tglmesh makes a triangle... remove it.
+ vertices.Clear;    // inherited TVKmesh makes a triangle... remove it.
  Mode := mmTriangleStrip;
  FAntiZFightOffset := 0.0000266;
  VertexMode := vmVNCT;
@@ -167,7 +167,7 @@ begin
                          v := AffinevectorMake(obj.AbsoluteRight);
                     end;
      msFaceCamera: begin
-                         c := Scene.CurrentGLCamera;
+                         c := Scene.CurrentCamera;
                          if c<>nil then
                          begin
                               dv := VectorSubtract(fLastV0Pos,AffinevectorMake(obj.AbsolutePosition));

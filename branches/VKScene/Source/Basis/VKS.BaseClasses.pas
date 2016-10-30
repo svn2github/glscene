@@ -7,9 +7,12 @@ unit VKS.BaseClasses;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //VKS
-  VKS.Strings, VKS.PersistentClasses, VKS.CrossPlatform;
+  VKS.Strings,
+  VKS.PersistentClasses,
+  VKS.CrossPlatform;
 
 type
 
@@ -21,17 +24,17 @@ type
 
   // TVKProgressEvent
   //
-  { Progression event for time-base animations/simulations. 
+  { Progression event for time-base animations/simulations.
      deltaTime is the time delta since last progress and newTime is the new
      time after the progress event is completed. }
   TVKProgressEvent = procedure(Sender: TObject; const deltaTime, newTime: Double) of object;
 
-  IGLNotifyAble = interface(IInterface)
+  IVKNotifyAble = interface(IInterface)
     ['{00079A6C-D46E-4126-86EE-F9E2951B4593}']
     procedure NotifyChange(Sender: TObject);
   end;
 
-  IGLProgessAble = interface(IInterface)
+  IVKProgessAble = interface(IInterface)
     ['{95E44548-B0FE-4607-98D0-CA51169AF8B5}']
     procedure DoProgress(const progressTime: TProgressTimes);
   end;
@@ -39,7 +42,7 @@ type
   // TVKUpdateAbleObject
   //
   { An abstract class describing the "update" interface.  }
-  TVKUpdateAbleObject = class(GLinterfacedPersistent, IGLNotifyAble)
+  TVKUpdateAbleObject = class(TVKInterfacedPersistent, IVKNotifyAble)
   private
     { Private Declarations }
     FOwner: TPersistent;
@@ -65,7 +68,7 @@ type
   // TVKCadenceAbleComponent
   //
   { A base class describing the "cadenceing" interface.  }
-  TVKCadenceAbleComponent = class(TVKComponent, IGLProgessAble)
+  TVKCadenceAbleComponent = class(TVKComponent, IVKProgessAble)
   public
     { Public Declarations }
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
@@ -74,7 +77,7 @@ type
   // TVKUpdateAbleComponent
   //
   { A base class describing the "update" interface.  }
-  TVKUpdateAbleComponent = class(TVKCadenceAbleComponent, IGLNotifyAble)
+  TVKUpdateAbleComponent = class(TVKCadenceAbleComponent, IVKNotifyAble)
   public
     { Public Declarations }
     procedure NotifyChange(Sender: TObject); virtual;

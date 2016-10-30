@@ -90,7 +90,7 @@ begin
   inherited;
   FTexture := TVKTexture.Create(Self);
   SetTexture(FTexture);
-  SetGLTextureImageClassesToStrings(CBImageClass.Items);
+  SetTextureImageClassesToStrings(CBImageClass.Items);
   for I := 0 to Integer(High(TVKTextureImageAlpha)) do
     CBImageAlpha.Items.Add(GetEnumName(TypeInfo(TVKTextureImageAlpha), I));
   for I := 0 to Integer(High(TVKMagFilter)) do
@@ -217,7 +217,7 @@ end;
 //
 procedure TRTextureEdit.SBEditImageClick(Sender: TObject);
 begin
-  EditGLTextureImage(FTexture.Image);
+  EditTextureImage(FTexture.Image);
   DoOnChange;
 end;
 

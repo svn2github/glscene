@@ -87,7 +87,7 @@ type
     drawState: TDrawState;
     objectsSorting: TVKObjectsSorting;
     visibilityCulling: TVKVisibilityCulling;
-    GLStates: TVKStateCache;
+    VKStates: TVKStateCache;
     PipelineTransformation: TVKTransformation;
     rcci: TRenderContextClippingInfo;
     sceneAmbientColor: TColorVector;

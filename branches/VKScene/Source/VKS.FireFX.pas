@@ -765,16 +765,16 @@ begin
   if Assigned(Manager.Reference) then
     rci.PipelineTransformation.ModelMatrix := IdentityHmgMatrix;
 
-  rci.GLStates.CurrentProgram := 0;
-  rci.GLStates.Disable(stCullFace);
-  rci.GLStates.ActiveTextureEnabled[ttTexture2D] := False;
-  rci.GLStates.Disable(stLighting);
-  rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOne);
-  rci.GLStates.Enable(stBlend);
-  rci.GLStates.Disable(stAlphaTest);
-  rci.GLStates.Enable(stDepthTest);
-  rci.GLStates.DepthFunc := cfLEqual;
-  rci.GLStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
+  rci.VKStates.CurrentProgram := 0;
+  rci.VKStates.Disable(stCullFace);
+  rci.VKStates.ActiveTextureEnabled[ttTexture2D] := False;
+  rci.VKStates.Disable(stLighting);
+  rci.VKStates.SetBlendFunc(bfSrcAlpha, bfOne);
+  rci.VKStates.Enable(stBlend);
+  rci.VKStates.Disable(stAlphaTest);
+  rci.VKStates.Enable(stDepthTest);
+  rci.VKStates.DepthFunc := cfLEqual;
+  rci.VKStates.DepthWriteMask := not GLboolean(Manager.NoZWrite);
 
   n := Manager.NP;
 

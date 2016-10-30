@@ -275,7 +275,7 @@ end;
 
 procedure TVKCanvas.BackupOpenGLStates;
 begin
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     Disable(stLighting);
     Disable(stFog);
@@ -362,7 +362,7 @@ begin
   if val < 1 then
     Exit;
   if val <> FPenWidth then
-    with CurrentGLContext.GLStates do
+    with CurrentVKContext.VKStates do
     begin
       FPenWidth := val;
       StopPrimitive;

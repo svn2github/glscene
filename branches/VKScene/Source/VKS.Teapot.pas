@@ -13,8 +13,9 @@ interface
 
 uses
   System.Classes,
-   
-  VKS.Scene, VKS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Context,
+  Winapi.OpenGL, Winapi.OpenGLext,
+
+  VKS.Scene, VKS.VectorGeometry, VKS.Context,
   VKS.RenderContextInfo, VKS.VectorTypes;
 
 type
@@ -119,7 +120,7 @@ begin
     FGrid := 2;
   GRD := FGrid;
 
-  rci.GLStates.InvertGLFrontFace;
+  rci.VKStates.InvertFrontFace;
   glEnable(GL_AUTO_NORMAL);
   glEnable(GL_MAP2_VERTEX_3);
   glEnable(GL_MAP2_TEXTURE_COORD_2);
@@ -164,7 +165,7 @@ begin
   glDisable(GL_AUTO_NORMAL);
   glDisable(GL_MAP2_VERTEX_3);
   glDisable(GL_MAP2_TEXTURE_COORD_2);
-  rci.GLStates.InvertGLFrontFace;
+  rci.VKStates.InvertFrontFace;
 end;
 
 // DoRender
@@ -188,7 +189,7 @@ begin
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
       else
-        ARci.GLStates.CallList(GetHandle(ARci))
+        ARci.VKStates.CallList(GetHandle(ARci))
     else
     begin
       Material.Apply(ARci);
@@ -196,7 +197,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          ARci.GLStates.CallList(GetHandle(ARci));
+          ARci.VKStates.CallList(GetHandle(ARci));
       until not Material.UnApply(ARci);
     end;
   end;

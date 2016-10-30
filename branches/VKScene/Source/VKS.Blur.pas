@@ -327,8 +327,8 @@ var
   end;
 
 begin
-  if FViewer.Camera <> Scene.CurrentGLCamera then
-    FViewer.Camera := Scene.CurrentGLCamera;
+  if FViewer.Camera <> Scene.CurrentCamera then
+    FViewer.Camera := Scene.CurrentCamera;
 
   if FViewer.Camera <> nil then
   begin
@@ -454,7 +454,7 @@ begin
   CheckOpenGLError;
   repeat
     if AlphaChannel <> 1 then
-      ARci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel);
+      ARci.VKStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel);
     // Prepare matrices
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
@@ -473,8 +473,8 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    ARci.GLStates.Disable(stDepthTest);
-    ARci.GLStates.DepthWriteMask := GLboolean(False);
+    ARci.VKStates.Disable(stDepthTest);
+    ARci.VKStates.DepthWriteMask := GLboolean(False);
 
     // calculate offsets in order to keep the quad a square centered in the view
     if ARci.viewPortSize.cx > ARci.viewPortSize.cy then
@@ -773,7 +773,7 @@ procedure TVKMotionBlur.DoRender(var ARci: TVKRenderContextInfo; ARenderSelf, AR
 begin
   if not (ARci.ignoreMaterials or (csDesigning in ComponentState) or
     (ARci.drawState = dsPicking)) then
-  with ARci.GLStates do
+  with ARci.VKStates do
   begin
     ARci.ignoreDepthRequests := True;
     Material.Apply(ARci);

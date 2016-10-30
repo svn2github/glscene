@@ -600,7 +600,7 @@ begin
    // initialize infos
    glNormal3fv(@ZVector);
    if FNoZWrite then
-      rci.GLStates.DepthWriteMask := 0;  //False
+      rci.VKStates.DepthWriteMask := 0;  //False
    if SortByMaterials then begin
       SetLength(quadInfos, MaterialLibrary.Materials.Count);
       for i:=0 to High(quadInfos) do begin //correction in (i:=0) from (i:=1)
@@ -656,7 +656,7 @@ begin
       end;
    end;
    if FNoZWrite then
-      rci.GLStates.DepthWriteMask := 1; //True
+      rci.VKStates.DepthWriteMask := 1; //True
 end;
 
 //-------------------------------------------------------------

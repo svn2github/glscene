@@ -21,6 +21,7 @@ uses
   FMX.Graphics,
   FMX.Controls,
   FMX.Types,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
   VKS.Context,
@@ -45,8 +46,7 @@ uses
   VKS.XOpenGL,
   VKS.VectorTypes,
   VKS.ApplicationFileIO,
-  VKS.Utils,
-  VKS.Log;
+  VKS.Utils;
 
 
 type
@@ -1437,7 +1437,7 @@ type
     FObjects: TVKSceneRootObject;
     FBaseContext: TVKContext; //reference, not owned!
     FLights, FBuffers: TPersistentObjectList;
-    FCurrentGLCamera: TVKCamera;
+    FCurrentCamera: TVKCamera;
     FCurrentBuffer: TVKSceneBuffer;
     FObjectsSorting: TVKObjectsSorting;
     FVisibilityCulling: TVKVisibilityCulling;
@@ -1506,7 +1506,7 @@ type
        See LoadFromFile for details. }
     procedure LoadFromTextFile(const fileName: string);
 
-    property CurrentGLCamera: TVKCamera read FCurrentGLCamera;
+    property CurrentCamera: TVKCamera read FCurrentCamera;
     property Lights: TPersistentObjectList read FLights;
     property Objects: TVKSceneRootObject read FObjects;
     property CurrentBuffer: TVKSceneBuffer read FCurrentBuffer;
@@ -1688,7 +1688,7 @@ type
     procedure SetColorDepth(const val: TVKColorDepth);
     procedure SetShadeModel(const val: TVKShadeModel);
     procedure SetFogEnable(AValue: Boolean);
-    procedure SetGLFogEnvironment(AValue: TVKFogEnvironment);
+    procedure SetFogEnvironment(AValue: TVKFogEnvironment);
     function StoreFog: Boolean;
     procedure SetAccumBufferBits(const val: Integer);
 
@@ -1943,7 +1943,7 @@ type
     { Fog environment options.
        See TVKFogEnvironment. }
     property FogEnvironment: TVKFogEnvironment read FFogEnvironment write
-      SetGLFogEnvironment stored StoreFog;
+      SetFogEnvironment stored StoreFog;
     { Color used for filling the background prior to any rendering. }
     property BackgroundColor: TColor read FBackgroundColor write
       SetBackgroundColor default TColors.SysBtnFace;
@@ -2216,7 +2216,7 @@ begin
   if GL.GREMEDY_string_marker then
     GL.StringMarkerGREMEDY(13, 'AxesBuildList');
 {$ENDIF}
-  with rci.GLStates do
+  with rci.VKStates do
   begin
     Disable(stLighting);
     if not rci.ignoreBlendingRequests then
@@ -2403,11 +2403,11 @@ begin
 
   if FListHandle.IsDataNeedUpdate then
   begin
-    rci.GLStates.NewList(Result, GL_COMPILE);
+    rci.VKStates.NewList(Result, GL_COMPILE);
     try
       BuildList(rci);
     finally
-      rci.GLStates.EndList;
+      rci.VKStates.EndList;
     end;
     FListHandle.NotifyDataUpdated;
   end;
@@ -4605,9 +4605,9 @@ begin
       ARci.PipelineTransformation.Push;
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.GLStates.Disable(stDepthTest);
+        ARci.VKStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.GLStates.Enable(stDepthTest);
+        ARci.VKStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
@@ -4619,9 +4619,9 @@ begin
     begin
       if osIgnoreDepthBuffer in ObjectStyle then
       begin
-        ARci.GLStates.Disable(stDepthTest);
+        ARci.VKStates.Disable(stDepthTest);
         DoRender(ARci, True, shouldRenderChildren);
-        ARci.GLStates.Enable(stDepthTest);
+        ARci.VKStates.Enable(stDepthTest);
       end
       else
         DoRender(ARci, True, shouldRenderChildren);
@@ -4634,9 +4634,9 @@ begin
     if (osIgnoreDepthBuffer in ObjectStyle) and
       TVKSceneBuffer(ARCi.buffer).DepthTest then
     begin
-      ARci.GLStates.Disable(stDepthTest);
+      ARci.VKStates.Disable(stDepthTest);
       DoRender(ARci, False, shouldRenderChildren);
-      ARci.GLStates.Enable(stDepthTest);
+      ARci.VKStates.Enable(stDepthTest);
     end
     else
       DoRender(ARci, False, shouldRenderChildren);
@@ -4659,7 +4659,7 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      ARci.GLStates.CallList(GetHandle(ARci));
+      ARci.VKStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -5442,7 +5442,7 @@ begin
       if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
         BuildList(ARci)
       else
-        ARci.GLStates.CallList(GetHandle(ARci))
+        ARci.VKStates.CallList(GetHandle(ARci))
     else
     begin
       FMaterial.Apply(ARci);
@@ -5450,7 +5450,7 @@ begin
         if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
           BuildList(ARci)
         else
-          ARci.GLStates.CallList(GetHandle(ARci));
+          ARci.VKStates.CallList(GetHandle(ARci));
       until not FMaterial.UnApply(ARci);
     end;
   // start rendering children (if any)
@@ -5617,7 +5617,7 @@ begin
       v2 := VectorAdd(absPos, v);
       LM := CreateLookAtMatrix(absPos, v2, d);
     end;
-    with CurrentGLContext.PipelineTransformation do
+    with CurrentVKContext.PipelineTransformation do
       ViewMatrix := MatrixMultiply(LM, ViewMatrix);
     ClearStructureChanged;
   end;
@@ -5654,7 +5654,7 @@ begin
     FNearPlane := -1;
     vFar := 1;
     mat := CreateOrthoMatrix(vLeft, vRight, vBottom, vTop, FNearPlane, vFar);
-    with CurrentGLContext.PipelineTransformation do
+    with CurrentVKContext.PipelineTransformation do
       ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
     FViewPortRadius := VectorLength(AWidth, AHeight) / 2;
   end
@@ -5765,7 +5765,7 @@ begin
       Assert(False);
     end;
 
-    with CurrentGLContext.PipelineTransformation do
+    with CurrentVKContext.PipelineTransformation do
       ProjectionMatrix := MatrixMultiply(mat, ProjectionMatrix);
 
     FViewPortRadius := VectorLength(vRight, vTop) / FNearPlane;
@@ -6304,7 +6304,7 @@ begin
     if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
       BuildList(ARci)
     else
-      ARci.GLStates.CallList(GetHandle(ARci));
+      ARci.VKStates.CallList(GetHandle(ARci));
   end;
   // start rendering children (if any)
   if ARenderChildren then
@@ -6371,7 +6371,7 @@ begin
           if (osDirectDraw in ObjectStyle) or ARci.amalgamating then
             BuildList(ARci)
           else
-            ARci.GLStates.CallList(GetHandle(ARci));
+            ARci.VKStates.CallList(GetHandle(ARci));
         end;
         if ARenderChildren then
           Self.RenderChildren(0, Count - 1, ARci);
@@ -7480,7 +7480,7 @@ begin
   if nbLights > maxLights then
     nbLights := maxLights;
   // setup all light sources
-  with CurrentGLContext.GLStates, CurrentGLContext.PipelineTransformation do
+  with CurrentVKContext.VKStates, CurrentVKContext.PipelineTransformation do
   begin
     for i := 0 to nbLights - 1 do
     begin
@@ -7822,7 +7822,7 @@ begin
     AuxBuffers := 0;
     AntiAliasing := Self.AntiAliasing;
     Layer := Self.Layer;
-    GLStates.ForwardContext := roForwardContext in ContextOptions;
+    VKStates.ForwardContext := roForwardContext in ContextOptions;
     PrepareGLContext;
   end;
 end;
@@ -7835,7 +7835,7 @@ begin
 
   try
     // will be freed in DestroyWindowHandle
-    FRenderingContext := GLContextManager.CreateContext;
+    FRenderingContext := VKContextManager.CreateContext;
     if not Assigned(FRenderingContext) then
       raise Exception.Create('Failed to create RenderingContext.');
     SetupRCOptions(FRenderingContext);
@@ -7861,16 +7861,16 @@ begin
       // this one should NOT be replaced with an assert
       if (GL_VERSION < 1.1) then
       begin
-        GLSLogger.LogFatalError(strWrongVersion);
+        ShowMessage(strWrongVersion);
         Abort;
       end;
       // define viewport, this is necessary because the first WM_SIZE message
       // is posted before the rendering context has been created
-      FRenderingContext.GLStates.ViewPort :=
+      FRenderingContext.VKStates.ViewPort :=
         Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
       // set up initial context states
       SetupRenderingContext(FRenderingContext);
-      FRenderingContext.GLStates.ColorClearValue :=
+      FRenderingContext.VKStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor);
     finally
       FRenderingContext.Deactivate;
@@ -7922,7 +7922,7 @@ begin
     FRenderingContext.Activate;
     try
       // Part of workaround for MS OpenGL "black borders" bug
-      FRenderingContext.GLStates.ViewPort :=
+      FRenderingContext.VKStates.ViewPort :=
         Vector4iMake(FViewPort.Left, FViewPort.Top, FViewPort.Width, FViewPort.Height);
     finally
       FRenderingContext.Deactivate;
@@ -7949,8 +7949,8 @@ procedure TVKSceneBuffer.SetupRenderingContext(context: TVKContext);
   procedure SetState(bool: Boolean; csState: TVKState);
   begin
     case bool of
-      true: context.GLStates.PerformEnable(csState);
-      false: context.GLStates.PerformDisable(csState);
+      true: context.VKStates.PerformEnable(csState);
+      false: context.VKStates.PerformDisable(csState);
     end;
   end;
 
@@ -7976,7 +7976,7 @@ begin
     end;
   end;
 
-  with context.GLStates do
+  with context.VKStates do
   begin
     Enable(stNormalize);
     SetState(DepthTest, stDepthTest);
@@ -7990,7 +7990,7 @@ begin
       glGetIntegerv(GL_BLUE_BITS, @LColorDepth); // could've used red or green too
       SetState((LColorDepth < 8), stDither);
     end;
-    ResetAllGLTextureMatrix;
+    ResetAllTextureMatrix;
   end;
 end;
 
@@ -8209,12 +8209,12 @@ begin
         TVKBlankImage(aTexture.Image).CubeMap := (glCubeFace > 0);
 
       bindTarget := aTexture.Image.NativeTextureTarget;
-      RenderingContext.GLStates.TextureBinding[0, bindTarget] := aTexture.Handle;
+      RenderingContext.VKStates.TextureBinding[0, bindTarget] := aTexture.Handle;
       if glCubeFace > 0 then
         glCopyTexSubImage2D(glCubeFace,
           0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
       else
-        glCopyTexSubImage2D(DecodeGLTextureTarget(bindTarget),
+        glCopyTexSubImage2D(DecodeTextureTarget(bindTarget),
           0, xDest, yDest, xSrc, ySrc, AWidth, AHeight)
     finally
       RenderingContext.Deactivate;
@@ -8333,7 +8333,7 @@ begin
     aColorBits := PixelFormatToColorBits(ABitmap.PixelFormat);
     if aColorBits < 8 then
       aColorBits := 8;
-    FRenderingContext := GLContextManager.CreateContext;
+    FRenderingContext := VKContextManager.CreateContext;
     SetupRCOptions(FRenderingContext);
     with FRenderingContext do
     begin
@@ -8346,7 +8346,7 @@ begin
       FRenderingContext.Activate;
       try
         SetupRenderingContext(FRenderingContext);
-        FRenderingContext.GLStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
+        FRenderingContext.VKStates.ColorClearValue := ConvertWinColor(FBackgroundColor);
         // set the desired viewport and limit output to this rectangle
         with FViewport do
         begin
@@ -8354,7 +8354,7 @@ begin
           Top := 0;
           Width := ABitmap.Width;
           Height := ABitmap.Height;
-          FRenderingContext.GLStates.ViewPort :=
+          FRenderingContext.VKStates.ViewPort :=
             Vector4iMake(Left, Top, Width, Height);
         end;
         ClearBuffers;
@@ -8364,7 +8364,7 @@ begin
         // render
         DoBaseRender(FViewport, FRenderDPI, dsPrinting, nil);
         if nativeContext <> nil then
-          FViewport := TRectangle(nativeContext.GLStates.ViewPort);
+          FViewport := TRectangle(nativeContext.VKStates.ViewPort);
         glFinish;
       finally
         FRenderingContext.Deactivate;
@@ -8750,12 +8750,12 @@ begin
   else
   begin
     bufferBits := GL_DEPTH_BUFFER_BIT;
-    CurrentGLContext.GLStates.DepthWriteMask := Byte(True);
+    CurrentVKContext.VKStates.DepthWriteMask := Byte(True);
   end;
   if ContextOptions * [roNoColorBuffer, roNoColorBufferClear] = [] then
   begin
     bufferBits := bufferBits or GL_COLOR_BUFFER_BIT;
-    CurrentGLContext.GLStates.SetColorMask(cAllColorComponents);
+    CurrentVKContext.VKStates.SetColorMask(cAllColorComponents);
   end;
   if roStencilBuffer in ContextOptions then
   begin
@@ -8949,18 +8949,18 @@ begin
   // setup projection matrix
   if Assigned(pickingRect) then
   begin
-    CurrentGLContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix(
+    CurrentVKContext.PipelineTransformation.ProjectionMatrix := CreatePickMatrix(
       (pickingRect^.Left + pickingRect^.Right) div 2,
       FViewPort.Height - ((pickingRect^.Top + pickingRect^.Bottom) div 2),
       Abs(pickingRect^.Right - pickingRect^.Left),
       Abs(pickingRect^.Bottom - pickingRect^.Top),
       TVector4i(FViewport));
   end;
-  FBaseProjectionMatrix := CurrentGLContext.PipelineTransformation.ProjectionMatrix;
+  FBaseProjectionMatrix := CurrentVKContext.PipelineTransformation.ProjectionMatrix;
 
   if Assigned(FCamera) then
   begin
-    FCamera.Scene.FCurrentGLCamera := FCamera;
+    FCamera.Scene.FCurrentCamera := FCamera;
     // apply camera perpective
     FCamera.ApplyPerspective(
       aViewport,
@@ -8981,7 +8981,7 @@ procedure TVKSceneBuffer.DoBaseRender(const aViewPort: TRectangle; resolution:
   Integer;
   drawState: TDrawState; baseObject: TVKBaseSceneObject);
 begin
-  with RenderingContext.GLStates do
+  with RenderingContext.VKStates do
   begin
     PrepareRenderingMatrices(aViewPort, resolution);
     if not ForwardContext then
@@ -9054,7 +9054,7 @@ begin
   begin
     RenderingContext.Activate;
     try
-      RenderingContext.GLStates.ColorClearValue :=
+      RenderingContext.VKStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       glMatrixMode(GL_PROJECTION);
@@ -9091,7 +9091,7 @@ begin
       ClearOpenGLError;
       SetupRenderingContext(FRenderingContext);
       // clear the buffers
-      FRenderingContext.GLStates.ColorClearValue :=
+      FRenderingContext.VKStates.ColorClearValue :=
         ConvertWinColor(FBackgroundColor, FBackgroundAlpha);
       ClearBuffers;
       // render
@@ -9170,13 +9170,13 @@ begin
   rci.viewPortSize.cx := viewPortSizeX;
   rci.viewPortSize.cy := viewPortSizeY;
   rci.renderDPI := FRenderDPI;
-  rci.GLStates := RenderingContext.GLStates;
+  rci.VKStates := RenderingContext.VKStates;
   rci.PipelineTransformation := RenderingContext.PipelineTransformation;
   rci.proxySubObject := False;
   rci.ignoreMaterials := (roNoColorBuffer in FContextOptions)
     or (rci.drawState = dsPicking);
   rci.amalgamating := rci.drawState = dsPicking;
-  rci.GLStates.SetGLColorWriting(not rci.ignoreMaterials);
+  rci.VKStates.SetColorWriting(not rci.ignoreMaterials);
   if Assigned(FInitiateRendering) then
     FInitiateRendering(Self, rci);
 
@@ -9199,7 +9199,7 @@ begin
   end
   else
     baseObject.Render(rci);
-  rci.GLStates.SetGLColorWriting(True);
+  rci.VKStates.SetColorWriting(True);
   with FAfterRenderEffects do
     if Count > 0 then
       for i := 0 to Count - 1 do
@@ -9376,10 +9376,10 @@ begin
   end;
 end;
 
-// SetGLFogEnvironment
+// SetFogEnvironment
 //
 
-procedure TVKSceneBuffer.SetGLFogEnvironment(AValue: TVKFogEnvironment);
+procedure TVKSceneBuffer.SetFogEnvironment(AValue: TVKFogEnvironment);
 begin
   FFogEnvironment.Assign(AValue);
   NotifyChange(Self);
@@ -9538,7 +9538,7 @@ begin
   begin
     Buffer.RenderingContext.Activate;
     try
-      target := DecodeGLTextureTarget(aTexture.Image.NativeTextureTarget);
+      target := DecodeTextureTarget(aTexture.Image.NativeTextureTarget);
 
       CreateTexture := true;
 
@@ -9561,8 +9561,8 @@ begin
       // For MRT
       glReadBuffer(MRT_BUFFERS[BufferIndex]);
 
-      Buffer.RenderingContext.GLStates.TextureBinding[0,
-        EncodeGLTextureTarget(target)] := handle;
+      Buffer.RenderingContext.VKStates.TextureBinding[0,
+        EncodeTextureTarget(target)] := handle;
 
       if target = GL_TEXTURE_CUBE_MAP_ARB then
         target := GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB + FCubeMapRotIdx;
@@ -9617,7 +9617,7 @@ var
   TM: TMatrix;
 begin
   // Setup appropriate FOV
-  with CurrentGLContext.PipelineTransformation do
+  with CurrentVKContext.PipelineTransformation do
   begin
     ProjectionMatrix := CreatePerspectiveMatrix(90, 1, FCubeMapZNear, FCubeMapZFar);
     TM := CreateTranslationMatrix(FCubeMapTranslation);

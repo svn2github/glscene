@@ -79,7 +79,7 @@ type
 
   TVKTexture = class;
 
-  IGLTextureNotifyAble = interface(IGLNotifyAble)
+  IVKTextureNotifyAble = interface(IVKNotifyAble)
     ['{0D9DC0B0-ECE4-4513-A8A1-5AE7022C9426}']
     procedure NotifyTexMapChange(Sender: TObject);
   end;
@@ -712,7 +712,7 @@ type
 
   // TVKTextureExItem
   //
-  TVKTextureExItem = class(TCollectionItem, IGLTextureNotifyAble)
+  TVKTextureExItem = class(TCollectionItem, IVKTextureNotifyAble)
   private
     { Private Decalarations }
     FTexture: TVKTexture;
@@ -793,17 +793,17 @@ type
   EGLShaderException = class(Exception);
 
   //: Register a TVKTextureImageClass (used for persistence and IDE purposes)
-procedure RegisterGLTextureImageClass(textureImageClass: TVKTextureImageClass);
+procedure RegisterTextureImageClass(textureImageClass: TVKTextureImageClass);
 //: Finds a registerer TVKTextureImageClass using its classname
-function FindGLTextureImageClass(const className: string): TVKTextureImageClass;
+function FindTextureImageClass(const className: string): TVKTextureImageClass;
 //: Finds a registerer TVKTextureImageClass using its FriendlyName
-function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
+function FindTextureImageClassByFriendlyName(const friendlyName: string):
   TVKTextureImageClass;
 //: Defines a TStrings with the list of registered TVKTextureImageClass.
-procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
-{ Creates a TStrings with the list of registered TVKTextureImageClass. 
+procedure SetTextureImageClassesToStrings(aStrings: TStrings);
+{ Creates a TStrings with the list of registered TVKTextureImageClass.
  To be freed by caller. }
-function GetGLTextureImageClassesAsStrings: TStrings;
+function GetTextureImageClassesAsStrings: TStrings;
 
 procedure RegisterTGraphicClassFileExtension(const extension: string;
   const aClass: TGraphicClass);
@@ -914,20 +914,20 @@ begin
   end;
 end;
 
-// RegisterGLTextureImageClass
+// RegisterTextureImageClass
 //
 
-procedure RegisterGLTextureImageClass(textureImageClass: TVKTextureImageClass);
+procedure RegisterTextureImageClass(textureImageClass: TVKTextureImageClass);
 begin
   if not Assigned(vGLTextureImageClasses) then
     vGLTextureImageClasses := TList.Create;
   vGLTextureImageClasses.Add(textureImageClass);
 end;
 
-// FindGLTextureImageClass
+// FindTextureImageClass
 //
 
-function FindGLTextureImageClass(const className: string): TVKTextureImageClass;
+function FindTextureImageClass(const className: string): TVKTextureImageClass;
 var
   i: Integer;
   tic: TVKTextureImageClass;
@@ -946,10 +946,10 @@ begin
 
 end;
 
-// FindGLTextureImageClassByFriendlyName
+// FindTextureImageClassByFriendlyName
 //
 
-function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
+function FindTextureImageClassByFriendlyName(const friendlyName: string):
   TVKTextureImageClass;
 var
   i: Integer;
@@ -968,10 +968,10 @@ begin
     end;
 end;
 
-// SetGLTextureImageClassesToStrings
+// SetTextureImageClassesToStrings
 //
 
-procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
+procedure SetTextureImageClassesToStrings(aStrings: TStrings);
 var
   i: Integer;
   tic: TVKTextureImageClass;
@@ -990,13 +990,13 @@ begin
   end;
 end;
 
-// GetGLTextureImageClassesAsStrings
+// GetTextureImageClassesAsStrings
 //
 
-function GetGLTextureImageClassesAsStrings: TStrings;
+function GetTextureImageClassesAsStrings: TStrings;
 begin
   Result := TStringList.Create;
-  SetGLTextureImageClassesToStrings(Result);
+  SetTextureImageClassesToStrings(Result);
 end;
 
 {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
@@ -2278,7 +2278,7 @@ begin
   if val <> '' then
     if FImage.ClassName <> val then
     begin
-      newImageClass := FindGLTextureImageClass(val);
+      newImageClass := FindTextureImageClass(val);
       Assert(newImageClass <> nil, 'Make sure you include the unit for ' + val +
         ' in your uses clause');
       if newImageClass = nil then
@@ -2432,12 +2432,12 @@ end;
 
 procedure TVKTexture.SetDisabled(AValue: Boolean);
 var
-  intf: IGLTextureNotifyAble;
+  intf: IVKTextureNotifyAble;
 begin
   if AValue <> FDisabled then
   begin
     FDisabled := AValue;
-    if Supports(Owner, IGLTextureNotifyAble, intf) then
+    if Supports(Owner, IVKTextureNotifyAble, intf) then
       intf.NotifyTexMapChange(Self)
     else
       NotifyChange(Self);
@@ -2635,7 +2635,7 @@ end;
 procedure TVKTexture.SetMappingMode(const val: TVKTextureMappingMode);
 var
   texMapChange: Boolean;
-  intf: IGLTextureNotifyAble;
+  intf: IVKTextureNotifyAble;
 begin
   if val <> FMappingMode then
   begin
@@ -2646,7 +2646,7 @@ begin
     begin
       // when switching between texGen modes and user mode, the geometry
       // must be rebuilt in whole (to specify/remove texCoord data!)
-      if Supports(Owner, IGLTextureNotifyAble, intf) then
+      if Supports(Owner, IVKTextureNotifyAble, intf) then
         intf.NotifyTexMapChange(Self);
     end
     else
@@ -2939,7 +2939,7 @@ procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
           m := rci.PipelineTransformation.ViewMatrix;
           NormalizeMatrix(m);
           TransposeMatrix(m);
-          rci.GLStates.SetGLTextureMatrix(m);
+          rci.VKStates.SetTextureMatrix(m);
         end;
       tmmCubeMapLight0:
         begin
@@ -2952,7 +2952,7 @@ procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
               NormalizeMatrix(mm);
               TransposeMatrix(mm);
               m := MatrixMultiply(m, mm);
-              rci.GLStates.SetGLTextureMatrix(m);
+              rci.VKStates.SetTextureMatrix(m);
             end;
         end;
       tmmCubeMapCamera:
@@ -2965,7 +2965,7 @@ procedure TVKTexture.Apply(var rci: TVKRenderContextInfo);
           NormalizeMatrix(mm);
           TransposeMatrix(mm);
           m := MatrixMultiply(m, mm);
-          rci.GLStates.SetGLTextureMatrix(m);
+          rci.VKStates.SetTextureMatrix(m);
         end;
     end;
   end;
@@ -2980,14 +2980,14 @@ begin
   H := Handle;
   if not Disabled and (H > 0) then
   begin
-    with rci.GLStates do
+    with rci.VKStates do
     begin
       ActiveTexture := 0;
       TextureBinding[0, FTextureHandle.Target] := H;
       ActiveTextureEnabled[FTextureHandle.Target] := True;
     end;
 
-    if not rci.GLStates.ForwardContext then
+    if not rci.VKStates.ForwardContext then
     begin
       if FTextureHandle.Target = ttTextureCube then
         SetCubeMapTextureMatrix;
@@ -2998,7 +2998,7 @@ begin
       xgl.MapTexCoordToMain;
     end;
   end
-  else if not rci.GLStates.ForwardContext then
+  else if not rci.VKStates.ForwardContext then
   begin // default
     xgl.MapTexCoordToMain;
   end;
@@ -3010,17 +3010,17 @@ end;
 procedure TVKTexture.UnApply(var rci: TVKRenderContextInfo);
 begin
   if not Disabled
-    and not rci.GLStates.ForwardContext then
+    and not rci.VKStates.ForwardContext then
   begin
     // Multisample image do not work with FFP
     if FTextureHandle.Target in [ttNoShape, ttTexture2DMultisample, ttTexture2DMultisampleArray] then
       exit;
-    with rci.GLStates do
+    with rci.VKStates do
     begin
       ActiveTexture := 0;
       ActiveTextureEnabled[FTextureHandle.Target] := False;
       if FTextureHandle.Target = ttTextureCube then
-        ResetGLTextureMatrix;
+        ResetTextureMatrix;
     end;
     UnApplyMappingMode;
   end;
@@ -3058,19 +3058,19 @@ begin
     if (FTextureHandle.Target = ttTexture2DMultisample) or
       (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
-    with rci.GLStates do
+    with rci.VKStates do
     begin
       ActiveTexture := n - 1;
       TextureBinding[n - 1, FTextureHandle.Target] := Handle;
       ActiveTextureEnabled[FTextureHandle.Target] := True;
       if Assigned(textureMatrix) then
-        SetGLTextureMatrix(textureMatrix^)
+        SetTextureMatrix(textureMatrix^)
       else if FTextureHandle.Target = ttTextureCube then
       begin
         m := rci.PipelineTransformation.ModelViewMatrix;
         NormalizeMatrix(m);
         TransposeMatrix(m);
-        rci.GLStates.SetGLTextureMatrix(m);
+        rci.VKStates.SetTextureMatrix(m);
       end;
 
       if not ForwardContext then
@@ -3090,19 +3090,19 @@ end;
 procedure TVKTexture.UnApplyAsTextureN(n: Integer; var rci: TVKRenderContextInfo;
   reloadIdentityTextureMatrix: boolean);
 begin
-  if not rci.GLStates.ForwardContext then
+  if not rci.VKStates.ForwardContext then
   begin
     // Multisample image do not work with FFP
     if (FTextureHandle.Target = ttTexture2DMultisample) or
       (FTextureHandle.Target = ttTexture2DMultisampleArray) then
       exit;
-    with rci.GLStates do
+    with rci.VKStates do
     begin
       ActiveTexture := n - 1;
       ActiveTextureEnabled[FTextureHandle.Target] := False;
       UnApplyMappingMode;
       if (FTextureHandle.Target = ttTextureCube) or reloadIdentityTextureMatrix then
-        ResetGLTextureMatrix;
+        ResetTextureMatrix;
       ActiveTexture := 0;
     end;
   end;
@@ -3139,9 +3139,9 @@ begin
   begin
     if FSamplerHandle.IsDataNeedUpdate then
     begin
-      with CurrentGLContext.GLStates do
+      with CurrentVKContext.VKStates do
         TextureBinding[ActiveTexture, FTextureHandle.Target] := Result;
-      PrepareParams(DecodeGLTextureTarget(FTextureHandle.Target));
+      PrepareParams(DecodeTextureTarget(FTextureHandle.Target));
       FSamplerHandle.NotifyDataUpdated;
     end;
   end
@@ -3169,7 +3169,7 @@ var
   var
     t: TVKTextureTarget;
   begin
-    with CurrentGLContext.GLStates do
+    with CurrentVKContext.VKStates do
     begin
       if TextureBinding[ActiveTexture, FTextureHandle.Target] = FTextureHandle.Handle then
         TextureBinding[ActiveTexture, FTextureHandle.Target] := 0;
@@ -3182,13 +3182,13 @@ var
   var
     t: TVKTextureTarget;
   begin
-    with CurrentGLContext.GLStates do
+    with CurrentVKContext.VKStates do
       for t := Low(TVKTextureTarget) to High(TVKTextureTarget) do
         TextureBinding[ActiveTexture, t] := LBinding[t];
   end;
 
 begin
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     StoreBindings;
     try
@@ -3197,7 +3197,7 @@ begin
       begin
         FTextureHandle.NotifyDataUpdated;
         // Check supporting
-        target := DecodeGLTextureTarget(Image.NativeTextureTarget);
+        target := DecodeTextureTarget(Image.NativeTextureTarget);
         if not IsTargetSupported(target)
           or not IsFormatSupported(TextureFormatEx) then
         begin
@@ -3257,7 +3257,7 @@ begin
     texComp := tcNone; // no compression support for float_type
 
   if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
-    with CurrentGLContext.GLStates do
+    with CurrentVKContext.VKStates do
     begin
       case texComp of
         tcStandard: TextureCompressionHint := hintDontCare;
@@ -3362,7 +3362,7 @@ begin
       texComp := tcNone;
 
     if (texComp <> tcNone) and (TextureFormat <= tfNormalMap) then
-      with CurrentGLContext.GLStates do
+      with CurrentVKContext.VKStates do
       begin
         case texComp of
           tcStandard: TextureCompressionHint := hintDontCare;
@@ -3439,7 +3439,7 @@ begin
 
   R_Dim := GL_ARB_texture_cube_map or GL_EXT_texture3D;
 
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     UnpackAlignment := 1;
     UnpackRowLength := 0;
@@ -3499,7 +3499,7 @@ begin
       cTextureCompareMode[fTextureCompareMode]);
     glTexParameteri(target, GL_TEXTURE_COMPARE_FUNC,
       cGLComparisonFunctionToGLEnum[fTextureCompareFunc]);
-    if not FTextureHandle.RenderingContext.GLStates.ForwardContext then
+    if not FTextureHandle.RenderingContext.VKStates.ForwardContext then
       glTexParameteri(target, GL_DEPTH_TEXTURE_MODE,
         cDepthTextureMode[fDepthTextureMode]);
   end;
@@ -3652,7 +3652,7 @@ begin
   FApplied := False;
   if FTexture.Enabled then
   begin
-    rci.GLStates.ActiveTexture := FTextureIndex;
+    rci.VKStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPushMatrix;
     if FTextureMatrixIsIdentity then
@@ -3660,7 +3660,7 @@ begin
     else
       glLoadMatrixf(@FTextureMatrix.X.X);
     glMatrixMode(GL_MODELVIEW);
-    rci.GLStates.ActiveTexture := 0;
+    rci.VKStates.ActiveTexture := 0;
     if FTextureIndex = 0 then
       FTexture.Apply(rci)
     else if FTextureIndex = 1 then
@@ -3684,11 +3684,11 @@ begin
       FTexture.UnApplyAsTexture2(rci, false)
     else if FTextureIndex >= 2 then
       FTexture.UnApplyAsTextureN(FTextureIndex + 1, rci, false);
-    rci.GLStates.ActiveTexture := FTextureIndex;
+    rci.VKStates.ActiveTexture := FTextureIndex;
     glMatrixMode(GL_TEXTURE);
     glPopMatrix;
     glMatrixMode(GL_MODELVIEW);
-    rci.GLStates.ActiveTexture := 0;
+    rci.VKStates.ActiveTexture := 0;
     FApplied := False;
   end;
 end;
@@ -3714,9 +3714,9 @@ end;
 
 procedure TVKTextureExItem.NotifyTexMapChange(Sender: TObject);
 var
-  intf: IGLTextureNotifyAble;
+  intf: IVKTextureNotifyAble;
 begin
-  if Supports(TObject(TVKTextureEx(Collection).FOwner), IGLTextureNotifyAble,
+  if Supports(TObject(TVKTextureEx(Collection).FOwner), IVKTextureNotifyAble,
     intf) then
     intf.NotifyTexMapChange(Sender);
 end;
@@ -3922,10 +3922,10 @@ initialization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  RegisterGLTextureImageClass(TVKBlankImage);
-  RegisterGLTextureImageClass(TVKPersistentImage);
-  RegisterGLTextureImageClass(TVKPicFileImage);
-  RegisterGLTextureImageClass(TVKCubeMapImage);
+  RegisterTextureImageClass(TVKBlankImage);
+  RegisterTextureImageClass(TVKPersistentImage);
+  RegisterTextureImageClass(TVKPicFileImage);
+  RegisterTextureImageClass(TVKCubeMapImage);
 
   RegisterTGraphicClassFileExtension('.bmp', TVKBitmap);
 

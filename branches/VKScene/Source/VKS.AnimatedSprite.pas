@@ -936,7 +936,7 @@ begin
 
         if Assigned(libMat) then
           libMat.Apply(rci);
-        rci.GLStates.Disable(stLighting);
+        rci.VKStates.Disable(stLighting);
         if FRotation <> 0 then
         begin
           glMatrixMode(GL_MODELVIEW);

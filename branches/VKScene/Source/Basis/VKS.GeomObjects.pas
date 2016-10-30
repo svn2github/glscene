@@ -14,7 +14,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   //VKS
-  VKS.OpenGLAdapter,
+//  VKS.OpenGLAdapter,
   VKS.Scene,
   VKS.VectorGeometry,
   VKS.Context,
@@ -2271,11 +2271,11 @@ begin
   end;
 
   begin
-    if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+    if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
     begin
-      TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+      TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
         PGLChar(TangentAttributeName));
-      BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+      BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
         PGLChar(BinormalAttributeName));
     end
     else
@@ -2988,11 +2988,11 @@ begin
       end;
       MeshIndex := FStacks + 1;
       begin
-        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3088,11 +3088,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(0, 0);
 
       begin
-        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3168,11 +3168,11 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(1, 1);
       begin
-        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3253,11 +3253,11 @@ begin
       ConeCenter.TexCoord := Vector2fMake(1, 1);
 
       begin
-        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else
@@ -3331,11 +3331,11 @@ begin
       ConeCenter.Binormal := FMesh[MeshIndex][0].Binormal;
       ConeCenter.TexCoord := Vector2fMake(0, 0);
       begin
-        if GL_ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
+        if {GL_ARB_shader_objects and} (rci.VKStates.CurrentProgram > 0) then
         begin
-          TanLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          TanLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(TangentAttributeName));
-          BinLoc := glGetAttribLocation(rci.GLStates.CurrentProgram,
+          BinLoc := glGetAttribLocation(rci.VKStates.CurrentProgram,
             PGLChar(BinormalAttributeName));
         end
         else

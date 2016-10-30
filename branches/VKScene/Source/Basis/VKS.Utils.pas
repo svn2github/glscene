@@ -1,9 +1,8 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net
 //
 {
-   Miscellaneous support utilities & classes. 
-
+   Miscellaneous support utilities & classes.
 }
 unit VKS.Utils;
 
@@ -18,6 +17,7 @@ uses
   System.UIConsts,
   FMX.Graphics,
   FMX.Controls,
+  FMX.Dialogs,
   //VKS
   VKS.VectorGeometry,
   VKS.Strings,
@@ -25,7 +25,6 @@ uses
 
 type
   EGLUtilsException = class(Exception);
-
   TSqrt255Array = array[0..255] of Byte;
   PSqrt255Array = ^TSqrt255Array;
 
@@ -58,7 +57,7 @@ function StringToColorAdvanced(const Str: string): TColor;
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p: PChar): Integer;
-{ Parses the next integer in the string. 
+{ Parses the next integer in the string.
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
@@ -93,7 +92,7 @@ function SavePictureDialog(var AFileName: string; const ATitle: string = ''): Bo
 { Pops up a simple open picture dialog. }
 function OpenPictureDialog(var AFileName: string; const ATitle: string = ''): Boolean;
 
-procedure SetGLSceneMediaDir();
+procedure SetVKSceneMediaDir();
 
 //------------------------------------------------------
 //------------------------------------------------------
@@ -104,7 +103,6 @@ implementation
 //------------------------------------------------------
 
 uses
-  FMX.Dialogs,
   VKS.ApplicationFileIO;
 
 var
@@ -112,8 +110,7 @@ var
 
   // WordToIntegerArray
   //
-{$IFNDEF GEOMETRY_NO_ASM}
-
+{$IFDEF GLS_ASM}
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal); assembler;
 // EAX contains Source
 // EDX contains Dest
@@ -134,7 +131,6 @@ asm
 @@Finish:
 end;
 {$ELSE}
-
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
 var
   i: integer;
@@ -673,7 +669,7 @@ begin
   end;
 end;
 
-procedure SetGLSceneMediaDir();
+procedure SetVKSceneMediaDir();
 var
   path: String;
   p: Integer;

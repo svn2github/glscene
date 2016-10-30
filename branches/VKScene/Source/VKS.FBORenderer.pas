@@ -1,11 +1,11 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene project, http://glscene.sourceforge.net
 //
-{ 
-  Implements FBO support for GLScene. 
+{
+  Implements FBO support for GLScene.
   Original author of the unit is Riz.
   Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
- 
+
 }
 unit VKS.FBORenderer;
 
@@ -18,6 +18,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
   VKS.VectorGeometry,
@@ -31,8 +32,7 @@ uses
   VKS.State,
   VKS.TextureFormat,
   VKS.VectorTypes,
-  VKS.MultisampleImage,
-  VKS.Log;
+  VKS.MultisampleImage;
 
 type
   TVKEnabledRenderBuffer = (erbDepth, erbStencil);
@@ -386,8 +386,7 @@ procedure TVKFBORenderer.Initialize;
       ForceDimensions(colorTex);
     if FColorAttachment >= FMaxAttachment then
     begin
-      GLSLogger.LogError
-        ('Number of color attachments out of GL_MAX_COLOR_ATTACHMENTS');
+      ShowMessage('Number of color attachments out of GL_MAX_COLOR_ATTACHMENTS');
       Visible := False;
       Abort;
     end;
@@ -416,13 +415,12 @@ begin
   if Width > FMaxSize then
   begin
     FWidth := FMaxSize;
-    GLSLogger.LogWarningFmt('%s.Width out of GL_MAX_RENDERBUFFER_SIZE', [Name]);
+    ShowMessage(Format('%s.Width out of GL_MAX_RENDERBUFFER_SIZE', [Name]));
   end;
   if Height > FMaxSize then
   begin
     FHeight := FMaxSize;
-    GLSLogger.LogWarningFmt
-      ('%s.Height out of GL_MAX_RENDERBUFFER_SIZE', [Name]);
+    ShowMessage(Format('%s.Height out of GL_MAX_RENDERBUFFER_SIZE', [Name]));
   end;
 
   FFbo.Width := Width;
@@ -452,7 +450,7 @@ begin
   begin
     if not(GL_ARB_draw_buffers or GL_ATI_draw_buffers) then
     begin
-      GLSLogger.LogError('Hardware do not support MRT');
+      ShowMessage('Hardware do not support MRT');
       Active := False;
       exit;
     end;
@@ -588,24 +586,24 @@ type
 
   function StoreStates: TVKStoredStates;
   begin
-    Result.ColorClearValue := ARci.GLStates.ColorClearValue;
-    Result.ColorWriteMask := ARci.GLStates.ColorWriteMask[0];
-    Result.Tests := [stDepthTest, stStencilTest] * ARci.GLStates.States;
+    Result.ColorClearValue := ARci.VKStates.ColorClearValue;
+    Result.ColorWriteMask := ARci.VKStates.ColorWriteMask[0];
+    Result.Tests := [stDepthTest, stStencilTest] * ARci.VKStates.States;
   end;
 
   procedure RestoreStates(const aStates: TVKStoredStates);
   begin
-    ARci.GLStates.ColorClearValue := aStates.ColorClearValue;
-    ARci.GLStates.SetColorMask(aStates.ColorWriteMask);
+    ARci.VKStates.ColorClearValue := aStates.ColorClearValue;
+    ARci.VKStates.SetColorMask(aStates.ColorWriteMask);
     if stDepthTest in aStates.Tests then
-      ARci.GLStates.Enable(stDepthTest)
+      ARci.VKStates.Enable(stDepthTest)
     else
-      ARci.GLStates.Disable(stDepthTest);
+      ARci.VKStates.Disable(stDepthTest);
 
     if stStencilTest in aStates.Tests then
-      ARci.GLStates.Enable(stStencilTest)
+      ARci.VKStates.Enable(stStencilTest)
     else
-      ARci.GLStates.Disable(stStencilTest);
+      ARci.VKStates.Disable(stStencilTest);
   end;
 
 var
@@ -620,7 +618,7 @@ begin
 
   if TVKFramebufferHandle.IsSupported = 0 then
   begin
-    GLSLogger.LogError('Framebuffer not supported - deactivated');
+    ShowMessage('Framebuffer not supported - deactivated');
     Active := False;
     exit;
   end;
@@ -645,14 +643,14 @@ begin
     FFbo.Bind;
     if FFbo.GetStringStatus(s) <> fsComplete then
     begin
-      GLSLogger.LogErrorFmt('Framebuffer error: %s. Deactivated', [s]);
+      ShowMessage(Format('Framebuffer error: %s. Deactivated', [s]));
       Active := False;
       exit;
     end;
 
     DoBeforeRender(ARci);
     if Assigned(Camera) then
-      Camera.Scene.SetupLights(ARci.GLStates.MaxLights);
+      Camera.Scene.SetupLights(ARci.VKStates.MaxLights);
 
     w := Width;
     h := Height;
@@ -665,30 +663,30 @@ begin
       if h = 0 then
         h := 1;
     end;
-    ARci.GLStates.Viewport := Vector4iMake(0, 0, w, h);
+    ARci.VKStates.Viewport := Vector4iMake(0, 0, w, h);
     buffer := ARci.buffer as TVKSceneBuffer;
 
     if HasColor then
-      ARci.GLStates.SetColorMask(cAllColorComponents)
+      ARci.VKStates.SetColorMask(cAllColorComponents)
     else
-      ARci.GLStates.SetColorMask([]);
+      ARci.VKStates.SetColorMask([]);
 
-    ARci.GLStates.DepthWriteMask := GLboolean(HasDepth);
+    ARci.VKStates.DepthWriteMask := GLboolean(HasDepth);
 
     if HasStencil then
-      ARci.GLStates.Enable(stStencilTest)
+      ARci.VKStates.Enable(stStencilTest)
     else
-      ARci.GLStates.Disable(stStencilTest);
+      ARci.VKStates.Disable(stStencilTest);
 
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
       backColor.W := buffer.BackgroundAlpha;
-      ARci.GLStates.ColorClearValue := backColor;
+      ARci.VKStates.ColorClearValue := backColor;
     end
     else
     begin
-      ARci.GLStates.ColorClearValue := FBackgroundColor.Color;
+      ARci.VKStates.ColorClearValue := FBackgroundColor.Color;
     end;
 
     glClear(GetClearBits);
@@ -711,7 +709,7 @@ begin
     FFbo.PostRender(FPostGenerateMipmap);
 
     RestoreStates(savedStates);
-    ARci.GLStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
+    ARci.VKStates.Viewport := Vector4iMake(0, 0, ARci.viewPortSize.cx,
       ARci.viewPortSize.cy);
   finally
     FFbo.Unbind;
@@ -719,7 +717,7 @@ begin
     DoAfterRender(ARci);
     UnApplyCamera(ARci);
     if Assigned(Camera) then
-      Camera.Scene.SetupLights(ARci.GLStates.MaxLights);
+      Camera.Scene.SetupLights(ARci.VKStates.MaxLights);
   end;
 end;
 
@@ -932,7 +930,7 @@ begin
           w := 1;
         if h = 0 then
           h := 1;
-        CurrentGLContext.GLStates.Viewport := Vector4iMake(0, 0, w, h);
+        CurrentVKContext.VKStates.Viewport := Vector4iMake(0, 0, w, h);
       end;
     end
     else

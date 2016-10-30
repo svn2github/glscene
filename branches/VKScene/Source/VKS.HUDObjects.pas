@@ -215,8 +215,8 @@ begin
   repeat
     if AlphaChannel <> 1 then
     begin
-      if stLighting in rci.GLStates.States then
-        rci.GLStates.SetGLMaterialAlphaChannel(GL_FRONT, AlphaChannel)
+      if stLighting in rci.VKStates.States then
+        rci.VKStates.SetMaterialAlphaChannel(GL_FRONT, AlphaChannel)
       else
         with Material.GetActualPrimaryMaterial.FrontProperties.Diffuse do
           glColor4f(Red, Green, Blue, AlphaChannel);
@@ -237,8 +237,8 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    rci.GLStates.Disable(stDepthTest);
-    rci.GLStates.DepthWriteMask := GLboolean(False);
+    rci.VKStates.Disable(stDepthTest);
+    rci.VKStates.DepthWriteMask := GLboolean(False);
 
     // precalc coordinates
     vx := -Width * 0.5 * f;
@@ -415,7 +415,7 @@ var
 begin
   if Assigned(FBitmapFont) and (Text <> '') then
   begin
-    rci.GLStates.PolygonMode := pmFill;
+    rci.VKStates.PolygonMode := pmFill;
     // Prepare matrices
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix;
@@ -430,12 +430,12 @@ begin
     glMatrixMode(GL_PROJECTION);
     glPushMatrix;
     glLoadIdentity;
-    rci.GLStates.Disable(stDepthTest);
+    rci.VKStates.Disable(stDepthTest);
     // render text
     FBitmapFont.RenderString(rci, Text, FAlignment, FLayout,
       FModulateColor.Color);
     // restore state
-    rci.GLStates.Enable(stDepthTest);
+    rci.VKStates.Enable(stDepthTest);
     glPopMatrix;
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix;

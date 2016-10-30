@@ -700,7 +700,7 @@ begin
     with FTexHandle do
     begin
       AllocateHandle;
-      with RenderingContext.GLStates do
+      with RenderingContext.VKStates do
       begin
         TextureBinding[0, ttTexture2D] := Handle;
 
@@ -723,7 +723,7 @@ begin
     end
   else
     with FTexHandle do
-      RenderingContext.GLStates.TextureBinding[0, ttTexture2D] := Handle;
+      RenderingContext.VKStates.TextureBinding[0, ttTexture2D] := Handle;
 end;
 
 procedure TVKZShadows.PrepareAlphaMemory;
@@ -769,9 +769,9 @@ begin
   end;
   ViewerZBuf.Refresh;
 
-  ARci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
-  ARci.GLStates.Enable(stBlend);
-  ARci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
+  ARci.VKStates.ActiveTextureEnabled[ttTexture2D] := True;
+  ARci.VKStates.Enable(stBlend);
+  ARci.VKStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
 
   if FWidth > ARci.viewPortSize.cx then
     Fwidth := ARci.viewPortSize.cx;
@@ -781,7 +781,7 @@ begin
   //-----------------------
   CalcShadowTexture(ARci);
   //-----------------------
-  ARci.GLStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
+  ARci.VKStates.TextureBinding[0, ttTexture2D] := FTexHandle.Handle;
 
   //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -811,8 +811,8 @@ begin
   glMatrixMode(GL_PROJECTION);
   glPushMatrix;
   glLoadIdentity;
-  ARci.GLStates.Disable(stDepthTest);
-  ARci.GLStates.Disable(stLighting);
+  ARci.VKStates.Disable(stDepthTest);
+  ARci.VKStates.Disable(stLighting);
 
   vx := 0;
   vx1 := vx + FWidth;

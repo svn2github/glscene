@@ -2,9 +2,9 @@
 // VKScene project, http://glscene.sourceforge.net
 //
 {
-   Components and functions that abstract file I/O access for an application. 
-   Allows re-routing file reads to reads from a single archive file f.i. 
-   
+   Components and functions that abstract file I/O access for an application.
+   Allows re-routing file reads to reads from a single archive file f.i.
+
 }
 unit VKS.ApplicationFileIO;
 
@@ -13,8 +13,11 @@ interface
 {$I VKScene.inc}
 
 uses
-  Winapi.Windows, System.Classes, System.SysUtils,
-  VKS.BaseClasses, VKS.Log;
+  Winapi.Windows,
+  System.Classes,
+  System.SysUtils,
+  FMX.Dialogs,
+  VKS.BaseClasses;
 
 
 const
@@ -214,7 +217,7 @@ begin
   if InfoBlock <> 0 then
     Result := TResourceStream.Create(HInstance, ResName, ResType)
   else
-    GLSLogger.LogError(Format('Can''t create stream of application resource "%s"', [ResName]));
+    ShowMessage(Format('Can''t create stream of application resource "%s"', [ResName]));
 end;
 
 // ------------------

@@ -25,6 +25,7 @@ uses
   Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
+  FMX.Dialogs,
   //VKS
   VKS.OpenGLAdapter,
   VKS.RenderContextInfo,
@@ -48,8 +49,7 @@ uses
   VKS.Strings,
   VKS.ImageUtils,
   VKS.Utils,
-  VKS.XOpenGL,
-  VKS.Log;
+  VKS.XOpenGL;
 
 
 type
@@ -1649,13 +1649,13 @@ end;
 
 procedure TVKFixedFunctionProperties.Apply(var ARci: TVKRenderContextInfo);
 begin
-  with ARci.GLStates do
+  with ARci.VKStates do
   begin
     Disable(stColorMaterial);
     PolygonMode := FPolygonMode;
 
     // Fixed functionality state
-    if not ARci.GLStates.ForwardContext then
+    if not ARci.VKStates.ForwardContext then
     begin
       // Lighting switch
       if (moNoLighting in MaterialOptions) or not ARci.bufferLighting then
@@ -1713,33 +1713,33 @@ begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmAdditive:
           begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfSrcAlpha, bfOne);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmAlphaTest50:
           begin
             Disable(stBlend);
             Enable(stAlphaTest);
-            SetGLAlphaFunction(cfGEqual, 0.5);
+            SetAlphaFunction(cfGEqual, 0.5);
           end;
         bmAlphaTest100:
           begin
             Disable(stBlend);
             Enable(stAlphaTest);
-            SetGLAlphaFunction(cfGEqual, 1.0);
+            SetAlphaFunction(cfGEqual, 1.0);
           end;
         bmModulate:
           begin
             Enable(stBlend);
             Enable(stAlphaTest);
             SetBlendFunc(bfDstColor, bfZero);
-            SetGLAlphaFunction(cfGreater, 0);
+            SetAlphaFunction(cfGreater, 0);
           end;
         bmCustom:
           begin
@@ -1756,7 +1756,7 @@ begin
     begin
       if FTexProp.Enabled and FTexProp.IsValid then
       begin
-        ARci.GLStates.ActiveTexture := 0;
+        ARci.VKStates.ActiveTexture := 0;
         FTexProp.Apply(ARci);
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
           cTextureMode[FTextureMode]);
@@ -1929,7 +1929,7 @@ begin
   if FIsValid then
   begin
     // Just bind
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
       ActiveTextureEnabled[FHandle.Target] := True;
@@ -1950,7 +1950,7 @@ begin
       end;
     end;
   end
-  else with ARci.GLStates do
+  else with ARci.VKStates do
     TextureBinding[ActiveTexture, FHandle.Target] := 0;
 end;
 
@@ -2050,7 +2050,7 @@ begin
       FUseStreaming := FUseStreaming and (LTarget = ttTexture2D);
     end;
 
-    with Sender.GLStates do
+    with Sender.VKStates do
     begin
       ActiveTextureEnabled[FHandle.Target] := True;
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
@@ -2079,7 +2079,7 @@ begin
     else
       FullTransfer;
 
-    Sender.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+    Sender.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
 
     FApplyCounter := 0;
     FIsValid := True;
@@ -2108,7 +2108,7 @@ begin
       LCompression := tcNone;
 
     if LCompression <> tcNone then
-      with CurrentGLContext.GLStates do
+      with CurrentVKContext.VKStates do
       begin
         case LCompression of
           tcStandard: TextureCompressionHint := hintDontCare;
@@ -2137,8 +2137,8 @@ begin
     if glGetError <> GL_NO_ERROR then
     begin
       ClearOpenGLError;
-      CurrentGLContext.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
-      GLSLogger.LogErrorFmt('Unable to create texture "%s"', [Self.Name]);
+      CurrentVKContext.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
+      ShowMessage(Format('Unable to create texture "%s"', [Self.Name]));
       Abort;
     end
     else
@@ -2153,13 +2153,13 @@ begin
   case FHandle.Target of
     ttTexture3D:
       begin
-        MaxLODSize := CurrentGLContext.GLStates.Max3DTextureSize;
+        MaxLODSize := CurrentVKContext.VKStates.Max3DTextureSize;
         MaxLODZSize := MaxLODSize;
       end;
 
     ttTextureCube:
       begin
-        MaxLODSize := CurrentGLContext.GLStates.MaxCubeTextureSize;
+        MaxLODSize := CurrentVKContext.VKStates.MaxCubeTextureSize;
         MaxLODZSize := 0;
       end;
 
@@ -2168,13 +2168,13 @@ begin
       ttTextureCubeArray,
       ttTexture2DMultisampleArray:
       begin
-        MaxLODSize := CurrentGLContext.GLStates.MaxTextureSize;
-        MaxLODZSize := CurrentGLContext.GLStates.MaxArrayTextureSize;
+        MaxLODSize := CurrentVKContext.VKStates.MaxTextureSize;
+        MaxLODZSize := CurrentVKContext.VKStates.MaxArrayTextureSize;
       end;
 
   else
     begin
-      MaxLODSize := CurrentGLContext.GLStates.MaxTextureSize;
+      MaxLODSize := CurrentVKContext.VKStates.MaxTextureSize;
       MaxLODZSize := 0;
     end;
   end;
@@ -2262,7 +2262,7 @@ begin
           end;
           LImage.LevelPixelBuffer[Level].UnBind;
           LImage.LevelStreamingState[Level] := ssTransfered;
-          GLSLogger.LogDebug(Format('Texture "%s" level %d loaded', [Name, Level]));
+          ShowMessage(Format('Texture "%s" level %d loaded', [Name, Level]));
         end;
 
       ssTransfered:
@@ -2503,8 +2503,8 @@ begin
         begin // no SourceFile
           FImage := TVKImage.Create;
           FImage.SetErrorImage;
-          GLSLogger.LogErrorFmt('Source file of texture "%s" image not found',
-            [Self.Name]);
+          ShowMessage(Format('Source file of texture "%s" image not found',
+            [Self.Name]));
         end;
       end; // if bReadFromSource
 
@@ -2517,8 +2517,7 @@ begin
         if IsDesignTime then
           InformationDlg(Self.Name + ' - ' + E.ClassName + ': ' + E.Message)
         else
-          GLSLogger.LogError(Self.Name + ' - ' + E.ClassName + ': ' +
-            E.Message);
+          ShowMessage(Self.Name + ' - ' + E.ClassName + ': ' + E.Message);
       end;
     end;
   end; // of not Assigned
@@ -2683,7 +2682,7 @@ end;
 
 procedure TVKTextureImageEx.UnApply(var ARci: TVKRenderContextInfo);
 begin
-  ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+  ARci.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
 
 procedure TVKTextureImageEx.WriteToFiler(AWriter: TWriter);
@@ -2714,7 +2713,7 @@ end;
 procedure TVKTextureSampler.Apply(var ARci: TVKRenderContextInfo);
 begin
   if FIsValid then
-    ARci.GLStates.SamplerBinding[ARci.GLStates.ActiveTexture] := FHandle.Handle;
+    ARci.VKStates.SamplerBinding[ARci.VKStates.ActiveTexture] := FHandle.Handle;
 end;
 
 procedure TVKTextureSampler.Assign(Source: TPersistent);
@@ -2806,7 +2805,7 @@ begin
           begin
             if FFilteringQuality = tfAnisotropic then
               glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentGLContext.GLStates.MaxTextureAnisotropy)
+                CurrentVKContext.VKStates.MaxTextureAnisotropy)
             else
               glSamplerParameteri(ID, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -2956,7 +2955,7 @@ end;
 procedure TVKTextureSampler.UnApply(var ARci: TVKRenderContextInfo);
 begin
   if FHandle.IsSupported > 0 then
-    with ARci.GLStates do
+    with ARci.VKStates do
       SamplerBinding[ActiveTexture] := 0;
 end;
 
@@ -3055,7 +3054,7 @@ begin
           if IsDesignTime then
             InformationDlg(E.ClassName + ': ' + E.Message)
           else
-            GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+            ShowMessage(E.ClassName + ': ' + E.Message);
         end;
       end;
       FHandle.NotifyDataUpdated;
@@ -3337,7 +3336,7 @@ begin
         FSM5.FShaders[ST].FDefferedInit := False;
   end;
 
-  CurrentGLContext.PrepareHandlesData;
+  CurrentVKContext.PrepareHandlesData;
 end;
 
 procedure TVKLibMaterialEx.SetMultitexturing(AValue:
@@ -3447,7 +3446,7 @@ begin
   else
     FNextPass := nil;
   end;
-  ARci.GLStates.ActiveTexture := 0;
+  ARci.VKStates.ActiveTexture := 0;
 
   Result := Assigned(FNextPass);
   if Result then
@@ -3475,11 +3474,11 @@ begin
     begin
       if Assigned(FTexProps[N]) and FTexProps[N].Enabled then
       begin
-        ARci.GLStates.ActiveTexture := N;
+        ARci.VKStates.ActiveTexture := N;
         FTexProps[N].Apply(ARci);
         if Ord(FLightDir) = N+1 then
         begin
-          LDir := ARci.GLStates.LightPosition[FLightSourceIndex];
+          LDir := ARci.VKStates.LightPosition[FLightSourceIndex];
           LDir := VectorTransform(LDir, ARci.PipelineTransformation.InvModelMatrix);
           NormalizeVector(LDir);
           glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, @LDir);
@@ -3496,7 +3495,7 @@ begin
         GetMaterial.FOnAsmProgSetting(Self.FLibAsmProg, ARci);
     end;
 
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
       if Assigned(FLibCombiner) and (Length(FLibCombiner.FCommandCache) > 0)
         then
@@ -3701,11 +3700,11 @@ begin
   begin
     if FTexProps[N].Enabled then
     begin
-      ARci.GLStates.ActiveTexture := N;
+      ARci.VKStates.ActiveTexture := N;
       FTexProps[N].UnApply(ARci);
     end;
   end;
-  ARci.GLStates.ActiveTexture := 0;
+  ARci.VKStates.ActiveTexture := 0;
 
   if Assigned(FLibAsmProg) then
     glDisable(GL_VERTEX_PROGRAM_ARB);
@@ -3725,7 +3724,7 @@ begin
       FLibTexture.Apply(ARci);
 
       // Apply swizzling if possible
-      glTarget := DecodeGLTextureTarget(FLibTexture.Shape);
+      glTarget := DecodeTextureTarget(FLibTexture.Shape);
       if GL_ARB_texture_swizzle or GL_EXT_texture_swizzle then
       begin
         if FSwizzling.FSwizzles[0] <> FLibTexture.FSwizzles[0] then
@@ -3780,7 +3779,7 @@ begin
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentGLContext.GLStates.MaxTextureAnisotropy)
+                CurrentVKContext.VKStates.MaxTextureAnisotropy)
             else
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -3804,7 +3803,7 @@ begin
       end;
 
       if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
-        ARci.GLStates.SetGLTextureMatrix(FTextureMatrix);
+        ARci.VKStates.SetTextureMatrix(FTextureMatrix);
 
       if ARci.currentMaterialLevel < mlSM3 then
       begin
@@ -4136,8 +4135,8 @@ begin
         if IsDesignTime then
           InformationDlg('Can not use write only attachment as texture')
         else
-          GLSLogger.LogErrorFmt('Attempt to use write only attachment "%s" as texture',
-            [LTexture.Name]);
+          ShowMessage(Format('Attempt to use write only attachment "%s" as texture',
+            [LTexture.Name]));
         NotifyChange(Self);
         exit;
       end;
@@ -4288,7 +4287,7 @@ begin
     if ARci.currentMaterialLevel < mlSM3 then
     begin
       if not FTextureMatrixIsIdentity and (MappingMode = tmmUser) then
-        ARci.GLStates.SetGLTextureMatrix(IdentityHmgMatrix);
+        ARci.VKStates.SetTextureMatrix(IdentityHmgMatrix);
       UnApplyMappingMode;
     end;
   end;
@@ -4400,11 +4399,11 @@ begin
             FInfoLog := 'Compilation successful';
         end
         else if FIsValid then
-          GLSLogger.LogInfoFmt('Shader "%s" compilation successful - %s',
-            [Name, FHandle[FShaderType].InfoLog])
+          ShowMessage(Format('Shader "%s" compilation successful - %s',
+            [Name, FHandle[FShaderType].InfoLog]))
         else
-          GLSLogger.LogErrorFmt('Shader "%s" compilation failed - %s',
-            [Name, FHandle[FShaderType].InfoLog]);
+          ShowMessage(Format('Shader "%s" compilation failed - %s',
+            [Name, FHandle[FShaderType].InfoLog]));
         FHandle[FShaderType].NotifyDataUpdated;
       end;
     end
@@ -4421,7 +4420,7 @@ begin
       if IsDesignTime then
         InformationDlg(E.ClassName + ': ' + E.Message)
       else
-        GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+        ShowMessage(E.ClassName + ': ' + E.Message);
     end;
   end;
 end;
@@ -4579,11 +4578,11 @@ end;
 
 procedure TVKLibMaterialProperty.NotifyChange(Sender: TObject);
 var
-  NA: IGLNotifyAble;
+  NA: IVKNotifyAble;
 begin
   if Assigned(Owner) then
   begin
-    if Supports(Owner, IGLNotifyAble, NA) then
+    if Supports(Owner, IVKNotifyAble, NA) then
       NA.NotifyChange(Self)
   end;
   if Assigned(OnNotifyChange) then
@@ -4919,20 +4918,20 @@ begin
                 if (GLSLData = GLSLTypeUndefined) and (GLSLSampler =
                   GLSLSamplerUndefined) then
                 begin
-                  GLSLogger.LogWarningFmt(
-                    'Detected active uniform "%s" with unknown type', [UName]);
+                  ShowMessage(Format('Detected active uniform "%s" with unknown type',
+                    [UName]));
                   continue;
                 end
                 else if GLSLData <> GLSLTypeUndefined then
                 begin
-                  GLSLogger.LogInfoFmt('Detected active uniform: %s %s',
-                    [cGLSLTypeString[GLSLData], UName]);
+                  ShowMessage(Format('Detected active uniform: %s %s',
+                    [cGLSLTypeString[GLSLData], UName]));
                 end
                 else
                 begin
                   bSampler := True;
-                  GLSLogger.LogInfoFmt('Detected active uniform: %s %s',
-                    [cGLSLSamplerString[GLSLSampler], UName]);
+                  ShowMessage(Format('Detected active uniform: %s %s',
+                    [cGLSLSamplerString[GLSLSampler], UName]));
                 end;
 
                 // Find already existing uniform
@@ -5044,11 +5043,11 @@ begin
               FInfoLog := 'Link successful';
           end
           else if FIsValid then
-            GLSLogger.LogInfoFmt('Program "%s" link successful - %s',
-              [GetMaterial.Name, FHandle.InfoLog])
+            ShowMessage(Format('Program "%s" link successful - %s',
+              [GetMaterial.Name, FHandle.InfoLog]))
           else
-            GLSLogger.LogErrorFmt('Program "%s" link failed! - %s',
-              [GetMaterial.Name, FHandle.InfoLog]);
+            ShowMessage(Format('Program "%s" link failed! - %s',
+              [GetMaterial.Name, FHandle.InfoLog]));
         end;
       end
       else
@@ -5065,7 +5064,7 @@ begin
         if IsDesignTime then
           InformationDlg(E.ClassName + ': ' + E.Message)
         else
-          GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+          ShowMessage(E.ClassName + ': ' + E.Message);
       end;
     end;
 end;
@@ -5157,8 +5156,8 @@ begin
 
   if not IsDesignTime then
   begin
-    GLSLogger.LogErrorFmt('Attempt to use unknow uniform "%s" for material "%s"',
-      [AName, GetMaterial.Name]);
+    ShowMessage(Format('Attempt to use unknow uniform "%s" for material "%s"',
+      [AName, GetMaterial.Name]));
     U := TVKAbstractShaderUniform.Create(Self);
     U._AddRef;
     U.FName := AName;
@@ -5225,7 +5224,7 @@ end;
 
 procedure TVKBaseShaderModel.UnApply(var ARci: TVKRenderContextInfo);
 begin
-  if FIsValid and not ARci.GLStates.ForwardContext then
+  if FIsValid and not ARci.VKStates.ForwardContext then
     FHandle.EndUseProgramObject;
 end;
 
@@ -5280,7 +5279,7 @@ begin
   end
   else
   begin
-    GLSLogger.LogError('glBegin called with unsupported primitive for tessellation');
+    ShowMessage('glBegin called with unsupported primitive for tessellation');
     Abort;
   end;
 end;
@@ -5640,7 +5639,7 @@ procedure TVKShaderUniformTexture.Apply(var ARci: TVKRenderContextInfo);
     bindTime, minTime: Double;
     LTex: TVKTextureImageEx;
   begin
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
       if Assigned(FLibTexture) and FLibTexture.IsValid then
       begin
@@ -5711,7 +5710,7 @@ begin
       then
       begin
         // Apply swizzling if possible
-        glTarget := DecodeGLTextureTarget(FLibTexture.Shape);
+        glTarget := DecodeTextureTarget(FLibTexture.Shape);
         if GL_ARB_texture_swizzle or GL_EXT_texture_swizzle then
         begin
 
@@ -5765,7 +5764,7 @@ begin
           begin
             if FLibSampler.FilteringQuality = tfAnisotropic then
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-                CurrentGLContext.GLStates.MaxTextureAnisotropy)
+                CurrentVKContext.VKStates.MaxTextureAnisotropy)
             else
               glTexParameteri(glTarget, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1);
           end;
@@ -5902,8 +5901,8 @@ begin
         if IsDesignTime then
           InformationDlg('Can not use write only attachment as texture')
         else
-          GLSLogger.LogErrorFmt('Attempt to write only attachment "%s" for uniform "%s"',
-            [LTexture.Name, Name]);
+          ShowMessage(Format('Attempt to write only attachment "%s" for uniform "%s"',
+            [LTexture.Name, Name]));
         NotifyChange(Self);
         exit;
       end;
@@ -6297,12 +6296,12 @@ end;
 
 procedure TVKShaderUniform.PopProgram;
 begin
-  CurrentGLContext.GLStates.CurrentProgram := FStoreProgram;
+  CurrentVKContext.VKStates.CurrentProgram := FStoreProgram;
 end;
 
 procedure TVKShaderUniform.PushProgram;
 begin
-  with CurrentGLContext.GLStates do
+  with CurrentVKContext.VKStates do
   begin
     FStoreProgram := CurrentProgram;
     CurrentProgram := GetProgram;
@@ -6641,14 +6640,14 @@ begin
   if FIsValid and not FOnlyWrite then
   begin
     // Just bind
-    with ARci.GLStates do
+    with ARci.VKStates do
     begin
       ActiveTextureEnabled[FHandle.Target] := True;
       TextureBinding[ActiveTexture, FHandle.Target] := FHandle.Handle;
     end;
   end
   else
-    ARci.GLStates.TextureBinding[ARci.GLStates.ActiveTexture, FHandle.Target] :=
+    ARci.VKStates.TextureBinding[ARci.VKStates.ActiveTexture, FHandle.Target] :=
       0;
 end;
 
@@ -6763,8 +6762,8 @@ begin
   s := FSamples;
   if FCubeMap then
   begin
-    if w > Integer(Sender.GLStates.MaxCubeTextureSize) then
-      w := Sender.GLStates.MaxCubeTextureSize;
+    if w > Integer(Sender.VKStates.MaxCubeTextureSize) then
+      w := Sender.VKStates.MaxCubeTextureSize;
     h := w;
     if FLayered then
     begin
@@ -6774,21 +6773,21 @@ begin
         d := 6 * (d div 6 + 1);
     end;
   end
-  else if w > Integer(Sender.GLStates.MaxTextureSize) then
-    w := Sender.GLStates.MaxTextureSize;
-  if h > Integer(Sender.GLStates.MaxTextureSize) then
-    h := Sender.GLStates.MaxTextureSize;
+  else if w > Integer(Sender.VKStates.MaxTextureSize) then
+    w := Sender.VKStates.MaxTextureSize;
+  if h > Integer(Sender.VKStates.MaxTextureSize) then
+    h := Sender.VKStates.MaxTextureSize;
   if FLayered then
   begin
-    if d > Integer(Sender.GLStates.MaxArrayTextureSize) then
-      d := Sender.GLStates.MaxArrayTextureSize;
+    if d > Integer(Sender.VKStates.MaxArrayTextureSize) then
+      d := Sender.VKStates.MaxArrayTextureSize;
   end
-  else if d > Integer(Sender.GLStates.Max3DTextureSize) then
-    d := Sender.GLStates.Max3DTextureSize;
-  if (s > -1) and (s > Integer(Sender.GLStates.MaxSamples)) then
-    s := Sender.GLStates.MaxSamples;
+  else if d > Integer(Sender.VKStates.Max3DTextureSize) then
+    d := Sender.VKStates.Max3DTextureSize;
+  if (s > -1) and (s > Integer(Sender.VKStates.MaxSamples)) then
+    s := Sender.VKStates.MaxSamples;
 
-  glTarget := DecodeGLTextureTarget(LTarget);
+  glTarget := DecodeTextureTarget(LTarget);
 
   if (FHandle.Target <> LTarget)
     and (FHandle.Target <> ttNoShape) then
@@ -6812,8 +6811,8 @@ begin
   else
     with Sender do
     begin
-      GLStates.ActiveTextureEnabled[FHandle.Target] := True;
-      GLStates.TextureBinding[GLStates.ActiveTexture, FHandle.Target] :=
+      VKStates.ActiveTextureEnabled[FHandle.Target] := True;
+      VKStates.TextureBinding[VKStates.ActiveTexture, FHandle.Target] :=
         FHandle.Handle;
       MaxLevel := CalcTextureLevelNumber(LTarget, w, h, d);
 
@@ -6888,14 +6887,14 @@ begin
           end;
       end; // of case
 
-      GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+      VKStates.ActiveTextureEnabled[FHandle.Target] := False;
       FOnlyWrite := False;
     end; // of texture
 
   if glGetError <> GL_NO_ERROR then
   begin
     ClearOpenGLError;
-    GLSLogger.LogErrorFmt('Unable to create attachment "%s"', [Self.Name]);
+    ShowMessage(Format('Unable to create attachment "%s"', [Self.Name]));
     exit;
   end
   else
@@ -7044,7 +7043,7 @@ end;
 
 procedure TVKFrameBufferAttachment.UnApply(var ARci: TVKRenderContextInfo);
 begin
-  ARci.GLStates.ActiveTextureEnabled[FHandle.Target] := False;
+  ARci.VKStates.ActiveTextureEnabled[FHandle.Target] := False;
 end;
 
 procedure TVKFrameBufferAttachment.WriteToFiler(AWriter: TWriter);
@@ -7136,67 +7135,67 @@ end;
 procedure TStandartUniformAutoSetExecutor.SetLightSource0Position(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.LightPosition[0];
+  Sender.vec4 := ARci.VKStates.LightPosition[0];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackAmbient(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialAmbient[cmBack];
+  Sender.vec4 := ARci.VKStates.MaterialAmbient[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackDiffuse(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialDiffuse[cmBack];
+  Sender.vec4 := ARci.VKStates.MaterialDiffuse[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackEmission(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialEmission[cmBack];
+  Sender.vec4 := ARci.VKStates.MaterialEmission[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackShininess(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.float := ARci.GLStates.MaterialShininess[cmBack];
+  Sender.float := ARci.VKStates.MaterialShininess[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialBackSpecular(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialSpecular[cmBack];
+  Sender.vec4 := ARci.VKStates.MaterialSpecular[cmBack];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontAmbient(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialAmbient[cmFront];
+  Sender.vec4 := ARci.VKStates.MaterialAmbient[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontDiffuse(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialDiffuse[cmFront];
+  Sender.vec4 := ARci.VKStates.MaterialDiffuse[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontEmission(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialEmission[cmFront];
+  Sender.vec4 := ARci.VKStates.MaterialEmission[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontShininess(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.float := ARci.GLStates.MaterialShininess[cmFront];
+  Sender.float := ARci.VKStates.MaterialShininess[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetMaterialFrontSpecular(Sender:
   IShaderParameter; var ARci: TVKRenderContextInfo);
 begin
-  Sender.vec4 := ARci.GLStates.MaterialSpecular[cmFront];
+  Sender.vec4 := ARci.VKStates.MaterialSpecular[cmFront];
 end;
 
 procedure TStandartUniformAutoSetExecutor.SetModelMatrix(Sender:
@@ -7300,11 +7299,11 @@ begin
               FInfoLog := 'Compilation successful';
           end
           else if FIsValid then
-            GLSLogger.LogInfoFmt('Program "%s" compilation successful - %s',
-              [Name, FHandle.InfoLog])
+            ShowMessage(Format('Program "%s" compilation successful - %s',
+              [Name, FHandle.InfoLog]))
           else
-            GLSLogger.LogErrorFmt('Program "%s" compilation failed - %s',
-              [Name, FHandle.InfoLog]);
+            ShowMessage(Format('Program "%s" compilation failed - %s',
+              [Name, FHandle.InfoLog]));
           FHandle.NotifyDataUpdated;
         end
         else
@@ -7312,7 +7311,7 @@ begin
           if IsDesignTime then
             FInfoLog := 'No source'
           else
-            GLSLogger.LogInfoFmt('Program "%s" has no source code', [Name]);
+            ShowMessage(Format('Program "%s" has no source code', [Name]));
           FIsValid := False;
         end;
       end;
@@ -7330,7 +7329,7 @@ begin
       if IsDesignTime then
         InformationDlg(E.ClassName + ': ' + E.Message)
       else
-        GLSLogger.LogError(E.ClassName + ': ' + E.Message);
+        ShowMessage(E.ClassName + ': ' + E.Message);
     end;
   end;
 end;

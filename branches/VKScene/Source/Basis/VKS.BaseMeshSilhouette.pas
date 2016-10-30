@@ -2,7 +2,7 @@
 // VKScene project, http://glscene.sourceforge.net 
 //
 {
-  Silhouette classes for GLBaseMesh and FaceGroups.
+  Silhouette classes for VKBaseMesh and FaceGroups.
    
 }
 
@@ -14,7 +14,10 @@ interface
 
 uses
   System.Classes,
-  VKS.VectorGeometry, VKS.VectorLists, VKS.VectorFileObjects, VKS.Silhouette;
+  VKS.VectorGeometry,
+  VKS.VectorLists,
+  VKS.VectorFileObjects,
+  VKS.Silhouette;
 
 type
   // TVKFaceGroupConnectivity
@@ -42,11 +45,11 @@ type
   //
   TVKBaseMeshConnectivity = class(TBaseConnectivity)
   private
-    FGLBaseMesh: TVKBaseMesh;
+    FVKBaseMesh: TVKBaseMesh;
     FFaceGroupConnectivityList: TList;
     function GetFaceGroupConnectivity(i: integer): TVKFaceGroupConnectivity;
     function GetConnectivityCount: integer;
-    procedure SetGLBaseMesh(const Value: TVKBaseMesh);
+    procedure SetVKBaseMesh(const Value: TVKBaseMesh);
 
   protected
     function GetEdgeCount: integer; override;
@@ -55,7 +58,7 @@ type
   public
     property ConnectivityCount: integer read GetConnectivityCount;
     property FaceGroupConnectivity[i: integer]: TVKFaceGroupConnectivity read GetFaceGroupConnectivity;
-    property GLBaseMesh: TVKBaseMesh read FGLBaseMesh write SetGLBaseMesh;
+    property VKBaseMesh: TVKBaseMesh read FVKBaseMesh write SetVKBaseMesh;
 
     procedure Clear(SaveFaceGroupConnectivity: boolean);
 
@@ -65,7 +68,7 @@ type
     procedure CreateSilhouette(const silhouetteParameters: TVKSilhouetteParameters; var aSilhouette: TVKSilhouette; AddToSilhouette: boolean); override;
 
     constructor Create(APrecomputeFaceNormal: boolean); override;
-    constructor CreateFromMesh(aGLBaseMesh: TVKBaseMesh);
+    constructor CreateFromMesh(aVKBaseMesh: TVKBaseMesh);
     destructor Destroy; override;
   end;
 
@@ -219,13 +222,13 @@ constructor TVKBaseMeshConnectivity.Create(APrecomputeFaceNormal: boolean);
     inherited;
   end;
 
-constructor TVKBaseMeshConnectivity.CreateFromMesh(aGLBaseMesh: TVKBaseMesh);
+constructor TVKBaseMeshConnectivity.CreateFromMesh(aVKBaseMesh: TVKBaseMesh);
   begin
-    Create(not(aGLBaseMesh is TVKActor));
-    GLBaseMesh := aGLBaseMesh;
+    Create(not(aVKBaseMesh is TVKActor));
+    VKBaseMesh := aVKBaseMesh;
   end;
 
-procedure TVKBaseMeshConnectivity.SetGLBaseMesh(const Value: TVKBaseMesh);
+procedure TVKBaseMeshConnectivity.SetVKBaseMesh(const Value: TVKBaseMesh);
   var
     i: integer;
     MO: TVKMeshObject;
@@ -233,11 +236,11 @@ procedure TVKBaseMeshConnectivity.SetGLBaseMesh(const Value: TVKBaseMesh);
   begin
     Clear(false);
 
-    FGLBaseMesh := Value;
+    FVKBaseMesh := Value;
 
     // Only precompute normals if the basemesh isn't an actor (because they change)
     FPrecomputeFaceNormal := not(Value is TVKActor);
-    FGLBaseMesh := Value;
+    FVKBaseMesh := Value;
 
     for i := 0 to Value.MeshObjects.Count - 1 do
     begin

@@ -175,7 +175,7 @@ begin
 
     if VectorDotProduct(VectorSubtract(ARci.cameraPosition, AbsolutePosition),
       AbsoluteDirection) > 0 then
-      with ARci.GLStates do
+      with ARci.VKStates do
       begin
 
         // "Render" stencil mask
@@ -184,7 +184,7 @@ begin
           if (moUseStencil in MirrorOptions) then
           begin
             Enable(stStencilTest);
-            ARci.GLStates.StencilClearValue := 0;
+            ARci.VKStates.StencilClearValue := 0;
             glClear(GL_STENCIL_BUFFER_BIT);
             SetStencilFunc(cfAlways, 1, 1);
             SetStencilOp(soReplace, soZero, soReplace);
@@ -192,11 +192,11 @@ begin
           if (moOpaque in MirrorOptions) then
           begin
             bgColor := ConvertWinColor(CurrentBuffer.BackgroundColor);
-            ARci.GLStates.SetGLMaterialColors(cmFront, bgColor, clrBlack,
+            ARci.VKStates.SetMaterialColors(cmFront, bgColor, clrBlack,
               clrBlack, clrBlack, 0);
           end
           else
-            SetGLColorWriting(False);
+            SetColorWriting(False);
 
           Enable(stDepthTest);
           DepthWriteMask := 0;
@@ -214,7 +214,7 @@ begin
             ClearZBufferArea(CurrentBuffer);
 
           if not (moOpaque in MirrorOptions) then
-            SetGLColorWriting(True);
+            SetColorWriting(True);
         end;
 
         ARci.PipelineTransformation.Push;
@@ -268,13 +268,13 @@ begin
         // Restore to "normal"
         ARci.cameraPosition := cameraPosBackup;
         ARci.cameraDirection := cameraDirectionBackup;
-        ARci.GLStates.CullFaceMode := cmBack;
+        ARci.VKStates.CullFaceMode := cmBack;
         ARci.PipelineTransformation.ReplaceFromStack;
         Scene.SetupLights(CurrentBuffer.LimitOf[limLights]);
         ARci.PipelineTransformation.Pop;
         if moMirrorPlaneClip in MirrorOptions then
           glDisable(GL_CLIP_PLANE0);
-        ARci.GLStates.Disable(stStencilTest);
+        ARci.VKStates.Disable(stStencilTest);
 
         ARci.proxySubObject := oldProxySubObject;
 
@@ -345,10 +345,10 @@ begin
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity;
 
-    with aBuffer.RenderingContext.GLStates do
+    with aBuffer.RenderingContext.VKStates do
     begin
       DepthFunc := cfAlways;
-      SetGLColorWriting(False);
+      SetColorWriting(False);
     end;
 
     glBegin(GL_QUADS);
@@ -366,10 +366,10 @@ begin
     glVertex3f(p.X, p.Y, 0.999);
     glEnd;
 
-    with aBuffer.RenderingContext.GLStates do
+    with aBuffer.RenderingContext.VKStates do
     begin
       DepthFunc := cfLess;
-      SetGLColorWriting(True);
+      SetColorWriting(True);
     end;
 
     glMatrixMode(GL_PROJECTION);
