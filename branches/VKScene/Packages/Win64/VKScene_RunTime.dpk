@@ -263,7 +263,6 @@ contains
   VKS.XOpenGL in '..\..\Source\Basis\VKS.XOpenGL.pas',
   VKS.zBuffer in '..\..\Source\VKS.zBuffer.pas',
   HDRImage in '..\..\Source\FileFormats\HDRImage.pas',
-  LIBFREETYPE in '..\..\Source\LIBFREETYPE.pas',
   LWObjects in '..\..\Source\FileFormats\LWObjects.pas',
   Q3BSP in '..\..\Source\FileFormats\Q3BSP.pas',
   Q3MD3 in '..\..\Source\FileFormats\Q3MD3.pas',

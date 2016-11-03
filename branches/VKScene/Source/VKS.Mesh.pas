@@ -15,12 +15,22 @@ interface
 {$I VKScene.inc}
 
 uses
+  Winapi.OpenGL, 
+  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   //VKS
-  VKS.Strings,  VKS.XOpenGL,  VKS.Context,  VKS.Scene,
-  VKS.VectorGeometry,  Winapi.OpenGL, Winapi.OpenGLext,   VKS.OpenGLAdapter,  VKS.State,
-  VKS.Color, VKS.BaseClasses,  VKS.RenderContextInfo, VKS.VectorTypes;
+  VKS.OpenGLAdapter,
+  VKS.Strings,  
+  VKS.XOpenGL,  
+  VKS.Context,  
+  VKS.Scene,
+  VKS.VectorGeometry,   
+  VKS.State,
+  VKS.Color, 
+  VKS.BaseClasses,  
+  VKS.RenderContextInfo, 
+  VKS.VectorTypes;
 
 type
   TMeshMode = (mmTriangleStrip, mmTriangleFan, mmTriangles, mmQuadStrip,
@@ -152,13 +162,13 @@ type
 
     { Locking state of the vertex list. 
       You can "Lock" a list to increase rendering performance on some
-      OpenGL implementations (NVidia's). A Locked list size shouldn't be
+      Vulkan implementations (NVidia's). A Locked list size shouldn't be
       changed and calculations should be avoided. 
       Performance can only be gained from a lock for osDirectDraw object,
       ie. meshes that are updated for each frame (the default build list
       mode is faster on static meshes). 
       Be aware that the "Locked" state enforcement is not very strict
-      to avoid performance hits, and GLScene may not always notify you
+      to avoid performance hits, and VKScene may not always notify you
       that you're doing things you shouldn't on a locked list! }
     property Locked: Boolean read GetLocked write SetLocked;
     procedure EnterLockSection;
@@ -368,12 +378,8 @@ begin
       else
       begin
         // Unlock
-        {$IFDEF MSWINDOWS}
         FGL.wglFreeMemoryNV(0, 0, 0, 0); //<-FGL.wglFreeMemoryNV(FValues);
-        {$ENDIF}
-        {$IFDEF LINUX}
-        FGL.glxFreeMemoryNV(FValues);
-        {$ENDIF}
+
         FValues := FLockedOldValues;
         FLockedOldValues := nil;
       end;

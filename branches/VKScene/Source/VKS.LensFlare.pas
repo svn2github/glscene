@@ -603,7 +603,7 @@ begin
   if AutoZTest then
   begin
     if dynamicSize and (GL_HP_occlusion_test or
-      (TVKOcclusionQueryHandle.IsSupported = 1)) then
+      (TVKOcclusionQueryHandle.IsSupported = True)) then
     begin
       // hardware-based occlusion test is possible
       FlareIsNotOccluded := True;
@@ -614,7 +614,7 @@ begin
       rci.VKStates.Enable(stDepthTest);
       rci.VKStates.DepthFunc := cfLEqual;
 
-      if TVKOcclusionQueryHandle.IsSupported > 0 then
+      if TVKOcclusionQueryHandle.IsSupported > False then
       begin
         // preferred method, doesn't stall rendering too badly
         if not Assigned(FOcclusionQuery) then
@@ -639,7 +639,7 @@ begin
       glVertex3f(posVector.X, posVector.Y - 2, 1);
       glEnd;
 
-      if TVKOcclusionQueryHandle.IsSupported > 0 then
+      if TVKOcclusionQueryHandle.IsSupported > False then
         FOcclusionQuery.EndQuery
       else
       begin

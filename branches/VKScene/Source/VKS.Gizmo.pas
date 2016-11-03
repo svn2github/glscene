@@ -173,7 +173,7 @@ type
     Rx, Ry: Integer;
 
     dglEnable, dglDisable, dgtEnable, dgtDisable, dgcEnable, dgcDisable,
-      dglaEnable, dglaDisable, dgliEnable, dgliDisable: TVKDirectOpenGL;
+      dglaEnable, dglaDisable, dgliEnable, dgliDisable: TVKDirectVulkan;
 
     LastMousePos: TVector;
     ObjDimensions: TVector;
@@ -376,17 +376,17 @@ begin
   _GZORootAxisLabel := _GZORootHelpers.AddNewChild(TVKDummyCube);
   _GZORootVisibleInfoLabels := _GZORootHelpers.AddNewChild(TVKDummyCube);
 
-  DglDisable := TVKDirectOpenGL(_GZORootLines.AddNewChild(TVKDirectOpenGL));
+  DglDisable := TVKDirectVulkan(_GZORootLines.AddNewChild(TVKDirectVulkan));
   DglDisable.OnRender := DirectGlDisable;
-  DgtDisable := TVKDirectOpenGL(_GZORootTorus.AddNewChild(TVKDirectOpenGL));
+  DgtDisable := TVKDirectVulkan(_GZORootTorus.AddNewChild(TVKDirectVulkan));
   DgtDisable.OnRender := DirectGlDisable;
-  DgcDisable := TVKDirectOpenGL(_GZORootCubes.AddNewChild(TVKDirectOpenGL));
+  DgcDisable := TVKDirectVulkan(_GZORootCubes.AddNewChild(TVKDirectVulkan));
   DgcDisable.OnRender := DirectGlDisable;
-  DglaDisable := TVKDirectOpenGL
-    (_GZORootAxisLabel.AddNewChild(TVKDirectOpenGL));
+  DglaDisable := TVKDirectVulkan
+    (_GZORootAxisLabel.AddNewChild(TVKDirectVulkan));
   DglaDisable.OnRender := DirectGlDisable;
-  DgliDisable := TVKDirectOpenGL(_GZORootVisibleInfoLabels.AddNewChild
-    (TVKDirectOpenGL));
+  DgliDisable := TVKDirectVulkan(_GZORootVisibleInfoLabels.AddNewChild
+    (TVKDirectVulkan));
   DgliDisable.OnRender := DirectGlDisable;
 
   with _GZOBoundingcube.Material do
@@ -695,16 +695,16 @@ begin
     Text := '';
   end;
 
-  DglEnable := TVKDirectOpenGL(_GZORootLines.AddNewChild(TVKDirectOpenGL));
+  DglEnable := TVKDirectVulkan(_GZORootLines.AddNewChild(TVKDirectVulkan));
   DglEnable.OnRender := DirectGlEnable;
-  DgtEnable := TVKDirectOpenGL(_GZORootTorus.AddNewChild(TVKDirectOpenGL));
+  DgtEnable := TVKDirectVulkan(_GZORootTorus.AddNewChild(TVKDirectVulkan));
   DgtEnable.OnRender := DirectGlEnable;
-  DgcEnable := TVKDirectOpenGL(_GZORootCubes.AddNewChild(TVKDirectOpenGL));
+  DgcEnable := TVKDirectVulkan(_GZORootCubes.AddNewChild(TVKDirectVulkan));
   DgcEnable.OnRender := DirectGlEnable;
-  DglaEnable := TVKDirectOpenGL(_GZORootAxisLabel.AddNewChild(TVKDirectOpenGL));
+  DglaEnable := TVKDirectVulkan(_GZORootAxisLabel.AddNewChild(TVKDirectVulkan));
   DglaEnable.OnRender := DirectGlEnable;
-  DgliEnable := TVKDirectOpenGL(_GZORootVisibleInfoLabels.AddNewChild
-    (TVKDirectOpenGL));
+  DgliEnable := TVKDirectVulkan(_GZORootVisibleInfoLabels.AddNewChild
+    (TVKDirectVulkan));
   DgliEnable.OnRender := DirectGlEnable;
 
   _GZObaseGizmo.Visible := False;

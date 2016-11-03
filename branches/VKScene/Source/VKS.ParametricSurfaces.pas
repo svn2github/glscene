@@ -8,7 +8,7 @@
    Notes:
    The MOParametricSurface is a TVKMeshObject descendant that can be used
    to render parametric surfaces. The Renderer property defines if the
-   surface should be rendered using OpenGL mesh evaluators (through GLU
+   surface should be rendered using Vulkan mesh evaluators (through GLU
    Nurbs for BSplines) or through GLScene using the CurvesAndSurfaces.pas
    routines to generate the mesh vertices and then rendered through the
    standard TVKMeshObject render routine. Please note that BSplines aren't
@@ -46,10 +46,10 @@ uses
 
 type
 
-  { psrGLScene tells the surface to render using GLScene code to build
-     the mesh, whereas, psrOpenGL uses glEvalMesh2 or gluNurbsRenderer
+  { psrVKScene tells the surface to render using GLScene code to build
+     the mesh, whereas, psrVulkan uses glEvalMesh2 or gluNurbsRenderer
      calls to render the surface. }
-  TParametricSurfaceRenderer = (psrGLScene, psrOpenGL);
+  TParametricSurfaceRenderer = (psrVKScene, psrVulkan);
 
   { psbBezier indicates building the surface with Bernstein basis
      functions, no knot or order properties are used.
@@ -278,8 +278,8 @@ var
   NurbsRenderer: PGLUNurbs;
 begin
   case FRenderer of
-    psrGLScene: inherited;
-    psrOpenGL:
+    psrVKScene: inherited;
+    psrVulkan:
       begin
         mrci.VKStates.PushAttrib([sttEnable, sttEval]);
         //glEnable(GL_MAP2_TEXTURE_COORD_3);
@@ -351,11 +351,11 @@ begin
       FWeightedControlPoints[i] := VectorScale(FWeightedControlPoints[i], FWeights[i]);
 
   case FRenderer of
-    psrGLScene:
+    psrVKScene:
       begin
         GenerateMesh;
       end;
-    psrOpenGL:
+    psrVulkan:
       begin
         if (FAutoKnots) and (FBasis = psbBSpline) then
         begin

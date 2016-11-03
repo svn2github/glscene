@@ -111,7 +111,7 @@ type
   protected
     { Protected Declarations }
           { Invoked once, before the first call to DoApply. 
-             The call happens with the OpenGL context being active. }
+             The call happens with the Vulkan context being active. }
     procedure DoInitialize(var rci: TVKRenderContextInfo; Sender: TObject);
       dynamic;
     { Request to apply the shader. 
@@ -122,7 +122,7 @@ type
        Return True to request a multipass. }
     function DoUnApply(var rci: TVKRenderContextInfo): Boolean; virtual; abstract;
     { Invoked once, before the destruction of context or release of shader. 
-       The call happens with the OpenGL context being active. }
+       The call happens with the Vulkan context being active. }
     procedure DoFinalize; dynamic;
 
     function GetShaderInitialized: Boolean;
@@ -158,7 +158,7 @@ type
     procedure BeginUpdate;
     procedure EndUpdate;
 
-    { Apply shader to OpenGL state machine.}
+    { Apply shader to Vulkan state machine.}
     procedure Apply(var rci: TVKRenderContextInfo; Sender: TObject);
     { UnApply shader. 
        When returning True, the caller is expected to perform a multipass
@@ -179,7 +179,7 @@ type
 
     { Defines what to do if for some reason shader failed to initialize.
        Note, that in some cases it cannon be determined by just checking the
-       required OpenGL extentions. You need to try to compile and link the
+       required Vulkan extentions. You need to try to compile and link the
        shader - only at that stage you might catch an error }
     property FailedInitAction: TVKShaderFailedInitAction
       read FFailedInitAction write FFailedInitAction default
@@ -765,7 +765,7 @@ type
        modulation mode with default-strength color components. 
        If persistent is True, the image will be loaded persistently in memory
        (via a TVKPersistentImage), if false, it will be unloaded after upload
-       to OpenGL (via TVKPicFileImage). }
+       to Vulkan (via TVKPicFileImage). }
     function AddTextureMaterial(const MaterialName, FileName: string;
       persistent: Boolean = True): TVKLibMaterial; overload;
     { Add a "standard" texture material. 
@@ -826,7 +826,7 @@ implementation
 constructor TVKFaceProperties.Create(aOwner: TPersistent);
 begin
   inherited;
-  // OpenGL default colors
+  // Vulkan default colors
   FAmbient := TVKColor.CreateInitialized(Self, clrGray20);
   FDiffuse := TVKColor.CreateInitialized(Self, clrGray80);
   FEmission := TVKColor.Create(Self);

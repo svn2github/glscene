@@ -326,7 +326,7 @@ begin
       glTexImage2DMultisample(
         DecodeTextureTarget(target),
         SamplesCount,
-        InternalFormatToOpenGLFormat(AInternalFormat),
+        InternalFormatToVulkanFormat(AInternalFormat),
         Width,
         Height,
         FFixedSamplesLocation);
@@ -335,7 +335,7 @@ begin
       glTexImage3DMultisample(
         DecodeTextureTarget(target),
         SamplesCount,
-        InternalFormatToOpenGLFormat(AInternalFormat),
+        InternalFormatToVulkanFormat(AInternalFormat),
         Width,
         Height,
         Depth,

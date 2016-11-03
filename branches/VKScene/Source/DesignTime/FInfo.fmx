@@ -16505,7 +16505,7 @@ object InfoForm: TInfoForm
           Size.Height = 16.000000000000000000
           Size.PlatformDefault = False
           TextSettings.WordWrap = False
-          Text = 'OpenGL vendor :'
+          Text = 'Vulkan vendor :'
         end
         object Label2: TLabel
           AutoSize = True
@@ -17182,13 +17182,13 @@ object InfoForm: TInfoForm
         TabOrder = 0
         Lines.Strings = (
           '***'
-          'GLScene is an OpenGL based 3D library for Delph, C++ Builder '
+          'VKScene is an Vulkan based 3D library for Delph, C++ Builder '
           'and Free Pascal. '
           'It provides visual components and objects '
           'allowing description and rendering of 3D scenes in an easy, '
           'no-hassle, yet powerful manner. '
           
-            'GLScene runs on Winapi.Windows, Mac OS X, iOS, Android, Linux, FreeBSD ' +
+            'VKScene runs on Winapi.Windows, Mac OS X, iOS, Android, Linux, FreeBSD ' +
             'and more.'
           'License: MPL'
           '***'

@@ -203,40 +203,39 @@ type
   // GLinternalCompression
   //
   { Texture compression option. 
-     If OpenGL supports it, this will activate a compressed texture format: 
+     If Vulkan supports it, this will activate a compressed texture format: 
       tcDefault : uses global default compression option
       tcNone : do not use compression
       tcStandard : use standard compression, average quality, average rate
       tcHighQuality : choose a high-quality, low-speed compression
       tcHighSpeed : choose a high-speed, low-quality compression
       . }
-  GLinternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
+  VKinternalCompression = (tcDefault, tcNone, tcStandard, tcHighQuality,
     tcHighSpeed);
 
   // Global texturing defaults
   //
 var
   vDefaultTextureFormat: GLinternalFormat = tfRGBA8;
-  vDefaultTextureCompression: GLinternalCompression = tcNone;
+  vDefaultTextureCompression: VKinternalCompression = tcNone;
 
 const
   cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
 
-{ Give a openGL texture format from GLScene texture format. }
-function InternalFormatToOpenGLFormat(intFormat: GLinternalFormat): GLEnum;
-{ Give a GLScene texture format from openGL texture format. }
-function OpenGLFormatToInternalFormat(glFormat: GLEnum): GLinternalFormat;
+{ Give a Vulkan texture format from GLScene texture format. }
+function InternalFormatToVulkanFormat(intFormat: GLinternalFormat): GLEnum;
+{ Give a VKScene texture format from openGL texture format. }
+function VulkanFormatToInternalFormat(glFormat: GLEnum): GLinternalFormat;
 { Give a pixel size in bytes from texture format or data format. }
 function GetTextureElementSize(intFormat: GLinternalFormat): Integer; overload;
 function GetTextureElementSize(colorFormat: GLEnum; dataType: GLEnum):
   Integer; overload;
-{ Give compatible openGL image format and data type. }
+{ Give compatible Vulkan image format and data type. }
 procedure FindCompatibleDataFormat(intFormat: GLinternalFormat; out dFormat:
   GLenum; out dType: GLenum);
-{ Give a compressed openGL texture format from GLScene texture format
+{ Give a compressed Vulkan texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
-function CompressedInternalFormatToOpenGL(intFormat: GLinternalFormat):
-  Integer;
+function CompressedInternalFormatToVulkan(intFormat: GLinternalFormat): Integer;
 { True if texture target supported. }
 function IsTargetSupported(glTarget: GLEnum): Boolean; overload;
 function IsTargetSupported(target: TVKTextureTarget): Boolean; overload;
@@ -251,10 +250,10 @@ function IsDepthFormat(glFormat: GLEnum): Boolean; overload;
 { True if texture compressed. }
 function IsCompressedFormat(intFormat: GLinternalFormat): Boolean; overload;
 function IsCompressedFormat(glFormat: GLEnum): Boolean; overload;
-{ Give generic compressed OpenGL texture format. }
+{ Give generic compressed Vulkan texture format. }
 function GetGenericCompressedFormat(const intFormat: GLinternalFormat;
   const colorFormat: GLEnum; out internalFormat: GLEnum): Boolean;
-{ Give uncompressed texture format and OpenGL color format. }
+{ Give uncompressed texture format and Vulkan color format. }
 function GetUncompressedFormat(const intFormat: GLinternalFormat;
   out internalFormat: GLinternalFormat; out colorFormat: GLEnum): Boolean;
 
@@ -290,7 +289,7 @@ type
 
 const
   //: InternalFormat, ColorFormat, DataType
-  cTextureFormatToOpenGL: array[low(GLinternalFormat)..high(GLinternalFormat)] of TFormatDesc =
+  cTextureFormatToVulkan: array[low(GLinternalFormat)..high(GLinternalFormat)] of TFormatDesc =
   (
     (IntFmt: GL_ALPHA4; ClrFmt: GL_ALPHA; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 4; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False),
     (IntFmt: GL_ALPHA8; ClrFmt: GL_ALPHA; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 8; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False),
@@ -453,18 +452,18 @@ const
     (IntFmt: GL_RGBA16_SNORM; ClrFmt: GL_RGBA; DataFmt: GL_SHORT; RBit: 16; GBit: 16; BBit: 16; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False)
     );
 
-function InternalFormatToOpenGLFormat(intFormat: GLinternalFormat): GLEnum;
+function InternalFormatToVulkanFormat(intFormat: GLinternalFormat): GLEnum;
 begin
-  Result := cTextureFormatToOpenGL[intFormat].IntFmt;
+  Result := cTextureFormatToVulkan[intFormat].IntFmt;
 end;
 
-function OpenGLFormatToInternalFormat(glFormat: GLEnum): GLinternalFormat;
+function VulkanFormatToInternalFormat(glFormat: GLEnum): GLinternalFormat;
 var
   i: GLinternalFormat;
 begin
   Result := tfRGBA8;
-  for i := Low(cTextureFormatToOpenGL) to High(cTextureFormatToOpenGL) do
-    if glFormat = cTextureFormatToOpenGL[i].IntFmt then
+  for i := Low(cTextureFormatToVulkan) to High(cTextureFormatToVulkan) do
+    if glFormat = cTextureFormatToVulkan[i].IntFmt then
     begin
       Result := i;
       Exit;
@@ -475,8 +474,8 @@ end;
 function GetTextureElementSize(intFormat: GLinternalFormat): Integer;
 begin
   Result := GetTextureElementSize(
-    cTextureFormatToOpenGL[intFormat].ClrFmt,
-    cTextureFormatToOpenGL[intFormat].DataFmt);
+    cTextureFormatToVulkan[intFormat].ClrFmt,
+    cTextureFormatToVulkan[intFormat].DataFmt);
 end;
 
 function GetTextureElementSize(colorFormat: GLEnum; dataType: GLEnum):
@@ -554,7 +553,7 @@ begin
   end;
 end;
 
-function CompressedInternalFormatToOpenGL(intFormat: GLinternalFormat):
+function CompressedInternalFormatToVulkan(intFormat: GLinternalFormat):
   Integer;
 begin
   Result := GL_COMPRESSED_RGBA;
@@ -575,8 +574,8 @@ end;
 procedure FindCompatibleDataFormat(intFormat: GLinternalFormat; out dFormat:
   GLEnum; out dType: GLenum);
 begin
-  dFormat := cTextureFormatToOpenGL[intFormat].ClrFmt;
-  dType := cTextureFormatToOpenGL[intFormat].DataFmt;
+  dFormat := cTextureFormatToVulkan[intFormat].ClrFmt;
+  dType := cTextureFormatToVulkan[intFormat].DataFmt;
 end;
 
 function IsTargetSupported(target: TVKTextureTarget): Boolean;
@@ -731,32 +730,32 @@ end;
 
 function IsFloatFormat(intFormat: GLinternalFormat): boolean;
 begin
-  Result := cTextureFormatToOpenGL[intFormat].Flt;
+  Result := cTextureFormatToVulkan[intFormat].Flt;
 end;
 
 function IsFloatFormat(glFormat: GLEnum): boolean;
 begin
-  Result := IsFloatFormat(OpenGLFormatToInternalFormat(glFormat));
+  Result := IsFloatFormat(VulkanFormatToInternalFormat(glFormat));
 end;
 
 function IsDepthFormat(intFormat: GLinternalFormat): boolean;
 begin
-  Result := cTextureFormatToOpenGL[intFormat].DBit > 0;
+  Result := cTextureFormatToVulkan[intFormat].DBit > 0;
 end;
 
 function IsDepthFormat(glFormat: GLEnum): boolean;
 begin
-  Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].DBit > 0;
+  Result := cTextureFormatToVulkan[VulkanFormatToInternalFormat(glFormat)].DBit > 0;
 end;
 
 function IsCompressedFormat(intFormat: GLinternalFormat): boolean;
 begin
-  Result := cTextureFormatToOpenGL[intFormat].Comp;
+  Result := cTextureFormatToVulkan[intFormat].Comp;
 end;
 
 function IsCompressedFormat(glFormat: GLEnum): boolean;
 begin
-  Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].Comp;
+  Result := cTextureFormatToVulkan[VulkanFormatToInternalFormat(glFormat)].Comp;
 end;
 
 function GetGenericCompressedFormat(const intFormat: GLinternalFormat;

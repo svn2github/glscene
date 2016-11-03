@@ -374,7 +374,6 @@
         <DCCReference Include="..\..\Source\Basis\VKS.XOpenGL.pas"/>
         <DCCReference Include="..\..\Source\VKS.zBuffer.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\HDRImage.pas"/>
-        <DCCReference Include="..\..\Source\LIBFREETYPE.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\LWObjects.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3BSP.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3MD3.pas"/>

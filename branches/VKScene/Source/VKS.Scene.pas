@@ -2,7 +2,7 @@
 // VKScene project, http://glscene.sourceforge.net
 //
 {
-   Base classes and structures for GLScene.
+   Base classes and structures for VKScene.
 }
 
 unit VKS.Scene;
@@ -102,12 +102,12 @@ type
      roNoSwapBuffers: don't perform RenderingContext.SwapBuffers after rendering
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
          early-z culling. 
-     roForwardContext: force OpenGL forward context }
+     roForwardContext: force Vulkan forward context }
   TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
     roNoSwapBuffers, roNoDepthBufferClear, roDebugContext,
-    roForwardContext, roOpenGL_ES2_Context);
+    roForwardContext, roVulkan_ES2_Context);
   TContextOptions = set of TContextOption;
 
   // IDs for limit determination
@@ -571,7 +571,7 @@ type
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
     { Make object-specific geometry description here. 
-       Subclasses should MAINTAIN OpenGL states (restore the states if
+       Subclasses should MAINTAIN Vulkan states (restore the states if
        they were altered). }
     procedure BuildList(var rci: TVKRenderContextInfo); virtual;
     function GetParentComponent: TComponent; override;
@@ -782,21 +782,21 @@ type
   // TVKObjectPreEffect
   //
   { An object effect that gets rendered before owner object's render. 
-     The current OpenGL matrices and material are that of the owner object. }
+     The current Vulkan matrices and material are that of the owner object. }
   TVKObjectPreEffect = class(TVKObjectEffect)
   end;
 
   // TVKObjectPostEffect
   //
   { An object effect that gets rendered after owner object's render. 
-     The current OpenGL matrices and material are that of the owner object. }
+     The current Vulkan matrices and material are that of the owner object. }
   TVKObjectPostEffect = class(TVKObjectEffect)
   end;
 
   // TVKObjectAfterEffect
   //
   { An object effect that gets rendered at scene's end. 
-     No particular OpenGL matrices or material should be assumed. }
+     No particular Vulkan matrices or material should be assumed. }
   TVKObjectAfterEffect = class(TVKObjectEffect)
   end;
 
@@ -963,18 +963,18 @@ type
 
   // TDirectRenderEvent
   //
-  { Event for user-specific rendering in a TVKDirectOpenGL object. }
+  { Event for user-specific rendering in a TVKDirectVulkan object. }
   TDirectRenderEvent = procedure(Sender: TObject; var rci: TVKRenderContextInfo)
     of object;
 
-  // TVKDirectOpenGL
+  // TVKDirectVulkan
   //
-  { Provides a way to issue direct OpenGL calls during the rendering. 
+  { Provides a way to issue direct Vulkan calls during the rendering. 
      You can use this object to do your specific rendering task in its OnRender
-     event. The OpenGL calls shall restore the OpenGL states they found when
+     event. The Vulkan calls shall restore the Vulkan states they found when
      entering, or exclusively use the GLMisc utility functions to alter the
      states.  }
-  TVKDirectOpenGL = class(TVKImmaterialSceneObject)
+  TVKDirectVulkan = class(TVKImmaterialSceneObject)
   private
     { Private Declarations }
     FUseBuildList: Boolean;
@@ -997,20 +997,20 @@ type
   published
     { Published Declarations }
     { Specifies if a build list be made. 
-       If True, GLScene will generate a build list (OpenGL-side cache),
+       If True, GLScene will generate a build list (Vulkan-side cache),
        ie. OnRender will only be invoked once for the first render, or after
        a StructureChanged call. This is suitable for "static" geometry and
        will usually speed up rendering of things that don't change. 
        If false, OnRender will be invoked for each render. This is suitable
        for dynamic geometry (things that change often or constantly). }
     property UseBuildList: Boolean read FUseBuildList write SetUseBuildList;
-    { Place your specific OpenGL code here. 
-       The OpenGL calls shall restore the OpenGL states they found when
+    { Place your specific Vulkan code here. 
+       The Vulkan calls shall restore the Vulkan states they found when
        entering, or exclusively use the GLMisc utility functions to alter
        the states.  }
     property OnRender: TDirectRenderEvent read FOnRender write FOnRender;
     { Defines if the object uses blending. 
-       This property will allow direct opengl objects to be flagged as
+       This property will allow direct Vulkan objects to be flagged as
        blended for object sorting purposes.  }
     property Blend: Boolean read FBlend write SetBlend;
   end;
@@ -1135,7 +1135,7 @@ type
      on/off through their Shining property. 
      Lightsources are managed in a specific object by the TVKScene for rendering
      purposes. The maximum number of light source in a scene is limited by the
-     OpenGL implementation (8 lights are supported under most ICDs), though the
+     Vulkan implementation (8 lights are supported under most ICDs), though the
      more light you use, the slower rendering may get. If you want to render
      many more light/lightsource, you may have to resort to other techniques
      like lightmapping. }
@@ -1265,7 +1265,7 @@ type
     { Nearest clipping plane for the frustum. 
        This value depends on the FocalLength and DepthOfView fields and
        is calculated to minimize Z-Buffer crawling as suggested by the
-       OpenGL documentation. }
+       Vulkan documentation. }
     property NearPlane: Single read FNearPlane;
 
     //: Apply camera transformation
@@ -1536,7 +1536,7 @@ type
   //
   { Fog distance calculation mode. 
       
-      fdDefault: let OpenGL use its default formula
+      fdDefault: let Vulkan use its default formula
       fdEyeRadial: uses radial "true" distance (best quality)
       fdEyePlane: uses the distance to the projection plane
                  (same as Z-Buffer, faster)
@@ -1588,9 +1588,9 @@ type
     { The formula used for converting distance to fog intensity. }
     property FogMode: TFogMode read FFogMode write SetFogMode default fmLinear;
     { Adjusts the formula used for calculating fog distances. 
-       This option is honoured if and only if the OpenGL ICD supports the
+       This option is honoured if and only if the Vulkan ICD supports the
        GL_NV_fog_distance extension, otherwise, it is ignored. 
-           fdDefault: let OpenGL use its default formula
+           fdDefault: let Vulkan use its default formula
            fdEyeRadial: uses radial "true" distance (best quality)
            fdEyePlane: uses the distance to the projection plane
              (same as Z-Buffer, faster)
@@ -1614,7 +1614,7 @@ type
 
   // TVKSceneBuffer
   //
-  { Encapsulates an OpenGL frame/rendering buffer.  }
+  { Encapsulates an Vulkan frame/rendering buffer.  }
   TVKSceneBuffer = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
@@ -1780,12 +1780,12 @@ type
        DPI is adjusted to make the bitmap similar to the viewer. }
     procedure RenderToFile(const AFile: string; bmpWidth, bmpHeight: Integer);
       overload;
-    { Creates a TVKBitmap32 that is a snapshot of current OpenGL content. 
+    { Creates a TVKBitmap32 that is a snapshot of current Vulkan content. 
        When possible, use this function instead of RenderToBitmap, it won't
        request a redraw and will be significantly faster. 
        The returned TVKBitmap32 should be freed by calling code. }
     function CreateSnapShot: TVKImage;
-    { Creates a VCL bitmap that is a snapshot of current OpenGL content.  }
+    { Creates a FMX bitmap that is a snapshot of current Vulkan content.  }
     function CreateSnapShotBitmap: TVKBitmap;
     procedure CopyToTexture(aTexture: TVKTexture); overload;
     procedure CopyToTexture(aTexture: TVKTexture; xSrc, ySrc, AWidth, AHeight:
@@ -1803,13 +1803,13 @@ type
     { Indicates if the Viewer is "frozen". }
     property Freezed: Boolean read FFreezed;
     { Freezes rendering leaving the last rendered scene on the buffer. This
-       is usefull in windowed applications for temporarily stoping rendering
+       is usefull in windowed applications for temporarily stopping rendering
        (when moving the window, for example). }
     procedure Freeze;
     { Restarts rendering after it was freezed. }
     procedure Melt;
 
-    { Displays a window with info on current OpenGL ICD and context. }
+    { Displays a window with info on current Vulkan ICD and context. }
     procedure ShowInfo(Modal: boolean = false);
 
     { Currently Rendering? }
@@ -1831,7 +1831,7 @@ type
     property BaseProjectionMatrix: TMatrix read FBaseProjectionMatrix;
 
     { Back up current View matrix and replace it with newMatrix. 
-       This method has no effect on the OpenGL matrix, only on the Buffer's
+       This method has no effect on theVulkan matrix, only on the Buffer's
        matrix, and is intended for special effects rendering. }
     procedure PushViewMatrix(const newMatrix: TMatrix); deprecated;
     { Restore a View matrix previously pushed. }
@@ -1924,8 +1924,8 @@ type
        See FramesPerSecond. }
     procedure ResetPerformanceMonitor;
 
-    { Retrieve one of the OpenGL limits for the current viewer. 
-       Limits include max texture size, OpenGL stack depth, etc. }
+    { Retrieve one of the Vulkan limits for the current viewer. 
+       Limits include max texture size, Vulkan stack depth, etc. }
     property LimitOf[Which: TLimitType]: Integer read GetLimit;
     { Current rendering context. 
        The context is a wrapper around platform-specific contexts
@@ -1980,7 +1980,7 @@ type
        When lighting is enabled, objects will be lit according to lightsources,
        when lighting is disabled, objects are rendered in their own colors,
        without any shading. 
-       Lighting does NOT generate shadows in OpenGL. }
+       Lighting does NOT generate shadows in Vulkan. }
     property Lighting: Boolean read FLighting write SetLighting default True;
     { AntiAliasing option. 
        Ignored if not hardware supported, currently based on ARB_multisample. }
@@ -2009,7 +2009,7 @@ type
       FOnStructuralChange stored False;
 
     { Triggered before the scene's objects get rendered. 
-       You may use this event to execute your own OpenGL rendering
+       You may use this event to execute your own Vulkan rendering
        (usually background stuff). }
     property BeforeRender: TNotifyEvent read FBeforeRender write FBeforeRender
       stored False;
@@ -2025,14 +2025,14 @@ type
     property WrapUpRendering: TDirectRenderEvent read FWrapUpRendering write
       FWrapUpRendering stored False;
     { Triggered just after all the scene's objects have been rendered. 
-       The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering (usually for HUD, 2D overlays
+       The Vulkan context is still active in this event, and you may use it
+       to execute your own Vulkan rendering (usually for HUD, 2D overlays
        or after effects).  }
     property PostRender: TNotifyEvent read FPostRender write FPostRender stored
       False;
     { Called after rendering. 
-       You cannot issue OpenGL calls in this event, if you want to do your own
-       OpenGL stuff, use the PostRender event. }
+       You cannot issue Vulkan calls in this event, if you want to do your own
+       Vulkan stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read FAfterRender write FAfterRender
       stored False;
   end;
@@ -2097,7 +2097,7 @@ type
        of the cube, from the absolute position of the camera. 
        This does NOT alter the content of the Pictures in the image,
        and will only change or define the content of textures as
-       registered by OpenGL. }
+       registered by Vulkan. }
     procedure RenderCubeMapTextures(cubeMapTexture: TVKTexture;
       zNear: Single = 0;
       zFar: Single = 0);
@@ -2110,16 +2110,16 @@ type
     property Height: Integer read FHeight write SetHeight default 256;
 
     { Triggered before the scene's objects get rendered. 
-       You may use this event to execute your own OpenGL rendering. }
+       You may use this event to execute your own Vulkan rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write
       SetBeforeRender;
     { Triggered just after all the scene's objects have been rendered. 
-       The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering.  }
+       The Vulkan context is still active in this event, and you may use it
+       to execute your own Vulkan rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
     { Called after rendering. 
-       You cannot issue OpenGL calls in this event, if you want to do your own
-       OpenGL stuff, use the PostRender event. }
+       You cannot issue Vulkan calls in this event, if you want to do your own
+       Vulkan stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
     { Access to buffer properties. }
@@ -2129,7 +2129,7 @@ type
   // TVKMemoryViewer
   //
   { Component to render a scene to memory only. 
-     This component curently requires that the OpenGL ICD supports the
+     This component curently requires that the Vulkan ICD supports the
      WGL_ARB_pbuffer extension (indirectly). }
   TVKMemoryViewer = class(TVKNonVisualViewer)
   private
@@ -2174,7 +2174,7 @@ procedure RegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
    See RegisterGLBaseSceneObjectNameChangeEvent. }
 procedure DeRegisterGLBehaviourNameChangeEvent(notifyEvent: TNotifyEvent);
 
-{ Issues OpenGL calls for drawing X, Y, Z axes in a standard style. }
+{ Issues Vulkan calls for drawing X, Y, Z axes in a standard style. }
 procedure AxesBuildList(var rci: TVKRenderContextInfo; pattern: Word; AxisLen:
   Single);
 
@@ -6397,13 +6397,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TVKDirectOpenGL ------------------
+// ------------------ TVKDirectVulkan ------------------
 // ------------------
 
 // Create
 //
 
-constructor TVKDirectOpenGL.Create(AOwner: TComponent);
+constructor TVKDirectVulkan.Create(AOwner: TComponent);
 begin
   inherited;
   ObjectStyle := ObjectStyle + [osDirectDraw];
@@ -6413,13 +6413,13 @@ end;
 // Assign
 //
 
-procedure TVKDirectOpenGL.Assign(Source: TPersistent);
+procedure TVKDirectVulkan.Assign(Source: TPersistent);
 begin
-  if Source is TVKDirectOpenGL then
+  if Source is TVKDirectVulkan then
   begin
-    UseBuildList := TVKDirectOpenGL(Source).UseBuildList;
-    FOnRender := TVKDirectOpenGL(Source).FOnRender;
-    FBlend := TVKDirectOpenGL(Source).Blend;
+    UseBuildList := TVKDirectVulkan(Source).UseBuildList;
+    FOnRender := TVKDirectVulkan(Source).FOnRender;
+    FBlend := TVKDirectVulkan(Source).Blend;
   end;
   inherited Assign(Source);
 end;
@@ -6427,7 +6427,7 @@ end;
 // BuildList
 //
 
-procedure TVKDirectOpenGL.BuildList(var rci: TVKRenderContextInfo);
+procedure TVKDirectVulkan.BuildList(var rci: TVKRenderContextInfo);
 begin
   if Assigned(FOnRender) then
   begin
@@ -6439,7 +6439,7 @@ end;
 // AxisAlignedDimensionsUnscaled
 //
 
-function TVKDirectOpenGL.AxisAlignedDimensionsUnscaled: TVector;
+function TVKDirectVulkan.AxisAlignedDimensionsUnscaled: TVector;
 begin
   Result := NullHmgPoint;
 end;
@@ -6447,7 +6447,7 @@ end;
 // SetUseBuildList
 //
 
-procedure TVKDirectOpenGL.SetUseBuildList(const val: Boolean);
+procedure TVKDirectVulkan.SetUseBuildList(const val: Boolean);
 begin
   if val <> FUseBuildList then
   begin
@@ -6462,7 +6462,7 @@ end;
 // Blended
 //
 
-function TVKDirectOpenGL.Blended: Boolean;
+function TVKDirectVulkan.Blended: Boolean;
 begin
   Result := FBlend;
 end;
@@ -6470,7 +6470,7 @@ end;
 // SetBlend
 //
 
-procedure TVKDirectOpenGL.SetBlend(const val: Boolean);
+procedure TVKDirectVulkan.SetBlend(const val: Boolean);
 begin
   if val <> FBlend then
   begin
@@ -7793,7 +7793,7 @@ begin
     locOptions := locOptions + [rcoStereo];
   if roDebugContext in ContextOptions then
     locOptions := locOptions + [rcoDebug];
-  if roOpenGL_ES2_Context in ContextOptions then
+  if roVulkan_ES2_Context in ContextOptions then
     locOptions := locOptions + [rcoOGL_ES];
   if roNoColorBuffer in ContextOptions then
     locColorBits := 0
@@ -9511,19 +9511,19 @@ var
       glReadPixels(0, 0, Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       case aTexture.MinFilter of
         miNearest, miLinear:
-          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexImage2d(target, 0, aTexture.VulkanTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
       else
         if GL_SGIS_generate_mipmap and (target = GL_TEXTURE_2D) then
         begin
           // hardware-accelerated when supported
           glTexParameteri(target, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
-          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexImage2d(target, 0, aTexture.VulkanTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
         end
         else
         begin
-          glTexImage2d(target, 0, aTexture.OpenGLTextureFormat, Width, Height,
+          glTexImage2d(target, 0, aTexture.VulkanTextureFormat, Width, Height,
             0, GL_RGBA, GL_UNSIGNED_BYTE, buf);
           glGenerateMipmap(target);
         end;
@@ -9892,7 +9892,7 @@ initialization
   //------------------------------------------------------------------------------
 
   RegisterClasses([TVKLightSource, TVKCamera, TVKProxyObject,
-    TVKScene, TVKDirectOpenGL, TVKRenderPoint,
+    TVKScene, TVKDirectVulkan, TVKRenderPoint,
       TVKMemoryViewer]);
 
   // preparation for high resolution timer

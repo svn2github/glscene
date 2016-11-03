@@ -616,7 +616,7 @@ begin
   if (ARci.drawState = dsPicking) and not PickableTarget then
     exit;
 
-  if TVKFramebufferHandle.IsSupported = 0 then
+  if TVKFramebufferHandle.IsSupported = True then
   begin
     ShowMessage('Framebuffer not supported - deactivated');
     Active := False;

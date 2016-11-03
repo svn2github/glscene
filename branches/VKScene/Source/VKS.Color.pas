@@ -34,7 +34,7 @@ type
 
   // TVKColor
   //
-  { Wraps an OpenGL color. }
+  { Wraps an Vulkan color. }
   TVKColor = class(TVKUpdateAbleObject)
   private
     { Private Properties }

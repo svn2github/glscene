@@ -777,7 +777,7 @@ var
   size: Integer;
 begin
   destImposter.PrepareTexture(rci);
-  bmp32.RegisterAsOpenGLTexture(
+  bmp32.RegisterAsVulkanTexture(
     destImposter.FTexture, False, GL_RGBA8, size, size, size);
 end;
 

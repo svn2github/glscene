@@ -2528,7 +2528,7 @@ Integer; cdecl; external LibName;
 procedure SDL_FreeYUVOverlay(Overlay: PSDL_Overlay); cdecl; external LibName;
 
 {------------------------------------------------------------------------------}
-{ OpenGL Routines                                                              }
+{ Vulkan Routines                                                              }
 {------------------------------------------------------------------------------}
 
 { Dynamically load a GL driver, if SDL is built with dynamic GL.

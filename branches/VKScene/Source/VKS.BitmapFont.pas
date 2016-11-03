@@ -912,7 +912,7 @@ begin
       else
         Assert(False);
       end;
-      RegisterAsOpenGLTexture(t, not(FMinFilter in [miNearest, miLinear]),
+      RegisterAsVulkanTexture(t, not(FMinFilter in [miNearest, miLinear]),
         TextureFormat, cap, cap, cap);
     end;
 

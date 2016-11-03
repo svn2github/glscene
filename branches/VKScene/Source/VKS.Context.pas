@@ -93,9 +93,9 @@ type
 
   // TVKContext
   //
-  { Wrapper around an OpenGL rendering context.
+  { Wrapper around an Vulkan rendering context.
      The aim of this class is to offer platform-independant
-     initialization, activation and management of OpenGL
+     initialization, activation and management of Vulkan
      rendering context. The class also offers notifications
      event and error/problems detection.
      This is a virtual abstract a class, and platform-specific
@@ -192,7 +192,7 @@ type
     property Acceleration: TVKContextAcceleration read FAcceleration write SetAcceleration;
     { Triggered whenever the context is destroyed. 
        This events happens *before* the context has been
-       actually destroyed, OpenGL resource cleanup can
+       actually destroyed, Vulkan resource cleanup can
        still occur here. }
     property OnDestroyContext: TNotifyEvent read FOnDestroyContext write
       FOnDestroyContext;
@@ -202,7 +202,7 @@ type
     procedure CreateContext(ADeviceHandle: THandle); overload; //VCL -> HDC
     { Creates an in-memory context. 
        The function should fail if no hardware-accelerated memory context
-       can be created (the CreateContext method can handle software OpenGL
+       can be created (the CreateContext method can handle software Vulkan
        contexts). }
     procedure CreateMemoryContext(OutputDevice: THandle; Width, Height: //HWND
       Integer; BufferCount: integer = 1);
@@ -281,7 +281,7 @@ type
 
   // TVKContextHandle
   //
-  { Wrapper around an OpenGL context handle. 
+  { Wrapper around an Vulkan context handle. 
      This wrapper also takes care of context registrations and data releases
      related to context releases an cleanups. This is an abstract class,
      use the TVKListHandle and TVKTextureHandle subclasses. }
@@ -329,7 +329,7 @@ type
     procedure NotifyChangesOfData;
 
     //: Checks if required extensions / OpenGL version are met
-    class function IsSupported: GLboolean; virtual;
+    class function IsSupported: Boolean; virtual;
     function IsAllocatedForContext(AContext: TVKContext = nil): Boolean;
     function IsShared: Boolean;
 
@@ -420,7 +420,7 @@ type
     class function IsValid(const ID: GLuint): GLboolean; override;
   public
     { Public Declarations }
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKQueryHandle
@@ -466,7 +466,7 @@ type
   // TVKOcclusionQueryHandle
   //
   { Manages a handle to an occlusion query. 
-     Requires OpenGL 1.5+ 
+     Requires Vulkan 1.5+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TVKOcclusionQueryHandle = class(TVKQueryHandle)
@@ -474,7 +474,7 @@ type
     function GetTarget: GLuint; override;
     function GetQueryType: TQueryType; override;
   public
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
     // Number of samples (pixels) drawn during the query, some pixels may
     // be drawn to several times in the same query
     function PixelCount: Integer;
@@ -485,7 +485,7 @@ type
     function GetTarget: GLuint; override;
     function GetQueryType: TQueryType; override;
   public
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKTimerQueryHandle
@@ -499,7 +499,7 @@ type
     function GetTarget: GLuint; override;
     function GetQueryType: TQueryType; override;
   public
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
     // Time, in nanoseconds (1 ns = 10^-9 s) between starting + ending the query.
     // with 32 bit integer can measure up to approximately 4 seconds, use
     // QueryResultUInt64 if you may need longer
@@ -509,7 +509,7 @@ type
   // TVKPrimitiveQueryHandle
   //
   { Manages a handle to a primitive query. 
-     Requires OpenGL 3.0+ 
+     Requires Vulkan 3.0+ 
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
   TVKPrimitiveQueryHandle = class(TVKQueryHandle)
@@ -517,7 +517,7 @@ type
     function GetTarget: GLuint; override;
     function GetQueryType: TQueryType; override;
   public
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
     // Number of primitives (eg. Points, Triangles etc.) drawn whilst the
     // query was active
     function PrimitivesGenerated: Integer;
@@ -549,7 +549,7 @@ type
     procedure UnBind; virtual; abstract;
 
     { Bind a buffer object to an indexed target, used by transform feedback
-       buffer objects and uniform buffer objects. (OpenGL 3.0+) }
+       buffer objects and uniform buffer objects. (Vulkan 3.0+) }
     procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr);
       virtual;
     { Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
@@ -582,7 +582,7 @@ type
        Must follow a MapBuffer, and happen before the buffer is unbound. }
     function UnmapBuffer: GLboolean;
 
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
 
     property Target: GLuint read GetTarget;
     property BufferSize: Integer read FSize;
@@ -639,7 +639,7 @@ type
   public
     procedure Bind; override;
     procedure UnBind; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKUnpackPBOHandle
@@ -653,7 +653,7 @@ type
   public
     procedure Bind; override;
     procedure UnBind; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKTransformFeedbackBufferHandle
@@ -677,7 +677,7 @@ type
     procedure BindBase(index: GLuint); override;
     procedure UnBindBase(index: GLuint); override;
 
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKTextureBufferHandle
@@ -689,7 +689,7 @@ type
   public
     procedure Bind; override;
     procedure UnBind; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKUniformBufferHandle
@@ -709,7 +709,7 @@ type
     procedure BindRange(index: GLuint; offset: GLintptr; size: GLsizeiptr); override;
     procedure BindBase(index: GLuint); override;
     procedure UnBindBase(index: GLuint); override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKVertexArrayHandle
@@ -726,7 +726,7 @@ type
   public
     procedure Bind;
     procedure UnBind;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   TVKFramebufferStatus = (
@@ -789,14 +789,14 @@ type
       GLuint; level: GLint; layer: GLint);
     procedure AttachRenderBuffer(target: GLEnum; attachment: GLEnum;
       renderbuffertarget: GLEnum; renderbuffer: GLuint);
-    // OpenGL 3.2+ only.
+    // Vulkan 3.2+ only.
     // If texture is the name of a three-dimensional texture, cube map texture, one-or
     // two-dimensional array texture, or two-dimensional multisample array texture, the
     // texture level attached to the framebuffer attachment point is an array of images,
     // and the framebuffer attachment is considered layered.
     procedure AttachTexture(target: GLEnum; attachment: GLEnum; texture:
       GLuint; level: GLint);
-    // OpenGL 3.2+ only
+    // Vulkan 3.2+ only
     procedure AttachTextureLayer(target: GLEnum; attachment: GLEnum; texture:
       GLuint; level: GLint; layer: GLint);
 
@@ -825,7 +825,7 @@ type
     function GetStatus: TVKFramebufferStatus;
     function GetStringStatus(out clarification: string): TVKFramebufferStatus;
 
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKRenderbufferHandle
@@ -845,7 +845,7 @@ type
     procedure SetStorage(internalformat: GLEnum; width, height: GLsizei);
     procedure SetStorageMultisample(internalformat: GLEnum; samples: GLsizei;
       width, height: GLsizei);
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   TVKARBProgramHandle = class(TVKContextHandle)
@@ -875,7 +875,7 @@ type
     class function GetTarget: GLEnum; override;
   public
     { Public Declarations }
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   TVKARBFragmentProgramHandle = class(TVKARBProgramHandle)
@@ -884,7 +884,7 @@ type
     class function GetTarget: GLEnum; override;
   public
     { Public Declarations }
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   TVKARBGeometryProgramHandle = class(TVKARBProgramHandle)
@@ -893,7 +893,7 @@ type
     class function GetTarget: GLEnum; override;
   public
     { Public Declarations }
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKSLHandle
@@ -911,7 +911,7 @@ type
   public
     { Public Declarations }
     function InfoLog: string;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKShaderHandle
@@ -947,7 +947,7 @@ type
   public
     { Public Declarations }
     constructor Create; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKGeometryShaderHandle
@@ -957,7 +957,7 @@ type
   public
     { Public Declarations }
     constructor Create; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKFragmentShaderHandle
@@ -967,7 +967,7 @@ type
   public
     { Public Declarations }
     constructor Create; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKTessControlShaderHandle
@@ -977,7 +977,7 @@ type
   public
     { Public Declarations }
     constructor Create; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKTessEvaluationShaderHandle
@@ -987,7 +987,7 @@ type
   public
     { Public Declarations }
     constructor Create; override;
-    class function IsSupported: GLboolean; override;
+    class function IsSupported: Boolean; override;
   end;
 
   // TVKProgramHandle
@@ -1058,7 +1058,7 @@ type
     function ValidateProgram: Boolean;
     function GetAttribLocation(const aName: string): GLInt;
     function GetUniformLocation(const aName: string): GLInt;
-    function GetUniformOffset(const aName: string): GLInt;
+    function GetUniformOffset(const aName: string): GLintptr;
     function GetUniformBlockIndex(const aName: string): GLInt;
 
     function GetVaryingLocation(const aName: string): GLInt;
@@ -1162,7 +1162,7 @@ type
     function CreateContext(AClass: TVKContextClass = nil): TVKContext;
 
     { Returns the number of TVKContext object. 
-       This is *not* the number of OpenGL rendering contexts! }
+       This is *not* the number of Vulkan rendering contexts! }
     function ContextCount: Integer;
     { Registers a new object to notify when the last context is destroyed. 
        When the last rendering context is destroyed, the 'anEvent' will
@@ -1203,7 +1203,7 @@ procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTa
 
 var
   VKContextManager: TVKContextManager;
-  vIgnoreOpenGLErrors: Boolean = False;
+  vIgnoreVulkanErrors: Boolean = False;
   vContextActivationFailureOccurred: Boolean = false;
   vMultitextureCoordinatorClass: TAbstractMultitextureCoordinatorClass;
 
@@ -1872,7 +1872,7 @@ begin
 
   if vCurrentVKContext = nil then
   begin
-///    ShowMessages('Failed to allocate OpenGL identifier - no active rendering context!');
+    ShowMessage('Failed to allocate Vulkan identifier - no active rendering context!');
     exit;
   end;
 
@@ -2193,9 +2193,9 @@ end;
 // IsSupported
 //
 
-class function TVKContextHandle.IsSupported: GLboolean;
+class function TVKContextHandle.IsSupported: Boolean;
 begin
-  Result := 1;
+  Result := True;
 end;
 
 // ------------------
@@ -2225,7 +2225,7 @@ begin
     if Assigned(FOnDestroy) then
       FOnDestroy(Self, AHandle);
     // check for error
-    {CheckError; } // from OpenGLAdapter
+    {CheckError; } // from Vulkan adapter
   end;
 end;
 
@@ -2390,9 +2390,9 @@ end;
 // TVKSamplerHandle
 //
 
-class function TVKSamplerHandle.IsSupported: GLboolean;
+class function TVKSamplerHandle.IsSupported: Boolean;
 begin
-  Result := 1; //ARB_sampler_objects;
+  Result := GL_ARB_sampler_objects;
 end;
 
 // IsValid
@@ -2549,9 +2549,9 @@ end;
 // IsSupported
 //
 
-class function TVKOcclusionQueryHandle.IsSupported: GLboolean;
+class function TVKOcclusionQueryHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_VERSION_1_5 higher;
+  Result := GL_VERSION_1_5;
 end;
 
 // PixelCount
@@ -2585,9 +2585,9 @@ end;
 // IsSupported
 //
 
-class function TVKBooleanOcclusionQueryHandle.IsSupported: GLboolean;
+class function TVKBooleanOcclusionQueryHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_occlusion_query2;
+  Result := GL_ARB_occlusion_query2;
 end;
 
 // ------------------
@@ -2610,9 +2610,9 @@ end;
 // IsSupported
 //
 
-class function TVKTimerQueryHandle.IsSupported: GLboolean;
+class function TVKTimerQueryHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_EXT_timer_query or GL_ARB_timer_query;
+  Result := GL_EXT_timer_query or GL_ARB_timer_query;
 end;
 
 // Time
@@ -2646,9 +2646,9 @@ end;
 // IsSupported
 //
 
-class function TVKPrimitiveQueryHandle.IsSupported: GLboolean;
+class function TVKPrimitiveQueryHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_VERSION_3_0 or higher;
+  Result := GL_VERSION_3_0;
 end;
 
 // PrimitivesGenerated
@@ -2713,9 +2713,9 @@ end;
 // IsSupported
 //
 
-class function TVKBufferObjectHandle.IsSupported: GLboolean;
+class function TVKBufferObjectHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_vertex_buffer_object;
+  Result := GL_ARB_vertex_buffer_object;
 end;
 
 // BindRange
@@ -2888,9 +2888,9 @@ end;
 // IsSupported
 //
 
-class function TVKPackPBOHandle.IsSupported: GLboolean;
+class function TVKPackPBOHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_pixel_buffer_object;
+  Result := GL_ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2918,9 +2918,9 @@ end;
 // IsSupported
 //
 
-class function TVKUnpackPBOHandle.IsSupported: GLboolean;
+class function TVKUnpackPBOHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_pixel_buffer_object;
+  Result := GL_ARB_pixel_buffer_object;
 end;
 
 // ------------------
@@ -2984,9 +2984,9 @@ end;
 // IsSupported
 //
 
-class function TVKTransformFeedbackBufferHandle.IsSupported: GLboolean;
+class function TVKTransformFeedbackBufferHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_EXT_transform_feedback or GL_VERSION_3_0;
+  Result := GL_EXT_transform_feedback or GL_VERSION_3_0;
 end;
 
 // ------------------
@@ -3014,9 +3014,9 @@ end;
 // IsSupported
 //
 
-class function TVKTextureBufferHandle.IsSupported: GLBoolean;
+class function TVKTextureBufferHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_VERSION_3_1 or higher;
+  Result := GL_VERSION_3_1;
 end;
 
 // ------------------
@@ -3063,9 +3063,9 @@ end;
 // IsSupported
 //
 
-class function TVKUniformBufferHandle.IsSupported: GLboolean;
+class function TVKUniformBufferHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_uniform_buffer_object;
+  Result := GL_ARB_uniform_buffer_object;
 end;
 
 // ------------------
@@ -3126,9 +3126,9 @@ end;
 // IsSupported
 //
 
-class function TVKVertexArrayHandle.IsSupported: GLboolean;
+class function TVKVertexArrayHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_vertex_array_object;
+  Result := GL_ARB_vertex_array_object;
 end;
 
 // Transferable
@@ -3383,9 +3383,9 @@ end;
 // IsSupported
 //
 
-class function TVKFramebufferHandle.IsSupported: GLboolean;
+class function TVKFramebufferHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
+  Result := GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
 end;
 
 // Transferable
@@ -3472,9 +3472,9 @@ end;
 // IsSupported
 //
 
-class function TVKRenderbufferHandle.IsSupported: GLboolean;
+class function TVKRenderbufferHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
+  Result := GL_EXT_framebuffer_object or GL_ARB_framebuffer_object;
 end;
 
 // ------------------
@@ -3568,9 +3568,9 @@ begin
   Result := GL_VERTEX_PROGRAM_ARB;
 end;
 
-class function TVKARBVertexProgramHandle.IsSupported: GLboolean;
+class function TVKARBVertexProgramHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_vertex_program;
+  Result := GL_ARB_vertex_program;
 end;
 
 class function TVKARBFragmentProgramHandle.GetTarget: GLEnum;
@@ -3578,9 +3578,9 @@ begin
   Result := GL_FRAGMENT_PROGRAM_ARB;
 end;
 
-class function TVKARBFragmentProgramHandle.IsSupported: GLBoolean;
+class function TVKARBFragmentProgramHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_vertex_program;
+  Result := GL_ARB_vertex_program;
 end;
 
 class function TVKARBGeometryProgramHandle.GetTarget: GLEnum;
@@ -3588,9 +3588,9 @@ begin
   Result := GL_GEOMETRY_PROGRAM_NV;
 end;
 
-class function TVKARBGeometryProgramHandle.IsSupported: GLboolean;
+class function TVKARBGeometryProgramHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_NV_geometry_program4;
+  Result := GL_NV_geometry_program4;
 end;
 
 // ------------------
@@ -3634,9 +3634,9 @@ end;
 // IsSupported
 //
 
-class function TVKSLHandle.IsSupported: GLboolean;
+class function TVKSLHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_shader_objects;
+  Result := GL_ARB_shader_objects;
 end;
 
 // ------------------
@@ -3701,9 +3701,9 @@ end;
 // IsSupported
 //
 
-class function TVKVertexShaderHandle.IsSupported: GLboolean;
+class function TVKVertexShaderHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_vertex_shader;
+  Result := GL_ARB_vertex_shader;
 end;
 
 // ------------------
@@ -3722,9 +3722,9 @@ end;
 // IsSupported
 //
 
-class function TVKGeometryShaderHandle.IsSupported: GLboolean;
+class function TVKGeometryShaderHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_EXT_geometry_shader4;
+  Result := GL_EXT_geometry_shader4;
 end;
 
 // ------------------
@@ -3743,9 +3743,9 @@ end;
 // IsSupported
 //
 
-class function TVKFragmentShaderHandle.IsSupported: GLboolean;
+class function TVKFragmentShaderHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_fragment_shader;
+  Result := GL_ARB_fragment_shader;
 end;
 
 // ------------------
@@ -3764,9 +3764,9 @@ end;
 // IsSupported
 //
 
-class function TVKTessControlShaderHandle.IsSupported: GLboolean;
+class function TVKTessControlShaderHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_tessellation_shader;
+  Result := GL_ARB_tessellation_shader;
 end;
 
 // ------------------
@@ -3785,9 +3785,9 @@ end;
 // IsSupported
 //
 
-class function TVKTessEvaluationShaderHandle.IsSupported: GLboolean;
+class function TVKTessEvaluationShaderHandle.IsSupported: Boolean;
 begin
-  Result := 1; //GL_ARB_tessellation_shader;
+  Result := GL_ARB_tessellation_shader;
 end;
 
 // ------------------
@@ -4262,7 +4262,7 @@ end;
 // GetUniformOffset
 //
 
-function TVKProgramHandle.GetUniformOffset(const aName: string): GLInt;
+function TVKProgramHandle.GetUniformOffset(const aName: string): GLintptr;
 begin
   Result := glGetUniformOffsetEXT(Handle, GetUniformLocation(aName));
 end;

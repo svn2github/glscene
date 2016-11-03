@@ -237,8 +237,8 @@ type
     FUIRootScale: TVKBaseSceneObject; // for Scale
     FUIRootAxisLabel: TVKBaseSceneObject;
     FUIRootVisibleInfoLabels: TVKBaseSceneObject;
-    FInterfaceRender: TVKDirectOpenGL;
-    FInternalRender: TVKDirectOpenGL;
+    FInterfaceRender: TVKDirectVulkan;
+    FInternalRender: TVKDirectVulkan;
 
     FUISelectLineX, FUISelectLineY, FUISelectLineZ: TVKGizmoExUILines;  //  For None (Select)
 
@@ -780,13 +780,13 @@ begin
   FUIBaseGizmo := TVKDummyCube.Create(Self);
 
   //BoundingBoxes...
-  FInternalRender := TVKDirectOpenGL(FUIBaseGizmo.AddNewChild(TVKDirectOpenGL));
+  FInternalRender := TVKDirectVulkan(FUIBaseGizmo.AddNewChild(TVKDirectVulkan));
   FInternalRender.OnRender := InternalRender;
 
   FUIRootHelpers := TVKDummyCube(FUIBaseGizmo.AddNewChild(TVKDummyCube));
 
   //Canvas...
-  FInterfaceRender := TVKDirectOpenGL(FUIBaseGizmo.AddNewChild(TVKDirectOpenGL));
+  FInterfaceRender := TVKDirectVulkan(FUIBaseGizmo.AddNewChild(TVKDirectVulkan));
   FInterfaceRender.OnRender := InterfaceRender;
 
   FSelectedObjects := TVKPickList.Create(psMinDepth);

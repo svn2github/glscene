@@ -2,10 +2,10 @@
 // VKScene project, http://glscene.sourceforge.net 
 //
 {
-   Defines base vector types for use in Geometry.pas and OpenGL1x.pas. 
+   Defines base vector types for use in VectorGeometry.pas 
 
-   The sole aim of this unit is to limit dependency between the Geometry
-   and OpenGL1x units by introducing the base compatibility types
+   The sole aim of this unit is to limit dependency between the VKVectorGeometry
+   and Vulkan units by introducing the base compatibility types
    (and only the *base* types). 
 
    Conventions: 

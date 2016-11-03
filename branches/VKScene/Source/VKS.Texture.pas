@@ -55,9 +55,9 @@ type
   // Specifies the depth comparison function.
   TVKDepthCompareFunc = TDepthFunction;
 
-  { Texture format for OpenGL (rendering) use. 
-  Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
-  specify a generic format to reduce OpenGL texture memory use: }
+  { Texture format for Vulkan (rendering) use. 
+  Internally, VKScene handles all "base" images as 32 Bits RGBA, but you can
+  specify a generic format to reduce Vulkan texture memory use: }
   TVKTextureFormat = (
     tfDefault,
     tfRGB, // = tfRGB8
@@ -75,7 +75,7 @@ type
 
   // TVKTextureCompression
   //
-  TVKTextureCompression = GLinternalCompression;
+  TVKTextureCompression = VKinternalCompression;
 
   TVKTexture = class;
 
@@ -578,13 +578,13 @@ type
     function AllocateHandle: GLuint;
     function IsHandleAllocated: Boolean;
     { Returns OpenGL texture format corresponding to current options. }
-    function OpenGLTextureFormat: Integer;
+    function VulkanTextureFormat: Integer;
     { Returns if of float data type}
     function IsFloatType: Boolean;
     { Is the texture enabled?. 
       Always equals to 'not Disabled'. }
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    { Handle to the OpenGL texture object. 
+    { Handle to the Vulkan texture object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: GLuint read GetHandle;
@@ -657,13 +657,13 @@ type
       SetTextureFormatEx stored StoreTextureFormatEx;
 
     { Texture compression control. 
-    If True the compressed TextureFormat variant (the OpenGL ICD must
+    If True the compressed TextureFormat variant (the Vulkan ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TVKTextureCompression read FCompression write
       SetCompression default tcDefault;
     { Specifies texture filtering quality. 
     You can choose between bilinear and trilinear filetring (anisotropic). 
-    The OpenGL ICD must support GL_EXT_texture_filter_anisotropic or
+    The Vulkan ICD must support GL_EXT_texture_filter_anisotropic or
     this property is ignored. }
     property FilteringQuality: TVKTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfIsotropic;
@@ -3233,10 +3233,10 @@ begin
   Result := IsFloatFormat(TextureFormatEx);
 end;
 
-// OpenGLTextureFormat
+// VulkanTextureFormat
 //
 
-function TVKTexture.OpenGLTextureFormat: Integer;
+function TVKTexture.VulkanTextureFormat: Integer;
 var
   texComp: TVKTextureCompression;
 begin
@@ -3266,10 +3266,10 @@ begin
       else
         Assert(False);
       end;
-      Result := CompressedInternalFormatToOpenGL(TextureFormatEx);
+      Result := CompressedInternalFormatToVulkan(TextureFormatEx);
     end
   else
-    Result := InternalFormatToOpenGLFormat(TextureFormatEx);
+    Result := InternalFormatToVulkanFormat(TextureFormatEx);
 end;
 
 // PrepareImage
@@ -3371,12 +3371,12 @@ begin
         else
           Assert(False, strErrorEx + strUnknownType);
         end;
-        glFormat := CompressedInternalFormatToOpenGL(FTextureFormat);
+        glFormat := CompressedInternalFormatToVulkan(FTextureFormat);
       end
     else
-      glFormat := InternalFormatToOpenGLFormat(FTextureFormat);
+      glFormat := InternalFormatToVulkanFormat(FTextureFormat);
 
-    bitmap32.RegisterAsOpenGLTexture(
+    bitmap32.RegisterAsVulkanTexture(
       FTextureHandle,
       not (FMinFilter in [miNearest, miLinear]),
       glFormat,

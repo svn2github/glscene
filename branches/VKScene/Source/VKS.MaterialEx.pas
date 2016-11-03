@@ -51,7 +51,6 @@ uses
   VKS.Utils,
   VKS.XOpenGL;
 
-
 type
 
   TVKMaterialComponentName = string;
@@ -328,18 +327,18 @@ type
     { Texture brightness correction. 
       This correction is applied upon loading a TVKTextureImage, it's a
       simple saturating scaling applied to the RGB components of
-      the 32 bits image, before it is passed to OpenGL, and before
+      the 32 bits image, before it is passed to Vulkan, and before
       gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
     { Texture gamma correction. 
       The gamma correction is applied upon loading a TVKTextureImage,
       applied to the RGB components of the 32 bits image, before it is
-      passed to OpenGL, after brightness correction (if any). }
+      passed to Vulkan, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
     { Texture compression control. 
-      If True the compressed TextureFormat variant (the OpenGL ICD must
+      If True the compressed TextureFormat variant (the Vulkan ICD must
       support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TVKTextureCompression read FCompression write
       SetCompression default tcDefault;
@@ -2045,7 +2044,7 @@ begin
     // Check streaming support
     if not IsDesignTime then
     begin
-      FUseStreaming := FUseStreaming and (TVKUnpackPBOHandle.IsSupported > 0) ;
+      FUseStreaming := FUseStreaming and (TVKUnpackPBOHandle.IsSupported > False) ;
       FUseStreaming := FUseStreaming and IsServiceContextAvaible;
       FUseStreaming := FUseStreaming and (LTarget = ttTexture2D);
     end;
@@ -2121,12 +2120,12 @@ begin
           FInternalFormat,
           FImage.ColorFormat,
           glFormat) then
-          glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+          glFormat := InternalFormatToVulkanFormat(FInternalFormat);
       end
     else
-      glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+      glFormat := InternalFormatToVulkanFormat(FInternalFormat);
 
-    FImage.RegisterAsOpenGLTexture(
+    FImage.RegisterAsVulkanTexture(
       FHandle,
       FMipGenMode = mgmOnFly,
       glFormat,
@@ -2253,7 +2252,7 @@ begin
         begin
           LImage.LevelPixelBuffer[Level].AllocateHandle;
           LImage.LevelPixelBuffer[Level].Bind;
-          glInternalFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+          glInternalFormat := InternalFormatToVulkanFormat(FInternalFormat);
           case transferMethod of
             0: glTexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.ColorFormat, FImage.DataType, nil);
             1: glCompressedTexImage2D(GL_TEXTURE_2D, Level, glInternalFormat, FImage.LevelWidth[level], FImage.LevelHeight[level], 0, FImage.LevelSizeInByte[Level], nil);
@@ -2784,7 +2783,7 @@ begin
   if IsDesignTime and FDefferedInit then
     exit;
   try
-    if FHandle.IsSupported > 0 then
+    if FHandle.IsSupported > False then
     begin
       FHandle.AllocateHandle;
       ID := FHandle.Handle;
@@ -2954,7 +2953,7 @@ end;
 
 procedure TVKTextureSampler.UnApply(var ARci: TVKRenderContextInfo);
 begin
-  if FHandle.IsSupported > 0 then
+  if FHandle.IsSupported > False then
     with ARci.VKStates do
       SamplerBinding[ActiveTexture] := 0;
 end;
@@ -4382,7 +4381,7 @@ begin
   if not IsDesignTime and FDefferedInit then
     exit;
   try
-    if FHandle[FShaderType].IsSupported > 0 then
+    if FHandle[FShaderType].IsSupported > False then
     begin
       FHandle[FShaderType].AllocateHandle;
       if FHandle[FShaderType].IsDataNeedUpdate then
@@ -4759,7 +4758,7 @@ var
 begin
   if FEnabled then
     try
-      if IsSupported and (FHandle.IsSupported > 0) then
+      if IsSupported and (FHandle.IsSupported > False) then
       begin
         FHandle.AllocateHandle;
         if FHandle.IsDataNeedUpdate then
@@ -6797,11 +6796,11 @@ begin
   end;
   FHandle.Target := LTarget;
 
-  glFormat := InternalFormatToOpenGLFormat(FInternalFormat);
+  glFormat := InternalFormatToVulkanFormat(FInternalFormat);
 
   if FOnlyWrite and ((LTarget = ttTexture2D) or (LTarget =
     ttTexture2DMultisample))
-    and (FRenderBufferHandle.IsSupported > 0) then
+    and (FRenderBufferHandle.IsSupported > False) then
   begin
     if LTarget = ttTexture2D then
       FRenderBufferHandle.SetStorage(glFormat, w, h)
@@ -7280,7 +7279,7 @@ begin
   if FDefferedInit and not IsDesignTime then
     exit;
   try
-    if FHandle.IsSupported > 0 then
+    if FHandle.IsSupported > False then
     begin
       FHandle.AllocateHandle;
       if FHandle.IsDataNeedUpdate then

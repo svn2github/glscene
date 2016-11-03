@@ -546,7 +546,7 @@ begin
 end;
 
 //
-// Tessellation routines (OpenGL callbacks)
+// Tessellation routines (Vulkan callbacks)
 //
 
 var

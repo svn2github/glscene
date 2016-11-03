@@ -181,13 +181,13 @@ type
     function TexturingMode: Cardinal; virtual; abstract;
 
     { Invoked when the particles of the manager will be rendered. 
-       This method is fired with the "base" OpenGL states and matrices
+       This method is fired with the "base" Vulkan states and matrices
        that will be used throughout the whole rendering, per-frame
        initialization should take place here. 
-       OpenGL states/matrices should not be altered in any way here. }
+       Vulkan states/matrices should not be altered in any way here. }
     procedure InitializeRendering(var rci: TVKRenderContextInfo); dynamic; abstract;
     { Triggered just before rendering a set of particles. 
-       The current OpenGL state should be assumed to be the "base" one as
+       The current Vulkan state should be assumed to be the "base" one as
        was found during InitializeRendering. Manager-specific states should
        be established here. 
        Multiple BeginParticles can occur during a render (but all will be
@@ -196,11 +196,11 @@ type
     procedure BeginParticles(var rci: TVKRenderContextInfo); virtual; abstract;
     { Request to render a particular particle. 
        Due to the nature of the rendering, no particular order should be
-       assumed. If possible, no OpenGL state changes should be made in this
+       assumed. If possible, no Vulkan state changes should be made in this
        method, but should be placed in Begin/EndParticles. }
     procedure RenderParticle(var rci: TVKRenderContextInfo; aParticle: TVKParticle); virtual; abstract;
     { Triggered after a set of particles as been rendered. 
-       If OpenGL state were altered directly (ie. not through the states
+       If Vulkan state were altered directly (ie. not through the states
        caches of GLMisc), it should be restored back to the "base" state. }
     procedure EndParticles(var rci: TVKRenderContextInfo); virtual; abstract;
     { Invoked when rendering of particles for this manager is done. }
@@ -230,7 +230,7 @@ type
 
     //: Class of particles created by this manager. }
     class function ParticlesClass: TVKParticleClass; virtual;
-    { Creates a new particle controled by the manager. }
+    { Creates a new particle controlled by the manager. }
     function CreateParticle: TVKParticle; virtual;
     { Create several particles at once. }
     procedure CreateParticles(nbParticles: Integer);
@@ -1293,7 +1293,7 @@ procedure TVKParticleFXManager.ApplyBlendingMode;
 begin
   if Renderer.BlendingMode <> BlendingMode then
   begin
-    // case disjunction to minimize OpenGL State changes
+    // case disjunction to minimize Vulkan State changes
     if Renderer.BlendingMode in [bmAdditive, bmTransparency] then
     begin
       case BlendingMode of
@@ -1332,7 +1332,7 @@ procedure TVKParticleFXManager.UnapplyBlendingMode;
 begin
   if Renderer.BlendingMode <> BlendingMode then
   begin
-    // case disjunction to minimize OpenGL State changes
+    // case disjunction to minimize Vulkan State changes
     if BlendingMode in [bmAdditive, bmTransparency] then
     begin
       case Renderer.BlendingMode of
@@ -3151,7 +3151,7 @@ begin
       try
         tf := GL_RGBA;
         PrepareImage(bmp32, tf);
-        bmp32.RegisterAsOpenGLTexture(
+        bmp32.RegisterAsVulkanTexture(
           FTexHandle,
           True,
           tf, tw, th, td);

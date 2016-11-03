@@ -39,7 +39,9 @@ unit VKS.VectorGeometry;
 interface
 
 uses
-  System.SysUtils, System.Types, System.Math,
+  System.SysUtils, 
+  System.Types, 
+  System.Math,
   VKS.VectorTypes;
 
 const
@@ -50,8 +52,6 @@ const
 
 type
   // data types needed for 3D graphics calculation,
-  // included are 'C like' aliases for each type (to be
-  // conformal with OpenGL types)
   PFloat = PSingle;
 
   PTexPoint = ^TTexPoint;
@@ -1784,7 +1784,7 @@ function MakeShadowMatrix(const planePoint, planeNormal,
   lightPos: TVector): TMatrix;
 
 { Builds a reflection matrix for the given plane.
-  Reflection matrix allow implementing planar reflectors in OpenGL (mirrors). }
+  Reflection matrix allow implementing planar reflectors (mirrors). }
 function MakeReflectionMatrix(const planePoint, planeNormal
   : TAffineVector): TMatrix;
 

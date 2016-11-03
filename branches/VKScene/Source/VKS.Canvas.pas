@@ -2,9 +2,9 @@
 // VKScene project, http://glscene.sourceforge.net
 //
 {
-   Implements a basic Canvas-like interface over for OpenGL. 
-   This class can be used for generic OpenGL applications and has no dependencies
-   to the GLScene core units (only to base units). 
+   Implements a basic Canvas-like interface over for Vulkan 
+   This class can be used for generic Vulkan applications and has no dependencies
+   to the VKScene core units (only to base units). 
   
 }
 unit VKS.Canvas;
@@ -28,15 +28,15 @@ type
 
   // TVKCanvas
   //
-    { A simple Canvas-like interface for OpenGL. 
-       This class implements a small "shell" for 2D operations in OpenGL,
-       it operates over the current OpenGL context and provides methods
+    { A simple Canvas-like interface for Vulkan. 
+       This class implements a small "shell" for 2D operations in Vulkan,
+       it operates over the current Vulkan context and provides methods
        for drawing lines, ellipses and points. 
        This class is typically used by creating an instance, using it for drawing,
        and freeing the instance. When drawing (0, 0) is the top left corner. 
        All coordinates are internally maintained with floating point precision. 
        Several states are cached and it is of primary importance not to invoke
-       OpenGL directly throughout the life of an instance (at the cost of
+       Vulkan directly throughout the life of an instance (at the cost of
        unexpected behaviour). }
   TVKCanvas = class
   private
@@ -51,7 +51,7 @@ type
     FArcDirection: TArcDirection;
   protected
     { Protected Declarations }
-    procedure BackupOpenGLStates;
+    procedure BackupVulkanStates;
 
     procedure StartPrimitive(const primitiveType: Integer);
 
@@ -83,7 +83,7 @@ type
        This function is invoked automatically by TVKCanvas when changeing
        primitives, you should directly call if you want to render your
        own stuff intertwined with TVKCanvas drawings. In that case, call
-       it before your own OpenGL calls. }
+       it before your own Vulkan calls. }
     procedure StopPrimitive;
 
     { Inverts the orientation of the Y Axis. 
@@ -166,7 +166,7 @@ type
     procedure FillEllipse(const x, y: Single; const Radius: Single); overload;
 
     { Draw a filled gradient ellipse. 
-    OpenGL will use the last PenColor and PenAlpha as the center color and do gradient to edge of ellipse using the edgeColor parameter. }
+    Vulkan will use the last PenColor and PenAlpha as the center color and do gradient to edge of ellipse using the edgeColor parameter. }
     procedure FillEllipseGradient(const x, y, xRadius, yRadius: Single;
       const edgeColor: TColorVector); overload;
     procedure FillEllipseGradient(const x, y: Integer;
@@ -242,7 +242,7 @@ begin
   glPushMatrix;
   glLoadMatrixf(@baseTransform);
 
-  BackupOpenGLStates;
+  BackupVulkanStates;
 
   FLastPrimitive := cNoPrimitive;
   FArcDirection := adCounterClockWise;
@@ -270,10 +270,10 @@ begin
   glPopMatrix;
 end;
 
-// BackupOpenGLStates
+// BackupVulkanStates
 //
 
-procedure TVKCanvas.BackupOpenGLStates;
+procedure TVKCanvas.BackupVulkanStates;
 begin
   with CurrentVKContext.VKStates do
   begin
@@ -737,7 +737,7 @@ begin
   // the center will use the last set PenColor and PenAlpha
   glVertex2f(x, y); // really necessary now :)
 
-  // then openGL will do a gradient from the center to the edge using the edgeColor
+  // then Vulkan will do a gradient from the center to the edge using the edgeColor
   glColor4f(edgeColor.X, edgeColor.Y, edgeColor.Z, edgeColor.W);
   EllipseVertices(x, y, xRadius, yRadius);
   StopPrimitive;

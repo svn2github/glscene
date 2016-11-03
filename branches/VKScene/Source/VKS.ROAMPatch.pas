@@ -818,7 +818,7 @@ var
 
 begin
   // CLOD tiles are rendered via ROAM
-  if (FOcclusionSkip > 0) and (FOcclusionQuery.IsSupported = 1) then
+  if (FOcclusionSkip > 0) and (FOcclusionQuery.IsSupported = True) then
   begin
     if FOcclusionQuery.Handle = 0 then
     begin

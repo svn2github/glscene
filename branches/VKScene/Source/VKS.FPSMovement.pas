@@ -125,7 +125,7 @@ type
     CollisionStates: TCollisionStates;
     ArrowLine1, ArrowLine2, ArrowLine3, ArrowLine4, ArrowLine5,
       ArrowLine6: TVKArrowLine;
-    dirGl: TVKDirectOpenGL;
+    dirGl: TVKDirectVulkan;
     tickCount: Int64;
 
     oldPosition: TVector;
@@ -649,7 +649,7 @@ begin
   ArrowLine6 := TVKArrowLine.Create(nil);
   setupArrow(ArrowLine6, TColors.Silver);
 
-  dirGl := TVKDirectOpenGL.Create(nil);
+  dirGl := TVKDirectVulkan.Create(nil);
   dirGl.OnRender := RenderArrowLines;
 
   oldPosition := OwnerBaseSceneObject.Position.AsVector;

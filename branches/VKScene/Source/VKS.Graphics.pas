@@ -136,8 +136,8 @@ type
 
     function GetTextureTarget: TVKTextureTarget;
 
-    { Registers the bitmap's content as an OpenGL texture map. }
-    procedure RegisterAsOpenGLTexture(
+    { Registers the bitmap's content as an Vulkan texture map. }
+    procedure RegisterAsVulkanTexture(
       AHandle: TVKTextureHandle;
       aMipmapGen: Boolean;
       aTexFormat: GLEnum;
@@ -1550,10 +1550,10 @@ begin
   Result := fData;
 end;
 
-// RegisterAsOpenGLTexture
+// RegisterAsVulkanTexture
 //
 
-procedure TVKBaseImage.RegisterAsOpenGLTexture(
+procedure TVKBaseImage.RegisterAsVulkanTexture(
   AHandle: TVKTextureHandle;
   aMipmapGen: Boolean;
   aTexFormat: GLEnum;
@@ -1969,7 +1969,7 @@ begin
           or (glTarget = GL_TEXTURE_2D_ARRAY)
           or (glTarget = GL_TEXTURE_CUBE_MAP_ARRAY) then
           glGetTexLevelParameteriv(glTarget, 0, GL_TEXTURE_DEPTH, @FLOD[0].Depth);
-        residentFormat := OpenGLFormatToInternalFormat(texFormat);
+        residentFormat := VulkanFormatToInternalFormat(texFormat);
         if CastToFormat then
           fInternalFormat := residentFormat
         else

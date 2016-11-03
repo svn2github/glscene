@@ -6,18 +6,18 @@
     
 }
 
-// TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
+// TODO: Proper client-side pushing + popping of state, in Vulkan 3+ contexts,
 //       rather than using glPushAttrib + glPopAttrib.
 // TODO: Proper support for textures, taking into account that they probably
-//       won't be linked to texture units in some future version of OpenGL.
+//       won't be linked to texture units in some future version of Vulkan.
 // TODO: Once more of GLScene is cache-aware, enable some of the checks before
-//       changing OpenGL state (where we will gain a speed increase).
+//       changing Vulkan state (where we will gain a speed increase).
 // DONE: Cache some relevant legacy state
 // TODO: improve binding objects to binding points
 // TODO: decide how to implement the new Enable* options (without going above
 //       32 elements in sets if possible, which would be slower in 32bit Delphi)
 // DONE: remove stTexture1D, 2D, etc from TVKState if possible, since they are
-//       per texture-unit + also deprecated in OpenGL 3+
+//       per texture-unit + also deprecated in Vulkan 3+
 
 unit VKS.State;
 
@@ -91,7 +91,7 @@ type
 
   // TVKState
   //
-//: Reflects all relevant (binary) states of OpenGL subsystem
+//: Reflects all relevant (binary) states of Vulkan subsystem
   TVKState = (stAlphaTest, stAutoNormal,
     stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
     stFog, stLighting, stLineSmooth, stLineStipple,
@@ -1103,7 +1103,7 @@ type
     // read only properties
     property States: TVKStates read FStates;
 
-    { True for ignore deprecated and removed features in OpenGL 3x }
+    { True for ignore deprecated and removed features in Vulkan 3x }
     property ForwardContext: Boolean read FForwardContext
       write SetForwardContext;
 
@@ -2479,7 +2479,7 @@ end;
 
 procedure TVKStateCache.SetLineWidth(const Value: GLfloat);
 begin
-  // note: wide lines no longer deprecated (see OpenGL spec)
+  // note: wide lines no longer deprecated (see Vulkan spec)
   if (Value <> FLineWidth) or FInsideList then
   begin
     if FInsideList then

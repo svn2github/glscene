@@ -46,7 +46,7 @@ type
   // TVKSceneViewer
   //
   { Component where the GLScene objects get rendered. 
-     This component delimits the area where OpenGL renders the scene,
+     This component delimits the area where Vulkan renders the scene,
      it represents the 3D scene viewed from a camera (specified in the
      camera property). This component can also render to a file or to a bitmap.
      It is primarily a windowed component, but it can handle full-screen
@@ -111,8 +111,8 @@ type
 
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     { Makes TWinControl's RecreateWnd public. 
-       This procedure allows to work around limitations in some OpenGL
-       drivers (like MS Software OpenGL) that are not able to share lists
+       This procedure allows to work around limitations in some Vulkan
+       drivers (like MS Software Vulkan) that are not able to share lists
        between RCs that already have display lists. }
     procedure RecreateWnd;
 
@@ -137,20 +137,20 @@ type
     property Camera: TVKCamera read GetCamera write SetCamera;
 
     { Specifies if the refresh should be synchronized with the VSync signal. 
-       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
+       If the underlying Vulkan ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
     { Triggered before the scene's objects get rendered. 
-       You may use this event to execute your own OpenGL rendering. }
+       You may use this event to execute your own Vulkan rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
     { Triggered just after all the scene's objects have been rendered. 
-       The OpenGL context is still active in this event, and you may use it
-       to execute your own OpenGL rendering.  }
+       The Vulkan context is still active in this event, and you may use it
+       to execute your own Vulkan rendering.  }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
     { Called after rendering. 
-       You cannot issue OpenGL calls in this event, if you want to do your own
-       OpenGL stuff, use the PostRender event. }
+       You cannot issue Vulkan calls in this event, if you want to do your own
+       Vulkan stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
     { Access to buffer properties. }

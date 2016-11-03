@@ -108,7 +108,7 @@ type
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime
       write SetVisibleAtRunTime default False;
-    { Amalgamate the dummy's children in a single OpenGL entity. 
+    { Amalgamate the dummy's children in a single Vulkan entity. 
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
@@ -449,7 +449,7 @@ type
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
 
-    { Setup OpenGL states according to line style. 
+    { Setup Vulkan states according to line style. 
       You must call RestoreLineStyle after drawing your lines. 
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TVKRenderContextInfo);
@@ -463,7 +463,7 @@ type
 
   published
     { Published Declarations }
-    { Indicates if OpenGL should smooth line edges. 
+    { Indicates if Vulkan should smooth line edges. 
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
     property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
@@ -849,16 +849,16 @@ type
   end;
 
 
-{ Issues OpenGL for a unit-size cube stippled wireframe. }
+{ Issues Vulkan for a unit-size cube stippled wireframe. }
 procedure CubeWireframeBuildList(var rci: TVKRenderContextInfo; Size: GLfloat;
   Stipple: Boolean; const Color: TColorVector);
-{ Issues OpenGL for a unit-size dodecahedron. }
+{ Issues Vulkan for a unit-size dodecahedron. }
 procedure DodecahedronBuildList;
-{ Issues OpenGL for a unit-size icosahedron. }
+{ Issues Vulkan for a unit-size icosahedron. }
 procedure IcosahedronBuildList;
-{ Issues OpenGL for a unit-size octahedron. }
+{ Issues Vulkan for a unit-size octahedron. }
 procedure OctahedronBuildList;
-{ Issues OpenGL for a unit-size tetrahedron. }
+{ Issues Vulkan for a unit-size tetrahedron. }
 procedure TetrahedronBuildList;
 
 
