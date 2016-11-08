@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 { 
   Binary Space Partion mesh support for GLScene.  

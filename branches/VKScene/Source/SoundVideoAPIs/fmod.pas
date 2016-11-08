@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 { =============================================================================================== }
 { FMOD Main header file. Copyright (c), Firelight Technologies Pty, Ltd. 1999-2004.               }

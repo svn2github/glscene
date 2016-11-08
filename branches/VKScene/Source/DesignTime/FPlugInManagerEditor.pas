@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
    Need a short description of what it does here. 

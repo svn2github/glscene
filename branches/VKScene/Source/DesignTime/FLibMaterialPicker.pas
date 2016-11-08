@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
  Allows choosing a material in a material library 

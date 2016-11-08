@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
 	Ghoul2 (GLM/GLA) file format loading structures 

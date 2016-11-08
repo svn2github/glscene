@@ -145,7 +145,7 @@ unit Kraft;
 *)
 interface
 
-uses {$ifdef windows}
+uses {$IFDEF MSWINDOWS}
     Winapi.Windows,
     Winapi.MMSystem,
      {$else}
@@ -10320,7 +10320,7 @@ constructor TKraftHighResolutionTimer.Create(FrameRate:longint=60);
 begin
  inherited Create;
  fFrequencyShift:=0;
-{$ifdef windows}
+{$IFDEF MSWINDOWS}
  if QueryPerformanceFrequency(fFrequency) then begin
   while (fFrequency and $ffffffffe0000000)<>0 do begin
    fFrequency:=fFrequency shr 1;
@@ -10370,7 +10370,7 @@ var tv:timeval;
 {$endif}
 {$endif}
 begin
-{$ifdef windows}
+{$IFDEF MSWINDOWS}
  if not QueryPerformanceCounter(result) then begin
   result:=timeGetTime;
  end;
@@ -10408,7 +10408,7 @@ var EndTime,NowTime{$ifdef unix},SleepTime{$endif}:int64;
 {$endif}
 begin
  if Delay>0 then begin
-{$ifdef windows}
+{$IFDEF MSWINDOWS}
   NowTime:=GetTime;
   EndTime:=NowTime+Delay;
   while (NowTime+fTwoMillisecondsInterval)<EndTime do begin

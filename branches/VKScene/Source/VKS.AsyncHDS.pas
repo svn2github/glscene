@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
    Implements a HDS Filter that generates HeightData tiles in a seperate thread. 
@@ -12,7 +12,7 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-    
+   The history of development is listed in a former version of GLScene.  
      
 }
 

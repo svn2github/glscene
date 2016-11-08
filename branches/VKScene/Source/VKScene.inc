@@ -1,7 +1,9 @@
 //
-// VKScene project, http://glscene.org
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //   
-
+{
+  The history is logged in a former GLS version of the unit.
+}
 {$DEFINE VKSCENE}
 
 //
@@ -77,12 +79,6 @@
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE VKS_X11_SUPPORT}
-{$ENDIF}
-
-{$IFDEF DARWIN}
-  {$UNDEF SUPPORT_WGL}
-  {$UNDEF SUPPORT_GLX}
-  {$UNDEF VKS_X11_SUPPORT}
 {$ENDIF}
 
 {$UNDEF VKS_UNSUPPORTED}

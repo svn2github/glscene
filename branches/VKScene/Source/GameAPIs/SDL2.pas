@@ -25,7 +25,7 @@ interface
 uses
     System.Classes,
     System.SysUtils
-    {$IFDEF WINDOWS}
+    {$IFDEF MSWINDOWS}
      ,Winapi.Windows;
     {$ELSE}
        {$IFDEF LINUX}
@@ -39,7 +39,7 @@ uses
 const
    SDL_LibName = 'SDL2.dll';
 (*
-  {$IFDEF WINDOWS}
+  {$IFDEF MSWINDOWS}
     SDL_LibName = 'SDL2.dll';
   {$ENDIF}
 
@@ -389,7 +389,7 @@ type
 
   TSDL_TLSID = Cardinal;
 
-{$IFDEF WINDOWS}
+{$IFDEF MSWINDOWS}
   {**
    *  SDL_thread.h
    *
@@ -1518,7 +1518,7 @@ type
 	  {$IFDEF ANDROID}
 	  3: (androidio: TAndroidIO);
 	  {$ENDIF}
-	  {$IFDEF WINDOWS}
+	  {$IFDEF MSWINDOWS}
 	  3: (windowsio: TWindowsIO);
 	  {$ENDIF}
   end;
@@ -5628,7 +5628,7 @@ type
   {$ENDIF}
 
   // The windows custom event structure
-  {$IFDEF Windows}
+  {$IFDEF MSWINDOWS}
     PSDL_SysWMmsg = ^TSDL_SysWMmsg;
     TSDL_SysWMmsg = record
       version: TSDL_Version;
@@ -5665,7 +5665,7 @@ type
   {$ENDIF}
 
   // The Windows custom window manager information structure
-  {$IFDEF Windows}
+  {$IFDEF MSWINDOWS}
     PSDL_SysWMinfo = ^TSDL_SysWMinfo;
     TSDL_SysWMinfo = record
       version : TSDL_Version;
@@ -6201,7 +6201,7 @@ end;
 //////////////////////        SDL_thread .h         ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-{$IFDEF WINDOWS}
+{$IFDEF MSWINDOWS}
    function SDL_CreateThread(fn: TSDL_ThreadFunction; name: PAnsiChar; data: Pointer): PSDL_Thread; overload;
    begin
         Result := SDL_CreateThread(fn,name,data,nil,nil);

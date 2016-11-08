@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
    A TVKImmaterialSceneObject drawing 6 quads (plus another quad as "Cloud" plane)

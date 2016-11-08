@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
   OpenGL adapter
@@ -1627,71 +1627,71 @@ type
 
     { Functions }
     EGetError : function:EGLint;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetDisplay : function(display_id:EGLNativeDisplayType):EGLDisplay;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EInitialize : function(dpy:EGLDisplay; major:pEGLint; minor:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ETerminate : function(dpy:EGLDisplay):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EQueryString : function(dpy:EGLDisplay; name:EGLint):pchar;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetConfigs : function(dpy:EGLDisplay; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EChooseConfig : function(dpy:EGLDisplay; attrib_list:pEGLint; configs:pEGLConfig; config_size:EGLint; num_config:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetConfigAttrib : function(dpy:EGLDisplay; config:EGLConfig; attribute:EGLint; value:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECreateWindowSurface : function(dpy:EGLDisplay; config:EGLConfig; win:EGLNativeWindowType; attrib_list:pEGLint):EGLSurface;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECreatePbufferSurface : function(dpy:EGLDisplay; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECreatePixmapSurface : function(dpy:EGLDisplay; config:EGLConfig; pixmap:EGLNativePixmapType; attrib_list:pEGLint):EGLSurface;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EDestroySurface : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EQuerySurface : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EBindAPI : function(api:EGLenum):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EQueryAPI : function:EGLenum;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EWaitClient : function:EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EReleaseThread : function:EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECreatePbufferFromClientBuffer : function(dpy:EGLDisplay; buftype:EGLenum; buffer:EGLClientBuffer; config:EGLConfig; attrib_list:pEGLint):EGLSurface;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ESurfaceAttrib : function(dpy:EGLDisplay; surface:EGLSurface; attribute:EGLint; value:EGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EBindTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EReleaseTexImage : function(dpy:EGLDisplay; surface:EGLSurface; buffer:EGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ESwapInterval : function(dpy:EGLDisplay; interval:EGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECreateContext : function(dpy:EGLDisplay; config:EGLConfig; share_context:EGLContext; attrib_list:pEGLint):EGLContext;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EDestroyContext : function(dpy:EGLDisplay; ctx:EGLContext):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EMakeCurrent : function(dpy:EGLDisplay; draw:EGLSurface; read:EGLSurface; ctx:EGLContext):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetCurrentContext : function:EGLContext;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetCurrentSurface : function(readdraw:EGLint):EGLSurface;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EGetCurrentDisplay : function:EGLDisplay;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EQueryContext : function(dpy:EGLDisplay; ctx:EGLContext; attribute:EGLint; value:pEGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EWaitGL : function:EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     EWaitNative : function(engine:EGLint):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ESwapBuffers : function(dpy:EGLDisplay; surface:EGLSurface):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     ECopyBuffers : function(dpy:EGLDisplay; surface:EGLSurface; target:EGLNativePixmapType):EGLBoolean;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     {$ENDIF EGL_SUPPORT}
 
     {$IFDEF VKS_REGIONS}{$ENDREGION}{$ENDIF}
@@ -1704,11 +1704,11 @@ type
     // ###########################################################
     (*
     gluNurbsCallbackDataEXT: procedure(nurb: PGLUnurbs; userData: Pointer);
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     gluNewNurbsTessellatorEXT: function: PGLUnurbs;
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     gluDeleteNurbsTessellatorEXT: procedure(nurb: PGLUnurbs);
-    {$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+    {$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
     *)
     constructor Create;
     procedure Initialize(ATemporary: Boolean = False);
@@ -1965,7 +1965,7 @@ begin
 end;
 
 procedure GLCap;
-{$IFDEF WINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   ShowMessage('Call Vulkan function with undefined entry point');
   Abort;

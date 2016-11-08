@@ -137,7 +137,7 @@
 {$ENDIF Win32}
 
 { ************************** dos/dos-like platforms **************}
-{$IFDEF Windows}
+{$IFDEF MSWINDOWS}
    {$DEFINE __OS_DOS__}
    {$DEFINE UseWin}
    {$DEFINE MSWINDOWS}

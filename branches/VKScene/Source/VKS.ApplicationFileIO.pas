@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Components and functions that abstract file I/O access for an application.

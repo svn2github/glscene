@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
    This file is converted from vulkan.h 
@@ -45,7 +45,7 @@ uses
  Winapi.Windows,
  System.SysUtils;
 
-{$IFDEF WINDOWS}
+{$IFDEF MSWINDOWS}
 const
   LIBNAME_VULKAN = 'vulkan-1.dll';
 {$ENDIF}
@@ -75,7 +75,6 @@ function VK_VERSION_PATCH(version: Cardinal): Integer;
 
 const
   VK_NULL_HANDLE = 0;
-  LIBNAME_VULKAN = 'vulkan-1.dll';
 
 type
   PVkHandle = ^TVkHandle;
@@ -1313,7 +1312,7 @@ type
     VK_COLOR_COMPONENT_FLAG_BITS_MAX_ENUM = $7FFFFFFF
 	);
 
- 
+
   PVkColorComponentFlags = ^TVkColorComponentFlags; 
   TVkColorComponentFlags = TVkFlags;
 
@@ -1338,7 +1337,7 @@ type
     VK_DESCRIPTOR_POOL_CREATE_FLAG_BITS_MAX_ENUM = $7FFFFFFF
 	);
 
- 
+
   PVkDescriptorPoolCreateFlags = ^TVkDescriptorPoolCreateFlags; 
   TVkDescriptorPoolCreateFlags = TVkFlags;
 
@@ -1388,7 +1387,7 @@ type
 	);
 
  
-  PVkAccessFlags = ^TVkAccessFlags; 
+  PVkAccessFlags = ^TVkAccessFlags;
   TVkAccessFlags = TVkFlags;
 
 
@@ -1474,7 +1473,7 @@ TvkAllocationFunction = function(
    size: TVKsize;
    alignment: TVKsize;
    allocationScope: TVkSystemAllocationScope): Pointer;
-   {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+    stdcall;
 
 TvkReallocationFunction = function(
    pUserData: Pointer;
@@ -1482,19 +1481,19 @@ TvkReallocationFunction = function(
    size: TVKsize;
    alignment: TVKsize;
    allocationScope: TVkSystemAllocationScope): Pointer;
-   {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+    stdcall;
 
   TvkFreeFunction = procedure(
     pUserData: Pointer;
     pMemory: Pointer);
-  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 TvkInternalAllocationNotification = procedure(
     pUserData: Pointer;
     size: TVKsize;
     allocationType: TVkInternalAllocationType;
     allocationScope: TVkSystemAllocationScope);
-    {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     stdcall;
 
 
 TvkInternalFreeNotification = procedure(
@@ -1502,10 +1501,10 @@ TvkInternalFreeNotification = procedure(
     size: TVKsize;
     allocationType: TVkInternalAllocationType;
     allocationScope: TVkSystemAllocationScope);
-    {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     stdcall;
 
    TvkVoidFunction = procedure();
-   {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+    stdcall;
 
 type
   PVkApplicationInfo = ^TVkApplicationInfo;
@@ -2691,30 +2690,25 @@ type
   TvkCreateInstance = function (
                                 const pCreateInfo: PVkInstanceCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
-                                pInstance: PVkInstance): TVkResult; 
-                                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pInstance: PVkInstance): TVkResult; stdcall;
 
   TvkDestroyInstance = procedure (
                                 instance: TVkInstance;
-                                const pAllocator: PVkAllocationCallbacks); 
-                                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkEnumeratePhysicalDevices = function (
                                 instance: TVkInstance;
                                 pPhysicalDeviceCount: PVKuint32;
-                                pPhysicalDevices: PVkPhysicalDevice): TVkResult; 
-                                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pPhysicalDevices: PVkPhysicalDevice): TVkResult; stdcall;
 
   TvkGetPhysicalDeviceFeatures = procedure (
                                 physicalDevice: TVkPhysicalDevice;
-                                pFeatures: PVkPhysicalDeviceFeatures); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pFeatures: PVkPhysicalDeviceFeatures); stdcall;
 
   TvkGetPhysicalDeviceFormatProperties = procedure (
                                 physicalDevice: TVkPhysicalDevice;
                                 format: TVkFormat;
-                                pFormatProperties: PVkFormatProperties); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pFormatProperties: PVkFormatProperties); stdcall;
 
   TvkGetPhysicalDeviceImageFormatProperties = function (
                                 physicalDevice: TVkPhysicalDevice;
@@ -2723,106 +2717,87 @@ type
                                 tiling: TVkImageTiling;
                                 usage: TVkImageUsageFlags;
                                 flags: TVkImageCreateFlags;
-                                pImageFormatProperties: PVkImageFormatProperties): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pImageFormatProperties: PVkImageFormatProperties): TVkResult;		 stdcall;
 
   TvkGetPhysicalDeviceProperties = procedure (
                                 physicalDevice: TVkPhysicalDevice;
-                                pProperties: PVkPhysicalDeviceProperties); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
-
+                                pProperties: PVkPhysicalDeviceProperties); stdcall;
 
   TvkGetPhysicalDeviceQueueFamilyProperties = procedure(
                                 physicalDevice: TVkPhysicalDevice;
                                 pQueueFamilyPropertyCount: PVKuint32;
-                                pQueueFamilyProperties: PVkQueueFamilyProperties); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pQueueFamilyProperties: PVkQueueFamilyProperties); stdcall;
 
   TvkGetPhysicalDeviceMemoryProperties = procedure (
                                 physicalDevice: TVkPhysicalDevice;
-                                pMemoryProperties: PVkPhysicalDeviceMemoryProperties); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pMemoryProperties: PVkPhysicalDeviceMemoryProperties); stdcall;
 
   TvkGetInstanceProcAddr = function (
                                 instance: TVkInstance;
-                                const pName: PVkChar): TvkVoidFunction; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pName: PVkChar): TvkVoidFunction; stdcall;
 
   TvkGetDeviceProcAddr = function (
                                 instance: TVkInstance;
-                                const pName: PVkChar): TvkVoidFunction; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pName: PVkChar): TvkVoidFunction;	 stdcall;
 
   TvkCreateDevice = function(
                                 physicalDevice: TVkPhysicalDevice;
                                 const pCreateInfo: PVkDeviceCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
-                                pDevice: PVkDevice): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pDevice: PVkDevice): TVkResult; stdcall;
 
   TvkDestroyDevice = procedure (
                                 device: TVkDevice;
-                                const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkEnumerateInstanceExtensionProperties = function (
                                 const pLayerName: PVkChar;
                                 pPropertyCount: PVKuint32;
-                                pProperties: PVkExtensionProperties): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pProperties: PVkExtensionProperties): TVkResult; stdcall;
 
   TvkEnumerateDeviceExtensionProperties = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 const pLayerName: PVkChar;
                                 pPropertyCount: PVKuint32;
-                                pProperties: PVkExtensionProperties): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pProperties: PVkExtensionProperties): TVkResult; stdcall;
 
   TvkEnumerateInstanceLayerProperties = function (
                                 pPropertyCount: PVKuint32;
-                                pProperties: PVkLayerProperties): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pProperties: PVkLayerProperties): TVkResult; stdcall;
 
   TvkEnumerateDeviceLayerProperties = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 pPropertyCount: PVKuint32;
-                                pProperties: PVkLayerProperties): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pProperties: PVkLayerProperties): TVkResult; stdcall;
 
   TvkGetDeviceQueue = procedure (
                                 device: TVkDevice;
                                 queueFamilyIndex: Uint32;
                                 queueIndex: Uint32;
-                                pQueue: PVkQueue); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pQueue: PVkQueue); stdcall;
 
   TvkQueueSubmit = function (
                                 queue: TVkQueue;
                                 submitCount: Uint32;
                                 pSubmits: PVkSubmitInfo;
-                                fence: TVkFence): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                fence: TVkFence): TVkResult; stdcall;
 
   TvkQueueWaitIdle = function(
-                                queue: TVkQueue): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                queue: TVkQueue): TVkResult; stdcall;
 
   TvkDeviceWaitIdle = function (
-                                device: TVkDevice): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                device: TVkDevice): TVkResult; stdcall;
 
   TvkAllocateMemory = function (
                                 device: TVkDevice;
                                 const pAllocateInfo: PVkMemoryAllocateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
-                                pMemory: PVkDeviceMemory): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pMemory: PVkDeviceMemory): TVkResult; stdcall;
 
   TvkFreeMemory = procedure (
                                 device: TVkDevice;
                                 memory: TVkDeviceMemory;
-                                const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkMapMemory = function (
                                 device: TVkDevice;
@@ -2831,63 +2806,54 @@ type
                                 size: TVkDeviceSize;
                                 flags: TVkMemoryMapFlags;
                                 ppData: PPointer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkUnmapMemory = procedure (
                                 vkUnmapMemory: TVkDevice;
-                                memory: TVkDeviceMemory); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                memory: TVkDeviceMemory);	 stdcall;
 
   TvkFlushMappedMemoryRanges = function (
                                 device: TVkDevice;
                                 memoryRangeCount: Uint32;
-                                const pMemoryRanges: PVkMappedMemoryRange): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pMemoryRanges: PVkMappedMemoryRange): TVkResult; stdcall;
 
   TvkInvalidateMappedMemoryRanges = function (
                                 device: TVkDevice;
                                 memoryRangeCount: Uint32;
-                                const pMemoryRanges: PVkMappedMemoryRange): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pMemoryRanges: PVkMappedMemoryRange): TVkResult; stdcall;
 
   TvkGetDeviceMemoryCommitment = procedure (
                                 device: TVkDevice;
                                 memory: TVkDeviceMemory;
-                                pCommittedMemoryInBytes: PVkDeviceSize); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pCommittedMemoryInBytes: PVkDeviceSize); stdcall;
 
   TvkBindBufferMemory = function (
                                 device: TVkDevice;
                                 buffer: TVkBuffer;
                                 memory: TVkDeviceMemory;
-                                memoryOffset: TVkDeviceSize): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                memoryOffset: TVkDeviceSize): TVkResult; stdcall;
 
   TvkBindImageMemory = function (
                                 device: TVkDevice;
                                 image: TVkImage;
                                 memory: TVkDeviceMemory;
-                                memoryOffset: TVkDeviceSize): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                memoryOffset: TVkDeviceSize): TVkResult; stdcall;
 
   TvkGetBufferMemoryRequirements = procedure (
                                 device: TVkDevice;
                                 buffer: TVkBuffer;
-                                pMemoryRequirements: PVkMemoryRequirements); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pMemoryRequirements: PVkMemoryRequirements); stdcall;
 
   TvkGetImageMemoryRequirements = procedure (
                                 device: TVkDevice;
                                 image: TVkImage;
-                                pMemoryRequirements: PVkMemoryRequirements); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pMemoryRequirements: PVkMemoryRequirements); stdcall;
 
   TvkGetImageSparseMemoryRequirements = procedure (
                                 device: TVkDevice;
                                 image: TVkImage;
                                 pSparseMemoryRequirementCount: PVKuint32;
-                                pSparseMemoryRequirements: PVkSparseImageMemoryRequirements); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pSparseMemoryRequirements: PVkSparseImageMemoryRequirements);						 stdcall;
 
   TvkGetPhysicalDeviceSparseImageFormatProperties = procedure (
                                 physicalDevice: TVkPhysicalDevice;
@@ -2897,40 +2863,35 @@ type
                                 usage: TVkImageUsageFlags;
                                 tiling: TVkImageTiling;
                                 pPropertyCount: PVKuint32;
-                                pProperties: PVkSparseImageFormatProperties); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pProperties: PVkSparseImageFormatProperties); stdcall;
 
   TvkQueueBindSparse = function (
                                 queue: TVkQueue;
                                 bindInfoCount: Uint32;
                                 const pBindInfo: PVkBindSparseInfo;
-                                fence: TVkFence): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                fence: TVkFence): TVkResult;
+								 stdcall;
 
   TvkCreateFence = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkFenceCreateInfo;
                                 pAllocator: PVkAllocationCallbacks;
-                                pFence: PVkFence): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pFence: PVkFence): TVkResult;	 stdcall;
 
   TvkDestroyFence = procedure (
                                 device: TVkDevice;
                                 fence: TVkFence;
-                                const pAllocator: TVkAllocationCallbacks);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: TVkAllocationCallbacks); stdcall;
 
 
   TvkResetFences = function (
                                 device: TVkDevice;
                                 fenceCount: Uint32;
-                                pFences: PVkFence): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pFences: PVkFence): TVkResult; stdcall;
 
   TvkGetFenceStatus = function (
                                 device: TVkDevice;
-                                fence: TVkFence): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                fence: TVkFence): TVkResult; stdcall;
 
   TvkWaitForFences = function (
                                 device: TVkDevice;
@@ -2938,62 +2899,54 @@ type
                                 const pFences: PVkFence;
                                 waitAll: TVkBool32;
                                 timeout: TVKUInt64): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateSemaphore = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkSemaphoreCreateInfo;
                                 pAllocator: PVkAllocationCallbacks;
-                                pSemaphore: PVkSemaphore): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pSemaphore: PVkSemaphore): TVkResult;	 stdcall;
 
 
   TvkDestroySemaphore = procedure (
                                 device: TVkDevice;
                                 semaphore: TVkSemaphore;
-                                const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkCreateEvent = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkEventCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
-                                pEvent: PVkEvent): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pEvent: PVkEvent): TVkResult;	 stdcall;
 
   TvkDestroyEvent = procedure (
                                 device: TVkDevice;
                                 event: TVkEvent;
-                                const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks);
+								 stdcall;
 
   TvkGetEventStatus = function (
                                 device: TVkDevice;
-                                event: TVkEvent): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                event: TVkEvent): TVkResult; stdcall;
 
   TvkSetEvent = function (
                                 device: TVkDevice;
-                                event: TVkEvent): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                event: TVkEvent): TVkResult; stdcall;
 
   TvkResetEvent = function (
                                 device: TVkDevice;
-                                event: TVkEvent): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                event: TVkEvent): TVkResult; stdcall;
 
   TvkCreateQueryPool = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkQueryPoolCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
-                                pQueryPool: PVkQueryPool): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                pQueryPool: PVkQueryPool): TVkResult;	 stdcall;
 
   TvkDestroyQueryPool = procedure (
                                 device: TVkDevice;
                                 queryPool: TVkQueryPool;
-                                const pAllocator: PVkAllocationCallbacks);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                                const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkGetQueryPoolResults = function (
                                 device: TVkDevice;
@@ -3004,106 +2957,106 @@ type
                                 pData: Pointer;
                                 stride: TVkDeviceSize;
                                 flags: TVkQueryResultFlags): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateBuffer = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkBufferCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pBuffer: PVkBuffer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyBuffer = procedure (
                                 device: TVkDevice;
                                 buffer: TVkBuffer;
                                 pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateBufferView = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkBufferViewCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pView: PVkBufferView): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyBufferView = procedure (
                                 device: TVkDevice;
                                 bufferView: TVkBufferView;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateImage = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkImageCreateInfo;
                                 pAllocator: PVkAllocationCallbacks;
                                 pImage: PVkImage): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyImage = procedure (
                                 device: TVkDevice;
                                 image: TVkImage;
                                 pAllocator: PVkAllocationCallbacks);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetImageSubresourceLayout = procedure (
                                 device: TVkDevice;
                                 image: TVkImage;
                                 const pSubresource: PVkImageSubresource;
                                 pLayout: PVkSubresourceLayout); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateImageView = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkImageViewCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pView: PVkImageView): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyImageView = procedure (
                                 device: TVkDevice;
                                 imageView: TVkImageView;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateShaderModule = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkShaderModuleCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pShaderModule: PVkShaderModule): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyShaderModule = procedure (
                                 device: TVkDevice;
                                 shaderModule: TVkShaderModule;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreatePipelineCache = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkPipelineCacheCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pPipelineCache: PVkPipelineCache): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyPipelineCache = procedure (
                                 device: TVkDevice;
                                 pipelineCache: TVkPipelineCache;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPipelineCacheData = function (
                                 device: TVkDevice;
                                 pipelineCache: TVkPipelineCache;
                                 pDataSize: Psize_t;
                                 pData: Pointer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkMergePipelineCaches = function (
                                 device: TVkDevice;
                                 dstCache: TVkPipelineCache;
                                 srcCacheCount: Uint32;
                                 const pSrcCaches: PVkPipelineCache): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateGraphicsPipelines = function (
                                 device: TVkDevice;
@@ -3112,7 +3065,7 @@ type
                                 const pCreateInfos: PVkGraphicsPipelineCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pPipelines: PVkPipeline): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateComputePipelines = function (
                                 device: TVkDevice;
@@ -3121,84 +3074,84 @@ type
                                 const pCreateInfos: PVkComputePipelineCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pPipelines: PVkPipeline): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyPipeline = procedure (
                                 device: TVkDevice;
                                 pipeline: TVkPipeline;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreatePipelineLayout = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkPipelineLayoutCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pPipelineLayout: PVkPipelineLayout): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyPipelineLayout = procedure (
                                 device: TVkDevice;
                                 pipelineLayout: TVkPipelineLayout;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateSampler = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkSamplerCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSampler: PVkSampler): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroySampler = procedure (
                                 device: TVkDevice;
                                 sampler: TVkSampler;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateDescriptorSetLayout = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkDescriptorSetLayoutCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSetLayout: PVkDescriptorSetLayout): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyDescriptorSetLayout = procedure (
                                 device: TVkDevice;
                                 descriptorSetLayout: TVkDescriptorSetLayout;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateDescriptorPool = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkDescriptorPoolCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pDescriptorPool: PVkDescriptorPool): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyDescriptorPool = procedure (
                                 device: TVkDevice;
                                 descriptorPool: TVkDescriptorPool;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkResetDescriptorPool = function (
                                 device: TVkDevice;
                                 descriptorPool: TVkDescriptorPool;
                                 flags: TVkDescriptorPoolResetFlags): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkAllocateDescriptorSets = function (
                                 device: TVkDevice;
                                 const pAllocateInfo: PVkDescriptorSetAllocateInfo;
                                 pDescriptorSets: PVkDescriptorSet): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkFreeDescriptorSets = function (
                                 device: TVkDevice;
                                 descriptorPool: TVkDescriptorPool;
                                 descriptorSetCount: Uint32;
                                 const pDescriptorSets: PVkDescriptorSet): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkUpdateDescriptorSets = procedure (
                                 device: TVkDevice;
@@ -3206,147 +3159,147 @@ type
                                 const pDescriptorWrites: PVkWriteDescriptorSet;
                                 descriptorCopyCount: Uint32;
                                 const pDescriptorCopies: PVkCopyDescriptorSet); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateFramebuffer = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkFramebufferCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pFramebuffer: PVkFramebuffer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyFramebuffer = procedure (
                                 device: TVkDevice;
                                 framebuffer: TVkFramebuffer;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateRenderPass = function (
                                 device: TVkDevice;
                                 pCreateInfo: PVkRenderPassCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pRenderPass: PVkRenderPass): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyRenderPass = procedure (
                                 device: TVkDevice;
                                 renderPass: TVkRenderPass;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetRenderAreaGranularity = procedure (
                                 device: TVkDevice;
                                 renderPass: TVkRenderPass;
                                 pGranularity: PVkExtent2D); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateCommandPool = function (
                                 device: TVkDevice;
                                 const pCreateInfo: PVkCommandPoolCreateInfo;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pCommandPool: PVkCommandPool): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkDestroyCommandPool = procedure (
                                 device: TVkDevice;
                                 commandPool: TVkCommandPool;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkResetCommandPool = function (
                                 device: TVkDevice;
                                 commandPool: TVkCommandPool;
                                 flags: TVkCommandPoolResetFlags): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkAllocateCommandBuffers = function (
                                 device: TVkDevice;
                                 pAllocateInfo: PVkCommandBufferAllocateInfo;
                                 pCommandBuffers: PVkCommandBuffer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkFreeCommandBuffers = procedure (
                                 device: TVkDevice;
                                 commandPool: TVkCommandPool;
                                 commandBufferCount: Uint32;
                                 const pCommandBuffers: PVkCommandBuffer); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkBeginCommandBuffer = function (
                                 commandBuffer: TVkCommandBuffer;
                                 const pBeginInfo: PVkCommandBufferBeginInfo): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkEndCommandBuffer = function (
                                 commandBuffer: TVkCommandBuffer): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkResetCommandBuffer = function (
                                 commandBuffer: TVkCommandBuffer;
                                 flags: TVkCommandBufferResetFlags): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBindPipeline = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 pipelineBindPoint: TVkPipelineBindPoint;
                                 pipeline: TVkPipeline); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetViewport = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 firstViewport: Uint32;
                                 viewportCount: Uint32;
                                 pViewports: PVkViewport); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetScissor = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 firstScissor: Uint32;
                                 scissorCount: Uint32;
                                 pScissors: PVkRect2D); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetLineWidth = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 lineWidth: Single); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetDepthBias = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 depthBiasConstantFactor: Single;
                                 depthBiasClamp: Single;
                                 depthBiasSlopeFactor: Single); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TVkBlendConstants_ = Array [0..3] of Single;
   TvkCmdSetBlendConstants = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 const blendConstants: TVkBlendConstants_); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetDepthBounds = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 minDepthBounds: Single;
                                 maxDepthBounds: Single); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetStencilCompareMask = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 faceMask: TVkStencilFaceFlags;
                                 compareMask: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetStencilWriteMask = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 faceMask: TVkStencilFaceFlags;
                                 writeMask: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetStencilReference = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 faceMask: TVkStencilFaceFlags;
                                 reference: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBindDescriptorSets = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3357,14 +3310,14 @@ type
                                 const pDescriptorSets: PVkDescriptorSet;
                                 dynamicOffsetCount: Uint32;
                                 const pDynamicOffsets: PVKuint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBindIndexBuffer = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 buffer: TVkBuffer;
                                 offset: TVkDeviceSize;
                                 indexType: TVkIndexType); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBindVertexBuffers = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3372,7 +3325,7 @@ type
                                 bindingCount: Uint32;
                                 const pBuffers: PVkBuffer;
                                 const pOffsets: PVkDeviceSize); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDraw = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3380,7 +3333,7 @@ type
                                 instanceCount: Uint32;
                                 firstVertex: Uint32;
                                 firstInstance: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDrawIndexed = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3389,7 +3342,7 @@ type
                                 firstIndex: Uint32;
                                 vertexOffset: TVKInt32;
                                 firstInstance: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDrawIndirect = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3397,7 +3350,7 @@ type
                                 offset: TVkDeviceSize;
                                 drawCount: Uint32;
                                 stride: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDrawIndexedIndirect = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3405,20 +3358,20 @@ type
                                 offset: TVkDeviceSize;
                                 drawCount: Uint32;
                                 stride: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDispatch = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 x: Uint32;
                                 y: Uint32;
                                 z: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdDispatchIndirect = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 buffer: TVkBuffer;
                                 offset: TVkDeviceSize);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdCopyBuffer = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3426,7 +3379,7 @@ type
                                 dstBuffer: TVkBuffer;
                                 regionCount: Uint32;
                                 const pRegions: PVkBufferCopy); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdCopyImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3436,7 +3389,7 @@ type
                                 dstImageLayout: TVkImageLayout;
                                 regionCount: Uint32;
                                 const pRegions: PVkImageCopy); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBlitImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3447,7 +3400,7 @@ type
                                 regionCount: Uint32;
                                 const pRegions: PVkImageCopy;
                                 filter: TVkFilter); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdCopyBufferToImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3456,7 +3409,7 @@ type
                                 dstImageLayout: TVkImageLayout;
                                 regionCount: Uint32;
                                 const pRegions: PVkBufferImageCopy); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdCopyImageToBuffer = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3465,7 +3418,7 @@ type
                                 dstBuffer: TVkBuffer;
                                 regionCount: Uint32;
                                 const pRegions: PVkBufferImageCopy); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdUpdateBuffer = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3473,7 +3426,7 @@ type
                                 dstOffset: TVkDeviceSize;
                                 dataSize: TVkDeviceSize;
                                 const pData: PVKuint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdFillBuffer = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3481,7 +3434,7 @@ type
                                 dstOffset: TVkDeviceSize;
                                 dataSize: TVkDeviceSize;
                                 data: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdClearColorImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3490,7 +3443,7 @@ type
                                 const pColor: PVkClearColorValue;
                                 rangeCount: Uint32;
                                 const pRanges: PVkImageSubresourceRange); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdClearDepthStencilImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3499,7 +3452,7 @@ type
                                 const pDepthStencil: PVkClearDepthStencilValue;
                                 rangeCount: Uint32;
                                 const pRanges: PVkImageSubresourceRange); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdClearAttachments = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3507,7 +3460,7 @@ type
                                 const pAttachments: PVkClearAttachment;
                                 rectCount: Uint32;
                                 const pRects: PVkClearRect); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdResolveImage = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3517,19 +3470,19 @@ type
                                 dstImageLayout: TVkImageLayout;
                                 regionCount: Uint32;
                                 const pRegions: PVkImageResolve); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdSetEvent = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 event: TVkEvent;
                                 stageMask: TVkPipelineStageFlags); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdResetEvent = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 event: TVkEvent;
                                 stageMask: TVkPipelineStageFlags); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdWaitEvents = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3543,7 +3496,7 @@ type
                                 const pBufferMemoryBarriers: PVkBufferMemoryBarrier;
                                 imageMemoryBarrierCount: Uint32;
                                 const pImageMemoryBarriers: PVkImageMemoryBarrier);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdPipelineBarrier = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3556,34 +3509,34 @@ type
                                 const pBufferMemoryBarriers: PVkBufferMemoryBarrier;
                                 imageMemoryBarrierCount: Uint32;
                                 const pImageMemoryBarriers: PVkImageMemoryBarrier); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBeginQuery = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 queryPool: TVkQueryPool;
                                 query: Uint32;
                                 flags: TVkQueryControlFlags); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdEndQuery = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 queryPool: TVkQueryPool;
                                 query: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdResetQueryPool = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 queryPool: TVkQueryPool;
                                 firstQuery: Uint32;
                                 queryCount: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdWriteTimestamp = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 pipelineStage: TVkPipelineStageFlagBits;
                                 queryPool: TVkQueryPool;
                                 query: Uint32);
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdCopyQueryPoolResults = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3595,7 +3548,7 @@ type
                                 dstOffset: TVkDeviceSize;
                                 stride: TVkDeviceSize;
                                 flags: TVkQueryResultFlags); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdPushConstants = procedure (
                                 commandBuffer: TVkCommandBuffer;
@@ -3604,28 +3557,28 @@ type
                                 offset: Uint32;
                                 size: Uint32;
                                 const pValues: Pointer); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdBeginRenderPass = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 const pRenderPassBegin: PVkRenderPassBeginInfo;
                                 contents: TVkSubpassContents); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdNextSubpass = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 contents: TVkSubpassContents); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdEndRenderPass = procedure (
                                 commandBuffer: TVkCommandBuffer); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCmdExecuteCommands = procedure (
                                 commandBuffer: TVkCommandBuffer;
                                 commandBufferCount: Uint32;
                                 const pCommandBuffers: PVkCommandBuffer); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -3853,34 +3806,34 @@ type
                                 instance: TVkInstance;
                                 surface: TVkSurfaceKHR;
                                 const pAllocator: PVkAllocationCallbacks); 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPhysicalDeviceSurfaceSupportKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 queueFamilyIndex: Uint32;
                                 surface: TVkSurfaceKHR;
                                 pSupported: PVkBool32): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPhysicalDeviceSurfaceCapabilitiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 surface: TVkSurfaceKHR;
                                 pSurfaceCapabilities: PVkSurfaceCapabilitiesKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPhysicalDeviceSurfaceFormatsKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 surface: TVkSurfaceKHR;
                                 pSurfaceFormatCount: PVKuint32;
                                 pSurfaceFormats: PVkSurfaceFormatKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPhysicalDeviceSurfacePresentModesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 surface: TVkSurfaceKHR;
                                 pPresentModeCount: PVKuint32;
                                 pPresentModes: PVkPresentModeKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -3945,19 +3898,19 @@ type  PVkSwapchainCreateFlagsKHR = ^TVkSwapchainCreateFlagsKHR;
                                 const pCreateInfo: PVkSwapchainCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSwapchain: PVkSwapchainKHR): TVkResult;
-                								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                								 stdcall;
   TvkDestroySwapchainKHR = procedure (
                                 device: TVkDevice;
                                 swapchain: TVkSwapchainKHR;
                                 const pAllocator: PVkAllocationCallbacks);
-								                {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								                 stdcall;
 
   TvkGetSwapchainImagesKHR = function (
                                 device: TVkDevice;
                                 swapchain: TVkSwapchainKHR;
                                 pSwapchainImageCount: PVKuint32;
                                 pSwapchainImages: PVkImage): TVkResult;
-                								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                								 stdcall;
 
   TvkAcquireNextImageKHR = function (
       device: TVkDevice;
@@ -3966,12 +3919,12 @@ type  PVkSwapchainCreateFlagsKHR = ^TVkSwapchainCreateFlagsKHR;
       semaphore: TVkSemaphore;
       fence: TVkFence;
       pImageIndex: PVKuint32): TVkResult;
-	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	   stdcall;
 
   TvkQueuePresentKHR = function (
       queue: TVkQueue;
       const pPresentInfo: PVkPresentInfoKHR): TVkResult;
-      {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+       stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4083,20 +4036,20 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
                                 physicalDevice: TVkPhysicalDevice;
                                 pPropertyCount: PVKuint32;
                                 pProperties: PVkDisplayPropertiesKHR): TVkResult; 
-                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				 stdcall;
 
   TvkGetPhysicalDeviceDisplayPlanePropertiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 pPropertyCount: PVKuint32;
                                 pProperties: PVkDisplayPlanePropertiesKHR): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetDisplayPlaneSupportedDisplaysKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 planeIndex: Uint32;
                                 pDisplayCount: PVKuint32;
                                 pDisplays: PVkDisplayKHR): TVkResult;
-                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				 stdcall;
 
   TvkGetDisplayModePropertiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
@@ -4104,7 +4057,7 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
                                 pPropertyCount: PVKuint32;
                                 pProperties: PVkDisplayModePropertiesKHR
                                 ): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkCreateDisplayModeKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
@@ -4112,21 +4065,21 @@ type  PVkDisplayPlaneAlphaFlagBitsKHR = ^TVkDisplayPlaneAlphaFlagBitsKHR;
                                 const pCreateInfo: PVkDisplayModeCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pMode: PVkDisplayModeKHR): TVkResult; 
-							    {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+							     stdcall;
 
   TvkGetDisplayPlaneCapabilitiesKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 mode: TVkDisplayModeKHR;
                                 planeIndex: Uint32;
                                 pCapabilities: PVkDisplayPlaneCapabilitiesKHR): TVkResult;
-                				{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+                				 stdcall;
 
   TvkCreateDisplayPlaneSurfaceKHR = function (
                                 instance: TVkInstance;
                                 const pCreateInfo: PVkDisplaySurfaceCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSurface: PVkSurfaceKHR): TVkResult;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4162,7 +4115,7 @@ type
       const pCreateInfos: PVkSwapchainCreateInfoKHR;
       const pAllocator: PVkAllocationCallbacks;
       pSwapchains: PVkSwapchainKHR): TVkResult; 
-	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	   stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4197,14 +4150,14 @@ type
       const pCreateInfo: PVkXlibSurfaceCreateInfoKHR;
       const pAllocator: PVkAllocationCallbacks;
       pSurface: PVkSurfaceKHR): TVkResult; 
-	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	   stdcall;
 
   TvkGetPhysicalDeviceXlibPresentationSupportKHR = function (
         physicalDevice: TVkPhysicalDevice;
         queueFamilyIndex: Uint32;
         dpy: PDisplay;
         visualID: TVisualID): TVkBool32; 
-		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+		 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4239,14 +4192,14 @@ type  TVkXcbSurfaceCreateFlagsKHR = ^TVkXcbSurfaceCreateFlagsKHR;
       const pCreateInfo: PVkXcbSurfaceCreateInfoKHR;
       const pAllocator: PVkAllocationCallbacks;
       pSurface: PVkSurfaceKHR): TVkResult; 
-	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	   stdcall;
 
   TvkGetPhysicalDeviceXcbPresentationSupportKHR = function (
       physicalDevice: TVkPhysicalDevice;
       queueFamilyIndex: Uint32;
       connection: Pxcb_connection_t;
       visual_id: xcb_visualid_t): TVkBool32; 
-	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+	  stdcall;
 
 {$IFDEF VK_NO_PROTOTYPES}
 var
@@ -4282,13 +4235,13 @@ type  PVkWaylandSurfaceCreateFlagsKHR = ^TVkWaylandSurfaceCreateFlagsKHR;
         const pCreateInfo: PVkWaylandSurfaceCreateInfoKHR;
         const pAllocator: PVkAllocationCallbacks;
         pSurface: PVkSurfaceKHR): TVkResult; 
-		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+		 stdcall;
 
   TvkGetPhysicalDeviceWaylandPresentationSupportKHR = function (
         physicalDevice: TVkPhysicalDevice;
         queueFamilyIndex: Uint32;
         display: Pwl_display): TVkBool32; 
-		{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+		 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4324,13 +4277,13 @@ type  PVkMirSurfaceCreateFlagsKHR = ^TVkMirSurfaceCreateFlagsKHR;
           const pCreateInfo: PVkMirSurfaceCreateInfoKHR;
           const pAllocator: PVkAllocationCallbacks;
           pSurface: PVkSurfaceKHR): TVkResult;
-			{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+			 stdcall;
 
   TvkGetPhysicalDeviceMirPresentationSupportKHR = function (
         physicalDevice: TVkPhysicalDevice;
         queueFamilyIndex: Uint32;
         connection: PMirConnection): TVkBool32;
-			{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+			 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4365,7 +4318,7 @@ type  PVkAndroidSurfaceCreateFlagsKHR = ^TVkAndroidSurfaceCreateFlagsKHR;
        const pCreateInfo: PVkAndroidSurfaceCreateInfoKHR;
        const pAllocator: PVkAllocationCallbacks;
        pSurface: PVkSurfaceKHR): TVkBool32;
-    {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4398,12 +4351,12 @@ type  PVkWin32SurfaceCreateFlagsKHR = ^TVkWin32SurfaceCreateFlagsKHR;
                                 const pCreateInfo: PVkWin32SurfaceCreateInfoKHR;
                                 const pAllocator: PVkAllocationCallbacks;
                                 pSurface: PVkSurfaceKHR): TVkResult; 
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
   TvkGetPhysicalDeviceWin32PresentationSupportKHR = function (
                                 physicalDevice: TVkPhysicalDevice;
                                 queueFamilyIndex: Uint32): TVkBool32;
-								{$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+								 stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4474,10 +4427,10 @@ type
     VK_DEBUG_REPORT_ERROR_END_RANGE_EXT = VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT,
     VK_DEBUG_REPORT_ERROR_RANGE_SIZE_EXT = (VK_DEBUG_REPORT_ERROR_CALLBACK_REF_EXT - VK_DEBUG_REPORT_ERROR_NONE_EXT + 1),
     VK_DEBUG_REPORT_ERROR_MAX_ENUM_EXT = $7FFFFFFF
-	
-	
-	
-	
+
+
+
+
   );
 
   PVkDebugReportFlagBitsEXT = ^TVkDebugReportFlagBitsEXT;
@@ -4501,8 +4454,7 @@ type
       messageCode: 			TVKInt32;
       pLayerPrefix: 		PVkChar;
       pMessage: 			PVkChar;
-      pUserData: Pointer): 	TVkBool32; 
-	  {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+      pUserData: Pointer): 	TVkBool32; stdcall;
 
   PVkDebugReportCallbackCreateInfoEXT = ^TVkDebugReportCallbackCreateInfoEXT;  TVkDebugReportCallbackCreateInfoEXT = record
     sType: 					TVkStructureType;
@@ -4517,14 +4469,12 @@ type
      instance: TVkInstance;
      const pCreateInfo: PVkDebugReportCallbackCreateInfoEXT;
      const pAllocator: PVkAllocationCallbacks;
-     pCallback: PVkDebugReportCallbackEXT): TVkResult; 
-	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     pCallback: PVkDebugReportCallbackEXT): TVkResult; stdcall;
 
   TvkDestroyDebugReportCallbackEXT = procedure (
      instance: TVkInstance;
      callback: TVkDebugReportCallbackEXT;
-     const pAllocator: PVkAllocationCallbacks); 
-  	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     const pAllocator: PVkAllocationCallbacks); stdcall;
 
   TvkDebugReportMessageEXT = procedure (
      instance: TVkInstance;
@@ -4534,8 +4484,7 @@ type
      location: TVKsize;
      messageCode: TVKInt32;
      pLayerPrefix: PVkChar;
-     pMessage: PVkChar); 
-	 {$IFDEF VK_CDECL}cdecl{$ELSE}stdcall{$ENDIF};
+     pMessage: PVkChar); stdcall;
 
 {$IFNDEF VK_NO_PROTOTYPES}
 var
@@ -4551,6 +4500,9 @@ function IsInitVulkan(LibName: String = LIBNAME_VULKAN): Boolean;
 var
   LibHandleVulkan: Pointer = nil;
 {$ENDIF}
+
+var
+  LibName: PWideChar;
 
 //-----------------------------------------------------------------
 //-----------------------------------------------------------------
@@ -4600,7 +4552,7 @@ const
 
 function LoadLibraryVulkan(Name: PChar): Pointer;
 begin
-  {$IFDEF WINDOWS}
+  {$IFDEF MSWINDOWS}
     Result := Pointer(LoadLibrary(LibName));    
   {$ENDIF}
 
@@ -4614,7 +4566,7 @@ begin
   if LibHandle = nil then
     Result := False
   else
-  {$IFDEF WINDOWS}
+  {$IFDEF MSWINDOWS}
     Result := FreeLibrary(HMODULE(LibHandle));
   {$ENDIF}
 
@@ -4627,7 +4579,7 @@ function GetProcAddressVulkan(ProcName: PAnsiChar; LibHandle: Pointer = nil): Po
 begin
   if LibHandle = nil then LibHandle := LibHandleVulkan;
 
-  {$IFDEF WINDOWS}
+  {$IFDEF MSWINDOWS}
     Result := GetProcAddress(HMODULE(LibHandle), ProcName);
   {$ENDIF}
 

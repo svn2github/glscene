@@ -1,5 +1,5 @@
 //
-// VKScene project, http://glscene.sourceforge.net
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
 {
    Utility functions for the universal 3DS file reader and writer (TFile3DS).

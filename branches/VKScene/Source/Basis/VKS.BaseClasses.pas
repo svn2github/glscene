@@ -1,7 +1,10 @@
 //
-// VKScene project, http://glscene.sourceforge.net
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-
+{
+  Base classes for VKScene
+  The history is logged in a former GLS version of the unit.
+}
 unit VKS.BaseClasses;
 
 interface

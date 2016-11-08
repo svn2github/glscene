@@ -1,9 +1,9 @@
 //
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
   Silhouette classes for VKBaseMesh and FaceGroups.
-   
+  The history is logged in a former GLS version of the unit.
 }
 
 unit VKS.BaseMeshSilhouette;

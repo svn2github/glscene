@@ -1,4 +1,4 @@
-// VKScene project, http://glscene.sourceforge.net 
+// VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
     A collection of pure abstract classes - descendants of TVKShader, which are

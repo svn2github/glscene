@@ -40,7 +40,7 @@
 
 
 {$IFDEF ver70}
-   {$IFDEF Windows}
+   {$IFDEF MSWINDOWS}
      {$DEFINE Win16}
    {$ENDIF Windows}
    {$IFDEF MSDOS}
@@ -467,7 +467,7 @@
 
 
 { ************************** dos/dos-like platforms **************}
-{$IFDEF Windows}
+{$IFDEF MSWINDOWS}
    {$DEFINE __OS_DOS__}
    {$DEFINE UseWin}
 //   {$DEFINE MSWINDOWS}
@@ -532,7 +532,7 @@
 {*************** define 16/32/64 Bit ********************}
 
 
-{$IFDEF WINDOWS}
+{$IFDEF MSWINDOWS}
   {$IFDEF WIN16}
     {$DEFINE 16BIT}
   {$ENDIF}
