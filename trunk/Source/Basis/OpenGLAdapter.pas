@@ -2998,8 +2998,7 @@ begin
   SGIX_shadow := CheckExtension('GL_SGIX_shadow');
   SGIX_shadow_ambient := CheckExtension('GL_SGIX_shadow_ambient');
 
-  AMD_vertex_shader_tessellator :=
-    CheckExtension('GL_AMD_vertex_shader_tessellator');
+  AMD_vertex_shader_tessellator := CheckExtension('GL_AMD_vertex_shader_tessellator');
 
   WIN_swap_hint := CheckExtension('GL_WIN_swap_hint');
   ATI_meminfo := CheckExtension('GL_ATI_meminfo');

@@ -103,7 +103,7 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.OpenGL,
+  OpenGLTokens,
   System.Classes,
   System.SysUtils,
   System.Math,

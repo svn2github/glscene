@@ -33,7 +33,7 @@ unit CL_GL;
 interface
 
 uses
-  Winapi.OpenGL,
+  OpenGLTokens,
   CL,
   CL_Platform;
 

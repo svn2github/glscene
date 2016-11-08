@@ -10,12 +10,25 @@ unit GLMeshLines;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Winapi.OpenGL, Winapi.OpenGLext, 
+  System.Classes, 
+  System.SysUtils,
+  OpenGLTokens, 
    
-  GLScene, GLObjects, GLTexture, GLVectorFileObjects, GLCoordinates, OpenGLTokens,
-  GLContext, GLMaterial, GLColor, GLState, GLNodes, GLVectorGeometry, GLSpline,
-  GLVectorTypes, GLVectorLists, GLRenderContextInfo;
+  GLScene, 
+  GLObjects, 
+  GLTexture, 
+  GLVectorFileObjects, 
+  GLCoordinates, 
+  GLContext, 
+  GLMaterial, 
+  GLColor, 
+  GLState, 
+  GLNodes, 
+  GLVectorGeometry, 
+  GLSpline,
+  GLVectorTypes, 
+  GLVectorLists, 
+  GLRenderContextInfo;
 
 type
    // TLineNode

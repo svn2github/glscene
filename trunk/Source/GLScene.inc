@@ -2,7 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 //
-// Include File for GLScene
+{
+  Include File for GLScene
+  The history is logged in a former GLS version of the unit
+}
 
 {$DEFINE GLSCENE}
 
@@ -85,12 +88,6 @@
   {$DEFINE UNIX}
   {$DEFINE SUPPORT_GLX}
   {$DEFINE GLS_X11_SUPPORT}
-{$ENDIF}
-
-{$IFDEF DARWIN}
-  {$UNDEF SUPPORT_WGL}
-  {$UNDEF SUPPORT_GLX}
-  {$UNDEF GLS_X11_SUPPORT}
 {$ENDIF}
 
 // .NET
