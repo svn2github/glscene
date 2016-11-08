@@ -10,7 +10,8 @@ unit FileMD3;
 interface
 
 uses
-  System.Classes, VKS.VectorTypes;
+  System.Classes, 
+  VKS.VectorTypes;
 
 type
   // Quake3 MD3 structure types

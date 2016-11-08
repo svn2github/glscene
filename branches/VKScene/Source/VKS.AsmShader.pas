@@ -5,6 +5,7 @@
     TVKAsmShader is a wrapper for all ARB shaders 
     This component is only a template and has to be replaced with a
     proper version by someone who uses ARB shaders more then me.
+    The history is logged in a former GLS version of the unit.
 }
  
 unit VKS.AsmShader;
@@ -14,11 +15,17 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes, 
+  System.SysUtils,
   //VKS
-  Winapi.OpenGL, Winapi.OpenGLext,   VKS.Context,
-  VKS.VectorGeometry, VKS.VectorTypes, VKS.Texture,
-  VKS.CustomShader, VKS.RenderContextInfo;
+  Winapi.OpenGL, 
+  Winapi.OpenGLext,   
+  VKS.Context,
+  VKS.VectorGeometry, 
+  VKS.VectorTypes, 
+  VKS.Texture,
+  VKS.CustomShader, 
+  VKS.RenderContextInfo;
 
 type
   TVKCustomAsmShader = class;
@@ -77,9 +84,9 @@ type
   TVKCustomAsmShader = class(TVKCustomShader)
   private
     { Private Declarations }
-    FVPHandle: TVKARBVertexProgramHandle;
-    FFPHandle: TVKARBFragmentProgramHandle;
-    FGPHandle: TVKARBGeometryProgramHandle;
+    FVPHandle: TVKVertexProgramHandle;
+    FFPHandle: TVKFragmentProgramHandle;
+    FGPHandle: TVKGeometryProgramHandle;
 
     FOnInitialize: TVKAsmShaderEvent;
     FOnApply: TVKAsmShaderEvent;
@@ -183,7 +190,7 @@ begin
     if VertexProgram.Enabled then
     begin
       if not Assigned(FVPHandle) then
-        FVPHandle := TVKARBVertexProgramHandle.CreateAndAllocate;
+        FVPHandle := TVKVertexProgramHandle.CreateAndAllocate;
       FVPHandle.LoadARBProgram(VertexProgram.Code.Text);
       VertexProgram.Enabled := FVPHandle.Ready;
     end;
@@ -191,7 +198,7 @@ begin
     if FragmentProgram.Enabled then
     begin
       if not Assigned(FFPHandle) then
-        FFPHandle := TVKARBFragmentProgramHandle.CreateAndAllocate;
+        FFPHandle := TVKFragmentProgramHandle.CreateAndAllocate;
       FFPHandle.LoadARBProgram(FragmentProgram.Code.Text);
       FragmentProgram.Enabled := FFPHandle.Ready;
     end;
@@ -199,7 +206,7 @@ begin
     if GeometryProgram.Enabled then
     begin
       if not Assigned(FGPHandle) then
-        FGPHandle := TVKARBGeometryProgramHandle.CreateAndAllocate;
+        FGPHandle := TVKGeometryProgramHandle.CreateAndAllocate;
       FGPHandle.LoadARBProgram(GeometryProgram.Code.Text);
       GeometryProgram.Enabled := FGPHandle.Ready;
     end;

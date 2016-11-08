@@ -677,13 +677,13 @@ type
     procedure ReadFromFiler(AReader: TReader); override;
   private
     { Private Declarations }
-    FHandle: TVKARBVertexProgramHandle;
+    FHandle: TVKVertexProgramHandle;
     FSource: TStringList;
     FSourceFile: string;
     FInfoLog: string;
     procedure SetSource(AValue: TStringList);
     procedure SetSourceFile(AValue: string);
-    function GetHandle: TVKARBVertexProgramHandle;
+    function GetHandle: TVKVertexProgramHandle;
   public
     { Public Declarations }
     constructor Create(AOwner: TVKXCollection); override;
@@ -695,7 +695,7 @@ type
     class function FriendlyName: string; override;
 
     procedure NotifyChange(Sender: TObject); override;
-    property Handle: TVKARBVertexProgramHandle read GetHandle;
+    property Handle: TVKVertexProgramHandle read GetHandle;
   published
     { Published Declarations }
     property Source: TStringList read FSource write SetSource;
@@ -7260,7 +7260,7 @@ end;
 constructor TVKASMVertexProgram.Create(AOwner: TVKXCollection);
 begin
   inherited;
-  FHandle := TVKARBVertexProgramHandle.Create;
+  FHandle := TVKVertexProgramHandle.Create;
   FHandle.OnPrapare := DoOnPrepare;
   FSource := TStringList.Create;
   FSource.OnChange := NotifyChange;
@@ -7338,7 +7338,7 @@ begin
   Result := 'ASM Vertex Program';
 end;
 
-function TVKASMVertexProgram.GetHandle: TVKARBVertexProgramHandle;
+function TVKASMVertexProgram.GetHandle: TVKVertexProgramHandle;
 begin
   Result := FHandle;
 end;

@@ -3,7 +3,7 @@
 //
 {
   Vector File related objects for GLScene
-  
+  The history is logged in a former GLS version of the unit. 
 }
 unit VKS.VectorFileObjects;
 

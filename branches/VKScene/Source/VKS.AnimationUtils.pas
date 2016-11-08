@@ -3,6 +3,7 @@
 //
 {
   Main purpose is to give an easy way to create an interpolation.
+  The history is logged in a former GLS version of the unit.
 }
 
 unit VKS.AnimationUtils;

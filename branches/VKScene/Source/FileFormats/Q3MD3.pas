@@ -10,9 +10,14 @@ unit Q3MD3;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  VKS.ApplicationFileIO, VKS.VectorGeometry, VKS.VectorFileObjects,
-  VKS.VectorLists, VKS.Material, FileMD3;
+  System.Classes, 
+  System.SysUtils,
+  VKS.ApplicationFileIO, 
+  VKS.VectorGeometry, 
+  VKS.VectorFileObjects,
+  VKS.VectorLists, 
+  VKS.Material, 
+  FileMD3;
 
 type
   // This class is used to extract the tag transform information

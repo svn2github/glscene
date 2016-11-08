@@ -12,7 +12,7 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-   The history of development is listed in a former version of GLScene.  
+   The history is logged in a former GLS version of the unit.
      
 }
 

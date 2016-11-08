@@ -3,6 +3,7 @@
 //
 { 
   Calculations and manipulations on Bounding Boxes.
+  The history is logged in a former GLS version of the unit.
 }
 unit VKS.GeometryBB;
 

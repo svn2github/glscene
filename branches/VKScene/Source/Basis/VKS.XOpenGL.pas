@@ -8,7 +8,7 @@
    Before using any of the xglTexCoordXxxx fonctions, call one of the
    xglMapTexCoordToXxxx functions to establish the redirectors.
    This unit is Open-Source under MPL
-
+   The history is logged in a former GLS version of the unit.
 }
 unit VKS.XOpenGL;
 

@@ -69,8 +69,8 @@ type
   { A generic bump shader.  }
   TVKBumpShader = class(TVKShader)
   private
-    FVertexProgramHandle: TVKARBVertexProgramHandle;
-    FFragmentProgramHandle: TVKARBFragmentProgramHandle;
+    FVertexProgramHandle: TVKVertexProgramHandle;
+    FFragmentProgramHandle: TVKFragmentProgramHandle;
     FLightIDs: TIntegerList;
     FLightsEnabled: Integer;
     FBumpMethod: TBumpMethod;
@@ -653,14 +653,14 @@ begin
 
     if not Assigned(FVertexProgramHandle) then
     begin
-      FVertexProgramHandle := TVKARBVertexProgramHandle.CreateAndAllocate;
+      FVertexProgramHandle := TVKVertexProgramHandle.CreateAndAllocate;
       FVertexProgramHandle.LoadARBProgram(GenerateVertexProgram);
     end;
 
     if not Assigned(FFragmentProgramHandle) then
       if FBumpMethod = bmBasicARBFP then
       begin
-        FFragmentProgramHandle := TVKARBFragmentProgramHandle.CreateAndAllocate;
+        FFragmentProgramHandle := TVKFragmentProgramHandle.CreateAndAllocate;
         FFragmentProgramHandle.LoadARBProgram(GenerateFragmentProgram);
       end;
 

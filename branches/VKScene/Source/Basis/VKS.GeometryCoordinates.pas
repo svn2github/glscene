@@ -4,7 +4,7 @@
 {
   Helper functions to convert between different three dimensional coordinate
   systems. Room for optimisations. 
-     
+  The history is logged in a former GLS version of the unit.     
 }
 unit VKS.GeometryCoordinates;
 

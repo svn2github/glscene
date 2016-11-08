@@ -3,7 +3,7 @@
 //
 {
    Prototypes and base implementation of TVKContext.
-
+   The history is logged in a former GLS version of the unit.
 }
 unit VKS.Context;
 
@@ -848,7 +848,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  TVKARBProgramHandle = class(TVKContextHandle)
+  TVKProgramHandleEXT = class(TVKContextHandle)
   private
     { Private Declarations }
     FReady: Boolean;
@@ -869,7 +869,7 @@ type
     property InfoLog: string read FInfoLog;
   end;
 
-  TVKARBVertexProgramHandle = class(TVKARBProgramHandle)
+  TVKVertexProgramHandle = class(TVKProgramHandleEXT)
   protected
     { Protected Declarations }
     class function GetTarget: GLEnum; override;
@@ -878,7 +878,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  TVKARBFragmentProgramHandle = class(TVKARBProgramHandle)
+  TVKFragmentProgramHandle = class(TVKProgramHandleEXT)
   protected
     { Protected Declarations }
     class function GetTarget: GLEnum; override;
@@ -887,7 +887,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  TVKARBGeometryProgramHandle = class(TVKARBProgramHandle)
+  TVKGeometryProgramHandle = class(TVKProgramHandleEXT)
   protected
     { Protected Declarations }
     class function GetTarget: GLEnum; override;
@@ -3478,13 +3478,13 @@ begin
 end;
 
 // ------------------
-// ------------------ TVKARBProgramHandle ------------------
+// ------------------ TVKProgramHandleEXT ------------------
 // ------------------
 
 // DoAllocateHandle
 //
 
-function TVKARBProgramHandle.DoAllocateHandle: Cardinal;
+function TVKProgramHandleEXT.DoAllocateHandle: Cardinal;
 begin
   Result := 0;
   glGenProgramsARB(1, @Result);
@@ -3494,7 +3494,7 @@ end;
 // DoDestroyHandle
 //
 
-procedure TVKARBProgramHandle.DoDestroyHandle(var AHandle: GLuint);
+procedure TVKProgramHandleEXT.DoDestroyHandle(var AHandle: GLuint);
 begin
   if not vContextActivationFailureOccurred then
   begin
@@ -3510,12 +3510,12 @@ end;
 // IsValid
 //
 
-class function TVKARBProgramHandle.IsValid(const ID: GLuint): GLboolean;
+class function TVKProgramHandleEXT.IsValid(const ID: GLuint): GLboolean;
 begin
   Result := glIsProgram(ID);
 end;
 
-procedure TVKARBProgramHandle.LoadARBProgram(AText: string);
+procedure TVKProgramHandleEXT.LoadARBProgram(AText: string);
 const
   cProgType: array[0..2] of string =
     ('ARB vertex', 'ARB fragment', 'NV geometry');
@@ -3545,7 +3545,7 @@ begin
   end;
 end;
 
-procedure TVKARBProgramHandle.Enable;
+procedure TVKProgramHandleEXT.Enable;
 begin
   if FReady then
     glEnable(GetTarget)
@@ -3553,42 +3553,42 @@ begin
     Abort;
 end;
 
-procedure TVKARBProgramHandle.Disable;
+procedure TVKProgramHandleEXT.Disable;
 begin
   glDisable(GetTarget);
 end;
 
-procedure TVKARBProgramHandle.Bind;
+procedure TVKProgramHandleEXT.Bind;
 begin
   glBindProgramARB(GetTarget, Handle);
 end;
 
-class function TVKARBVertexProgramHandle.GetTarget: GLEnum;
+class function TVKVertexProgramHandle.GetTarget: GLEnum;
 begin
   Result := GL_VERTEX_PROGRAM_ARB;
 end;
 
-class function TVKARBVertexProgramHandle.IsSupported: Boolean;
+class function TVKVertexProgramHandle.IsSupported: Boolean;
 begin
   Result := GL_ARB_vertex_program;
 end;
 
-class function TVKARBFragmentProgramHandle.GetTarget: GLEnum;
+class function TVKFragmentProgramHandle.GetTarget: GLEnum;
 begin
   Result := GL_FRAGMENT_PROGRAM_ARB;
 end;
 
-class function TVKARBFragmentProgramHandle.IsSupported: Boolean;
+class function TVKFragmentProgramHandle.IsSupported: Boolean;
 begin
   Result := GL_ARB_vertex_program;
 end;
 
-class function TVKARBGeometryProgramHandle.GetTarget: GLEnum;
+class function TVKGeometryProgramHandle.GetTarget: GLEnum;
 begin
   Result := GL_GEOMETRY_PROGRAM_NV;
 end;
 
-class function TVKARBGeometryProgramHandle.IsSupported: Boolean;
+class function TVKGeometryProgramHandle.IsSupported: Boolean;
 begin
   Result := GL_NV_geometry_program4;
 end;

@@ -43,7 +43,7 @@ type
   private
     FOutlineWidth: Single;
     FCelShaderOptions: TVKCelShaderOptions;
-    FVPHandle: TVKARBVertexProgramHandle;
+    FVPHandle: TVKVertexProgramHandle;
     FShadeTexture: TVKTexture;
     FOnGetIntensity: TVKCelShaderGetIntensity;
     FOutlinePass,
@@ -112,7 +112,7 @@ begin
 
   ShaderStyle := ssLowLevel;
 
-  FVPHandle := TVKARBVertexProgramHandle.Create;
+  FVPHandle := TVKVertexProgramHandle.Create;
 end;
 
 // Destroy

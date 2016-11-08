@@ -1,7 +1,10 @@
 //
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net
 //
-{  Geometric objects }
+{ 
+  Geometric objects 
+  The history is logged in a former GLS version of the unit.
+}
 
 unit VKS.GeomObjects;
 

@@ -3,6 +3,7 @@
 //
 {
   A sprite that uses a scrolling texture for animation.
+  The history is logged in a former GLS version of the unit.
 }
 
 unit VKS.AnimatedSprite;

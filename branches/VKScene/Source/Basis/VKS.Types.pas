@@ -5,7 +5,7 @@
    Defines vector types for geometry only aiming to imply
    compatibility of GLScene for Delphi with C+Builder.
    Do not include any other units in uses clause
-    
+   The history is logged in a former GLS version of the unit.    
 }
 unit VKS.Types;
 

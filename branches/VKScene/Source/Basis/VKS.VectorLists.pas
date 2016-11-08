@@ -3,7 +3,7 @@
 //
 {
    Misc. lists of vectors and entities
-  
+   The history is logged in a former GLS version of the unit.  
 }
 unit VKS.VectorLists;
 

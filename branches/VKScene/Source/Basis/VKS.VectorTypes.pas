@@ -15,7 +15,7 @@
         s  is uses for 16 bits signed integers (smallint)
 
    Note : D3D types untested. 
-     
+   The history is logged in a former GLS version of the unit.     
 }
 unit VKS.VectorTypes;
 

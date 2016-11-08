@@ -3,6 +3,7 @@
 //
 {
    Miscellaneous support utilities & classes.
+   The history is logged in a former GLS version of the unit.
 }
 unit VKS.Utils;
 

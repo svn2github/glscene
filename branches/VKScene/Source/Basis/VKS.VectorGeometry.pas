@@ -31,6 +31,7 @@
   all Intel processors after Pentium should be immune to this.
 
    Based on Geometry.pas v.2.5 by Mike Lischke from 04. January 2000
+   The history is logged in a former GLS version of the unit.
 }
 
 unit VKS.VectorGeometry;
