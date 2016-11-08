@@ -27,7 +27,7 @@
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
-#include "TGA.hpp"
+#include "GLFileTGA.hpp"
 #include "GLUtils.hpp"
 
 

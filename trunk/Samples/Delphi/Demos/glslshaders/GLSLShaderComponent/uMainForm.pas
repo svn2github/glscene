@@ -13,7 +13,7 @@ uses
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLUtils,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
+  GLFileTGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
 
 type
   TGLSLTestForm = class(TForm)

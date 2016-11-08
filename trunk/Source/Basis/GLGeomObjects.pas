@@ -36,10 +36,19 @@ unit GLGeomObjects;
 interface
 
 uses
-  System.Classes, System.Math,
+  System.Classes, 
+  System.Math,
    
-  GLScene, GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext,
-  GLObjects, GLSilhouette, GLVectorTypes, GLGeometryBB, GLRenderContextInfo;
+  OpenGLTokens, 
+  OpenGLAdapter,
+  GLScene, 
+  GLVectorGeometry, 
+  GLContext,
+  GLObjects, 
+  GLSilhouette, 
+  GLVectorTypes, 
+  GLGeometryBB, 
+  GLRenderContextInfo;
 
 type
 

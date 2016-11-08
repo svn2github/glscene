@@ -147,6 +147,7 @@
         <DCCReference Include="..\..\Source\FileFormats\FileMD2.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\FileMD3.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\FileOCT.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\FileTGA.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\FileX.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\GLAVIRecorder.pas"/>
         <DCCReference Include="..\..\Source\GLAnimatedSprite.pas"/>
@@ -215,6 +216,7 @@
         <DCCReference Include="..\..\Source\FileFormats\GLFileO3TC.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileOBJ.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileOCT.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFilePAK.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFilePLY.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFilePNG.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileQ3BSP.pas"/>
@@ -225,6 +227,7 @@
         <DCCReference Include="..\..\Source\FileFormats\GLFileVRML.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileWAV.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFileX.pas"/>
+        <DCCReference Include="..\..\Source\FileFormats\GLFileZLIB.pas"/>
         <DCCReference Include="..\..\Source\GLFireFX.pas"/>
         <DCCReference Include="..\..\Source\GLFullScreenViewer.pas"/>
         <DCCReference Include="..\..\Source\GLGLUTesselation.pas"/>
@@ -388,7 +391,6 @@
         <DCCReference Include="..\..\Source\Basis\OpenGLTokens.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3BSP.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Q3MD3.pas"/>
-        <DCCReference Include="..\..\Source\FileFormats\TGA.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Types3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\Utils3DS.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VRMLParser.pas"/>
@@ -414,10 +416,13 @@
                     <Source Name="MainSource">GLScene_RunTime.dpk</Source>
                 </Source>
                 <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\GLScene_DesignTime.bpl">GLScene OpenGL 3D library</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\GLScene_Parallel_DesignTime.bpl">GLScene GPU Computing</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\GLScene_Cg_DesignTime.bpl">GLScene Cg Shaders</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
@@ -438,16 +443,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -759,7 +755,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

@@ -4,9 +4,7 @@
 {
    Methods for PAK Archiving
    History :  
-       04/06/10 - Yar - Added to GLScene
-                           (Created by Rustam Asmandiarov aka Predator)
-   
+     04/06/10 - Yar - Added to GLScene (as created by Rustam Asmandiarov aka Predator)
 }
 
 unit GLFilePAK;
@@ -16,7 +14,8 @@ unit GLFilePAK;
 interface
 
 uses
-  System.Classes, System.SysUtils, 
+  System.Classes,
+  System.SysUtils,
   GLSArchiveManager;
 
 const

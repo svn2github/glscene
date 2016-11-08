@@ -9,7 +9,7 @@ uses
   GLScene, GLObjects, GLTexture, GLWin32Viewer, GLCadencer, GLVectorFileObjects,
   GLShadowVolume, GLGeomObjects, GLUtils, GLFileLMTS, GLContext, GLVectorGeometry,
   GLSLProjectedTextures, GLCrossPlatform, GLGraphics, GLMaterial, GLCoordinates,
-  GLBaseClasses, TGA;
+  GLBaseClasses, GLFileTGA;
 
 type
 

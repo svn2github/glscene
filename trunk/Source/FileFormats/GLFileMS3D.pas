@@ -35,11 +35,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes, 
+  System.SysUtils, 
+  System.Math,
    
-  GLCrossPlatform, GLVectorFileObjects,
-  GLVectorTypes, GLMaterial, GLColor, GLTexture,
-  GLVectorGeometry, GLVectorLists, GLApplicationFileIO;
+  GLCrossPlatform, 
+  GLVectorFileObjects,
+  GLVectorTypes, 
+  GLMaterial, 
+  GLColor, 
+  GLTexture,
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLApplicationFileIO;
   
 
 const
@@ -125,9 +133,7 @@ type
   PMS3DTriangleArray = ^TMS3DTriangleArray;
   TMS3DTriangleArray = array[0..MAX_MS3D_TRIANGLES - 1] of TMS3DTriangle;
 
-
-
-  // typedef struct
+   // typedef struct
   // {
   //     char            name[32];                           //
   //     float           ambient[4];                         //

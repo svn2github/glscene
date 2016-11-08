@@ -13,6 +13,7 @@
 #include <Vcl.Buttons.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLCadencer.hpp"
@@ -24,7 +25,6 @@
 #include "GLWin32Viewer.hpp"
 #include "GLFileMD2.hpp"
 #include "GLBaseClasses.hpp"
-#include "JPEG.hpp"
 #include "GLUtils.hpp"
 
 //---------------------------------------------------------------------------

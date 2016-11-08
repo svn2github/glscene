@@ -7,12 +7,12 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
 
-  // GLScene
+  // GLS
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
   GLMeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLUtils, GLFileMD2
-//  TGA,
+//  GLFileTGA,
 //  GLFileObj,
 //  GLFile3DS,
 //  GLFileSMD,

@@ -20,7 +20,7 @@ uses
   GLObjects, GLCoordinates, GLGraphics, GLState, GLCompositeImage,
   // FileFormats 3D
   GLFileMS3D, GLFile3DS, GLFileMD2, GLFileMD3, GLFileLMTS, GLFileOBJ, GLFileSMD,
-  TGA, GLFilePNG, GLFileDDS;
+  GLFileTGA, GLFilePNG, GLFileDDS;
 
 type
   TForm1 = class(TForm)

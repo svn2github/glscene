@@ -8,7 +8,7 @@
 
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
-#pragma link "tga"
+#pragma link "GLFileTGA"
 #pragma resource "*.dfm"
 
 TForm1 *Form1;

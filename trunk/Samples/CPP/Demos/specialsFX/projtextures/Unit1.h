@@ -20,8 +20,7 @@
 #include "GLCrossPlatform.hpp"
 #include "GLMaterial.hpp"
 #include "GLFileTGA.hpp"
-#include "jpeg.hpp"
-#include "tga.hpp"
+
 
 
 //---------------------------------------------------------------------------
@@ -43,10 +42,10 @@ __published:	// IDE-managed Components
         TGLCube *GLCube1;
         TGLPlane *GLPlane1;
         TGLPlane *GLPlane2;
-        TGLPlane *GLPlane3;
+		TGLPlane *GLPlane3;
         TGLSphere *GLSphere1;
 	TGLCamera *GLCamera1;
-        TGLCadencer *GLCadencer1;
+		TGLCadencer *GLCadencer1;
         TGLMaterialLibrary *matLib;
         TTimer *Timer1;
         void __fastcall GLCadencer1Progress(TObject *Sender,

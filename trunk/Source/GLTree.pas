@@ -30,9 +30,15 @@ uses
    
    OpenGLTokens,
    GLScene, 
-   GLMaterial, GLVectorGeometry, GLVectorLists,
-   GLVectorFileObjects, GLApplicationFileIO, GLRenderContextInfo,
-   XOpenGL, GLContext, GLVectorTypes;
+   GLMaterial, 
+   GLVectorGeometry, 
+   GLVectorLists,
+   GLVectorFileObjects, 
+   GLApplicationFileIO, 
+   GLRenderContextInfo,
+   XOpenGL, 
+   GLContext, 
+   GLVectorTypes;
 
 type
    TGLTree = class;

@@ -7,6 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -27,8 +28,7 @@
 #include "GLRenderContextInfo.hpp"
 #include "GLState.hpp"
 #include "GLUtils.hpp"
-#include "JPEG.hpp"
-#include "TGA.hpp"
+#include "GLFileTGA.hpp"
 
 
 //---------------------------------------------------------------------------

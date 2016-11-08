@@ -12,6 +12,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
@@ -25,8 +26,7 @@
 #include "GLMeshUtils.hpp"
 #include "GLVectorGeometry.hpp"
 
-#include "Jpeg.hpp"
-#include "TGA.hpp"
+#include "GLFileTGA.hpp"
 #include "GLFileObj.hpp"
 #include "GLFile3DS.hpp"
 #include "GLFileMD2.hpp"

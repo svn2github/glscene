@@ -8,9 +8,19 @@ uses
   Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ExtDlgs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ActnList, 
   Vcl.ToolWin, Vcl.Menus, Vcl.ImgList, Vcl.Imaging.Jpeg,
   //GLS
-  GLObjects, GLHUDObjects, GLScene, GLWin32Viewer, TGA,
-  GLCoordinates, GLCrossPlatform, GLBaseClasses,
-  GLTexture, GLGraphics, GLVectorGeometry, GLState, GLUtils;
+  GLObjects, 
+  GLHUDObjects, 
+  GLScene, 
+  GLWin32Viewer, 
+  GLFileTGA,
+  GLCoordinates, 
+  GLCrossPlatform, 
+  GLBaseClasses,
+  GLTexture, 
+  GLGraphics, 
+  GLVectorGeometry, 
+  GLState, 
+  GLUtils;
 
 
 type

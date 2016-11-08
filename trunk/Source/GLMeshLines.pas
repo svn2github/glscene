@@ -3,6 +3,7 @@
 //
 {
    Line implementation by means of a Triangle strip. 
+   The history is logged in a former GLS version of the unit.
 }
 
 unit GLMeshLines;

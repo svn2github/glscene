@@ -8,9 +8,21 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
   //GLS
-  GLCadencer, GLScene, GLWin32Viewer, GLTexture, TGA, GLObjects,
-  GLVectorGeometry, GLProjectedTextures, GLHUDObjects, GLCrossPlatform,
-  GLMaterial, GLCoordinates, GLBaseClasses, GLSimpleNavigation, GLUtils;
+  GLCadencer, 
+  GLScene, 
+  GLWin32Viewer, 
+  GLTexture, 
+  FileTGA,
+  GLObjects,
+  GLVectorGeometry, 
+  GLProjectedTextures, 
+  GLHUDObjects, 
+  GLCrossPlatform,
+  GLMaterial, 
+  GLCoordinates, 
+  GLBaseClasses, 
+  GLSimpleNavigation, 
+  GLUtils;
 
 type
   TForm1 = class(TForm)

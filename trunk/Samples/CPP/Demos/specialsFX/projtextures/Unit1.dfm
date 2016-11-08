@@ -67,7 +67,6 @@ object Form1: TForm1
         end
         object Light: TGLDummyCube
           Position.Coordinates = {0000000000000000000000400000803F}
-          Up.Coordinates = {000000000000803F0000008000000000}
           CubeSize = 0.200000002980232200
           EdgeColor.Color = {0000803F0000803F000000000000803F}
           object GLLightSource1: TGLLightSource

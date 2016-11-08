@@ -5,13 +5,34 @@ interface
 uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
+  Vcl.ExtCtrls, 
+  Vcl.ComCtrls,
+  Vcl.Imaging.Jpeg,
   //GLS
-  GLWin32Viewer, GLScene, GLTexture, GLObjects, GLUtils, Vcl.ComCtrls, GLContext,
-  GLVectorGeometry, GLGeomObjects, GLCadencer, GLUserShader, GLGraph,
-  GLVectorTypes, GLSkydome, GLVectorLists, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLSimpleNavigation,
-  GLTextureFormat, GLColor, OpenGLTokens, TGA;
+  OpenGLTokens,
+  GLWin32Viewer, 
+  GLScene, 
+  GLTexture, 
+  GLObjects, 
+  GLUtils, 
+  GLContext,
+  GLVectorGeometry, 
+  GLGeomObjects, 
+  GLCadencer, 
+  GLUserShader, 
+  GLGraph,
+  GLVectorTypes, 
+  GLSkydome, 
+  GLVectorLists, 
+  GLCrossPlatform, 
+  GLMaterial,
+  GLCoordinates, 
+  GLBaseClasses, 
+  GLRenderContextInfo, 
+  GLSimpleNavigation,
+  GLTextureFormat, 
+  GLColor, 
+  GLFileTGA;
 
 type
   TForm1 = class(TForm)

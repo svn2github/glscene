@@ -8,7 +8,7 @@ uses
   //GLS
   GLScene, GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer,
   GLSArchiveManager, GLBaseClasses, GLVectorGeometry, GLFileMS3D,
-  TGA, GLFileZLIB, GLCoordinates, GLCrossPlatform, GLWin32Viewer,
+  GLFileTGA, GLFileZLIB, GLCoordinates, GLCrossPlatform, GLWin32Viewer,
   GLVectorTypes, GLUtils;
 
 

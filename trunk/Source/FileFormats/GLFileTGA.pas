@@ -2,315 +2,291 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Graphic engine friendly loading of TGA image.
-   History :  
-         04/04/11 - Yar - Creation
-    
-}
+   Simple TGA formats supports for Delphi.
+   Currently supports only 24 and 32 bits RGB formats (uncompressed
+   and RLE compressed). 
+   Based on David McDuffee's document from www.wotsit.org 
 
+   History :  
+      07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
+      20/04/10 - Yar - Removed registration for FPC (thanks to Rustam Asmandiarov aka Predator)
+	    07/01/10 - DaStr - TTGAImage is now replaced by LazTGA.TTGAImage
+                              in Lazarus (thanks Predator)
+	    08/07/04 - LR - Uses of Graphics replaced by GLCrossPlatform for Linux
+	    21/11/02 - Egg - Creation
+
+}
 unit GLFileTGA;
 
 interface
 
-{.$I GLScene.inc}
+{$I GLScene.inc}
 
 uses
   System.Classes,
   System.SysUtils,
+   
   GLCrossPlatform,
-  OpenGLTokens,
-  GLContext,
-  GLGraphics,
-  GLTextureFormat,
-  GLApplicationFileIO;
+  GLGraphics;
+
 
 type
 
-  // TGLTGAImage
-  //
+	// TTGAImage
+	//
+   {TGA image load/save capable class for Delphi.
+      TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
+      saves only to uncompressed TGA. }
+        TTGAImage = class (TGLBitmap)
+	   private
+	      { Private Declarations }
 
-  TGLTGAImage = class(TGLBaseImage)
-  public
-    { Public Declarations }
-    procedure LoadFromFile(const filename: string); override;
-    procedure SaveToFile(const filename: string); override;
-    procedure LoadFromStream(stream: TStream); override;
-    procedure SaveToStream(stream: TStream); override;
-    class function Capabilities: TGLDataFileCapabilities; override;
+	   protected
+	      { Protected Declarations }
 
-    procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
-      textureTarget: TGLTextureTarget;
-      const CurrentFormat: boolean;
-      const intFormat: TGLInternalFormat); reintroduce;
-  end;
+	   public
+	      { Public Declarations }
+	      constructor Create; override;
+         destructor Destroy; override;
 
+         procedure LoadFromStream(stream : TStream); override;
+         procedure SaveToStream(stream : TStream); override;
+	end;
+
+   // ETGAException
+   //
+   ETGAException = class (Exception)
+   end;
+
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 type
 
-  // TTGAHeader
-  //
-
-  TTGAFileHeader = packed record
-    IDLength: Byte;
-    ColorMapType: Byte;
-    ImageType: Byte;
-    ColorMapOrigin: Word;
-    ColorMapLength: Word;
-    ColorMapEntrySize: Byte;
-    XOrigin: Word;
-    YOrigin: Word;
-    Width: Word;
-    Height: Word;
-    PixelSize: Byte;
-    ImageDescriptor: Byte;
+   // TTGAHeader
+   //
+   TTGAHeader = packed record
+      IDLength          : Byte;
+      ColorMapType      : Byte;
+      ImageType         : Byte;
+      ColorMapOrigin    : Word;
+      ColorMapLength    : Word;
+      ColorMapEntrySize : Byte;
+      XOrigin           : Word;
+      YOrigin           : Word;
+      Width             : Word;
+      Height            : Word;
+      PixelSize         : Byte;
+      ImageDescriptor   : Byte;
   end;
 
-  // ReadAndUnPackRLETGA24
-  //
-
-procedure ReadAndUnPackRLETGA24(stream: TStream; destBuf: PAnsiChar;
-  totalSize: Integer);
+// ReadAndUnPackRLETGA24
+//
+procedure ReadAndUnPackRLETGA24(stream : TStream; destBuf : PAnsiChar; totalSize : Integer);
 type
-  TRGB24 = packed record
-    r, g, b: Byte;
-  end;
-  PRGB24 = ^TRGB24;
+   TRGB24 = packed record
+      r, g, b : Byte;
+   end;
+   PRGB24 = ^TRGB24;
 var
-  n: Integer;
-  color: TRGB24;
-  bufEnd: PAnsiChar;
-  b: Byte;
+   n : Integer;
+   color : TRGB24;
+   bufEnd : PAnsiChar;
+   b : Byte;
 begin
-  bufEnd := @destBuf[totalSize];
-  while destBuf < bufEnd do
-  begin
-    stream.Read(b, 1);
-    if b >= 128 then
-    begin
-      // repetition packet
-      stream.Read(color, 3);
-      b := (b and 127) + 1;
-      while b > 0 do
-      begin
-        PRGB24(destBuf)^ := color;
-        Inc(destBuf, 3);
-        Dec(b);
+   bufEnd:=@destBuf[totalSize];
+   while destBuf<bufEnd do begin
+      stream.Read(b, 1);
+      if b>=128 then begin
+         // repetition packet
+         stream.Read(color, 3);
+         b:=(b and 127)+1;
+         while b>0 do begin
+            PRGB24(destBuf)^:=color;
+            Inc(destBuf, 3);
+            Dec(b);
+         end;
+      end else begin
+         n:=((b and 127)+1)*3;
+         stream.Read(destBuf^, n);
+         Inc(destBuf, n);
       end;
-    end
-    else
-    begin
-      n := ((b and 127) + 1) * 3;
-      stream.Read(destBuf^, n);
-      Inc(destBuf, n);
-    end;
-  end;
+   end;
 end;
 
 // ReadAndUnPackRLETGA32
 //
-
-procedure ReadAndUnPackRLETGA32(stream: TStream; destBuf: PAnsiChar;
-  totalSize: Integer);
+procedure ReadAndUnPackRLETGA32(stream : TStream; destBuf : PAnsiChar; totalSize : Integer);
 type
-  TRGB32 = packed record
-    r, g, b, a: Byte;
-  end;
-  PRGB32 = ^TRGB32;
+   TRGB32 = packed record
+      r, g, b, a : Byte;
+   end;
+   PRGB32 = ^TRGB32;
 var
-  n: Integer;
-  color: TRGB32;
-  bufEnd: PAnsiChar;
-  b: Byte;
+   n : Integer;
+   color : TRGB32;
+   bufEnd : PAnsiChar;
+   b : Byte;
 begin
-  bufEnd := @destBuf[totalSize];
-  while destBuf < bufEnd do
-  begin
-    stream.Read(b, 1);
-    if b >= 128 then
-    begin
-      // repetition packet
-      stream.Read(color, 4);
-      b := (b and 127) + 1;
-      while b > 0 do
-      begin
-        PRGB32(destBuf)^ := color;
-        Inc(destBuf, 4);
-        Dec(b);
+   bufEnd:=@destBuf[totalSize];
+   while destBuf<bufEnd do begin
+      stream.Read(b, 1);
+      if b>=128 then begin
+         // repetition packet
+         stream.Read(color, 4);
+         b:=(b and 127)+1;
+         while b>0 do begin
+            PRGB32(destBuf)^:=color;
+            Inc(destBuf, 4);
+            Dec(b);
+         end;
+      end else begin
+         n:=((b and 127)+1)*4;
+         stream.Read(destBuf^, n);
+         Inc(destBuf, n);
       end;
-    end
-    else
-    begin
-      n := ((b and 127) + 1) * 4;
-      stream.Read(destBuf^, n);
-      Inc(destBuf, n);
-    end;
-  end;
+   end;
 end;
 
-// LoadFromFile
-//
+// ------------------
+// ------------------ TTGAImage ------------------
+// ------------------
 
-procedure TGLTGAImage.LoadFromFile(const filename: string);
-var
-  fs: TStream;
+// Create
+//
+constructor TTGAImage.Create;
 begin
-  if FileStreamExists(fileName) then
-  begin
-    fs := CreateFileStream(fileName, fmOpenRead);
-    try
-      LoadFromStream(fs);
-    finally
-      fs.Free;
-      ResourceName := filename;
-    end;
-  end
-  else
-    raise EInvalidRasterFile.CreateFmt('File %s not found', [filename]);
+	inherited Create;
 end;
 
-// SaveToFile
+// Destroy
 //
-
-procedure TGLTGAImage.SaveToFile(const filename: string);
-var
-  fs: TStream;
+destructor TTGAImage.Destroy;
 begin
-  fs := CreateFileStream(fileName, fmOpenWrite or fmCreate);
-  try
-    SaveToStream(fs);
-  finally
-    fs.Free;
-  end;
-  ResourceName := filename;
+	inherited Destroy;
 end;
 
 // LoadFromStream
 //
-
-procedure TGLTGAImage.LoadFromStream(stream: TStream);
+procedure TTGAImage.LoadFromStream(stream : TStream);
 var
-  LHeader: TTGAFileHeader;
-  y, rowSize, bufSize: Integer;
-  verticalFlip: Boolean;
-  unpackBuf: PAnsiChar;
-  Ptr: PByte;
+   header : TTGAHeader;
+   y, rowSize, bufSize : Integer;
+   verticalFlip : Boolean;
+   unpackBuf : PAnsiChar;
+
+   function GetLineAddress(ALine: Integer): PByte;
+   begin
+     Result := PByte(ScanLine[ALine]);
+   end;
+
 begin
-  stream.Read(LHeader, Sizeof(TTGAFileHeader));
+   stream.Read(header, Sizeof(TTGAHeader));
 
-  if LHeader.ColorMapType <> 0 then
-    raise EInvalidRasterFile.Create('ColorMapped TGA unsupported');
+   if header.ColorMapType<>0 then
+      raise ETGAException.Create('ColorMapped TGA unsupported');
 
-  UnMipmap;
-  FLOD[0].Width := LHeader.Width;
-  FLOD[0].Height := LHeader.Height;
-  FLOD[0].Depth := 0;
+   case header.PixelSize of
+      24 : PixelFormat:=glpf24bit;
+      32 : PixelFormat:=glpf32bit;
+   else
+      raise ETGAException.Create('Unsupported TGA ImageType');
+   end;
 
-  case LHeader.PixelSize of
-    24:
-      begin
-        FColorFormat := GL_BGR;
-        FInternalFormat := tfRGB8;
-        FElementSize := 3;
-      end;
-    32:
-      begin
-        FColorFormat := GL_RGBA;
-        FInternalFormat := tfRGBA8;
-        FElementSize := 4;
-      end;
-  else
-    raise EInvalidRasterFile.Create('Unsupported TGA ImageType');
-  end;
-
-  FDataType := GL_UNSIGNED_BYTE;
-  FCubeMap := False;
-  FTextureArray := False;
-  ReallocMem(FData, DataSize);
-
-  rowSize := GetWidth * FElementSize;
-  verticalFlip := ((LHeader.ImageDescriptor and $20) <> 1);
-
-  if LHeader.IDLength > 0 then
-    stream.Seek(LHeader.IDLength, soFromCurrent);
-
-  case LHeader.ImageType of
-    2:
-      begin // uncompressed RGB/RGBA
-        if verticalFlip then
-        begin
-          Ptr := PByte(FData);
-          Inc(Ptr, rowSize * (GetHeight - 1));
-          for y := 0 to GetHeight - 1 do
-          begin
-            stream.Read(Ptr^, rowSize);
-            Dec(Ptr, rowSize);
-          end;
-        end
-        else
-          stream.Read(FData^, rowSize * GetHeight);
-      end;
-    10:
-      begin // RLE encoded RGB/RGBA
-        bufSize := GetHeight * rowSize;
-        GetMem(unpackBuf, bufSize);
-        try
-          // read & unpack everything
-          if LHeader.PixelSize = 24 then
-            ReadAndUnPackRLETGA24(stream, unpackBuf, bufSize)
-          else
-            ReadAndUnPackRLETGA32(stream, unpackBuf, bufSize);
-          // fillup bitmap
-          if verticalFlip then
-          begin
-            Ptr := PByte(FData);
-            Inc(Ptr, rowSize * (GetHeight - 1));
-            for y := 0 to GetHeight - 1 do
-            begin
-              Move(unPackBuf[y * rowSize], Ptr^, rowSize);
-              Dec(Ptr, rowSize);
-            end;
-          end
-          else
-            Move(unPackBuf[rowSize * GetHeight], FData^, rowSize * GetHeight);
-        finally
-          FreeMem(unpackBuf);
+   Width:=header.Width;
+   Height:=header.Height;
+   rowSize:=(Width*header.PixelSize) div 8;
+   verticalFlip:=((header.ImageDescriptor and $20)=0);
+   if header.IDLength>0 then
+      stream.Seek(header.IDLength, soFromCurrent);
+   try
+     case header.ImageType of
+        0 : begin // empty image, support is useless but easy ;)
+           Width:=0;
+           Height:=0;
+           Abort;
         end;
-      end;
-  else
-    raise EInvalidRasterFile.CreateFmt('Unsupported TGA ImageType %d',
-      [LHeader.ImageType]);
-  end;
+        2 : begin // uncompressed RGB/RGBA
+           if verticalFlip then begin
+              for y:=0 to Height-1 do
+                 stream.Read(GetLineAddress(Height-y-1)^, rowSize);
+           end else begin
+              for y:=0 to Height-1 do
+                 stream.Read(GetLineAddress(y)^, rowSize);
+           end;
+        end;
+        10 : begin // RLE encoded RGB/RGBA
+           bufSize:=Height*rowSize;
+           unpackBuf:=GetMemory(bufSize);
+           try
+              // read & unpack everything
+              if header.PixelSize=24 then
+                 ReadAndUnPackRLETGA24(stream, unpackBuf, bufSize)
+              else ReadAndUnPackRLETGA32(stream, unpackBuf, bufSize);
+              // fillup bitmap
+              if verticalFlip then begin
+                 for y:=0 to Height-1 do begin
+                    Move(unPackBuf[y*rowSize], GetLineAddress(Height-y-1)^, rowSize);
+                 end;
+              end else begin
+                 for y:=0 to Height-1 do
+                    Move(unPackBuf[y*rowSize], GetLineAddress(y)^, rowSize);
+              end;
+           finally
+              FreeMemory(unpackBuf);
+           end;
+        end;
+     else
+        raise ETGAException.Create('Unsupported TGA ImageType '+IntToStr(header.ImageType));
+     end;
+   finally
+     //
+   end;
 end;
 
-// SaveToStream
+// TTGAImage
 //
-
-procedure TGLTGAImage.SaveToStream(stream: TStream);
+procedure TTGAImage.SaveToStream(stream : TStream);
+var
+   y, rowSize : Integer;
+   header : TTGAHeader;
 begin
-{$MESSAGE Hint 'TGLTGAImage.SaveToStream not yet implemented' }
+   // prepare the header, essentially made up from zeroes
+   FillChar(header, SizeOf(TTGAHeader), 0);
+   header.ImageType:=2;
+   header.Width:=Width;
+   header.Height:=Height;
+   case PixelFormat of
+      glpf24bit : header.PixelSize:=24;
+      glpf32bit : header.PixelSize:=32;
+   else
+      raise ETGAException.Create('Unsupported Bitmap format');
+   end;
+
+   stream.Write(header, SizeOf(TTGAHeader));
+
+   rowSize:=(Width*header.PixelSize) div 8;
+   for y:=0 to Height-1 do
+      stream.Write(ScanLine[Height-y-1]^, rowSize);
 end;
 
-// AssignFromTexture
-//
-
-procedure TGLTGAImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint; textureTarget: TGLTextureTarget;
-  const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
-begin
-{$MESSAGE Hint 'TGLTGAImage.AssignFromTexture not yet implemented' }
-end;
-
-class function TGLTGAImage.Capabilities: TGLDataFileCapabilities;
-begin
-  Result := [dfcRead {, dfcWrite}];
-end;
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
 initialization
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+   TGLPicture.RegisterFileFormat('tga', 'Targa', TTGAImage);
 
-  { Register this Fileformat-Handler with GLScene }
-  RegisterRasterFormat('tga', 'TARGA Image File', TGLTGAImage);
+finalization
 
+   TGLPicture.UnregisterGraphicClass(TTGAImage);
 end.
-

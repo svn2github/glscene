@@ -9,7 +9,7 @@ uses
   //GLS
   GLScene, GLObjects, GLWin32Viewer, GLTree, GLTexture, GLVectorFileObjects,
   GLAsyncTimer, GLCadencer, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLBaseClasses, GLUtils, TGA;
+  GLBaseClasses, GLUtils, GLFileTGA;
 
 type
   TForm1 = class(TForm)

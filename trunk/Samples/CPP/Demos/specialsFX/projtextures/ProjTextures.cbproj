@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>16.0</ProjectVersion>
+        <ProjectVersion>18.1</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -82,10 +82,11 @@
         <PackageImports>rtl.bpi;vcl.bpi;vclx.bpi;$(PackageImports)</PackageImports>
         <BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
         <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
-        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
+        <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib;VclSmp.lib;vclx.lib;vclactnband.lib</AllPackageLibs>
         <BCC_PCHCache>true</BCC_PCHCache>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <TASM_Defines>_DEBUG;$(TASM_Defines)</TASM_Defines>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve</BCC_UserSuppliedOptions>
         <BRCC_Defines>_DEBUG;$(BRCC_Defines)</BRCC_Defines>
@@ -116,11 +117,11 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
-        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <LinkPackageStatics>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</LinkPackageStatics>
+        <LinkPackageStatics>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib;VclSmp.lib;vclx.lib;vclactnband.lib</LinkPackageStatics>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win64)'!=''">
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>

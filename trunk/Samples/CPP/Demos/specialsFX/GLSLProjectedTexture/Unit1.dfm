@@ -11,6 +11,8 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnMouseWheel = FormMouseWheel
   DesignSize = (
@@ -87,7 +89,7 @@ object Form1: TForm1
           Aspect = 1.000000000000000000
           Style = ptsShadow
           Attenuation = 100.000000000000000000
-          Brightness = 0.800000011920928900
+          Brightness = 0.800000011920929000
           Color.Color = {0000803F0000803F0000803F0000803F}
           UseAttenuation = False
           UseQuadraticAttenuation = False

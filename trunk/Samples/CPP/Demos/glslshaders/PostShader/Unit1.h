@@ -9,6 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.CheckLst.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -28,8 +29,7 @@
 #include "GLCGPostTransformationShader.hpp"
 
 // FileFormats
-#include "TGA.hpp"
-#include "JPEG.hpp"
+#include "GLFileTGA.hpp"
 #include "GLFileMD2.hpp"
 #include "GLFileMS3D.hpp"
 #include "GLFile3DS.hpp"

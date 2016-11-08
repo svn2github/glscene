@@ -15,7 +15,7 @@ uses
 
 
   // FileFormats
-  TGA, GLFileMS3D, GLFile3DS, DDSImage, GLFileMD2, GLFileSMD;
+  GLFileTGA, GLFileMS3D, GLFile3DS, DDSImage, GLFileMD2, GLFileSMD;
 
 type
   TGLSLTestForm = class(TForm)
