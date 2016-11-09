@@ -227,9 +227,9 @@ uses
   Vcl.Imaging.pngimage,
 
   // GLS
+  OpenGLTokens,
   GLCrossPlatform,
   GLBaseClasses,
-  OpenGLTokens,
   GLVectorGeometry,
   GLGraphics,
   GLContext,

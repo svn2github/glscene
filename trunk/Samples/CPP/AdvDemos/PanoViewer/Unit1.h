@@ -11,6 +11,7 @@
 #include <ComCtrls.hpp>
 #include <Dialogs.hpp>
 #include <Forms.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLCadencer.hpp"
 #include "GLObjects.hpp"
@@ -22,7 +23,6 @@
 #include "GLMaterial.hpp"
 #include "GLCrossPlatform.hpp"
 #include "GLKeyBoard.hpp"
-#include "JPEG.hpp"
 #include "GLFileJPEG.hpp"
 #include "GLUtils.hpp"
 

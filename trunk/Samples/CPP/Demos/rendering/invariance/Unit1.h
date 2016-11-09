@@ -7,6 +7,8 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
+
 #include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
@@ -15,7 +17,6 @@
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include "JPEG.hpp"
 #include "GLUtils.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

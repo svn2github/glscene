@@ -17,7 +17,7 @@
 #include "GLScene.hpp"
 #include "GLTilePlane.hpp"
 #include "GLWin32Viewer.hpp"
-#include "JPEG.hpp"
+#include <Vcl.Imaging.jpeg.hpp>
 #include <Vcl.ExtCtrls.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

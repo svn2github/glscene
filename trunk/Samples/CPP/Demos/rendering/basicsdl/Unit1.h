@@ -14,7 +14,7 @@
 #include "GLTeapot.hpp"
 #include "OpenGL1x.hpp"
 #include "GLSDLContext.hpp"
-#include "JPEG.hpp"
+#include <Vcl.Imaging.jpeg.hpp>
 
 //---------------------------------------------------------------------------
 class TDataModule1 : public TDataModule

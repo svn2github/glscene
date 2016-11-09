@@ -11,6 +11,7 @@
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
@@ -26,7 +27,6 @@
 #include "GLCrossPlatform.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLFileSMD.hpp"
-#include "JPEG.hpp"
 #include "GLUtils.hpp"
 #include "GLBaseClasses.hpp"
 

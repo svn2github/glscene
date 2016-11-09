@@ -24,7 +24,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.SyncObjs,
+  System.Classes, 
+  System.SysUtils, 
+  System.SyncObjs,
    
   GLCrossPlatform;
 

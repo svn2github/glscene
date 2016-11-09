@@ -23,7 +23,7 @@
 #include "GLObjects.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include "JPEG.hpp"
+#include <Vcl.Imaging.jpeg.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

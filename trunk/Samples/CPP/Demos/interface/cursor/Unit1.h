@@ -12,6 +12,7 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Vcl.ExtDlgs.hpp>
 #include <Vcl.Menus.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
 #include "GLCoordinates.hpp"
@@ -22,7 +23,6 @@
 #include "GLParticles.hpp"
 #include "GLScene.hpp"
 #include "GLWin32Viewer.hpp"
-#include "JPEG.hpp"
 #include "GLUtils.hpp"
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
