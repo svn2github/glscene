@@ -117,18 +117,10 @@ type
   TProjectTargetNameFunc = function(): string;
 
 const
-{$IFDEF MSWINDOWS}
   glpf8Bit = TPixelFormat.RGBA; //in VCL ->  pf8bit;
   glpf24bit = TPixelFormat.RGBA16; //in VCL -> pf24bit;
   glpf32Bit = TPixelFormat.RGBA32F; //in VCL -> pf32bit;
   glpfDevice = TPixelFormat.RGBA; //in VCL -> pfDevice;
-{$ENDIF}
-{$IFDEF UNIX}
-  glpf8Bit = pf8bit;
-  glpf24bit = pf32bit;
-  glpf32Bit = pf32bit;
-  glpfDevice = pf32bit;
-{$ENDIF}
 
   // standard keyboard
   glKey_TAB = VK_TAB;
@@ -204,7 +196,7 @@ function StartPrecisionTimer: Int64;
 { Computes time elapsed since timer start. 
    Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
-{ Computes time elapsed since timer start and stop timer. 
+{ Computes time elapsed since timer start and stop timer.
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 

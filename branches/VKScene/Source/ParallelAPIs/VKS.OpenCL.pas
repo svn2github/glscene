@@ -35,11 +35,112 @@ interface
 uses
   Winapi.Windows;
 
-{$I cl.inc}
-
 const
   LibOpenCL = 'OpenCL.dll';
+
+//+++++++++++++ Types and constants from CL_Platform.h ++++++++++++++
+type
+  Tsize_t = NativeUInt; // 32 or 64 bit unsigned integer
+  Psize_t = ^Tsize_t;
+  intptr_t = NativeUInt;
+  // Pintptr_t = ^intptr_t;
+
+  // scalar types
+  Tcl_char = ShortInt;
+  Tcl_uchar = Byte;
+  Tcl_short = SmallInt;
+  Tcl_ushort = Word;
+  Tcl_int = LongInt;
+  Tcl_uint = LongWord;
+  Tcl_long = Int64;
+  Tcl_ulong = UInt64;
+
+  Tcl_half = Word;
+  Tcl_float = Single;
+  Tcl_double = Double;
+
+  Pcl_char = ^Tcl_char;
+  Pcl_uchar = ^Tcl_uchar;
+  Pcl_short = ^Tcl_short;
+  Pcl_ushort = ^Tcl_ushort;
+  Pcl_int = ^Tcl_int;
+  Pcl_uint = ^Tcl_uint;
+  Pcl_long = ^Tcl_long;
+  Pcl_ulong = ^Tcl_ulong;
+
+  Pcl_half = ^Tcl_half;
+  Pcl_float = ^Tcl_float;
+  Pcl_double = ^Tcl_double;
+
+  /// *
+  // * Vector types
+  // *
+  // *  Note:   OpenCL requires that all types be naturally aligned.
+  // *          This means that vector types must be naturally aligned.
+  // *          For example, a vector of four floats must be aligned to
+  // *          a 16 byte boundary (calculated as 4 * the natural 4-byte
+  // *          alignment of the float).  The alignment qualifiers here
+  // *          will only function properly if your compiler supports them
+  // *          and if you don't actively work to defeat them.  For example,
+  // *          in order for a cl_float4 to be 16 byte aligned in a struct,
+  // *          the start of the struct must itself be 16-byte aligned.
+  // *
+  // *          Maintaining proper alignment is the user's responsibility.
+  // */
 //******************************************************************************//
+
+type
+  Tcl_char2 = array [0 .. 1] of Tcl_char;
+  Tcl_char4 = array [0 .. 3] of Tcl_char;
+  Tcl_char8 = array [0 .. 7] of Tcl_char;
+  Tcl_char16 = array [0 .. 15] of Tcl_char;
+
+  Tcl_uchar2 = array [0 .. 1] of Tcl_uchar;
+  Tcl_uchar4 = array [0 .. 3] of Tcl_uchar;
+  Tcl_uchar8 = array [0 .. 7] of Tcl_uchar;
+  Tcl_uchar16 = array [0 .. 15] of Tcl_uchar;
+
+  Tcl_short2 = array [0 .. 1] of Tcl_short;
+  Tcl_short4 = array [0 .. 3] of Tcl_short;
+  Tcl_short8 = array [0 .. 7] of Tcl_short;
+  Tcl_short16 = array [0 .. 15] of Tcl_short;
+
+  Tcl_ushort2 = array [0 .. 1] of Tcl_ushort;
+  Tcl_ushort4 = array [0 .. 3] of Tcl_ushort;
+  Tcl_ushort8 = array [0 .. 7] of Tcl_ushort;
+  Tcl_ushort16 = array [0 .. 15] of Tcl_ushort;
+
+  Tcl_int2 = array [0 .. 1] of Tcl_int;
+  Tcl_int4 = array [0 .. 3] of Tcl_int;
+  Tcl_int8 = array [0 .. 7] of Tcl_int;
+  Tcl_int16 = array [0 .. 15] of Tcl_int;
+
+  Tcl_uint2 = array [0 .. 1] of Tcl_uint;
+  Tcl_uint4 = array [0 .. 3] of Tcl_uint;
+  Tcl_uint8 = array [0 .. 7] of Tcl_uint;
+  Tcl_uint16 = array [0 .. 15] of Tcl_uint;
+
+  Tcl_long2 = array [0 .. 1] of Tcl_long;
+  Tcl_long4 = array [0 .. 3] of Tcl_long;
+  Tcl_long8 = array [0 .. 7] of Tcl_long;
+  Tcl_long16 = array [0 .. 15] of Tcl_long;
+
+  Tcl_ulong2 = array [0 .. 1] of Tcl_ulong;
+  Tcl_ulong4 = array [0 .. 3] of Tcl_ulong;
+  Tcl_ulong8 = array [0 .. 7] of Tcl_ulong;
+  Tcl_ulong16 = array [0 .. 15] of Tcl_ulong;
+
+  Tcl_float2 = array [0 .. 1] of Tcl_float;
+  Tcl_float4 = array [0 .. 3] of Tcl_float;
+  Tcl_float8 = array [0 .. 7] of Tcl_float;
+  Tcl_float16 = array [0 .. 15] of Tcl_float;
+
+  Tcl_double2 = array [0 .. 1] of Tcl_double;
+  Tcl_double4 = array [0 .. 3] of Tcl_double;
+  Tcl_double8 = array [0 .. 7] of Tcl_double;
+  Tcl_double16 = array [0 .. 15] of Tcl_double;
+ // There are no vector types for half
+
 type
   T_cl_platform_id = record end;
   Tcl_platform_id = ^T_cl_platform_id;
@@ -196,108 +297,6 @@ type
   end;
   Pcl_buffer_region = ^Tcl_buffer_region;
 
-//+++++++++++++ Types and constants from CL_Platform.h ++++++++++++++
-type
-  Tsize_t = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^Tsize_t;
-  intptr_t = NativeUInt;
-  // Pintptr_t = ^intptr_t;
-
-  // scalar types
-  Tcl_char = ShortInt;
-  Tcl_uchar = Byte;
-  Tcl_short = SmallInt;
-  Tcl_ushort = Word;
-  Tcl_int = LongInt;
-  Tcl_uint = LongWord;
-  Tcl_long = Int64;
-  Tcl_ulong = UInt64;
-
-  Tcl_half = Word;
-  Tcl_float = Single;
-  Tcl_double = Double;
-
-  Pcl_char = ^Tcl_char;
-  Pcl_uchar = ^Tcl_uchar;
-  Pcl_short = ^Tcl_short;
-  Pcl_ushort = ^Tcl_ushort;
-  Pcl_int = ^Tcl_int;
-  Pcl_uint = ^Tcl_uint;
-  Pcl_long = ^Tcl_long;
-  Pcl_ulong = ^Tcl_ulong;
-
-  Pcl_half = ^Tcl_half;
-  Pcl_float = ^Tcl_float;
-  Pcl_double = ^Tcl_double;
-
-  /// *
-  // * Vector types
-  // *
-  // *  Note:   OpenCL requires that all types be naturally aligned.
-  // *          This means that vector types must be naturally aligned.
-  // *          For example, a vector of four floats must be aligned to
-  // *          a 16 byte boundary (calculated as 4 * the natural 4-byte
-  // *          alignment of the float).  The alignment qualifiers here
-  // *          will only function properly if your compiler supports them
-  // *          and if you don't actively work to defeat them.  For example,
-  // *          in order for a cl_float4 to be 16 byte aligned in a struct,
-  // *          the start of the struct must itself be 16-byte aligned.
-  // *
-  // *          Maintaining proper alignment is the user's responsibility.
-  // */
-
-type
-  Tcl_char2 = array [0 .. 1] of Tcl_char;
-  Tcl_char4 = array [0 .. 3] of Tcl_char;
-  Tcl_char8 = array [0 .. 7] of Tcl_char;
-  Tcl_char16 = array [0 .. 15] of Tcl_char;
-
-  Tcl_uchar2 = array [0 .. 1] of Tcl_uchar;
-  Tcl_uchar4 = array [0 .. 3] of Tcl_uchar;
-  Tcl_uchar8 = array [0 .. 7] of Tcl_uchar;
-  Tcl_uchar16 = array [0 .. 15] of Tcl_uchar;
-
-  Tcl_short2 = array [0 .. 1] of Tcl_short;
-  Tcl_short4 = array [0 .. 3] of Tcl_short;
-  Tcl_short8 = array [0 .. 7] of Tcl_short;
-  Tcl_short16 = array [0 .. 15] of Tcl_short;
-
-  Tcl_ushort2 = array [0 .. 1] of Tcl_ushort;
-  Tcl_ushort4 = array [0 .. 3] of Tcl_ushort;
-  Tcl_ushort8 = array [0 .. 7] of Tcl_ushort;
-  Tcl_ushort16 = array [0 .. 15] of Tcl_ushort;
-
-  Tcl_int2 = array [0 .. 1] of Tcl_int;
-  Tcl_int4 = array [0 .. 3] of Tcl_int;
-  Tcl_int8 = array [0 .. 7] of Tcl_int;
-  Tcl_int16 = array [0 .. 15] of Tcl_int;
-
-  Tcl_uint2 = array [0 .. 1] of Tcl_uint;
-  Tcl_uint4 = array [0 .. 3] of Tcl_uint;
-  Tcl_uint8 = array [0 .. 7] of Tcl_uint;
-  Tcl_uint16 = array [0 .. 15] of Tcl_uint;
-
-  Tcl_long2 = array [0 .. 1] of Tcl_long;
-  Tcl_long4 = array [0 .. 3] of Tcl_long;
-  Tcl_long8 = array [0 .. 7] of Tcl_long;
-  Tcl_long16 = array [0 .. 15] of Tcl_long;
-
-  Tcl_ulong2 = array [0 .. 1] of Tcl_ulong;
-  Tcl_ulong4 = array [0 .. 3] of Tcl_ulong;
-  Tcl_ulong8 = array [0 .. 7] of Tcl_ulong;
-  Tcl_ulong16 = array [0 .. 15] of Tcl_ulong;
-
-  Tcl_float2 = array [0 .. 1] of Tcl_float;
-  Tcl_float4 = array [0 .. 3] of Tcl_float;
-  Tcl_float8 = array [0 .. 7] of Tcl_float;
-  Tcl_float16 = array [0 .. 15] of Tcl_float;
-
-  Tcl_double2 = array [0 .. 1] of Tcl_double;
-  Tcl_double4 = array [0 .. 3] of Tcl_double;
-  Tcl_double8 = array [0 .. 7] of Tcl_double;
-  Tcl_double16 = array [0 .. 15] of Tcl_double;
- // There are no vector types for half
-
  const
   CL_CHAR_BIT = 8;
   CL_SCHAR_MAX = 127;
@@ -336,7 +335,7 @@ type
   CL_DBL_MAX = 8.98E307; // 0x1.fffffffffffffp1023;
   CL_DBL_MIN = 2.2E-308; // 0x1.0p-1022;
   CL_DBL_EPSILON = 2.2E-26; // 0x1.0p-52;
-//+++++++++ END CL_Platform.h ++++++++++++++++++++ 
+//+++++++++ End of CL_Platform.h ++++++++++++++++++++ 
   
  
 //* Error Codes *//
@@ -867,14 +866,14 @@ var
   clGetPlatformIDs: function(num_entries: Tcl_uint;
     platforms: Pcl_platform_id;
     num_platforms: Pcl_uint): Tcl_int;     // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetPlatformInfo: function(cl_platform: Tcl_platform_id;
     param_name: Tcl_platform_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Device APIs *//
   clGetDeviceIDs: function(_platform: Tcl_platform_id;
@@ -882,41 +881,41 @@ var
     num_entries: Tcl_uint;
     devices: Pcl_device_id;
     num_devices: Pcl_uint): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetDeviceInfo: function(device: Tcl_device_id;
     param_name: Tcl_device_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateSubDevices: function(in_device: Tcl_device_id;
     properties: Pcl_device_partition_property;
     num_devices: Tcl_uint;
     out_devices: Pcl_device_id;
   	num_devices_ret: Pcl_uint): Tcl_int;    // CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainDevice: function(device : Tcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   clReleaseDevice: function(device : Tcl_device_id): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   clSetDefaultDeviceCommandQueue: function(context: Tcl_context;
     device: Tcl_device_id;
     command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   clGetDeviceAndHostTimer: function(device: Tcl_device_id;
     device_timestamp: Pcl_ulong;
     host_timestamp: Pcl_ulong): Tcl_int;  //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   clGetHostTimer: function(device: Tcl_device_id;
     host_timestamp: Pcl_ulong): Tcl_int;  //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   //* Context APIs *//
 type
@@ -924,7 +923,7 @@ type
     private_info: Pointer;
     size: Tsize_t;
     user_data: Pointer);
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 var
   clCreateContext: function(properties: Pcl_context_properties;
@@ -933,47 +932,47 @@ var
     pfn_notify: Tcl_context_notify; {const char *, const void *, size_t, void *}
     user_data: Pointer;
     errcode_ret: Pcl_int): Tcl_context;   // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateContextFromType: function(properties: Pcl_context_properties;
     device_type: Tcl_device_type;
     pfn_notify: Tcl_context_notify; {const char *, const void *, size_t, void *}
     user_data: Pointer;
     errcode_ret: Pcl_int): Tcl_context;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainContext: function(context: Tcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseContext: function(context: Tcl_context): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetContextInfo: function(context: Tcl_context;
     param_name: Tcl_context_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Command Queue APIs *//
   clCreateCommandQueue: function(context: Tcl_context;
     device: Tcl_device_id;
     properties: Tcl_command_queue_properties;
     errcode_ret: Pcl_int): Tcl_command_queue; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainCommandQueue: function(command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseCommandQueue: function(command_queue: Tcl_command_queue): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
- {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   clGetCommandQueueInfo: function(command_queue: Tcl_command_queue;
     param_name: Tcl_command_queue_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
- {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+  stdcall;
 
   //* Memory Object APIs *//
   clCreateBuffer: function(context: Tcl_context;
@@ -981,14 +980,14 @@ var
     size: Tsize_t;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateSubBuffer: function(buffer: Tcl_mem;
     flags: Tcl_mem_flags;
     buffer_create_type: Tcl_buffer_create_type;
     buffer_create_info: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;   //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateImage: function(context: Tcl_context;
     flags: Tcl_mem_flags;
@@ -996,7 +995,7 @@ var
     image_desc: Pcl_image_desc;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreatePipe: function(context: Tcl_context;
     flags: Tcl_mem_flags;
@@ -1004,13 +1003,13 @@ var
     pipe_max_packets: Tcl_uint;
     properties: Pcl_pipe_properties;
     errcode_ret: Pcl_int): Tcl_mem;   //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainMemObject: function(memobj: Tcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseMemObject: function(memobj: Tcl_mem): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetSupportedImageFormats: function(context: Tcl_context;
     flags: Tcl_mem_flags;
@@ -1018,70 +1017,70 @@ var
     num_entries: Tcl_uint;
     image_formats: Pcl_image_format;
     num_image_formats: Pcl_uint): Tcl_int;   //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetMemObjectInfo: function(memobj: Tcl_mem;
     param_name: Tcl_mem_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetImageInfo: function(image: Tcl_mem;
     param_name: Tcl_image_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetPipeInfo: function(pipe: Tcl_mem;
     param_name: Tcl_pipe_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 type
   Tcl_destructor_notify = procedure(memobj: Tcl_mem;
     user_data: Pointer);
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
  var
   clSetMemObjectDestructorCallback: function(memobj: Tcl_mem;
      pfn_notify:   Tcl_destructor_notify; //( cl_mem /* memobj */, void* /*user_data*/),
      user_data: Pointer): Tcl_int;     //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
    //* SVM Allocation APIs *//
    clSVMAlloc: function(context: Tcl_context;
      flags: Tcl_svm_mem_flags;
      size: Tsize_t;
      alignment: Tcl_uint): Pointer; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
    clSVMFree: procedure(context: Tcl_context;
      svm_pointer: Pointer);     //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Sampler APIs *//
   clCreateSamplerWithProperties: function(context: Tcl_context;
     normalized_coords: Pcl_sampler_properties;
     addressing_mode: Tcl_addressing_mode;
     errcode_ret: Pcl_int): Tcl_sampler;   //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainSampler: function(sampler: Tcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseSampler: function(sampler: Tcl_sampler): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetSamplerInfo: function(sampler: Tcl_sampler;
     param_name: Tcl_sampler_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Program Object APIs *//
   clCreateProgramWithSource: function(context: Tcl_context;
@@ -1089,7 +1088,7 @@ type
     strings: PPAnsiChar;
     lengths: Psize_t;
     errcode_ret: Pcl_int): Tcl_program;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateProgramWithBinary: function(context: Tcl_context;
     num_devices: Tcl_uint;
@@ -1098,31 +1097,31 @@ type
     binaries: PByte;
     binary_status: Pcl_int;
     errcode_ret: Pcl_int): Tcl_program;   //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateProgramWithBuiltInKernels: function(context: Tcl_context;
     num_devices: Tcl_uint;
     device_list: Pcl_device_id;
     kernel_names: Pcl_char;
     errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateProgramWithIL: function(context: Tcl_context;
     il: Pointer;
     length: Tsize_t;
     errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainProgram: function(_program: Tcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseProgram: function(_program: Tcl_program): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 type
   Tcl_programbuilt_notify = procedure(_program: Tcl_program;
     user_data: Pointer);
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 var
   clBuildProgram: function(_program: Tcl_program;
@@ -1131,7 +1130,7 @@ var
     options: Pcl_char;
     pfn_notify: Tcl_programbuilt_notify;
     user_data: Pointer): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCompileProgram: function(_program: Tcl_program;
     num_devices: Tcl_uint;
@@ -1142,7 +1141,7 @@ var
   	header_include_names: PPAnsiChar;
     pfn_notify: Tcl_programbuilt_notify;
     user_data: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clLinkProgram: function(context: Tcl_context;
     num_devices: Tcl_uint;
@@ -1153,17 +1152,17 @@ var
     pfn_notify: Tcl_programbuilt_notify; //(cl_program /* program */, void * /* user_data */)
     user_data: Pointer;
     errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clUnloadPlatformCompiler: function: Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetProgramInfo: function(_program: Tcl_program;
     param_name: Tcl_program_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetProgramBuildInfo: function(_program: Tcl_program;
     device: Tcl_device_id;
@@ -1171,53 +1170,53 @@ var
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Kernel Object APIs *//
   clCreateKernel: function(_program: Tcl_program;
     kernel_name: PAnsiChar;
     errcode_ret: Pcl_int): Tcl_kernel; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateKernelsInProgram: function(_program: Tcl_program;
     num_kernels: Tcl_uint;
     kernels: Pcl_kernel;
     num_kernels_ret: Pcl_uint): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCloneKernel: function(source_kernel: Tcl_kernel;
     errocode_ret: Pcl_int): Tcl_int;   //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainKernel: function(kernel: Tcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseKernel: function(kernel: Tcl_kernel): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clSetKernelArg: function(kernel: Tcl_kernel;
     arg_index: Tcl_uint;
     arg_size: Tsize_t;
     arg_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clSetKernelArgSVMPointer: function(kernel: Tcl_kernel;
     arg_index: Tcl_uint;
     arg_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clSetKernelExecInfo: function(kernel: Tcl_kernel;
     param_name: Tcl_kernel_exec_info;
     param_value_size: Tsize_t;
     param_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetKernelInfo: function(kernel: Tcl_kernel;
     param_name: Tcl_kernel_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetKernelArgInfo: function(kernel: Tcl_kernel;
     arg_indx: Tcl_uint;
@@ -1225,7 +1224,7 @@ var
 	param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetKernelWorkGroupInfo: function(kernel: Tcl_kernel;
     device: Tcl_device_id;
@@ -1233,7 +1232,7 @@ var
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetKernelSubGroupInfo: function(kernel: Tcl_kernel;
     device: Tcl_device_id;
@@ -1243,46 +1242,46 @@ var
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Event Object APIs *//
   clWaitForEvents: function(num_events: Tcl_uint;
     event_list: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clGetEventInfo: function(event: Tcl_event;
     param_name: Tcl_event_info;
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;   //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clCreateUserEvent: function(context: Tcl_context;
     errcode_ret: Pcl_int): Tcl_event;   //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clRetainEvent: function(event: Tcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clReleaseEvent: function(event: Tcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clSetUserEventStatus: function(event: Tcl_event;
     execution_status: Tcl_int): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
  type
   Tcl_event_notify = procedure(event: Tcl_event;
     num_event: Tcl_int;
     user_data: Pointer);
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 var
   clSetEventCallback: function(event: Tcl_event;
     command_exec_callback_type: Tcl_int;
     pfn_notify: Tcl_event_notify;
     user_data: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Profiling APIs *//
   clGetEventProfilingInfo: function(event: Tcl_event;
@@ -1290,14 +1289,14 @@ var
     param_value_size: Tsize_t;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Flush and Finish APIs *//
   clFlush: function(command_queue: Tcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clFinish: function(command_queue: Tcl_command_queue): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Enqueued Commands APIs *//
   clEnqueueReadBuffer: function(command_queue: Tcl_command_queue;
@@ -1309,7 +1308,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueReadBufferRect: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
@@ -1325,7 +1324,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueWriteBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
@@ -1336,7 +1335,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueWriteBufferRect: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
@@ -1352,7 +1351,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueFillBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
@@ -1363,7 +1362,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueCopyBuffer: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
@@ -1374,7 +1373,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueCopyBufferRect: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
@@ -1389,7 +1388,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueReadImage: function(command_queue: Tcl_command_queue;
     image: Tcl_mem;
@@ -1402,7 +1401,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueWriteImage: function(command_queue: Tcl_command_queue;
     image: Tcl_mem;
@@ -1415,7 +1414,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 
   clEnqueueFillImage: function(command_queue: Tcl_command_queue;
@@ -1426,7 +1425,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; // CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueCopyImage: function(command_queue: Tcl_command_queue;
     src_image: Tcl_mem;
@@ -1437,7 +1436,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueCopyImageToBuffer: function(command_queue: Tcl_command_queue;
     src_image: Tcl_mem;
@@ -1448,7 +1447,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; // CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueCopyBufferToImage: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
@@ -1459,7 +1458,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueMapBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
@@ -1471,7 +1470,7 @@ var
     event_wait_list: Pcl_event;
     event: Pcl_event;
     errcode_ret: Pcl_int): Pointer; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueMapImage: function(command_queue: Tcl_command_queue;
     image: Tcl_mem;
@@ -1485,7 +1484,7 @@ var
     event_wait_list: Pcl_event;
     event: Pcl_event;
     errcode_ret: Pcl_int): Pointer;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueUnmapMemObject: function(command_queue: Tcl_command_queue;
     memobj: Tcl_mem;
@@ -1493,7 +1492,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueMigrateMemObjects: function(command_queue: Tcl_command_queue;
     num_mem_objects: Tcl_uint;
@@ -1502,7 +1501,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueNDRangeKernel: function(command_queue: Tcl_command_queue;
     kernel: Tcl_kernel;
@@ -1513,11 +1512,11 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 type
   Tcl_EnqueueNativeKernel = procedure();
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 var
   clEnqueueNativeKernel: function(command_queue: Tcl_command_queue;
@@ -1530,23 +1529,23 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueMarkerWithWaitList: function(command_queue: Tcl_command_queue;
     num_events_in_wait_list: Tcl_uint;
 	event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueBarrierWithWaitList: function(command_queue: Tcl_command_queue;
     num_events_in_wait_list: Tcl_uint;
 	event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 type
   Tcl_EnqueueSVM_fn = procedure();
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 var
   clEnqueueSVMFree: function(command_queue: Tcl_command_queue;
@@ -1559,7 +1558,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueSVMMemcpy: function(command_queue: Tcl_command_queue;
     num_svm_pointers: Tcl_uint;
@@ -1570,7 +1569,7 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueSVMMap: function(command_queue: Tcl_command_queue;
     num_svm_pointers: Tcl_uint;
@@ -1581,14 +1580,14 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueSVMUnmap: function(command_queue: Tcl_command_queue;
     svm_ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueSVMmigrateMem: function(command_queue: Tcl_command_queue;
     num_svm_pointers: Tcl_uint;
@@ -1598,15 +1597,15 @@ var
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_2_1
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueWaitForEvents: function(command_queue: Tcl_command_queue;
     num_events: Tcl_uint;
     event_list: Pcl_event): Tcl_int;
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   clEnqueueBarrier: function(command_queue: Tcl_command_queue): Tcl_int;
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
   //* Extension function access
   //*
@@ -1618,7 +1617,7 @@ var
 
   clGetExtensionFunctionAddressForPlatform: function(platform: Tcl_platform_id;
     func_name: Pcl_char): Pointer;  //CL_API_SUFFIX__VERSION_1_2
-  {$IFDEF MSWINDOWS}cdecl{$ELSE}stdcall{$ENDIF};
+   stdcall;
 
 
    //* Deprecated OpenCL 1.1 APIs *//

@@ -46,7 +46,7 @@ uses
   Winapi.Windows,
   System.SysUtils,
   FMX.Dialogs,
-  VKS.CL_Platform,
+  VKS.OpenCL,
   VKS.CrossPlatform,
   VKS.Strings;
 

@@ -51,7 +51,7 @@ uses
 {$ENDIF}
   System.SysUtils,
   FMX.Dialogs,
-  VKS.CL_Platform,
+  VKS.OpenCL,
   VKS.CUDAAPI,
   VKS.CrossPlatform;
 

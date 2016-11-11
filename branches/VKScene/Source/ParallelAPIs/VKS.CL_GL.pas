@@ -34,11 +34,8 @@ interface
 
 uses
   Winapi.OpenGL,
-  VKS.CL,
-  VKS.CL_Platform;
+  VKS.OpenCL;
 
-
-{$I cl.inc}
 
 type
 
@@ -75,7 +72,7 @@ function clCreateFromGLBuffer(context: Tcl_context;
            flags: Tcl_mem_flags;
            bufobj: GLuint;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 
 function clCreateFromGLTexture3D(context: Tcl_context;
@@ -84,26 +81,26 @@ function clCreateFromGLTexture3D(context: Tcl_context;
            miplevel: GLint;
            texture: GLuint;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_2;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 function clCreateFromGLRenderbuffer(context: Tcl_context;
            flags: Tcl_mem_flags;
            renderbuffer: GLuint;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
-function clGetObjectInfo(memobj: Tcl_mem;
+function clGetGLObjectInfo(memobj: Tcl_mem;
            gl_object_type: Pcl_gl_object_type;
            gl_object_name: PGLuint): Tcl_int; //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 
-function clGetTextureInfo(memobj: Tcl_mem;
+function clGetGLTextureInfo(memobj: Tcl_mem;
            param_name: Tcl_gl_texture_info;
            param_value_size: Tsize_t;
            param_value: Pointer;
            param_value_size_ret: Psize_t): Tcl_int; //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 
 function clEnqueueAcquireGLObjects(command_queue: Tcl_command_queue;
@@ -112,7 +109,7 @@ function clEnqueueAcquireGLObjects(command_queue: Tcl_command_queue;
            num_events_in_wait_list: Tcl_uint;
            event_wait_list: Pcl_event;
            event: Pcl_event): Tcl_int;  //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 
 function clEnqueueReleaseGLObjects(command_queue: Tcl_command_queue;
@@ -121,7 +118,7 @@ function clEnqueueReleaseGLObjects(command_queue: Tcl_command_queue;
            num_events_in_wait_list: Tcl_uint;
            event_wait_list: Pcl_event;
            event: Pcl_event): Tcl_int; //< CL_API_SUFFIX__VERSION_1_0;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 //* Deprecated OpenCL 1.1 APIs *//
 (* function clCreateFromGLTexture2D(); *)
@@ -149,20 +146,20 @@ CL_GLX_DISPLAY_KHR =                            $200A;
 CL_WGL_HDC_KHR =                                $200B;
 CL_CGL_SHAREGROUP_KHR =                         $200C;
 
-function clGetContextInfoKHR(properties: Tcl_context_properties;
+function clGetGLContextInfoKHR(properties: Tcl_context_properties;
            param_name: Tcl_gl_context_info;
            param_value_size: Tsize_t;
            param_value: Pointer;
            param_value_size_ret: Psize_t): Tcl_int;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+           stdcall; external LibOpenCL;
 
 (*
-function clGetContextInfoKHR_fn(properties: Pcl_context_properties;
+function clGetGLContextInfoKHR_fn(properties: Pcl_context_properties;
          param_name: Tcl_gl_context_info;
          param_value_size: Tsize_t;
          param_value: Pointer;
          param_value_size_ret: Psize_t): Tcl_int;
-{$IFDEF CDECL}cdecl{$ELSE}stdcall{$ENDIF}; external LibOpenCL;
+         stdcall; external LibOpenCL;
 *)
 
 //--------------------------------------------------------------------

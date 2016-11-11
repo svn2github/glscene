@@ -24,7 +24,7 @@
 {.$DEFINE VKS_INLINE}
 
 // De-Activate regions
-{.$DEFINE VKS_NO_REGIONS}
+{$DEFINE VKS_NO_REGIONS}
 
 // Activate Vulkan debug mode
 {.$DEFINE VKS_DEBUG}
@@ -34,7 +34,7 @@
 
 // Enable service rendering context, which automatically activate VKS_MULTITHREAD
 // This work only on windows platform and with modern compiler (XE2 and FPC or higher}
-{$DEFINE VKS_SERVICE_CONTEXT}
+{.$DEFINE VKS_SERVICE_CONTEXT}
 
 {$IFDEF VKS_MULTITHREAD}
   {$DEFINE MULTITHREADOPENGL}
@@ -44,6 +44,9 @@
   // Activate Multithread support
   {$DEFINE VKS_MULTITHREAD}
 {$ENDIF}
+
+// Activate support of Windows OS
+{$DEFINE MSWINDOWS}
 
 // Activate support of Mac OS
 {.$DEFINE MACOS}
@@ -91,10 +94,6 @@
   {$IFDEF VKS_INLINE}
     {$DEFINE VKS_INLINE_VICE_ASM}
   {$ENDIF}
-{$ENDIF}
-
-{$IFNDEF VKS_NO_REGIONS}
-  {$DEFINE VKS_REGIONS}
 {$ENDIF}
 
 {$DEFINE VKS_DEPRECATED}

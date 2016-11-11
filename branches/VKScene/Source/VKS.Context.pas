@@ -1147,15 +1147,10 @@ type
     procedure ContextCreatedBy(aContext: TVKContext);
     procedure DestroyingContextBy(aContext: TVKContext);
 
-   { Create a special service and resource-keeper context. }
-    procedure CreateServiceContext;
-    procedure QueueTaskDepleted;
-    property ServiceStarter: TEvent read FServiceStarter;
-    property ServiceContext: TVKContext read FServiceContext;
-  public
-    { Public Declarations }
-    constructor Create;
-    destructor Destroy; override;
+      public
+         { Public Declarations }
+         constructor Create;
+         destructor Destroy; override;
 
     { Returns an appropriate, ready-to use context. 
        The returned context should be freed by caller. }
@@ -1199,7 +1194,6 @@ function SafeCurrentVKContext: TVKContext;
 function IsMainThread: Boolean;
 function IsServiceContextAvaible: Boolean;
 function GetServiceWindow: TForm;
-procedure AddTaskForServiceContext(ATask: TTaskProcedure; FinishEvent: TFinishTaskEvent = nil);
 
 var
   VKContextManager: TVKContextManager;
@@ -1215,37 +1209,11 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-type
-  // TServiceContextThread
-  //
-  TServiceContextThread = class(TThread)
-  private
-    FDC: THandle; // VCL -> HDC;
-    FWindow: TForm;
-    FLastTaskStartTime: Double;
-    FReported: Boolean;
-  protected
-    procedure Execute; override;
-    procedure DoCreateServiceContext; stdcall;
-  public
-    constructor Create;
-    destructor Destroy; override;
-  end;
-
 var
   vContextClasses: TList;
   GLwithoutContext: TVKExtensionsAndEntryPoints;
   vServiceWindow: TForm;
-{$IFDEF VKS_SERVICE_CONTEXT}
-  OldInitProc: Pointer;
-{$ENDIF}
 
-
-{$IFNDEF VKS_MULTITHREAD}
-var
-{$ELSE}
-threadvar
-{$ENDIF}
   vVK: TVKExtensionsAndEntryPoints;
   vCurrentVKContext: TVKContext;
   vMainThread: Boolean;
@@ -1277,7 +1245,7 @@ end;
 
 function IsServiceContextAvaible: Boolean;
 begin
-  Result := VKContextManager.ServiceContext <> nil;
+  Result := VKContextManager.FHandles <> nil;
 end;
 
 function GetServiceWindow: TForm;
@@ -1510,9 +1478,9 @@ begin
   if vCurrentVKContext = Self then
   begin
 {$IFNDEF VKS_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
+    for i := Manager.FHandles.LockList.Count - 1 downto 0 do
     begin
-      LHandle := TVKContextHandle(Manager.FHandles[i]);
+      LHandle := TVKContextHandle(Manager.FHandles.LockList[i]);
       if Assigned(LHandle.FOnPrepare) then
         LHandle.FOnPrepare(Self);
     end;
@@ -1542,26 +1510,6 @@ var
   otherContext: TVKContext;
   otherList: TList;
 begin
-{$IFNDEF VKS_MULTITHREAD}
-  with FSharedContexts do
-  begin
-    for i := 1 to Count - 1 do
-    begin
-      otherContext := TVKContext(Items[i]);
-      otherList := otherContext.FSharedContexts;
-      for J := 0 to otherList.Count - 1 do
-        if IndexOf(otherList[J]) < 0 then
-          Add(otherList[J]);
-    end;
-    for i := 1 to Count - 1 do
-    begin
-      otherContext := TVKContext(Items[i]);
-      otherList := otherContext.FSharedContexts;
-      if otherList.IndexOf(Self) < 0 then
-        otherList.Add(Self);
-    end;
-  end;
-{$ELSE}
   with FSharedContexts.LockList do
     try
       for i := 1 to Count - 1 do
@@ -1584,7 +1532,6 @@ begin
     finally
       FSharedContexts.UnlockList;
     end;
-{$ENDIF}
 end;
 
 // ShareLists
@@ -1592,16 +1539,6 @@ end;
 
 procedure TVKContext.ShareLists(AContext: TVKContext);
 begin
-{$IFNDEF VKS_MULTITHREAD}
-  if FSharedContexts.IndexOf(AContext) < 0 then
-  begin
-    if DoShareLists(AContext) then
-    begin
-      FSharedContexts.Add(AContext);
-      PropagateSharedContext;
-    end;
-  end;
-{$ELSE}
   with FSharedContexts.LockList do
     try
       if IndexOf(aContext) < 0 then
@@ -1615,7 +1552,6 @@ begin
     finally
       FSharedContexts.UnlockList;
     end;
-{$ENDIF}
 end;
 
 // DestroyAllHandles
@@ -1627,10 +1563,6 @@ var
 begin
   Activate;
   try
-{$IFNDEF VKS_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
-      TVKContextHandle(Manager.FHandles[i]).ContextDestroying;
-{$ELSE}
     with Manager.FHandles.LockList do
       try
         for i := Count - 1 downto 0 do
@@ -1638,7 +1570,6 @@ begin
       finally
         Manager.FHandles.UnlockList;
       end;
-{$ENDIF}
   finally
     Deactivate;
   end;
@@ -1666,13 +1597,6 @@ begin
 
   Activate;
   try
-{$IFNDEF VKS_MULTITHREAD}
-    for i := Manager.FHandles.Count - 1 downto 0 do
-    begin
-      contextHandle := TVKContextHandle(Manager.FHandles[i]);
-      contextHandle.ContextDestroying;
-    end;
-{$ELSE}
     aList := Manager.FHandles.LockList;
     try
       for i := aList.Count - 1 downto 0 do
@@ -1683,14 +1607,9 @@ begin
     finally
       Manager.FHandles.UnlockList;
     end;
-{$ENDIF}
     Manager.DestroyingContextBy(Self);
 
-{$IFDEF VKS_MULTITHREAD}
     aList := FSharedContexts.LockList;
-{$ELSE}
-    aList := FSharedContexts;
-{$ENDIF}
     for I := 1 to aList.Count - 1 do
     begin
       otherContext := TVKContext(aList[I]);
@@ -1698,9 +1617,7 @@ begin
     end;
     FSharedContexts.Clear;
     FSharedContexts.Add(Self);
-{$IFDEF VKS_MULTITHREAD}
     FSharedContexts.UnlockList;
-{$ENDIF}
     Active := False;
     DoDestroyContext;
   finally
@@ -1716,9 +1633,7 @@ end;
 
 procedure TVKContext.Activate;
 begin
-{$IFDEF VKS_MULTITHREAD}
   FLock.Enter;
-{$ENDIF}
   if FActivationCount = 0 then
   begin
     if not IsValid then
@@ -1756,9 +1671,7 @@ begin
   end
   else if FActivationCount < 0 then
     raise EVKContext.Create(strUnbalancedContexActivations);
-{$IFDEF VKS_MULTITHREAD}
   FLock.Leave;
-{$ENDIF}
 end;
 
 // FindCompatibleContext
@@ -1769,14 +1682,6 @@ var
   i: Integer;
 begin
   Result := nil;
-{$IFNDEF VKS_MULTITHREAD}
-  for i := 0 to FSharedContexts.Count - 1 do
-    if TVKContext(FSharedContexts[i]) <> Self then
-    begin
-      Result := TVKContext(FSharedContexts[i]);
-      Break;
-    end;
-{$ELSE}
   with FSharedContexts.LockList do
     try
       for i := 0 to Count - 1 do
@@ -1788,7 +1693,6 @@ begin
     finally
       FSharedContexts.UnlockList;
     end;
-{$ENDIF}
 end;
 
 class function TVKContext.ServiceContext: TVKContext;
@@ -4289,14 +4193,6 @@ end;
 // ------------------ TVKContextManager ------------------
 // ------------------
 
-{$IFDEF VKS_SERVICE_CONTEXT}
-procedure OnApplicationInitialize;
-begin
-  InitProc := OldInitProc;
-  Application.Initialize;
-  VKContextManager.CreateServiceContext;
-end;
-{$ENDIF}
 
 // Create
 //
@@ -4304,11 +4200,8 @@ end;
 constructor TVKContextManager.Create;
 begin
   inherited Create;
-{$IFNDEF VKS_MULTITHREAD}
-  FHandles := TList.Create;
-{$ELSE}
   FHandles := TThreadList.Create;
-{$ENDIF VKS_MULTITHREAD}
+
   FList := TThreadList.Create;
 end;
 
@@ -4561,20 +4454,6 @@ end;
 procedure TVKContextManager.Terminate;
 begin
   FTerminated := True;
-{$IFDEF VKS_SERVICE_CONTEXT}
-  // Sevice context may not be created becouse Application.Initialize not happened
-  if Assigned(FServiceContext) then
-  begin
-    CheckSynchronize;
-    FThread.Terminate;
-    FServiceStarter.SetEvent;
-    FThread.WaitFor;
-    FThread.Destroy;
-    ShowMessage('Service thread destroyed');
-    FServiceStarter.Destroy;
-    FThreadTask.Destroy;
-  end;
-{$ENDIF}
   if ContextCount = 0 then
   begin
     VKContextManager := nil;
@@ -4802,8 +4681,6 @@ initialization
   // ------------------------------------------------------------------
 
   vMainThread := True;
-  OldInitProc := InitProc;
-  InitProc := @OnApplicationInitialize;
   VKContextManager := TVKContextManager.Create;
 
 finalization
