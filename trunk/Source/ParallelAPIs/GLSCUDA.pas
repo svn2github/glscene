@@ -23,15 +23,28 @@ interface
 {$I cuda.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLPersistentClasses,  GLBaseClasses,  GLCrossPlatform,  GLContext,
-  GLVectorGeometry,  GLVectorTypes,  GLVectorLists,  GLGraphics,
-  GLSCUDAApi,  GLSCUDARunTime,  GLSCUDAParser,
-  GLSCUDAFourierTransform,  GLSCUDACompiler,  GLSCUDAContext,
-  GLSCUDADataAccess,  GLStrings,  GLUtils, GLSLog,
-  //OpenCL
-  CL_Platform;
+  GLPersistentClasses,
+  GLBaseClasses,
+  GLCrossPlatform,
+  GLContext,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLVectorLists,
+  GLGraphics,
+  GLStrings,
+  GLUtils,
+  GLSOpenCL,
+  GLSCUDAApi,
+  GLSCUDARunTime,
+  GLSCUDAParser,
+  GLSCUDAFourierTransform,
+  GLSCUDACompiler,
+  GLSCUDAContext,
+  GLSCUDADataAccess,
+  GLSLog;
 
 type
 

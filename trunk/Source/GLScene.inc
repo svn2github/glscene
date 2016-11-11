@@ -30,7 +30,7 @@
 {.$DEFINE GLS_NO_REGIONS}
 
 // Activate Logging
-{.$DEFINE GLS_LOGGING}
+{$DEFINE GLS_LOGGING}
 
 // Activate OpenGL debug mode
 {.$DEFINE GLS_OPENGL_DEBUG}
@@ -38,10 +38,9 @@
 // Activate Multithread support
 {.$DEFINE GLS_MULTITHREAD}
 
-
 // Enable service rendering context, which automatically activate GLS_MULTITHREAD
-// This work only on windows platform and with modern compiler (XE2 and FPC or higher}
-{$DEFINE GLS_SERVICE_CONTEXT}
+// This work only on windows platform with modern compilers (XE2 and FPC or higher}
+{.$DEFINE GLS_SERVICE_CONTEXT}
 
 {$IFDEF GLS_MULTITHREAD}
   {$DEFINE MULTITHREADOPENGL}
@@ -52,6 +51,12 @@
   {$DEFINE GLS_MULTITHREAD}
 {$ENDIF}
 
+// Activate support of Linux
+{$DEFINE MSWINDOWS}
+
+// Activate support of Linux
+{.$DEFINE LINUX}
+
 // Activate support of Mac OS
 {.$DEFINE MACOS}
 
@@ -60,9 +65,6 @@
 
 // Activate support of Android
 {.$DEFINE ANDROID}
-
-// Activate support of Linux
-{.$DEFINE LINUX}
 
 // Activate support X Window System
 {.$DEFINE GLS_X11_SUPPORT}

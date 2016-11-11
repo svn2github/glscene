@@ -584,7 +584,7 @@ uses
   GLVectorGeometry,
   // Image file formats
   DDSImage,
-  TGA,
+  GLFileTGA,
   // Vector file formats
   GLFile3DS,
   GLFileASE,
@@ -619,7 +619,7 @@ uses
   GLFileJPEG,
   GLFilePNG,
   GLFileBMP,
-  GLFileTGA,
+  FileTGA,
 
   GLSound,
   GLSoundFileObjects,

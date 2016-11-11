@@ -44,8 +44,8 @@ interface
 
 uses
   Winapi.Windows,
-  CL_Platform,
   GLCrossPlatform,
+  GLSopenCL,
   GLSLog;
 
 const

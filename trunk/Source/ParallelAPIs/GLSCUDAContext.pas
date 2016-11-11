@@ -23,9 +23,9 @@ uses
   GLContext,
   GLSGenerics,
   GLSLog,
+  GLSOpenCL,
   GLSCUDARunTime,
-  GLSCUDAApi,
-  CL_Platform;
+  GLSCUDAApi;
 
 type
 

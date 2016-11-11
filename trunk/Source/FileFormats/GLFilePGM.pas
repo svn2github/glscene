@@ -15,10 +15,18 @@ unit GLFilePGM;
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //GLS
-  OpenGLTokens, GLContext, GLGraphics, GLTextureFormat, GLStrings,
-  GLApplicationFileIO;
+  OpenGLTokens,
+  GLContext,
+  GLGraphics,
+  GLTextureFormat,
+  GLStrings,
+  GLApplicationFileIO,
+  //CUDA
+  GLSCUDAUtility;
+
 
 type
 
@@ -44,9 +52,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  GLSCUDAUtility;
 
   // ------------------
   // ------------------ TGLPGMImage ------------------

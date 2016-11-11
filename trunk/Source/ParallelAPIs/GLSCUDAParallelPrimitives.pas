@@ -3,11 +3,7 @@
 //
 {
    CUDA Parallel Primitives 
-
-   History :
-       12/01/15 - PW - Renamed size_t to Tsize_t
-       28/01/10 - Yar - Creation
-    
+   See history in previous versions of the unit
 }
 
 // -------------------------------------------------------------
@@ -25,7 +21,7 @@ unit GLSCUDAParallelPrimitives;
 interface
 
 uses
-  CL_Platform;
+  GLSOpenCL;
 
 {$I cuda.inc}
 

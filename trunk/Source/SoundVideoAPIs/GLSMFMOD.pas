@@ -132,7 +132,7 @@ var
    cap : Cardinal;
 begin
    FMOD_Load(nil);
-   {$IFDEF MSWindows}
+   {$IFDEF MSWINDOWS}
    if not FSOUND_SetOutput(FSOUND_OUTPUT_DSOUND) then begin
       Result:=False;
       Exit;

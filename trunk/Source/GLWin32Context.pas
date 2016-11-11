@@ -59,8 +59,6 @@ interface
 
 {$I GLScene.inc}
 
-{$IFNDEF MSWINDOWS}{$MESSAGE Error 'Unit is Windows specific'}{$ENDIF}
-
 uses
   Winapi.Windows,
   Winapi.Messages,
@@ -1165,10 +1163,10 @@ begin
                {$IFDEF GLS_LOGGING}
                 begin
                   if GLStates.ForwardContext then
-                    GLSLogger.LogErrorFmt(cForwardContextFailed,
+                    GLSLogger.LogErrorFmt(strForwardContextFailed,
                       [GetLastError, SysErrorMessage(GetLastError)])
                   else
-                    GLSLogger.LogErrorFmt(cBackwardContextFailed,
+                    GLSLogger.LogErrorFmt(strBackwardContextFailed,
                       [GetLastError, SysErrorMessage(GetLastError)]);
                   Abort;
                 end;

@@ -56,10 +56,10 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  GLCrossPlatform,
-  CL_Platform,
-  GLSCUDAApi,
   OpenGLTokens,
+  GLCrossPlatform,
+  GLSOpenCL,
+  GLSCUDAApi,
   GLSLog;
 
 

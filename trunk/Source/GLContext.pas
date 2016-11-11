@@ -1350,7 +1350,7 @@ begin
   if not Assigned(Result) then
   begin
    {$IFDEF GLS_LOGGING}
-    GLSLogger.LogError(cNoActiveRC);
+     GLSLogger.LogError(strNoActiveRC);
    {$ENDIF}
     Abort;
   end;
@@ -4744,8 +4744,6 @@ begin
 end;
 
 {$IFDEF GLS_SERVICE_CONTEXT}
-
-{$REGION 'TServiceContextThread'}
 
 constructor TServiceContextThread.Create;
 begin
