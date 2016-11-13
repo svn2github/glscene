@@ -528,8 +528,8 @@ var
   Temp: TAffineVector;
 begin
   Temp := TGLSceneBuffer(rci.buffer).WorldToScreen(Self.AbsoluteAffinePosition);
-  Temp.V[1] := rci.viewPortSize.cy - Temp.V[1];
-  RenderTextAtPosition(Temp.V[0], Temp.V[1], Temp.V[2], rci);
+  Temp.Y := rci.viewPortSize.cy - Temp.Y;
+  RenderTextAtPosition(Temp.X, Temp.Y, Temp.Z, rci);
   if Count > 0 then
     Self.renderChildren(0, Count - 1, rci);
 end;

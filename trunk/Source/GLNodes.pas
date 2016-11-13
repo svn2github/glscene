@@ -420,9 +420,9 @@ begin
     for I := 0 to NbSegments do
     begin
       SinCosine(I * F + StartAngle, S, C);
-      SetVector(Add.FCoords, Center.V[0] + XRadius * C,
-                             Center.V[1] + YRadius * S,
-                             Center.V[2], 1);
+      SetVector(Add.FCoords, Center.X + XRadius * C,
+                             Center.Y + YRadius * S,
+                             Center.Z, 1);
     end;
   finally
     EndUpdate;
@@ -600,9 +600,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V2 := V^.V[2];
-    V^.V[1] := C * V^.V[1] + S * V2;
-    V^.V[2] := C * V2 - S * V^.V[1];
+    V2 := V^.Z;
+    V^.Y := C * V^.Y + S * V2;
+    V^.Z := C * V2 - S * V^.Y;
   end;
   NotifyChange;
 end;
@@ -620,9 +620,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V0 := V^.V[0];
-    V^.V[0] := C * V0 + S * V^.V[2];
-    V^.V[2] := C * V^.V[2] - S * V0;
+    V0 := V^.X;
+    V^.X := C * V0 + S * V^.Z;
+    V^.Z := C * V^.Z - S * V0;
   end;
   NotifyChange;
 end;
@@ -640,9 +640,9 @@ begin
   for I := 0 to Count - 1 do
   begin
     V := PAffineVector(Items[I].AsAddress);
-    V1 := V^.V[1];
-    V^.V[1] := C * V1 + S * V^.V[0];
-    V^.V[0] := C * V^.V[0] - S * V1;
+    V1 := V^.Y;
+    V^.Y := C * V1 + S * V^.X;
+    V^.X := C * V^.X - S * V1;
   end;
   NotifyChange;
 end;
@@ -739,7 +739,7 @@ begin
     if Assigned(ANormal) then
     begin
       GL.Normal3fv(PGLFloat(ANormal));
-      GluTessNormal(Tess, ANormal^.V[0], ANormal^.V[1], ANormal^.V[2]);
+      GluTessNormal(Tess, ANormal^.X, ANormal^.Y, ANormal^.Z);
     end;
     // Issue polygon
     GluTessBeginPolygon(Tess, nil);

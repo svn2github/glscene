@@ -249,19 +249,19 @@ var
         intensity := intensity * contrib;
         alt := (VectorLength(atmPoint) - FPlanetRadius) * invAtmosphereHeight;
         VectorLerp(LowAtmColor.Color, HighAtmColor.Color, alt, altColor);
-        Result.V[0] := Result.V[0] * decay + altColor.V[0] * intensity;
-        Result.V[1] := Result.V[1] * decay + altColor.V[1] * intensity;
-        Result.V[2] := Result.V[2] * decay + altColor.V[2] * intensity;
+        Result.X := Result.X * decay + altColor.X * intensity;
+        Result.Y := Result.Y * decay + altColor.Y * intensity;
+        Result.Z := Result.Z * decay + altColor.Z * intensity;
       end
       else
       begin
         // sample on the dark sid
-        Result.V[0] := Result.V[0] * decay;
-        Result.V[1] := Result.V[1] * decay;
-        Result.V[2] := Result.V[2] * decay;
+        Result.X := Result.X * decay;
+        Result.Y := Result.Y * decay;
+        Result.Z := Result.Z * decay;
       end;
     end;
-    Result.V[3] := n * contrib * Opacity * 0.1;
+    Result.W := n * contrib * Opacity * 0.1;
   end;
 
 
@@ -416,10 +416,10 @@ end;
 
 function TGLCustomAtmosphere.AxisAlignedDimensionsUnscaled : TVector;
 begin
-  Result.V[0] := FAtmosphereRadius;
-  Result.V[1] := Result.V[0];
-  Result.V[2] := Result.V[0];
-  Result.V[3] := 0;
+  Result.X := FAtmosphereRadius;
+  Result.Y := Result.X;
+  Result.Z := Result.X;
+  Result.W := 0;
 end;
 
 procedure TGLCustomAtmosphere.Notification(AComponent: TComponent;

@@ -7,8 +7,14 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
 
   // GLScene
-  GLScene, GLObjects, GLWin32Viewer, GLCadencer, GLSimpleNavigation,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLCadencer,
+  GLSimpleNavigation,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

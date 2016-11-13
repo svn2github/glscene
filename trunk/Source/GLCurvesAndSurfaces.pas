@@ -82,9 +82,9 @@ begin
   Result:=NullVector;
   for i:=0 to n-1 do begin
     b:=BernsteinBasis(n-1,i,t);
-    Result.V[0]:=Result.V[0]+cp[i].V[0]*b;
-    Result.V[1]:=Result.V[1]+cp[i].V[1]*b;
-    Result.V[2]:=Result.V[2]+cp[i].V[2]*b;
+    Result.X:=Result.X+cp[i].X*b;
+    Result.Y:=Result.Y+cp[i].Y*b;
+    Result.Z:=Result.Z+cp[i].Z*b;
   end;
 end;
 
@@ -98,9 +98,9 @@ begin
     for i:=0 to m-1 do begin
       b1:=BernsteinBasis(m-1,i,s);
       b2:=BernsteinBasis(n-1,j,t);
-      Result.V[0]:=Result.V[0]+cp[j*m+i].V[0]*b1*b2;
-      Result.V[1]:=Result.V[1]+cp[j*m+i].V[1]*b1*b2;
-      Result.V[2]:=Result.V[2]+cp[j*m+i].V[2]*b1*b2;
+      Result.X:=Result.X+cp[j*m+i].X*b1*b2;
+      Result.Y:=Result.Y+cp[j*m+i].Y*b1*b2;
+      Result.Z:=Result.Z+cp[j*m+i].Z*b1*b2;
     end;
 end;
 
@@ -163,9 +163,9 @@ begin
   Result:=NullVector;
   for i:=0 to n-1 do begin
     if det<>0 then b[i]:=b[i]/det else b[i]:=0;
-    Result.V[0]:=Result.V[0]+cp[i].V[0]*b[i];
-    Result.V[1]:=Result.V[1]+cp[i].V[1]*b[i];
-    Result.V[2]:=Result.V[2]+cp[i].V[2]*b[i];
+    Result.X:=Result.X+cp[i].X*b[i];
+    Result.Y:=Result.Y+cp[i].Y*b[i];
+    Result.Z:=Result.Z+cp[i].Z*b[i];
   end;
   SetLength(b,0);
 end;
@@ -188,9 +188,9 @@ begin
     if det2<>0 then b2[j]:=b2[j]/det2 else b2[j]:=0;
     for i:=0 to m-1 do begin
       if det1<>0 then b1[i]:=b1[i]/det1 else b1[i]:=0;
-      Result.V[0]:=Result.V[0]+cp[j*m+i].V[0]*b1[i]*b2[j];
-      Result.V[1]:=Result.V[1]+cp[j*m+i].V[1]*b1[i]*b2[j];
-      Result.V[2]:=Result.V[2]+cp[j*m+i].V[2]*b1[i]*b2[j];
+      Result.X:=Result.X+cp[j*m+i].X*b1[i]*b2[j];
+      Result.Y:=Result.Y+cp[j*m+i].Y*b1[i]*b2[j];
+      Result.Z:=Result.Z+cp[j*m+i].Z*b1[i]*b2[j];
     end;
   end;
 end;

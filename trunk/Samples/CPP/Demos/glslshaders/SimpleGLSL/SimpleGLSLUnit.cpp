@@ -41,9 +41,22 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 		: TForm(Owner)
 {
 }
+
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+  SetGLSceneMediaDir();
+  ShaderActived = false;
+  GLFreeForm1->LoadFromFile("teapot.3ds");
+
+  MatLib->LibMaterialByName("Brick01")->Material->Texture->Image->LoadFromFile("mur_NormalMap.bmp");
+  MatLib->LibMaterialByName("Brick02")->Material->Texture->Image->LoadFromFile("mur_Ambiant.bmp");
+  MatLib->LibMaterialByName("Brick03")->Material->Texture->Image->LoadFromFile("mur_Hauteur.bmp");
+}
+
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
-      const double deltaTime, const double newTime)
+	  const double deltaTime, const double newTime)
 {
   if (IsKeyDown('1'))
   {
@@ -52,7 +65,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
   if (IsKeyDown('2'))
   {
     CurrShadName= "Lambert";
-	CurrShad= 1; } else
+    CurrShad= 1; } else
   if (IsKeyDown('3'))
   {
     CurrShadName= "Phong";
@@ -63,8 +76,8 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
     CurrShad= 3; } else
   if (IsKeyDown('5'))
   {
-    CurrShadName= "SharpSpecular";
-    CurrShad= 4; } else
+	CurrShadName= "SharpSpecular";
+	CurrShad= 4; } else
   if (IsKeyDown('6'))
   {
     CurrShadName= "Sheen";
@@ -81,7 +94,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
   if (IsKeyDown('9'))
   {
     CurrShadName= "TEST TEXTURE BUMP";
-	CurrShad= 8;
+    CurrShad= 8;
   }
   if (IsKeyDown('0'))
   {
@@ -91,7 +104,7 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender,
   if (CurrShad != 8)
   {
     DummyLight->Position->X= sin(DegToRad(newTime*15))*65;
-	DummyLight->Position->Z= sin(DegToRad(newTime*15))*65;
+    DummyLight->Position->Z= sin(DegToRad(newTime*15))*65;
   }
   GLSceneViewer1->Invalidate();
 }
@@ -106,35 +119,35 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
   GLSLProg[CurrShad]->UseProgramObject();
 
   if ((CurrShad != 8) && (CurrShad != 9))
-	GLSLProg[CurrShad]->Uniform4f["light"] = Light->AbsolutePosition;
+    GLSLProg[CurrShad]->Uniform4f["light"] = Light->AbsolutePosition;
   if ((CurrShad == 8))
   {
-	// initialize the heightmap
-	libMat = MatLib->LibMaterialByName("Brick01");
+    // initialize the heightmap
+    libMat = MatLib->LibMaterialByName("Brick01");
     {
       libMat->PrepareBuildList();
-	  GL()->ActiveTexture(GL_TEXTURE0_ARB);
-	  GL()->BindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
+      glBindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
       GLSLProg[CurrShad]->Uniform1i["Normal"]=0;
-      GL()->ActiveTexture(GL_TEXTURE0_ARB);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
     }
     libMat = MatLib->LibMaterialByName("Brick02");
     {
       libMat->PrepareBuildList();
-      GL()->ActiveTexture(GL_TEXTURE1_ARB);
-	  GL()->BindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
+      glActiveTextureARB(GL_TEXTURE1_ARB);
+      glBindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
       GLSLProg[CurrShad]->Uniform1i["base_tex"]=1;
-      GL()->ActiveTexture(GL_TEXTURE0_ARB);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
     }
     libMat = MatLib->LibMaterialByName("Brick03");
     {
       libMat->PrepareBuildList();
-      GL()->ActiveTexture(GL_TEXTURE2_ARB);
-      GL()->BindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
+      glActiveTextureARB(GL_TEXTURE2_ARB);
+      glBindTexture(GL_TEXTURE_2D, libMat->Material->Texture->Handle);
       GLSLProg[CurrShad]->Uniform1i["Base_Height"]=2;
-      GL()->ActiveTexture(GL_TEXTURE0_ARB);
+      glActiveTextureARB(GL_TEXTURE0_ARB);
 	}
-    GLSLProg[CurrShad]->Uniform1f["u_invRad"]= 0.001;
+	GLSLProg[CurrShad]->Uniform1f["u_invRad"]= 0.001;
 	vec.X= 0.42200005; vec.Y= -0.04999996; vec.Z= 0;
 	GLSLProg[CurrShad]->Uniform3f["cBumpSize"]= vec;
   }
@@ -145,12 +158,12 @@ void __fastcall TForm1::GLUserShader1DoApply(TObject *Sender,
 	VecCol2.X= 0.95; VecCol2.Y= 0.45; VecCol2.Z= 0.3;
 	GLSLProg[CurrShad]->Uniform3f["PhongColor"]= VecCol2;
 	GLSLProg[CurrShad]->Uniform1f["Edge"]= 0.25;
-    GLSLProg[CurrShad]->Uniform1f["Phong"]= 0.5540001;
+	GLSLProg[CurrShad]->Uniform1f["Phong"]= 0.5540001;
   }
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::GLUserShader1DoUnApply(TObject *Sender, int Pass,
-      TGLRenderContextInfo &rci, bool &Continue)
+	  TGLRenderContextInfo &rci, bool &Continue)
 {
   GLSLProg[CurrShad]->EndUseProgramObject();
 }
@@ -178,19 +191,6 @@ void __fastcall TForm1::GLSceneViewer1MouseMove(TObject *Sender,
   my = Y;
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormCreate(TObject *Sender)
-{
-  SetGLSceneMediaDir();
-  ShaderActived = false;
-  GLFreeForm1->LoadFromFile("teapot.3ds");
-
-  MatLib->LibMaterialByName("Brick01")->Material->Texture->Image->LoadFromFile("mur_NormalMap.bmp");
-  MatLib->LibMaterialByName("Brick02")->Material->Texture->Image->LoadFromFile("mur_Ambiant.bmp");
-  MatLib->LibMaterialByName("Brick03")->Material->Texture->Image->LoadFromFile("mur_Hauteur.bmp");
-
-  SetCurrentDir(ExtractFilePath(ParamStr(0)));
-}
-//---------------------------------------------------------------------------
 void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
 {
   GLCadencer1->Enabled = false;
@@ -198,19 +198,22 @@ void __fastcall TForm1::FormClose(TObject *Sender, TCloseAction &Action)
   ShaderActived = false;
   for (int i=0; i<MAXSHADERS; i++)
   {
-	GLSLProg[i]->Free();
+    GLSLProg[i]->Free();
   }
 }
-
+//---------------------------------------------------------------------------
+void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift,
+      int WheelDelta, TPoint &MousePos, bool &Handled)
+{
+  Cam->AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
+}
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 	  TGLRenderContextInfo &rci)
 {
   bool Continue;
-  TGLExtensionsAndEntryPoints *GL;
-
-  if ( ShaderActived)  /// Should be (! ShaderActived)
+  if (! ShaderActived)  /// Should be (! ShaderActived)
   {
 	if (! ((GL_SHADER_OBJECT_ARB) &&
 			(GL_VERTEX_PROGRAM_ARB) &&
@@ -268,52 +271,44 @@ void __fastcall TForm1::GLDOInitializeRender(TObject *Sender,
 	  if (! GLSLProg[i]->ValidateProgram())
 		throw Exception(GLSLProg[i]->InfoLog());
 	}
-	///CheckOpenGLError();
+	CheckOpenGLError();
 	ShaderActived = true;
   }
   else
   if (ShaderActived)
   {
-	GLUserShader1DoApply(this, rci);
-	if (CurrShad != 8)
-	{
-	  GL = new TGLExtensionsAndEntryPoints();
-	  GL->PushMatrix();
-	  GL->Color4fv(GLSphere1->Material->FrontProperties->Diffuse->AsAddress());
-	  GLSphere1->DoRender(rci,true,false);
-	  GL->PopMatrix();
-	  GL->PushMatrix();
-	  GL->Translatef(1, 0, 0);
-	  GL->Color4fv(GLCone1->Material->FrontProperties->Diffuse->AsAddress());
-	  GLCone1->DoRender(rci,true,false);
-	  GL->PopMatrix();
-	  GL->PushMatrix();
-	  GL->Translatef(0, -1, 0);
-	  GL->Scalef(0.015,0.015,0.015);
-	  GL->Rotatef(90,-1,0,0);
-	  GL->Color4fv(GLFreeForm1->Material->FrontProperties->Diffuse->AsAddress());
-	  GLFreeForm1->DoRender(rci,true,false);
-	  GL->PopMatrix();
-	  GL->PushMatrix();
-	  GL->Translatef(-1, 0, 0);
-	  GL->Color4fv(GLCube1->Material->FrontProperties->Diffuse->AsAddress());
-	  GLCube1->DoRender(rci,true,false);
-	  GL->PopMatrix();
-	}
-	else
-	{
-	  GL->PushMatrix();
-	  GLCube1->DoRender(rci,true,false);
-	  GL->PopMatrix();
+    GLUserShader1DoApply(this, rci);
+    if (CurrShad != 8)
+    {
+      glPushMatrix();
+      glColor4fv(GLSphere1->Material->FrontProperties->Diffuse->AsAddress());
+      GLSphere1->DoRender(rci,true,false);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(1, 0, 0);
+      glColor4fv(GLCone1->Material->FrontProperties->Diffuse->AsAddress());
+      GLCone1->DoRender(rci,true,false);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(0, -1, 0);
+      glScalef(0.015,0.015,0.015);
+      glRotatef(90,-1,0,0);
+      glColor4fv(GLFreeForm1->Material->FrontProperties->Diffuse->AsAddress());
+      GLFreeForm1->DoRender(rci,true,false);
+      glPopMatrix();
+      glPushMatrix();
+      glTranslatef(-1, 0, 0);
+      glColor4fv(GLCube1->Material->FrontProperties->Diffuse->AsAddress());
+      GLCube1->DoRender(rci,true,false);
+      glPopMatrix();
+    }
+    else
+    {
+      glPushMatrix();
+      GLCube1->DoRender(rci,true,false);
+      glPopMatrix();
    }
  }
  GLUserShader1DoUnApply(this, 0, rci, Continue);
 }
 //---------------------------------------------------------------------------
-void __fastcall TForm1::FormMouseWheel(TObject *Sender, TShiftState Shift, int WheelDelta,
-		  TPoint &MousePos, bool &Handled)
-{
-  Cam->AdjustDistanceToTarget(System::Math::Power(1.1, WheelDelta / 120));
-}
-//---------------------------------------------------------------------------
-

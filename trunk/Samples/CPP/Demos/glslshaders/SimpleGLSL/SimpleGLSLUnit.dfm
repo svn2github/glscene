@@ -35,7 +35,7 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 56
+    Left = 176
     Top = 40
     object GLDOInitialize: TGLDirectOpenGL
       UseBuildList = False
@@ -108,20 +108,20 @@ object Form1: TForm1
     Scene = GLScene1
     MaxDeltaTime = 0.020000000000000000
     OnProgress = GLCadencer1Progress
-    Left = 56
-    Top = 96
+    Left = 296
+    Top = 40
   end
   object GLUserShader1: TGLUserShader
     OnDoApply = GLUserShader1DoApply
     OnDoUnApply = GLUserShader1DoUnApply
     ShaderStyle = ssHighLevel
-    Left = 128
-    Top = 40
+    Left = 304
+    Top = 120
   end
   object Timer1: TTimer
     Interval = 800
     OnTimer = Timer1Timer
-    Left = 344
+    Left = 408
     Top = 40
   end
   object GLWindowsBitmapFont1: TGLWindowsBitmapFont
@@ -130,8 +130,8 @@ object Form1: TForm1
     Font.Height = -13
     Font.Name = 'Arial'
     Font.Style = [fsBold]
-    Left = 232
-    Top = 40
+    Left = 176
+    Top = 120
   end
   object MatLib: TGLMaterialLibrary
     Materials = <
@@ -154,7 +154,7 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Shader = GLUserShader1
       end>
-    Left = 128
-    Top = 96
+    Left = 408
+    Top = 120
   end
 end

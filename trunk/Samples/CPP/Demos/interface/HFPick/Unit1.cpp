@@ -68,8 +68,8 @@ void __fastcall TForm1::GLSceneViewerMouseDown(TObject *Sender, TMouseButton But
 	  // convert to heightfield local coordinates
 	  v = HeightField->AbsoluteToLocal(v);
 	  // convert that local coords to grid pos
-	  ix = Round(v.V[0]);
-	  iy = Round(v.V[1]);
+	  ix = Round(v.X);
+	  iy = Round(v.Y);
 	  // if we are in the grid...
 	  if ((ix>=-5) && (ix<=5) && (iy>=-5) && (iy<=5))
 	  {

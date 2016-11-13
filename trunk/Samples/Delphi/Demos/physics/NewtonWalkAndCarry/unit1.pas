@@ -154,36 +154,36 @@ begin
   if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and OnMouse_Click then
   begin
 
-    GP3D.V[0] := Player_Cube.AbsolutePosition.V[0] +
-      Player_Cube.AbsoluteDirection.V[0] * -2;
-    GP3D.V[1] := Player_Capsule.AbsolutePosition.V[1] + 1.6 +
-      Player_Cam.AbsoluteDirection.V[1];
-    GP3D.V[2] := Player_Cube.AbsolutePosition.V[2] +
-      Player_Cube.AbsoluteDirection.V[2] * -2;
+    GP3D.X := Player_Cube.AbsolutePosition.X +
+      Player_Cube.AbsoluteDirection.X * -2;
+    GP3D.Y := Player_Capsule.AbsolutePosition.Y + 1.6 +
+      Player_Cam.AbsoluteDirection.Y;
+    GP3D.Z := Player_Cube.AbsolutePosition.Z +
+      Player_Cube.AbsoluteDirection.Z * -2;
 
-    if (roundto((point3d.V[0]), -3) <> roundto((GP3D.V[0]), -3)) or
-      (roundto((point3d.V[1]), -3) <> roundto((GP3D.V[1]), -3)) or
-      (roundto((point3d.V[2]), -3) <> roundto(GP3D.V[2], -3)) then
+    if (roundto((point3d.X), -3) <> roundto((GP3D.X), -3)) or
+      (roundto((point3d.Y), -3) <> roundto((GP3D.Y), -3)) or
+      (roundto((point3d.Z), -3) <> roundto(GP3D.Z, -3)) then
     begin
-      GP3D.V[0] := point3d.V[0] - GP3D.V[0];
-      GP3D.V[1] := point3d.V[1] - GP3D.V[1];
-      GP3D.V[2] := point3d.V[2] - GP3D.V[2];
+      GP3D.X := point3d.X - GP3D.X;
+      GP3D.Y := point3d.Y - GP3D.Y;
+      GP3D.Z := point3d.Z - GP3D.Z;
       NormalizeVector(GP3D);
 
-      GotoPoint3d.V[0] := point3d.V[0] + GP3D.V[0] * -6 * deltaTime;
-      GotoPoint3d.V[1] := point3d.V[1] + GP3D.V[1] * -6 * deltaTime;
-      GotoPoint3d.V[2] := point3d.V[2] + GP3D.V[2] * -6 * deltaTime;
+      GotoPoint3d.X := point3d.X + GP3D.X * -6 * deltaTime;
+      GotoPoint3d.Y := point3d.Y + GP3D.Y * -6 * deltaTime;
+      GotoPoint3d.Z := point3d.Z + GP3D.Z * -6 * deltaTime;
 
       point3d := GotoPoint3d;
     end
     else
     begin
-      GotoPoint3d.V[0] := Player_Cube.AbsolutePosition.V[0] +
-        Player_Cube.AbsoluteDirection.V[0] * -2;
-      GotoPoint3d.V[1] := Player_Capsule.AbsolutePosition.V[1] + 1.6 +
-        Player_Cam.AbsoluteDirection.V[1];
-      GotoPoint3d.V[2] := Player_Cube.AbsolutePosition.V[2] +
-        Player_Cube.AbsoluteDirection.V[2] * -2;
+      GotoPoint3d.X := Player_Cube.AbsolutePosition.X +
+        Player_Cube.AbsoluteDirection.X * -2;
+      GotoPoint3d.Y := Player_Capsule.AbsolutePosition.Y + 1.6 +
+        Player_Cam.AbsoluteDirection.Y;
+      GotoPoint3d.Z := Player_Cube.AbsolutePosition.Z +
+        Player_Cube.AbsoluteDirection.Z * -2;
     end;
 
     pickjoint.KinematicControllerPick(point3d, paMove);
@@ -245,9 +245,9 @@ begin
   if Assigned(FPickedSceneObject) and Assigned(GetNGDDynamic(FPickedSceneObject)) and IsKeyDown(VK_RBUTTON) then
     begin
       I:=Player_Cam.AbsoluteDirection;
-      i.V[0]:=I.V[0]*20;
-      i.V[1]:=I.V[1]*20;
-      i.V[2]:=I.V[2]*20;
+      i.X:=I.X*20;
+      i.Y:=I.Y*20;
+      i.Z:=I.Z*20;
       with TGLNGDDynamic(FPickedSceneObject.Behaviours.GetByClass(TGLNGDDynamic)) do
         SetVelocity(I);
 
@@ -275,9 +275,9 @@ begin
       I := Player_Cube.AbsoluteDirection;
       if IsKeyDown('w') then
       begin
-        i.V[0]:=-i.V[0]*6;
-        i.V[0]:=10;
-        i.V[0]:=-i.V[2]*6;
+        i.X:=-i.X*6;
+        i.X:=10;
+        i.X:=-i.Z*6;
         SetVelocity(i);
       end
       else SetVelocity(VectorMake(0,10,0));
@@ -288,7 +288,7 @@ begin
   end;
 
   if Assigned(currentPick) then
-    if currentPick.Material.FrontProperties.Emission.Color.V[0] = 1 then
+    if currentPick.Material.FrontProperties.Emission.Color.X = 1 then
     begin
       GLHUDSprite1.Visible := True;
     end
@@ -302,9 +302,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cube.AbsoluteDirection;
-      i.V[0]:=-I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=-I.V[2]*4;
+      i.X:=-I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=-I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -314,9 +314,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cube.AbsoluteDirection;
-      i.V[0]:=I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=I.V[2]*4;
+      i.X:=I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -326,9 +326,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cam.AbsoluteRight;
-      i.V[0]:=I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=I.V[2]*4;
+      i.X:=I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -338,9 +338,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := Player_Cam.AbsoluteLeft;
-      i.V[0]:=I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=I.V[2]*4;
+      i.X:=I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -350,9 +350,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteLeft, Player_Cube.AbsoluteDirection);
-      i.V[0]:=-I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=-I.V[2]*4;
+      i.X:=-I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=-I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -362,9 +362,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteRight, Player_Cube.AbsoluteDirection);
-      i.V[0]:=-I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=-I.V[2]*4;
+      i.X:=-I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=-I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -374,9 +374,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteLeft, Player_Cube.AbsoluteDirection);
-      i.V[0]:=I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=I.V[2]*4;
+      i.X:=I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -386,9 +386,9 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       I := VectorAdd(Player_Cube.AbsoluteRight, Player_Cube.AbsoluteDirection);
-      i.V[0]:=I.V[0]*4;
-      i.V[1]:=AppliedVelocity.y;
-      i.V[2]:=I.V[2]*4;
+      i.X:=I.X*4;
+      i.Y:=AppliedVelocity.y;
+      i.Z:=I.Z*4;
       SetVelocity(i);
     end;
   end;
@@ -402,7 +402,7 @@ begin
     with TGLNGDDynamic(Player_Capsule.Behaviours.GetByClass(TGLNGDDynamic)) do
     begin
       mm := NewtonBodyMatrix;
-      mm.V[3] := VectorMake(0, 0, 0, 1);
+      mm.W := VectorMake(0, 0, 0, 1);
       NewtonBodyMatrix := mm;
     end;
   end;

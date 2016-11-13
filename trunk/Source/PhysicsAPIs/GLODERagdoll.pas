@@ -259,11 +259,11 @@ var
   R : TdMatrix3;
 begin
   if not Assigned(FBody) then exit;
-  R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
-  R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
-  R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
+  R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
+  R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
+  R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
   dBodySetRotation(FBody,R);
-  dBodySetPosition(FBody,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
+  dBodySetPosition(FBody,Mat.W.X,Mat.W.Y,Mat.W.Z);
 end;
 
 procedure TODERagdollBone.Start;
@@ -276,30 +276,30 @@ var
   var absMat: TMatrix;
   begin
     absMat := ReferenceMatrix;
-    absMat.V[3] := NullHmgVector;
+    absMat.W := NullHmgVector;
     Result := VectorNormalize(VectorTransform(Axis, absMat));
   end;
 
 begin
   FBody := dBodyCreate(FRagdoll.ODEWorld.World);
 
-  boneSize.V[0] := Size.V[0]*VectorLength(BoneMatrix.V[0]);
-  boneSize.V[1] := Size.V[1]*VectorLength(BoneMatrix.V[1]);
-  boneSize.V[2] := Size.V[2]*VectorLength(BoneMatrix.V[2]);
+  boneSize.X := Size.X*VectorLength(BoneMatrix.X);
+  boneSize.Y := Size.Y*VectorLength(BoneMatrix.Y);
+  boneSize.Z := Size.Z*VectorLength(BoneMatrix.Z);
 
   // prevent ODE 0.9 "bNormalizationResult failed" error:
   for n:=0 to 2 do
       if (BoneSize.V[n]=0) then
          BoneSize.V[n]:=0.000001;
 
-  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.V[0], BoneSize.V[1], BoneSize.V[2]);
+  dMassSetBox(mass, vGLODERagdoll_cDensity, BoneSize.X, BoneSize.Y, BoneSize.Z);
 
   dMassAdjust(mass, vGLODERagdoll_cMass);
   dBodySetMass(FBody, @mass);
 
   AlignBodyToMatrix(ReferenceMatrix);
 
-  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize.V[0], BoneSize.V[1], BoneSize.V[2]);
+  FGeom := dCreateBox(FRagdoll.ODEWorld.Space, BoneSize.X, BoneSize.Y, BoneSize.Z);
   FGeom.data := FRagdoll.GLSceneRoot.AddNewChild(TODERagdollCube);
   if (Joint is TODERagdollDummyJoint) then
     dGeomSetBody(FGeom, FOwner.Body)
@@ -315,8 +315,8 @@ begin
       vAxis := RotateAxis(Axis);
       FJointId := dJointCreateHinge(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetHingeAnchor(FJointId, Anchor.V[0], Anchor.V[1], Anchor.V[2]);
-      dJointSetHingeAxis (FJointId, vAxis.V[0], vAxis.V[1], vAxis.V[2]);
+      dJointSetHingeAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
+      dJointSetHingeAxis (FJointId, vAxis.X, vAxis.Y, vAxis.Z);
    	  dJointSetHingeParam (FJointId, dParamLoStop, ParamLoStop);
       dJointSetHingeParam (FJointId, dParamHiStop, ParamHiStop);
     end;
@@ -328,9 +328,9 @@ begin
       vAxis2 := RotateAxis(Axis2);
       FJointId := dJointCreateUniversal(FRagdoll.ODEWorld.World, nil);
       dJointAttach(FJointId, TODERagdollBone(Owner).Body, FBody);
-      dJointSetUniversalAnchor(FJointId, Anchor.V[0], Anchor.V[1], Anchor.V[2]);
-      dJointSetUniversalAxis1(FJointId, vAxis.V[0], vAxis.V[1], vAxis.V[2]);
-      dJointSetUniversalAxis2(FJointId, vAxis2.V[0], vAxis2.V[1], vAxis2.V[2]);
+      dJointSetUniversalAnchor(FJointId, Anchor.X, Anchor.Y, Anchor.Z);
+      dJointSetUniversalAxis1(FJointId, vAxis.X, vAxis.Y, vAxis.Z);
+      dJointSetUniversalAxis2(FJointId, vAxis2.X, vAxis2.Y, vAxis2.Z);
    	  dJointSetUniversalParam(FJointId, dParamLoStop, ParamLoStop);
    	  dJointSetUniversalParam(FJointId, dParamHiStop, ParamHiStop);
    	  dJointSetUniversalParam(FJointId, dParamLoStop2, ParamLoStop2);
@@ -344,9 +344,9 @@ begin
   begin
     Visible := FRagdoll.ShowBoundingBoxes;
     Material.FrontProperties.Diffuse.SetColor(1,0,0,0.4);
-    CubeWidth := BoneSize.V[0];
-    CubeHeight := BoneSize.V[1];
-    CubeDepth := BoneSize.V[2];
+    CubeWidth := BoneSize.X;
+    CubeHeight := BoneSize.Y;
+    CubeDepth := BoneSize.Z;
     Bone:=self;
     Ragdoll:=self.FRagdoll;
   end;

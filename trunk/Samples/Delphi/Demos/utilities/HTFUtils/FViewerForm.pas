@@ -110,7 +110,7 @@ var
       else d:=0;
       for cur:=prev to next do begin
          cC:=VectorLerp(pC, nC, (cur-prev)*d);
-         heightColor[cur]:=Color32(Round(cC.V[0]), Round(cC.V[1]), Round(cC.V[2]));
+         heightColor[cur]:=Color32(Round(cC.X), Round(cC.Y), Round(cC.Z));
       end;
    end;
 

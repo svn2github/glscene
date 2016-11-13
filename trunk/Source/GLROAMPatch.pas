@@ -730,7 +730,7 @@ begin
       FullLeftTess(@vTriangleNodes[FBRNode], 1);
     if Assigned(FWest) and FWest.HighRes then
       FullLeftTess(@vTriangleNodes[FTLNode], 1);
-    if FObserverPosition.v[2] > 0 then
+    if FObserverPosition.Z > 0 then
       tessFrameVarianceDelta := Round(Sqr(FObserverPosition.Z * (1 / 16)))
     else
       tessFrameVarianceDelta := 0;

@@ -3143,10 +3143,10 @@ procedure TGLBaseSceneObject.RebuildMatrix;
 begin
   if ocTransformation in Changes then
   begin
-    VectorScale(LeftVector, Scale.X, FLocalMatrix^.V[0]);
-    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.V[1]);
-    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.V[2]);
-    SetVector(FLocalMatrix^.V[3], FPosition.AsVector);
+    VectorScale(LeftVector, Scale.X, FLocalMatrix^.X);
+    VectorScale(FUp.AsVector, Scale.Y, FLocalMatrix^.Y);
+    VectorScale(FDirection.AsVector, Scale.Z, FLocalMatrix^.Z);
+    SetVector(FLocalMatrix^.W, FPosition.AsVector);
     Exclude(FChanges, ocTransformation);
     Include(FChanges, ocAbsoluteMatrix);
     Include(FChanges, ocInvAbsoluteMatrix);
@@ -3261,7 +3261,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteDirection: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[2]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Z);
 end;
 
 // SetAbsoluteDirection
@@ -3280,11 +3280,11 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteScale: TVector;
 begin
-  Result.V[0] := AbsoluteMatrixAsAddress^.V[0].V[0];
-  Result.V[1] := AbsoluteMatrixAsAddress^.V[1].V[1];
-  Result.V[2] := AbsoluteMatrixAsAddress^.V[2].V[2];
+  Result.X := AbsoluteMatrixAsAddress^.X.X;
+  Result.Y := AbsoluteMatrixAsAddress^.Y.Y;
+  Result.Z := AbsoluteMatrixAsAddress^.Z.Z;
 
-  Result.V[3] := 0;
+  Result.W := 0;
 end;
 
 // SetAbsoluteScale
@@ -3303,7 +3303,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsoluteUp: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[1]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.Y);
 end;
 
 // SetAbsoluteUp
@@ -3322,7 +3322,7 @@ end;
 
 function TGLBaseSceneObject.AbsoluteRight: TVector;
 begin
-  Result := VectorNormalize(AbsoluteMatrixAsAddress^.V[0]);
+  Result := VectorNormalize(AbsoluteMatrixAsAddress^.X);
 end;
 
 // AbsoluteLeft
@@ -3338,7 +3338,7 @@ end;
 
 function TGLBaseSceneObject.GetAbsolutePosition: TVector;
 begin
-  Result := AbsoluteMatrixAsAddress^.V[3];
+  Result := AbsoluteMatrixAsAddress^.W;
 end;
 
 // SetAbsolutePosition
@@ -3357,7 +3357,7 @@ end;
 
 function TGLBaseSceneObject.AbsolutePositionAsAddress: PVector;
 begin
-  Result := @AbsoluteMatrixAsAddress^.V[3];
+  Result := @AbsoluteMatrixAsAddress^.W;
 end;
 
 // AbsoluteXVector
@@ -3366,7 +3366,7 @@ end;
 function TGLBaseSceneObject.AbsoluteXVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[0])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.X)^);
 end;
 
 // AbsoluteYVector
@@ -3375,7 +3375,7 @@ end;
 function TGLBaseSceneObject.AbsoluteYVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[1])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Y)^);
 end;
 
 // AbsoluteZVector
@@ -3384,7 +3384,7 @@ end;
 function TGLBaseSceneObject.AbsoluteZVector: TVector;
 begin
   AbsoluteMatrixAsAddress;
-  SetVector(Result, PAffineVector(@FAbsoluteMatrix.V[2])^);
+  SetVector(Result, PAffineVector(@FAbsoluteMatrix.Z)^);
 end;
 
 // AbsoluteToLocal (hmg)
@@ -3508,10 +3508,10 @@ end;
 
 function TGLBaseSceneObject.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5;
-  Result.V[1] := 0.5;
-  Result.V[2] := 0.5;
-  Result.V[3] := 0;
+  Result.X := 0.5;
+  Result.Y := 0.5;
+  Result.Z := 0.5;
+  Result.W := 0;
 end;
 
 // AxisAlignedBoundingBox
@@ -3659,9 +3659,9 @@ var
 begin
   dim := AxisAlignedDimensions;
   localPt := VectorTransform(point, InvAbsoluteMatrix);
-  Result := (Abs(localPt.V[0] * Scale.X) <= dim.V[0]) and
-            (Abs(localPt.V[1] * Scale.Y) <= dim.V[1]) and
-            (Abs(localPt.V[2] * Scale.Z) <= dim.V[2]);
+  Result := (Abs(localPt.X * Scale.X) <= dim.X) and
+            (Abs(localPt.Y * Scale.Y) <= dim.Y) and
+            (Abs(localPt.Z * Scale.Z) <= dim.Z);
 end;
 
 // CalculateBoundingBoxPersonalUnscaled
@@ -3948,10 +3948,10 @@ end;
 procedure TGLBaseSceneObject.ResetRotations;
 begin
   FillChar(FLocalMatrix^, SizeOf(TMatrix), 0);
-  FLocalMatrix^.V[0].V[0] := Scale.DirectX;
-  FLocalMatrix^.V[1].V[1] := Scale.DirectY;
-  FLocalMatrix^.V[2].V[2] := Scale.DirectZ;
-  SetVector(FLocalMatrix^.V[3], Position.DirectVector);
+  FLocalMatrix^.X.X := Scale.DirectX;
+  FLocalMatrix^.Y.Y := Scale.DirectY;
+  FLocalMatrix^.Z.Z := Scale.DirectZ;
+  SetVector(FLocalMatrix^.W, Position.DirectVector);
   FRotation.DirectVector := NullHmgPoint;
   FDirection.DirectVector := ZHmgVector;
   FUp.DirectVector := YHmgVector;
@@ -4122,11 +4122,11 @@ begin
 
     // calculate new rotation angle from vectors
     rightVector := Right;
-    r := -RadToDeg(ArcTan2(rightVector.V[1],
-              VectorLength(rightVector.V[0],
-                           rightVector.V[2])));
-    if rightVector.V[0] < 0 then
-      if rightVector.V[1] < 0 then
+    r := -RadToDeg(ArcTan2(rightVector.Y,
+              VectorLength(rightVector.X,
+                           rightVector.Z)));
+    if rightVector.X < 0 then
+      if rightVector.Y < 0 then
         r := 180 - r
       else
         r := -180 - r;
@@ -5146,12 +5146,12 @@ end;
 procedure TGLBaseSceneObject.SetMatrix(const aValue: TMatrix);
 begin
   FLocalMatrix^ := aValue;
-  FDirection.DirectVector := VectorNormalize(FLocalMatrix^.V[2]);
-  FUp.DirectVector := VectorNormalize(FLocalMatrix^.V[1]);
-  Scale.SetVector(VectorLength(FLocalMatrix^.V[0]),
-    VectorLength(FLocalMatrix^.V[1]),
-    VectorLength(FLocalMatrix^.V[2]), 0);
-  FPosition.DirectVector := FLocalMatrix^.V[3];
+  FDirection.DirectVector := VectorNormalize(FLocalMatrix^.Z);
+  FUp.DirectVector := VectorNormalize(FLocalMatrix^.Y);
+  Scale.SetVector(VectorLength(FLocalMatrix^.X),
+    VectorLength(FLocalMatrix^.Y),
+    VectorLength(FLocalMatrix^.Z), 0);
+  FPosition.DirectVector := FLocalMatrix^.W;
   TransformationChanged;
 end;
 
@@ -5303,7 +5303,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsolutePosition;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // GetAbsoluteAffineDirection
@@ -5314,7 +5314,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsoluteDirection;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // GetAbsoluteAffineUp
@@ -5325,7 +5325,7 @@ var
   temp: TVector;
 begin
   temp := GetAbsoluteUp;
-  Result := AffineVectorMake(temp.V[0], temp.V[1], temp.V[2]);
+  Result := AffineVectorMake(temp.X, temp.Y, temp.Z);
 end;
 
 // SetAbsoluteAffinePosition
@@ -5408,7 +5408,7 @@ end;
 procedure TGLBaseSceneObject.SetAbsoluteAffineScale(
   const Value: TAffineVector);
 begin
-  SetAbsoluteScale(VectorMake(Value, GetAbsoluteScale.V[3]));
+  SetAbsoluteScale(VectorMake(Value, GetAbsoluteScale.W));
 end;
 
 // ------------------
@@ -6082,14 +6082,14 @@ begin
       csInfinitePerspective:
         begin
           mat := IdentityHmgMatrix;
-          mat.V[0].V[0] := 2 * FNearPlane / (vRight - vLeft);
-          mat.V[1].V[1] := 2 * FNearPlane / (vTop - vBottom);
-          mat.V[2].V[0] := (vRight + vLeft) / (vRight - vLeft);
-          mat.V[2].V[1] := (vTop + vBottom) / (vTop - vBottom);
-          mat.V[2].V[2] := cEpsilon - 1;
-          mat.V[2].V[3] := -1;
-          mat.V[3].V[2] := FNearPlane * (cEpsilon - 2);
-          mat.V[3].V[3] := 0;
+          mat.X.X := 2 * FNearPlane / (vRight - vLeft);
+          mat.Y.Y := 2 * FNearPlane / (vTop - vBottom);
+          mat.Z.X := (vRight + vLeft) / (vRight - vLeft);
+          mat.Z.Y := (vTop + vBottom) / (vTop - vBottom);
+          mat.Z.Z := cEpsilon - 1;
+          mat.Z.W := -1;
+          mat.W.Z := FNearPlane * (cEpsilon - 2);
+          mat.W.W := 0;
         end;
       csOrthogonal:
         begin
@@ -6121,8 +6121,8 @@ begin
     FUp.Normalize;
     // adjust local coordinates
     FDirection.DirectVector := VectorCrossProduct(FUp.AsVector, rightVector);
-    FRotation.Z := -RadToDeg(ArcTan2(RightVector.V[1],
-      VectorLength(RightVector.V[0], RightVector.V[2])));
+    FRotation.Z := -RadToDeg(ArcTan2(RightVector.Y,
+      VectorLength(RightVector.X, RightVector.Z)));
   end;
 end;
 
@@ -6402,7 +6402,7 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[0], screenY.V[1]);
+  d := VectorLength(screenY.X, screenY.Y);
   if d <= 1e-10 then
     d := ratio
   else
@@ -6410,10 +6410,10 @@ begin
   // and here, we're done
   dxr := deltaX * d;
   dyr := deltaY * d;
-  Result.V[0] := screenY.V[1] * dxr + screenY.V[0] * dyr;
-  Result.V[1] := screenY.V[1] * dyr - screenY.V[0] * dxr;
-  Result.V[2] := 0;
-  Result.V[3] := 0;
+  Result.X := screenY.Y * dxr + screenY.X * dyr;
+  Result.Y := screenY.Y * dyr - screenY.X * dxr;
+  Result.Z := 0;
+  Result.W := 0;
 end;
 
 // ScreenDeltaToVectorXZ
@@ -6430,17 +6430,17 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[0], screenY.V[2]);
+  d := VectorLength(screenY.X, screenY.Z);
   if d <= 1e-10 then
     d := ratio
   else
     d := ratio / d;
   dxr := deltaX * d;
   dzr := deltaY * d;
-  Result.V[0] := -screenY.V[2] * dxr + screenY.V[0] * dzr;
-  Result.V[1] := 0;
-  Result.V[2] := screenY.V[2] * dzr + screenY.V[0] * dxr;
-  Result.V[3] := 0;
+  Result.X := -screenY.Z * dxr + screenY.X * dzr;
+  Result.Y := 0;
+  Result.Z := screenY.Z * dzr + screenY.X * dxr;
+  Result.W := 0;
 end;
 
 // ScreenDeltaToVectorYZ
@@ -6457,17 +6457,17 @@ begin
     screenY := VectorSubtract(TargetObject.AbsolutePosition, AbsolutePosition)
   else
     screenY := Direction.AsVector;
-  d := VectorLength(screenY.V[1], screenY.V[2]);
+  d := VectorLength(screenY.Y, screenY.Z);
   if d <= 1e-10 then
     d := ratio
   else
     d := ratio / d;
   dyr := deltaX * d;
   dzr := deltaY * d;
-  Result.V[0] := 0;
-  Result.V[1] := screenY.V[2] * dyr + screenY.V[1] * dzr;
-  Result.V[2] := screenY.V[2] * dzr - screenY.V[1] * dyr;
-  Result.V[3] := 0;
+  Result.X := 0;
+  Result.Y := screenY.Z * dyr + screenY.Y * dzr;
+  Result.Z := screenY.Z * dzr - screenY.Y * dyr;
+  Result.W := 0;
 end;
 
 // PointInFront
@@ -7846,9 +7846,9 @@ begin
 
             lPos := lightSource.AbsolutePosition;
             if LightStyle in [lsParallel, lsParallelSpot] then
-              lPos.V[3] := 0.0
+              lPos.W := 0.0
             else
-              lPos.V[3] := 1.0;
+              lPos.W := 1.0;
             LightPosition[FLightID] := lPos;
             LightSpotDirection[FLightID] := lightSource.SpotDirection.AsAffineVector;
 
@@ -8946,7 +8946,7 @@ function TGLSceneBuffer.ScreenToVector(const aPoint: TVector): TVector;
 begin
   SetVector(Result, VectorSubtract(ScreenToWorld(aPoint),
     FCameraAbsolutePosition));
-  Result.V[3] := 0;
+  Result.W := 0;
 end;
 
 // ScreenToVector
@@ -8956,9 +8956,9 @@ function TGLSceneBuffer.ScreenToVector(const x, y: Integer): TVector;
 var
   av: TAffineVector;
 begin
-  av.V[0] := x;
-  av.V[1] := y;
-  av.V[2] := 0;
+  av.X := x;
+  av.Y := y;
+  av.Z := 0;
   SetVector(Result, ScreenToVector(av));
 end;
 
@@ -8987,7 +8987,7 @@ begin
     SetVector(v, ScreenToVector(aScreenPoint));
     Result := RayCastPlaneIntersect(FCameraAbsolutePosition,
       v, planePoint, planeNormal, @intersectPoint);
-    intersectPoint.V[3] := 1;
+    intersectPoint.W := 1;
   end
   else
     Result := False;
@@ -9002,7 +9002,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXY(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, 0, z),
     ZHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // ScreenVectorIntersectWithPlaneYZ
@@ -9014,7 +9014,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneYZ(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(x, 0, 0),
     XHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // ScreenVectorIntersectWithPlaneXZ
@@ -9026,7 +9026,7 @@ function TGLSceneBuffer.ScreenVectorIntersectWithPlaneXZ(
 begin
   Result := ScreenVectorIntersectWithPlane(aScreenPoint, VectorMake(0, y, 0),
     YHmgVector, intersectPoint);
-  intersectPoint.V[3] := 0;
+  intersectPoint.W := 0;
 end;
 
 // PixelRayToWorld
@@ -9049,17 +9049,17 @@ begin
   //------------------------
   //z:=1-(fp/d-1)/(fp/np-1);  //calc from world depth to z-buffer value
   //------------------------
-  vec.V[0] := x;
-  vec.V[1] := FViewPort.Height - y;
-  vec.V[2] := 0;
+  vec.X := x;
+  vec.Y := FViewPort.Height - y;
+  vec.Z := 0;
   vec := ScreenToVector(vec);
   NormalizeVector(vec);
   SetVector(cam, Camera.AbsolutePosition);
   //targ:=Camera.TargetObject.Position.AsAffineVector;
   //SubtractVector(targ,cam);
-  pix.V[0] := FViewPort.Width * 0.5;
-  pix.V[1] := FViewPort.Height * 0.5;
-  pix.V[2] := 0;
+  pix.X := FViewPort.Width * 0.5;
+  pix.Y := FViewPort.Height * 0.5;
+  pix.Z := 0;
   targ := self.ScreenToVector(pix);
 
   camAng := VectorAngleCosine(targ, vec);
@@ -9252,11 +9252,11 @@ begin
   fp := np + dov; // Far plane distance
   dst := (np * fp) / (fp - z * dov);
   //calculate from z-buffer value to frustrum depth
-  coord.V[0] := x;
-  coord.V[1] := y;
+  coord.X := x;
+  coord.Y := y;
   vec := self.ScreenToVector(coord); //get the pixel vector
-  coord.V[0] := FViewPort.Width div 2;
-  coord.V[1] := FViewPort.Height div 2;
+  coord.X := FViewPort.Width div 2;
+  coord.Y := FViewPort.Height div 2;
   norm := self.ScreenToVector(coord); //get the absolute camera direction
   camAng := VectorAngleCosine(norm, vec);
   Result := dst / camAng; //compensate for flat frustrum face
@@ -9483,7 +9483,7 @@ begin
     rci.cameraPosition := FCameraAbsolutePosition;
     rci.cameraDirection := FLastDirection;
     NormalizeVector(rci.cameraDirection);
-    rci.cameraDirection.V[3] := 0;
+    rci.cameraDirection.W := 0;
     rightVector := VectorCrossProduct(rci.cameraDirection, Up.AsVector);
     rci.cameraUp := VectorCrossProduct(rightVector, rci.cameraDirection);
     NormalizeVector(rci.cameraUp);

@@ -52,12 +52,12 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   r : Single;
 begin
-  // Load the vertex and fragment Cg programs from project dir
-  CgCellShader.VertexProgram.LoadFromFile('cellshading_vp.cg');
-  CgCellShader.FragmentProgram.LoadFromFile('cellshading_fp.cg');
-
-  // Load and scale the actor from media dir
   SetGLSceneMediaDir();
+  // Load the vertex and fragment Cg programs from Shaders dir
+  CgCellShader.VertexProgram.LoadFromFile('Shaders\cellshading_vp.cg');
+  CgCellShader.FragmentProgram.LoadFromFile('Shaders\cellshading_fp.cg');
+
+  // Load and scale the actor
   GLActor1.LoadFromFile('waste.md2');
 
   r:=GLActor1.BoundingSphereRadius;

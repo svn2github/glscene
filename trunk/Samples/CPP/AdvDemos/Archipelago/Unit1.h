@@ -9,6 +9,7 @@
 #include <Vcl.Forms.hpp>
 #include <Vcl.ComCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 
 #include "GLScene.hpp"
 #include "GLCadencer.hpp"
@@ -33,10 +34,8 @@
 #include "GLVectorLists.hpp"
 #include "GLVectorTypes.hpp"
 #include "GLVectorGeometry.hpp"
-#include "Jpeg.hpp"
 
 #include "GLKeyboard.hpp"
-#include "OpenGLTokens.hpp"
 #include "OpenGL1x.hpp"
 #include "GLContext.hpp"
 #include "GLState.hpp"

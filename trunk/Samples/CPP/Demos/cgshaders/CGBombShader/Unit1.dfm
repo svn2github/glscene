@@ -367,7 +367,7 @@ object Form1: TForm1
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
       end>
-    Left = 376
+    Left = 408
     Top = 64
   end
   object GLCadencer1: TGLCadencer

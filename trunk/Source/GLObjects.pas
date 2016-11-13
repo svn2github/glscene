@@ -1331,9 +1331,9 @@ end;
 
 function TGLPlane.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5 * Abs(FWidth);
-  Result.V[1] := 0.5 * Abs(FHeight);
-  Result.V[2] := 0;
+  Result.X := 0.5 * Abs(FWidth);
+  Result.Y := 0.5 * Abs(FHeight);
+  Result.Z := 0;
 end;
 
 // RayCastIntersect
@@ -1347,15 +1347,15 @@ var
 begin
   locRayStart := AbsoluteToLocal(rayStart);
   locRayVector := AbsoluteToLocal(rayVector);
-  if locRayStart.V[2] >= 0 then
+  if locRayStart.Z >= 0 then
   begin
     // ray start over plane
-    if locRayVector.V[2] < 0 then
+    if locRayVector.Z < 0 then
     begin
-      t := locRayStart.V[2] / locRayVector.V[2];
-      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
-      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
-      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      t := locRayStart.Z / locRayVector.Z;
+      ip.X := locRayStart.X - t * locRayVector.X;
+      ip.Y := locRayStart.Y - t * locRayVector.Y;
+      if (Abs(ip.X) <= 0.5 * Width) and (Abs(ip.Y) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1370,12 +1370,12 @@ begin
   else
   begin
     // ray start below plane
-    if locRayVector.V[2] > 0 then
+    if locRayVector.Z > 0 then
     begin
-      t := locRayStart.V[2] / locRayVector.V[2];
-      ip.V[0] := locRayStart.V[0] - t * locRayVector.V[0];
-      ip.V[1] := locRayStart.V[1] - t * locRayVector.V[1];
-      if (Abs(ip.V[0]) <= 0.5 * Width) and (Abs(ip.V[1]) <= 0.5 * Height) then
+      t := locRayStart.Z / locRayVector.Z;
+      ip.X := locRayStart.X - t * locRayVector.X;
+      ip.Y := locRayStart.Y - t * locRayVector.Y;
+      if (Abs(ip.X) <= 0.5 * Width) and (Abs(ip.Y) <= 0.5 * Height) then
       begin
         Result := True;
         if Assigned(intersectNormal) then
@@ -1389,8 +1389,8 @@ begin
   end;
   if Result and Assigned(intersectPoint) then
   begin
-    ip.V[2] := 0;
-    ip.V[3] := 1;
+    ip.Z := 0;
+    ip.W := 1;
     intersectPoint^ := LocalToAbsolute(ip);
   end;
 end;
@@ -1763,11 +1763,11 @@ end;
 
 function TGLSprite.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := 0.5 * Abs(FWidth);
-  Result.V[1] := 0.5 * Abs(FHeight);
+  Result.X := 0.5 * Abs(FWidth);
+  Result.Y := 0.5 * Abs(FHeight);
   // Sprites turn with the camera and can be considered to have the same depth
   // as width
-  Result.V[2] := 0.5 * Abs(FWidth);
+  Result.Z := 0.5 * Abs(FWidth);
 end;
 
 // BuildList
@@ -1820,17 +1820,17 @@ begin
   if FRotation <> 0 then
   begin
     GL.PushMatrix;
-    GL.Rotatef(FRotation, mat.V[0].V[2], mat.V[1].V[2], mat.V[2].V[2]);
+    GL.Rotatef(FRotation, mat.X.Z, mat.Y.Z, mat.Z.Z);
   end;
   GL.Begin_(GL_QUADS);
   xgl.TexCoord2f(u1, v1);
-  GL.Vertex3f(vx.V[0] + vy.V[0], vx.V[1] + vy.V[1], vx.V[2] + vy.V[2]);
+  GL.Vertex3f(vx.X + vy.X, vx.Y + vy.Y, vx.Z + vy.Z);
   xgl.TexCoord2f(u0, v1);
-  GL.Vertex3f(-vx.V[0] + vy.V[0], -vx.V[1] + vy.V[1], -vx.V[2] + vy.V[2]);
+  GL.Vertex3f(-vx.X + vy.X, -vx.Y + vy.Y, -vx.Z + vy.Z);
   xgl.TexCoord2f(u0, v0);
-  GL.Vertex3f(-vx.V[0] - vy.V[0], -vx.V[1] - vy.V[1], -vx.V[2] - vy.V[2]);
+  GL.Vertex3f(-vx.X - vy.X, -vx.Y - vy.Y, -vx.Z - vy.Z);
   xgl.TexCoord2f(u1, v0);
-  GL.Vertex3f(vx.V[0] - vy.V[0], vx.V[1] - vy.V[1], vx.V[2] - vy.V[2]);
+  GL.Vertex3f(vx.X - vy.X, vx.Y - vy.Y, vx.Z - vy.Z);
   GL.End_;
   if FRotation <> 0 then
     GL.PopMatrix;
@@ -3352,7 +3352,7 @@ begin
         FCubeSize.V[i mod 3]) / (p[i].X * rv.X +
                                  p[i].Y * rv.Y +
                                  p[i].Z * rv.Z);
-      MakePoint(r, rs.V[0] + t * rv.X, rs.Y +
+      MakePoint(r, rs.X + t * rv.X, rs.Y +
                              t * rv.Y, rs.Z +
                              t * rv.Z);
       if (Abs(r.X) <= eSize.X) and
@@ -3379,7 +3379,7 @@ procedure TGLCube.DefineProperties(Filer: TFiler);
 begin
   inherited;
   Filer.DefineBinaryProperty('CubeSize', ReadData, WriteData,
-    (FCubeSize.V[0] <> 1) or (FCubeSize.V[1] <> 1) or (FCubeSize.V[2] <> 1));
+    (FCubeSize.X <> 1) or (FCubeSize.Y <> 1) or (FCubeSize.Z <> 1));
 end;
 
 // ReadData
@@ -3555,15 +3555,15 @@ begin
       GL.Vertex3f(0, SinP, 0);
       N1 := YVector;
       if DoReverse then
-        N1.V[1] := -N1.V[1];
+        N1.Y := -N1.Y;
     end;
-    v1.V[1] := SinP;
+    v1.Y := SinP;
     Theta := AngStart;
     for i := 0 to FSlices do
     begin
       SinCosine(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      v1.V[2] := CosP * CosT;
+      v1.X := CosP * SinT;
+      v1.Z := CosP * CosT;
       if FTopCap = ctCenter then
       begin
         N1 := VectorPerpendicular(YVector, v1);
@@ -3589,8 +3589,8 @@ begin
     Theta := AngStart;
     SinCos(Phi, SinP, CosP);
     SinCos(Phi2, SinP2, CosP2);
-    v1.V[1] := SinP;
-    V2.V[1] := SinP2;
+    v1.Y := SinP;
+    V2.Y := SinP2;
     vTexCoord0 := 1 - j * vTexFactor;
     vTexCoord1 := 1 - (j + 1) * vTexFactor;
 
@@ -3599,10 +3599,10 @@ begin
     begin
 
       SinCos(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      V2.V[0] := CosP2 * SinT;
-      v1.V[2] := CosP * CosT;
-      V2.V[2] := CosP2 * CosT;
+      v1.X := CosP * SinT;
+      V2.X := CosP2 * SinT;
+      v1.Z := CosP * CosT;
+      V2.Z := CosP2 * CosT;
 
       uTexCoord := i * uTexFactor;
       xgl.TexCoord2f(uTexCoord, vTexCoord0);
@@ -3655,13 +3655,13 @@ begin
         NegateVector(N1); 
       end;
     end;
-    v1.V[1] := SinP;
+    v1.Y := SinP;
     Theta := AngStop;
     for i := 0 to FSlices do
     begin
       SinCos(Theta, SinT, CosT);
-      v1.V[0] := CosP * SinT;
-      v1.V[2] := CosP * CosT;
+      v1.X := CosP * SinT;
+      v1.Z := CosP * CosT;
       if FBottomCap = ctCenter then
       begin
         N1 := VectorPerpendicular(AffineVectorMake(0, -1, 0), v1);
@@ -3702,7 +3702,7 @@ begin
       SetVector(intersectPoint^, LocalToAbsolute(i1));
     if Assigned(intersectNormal) then
     begin
-      i1.V[3] := 0; // vector transform
+      i1.W := 0; // vector transform
       SetVector(intersectNormal^, LocalToAbsolute(i1));
     end;
   end
@@ -3885,10 +3885,10 @@ end;
 
 function TGLSphere.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := Abs(FRadius);
-  Result.V[1] := Result.V[0];
-  Result.V[2] := Result.V[0];
-  Result.V[3] := 0;
+  Result.X := Abs(FRadius);
+  Result.Y := Result.X;
+  Result.Z := Result.X;
+  Result.W := 0;
 end;
 
 // ------------------

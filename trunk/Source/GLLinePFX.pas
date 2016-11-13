@@ -155,8 +155,8 @@ begin
    inherited;
    GL.GetFloatv(GL_MODELVIEW_MATRIX, @matrix);
    for i:=0 to 2 do begin
-      Fvx.V[i]:=matrix.V[i].V[0];
-      Fvy.V[i]:=matrix.V[i].V[1];
+      Fvx.V[i]:=matrix.V[i].X;
+      Fvy.V[i]:=matrix.V[i].Y;
    end;
    FNvx:=VectorNormalize(Fvx);
    FNvy:=VectorNormalize(Fvy);
@@ -202,13 +202,13 @@ begin
       GL.Color4fv(@inner);
       GL.Vertex3fv(@start);
       GL.Color4fv(@outer);
-      GL.Vertex3f(start.V[0]+dv.V[0], start.V[1]+dv.V[1], start.V[2]+dv.V[2]);
-      GL.Vertex3f(stop.V[0]+dv.V[0], stop.V[1]+dv.V[1], stop.V[2]+dv.V[2]);
+      GL.Vertex3f(start.X+dv.X, start.Y+dv.Y, start.Z+dv.Z);
+      GL.Vertex3f(stop.X+dv.X, stop.Y+dv.Y, stop.Z+dv.Z);
       GL.Color4fv(@inner);
       GL.Vertex3fv(@stop);
       GL.Color4fv(@outer);
-      GL.Vertex3f(stop.V[0]-dv.V[0], stop.V[1]-dv.V[1], stop.V[2]-dv.V[2]);
-      GL.Vertex3f(start.V[0]-dv.V[0], start.V[1]-dv.V[1], start.V[2]-dv.V[2]);
+      GL.Vertex3f(stop.X-dv.X, stop.Y-dv.Y, stop.Z-dv.Z);
+      GL.Vertex3f(start.X-dv.X, start.Y-dv.Y, start.Z-dv.Z);
    GL.End_;
 end;
 

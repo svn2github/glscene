@@ -681,8 +681,8 @@ object PostShaderDemoForm: TPostShaderDemoForm
     Scene = Scene
     MaxDeltaTime = 0.020000000000000000
     OnProgress = CadencerProgress
-    Left = 32
-    Top = 120
+    Left = 96
+    Top = 16
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
@@ -727,8 +727,8 @@ object PostShaderDemoForm: TPostShaderDemoForm
         Material.Texture.Disabled = False
         Material.Texture.DepthTextureMode = dtmIntensity
       end>
-    Left = 160
-    Top = 264
+    Left = 40
+    Top = 80
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
@@ -747,7 +747,7 @@ object PostShaderDemoForm: TPostShaderDemoForm
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 168
-    Top = 136
+    Left = 192
+    Top = 16
   end
 end

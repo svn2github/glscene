@@ -76,24 +76,24 @@ void __fastcall TForm1::GLCadencer1Progress(TObject *Sender, const double deltaT
 		// ( note : VectorCombine(v1, v2, f1, f2)=v1*f1+v2*f2 )
 		newBallPos = VectorCombine(Ball->Position->AsVector, ballVector, 1, deltaTime);
 		// check collision with edges
-		if (newBallPos.V[0]<-7.05)
-			ballVector.V[0] = -ballVector.V[0];
+		if (newBallPos.X<-7.05)
+			ballVector.X = -ballVector.X;
 		else
-		if (newBallPos.V[0]>7.05)
-			ballVector.V[0] = -ballVector.V[0];
+		if (newBallPos.X>7.05)
+			ballVector.X = -ballVector.X;
 		else
-		if (newBallPos.V[1]>4.55)
-			ballVector.V[1] = -ballVector.V[1];
+		if (newBallPos.Y>4.55)
+			ballVector.Y = -ballVector.Y;
 		// check collision with pad
-		if (newBallPos.V[1]<-4)
+		if (newBallPos.Y<-4)
 		{
-			if ((newBallPos.V[0]>Pad->Position->X-1.25) && (newBallPos.V[0]<Pad->Position->X+1.25))
+			if ((newBallPos.X>Pad->Position->X-1.25) && (newBallPos.X<Pad->Position->X+1.25))
 			{
 				// when ball bumps the pad, it is accelerated and the vector
 				// is slightly randomized
-				ballVector.V[1] = -ballVector.V[1];
-				ballVector.V[0] = ballVector.V[0]+(Random(100)-50)/50;
-				ballVector.V[1] = ballVector.V[1]+0.1;
+				ballVector.Y = -ballVector.Y;
+				ballVector.X = ballVector.X+(Random(100)-50)/50;
+				ballVector.Y = ballVector.Y+0.1;
 				// ...and of course a point is scored !
 				score++;
 				SpaceText1->Text = Format("%.3d", ARRAYOFCONST((score)));

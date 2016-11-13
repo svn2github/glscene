@@ -3,15 +3,32 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.Imaging.Jpeg,
 
   //GLS
-  GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects,
-  GLProxyObjects,  GLGeomObjects, GLVectorGeometry, GLCadencer,
-  GLTexture, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLFileSMD;
+  GLScene,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLObjects,
+  GLProxyObjects,
+  GLGeomObjects,
+  GLVectorGeometry,
+  GLCadencer,
+  GLTexture,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLFileSMD;
 
 type
   TForm1 = class(TForm)
@@ -89,8 +106,8 @@ end;
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
-     mouseX := X;
-     mouseY := Y;
+  mouseX := X;
+  mouseY := Y;
 end;
 
 procedure TForm1.DoRaycastStuff;

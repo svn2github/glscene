@@ -518,12 +518,12 @@ var
 begin
   // * first project onto an axis-aligned plane, that maximizes the area */
   // * of the triangles, compute indices: i0,i1. */
-  A.V[0] := Abs(N.V[0]);
-  A.V[1] := Abs(N.V[1]);
-  A.V[2] := Abs(N.V[2]);
-  if (A.V[0] > A.V[1]) then
+  A.X := Abs(N.X);
+  A.Y := Abs(N.Y);
+  A.Z := Abs(N.Z);
+  if (A.X > A.Y) then
   begin
-    if (A.V[0] > A.V[2]) then
+    if (A.X > A.Z) then
     begin
       I0 := 1; // * A[0] is greatest */
       I1 := 2;
@@ -536,7 +536,7 @@ begin
   end
   else
   begin // * A[0]<=A[1] */
-    if (A.V[2] > A.V[1]) then
+    if (A.Z > A.Y) then
     begin
       I0 := 0; // * A[2] is greatest */
       I1 := 1;
@@ -694,10 +694,10 @@ begin
   D := VectorCrossProduct(N1, N2);
 
   // * compute and index to the largest component of D */
-  Max := Abs(D.V[0]);
+  Max := Abs(D.X);
   index := 0;
-  B := Abs(D.V[1]);
-  C := Abs(D.V[2]);
+  B := Abs(D.Y);
+  C := Abs(D.Z);
   if (B > Max) then
   begin
     Max := B;
@@ -1054,10 +1054,10 @@ end;
 //
 function TOctree.PointInNode(const Min, Max, APoint: TAffineFLTVector): BOOLEAN;
 begin
-  Result := (APoint.V[0] >= Min.V[0]) and
-    (APoint.V[1] >= Min.V[1]) and (APoint.V[2] >= Min.V[2]) and
-    (APoint.V[0] <= Max.V[0]) and (APoint.V[1] <= Max.V[1]) and
-    (APoint.V[2] <= Max.V[2]);
+  Result := (APoint.X >= Min.X) and
+    (APoint.Y >= Min.Y) and (APoint.Z >= Min.Z) and
+    (APoint.X <= Max.X) and (APoint.Y <= Max.Y) and
+    (APoint.Z <= Max.Z);
 end;
 
 // WalkPointToLeaf

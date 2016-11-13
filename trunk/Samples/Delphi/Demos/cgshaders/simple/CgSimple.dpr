@@ -7,8 +7,7 @@
 }
 program CgSimple;
 
-{%File 'Simple_fp.cg'}
-{%File 'Simple_vp.cg'}
+
 
 uses
   Forms,

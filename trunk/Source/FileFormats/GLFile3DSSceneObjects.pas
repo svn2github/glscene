@@ -104,13 +104,13 @@ begin
   halfAngle := (angle) / 2;
   invAxisLengthMult := 1 / VectorLength(axis) * sin(halfAngle);
 
-  v.V[0] := axis.V[0] * invAxisLengthMult;
-  v.V[1] := axis.V[1] * invAxisLengthMult;
-  v.V[2] := axis.V[2] * invAxisLengthMult;
-  v.V[3] := cos(halfAngle);
+  v.X := axis.X * invAxisLengthMult;
+  v.Y := axis.Y * invAxisLengthMult;
+  v.Z := axis.Z * invAxisLengthMult;
+  v.W := cos(halfAngle);
 
   Result.ImagPart := AffineVectorMake(v);
-  Result.RealPart := v.V[3];
+  Result.RealPart := v.W;
 end;
 
 function QuaternionToRotateMatrix(const Quaternion: TQuaternion): TMatrix;
@@ -120,38 +120,38 @@ var
   m: TMatrix;
 begin
   quat := VectorMake(Quaternion.ImagPart);
-  quat.V[3] := Quaternion.RealPart;
+  quat.W := Quaternion.RealPart;
 
-  x2 := quat.V[0] + quat.V[0];
-  y2 := quat.V[1] + quat.V[1];
-  z2 := quat.V[2] + quat.V[2];
-  xx := quat.V[0] * x2;
-  xy := quat.V[0] * y2;
-  xz := quat.V[0] * z2;
-  yy := quat.V[1] * y2;
-  yz := quat.V[1] * z2;
-  zz := quat.V[2] * z2;
-  wx := quat.V[3] * x2;
-  wy := quat.V[3] * y2;
-  wz := quat.V[3] * z2;
+  x2 := quat.X + quat.X;
+  y2 := quat.Y + quat.Y;
+  z2 := quat.Z + quat.Z;
+  xx := quat.X * x2;
+  xy := quat.X * y2;
+  xz := quat.X * z2;
+  yy := quat.Y * y2;
+  yz := quat.Y * z2;
+  zz := quat.Z * z2;
+  wx := quat.W * x2;
+  wy := quat.W * y2;
+  wz := quat.W * z2;
 
-  m.V[0].V[0] := 1.0 - (yy + zz);
-  m.V[0].V[1] := xy - wz;
-  m.V[0].V[2] := xz + wy;
-  m.V[1].V[0] := xy + wz;
-  m.V[1].V[1] := 1.0 - (xx + zz);
-  m.V[1].V[2] := yz - wx;
-  m.V[2].V[0] := xz - wy;
-  m.V[2].V[1] := yz + wx;
-  m.V[2].V[2] := 1.0 - (xx + yy);
+  m.X.X := 1.0 - (yy + zz);
+  m.X.Y := xy - wz;
+  m.X.Z := xz + wy;
+  m.Y.X := xy + wz;
+  m.Y.Y := 1.0 - (xx + zz);
+  m.Y.Z := yz - wx;
+  m.Z.X := xz - wy;
+  m.Z.Y := yz + wx;
+  m.Z.Z := 1.0 - (xx + yy);
 
-  m.V[0].V[3] := 0;
-  m.V[1].V[3] := 0;
-  m.V[2].V[3] := 0;
-  m.V[3].V[0] := 0;
-  m.V[3].V[1] := 0;
-  m.V[3].V[2] := 0;
-  m.V[3].V[3] := 1;
+  m.X.W := 0;
+  m.Y.W := 0;
+  m.Z.W := 0;
+  m.W.X := 0;
+  m.W.Y := 0;
+  m.W.Z := 0;
+  m.W.W := 1;
 
   Result := m;
 end;
@@ -277,7 +277,7 @@ begin
 
   v := VectorNormalize(VectorSubtract(FTargetPos.AsAffineVector, Position.AsAffineVector));
 
-  v1 := AffineVectorMake(v.V[0], v.V[1], 0);
+  v1 := AffineVectorMake(v.X, v.Y, 0);
   NormalizeVector(v1);
   ang := ArcCos(VectorDotProduct(v, v1));
 
@@ -461,15 +461,15 @@ begin
   MeshObjects.GetExtents(dMin, dMax);
   mat := ParentMatrix;
   mat := MatrixMultiply(FRefMat, mat);
-  if not IsInfinite(dMin.V[0]) then
+  if not IsInfinite(dMin.X) then
     dMin := VectorTransform(dMin, mat);
-  if not IsInfinite(dMax.V[0]) then
+  if not IsInfinite(dMax.X) then
     dMax := VectorTransform(dMax, mat);
 
-  Result.V[0] := (dMax.V[0] - dMin.V[0]) / 2;
-  Result.V[1] := (dMax.V[1] - dMin.V[1]) / 2;
-  Result.V[2] := (dMax.V[2] - dMin.V[2]) / 2;
-  Result.V[3] := 0;
+  Result.X := (dMax.X - dMin.X) / 2;
+  Result.Y := (dMax.Y - dMin.Y) / 2;
+  Result.Z := (dMax.Z - dMin.Z) / 2;
+  Result.W := 0;
 end;
 
 // BarycenterAbsolutePosition
@@ -483,15 +483,15 @@ begin
   MeshObjects.GetExtents(dMin, dMax);
   mat := ParentMatrix;
   mat := MatrixMultiply(FRefMat, mat);
-  if not IsInfinite(dMin.V[0]) then
+  if not IsInfinite(dMin.X) then
     dMin := VectorTransform(dMin, mat);
-  if not IsInfinite(dMax.V[0]) then
+  if not IsInfinite(dMax.X) then
     dMax := VectorTransform(dMax, mat);
 
-  Result.V[0] := (dMax.V[0] + dMin.V[0]) / 2;
-  Result.V[1] := (dMax.V[1] + dMin.V[1]) / 2;
-  Result.V[2] := (dMax.V[2] + dMin.V[2]) / 2;
-  Result.V[3] := 1;
+  Result.X := (dMax.X + dMin.X) / 2;
+  Result.Y := (dMax.Y + dMin.Y) / 2;
+  Result.Z := (dMax.Z + dMin.Z) / 2;
+  Result.W := 1;
 
   Result := LocalToAbsolute(Result);
 end;

@@ -7,6 +7,7 @@
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.Forms.hpp>
+#include <Vcl.Imaging.jpeg.hpp>
 #include "GLAsyncTimer.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLCadencer.hpp"
@@ -21,7 +22,6 @@
 #include "GLFileMD2.hpp"
 #include "GLUtils.hpp"
 #include "CgGL.hpp"
-#include "JPeg.hpp"
 
 //---------------------------------------------------------------------------
 class TForm1 : public TForm

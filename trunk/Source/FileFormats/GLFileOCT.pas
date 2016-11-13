@@ -138,7 +138,7 @@ begin
     for i := 0 to n - 1 do
       with oct.Vertices[i] do
       begin
-        mo.Vertices.Add(pos.V[0], pos.V[1], pos.V[2]);
+        mo.Vertices.Add(pos.X, pos.Y, pos.Z);
         mo.TexCoords.Add(tv.s, tv.t);
         mo.LightMapTexCoords.Add(lv.s, lv.t);
       end;

@@ -247,7 +247,7 @@ object GLSLTestForm: TGLSLTestForm
       FocalLength = 65.000000000000000000
       TargetObject = GLXYZGrid1
       CameraStyle = csInfinitePerspective
-      Position.Coordinates = {0000000000004842000048430000803F}
+      Position.Coordinates = {0000000000007A43000048430000803F}
       Direction.Coordinates = {00000000000080BF0000000000000000}
       Up.Coordinates = {00000000000000000000803F00000000}
     end

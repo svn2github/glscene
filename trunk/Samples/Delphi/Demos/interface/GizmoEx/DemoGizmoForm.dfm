@@ -1625,10 +1625,6 @@ object Form1: TForm1
     TabOrder = 3
     object TabSheet1: TTabSheet
       Caption = 'Main Settings'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label10: TLabel
         Left = 0
         Top = 118
@@ -2761,7 +2757,6 @@ object Form1: TForm1
       end
     end
     object GLRootObjects: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object GLDodecahedron3: TGLDodecahedron
         Position.Coordinates = {0000000000000000000000400000803F}
@@ -2820,7 +2815,6 @@ object Form1: TForm1
       end
     end
     object RootGizmo: TGLDummyCube
-      Up.Coordinates = {000000000000803F0000008000000000}
       CubeSize = 1.000000000000000000
     end
     object RootTempObjects: TGLDummyCube

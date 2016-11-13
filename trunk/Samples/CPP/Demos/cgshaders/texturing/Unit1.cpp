@@ -28,16 +28,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
+  SetGLSceneMediaDir();
   // load Cg proggy from project directory
-  SetCurrentDir(ExtractFilePath(Application->ExeName));
-  CgShader1->VertexProgram->LoadFromFile("cg_texture_vp.cg");
+  CgShader1->VertexProgram->LoadFromFile("Shaders\\cg_texture_vp.cg");
   MemoVertCode->Lines->Assign(CgShader1->VertexProgram->Code);
-
-  CgShader1->FragmentProgram->LoadFromFile("cg_texture_fp.cg");
+  CgShader1->FragmentProgram->LoadFromFile("Shaders\\cg_texture_fp.cg");
   MemoFragCode->Lines->Assign(CgShader1->FragmentProgram->Code);
 
   // Load images from media dir
-  SetGLSceneMediaDir();
   GLMatLib->Materials->Items[0]->Material->Texture->Image->LoadFromFile("moon.bmp");
   GLMatLib->Materials->Items[1]->Material->Texture->Image->LoadFromFile("clover.jpg");
   GLMatLib->Materials->Items[2]->Material->Texture->Image->LoadFromFile("marbletiles.jpg");

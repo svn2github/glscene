@@ -7,8 +7,7 @@
 
 program CgTexture;
 
-{%File 'cg_texture.fp.cg'}
-{%File 'cg_texture.vp.cg'}
+
 
 uses
   Forms,

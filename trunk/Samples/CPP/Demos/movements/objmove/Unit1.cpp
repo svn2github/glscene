@@ -67,14 +67,14 @@ void __fastcall TForm1::UpdateHudText()
 
 	TopText->Text = Format(
 	  "New Object Position: Xn: %4.4f, Yn: %4.4f, Zn: %4.4f",
-	  ARRAYOFCONST ((objPos.V[0], objPos.V[1], objPos.V[2])));
+	  ARRAYOFCONST ((objPos.X, objPos.Y, objPos.Z)));
 
 	winPos = Scn->Buffer->WorldToScreen(objPos);
 
 	ObjText->Visible = true;
 	ObjText->Text = CurrentPick->Name;
-	ObjText->Position->X = winPos.V[0] + 10;
-	ObjText->Position->Y = Scn->Height - winPos.V[1] + 10;
+	ObjText->Position->X = winPos.X + 10;
+	ObjText->Position->Y = Scn->Height - winPos.Y + 10;
   }
   else
   {

@@ -48,7 +48,6 @@ object Form1: TForm1
     Left = 48
     Top = 24
     object InvisibleDummyCube: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Visible = False
       CubeSize = 1.000000000000000000
       object MasterActor: TGLActor
@@ -61,13 +60,11 @@ object Form1: TForm1
       end
     end
     object GLDummyCube2: TGLDummyCube
-      Up.Coordinates = {000000000000803F0000008000000000}
       CubeSize = 1.000000000000000000
       object GLActorProxy1: TGLActorProxy
         MasterObject = MasterActor
         ProxyOptions = [pooEffects, pooObjects, pooTransformation]
         Position.Coordinates = {000000C000000000000000000000803F}
-        Up.Coordinates = {000000000000803F0000008000000000}
         MaterialLibrary = GLMaterialLibrary1
         LibMaterialName = 'Mat1'
         StoreBonesMatrix = True
@@ -86,7 +83,6 @@ object Form1: TForm1
         MasterObject = MasterActor
         ProxyOptions = [pooEffects, pooObjects, pooTransformation]
         Position.Coordinates = {0000004000000000000000000000803F}
-        Up.Coordinates = {000000000000803F0000008000000000}
         MaterialLibrary = GLMaterialLibrary1
         LibMaterialName = 'Mat2'
         StoreBonesMatrix = True

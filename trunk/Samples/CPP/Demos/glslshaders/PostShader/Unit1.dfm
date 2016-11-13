@@ -194,8 +194,8 @@ object Form1: TForm1
     Scene = Scene
     MaxDeltaTime = 0.020000000000000000
     OnProgress = CadencerProgress
-    Left = 24
-    Top = 56
+    Left = 120
+    Top = 16
   end
   object MaterialLibrary: TGLMaterialLibrary
     Materials = <
@@ -234,7 +234,7 @@ object Form1: TForm1
         Tag = 0
         Material.Texture.Disabled = False
       end>
-    Left = 24
+    Left = 32
     Top = 88
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
@@ -254,7 +254,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 24
-    Top = 120
+    Left = 128
+    Top = 88
   end
 end

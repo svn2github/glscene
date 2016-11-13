@@ -161,18 +161,18 @@ begin
   begin
     // find out where it is on the screen.
     screenPos := CurrentBuffer.WorldToScreen(v);
-    if (screenPos.V[0] < rci.viewPortSize.cx) and (screenPos.V[0] >= 0)
-      and (screenPos.V[1] < rci.viewPortSize.cy) and (screenPos.V[1] >= 0) then
+    if (screenPos.X < rci.viewPortSize.cx) and (screenPos.X >= 0)
+      and (screenPos.Y < rci.viewPortSize.cy) and (screenPos.Y >= 0) then
     begin
       if FAutoZTest then
       begin
-        depth := CurrentBuffer.GetPixelDepth(Round(ScreenPos.V[0]),
-          Round(rci.viewPortSize.cy - ScreenPos.V[1]));
+        depth := CurrentBuffer.GetPixelDepth(Round(ScreenPos.X),
+          Round(rci.viewPortSize.cy - ScreenPos.Y));
         // but is it behind something?
-        if screenPos.V[2] >= 1 then
+        if screenPos.Z >= 1 then
           flag := (depth >= 1)
         else
-          flag := (depth >= screenPos.V[2]);
+          flag := (depth >= screenPos.Z);
       end
       else
         flag := True;
@@ -184,8 +184,8 @@ begin
     flag := False;
 
   MakeVector(posVector,
-    screenPos.V[0] - rci.viewPortSize.cx / 2,
-    screenPos.V[1] - rci.viewPortSize.cy / 2, 0);
+    screenPos.X - rci.viewPortSize.cx / 2,
+    screenPos.Y - rci.viewPortSize.cy / 2, 0);
 
   // make the glow appear/disappear progressively
 
@@ -215,7 +215,7 @@ begin
 
   //Rays and Glow on Same Position
   GL.PushMatrix;
-  GL.Translatef(posVector.V[0], posVector.V[1], posVector.V[2]);
+  GL.Translatef(posVector.X, posVector.Y, posVector.Z);
 
   if not ImgGlow.Disabled and Assigned(ImgGlow.Image) then
   begin
@@ -253,7 +253,7 @@ begin
   if not ImgRing.Disabled and Assigned(ImgRing.Image) then
   begin
     GL.PushMatrix;
-    GL.Translatef(posVector.V[0] * 1.1, posVector.V[1] * 1.1, posVector.V[2]);
+    GL.Translatef(posVector.X * 1.1, posVector.Y * 1.1, posVector.Z);
     ImgRing.Apply(rci);
     GL.begin_(GL_QUADS);
     GL.TexCoord2f(0, 0);
@@ -283,7 +283,7 @@ begin
       else
         ScaleVector(V, 0.8 * rnd);
       GL.PushMatrix;
-      GL.Translatef(v.V[0], v.V[1], v.V[2]);
+      GL.Translatef(v.X, v.Y, v.Z);
 
       rnd := random * 0.5 + 0.1;
       GL.begin_(GL_QUADS);

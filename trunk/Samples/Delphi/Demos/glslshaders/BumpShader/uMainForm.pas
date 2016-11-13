@@ -3,19 +3,39 @@ unit uMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
 
   // GLS
-  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
-  GLVectorFileObjects, GLGraph, GLGeomObjects, GLVectorGeometry, GLSLBumpShader,
-  GLCustomShader, GLSLShader, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLBaseClasses, GLUtils,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
+  GLVectorFileObjects, GLGraph,
+  GLGeomObjects, GLVectorGeometry,
+  GLSLBumpShader,
+  GLCustomShader,
+  GLSLShader,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils,
 
 
   // FileFormats
-  GLFileTGA, GLFileMS3D, GLFile3DS, DDSImage, GLFileMD2, GLFileSMD;
+  GLFileTGA,
+  GLFileMS3D,
+  GLFile3DS,
+  DDSImage,
+  GLFileMD2,
+  GLFileSMD;
 
 type
   TGLSLTestForm = class(TForm)

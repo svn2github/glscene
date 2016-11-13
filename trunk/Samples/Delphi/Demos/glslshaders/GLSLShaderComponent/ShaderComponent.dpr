@@ -11,8 +11,7 @@
 }
 program ShaderComponent;
 
-{%File 'Shaders\Shader.Frag'}
-{%File 'Shaders\Shader.Vert'}
+
 
 uses
   Forms,

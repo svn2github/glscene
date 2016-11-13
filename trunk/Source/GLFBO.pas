@@ -691,7 +691,7 @@ begin
   buffer := TGLSceneBuffer(rci.buffer);
 
   backColor := ConvertWinColor(buffer.BackgroundColor);
-  GL.ClearColor(backColor.V[0], backColor.V[1], backColor.V[2],
+  GL.ClearColor(backColor.X, backColor.Y, backColor.Z,
     buffer.BackgroundAlpha);
   rci.GLStates.SetColorMask(cAllColorComponents);
   rci.GLStates.DepthWriteMask := True;

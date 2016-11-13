@@ -259,10 +259,10 @@ begin
   end;
 
   rci.GLStates.Disable(stLighting);
-  GL.GetLightfv(GL_LIGHT0, GL_POSITION, @light.V[0]);
+  GL.GetLightfv(GL_LIGHT0, GL_POSITION, @light.X);
   FVPHandle.Enable;
   FVPHandle.Bind;
-  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @light.V[0]);
+  GL.ProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @light.X);
 
   if (csoTextured in FCelShaderOptions) then
     FShadeTexture.ApplyAsTexture2(rci, nil)

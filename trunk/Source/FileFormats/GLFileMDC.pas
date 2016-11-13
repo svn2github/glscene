@@ -170,9 +170,9 @@ var
     // to be calculated into cartesian space.
     Lat := (Pn[0]) * (2 * Pi) / 255;
     Lng := (Pn[1]) * (2 * Pi) / 255;
-    Result.V[0] := Cos(Lat) * Sin(Lng);
-    Result.V[1] := Sin(Lat) * Sin(Lng);
-    Result.V[2] := Cos(Lng);
+    Result.X := Cos(Lat) * Sin(Lng);
+    Result.Y := Sin(Lat) * Sin(Lng);
+    Result.Z := Cos(Lng);
   end;
 
   procedure AllocateMaterial(Meshname: string);
@@ -298,22 +298,22 @@ begin
 
           for K := 0 to Surfheader.NumVertices - 1 do
           begin
-            Xyz.V[0] := (Baseframe.BaseVertices[K, 0] * MDC_BASEVERTEX_FACTOR) +
+            Xyz.X := (Baseframe.BaseVertices[K, 0] * MDC_BASEVERTEX_FACTOR) +
               Borderframes[J].LocalOrigin[0];
-            Xyz.V[1] := (Baseframe.BaseVertices[K, 1] * MDC_BASEVERTEX_FACTOR) +
+            Xyz.Y := (Baseframe.BaseVertices[K, 1] * MDC_BASEVERTEX_FACTOR) +
               Borderframes[J].LocalOrigin[1];
-            Xyz.V[2] := (Baseframe.BaseVertices[K, 2] * MDC_BASEVERTEX_FACTOR) +
+            Xyz.Z := (Baseframe.BaseVertices[K, 2] * MDC_BASEVERTEX_FACTOR) +
               Borderframes[J].LocalOrigin[2];
             Normal := UnpackNormal
               (PPackedNormal(@Baseframe.BaseVertices[K, 3])^);
 
             if Compframetable[J] <> $FFFF then
             begin
-              Xyz.V[0] := Xyz.V[0] + ((Compframe.CompVertices[K, 0] - 128) *
+              Xyz.X := Xyz.X + ((Compframe.CompVertices[K, 0] - 128) *
                 MDC_COMPVERTEX_FACTOR);
-              Xyz.V[1] := Xyz.V[1] + ((Compframe.CompVertices[K, 1] - 128) *
+              Xyz.Y := Xyz.Y + ((Compframe.CompVertices[K, 1] - 128) *
                 MDC_COMPVERTEX_FACTOR);
-              Xyz.V[2] := Xyz.V[2] + ((Compframe.CompVertices[K, 2] - 128) *
+              Xyz.Z := Xyz.Z + ((Compframe.CompVertices[K, 2] - 128) *
                 MDC_COMPVERTEX_FACTOR);
               // FIXME:
               // I'm sure compframe.CompVertices[3] points a packed normal.
@@ -332,8 +332,8 @@ begin
             end;
 
             // all id Sofware based games uses Z axis as up instead of Y. So, convert them
-            MorphTarget.Vertices.Add(Xyz.V[0], Xyz.V[2], -Xyz.V[1]);
-            MorphTarget.Normals.Add(Normal.V[0], Normal.V[2], -Normal.V[1]);
+            MorphTarget.Vertices.Add(Xyz.X, Xyz.Z, -Xyz.Y);
+            MorphTarget.Normals.Add(Normal.X, Normal.Z, -Normal.Y);
           end;
         end;
       end;

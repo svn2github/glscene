@@ -65,6 +65,7 @@ uses
   System.SysUtils,
   System.Classes,
   Vcl.Forms,
+  //GLS
   GLStrings,
   OpenGLTokens,
   OpenGLAdapter,

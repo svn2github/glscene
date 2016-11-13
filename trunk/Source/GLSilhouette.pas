@@ -249,7 +249,7 @@ begin
   vListN := @vList[nv];
   for i := 0 to nv - 1 do
   begin
-    vListN^[i].V[3] := 0;
+    vListN^[i].W := 0;
     VectorSubtract(PAffineVector(@vList[i])^, origin,
       PAffineVector(@vListN[i])^);
   end;

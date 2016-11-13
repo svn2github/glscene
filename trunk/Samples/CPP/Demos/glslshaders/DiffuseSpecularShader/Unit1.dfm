@@ -246,11 +246,11 @@ object Form1: TForm1
         Material.Texture.Disabled = False
       end>
     Left = 24
-    Top = 88
+    Top = 144
   end
   object DiffuseSpecularShader: TGLSLDiffuseSpecularShader
     LightPower = 1.000000000000000000
-    Left = 56
+    Left = 176
     Top = 16
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
@@ -270,7 +270,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 56
-    Top = 56
+    Left = 176
+    Top = 64
   end
 end

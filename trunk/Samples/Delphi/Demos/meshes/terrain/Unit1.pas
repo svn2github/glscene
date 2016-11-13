@@ -257,9 +257,9 @@ begin
       // wolf howl at some distance, at ground level
       wolfPos:=GLCamera1.AbsolutePosition;
       SinCosine(Random*c2PI, 100+Random(1000), s, c);
-      wolfPos.V[0]:=wolfPos.V[0]+c;
-      wolfPos.V[2]:=wolfPos.V[2]+s;
-      wolfPos.V[1]:=TerrainRenderer1.InterpolatedHeight(wolfPos);
+      wolfPos.X:=wolfPos.X+c;
+      wolfPos.Z:=wolfPos.Z+s;
+      wolfPos.Y:=TerrainRenderer1.InterpolatedHeight(wolfPos);
       DCSound.Position.AsVector:=wolfPos;
       with GetOrCreateSoundEmitter(DCSound) do begin
          Source.SoundLibrary:=GLSoundLibrary;

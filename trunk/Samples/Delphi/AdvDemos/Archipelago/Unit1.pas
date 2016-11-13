@@ -264,7 +264,7 @@ begin
     Y := terrainHeight + CamHeight;
   end;
   // adjust fog distance/color for air/water
-  if (GLCamera.AbsolutePosition.V[1] > surfaceHeight) or (not WaterPlane) then
+  if (GLCamera.AbsolutePosition.Y > surfaceHeight) or (not WaterPlane) then
   begin
     if not WasAboveWater then
     begin
@@ -311,8 +311,8 @@ begin
   end;
   // rock the sailboat
   sbp := TerrainRenderer.AbsoluteToLocal(FFSailBoat.AbsolutePosition);
-  alpha := WaterPhase(sbp.V[0] + TerrainRenderer.TileSize * 0.5,
-    sbp.V[1] + TerrainRenderer.TileSize * 0.5);
+  alpha := WaterPhase(sbp.X + TerrainRenderer.TileSize * 0.5,
+    sbp.Y + TerrainRenderer.TileSize * 0.5);
   FFSailBoat.Position.Y := (cWaterLevel + Sin(alpha) * cWaveAmplitude) * (TerrainRenderer.Scale.Z / 128)
     - 1.5;
   f := cWaveAmplitude * 0.01;

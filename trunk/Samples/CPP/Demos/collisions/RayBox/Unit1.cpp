@@ -61,7 +61,7 @@ void __fastcall TForm1::Button1Click(TObject *Sender)
 	BoxPos, afScale), VectorAdd(BoxPos, afScale), &iPnt))
   {
 	Label1->Caption =  Format("Intersect point: %.3f %.3f %.3f",
-	   ARRAYOFCONST	((iPnt.V[0], iPnt.V[1], iPnt.V[2])));
+	   ARRAYOFCONST	((iPnt.X, iPnt.Y, iPnt.Z)));
 	GLPoints1->Positions->Add(iPnt);
 	Beep();
   }

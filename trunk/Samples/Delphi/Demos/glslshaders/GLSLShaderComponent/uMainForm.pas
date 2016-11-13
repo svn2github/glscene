@@ -3,10 +3,12 @@ unit uMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Controls,
+  Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
-  // GLScene
+  // GLS
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
   GLGraph, GLVectorLists, GLVectorTypes, GLVectorGeometry, GLSLShader,
   GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
@@ -72,7 +74,7 @@ procedure TGLSLTestForm.FormCreate(Sender: TObject);
 begin
   //First load scripts from shader directory
   SetGLSceneMediaDir();
-  GLSLShader.LoadShaderPrograms('Shader.Vert','Shader.Frag');
+  GLSLShader.LoadShaderPrograms('Shaders\Shader.Vert','Shaders\Shader.Frag');
   GLSLShader.Enabled := True;
 
 

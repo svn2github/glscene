@@ -23,6 +23,7 @@
 #include "GLMaterial.hpp"
 #include "OpenGLTokens.hpp"
 #include "GLContext.hpp"
+#include "OpenGL1x.hpp"
 //---------------------------------------------------------------------------
 
 #define MAXSHADERS 10

@@ -13798,9 +13798,9 @@ var CountPoints:longint;
  function Tri(const a,b,c,id:longint;const na:longint=-1;const nb:longint=-1;const nc:longint=-1):TTri;
  begin
   FillChar(result,SizeOf(TTri),#0);
-  result.v[0]:=a;
-  result.v[1]:=b;
-  result.v[2]:=c;
+  result.X:=a;
+  result.Y:=b;
+  result.Z:=c;
   result.n[0]:=na;
   result.n[1]:=nb;
   result.n[2]:=nc;
@@ -14091,9 +14091,9 @@ var CountPoints:longint;
      tt:=@Tris[k];
      Assert(tt^.ID>=0);
      Assert(tt^.vmax<0);
-     n:=TriNormal(Vertices[tt^.v[0]],Vertices[tt^.v[1]],Vertices[tt^.v[2]]);
+     n:=TriNormal(Vertices[tt^.X],Vertices[tt^.Y],Vertices[tt^.Z]);
      tt^.vmax:=Maxdir(Vertices,CountVertices,n);
-     tt^.Rise:=ConvexHullVectorDot(n,ConvexHullVectorSub(Vertices[tt^.vmax],Vertices[tt^.v[0]]));
+     tt^.Rise:=ConvexHullVectorDot(n,ConvexHullVectorSub(Vertices[tt^.vmax],Vertices[tt^.X]));
     end;
     dec(VerticesLimit,4);
     while VerticesLimit>0 do begin
@@ -14153,12 +14153,12 @@ var CountPoints:longint;
       if tt^.vmax>=0 then begin
        break;
       end;
-      n:=TriNormal(Vertices[tt^.v[0]],Vertices[tt^.v[1]],Vertices[tt^.v[2]]);
+      n:=TriNormal(Vertices[tt^.X],Vertices[tt^.Y],Vertices[tt^.Z]);
       tt^.vmax:=MaxDir(Vertices,CountVertices,n);
       if isextreme[tt^.vmax] then begin
        tt^.vmax:=-1; // already done that vertex - algorithm needs to be able to terminate.
       end else begin
-       tt^.Rise:=ConvexHullVectorDot(n,ConvexHullVectorSub(Vertices[tt^.vmax],Vertices[tt^.v[0]]));
+       tt^.Rise:=ConvexHullVectorDot(n,ConvexHullVectorSub(Vertices[tt^.vmax],Vertices[tt^.X]));
       end;
      end;
      // compress, remove non-tris

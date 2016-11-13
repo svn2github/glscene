@@ -43,13 +43,13 @@ void __fastcall TForm1::HeightFieldGetHeight(const float x, const float y,
          break;
       }
       case 1 : { // the "spin" effect
-		 vec.V[0] = x-warpX;
-		 vec.V[1] = 0.0;
-		 vec.V[2] = y-warpY;
+		 vec.X = x-warpX;
+		 vec.Y = 0.0;
+		 vec.Z = y-warpY;
 		 d = VectorNorm(vec);
 		 RotateVectorAroundY(vec, (warpRadius*warpRadius)/(d+1.0));
-		 dx = warpX+vec.V[0];
-		 dy = warpY+vec.V[2];
+		 dx = warpX+vec.X;
+		 dy = warpY+vec.Z;
          break;
       }
       default :

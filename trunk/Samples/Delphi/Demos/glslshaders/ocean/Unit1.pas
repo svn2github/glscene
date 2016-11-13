@@ -3,14 +3,18 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ExtCtrls, 
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
   Vcl.ComCtrls,
   Vcl.Imaging.Jpeg,
   //GLS
   OpenGLTokens,
-  GLWin32Viewer, 
+  GLWin32Viewer,
   GLScene, 
   GLTexture, 
   GLObjects, 
@@ -131,8 +135,8 @@ begin
 
   programObject := TGLProgramHandle.CreateAndAllocate;
 
-  programObject.AddShader(TGLVertexShaderHandle, string(LoadAnsiStringFromFile('ocean_vp.glsl')), True);
-  programObject.AddShader(TGLFragmentShaderHandle, string(LoadAnsiStringFromFile('ocean_fp.glsl')), True);
+  programObject.AddShader(TGLVertexShaderHandle, String(LoadAnsiStringFromFile('Shaders\ocean_vp.glsl')), True);
+  programObject.AddShader(TGLFragmentShaderHandle, String(LoadAnsiStringFromFile('Shaders\ocean_fp.glsl')), True);
 
   if not programObject.LinkProgram then
     raise Exception.Create(programObject.InfoLog);

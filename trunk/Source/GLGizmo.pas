@@ -1171,33 +1171,33 @@ begin
     case SelAxis of
       GaX:
         if not Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(V,
-          SelectedObj.AbsolutePosition.V[1], Result) then
+          SelectedObj.AbsolutePosition.Y, Result) then
           MakeVector(Result, X / 5, 0, 0);
 
       GaY:
         if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(V,
-          SelectedObj.AbsolutePosition.V[0], Result) then
+          SelectedObj.AbsolutePosition.X, Result) then
           MakeVector(Result, 0, InvertedY / 5, 0);
 
       GaZ:
         if not Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(V,
-          SelectedObj.AbsolutePosition.V[0], Result) then
+          SelectedObj.AbsolutePosition.X, Result) then
           MakeVector(Result, 0, 0, -InvertedY / 5);
 
       GaXY:
         begin
           Viewer.Buffer.ScreenVectorIntersectWithPlaneXY(V,
-            SelectedObj.AbsolutePosition.V[2], Result);
+            SelectedObj.AbsolutePosition.Z, Result);
         end;
       GaXZ:
         begin
           Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(V,
-            SelectedObj.AbsolutePosition.V[1], Result);
+            SelectedObj.AbsolutePosition.Y, Result);
         end;
       GaYZ:
         begin
           Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(V,
-            SelectedObj.AbsolutePosition.V[0], Result);
+            SelectedObj.AbsolutePosition.X, Result);
         end;
     end;
 
@@ -1330,18 +1330,18 @@ var
     case SelAxis of
       GaX:
         begin
-          MakeVector(Vec1, QuantizedMousePos.V[0], 0, 0);
-          MakeVector(Vec2, QuantizedMousePos2.V[0], 0, 0);
+          MakeVector(Vec1, QuantizedMousePos.X, 0, 0);
+          MakeVector(Vec2, QuantizedMousePos2.X, 0, 0);
         end;
       GaY:
         begin
-          MakeVector(Vec1, 0, QuantizedMousePos.V[1], 0);
-          MakeVector(Vec2, 0, QuantizedMousePos2.V[1], 0);
+          MakeVector(Vec1, 0, QuantizedMousePos.Y, 0);
+          MakeVector(Vec2, 0, QuantizedMousePos2.Y, 0);
         end;
       GaZ:
         begin
-          MakeVector(Vec1, 0, 0, QuantizedMousePos.V[2]);
-          MakeVector(Vec2, 0, 0, QuantizedMousePos2.V[2]);
+          MakeVector(Vec1, 0, 0, QuantizedMousePos.Z);
+          MakeVector(Vec2, 0, 0, QuantizedMousePos2.Z);
         end;
     else
       begin
@@ -1366,77 +1366,77 @@ var
     Pmat: TMatrix;
 
   begin
-    Vec1.V[0] := 0;
-    Vec1.V[1] := 0;
+    Vec1.X := 0;
+    Vec1.Y := 0;
     if Abs(X - Rx) >= RotationCoef then
     begin
       if RotationCoef > 1 then
-        Vec1.V[0] := RotationCoef * (Round((X - Rx) / (RotationCoef)))
+        Vec1.X := RotationCoef * (Round((X - Rx) / (RotationCoef)))
       else
-        Vec1.V[0] := RotationCoef * (X - Rx);
+        Vec1.X := RotationCoef * (X - Rx);
       Rx := X;
     end;
     if Abs(Y - Ry) >= RotationCoef then
     begin
       if RotationCoef > 1 then
-        Vec1.V[1] := RotationCoef * (Round((Y - Ry) / (RotationCoef)))
+        Vec1.Y := RotationCoef * (Round((Y - Ry) / (RotationCoef)))
       else
-        Vec1.V[1] := RotationCoef * (Y - Ry);
+        Vec1.Y := RotationCoef * (Y - Ry);
       Ry := Y;
     end;
 
-    Vec1.V[2] := 0;
-    Vec1.V[3] := 0;
+    Vec1.Z := 0;
+    Vec1.W := 0;
     if Assigned(OnBeforeUpdate) then
       OnBeforeUpdate(Self, SelectedObj, SelAxis, Operation, Vec1);
 
     Pmat := SelectedObj.Parent.InvAbsoluteMatrix;
-    SetVector(Pmat.V[3], NullHmgPoint);
+    SetVector(Pmat.W, NullHmgPoint);
     case SelAxis of
       GaX:
         begin
           RotV := VectorTransform(XVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[1]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.Y);
         end;
       GaY:
         begin
           RotV := VectorTransform(YVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[0]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.X);
         end;
       GaZ:
         begin
           RotV := VectorTransform(ZVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[1]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.Y);
         end;
       GaXY:
         begin
           RotV := VectorTransform(XVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[1]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.Y);
           RotV := VectorTransform(YVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[0]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.X);
         end;
       GaXZ:
         begin
           RotV := VectorTransform(XVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[1]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.Y);
           RotV := VectorTransform(ZVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[0]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.X);
         end;
       GaYZ:
         begin
           RotV := VectorTransform(YVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[1]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.Y);
           RotV := VectorTransform(ZVector, Pmat);
           RotateAroundArbitraryAxis(SelectedObj, RotV,
-            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.V[0]);
+            AffineVectorMake(SelectedObj.Position.AsVector), Vec1.X);
         end;
     end;
   end;
@@ -1458,15 +1458,15 @@ var
         begin
           if FForceUniformScale then
           begin
-            MakeVector(Vec1, QuantizedMousePos.V[0], QuantizedMousePos.V[0],
-              QuantizedMousePos.V[0]);
-            MakeVector(Vec2, QuantizedMousePos2.V[0], QuantizedMousePos2.V[0],
-              QuantizedMousePos2.V[0]);
+            MakeVector(Vec1, QuantizedMousePos.X, QuantizedMousePos.X,
+              QuantizedMousePos.X);
+            MakeVector(Vec2, QuantizedMousePos2.X, QuantizedMousePos2.X,
+              QuantizedMousePos2.X);
           end
           else
           begin
-            MakeVector(Vec1, QuantizedMousePos.V[0], 0, 0);
-            MakeVector(Vec2, QuantizedMousePos2.V[0], 0, 0);
+            MakeVector(Vec1, QuantizedMousePos.X, 0, 0);
+            MakeVector(Vec2, QuantizedMousePos2.X, 0, 0);
           end;
 
         end;
@@ -1475,15 +1475,15 @@ var
         begin
           if FForceUniformScale then
           begin
-            MakeVector(Vec1, QuantizedMousePos.V[1], QuantizedMousePos.V[1],
-              QuantizedMousePos.V[1]);
-            MakeVector(Vec2, QuantizedMousePos2.V[1], QuantizedMousePos2.V[1],
-              QuantizedMousePos2.V[1]);
+            MakeVector(Vec1, QuantizedMousePos.Y, QuantizedMousePos.Y,
+              QuantizedMousePos.Y);
+            MakeVector(Vec2, QuantizedMousePos2.Y, QuantizedMousePos2.Y,
+              QuantizedMousePos2.Y);
           end
           else
           begin
-            MakeVector(Vec1, 0, QuantizedMousePos.V[1], 0);
-            MakeVector(Vec2, 0, QuantizedMousePos2.V[1], 0);
+            MakeVector(Vec1, 0, QuantizedMousePos.Y, 0);
+            MakeVector(Vec2, 0, QuantizedMousePos2.Y, 0);
           end;
         end;
 
@@ -1491,15 +1491,15 @@ var
         begin
           if FForceUniformScale then
           begin
-            MakeVector(Vec1, QuantizedMousePos.V[2], QuantizedMousePos.V[2],
-              QuantizedMousePos.V[2]);
-            MakeVector(Vec2, QuantizedMousePos2.V[2], QuantizedMousePos2.V[2],
-              QuantizedMousePos2.V[2]);
+            MakeVector(Vec1, QuantizedMousePos.Z, QuantizedMousePos.Z,
+              QuantizedMousePos.Z);
+            MakeVector(Vec2, QuantizedMousePos2.Z, QuantizedMousePos2.Z,
+              QuantizedMousePos2.Z);
           end
           else
           begin
-            MakeVector(Vec1, 0, 0, QuantizedMousePos.V[2]);
-            MakeVector(Vec2, 0, 0, QuantizedMousePos2.V[2]);
+            MakeVector(Vec1, 0, 0, QuantizedMousePos.Z);
+            MakeVector(Vec2, 0, 0, QuantizedMousePos2.Z);
           end;
         end;
     else

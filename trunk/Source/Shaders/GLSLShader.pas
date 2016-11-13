@@ -619,32 +619,32 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector2f(const Value: TVector2f);
 begin
-  GL.Uniform2f(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2f(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector2i(const Value: TVector2i);
 begin
-  GL.Uniform2i(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2i(FParameterID, Value.X, Value.Y);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3f(const Value: TVector3f);
 begin
-  GL.Uniform3f(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3f(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector3i(const Value: TVector3i);
 begin
-  GL.Uniform3i(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3i(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4f(const Value: TVector4f);
 begin
-  GL.Uniform4f(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4f(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TGLSLShaderParameter.SetAsVector4i(const Value: TVector4i);
 begin
-  GL.Uniform4i(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 function TGLSLShaderParameter.GetAsUniformBuffer: GLenum;
@@ -669,7 +669,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector2ui(const Value: TVector2ui);
 begin
-  GL.Uniform2ui(FParameterID, Value.V[0], Value.V[1]);
+  GL.Uniform2ui(FParameterID, Value.X, Value.Y);
 end;
 
 function TGLSLShaderParameter.GetAsVector3ui: TVector3ui;
@@ -679,7 +679,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector3ui(const Value: TVector3ui);
 begin
-  GL.Uniform3ui(FParameterID, Value.V[0], Value.V[1], Value.V[2]);
+  GL.Uniform3ui(FParameterID, Value.X, Value.Y, Value.Z);
 end;
 
 function TGLSLShaderParameter.GetAsVector4ui: TVector4ui;
@@ -689,7 +689,7 @@ end;
 
 procedure TGLSLShaderParameter.SetAsVector4ui(const Value: TVector4ui);
 begin
-  GL.Uniform4ui(FParameterID, Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+  GL.Uniform4ui(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
 procedure TGLSLShaderParameter.SetAsUniformBuffer(UBO: Cardinal);

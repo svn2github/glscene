@@ -2610,28 +2610,28 @@ begin
           FLocalMatrixList := AllocMem(SizeOf(TMatrix) * Rotation.Count);
           for i := 0 to Rotation.Count - 1 do
           begin
-            if Rotation[i].V[0] <> 0 then
+            if Rotation[i].X <> 0 then
             begin
-              SinCosine(Rotation[i].V[0], s, c);
+              SinCosine(Rotation[i].X, s, c);
               mat := CreateRotationMatrixX(s, c);
             end
             else
               mat := IdentityHmgMatrix;
-            if Rotation[i].V[1] <> 0 then
+            if Rotation[i].Y <> 0 then
             begin
-              SinCosine(Rotation[i].V[1], s, c);
+              SinCosine(Rotation[i].Y, s, c);
               rmat := CreateRotationMatrixY(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
-            if Rotation[i].V[2] <> 0 then
+            if Rotation[i].Z <> 0 then
             begin
-              SinCosine(Rotation[i].V[2], s, c);
+              SinCosine(Rotation[i].Z, s, c);
               rmat := CreateRotationMatrixZ(s, c);
               mat := MatrixMultiply(mat, rmat);
             end;
-            mat.V[3].V[0] := Position[i].V[0];
-            mat.V[3].V[1] := Position[i].V[1];
-            mat.V[3].V[2] := Position[i].V[2];
+            mat.W.X := Position[i].X;
+            mat.W.Y := Position[i].Y;
+            mat.W.Z := Position[i].Z;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -2642,10 +2642,10 @@ begin
           begin
             quat := Quaternion[i];
             mat := QuaternionToMatrix(quat);
-            mat.V[3].V[0] := Position[i].V[0];
-            mat.V[3].V[1] := Position[i].V[1];
-            mat.V[3].V[2] := Position[i].V[2];
-            mat.V[3].V[3] := 1;
+            mat.W.X := Position[i].X;
+            mat.W.Y := Position[i].Y;
+            mat.W.Z := Position[i].Z;
+            mat.W.W := 1;
             FLocalMatrixList^[i] := mat;
           end;
         end;
@@ -2703,13 +2703,13 @@ begin
   for i := 0 to Rotation.Count - 1 do
   begin
     mat := IdentityHmgMatrix;
-    SinCosine(Rotation[i].V[0], s, c);
+    SinCosine(Rotation[i].X, s, c);
     rmat := CreateRotationMatrixX(s, c);
     mat := MatrixMultiply(mat, rmat);
-    SinCosine(Rotation[i].V[1], s, c);
+    SinCosine(Rotation[i].Y, s, c);
     rmat := CreateRotationMatrixY(s, c);
     mat := MatrixMultiply(mat, rmat);
-    SinCosine(Rotation[i].V[2], s, c);
+    SinCosine(Rotation[i].Z, s, c);
     rmat := CreateRotationMatrixZ(s, c);
     mat := MatrixMultiply(mat, rmat);
     Quaternion.Add(QuaternionFromMatrix(mat));
@@ -3090,14 +3090,14 @@ begin
   mrci.GLStates.PointSize := 5;
   GL.Begin_(GL_POINTS);
   IssueColor(Color);
-  GL.Vertex3fv(@GlobalMatrix.V[3].V[0]);
+  GL.Vertex3fv(@GlobalMatrix.W.X);
   GL.End_;
   // parent-self bone line
   if Owner is TGLSkeletonBone then
   begin
     GL.Begin_(GL_LINES);
-    GL.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.V[3].V[0]);
-    GL.Vertex3fv(@GlobalMatrix.V[3].V[0]);
+    GL.Vertex3fv(@TGLSkeletonBone(Owner).GlobalMatrix.W.X);
+    GL.Vertex3fv(@GlobalMatrix.W.X);
     GL.End_;
   end;
   // render sub-bones
@@ -4118,10 +4118,10 @@ var
 begin
   GetExtents(dMin, dMax);
 
-  Result.V[0] := (dMin.V[0] + dMax.V[0]) / 2;
-  Result.V[1] := (dMin.V[1] + dMax.V[1]) / 2;
-  Result.V[2] := (dMin.V[2] + dMax.V[2]) / 2;
-  Result.V[3] := 0;
+  Result.X := (dMin.X + dMax.X) / 2;
+  Result.Y := (dMin.Y + dMax.Y) / 2;
+  Result.Z := (dMin.Z + dMax.Z) / 2;
+  Result.W := 0;
 end;
 
 // Prepare
@@ -4144,12 +4144,12 @@ var
   min, max: TAffineVector;
 begin
   GetExtents(min, max);
-  Result := (aPoint.V[0] >= min.V[0]) and
-            (aPoint.V[1] >= min.V[1]) and
-            (aPoint.V[2] >= min.V[2]) and
-            (aPoint.V[0] <= max.V[0]) and
-            (aPoint.V[1] <= max.V[1]) and
-            (aPoint.V[2] <= max.V[2]);
+  Result := (aPoint.X >= min.X) and
+            (aPoint.Y >= min.Y) and
+            (aPoint.Z >= min.Z) and
+            (aPoint.X <= max.X) and
+            (aPoint.Y <= max.Y) and
+            (aPoint.Z <= max.Z);
 end;
 
 // SetTexCoords
@@ -4682,20 +4682,20 @@ begin
       begin
         SortVertexData(1);
 
-        if (t[2].V[1] - t[0].V[1]) = 0 then
+        if (t[2].Y - t[0].Y) = 0 then
           interp := 1
         else
-          interp := (t[1].V[1] - t[0].V[1]) / (t[2].V[1] - t[0].V[1]);
+          interp := (t[1].Y - t[0].Y) / (t[2].Y - t[0].Y);
 
         vt := VectorLerp(v[0], v[2], interp);
-        interp := t[0].V[0] + (t[2].V[0] - t[0].V[0]) * interp;
+        interp := t[0].X + (t[2].X - t[0].X) * interp;
         vt := VectorSubtract(vt, v[1]);
-        if t[1].V[0] < interp then
+        if t[1].X < interp then
           vt := VectorNegate(vt);
         dot := VectorDotProduct(vt, n[j]);
-        vt.V[0] := vt.V[0] - n[j].V[0] * dot;
-        vt.V[1] := vt.V[1] - n[j].V[1] * dot;
-        vt.V[2] := vt.V[2] - n[j].V[2] * dot;
+        vt.X := vt.X - n[j].X * dot;
+        vt.Y := vt.Y - n[j].Y * dot;
+        vt.Z := vt.Z - n[j].Z * dot;
         tangent[j] := VectorMake(VectorNormalize(vt), 0);
       end;
 
@@ -4704,20 +4704,20 @@ begin
       begin
         SortVertexData(0);
 
-        if (t[2].V[0] - t[0].V[0]) = 0 then
+        if (t[2].X - t[0].X) = 0 then
           interp := 1
         else
-          interp := (t[1].V[0] - t[0].V[0]) / (t[2].V[0] - t[0].V[0]);
+          interp := (t[1].X - t[0].X) / (t[2].X - t[0].X);
 
         vt := VectorLerp(v[0], v[2], interp);
-        interp := t[0].V[1] + (t[2].V[1] - t[0].V[1]) * interp;
+        interp := t[0].Y + (t[2].Y - t[0].Y) * interp;
         vt := VectorSubtract(vt, v[1]);
-        if t[1].V[1] < interp then
+        if t[1].Y < interp then
           vt := VectorNegate(vt);
         dot := VectorDotProduct(vt, n[j]);
-        vt.V[0] := vt.V[0] - n[j].V[0] * dot;
-        vt.V[1] := vt.V[1] - n[j].V[1] * dot;
-        vt.V[2] := vt.V[2] - n[j].V[2] * dot;
+        vt.X := vt.X - n[j].X * dot;
+        vt.Y := vt.Y - n[j].Y * dot;
+        vt.Z := vt.Z - n[j].Z * dot;
         binormal[j] := VectorMake(VectorNormalize(vt), 0);
       end;
     end;
@@ -6154,7 +6154,7 @@ begin
       // transform normal
       SetVector(p, Normals[i]);
       invMat := bone.GlobalMatrix;
-      invMat.V[3] := NullHmgPoint;
+      invMat.W := NullHmgPoint;
       InvertMatrix(invMat);
       p := VectorTransform(p, invMat);
       invMesh.Normals[i] := PAffineVector(@p)^;
@@ -6221,7 +6221,7 @@ begin
     refNormals := Normals;
   end;
   skeleton := Owner.Owner.Skeleton;
-  n.V[3] := 0;
+  n.W := 0;
   if BonesPerVertex = 1 then
   begin
     // simple case, one bone per vertex
@@ -7341,7 +7341,7 @@ begin
     FSkeleton := TGLSkeleton.CreateOwned(Self);
   FUseMeshMaterials := True;
   FAutoCentering := [];
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   FBaryCenterOffsetChanged := True;
   FAutoScaling := TGLCoordinates.CreateInitialized(Self, XYZWHmgVector,
     csPoint);
@@ -7671,13 +7671,13 @@ function TGLBaseMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     MeshObjects.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache.V[0] := (dMax.V[0] - dMin.V[0]) / 2;
-    FAxisAlignedDimensionsCache.V[1] := (dMax.V[1] - dMin.V[1]) / 2;
-    FAxisAlignedDimensionsCache.V[2] := (dMax.V[2] - dMin.V[2]) / 2;
-    FAxisAlignedDimensionsCache.V[3] := 0;
+    FAxisAlignedDimensionsCache.X := (dMax.X - dMin.X) / 2;
+    FAxisAlignedDimensionsCache.Y := (dMax.Y - dMin.Y) / 2;
+    FAxisAlignedDimensionsCache.Z := (dMax.Z - dMin.Z) / 2;
+    FAxisAlignedDimensionsCache.W := 0;
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -7693,10 +7693,10 @@ begin
   begin
     MeshObjects.GetExtents(dMin, dMax);
 
-    FBaryCenterOffset.V[0] := (dMin.V[0] + dMax.V[0]) / 2;
-    FBaryCenterOffset.V[1] := (dMin.V[1] + dMax.V[1]) / 2;
-    FBaryCenterOffset.V[2] := (dMin.V[2] + dMax.V[2]) / 2;
-    FBaryCenterOffset.V[3] := 0;
+    FBaryCenterOffset.X := (dMin.X + dMax.X) / 2;
+    FBaryCenterOffset.Y := (dMin.Y + dMax.Y) / 2;
+    FBaryCenterOffset.Z := (dMin.Z + dMax.Z) / 2;
+    FBaryCenterOffset.W := 0;
     FBaryCenterOffsetChanged := False;
   end;
   Result := FBaryCenterOffset;
@@ -7751,17 +7751,17 @@ begin
   begin
     GetExtents(min, max);
     if macCenterX in AutoCentering then
-      delta.V[0] := -0.5 * (min.V[0] + max.V[0])
+      delta.X := -0.5 * (min.X + max.X)
     else
-      delta.V[0] := 0;
+      delta.X := 0;
     if macCenterY in AutoCentering then
-      delta.V[1] := -0.5 * (min.V[1] + max.V[1])
+      delta.Y := -0.5 * (min.Y + max.Y)
     else
-      delta.V[1] := 0;
+      delta.Y := 0;
     if macCenterZ in AutoCentering then
-      delta.V[2] := -0.5 * (min.V[2] + max.V[2])
+      delta.Z := -0.5 * (min.Z + max.Z)
     else
-      delta.V[2] := 0;
+      delta.Z := 0;
   end;
   MeshObjects.Translate(delta);
 
@@ -7918,7 +7918,7 @@ end;
 
 procedure TGLBaseMesh.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   FBaryCenterOffsetChanged := True;
   DropMaterialLibraryCache;
   MeshObjects.Prepare;

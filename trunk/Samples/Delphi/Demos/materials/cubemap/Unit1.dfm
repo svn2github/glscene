@@ -11,6 +11,9 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
+  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
@@ -21,7 +24,7 @@ object Form1: TForm1
     Camera = GLCamera1
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clTeal
-    FieldOfView = 62.487583160400400000
+    FieldOfView = 62.487583160400390000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -40,7 +43,7 @@ object Form1: TForm1
     Left = 8
     Top = 8
     object DummyCube1: TGLDummyCube
-      CubeSize = 0.800000011920928900
+      CubeSize = 0.800000011920929000
       VisibleAtRunTime = True
     end
     object GLLightSource1: TGLLightSource

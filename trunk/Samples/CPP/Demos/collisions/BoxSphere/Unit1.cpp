@@ -53,18 +53,18 @@ Glvectorgeometry::TMatrix RandomRotation(Glvectorgeometry::TMatrix const &aMatri
   // Save scale.
   for (I = 0; I < 2; I++)
 	aScale.V[I] = VectorLength(aMatrix.V[I]);
-  mat.V[3] = aMatrix.V[3];
+  mat.W = aMatrix.W;
   // Generate two not equal random vectors.
-  while (VectorNorm(VectorSubtract(mat.V[0], mat.V[1])) < 10e-6)
+  while (VectorNorm(VectorSubtract(mat.X, mat.Y)) < 10e-6)
   {
-	while (VectorNorm(mat.V[0]) < 10e-6)
-	  mat.V[0] = VectorMake(Random() * 2 - 1, Random() * 2 - 1, Random() * 2 - 1);
-	while (VectorNorm(mat.V[1]) < 10e-6)
-	  mat.V[1] = VectorMake(Random() * 2 - 1, Random() * 2 - 1, Random() * 2 - 1);
+	while (VectorNorm(mat.X) < 10e-6)
+	  mat.X = VectorMake(Random() * 2 - 1, Random() * 2 - 1, Random() * 2 - 1);
+	while (VectorNorm(mat.Y) < 10e-6)
+	  mat.Y = VectorMake(Random() * 2 - 1, Random() * 2 - 1, Random() * 2 - 1);
   }
   // Calculate two perpendicular vectors.
-  mat.V[2] = VectorCrossProduct(mat.V[0], mat.V[1]);
-  mat.V[1] = VectorCrossProduct(mat.V[0], mat.V[2]);
+  mat.Z = VectorCrossProduct(mat.X, mat.Y);
+  mat.Y = VectorCrossProduct(mat.X, mat.Z);
   // Restore scale.
   for (I = 0; I < 2; I++)
   {
@@ -90,18 +90,18 @@ void __fastcall TForm1::Edit1Change(TObject *Sender)
 	exit;
   GLLines3->Nodes->Clear();
   // Calc data.
-  BoxMatrix.V[3].V[0] = UpDown1->Position * EditorsScale;
-  BoxMatrix.V[3].V[1] = UpDown2->Position * EditorsScale;
-  BoxMatrix.V[3].V[2] = UpDown3->Position * EditorsScale;
-  BoxMatrix.V[3].V[3] = 1;
+  BoxMatrix.W.X = UpDown1->Position * EditorsScale;
+  BoxMatrix.W.Y = UpDown2->Position * EditorsScale;
+  BoxMatrix.W.Z = UpDown3->Position * EditorsScale;
+  BoxMatrix.W.W = 1;
 
-  BoxScale.V[0] = UpDown4->Position * EditorsScale;
-  BoxScale.V[1] = UpDown5->Position * EditorsScale;
-  BoxScale.V[2] = UpDown6->Position * EditorsScale;
+  BoxScale.X = UpDown4->Position * EditorsScale;
+  BoxScale.Y = UpDown5->Position * EditorsScale;
+  BoxScale.Z = UpDown6->Position * EditorsScale;
 
-  SpherePos.V[0] = UpDown7->Position * EditorsScale;
-  SpherePos.V[1] = UpDown8->Position * EditorsScale;
-  SpherePos.V[2] = UpDown9->Position * EditorsScale;
+  SpherePos.X = UpDown7->Position * EditorsScale;
+  SpherePos.Y = UpDown8->Position * EditorsScale;
+  SpherePos.Z = UpDown9->Position * EditorsScale;
 
   SphereRadius = UpDown10->Position * EditorsScale;
 
@@ -131,9 +131,9 @@ void __fastcall TForm1::Edit1Change(TObject *Sender)
   DCCamTarget->Visible = Res1;
   // Draw GLCube1 and GLSphere1.
   GLCube1->Matrix = BoxMatrix;
-  GLCube1->CubeWidth = BoxScale.V[0];
-  GLCube1->CubeHeight = BoxScale.V[1];
-  GLCube1->CubeDepth = BoxScale.V[2];
+  GLCube1->CubeWidth = BoxScale.X;
+  GLCube1->CubeHeight = BoxScale.Y;
+  GLCube1->CubeDepth = BoxScale.Z;
   DCCube1->Matrix = GLCube1->Matrix;
   DCCube1->Scale->SetVector(BoxScale);
   GLSphere1->Position->SetPoint(SpherePos);

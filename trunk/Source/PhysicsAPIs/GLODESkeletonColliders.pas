@@ -183,10 +183,10 @@ begin
   inherited;
   if Assigned(FGeom) then begin
     Mat:=GlobalMatrix;
-    dGeomSetPosition(FGeom,Mat.V[3].V[0],Mat.V[3].V[1],Mat.V[3].V[2]);
-    R[0]:=Mat.V[0].V[0]; R[1]:=Mat.V[1].V[0]; R[2]:= Mat.V[2].V[0]; R[3]:= 0;
-    R[4]:=Mat.V[0].V[1]; R[5]:=Mat.V[1].V[1]; R[6]:= Mat.V[2].V[1]; R[7]:= 0;
-    R[8]:=Mat.V[0].V[2]; R[9]:=Mat.V[1].V[2]; R[10]:=Mat.V[2].V[2]; R[11]:=0;
+    dGeomSetPosition(FGeom,Mat.W.X,Mat.W.Y,Mat.W.Z);
+    R[0]:=Mat.X.X; R[1]:=Mat.Y.X; R[2]:= Mat.Z.X; R[3]:= 0;
+    R[4]:=Mat.X.Y; R[5]:=Mat.Y.Y; R[6]:= Mat.Z.Y; R[7]:= 0;
+    R[8]:=Mat.X.Z; R[9]:=Mat.Y.Z; R[10]:=Mat.Z.Z; R[11]:=0;
     dGeomSetRotation(FGeom,R);
   end;
 end;

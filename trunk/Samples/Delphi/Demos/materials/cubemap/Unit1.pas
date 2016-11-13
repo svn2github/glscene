@@ -3,13 +3,27 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils,  System.Classes,
-  Vcl.Graphics, Vcl.Imaging.Jpeg,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Imaging.Jpeg,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
 
   //GLS
-  GLScene,  GLWin32Viewer,  GLObjects,  GLTeapot,  GLCrossPlatform,
-  GLTexture,  GLContext,  GLUtils,  GLCoordinates,  GLBaseClasses;
+  GLScene,
+  GLWin32Viewer,
+  GLObjects,
+  GLTeapot,
+  GLCrossPlatform,
+  GLTexture,
+  GLContext,
+  GLUtils,
+  GLCoordinates,
+  GLBaseClasses,
+  GLGeomObjects;
 
 type
   TForm1 = class(TForm)
@@ -26,6 +40,7 @@ type
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Button1Click(Sender: TObject);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     CubmapSupported: Boolean;
@@ -40,6 +55,12 @@ var
 implementation
 
 {$R *.dfm}
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  // Our cube map images are here
+  SetGLSceneMediaDir();
+end;
 
 procedure TForm1.GLSceneViewer1BeforeRender(Sender: TObject);
 begin
@@ -58,9 +79,6 @@ begin
     ShowMessage('Your graphics board does not support cube maps...');
     Exit;
   end;
-  // Our cube map images are here
-  SetGLSceneMediaDir();
-
   with Teapot1.Material.Texture do
   begin
     // We need a CubeMapImage, which unlike the "regular Images" stores

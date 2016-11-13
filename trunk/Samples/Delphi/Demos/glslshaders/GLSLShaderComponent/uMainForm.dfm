@@ -166,7 +166,7 @@ object GLSLTestForm: TGLSLTestForm
     Scene = Scene
     MaxDeltaTime = 0.020000000000000000
     OnProgress = CadencerProgress
-    Left = 56
+    Left = 88
     Top = 16
   end
   object MaterialLibrary: TGLMaterialLibrary
@@ -183,7 +183,7 @@ object GLSLTestForm: TGLSLTestForm
         Tag = 0
         Shader = GLSLShader
       end>
-    Left = 88
+    Left = 168
     Top = 16
   end
   object GLSLShader: TGLSLShader
@@ -193,8 +193,8 @@ object GLSLTestForm: TGLSLTestForm
     OnUnApply = GLSLShaderUnApply
     OnInitialize = GLSLShaderInitialize
     ShaderStyle = ssReplace
-    Left = 152
-    Top = 16
+    Left = 32
+    Top = 72
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
@@ -213,7 +213,7 @@ object GLSLTestForm: TGLSLTestForm
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 120
+    Left = 256
     Top = 16
   end
 end

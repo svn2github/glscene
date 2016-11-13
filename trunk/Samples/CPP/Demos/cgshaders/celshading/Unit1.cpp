@@ -31,14 +31,13 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   float r;
+  SetGLSceneMediaDir();
 
   // Load the vertex and fragment Cg programs from project dir
-  SetCurrentDir(ExtractFilePath(Application->ExeName));
-  CgCellShader->VertexProgram->LoadFromFile("cellshading_vp.cg");
-  CgCellShader->FragmentProgram->LoadFromFile("cellshading_fp.cg");
+  CgCellShader->VertexProgram->LoadFromFile("Shaders\\cellshading_vp.cg");
+  CgCellShader->FragmentProgram->LoadFromFile("Shaders\\cellshading_fp.cg");
 
   // Load and scale the actor from media dir
-  SetGLSceneMediaDir();
   GLActor1->LoadFromFile("waste.md2");
 
   r = GLActor1->BoundingSphereRadius();

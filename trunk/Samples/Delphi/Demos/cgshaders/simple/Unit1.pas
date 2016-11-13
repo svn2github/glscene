@@ -3,15 +3,32 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls,
 
   //nVIDIA
-  Cg, cgGL,
+  Cg, CgGL,
   //GLS
-  GLScene, GLObjects, GLWin32Viewer, GLTexture, GLCgShader, GLVectorGeometry,
-  GLCadencer, GLVectorFileObjects, GLFile3DS, GLGraph, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses, GLUtils;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLTexture,
+  GLCgShader,
+  GLVectorGeometry,
+  GLCadencer,
+  GLVectorFileObjects,
+  GLFile3DS,
+  GLGraph,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -100,12 +117,13 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+   SetGLSceneMediaDir();
    // Load Cg proggy
    with CgShader1 do begin
-     VertexProgram.LoadFromFile('simple_vp.cg');
+     VertexProgram.LoadFromFile('Shaders\simple_vp.cg');
      MemoVertCode.Lines.Assign(VertexProgram.Code);
 
-     FragmentProgram.LoadFromFile('simple_fp.cg');
+     FragmentProgram.LoadFromFile('Shaders\simple_fp.cg');
      MemoFragCode.Lines.Assign(FragmentProgram.Code);
 
      VertexProgram.Enabled:=false;

@@ -4,11 +4,16 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
   Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls,
 
-  // GLScene
-  GLScene, GLCadencer, GLObjects, GLVectorTypes,
+  // GLS
+  GLScene,
+  GLCadencer,
+  GLObjects,
+  GLVectorTypes,
   GLWin32Viewer, GLKeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
   GLBaseClasses,  GLVectorGeometry, GLGeomObjects, GLBitmapFont,
   GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
@@ -175,8 +180,8 @@ begin
     case Step of
       0:
       begin
-        CubeWidth := Length.V[0]*2;
-        CubeDepth := Length.V[2]*2;
+        CubeWidth := Length.X*2;
+        CubeDepth := Length.Z*2;
       end;
       1: CubeHeight := FVectorLength;
       2:  FCreationScenarious := -1;
@@ -194,8 +199,8 @@ begin
     case Step of
       0:
       begin
-        Width := Length.V[0]*2;
-        Height := Length.V[2]*2;
+        Width := Length.X*2;
+        Height := Length.Z*2;
       end;
       1: FCreationScenarious := -1;
     end;
@@ -219,16 +224,15 @@ var
   v: TVector;
   InvertedY: Integer;
 begin
-
   InvertedY := Viewer.Height - Y;
 
   SetVector(v, X, InvertedY, 0);
  if not isy then
   Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ
-   (v, GLTargetCamera.AbsolutePosition.V[1], Result)
+   (v, GLTargetCamera.AbsolutePosition.Y, Result)
    else
      Viewer.Buffer.ScreenVectorIntersectWithPlaneXY
-       (v, GLTargetCamera.AbsolutePosition.V[2], Result)
+       (v, GLTargetCamera.AbsolutePosition.Z, Result)
 end;
 
 procedure TForm1.UpdateTreeView;
@@ -450,8 +454,6 @@ begin
        FCreationScenarious := 0;
     end;
   end;
-
-
 end;
 
 procedure TForm1.ViewerMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
@@ -482,8 +484,8 @@ begin
         else
           MousePos := MouseWorldPos(x, y, true);
       MousePos := VectorSubtract(LostMousePos,MousePos);
-      MousePos.V[0]:= -MousePos.V[0]*0.4 ;
-      MousePos.V[2]:= -MousePos.V[2]*0.4 ;
+      MousePos.X:= -MousePos.X*0.4 ;
+      MousePos.Z:= -MousePos.Z*0.4 ;
       GLTargetCamera.Position.AsVector := Vectoradd(pos, MousePos);
     end;
     if SpeedButton16.Down or SpeedButton19.Down or SpeedButton20.Down then

@@ -304,7 +304,7 @@ begin
     for i:=0 to 2 do
       Result.V[i].V[j]:=Tag.rotation.V[i].V[j];
   for i:=0 to 2 do
-    Result.V[3].V[i]:=Tag.vPosition.V[i];
+    Result.W.V[i]:=Tag.vPosition.V[i];
 end;
 
 end.

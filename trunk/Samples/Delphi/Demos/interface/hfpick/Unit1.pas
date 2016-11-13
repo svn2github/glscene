@@ -85,8 +85,8 @@ begin
       // convert to heightfield local coordinates
       v:=HeightField.AbsoluteToLocal(v);
       // convert that local coords to grid pos
-      ix:=Round(v.V[0]);
-      iy:=Round(v.V[1]);
+      ix:=Round(v.X);
+      iy:=Round(v.Y);
       // if we are in the grid...
       if (ix>=-5) and (ix<=5) and (iy>=-5) and (iy<=5) then begin
          // show last coord in the caption bar

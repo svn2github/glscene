@@ -205,9 +205,9 @@ var
     Cube := TVCCube.Create(VerletWorld);
     Cube.Location := AffineVectorMake(GLCube.AbsolutePosition);
     Cube.FrictionRatio := 0.1;
-    Sides.V[0] := GLCube.CubeWidth * 1.1;
-    Sides.V[1] := GLCube.CubeHeight * 1.1;
-    Sides.V[2] := GLCube.CubeDepth * 1.1;
+    Sides.X := GLCube.CubeWidth * 1.1;
+    Sides.Y := GLCube.CubeHeight * 1.1;
+    Sides.Z := GLCube.CubeDepth * 1.1;
     Cube.Sides := Sides;//}
   end;
 
@@ -437,9 +437,9 @@ begin
          VCSphere.Location := GLSphere1.Position.AsAffineVector;
 
          dBodyAddForce(dGeomGetBody(ODESphere),
-                       VCSphere.KickbackForce.V[0],
-                       VCSphere.KickbackForce.V[1],
-                       VCSphere.KickbackForce.V[2]);
+                       VCSphere.KickbackForce.X,
+                       VCSphere.KickbackForce.Y,
+                       VCSphere.KickbackForce.Z);
 
          dSpaceCollide (space,nil,nearCallback);
          dWorldStep(World, VerletWorld.MaxDeltaTime);
@@ -504,28 +504,28 @@ procedure TfrmClothify.GLDirectOpenGL1Render(Sender: TObject; var rci: TGLRender
     rci.GLStates.LineWidth := w;
 
     GL.Begin_(GL_LINE_STRIP);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.min.V[2]);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.min.Z);
 
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
+      GL.Vertex3f(AABB.min.X,AABB.min.Y, AABB.max.Z);
     GL.End_;
 
     GL.Begin_(GL_LINES);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.min.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.min.X,AABB.max.Y, AABB.max.Z);
 
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.max.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.max.Y, AABB.max.Z);
 
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.min.V[2]);
-      GL.Vertex3f(AABB.max.V[0],AABB.min.V[1], AABB.max.V[2]);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.min.Z);
+      GL.Vertex3f(AABB.max.X,AABB.min.Y, AABB.max.Z);
     GL.End_;
   end;
 

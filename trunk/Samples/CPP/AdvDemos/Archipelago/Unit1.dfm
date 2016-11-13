@@ -15,8 +15,6 @@ object Form1: TForm1
   OldCreateOrder = False
   OnCreate = FormCreate
   OnKeyPress = FormKeyPress
-  ExplicitWidth = 320
-  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer: TGLSceneViewer
@@ -110,6 +108,7 @@ object Form1: TForm1
       MaterialLibrary = MaterialLibrary
       CLODPrecision = 5
       OnHeightDataPostRender = TerrainRendererHeightDataPostRender
+      ContourWidth = 0
     end
     object DOWake: TGLDirectOpenGL
       OnProgress = DOWakeProgress
@@ -188,7 +187,6 @@ object Form1: TForm1
         Material.Texture.Disabled = False
         Texture2Name = 'wake'
       end>
-    TexturePaths = '..\\Data'
     Left = 40
     Top = 96
   end

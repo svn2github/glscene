@@ -65,8 +65,8 @@ void __fastcall TForm1::GLBumpmapHDS1NewTilePrepared(TGLBumpmapHDS * Sender,
 	normalMapMaterial->Material->MaterialOptions << moNoLighting;
   n = VectorNormalize(SPSun->AbsolutePosition);
   ScaleVector(n, 0.5);
-  n.V[1] = -n.V[1];
-  n.V[2] = -n.V[2];
+  n.Y = -n.Y;
+  n.Z = -n.Z;
   AddVector(n, 0.5);
   normalMapMaterial->Material->FrontProperties->Diffuse->Color = n;
 }

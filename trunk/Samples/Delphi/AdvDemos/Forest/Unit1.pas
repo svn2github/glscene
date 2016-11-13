@@ -621,10 +621,10 @@ begin
   rci.GLStates.ActiveTextureEnabled[ttTexture2D] := True;
 
   tex0Matrix := IdentityHmgMatrix;
-  tex0Matrix.V[0].V[0] := 3 * cWaveScale;
-  tex0Matrix.V[1].V[1] := 4 * cWaveScale;
-  tex0Matrix.V[3].V[0] := tWave * 1.1;
-  tex0Matrix.V[3].V[1] := tWave * 1.06;
+  tex0Matrix.X.X := 3 * cWaveScale;
+  tex0Matrix.Y.Y := 4 * cWaveScale;
+  tex0Matrix.W.X := tWave * 1.1;
+  tex0Matrix.W.Y := tWave * 1.06;
   rci.GLStates.SetGLTextureMatrix(tex0Matrix);
 
   rci.GLStates.ActiveTexture := 1;

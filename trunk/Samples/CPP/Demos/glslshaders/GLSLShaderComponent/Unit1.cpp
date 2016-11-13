@@ -38,7 +38,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 {
   SetGLSceneMediaDir();
   //First load scripts from shader directory in project dir
-  GLSLShader->LoadShaderPrograms("Shader.Vert","Shader.Frag");
+  GLSLShader->LoadShaderPrograms("Shaders\\Shader.Vert","Shaders\\Shader.Frag");
   GLSLShader->Enabled = true;
 
 

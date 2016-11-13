@@ -270,7 +270,7 @@ begin
     f := VectorAdd(fup, fdn);
     f := VectorAdd(f, frg);
     f := VectorAdd(f, flf);
-    f.V[1] := 0; // Do not allow the body to go up or down
+    f.Y := 0; // Do not allow the body to go up or down
     NormalizeVector(f);
 
     // Move the body

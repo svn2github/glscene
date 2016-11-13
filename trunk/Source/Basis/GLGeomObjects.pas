@@ -753,7 +753,7 @@ begin
         else
         begin
           // arctan2 returns results between -pi and +pi, we want between 0 and 360
-          angle := 180 / pi * ArcTangent2(localIntPoint.V[0], localIntPoint.V[1]);
+          angle := 180 / pi * ArcTangent2(localIntPoint.X, localIntPoint.Y);
           if angle < 0 then
             angle := angle + 360;
           // we also want StartAngle and StartAngle+SweepAngle to be in this range
@@ -1060,12 +1060,12 @@ begin
   if coBottom in Parts then
   begin
     // bottom can only be raycast from beneath
-    if localRayStart.V[1] < -FHeight * 0.5 then
+    if localRayStart.Y < -FHeight * 0.5 then
     begin
       if RayCastPlaneIntersect(localRayStart, localRayVector,
         PointMake(0, -FHeight * 0.5, 0), YHmgVector, @ip) then
       begin
-        d := VectorNorm(ip.V[0], ip.V[2]);
+        d := VectorNorm(ip.X, ip.Z);
         if (d <= Sqr(BottomRadius)) then
         begin
           Result := true;
@@ -1082,14 +1082,14 @@ begin
   begin
     hconst := -Sqr(BottomRadius) / Sqr(Height);
     // intersect against infinite cones (in positive and negative direction)
-    poly[0] := Sqr(localRayStart.V[0]) + hconst *
-               Sqr(localRayStart.V[1] - 0.5 * FHeight) +
-               Sqr(localRayStart.V[2]);
-    poly[1] := 2 * (localRayStart.V[0] * localRayVector.V[0] + hconst *
-                   (localRayStart.V[1] - 0.5 * FHeight) * localRayVector.V[1] +
-                    localRayStart.V[2]* localRayVector.V[2]);
-    poly[2] := Sqr(localRayVector.V[0]) + hconst * Sqr(localRayVector.V[1]) +
-               Sqr(localRayVector.V[2]);
+    poly[0] := Sqr(localRayStart.X) + hconst *
+               Sqr(localRayStart.Y - 0.5 * FHeight) +
+               Sqr(localRayStart.Z);
+    poly[1] := 2 * (localRayStart.X * localRayVector.X + hconst *
+                   (localRayStart.Y - 0.5 * FHeight) * localRayVector.Y +
+                    localRayStart.Z* localRayVector.Z);
+    poly[2] := Sqr(localRayVector.X) + hconst * Sqr(localRayVector.Y) +
+               Sqr(localRayVector.Z);
     SetLength(roots, 0);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
@@ -1097,15 +1097,15 @@ begin
       t := minRoot;
       ip := VectorCombine(localRayStart, localRayVector, 1, t);
       // check that intersection with infinite cone is within the range we want
-      if (ip.V[1] > -FHeight * 0.5) and (ip.V[1] < FHeight * 0.5) then
+      if (ip.Y > -FHeight * 0.5) and (ip.Y < FHeight * 0.5) then
       begin
         Result := true;
         if Assigned(intersectPoint) then
           intersectPoint^ := LocalToAbsolute(ip);
         if Assigned(intersectNormal) then
         begin
-          ip.V[1] := hconst * (ip.V[1] - 0.5 * Height);
-          ip.V[3] := 0;
+          ip.Y := hconst * (ip.Y - 0.5 * Height);
+          ip.W := 0;
           NormalizeVector(ip);
           intersectNormal^ := LocalToAbsolute(ip);
         end;
@@ -1275,30 +1275,30 @@ begin
     hBottom := -hTop;
   end;
 
-  if locRayVector.V[1] = 0 then
+  if locRayVector.Y = 0 then
   begin
     // intersect if ray shot through the top/bottom planes
-    if (locRayStart.V[0] > hTop) or (locRayStart.V[0] < hBottom) then
+    if (locRayStart.X > hTop) or (locRayStart.X < hBottom) then
       Exit;
     tPlaneMin := -1E99;
     tPlaneMax := 1E99;
   end
   else
   begin
-    invRayVector1 := cOne / locRayVector.V[1];
+    invRayVector1 := cOne / locRayVector.Y;
     tr2 := Sqr(TopRadius);
 
     // compute intersection with topPlane
-    t := (hTop - locRayStart.V[1]) * invRayVector1;
+    t := (hTop - locRayStart.Y) * invRayVector1;
     if (t > 0) and (cyTop in Parts) then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
-      if Sqr(ip.V[0]) + Sqr(ip.V[2]) <= tr2 then
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
+      if Sqr(ip.X) + Sqr(ip.Z) <= tr2 then
       begin
         // intersect with top plane
         if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], hTop, ip.V[2], 1));
+          intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, hTop, ip.Z, 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
         Result := true;
@@ -1307,19 +1307,19 @@ begin
     tPlaneMin := t;
     tPlaneMax := t;
     // compute intersection with bottomPlane
-    t := (hBottom - locRayStart.V[1]) * invRayVector1;
+    t := (hBottom - locRayStart.Y) * invRayVector1;
     if (t > 0) and (cyBottom in Parts) then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
       if (t < tPlaneMin) or (not(cyTop in Parts)) then
       begin
-        if Sqr(ip.V[0]) + Sqr(ip.V[2]) <= tr2 then
+        if Sqr(ip.X) + Sqr(ip.Z) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], hBottom,
-              ip.V[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, hBottom,
+              ip.Z, 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
           Result := true;
@@ -1334,10 +1334,10 @@ begin
   if cySides in Parts then
   begin
     // intersect against cylinder infinite cylinder
-    poly[0] := Sqr(locRayStart.V[0]) + Sqr(locRayStart.V[2]) - Sqr(TopRadius);
-    poly[1] := 2 * (locRayStart.V[0] * locRayVector.V[0] + locRayStart.V[2] *
-      locRayVector.V[2]);
-    poly[2] := Sqr(locRayVector.V[0]) + Sqr(locRayVector.V[2]);
+    poly[0] := Sqr(locRayStart.X) + Sqr(locRayStart.Z) - Sqr(TopRadius);
+    poly[1] := 2 * (locRayStart.X * locRayVector.X + locRayStart.Z *
+      locRayVector.Z);
+    poly[2] := Sqr(locRayVector.X) + Sqr(locRayVector.Z);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
     begin
@@ -1351,8 +1351,8 @@ begin
             intersectPoint^ := LocalToAbsolute(ip);
           if Assigned(intersectNormal) then
           begin
-            ip.V[1] := 0;
-            ip.V[3] := 0;
+            ip.Y := 0;
+            ip.W := 0;
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
@@ -1678,30 +1678,30 @@ begin
     hBottom := -hTop;
   end;
 
-  if locRayVector.V[1] = 0 then
+  if locRayVector.Y = 0 then
   begin
     // intersect if ray shot through the top/bottom planes
-    if (locRayStart.V[0] > hTop) or (locRayStart.V[0] < hBottom) then
+    if (locRayStart.X > hTop) or (locRayStart.X < hBottom) then
       Exit;
     tPlaneMin := -1E99;
     tPlaneMax := 1E99;
   end
   else
   begin
-    invRayVector1 := cOne / locRayVector.V[1];
+    invRayVector1 := cOne / locRayVector.Y;
     tr2 := Sqr(Radius);
 
     // compute intersection with topPlane
-    t := (hTop - locRayStart.V[1]) * invRayVector1;
+    t := (hTop - locRayStart.Y) * invRayVector1;
     if (t > 0) and (cyTop in Parts) then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
-      if Sqr(ip.V[0]) + Sqr(ip.V[2]) <= tr2 then
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
+      if Sqr(ip.X) + Sqr(ip.Z) <= tr2 then
       begin
         // intersect with top plane
         if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], hTop, ip.V[2], 1));
+          intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, hTop, ip.Z, 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
         Result := true;
@@ -1710,19 +1710,19 @@ begin
     tPlaneMin := t;
     tPlaneMax := t;
     // compute intersection with bottomPlane
-    t := (hBottom - locRayStart.V[1]) * invRayVector1;
+    t := (hBottom - locRayStart.Y) * invRayVector1;
     if (t > 0) and (cyBottom in Parts) then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
       if (t < tPlaneMin) or (not(cyTop in Parts)) then
       begin
-        if Sqr(ip.V[0]) + Sqr(ip.V[2]) <= tr2 then
+        if Sqr(ip.X) + Sqr(ip.Z) <= tr2 then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], hBottom,
-              ip.V[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, hBottom,
+              ip.Z, 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
           Result := true;
@@ -1737,10 +1737,10 @@ begin
   if cySides in Parts then
   begin
     // intersect against cylinder infinite cylinder
-    poly[0] := Sqr(locRayStart.V[0]) + Sqr(locRayStart.V[2]) - Sqr(Radius);
-    poly[1] := 2 * (locRayStart.V[0] * locRayVector.V[0] +
-                    locRayStart.V[2] * locRayVector.V[2]);
-    poly[2] := Sqr(locRayVector.V[0]) + Sqr(locRayVector.V[2]);
+    poly[0] := Sqr(locRayStart.X) + Sqr(locRayStart.Z) - Sqr(Radius);
+    poly[1] := 2 * (locRayStart.X * locRayVector.X +
+                    locRayStart.Z * locRayVector.Z);
+    poly[2] := Sqr(locRayVector.X) + Sqr(locRayVector.Z);
     roots := SolveQuadric(@poly);
     if MinPositiveCoef(roots, minRoot) then
     begin
@@ -1754,8 +1754,8 @@ begin
             intersectPoint^ := LocalToAbsolute(ip);
           if Assigned(intersectNormal) then
           begin
-            ip.V[1] := 0;
-            ip.V[3] := 0;
+            ip.Y := 0;
+            ip.W := 0;
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
@@ -1956,7 +1956,7 @@ begin
 
   hTop := Height * 0.5;
   hBot := -hTop;
-  if locRayVector.V[1] < 0 then
+  if locRayVector.Y < 0 then
   begin // Sort the planes according to the direction of view
     h1 := hTop; // Height of the 1st plane
     h2 := hBot; // Height of the 2nd plane
@@ -1971,34 +1971,34 @@ begin
     Draw2 := (anTop in Parts);
   end; // if
 
-  if locRayVector.V[1] = 0 then
+  if locRayVector.Y = 0 then
   begin
     // intersect if ray shot through the top/bottom planes
-    if (locRayStart.V[0] > hTop) or (locRayStart.V[0] < hBot) then
+    if (locRayStart.X > hTop) or (locRayStart.X < hBot) then
       Exit;
     tPlaneMin := -1E99;
     tPlaneMax := 1E99;
   end
   else
   begin
-    invRayVector1 := cOne / locRayVector.V[1];
+    invRayVector1 := cOne / locRayVector.Y;
     tr2 := Sqr(TopRadius);
     tir2 := Sqr(TopInnerRadius);
     FirstIntersected := False;
 
     // compute intersection with first plane
-    t := (h1 - locRayStart.V[1]) * invRayVector1;
+    t := (h1 - locRayStart.Y) * invRayVector1;
     if (t > 0) and Draw1 then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
-      d2 := Sqr(ip.V[0]) + Sqr(ip.V[2]);
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
+      d2 := Sqr(ip.X) + Sqr(ip.Z);
       if (d2 <= tr2) and (d2 >= tir2) then
       begin
         // intersect with top plane
         FirstIntersected := true;
         if Assigned(intersectPoint) then
-          intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], h1, ip.V[2], 1));
+          intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, h1, ip.Z, 1));
         if Assigned(intersectNormal) then
           intersectNormal^ := LocalToAbsolute(YHmgVector);
         Result := true;
@@ -2008,19 +2008,19 @@ begin
     tPlaneMax := t;
 
     // compute intersection with second plane
-    t := (h2 - locRayStart.V[1]) * invRayVector1;
+    t := (h2 - locRayStart.Y) * invRayVector1;
     if (t > 0) and Draw2 then
     begin
-      ip.V[0] := locRayStart.V[0] + t * locRayVector.V[0];
-      ip.V[2] := locRayStart.V[2] + t * locRayVector.V[2];
-      d2 := Sqr(ip.V[0]) + Sqr(ip.V[2]);
+      ip.X := locRayStart.X + t * locRayVector.X;
+      ip.Z := locRayStart.Z + t * locRayVector.Z;
+      d2 := Sqr(ip.X) + Sqr(ip.Z);
       if (t < tPlaneMin) or (not FirstIntersected) then
       begin
         if (d2 <= tr2) and (d2 >= tir2) then
         begin
           // intersect with top plane
           if Assigned(intersectPoint) then
-            intersectPoint^ := LocalToAbsolute(VectorMake(ip.V[0], h2, ip.V[2], 1));
+            intersectPoint^ := LocalToAbsolute(VectorMake(ip.X, h2, ip.Z, 1));
           if Assigned(intersectNormal) then
             intersectNormal^ := LocalToAbsolute(VectorNegate(YHmgVector));
           Result := true;
@@ -2046,10 +2046,10 @@ begin
     if anOuterSides in Parts then
     begin
       // intersect against infinite cylinder, will be cut by tPlaneMine and tPlaneMax
-      poly[0] := Sqr(locRayStart.V[0]) + Sqr(locRayStart.V[2]) - Sqr(TopRadius);
-      poly[1] := 2 * (locRayStart.V[0] * locRayVector.V[0] + locRayStart.V[2] *
-        locRayVector.V[2]);
-      poly[2] := Sqr(locRayVector.V[0]) + Sqr(locRayVector.V[2]);
+      poly[0] := Sqr(locRayStart.X) + Sqr(locRayStart.Z) - Sqr(TopRadius);
+      poly[1] := 2 * (locRayStart.X * locRayVector.X + locRayStart.Z *
+        locRayVector.Z);
+      poly[2] := Sqr(locRayVector.X) + Sqr(locRayVector.Z);
       tmpRoots := SolveQuadric(@poly);
       // Intersect coordinates on rayVector (rayStart=0)
       if ( High(tmpRoots) >= 0) and // Does root exist?
@@ -2067,11 +2067,11 @@ begin
     if anInnerSides in Parts then
     begin
       // intersect against infinite cylinder
-      poly[0] := Sqr(locRayStart.V[0]) +
-                 Sqr(locRayStart.V[2]) - Sqr(TopInnerRadius);
-      poly[1] := 2 * (locRayStart.V[0] * locRayVector.V[0] +
-                 locRayStart.V[2] * locRayVector.V[2]);
-      poly[2] := Sqr(locRayVector.V[0]) + Sqr(locRayVector.V[2]);
+      poly[0] := Sqr(locRayStart.X) +
+                 Sqr(locRayStart.Z) - Sqr(TopInnerRadius);
+      poly[1] := 2 * (locRayStart.X * locRayVector.X +
+                 locRayStart.Z * locRayVector.Z);
+      poly[2] := Sqr(locRayVector.X) + Sqr(locRayVector.Z);
                  tmpRoots := SolveQuadric(@poly);
       if ( High(tmpRoots) >= 0) and
         ((tmpRoots[0] > tPlaneMin) and not FirstIntersected) and
@@ -2096,8 +2096,8 @@ begin
             intersectPoint^ := LocalToAbsolute(ip);
           if Assigned(intersectNormal) then
           begin
-            ip.V[1] := 0;
-            ip.V[3] := 0;
+            ip.Y := 0;
+            ip.W := 0;
             intersectNormal^ := LocalToAbsolute(ip);
           end;
         end;
@@ -2197,7 +2197,7 @@ begin
           FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, FMinorRadius * sinPhi);
           ringDir := FMesh[i][j].Position;
-          ringDir.V[2] := 0.0;
+          ringDir.Z := 0.0;
           NormalizeVector(ringDir);
           FMesh[i][j].Normal := Vector3fMake(cosTheta1 * cosPhi,
             -sinTheta1 * cosPhi, sinPhi);
@@ -2224,10 +2224,10 @@ begin
           FMesh[MeshIndex][j].Position := FMesh[MeshIndex - 1][j].Position;
           FMesh[MeshIndex][j].Normal := FMesh[MeshIndex - 1][j].Tangent;
           FMesh[MeshIndex][j].Tangent := FMesh[MeshIndex - 1][j].Position;
-          FMesh[MeshIndex][j].Tangent.V[2] := 0;
+          FMesh[MeshIndex][j].Tangent.Z := 0;
           FMesh[MeshIndex][j].Binormal := ZVector;
           FMesh[MeshIndex][j].TexCoord := FMesh[MeshIndex - 1][j].TexCoord;
-          FMesh[MeshIndex][j].TexCoord.V[0] := 0;
+          FMesh[MeshIndex][j].TexCoord.X := 0;
         end;
       end
       else
@@ -2241,7 +2241,7 @@ begin
           FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, FMinorRadius * sinPhi);
           ringDir := FMesh[MeshIndex][j].Position;
-          ringDir.V[2] := 0.0;
+          ringDir.Z := 0.0;
           NormalizeVector(ringDir);
           FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
           FMesh[MeshIndex][j].Tangent := ringDir;
@@ -2271,10 +2271,10 @@ begin
           FMesh[MeshIndex][j].Position := FMesh[0][j].Position;
           FMesh[MeshIndex][j].Normal := VectorNegate(FMesh[0][j].Tangent);
           FMesh[MeshIndex][j].Tangent := FMesh[0][j].Position;
-          FMesh[MeshIndex][j].Tangent.V[2] := 0;
+          FMesh[MeshIndex][j].Tangent.Z := 0;
           FMesh[MeshIndex][j].Binormal := VectorNegate(ZVector);
           FMesh[MeshIndex][j].TexCoord := FMesh[0][j].TexCoord;
-          FMesh[MeshIndex][j].TexCoord.V[0] := 1;
+          FMesh[MeshIndex][j].TexCoord.X := 1;
         end;
       end
       else
@@ -2288,7 +2288,7 @@ begin
           FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, FMinorRadius * sinPhi);
           ringDir := FMesh[MeshIndex][j].Position;
-          ringDir.V[2] := 0.0;
+          ringDir.Z := 0.0;
           NormalizeVector(ringDir);
           FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
           FMesh[MeshIndex][j].Tangent := ringDir;
@@ -2499,9 +2499,9 @@ begin
   fDE := VectorDotProduct(localStart, localVector);
   fVal := VectorNorm(localStart) - (fRo2 + fRi2);
 
-  polynom[0] := Sqr(fVal) - 4.0 * fRo2 * (fRi2 - Sqr(localStart.V[2]));
-  polynom[1] := 4.0 * fDE * fVal + 8.0 * fRo2 * localVector.V[2] * localStart.V[2];
-  polynom[2] := 2.0 * fVal + 4.0 * Sqr(fDE) + 4.0 * fRo2 * Sqr(localVector.V[2]);
+  polynom[0] := Sqr(fVal) - 4.0 * fRo2 * (fRi2 - Sqr(localStart.Z));
+  polynom[1] := 4.0 * fDE * fVal + 8.0 * fRo2 * localVector.Z * localStart.Z;
+  polynom[2] := 2.0 * fVal + 4.0 * Sqr(fDE) + 4.0 * fRo2 * Sqr(localVector.Z);
   polynom[3] := 4.0 * fDE;
   polynom[4] := 1;
 
@@ -2528,15 +2528,15 @@ begin
     if Assigned(intersectNormal) then
     begin
       // project vi on local torus plane
-      vc.V[0] := vi.V[0];
-      vc.V[1] := vi.V[1];
-      vc.V[2] := 0;
+      vc.X := vi.X;
+      vc.Y := vi.Y;
+      vc.Z := 0;
       // project vc on MajorRadius circle
       ScaleVector(vc, MajorRadius / (VectorLength(vc) + 0.000001));
       // calculate circle to intersect vector (gives normal);
       SubtractVector(vi, vc);
       // return to absolute coordinates and normalize
-      vi.V[3] := 0;
+      vi.W := 0;
       SetVector(intersectNormal^, LocalToAbsolute(vi));
     end;
   end;
@@ -3012,7 +3012,7 @@ begin
           FMesh[i][j].Position := Vector3fMake(cosTheta1 * dist,
             -sinTheta1 * dist, Lerp(FTopRadius, FBottomRadius, i * iFact) * sinPhi);
           ringDir := FMesh[i][j].Position;
-          ringDir.V[2] := 0.0;
+          ringDir.Z := 0.0;
           NormalizeVector(ringDir);
           FMesh[i][j].Normal := Vector3fMake(cosTheta1 * cosPhi,
             -sinTheta1 * cosPhi, sinPhi);
@@ -3088,7 +3088,7 @@ begin
         FMesh[MeshIndex][J].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, fBottomArrowHeadRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
-        ringDir.V[2] := 0.0;
+        ringDir.Z := 0.0;
         NormalizeVector(ringDir);
         FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
         FMesh[MeshIndex][j].Tangent := ringDir;
@@ -3192,7 +3192,7 @@ begin
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, FBottomRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
-        ringDir.V[2] := 0.0;
+        ringDir.Z := 0.0;
         NormalizeVector(ringDir);
         FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
         FMesh[MeshIndex][j].Tangent := ringDir;
@@ -3255,7 +3255,7 @@ begin
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, fTopArrowHeadRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
-        ringDir.V[2] := 0.0;
+        ringDir.Z := 0.0;
         NormalizeVector(ringDir);
         FMesh[MeshIndex][j].Normal := VectorCrossProduct(ZVector, ringDir);
         FMesh[MeshIndex][j].Tangent := ringDir;
@@ -3358,7 +3358,7 @@ begin
         FMesh[MeshIndex][j].Position := Vector3fMake(cosTheta1 * dist,
           -sinTheta1 * dist, fTopRadius * sinPhi);
         ringDir := FMesh[MeshIndex][j].Position;
-        ringDir.V[2] := 0.0;
+        ringDir.Z := 0.0;
         NormalizeVector(ringDir);
         FMesh[MeshIndex][j].Normal := VectorCrossProduct(ringDir, ZVector);
         FMesh[MeshIndex][j].Tangent := ringDir;
@@ -3678,10 +3678,10 @@ end;
 
 function TGLFrustrum.AxisAlignedDimensionsUnscaled: TVector;
 begin
-  Result.V[0] := FBaseWidth * 0.5;
-  Result.V[1] := FHeight * 0.5;
-  Result.V[2] := FBaseDepth * 0.5;
-  Result.V[3] := 0;
+  Result.X := FBaseWidth * 0.5;
+  Result.Y := FHeight * 0.5;
+  Result.Z := FBaseDepth * 0.5;
+  Result.W := 0;
 end;
 
 // ------------------

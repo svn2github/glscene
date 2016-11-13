@@ -237,7 +237,7 @@ begin
   ma := FCubeSize * 0.5;
   mi := -ma;
   with EdgeColor do
-    GL.Color3f(Color.V[0], Color.V[1], Color.V[2]);
+    GL.Color3f(Color.X, Color.Y, Color.Z);
   GL.Begin_(GL_LINE_STRIP);
   // front face
   GL.Vertex3f(ma, mi, mi);

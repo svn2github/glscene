@@ -78,7 +78,7 @@ begin
   // This can be used to simulate boats and lighter than air vehicles etc..
   PlaneEquation := MyForm.GLPlane1.Direction.AsVector;
   // the distance along this normal, to the origin.
-  PlaneEquation.V[3] := MyForm.GLPlane1.Position.Y;
+  PlaneEquation.W := MyForm.GLPlane1.Position.Y;
 
   PVector(globalSpacePlane)^ := PlaneEquation;
 

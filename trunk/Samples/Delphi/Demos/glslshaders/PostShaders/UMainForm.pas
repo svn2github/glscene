@@ -9,8 +9,10 @@ uses
 
   // GLS
   GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
-  GLGraph, GLUtils, GLContext, GLVectorGeometry, GLGeomObjects, GLCoordinates,
-  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform, GLMaterial,
+  GLGraph, GLUtils, GLContext, GLVectorGeometry,
+  GLGeomObjects, GLCoordinates,
+  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
+  GLMaterial,
   GLBaseClasses,
 
   // GLSL shaders
@@ -19,7 +21,7 @@ uses
   GLcgPostTransformationShader,
 
   // FileFormats
-  TGA, GLFileMD2, GLFileMS3D, GLFile3DS;
+  GLFileTGA, GLFileMD2, GLFileMS3D, GLFile3DS;
 
 type
   TPostShaderDemoForm = class(TForm)

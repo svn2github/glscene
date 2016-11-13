@@ -405,9 +405,9 @@ begin
     begin
       dst := (NpFp) / (fp - z * dov);
       //calc from z-buffer value to frustrum depth
-      xx := (lbW.V[0] + riVecW.V[0] * x + UpVecW.V[0] * fy);
-      yy := (lbW.V[1] + riVecW.V[1] * x + UpVecW.V[1] * fy);
-      zz := (lbW.V[2] + riVecW.V[2] * x + UpVecW.V[2] * fy);
+      xx := (lbW.X + riVecW.X * x + UpVecW.X * fy);
+      yy := (lbW.Y + riVecW.Y * x + UpVecW.Y * fy);
+      zz := (lbW.Z + riVecW.Z * x + UpVecW.Z * fy);
       result := sqrt(xx * xx + yy * yy + zz * zz) * dst;
     end
     else
@@ -466,19 +466,19 @@ begin
   MakeVector(hnorm, normal);
 
   MakeVector(hcVec, lb); //---Corner Vector---
-  ang1 := ArcTan2(Hnorm.V[0], Hnorm.V[2]);
+  ang1 := ArcTan2(Hnorm.X, Hnorm.Z);
   SetVector(axs, 0, 1, 0);
   RotateVector(hnorm, axs, ang1);
   RotateVector(hcvec, axs, ang1);
 
-  ang2 := ArcTan2(Hnorm.V[1], Hnorm.V[2]);
+  ang2 := ArcTan2(Hnorm.Y, Hnorm.Z);
   SetVector(axs, 1, 0, 0);
   RotateVector(hcvec, axs, -ang2);
 
-  hcvec.V[0] := hcvec.V[0] / hcvec.V[2];
+  hcvec.X := hcvec.X / hcvec.Z;
   vw := Fwidth / 2;
   vh := Fheight / 2;
-  scal := vw / hcvec.V[0];
+  scal := vw / hcvec.X;
   SinCosine(-ang1, s1, c1);
   SinCosine(-ang2, s2, c2);
   //------------------------------------------
@@ -507,9 +507,9 @@ begin
   // OrthAdd:=2;
   // OrthMul:=64;
 
-  orthAddX := rt.V[0];
+  orthAddX := rt.X;
   OrthMulX := FWidth / (OrthAddX * 2);
-  orthAddY := rt.V[2];
+  orthAddY := rt.Z;
   OrthMulY := FHeight / (OrthAddY * 2);
   OrthInvDov := 1 / dov;
 
@@ -525,26 +525,26 @@ begin
   h := FHeight;
   Rlerp := x / w;
   Ulerp := (h - y) / h;
-  result.V[0] := lb.V[0] + riVec.V[0] * Rlerp + UpVec.V[0] * Ulerp;
-  result.V[1] := lb.V[1] + riVec.V[1] * Rlerp + UpVec.V[1] * Ulerp;
-  result.V[2] := lb.V[2] + riVec.V[2] * Rlerp + UpVec.V[2] * Ulerp;
+  result.X := lb.X + riVec.X * Rlerp + UpVec.X * Ulerp;
+  result.Y := lb.Y + riVec.Y * Rlerp + UpVec.Y * Ulerp;
+  result.Z := lb.Z + riVec.Z * Rlerp + UpVec.Z * Ulerp;
 end;
 
 function TGLzBuffer.FastVectorToScreen(Vec: TAffineVector): TAffineVector;
 var
   v0, v1, x, y, z: Single;
 begin
-  x := vec.V[0];
-  y := vec.V[1];
-  z := vec.V[2];
+  x := vec.X;
+  y := vec.Y;
+  z := vec.Z;
   v0 := x;
   x := c1 * v0 + s1 * z;
   z := c1 * z - s1 * v0; //Rotate around Y-axis
   v1 := y;
   y := c2 * v1 + s2 * z;
   z := c2 * z - s2 * v1; //Rotate around X-axis
-  Result.V[0] := Round(-x / z * scal + vw);
-  Result.V[1] := Round(y / z * scal + vh);
+  Result.X := Round(-x / z * scal + vw);
+  Result.Y := Round(y / z * scal + vh);
 
 end;
 
@@ -561,15 +561,15 @@ begin
     dst := (NpFp) / (fp - z * dov); //calc from z-buffer value to frustrum depth
     camvec := cam.AbsolutePosition;
     fy := FHeight - y;
-    result.V[0] := (lbW.V[0] + riVecW.V[0] * x + UpVecW.V[0] * fy) * dst + camvec.V[0];
-    result.V[1] := (lbW.V[1] + riVecW.V[1] * x + UpVecW.V[1] * fy) * dst + camvec.V[1];
-    result.V[2] := (lbW.V[2] + riVecW.V[2] * x + UpVecW.V[2] * fy) * dst + camvec.V[2];
+    result.X := (lbW.X + riVecW.X * x + UpVecW.X * fy) * dst + camvec.X;
+    result.Y := (lbW.Y + riVecW.Y * x + UpVecW.Y * fy) * dst + camvec.Y;
+    result.Z := (lbW.Z + riVecW.Z * x + UpVecW.Z * fy) * dst + camvec.Z;
   end
   else
   begin
-    result.V[0] := 0;
-    result.V[1] := 0;
-    result.V[2] := 0;
+    result.X := 0;
+    result.Y := 0;
+    result.Z := 0;
   end;
 end;
 
@@ -584,9 +584,9 @@ begin
   //---returns canvas pixel x,y coordinate, and the world distance
   result := false;
   campos := cam.AbsolutePosition;
-  x := apoint.V[0] - camPos.V[0];
-  y := apoint.V[1] - camPos.V[1];
-  z := apoint.V[2] - camPos.V[2]; //get vector from camera to world point
+  x := apoint.X - camPos.X;
+  y := apoint.Y - camPos.Y;
+  z := apoint.Z - camPos.Z; //get vector from camera to world point
   v0 := x;
   x := c1 * v0 + s1 * z;
   z := c1 * z - s1 * v0; //Rotate around Y-axis
@@ -620,9 +620,9 @@ begin
   //---Result is true if pixel lies within view frustrum
   //---returns canvas pixel x,y coordinate, and CALCULATES the z-buffer distance
   campos := cam.AbsolutePosition;
-  x := apoint.V[0] - camPos.V[0];
-  y := apoint.V[1] - camPos.V[1];
-  z := apoint.V[2] - camPos.V[2]; //get vector from camera to world point
+  x := apoint.X - camPos.X;
+  y := apoint.Y - camPos.Y;
+  z := apoint.Z - camPos.Z; //get vector from camera to world point
   v0 := x;
   x := c1 * v0 + s1 * z;
   z := c1 * z - s1 * v0; //Rotate around Y-axis
@@ -659,9 +659,9 @@ begin
   //---Result is true if pixel lies within view frustrum
   //---returns canvas pixel x,y coordinate, and CALCULATES the z-buffer distance
   campos := cam.AbsolutePosition;
-  x := apoint.V[0] - camPos.V[0];
-  y := apoint.V[1] - camPos.V[1];
-  z := apoint.V[2] - camPos.V[2]; //get vector from camera to world point
+  x := apoint.X - camPos.X;
+  y := apoint.Y - camPos.Y;
+  z := apoint.Z - camPos.Z; //get vector from camera to world point
   v0 := x;
   x := c1 * v0 + s1 * z;
   z := c1 * z - s1 * v0; //Rotate around Y-axis
@@ -696,9 +696,9 @@ var
   x, y, z: single;
 begin
   campos := cam.AbsolutePosition;
-  x := apoint.V[0] - camPos.V[0];
-  y := apoint.V[1] - camPos.V[1];
-  z := apoint.V[2] - camPos.V[2]; //get vector from camera to world point
+  x := apoint.X - camPos.X;
+  y := apoint.Y - camPos.Y;
+  z := apoint.Z - camPos.Z; //get vector from camera to world point
 
   pixX := (x + OrthAddX) * OrthMulX;
   pixY := (z + OrthAddY) * OrthMulY;

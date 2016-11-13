@@ -3,13 +3,31 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.Samples.Spin,
+  Winapi.Windows,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.Samples.Spin,
 
   //GLS
-  GLScene, GLObjects, GLCadencer, GLVectorFileObjects, GLWin32Viewer,
-  GLVectorGeometry, GLGraph, GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLVectorFileObjects,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLGraph,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -114,18 +132,18 @@ begin
   GLLines3.Nodes.Clear;
 
   // Calc data.
-  BoxMatrix.V[3].V[0] := UpDown1.Position * EditorsScale;
-  BoxMatrix.V[3].V[1] := UpDown2.Position * EditorsScale;
-  BoxMatrix.V[3].V[2] := UpDown3.Position * EditorsScale;
-  BoxMatrix.V[3].V[3] := 1;
+  BoxMatrix.W.X := UpDown1.Position * EditorsScale;
+  BoxMatrix.W.Y := UpDown2.Position * EditorsScale;
+  BoxMatrix.W.Z := UpDown3.Position * EditorsScale;
+  BoxMatrix.W.W := 1;
 
-  BoxScale.V[0] := UpDown4.Position * EditorsScale;
-  BoxScale.V[1] := UpDown5.Position * EditorsScale;
-  BoxScale.V[2] := UpDown6.Position * EditorsScale;
+  BoxScale.X := UpDown4.Position * EditorsScale;
+  BoxScale.Y := UpDown5.Position * EditorsScale;
+  BoxScale.Z := UpDown6.Position * EditorsScale;
 
-  SpherePos.V[0] := UpDown7.Position * EditorsScale;
-  SpherePos.V[1] := UpDown8.Position * EditorsScale;
-  SpherePos.V[2] := UpDown9.Position * EditorsScale;
+  SpherePos.X := UpDown7.Position * EditorsScale;
+  SpherePos.Y := UpDown8.Position * EditorsScale;
+  SpherePos.Z := UpDown9.Position * EditorsScale;
 
   SphereRadius := UpDown10.Position * EditorsScale;
 
@@ -156,9 +174,9 @@ begin
 
   // Draw GLCube1 and GLSphere1.
   GLCube1.Matrix := BoxMatrix;
-  GLCube1.CubeWidth := BoxScale.V[0];
-  GLCube1.CubeHeight := BoxScale.V[1];
-  GLCube1.CubeDepth := BoxScale.V[2];
+  GLCube1.CubeWidth := BoxScale.X;
+  GLCube1.CubeHeight := BoxScale.Y;
+  GLCube1.CubeDepth := BoxScale.Z;
   DCCube1.Matrix := GLCube1.Matrix;
   DCCube1.Scale.SetVector(BoxScale);
   GLSphere1.Position.SetPoint(SpherePos);
@@ -183,18 +201,18 @@ begin
   for I := 0 to 2 do
     aScale.V[I] := VectorLength(aMatrix.V[I]);
   // Generate two not equal random vectors.
-  Result.V[3] := aMatrix.V[3];
+  Result.W := aMatrix.W;
   repeat
     repeat
-      Result.V[0] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result.V[0]) > 10e-6;
+      Result.X := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.X) > 10e-6;
     repeat
-      Result.V[1] := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
-    until VectorNorm(Result.V[1]) > 10e-6;
-  until VectorNorm(VectorSubtract(Result.V[0], Result.V[1])) > 10e-6;
+      Result.Y := VectorMake(Random * 2 - 1, Random * 2 - 1, Random * 2 - 1);
+    until VectorNorm(Result.Y) > 10e-6;
+  until VectorNorm(VectorSubtract(Result.X, Result.Y)) > 10e-6;
   // Calculate two perpendicular vectors.
-  Result.V[2] := VectorCrossProduct(Result.V[0], Result.V[1]);
-  Result.V[1] := VectorCrossProduct(Result.V[0], Result.V[2]);
+  Result.Z := VectorCrossProduct(Result.X, Result.Y);
+  Result.Y := VectorCrossProduct(Result.X, Result.Z);
   // Restore scale.
   for I := 0 to 2 do
   begin

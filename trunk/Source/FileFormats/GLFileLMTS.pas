@@ -546,9 +546,9 @@ begin
           with V[l] do
           begin
             // vertex
-            x := -MO.Vertices[FG.vertexindices[k + l]].V[0];
-            y := MO.Vertices[FG.vertexindices[k + l]].V[1];
-            z := MO.Vertices[FG.vertexindices[k + l]].V[2];
+            x := -MO.Vertices[FG.vertexindices[k + l]].X;
+            y := MO.Vertices[FG.vertexindices[k + l]].Y;
+            z := MO.Vertices[FG.vertexindices[k + l]].Z;
 
             // texcoords
             u1 := 0;
@@ -559,20 +559,20 @@ begin
                 .texcoordIndices[k + l] then
               begin
                 u1 := MO.TexCoords[TFGVertexNormalTexIndexList(FG)
-                  .texcoordIndices[k + l]].V[0];
+                  .texcoordIndices[k + l]].X;
                 v1 := -MO.TexCoords[TFGVertexNormalTexIndexList(FG)
-                  .texcoordIndices[k + l]].V[1];
+                  .texcoordIndices[k + l]].Y;
               end;
             end
             else if FG is TFGIndexTexCoordList then
             begin
-              u1 := TFGIndexTexCoordList(FG).TexCoords[k + l].V[0];
-              v1 := -TFGIndexTexCoordList(FG).TexCoords[k + l].V[1];
+              u1 := TFGIndexTexCoordList(FG).TexCoords[k + l].X;
+              v1 := -TFGIndexTexCoordList(FG).TexCoords[k + l].Y;
             end
             else if MO.TexCoords.Count > FG.vertexindices[k + l] then
             begin
-              u1 := MO.TexCoords[FG.vertexindices[k + l]].V[0];
-              v1 := -MO.TexCoords[FG.vertexindices[k + l]].V[1];
+              u1 := MO.TexCoords[FG.vertexindices[k + l]].X;
+              v1 := -MO.TexCoords[FG.vertexindices[k + l]].Y;
             end;
 
             // lightmap texcoords
@@ -580,8 +580,8 @@ begin
             v2 := 0;
             if MO.LightmapTexCoords.Count > FG.vertexindices[k + l] then
             begin
-              u2 := MO.LightmapTexCoords[FG.vertexindices[k + l]].V[0];
-              v2 := 1 - MO.LightmapTexCoords[FG.vertexindices[k + l]].V[1];
+              u2 := MO.LightmapTexCoords[FG.vertexindices[k + l]].X;
+              v2 := 1 - MO.LightmapTexCoords[FG.vertexindices[k + l]].Y;
             end;
           end;
         end;

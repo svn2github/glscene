@@ -292,7 +292,7 @@ begin
       WriteCoords := True;
     WriteBoolean(WriteCoords);
     if WriteCoords then
-      Write(FCoords.V[0], SizeOf(FCoords));
+      Write(FCoords.X, SizeOf(FCoords));
   end;
 end;
 
@@ -309,7 +309,7 @@ begin
     begin
       N := SizeOf(FCoords);
       Assert(N = 4 * SizeOf(Single));
-      Read(FCoords.V[0], N);
+      Read(FCoords.X, N);
     end
     else if Assigned(FPDefaultCoords) then
       FCoords := FPDefaultCoords^;
@@ -354,9 +354,9 @@ end;
 //
 procedure TGLCustomCoordinates.Translate(const TranslationVector: TVector);
 begin
-  FCoords.V[0] := FCoords.V[0] + TranslationVector.V[0];
-  FCoords.V[1] := FCoords.V[1] + TranslationVector.V[1];
-  FCoords.V[2] := FCoords.V[2] + TranslationVector.V[2];
+  FCoords.X := FCoords.X + TranslationVector.X;
+  FCoords.Y := FCoords.Y + TranslationVector.Y;
+  FCoords.Z := FCoords.Z + TranslationVector.Z;
   NotifyChange(Self);
 end;
 
@@ -365,9 +365,9 @@ end;
 procedure TGLCustomCoordinates.Translate(const TranslationVector
   : TAffineVector);
 begin
-  FCoords.V[0] := FCoords.V[0] + TranslationVector.V[0];
-  FCoords.V[1] := FCoords.V[1] + TranslationVector.V[1];
-  FCoords.V[2] := FCoords.V[2] + TranslationVector.V[2];
+  FCoords.X := FCoords.X + TranslationVector.X;
+  FCoords.Y := FCoords.Y + TranslationVector.Y;
+  FCoords.Z := FCoords.Z + TranslationVector.Z;
   NotifyChange(Self);
 end;
 
@@ -510,23 +510,23 @@ end;
 
 procedure TGLCustomCoordinates.SetDirectVector(const V: TVector);
 begin
-  FCoords.V[0] := V.V[0];
-  FCoords.V[1] := V.V[1];
-  FCoords.V[2] := V.V[2];
-  FCoords.V[3] := V.V[3];
+  FCoords.X := V.X;
+  FCoords.Y := V.Y;
+  FCoords.Z := V.Z;
+  FCoords.W := V.W;
 end;
 
 // SetToZero
 //
 procedure TGLCustomCoordinates.SetToZero;
 begin
-  FCoords.V[0] := 0;
-  FCoords.V[1] := 0;
-  FCoords.V[2] := 0;
+  FCoords.X := 0;
+  FCoords.Y := 0;
+  FCoords.Z := 0;
   if FStyle = CsPoint then
-    FCoords.V[3] := 1
+    FCoords.W := 1
   else
-    FCoords.V[3] := 0;
+    FCoords.W := 0;
   NotifyChange(Self);
 end;
 
@@ -589,7 +589,7 @@ end;
 procedure TGLCustomCoordinates.SetPoint2D(const Vector: TVector2f);
 begin
   Assert(FStyle = CsPoint2D, CsPoint2DHelp);
-  MakeVector(FCoords, Vector.V[0], Vector.V[1], 0);
+  MakeVector(FCoords, Vector.X, Vector.Y, 0);
   NotifyChange(Self);
 end;
 
@@ -608,13 +608,13 @@ begin
   case FStyle of
     CsPoint2D:
       begin
-        FCoords.V[2] := 0;
-        FCoords.V[3] := 0;
+        FCoords.Z := 0;
+        FCoords.W := 0;
       end;
     CsPoint:
-      FCoords.V[3] := 1;
+      FCoords.W := 1;
     CsVector:
-      FCoords.V[3] := 0;
+      FCoords.W := 0;
   else
     Assert(False);
   end;
@@ -645,10 +645,10 @@ begin
   case FStyle of
     CsPoint2D, CsPoint, CsVector:
       begin
-        FCoords.V[0] := Value.V[0];
-        FCoords.V[1] := Value.V[1];
-        FCoords.V[2] := 0;
-        FCoords.V[3] := 0;
+        FCoords.X := Value.X;
+        FCoords.Y := Value.Y;
+        FCoords.Z := 0;
+        FCoords.W := 0;
       end;
   else
     Assert(False);
@@ -667,8 +667,8 @@ end;
 //
 function TGLCustomCoordinates.GetAsPoint2D: TVector2f;
 begin
-  Result.V[0] := FCoords.V[0];
-  Result.V[1] := FCoords.V[1];
+  Result.X := FCoords.X;
+  Result.Y := FCoords.Y;
 end;
 
 // SetCoordinate
@@ -699,12 +699,12 @@ function TGLCustomCoordinates.GetAsString: String;
 begin
   case Style of
     CsPoint2D:
-      Result := Format('(%g; %g)', [FCoords.V[0], FCoords.V[1]]);
+      Result := Format('(%g; %g)', [FCoords.X, FCoords.Y]);
     CsPoint:
-      Result := Format('(%g; %g; %g)', [FCoords.V[0], FCoords.V[1], FCoords.V[2]]);
+      Result := Format('(%g; %g; %g)', [FCoords.X, FCoords.Y, FCoords.Z]);
     CsVector:
-      Result := Format('(%g; %g; %g; %g)', [FCoords.V[0], FCoords.V[1], FCoords.V[2],
-        FCoords.V[3]]);
+      Result := Format('(%g; %g; %g; %g)', [FCoords.X, FCoords.Y, FCoords.Z,
+        FCoords.W]);
   else
     Assert(False);
   end;

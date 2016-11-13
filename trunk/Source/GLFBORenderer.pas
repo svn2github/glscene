@@ -697,7 +697,7 @@ begin
     if coUseBufferBackground in FClearOptions then
     begin
       backColor := ConvertWinColor(buffer.BackgroundColor);
-      backColor.V[3] := buffer.BackgroundAlpha;
+      backColor.W := buffer.BackgroundAlpha;
       ARci.GLStates.ColorClearValue := backColor;
     end
     else

@@ -374,18 +374,18 @@ begin
   SetVector(nvec, FTarget.x, FTarget.y, FTarget.z);
   len := VectorLength(nvec);
   NormalizeVector(nvec);
-  a := ArcCos(nvec.V[2]);
-  b := ArcTan2(nvec.V[0], nvec.V[1]);
+  a := ArcCos(nvec.Z);
+  b := ArcTan2(nvec.X, nvec.Y);
 
   N := 0;
   While (N < Maxpoints) do
   begin
     dist := N / Maxpoints * len;
     vec := FThorpoints^[N].Position;
-    vec.V[2] := dist;
+    vec.Z := dist;
 
     if Assigned(OnCalcPoint) then
-      OnCalcPoint(Self, N, vec.V[0], vec.V[1], vec.V[2]);
+      OnCalcPoint(Self, N, vec.X, vec.Y, vec.Z);
     // Let user mess around with point position
 
     SetVector(axs, 1, 0, 0); // Rotate up
@@ -591,8 +591,8 @@ begin
     mat := rci.PipelineTransformation.ModelViewMatrix;
     for m := 0 to 2 do
     begin
-      vx.V[m] := mat.V[m].V[0] * Manager.GlowSize;
-      vy.V[m] := mat.V[m].V[1] * Manager.GlowSize;
+      vx.V[m] := mat.V[m].X * Manager.GlowSize;
+      vy.V[m] := mat.V[m].Y * Manager.GlowSize;
     end;
 
     SetVector(InnerColor, Manager.FInnerColor.color);
@@ -619,7 +619,7 @@ begin
       begin
         fp := @(Manager.FThorpoints[i]);
         SetVector(Ppos, fp^.Position);
-        GL.Vertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]);
+        GL.Vertex3f(Ppos.X, Ppos.Y, Ppos.Z);
       end;
       GL.End_;
     end; // Core;
@@ -636,34 +636,34 @@ begin
         SetVector(Ppos2, fp^.Position);
         GL.Begin_(GL_TRIANGLE_FAN);
         GL.Color4fv(@Icol);
-        GL.Vertex3f(Ppos.V[0], Ppos.V[1], Ppos.V[2]); // middle1
+        GL.Vertex3f(Ppos.X, Ppos.Y, Ppos.Z); // middle1
         GL.Color4fv(@Ocol);
-        GL.Vertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
-          Ppos.V[2]); // TopRight
-        GL.Vertex3f(Vx.V[0] * 1.4 + Ppos.V[0],
-          Vx.V[1] * 1.4 + Ppos.V[1], Vx.V[2] * 1.4 + Ppos.V[2]);
+        GL.Vertex3f(Vx.X + Vy.X + Ppos.X,
+          Vx.Y + Vy.Y + Ppos.Y, Vx.Z + Vy.Z +
+          Ppos.Z); // TopRight
+        GL.Vertex3f(Vx.X * 1.4 + Ppos.X,
+          Vx.Y * 1.4 + Ppos.Y, Vx.Z * 1.4 + Ppos.Z);
         // Right1
-        GL.Vertex3f(Vx.V[0] - Vy.V[0] + Ppos.V[0],
-          Vx.V[1] - Vy.V[1] + Ppos.V[1], Vx.V[2] - Vy.V[2] +
-          Ppos.V[2]); // BottomRight
-        GL.Vertex3f(-Vy.V[0] * 1.4 + Ppos.V[0],
-          -Vy.V[1] * 1.4 + Ppos.V[1], -Vy.V[2] * 1.4 + Ppos.V[2]
+        GL.Vertex3f(Vx.X - Vy.X + Ppos.X,
+          Vx.Y - Vy.Y + Ppos.Y, Vx.Z - Vy.Z +
+          Ppos.Z); // BottomRight
+        GL.Vertex3f(-Vy.X * 1.4 + Ppos.X,
+          -Vy.Y * 1.4 + Ppos.Y, -Vy.Z * 1.4 + Ppos.Z
           ); // bottom1
-        GL.Vertex3f(-Vx.V[0] - Vy.V[0] + Ppos.V[0],
-          -Vx.V[1] - Vy.V[1] + Ppos.V[1], -Vx.V[2] - Vy.V[2]
-          + Ppos.V[2]); // BottomLeft
-        GL.Vertex3f(-Vx.V[0] * 1.4 + Ppos.V[0],
-          -Vx.V[1] * 1.4 + Ppos.V[1], -Vx.V[2] * 1.4 + Ppos.V[2]); // left1
-        GL.Vertex3f(-Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          -Vx.V[1] + Vy.V[1] + Ppos.V[1], -Vx.V[2] + Vy.V[2]
-          + Ppos.V[2]); // TopLeft
-        GL.Vertex3f(Vy.V[0] * 1.4 + Ppos.V[0],
-          Vy.V[1] * 1.4 + Ppos.V[1], Vy.V[2] * 1.4 + Ppos.V[2]);
+        GL.Vertex3f(-Vx.X - Vy.X + Ppos.X,
+          -Vx.Y - Vy.Y + Ppos.Y, -Vx.Z - Vy.Z
+          + Ppos.Z); // BottomLeft
+        GL.Vertex3f(-Vx.X * 1.4 + Ppos.X,
+          -Vx.Y * 1.4 + Ppos.Y, -Vx.Z * 1.4 + Ppos.Z); // left1
+        GL.Vertex3f(-Vx.X + Vy.X + Ppos.X,
+          -Vx.Y + Vy.Y + Ppos.Y, -Vx.Z + Vy.Z
+          + Ppos.Z); // TopLeft
+        GL.Vertex3f(Vy.X * 1.4 + Ppos.X,
+          Vy.Y * 1.4 + Ppos.Y, Vy.Z * 1.4 + Ppos.Z);
         // top1
-        GL.Vertex3f(Vx.V[0] + Vy.V[0] + Ppos.V[0],
-          Vx.V[1] + Vy.V[1] + Ppos.V[1], Vx.V[2] + Vy.V[2] +
-          Ppos.V[2]); // TopRight
+        GL.Vertex3f(Vx.X + Vy.X + Ppos.X,
+          Vx.Y + Vy.Y + Ppos.Y, Vx.Z + Vy.Z +
+          Ppos.Z); // TopRight
         GL.End_;
       end; // Glow
     end;

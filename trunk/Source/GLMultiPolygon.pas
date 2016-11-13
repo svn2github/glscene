@@ -454,7 +454,7 @@ begin
   FContours := TGLContours.Create(Self);
   FContours.OnNotifyChange := ContourChanged;
   FContoursNormal := AffineVectorMake(0, 0, 1);
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
 end;
 
 // Destroy
@@ -710,7 +710,7 @@ begin
       gluTessCallback(tess, GLU_TESS_COMBINE, @tessCombine);
 
       // issue normal
-      gluTessNormal(tess, FContoursNormal.V[0], FContoursNormal.V[1], FContoursNormal.V[2]);
+      gluTessNormal(tess, FContoursNormal.X, FContoursNormal.Y, FContoursNormal.Z);
 
       // set properties
       gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
@@ -777,7 +777,7 @@ begin
     if Assigned(normal) then
     begin
       GL.Normal3fv(PGLFloat(normal));
-      gluTessNormal(tess, normal^.V[0], normal^.V[1], normal^.V[2]);
+      gluTessNormal(tess, normal^.X, normal^.Y, normal^.Z);
     end;
     gluTessProperty(Tess, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_POSITIVE);
     // Issue polygon
@@ -878,12 +878,12 @@ function TMultiPolygonBase.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     Contours.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache.V[0] := MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-    FAxisAlignedDimensionsCache.V[1] := MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-    FAxisAlignedDimensionsCache.V[2] := MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
+    FAxisAlignedDimensionsCache.X := MaxFloat(Abs(dMin.X), Abs(dMax.X));
+    FAxisAlignedDimensionsCache.Y := MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+    FAxisAlignedDimensionsCache.Z := MaxFloat(Abs(dMin.Z), Abs(dMax.Z));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -893,7 +893,7 @@ end;
 
 procedure TMultiPolygonBase.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 

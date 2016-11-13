@@ -196,9 +196,9 @@ begin
    if VectorLength(v)=0 then
       v:=NullVector
    else NormalizeVector(v);
-   EDx.Text:=FloatToStr(v.V[0]);
-   EDy.Text:=FloatToStr(v.V[1]);
-   EDz.Text:=FloatToStr(v.V[2]);
+   EDx.Text:=FloatToStr(v.X);
+   EDy.Text:=FloatToStr(v.Y);
+   EDz.Text:=FloatToStr(v.Z);
 end;
 
 procedure TGLVectorEditorForm.SBInvertClick(Sender: TObject);
@@ -207,9 +207,9 @@ var
 begin
    SetVector(v, GLUtils.StrToFloatDef(EDx.Text, 0), GLUtils.StrToFloatDef(EDy.Text, 0), GLUtils.StrToFloatDef(EDz.Text, 0));
    NegateVector(v);
-   EDx.Text:=FloatToStr(v.V[0]);
-   EDy.Text:=FloatToStr(v.V[1]);
-   EDz.Text:=FloatToStr(v.V[2]);
+   EDx.Text:=FloatToStr(v.X);
+   EDy.Text:=FloatToStr(v.Y);
+   EDz.Text:=FloatToStr(v.Z);
 end;
 
 // ------------------------------------------------------------------

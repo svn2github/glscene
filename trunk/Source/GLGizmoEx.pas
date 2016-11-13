@@ -2215,8 +2215,8 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
         AVector := VectorAdd(AVector, BB.BBox[I]);
 
         GL.Begin_(GL_LINES);
-        GL.Vertex3f(BB.BBox[I].V[0], BB.BBox[I].V[1], BB.BBox[I].V[2]);
-        GL.Vertex3f(AVector.V[0], AVector.V[1], AVector.V[2]);
+        GL.Vertex3f(BB.BBox[I].X, BB.BBox[I].Y, BB.BBox[I].Z);
+        GL.Vertex3f(AVector.X, AVector.Y, AVector.Z);
         GL.End_;
       end;
     end;
@@ -2252,11 +2252,11 @@ procedure TGLGizmoEx.InternalRender(Sender: TObject; var rci: TGLRenderContextIn
     GL.LoadMatrixf(@wm);
 
     rci.GLStates.PolygonMode := pmFill;
-    GL.Scalef(Scale.V[0], Scale.V[1], Scale.V[2]);
-    GL.Translatef(Position.V[0], Position.V[1], Position.V[2]);
+    GL.Scalef(Scale.X, Scale.Y, Scale.Z);
+    GL.Translatef(Position.X, Position.Y, Position.Z);
 
 
-    if Color.V[3] <> 1 then
+    if Color.W <> 1 then
     begin
       rci.GLStates.Enable(stBlend);
       rci.GLStates.SetBlendFunc(bfSrcAlpha, bfOneMinusSrcAlpha);
@@ -3112,9 +3112,9 @@ begin
       end
       else
       begin
-        T := T + '[' + Format('%2.2f', [FChangeRate.V[0]]);
-        T := T + ' ' + Format('%2.2f', [FChangeRate.V[1]]);
-        T := T + ' ' + Format('%2.2f', [FChangeRate.V[2]]) + ']';
+        T := T + '[' + Format('%2.2f', [FChangeRate.X]);
+        T := T + ' ' + Format('%2.2f', [FChangeRate.Y]);
+        T := T + ' ' + Format('%2.2f', [FChangeRate.Z]) + ']';
       end;
     end;
   end;
@@ -3174,15 +3174,15 @@ begin
   SetVector(v, X, InvertedY, 0);
 
   case selAxis of
-    gaX: Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.V[1], Result);
-    gaY: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.V[0], Result);
-    gaZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.V[0], Result);
-    gaXY: Viewer.Buffer.ScreenVectorIntersectWithPlaneXY(v, FUIRootHelpers.AbsolutePosition.V[2], Result);
-    gaYZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.V[0], Result);
-    gaXZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.V[1], Result);
+    gaX: Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.Y, Result);
+    gaY: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.X, Result);
+    gaZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.X, Result);
+    gaXY: Viewer.Buffer.ScreenVectorIntersectWithPlaneXY(v, FUIRootHelpers.AbsolutePosition.Z, Result);
+    gaYZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneYZ(v, FUIRootHelpers.AbsolutePosition.X, Result);
+    gaXZ: Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.Y, Result);
     gaXYZ:
     begin
-      Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.V[1], Result);
+      Viewer.Buffer.ScreenVectorIntersectWithPlaneXZ(v, FUIRootHelpers.AbsolutePosition.Y, Result);
       MakeVector(Result, InvertedY / 25, InvertedY / 25, InvertedY / 25);
     end;
   end;
@@ -3199,7 +3199,7 @@ procedure TGLGizmoEx.ActivatingElements(PickList: TGLPickList);
     for I := 0 to line.Nodes.Count - 1 do
     begin
       v := FUIRotateLineXY.AbsoluteToLocal((line.LocalToAbsolute(line.Nodes[I].AsVector)));
-      if v.V[2] >= 0 then
+      if v.Z >= 0 then
       begin
         TGLLinesNode(line.Nodes[I]).Color.Color := FSelectedColor.Color;
         TGLLinesNode(line.Nodes[I]).Color.Alpha := 1;
@@ -3222,7 +3222,7 @@ procedure TGLGizmoEx.ActivatingElements(PickList: TGLPickList);
     for I := 0 to line.Nodes.Count - 1 do
     begin
       v := FUIRotateLineXY.AbsoluteToLocal((line.LocalToAbsolute(line.Nodes[I].AsVector)));
-      if v.V[2] >= 0 then
+      if v.Z >= 0 then
       begin
         TGLLinesNode(line.Nodes[I]).Color.Color := dark;
         TGLLinesNode(line.Nodes[I]).Color.Alpha := 1;
@@ -3579,18 +3579,18 @@ var
     case SelAxis of
       gaX:
       begin
-        MakeVector(vec1, quantizedMousePos.V[0], 0, 0);
-        makeVector(vec2, quantizedMousePos2.V[0], 0, 0);
+        MakeVector(vec1, quantizedMousePos.X, 0, 0);
+        makeVector(vec2, quantizedMousePos2.X, 0, 0);
       end;
       gaY:
       begin
-        MakeVector(vec1, 0, quantizedMousePos.V[1], 0);
-        makeVector(vec2, 0, quantizedMousePos2.V[1], 0);
+        MakeVector(vec1, 0, quantizedMousePos.Y, 0);
+        makeVector(vec2, 0, quantizedMousePos2.Y, 0);
       end;
       gaZ:
       begin
-        MakeVector(vec1, 0, 0, quantizedMousePos.V[2]);
-        makeVector(vec2, 0, 0, quantizedMousePos2.V[2]);
+        MakeVector(vec1, 0, 0, quantizedMousePos.Z);
+        makeVector(vec2, 0, 0, quantizedMousePos2.Z);
       end;
       else
       begin
@@ -3605,23 +3605,23 @@ var
       Exit;// prevents NAN problems
 
     case SelAxis of
-      gaX: fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-      gaY: fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
-      gaZ: fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
+      gaX: fchangerate.X := fchangerate.X + vec1.X;
+      gaY: fchangerate.Y := fchangerate.Y + vec1.Y;
+      gaZ: fchangerate.Z := fchangerate.Z + vec1.Z;
       gaXY:
       begin
-        fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-        fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
+        fchangerate.X := fchangerate.X + vec1.X;
+        fchangerate.Y := fchangerate.Y + vec1.Y;
       end;
       gaYZ:
       begin
-        fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
-        fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
+        fchangerate.Z := fchangerate.Z + vec1.Z;
+        fchangerate.Y := fchangerate.Y + vec1.Y;
       end;
       gaXZ:
       begin
-        fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-        fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
+        fchangerate.X := fchangerate.X + vec1.X;
+        fchangerate.Z := fchangerate.Z + vec1.Z;
       end;
     end;
 
@@ -3656,33 +3656,33 @@ var
     v:    TVector;
   begin
 
-    vec1.V[0] := 0;
-    vec1.V[1] := 0;
+    vec1.X := 0;
+    vec1.Y := 0;
     if abs(X - mx) >= RotationCoef then
     begin
       if RotationCoef > 1 then
-        vec1.V[0] := RotationCoef * (Round((X - mx) / (RotationCoef)))
+        vec1.X := RotationCoef * (Round((X - mx) / (RotationCoef)))
       else
-        vec1.V[0] := RotationCoef * (X - mx);
+        vec1.X := RotationCoef * (X - mx);
       mx := X;
     end;
     if abs(Y - my) >= RotationCoef then
     begin
       if RotationCoef > 1 then
-        vec1.V[1] := RotationCoef * (Round((Y - my) / (RotationCoef)))
+        vec1.Y := RotationCoef * (Round((Y - my) / (RotationCoef)))
       else
-        vec1.V[1] := RotationCoef * (Y - my);
+        vec1.Y := RotationCoef * (Y - my);
       my := Y;
     end;
 
 
-    vec1.V[2] := 0;
-    vec1.V[3] := 0;
+    vec1.Z := 0;
+    vec1.W := 0;
 
     case SelAxis of
-      gaX: fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
-      gaY: fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-      gaZ: fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
+      gaX: fchangerate.Y := fchangerate.Y + vec1.Y;
+      gaY: fchangerate.X := fchangerate.X + vec1.X;
+      gaZ: fchangerate.Y := fchangerate.Y + vec1.Y;
     end;
 
     for I := 0 to FSelectedObjects.Count - 1 do
@@ -3702,46 +3702,46 @@ var
           IncludeCh := FindParent(TGLBaseSceneObject(Hit[I]).parent);
 
         pmat := TGLBaseSceneObject(Hit[I]).parent.InvAbsoluteMatrix;
-        SetVector(pmat.V[3], NullHmgPoint);
+        SetVector(pmat.W, NullHmgPoint);
 
         if IncludeCh then
           case SelAxis of
             gaX:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.Y);
 
             end;
             gaY:
             begin
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.X);
             end;
             gaZ:
             begin
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.Y);
             end;
             gaXY:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.Y);
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.X);
             end;
             gaXZ:
             begin
               rotV := VectorTransform(XVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.Y);
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.X);
             end;
             gaYZ:
             begin
               rotV := VectorTransform(YVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[1]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.Y);
               rotV := VectorTransform(ZVector, pmat);
-              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.V[0]);
+              RotateAroundArbitraryAxis(TGLBaseSceneObject(Hit[I]), rotV, AffineVectorMake(v), vec1.X);
             end;
           end;
       end;
@@ -3765,30 +3765,30 @@ var
     case SelAxis of
       gaX:
       begin
-        MakeVector(vec1, quantizedMousePos.V[0], 0, 0);
-        makeVector(vec2, quantizedMousePos2.V[0], 0, 0);
+        MakeVector(vec1, quantizedMousePos.X, 0, 0);
+        makeVector(vec2, quantizedMousePos2.X, 0, 0);
       end;
       gaY:
       begin
-        MakeVector(vec1, 0, quantizedMousePos.V[1], 0);
-        makeVector(vec2, 0, quantizedMousePos2.V[1], 0);
+        MakeVector(vec1, 0, quantizedMousePos.Y, 0);
+        makeVector(vec2, 0, quantizedMousePos2.Y, 0);
       end;
       gaZ:
       begin
-        MakeVector(vec1, 0, 0, quantizedMousePos.V[2]);
-        makeVector(vec2, 0, 0, quantizedMousePos2.V[2]);
+        MakeVector(vec1, 0, 0, quantizedMousePos.Z);
+        makeVector(vec2, 0, 0, quantizedMousePos2.Z);
       end;
 
       gaXY:
       begin
-        MakeVector(vec1, quantizedMousePos.V[0], quantizedMousePos.V[1], 0);
-        makeVector(vec2, quantizedMousePos2.V[0], quantizedMousePos2.V[1], 0);
+        MakeVector(vec1, quantizedMousePos.X, quantizedMousePos.Y, 0);
+        makeVector(vec2, quantizedMousePos2.X, quantizedMousePos2.Y, 0);
       end;
 
       gaXYZ:
       begin
-        MakeVector(vec1, quantizedMousePos.V[0], quantizedMousePos.V[1], quantizedMousePos.V[2]);
-        makeVector(vec2, quantizedMousePos2.V[0], quantizedMousePos2.V[1], quantizedMousePos2.V[2]);
+        MakeVector(vec1, quantizedMousePos.X, quantizedMousePos.Y, quantizedMousePos.Z);
+        makeVector(vec2, quantizedMousePos2.X, quantizedMousePos2.Y, quantizedMousePos2.Z);
       end
 
       else
@@ -3804,23 +3804,23 @@ var
       Exit;// prevents NAN problems
 
     case SelAxis of
-      gaX: fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-      gaY: fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
-      gaZ: fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
+      gaX: fchangerate.X := fchangerate.X + vec1.X;
+      gaY: fchangerate.Y := fchangerate.Y + vec1.Y;
+      gaZ: fchangerate.Z := fchangerate.Z + vec1.Z;
       gaXY:
       begin
-        fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-        fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
+        fchangerate.X := fchangerate.X + vec1.X;
+        fchangerate.Y := fchangerate.Y + vec1.Y;
       end;
       gaYZ:
       begin
-        fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
-        fchangerate.V[1] := fchangerate.V[1] + vec1.V[1];
+        fchangerate.Z := fchangerate.Z + vec1.Z;
+        fchangerate.Y := fchangerate.Y + vec1.Y;
       end;
       gaXZ:
       begin
-        fchangerate.V[0] := fchangerate.V[0] + vec1.V[0];
-        fchangerate.V[2] := fchangerate.V[2] + vec1.V[2];
+        fchangerate.X := fchangerate.X + vec1.X;
+        fchangerate.Z := fchangerate.Z + vec1.Z;
       end;
       gaXYZ:
         fchangerate := VectorAdd(fchangerate, AffineVectorMake(vec1));
@@ -3937,10 +3937,10 @@ begin
           LoopCursorMoving;
         OpeRotate(X, Y);
         if (SelAxis = gax) or (SelAxis = gaz) then
-          SetAngleDisk(fchangerate.V[1])
+          SetAngleDisk(fchangerate.Y)
         else
         if SelAxis = gaY then
-          SetAngleDisk(fchangerate.V[0]);
+          SetAngleDisk(fchangerate.X);
 
       end
       else if Operation = gopScale then

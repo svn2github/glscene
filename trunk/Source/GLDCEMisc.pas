@@ -78,9 +78,9 @@ implementation
 procedure ECSetCollisionRange(var MovePack: TECMovePack);
 var  N: TAffineVector;
 begin
-  N.V[0] := Abs(MovePack.Velocity.V[0]) + Abs(MovePack.Gravity.V[0]) + (MovePack.Radius.V[0]);
-  N.V[1] := Abs(MovePack.Velocity.V[1]) + Abs(MovePack.Gravity.V[1]) + (MovePack.Radius.V[1]);
-  N.V[2] := Abs(MovePack.Velocity.V[2]) + Abs(MovePack.Gravity.V[2]) + (MovePack.Radius.V[2]);
+  N.X := Abs(MovePack.Velocity.X) + Abs(MovePack.Gravity.X) + (MovePack.Radius.X);
+  N.Y := Abs(MovePack.Velocity.Y) + Abs(MovePack.Gravity.Y) + (MovePack.Radius.Y);
+  N.Z := Abs(MovePack.Velocity.Z) + Abs(MovePack.Gravity.Z) + (MovePack.Radius.Z);
   MovePack.CollisionRange := MaxXYZComponent(N);
 end;
 
@@ -182,18 +182,18 @@ procedure ECAddTerrain(var MovePack: TECMovePack;
 
   function intvec(x,z: Single): TAffineVector;
   begin
-    result.V[0] := x + MovePack.Position.V[0];
-    result.V[1] := 0 + MovePack.Position.V[1];
-    result.V[2] := z + MovePack.Position.V[2];
+    result.X := x + MovePack.Position.X;
+    result.Y := 0 + MovePack.Position.Y;
+    result.Z := z + MovePack.Position.Z;
   end;
 
   function locabs(x,y,z: Single): TAffineVector;
   begin
     //result := TerrainRenderer.LocalToAbsolute(AffineVectorMake(x,y,z));
     //result := AffineVectorMake(x,y,z);
-    result.V[0] := x + MovePack.Position.V[0];
-    result.V[1] := y + TerrainRenderer.AbsolutePosition.V[1];
-    result.V[2] := z + MovePack.Position.V[2];
+    result.X := x + MovePack.Position.X;
+    result.Y := y + TerrainRenderer.AbsolutePosition.Y;
+    result.Z := z + MovePack.Position.Z;
   end;
 
 

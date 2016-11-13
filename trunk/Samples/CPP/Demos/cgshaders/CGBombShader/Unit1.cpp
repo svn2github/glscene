@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
-
 #include <vcl.h>
 #include <tchar.h>
-
 #pragma hdrstop
 
 #include "Unit1.h"

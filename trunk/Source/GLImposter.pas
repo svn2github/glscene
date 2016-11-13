@@ -584,14 +584,14 @@ begin
       GL.TexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
     mat := rci.PipelineTransformation.ModelViewMatrix;
-    FVx.V[0] := mat.V[0].V[0];
-    FVx.V[1] := mat.V[1].V[0];
-    FVx.V[2] := mat.V[2].V[0];
+    FVx.X := mat.X.X;
+    FVx.Y := mat.Y.X;
+    FVx.Z := mat.Z.X;
     NormalizeVector(FVx);
 
-    FVy.V[0] := mat.V[0].V[1];
-    FVy.V[1] := mat.V[1].V[1];
-    FVy.V[2] := mat.V[2].V[1];
+    FVy.X := mat.X.Y;
+    FVy.Y := mat.Y.Y;
+    FVy.Z := mat.Z.Y;
     NormalizeVector(FVy);
     if impoPerspectiveCorrection in Builder.ImposterOptions then
     begin
@@ -642,16 +642,16 @@ var
   pos: TVector;
 begin
   VectorCombine(objPos, FQuad[0], size, pos);
-  GL.TexCoord2f(texExtents.V[2], texExtents.V[3]);
+  GL.TexCoord2f(texExtents.Z, texExtents.W);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[1], size, pos);
-  GL.TexCoord2f(texExtents.V[0], texExtents.V[3]);
+  GL.TexCoord2f(texExtents.X, texExtents.W);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[2], size, pos);
-  GL.TexCoord2f(texExtents.V[0], texExtents.V[1]);
+  GL.TexCoord2f(texExtents.X, texExtents.Y);
   GL.Vertex3fv(@pos);
   VectorCombine(objPos, FQuad[3], size, pos);
-  GL.TexCoord2f(texExtents.V[2], texExtents.V[1]);
+  GL.TexCoord2f(texExtents.Z, texExtents.Y);
   GL.Vertex3fv(@pos);
 end;
 
@@ -1186,10 +1186,10 @@ begin // inherited; exit;
 
   // determine closest corona
   bestCorona := siBuilder.Coronas.CoronaForElevationTangent(
-    localCameraPos.V[1] / VectorLength(localCameraPos.V[0], localCameraPos.V[2]));
+    localCameraPos.Y / VectorLength(localCameraPos.X, localCameraPos.Z));
 
   // determine closest sample in corona
-  azimuthAngle := FastArcTangent2(localCameraPos.V[2], localCameraPos.V[0]) + cPI;
+  azimuthAngle := FastArcTangent2(localCameraPos.Z, localCameraPos.X) + cPI;
   i := Round(azimuthAngle * bestCorona.Samples * cInv2PI);
   if i < 0 then
     i := 0
@@ -1197,13 +1197,13 @@ begin // inherited; exit;
     i := bestCorona.Samples - 1;
   i := bestCorona.FSampleBaseIndex + i;
 
-  tdx := siBuilder.FInvSamplesPerAxis.V[0];
-  tdy := siBuilder.FInvSamplesPerAxis.V[1];
+  tdx := siBuilder.FInvSamplesPerAxis.X;
+  tdy := siBuilder.FInvSamplesPerAxis.Y;
   DivMod(i, siBuilder.SamplesPerAxis.X, y, x);
-  texExtents.V[0] := tdx * x;
-  texExtents.V[1] := tdy * y;
-  texExtents.V[2] := texExtents.V[0] + tdx;
-  texExtents.V[3] := texExtents.V[1] + tdy;
+  texExtents.X := tdx * x;
+  texExtents.Y := tdy * y;
+  texExtents.Z := texExtents.X + tdx;
+  texExtents.W := texExtents.Y + tdy;
 
   // then render it
   RenderQuad(texExtents, objPos, Size);
@@ -1386,8 +1386,8 @@ begin
 
   FSamplesPerAxis.X := FTextureSize.X div SampleSize;
   FSamplesPerAxis.Y := FTextureSize.Y div SampleSize;
-  FInvSamplesPerAxis.V[0] := 1 / FSamplesPerAxis.X;
-  FInvSamplesPerAxis.V[1] := 1 / FSamplesPerAxis.Y;
+  FInvSamplesPerAxis.X := 1 / FSamplesPerAxis.X;
+  FInvSamplesPerAxis.Y := 1 / FSamplesPerAxis.Y;
   Assert(FSamplesPerAxis.X * FSamplesPerAxis.Y >= Coronas.SampleCount,
     'User specified bitmap and imposter parameters don''t match');
 
@@ -1429,7 +1429,7 @@ begin
   if ImposterReference <> irCenter then
     radius := radius * 0.5;
 
-  Assert((rci.GLStates.ViewPort.V[2] >= SampleSize) and (rci.GLStates.ViewPort.V[3] >= SampleSize),
+  Assert((rci.GLStates.ViewPort.Z >= SampleSize) and (rci.GLStates.ViewPort.W >= SampleSize),
     'ViewPort too small to render imposter samples!');
 
   // Setup the buffer in a suitable fashion for our needs
@@ -1439,13 +1439,13 @@ begin
     rci.GLStates.Disable(stLighting);
 
   rci.PipelineTransformation.Push;
-  fx := radius * rci.GLStates.ViewPort.V[2] / SampleSize;
-  fy := radius * rci.GLStates.ViewPort.V[3] / SampleSize;
+  fx := radius * rci.GLStates.ViewPort.Z / SampleSize;
+  fy := radius * rci.GLStates.ViewPort.W / SampleSize;
   yOffset := cReferenceToPos[ImposterReference] * radius;
   rci.PipelineTransformation.ProjectionMatrix :=
     CreateOrthoMatrix(-fx, fx, yOffset - fy, yOffset + fy, radius * 0.5, radius * 5);
-  xSrc := (rci.GLStates.ViewPort.V[2] - SampleSize) div 2;
-  ySrc := (rci.GLStates.ViewPort.V[3] - SampleSize) div 2;
+  xSrc := (rci.GLStates.ViewPort.Z - SampleSize) div 2;
+  ySrc := (rci.GLStates.ViewPort.W - SampleSize) div 2;
 
   // setup imposter texture
   if destImposter.Texture.Handle = 0 then

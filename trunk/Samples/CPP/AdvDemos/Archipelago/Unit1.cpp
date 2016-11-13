@@ -23,6 +23,7 @@
 #pragma link "GLWindowsFont"
 #pragma link "GLKeyboard"
 #pragma link "GLState"
+#pragma link "OpenGL1x"
 #pragma link "GLBaseClasses"
 #pragma link "GLCoordinates"
 #pragma link "GLCrossPlatform"
@@ -47,7 +48,9 @@ void __fastcall TForm1::FormCreate(TObject *Sender) {
 	TGLLibMaterial *libMat;
 	String DataPath;
 
-	DataPath = ExtractFilePath(ParamStr(0)) + "Data";
+//	DataPath = ExtractFilePath(ParamStr(0));
+	DataPath = ExtractFilePath(Application->ExeName);
+	DataPath += "Data\\";
 	SetCurrentDir(DataPath);
 	MaterialLibrary->TexturePaths = DataPath;
 
@@ -255,19 +258,19 @@ void __fastcall TForm1::FormKeyPress(TObject *Sender, System::WideChar &Key) {
 	switch (Key) {
 	case 'w':
 	case 'W': {
-			if (MaterialLibrary->Materials->Items[0]->Material->PolygonMode ==
-				pmLines)
-				pm = pmFill;
-			else
-				pm = pmLines;
-			for (i = 0; i < MaterialLibrary->Materials->Count; i++)
-				MaterialLibrary->Materials->Items[i]
-					->Material->PolygonMode = pm;
+		if (MaterialLibrary->Materials->Items[0]->Material->PolygonMode ==
+			pmLines)
+			pm = pmFill;
+		else
+			pm = pmLines;
+		for (i = 0; i < MaterialLibrary->Materials->Count; i++)
+			MaterialLibrary->Materials->Items[i]
+				->Material->PolygonMode = pm;
 
-			for (i = 0; i < MLSailBoat->Materials->Count; i++)
-				MLSailBoat->Materials->Items[i]->Material->PolygonMode = pm;
+		for (i = 0; i < MLSailBoat->Materials->Count; i++)
+			MLSailBoat->Materials->Items[i]->Material->PolygonMode = pm;
 			FFSailBoat->StructureChanged();
-			break;
+		break;
 		}
 	case 's':
 	case 'S':

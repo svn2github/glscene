@@ -1305,8 +1305,8 @@ begin
     FLightStates.Specular[I] := clrBlack;
     FLightStates.SpotDirection[I] := VectorMake(0.0, 0.0, -1.0, 0.0);
     FSpotCutoff[I] := 180.0;
-    FlightStates.SpotCosCutoffExponent[I].V[0] := -1;
-    FLightStates.SpotCosCutoffExponent[I].V[1] := 0;
+    FlightStates.SpotCosCutoffExponent[I].X := -1;
+    FLightStates.SpotCosCutoffExponent[I].Y := 0;
     FLightStates.Attenuation[I] := NullHmgVector;
   end;
   FLightStates.Diffuse[0] := clrWhite;
@@ -1659,13 +1659,13 @@ begin
   begin
     // We need a temp variable, because FColor is cauched.
     GL.GetFloatv(GL_CURRENT_COLOR, @color);
-    color.V[3] := alpha;
+    color.W := alpha;
     GL.Color4fv(@color);
   end
   else
   begin
     i := aFace - GL_FRONT;
-    if (FFrontBackColors[i][2].V[3] <> alpha) or FInsideList then
+    if (FFrontBackColors[i][2].W <> alpha) or FInsideList then
     begin
       if FInsideList then
       begin
@@ -1675,7 +1675,7 @@ begin
       end
       else
       begin
-        FFrontBackColors[i][2].V[3] := alpha;
+        FFrontBackColors[i][2].W := alpha;
         GL.Materialfv(aFace, GL_DIFFUSE, @FFrontBackColors[i][2]);
       end;
     end;
@@ -1826,7 +1826,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FBlendColor := Value;
-    GL.BlendColor(Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+    GL.BlendColor(Value.X, Value.Y, Value.Z, Value.W);
   end;
 end;
 
@@ -1982,7 +1982,7 @@ begin
   if not VectorEquals(Value, FCurrentVertexAttrib[Index]) then
   begin
     FCurrentVertexAttrib[Index] := Value;
-    GL.VertexAttrib4fv(Index, @Value.V[0]);
+    GL.VertexAttrib4fv(Index, @Value.X);
   end;
 end;
 
@@ -2461,7 +2461,7 @@ begin
   else
     FTextureMatrixIsIdentity[ActiveTexture] := False;
   GL.MatrixMode(GL_TEXTURE);
-  GL.LoadMatrixf(PGLFloat(@matrix.V[0].V[0]));
+  GL.LoadMatrixf(PGLFloat(@matrix.X.X));
   GL.MatrixMode(GL_MODELVIEW);
 end;
 
@@ -2844,7 +2844,7 @@ begin
       Include(FListStates[FCurrentList], sttScissor)
     else
       FScissorBox := Value;
-    GL.Scissor(Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+    GL.Scissor(Value.X, Value.Y, Value.Z, Value.W);
   end;
 end;
 
@@ -2890,7 +2890,7 @@ begin
       Include(FListStates[FCurrentList], sttColorBuffer)
     else
       FColorClearValue := Value;
-    GL.ClearColor(Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+    GL.ClearColor(Value.X, Value.Y, Value.Z, Value.W);
   end;
 end;
 
@@ -3343,7 +3343,7 @@ begin
       Include(FListStates[FCurrentList], sttViewport)
     else
       FViewPort := Value;
-    GL.Viewport(Value.V[0], Value.V[1], Value.V[2], Value.V[3]);
+    GL.Viewport(Value.X, Value.Y, Value.Z, Value.W);
   end;
 end;
 
@@ -3577,7 +3577,7 @@ begin
     else
     begin
       FSpotCutoff[I] := Value;
-      FLightStates.SpotCosCutoffExponent[I].V[0] := cos(DegToRadian(Value));
+      FLightStates.SpotCosCutoffExponent[I].X := cos(DegToRadian(Value));
     end;
 	
     if FFFPLight then
@@ -3591,18 +3591,18 @@ end;
 
 function TGLStateCache.GetSpotExponent(I: Integer): Single;
 begin
-  Result := FLightStates.SpotCosCutoffExponent[I].V[1];
+  Result := FLightStates.SpotCosCutoffExponent[I].Y;
 end;
 
 procedure TGLStateCache.SetSpotExponent(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.SpotCosCutoffExponent[I].V[1] )
+  if (Value <> FLightStates.SpotCosCutoffExponent[I].Y )
     or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.SpotCosCutoffExponent[I].V[1]  := Value;
+      FLightStates.SpotCosCutoffExponent[I].Y  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_SPOT_EXPONENT, @Value);
@@ -3615,17 +3615,17 @@ end;
 
 function TGLStateCache.GetConstantAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I].V[0] ;
+  Result := FLightStates.Attenuation[I].X ;
 end;
 
 procedure TGLStateCache.SetConstantAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I].V[0] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].X ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I].V[0]  := Value;
+      FLightStates.Attenuation[I].X  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_CONSTANT_ATTENUATION, @Value);
@@ -3638,17 +3638,17 @@ end;
 
 function TGLStateCache.GetLinearAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I].V[1] ;
+  Result := FLightStates.Attenuation[I].Y ;
 end;
 
 procedure TGLStateCache.SetLinearAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I].V[1] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].Y ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I].V[1]  := Value;
+      FLightStates.Attenuation[I].Y  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_LINEAR_ATTENUATION, @Value);
@@ -3661,17 +3661,17 @@ end;
 
 function TGLStateCache.GetQuadAtten(I: Integer): Single;
 begin
-  Result := FLightStates.Attenuation[I].V[2] ;
+  Result := FLightStates.Attenuation[I].Z ;
 end;
 
 procedure TGLStateCache.SetQuadAtten(I: Integer; const Value: Single);
 begin
-  if (Value <> FLightStates.Attenuation[I].V[2] ) or FInsideList then
+  if (Value <> FLightStates.Attenuation[I].Z ) or FInsideList then
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttLighting)
     else
-      FLightStates.Attenuation[I].V[2]  := Value;
+      FLightStates.Attenuation[I].Z  := Value;
 
     if FFFPLight then
       GL.Lightfv(GL_LIGHT0 + I, GL_QUADRATIC_ATTENUATION, @Value);

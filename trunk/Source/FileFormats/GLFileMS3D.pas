@@ -458,23 +458,23 @@ var
     mat1 := IdentityHMGMatrix;
     mat2 := IdentityHMGMatrix;
 
-    SinCos(rot.V[0], s, c);
+    SinCos(rot.X, s, c);
     rmat := CreateRotationMatrixX(s, c);
     mat1 := MatrixMultiply(mat1, rmat);
-    SinCos(rot.V[1], s, c);
+    SinCos(rot.Y, s, c);
     rmat := CreateRotationMatrixY(s, c);
     mat1 := MatrixMultiply(mat1, rmat);
-    SinCos(rot.V[2], s, c);
+    SinCos(rot.Z, s, c);
     rmat := CreateRotationMatrixZ(s, c);
     mat1 := MatrixMultiply(mat1, rmat);
 
-    SinCos(baserot.V[0], s, c);
+    SinCos(baserot.X, s, c);
     rmat := CreateRotationMatrixX(s, c);
     mat2 := MatrixMultiply(mat2, rmat);
-    SinCos(baserot.V[1], s, c);
+    SinCos(baserot.Y, s, c);
     rmat := CreateRotationMatrixY(s, c);
     mat2 := MatrixMultiply(mat2, rmat);
-    SinCos(baserot.V[2], s, c);
+    SinCos(baserot.Z, s, c);
     rmat := CreateRotationMatrixZ(s, c);
     mat2 := MatrixMultiply(mat2, rmat);
 

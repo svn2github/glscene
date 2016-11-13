@@ -124,8 +124,8 @@ void __fastcall TForm1::btnOrbitToPosClick(TObject *Sender)
   GetInput(btnOrbitToPos);
   lTargetPosition = dcSphere->LocalToAbsolute(PointMake(DextX, DextY, DextZ));
 
-  FGLCameraController->OrbitToPos(lTargetPosition.V[0],
-     lTargetPosition.V[1], lTargetPosition.V[2], Time);
+  FGLCameraController->OrbitToPos(lTargetPosition.X,
+     lTargetPosition.Y, lTargetPosition.Z, Time);
 }
 //---------------------------------------------------------------------------
 void __fastcall TForm1::btnSafeOrbitAndZoomToPosClick(TObject *Sender)
@@ -191,7 +191,7 @@ void __fastcall TForm1::btSmoothOrbitToPosAdvClick(TObject *Sender)
   FCameraSmoothAnimator_AbsPos->TargetValue->DirectVector = GLCamera->AbsolutePosition;
   FCameraSmoothAnimator_AbsPos->Enabled = true;
   FGLCameraController->OrbitToPosAdvancedSmooth(
-	lTargetPosition.V[0], lTargetPosition.V[1], lTargetPosition.V[2],
+	lTargetPosition.X, lTargetPosition.Y, lTargetPosition.Z,
 	lTime, FCameraSmoothAnimator_AbsPos);
 
 }
@@ -203,8 +203,8 @@ void __fastcall TForm1::btnOrbitToPosAdvClick(TObject *Sender)
 
   GetInput(btnOrbitToPosAdv);
   lTargetPosition = dcSphere->LocalToAbsolute(PointMake(DextX, DextY, DextZ));
-  FGLCameraController->OrbitToPosAdvanced(lTargetPosition.V[0], lTargetPosition.V[1],
-       lTargetPosition.V[2], Time, UpAxis->Checked);
+  FGLCameraController->OrbitToPosAdvanced(lTargetPosition.X, lTargetPosition.Y,
+       lTargetPosition.Z, Time, UpAxis->Checked);
 }
 //---------------------------------------------------------------------------
 

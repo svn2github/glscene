@@ -1096,17 +1096,17 @@ begin
       if command = 'V' then
       begin
         ReadHomogeneousVector;
-        Mesh.Vertices.Add(hv.V[0], hv.V[1], hv.V[2]);
+        Mesh.Vertices.Add(hv.X, hv.Y, hv.Z);
       end
       else if command = 'VT' then
       begin
         ReadAffineVector;
-        Mesh.TexCoords.Add(av.V[0], av.V[1], 0);
+        Mesh.TexCoords.Add(av.X, av.Y, 0);
       end
       else if command = 'VN' then
       begin
         ReadAffineVector;
-        Mesh.Normals.Add(av.V[0], av.V[1], av.V[2]);
+        Mesh.Normals.Add(av.X, av.Y, av.Z);
       end
       else if command = 'VP' then
       begin
@@ -1223,9 +1223,9 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('v %g %g %g', [List^[i].V[0],
-                                     List^[i].V[1],
-                                     List^[i].V[2]]);
+          s := Format('v %g %g %g', [List^[i].X,
+                                     List^[i].Y,
+                                     List^[i].Z]);
           Writeln(s);
         end;
         Inc(n, Count);
@@ -1248,9 +1248,9 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vn %g %g %g', [List^[i].V[0],
-                                      List^[i].V[1],
-                                      List^[i].V[2]]);
+          s := Format('vn %g %g %g', [List^[i].X,
+                                      List^[i].Y,
+                                      List^[i].Z]);
           Writeln(s);
         end;
         Inc(n, Count);
@@ -1273,7 +1273,7 @@ var
       begin
         for i := 0 to Count - 1 do
         begin
-          s := Format('vt %g %g', [List^[i].V[0], List^[i].V[1]]);
+          s := Format('vt %g %g', [List^[i].X, List^[i].Y]);
           Writeln(s);
         end;
         Inc(n, Count);

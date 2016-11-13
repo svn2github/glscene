@@ -83,28 +83,28 @@ begin
   rci.GLStates.LineWidth := w;
 
   GL.Begin_(GL_LINE_STRIP);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.min.V[2]);
+  GL.Vertex3f(AABB.min.X, AABB.min.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.min.X, AABB.max.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.max.X, AABB.max.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.max.X, AABB.min.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.min.X, AABB.min.Y, AABB.min.Z);
 
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.min.V[1], AABB.max.V[2]);
+  GL.Vertex3f(AABB.min.X, AABB.min.Y, AABB.max.Z);
+  GL.Vertex3f(AABB.min.X, AABB.max.Y, AABB.max.Z);
+  GL.Vertex3f(AABB.max.X, AABB.max.Y, AABB.max.Z);
+  GL.Vertex3f(AABB.max.X, AABB.min.Y, AABB.max.Z);
+  GL.Vertex3f(AABB.min.X, AABB.min.Y, AABB.max.Z);
   GL.End_;
 
   GL.Begin_(GL_LINES);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.min.V[0], AABB.max.V[1], AABB.max.V[2]);
+  GL.Vertex3f(AABB.min.X, AABB.max.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.min.X, AABB.max.Y, AABB.max.Z);
 
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.max.V[1], AABB.max.V[2]);
+  GL.Vertex3f(AABB.max.X, AABB.max.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.max.X, AABB.max.Y, AABB.max.Z);
 
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.min.V[2]);
-  GL.Vertex3f(AABB.max.V[0], AABB.min.V[1], AABB.max.V[2]);
+  GL.Vertex3f(AABB.max.X, AABB.min.Y, AABB.min.Z);
+  GL.Vertex3f(AABB.max.X, AABB.min.Y, AABB.max.Z);
   GL.End_;
 end;
 

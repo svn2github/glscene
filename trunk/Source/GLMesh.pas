@@ -721,7 +721,7 @@ begin
   FVertices.AddVertex(YVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.AddVertex(ZVector, ZVector, NullHmgVector, NullTexPoint);
   FVertices.OnNotifyChange := VerticesChanged;
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   FVertexMode := vmVNCT;
   // should change this later to default to vmVN. But need to
 end; // change GLMeshPropform so that it greys out unused vertex info
@@ -928,12 +928,12 @@ function TGLMesh.AxisAlignedDimensionsUnscaled: TVector;
 var
   dMin, dMax: TAffineVector;
 begin
-  if FAxisAlignedDimensionsCache.V[0] < 0 then
+  if FAxisAlignedDimensionsCache.X < 0 then
   begin
     Vertices.GetExtents(dMin, dMax);
-    FAxisAlignedDimensionsCache.V[0] := MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-    FAxisAlignedDimensionsCache.V[1] := MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-    FAxisAlignedDimensionsCache.V[2] := MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
+    FAxisAlignedDimensionsCache.X := MaxFloat(Abs(dMin.X), Abs(dMax.X));
+    FAxisAlignedDimensionsCache.Y := MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+    FAxisAlignedDimensionsCache.Z := MaxFloat(Abs(dMin.Z), Abs(dMax.Z));
   end;
   SetVector(Result, FAxisAlignedDimensionsCache);
 end;
@@ -943,7 +943,7 @@ end;
 
 procedure TGLMesh.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0] := -1;
+  FAxisAlignedDimensionsCache.X := -1;
   inherited;
 end;
 

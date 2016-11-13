@@ -341,11 +341,11 @@ begin
    radius:=Owner.LeafSize;
    Inc(FCount);
 
-   pos:=matrix.V[3];
-   Matrix.V[3]:=NullHMGPoint;
+   pos:=matrix.W;
+   Matrix.W:=NullHMGPoint;
    Matrix:=Roll(matrix, FCount/10);
    NormalizeMatrix(matrix);
-   Matrix.V[3]:=pos;
+   Matrix.W:=pos;
 
    FVertices.Add(VectorTransform(PointMake(0, -radius, 0), matrix));
    FVertices.Add(VectorTransform(PointMake(0, radius, 0), matrix));
@@ -692,7 +692,7 @@ begin
       Owner.Leaves.Vertices.Translate(delta);
    end;
 
-   Owner.FAxisAlignedDimensionsCache.V[0]:=-1;
+   Owner.FAxisAlignedDimensionsCache.X:=-1;
 end;
 
 // BuildList
@@ -872,7 +872,7 @@ end;
 //
 procedure TGLTree.StructureChanged;
 begin
-  FAxisAlignedDimensionsCache.V[0]:=-1;
+  FAxisAlignedDimensionsCache.X:=-1;
   inherited;
 end;
 
@@ -898,7 +898,7 @@ procedure TGLTree.BuildMesh(GLBaseMesh : TGLBaseMesh);
       NormalizeMatrix(mat);
       if MatrixDecompose(mat,trans) then begin
          SetVector(rot,trans[ttRotateX],trans[ttRotateY],trans[ttRotateZ]);
-         SetVector(pos,mat.V[3]);
+         SetVector(pos,mat.W);
       end else begin
          rot:=NullVector;
         pos:=NullVector;
@@ -1357,13 +1357,13 @@ begin
      bmax:=NullVector;
    end;
 
-   min.V[0]:=MinFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
-   min.V[1]:=MinFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
-   min.V[2]:=MinFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
+   min.X:=MinFloat([lmin.X, lmax.X, bmin.X, bmax.X]);
+   min.Y:=MinFloat([lmin.Y, lmax.Y, bmin.Y, bmax.Y]);
+   min.Z:=MinFloat([lmin.Z, lmax.Z, bmin.Z, bmax.Z]);
 
-   max.V[0]:=MaxFloat([lmin.V[0], lmax.V[0], bmin.V[0], bmax.V[0]]);
-   max.V[1]:=MaxFloat([lmin.V[1], lmax.V[1], bmin.V[1], bmax.V[1]]);
-   max.V[2]:=MaxFloat([lmin.V[2], lmax.V[2], bmin.V[2], bmax.V[2]]);
+   max.X:=MaxFloat([lmin.X, lmax.X, bmin.X, bmax.X]);
+   max.Y:=MaxFloat([lmin.Y, lmax.Y, bmin.Y, bmax.Y]);
+   max.Z:=MaxFloat([lmin.Z, lmax.Z, bmin.Z, bmax.Z]);
 end;
 
 // AxisAlignedDimensionsUnscaled
@@ -1372,11 +1372,11 @@ function TGLTree.AxisAlignedDimensionsUnscaled : TVector;
 var
    dMin, dMax : TAffineVector;
 begin
-   if FAxisAlignedDimensionsCache.V[0]<0 then begin
+   if FAxisAlignedDimensionsCache.X<0 then begin
       GetExtents(dMin, dMax);
-      FAxisAlignedDimensionsCache.V[0]:=MaxFloat(Abs(dMin.V[0]), Abs(dMax.V[0]));
-      FAxisAlignedDimensionsCache.V[1]:=MaxFloat(Abs(dMin.V[1]), Abs(dMax.V[1]));
-      FAxisAlignedDimensionsCache.V[2]:=MaxFloat(Abs(dMin.V[2]), Abs(dMax.V[2]));
+      FAxisAlignedDimensionsCache.X:=MaxFloat(Abs(dMin.X), Abs(dMax.X));
+      FAxisAlignedDimensionsCache.Y:=MaxFloat(Abs(dMin.Y), Abs(dMax.Y));
+      FAxisAlignedDimensionsCache.Z:=MaxFloat(Abs(dMin.Z), Abs(dMax.Z));
    end;
    SetVector(Result, FAxisAlignedDimensionsCache);
 end;

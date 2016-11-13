@@ -183,15 +183,15 @@ begin
   for I := 0 to Header.Num_VertexIndices - 1 do begin
     aStream.Read(Triangle, SizeOf(TMD2Triangle));
      with fIndexList[I] do begin
-      A := Triangle.VertexIndex.V[2];
-      B := Triangle.VertexIndex.V[1];
-      C := Triangle.VertexIndex.V[0];
-      A_S := TextureCoords[Triangle.TextureCoordIndex.V[2]].V[0] / Header.SkinWidth;
-      A_T := TextureCoords[Triangle.TextureCoordIndex.V[2]].V[1] / Header.SkinHeight;
-      B_S := TextureCoords[Triangle.TextureCoordIndex.V[1]].V[0] / Header.SkinWidth;
-      B_T := TextureCoords[Triangle.TextureCoordIndex.V[1]].V[1] / Header.SkinHeight;
-      C_S := TextureCoords[Triangle.TextureCoordIndex.V[0]].V[0] / Header.SkinWidth;
-      C_T := TextureCoords[Triangle.TextureCoordIndex.V[0]].V[1] / Header.SkinHeight;
+      A := Triangle.VertexIndex.Z;
+      B := Triangle.VertexIndex.Y;
+      C := Triangle.VertexIndex.X;
+      A_S := TextureCoords[Triangle.TextureCoordIndex.Z].X / Header.SkinWidth;
+      A_T := TextureCoords[Triangle.TextureCoordIndex.Z].Y / Header.SkinHeight;
+      B_S := TextureCoords[Triangle.TextureCoordIndex.Y].X / Header.SkinWidth;
+      B_T := TextureCoords[Triangle.TextureCoordIndex.Y].Y / Header.SkinHeight;
+      C_S := TextureCoords[Triangle.TextureCoordIndex.X].X / Header.SkinWidth;
+      C_T := TextureCoords[Triangle.TextureCoordIndex.X].Y / Header.SkinHeight;
     end;
   end;
   for I := 0 to Header.Num_Frames - 1 do begin
