@@ -127,12 +127,12 @@ begin
   FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5), VectorMake(0.5, 0.5, 0.5));
 
   // Loading shader
-  GLSLShader1.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
-  GLSLShader1.FragmentProgram.LoadFromFile('shadowmapvis_fp.glsl');
+  GLSLShader1.VertexProgram.LoadFromFile('Shaders\shadowmap_vp.glsl');
+  GLSLShader1.FragmentProgram.LoadFromFile('Shaders\shadowmapvis_fp.glsl');
   GLSLShader1.Enabled := true;
 
-  GLSLShader2.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
-  GLSLShader2.FragmentProgram.LoadFromFile('shadowmap_fp.glsl');
+  GLSLShader2.VertexProgram.LoadFromFile('Shaders\shadowmap_vp.glsl');
+  GLSLShader2.FragmentProgram.LoadFromFile('Shaders\shadowmap_fp.glsl');
   GLSLShader2.Enabled := true;
 end;
 

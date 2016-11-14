@@ -56,6 +56,7 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
+  GLMaterialLibrary.TexturePaths := GetCurrentDir;
   GLMaterialLibrary.Materials[0].Material.Texture.Image.LoadFromFile('BeigeMarble.jpg');
 end;
 

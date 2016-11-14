@@ -3,12 +3,27 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.ExtCtrls, Vcl.StdCtrls,
+  System.SysUtils, 
+  System.Classes, 
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms,
+  Vcl.ExtCtrls, 
+  Vcl.StdCtrls,
   // GLS
-  GLScene, GLObjects, GLExtrusion, GLMirror,
-  GLCadencer, GLWin32Viewer, GLTeapot, GLGeomObjects,
-  GLCoordinates, GLCrossPlatform, GLBaseClasses, GLMultiPolygon;
+  GLCrossPlatform, 
+  GLBaseClasses, 
+  GLScene, 
+  GLObjects, 
+  GLExtrusion, 
+  GLMirror,
+  GLCadencer, 
+  GLWin32Viewer, 
+  GLTeapot, 
+  GLGeomObjects,
+  GLCoordinates, 
+ 
+  GLMultiPolygon;
 
 type
   TForm1 = class(TForm)

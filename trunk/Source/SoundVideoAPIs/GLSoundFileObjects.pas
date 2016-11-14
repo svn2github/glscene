@@ -29,9 +29,10 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  {$IFDEF MSWINDOWS}MMSystem,{$ENDIF}
+  Winapi.MMSystem,
    
-  GLApplicationFileIO, GLCrossPlatform;
+  GLApplicationFileIO,
+  GLCrossPlatform;
 
 type
 
@@ -59,10 +60,8 @@ type
          function BytesPerSec : Integer;
          function BytesPerSample : Integer;
 
-        {$IFDEF MSWINDOWS}
          function WaveFormat : TWaveFormatEx;
-        {$ENDIF}
-	   published
+     published
 	      { Published Declarations }
          {Sampling frequency in Hz (= samples per sec) }
          property Frequency : Integer read FFrequency write FFrequency default 22050;
@@ -233,7 +232,6 @@ begin
    Result:=FBitsPerSample shr 3;
 end;
 
-{$IFDEF MSWINDOWS}
 // WaveFormat
 //
 function TGLSoundSampling.WaveFormat : TWaveFormatEx;
@@ -246,7 +244,6 @@ begin
    Result.nBlockAlign:=NbChannels*BytesPerSample;
    Result.cbSize:=0;
 end;
-{$ENDIF}
 
 // ------------------
 // ------------------ TGLSoundFile ------------------
@@ -407,4 +404,5 @@ finalization
   FreeAndNil(vSoundFileFormats);
 
 end.
+
 

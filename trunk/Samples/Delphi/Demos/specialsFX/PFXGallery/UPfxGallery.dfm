@@ -89,7 +89,7 @@ object FrmMain: TFrmMain
     Renderer = PfxRenderer
     Friction = 1.000000000000000000
     TexMapSize = 3
-    Smoothness = 0.699999988079071000
+    Smoothness = 0.699999988079071100
     Brightness = 1.000000000000000000
     Gamma = 1.000000000000000000
     NoiseSeed = 123415
@@ -132,14 +132,14 @@ object FrmMain: TFrmMain
       item
         ColorInner.Color = {000000000000803F000000000000803F}
         ColorOuter.Color = {0000803F0000803F1283003F0000803F}
-        LifeTime = 0.400000005960464500
+        LifeTime = 0.400000005960464400
         SizeScale = 0.500000000000000000
         RotateAngle = 40.000000000000000000
       end
       item
         ColorInner.Color = {000000001283003F000000000000803F}
         ColorOuter.Color = {000000000000803F000000000000803F}
-        LifeTime = 0.800000011920929000
+        LifeTime = 0.800000011920928900
         SizeScale = 0.200000002980232200
         RotateAngle = 80.000000000000000000
       end>
@@ -2303,7 +2303,6 @@ object FrmMain: TFrmMain
     Left = 36
     Top = 44
     object WorldRoot: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Scale.Coordinates = {0000C0400000C0400000C04000000000}
       CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
@@ -2666,7 +2665,7 @@ object FrmMain: TFrmMain
     Acceleration.Coordinates = {00000000000070C20000000000000000}
     Friction = 1.000000000000000000
     TexMapSize = 5
-    Smoothness = 0.699999988079071000
+    Smoothness = 0.699999988079071100
     Brightness = 1.000000000000000000
     Gamma = 1.000000000000000000
     NoiseSeed = 67334
@@ -2682,7 +2681,7 @@ object FrmMain: TFrmMain
       end
       item
         ColorInner.Color = {D578E93DBA490C3E2FDD243E0000803F}
-        LifeTime = 0.400000005960464500
+        LifeTime = 0.400000005960464400
         SizeScale = 1.200000047683716000
         RotateAngle = 20.000000000000000000
       end
@@ -2694,7 +2693,7 @@ object FrmMain: TFrmMain
       end
       item
         ColorInner.Color = {9EEFA73D9EEFA73DEC51B83D0000803F}
-        LifeTime = 0.800000011920929000
+        LifeTime = 0.800000011920928900
         SizeScale = 1.399999976158142000
         RotateAngle = 40.000000000000000000
       end

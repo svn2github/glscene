@@ -64,7 +64,7 @@ end;
 procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
   newTime: Double);
 var
-	i : Integer;
+	i : Cardinal;
 	a, aBase : Double;
 begin
    // angular reference : 90° per second <=> 4 second per revolution

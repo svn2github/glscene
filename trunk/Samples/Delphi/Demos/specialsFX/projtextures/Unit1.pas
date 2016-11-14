@@ -4,24 +4,30 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Imaging.Jpeg, Vcl.ExtCtrls,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
+  Vcl.ExtCtrls,
   //GLS
-  GLCadencer, 
-  GLScene, 
-  GLWin32Viewer, 
-  GLTexture, 
-  FileTGA,
+  GLCadencer,
+  GLScene,
+  GLWin32Viewer,
+  GLTexture,
+  GLFileTGA,
   GLObjects,
-  GLVectorGeometry, 
-  GLProjectedTextures, 
-  GLHUDObjects, 
+  GLVectorGeometry,
+  GLProjectedTextures,
+  GLHUDObjects,
   GLCrossPlatform,
-  GLMaterial, 
-  GLCoordinates, 
-  GLBaseClasses, 
-  GLSimpleNavigation, 
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLSimpleNavigation,
   GLUtils;
 
 type
@@ -50,11 +56,11 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
     procedure FormCreate(Sender: TObject);
-    procedure viewerMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure ViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure viewerMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure viewerMouseMove(Sender: TObject; Shift: TShiftState; X,
+    procedure ViewerMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);

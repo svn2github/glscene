@@ -16,17 +16,25 @@
        13/01/01 - EG - Added CPUUsagePercent
        09/06/00 - EG - Various enhancements
      04/06/00 - EG - Creation
-  
+
 }
 unit GLSound;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Types,
-   
-  GLSoundFileObjects, GLScene, GLXCollection, GLVectorGeometry,
-  GLCadencer, GLBaseClasses, GLCrossPlatform, GLUtils;
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+
+  GLSoundFileObjects,
+  GLScene,
+  GLXCollection,
+  GLVectorGeometry,
+  GLCadencer,
+  GLBaseClasses,
+  GLCrossPlatform,
+  GLUtils;
 
 {$I GLScene.inc}
 
@@ -187,10 +195,10 @@ type
     //: This Tag is reserved for sound manager use only
     property ManagerTag: PtrUInt read FTag write FTag;
 
-    {Origin object for the sound sources. 
+    {Origin object for the sound sources.
        Absolute object position/orientation are taken into account, the
-       object's TGLBInertia is considered if any. 
-       If origin is nil, the source is assumed to be static at the origin. 
+       object's TGLBInertia is considered if any.
+       If origin is nil, the source is assumed to be static at the origin.
         Note :  since TCollectionItem do not support the "Notification"
        scheme, it is up to the Origin object to take care of updating this
        property prior to release/destruction. }
@@ -210,44 +218,44 @@ type
     property Mute: Boolean read FMute write SetMute default False;
     property Pause: Boolean read FPause write SetPause default False;
 
-    {Sound source priority, the higher the better. 
+    {Sound source priority, the higher the better.
        When maximum number of sound sources is reached, only the sources
        with the highest priority will continue to play, however, even
        non-playing sources should be tracked by the manager, thus allowing
        an "unlimited" amount of sources from the application point of view. }
     property Priority: Integer read FPriority write SetPriority default 0;
 
-    {Min distance before spatial attenuation occurs. 
+    {Min distance before spatial attenuation occurs.
        1.0 by default }
     property MinDistance: Single read FMinDistance write SetMinDistance;
-    {Max distance, if source is further away, it will not be heard. 
+    {Max distance, if source is further away, it will not be heard.
        100.0 by default }
     property MaxDistance: Single read FMaxDistance write SetMaxDistance;
 
-    {Inside cone angle, [0°; 360°]. 
-       Sound volume is maximal within this cone. 
+    {Inside cone angle, [0°; 360°].
+       Sound volume is maximal within this cone.
        See DirectX SDK for details. }
     property InsideConeAngle: Single read FInsideConeAngle write
       SetInsideConeAngle;
-    {Outside cone angle, [0°; 360°]. 
+    {Outside cone angle, [0°; 360°].
        Between inside and outside cone, sound volume decreases between max
-       and cone outside volume. 
+       and cone outside volume.
        See DirectX SDK for details. }
     property OutsideConeAngle: Single read FOutsideConeAngle write
       SetOutsideConeAngle;
-    {Cone outside volume, [0.0; 1.0] range. 
+    {Cone outside volume, [0.0; 1.0] range.
        See DirectX SDK for details. }
     property ConeOutsideVolume: Single read FConeOutsideVolume write
       SetConeOutsideVolume;
-    {Sample custom playback frequency. 
+    {Sample custom playback frequency.
        Values null or negative are interpreted as 'default frequency'. }
     property Frequency: Integer read FFrequency write SetFrequency default -1;
   end;
 
   // TGLSoundSource
   //
-    {Origin of sound playback. 
-       Just publishes the 'Origin' property. 
+    {Origin of sound playback.
+       Just publishes the 'Origin' property.
        Note that the "orientation" is the the source's Direction, ie. the "Z"
        vector. }
   TGLSoundSource = class(TGLBaseSoundSource)
@@ -294,10 +302,10 @@ type
 
   // TGLSoundManager
   //
-    {Base class for sound manager components. 
+    {Base class for sound manager components.
        The sound manager component is the interface to a low-level audio API
        (like DirectSound), there can only be one active manager at any time
-       (this class takes care of this). 
+       (this class takes care of this).
        Subclass should override the DoActivate and DoDeActivate protected methods
        to "initialize/unitialize" their sound layer, actual data releases should
        occur in destructor however. }
@@ -355,19 +363,19 @@ type
     function DoActivate: Boolean; dynamic;
     //: Invoked AFTER all sources have been stopped
     procedure DoDeActivate; dynamic;
-    {Effect mute of all sounds. 
+    {Effect mute of all sounds.
        Default implementation call MuteSource for all non-muted sources
        with "True" as parameter. }
     function DoMute: Boolean; dynamic;
-    {Effect un-mute of all sounds. 
+    {Effect un-mute of all sounds.
        Default implementation call MuteSource for all non-muted sources
        with "False" as parameter. }
     procedure DoUnMute; dynamic;
-    {Effect pause of all sounds. 
+    {Effect pause of all sounds.
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
     function DoPause: Boolean; dynamic;
-    {Effect un-pause of all sounds. 
+    {Effect un-pause of all sounds.
        Default implementation call PauseSource for all non-paused sources
        with "True" as parameter. }
     procedure DoUnPause; dynamic;
@@ -378,7 +386,7 @@ type
 
     //: Called when a source will be freed
     procedure KillSource(aSource: TGLBaseSoundSource); virtual;
-    {Request to update source's data in low-level sound API. 
+    {Request to update source's data in low-level sound API.
        Default implementation just clears the "Changes" flags. }
     procedure UpdateSource(aSource: TGLBaseSoundSource); virtual;
     procedure MuteSource(aSource: TGLBaseSoundSource; muted: Boolean); virtual;
@@ -390,18 +398,18 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    {Manual request to update all sources to reflect changes. 
+    {Manual request to update all sources to reflect changes.
        Default implementation invokes UpdateSource for all known sources. }
     procedure UpdateSources; virtual;
     {Stop and free all sources. }
     procedure StopAllSources;
 
-    {Progress notification for time synchronization. 
+    {Progress notification for time synchronization.
        This method will call UpdateSources depending on the last time
        it was performed and the value of the UpdateFrequency property. }
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {Sound manager API reported CPU Usage. 
+    {Sound manager API reported CPU Usage.
        Returns -1 when unsupported. }
     function CPUUsagePercent: Single; virtual;
     {True if EAX is supported. }
@@ -456,7 +464,7 @@ type
       SetUpdateFrequency stored StoreUpdateFrequency;
     {Cadencer for time-based control.  }
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
-    {Engine relative distance factor, compared to 1.0 meters. 
+    {Engine relative distance factor, compared to 1.0 meters.
        Equates to 'how many units per meter' your engine has. }
     property DistanceFactor: Single read FDistanceFactor write SetDistanceFactor
       stored StoreDistanceFactor;
@@ -479,7 +487,7 @@ type
 
   // TGLBSoundEmitter
   //
-  {A sound emitter behaviour, plug it on any object to make it noisy. 
+  {A sound emitter behaviour, plug it on any object to make it noisy.
        This behaviour is just an interface to a TGLSoundSource, for editing
        convenience. }
   TGLBSoundEmitter = class(TGLBehaviour)

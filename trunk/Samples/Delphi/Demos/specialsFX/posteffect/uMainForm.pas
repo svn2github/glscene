@@ -11,8 +11,7 @@ uses
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
   GLMeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLRenderContextInfo, GLUtils, GLFileMD2
-//  GLFileTGA,
+  GLRenderContextInfo, GLUtils, GLFileMD2, GLFileTGA,
 //  GLFileObj,
 //  GLFile3DS,
 //  GLFileSMD,
