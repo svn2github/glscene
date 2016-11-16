@@ -4,16 +4,40 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
 
   //GLS
-  GLScene, GLTexture, GLCadencer,   GLFPSMovement, GLKeyboard, GLState,
-  GLWin32Viewer, GLObjects, GLCollision, GLVectorFileObjects,
-  GLNavigator, GLVectorLists, GLOctree, GLFile3DS, GLVectorGeometry,
-  GLGeomObjects, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLSimpleNavigation, GLBaseClasses, GLUtils;
+  GLScene,
+  GLTexture,
+  GLCadencer,
+  GLFPSMovement,
+  GLKeyboard,
+  GLState,
+  GLWin32Viewer,
+  GLObjects,
+  GLCollision,
+  GLVectorFileObjects,
+  GLNavigator,
+  GLVectorLists,
+  GLOctree,
+  GLFile3DS,
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLSimpleNavigation,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

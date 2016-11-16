@@ -48,7 +48,7 @@ object Form1: TForm1
         Position.Coordinates = {000000C0CDCC0C40000000000000803F}
         Up.Coordinates = {F604B53EF304353F70C41CBF00000000}
         OnProgress = SphereProgress
-        MajorRadius = 0.699999988079071000
+        MajorRadius = 0.699999988079071100
         MinorRadius = 0.200000002980232200
         StopAngle = 360.000000000000000000
         Parts = [toSides, toStartDisk, toStopDisk]

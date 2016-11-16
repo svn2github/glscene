@@ -4,19 +4,35 @@ interface
 
 uses
   Winapi.Windows,
+  Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
   System.Math,
-  Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Buttons, Vcl.ComCtrls,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Buttons,
+  Vcl.ComCtrls,
 
   // GLS
   GLScene,
   GLCadencer,
   GLObjects,
   GLVectorTypes,
-  GLWin32Viewer, GLKeyboard, GLGizmoEx, GLCrossPlatform, GLCoordinates,
-  GLBaseClasses,  GLVectorGeometry, GLGeomObjects, GLBitmapFont,
-  GLWindowsFont,  GLPolyhedron, GLHUDObjects, GLGraph;
+  GLWin32Viewer,
+  GLKeyboard,
+  GLGizmoEx,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLPolyhedron,
+  GLHUDObjects,
+  GLGraph;
 
 type
   TForm1 = class(TForm)

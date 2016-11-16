@@ -3,8 +3,8 @@ object MainForm: TMainForm
   Top = 272
   BorderWidth = 2
   Caption = 'Post Effect'
-  ClientHeight = 305
-  ClientWidth = 495
+  ClientHeight = 301
+  ClientWidth = 491
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,10 +18,10 @@ object MainForm: TMainForm
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 493
+    Left = 489
     Top = 33
     Width = 2
-    Height = 272
+    Height = 268
     Align = alRight
     AutoSize = False
     ExplicitLeft = 497
@@ -30,7 +30,7 @@ object MainForm: TMainForm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 495
+    Width = 491
     Height = 33
     Align = alTop
     TabOrder = 0
@@ -65,11 +65,11 @@ object MainForm: TMainForm
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 33
-    Width = 493
-    Height = 272
+    Width = 489
+    Height = 268
     Camera = GLCamera1
     Buffer.BackgroundColor = 16776176
-    FieldOfView = 139.628387451171900000
+    FieldOfView = 139.075454711914100000
     Align = alClient
     TabOrder = 1
   end

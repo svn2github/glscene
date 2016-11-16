@@ -25,8 +25,8 @@ object Form1: TForm1
     TabOrder = 0
   end
   object GLScene1: TGLScene
-    Left = 80
-    Top = 16
+    Left = 48
+    Top = 24
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {000020410000A0410000C8420000803F}
@@ -46,8 +46,8 @@ object Form1: TForm1
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
-    Left = 48
-    Top = 16
+    Left = 128
+    Top = 24
   end
   object GLSimpleNavigation1: TGLSimpleNavigation
     Form = Owner
@@ -66,7 +66,7 @@ object Form1: TForm1
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 16
-    Top = 16
+    Left = 232
+    Top = 24
   end
 end

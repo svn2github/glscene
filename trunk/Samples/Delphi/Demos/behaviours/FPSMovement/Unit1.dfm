@@ -77,7 +77,7 @@ object Form1: TForm1
         object BotSphere: TGLSphere
           Material.MaterialOptions = [moNoLighting]
           Material.FaceCulling = fcNoCull
-          Radius = 0.400000005960464500
+          Radius = 0.400000005960464400
         end
       end
       object GLLight: TGLLightSource

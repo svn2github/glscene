@@ -17,12 +17,12 @@ uses
   GLObjects,
   GLCadencer,
   GLBitmapFont,
-  GLWin32Viewer,
   GLTeapot,
   GLCrossPlatform,
   GLCoordinates,
   GLBaseClasses,
-  GLUtils;
+  GLUtils,
+  GLWin32Viewer;
 
 type
   TForm1 = class(TForm)
@@ -62,8 +62,14 @@ begin
   SetGLSceneMediaDir();
   BitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
   // sorry, couldn't resist...
-  HUDText1.Text := 'Hello World !'#13#10#13#10 + 'This is me, '#13#10 +
+  {$IFDEF WIN32}
+  HUDText1.Text := 'Hello WIN 32!'#13#10#13#10 + 'This is me, '#13#10 +
     'the HUD Text.'#13#10#13#10 + 'Bitmap Fonts!';
+  {$ENDIF}
+ {$IFDEF WIN64}
+  HUDText1.Text := 'Hello WIN 64!'#13#10#13#10 + 'This is me, '#13#10 +
+    'the HUD Text.'#13#10#13#10 + 'Bitmap Fonts!';
+  {$ENDIF}
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
@@ -80,7 +86,7 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   FormatSettings.DecimalSeparator := ',';
   HUDTextFPS.Text := FloatToStr(-2.01);
-  // HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+  HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

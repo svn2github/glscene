@@ -113,7 +113,6 @@ object Form1: TForm1
         Direction.Coordinates = {2EF9E43E000000002EF9643F00000000}
         Position.Coordinates = {0000000000000000000080400000803F}
         Scale.Coordinates = {0000003F0000003F0000003F00000000}
-        Up.Coordinates = {000000000000803F0000008000000000}
       end
       object Octahedron: TGLOctahedron
         Material.FrontProperties.Diffuse.Color = {CDCC4C3FF8FEFE3EACC8483E0000803F}

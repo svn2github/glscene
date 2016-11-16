@@ -837,7 +837,6 @@ object Form1: TForm1
         Tag = 0
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
       end>
-    TexturePaths = '..\..\..\..\media\'
     Left = 120
     Top = 16
   end

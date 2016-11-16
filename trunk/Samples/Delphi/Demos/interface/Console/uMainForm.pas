@@ -3,14 +3,30 @@ unit uMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls,
-  Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,  ExtCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
 
-  //GLScene
-  GLScene, GLObjects,  GLCadencer, GLWin32Viewer, GLBaseClasses,
-  GLCrossPlatform, GLTexture, GLBitmapFont, GLWindowsFont,
-  GLBehaviours, GLConsole, GLCoordinates, GLSimpleNavigation,
+  //GLS
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLBaseClasses,
+  GLCrossPlatform,
+  GLTexture,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLBehaviours,
+  GLConsole,
+  GLCoordinates,
+  GLSimpleNavigation,
   GLUtils;
 
 type

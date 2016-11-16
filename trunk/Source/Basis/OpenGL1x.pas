@@ -105,7 +105,6 @@ interface
  // manually here, though I would not reccomend it. This is because other units
  // may depend on this option too. So if you need this option, please use the
  // GLS_MULTITHREAD define in GLScene.inc.
-{.$define MULTITHREADOPENGL}
 
 uses
   System.SysUtils,
@@ -119,7 +118,152 @@ uses
     {Libc,}Types, LCLType, dynlibs,
   {$ENDIF}
   OpenGLTokens, GLVectorTypes;
-{$IFDEF GLS_REGIONS} {$region 'OpenGL extension feature checks'} {$ENDIF}
+
+const
+{$IFDEF MSWINDOWS}
+  opengl32 = 'OpenGL32.dll';
+  glu32 = 'GLU32.dll';
+  libEGL = 'libEGL.dll';
+  libGLES2 = 'libGLESv2.dll';
+{$ENDIF}
+
+{$IFDEF Linux}
+  opengl32 = 'libGL.so';
+  glu32 = 'libGLU.so';
+  libEGL = 'libEGL.so';
+  libGLES2 = 'libGLESv2.so';
+{$ENDIF}
+
+type
+
+  PGLChar = PAnsiChar;
+  TGLString = AnsiString;
+
+  GLenum = Cardinal;
+ {$EXTERNALSYM GLenum}
+  TGLenum = Cardinal;
+  PGLenum = ^TGLenum;
+
+  GLboolean = BYTEBOOL;
+ {$EXTERNALSYM GLboolean}
+  TGLboolean = BYTEBOOL;
+  PGLboolean = ^TGLboolean;
+
+  GLbitfield = UINT;
+ {$EXTERNALSYM GLbitfield}
+  TGLbitfield = UINT;
+  PGLbitfield = ^TGLbitfield;
+
+  GLbyte = ShortInt;
+ {$EXTERNALSYM GLbyte}
+  TGLbyte = ShortInt;
+  PGLbyte = ^TGLbyte;
+
+  GLshort = SmallInt;
+ {$EXTERNALSYM GLshort}
+  TGLshort = SmallInt;
+  PGLshort = ^TGLshort;
+
+  GLint = Integer;
+ {$EXTERNALSYM GLint}
+  TGLint = Integer;
+  PGLint = ^Integer;
+
+  GLsizei = Integer;
+ {$EXTERNALSYM GLsizei}
+  TGLsizei = Integer;
+  PGLsizei = ^TGLsizei;
+
+  GLint64 = Int64;
+ {$EXTERNALSYM GLint64}
+  TGLint64 = Int64;
+  PGLint64 = ^TGLInt64;
+
+  GLint64EXT = Int64;
+  TGLint64EXT = Int64;
+  PGLint64EXT = ^TGLint64EXT;
+
+  GLuint64 = UInt64;
+  TGLuint64 = UInt64;
+  PGLuint64 = ^TGLuint64;
+
+  GLuint64EXT = UInt64;
+  TGLuint64EXT = UInt64;
+  PGLuint64EXT = ^TGLuint64EXT;
+
+  GLubyte = Byte;
+ {$EXTERNALSYM GLubyte}
+  TGLubyte = Byte;
+  PGLubyte = System.PByte;
+
+  GLushort = Word;
+ {$EXTERNALSYM GLushort}
+  TGLushort = Word;
+  PGLushort = System.PWord;
+
+  GLuint = UINT;
+ {$EXTERNALSYM GLuint}
+  TGLuint = UINT;
+  PGLuint = ^TGLuint;
+
+  GLfloat = Single;
+ {$EXTERNALSYM GLfloat}
+  TGLfloat = Single;
+  PGLfloat = System.PSingle;
+
+  GLclampf = Single;
+ {$EXTERNALSYM GLclampf}
+  TGLclampf = Single;
+  PGLclampf = ^TGLclampf;
+
+  GLdouble = Double;
+ {$EXTERNALSYM GLdouble}
+  TGLdouble = Double;
+  PGLdouble = System.PDouble;
+
+  GLclampd = Double;
+  TGLclampd = Double;
+  PGLclampd = ^TGLclampd;
+
+  GLhandleARB = Cardinal;
+  PGLhandleARB = ^GLhandleARB;
+
+  PGLPCharArray = ^PGLChar;
+
+  PGLvoid = Pointer;
+
+  PGLPointer = ^Pointer;
+
+  // GL_ARB_cl_event
+  { These incomplete types let us declare types compatible with OpenCL's
+    cl_context and cl_event }
+  _cl_context = record end;
+  _cl_event = record end;
+  p_cl_context = ^_cl_context;
+  p_cl_event = ^_cl_event;
+
+  // the size of these depend on platform (32bit or 64bit)
+  GLintptr = NativeInt;
+  TGLintptr = NativeInt;
+  GLsizeiptr = NativeInt;
+  TGLsizeiptr = NativeInt;
+  GLsync = NativeInt;
+  TGLsync = NativeInt;
+
+  // Windows types
+{$IFDEF MSWINDOWS}
+  PWGLswap = ^TWGLswap;
+  _WGLSWAP = packed record
+    hdc: HDC;
+    uiFlags: UINT;
+  end;
+  TWGLswap = _WGLSWAP;
+  WGLSWAP = _WGLSWAP;
+  HPBUFFERARB = Integer;
+{$ENDIF}
+
+
+//  --------------- OpenGL extension feature checks -------------
 
 {$IFDEF MULTITHREADOPENGL}
 threadvar
@@ -688,7 +832,273 @@ var
   WIN_swap_hint: Boolean;
 
 
-{$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
+const
+//------------------ OpenGL v1.1 generic constants --------------------
+
+  // attribute bits
+  GL_DEPTH_BUFFER_BIT = $00000100;
+  GL_STENCIL_BUFFER_BIT = $00000400;
+  GL_COLOR_BUFFER_BIT = $00004000;
+
+  // boolean values
+  GL_FALSE = 0;
+  GL_TRUE = 1;
+
+  // primitives
+  GL_POINTS = $0000;
+  GL_LINES = $0001;
+  GL_LINE_LOOP = $0002;
+  GL_LINE_STRIP = $0003;
+  GL_TRIANGLES = $0004;
+  GL_TRIANGLE_STRIP = $0005;
+  GL_TRIANGLE_FAN = $0006;
+
+  // AlphaFunction
+  GL_NEVER = $0200;
+  GL_LESS = $0201;
+  GL_EQUAL = $0202;
+  GL_LEQUAL = $0203;
+  GL_GREATER = $0204;
+  GL_NOTEQUAL = $0205;
+  GL_GEQUAL = $0206;
+  GL_ALWAYS = $0207;
+
+  // blending
+  GL_ZERO = 0;
+  GL_ONE = 1;
+  GL_SRC_COLOR = $0300;
+  GL_ONE_MINUS_SRC_COLOR = $0301;
+  GL_SRC_ALPHA = $0302;
+  GL_ONE_MINUS_SRC_ALPHA = $0303;
+  GL_DST_ALPHA = $0304;
+  GL_ONE_MINUS_DST_ALPHA = $0305;
+  GL_DST_COLOR = $0306;
+  GL_ONE_MINUS_DST_COLOR = $0307;
+  GL_SRC_ALPHA_SATURATE = $0308;
+
+  // buffers
+  GL_NONE = 0;
+  GL_FRONT_LEFT = $0400;
+  GL_FRONT_RIGHT = $0401;
+  GL_BACK_LEFT = $0402;
+  GL_BACK_RIGHT = $0403;
+  GL_FRONT = $0404;
+  GL_BACK = $0405;
+  GL_LEFT = $0406;
+  GL_RIGHT = $0407;
+  GL_FRONT_AND_BACK = $0408;
+
+  // errors
+  GL_NO_ERROR = 0;
+  GL_INVALID_ENUM = $0500;
+  GL_INVALID_VALUE = $0501;
+  GL_INVALID_OPERATION = $0502;
+  GL_OUT_OF_MEMORY = $0505;
+
+  // FrontFaceDirection
+  GL_CW = $0900;
+  GL_CCW = $0901;
+
+  // points
+  GL_POINT_SIZE = $0B11;
+  GL_POINT_SIZE_RANGE = $0B12;
+  GL_POINT_SIZE_GRANULARITY = $0B13;
+
+  // lines
+  GL_LINE_SMOOTH = $0B20;
+  GL_LINE_WIDTH = $0B21;
+  GL_LINE_WIDTH_RANGE = $0B22;
+  GL_LINE_WIDTH_GRANULARITY = $0B23;
+
+  // polygons
+  GL_POLYGON_SMOOTH = $0B41;
+  GL_CULL_FACE = $0B44;
+  GL_CULL_FACE_MODE = $0B45;
+  GL_FRONT_FACE = $0B46;
+
+  // depth buffer
+  GL_DEPTH_RANGE = $0B70;
+  GL_DEPTH_TEST = $0B71;
+  GL_DEPTH_WRITEMASK = $0B72;
+  GL_DEPTH_CLEAR_VALUE = $0B73;
+  GL_DEPTH_FUNC = $0B74;
+
+  // stenciling
+  GL_STENCIL_TEST = $0B90;
+  GL_STENCIL_CLEAR_VALUE = $0B91;
+  GL_STENCIL_FUNC = $0B92;
+  GL_STENCIL_VALUE_MASK = $0B93;
+  GL_STENCIL_FAIL = $0B94;
+  GL_STENCIL_PASS_DEPTH_FAIL = $0B95;
+  GL_STENCIL_PASS_DEPTH_PASS = $0B96;
+  GL_STENCIL_REF = $0B97;
+  GL_STENCIL_WRITEMASK = $0B98;
+
+  GL_MATRIX_MODE = $0BA0;
+
+  GL_VIEWPORT = $0BA2;
+
+  // miscellaneous
+  GL_DITHER = $0BD0;
+
+  GL_BLEND_DST = $0BE0;
+  GL_BLEND_SRC = $0BE1;
+  GL_BLEND = $0BE2;
+
+  GL_LOGIC_OP_MODE = $0BF0;
+  GL_COLOR_LOGIC_OP = $0BF2;
+
+  GL_DRAW_BUFFER = $0C01;
+  GL_READ_BUFFER = $0C02;
+
+  GL_SCISSOR_BOX = $0C10;
+  GL_SCISSOR_TEST = $0C11;
+  GL_COLOR_CLEAR_VALUE = $0C22;
+  GL_COLOR_WRITEMASK = $0C23;
+
+  GL_DOUBLEBUFFER = $0C32;
+  GL_STEREO = $0C33;
+
+  GL_LINE_SMOOTH_HINT = $0C52;
+  GL_POLYGON_SMOOTH_HINT = $0C53;
+
+  // pixel mode, transfer
+  GL_UNPACK_SWAP_BYTES = $0CF0;
+  GL_UNPACK_LSB_FIRST = $0CF1;
+  GL_UNPACK_ROW_LENGTH = $0CF2;
+  GL_UNPACK_SKIP_ROWS = $0CF3;
+  GL_UNPACK_SKIP_PIXELS = $0CF4;
+  GL_UNPACK_ALIGNMENT = $0CF5;
+  GL_PACK_SWAP_BYTES = $0D00;
+  GL_PACK_LSB_FIRST = $0D01;
+  GL_PACK_ROW_LENGTH = $0D02;
+  GL_PACK_SKIP_ROWS = $0D03;
+  GL_PACK_SKIP_PIXELS = $0D04;
+  GL_PACK_ALIGNMENT = $0D05;
+
+  GL_MAX_TEXTURE_SIZE = $0D33;
+  GL_MAX_VIEWPORT_DIMS = $0D3A;
+  GL_SUBPIXEL_BITS = $0D50;
+
+  GL_TEXTURE_1D = $0DE0;
+  GL_TEXTURE_2D = $0DE1;
+
+  GL_POLYGON_OFFSET_UNITS = $2A00;
+  GL_POLYGON_OFFSET_POINT = $2A01;
+  GL_POLYGON_OFFSET_LINE = $2A02;
+  GL_POLYGON_OFFSET_FILL = $8037;
+  GL_POLYGON_OFFSET_FACTOR = $8038;
+  GL_TEXTURE_BINDING_1D = $8068;
+  GL_TEXTURE_BINDING_2D = $8069;
+
+  // texture mapping
+  GL_TEXTURE_WIDTH = $1000;
+  GL_TEXTURE_HEIGHT = $1001;
+  GL_TEXTURE_INTERNAL_FORMAT = $1003;
+  GL_TEXTURE_BORDER_COLOR = $1004;
+  GL_TEXTURE_BORDER = $1005;
+  GL_TEXTURE_RED_SIZE = $805C;
+  GL_TEXTURE_GREEN_SIZE = $805D;
+  GL_TEXTURE_BLUE_SIZE = $805E;
+  GL_TEXTURE_ALPHA_SIZE = $805F;
+
+  // hints
+  GL_DONT_CARE = $1100;
+  GL_FASTEST = $1101;
+  GL_NICEST = $1102;
+
+  // data types
+  GL_BYTE = $1400;
+  GL_UNSIGNED_BYTE = $1401;
+  GL_SHORT = $1402;
+  GL_UNSIGNED_SHORT = $1403;
+  GL_INT = $1404;
+  GL_UNSIGNED_INT = $1405;
+  GL_FLOAT = $1406;
+  GL_DOUBLE = $140A;
+
+  // logic operations
+  GL_CLEAR = $1500;
+  GL_AND = $1501;
+  GL_AND_REVERSE = $1502;
+  GL_COPY = $1503;
+  GL_AND_INVERTED = $1504;
+  GL_NOOP = $1505;
+  GL_XOR = $1506;
+  GL_OR = $1507;
+  GL_NOR = $1508;
+  GL_EQUIV = $1509;
+  GL_INVERT = $150A;
+  GL_OR_REVERSE = $150B;
+  GL_COPY_INVERTED = $150C;
+  GL_OR_INVERTED = $150D;
+  GL_NAND = $150E;
+  GL_SET = $150F;
+
+  GL_TEXTURE = $1702; // (for gl3.h, FBO attachment type)
+
+  // PixelCopyType
+  GL_COLOR = $1800;
+  GL_DEPTH = $1801;
+  GL_STENCIL = $1802;
+
+  // pixel formats
+  GL_STENCIL_INDEX = $1901;
+  GL_DEPTH_COMPONENT = $1902;
+  GL_RED = $1903;
+  GL_GREEN = $1904;
+  GL_BLUE = $1905;
+  GL_ALPHA = $1906;
+  GL_RGB = $1907;
+  GL_RGBA = $1908;
+
+  // PolygonMode
+  GL_POINT = $1B00;
+  GL_LINE = $1B01;
+  GL_FILL = $1B02;
+
+  // StencilOp
+  GL_KEEP = $1E00;
+  GL_REPLACE = $1E01;
+  GL_INCR = $1E02;
+  GL_DECR = $1E03;
+
+  // implementation strings
+  GL_VENDOR = $1F00;
+  GL_RENDERER = $1F01;
+  GL_VERSION = $1F02;
+  GL_EXTENSIONS = $1F03;
+
+  GL_NEAREST = $2600;
+  GL_LINEAR = $2601;
+  GL_NEAREST_MIPMAP_NEAREST = $2700;
+  GL_LINEAR_MIPMAP_NEAREST = $2701;
+  GL_NEAREST_MIPMAP_LINEAR = $2702;
+  GL_LINEAR_MIPMAP_LINEAR = $2703;
+  GL_TEXTURE_MAG_FILTER = $2800;
+  GL_TEXTURE_MIN_FILTER = $2801;
+  GL_TEXTURE_WRAP_S = $2802;
+  GL_TEXTURE_WRAP_T = $2803;
+  GL_PROXY_TEXTURE_1D = $8063;
+  GL_PROXY_TEXTURE_2D = $8064;
+  GL_REPEAT = $2901;
+
+  // pixel formats
+  GL_R3_G3_B2 = $2A10;
+  GL_RGB4 = $804F;
+  GL_RGB5 = $8050;
+  GL_RGB8 = $8051;
+  GL_RGB10 = $8052;
+  GL_RGB12 = $8053;
+  GL_RGB16 = $8054;
+  GL_RGBA2 = $8055;
+  GL_RGBA4 = $8056;
+  GL_RGB5_A1 = $8057;
+  GL_RGBA8 = $8058;
+  GL_RGB10_A2 = $8059;
+  GL_RGBA12 = $805A;
+  GL_RGBA16 = $805B;
+
 
 {$IFDEF GLS_REGIONS} {$region 'OpenGL v1.1 core functions and procedures'} {$ENDIF}
    procedure glBindTexture(target: TGLEnum; texture: TGLuint); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external opengl32;
@@ -1068,7 +1478,53 @@ var
 
 {$IFDEF GLS_REGIONS} {$endregion} {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$region 'OpenGL utility (GLU) functions and procedures'} {$ENDIF}
+//------------------- OpenGL Utility (GLU) types ----------------
+type
+   // GLU types
+   TGLUNurbs = record end;
+   TGLUQuadric = record end;
+   TGLUTesselator = record end;
+
+   PGLUNurbs = ^TGLUNurbs;
+   PGLUQuadric = ^TGLUQuadric;
+   PGLUTesselator=  ^TGLUTesselator;
+
+   // backwards compatibility
+   TGLUNurbsObj = TGLUNurbs;
+   TGLUQuadricObj = TGLUQuadric;
+   TGLUTesselatorObj = TGLUTesselator;
+   TGLUTriangulatorObj = TGLUTesselator;
+
+   PGLUNurbsObj = PGLUNurbs;
+   PGLUQuadricObj = PGLUQuadric;
+   PGLUTesselatorObj = PGLUTesselator;
+   PGLUTriangulatorObj = PGLUTesselator;
+
+
+ // ----------------------- OpenGL utility (GLU) functions and procedures -----------------
+   // Callback function prototypes
+   // GLUQuadricCallback
+   TGLUQuadricErrorProc = procedure(errorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+   // GLUTessCallback
+   TGLUTessBeginProc = procedure(AType: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEdgeFlagProc = procedure(Flag: TGLboolean); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessVertexProc = procedure(VertexData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEndProc = procedure; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessErrorProc = procedure(ErrNo: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessCombineProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessBeginDataProc = procedure(AType: TGLEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEdgeFlagDataProc = procedure(Flag: TGLboolean; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessVertexDataProc = procedure(VertexData: Pointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessEndDataProc = procedure(UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessErrorDataProc = procedure(ErrNo: TGLEnum; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+   TGLUTessCombineDataProc = procedure(const Coords: TVector3d; const VertexData: TVector4p; const Weight: TVector4f; OutData: PGLPointer; UserData: Pointer); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+   // GLUNurbsCallback
+   TGLUNurbsErrorProc = procedure(ErrorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
+
+
+
    function  gluErrorString(errCode: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
    function  gluGetString(name: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
    procedure gluOrtho2D(left, right, bottom, top: TGLdouble); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;

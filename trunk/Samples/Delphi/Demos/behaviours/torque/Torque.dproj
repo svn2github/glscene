@@ -113,7 +113,6 @@
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <DCC_RangeChecking>true</DCC_RangeChecking>
         <DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
-        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <Debugger_DebugSourcePath>D:\Library\GLScene\Source\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <AppEnableHighDPI>true</AppEnableHighDPI>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -153,7 +152,6 @@
                     <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
                     <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\GLScene_Cg_DesignTime.bpl">GLScene Cg Shaders</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

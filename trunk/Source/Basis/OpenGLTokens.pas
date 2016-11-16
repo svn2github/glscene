@@ -287,7 +287,7 @@ type
   TGLvdpauSurfaceNV = GLintptr;
   PGLvdpauSurfaceNV = ^TGLvdpauSurfaceNV;
 
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL Utility (GLU) types'} {$ENDIF}
+//------------------- OpenGL Utility (GLU) types ----------------
 type
    // GLU types
    TGLUNurbs = record end;
@@ -330,7 +330,6 @@ type
    // GLUNurbsCallback
    TGLUNurbsErrorProc = procedure(ErrorCode: TGLEnum); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF}
 
-{$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
 
 {$IFDEF EGL_SUPPORT}
 type
@@ -369,8 +368,7 @@ type
 
 const
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL v1.1 generic constants'}{$ENDIF}
-  // ********** GL generic constants **********
+//------------------ OpenGL v1.1 generic constants --------------------
 
   // attribute bits
   GL_DEPTH_BUFFER_BIT = $00000100;
@@ -1051,8 +1049,6 @@ const
   GL_LIGHT5 = $4005 {deprecated};
   GL_LIGHT6 = $4006 {deprecated};
   GL_LIGHT7 = $4007 {deprecated};
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 

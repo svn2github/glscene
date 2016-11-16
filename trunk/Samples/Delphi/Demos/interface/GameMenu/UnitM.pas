@@ -4,14 +4,33 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.Imaging.Jpeg,
 
-  // GLScene
-  GLScene, GLObjects, GLWin32Viewer, GLGeomObjects,
-  GLBitmapFont, GLWindowsFont, GLGameMenu, GLCadencer, GLTexture, GLKeyboard,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLUtils;
+  // GLS
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLGameMenu,
+  GLCadencer,
+  GLTexture,
+  GLKeyboard,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

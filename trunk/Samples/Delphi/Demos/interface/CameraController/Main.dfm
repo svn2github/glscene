@@ -660,7 +660,6 @@ object Form1: TForm1
       object dcSphere: TGLDummyCube
         ObjectsSorting = osRenderBlendedLast
         ShowAxes = True
-        Up.Coordinates = {000000000000803F0000008000000000}
         CubeSize = 4.000000000000000000
         object GLSphere1: TGLSphere
           Material.MaterialLibrary = GLMaterialLibrary1

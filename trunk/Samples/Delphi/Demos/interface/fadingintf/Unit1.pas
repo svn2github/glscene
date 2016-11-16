@@ -4,12 +4,24 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Forms, Vcl.Controls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Forms,
+  Vcl.Controls,
   Vcl.ExtCtrls,
   //GLS
-  GLScene, GLObjects, GLTexture, GLVectorGeometry, GLWin32Viewer, GLVectorTypes,
-  GLGeomObjects, GLColor, GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLVectorGeometry,
+  GLWin32Viewer,
+  GLVectorTypes,
+  GLGeomObjects,
+  GLColor,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)

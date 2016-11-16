@@ -1504,7 +1504,7 @@ object Form1: TForm1
     Friction = 1.000000000000000000
     BlendingMode = bmTransparency
     NbSides = 5
-    ParticleSize = 0.029999999329447740
+    ParticleSize = 0.029999999329447750
     ColorInner.Color = {0000803F000000000000000000000000}
     ColorOuter.Color = {0000803F0000803F0000000000000000}
     LifeColors = <

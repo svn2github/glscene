@@ -3,13 +3,30 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ExtCtrls, Vcl.Menus,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.Menus,
   //GLS
-  GLScene, GLHUDObjects, GLObjects, GLCadencer,
-  GLBitmapFont, GLWin32Viewer, GLWindowsFont, GLWindows, GLGui,
-  GLTexture, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLScene,
+  GLHUDObjects,
+  GLObjects,
+  GLCadencer,
+  GLBitmapFont,
+  GLWin32Viewer,
+  GLWindowsFont,
+  GLWindows,
+  GLGui,
+  GLTexture,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
   GLUtils;
 
 type
@@ -98,7 +115,8 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  SetGLSceneMediaDir();
+  SetGLSceneMediaDir();  // go to media dir
+  GLMaterialLibrary1.TexturePaths := GetCurrentDir();
   GLCanvas.MaxInvalidRenderCount := 40;
   StartX := -1;
 end;
