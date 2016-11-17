@@ -3,9 +3,16 @@ unit fClothify;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
   //GLS
   GLObjects, GLScene, GLVectorFileObjects, GLWin32Viewer,
   GLFileMS3D, GLVerletTypes, GLVectorTypes, GLVectorLists, GLVectorGeometry,

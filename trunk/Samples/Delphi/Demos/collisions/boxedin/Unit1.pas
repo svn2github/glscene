@@ -4,13 +4,30 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
 
   //GLS
-  GLKeyboard, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,
-  GLObjects, GLWin32Viewer, GLCadencer, GLNavigator, GLGeomObjects,
-  GLCrossPlatform, GLCoordinates, GLUtils, GLBaseClasses,
+  GLKeyboard,
+  GLVectorGeometry,
+  GLScene,
+  GLVectorFileObjects,
+  GLVectorTypes,
+  GLObjects,
+  GLWin32Viewer,
+  GLCadencer,
+  GLNavigator,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLUtils,
+  GLBaseClasses,
   GLFile3DS;
 
 type

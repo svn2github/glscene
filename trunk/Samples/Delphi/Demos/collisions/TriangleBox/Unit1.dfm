@@ -139,7 +139,6 @@ object Form1: TForm1
     end
     object GLCube1: TGLCube
       Material.FrontProperties.Diffuse.Color = {0000803F00000000000000000000803F}
-      Direction.Coordinates = {00000000000000800000803F00000000}
     end
     object GLXYZGrid1: TGLXYZGrid
       XSamplingScale.Min = -10.000000000000000000

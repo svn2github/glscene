@@ -387,7 +387,6 @@ object frmClothify: TfrmClothify
           CubeSize = {000040400000404000004040}
         end
         object GLDummyCube_Stairs: TGLDummyCube
-          Direction.Coordinates = {00000000000000800000803F00000000}
           Visible = False
           CubeSize = 1.000000000000000000
           object GLCube_Stair1: TGLCube
@@ -430,7 +429,7 @@ object frmClothify: TfrmClothify
       Blend = False
     end
     object GLCamera1: TGLCamera
-      DepthOfView = 1.000000033181354E32
+      DepthOfView = 1.000000033181353E32
       FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000704100002041000070410000803F}

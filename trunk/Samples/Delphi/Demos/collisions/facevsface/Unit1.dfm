@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 162
   BorderWidth = 3
   Caption = 'Face vs Face'
-  ClientHeight = 405
-  ClientWidth = 555
+  ClientHeight = 399
+  ClientWidth = 549
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,10 +19,10 @@ object Form1: TForm1
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
-    Left = 341
+    Left = 335
     Top = 0
     Width = 4
-    Height = 253
+    Height = 247
     Align = alRight
     ExplicitLeft = 460
     ExplicitHeight = 331
@@ -30,11 +30,11 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 121
     Top = 0
-    Width = 220
-    Height = 253
+    Width = 214
+    Height = 247
     Camera = GLCamera2
     Buffer.BackgroundColor = 8404992
-    FieldOfView = 30.752502441406250000
+    FieldOfView = 29.951969146728520000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -44,7 +44,7 @@ object Form1: TForm1
     Left = 0
     Top = 0
     Width = 121
-    Height = 253
+    Height = 247
     Align = alLeft
     BevelOuter = bvLowered
     TabOrder = 1
@@ -96,8 +96,8 @@ object Form1: TForm1
   end
   object Panel2: TPanel
     Left = 0
-    Top = 253
-    Width = 555
+    Top = 247
+    Width = 549
     Height = 152
     Align = alBottom
     TabOrder = 2
@@ -111,13 +111,27 @@ object Form1: TForm1
       DefaultRowHeight = 20
       RowCount = 6
       TabOrder = 0
+      ColWidths = (
+        90
+        90
+        90
+        90
+        90
+        90)
+      RowHeights = (
+        20
+        20
+        20
+        20
+        20
+        20)
     end
   end
   object Memo1: TMemo
-    Left = 345
+    Left = 339
     Top = 0
     Width = 210
-    Height = 253
+    Height = 247
     Align = alRight
     Lines.Strings = (
       'Memo1')
@@ -171,7 +185,6 @@ object Form1: TForm1
           'Y')
       end
       object txtZ: TGLSpaceText
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Position.Coordinates = {0000000000000000000000400000803F}
         Scale.Coordinates = {0000003F0000003F0000003F00000000}
         Extrusion = 0.100000001490116100
