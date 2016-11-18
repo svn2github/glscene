@@ -315,7 +315,6 @@ object Form1: TForm1
         CubeSize = 1.000000000000000000
       end
       object GLCylinder1: TGLCylinder
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Position.Coordinates = {00004040000080C0000000000000803F}
         Up.Coordinates = {0000803F000000000000000000000000}
         BottomRadius = 0.600000023841857900

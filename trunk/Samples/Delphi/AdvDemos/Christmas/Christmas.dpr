@@ -20,7 +20,7 @@
 program Christmas;
 
 uses
-  Forms,
+  Vcl.Forms,
   GLSound,
   FMain in 'FMain.pas' {Main};
 

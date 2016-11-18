@@ -126,6 +126,7 @@ object frmQuadtreeVisCulling: TfrmQuadtreeVisCulling
       HeightDataSource = GLBitmapHDS1
       TileSize = 32
       TilesPerTexture = 8.000000000000000000
+      ContourWidth = 0
     end
     object queryVisible: TGLDirectOpenGL
       UseBuildList = False

@@ -3,10 +3,15 @@ unit uMainForm;
 interface
 
 uses
+  Winapi.OpenGL,
   System.Classes,
-  Vcl.Forms, Vcl.StdCtrls, Vcl.Controls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.Controls,
+  Vcl.ExtCtrls,
+  Vcl.Imaging.Jpeg,
 
-  // GLScene
+  // GLS
   GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
   GLTexture, GLSkydome, GLVectorGeometry, GLCrossPlatform,
   GLAtmosphere, GLSimpleNavigation, GLBehaviours, GLCoordinates, GLBaseClasses,

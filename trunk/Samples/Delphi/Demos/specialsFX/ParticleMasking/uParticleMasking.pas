@@ -3,11 +3,19 @@ unit uParticleMasking;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
 
-  //GLScene
+  //GLS
   GLBitmapFont, GLWindowsFont, GLTexture,  GLCadencer, GLWin32Viewer, GLScene,
   GLObjects,  GLParticleFX, GLVectorGeometry, GLVectorTypes, GLEParticleMasksManager,
   GLGeomObjects, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,

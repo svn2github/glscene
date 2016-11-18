@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 188
   Top = 112
   Caption = 'Culling'
-  ClientHeight = 419
-  ClientWidth = 581
+  ClientHeight = 486
+  ClientWidth = 636
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,31 +11,35 @@ object Form1: TForm1
   Font.Name = 'Arial'
   Font.Style = []
   OldCreateOrder = False
-  WindowState = wsMaximized
+  Position = poScreenCenter
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 14
   object Viewer: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 449
-    Height = 419
+    Width = 504
+    Height = 486
     Camera = GLCamera1
     Buffer.BackgroundColor = 12040119
-    FieldOfView = 153.153396606445300000
+    FieldOfView = 156.746032714843700000
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 449
+    ExplicitHeight = 419
   end
   object Panel2: TPanel
-    Left = 449
+    Left = 504
     Top = 0
     Width = 132
-    Height = 419
+    Height = 486
     Align = alRight
     TabOrder = 1
+    ExplicitLeft = 449
+    ExplicitHeight = 419
     DesignSize = (
       132
-      419)
+      486)
     object Label1: TLabel
       Left = 25
       Top = 8

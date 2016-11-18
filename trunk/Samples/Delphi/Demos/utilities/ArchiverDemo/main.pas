@@ -3,14 +3,18 @@ unit Main;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Vcl.Forms, Vcl.Controls, Vcl.Graphics, Vcl.Dialogs,
-  //GLS
+  Winapi.OpenGL,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Forms,
+  Vcl.Controls,
+  Vcl.Graphics,
+  Vcl.Dialogs,
+  // GLS
   GLScene, GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer,
   GLSArchiveManager, GLBaseClasses, GLVectorGeometry, GLFileMS3D,
   GLFileTGA, GLFileZLIB, GLCoordinates, GLCrossPlatform, GLWin32Viewer,
   GLVectorTypes, GLUtils;
-
 
 type
 
@@ -29,13 +33,13 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     procedure FormCreate(Sender: TObject);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
   private
     { private declarations }
   public
     { public declarations }
-  end; 
+  end;
 
 var
   Form1: TForm1;
@@ -43,30 +47,30 @@ var
 implementation
 
 {$R *.dfm}
-
 { TForm1 }
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
-   GLCamera.Position.Rotate(VectorMake(0, 1, 0), deltaTime * 0.1);
+  GLCamera.Position.Rotate(VectorMake(0, 1, 0), deltaTime * 0.1);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
+  GLMaterialLibrary1.TexturePaths := GetCurrentDir();
   with GLSArchiveManager1.Archives[0] do
   begin
     LoadFromFile('Chair.zlib');
-    if FileName='' then ShowMessage('Archive Can not be Loaded');
-    {: Automatic loading from archive.
-       If file is not in archive, then it's loaded from harddrive. }
+    if FileName = '' then
+      ShowMessage('Archive Can not be Loaded');
+    { Automatic loading from archive.
+      If file is not in archive, then it's loaded from harddrive. }
     GLFreeForm.LoadFromFile('Chair.ms3d');
-    {: Direct loading from archive }
-    GLFreeForm1.LoadFromStream('Chair.ms3d',GetContent('Chair.ms3d'));
+    { Direct loading from archive }
+    GLFreeForm1.LoadFromStream('Chair.ms3d', GetContent('Chair.ms3d'));
   end;
   GLPlane1.Material.Texture.Image.LoadFromFile('GLScene.bmp');
 end;
 
 end.
-

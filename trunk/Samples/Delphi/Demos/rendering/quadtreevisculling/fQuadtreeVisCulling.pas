@@ -4,9 +4,17 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.Imaging.Jpeg, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
 
   //GLS
   GLScene, GLWin32Viewer, GLSkydome, GLObjects, GLKeyboard,

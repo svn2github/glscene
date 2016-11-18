@@ -3,7 +3,7 @@ unit FMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
+  Winapi.Windows, Winapi.Messages, Winapi.OpenGL,
   System.SysUtils, System.Classes, System.IniFiles, System.Win.Registry,
   System.ImageList, System.Math, System.Actions, System.Types,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,

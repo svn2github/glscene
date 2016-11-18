@@ -3,11 +3,18 @@ unit uDemo;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
 
-  //GLScene
+  //GLS
   GLScene, GLWin32Viewer, GLFBORenderer, GLObjects, GLCoordinates, GLSimpleNavigation,
   GLMaterial, GLCadencer,  GLCrossPlatform, GLBaseClasses,
   GLRenderContextInfo, GLContext, GLAsyncTimer;

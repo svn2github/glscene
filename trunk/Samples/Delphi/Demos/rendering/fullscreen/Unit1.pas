@@ -3,12 +3,22 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Forms, Vcl.Controls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Forms,
+  Vcl.Controls,
 
-  //GLScene
-  GLScene, GLObjects, GLTeapot, GLCanvas, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLFullScreenViewer;
+  //GLS
+  GLScene,
+  GLObjects,
+  GLTeapot,
+  GLCanvas,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLFullScreenViewer;
 
 type
   TDataModule1 = class(TDataModule)

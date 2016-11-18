@@ -142,7 +142,6 @@ object Form1: TForm1
       Material.Texture.MinFilter = miLinear
       Material.Texture.TextureMode = tmReplace
       Material.Texture.Disabled = False
-      Direction.Coordinates = {00000000000000800000803F00000000}
       XSamplingScale.Max = 16.000000000000000000
       XSamplingScale.Step = 8.000000000000000000
       YSamplingScale.Max = 16.000000000000000000

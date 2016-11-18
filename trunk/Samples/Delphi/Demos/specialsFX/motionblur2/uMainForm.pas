@@ -3,8 +3,11 @@ unit uMainForm;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Vcl.Forms, Vcl.StdCtrls, Vcl.Controls,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.Controls,
   //GLS
   GLObjects, GLScene, GLBlur, GLSimpleNavigation, GLTexture,
   GLCadencer, GLVectorGeometry, GLTeapot, GLPolyhedron, GLGeomObjects,

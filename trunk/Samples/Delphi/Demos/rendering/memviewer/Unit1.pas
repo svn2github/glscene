@@ -3,13 +3,29 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Imaging.JPeg, Vcl.Graphics, Vcl.Controls,
-  Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Imaging.JPeg,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
 
   //GLS
-  GLScene, GLObjects, GLCadencer, GLTexture, GLWin32Viewer, GLCrossPlatform,
-  GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLTexture,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLContext,
+  OpenGLAdapter;
+
 
 type
   TForm1 = class(TForm)
@@ -50,10 +66,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLContext,
-  OpenGLAdapter;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin

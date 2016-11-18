@@ -180,7 +180,6 @@ object MainForm: TMainForm
       end
       object GLDummyCube1: TGLDummyCube
         ObjectsSorting = osNone
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Position.Coordinates = {0000204100000040000040400000803F}
         CubeSize = 1.000000000000000000
         object GLSphere1: TGLSphere

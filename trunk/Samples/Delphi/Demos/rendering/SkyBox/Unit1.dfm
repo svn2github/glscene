@@ -65,7 +65,6 @@ object Form1: TForm1
       end
     end
     object GLSkyBox2: TGLSkyBox
-      Direction.Coordinates = {00000000000000800000803F00000000}
       MaterialLibrary = GLMaterialLibrary1
       MatNameClouds = 'Clouds'
       CloudsPlaneOffset = 0.100000001490116100

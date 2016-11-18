@@ -3,9 +3,16 @@ unit MainFormUnit;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.Menus, Vcl.StdCtrls, Vcl.ExtDlgs,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Menus,
+  Vcl.StdCtrls,
+  Vcl.ExtDlgs,
   //GLS
   GLGui, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont,

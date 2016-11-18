@@ -3,14 +3,35 @@ unit fOctreeDemo;
 interface
 
 uses
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.ComCtrls, OpenGL,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
   //GLS
-  GLScene, GLObjects, GLWin32Viewer, GLVectorGeometry, GLVectorTypes,
-  GLGeometryBB, GLTexture, GLCadencer, GLSpacePartition,
-  GLCrossPlatform, GLCoordinates, GLRenderContextInfo,
-  GLState, GLSimpleNavigation, GLMaterial, GLContext, GLBaseClasses;
+  GLObjects,
+  GLScene,
+  GLCadencer,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLGeometryBB,
+  GLTexture,
+  GLSpacePartition,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLState,
+  GLSimpleNavigation,
+  GLMaterial,
+  GLContext,
+  GLBaseClasses;
 
 const
   cBOX_SIZE = 14.2;

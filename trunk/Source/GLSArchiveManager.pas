@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Archive manager
+  Archive manager -  the component to work with archives
   History :  
      04/06/10 - Yar - Added to GLScene
                      (Created by Rustam Asmandiarov aka Predator)
@@ -15,9 +15,11 @@ unit GLSArchiveManager;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLPersistentClasses, GLApplicationFileIO;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLPersistentClasses,
+  GLApplicationFileIO;
 
 Type
 
@@ -88,7 +90,7 @@ Type
   //использовать соответсвующий архиватор. Например: GLFilePak, GLFileZLib
 
   {TArchiveFileFormat}
-  {Запись для зарегестрированного класса}
+  {The type to record a registered class}
 
   TArchiveFileFormat = class
   public
@@ -99,7 +101,7 @@ Type
   end;
 
   {TGLArchiveFileFormatsList}
-  {Список зарегестрированных классов}
+  {The list of registered classes}
 
   TGLArchiveFileFormatsList = class(TPersistentObjectList)
   public
@@ -205,7 +207,6 @@ Type
   end;
 
   //*****************************************************************************
-  //Компонента VCL для работы с архивами.
 
   { TGLSArchiveManager }
 
@@ -228,8 +229,6 @@ Type
   end;
 
   //****************************************************************************
-  //Другое
-
 
   EInvalidArchiveFile = class(Exception);
 
@@ -242,7 +241,7 @@ Type
   procedure UnregisterArchiveFormat(AClass: TGLBaseArchiveClass);
 
   //Получение активного менеджера архивов
-  //Внимание!!! Работает только для одного Менеджера Архивов
+  //Caution!!! Работает только для одного Менеджера Архивов
   function GetArchiveManager: TGLSArchiveManager;
 
   // GLApplicationFileIO

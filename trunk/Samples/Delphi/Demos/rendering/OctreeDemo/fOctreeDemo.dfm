@@ -12,6 +12,7 @@ object frmOctreeDemo: TfrmOctreeDemo
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   PixelsPerInch = 96
@@ -125,7 +126,7 @@ object frmOctreeDemo: TfrmOctreeDemo
       DepthOfView = 100.000000000000000000
       FocalLength = 75.000000000000000000
       TargetObject = GLDummyCube1
-      Position.Coordinates = {0000404100008040000000410000803F}
+      Position.Coordinates = {0000004200006041000090410000803F}
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1.000000000000000000
         SpotCutOff = 180.000000000000000000

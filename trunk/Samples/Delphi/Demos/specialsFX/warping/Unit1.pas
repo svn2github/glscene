@@ -3,9 +3,16 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Imaging.Jpeg, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtDlgs, Vcl.Menus,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Imaging.Jpeg,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtDlgs,
+  Vcl.Menus,
 
   //GLS
   GLScene, GLGraphics, GLGraph, GLObjects, GLVectorGeometry, GLVectorTypes,

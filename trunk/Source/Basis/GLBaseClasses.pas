@@ -14,9 +14,12 @@ unit GLBaseClasses;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLStrings, GLPersistentClasses, GLCrossPlatform;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLStrings,
+  GLPersistentClasses,
+  GLCrossPlatform;
 
 type
 

@@ -65,7 +65,6 @@ object Form1: TForm1
     end
     object Room: TGLSphere
       Material.PolygonMode = pmLines
-      Up.Coordinates = {000000000000803F0000008000000000}
       NormalDirection = ndInside
       Radius = 8.000000000000000000
     end

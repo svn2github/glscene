@@ -16,6 +16,7 @@ uses
   Vcl.Forms, 
   Vcl.Dialogs, 
   Vcl.Imaging.Jpeg,
+  //GLS
   GLScene, 
   GLCadencer, 
   GLObjects, 
@@ -124,7 +125,7 @@ var
   libMat: TGLLibMaterial;
 begin
   DataPath := ExtractFilePath(ParamStr(0));
-  //Delete(DataPath, Length(DataPath) - 12, 12); // del Win32\Debug\
+  //Delete(DataPath, Length(DataPath) - 12, 12); // del if Win32\Debug\
   DataPath := DataPath + 'Data\';
   SetCurrentDir(DataPath);
 

@@ -3,19 +3,28 @@ unit uMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Imaging.Jpeg,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.Imaging.Jpeg,
 
   // GLS
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
   GLMeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLRenderContextInfo, GLUtils, GLFileMD2, GLFileTGA,
-//  GLFileObj,
-//  GLFile3DS,
-//  GLFileSMD,
-  ;
+  GLRenderContextInfo, GLUtils,
+  GLFileMD2,
+  GLFileTGA,
+  GLFileObj,
+  GLFile3DS,
+  GLFileSMD;
 
 
 type
@@ -60,7 +69,7 @@ end;
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir;
-//  GLMaterialLibrary1.TexturePaths := MediaPath;
+  GLMaterialLibrary1.TexturePaths := GetCurrentDir();
   GLActor1.LoadFromFile('waste.md2');
   GLActor1.Material.Texture.Image.LoadFromFile('waste.jpg');
   GLActor1.Material.Texture.Enabled := True;

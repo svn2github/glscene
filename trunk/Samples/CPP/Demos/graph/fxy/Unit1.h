@@ -2,22 +2,18 @@
 
 #ifndef Unit1H
 #define Unit1H
-//---------------------------------------------------------------------------
-#include <System.Classes.hpp>
-#include <System.Math.hpp>
-#include <Vcl.Controls.hpp>
-#include <Vcl.StdCtrls.hpp>
-#include <Vcl.Forms.hpp>
-#include <Vcl.ExtCtrls.hpp>
-#include "GLScene.hpp"
-
-#include "GLWin32Viewer.hpp"
-#include <ComCtrls.hpp>
-#include "GLGraph.hpp"
-#include "GLObjects.hpp"
 #include "GLBaseClasses.hpp"
 #include "GLCoordinates.hpp"
 #include "GLCrossPlatform.hpp"
+#include "GLGraph.hpp"
+#include "GLObjects.hpp"
+#include "GLScene.hpp"
+#include "GLWin32Viewer.hpp"
+#include <System.Classes.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.StdCtrls.hpp>
 
 //---------------------------------------------------------------------------
 class TForm1:public TForm
