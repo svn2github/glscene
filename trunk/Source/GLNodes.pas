@@ -21,10 +21,18 @@ unit GLNodes;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLBaseClasses,
-  GLCoordinates, GLSpline, XOpenGL, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorGeometry,
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLContext,
+  GLBaseClasses,
+  GLCoordinates,
+  GLSpline,
+  XOpenGL,
+  GLVectorTypes;
 
 
 {$I GLScene.inc}
