@@ -3,7 +3,6 @@
 //
 {
    Tools for managing an application-side cache of Vulkan state.
-    
 }
 
 // TODO: Proper client-side pushing + popping of state, in Vulkan 3+ contexts,
@@ -24,7 +23,6 @@ unit VKS.State;
 interface
 
 {$I VKScene.inc}
-{.$DEFINE VKS_CACHE_MISS_CHECK}
 
 uses
   Winapi.OpenGL,
@@ -134,7 +132,7 @@ type
 
   // TFaceWinding
   //
-//: Describe what kind of winding has a front face
+  // Describe what kind of winding has a front face
   TFaceWinding = (fwCounterClockWise, fwClockWise);
 
   TPolygonMode = (pmFill, pmLines, pmPoints);
@@ -1464,10 +1462,6 @@ begin
       Include(FListStates[FCurrentList], sttEnable)
     else
       Include(FStates, aState);
-{$IFDEF VKS_CACHE_MISS_CHECK}
-    if glIsEnabled(cGLStateToGLEnum[aState].VKConst) then
-      ShowMessages(strStateCashMissing + 'Enable');
-{$ENDIF}
     glEnable(cGLStateToGLEnum[aState].VKConst);
   end;
 end;
@@ -2238,20 +2232,9 @@ end;
 
 procedure TVKStateCache.SetAlphaFunction(func: TComparisonFunction;
   ref: GLclampf);
-{$IFDEF VKS_CACHE_MISS_CHECK}
-var I: GLuint; E: Single;
-{$ENDIF}
 begin
   if FForwardContext then
     exit;
-{$IFDEF VKS_CACHE_MISS_CHECK}
-  glGetIntegerv(GL_ALPHA_TEST_FUNC, @I);
-  if cGLComparisonFunctionToGLEnum[FAlphaFunc] <> I then
-    ShowMessages(strStateCashMissing + 'AlphaTest function');
-  glGetFloatv(GL_ALPHA_TEST_REF, @E);
-  if FAlphaRef <> E then
-    ShowMessages(strStateCashMissing + 'AlphaTest reference');
-{$ENDIF}
   if (FAlphaFunc <> func) or (FAlphaRef <> ref)
     or FInsideList then
   begin
@@ -2820,22 +2803,11 @@ begin
       Include(FListStates[FCurrentList], sttStencilBuffer)
     else
       FStencilBackWriteMask := Value;
-    // DONE: ignore if unsupported
-    if GL_VERSION = 2.0 then
-      glStencilMaskSeparate(GL_BACK, Value);
   end;
 end;
 
 procedure TVKStateCache.SetStencilClearValue(const Value: GLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
-var I: GLuint;
-{$ENDIF}
 begin
-{$IFDEF VKS_CACHE_MISS_CHECK}
-  glGetIntegerv(GL_STENCIL_CLEAR_VALUE, @I);
-  if FStencilClearValue <> I then
-    ShowMessages(strStateCashMissing + 'Stencil clear value');
-{$ENDIF}
   if (Value <> FStencilClearValue) or FInsideList then
   begin
     if FInsideList then
@@ -2879,24 +2851,10 @@ end;
 
 procedure TVKStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
   const func: TStencilFunction; const ref: GLint; const mask: GLuint);
-{$IFDEF VKS_CACHE_MISS_CHECK}
-var UI: GLuint; I: GLint;
-{$ENDIF}
+
 begin
 //  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
 //    or FInsideList then
-{$IFDEF VKS_CACHE_MISS_CHECK}
-  glGetIntegerv(GL_STENCIL_FUNC, @UI);
-  if cGLComparisonFunctionToGLEnum[FStencilFunc] <> UI then
-    ShowMessages(strStateCashMissing + 'Stencil function');
-  glGetIntegerv(GL_STENCIL_REF, @I);
-  if FStencilRef <> I then
-    ShowMessages(strStateCashMissing + 'Stencil reference');
-    ShowMessages(strStateCashMissing + 'Stencil function');
-  glGetIntegerv(GL_STENCIL_VALUE_MASK, @UI);
-  if FStencilValueMask <> UI then
-    ShowMessages(strStateCashMissing + 'Stencil value mask');
-{$ENDIF}
   begin
     if FInsideList then
       Include(FListStates[FCurrentList], sttStencilBuffer)
@@ -3659,7 +3617,7 @@ begin
 end;
 
 
-// SetGLColorIgnoring
+// SetVKColorIgnoring
 //
 
 procedure TVKStateCache.SetColorWriting(flag: Boolean);
@@ -3674,7 +3632,7 @@ begin
   end;
 end;
 
-// InvertGLFrontFace
+// InvertVKFrontFace
 //
 
 procedure TVKStateCache.InvertFrontFace;
@@ -3699,7 +3657,7 @@ begin
 	Disable(aState);
 end;
 
-// ResetGLPolygonMode
+// ResetVKPolygonMode
 //
 
 procedure TVKStateCache.ResetPolygonMode;
@@ -3709,7 +3667,7 @@ begin
   FPolygonBackMode := pmFill;
 end;
 
-// ResetGLMaterialColors
+// ResetVKMaterialColors
 //
 
 procedure TVKStateCache.ResetMaterialColors;
@@ -3724,7 +3682,7 @@ begin
   FFrontBackShininess[1] := 0;
 end;
 
-// ResetGLTexture
+// ResetVKTexture
 //
 
 procedure TVKStateCache.ResetTexture(const TextureUnit: Integer);
@@ -3746,7 +3704,7 @@ begin
   FActiveTexture := 0;
 end;
 
-// ResetGLCurrentTexture
+// ResetVKCurrentTexture
 //
 
 procedure TVKStateCache.ResetCurrentTexture;
@@ -3770,7 +3728,7 @@ begin
   end;
 end;
 
-// ResetGLFrontFace
+// ResetVKFrontFace
 //
 
 procedure TVKStateCache.ResetFrontFace;
@@ -3794,12 +3752,10 @@ end;
 
 procedure TVKStateCache.ResetAll;
 begin
- {$WARN SYMBOL_DEPRECATED OFF}
   ResetPolygonMode;
   ResetMaterialColors;
   ResetCurrentTexture;
   ResetFrontFace;
- {$WARN SYMBOL_DEPRECATED ON}
 end;
 
 end.
