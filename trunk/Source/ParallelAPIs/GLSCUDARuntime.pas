@@ -3,11 +3,8 @@
 //
 {  
    GLScene CUDA Runtime 
-
-   History :  
-   13/12/13 - PW - Added GLScene.inc
+   History :
    28/01/10 - Yar - Creation
-   
 }
 
 /// *
@@ -56,7 +53,7 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  OpenGLTokens,
+//  OpenGLTokens,
   GLCrossPlatform,
   GLSOpenCL,
   GLSCUDAApi,
@@ -698,43 +695,43 @@ var
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLRegisterBufferObject: function(bufObj: GLuint): cudaError_t;
+  cudaGLRegisterBufferObject: function(bufObj: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaGraphicsGLRegisterImage: function(const resource: PCUgraphicsResource;
-    image: GLuint; target: GLenum; flags: Cardinal): cudaError_t;
+    image: Cardinal; target: Cardinal; flags: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
   cudaGraphicsGLRegisterBuffer: function(const resource: PCUgraphicsResource;
-    buffer: GLuint; flags: Cardinal): cudaError_t;
+    buffer: Cardinal; flags: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLMapBufferObject: function(devPtr: Pointer; bufObj: GLuint): cudaError_t;
+  cudaGLMapBufferObject: function(devPtr: Pointer; bufObj: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLUnmapBufferObject: function(bufObj: GLuint): cudaError_t;
+  cudaGLUnmapBufferObject: function(bufObj: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLUnregisterBufferObject: function(bufObj: GLuint): cudaError_t;
+  cudaGLUnregisterBufferObject: function(bufObj: Cardinal): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLSetBufferObjectMapFlags: function(bufObj: GLuint;
+  cudaGLSetBufferObjectMapFlags: function(bufObj: Cardinal;
     flags: TCudaGLMapFlags): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLMapBufferObjectAsync: function(var devPtr: Pointer; bufObj: GLuint;
+  cudaGLMapBufferObjectAsync: function(var devPtr: Pointer; bufObj: Cardinal;
     stream: cudaStream_t): cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;
 {$ENDIF}
-  cudaGLUnmapBufferObjectAsync: function(bufObj: GLuint; stream: cudaStream_t)
+  cudaGLUnmapBufferObjectAsync: function(bufObj: Cardinal; stream: cudaStream_t)
     : cudaError_t;
 {$IFDEF CUDA_STDCALL}stdcall;
 {$ENDIF}{$IFDEF CUDA_CDECL}cdecl;

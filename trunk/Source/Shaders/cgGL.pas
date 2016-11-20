@@ -53,8 +53,6 @@
  * acceptance of these terms.  If you do not agree with these terms, please do
  * not use, install, modify or redistribute this NVIDIA software.
  *
- *
- *
  * In consideration of your agreement to abide by the following terms, and
  * subject to these terms, NVIDIA grants you a personal, non-exclusive license,
  * under NVIDIARs copyrights in this original NVIDIA software (the "NVIDIA
@@ -71,15 +69,11 @@
  * infringed by your derivative works or by other works in which the NVIDIA
  * Software may be incorporated. No hardware is licensed hereunder.
  *
- *
- *
  * THE NVIDIA SOFTWARE IS BEING PROVIDED ON AN "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  * WITHOUT LIMITATION, WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR ITS USE AND OPERATION
  * EITHER ALONE OR IN COMBINATION WITH OTHER PRODUCTS.
- *
- *
  *
  * IN NO EVENT SHALL NVIDIA BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL,
  * EXEMPLARY, CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOST
@@ -92,32 +86,14 @@
  *
  *)
 unit cgGL;
-//
-// HISTORY:
-// 19-Dec-2012 - PW: Restored CPPB compatibility,
-//                 suppressed some unnecessary directives
-// 23-Aug-2010 - YarUnderoaker
-//   - Replaced OpenGL1x to OpenGLTokens
-// 17-Nov-09 - Da Stranger
-//   - Improved Unix compatibility (thanks Predator) (BugtrackerID = 2893580)
-// XX-XX-04 - LR, YHC - BCB corrections:
-//   - suppress the $NODEFINE, $HPPEMIT and $EXTERNALSYM directives
-// 23-Apr-04 - Nelson Chu:
-//   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
-// 04-Mar-04 - Alexey Barkovoy:
-//   - Updated to Release 1.2 of Cg toolkit (published 25-Feb-2004)
-// 21-Mar-03 - Alexey Barkovoy:
-//   - Updated to Release 1.1 of Cg toolkit (published 04-Mar-2003)
-// 11-Jan-03 - Alexey Barkovoy:
-//   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
 
 {$I GLScene.inc}
 
 interface
 
 uses
-  OpenGLTokens, cg
-  {$IFDEF MSWINDOWS}, Winapi.Windows{$ENDIF};
+  {$IFDEF MSWINDOWS} Winapi.Windows,{$ENDIF}
+  cg;
 
 const
   {$IFDEF MSWINDOWS}
@@ -131,7 +107,7 @@ const
 (*****************************************************************************)
 
 type
-  TCGGLenum = TGLEnum;
+  TCGGLenum = Cardinal;
   CGGLenum = TCGGLenum;
 
 const
@@ -168,7 +144,7 @@ procedure cgGLLoadProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
 function cgGLIsProgramLoaded(_program: PCGprogram): TCGbool; cdecl; external CgGLlibrary;
 procedure cgGLBindProgram(_program: PCGprogram); cdecl; external CgGLlibrary;
 procedure cgGLUnbindProgram(profile: TCGprofile); cdecl; external CgGLlibrary;
-function cgGLGetProgramID(_program: PCGprogram): GLuint; cdecl; external CgGLlibrary;
+function cgGLGetProgramID(_program: PCGprogram): Cardinal; cdecl; external CgGLlibrary;
 
 (******************************************************************************
  *** Parameter Managment Functions
@@ -270,8 +246,8 @@ procedure cgGLGetParameterArray3d(param: PCGparameter;
 procedure cgGLGetParameterArray4d(param: PCGparameter;
     offset, nelements: Longint; v: PDouble); cdecl; external CgGLlibrary;
 
-procedure cgGLSetParameterPointer(param: PCGparameter; fsize: GLint;
-    _type: TGLenum; stride: GLsizei; const _pointer: Pointer); cdecl; external CgGLlibrary;
+procedure cgGLSetParameterPointer(param: PCGparameter; fsize: Integer;
+    _type: Cardinal; stride: Integer; const _pointer: Pointer); cdecl; external CgGLlibrary;
 
 procedure cgGLEnableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
 procedure cgGLDisableClientState(param: PCGparameter); cdecl; external CgGLlibrary;
@@ -321,11 +297,11 @@ procedure cgGLGetMatrixParameterArraydr(param: PCGparameter;
  *** Texture Parameter Managment Functions
  *****************************************************************************)
 
-procedure cgGLSetTextureParameter(param: PCGparameter; texobj: TGLuint); cdecl; external CgGLlibrary;
-function cgGLGetTextureParameter(param: PCGparameter): TGLuint; cdecl; external CgGLlibrary;
+procedure cgGLSetTextureParameter(param: PCGparameter; texobj: Cardinal); cdecl; external CgGLlibrary;
+function cgGLGetTextureParameter(param: PCGparameter): Cardinal; cdecl; external CgGLlibrary;
 procedure cgGLEnableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
 procedure cgGLDisableTextureParameter(param: PCGparameter); cdecl; external CgGLlibrary;
-function cgGLGetTextureEnum(param: PCGparameter): TGLenum; cdecl; external CgGLlibrary;
+function cgGLGetTextureEnum(param: PCGparameter): Cardinal; cdecl; external CgGLlibrary;
 procedure cgGLSetManageTextureParameters(ctx: PCGcontext; flag: TCGbool); cdecl; external CgGLlibrary;
 function cgGLGetManageTextureParameters(ctx: PCGcontext): TCGbool; cdecl; external CgGLlibrary;
 

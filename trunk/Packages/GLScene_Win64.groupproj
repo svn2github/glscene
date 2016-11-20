@@ -18,6 +18,9 @@
         <Projects Include="Win64\GLScene_Cg_RunTime.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Win64\GLScene_SDL_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -71,14 +74,23 @@
     <Target Name="GLScene_Cg_RunTime:Make">
         <MSBuild Projects="Win64\GLScene_Cg_RunTime.dproj" Targets="Make"/>
     </Target>
+    <Target Name="GLScene_SDL_RunTime">
+        <MSBuild Projects="Win64\GLScene_SDL_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLScene_SDL_RunTime:Clean">
+        <MSBuild Projects="Win64\GLScene_SDL_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_SDL_RunTime:Make">
+        <MSBuild Projects="Win64\GLScene_SDL_RunTime.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTime;GLScene_Sounds_RunTime;GLScene_Physics_RunTime;GLScene_Parallel_RunTime;GLScene_Cg_RunTime"/>
+        <CallTarget Targets="GLScene_RunTime;GLScene_Sounds_RunTime;GLScene_Physics_RunTime;GLScene_Parallel_RunTime;GLScene_Cg_RunTime;GLScene_SDL_RunTime"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_Sounds_RunTime:Clean;GLScene_Physics_RunTime:Clean;GLScene_Parallel_RunTime:Clean;GLScene_Cg_RunTime:Clean"/>
+        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_Sounds_RunTime:Clean;GLScene_Physics_RunTime:Clean;GLScene_Parallel_RunTime:Clean;GLScene_Cg_RunTime:Clean;GLScene_SDL_RunTime:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTime:Make;GLScene_Sounds_RunTime:Make;GLScene_Physics_RunTime:Make;GLScene_Parallel_RunTime:Make;GLScene_Cg_RunTime:Make"/>
+        <CallTarget Targets="GLScene_RunTime:Make;GLScene_Sounds_RunTime:Make;GLScene_Physics_RunTime:Make;GLScene_Parallel_RunTime:Make;GLScene_Cg_RunTime:Make;GLScene_SDL_RunTime:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

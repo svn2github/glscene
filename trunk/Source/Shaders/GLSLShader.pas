@@ -2,68 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-     TGLSLShader is a wrapper for GLS shaders. 
-
-	 History :  
-       27/01/15 - NelC - Added TGLCustomGLSLShader.SetTex()
-       09/02/13 - Yar - Added OnApplyEx, OnInitializeEx events where is TGLLibMaterial as Sender (thanks to Dmitriy Buharin)
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       18/02/11 - Yar - Fixed transform feedback varyings activation
-       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-       02/06/10 - Yar - Replace OpenGL functions to OpenGLAdapter
-                           Added unsigned integer uniforms
-       22/04/10 - Yar - Fixes after GLState revision
-       02/04/10 - Yar -  Added GetActiveAttribs to TGLCustomGLSLShader
-       04/11/09 - DaStr - Added default value to TGLCustomGLSLShader.TransformFeedBackMode
-       26/10/09 - DaStr - Updated GeometryShader support (thanks YarUnderoaker)
-       24/08/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
-       24/07/09 - DaStr - Added support for TGLCustomShader.DebugMode
-                             Fixed spelling mistake in TGLShaderUnAplyEvent
-                             TGLShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-                             Bugfixed TGLCustomGLSLShader.DoInitialize() - now
-                              shader cleanes up correctly if failed to initialize
-       15/03/08 - DaStr - Fixups for vIgnoreContextActivationFailures mode
-                                                      (BugTracker ID = 1914782)
-       25/12/07 - DaStr - Fix-up for previous update (BugtrackerID = 1772477)
-       12/08/07 - LC -    TGLSLShaderParameter.SetAsCustomTexture now restores
-                              the active texture unit (BugtrackerID = 1772477)
-       12/07/07 - DaStr - TGLSLInitializedShaderParameters removed because
-                              even if implemented, it could not give
-                              a significant performance increase
-       30/03/07 - fig -   Changed OnInitialize event to be fired after
-                              linking, but before validation. This can now be
-                              used to set texture units for different sampler
-                              types (1D/2D/3D) before validation, which fixes
-                              a bug (or complies to strict validation) with ATI
-                              drivers
-       30/03/07 - DaStr - Bugfixed TGLCustomGLSLShader.DoUnApply
-                              (Result was not initialized)
-       20/03/07 - DaStr - TGLCustomGLSLShader now generates its own events
-                             Added TGLSLShaderParameter
-                             Added TGLCustomGLSLShader.DoInitialPass
-                             Added TGLCustomGLSLShader.Param[]
-       21/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-
-    Previous version history:
-      v1.0    11 March     '2006  Creation
-      v1.1    06 August    '2006  TGLCustomGLSLShader.DoInitialize bugfixed
-      v1.1.2  24 August    '2006  TGLCustomShader.SetParameterTexture[1-3]D added
-      v1.1.4  09 September '2006  Fixed a memory leak which occured when
-                                   enabling / disabling the shader several times
-      v1.1.6  22 September '2006  DoUnApply fixed (suggested by Nelsol Chu)
-      v1.2    04 November  '2006  function GetGLSLProg added (just in case)
-                                  TGLSLShader has more published properties
-                                  Bugfix in DoInitialize (when no shader is active)
-                                  (Get/Set)ParameterTexture[1/2/3]DHandle added
-                                  (Get/Set)ParameterCustomTextureHandle support added
-      v1.2.4  22 November  '2006  TGLProgramHandle.Name is now used
-                                  Assign() bugfixed
-                                  Fixed a possible bug in DoInitialize
-                                    (Handle was freed, but not nil'ed)
-
+   TGLSLShader is a wrapper for GLS shaders.
+   The history is logged in a former GLS version of the unit.
 }
 unit GLSLShader;
 
@@ -72,10 +12,21 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext, GLCustomShader,
-  GLRenderContextInfo, GLTextureFormat, GLSLParameter, GLMaterial;
+  OpenGLTokens,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLTexture,
+  GLContext,
+  GLCustomShader,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLSLParameter,
+  GLMaterial,
+  GLState;
+
 
 type
   TGLSLShaderParameter = class;
@@ -90,7 +41,7 @@ type
 
   TGLActiveAttrib = record
     Name: string;
-    Size: GLInt;
+    Size: TGLInt;
     AType: TGLSLDataType;
     Location: Integer;
   end;
@@ -157,7 +108,7 @@ type
   private
     { Private Declarations }
     FGLSLProg: TGLProgramHandle;
-    FParameterID: GLInt;
+    FParameterID: TGLInt;
   protected
     { Protected Declarations }
     function GetAsVector1f: Single; override;
@@ -170,7 +121,7 @@ type
     function GetAsVector3i: TVector3i; override;
     function GetAsVector4i: TVector4i; override;
 
-    function GetAsVector1ui: GLuint; override;
+    function GetAsVector1ui: Cardinal; override;
     function GetAsVector2ui: TVector2ui; override;
     function GetAsVector3ui: TVector3ui; override;
     function GetAsVector4ui: TVector4ui; override;
@@ -185,7 +136,7 @@ type
     procedure SetAsVector3i(const Value: TVector3i); override;
     procedure SetAsVector4i(const Value: TVector4i); override;
 
-    procedure SetAsVector1ui(const Value: GLuint); override;
+    procedure SetAsVector1ui(const Value: Cardinal); override;
     procedure SetAsVector2ui(const Value: TVector2ui); override;
     procedure SetAsVector3ui(const Value: TVector3ui); override;
     procedure SetAsVector4ui(const Value: TVector4ui); override;
@@ -202,8 +153,8 @@ type
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget; const Value: Cardinal); override;
 
-    function GetAsUniformBuffer: GLenum; override;
-    procedure SetAsUniformBuffer( UBO: GLenum); override;
+    function GetAsUniformBuffer: TGLenum; override;
+    procedure SetAsUniformBuffer( UBO: TGLenum); override;
 
    public
      // Nothing here ...yet.
@@ -235,9 +186,6 @@ implementation
 //------------------------------------------------------------------------
 //------------------------------------------------------------------------
 
-uses
-  GLState;
-
 { TGLCustomGLSLShader }
 
 procedure TGLCustomGLSLShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
@@ -253,7 +201,7 @@ end;
 
 procedure TGLCustomGLSLShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 const
-  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of GLenum = (
+  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of TGLenum = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
 var
   i, NumVarying: Integer;
@@ -371,9 +319,9 @@ var
   LRci: TGLRenderContextInfo;
   i, j: Integer;
   buff: array[0..127] of AnsiChar;
-  len: GLsizei;
-  max: GLInt;
-  glType: GLEnum;
+  len: TGLsizei;
+  max: TGLInt;
+  glType: TGLEnum;
 begin
   DoInitialize(LRci, Self);
 
@@ -647,17 +595,17 @@ begin
   GL.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
-function TGLSLShaderParameter.GetAsUniformBuffer: GLenum;
+function TGLSLShaderParameter.GetAsUniformBuffer: TGLenum;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-function TGLSLShaderParameter.GetAsVector1ui: GLuint;
+function TGLSLShaderParameter.GetAsVector1ui: Cardinal;
 begin
   GL.GetUniformuiv(FGLSLProg.Handle, FParameterID, @Result);
 end;
 
-procedure TGLSLShaderParameter.SetAsVector1ui(const Value: GLuint);
+procedure TGLSLShaderParameter.SetAsVector1ui(const Value: Cardinal);
 begin
   GL.Uniform1ui(FParameterID, Value);
 end;

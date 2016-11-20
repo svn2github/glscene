@@ -37,8 +37,6 @@ uses
    {$ENDIF}
 
 const
-   SDL_LibName = 'SDL2.dll';
-(*
   {$IFDEF MSWINDOWS}
     SDL_LibName = 'SDL2.dll';
   {$ENDIF}
@@ -62,7 +60,6 @@ const
     {$ENDIF}
   {$ENDIF}
 
-*)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////  SDLtype_s.h / SDL_stdinc.h  ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1462,7 +1459,7 @@ type
    *}
 
   TClose =  function(context: PSDL_RWops): SInt32; cdecl;
-	
+
   TStdio = record
     autoclose: TSDL_Bool;
 	fp: file;
@@ -1812,7 +1809,7 @@ function SDL_SetColorKey(surface: PSDL_Surface; flag: SInt32; key: UInt32): SInt
    *  surface The surface to update
    *  key A pointer filled in with the transparent pixel in the native
    *      surface format
-   *  
+   *
    *  0 on success, or -1 if the surface is not valid or colorkey is not
    *  enabled.
    *}
@@ -2440,7 +2437,7 @@ function SDL_GetVideoDriver(index: SInt32): PAnsiChar cdecl; external SDL_LibNam
    *  to the window manager, etc, and determines the available display modes
    *  and pixel formats, but does not initialize a window or graphics mode.
    *  
-   *  SDL_VideoQuit()
+   *  SDL_Video Quit()
    *}
 
 function SDL_VideoInit(const driver_name: PAnsiChar): SInt32 cdecl; external SDL_LibName {$IFDEF MACOS} name '_SDL_VideoInit' {$ENDIF};
@@ -2487,7 +2484,7 @@ function SDL_GetDisplayName(displayIndex: SInt32): PAnsiChar cdecl; external SDL
   {**
    *  Get the desktop area represented by a display, with the primary
    *  display located at 0,0
-   *  
+   *
    *  0 on success, or -1 if the index is out of range.
    *  
    *  SDL_GetNumVideoDisplays()
@@ -2862,7 +2859,7 @@ procedure SDL_MinimizeWindow(window: PSDL_Window) cdecl; external SDL_LibName {$
 
   {**
    *  Restore the size and position of a minimized or maximized window.
-   *  
+   *
    *  SDL_MaximizeWindow()
    *  SDL_MinimizeWindow()
    *}
@@ -3062,7 +3059,7 @@ function SDL_GL_GetProcAddress(const proc: PAnsiChar): Pointer cdecl; external S
 
   {**
    *  Unload the OpenGL library previously loaded by SDL_GL_LoadLibrary().
-   *  
+   *
    *  SDL_GL_LoadLibrary()
    *}
 
@@ -3137,7 +3134,7 @@ function SDL_GL_SetSwapInterval(interval: SInt32): SInt32 cdecl; external SDL_Li
    *  swaps happen immediately instead of waiting for the next retrace.
    *  If the system can't determine the swap interval, or there isn't a
    *  valid current context, this will return 0 as a safe default.
-   *  
+   *
    *  SDL_GL_SetSwapInterval()
    *}
 
@@ -3162,7 +3159,7 @@ procedure SDL_GL_DeleteContext(context: TSDL_GLContext) cdecl; external SDL_LibN
 
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////  
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////        SDL_renderer.h         ///////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
 
@@ -5112,7 +5109,7 @@ procedure SDL_JoystickClose(joystick: PSDL_Joystick) cdecl; external SDL_LibName
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////  
 //////////////////////         SDL_touch.h          ////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////  
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 type
   PSDL_TouchID  = ^TSDL_TouchID;
@@ -5262,7 +5259,7 @@ const
   SDL_JOYBALLMOTION    = $601;  // Joystick trackball motion
   SDL_JOYHATMOTION     = $602;  // Joystick hat position change
   SDL_JOYBUTTONDOWN    = $603;  // Joystick button pressed
-  SDL_JOYBUTTONUP      = $604;  // Joystick button released 
+  SDL_JOYBUTTONUP      = $604;  // Joystick button released
   SDL_JOYDEVICEADDED   = $605;  // A new joystick has been inserted into the system 
   SDL_JOYDEVICEREMOVED = $606;  // An opened joystick has been removed 
 
@@ -5423,7 +5420,7 @@ type
     windowID: UInt32;    // The window with mouse focus, if any 
     which: UInt32;       // The mouse instance id, or SDL_TOUCH_MOUSEID
     x: SInt32;           // The amount scrolled horizontally 
-    y: SInt32;           // The amount scrolled vertically 
+    y: SInt32;           // The amount scrolled vertically
   end;
 
   {**
@@ -5862,7 +5859,7 @@ type
    *  event - If not nil, the next event is removed from the queue and
    *  stored in that area.
    *}
- 
+
   function SDL_WaitEventTimeout(event: PSDL_Event; timeout: SInt32): SInt32 cdecl; external SDL_LibName {$IFDEF MACOS} name '_SDL_WaitEventTimeout' {$ENDIF};
 
   {**
@@ -5887,7 +5884,7 @@ type
    *  internal state will still be updated.  This allows selective filtering of
    *  dynamically arriving events.
    *  
-   *  Be very careful of what you do in the event filter function, as 
+   *  Be very careful of what you do in the event filter function, as
    *  it may run in a different thread!
    *  
    *  There is one caveat when dealing with the SDL_QUITEVENT event type.  The
@@ -5898,7 +5895,7 @@ type
    *  If the quit event is generated by an interrupt signal, it will bypass the
    *  internal queue and be delivered to the application at the next event poll.
    *}
- 
+
   procedure SDL_SetEventFilter(filter: TSDL_EventFilter; userdata: Pointer) cdecl; external SDL_LibName {$IFDEF MACOS} name '_SDL_SetEventFilter' {$ENDIF};
 
   {**
@@ -6100,7 +6097,6 @@ const
 {$ENDIF}
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////       SDL_messagebox.h       ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6119,13 +6115,6 @@ const
 function SDL_ShowSimpleMessageBox(flags : Uint32; const title : PAnsiChar; const message : PAnsiChar; window : PSDL_Window): UInt32 cdecl; external SDL_LibName {$IFDEF MACOS} name '_SDL_ShowSimpleMessageBox' {$ENDIF};
 
 
-
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////            *** KTI ***           ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6142,21 +6131,11 @@ type
       EinvalidContainer=class(Exception);
    {$ENDIF}
 
-
-
 function SDL_Swap32(D: Uint32): Uint32;
 function SDLStreamSetup( stream : TStream ) : PSDL_RWops;
 function LoadSDLBMPFromStream( Stream : TStream ) : PSDL_Surface;
 procedure SaveSDLBMPToStream( SDL_Surface : PSDL_Surface; stream : TStream );
 procedure SDLStreamCloseRWops( SDL_RWops : PSDL_RWops );
-
-
-
-
-
-
-
-
 
 
 implementation
@@ -6208,8 +6187,6 @@ end;
    end;
 {$ENDIF}
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////          SDL_rect.h          ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6247,8 +6224,12 @@ end;
 //******************************************************************************
 
 function SDL_RWtell(ctx: PSDL_RWops): SInt64;
+var
+  offset: Int64;
 begin
-     Result := ctx^.seek(ctx, 0, RW_SEEK_CUR);
+  offset.lo := 0;
+  offset.hi := 0;
+     Result := ctx^.seek(ctx, offset, RW_SEEK_CUR);
 end;
 
 //******************************************************************************
@@ -6337,8 +6318,6 @@ begin
      Result := SDL_SaveBMP_RW(surface, SDL_RWFromFile(_file, 'wb'), 1);
 end;
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////        SDL_video.h           ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6355,8 +6334,6 @@ begin
      Result := (X and $FFFF0000) = SDL_WINDOWPOS_CENTERED_MASK;
 end;
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////        SDL_events.h          ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6366,17 +6343,9 @@ begin
      Result := SDL_EventState(type_, SDL_QUERY);
 end;
 
-
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////            *** KTI ***           ////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 function SDL_Swap32(D: Uint32): Uint32;
 begin
@@ -6384,72 +6353,68 @@ begin
 end;
 
 //******************************************************************************
-
-function SdlStreamSeek( context : PSDL_RWops; offset : SInt64; whence : SInt32 ) : SInt64; cdecl;
+function SdlStreamSeek( context : PSDL_RWops; offset : SInt64; whence : SInt32 ) : SInt64; cdecl;
 var
    stream : TStream;
    origin : Word;
 begin
-     stream := TStream( context.unknown );
+     stream := TStream(context.unknown);
      if ( stream = nil ) then
         raise EInvalidContainer.Create( 'SDLStreamSeek on nil' );
      case whence of
-       0 : origin := soFromBeginning; //	Offset is from the beginning of the resource. Seek moves to the position Offset. Offset must be >= 0.
-       1 : origin := soFromCurrent; //	Offset is from the current position in the resource. Seek moves to Position + Offset.
+       0 : origin := soFromBeginning; //Offset is from the beginning of the resource. Seek moves to the position Offset. Offset must be >= 0.
+       1 : origin := soFromCurrent; //Offset is from the current position in the resource. Seek moves to Position + Offset.
        2 : origin := soFromEnd;
      else
-       origin := soFromBeginning; // just in case
+       origin := soFromBeginning; //just in case
      end;
-     Result := stream.Seek( offset, origin );
+     Result.hi := stream.Seek(offset.hi, origin);
 end;
 
 //******************************************************************************
-
 function SDLStreamWrite( context : PSDL_RWops; const Ptr : Pointer;  size : size_t; num : size_t ) : size_t; cdecl;
 var
    stream : TStream;
+
 begin
      stream := TStream( context.unknown );
-     if ( stream = nil ) then
-       raise EInvalidContainer.Create( 'SDLStreamWrite on nil' );
+     if (stream = nil) then
+       raise EInvalidContainer.Create('SDLStreamWrite on nil');
      try
-       Result := stream.Write( Ptr^, Size * num ) div size;
+       Result := stream.Write(Ptr^, Size * num) div size;
      except
        Result := 0;
      end;
 end;
 
 //******************************************************************************
-
 function SdlStreamRead( context : PSDL_RWops; Ptr : Pointer; size : size_t; maxnum : size_t ) : size_t; cdecl;
 var
    stream : TStream;
 begin
      stream := TStream( context.unknown );
      if ( stream = nil ) then
-       raise EInvalidContainer.Create( 'SDLStreamRead on nil' );
+       raise EInvalidContainer.Create('SDLStreamRead on nil');
      try
-       Result := stream.read( Ptr^, Size * maxnum ) div size;
+       Result := stream.Read(Ptr^, Size * maxnum) div size;
      except
        Result := 0;
      end;
 end;
 
 //******************************************************************************
-
 function SDLStreamClose( context : PSDL_RWops ) : Integer; cdecl;
 var
    stream : TStream;
 begin
      stream := TStream( context.unknown );
-     if ( stream = nil ) then
+     if (stream = nil) then
         raise EInvalidContainer.Create( 'SDLStreamClose on nil' );
      stream.Free;
      Result := 1;
 end;
 
 //******************************************************************************
-
 function SDLStreamSetup( stream : TStream ) : PSDL_RWops;
 begin
      result := SDL_AllocRW;
@@ -6464,16 +6429,14 @@ begin
 end;
 
 //******************************************************************************
-
-procedure SDLStreamCloseRWops( SDL_RWops : PSDL_RWops );
+procedure SDLStreamCloseRWops(SDL_RWops : PSDL_RWops);
 begin
      // this only closes the SDL part of the stream, not the context
-     SDL_FreeRW( SDL_RWops );
+     SDL_FreeRW(SDL_RWops);
 end;
 
 //******************************************************************************
-
-function LoadSDLBMPFromStream( stream : TStream ) : PSDL_Surface;
+function LoadSDLBMPFromStream(stream : TStream) : PSDL_Surface;
 var
    SDL_RWops : PSDL_RWops;
 begin
@@ -6484,7 +6447,7 @@ end;
 
 //******************************************************************************
 
-procedure SaveSDLBMPToStream( SDL_Surface : PSDL_Surface; stream : TStream );
+procedure SaveSDLBMPToStream(SDL_Surface : PSDL_Surface; stream : TStream);
 var
    SDL_RWops : PSDL_RWops;
 begin

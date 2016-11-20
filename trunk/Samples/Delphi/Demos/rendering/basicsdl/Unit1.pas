@@ -3,11 +3,21 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Forms, Vcl.Dialogs, Vcl.Imaging.Jpeg,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Imaging.Jpeg,
   //GLS
-  GLScene, GLObjects, GLSDLContext, GLSDL,
-  GLTeapot, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLColor;
+  GLScene,
+  GLObjects,
+  GLSDLContext,
+  SDL,
+  GLTeapot,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLColor;
 
 type
   TDataModule1 = class(TDataModule)

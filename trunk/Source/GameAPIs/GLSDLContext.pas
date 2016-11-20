@@ -8,14 +8,7 @@
          "ignore OpenGL errors" mode during destruction, thus potentially
          leaking memory (depending on hardware drivers willingness to perform
          automatic releases) 
-
-    History :  
-       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-       06/06/10 - Yar - Make outputDevice HWND type
-       15/02/07 - DaStr - Integer -> Cardinal because $R- was removed in GLScene.pas
-       11/09/06 - NC - Changes for Multiple-Render-Target
-       12/12/01 - EG - Creation
-    
+   The history is logged in a former GLS version of the unit.
 }
 unit GLSDLContext;
 
@@ -25,25 +18,26 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-   
+  //GLS
+  OpenGLAdapter,
   GLContext,
   GLSDLWindow,
   GLScene,
-  //SDL
-  GLSDL;
+  GLCrossPlatform,
+  SDL{,
+  SDL2};
 
 type
-
   // TGLSDLViewer
   //
-  {A viewer using SDL. 
+  {A viewer using SDL.
      Beware: only one at a time, no other viewers allowed!
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
     { Private Declarations }
     FCaption: string;
-    FOnSDLEvent: TSDLEvent;
+    FOnSDLEvent: TGLSDLEvent;
     FOnEventPollDone: TNotifyEvent;
     FOnResize: TNotifyEvent;
 
@@ -78,7 +72,7 @@ type
     {Fired whenever an SDL Event is polled. 
        SDL_QUITEV and SDL_VIDEORESIZE are not passed to this event handler,
        they are passed via OnClose and OnResize respectively. }
-    property OnSDLEvent: TSDLEvent read FOnSDLEvent write FOnSDLEvent;
+    property OnSDLEvent: TGLSDLEvent read FOnSDLEvent write FOnSDLEvent;
     {Fired whenever an event polling completes with no events left to poll. }
     property OnEventPollDone: TNotifyEvent read FOnEventPollDone write FOnEventPollDone;
   end;
@@ -94,7 +88,7 @@ type
   TGLSDLContext = class(TGLScreenControlingContext)
   private
     { Private Declarations }
-    FSDLWin: TSDLWindow;
+    FSDLWin: TGLSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
 
   protected
@@ -116,7 +110,7 @@ type
 
     function RenderOutputDevice: Pointer; override;
 
-    property SDLWindow: TSDLWindow read FSDLWin;
+    property SDLWindow: TGLSDLWindow read FSDLWin;
   end;
 
 procedure Register;
@@ -128,11 +122,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-uses
-  OpenGLAdapter,
-  GLCrossPlatform,
-  XOpenGL;
 
 procedure Register;
 begin
@@ -285,7 +274,7 @@ end;
 constructor TGLSDLContext.Create;
 begin
   inherited Create;
-  FSDLWin := TSDLWindow.Create(nil);
+  FSDLWin := TGLSDLWindow.Create(nil);
 end;
 
 // Destroy
@@ -312,7 +301,7 @@ end;
 
 procedure TGLSDLContext.DoCreateContext(outputDevice: HDC);
 var
-  sdlOpt: TSDLWindowOptions;
+  sdlOpt: TGLSDLWindowOptions;
 begin
   // Just in case it didn't happen already.
   if not InitOpenGL then

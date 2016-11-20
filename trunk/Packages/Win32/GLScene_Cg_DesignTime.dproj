@@ -125,7 +125,6 @@
         <DCCReference Include="..\..\Resources\GLSceneCg.dcr"/>
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="designide.dcp"/>
-        <DCCReference Include="VclSmp.dcp"/>
         <DCCReference Include="GLScene_RunTime.dcp"/>
         <DCCReference Include="GLScene_Cg_RunTime.dcp"/>
         <DCCReference Include="GLScene_DesignTime.dcp"/>

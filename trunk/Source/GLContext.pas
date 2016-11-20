@@ -109,7 +109,7 @@ uses
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  MRT_BUFFERS: array[0..3] of GLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
+  MRT_BUFFERS: array[0..3] of TGLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 type
 
@@ -380,7 +380,7 @@ type
 
     //: Specifies if the handle can be transfered across shared contexts
     class function Transferable: Boolean; virtual;
-    class function IsValid(const ID: GLuint): Boolean; virtual;
+    class function IsValid(const ID: TGLuint): Boolean; virtual;
 
     function DoAllocateHandle: Cardinal; virtual; abstract;
     procedure DoDestroyHandle(var AHandle: TGLuint); virtual; abstract;
@@ -461,7 +461,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     procedure NewList(mode: Cardinal);
@@ -480,7 +480,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     property Target: TGLTextureTarget read FTarget write SetTarget;
@@ -494,7 +494,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -515,7 +515,7 @@ type
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     function GetTarget: TGLuint; virtual; abstract;
     function GetQueryType: TQueryType; virtual; abstract;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     procedure BeginQuery;
@@ -615,7 +615,7 @@ type
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
     function GetTarget: TGLuint; virtual; abstract;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     {Creates the buffer object buffer and initializes it. }
@@ -799,7 +799,7 @@ type
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     procedure Bind;
     procedure UnBind;
@@ -837,7 +837,7 @@ type
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     // Bind framebuffer for both drawing + reading
     procedure Bind;
@@ -910,7 +910,7 @@ type
   protected
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     procedure Bind;
     procedure UnBind;
@@ -929,7 +929,7 @@ type
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
     class function GetTarget: TGLenum; virtual; abstract;
   public
     { Public Declarations }
@@ -1000,7 +1000,7 @@ type
   protected
     { Protected Declarations }
     function DoAllocateHandle: Cardinal; override;
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   public
     { Public Declarations }
     procedure ShaderSource(const source: AnsiString); overload;
@@ -1069,7 +1069,7 @@ type
      checked by the user. }
   TGLProgramHandle = class(TGLSLHandle)
   public
-    class function IsValid(const ID: GLuint): Boolean; override;
+    class function IsValid(const ID: Cardinal): Boolean; override;
   private
     { Private Declarations }
     FName: string;
@@ -2311,7 +2311,7 @@ begin
   Result := True;
 end;
 
-class function TGLContextHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLContextHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := True;
 end;
@@ -2399,7 +2399,7 @@ end;
 // IsValid
 //
 
-class function TGLListHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLListHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsList(ID);
 end;
@@ -2481,7 +2481,7 @@ end;
 // IsValid
 //
 
-class function TGLTextureHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLTextureHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsTexture(ID);
 end;
@@ -2533,7 +2533,7 @@ end;
 // IsValid
 //
 
-class function TGLSamplerHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLSamplerHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsSampler(ID);
 end;
@@ -2589,7 +2589,7 @@ end;
 // IsValid
 //
 
-class function TGLQueryHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLQueryHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsQuery(ID);
 end;
@@ -2842,7 +2842,7 @@ end;
 // IsValid
 //
 
-class function TGLBufferObjectHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLBufferObjectHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsBuffer(ID);
 end;
@@ -3239,7 +3239,7 @@ end;
 // IsValid
 //
 
-class function TGLVertexArrayHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLVertexArrayHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsVertexArray(ID);
 end;
@@ -3311,7 +3311,7 @@ end;
 // IsValid
 //
 
-class function TGLFramebufferHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLFramebufferHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsFramebuffer(ID);
 end;
@@ -3571,7 +3571,7 @@ end;
 // IsValid
 //
 
-class function TGLRenderbufferHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLRenderbufferHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsRenderbuffer(ID);
 end;
@@ -3654,7 +3654,7 @@ end;
 // IsValid
 //
 
-class function TGLARBProgramHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLARBProgramHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsProgram(ID);
 end;
@@ -3797,7 +3797,7 @@ end;
 // IsValid
 //
 
-class function TGLShaderHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLShaderHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsShader(ID);
 end;
@@ -3948,7 +3948,7 @@ end;
 // IsValid
 //
 
-class function TGLProgramHandle.IsValid(const ID: GLuint): Boolean;
+class function TGLProgramHandle.IsValid(const ID: Cardinal): Boolean;
 begin
   Result := GL.IsProgram(ID);
 end;
@@ -3994,7 +3994,7 @@ procedure TGLProgramHandle.DetachAllObject;
 var
   glH: TGLuint;
   I: Integer;
-  count: GLSizei;
+  count: TGLsizei;
   buffer: array[0..255] of TGLuint;
 begin
   glH := GetHandle;

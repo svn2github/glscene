@@ -1,3 +1,10 @@
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   Conversion of cg NVIDIA header files to cg.pas
+   The history is logged in a former GLS version of the unit.
+}
 {******************************************************************************}
 {*                                                                            *}
 {*  Copyright (c) 2002, NVIDIA Corporation.                                   *}
@@ -43,18 +50,13 @@
 {******************************************************************************}
 
 (*
- *
  * Copyright (c) 2002, NVIDIA Corporation.
- *
- *
  *
  * NVIDIA Corporation("NVIDIA") supplies this software to you in consideration
  * of your agreement to the following terms, and your use, installation,
  * modification or redistribution of this NVIDIA software constitutes
  * acceptance of these terms.  If you do not agree with these terms, please do
  * not use, install, modify or redistribute this NVIDIA software.
- *
- *
  *
  * In consideration of your agreement to abide by the following terms, and
  * subject to these terms, NVIDIA grants you a personal, non-exclusive license,
@@ -72,15 +74,11 @@
  * infringed by your derivative works or by other works in which the NVIDIA
  * Software may be incorporated. No hardware is licensed hereunder.
  *
- *
- *
  * THE NVIDIA SOFTWARE IS BEING PROVIDED ON AN "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
  * WITHOUT LIMITATION, WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR ITS USE AND OPERATION
  * EITHER ALONE OR IN COMBINATION WITH OTHER PRODUCTS.
- *
- *
  *
  * IN NO EVENT SHALL NVIDIA BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL,
  * EXEMPLARY, CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOST
@@ -90,32 +88,14 @@
  * HOWEVER CAUSED AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING
  * NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF NVIDIA HAS BEEN ADVISED
  * OF THE POSSIBILITY OF SUCH DAMAGE.
- *
  *)
 unit cg;
-//
-// HISTORY:
-// 18-Dec-12 - PW:
-//             Restored CPP compatibility, suppressed unnecessary directives
-// 17-Nov-09 - Da Stranger
-//   - Improved Unix compatibility (thanks Predator) (BugtrackerID = 2893580)
-// 07-Sep-04 - Nelson Chu:
-//   - Added profiles vp40 and fp40 from Cg 1.3 beta 2
-// XX-XX-04 - LR, YHC - BCB corrections:
-//   - Suppress the $NODEFINE, $HPPEMIT and $EXTERNALSYM directives
-// 23-Apr-04 - Nelson Chu:
-//   - Adopted to use with GLScene (jedi.inc -> GLScene.inc)
-// 04-Mar-04 - Alexey Barkovoy:
-//   - Updated to Release 1.2 of Cg toolkit (published 25-Feb-2004)
-// 21-Mar-03 - Alexey Barkovoy:
-//   - Updated to Release 1.1 of Cg toolkit (published 04-Mar-2003)
-// 11-Jan-03 - Alexey Barkovoy:
-//   - Updated to Release 1.0 of Cg toolkit (published 20-Dec-2002)
 
 interface
 
 {$IFDEF MSWINDOWS}
-uses Winapi.Windows;
+uses
+  Winapi.Windows;
 {$ENDIF}
 
 {$I GLScene.inc}
@@ -159,12 +139,12 @@ type
 const
   CG_FALSE = TCGbool(0);
   CG_TRUE  = TCGbool(1);
-  
+
 type
   _CGcontext = record end;
   PCGcontext = ^_CGcontext;
   CGcontext = PCGcontext;
-        
+
   _CGprogram = record end;
   PCGprogram = ^_CGprogram;
   CGprogram = PCGprogram;

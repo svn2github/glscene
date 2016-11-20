@@ -216,7 +216,7 @@ end;
 
 procedure setTransform(pos: TdVector3; R: TdMatrix3);
 var
-  matrix: array[0..15] of GLfloat;
+  matrix: array[0..15] of Single;
 begin
   matrix[0] := R[0];
   matrix[1] := R[4];

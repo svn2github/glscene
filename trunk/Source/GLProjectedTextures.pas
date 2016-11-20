@@ -3,8 +3,7 @@
 //
 {
    Implements projected textures through a GLScene object.
-
-    History :  
+   History :
        10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
        22/04/10 - Yar - Fixes after GLState revision
@@ -25,12 +24,11 @@ interface
 
 uses
   System.Classes,
-   
+  //GLS
+  OpenGLTokens,
   GLScene,
   GLTexture,
-  OpenGLTokens,
   GLVectorGeometry,
-  XOpenGL,
   GLRenderContextInfo,
   GLState;
 
@@ -329,10 +327,10 @@ end;
 procedure TGLProjectedTextures.DoRender(var ARci: TGLRenderContextInfo;
   ARenderSelf, ARenderChildren: boolean);
 const
-  PS: array[0..3] of GLfloat = (1, 0, 0, 0);
-  PT: array[0..3] of GLfloat = (0, 1, 0, 0);
-  PR: array[0..3] of GLfloat = (0, 0, 1, 0);
-  PQ: array[0..3] of GLfloat = (0, 0, 0, 1);
+  PS: array[0..3] of Single = (1, 0, 0, 0);
+  PT: array[0..3] of Single = (0, 1, 0, 0);
+  PR: array[0..3] of Single = (0, 0, 1, 0);
+  PQ: array[0..3] of Single = (0, 0, 0, 1);
 var
   i: integer;
   emitter: TGLTextureEmitter;

@@ -131,7 +131,6 @@
         <DCCReference Include="rtl.dcp"/>
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="vclimg.dcp"/>
-        <DCCReference Include="xmlrtl.dcp"/>
         <DCCReference Include="GLScene_RunTime.dcp"/>
         <DCCReference Include="..\..\Source\Shaders\cgGL.pas"/>
         <DCCReference Include="..\..\Source\Shaders\cg.pas"/>

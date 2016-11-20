@@ -243,7 +243,7 @@ function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
   Integer; overload;
 {Give compatible openGL image format and data type. }
 procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
-  GLenum; out dType: GLenum);
+  TGLenum; out dType: TGLenum);
 {Give a compressed openGL texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
 function CompressedInternalFormatToOpenGL(intFormat: TGLInternalFormat):
@@ -584,7 +584,7 @@ begin
 end;
 
 procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
-  TGLEnum; out dType: GLenum);
+  TGLEnum; out dType: TGLenum);
 begin
   dFormat := cTextureFormatToOpenGL[intFormat].ClrFmt;
   dType := cTextureFormatToOpenGL[intFormat].DataFmt;

@@ -2,43 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Tools for managing an application-side cache of OpenGL state. 
-
-   History :  
-       10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
-       12/05/11 - Yar - Bugfixed issue with glColor cache miss (it must be direct state due to it indeterminacy in many cases)
-       07/05/11 - Yar - Bugfixed stColorMaterial action inside display list
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       16/12/10 - Yar - Added uniform and transform feedback buffers indexed binding cache
-       14/12/10 - DaStr - Added to TGLStateCache:
-                               Color property
-                               SetGLMaterialColorsNoLighting()
-                               SetGLMaterialDiffuseColor()
-                             Bugfixed: TGLStateCache.SetGLMaterialAlphaChannel()
-       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-       03/11/10 - Yar - Added LightSpotDirection, LightSpotExponent
-       27/10/10 - Yar - Bugfixed default OpenGL state for LightDiffuse[N>0]
-       09/10/10 - Yar - Added properties SamplerBinding, MaxTextureImageUnit, MaxTextureAnisotropy
-                           SetGLTextureMatrix work for ActiveTexture (in four count)
-       23/08/10 - Yar - Done replacing OpenGL1x functions to OpenGLAdapter
-       03/08/10 - DaStr - Restored deprecated SetGLFrontFaceCW() function
-       16/06/10 - YP  - Out of range fix, increasing FListStates by 2 must be done in a while loop
-       16/06/10 - YP  - Out of range fix, MAX_HARDWARE_LIGHT can be up to 16
-       31/05/10 - Yar - Replaced OpenGL1x functions to OpenGLAdapter, not complete yet.
-       01/05/10 - Yar - Added cashing to Vertex Array Object
-       22/04/10 - Yar - GLState revision
-       11/04/10 - Yar - Added NewList, EndList, InsideList
-       08/05/10 - DanB - Added TGLStateCache.SetColorMask
-       05/03/10 - DanB - Added initial functions/properties for caching all
-                            OpenGL 3.2 state, not complete yet.
-       22/02/10 - DanB - added SetGLCurrentProgram
-       22/02/10 - Yar - Added more control of states
-       13/05/07 - fig - Added stTexture3D (GL_TEXTURE_3D)
-       19/12/06 - DaStr - GetGLCurrentTexture, ResetGLTexture added to TGLStateCache
-       04/10/04 - NC - Added stTextureRect (GL_TEXTURE_RECTANGLE_NV)
-       07/01/04 - EG - Introduced TGLStateCache
-       05/09/03 - EG - Creation from GLMisc split
-    
+   Tools for managing an application-side cache of OpenGL state.
+   History :
+     05/09/03 - EG - Creation from GLMisc split
+     The whole history is logged in a former GLS version of the unit.
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
@@ -215,7 +182,7 @@ type
   TGLBufferBindingTarget = (bbtUniform, bbtTransformFeedBack);
 
   TUBOStates = record
-    FUniformBufferBinding: TGLuint;
+    FUniformBufferBinding: Cardinal;
     FOffset: TGLintptr;
     FSize: TGLsizeiptr;
   end;
@@ -239,7 +206,7 @@ type
     FPolygonBackMode: TPolygonMode; // Front + back have same polygon mode
 
     // Lighting state
-    FMaxLights: GLuint;
+    FMaxLights: Cardinal;
     FLightEnabling: array[0..MAX_HARDWARE_LIGHT - 1] of Boolean;
     FLightIndices: array[0..MAX_HARDWARE_LIGHT - 1] of TGLint;
     FLightNumber: Integer;
@@ -251,18 +218,18 @@ type
     FColorWriting: Boolean; // TODO: change to per draw buffer (FColorWriteMask)
     FStates: TGLStates;
     FListStates: array of TGLStateTypes;
-    FCurrentList: TGLuint;
+    FCurrentList: Cardinal;
     FTextureMatrixIsIdentity: array[0..3] of Boolean;
     FForwardContext: Boolean;
     FFFPLight: Boolean;
 
     // Vertex Array Data state
-    FVertexArrayBinding: TGLuint;
-    FArrayBufferBinding: TGLuint;
-    FElementBufferBinding: TGLuint;
-    FTextureBufferBinding: TGLuint;
+    FVertexArrayBinding: Cardinal;
+    FArrayBufferBinding: Cardinal;
+    FElementBufferBinding: Cardinal;
+    FTextureBufferBinding: Cardinal;
     FEnablePrimitiveRestart: TGLboolean;
-    FPrimitiveRestartIndex: TGLuint;
+    FPrimitiveRestartIndex: Cardinal;
 
     // Transformation state
     FViewPort: TVector4i;
@@ -305,16 +272,16 @@ type
     FSampleMaskValue: array[0..15] of TGLbitfield;
 
     // Texture state
-    FMaxTextureSize: TGLuint;
-    FMax3DTextureSize: TGLuint;
-    FMaxCubeTextureSize: TGLuint;
-    FMaxArrayTextureSize: TGLuint;
-    FMaxTextureImageUnits: TGLuint;
-    FMaxTextureAnisotropy: TGLuint;
-    FMaxSamples: TGLuint;
-    FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of TGLuint;
+    FMaxTextureSize: Cardinal;
+    FMax3DTextureSize: Cardinal;
+    FMaxCubeTextureSize: Cardinal;
+    FMaxArrayTextureSize: Cardinal;
+    FMaxTextureImageUnits: Cardinal;
+    FMaxTextureAnisotropy: Cardinal;
+    FMaxSamples: Cardinal;
+    FTextureBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Cardinal;
     FTextureBindingTime: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1, TGLTextureTarget] of Double;
-    FSamplerBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of TGLuint;
+    FSamplerBinding: array[0..MAX_HARDWARE_TEXTURE_UNIT - 1] of Cardinal;
 
     // Active texture state
     FActiveTexture: TGLint; // 0 .. Max_texture_units
@@ -327,15 +294,15 @@ type
     FEnableStencilTest: TGLboolean;
 
     FStencilFunc: TStencilFunction;
-    FStencilValueMask: TGLuint;
+    FStencilValueMask: Cardinal;
     FStencilRef: TGLint;
     FStencilFail: TStencilOp;
     FStencilPassDepthFail: TStencilOp;
     FStencilPassDepthPass: TStencilOp;
 
     FStencilBackFunc: TStencilFunction;
-    FStencilBackValueMask: TGLuint;
-    FStencilBackRef: TGLuint;
+    FStencilBackValueMask: Cardinal;
+    FStencilBackRef: Cardinal;
     FStencilBackFail: TStencilOp;
     FStencilBackPassDepthPass: TStencilOp;
     FStencilBackPassDepthFail: TStencilOp;
@@ -363,44 +330,44 @@ type
     // Framebuffer control state
     FColorWriteMask: array[0..15] of TColorMask;
     FDepthWriteMask: TGLBoolean;
-    FStencilWriteMask: TGLuint;
-    FStencilBackWriteMask: TGLuint;
+    FStencilWriteMask: Cardinal;
+    FStencilBackWriteMask: Cardinal;
     FColorClearValue: TVector;
     FDepthClearValue: TGLfloat;
-    FStencilClearValue: TGLuint;
+    FStencilClearValue: Cardinal;
 
     // Framebuffer state
-    FDrawFrameBuffer: TGLuint;
-    FReadFrameBuffer: TGLuint;
+    FDrawFrameBuffer: Cardinal;
+    FReadFrameBuffer: Cardinal;
 
     // Renderbuffer state
-    FRenderBuffer: TGLuint;
+    FRenderBuffer: Cardinal;
 
     // Pixels state
     FUnpackSwapBytes: TGLboolean;
     FUnpackLSBFirst: TGLboolean;
-    FUnpackImageHeight: TGLuint;
-    FUnpackSkipImages: TGLuint;
-    FUnpackRowLength: TGLuint;
-    FUnpackSkipRows: TGLuint;
-    FUnpackSkipPixels: TGLuint;
-    FUnpackAlignment: TGLuint;
+    FUnpackImageHeight: Cardinal;
+    FUnpackSkipImages: Cardinal;
+    FUnpackRowLength: Cardinal;
+    FUnpackSkipRows: Cardinal;
+    FUnpackSkipPixels: Cardinal;
+    FUnpackAlignment: Cardinal;
     FPackSwapBytes: TGLboolean;
     FPackLSBFirst: TGLboolean;
-    FPackImageHeight: TGLuint;
-    FPackSkipImages: TGLuint;
-    FPackRowLength: TGLuint;
-    FPackSkipRows: TGLuint;
-    FPackSkipPixels: TGLuint;
-    FPackAlignment: TGLuint;
+    FPackImageHeight: Cardinal;
+    FPackSkipImages: Cardinal;
+    FPackRowLength: Cardinal;
+    FPackSkipRows: Cardinal;
+    FPackSkipPixels: Cardinal;
+    FPackAlignment: Cardinal;
 
-    FPixelPackBufferBinding: TGLuint;
-    FPixelUnpackBufferBinding: TGLuint;
+    FPixelPackBufferBinding: Cardinal;
+    FPixelUnpackBufferBinding: Cardinal;
 
     // Program state
-    FCurrentProgram: TGLuint;
-    FMaxTextureUnits: TGLuint;
-    FUniformBufferBinding: TGLuint;
+    FCurrentProgram: Cardinal;
+    FMaxTextureUnits: Cardinal;
+    FUniformBufferBinding: Cardinal;
     FUBOStates: array[TGLBufferBindingTarget, 0..MAX_HARDWARE_UNIFORM_BUFFER_BINDING-1] of TUBOStates;
 
     // Vector + Geometry Shader state
@@ -408,7 +375,7 @@ type
     FEnableProgramPointSize: TGLboolean;
 
     // Transform Feedback state
-    FTransformFeedbackBufferBinding: TGLuint;
+    FTransformFeedbackBufferBinding: Cardinal;
 
     // Hints state
     FTextureCompressionHint: THintType;
@@ -418,9 +385,9 @@ type
     FMultisampleFilterHint: THintType;
 
     // Misc state
-    FCurrentQuery: array[TQueryType] of TGLuint;
-    FCopyReadBufferBinding: TGLuint;
-    FCopyWriteBufferBinding: TGLuint;
+    FCurrentQuery: array[TQueryType] of Cardinal;
+    FCopyReadBufferBinding: Cardinal;
+    FCopyWriteBufferBinding: Cardinal;
     FEnableTextureCubeMapSeamless: TGLboolean;
     FInsideList: Boolean;
 
@@ -428,16 +395,16 @@ type
   protected
     { Protected Declarations }
     // Vertex Array Data state
-    procedure SetVertexArrayBinding(const Value: TGLuint);
-    function GetArrayBufferBinding: TGLuint;
-    procedure SetArrayBufferBinding(const Value: TGLuint);
-    function GetElementBufferBinding: TGLuint;
-    procedure SetElementBufferBinding(const Value: TGLuint);
+    procedure SetVertexArrayBinding(const Value: Cardinal);
+    function GetArrayBufferBinding: Cardinal;
+    procedure SetArrayBufferBinding(const Value: Cardinal);
+    function GetElementBufferBinding: Cardinal;
+    procedure SetElementBufferBinding(const Value: Cardinal);
     function GetEnablePrimitiveRestart: TGLboolean;
-    function GetPrimitiveRestartIndex: TGLuint;
+    function GetPrimitiveRestartIndex: Cardinal;
     procedure SetEnablePrimitiveRestart(const enabled: TGLboolean);
-    procedure SetPrimitiveRestartIndex(const index: TGLuint);
-    procedure SetTextureBufferBinding(const Value: TGLuint);
+    procedure SetPrimitiveRestartIndex(const index: Cardinal);
+    procedure SetTextureBufferBinding(const Value: Cardinal);
     // Transformation state
     procedure SetViewPort(const Value: TVector4i);
     function GetEnableClipDistance(ClipDistance: Cardinal): TGLboolean;
@@ -480,24 +447,24 @@ type
     function GetSampleMaskValue(Index: Integer): TGLbitfield;
     procedure SetSampleMaskValue(Index: Integer; const Value: TGLbitfield);
     // Texture state
-    function GetMaxTextureSize: TGLuint;
-    function GetMax3DTextureSize: TGLuint;
-    function GetMaxCubeTextureSize: TGLuint;
-    function GetMaxArrayTextureSize: TGLuint;
-    function GetMaxTextureImageUnits: TGLuint;
-    function GetMaxTextureAnisotropy: TGLuint;
-    function GetMaxSamples: TGLuint;
+    function GetMaxTextureSize: Cardinal;
+    function GetMax3DTextureSize: Cardinal;
+    function GetMaxCubeTextureSize: Cardinal;
+    function GetMaxArrayTextureSize: Cardinal;
+    function GetMaxTextureImageUnits: Cardinal;
+    function GetMaxTextureAnisotropy: Cardinal;
+    function GetMaxSamples: Cardinal;
     function GetTextureBinding(Index: Integer; target: TGLTextureTarget):
-      TGLuint;
+      Cardinal;
     function GetTextureBindingTime(Index: Integer; target: TGLTextureTarget):
       Double;
     procedure SetTextureBinding(Index: Integer; target: TGLTextureTarget;
-      const Value: TGLuint);
+      const Value: Cardinal);
     function GetActiveTextureEnabled(Target: TGLTextureTarget): Boolean;
     procedure SetActiveTextureEnabled(Target: TGLTextureTarget; const Value:
       Boolean);
-    function GetSamplerBinding(Index: TGLuint): TGLuint;
-    procedure SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
+    function GetSamplerBinding(Index: Cardinal): Cardinal;
+    procedure SetSamplerBinding(Index: Cardinal; const Value: Cardinal);
     // Active texture
     procedure SetActiveTexture(const Value: TGLint);
     // Pixel operations
@@ -517,45 +484,45 @@ type
     function GetColorWriteMask(Index: Integer): TColorMask;
     procedure SetColorWriteMask(Index: Integer; const Value: TColorMask);
     procedure SetDepthWriteMask(const Value: TGLboolean);
-    procedure SetStencilWriteMask(const Value: TGLuint);
-    procedure SetStencilBackWriteMask(const Value: TGLuint);
+    procedure SetStencilWriteMask(const Value: Cardinal);
+    procedure SetStencilBackWriteMask(const Value: Cardinal);
     procedure SetColorClearValue(const Value: TVector);
     procedure SetDepthClearValue(const Value: TGLfloat);
-    procedure SetStencilClearValue(const Value: TGLuint);
+    procedure SetStencilClearValue(const Value: Cardinal);
     // Framebuffer
-    procedure SetDrawFrameBuffer(const Value: TGLuint);
-    procedure SetReadFrameBuffer(const Value: TGLuint);
+    procedure SetDrawFrameBuffer(const Value: Cardinal);
+    procedure SetReadFrameBuffer(const Value: Cardinal);
     // Renderbuffer
-    procedure SetRenderBuffer(const Value: TGLuint);
+    procedure SetRenderBuffer(const Value: Cardinal);
     // Pixels
     procedure SetUnpackSwapBytes(const Value: TGLboolean);
     procedure SetUnpackLSBFirst(const Value: TGLboolean);
-    procedure SetUnpackImageHeight(const Value: TGLuint);
-    procedure SetUnpackSkipImages(const Value: TGLuint);
-    procedure SetUnpackRowLength(const Value: TGLuint);
-    procedure SetUnpackSkipRows(const Value: TGLuint);
-    procedure SetUnpackSkipPixels(const Value: TGLuint);
-    procedure SetUnpackAlignment(const Value: TGLuint);
+    procedure SetUnpackImageHeight(const Value: Cardinal);
+    procedure SetUnpackSkipImages(const Value: Cardinal);
+    procedure SetUnpackRowLength(const Value: Cardinal);
+    procedure SetUnpackSkipRows(const Value: Cardinal);
+    procedure SetUnpackSkipPixels(const Value: Cardinal);
+    procedure SetUnpackAlignment(const Value: Cardinal);
     procedure SetPackSwapBytes(const Value: TGLboolean);
     procedure SetPackLSBFirst(const Value: TGLboolean);
-    procedure SetPackImageHeight(const Value: TGLuint);
-    procedure SetPackSkipImages(const Value: TGLuint);
-    procedure SetPackRowLength(const Value: TGLuint);
-    procedure SetPackSkipRows(const Value: TGLuint);
-    procedure SetPackSkipPixels(const Value: TGLuint);
-    procedure SetPackAlignment(const Value: TGLuint);
-    procedure SetPixelPackBufferBinding(const Value: TGLuint);
-    procedure SetPixelUnpackBufferBinding(const Value: TGLuint);
+    procedure SetPackImageHeight(const Value: Cardinal);
+    procedure SetPackSkipImages(const Value: Cardinal);
+    procedure SetPackRowLength(const Value: Cardinal);
+    procedure SetPackSkipRows(const Value: Cardinal);
+    procedure SetPackSkipPixels(const Value: Cardinal);
+    procedure SetPackAlignment(const Value: Cardinal);
+    procedure SetPixelPackBufferBinding(const Value: Cardinal);
+    procedure SetPixelUnpackBufferBinding(const Value: Cardinal);
     // Program
-    procedure SetCurrentProgram(const Value: TGLuint);
-    procedure SetUniformBufferBinding(const Value: TGLuint);
-    function GetMaxTextureUnits: TGLuint;
+    procedure SetCurrentProgram(const Value: Cardinal);
+    procedure SetUniformBufferBinding(const Value: Cardinal);
+    function GetMaxTextureUnits: Cardinal;
     // Vector + Geometry Shader state
     function GetCurrentVertexAttrib(Index: Integer): TVector;
     procedure SetCurrentVertexAttrib(Index: Integer; const Value: TVector);
     procedure SetEnableProgramPointSize(const Value: TGLboolean);
     // Transform Feedback state
-    procedure SetTransformFeedbackBufferBinding(const Value: TGLuint);
+    procedure SetTransformFeedbackBufferBinding(const Value: Cardinal);
     // Hints
     procedure SetLineSmoothHint(const Value: THintType);
     procedure SetPolygonSmoothHint(const Value: THintType);
@@ -563,10 +530,10 @@ type
     procedure SetFragmentShaderDerivitiveHint(const Value: THintType);
     procedure SetMultisampleFilterHint(const Value: THintType);
     // Misc
-    function GetCurrentQuery(Index: TQueryType): TGLuint;
-    //    procedure SetCurrentQuery(Index: TQueryType; const Value: TGLuint);
-    procedure SetCopyReadBufferBinding(const Value: TGLuint);
-    procedure SetCopyWriteBufferBinding(const Value: TGLuint);
+    function GetCurrentQuery(Index: TQueryType): Cardinal;
+    //    procedure SetCurrentQuery(Index: TQueryType; const Value: Cardinal);
+    procedure SetCopyReadBufferBinding(const Value: Cardinal);
+    procedure SetCopyWriteBufferBinding(const Value: Cardinal);
     procedure SetEnableTextureCubeMapSeamless(const Value: TGLboolean);
     // Ligting
     procedure SetFFPLight(Value: Boolean);
@@ -681,22 +648,22 @@ type
     // Vertex Array Data state
     {The currently bound array buffer (calling glVertexAttribPointer
        locks this buffer to the currently bound VBO). }
-    property VertexArrayBinding: TGLuint read FVertexArrayBinding write
+    property VertexArrayBinding: Cardinal read FVertexArrayBinding write
       SetVertexArrayBinding;
     {The currently bound vertex buffer object (VAO). }
-    property ArrayBufferBinding: TGLuint read GetArrayBufferBinding write
+    property ArrayBufferBinding: Cardinal read GetArrayBufferBinding write
       SetArrayBufferBinding;
     {The currently bound element buffer object (EBO). }
-    property ElementBufferBinding: TGLuint read GetElementBufferBinding write
+    property ElementBufferBinding: Cardinal read GetElementBufferBinding write
       SetElementBufferBinding;
     {Determines whether primitive restart is turned on or off. }
     property EnablePrimitiveRestart: TGLboolean read GetEnablePrimitiveRestart
       write SetEnablePrimitiveRestart;
     {The index Value that causes a primitive restart. }
-    property PrimitiveRestartIndex: TGLuint read GetPrimitiveRestartIndex write
+    property PrimitiveRestartIndex: Cardinal read GetPrimitiveRestartIndex write
       SetPrimitiveRestartIndex;
     {The currently bound texture buffer object (TBO). }
-    property TextureBufferBinding: TGLuint read FTextureBufferBinding write
+    property TextureBufferBinding: Cardinal read FTextureBufferBinding write
       SetTextureBufferBinding;
 
     // Transformation state
@@ -809,21 +776,21 @@ type
 
     // Textures
     {Textures bound to each texture unit + binding point. }
-    property TextureBinding[Index: Integer; target: TGLTextureTarget]: TGLuint
+    property TextureBinding[Index: Integer; target: TGLTextureTarget]: Cardinal
       read GetTextureBinding write SetTextureBinding;
     property TextureBindingTime[Index: Integer; target: TGLTextureTarget]: Double
       read GetTextureBindingTime;
     property ActiveTextureEnabled[Target: TGLTextureTarget]: Boolean read
     GetActiveTextureEnabled write SetActiveTextureEnabled;
-    property SamplerBinding[Index: TGLuint]: TGLuint read GetSamplerBinding
+    property SamplerBinding[Index: Cardinal]: Cardinal read GetSamplerBinding
       write SetSamplerBinding;
-    property MaxTextureSize: TGLuint read GetMaxTextureSize;
-    property Max3DTextureSize: TGLuint read GetMax3DTextureSize;
-    property MaxCubeTextureSize: TGLuint read GetMaxCubeTextureSize;
-    property MaxArrayTextureSize: TGLuint read GetMaxArrayTextureSize;
-    property MaxTextureImageUnits: TGLuint read GetMaxTextureImageUnits;
-    property MaxTextureAnisotropy: TGLuint read GetMaxTextureAnisotropy;
-    property MaxSamples: TGLuint read GetMaxSamples;
+    property MaxTextureSize: Cardinal read GetMaxTextureSize;
+    property Max3DTextureSize: Cardinal read GetMax3DTextureSize;
+    property MaxCubeTextureSize: Cardinal read GetMaxCubeTextureSize;
+    property MaxArrayTextureSize: Cardinal read GetMaxArrayTextureSize;
+    property MaxTextureImageUnits: Cardinal read GetMaxTextureImageUnits;
+    property MaxTextureAnisotropy: Cardinal read GetMaxTextureAnisotropy;
+    property MaxSamples: Cardinal read GetMaxSamples;
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
@@ -845,7 +812,7 @@ type
     // write SetStencilFunc;
   {The stencil value mask.  Masks both the reference + stored stencil
      values. }
-    property StencilValueMask: TGLuint read FStencilValueMask;
+    property StencilValueMask: Cardinal read FStencilValueMask;
     // write SetStencilValueMask;
   {The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
     property StencilRef: TGLint read FStencilRef; // write SetStencilRef;
@@ -865,11 +832,11 @@ type
     // write SetStencilBackFunc;
   {The stencil back value mask.  Masks both the reference + stored stencil
      values. }
-    property StencilBackValueMask: TGLuint read FStencilBackValueMask;
+    property StencilBackValueMask: Cardinal read FStencilBackValueMask;
     // write SetStencilBackValueMask;
   {The stencil back reference value.  Clamped to 0..255 with an 8 bit
      stencil. }
-    property StencilBackRef: TGLuint read FStencilBackRef;
+    property StencilBackRef: Cardinal read FStencilBackRef;
     // write SetStencilBackRef;
   {The operation to perform when stencil test fails on back facing
      primitives. }
@@ -888,12 +855,12 @@ type
   {Used to set stencil Function, Reference + Mask values, for both front +
      back facing primitives. }
     procedure SetStencilFunc(const func: TStencilFunction; const ref: TGLint;
-      const mask: TGLuint);
+      const mask: Cardinal);
     {Used to set stencil Function, Reference + Mask values for either the
        front or back facing primitives (or both, which is the same as calling
        SetStencilFunc). }
     procedure SetStencilFuncSeparate(const face: TCullFaceMode;
-      const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
+      const func: TStencilFunction; const ref: TGLint; const mask: Cardinal);
     {Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go. }
     procedure SetStencilOp(const fail, zfail, zpass: TStencilOp);
@@ -968,10 +935,10 @@ type
     property DepthWriteMask: TGLBoolean read FDepthWriteMask write
       SetDepthWriteMask;
     {The stencil write mask. }
-    property StencilWriteMask: TGLuint read FStencilWriteMask write
+    property StencilWriteMask: Cardinal read FStencilWriteMask write
       SetStencilWriteMask;
     {The stencil back write mask. }
-    property StencilBackWriteMask: TGLuint read FStencilBackWriteMask write
+    property StencilBackWriteMask: Cardinal read FStencilBackWriteMask write
       SetStencilBackWriteMask;
     {The color clear value. }
     property ColorClearValue: TVector read FColorClearValue write
@@ -980,23 +947,23 @@ type
     property DepthClearValue: TGLfloat read FDepthClearValue write
       SetDepthClearValue;
     {The stencil clear value. }
-    property StencilClearValue: TGLuint read FStencilClearValue write
+    property StencilClearValue: Cardinal read FStencilClearValue write
       SetStencilClearValue;
 
     // Framebuffer
     {Framebuffer to be used for draw operations, 0 = default framebuffer. }
-    property DrawFrameBuffer: TGLuint read FDrawFrameBuffer write
+    property DrawFrameBuffer: Cardinal read FDrawFrameBuffer write
       SetDrawFrameBuffer;
     {Framebuffer to be used for read operations, 0 = default framebuffer. }
-    property ReadFrameBuffer: TGLuint read FReadFrameBuffer write
+    property ReadFrameBuffer: Cardinal read FReadFrameBuffer write
       SetReadFrameBuffer;
     {set both draw + read framebuffer. }
-    procedure SetFrameBuffer(const Value: TGLuint);
-    //property FrameBuffer: TGLuint read FDrawFrameBuffer write SetFrameBuffer;
+    procedure SetFrameBuffer(const Value: Cardinal);
+    //property FrameBuffer: Cardinal read FDrawFrameBuffer write SetFrameBuffer;
 
     // Renderbuffer
     {Currently bound render buffer. }
-    property RenderBuffer: TGLuint read FRenderBuffer write SetRenderBuffer;
+    property RenderBuffer: Cardinal read FRenderBuffer write SetRenderBuffer;
 
     // Pixels
     {Controls whether byte swapping occurs during pixel unpacking. }
@@ -1006,22 +973,22 @@ type
     property UnpackLSBFirst: TGLboolean read FUnpackLSBFirst write
       SetUnpackLSBFirst;
     {Unpack image height. }
-    property UnpackImageHeight: TGLuint read FUnpackImageHeight write
+    property UnpackImageHeight: Cardinal read FUnpackImageHeight write
       SetUnpackImageHeight;
     {Unpack skip images. }
-    property UnpackSkipImages: TGLuint read FUnpackSkipImages write
+    property UnpackSkipImages: Cardinal read FUnpackSkipImages write
       SetUnpackSkipImages;
     {Unpack row length. }
-    property UnpackRowLength: TGLuint read FUnpackRowLength write
+    property UnpackRowLength: Cardinal read FUnpackRowLength write
       SetUnpackRowLength;
     {Unpack skip rows. }
-    property UnpackSkipRows: TGLuint read FUnpackSkipRows write
+    property UnpackSkipRows: Cardinal read FUnpackSkipRows write
       SetUnpackSkipRows;
     {Unpack skip pixels. }
-    property UnpackSkipPixels: TGLuint read FUnpackSkipPixels write
+    property UnpackSkipPixels: Cardinal read FUnpackSkipPixels write
       SetUnpackSkipPixels;
     {Unpack alignment. }
-    property UnpackAlignment: TGLuint read FUnpackAlignment write
+    property UnpackAlignment: Cardinal read FUnpackAlignment write
       SetUnpackAlignment;
     {Controls whether byte swapping occurs during pixel packing. }
     property PackSwapBytes: TGLboolean read FPackSwapBytes write
@@ -1029,38 +996,38 @@ type
     {Whether packed data is required with LSB (least significant bit) first. }
     property PackLSBFirst: TGLboolean read FPackLSBFirst write SetPackLSBFirst;
     {Pack image height. }
-    property PackImageHeight: TGLuint read FPackImageHeight write
+    property PackImageHeight: Cardinal read FPackImageHeight write
       SetPackImageHeight;
     {Pack skip images. }
-    property PackSkipImages: TGLuint read FPackSkipImages write
+    property PackSkipImages: Cardinal read FPackSkipImages write
       SetPackSkipImages;
     {Pack row length. }
-    property PackRowLength: TGLuint read FPackRowLength write SetPackRowLength;
+    property PackRowLength: Cardinal read FPackRowLength write SetPackRowLength;
     {Pack skip rows. }
-    property PackSkipRows: TGLuint read FPackSkipRows write SetPackSkipRows;
+    property PackSkipRows: Cardinal read FPackSkipRows write SetPackSkipRows;
     {Pack skip pixels. }
-    property PackSkipPixels: TGLuint read FPackSkipPixels write
+    property PackSkipPixels: Cardinal read FPackSkipPixels write
       SetPackSkipPixels;
     {Pack alignment. }
-    property PackAlignment: TGLuint read FPackAlignment write SetPackAlignment;
+    property PackAlignment: Cardinal read FPackAlignment write SetPackAlignment;
     {Buffer bound for pixel packing (eg. ReadPixels). }
-    property PixelPackBufferBinding: TGLuint read FPixelPackBufferBinding
+    property PixelPackBufferBinding: Cardinal read FPixelPackBufferBinding
       write SetPixelPackBufferBinding;
     {Buffer bound for pixel unpacking (eg. Tex*Image). }
-    property PixelUnpackBufferBinding: TGLuint read FPixelUnpackBufferBinding
+    property PixelUnpackBufferBinding: Cardinal read FPixelUnpackBufferBinding
       write SetPixelUnpackBufferBinding;
 
     // Program
     {Currently bound program. }
-    property CurrentProgram: TGLuint read FCurrentProgram write
+    property CurrentProgram: Cardinal read FCurrentProgram write
       SetCurrentProgram;
-    property MaxTextureUnits: TGLuint read GetMaxTextureUnits;
+    property MaxTextureUnits: Cardinal read GetMaxTextureUnits;
     {Currently bound uniform buffer. }
-    property UniformBufferBinding: TGLuint read FUniformBufferBinding
+    property UniformBufferBinding: Cardinal read FUniformBufferBinding
       write SetUniformBufferBinding;
 
-    procedure SetBufferIndexedBinding(const Value: TGLuint; ATarget: TGLBufferBindingTarget; AIndex: TGLuint; ABufferSize: TGLsizeiptr); overload;
-    procedure SetBufferIndexedBinding(const Value: TGLuint; ATarget: TGLBufferBindingTarget; AIndex: TGLuint; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload;
+    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; ABufferSize: TGLsizeiptr); overload;
+    procedure SetBufferIndexedBinding(const Value: Cardinal; ATarget: TGLBufferBindingTarget; AIndex: Cardinal; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload;
 
     // Vector + Geometry Shader state
     {Default values to be used when a vertex array is not used for that
@@ -1073,7 +1040,7 @@ type
 
     // Transform Feedback state
     {Currently bound transform feedbac buffer. }
-    property TransformFeedbackBufferBinding: TGLuint
+    property TransformFeedbackBufferBinding: Cardinal
       read FTransformFeedbackBufferBinding write
       SetTransformFeedbackBufferBinding;
 
@@ -1095,20 +1062,20 @@ type
 
     // Misc
     {Current queries. }
-    property CurrentQuery[Index: TQueryType]: TGLuint read GetCurrentQuery;
+    property CurrentQuery[Index: TQueryType]: Cardinal read GetCurrentQuery;
     {Begins a query of "Target" type.  "Value" must be a valid query object. }
-    procedure BeginQuery(const Target: TQueryType; const Value: TGLuint);
+    procedure BeginQuery(const Target: TQueryType; const Value: Cardinal);
     {Ends current query of type "Target". }
     procedure EndQuery(const Target: TQueryType);
     {The buffer currently bound to the copy read buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
-    property CopyReadBufferBinding: TGLuint read FCopyReadBufferBinding
+    property CopyReadBufferBinding: Cardinal read FCopyReadBufferBinding
       write SetCopyReadBufferBinding;
     {The buffer currently bound to the copy write buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
-    property CopyWriteBufferBinding: TGLuint read FCopyWriteBufferBinding
+    property CopyWriteBufferBinding: Cardinal read FCopyWriteBufferBinding
       write SetCopyWriteBufferBinding;
     {Enables/Disables seamless texture cube maps. }
     property EnableTextureCubeMapSeamless: TGLboolean read
@@ -1116,11 +1083,11 @@ type
     {Indicates the current presence within the list. }
     property InsideList: Boolean read FInsideList;
     {Begin new display list. }
-    procedure NewList(list: TGLuint; mode: TGLEnum);
+    procedure NewList(list: Cardinal; mode: TGLEnum);
     {End display list. }
     procedure EndList;
     {Call display list. }
-    procedure CallList(list: TGLuint);
+    procedure CallList(list: Cardinal);
 
     {Defines the OpenGL texture matrix. 
        Assumed texture mode is GL_MODELVIEW. }
@@ -1253,7 +1220,7 @@ uses
   // ------------------
 
 procedure TGLStateCache.BeginQuery(const Target: TQueryType; const Value:
-  TGLuint);
+  Cardinal);
 begin
   Assert(FCurrentQuery[Target] = 0, 'Can only have one query (of each type)' +
     ' running at a time');
@@ -1573,7 +1540,7 @@ end;
 
 procedure TGLStateCache.PushAttrib(stateTypes: TGLStateTypes);
 var
-  tempFlag: TGLuint;
+  tempFlag: Cardinal;
   I: Integer;
 begin
   // TODO: replace with proper client side push/pop
@@ -1725,7 +1692,7 @@ begin
     end;
 end;
 
-procedure TGLStateCache.SetVertexArrayBinding(const Value: TGLuint);
+procedure TGLStateCache.SetVertexArrayBinding(const Value: Cardinal);
 begin
   if Value <> FVertexArrayBinding then
   begin
@@ -1734,12 +1701,12 @@ begin
   end;
 end;
 
-function TGLStateCache.GetArrayBufferBinding: TGLuint;
+function TGLStateCache.GetArrayBufferBinding: Cardinal;
 begin
   Result := FArrayBufferBinding;
 end;
 
-procedure TGLStateCache.SetArrayBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetArrayBufferBinding(const Value: Cardinal);
 begin
   if (Value <> FArrayBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
@@ -1748,12 +1715,12 @@ begin
   end;
 end;
 
-function TGLStateCache.GetElementBufferBinding: TGLuint;
+function TGLStateCache.GetElementBufferBinding: Cardinal;
 begin
   Result := FElementBufferBinding
 end;
 
-procedure TGLStateCache.SetElementBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetElementBufferBinding(const Value: Cardinal);
 begin
   if (Value <> FElementBufferBinding) or (FVertexArrayBinding <> 0) then
   begin
@@ -1789,12 +1756,12 @@ begin
   end;
 end;
 
-function TGLStateCache.GetPrimitiveRestartIndex: TGLuint;
+function TGLStateCache.GetPrimitiveRestartIndex: Cardinal;
 begin
   Result := FPrimitiveRestartIndex;
 end;
 
-procedure TGLStateCache.SetPrimitiveRestartIndex(const index: TGLuint);
+procedure TGLStateCache.SetPrimitiveRestartIndex(const index: Cardinal);
 begin
   if index <> FPrimitiveRestartIndex then
   begin
@@ -1927,7 +1894,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetCopyReadBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetCopyReadBufferBinding(const Value: Cardinal);
 begin
   if Value <> FCopyReadBufferBinding then
   begin
@@ -1936,7 +1903,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetCopyWriteBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetCopyWriteBufferBinding(const Value: Cardinal);
 begin
   if Value <> FCopyWriteBufferBinding then
   begin
@@ -1958,7 +1925,7 @@ begin
 
 end;
 
-procedure TGLStateCache.SetCurrentProgram(const Value: TGLuint);
+procedure TGLStateCache.SetCurrentProgram(const Value: Cardinal);
 begin
   if Value <> FCurrentProgram then
   begin
@@ -1967,7 +1934,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetTextureBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetTextureBufferBinding(const Value: Cardinal);
 begin
   if Value <> FTextureBufferBinding then
   begin
@@ -2064,7 +2031,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetDrawFrameBuffer(const Value: TGLuint);
+procedure TGLStateCache.SetDrawFrameBuffer(const Value: Cardinal);
 begin
   if Value <> FDrawFrameBuffer then
   begin
@@ -2249,7 +2216,7 @@ begin
     end;
 end;
 
-procedure TGLStateCache.SetFrameBuffer(const Value: TGLuint);
+procedure TGLStateCache.SetFrameBuffer(const Value: Cardinal);
 begin
   if (Value <> FDrawFrameBuffer) or (Value <> FReadFrameBuffer)
     or FInsideList then
@@ -2275,7 +2242,7 @@ end;
 procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction;
   ref: TGLclampf);
 {$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint; E: Single;
+var I: Cardinal; E: Single;
 {$ENDIF}
 begin
   if FForwardContext then
@@ -2307,7 +2274,7 @@ begin
   Result := FColorWriteMask[Index];
 end;
 
-function TGLStateCache.GetCurrentQuery(Index: TQueryType): TGLuint;
+function TGLStateCache.GetCurrentQuery(Index: TQueryType): Cardinal;
 begin
   Result := FCurrentQuery[Index];
 end;
@@ -2343,7 +2310,7 @@ begin
   Result := FSampleMaskValue[Index];
 end;
 
-function TGLStateCache.GetMaxTextureSize: TGLuint;
+function TGLStateCache.GetMaxTextureSize: Cardinal;
 begin
   if FMaxTextureSize = 0 then
     GL.GetIntegerv(GL_MAX_TEXTURE_SIZE, @FMaxTextureSize);
@@ -2375,21 +2342,21 @@ begin
   Result := FFrontBackColors[ord(aFace)][3];
 end;
 
-function TGLStateCache.GetMax3DTextureSize: TGLuint;
+function TGLStateCache.GetMax3DTextureSize: Cardinal;
 begin
   if FMax3DTextureSize = 0 then
     GL.GetIntegerv(GL_MAX_3D_TEXTURE_SIZE, @FMax3DTextureSize);
   Result := FMax3DTextureSize;
 end;
 
-function TGLStateCache.GetMaxCubeTextureSize: TGLuint;
+function TGLStateCache.GetMaxCubeTextureSize: Cardinal;
 begin
   if FMaxCubeTextureSize = 0 then
     GL.GetIntegerv(GL_MAX_CUBE_MAP_TEXTURE_SIZE, @FMaxCubeTextureSize);
   Result := FMaxCubeTextureSize;
 end;
 
-function TGLStateCache.GetMaxArrayTextureSize: TGLuint;
+function TGLStateCache.GetMaxArrayTextureSize: Cardinal;
 begin
   if FMaxArrayTextureSize = 0 then
     GL.GetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, @FMaxArrayTextureSize);
@@ -2397,21 +2364,21 @@ begin
 end;
 
 
-function TGLStateCache.GetMaxTextureImageUnits: TGLuint;
+function TGLStateCache.GetMaxTextureImageUnits: Cardinal;
 begin
   if FMaxTextureImageUnits = 0 then
     GL.GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, @FMaxTextureImageUnits);
   Result := FMaxTextureImageUnits;
 end;
 
-function TGLStateCache.GetMaxTextureAnisotropy: TGLuint;
+function TGLStateCache.GetMaxTextureAnisotropy: Cardinal;
 begin
   if (FMaxTextureAnisotropy = 0) and GL.EXT_texture_filter_anisotropic then
     GL.GetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, @FMaxTextureAnisotropy);
   Result := FMaxTextureAnisotropy;
 end;
 
-function TGLStateCache.GetMaxSamples: TGLuint;
+function TGLStateCache.GetMaxSamples: Cardinal;
 begin
   if (FMaxSamples = 0) and GL.EXT_multisample then
     GL.GetIntegerv(GL_MAX_SAMPLES, @FMaxSamples);
@@ -2419,7 +2386,7 @@ begin
 end;
 
 function TGLStateCache.GetTextureBinding(Index: Integer;
-  target: TGLTextureTarget): TGLuint;
+  target: TGLTextureTarget): Cardinal;
 begin
   Result := FTextureBinding[Index, target];
 end;
@@ -2430,12 +2397,12 @@ begin
   Result := FTextureBindingTime[Index, target];
 end;
 
-function TGLStateCache.GetSamplerBinding(Index: TGLuint): TGLuint;
+function TGLStateCache.GetSamplerBinding(Index: Cardinal): Cardinal;
 begin
   Result := FSamplerBinding[Index];
 end;
 
-procedure TGLStateCache.SetSamplerBinding(Index: TGLuint; const Value: TGLuint);
+procedure TGLStateCache.SetSamplerBinding(Index: Cardinal; const Value: Cardinal);
 begin
   if Index > High(FSamplerBinding) then
     exit;
@@ -2484,7 +2451,7 @@ end;
 procedure TGLStateCache.ResetAllGLTextureMatrix;
 var
   I: Integer;
-  lastActiveTexture: TGLuint;
+  lastActiveTexture: Cardinal;
 begin
   if FForwardContext then
     exit;
@@ -2562,7 +2529,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackAlignment(const Value: TGLuint);
+procedure TGLStateCache.SetPackAlignment(const Value: Cardinal);
 begin
   if Value <> FPackAlignment then
   begin
@@ -2571,7 +2538,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackImageHeight(const Value: TGLuint);
+procedure TGLStateCache.SetPackImageHeight(const Value: Cardinal);
 begin
   if Value <> FPackImageHeight then
   begin
@@ -2589,7 +2556,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackRowLength(const Value: TGLuint);
+procedure TGLStateCache.SetPackRowLength(const Value: Cardinal);
 begin
   if Value <> FPackRowLength then
   begin
@@ -2598,7 +2565,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackSkipImages(const Value: TGLuint);
+procedure TGLStateCache.SetPackSkipImages(const Value: Cardinal);
 begin
   if Value <> FPackSkipImages then
   begin
@@ -2607,7 +2574,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackSkipPixels(const Value: TGLuint);
+procedure TGLStateCache.SetPackSkipPixels(const Value: Cardinal);
 begin
   if Value <> FPackSkipPixels then
   begin
@@ -2616,7 +2583,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPackSkipRows(const Value: TGLuint);
+procedure TGLStateCache.SetPackSkipRows(const Value: Cardinal);
 begin
   if Value <> FPackSkipRows then
   begin
@@ -2634,7 +2601,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPixelPackBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetPixelPackBufferBinding(const Value: Cardinal);
 begin
   if Value <> FPixelPackBufferBinding then
   begin
@@ -2643,7 +2610,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPixelUnpackBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetPixelUnpackBufferBinding(const Value: Cardinal);
 begin
   if Value <> FPixelUnpackBufferBinding then
   begin
@@ -2764,7 +2731,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetReadFrameBuffer(const Value: TGLuint);
+procedure TGLStateCache.SetReadFrameBuffer(const Value: Cardinal);
 begin
   if Value <> FReadFrameBuffer then
   begin
@@ -2773,7 +2740,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetRenderBuffer(const Value: TGLuint);
+procedure TGLStateCache.SetRenderBuffer(const Value: Cardinal);
 begin
   if Value <> FRenderBuffer then
   begin
@@ -2848,7 +2815,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetStencilBackWriteMask(const Value: TGLuint);
+procedure TGLStateCache.SetStencilBackWriteMask(const Value: Cardinal);
 begin
   if (Value <> FStencilBackWriteMask) or FInsideList then
   begin
@@ -2862,9 +2829,9 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetStencilClearValue(const Value: TGLuint);
+procedure TGLStateCache.SetStencilClearValue(const Value: Cardinal);
 {$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
+var I: Cardinal;
 {$ENDIF}
 begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
@@ -2912,9 +2879,9 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilFuncSeparate(const face: TCullFaceMode;
-  const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
+  const func: TStencilFunction; const ref: TGLint; const mask: Cardinal);
 {$IFDEF GLS_CACHE_MISS_CHECK}
-var UI: TGLuint; I: TGLint;
+var UI: Cardinal; I: TGLint;
 {$ENDIF}
 begin
 //  if (func<>FStencilFunc) or (ref<>FStencilRef) or (mask<>FStencilValueMask)
@@ -2965,7 +2932,7 @@ begin
 end;
 
 procedure TGLStateCache.SetStencilFunc(const func: TStencilFunction; const ref:
-  TGLint; const mask: TGLuint);
+  TGLint; const mask: Cardinal);
 begin
   if (func <> FStencilFunc) or (ref <> FStencilRef) or (mask <>
     FStencilValueMask) or FInsideList then
@@ -2984,7 +2951,7 @@ end;
 
 procedure TGLStateCache.SetStencilOp(const fail, zfail, zpass: TStencilOp);
 {$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
+var I: Cardinal;
 {$ENDIF}
 begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
@@ -3051,9 +3018,9 @@ begin
     cGLStencilOpToGLEnum[dppass]);
 end;
 
-procedure TGLStateCache.SetStencilWriteMask(const Value: TGLuint);
+procedure TGLStateCache.SetStencilWriteMask(const Value: Cardinal);
 {$IFDEF GLS_CACHE_MISS_CHECK}
-var I: TGLuint;
+var I: Cardinal;
 {$ENDIF}
 begin
 {$IFDEF GLS_CACHE_MISS_CHECK}
@@ -3073,9 +3040,9 @@ end;
 
 procedure TGLStateCache.SetTextureBinding(Index: Integer; target:
   TGLTextureTarget;
-  const Value: TGLuint);
+  const Value: Cardinal);
 var
-  lastActiveTexture: TGLuint;
+  lastActiveTexture: Cardinal;
 begin
   if target = ttNoShape then
     exit;
@@ -3133,7 +3100,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetTransformFeedbackBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetTransformFeedbackBufferBinding(const Value: Cardinal);
 begin
   if (Value <> FTransformFeedbackBufferBinding) or FInsideList then
   begin
@@ -3155,9 +3122,9 @@ begin
   end;
 end;
 
-procedure TGLStateCache.NewList(list: TGLuint; mode: TGLEnum);
+procedure TGLStateCache.NewList(list: Cardinal; mode: TGLEnum);
 var
-  I: TGLuint;
+  I: Cardinal;
 begin
   Assert(mode = GL_COMPILE,
     'Compile & executing not supported by TGLStateCache');
@@ -3187,7 +3154,7 @@ begin
   FInsideList := False;
 end;
 
-procedure TGLStateCache.CallList(list: TGLuint);
+procedure TGLStateCache.CallList(list: Cardinal);
 begin
   while High(FListStates) < Integer(list) do
     SetLength(FListStates, 2 * Length(FListStates));
@@ -3202,7 +3169,7 @@ begin
     GL.CallList(list);
 end;
 
-procedure TGLStateCache.SetUniformBufferBinding(const Value: TGLuint);
+procedure TGLStateCache.SetUniformBufferBinding(const Value: Cardinal);
 begin
   Assert(not FInsideList);
   if Value <> FUniformBufferBinding then
@@ -3212,8 +3179,8 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
-  ATarget: TGLBufferBindingTarget; AIndex: TGLuint; ABufferSize: TGLsizeiptr);
+procedure TGLStateCache.SetBufferIndexedBinding(const Value: Cardinal;
+  ATarget: TGLBufferBindingTarget; AIndex: Cardinal; ABufferSize: TGLsizeiptr);
 begin
   Assert(not FInsideList);
   if (FUBOStates[ATarget, AIndex].FUniformBufferBinding <> Value)
@@ -3236,8 +3203,8 @@ begin
     end;
 end;
 
-procedure TGLStateCache.SetBufferIndexedBinding(const Value: TGLuint;
-  ATarget: TGLBufferBindingTarget; AIndex: TGLuint;
+procedure TGLStateCache.SetBufferIndexedBinding(const Value: Cardinal;
+  ATarget: TGLBufferBindingTarget; AIndex: Cardinal;
     AOffset: TGLintptr; ARangeSize: TGLsizeiptr);
 begin
   Assert(not FInsideList);
@@ -3256,14 +3223,14 @@ begin
   end;
 end;
 
-function TGLStateCache.GetMaxTextureUnits: TGLuint;
+function TGLStateCache.GetMaxTextureUnits: Cardinal;
 begin
   if FMaxTextureUnits = 0 then
     GL.GetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, @FMaxTextureUnits);
   Result := FMaxTextureUnits;
 end;
 
-procedure TGLStateCache.SetUnpackAlignment(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackAlignment(const Value: Cardinal);
 begin
   if Value <> FUnpackAlignment then
   begin
@@ -3272,7 +3239,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetUnpackImageHeight(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackImageHeight(const Value: Cardinal);
 begin
   if Value <> FUnpackImageHeight then
   begin
@@ -3290,7 +3257,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetUnpackRowLength(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackRowLength(const Value: Cardinal);
 begin
   if Value <> FUnpackRowLength then
   begin
@@ -3299,7 +3266,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetUnpackSkipImages(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackSkipImages(const Value: Cardinal);
 begin
   if Value <> FUnpackSkipImages then
   begin
@@ -3308,7 +3275,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetUnpackSkipPixels(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackSkipPixels(const Value: Cardinal);
 begin
   if Value <> FUnpackSkipPixels then
   begin
@@ -3317,7 +3284,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetUnpackSkipRows(const Value: TGLuint);
+procedure TGLStateCache.SetUnpackSkipRows(const Value: Cardinal);
 begin
   if Value <> FUnpackSkipRows then
   begin

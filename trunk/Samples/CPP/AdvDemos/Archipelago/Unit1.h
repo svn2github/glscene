@@ -2,7 +2,29 @@
 
 #ifndef Unit1H
 #define Unit1H
+#include "GLBaseClasses.hpp"
+#include "GLBitmapFont.hpp"
+#include "GLCadencer.hpp"
+#include "GLCoordinates.hpp"
+#include "GLCrossPlatform.hpp"
+#include "GLHeightData.hpp"
+#include "GLHeightTileFileHDS.hpp"
+#include "GLHUDObjects.hpp"
+#include "GLMaterial.hpp"
+#include "GLObjects.hpp"
+#include "GLScene.hpp"
+#include "GLSkydome.hpp"
+#include "GLTerrainRenderer.hpp"
+#include "GLVectorFileObjects.hpp"
+#include "GLWin32Viewer.hpp"
+#include "GLWindowsFont.hpp"
+#include <System.Classes.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.StdCtrls.hpp>
 //---------------------------------------------------------------------------
+#include <GL\gl.h>
 #include <System.Classes.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -36,7 +58,7 @@
 #include "GLVectorGeometry.hpp"
 
 #include "GLKeyboard.hpp"
-#include "OpenGL1x.hpp"
+//#include "OpenGL1x.hpp"
 #include "GLContext.hpp"
 #include "GLState.hpp"
 #include "GLTextureFormat.hpp"

@@ -5,99 +5,8 @@
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.
-    It also contains a procedures and function that can be used in all shaders. 
-
-	 History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       15/16/10 - Yar - Rewrited static procedures (InitTexture, etc.)
-       04/06/10 - Yar - Added unsigned integer uniforms
-       22/04/10 - Yar - Fixes after GLState revision
-       22/01/10 - Yar - Added to TGLCustomShaderParameter property AsTexture
-       25/10/09 - DaStr - Updated TGLGeometryProgram (thanks YarUnderoaker)
-       24/08/09 - DaStr - Separated TGLShaderProgram into TGLVertexProgram,
-                              TGLFragmentProgram and TGLGeometryProgram
-                             Added TGLCustomShaderParameter.AsUniformBuffer
-                              (thanks YarUnderoaker)
-       28/07/09 - DaStr - Added GeometryShader support (thanks YarUnderoaker)
-                             Fixed TGLCustomShader.[...]Program serialization
-       24/07/09 - DaStr - Added TGLCustomShader.DebugMode
-                             Fixed spelling mistake in TGLShaderUnAplyEvent
-                             Added TGLShaderFogSupport, IsFogEnabled()
-       03/04/07 - DaStr - Added TGLCustomShaderParameter.AsFloat and AsInteger
-       25/03/07 - DaStr - Added TGLCustomShaderParameter.SetToTextureOf
-       20/03/07 - DaStr - Added DrawTexturedScreenQuad[4/5/6]
-                             "TextureType" parameter renamed to "TextureTarget"
-                             Finished working on TGLCustomShaderParameter
-       04/03/07 - DaStr - Added IGLPostShader
-       03/03/07 - DaStr - Added TGLCustomShaderParameter (beta state)
-       22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-    What different shader prefixes might mean:
-
-      ML - Multi Light      -    Shader supports up to 8 lights.
-                                 Attributes such as [Ambient/Diffuse/Specular]
-                                 Colors are taken from the current OpenGL
-                                 state (that means from TGLLightSource too)
-                                 In all other cases shader supports only
-                                 one light, position of which is taken
-                                 from the first registered OpenGL light.
-
-
-
-      What different shader suffixes might mean:
-
-       MP - Manual Parameters    - [Ambient/Diffuse/Specular] Colors have
-                                   to be set manualy as shader's properties.
-                                   In all other cases they are taken from
-                                   the current OpenGL  state
-                                   (that means from TGLLightSource too)
-
-       MT - Manual Main Texture  - Main Texture is taken not from the
-                                   current texture, that is applied to the
-                                   rendered object, but has to be set manualy
-                                   as shader's property
-                                   In all other cases it is taken from
-                                   the current texture, that is applied to
-                                   the rendered object
-
-       AM - All Manual           - MP + MMT
-
-       AST - Auto Secondary Textures - All other textures are taken from the
-                                       textures, that are applied to the
-                                       rendered object after the main one
-                                       (like the one in TGLLIbMaterial.Texture2Name,
-                                       or any other textures that are applied to the
-                                       object manualy using TGLMaterial.Apply
-                                       or Direct OpenGL API)
-                                       In all other cases they are taken from
-                                       the shader's properties
-
-
-    Previous version history:
-      v1.0    11 March     '2006  Creation, separated from GLSLShader
-      v1.1    06 August    '2006  TGLCustomShader.HandleShaderNotSupportedException added
-                                  TGLCustomShader.ShaderNotSupportedExceptionMessage added
-      v1.2    14 August    '2006  IGLShaderSupported separated
-                                  TGLShaderTextureSource added
-      v1.2.2  19 August    '2006  IMultiShaderCompatible added
-      v1.2.4  24 August    '2006  TGLCustomShader.ParameterTexture[1-3]D added
-      v1.2.6  04 September '2006  Minor fixes
-      v1.3    04 November  '2006  TGLShaderUnUplyEvent added
-                                  OnApply, OnUnApply, OnInitialize moved to
-                                   the protected section
-                                  (Un)ApplyBlendingMode added
-                                  (Get/Set)ParameterTexture[1/2/3]DHandle added
-                                  InitTexture(), DrawTexturedScreenQuad() added
-                                  (Get/Set)ParameterCustomTextureHandle support added
-      v1.3.2  16 December  '2006  Added shader Naming convention in the comments
-                                  STR_SHADER_NEEDS_AT_LEAST_ONE_LIGHT_SOURCE
-                                   moved here from StrangeGLSLBumpShader
-                                  vStrangeShaderClassList and all shader
-                                   registration utility functions added
-      v1.3.4  18 February  '2007  StrangeTextureUtilities dependancy removed
-                                  Updated to the latest CVS version of GLScene
-
+    It also contains a procedures and function that can be used in all shaders.
+    The whole history is logged in a former GLS version of the unit.
 
 }
 unit GLCustomShader;
@@ -267,7 +176,7 @@ type
     function GetAsVector3i: TVector3i; virtual; abstract;
     function GetAsVector4i: TVector4i; virtual; abstract;
 
-    function GetAsVector1ui: GLuint; virtual; abstract;
+    function GetAsVector1ui: Cardinal; virtual; abstract;
     function GetAsVector2ui: TVector2ui; virtual; abstract;
     function GetAsVector3ui: TVector3ui; virtual; abstract;
     function GetAsVector4ui: TVector4ui; virtual; abstract;
@@ -282,7 +191,7 @@ type
     procedure SetAsVector3i(const Value: TVector3i); virtual; abstract;
     procedure SetAsVector4i(const Value: TVector4i); virtual; abstract;
 
-    procedure SetAsVector1ui(const Value: GLuint); virtual; abstract;
+    procedure SetAsVector1ui(const Value: Cardinal); virtual; abstract;
     procedure SetAsVector2ui(const Value: TVector2ui); virtual; abstract;
     procedure SetAsVector3ui(const Value: TVector3ui); virtual; abstract;
     procedure SetAsVector4ui(const Value: TVector4ui); virtual; abstract;
@@ -312,8 +221,8 @@ type
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget; const Value: Cardinal); virtual; abstract;
 
-    function GetAsUniformBuffer: GLenum; virtual; abstract;
-    procedure SetAsUniformBuffer(UBO: GLenum); virtual; abstract;
+    function GetAsUniformBuffer: TGLenum; virtual; abstract;
+    procedure SetAsUniformBuffer(UBO: TGLenum); virtual; abstract;
   public
     { Public Declarations }
 
@@ -347,7 +256,7 @@ type
     property AsVector4i: TVector4i read GetAsVector4i write SetAsVector4i;
 
     //: Unsigned integer vector  types.
-    property AsVector1ui: GLuint   read GetAsVector1ui write SetAsVector1ui;
+    property AsVector1ui: Cardinal   read GetAsVector1ui write SetAsVector1ui;
     property AsVector2ui: TVector2ui read GetAsVector2ui write SetAsVector2ui;
     property AsVector3ui: TVector3ui read GetAsVector3ui write SetAsVector3ui;
     property AsVector4ui: TVector4ui read GetAsVector4ui write SetAsVector4ui;
@@ -367,7 +276,7 @@ type
 
     property AsCustomTexture[const TextureIndex: Integer; TextureTarget: TGLTextureTarget]: Cardinal read GetAsCustomTexture write SetAsCustomTexture;
 
-    property AsUniformBuffer: GLenum read GetAsUniformBuffer write SetAsUniformBuffer;
+    property AsUniformBuffer: TGLenum read GetAsUniformBuffer write SetAsUniformBuffer;
   end;
 
 

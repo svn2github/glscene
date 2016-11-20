@@ -195,7 +195,7 @@ begin
   inherited Destroy;
 end;
 
-function TGLRenderbuffer.GetHandle: GLuint;
+function TGLRenderbuffer.GetHandle: Cardinal;
 begin
   if FRenderbufferHandle.Handle = 0 then
     FRenderbufferHandle.AllocateHandle;

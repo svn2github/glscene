@@ -865,7 +865,7 @@ type
     procedure SetIVec3(const Value: TVector3i); virtual;
     procedure SetIVec4(const Value: TVector4i); virtual;
 
-    procedure SetUInt(const Value: GLuint); virtual;
+    procedure SetUInt(const Value: Cardinal); virtual;
     procedure SetUVec2(const Value: TVector2ui); virtual;
     procedure SetUVec3(const Value: TVector3ui); virtual;
     procedure SetUVec4(const Value: TVector4ui); virtual;
@@ -929,7 +929,7 @@ type
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
 
-    procedure SetUInt(const Value: GLuint); override;
+    procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
@@ -976,7 +976,7 @@ type
     procedure SetIVec3(const Value: TVector3i); override;
     procedure SetIVec4(const Value: TVector4i); override;
 
-    procedure SetUInt(const Value: GLuint); override;
+    procedure SetUInt(const Value: Cardinal); override;
     procedure SetUVec2(const Value: TVector2ui); override;
     procedure SetUVec3(const Value: TVector3ui); override;
     procedure SetUVec4(const Value: TVector4ui); override;
@@ -4731,9 +4731,9 @@ var
   I, J, C: Integer;
   buff: array[0..255] of AnsiChar;
   Size: TGLInt;
-  Len: GLsizei;
+  Len: TGLsizei;
   Loc: TGLint;
-  AType: GLenum;
+  AType: TGLenum;
   UName: string;
   GLSLData: TGLSLDataType;
   GLSLSampler: TGLSLSamplerType;
@@ -6133,7 +6133,7 @@ procedure TGLAbstractShaderUniform.SetTextureSwizzle(const AValue:
 begin
 end;
 
-procedure TGLAbstractShaderUniform.SetUInt(const Value: GLuint);
+procedure TGLAbstractShaderUniform.SetUInt(const Value: Cardinal);
 begin
 end;
 
@@ -6384,7 +6384,7 @@ begin
   FAutoSet := GetUniformAutoSetMethod(AValue);
 end;
 
-procedure TGLShaderUniform.SetUInt(const Value: GLuint);
+procedure TGLShaderUniform.SetUInt(const Value: Cardinal);
 begin
   PushProgram;
   GL.Uniform1ui(FLocation, Value);
@@ -6507,7 +6507,7 @@ begin
   GL.ProgramUniformMatrix4fv(GetProgram, FLocation, 1, False, @Value);
 end;
 
-procedure TGLShaderUniformDSA.SetUInt(const Value: GLuint);
+procedure TGLShaderUniformDSA.SetUInt(const Value: Cardinal);
 begin
   GL.ProgramUniform1ui(GetProgram, FLocation, Value);
 end;

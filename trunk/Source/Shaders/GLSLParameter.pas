@@ -138,7 +138,7 @@ type
     procedure SetIVec3(const Value: TVector3i);
     procedure SetIVec4(const Value: TVector4i);
 
-    procedure SetUInt(const Value: GLuint);
+    procedure SetUInt(const Value: Cardinal);
     procedure SetUVec2(const Value: TVector2ui);
     procedure SetUVec3(const Value: TVector3ui);
     procedure SetUVec4(const Value: TVector4ui);
@@ -248,10 +248,10 @@ const
     'usamplerMSArray');
 
 const
-  cGLgsInTypes : array[TGLgsInTypes] of GLenum =
+  cGLgsInTypes : array[TGLgsInTypes] of TGLenum =
     (GL_POINTS, GL_LINES, GL_LINES_ADJACENCY_EXT, GL_TRIANGLES,
      GL_TRIANGLES_ADJACENCY_EXT);
-  cGLgsOutTypes: array[TGLgsOutTypes] of GLenum =
+  cGLgsOutTypes: array[TGLgsOutTypes] of TGLenum =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
 
 type

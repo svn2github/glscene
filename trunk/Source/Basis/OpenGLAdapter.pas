@@ -44,7 +44,7 @@ type
     FBuffer: string;
     FInitialized: boolean;
     FDebug: boolean;
-    FDebugIds: GLuint;
+    FDebugIds: TGLuint;
     function CheckExtension(const Extension: string): boolean;
 {$IFDEF SUPPORT_WGL}
     procedure ReadWGLExtensions;
@@ -1550,8 +1550,8 @@ type
     // Special Gremedy debugger extension
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
-    DebugMessageEnableAMDX: procedure(category: GLenum; severity: GLenum;
-      Count: GLSizei; var ids: GLuint; Enabled: boolean);
+    DebugMessageEnableAMDX: procedure(category: TGLenum; severity: TGLenum;
+      Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
 
     PushDebugGroup: PFNGLPushDebugGroup;
     PopDebugGroup: PFNGLPopDebugGroup;
@@ -1564,13 +1564,13 @@ type
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
-    DebugMessageControl: procedure(type_: GLenum; Source: GLenum;
-      severity: GLenum; Count: GLSizei; var ids: GLuint; Enabled: boolean);
+    DebugMessageControl: procedure(type_: TGLenum; Source: TGLenum;
+      severity: TGLenum; Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
-    DebugMessageInsert: procedure(Source: GLenum; severity: GLenum; id: GLuint;
-      length: GLSizei; const buf: PGLChar);
+    DebugMessageInsert: procedure(Source: TGLenum; severity: TGLenum; id: TGLuint;
+      length: TGLsizei; const buf: PGLChar);
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
@@ -1578,9 +1578,9 @@ type
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
-    GetDebugMessageLog: function(Count: GLuint; bufSize: GLSizei;
-      var severity: GLenum; var severities: GLuint; var ids: GLuint;
-      var lengths: GLSizei; messageLog: PGLChar): GLuint;
+    GetDebugMessageLog: function(Count: TGLuint; bufSize: TGLsizei;
+      var severity: TGLenum; var severities: TGLuint; var ids: TGLuint;
+      var lengths: TGLsizei; messageLog: PGLChar): TGLuint;
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
@@ -1944,8 +1944,8 @@ type
     ASetDrawable: function(ctx: TAGLContext; draw: TAGLDrawable): GLboolean;
       cdecl; // deprecated
     AGetDrawable: function(ctx: TAGLContext): TAGLDrawable; cdecl; // deprecated
-    ASetFullScreen: function(ctx: TAGLContext; Width: GLSizei; Height: GLSizei;
-      freq: GLSizei; device: GLint): GLboolean; cdecl;
+    ASetFullScreen: function(ctx: TAGLContext; Width: TGLsizei; Height: TGLsizei;
+      freq: TGLsizei; device: GLint): GLboolean; cdecl;
     ASetOffScreen: function(ctx: TAGLContext; Width, Height, rowbytes: TGLsizei;
       out baseaddr: Pointer): GLboolean; cdecl;
     // Getting and Setting Context Options
@@ -2462,8 +2462,8 @@ end;
 var
   vNotInformed: boolean = True;
 
-procedure DebugCallBack(Source: GLenum; type_: GLenum; id: GLuint;
-  severity: GLenum; length: GLSizei; const message: PGLChar;
+procedure DebugCallBack(Source: TGLenum; type_: TGLenum; id: TGLuint;
+  severity: TGLenum; length: TGLsizei; const message: PGLChar;
   userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2475,8 +2475,8 @@ begin
 {$ENDIF}
 end;
 
-procedure DebugCallBackAMD(id: GLuint; category: GLenum; severity: GLenum;
-  length: GLSizei; message: PGLChar; userParam: Pointer);
+procedure DebugCallBackAMD(id: TGLuint; category: TGLenum; severity: TGLenum;
+  length: TGLsizei; message: PGLChar; userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}

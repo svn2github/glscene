@@ -3,31 +3,31 @@
 //
 {
    DXTC (also S3TC) decoding.
-   Adapted from DevIL image library (http://openil.sourceforge.net) 
-
-    History :  
-       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
+   Adapted from DevIL image library (http://openil.sourceforge.net)
+   History :
+       04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
        23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
        05/03/10 - Yar - Added float types in GLEnumToDDSHeader
        23/01/10 - Yar - Added more support DX9 DDS color formats
-                           and DX11 DXGI constants to future
+                        and DX11 DXGI constants to future
        31/03/07 - DaStr - Added $I GLScene.inc
        03/09/04 - SG - Delphi 5 compatibilty fixes (Ivan Lee Herring)
        01/09/04 - SG - Creation
-    
 }
+
 unit DXTC;
 
 interface
 
-{$I GLScene.inc}
-
-{$Z4}  // Minimum enum size = dword
+  {$I GLScene.inc}
+  {$Z4}  // Minimum enum size = dword
 
 uses
-   System.SysUtils, 
-    
-   GLCrossPlatform, OpenGLTokens, GLTextureFormat;
+   System.SysUtils,
+   //GLS
+   OpenGLTokens,
+   GLCrossPlatform,
+   GLTextureFormat;
 
 const
    DDSD_CAPS        = $00000001;
@@ -79,8 +79,8 @@ type
       dwHeight,
       dwWidth,
       dwPitchOrLinearSize, {The number of bytes per scan line in an
-                              uncompressed texture; the total number of bytes
-                              in the top level texture for a compressed texture.}
+                            uncompressed texture; the total number of bytes
+                            in the top level texture for a compressed texture.}
       dwDepth,
       dwMipMapCount : Cardinal;
       dwReserved1 : array[0..10] of Cardinal;
@@ -98,21 +98,21 @@ type
    end;
 
   DXTColBlock = record
-    col0: GLushort;
-    col1: GLushort;
-    row: array[0..3] of GLubyte;
+    col0: Word;
+    col1: Word;
+    row: array[0..3] of Byte;
   end;
   PDXTColBlock = ^DXTColBlock;
 
   DXT3AlphaBlock = record
-    row: array[0..3] of GLushort;
+    row: array[0..3] of Word;
   end;
   PDXT3AlphaBlock = ^DXT3AlphaBlock;
 
   DXT5AlphaBlock = record
-    alpha0 : GLubyte;
-    alpha1 : GLubyte;
-    row : array[0..5] of GLubyte;
+    alpha0 : Byte;
+    alpha1 : Byte;
+    row : array[0..5] of Byte;
   end;
   PDXT5AlphaBlock = ^DXT5AlphaBlock;
 
@@ -301,9 +301,9 @@ type
   TGLImageDataFormat = record
     ColorFlag: Cardinal;
     RBits, GBits, BBits, ABits: Cardinal;
-    colorFormat: GLEnum;
+    colorFormat: Cardinal;
     TexFormat: TGLInternalFormat;
-    dType: GLenum;
+    dType: Cardinal;
   end;
 
 const
@@ -482,16 +482,16 @@ function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            out iFormat: TGLInternalFormat;
-                           out colorFormat: GLEnum;
-                           out dataType: GLenum;
+                           out colorFormat: TGLEnum;
+                           out dataType: TGLenum;
                            out bpe: Integer): Boolean;
 
 function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            const iFormat: TGLInternalFormat;
-                           const colorFormat: GLEnum;
-                           const dataType: GLenum;
+                           const colorFormat: TGLEnum;
+                           const dataType: TGLenum;
                            const bpe: Integer): Boolean;
 
 function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
@@ -751,7 +751,7 @@ end;
 procedure flip_blocks_dxtc1( data : PGLubyte; numBlocks: integer);
 var
   curblock : PDXTColBlock;
-  temp : GLubyte;
+  temp : Byte;
   i : integer;
 begin
   curblock := PDXTColBlock( data );
@@ -773,8 +773,8 @@ procedure flip_blocks_dxtc3( data: PGLubyte; numBlocks: integer );
 var
   curblock : PDXTColBlock;
   alphablock : PDXT3AlphaBlock;
-  tempS : GLushort;
-  tempB : GLubyte;
+  tempS : Word;
+  tempB : Byte;
   i : integer;
 begin
   curblock := PDXTColBlock( data );
@@ -809,49 +809,49 @@ procedure flip_dxt5_alpha( block : PDXT5AlphaBlock);
 const
   mask = $00000007;          // bits = 00 00 01 11
 var
-  gBits : array[0..3, 0..3] of GLubyte;
+  gBits : array[0..3, 0..3] of Byte;
   bits  : Integer;
 begin
   bits := 0;
-  Move(block.row[0], bits, sizeof(GLubyte) * 3);
+  Move(block.row[0], bits, sizeof(Byte) * 3);
 
-  gBits[0][0] := GLubyte(bits and mask);
+  gBits[0][0] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[0][1] := GLubyte(bits and mask);
+  gBits[0][1] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[0][2] := GLubyte(bits and mask);
+  gBits[0][2] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[0][3] := GLubyte(bits and mask);
+  gBits[0][3] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[1][0] := GLubyte(bits and mask);
+  gBits[1][0] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[1][1] := GLubyte(bits and mask);
+  gBits[1][1] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[1][2] := GLubyte(bits and mask);
+  gBits[1][2] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[1][3] := GLubyte(bits and mask);
+  gBits[1][3] := Byte(bits and mask);
 
   bits := 0;
-  Move(block.row[3], bits, sizeof(GLubyte) * 3);
+  Move(block.row[3], bits, sizeof(Byte) * 3);
 
-  gBits[2][0] := GLubyte(bits and mask);
+  gBits[2][0] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[2][1] := GLubyte(bits and mask);
+  gBits[2][1] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[2][2] := GLubyte(bits and mask);
+  gBits[2][2] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[2][3] := GLubyte(bits and mask);
+  gBits[2][3] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[3][0] := GLubyte(bits and mask);
+  gBits[3][0] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[3][1] := GLubyte(bits and mask);
+  gBits[3][1] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[3][2] := GLubyte(bits and mask);
+  gBits[3][2] := Byte(bits and mask);
   bits := bits shr 3;
-  gBits[3][3] := GLubyte(bits and mask);
+  gBits[3][3] := Byte(bits and mask);
 
   // clear existing alpha bits
-  FillChar( block.row, sizeof(GLubyte) * 6, 0);
+  FillChar( block.row, sizeof(Byte) * 6, 0);
 
   bits := block.row[0]+block.row[1]*$100+block.row[2]*$10000;
 
@@ -892,7 +892,7 @@ end;
 procedure flip_blocks_dxtc5( data: PGLubyte; numBlocks: integer );
 var
   curblock : PDXTColBlock;
-  temp : GLubyte;
+  temp : Byte;
   i : integer;
 begin
   curblock := PDXTColBlock( data );
@@ -914,8 +914,8 @@ function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            out iFormat: TGLInternalFormat;
-                           out colorFormat: GLEnum;
-                           out dataType: GLenum;
+                           out colorFormat: TGLEnum;
+                           out dataType: TGLenum;
                            out bpe: Integer): Boolean;
 var
   i: Integer;
@@ -1191,8 +1191,8 @@ function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            const iFormat: TGLInternalFormat;
-                           const colorFormat: GLEnum;
-                           const dataType: GLenum;
+                           const colorFormat: TGLEnum;
+                           const dataType: TGLenum;
                            const bpe: Integer): Boolean;
 var
   i: Integer;

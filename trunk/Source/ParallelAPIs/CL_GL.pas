@@ -33,25 +33,23 @@ unit CL_GL;
 interface
 
 uses
-  OpenGLTokens,
   GLSOpenCL;
 
-
-
 type
+  PGLuint = ^Cardinal;
 
-Tcl_gl_object_type = Tcl_uint;
-Pcl_gl_object_type = ^Tcl_gl_object_type;
+  Tcl_gl_object_type = Tcl_uint;
+  Pcl_gl_object_type = ^Tcl_gl_object_type;
 
-Tcl_gl_texture_info = Tcl_uint;
-Pcl_gl_texture_info = ^Tcl_gl_texture_info;
+  Tcl_gl_texture_info = Tcl_uint;
+  Pcl_gl_texture_info = ^Tcl_gl_texture_info;
 
-Tcl_gl_platform_info = Tcl_uint;
-Pcl_gl_platform_info = ^Tcl_gl_platform_info;
+  Tcl_gl_platform_info = Tcl_uint;
+  Pcl_gl_platform_info = ^Tcl_gl_platform_info;
 
-__GLsync = record end; Pcl_GLsync = ^__GLsync;
+  __GLsync = record end; Pcl_GLsync = ^__GLsync;
 
-//* cl_gl_object_type = 0x2000 - 0x200F enum values are currently taken  *//
+  //* cl_gl_object_type = 0x2000 - 0x200F enum values are currently taken  *//
 
 const
 
@@ -71,22 +69,21 @@ CL_GL_NUM_SAMPLES =                       $2012;
 
 function clCreateFromGLBuffer(context: Tcl_context;
            flags: Tcl_mem_flags;
-           bufobj: GLuint;
+           bufobj: Cardinal;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_0;
            stdcall; external LibOpenCL;
 
-
 function clCreateFromGLTexture3D(context: Tcl_context;
            flags: Tcl_mem_flags;
-           target: GLenum;
-           miplevel: GLint;
-           texture: GLuint;
+           target: Cardinal;
+           miplevel: Integer;
+           texture: Cardinal;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_2;
            stdcall; external LibOpenCL;
 
 function clCreateFromGLRenderbuffer(context: Tcl_context;
            flags: Tcl_mem_flags;
-           renderbuffer: GLuint;
+           renderbuffer: Cardinal;
            errcode_ret: Pcl_int): Tcl_mem; //< CL_API_SUFFIX__VERSION_1_0;
            stdcall; external LibOpenCL;
 

@@ -437,7 +437,7 @@ type
 
     fWidth, fHeight, fDepth: Integer;
     {Store a icolor format, because fBitmap is not always defined}
-    fColorFormat: GLenum;
+    fColorFormat: TGLenum;
     {Blank Cube Map }
     fCubeMap: Boolean;
     {Flag to interparate depth as layer }
@@ -470,7 +470,7 @@ type
     property Depth: Integer read GetDepth write SetDepth default 0;
     property CubeMap: Boolean read fCubeMap write SetCubeMap default false;
     property TextureArray: Boolean read fArray write SetArray default false;
-    property ColorFormat: GLenum read fColorFormat write fColorFormat;
+    property ColorFormat: TGLenum read fColorFormat write fColorFormat;
   end;
 
   // TGLPictureImage
@@ -516,7 +516,7 @@ type
 
   // TGLPersistentImage
   //
-  {Stores any image compatible with Delphi's TPicture mechanism. 
+  {Stores any image compatible with Delphi's TPicture mechanism.
    The picture's data is actually stored into the DFM, the original
    picture name or path is not remembered. It is similar in behaviour
    to Delphi's TImage. 
@@ -566,7 +566,7 @@ type
 
     //: Only picture file name is saved
     procedure SaveToFile(const fileName: string); override;
-    {Load picture file name or use fileName as picture filename. 
+    {Load picture file name or use fileName as picture filename.
        The autodetection is based on the filelength and presence of zeros. }
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;

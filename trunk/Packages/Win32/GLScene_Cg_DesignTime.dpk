@@ -33,7 +33,6 @@ package GLScene_Cg_DesignTime;
 requires
   rtl,
   designide,
-  VclSmp,
   GLScene_RunTime,
   GLScene_Cg_RunTime,
   GLScene_DesignTime;
