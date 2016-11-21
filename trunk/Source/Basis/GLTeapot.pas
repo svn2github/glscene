@@ -3,14 +3,9 @@
 //
 {
   Implements the standard Teapot, build from evaluators. 
+  History : 21/07/03 - EG - Creation from GLObjects split
+  The whole history is logged in a former GLS version of the unit.
 
-  History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       30/03/07 - DaStr - Added $I GLScene.inc
-       21/07/03 - EG - Creation from GLObjects split
-    
 }
 unit GLTeapot;
 
@@ -19,10 +14,14 @@ interface
 {$I GLScene.inc}
 
 uses
+  Winapi.OpenGL,
   System.Classes,
-   
-  GLScene, GLVectorGeometry, OpenGLTokens, GLContext,
-  GLRenderContextInfo, GLVectorTypes;
+  //GLS
+  GLScene,
+  GLVectorGeometry,
+  GLContext,
+  GLRenderContextInfo,
+  GLVectorTypes;
 
 type
 
@@ -91,7 +90,7 @@ const
     (68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83), // spout
     (80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95)); // spout
 
-  CPData: array[0..126, 0..2] of TGLFloat =
+  CPData: array[0..126, 0..2] of Single =
     ((0.2, 0, 2.7), (0.2, -0.112, 2.7), (0.112, -0.2, 2.7), (0, -0.2, 2.7), (1.3375, 0, 2.53125),
     (1.3375, -0.749, 2.53125), (0.749, -1.3375, 2.53125), (0, -1.3375, 2.53125),
     (1.4375, 0, 2.53125), (1.4375, -0.805, 2.53125), (0.805, -1.4375, 2.53125),
@@ -119,11 +118,11 @@ const
     (0.728, -1.3, 2.4), (0, -1.3, 2.4), (0, 0, 0), (1.425, -0.798, 0), (1.5, 0, 0.075), (1.425, 0, 0),
     (0.798, -1.425, 0), (0, -1.5, 0.075), (0, -1.425, 0), (1.5, -0.84, 0.075), (0.84, -1.5, 0.075));
 
-  Tex: array[0..1, 0..1, 0..1] of TGLFloat =
+  Tex: array[0..1, 0..1, 0..1] of Single =
     (((0, 0), (1, 0)), ((0, 1), (1, 1)));
 
 var
-  P, Q, R, S: array[0..3, 0..3, 0..2] of TGLFloat;
+  P, Q, R, S: array[0..3, 0..3, 0..2] of Single;
   I, J, K, L, GRD: Integer;
 begin
   if FGrid < 2 then

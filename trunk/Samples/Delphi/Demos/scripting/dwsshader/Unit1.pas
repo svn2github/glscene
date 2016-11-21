@@ -3,13 +3,23 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
   //GLS
   GLCadencer, GLTexture, GLUserShader, GLWin32Viewer,
-  GLScene, GLObjects, GLAsyncTimer, GLScriptBase, GLScriptDWS2,
-  dws2OpenGL1x, dws2VectorGeometry, dws2Comp, GLMaterial, GLCoordinates,
+  GLScene, GLObjects, GLAsyncTimer, GLScriptBase,
+  GLScriptDWS,
+  dwsOpenGLAdapter,
+  dwsVectorGeometry,
+  dwsComp, GLMaterial, GLCoordinates,
   GLCrossPlatform, GLBaseClasses, GLRenderContextInfo;
 
 type
@@ -17,7 +27,7 @@ type
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     Panel1: TPanel;
-    dws2OpenGL1xUnit1: Tdws2OpenGL1xUnit;
+    dwsOpenGL1xUnit1: TdwsOpenGL1xUnit;
     GLUserShader1: TGLUserShader;
     ShaderScript: TMemo;
     Recompile: TButton;
@@ -29,9 +39,9 @@ type
     GLLightSource1: TGLLightSource;
     GLCube1: TGLCube;
     GLMaterialLibrary1: TGLMaterialLibrary;
-    dws2VectorGeometryUnit1: Tdws2VectorGeometryUnit;
+    dws2VectorGeometryUnit1: TdwsVectorGeometryUnit;
     AsyncTimer1: TGLAsyncTimer;
-    GLDelphiWebScriptII1: TGLDelphiWebScriptII;
+    GLDelphiWebScriptII1: TGLDelphiWebScript;
     GLScriptLibrary1: TGLScriptLibrary;
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);

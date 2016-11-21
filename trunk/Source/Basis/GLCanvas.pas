@@ -35,7 +35,7 @@
        31/01/02 - EG - Texture3D/CubeMap only disabled if supported
        24/01/02 - EG - Added PenAlpha
        19/01/02 - EG - Creation
-  
+
 }
 unit GLCanvas;
 
@@ -44,12 +44,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.Math,
+  System.Classes,
+  System.Math,
   VCL.Graphics,
-
+  //GLS
+  OpenGLTokens,
   GLVectorGeometry,
   GLColor,
   GLCrossPlatform,
+  GLContext,
+  GLVectorTypes,
   GLState;
 
 type
@@ -58,7 +62,7 @@ type
 
   // TGLCanvas
   //
-    {A simple Canvas-like interface for OpenGL. 
+    {A simple Canvas-like interface for OpenGL.
        This class implements a small "shell" for 2D operations in OpenGL,
        it operates over the current OpenGL context and provides methods
        for drawing lines, ellipses and points.
@@ -237,11 +241,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-
-uses
-  OpenGLTokens,
-  GLContext,
-  GLVectorTypes;
 
 const
   cNoPrimitive = MaxInt;

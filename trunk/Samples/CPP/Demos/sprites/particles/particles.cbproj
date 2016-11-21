@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>16.0</ProjectVersion>
+        <ProjectVersion>18.1</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -64,14 +64,14 @@
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
         <VerInfo_Locale>1036</VerInfo_Locale>
         <BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
-        <BCC_IncludePath>$(BDS)\include;$(BDS)\include\vcl;..\..\..\..\include;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>$(BDS)\include;$(BDS)\include\vcl;$(BCC_IncludePath)</BCC_IncludePath>
         <DCC_IncludePath>.\;$(BDS)\lib;$(BDS)\lib\obj;$(DCC_IncludePath)</DCC_IncludePath>
         <BCC_DisableOptimizations>true</BCC_DisableOptimizations>
         <ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
         <DynamicRTL>true</DynamicRTL>
         <ILINK_AppType>Windows</ILINK_AppType>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
-        <ILINK_LibraryPath>$(BDS)\lib\obj;$(BDS)\lib;..\..\..\..\lib;..\..\..\..\dcu;$(BDS)\lib\psdk;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDS)\lib\obj;$(BDS)\lib;$(BDS)\lib\psdk;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <TASM_AdditionalSwitches> /w2</TASM_AdditionalSwitches>
         <BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
         <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
@@ -87,6 +87,7 @@
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib;fmx.lib</AllPackageLibs>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <TASM_Defines>_DEBUG;$(TASM_Defines)</TASM_Defines>
         <OutputExt>exe</OutputExt>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve</BCC_UserSuppliedOptions>
@@ -115,8 +116,9 @@
         <IntermediateOutputDir>Debug_Build</IntermediateOutputDir>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
-        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <VerInfo_Locale>1033</VerInfo_Locale>
@@ -227,6 +229,12 @@
                 <Source>
                     <Source Name="MainSource">particles.cpp</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcboffice2k240.bpl">Embarcadero C++Builder Office 2000 Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\bcbofficexp240.bpl">Embarcadero C++Builder Office XP Servers Package</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k240.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp240.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                </Excluded_Packages>
             </CPlusPlusBuilder.Personality>
             <Platforms>
                 <Platform value="Win32">True</Platform>

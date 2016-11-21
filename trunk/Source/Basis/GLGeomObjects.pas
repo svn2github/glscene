@@ -2,32 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Geometric objects. 
-  History :  
-   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-   13/05/11 - Vince - Add ArrowArc object
-   13/05/11 - Vince - Add StartAngle ,StopAngle and Parts attributes
-                 to display a slice of TGLTorus between start and stop angles
-   24/03/11 - Yar - Replaced TGLTorus primitives to triangles, added tangent and binormal attributes
-   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-   22/04/10 - Yar - Fixes after GLState revision
-   15/03/08 - DaStr - Deleted TGLFrustrum.AxisAlignedBoundingBox(),
-                 now this function references the inherited function
-   20/01/08 - DaStr - Corrected object centering in TGLFrustrum.BuildList()
-                 (thanks Sandor Domokos) (BugTrackerID = 1864314)
-  Added a TGLCapsule object (thanks Dave Gravel)
-   18/11/07 - DaStr - Got rid of compiler warning in TGLCone.RayCastIntersect
-   07/05/07 - DanB - Added TGLCone.RayCastIntersect Improved TGLDisk.RayCastIntersect
-   30/03/07 - DaStr - Added $I GLScene.inc
-   25/09/04 - Eric Pascual - Added AxisAlignedBoundingBox,
-                 AxisAlignedBoundingBoxUnscaled,
-                 AxisAlignedDimensionsUnscaled
-   02/08/04 - LR, YHC - BCB corrections: use record instead array
-   29/11/03 - MF - Added shadow silhouette code for TGLCylinderBase et al.
-  Added GetTopRadius to facilitate silhouette.
-   24/10/03 - NelC - Fixed TGLTorus texture coord. bug
+  Geometric objects.
+  History :
    21/07/03 - EG - Creation from GLObjects split
-   
+   The whole history is logged in a former GLS version of the unit.
 }
 unit GLGeomObjects;
 
@@ -36,37 +14,37 @@ unit GLGeomObjects;
 interface
 
 uses
-  System.Classes, 
+  System.Classes,
   System.Math,
-   
-  OpenGLTokens, 
+  //GLS
+  OpenGLTokens,
   OpenGLAdapter,
-  GLScene, 
-  GLVectorGeometry, 
+  GLScene,
+  GLVectorGeometry,
   GLContext,
-  GLObjects, 
-  GLSilhouette, 
-  GLVectorTypes, 
-  GLGeometryBB, 
+  GLObjects,
+  GLSilhouette,
+  GLVectorTypes,
+  GLGeometryBB,
   GLRenderContextInfo;
 
 type
 
   // TGLDisk
   //
-  {  A Disk object. 
+  {  A Disk object.
     The disk may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
   TGLDisk = class(TGLQuadricObject)
   private
     { Private Declarations }
-    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: TGLFloat;
-    FSlices, FLoops: TGLInt;
+    FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: Single;
+    FSlices, FLoops: Integer;
     procedure SetOuterRadius(const aValue: Single);
     procedure SetInnerRadius(const aValue: Single);
-    procedure SetSlices(aValue: TGLInt);
-    procedure SetLoops(aValue: TGLInt);
+    procedure SetSlices(aValue: Integer);
+    procedure SetLoops(aValue: Integer);
     procedure SetStartAngle(const aValue: Single);
     procedure SetSweepAngle(const aValue: Single);
 
@@ -84,17 +62,17 @@ type
   published
     { Published Declarations }
     {  Allows defining a "hole" in the disk. }
-    property InnerRadius: TGLFloat read FInnerRadius write SetInnerRadius;
+    property InnerRadius: Single read FInnerRadius write SetInnerRadius;
     {  Number of radial mesh subdivisions. }
-    property Loops: TGLInt read FLoops write SetLoops default 2;
+    property Loops: Integer read FLoops write SetLoops default 2;
     {  Outer radius for the disk. 
       If you leave InnerRadius at 0, this is the disk radius. }
-    property OuterRadius: TGLFloat read FOuterRadius write SetOuterRadius;
+    property OuterRadius: Single read FOuterRadius write SetOuterRadius;
     {  Number of mesh slices. 
       For instance, if Slices=6, your disk will look like an hexagon. }
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
-    property SweepAngle: TGLFloat read FSweepAngle write SetSweepAngle;
+    property Slices: Integer read FSlices write SetSlices default 16;
+    property StartAngle: Single read FStartAngle write SetStartAngle;
+    property SweepAngle: Single read FSweepAngle write SetSweepAngle;
   end;
 
   // TGLCylinderBase
@@ -107,17 +85,17 @@ type
   TGLCylinderBase = class(TGLQuadricObject)
   private
     { Private Declarations }
-    FBottomRadius: TGLFloat;
-    FSlices, FStacks, FLoops: TGLInt;
-    FHeight: TGLFloat;
+    FBottomRadius: Single;
+    FSlices, FStacks, FLoops: Integer;
+    FHeight: Single;
 
   protected
     { Protected Declarations }
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
-    procedure SetSlices(aValue: TGLInt);
-    procedure SetStacks(aValue: TGLInt);
-    procedure SetLoops(aValue: TGLInt);
+    procedure SetSlices(aValue: Integer);
+    procedure SetStacks(aValue: Integer);
+    procedure SetLoops(aValue: Integer);
     function GetTopRadius: Single; virtual;
   public
     { Public Declarations }
@@ -129,12 +107,12 @@ type
       : TGLSilhouetteParameters): TGLSilhouette; override;
   published
     { Published Declarations }
-    property BottomRadius: TGLFloat read FBottomRadius write SetBottomRadius;
-    property Height: TGLFloat read FHeight write SetHeight;
-    property Slices: TGLInt read FSlices write SetSlices default 16;
-    property Stacks: TGLInt read FStacks write SetStacks default 4;
+    property BottomRadius: Single read FBottomRadius write SetBottomRadius;
+    property Height: Single read FHeight write SetHeight;
+    property Slices: Integer read FSlices write SetSlices default 16;
+    property Stacks: Integer read FStacks write SetStacks default 4;
     {  Number of concentric rings for top/bottom disk(s). }
-    property Loops: TGLInt read FLoops write SetLoops default 1;
+    property Loops: Integer read FLoops write SetLoops default 1;
   end;
 
   // TConePart
@@ -188,7 +166,7 @@ type
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FTopRadius: TGLFloat;
+    FTopRadius: Single;
     FAlignment: TCylinderAlignment;
 
   protected
@@ -215,7 +193,7 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
@@ -227,10 +205,10 @@ type
   private
     { Private Declarations }
     FParts: TCylinderParts;
-    FRadius: TGLFloat;
-    FSlices: TGLInt;
-    FStacks: TGLInt;
-    FHeight: TGLFloat;
+    FRadius: Single;
+    FSlices: Integer;
+    FStacks: Integer;
+    FHeight: Single;
     FAlignment: TCylinderAlignment;
   protected
     { Protected Declarations }
@@ -254,10 +232,10 @@ type
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
     { Published Declarations }
-    property Height: TGLFloat read FHeight write SetHeight;
-    property Slices: TGLInt read FSlices write SetSlices;
-    property Stacks: TGLInt read FStacks write SetStacks;
-    property Radius: TGLFloat read FRadius write SetRadius;
+    property Height: Single read FHeight write SetHeight;
+    property Slices: Integer read FSlices write SetSlices;
+    property Stacks: Integer read FStacks write SetStacks;
+    property Radius: Single read FRadius write SetRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
     property Alignment: TCylinderAlignment read FAlignment write SetAlignment
@@ -276,9 +254,9 @@ type
   private
     { Private Declarations }
     FParts: TAnnulusParts;
-    FBottomInnerRadius: TGLFloat;
-    FTopInnerRadius: TGLFloat;
-    FTopRadius: TGLFloat;
+    FBottomInnerRadius: Single;
+    FTopInnerRadius: Single;
+    FTopRadius: Single;
 
   protected
     { Protected Declarations }
@@ -300,11 +278,11 @@ type
 
   published
     { Published Declarations }
-    property BottomInnerRadius: TGLFloat read FBottomInnerRadius
+    property BottomInnerRadius: Single read FBottomInnerRadius
       write SetBottomInnerRadius;
-    property TopInnerRadius: TGLFloat read FTopInnerRadius
+    property TopInnerRadius: Single read FTopInnerRadius
       write SetTopInnerRadius;
-    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TAnnulusParts read FParts write SetParts
       default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
@@ -402,18 +380,18 @@ type
 
   published
     { Published Declarations }
-    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowLineParts read FParts write SetParts
       default [alLine, alTopArrow];
-    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: Single read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: Single read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: Single read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: Single read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -466,21 +444,21 @@ type
 
   published
     { Published Declarations }
-    property ArcRadius: TGLFloat read fArcRadius write SetArcRadius;
-    property StartAngle: TGLFloat read FStartAngle write SetStartAngle;
-    property StopAngle: TGLFloat read FStopAngle write SetStopAngle;
-    property TopRadius: TGLFloat read FTopRadius write SetTopRadius;
+    property ArcRadius: Single read fArcRadius write SetArcRadius;
+    property StartAngle: Single read FStartAngle write SetStartAngle;
+    property StopAngle: Single read FStopAngle write SetStopAngle;
+    property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
     property Parts: TArrowArcParts read FParts write SetParts
       default [aaArc, aaTopArrow];
-    property TopArrowHeadHeight: TGLFloat read fTopArrowHeadHeight
+    property TopArrowHeadHeight: Single read fTopArrowHeadHeight
       write SetTopArrowHeadHeight;
-    property TopArrowHeadRadius: TGLFloat read fTopArrowHeadRadius
+    property TopArrowHeadRadius: Single read fTopArrowHeadRadius
       write SetTopArrowHeadRadius;
-    property BottomArrowHeadHeight: TGLFloat read fBottomArrowHeadHeight
+    property BottomArrowHeadHeight: Single read fBottomArrowHeadHeight
       write SetBottomArrowHeadHeight;
-    property BottomArrowHeadRadius: TGLFloat read fBottomArrowHeadRadius
+    property BottomArrowHeadRadius: Single read fBottomArrowHeadRadius
       write SetBottomArrowHeadRadius;
   end;
 
@@ -541,7 +519,7 @@ type
   TGLFrustrum = class(TGLSceneObject)
   private
     { Private Declarations }
-    FApexHeight, FBaseDepth, FBaseWidth, FHeight: TGLFloat;
+    FApexHeight, FBaseDepth, FBaseWidth, FHeight: Single;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
     procedure SetApexHeight(const aValue: Single);
@@ -562,19 +540,19 @@ type
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
-    function TopDepth: TGLFloat;
-    function TopWidth: TGLFloat;
+    function TopDepth: Single;
+    function TopWidth: Single;
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: TGLFloat read FApexHeight write SetApexHeight
+    property ApexHeight: Single read FApexHeight write SetApexHeight
       stored False;
-    property BaseDepth: TGLFloat read FBaseDepth write SetBaseDepth
+    property BaseDepth: Single read FBaseDepth write SetBaseDepth
       stored False;
-    property BaseWidth: TGLFloat read FBaseWidth write SetBaseWidth
+    property BaseWidth: Single read FBaseWidth write SetBaseWidth
       stored False;
-    property Height: TGLFloat read FHeight write SetHeight stored False;
+    property Height: Single read FHeight write SetHeight stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
     property Parts: TFrustrumParts read FParts write SetParts
@@ -617,7 +595,7 @@ end;
 
 procedure TGLDisk.BuildList(var rci: TGLRenderContextInfo);
 var
-  quadric: PGLUquadricObj;
+  quadric: PGLUquadric;
 begin
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
@@ -720,7 +698,7 @@ end;
 
 function TGLDisk.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TGLFloat;
+  r: Single;
 begin
   r := Abs(FOuterRadius);
   Result := VectorMake(r, r, 0);
@@ -830,7 +808,7 @@ end;
 // SetSlices
 //
 
-procedure TGLCylinderBase.SetSlices(aValue: TGLInt);
+procedure TGLCylinderBase.SetSlices(aValue: Integer);
 begin
   if aValue <> FSlices then
   begin
@@ -842,7 +820,7 @@ end;
 // SetStack
 //
 
-procedure TGLCylinderBase.SetStacks(aValue: TGLInt);
+procedure TGLCylinderBase.SetStacks(aValue: Integer);
 begin
   if aValue <> FStacks then
   begin
@@ -854,7 +832,7 @@ end;
 // SetLoops
 //
 
-procedure TGLCylinderBase.SetLoops(aValue: TGLInt);
+procedure TGLCylinderBase.SetLoops(aValue: Integer);
 begin
   if (aValue >= 1) and (aValue <> FLoops) then
   begin
@@ -1026,7 +1004,7 @@ end;
 
 function TGLCone.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r: TGLFloat;
+  r: Single;
 begin
   r := Abs(FBottomRadius);
   Result := VectorMake(r { *Scale.DirectX } , 0.5 * FHeight { *Scale.DirectY } ,
@@ -1229,7 +1207,7 @@ end;
 
 function TGLCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLFloat;
+  r, r1: Single;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -1632,7 +1610,7 @@ end;
 
 function TGLCapsule.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLFloat;
+  r, r1: Single;
 begin
   r := Abs(FRadius);
   r1 := Abs(FRadius);
@@ -1920,7 +1898,7 @@ end;
 
 function TGLAnnulus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLFloat;
+  r, r1: Single;
 begin
   r := Abs(FBottomRadius);
   r1 := Abs(FTopRadius);
@@ -2151,13 +2129,13 @@ procedure TGLTorus.BuildList(var rci: TGLRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
-  cosTheta1, sinTheta1: TGLFloat;
-  ringDelta, sideDelta: TGLFloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: Single;
+  cosTheta1, sinTheta1: Single;
+  ringDelta, sideDelta: Single;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLInt;
+  TanLoc, BinLoc: Integer;
   MeshSize: integer;
   MeshIndex: integer;
   Vertex: TVertexRec;
@@ -2470,7 +2448,7 @@ end;
 
 function TGLTorus.AxisAlignedDimensionsUnscaled: TVector;
 var
-  r, r1: TGLFloat;
+  r, r1: Single;
 begin
   r := Abs(FMajorRadius);
   r1 := Abs(FMinorRadius);
@@ -2925,13 +2903,13 @@ procedure TGLArrowArc.BuildList(var rci: TGLRenderContextInfo);
 
 var
   i, j: integer;
-  Theta, Phi, Theta1, cosPhi, sinPhi, dist: TGLFloat;
-  cosTheta1, sinTheta1: TGLFloat;
-  ringDelta, sideDelta: TGLFloat;
+  Theta, Phi, Theta1, cosPhi, sinPhi, dist: Single;
+  cosTheta1, sinTheta1: Single;
+  ringDelta, sideDelta: Single;
   ringDir: TAffineVector;
   iFact, jFact: Single;
   pVertex: PVertexRec;
-  TanLoc, BinLoc: TGLInt;
+  TanLoc, BinLoc: Integer;
   MeshSize: integer;
   MeshIndex: integer;
   ConeCenter: TVertexRec;
@@ -3437,12 +3415,12 @@ end;
 
 procedure TGLFrustrum.BuildList(var rci: TGLRenderContextInfo);
 var
-  HBW, HBD: TGLFloat; // half of width, half of depth at base
-  HTW, HTD: TGLFloat; // half of width, half of depth at top of frustrum
-  HFH: TGLFloat; // half of height, for align to center
-  Sign: TGLFloat; // +1 or -1
-  angle: TGLFloat; // in radians
-  ASin, ACos: TGLFloat;
+  HBW, HBD: Single; // half of width, half of depth at base
+  HTW, HTD: Single; // half of width, half of depth at top of frustrum
+  HFH: Single; // half of height, for align to center
+  Sign: Single; // +1 or -1
+  angle: Single; // in radians
+  ASin, ACos: Single;
 begin
   if FNormalDirection = ndInside then
     Sign := -1
@@ -3617,12 +3595,12 @@ begin
   inherited Assign(Source);
 end;
 
-function TGLFrustrum.TopDepth: TGLFloat;
+function TGLFrustrum.TopDepth: Single;
 begin
   Result := FBaseDepth * (FApexHeight - FHeight) / FApexHeight;
 end;
 
-function TGLFrustrum.TopWidth: TGLFloat;
+function TGLFrustrum.TopWidth: Single;
 begin
   Result := FBaseWidth * (FApexHeight - FHeight) / FApexHeight;
 end;

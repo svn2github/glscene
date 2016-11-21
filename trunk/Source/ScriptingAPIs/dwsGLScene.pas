@@ -1,27 +1,38 @@
-// dws2GLScene
-{DelphiWebScriptII symbol creation for base GLScene classes. 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   DelphiWebScript symbol creation for base GLScene classes.
 
    This unit is dependent on dws2Classes and dws2VectorGeometry.
    These components must be associated with the same compiler
-   for the GLScene classes to inherit from. 
+   for the GLScene classes to inherit from.
 
-    History :  
+    History :
        27/04/2004 - SG - Creation
-    
+
 }
-unit dws2GLScene;
+unit dwsGLScene;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //dws
-  dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc, GLScene, GLVectorGeometry,
+  dwsExprs,
+  dwsSymbols,
+  dwsComp,
+  dwsCompStrings,
+  dwsStack,
+  dwsFunctions,
+  dwsHelperFunc,
+  GLScene,
+  GLVectorGeometry,
   GLCoordinates;
 
 type
-  Tdws2GLSceneUnit = class(Tdws2UnitComponent)
+  TdwsGLSceneUnit = class(TdwsUnitComponent)
     private
 
       procedure AddClassTGLCoordinates(SymbolTable : TSymbolTable);
@@ -780,12 +791,12 @@ end;
 
 
 // ----------
-// ---------- Tdws2GLSceneUnit ----------
+// ---------- TdwsGLSceneUnit ----------
 // ----------
 
 // Create
 //
-constructor Tdws2GLSceneUnit.Create(AOwner: TComponent);
+constructor TdwsGLSceneUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName:='GLScene';
@@ -797,7 +808,7 @@ end;
 
 // AddClassTGLCoordinates
 //
-procedure Tdws2GLSceneUnit.AddClassTGLCoordinates(
+procedure TdwsGLSceneUnit.AddClassTGLCoordinates(
   SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
@@ -858,7 +869,7 @@ end;
 
 // AddClassTGLBaseSceneObject
 //
-procedure Tdws2GLSceneUnit.AddClassTGLBaseSceneObject(
+procedure TdwsGLSceneUnit.AddClassTGLBaseSceneObject(
   SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
@@ -948,7 +959,7 @@ end;
 
 // AddUnitSymbols
 //
-procedure Tdws2GLSceneUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
+procedure TdwsGLSceneUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 begin
   // Forward class declaration
   AddForwardDeclaration('TGLCoordinates', SymbolTable);

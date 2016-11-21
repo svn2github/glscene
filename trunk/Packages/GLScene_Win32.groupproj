@@ -39,6 +39,12 @@
         <Projects Include="Win32\GLScene_SDL_DesignTime.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="Win32\GLScene_DWS_RunTime.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Win32\GLScene_DWS_DesignTime.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -155,14 +161,32 @@
     <Target Name="GLScene_SDL_DesignTime:Make">
         <MSBuild Projects="Win32\GLScene_SDL_DesignTime.dproj" Targets="Make"/>
     </Target>
+    <Target Name="GLScene_DWS_RunTime">
+        <MSBuild Projects="Win32\GLScene_DWS_RunTime.dproj"/>
+    </Target>
+    <Target Name="GLScene_DWS_RunTime:Clean">
+        <MSBuild Projects="Win32\GLScene_DWS_RunTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_DWS_RunTime:Make">
+        <MSBuild Projects="Win32\GLScene_DWS_RunTime.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GLScene_DWS_DesignTime">
+        <MSBuild Projects="Win32\GLScene_DWS_DesignTime.dproj"/>
+    </Target>
+    <Target Name="GLScene_DWS_DesignTime:Clean">
+        <MSBuild Projects="Win32\GLScene_DWS_DesignTime.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GLScene_DWS_DesignTime:Make">
+        <MSBuild Projects="Win32\GLScene_DWS_DesignTime.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="GLScene_RunTime;GLScene_DesignTime;GLScene_Sounds_RunTime;GLScene_Sounds_DesignTime;GLScene_Physics_RunTime;GLScene_Physics_DesignTime;GLScene_Parallel_RunTime;GLScene_Parallel_DesignTime;GLScene_Cg_RunTime;GLScene_Cg_DesignTime;GLScene_SDL_RunTime;GLScene_SDL_DesignTime"/>
+        <CallTarget Targets="GLScene_RunTime;GLScene_DesignTime;GLScene_Sounds_RunTime;GLScene_Sounds_DesignTime;GLScene_Physics_RunTime;GLScene_Physics_DesignTime;GLScene_Parallel_RunTime;GLScene_Parallel_DesignTime;GLScene_Cg_RunTime;GLScene_Cg_DesignTime;GLScene_SDL_RunTime;GLScene_SDL_DesignTime;GLScene_DWS_RunTime;GLScene_DWS_DesignTime"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_DesignTime:Clean;GLScene_Sounds_RunTime:Clean;GLScene_Sounds_DesignTime:Clean;GLScene_Physics_RunTime:Clean;GLScene_Physics_DesignTime:Clean;GLScene_Parallel_RunTime:Clean;GLScene_Parallel_DesignTime:Clean;GLScene_Cg_RunTime:Clean;GLScene_Cg_DesignTime:Clean;GLScene_SDL_RunTime:Clean;GLScene_SDL_DesignTime:Clean"/>
+        <CallTarget Targets="GLScene_RunTime:Clean;GLScene_DesignTime:Clean;GLScene_Sounds_RunTime:Clean;GLScene_Sounds_DesignTime:Clean;GLScene_Physics_RunTime:Clean;GLScene_Physics_DesignTime:Clean;GLScene_Parallel_RunTime:Clean;GLScene_Parallel_DesignTime:Clean;GLScene_Cg_RunTime:Clean;GLScene_Cg_DesignTime:Clean;GLScene_SDL_RunTime:Clean;GLScene_SDL_DesignTime:Clean;GLScene_DWS_RunTime:Clean;GLScene_DWS_DesignTime:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GLScene_RunTime:Make;GLScene_DesignTime:Make;GLScene_Sounds_RunTime:Make;GLScene_Sounds_DesignTime:Make;GLScene_Physics_RunTime:Make;GLScene_Physics_DesignTime:Make;GLScene_Parallel_RunTime:Make;GLScene_Parallel_DesignTime:Make;GLScene_Cg_RunTime:Make;GLScene_Cg_DesignTime:Make;GLScene_SDL_RunTime:Make;GLScene_SDL_DesignTime:Make"/>
+        <CallTarget Targets="GLScene_RunTime:Make;GLScene_DesignTime:Make;GLScene_Sounds_RunTime:Make;GLScene_Sounds_DesignTime:Make;GLScene_Physics_RunTime:Make;GLScene_Physics_DesignTime:Make;GLScene_Parallel_RunTime:Make;GLScene_Parallel_DesignTime:Make;GLScene_Cg_RunTime:Make;GLScene_Cg_DesignTime:Make;GLScene_SDL_RunTime:Make;GLScene_SDL_DesignTime:Make;GLScene_DWS_RunTime:Make;GLScene_DWS_DesignTime:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

@@ -3,21 +3,41 @@ unit main;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
   //GLS
-  GLObjects, GLWin32Viewer, dws2Comp, GLScene,
-  dws2OpenGL1x, GLDWS2Objects, dws2Exprs, GLTexture, GLCadencer, GLAsyncTimer,
-  GLBitmapFont, GLWindowsFont, GLHUDObjects,
-  dws2VectorGeometry, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLScriptDWS2,
+  GLObjects,
+  GLWin32Viewer,
+  GLScene,
+  GLScriptDWS,
+  dwsComp,
+  dwsOpenGLAdapter,
+  GLDWSObjects,
+  dwsExprs,
+  dwsVectorGeometry,
+  GLTexture,
+  GLCadencer,
+  GLAsyncTimer,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLHUDObjects,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
   GLRenderContextInfo;
 
 type
   TForm1 = class(TForm)
-    GLDelphiWebScriptII1: TGLDelphiWebScriptII;
-    dws2OpenGL1xUnit1: Tdws2OpenGL1xUnit;
+    GLDelphiWebScriptII1: TGLDelphiWebScript;
+    dws2OpenGL1xUnit1: TdwsOpenGL1xUnit;
     GLScene1: TGLScene;
     GLSceneViewer1: TGLSceneViewer;
     GLCamera1: TGLCamera;
@@ -31,7 +51,7 @@ type
     Panel2: TPanel;
     CompileButton: TButton;
     Script: TMemo;
-    dws2VectorGeometryUnit1: Tdws2VectorGeometryUnit;
+    dws2VectorGeometryUnit1: TdwsVectorGeometryUnit;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;

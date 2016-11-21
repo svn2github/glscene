@@ -225,7 +225,6 @@ contains
   GLSceneForm in '..\..\Source\GLSceneForm.pas',
   GLScreen in '..\..\Source\GLScreen.pas',
   GLScreenSaver in '..\..\Source\GLScreenSaver.pas',
-  GLScriptBase in '..\..\Source\GLScriptBase.pas',
   GLSelection in '..\..\Source\GLSelection.pas',
   GLShaderCombiner in '..\..\Source\Shaders\GLShaderCombiner.pas',
   GLShadowHDS in '..\..\Source\GLShadowHDS.pas',

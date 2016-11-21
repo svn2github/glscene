@@ -10,23 +10,30 @@
        06/04/2004 - SG - Creation
     
 }
-unit GLDWS2Objects;
+unit GLDWSObjects;
 
 interface
 
 uses
-  System.Classes, System.SysUtils, 
-  dws2Comp, dws2Exprs, dws2Symbols,
-  GLScene, GLXCollection, GLScriptDWS2, GLBaseClasses, GLManager;
+  System.Classes, 
+  System.SysUtils, 
+  dwsComp, 
+  dwsExprs, 
+  dwsSymbols,
+  GLScene, 
+  GLXCollection, 
+  GLScriptDWS2, 
+  GLBaseClasses, 
+  GLManager;
 
 type
-  // TGLDWS2ActiveBehaviour
+  // TGLDWSActiveBehaviour
   //
-  { A DelphiWebScriptII enabled behaviour. This behaviour also calls
+  { A DelphiWebScript enabled behaviour. This behaviour also calls
     on the OnProgress and OnBeginProgram procedures in the script if
     they are found. Once compiled and executed the program remains
     active until killed, deactivated or the script is invalidated. }
-  TGLDWS2ActiveBehaviour = class (TGLBehaviour)
+  TGLDWSActiveBehaviour = class (TGLBehaviour)
     private
       FActive : Boolean;
       FScript : TStringList;
@@ -55,7 +62,7 @@ type
       procedure DoProgress(const ProgressTimes : TProgressTimes); override;
       procedure InvalidateScript;
 
-      property DWS2Program : TProgram read FDWS2Program;
+      property DWSProgram : TProgram read FDWS2Program;
 
     published
       property Active : Boolean read FActive write SetActive;
@@ -79,17 +86,17 @@ implementation
 
 procedure Register;
 begin
-  RegisterClasses([TGLDWS2ActiveBehaviour]);
+  RegisterClasses([TGLDWSActiveBehaviour]);
 end;
 
 
 // ----------
-// ---------- TGLDWS2ActiveBehaviour ----------
+// ---------- TGLDWSActiveBehaviour ----------
 // ----------
 
 // Create
 //
-constructor TGLDWS2ActiveBehaviour.Create(AOwner: TGLXCollection);
+constructor TGLDWSActiveBehaviour.Create(AOwner: TGLXCollection);
 begin
   inherited;
   FScript:=TStringList.Create;
@@ -97,7 +104,7 @@ end;
 
 // Destroy
 //
-destructor TGLDWS2ActiveBehaviour.Destroy;
+destructor TGLDWSActiveBehaviour.Destroy;
 begin
   KillProgram;
   FScript.Free;
@@ -106,39 +113,39 @@ end;
 
 // FriendlyName
 //
-class function TGLDWS2ActiveBehaviour.FriendlyName: String;
+class function TGLDWSActiveBehaviour.FriendlyName: String;
 begin
-  Result:='DWS2 Active Script';
+  Result:='DWS Active Script';
 end;
 
 // DoProgress
 //
-procedure TGLDWS2ActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
+procedure TGLDWSActiveBehaviour.DoProgress(const ProgressTimes: TProgressTimes);
 var
   Symbol : TSymbol;
 begin
   inherited;
-  if Assigned(FDWS2Program) then begin
-    if FDWS2Program.ProgramState = psRunning then begin
-      Symbol:=DWS2Program.Table.FindSymbol('OnProgress');
+  if Assigned(FDWSProgram) then begin
+    if FDWSProgram.ProgramState = psRunning then begin
+      Symbol:=DWSProgram.Table.FindSymbol('OnProgress');
       if Assigned(Symbol) then
         if Symbol is TFuncSymbol then
-          DWS2Program.Info.Func['OnProgress'].Call([ProgressTimes.newTime, ProgressTimes.deltaTime]);
+          DWSProgram.Info.Func['OnProgress'].Call([ProgressTimes.newTime, ProgressTimes.deltaTime]);
     end;
   end;
 end;
 
 // Loaded
 //
-procedure TGLDWS2ActiveBehaviour.Loaded;
+procedure TGLDWSActiveBehaviour.Loaded;
 var
   temp : TComponent;
 begin
   inherited;
   if FCompilerName<>'' then begin
-    temp:=FindManager(TGLDelphiWebScriptII, FCompilerName);
+    temp:=FindManager(TGLDelphiWebScript, FCompilerName);
     if Assigned(temp) then
-      Compiler:=TGLDelphiWebScriptII(temp);
+      Compiler:=TGLDelphiWebScript(temp);
     FCompilerName:='';
     CompileProgram;
     if Active then BeginProgram;
@@ -147,7 +154,7 @@ end;
 
 // ReadFromFiler
 //
-procedure TGLDWS2ActiveBehaviour.ReadFromFiler(reader: TReader);
+procedure TGLDWSActiveBehaviour.ReadFromFiler(reader: TReader);
 begin
   inherited;
   with reader do begin
@@ -160,7 +167,7 @@ end;
 
 // WriteToFiler
 //
-procedure TGLDWS2ActiveBehaviour.WriteToFiler(writer: TWriter);
+procedure TGLDWSActiveBehaviour.WriteToFiler(writer: TWriter);
 begin
   inherited;
   with writer do begin
@@ -175,7 +182,7 @@ end;
 
 // CompileProgram
 //
-procedure TGLDWS2ActiveBehaviour.CompileProgram;
+procedure TGLDWSActiveBehaviour.CompileProgram;
 begin
   if Assigned(Compiler) then begin
     KillProgram;
@@ -187,23 +194,23 @@ end;
 
 // BeginProgram
 //
-procedure TGLDWS2ActiveBehaviour.BeginProgram;
+procedure TGLDWSActiveBehaviour.BeginProgram;
 var
   Symbol : TSymbol;
   ObjectID : Variant;
   Obj : TGLBaseSceneObject;
 begin
-  if Assigned(DWS2Program) then begin
-    if DWS2Program.ProgramState = psReadyToRun then begin
-      DWS2Program.BeginProgram;
-      if FDWS2Program.ProgramState = psRunning then begin
-        Symbol:=DWS2Program.Table.FindSymbol('OnBeginProgram');
+  if Assigned(DWSProgram) then begin
+    if DWSProgram.ProgramState = psReadyToRun then begin
+      DWSProgram.BeginProgram;
+      if FDWSProgram.ProgramState = psRunning then begin
+        Symbol:=DWSProgram.Table.FindSymbol('OnBeginProgram');
         if Assigned(Symbol) then
           if Symbol is TFuncSymbol then begin
             Obj:=OwnerBaseSceneObject;
             if Assigned(Obj) then begin
-              ObjectID:=DWS2Program.Info.RegisterExternalObject(Obj, False, False);
-              DWS2Program.Info.Func['OnBeginProgram'].Call([ObjectID]);
+              ObjectID:=DWSProgram.Info.RegisterExternalObject(Obj, False, False);
+              DWSProgram.Info.Func['OnBeginProgram'].Call([ObjectID]);
             end;
           end;
       end;
@@ -213,27 +220,27 @@ end;
 
 // EndProgram
 //
-procedure TGLDWS2ActiveBehaviour.EndProgram;
+procedure TGLDWSActiveBehaviour.EndProgram;
 begin
-  if Assigned(DWS2Program) then begin
-    if DWS2Program.ProgramState = psRunning then
-      DWS2Program.EndProgram;
+  if Assigned(DWSProgram) then begin
+    if DWSProgram.ProgramState = psRunning then
+      DWSProgram.EndProgram;
   end;
 end;
 
 // KillProgram
 //
-procedure TGLDWS2ActiveBehaviour.KillProgram;
+procedure TGLDWSActiveBehaviour.KillProgram;
 begin
-  if Assigned(DWS2Program) then begin
+  if Assigned(DWSProgram) then begin
     EndProgram;
-    FreeAndNil(FDWS2Program);
+    FreeAndNil(FDWSProgram);
   end;
 end;
 
 // InvalidateScript
 //
-procedure TGLDWS2ActiveBehaviour.InvalidateScript;
+procedure TGLDWSActiveBehaviour.InvalidateScript;
 begin
   KillProgram;
   CompileProgram;
@@ -241,7 +248,7 @@ end;
 
 // SetActive
 //
-procedure TGLDWS2ActiveBehaviour.SetActive(const Value: Boolean);
+procedure TGLDWSActiveBehaviour.SetActive(const Value: Boolean);
 begin
   if Value<>FActive then begin
     EndProgram;
@@ -253,7 +260,7 @@ end;
 
 // SetScript
 //
-procedure TGLDWS2ActiveBehaviour.SetScript(const Value: TStringList);
+procedure TGLDWSActiveBehaviour.SetScript(const Value: TStringList);
 begin
   if Assigned(Value) then begin
     KillProgram;
@@ -267,7 +274,7 @@ end;
 
 // SetCompiler
 //
-procedure TGLDWS2ActiveBehaviour.SetCompiler(const Value: TGLDelphiWebScriptII);
+procedure TGLDWSActiveBehaviour.SetCompiler(const Value: TGLDelphiWebScriptII);
 begin
   if Value<>FCompiler then begin
     if Assigned(FCompiler) then
@@ -290,7 +297,7 @@ initialization
 // --------------------------------------------------
 // --------------------------------------------------
 
-  RegisterXCollectionItemClass(TGLDWS2ActiveBehaviour);
+  RegisterXCollectionItemClass(TGLDWSActiveBehaviour);
 
 // --------------------------------------------------
 // --------------------------------------------------
@@ -300,6 +307,6 @@ finalization
 // --------------------------------------------------
 // --------------------------------------------------
 
-  UnregisterXCollectionItemClass(TGLDWS2ActiveBehaviour);
+  UnregisterXCollectionItemClass(TGLDWSActiveBehaviour);
 
 end.

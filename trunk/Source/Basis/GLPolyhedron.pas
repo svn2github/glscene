@@ -3,13 +3,10 @@
 //
 {
   Standard polyhedrons 
-
-  History :  
+  History :
        10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes
-       23/08/10 - Yar - Added OpenGLTokens to uses
        20/01/04 - SG - Added TGLIcosahedron
        21/07/03 - EG - Creation from GLObjects split
-    
 }
 unit GLPolyhedron;
 
@@ -17,11 +14,13 @@ interface
 
 uses
   System.Classes,
-   
-  GLScene, GLVectorGeometry, GLRenderContextInfo;
+  //GLS
+  GLScene,
+  GLVectorGeometry,
+  GLObjects,
+  GLRenderContextInfo;
 
 type
-
   // TGLDodecahedron
   //
   {A Dodecahedron. 
@@ -67,16 +66,10 @@ type
   end;
 
 
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
-  //-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
+//-------------------------------------------------------------
 implementation
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-//-------------------------------------------------------------
-
-uses GLObjects;
-
 // ------------------
 // ------------------ TGLDodecahedron ------------------
 // ------------------

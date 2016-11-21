@@ -1,28 +1,37 @@
-// dws2OpenGL1x
-{DelphiWebScriptII symbol creation for OpenGL procedures
-   and functions. 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+   DelphiWebScript symbol creation for OpenGL procedures and functions.
+   This unit is still under development.
 
-   This unit is still under development. 
-
-    History :  
+    History :
        16/01/2011 - Yar - Rename to dws2OpenGLAdapter, update to current main package
        08/10/2008 - DanB - Split AddUnitSymbols into two procedures, to prevent error
        23/09/2004 - SG - Added main GL constants and a few procedures
        21/09/2004 - SG - Creation
-    
+
 }
-unit dws2OpenGLAdapter;
+unit dwsOpenGLAdapter;
 
 interface
 
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.Variants,
-  dws2Exprs, dws2Symbols, dws2Comp;
+  System.Classes,
+  System.Variants,
+  dwsExprs,
+  dwsSymbols,
+  dwsComp,
+  dwsFunctions,
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLContext,
+  GLVectorGeometry;
 
 type
-  Tdws2OpenGLUnit = class(Tdws2UnitComponent)
+  TdwsOpenGLUnit = class(TdwsUnitComponent)
     protected
       procedure AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
       procedure AddUnitSymbols(SymbolTable: TSymbolTable); override;
@@ -38,9 +47,6 @@ const
 procedure Register;
 
 implementation
-
-uses
-  dws2Functions, OpenGLTokens, OpenGLAdapter, GLContext, GLVectorGeometry;
 
 type
   TglPushAttrib = class(TInternalFunction)
@@ -257,12 +263,12 @@ type
   public
     procedure Execute; override;
   end;
-  
+
   TglStencilMask = class(TInternalFunction)
   public
     procedure Execute; override;
   end;
-  
+
   TglStencilOp = class(TInternalFunction)
   public
     procedure Execute; override;
@@ -283,7 +289,7 @@ type
 //
 procedure Register;
 begin
-  RegisterComponents('GLScene DWS2', [Tdws2OpenGLUnit]);
+  RegisterComponents('GLScene DWS', [TdwsOpenGLUnit]);
 end;
 
 // GetMatrixFromInfo
@@ -300,10 +306,10 @@ begin
 end;
 
 // ----------
-// ---------- Tdws2OpenGLUnit ----------
+// ---------- TdwsOpenGLUnit ----------
 // ----------
 
-procedure Tdws2OpenGLUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
+procedure TdwsOpenGLUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 var
   CardinalSymbol,
   ByteSymbol : TSymbol;
@@ -1092,7 +1098,7 @@ begin
   TglLogicOp.Create(SymbolTable, 'glLogicOp', ['opcode', 'Cardinal'], '');
 end;
 
-procedure Tdws2OpenGLUnit.AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
+procedure TdwsOpenGLUnit.AddExtensionUnitSymbols(SymbolTable: TSymbolTable);
 var
   CardinalSymbol,
   ByteSymbol : TSymbol;
@@ -2018,7 +2024,7 @@ begin
 
 end;
 
-constructor Tdws2OpenGLUnit.Create(AOwner: TComponent);
+constructor TdwsOpenGLUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName := 'OpenGLAdapter';
@@ -2032,9 +2038,9 @@ end;
 
 procedure TglPushAttrib.Execute;
 var
-  mask : Cardinal;
+  mask: Cardinal;
 begin
-  mask:=Info['mask'];
+  mask := Info['mask'];
   GL.PushAttrib(mask);
 end;
 
@@ -2053,9 +2059,9 @@ end;
 
 procedure TglPushClientAttrib.Execute;
 var
-  mask : Cardinal;
+  mask: Cardinal;
 begin
-  mask:=Info['mask'];
+  mask := Info['mask'];
   GL.PushClientAttrib(mask);
 end;
 
@@ -2074,9 +2080,9 @@ end;
 
 procedure TglEnable.Execute;
 var
-  cap : Cardinal;
+  cap: Cardinal;
 begin
-  cap:=Info['cap'];
+  cap := Info['cap'];
   GL.Enable(cap);
 end;
 
@@ -2086,9 +2092,9 @@ end;
 
 procedure TglDisable.Execute;
 var
-  cap : Cardinal;
+  cap: Cardinal;
 begin
-  cap:=Info['cap'];
+  cap := Info['cap'];
   GL.Disable(cap);
 end;
 
@@ -2098,9 +2104,9 @@ end;
 
 procedure TglEnableClientState.Execute;
 var
-  aarray : Cardinal;
+  aarray: Cardinal;
 begin
-  aarray:=Info['aarray'];
+  aarray := Info['aarray'];
   GL.EnableClientState(aarray);
 end;
 
@@ -2110,9 +2116,9 @@ end;
 
 procedure TglDisableClientState.Execute;
 var
-  aarray : Cardinal;
+  aarray: Cardinal;
 begin
-  aarray:=Info['aarray'];
+  aarray := Info['aarray'];
   GL.DisableClientState(aarray);
 end;
 
@@ -2122,9 +2128,9 @@ end;
 
 procedure TglMatrixMode.Execute;
 var
-  mode : Cardinal;
+  mode: Cardinal;
 begin
-  mode:=Info['mode'];
+  mode := Info['mode'];
   GL.MatrixMode(mode);
 end;
 
@@ -2161,9 +2167,9 @@ end;
 
 procedure TglLoadMatrixf.Execute;
 var
-  m : TMatrix;
+  m: TMatrix;
 begin
-  m:=GetMatrixFromInfo(Info.Vars['m']);
+  m := GetMatrixFromInfo(Info.Vars['m']);
   GL.LoadMatrixf(@m[0]);
 end;
 
@@ -2173,12 +2179,12 @@ end;
 
 procedure TglTranslatef.Execute;
 var
-  x, y, z : Single;
+  x, y, z: Single;
 begin
-  x:=Info['x'];
-  y:=Info['y'];
-  z:=Info['z'];
-  GL.Translatef(x,y,z);
+  x := Info['x'];
+  y := Info['y'];
+  z := Info['z'];
+  GL.Translatef(x, y, z);
 end;
 
 // ----------
@@ -2187,13 +2193,13 @@ end;
 
 procedure TglRotatef.Execute;
 var
-  angle, x, y, z : Single;
+  angle, x, y, z: Single;
 begin
-  angle:=Info['angle'];
-  x:=Info['x'];
-  y:=Info['y'];
-  z:=Info['z'];
-  GL.Rotatef(angle,x,y,z);
+  angle := Info['angle'];
+  x := Info['x'];
+  y := Info['y'];
+  z := Info['z'];
+  GL.Rotatef(angle, x, y, z);
 end;
 
 // ----------
@@ -2202,12 +2208,12 @@ end;
 
 procedure TglScalef.Execute;
 var
-  x, y, z : Single;
+  x, y, z: Single;
 begin
-  x:=Info['x'];
-  y:=Info['y'];
-  z:=Info['z'];
-  GL.Scalef(x,y,z);
+  x := Info['x'];
+  y := Info['y'];
+  z := Info['z'];
+  GL.Scalef(x, y, z);
 end;
 
 // ----------
@@ -2216,9 +2222,9 @@ end;
 
 procedure TglShadeModel.Execute;
 var
-  mode : Cardinal;
+  mode: Cardinal;
 begin
-  mode:=Info['mode'];
+  mode := Info['mode'];
   GL.ShadeModel(mode);
 end;
 
@@ -2228,9 +2234,9 @@ end;
 
 procedure TglCullFace.Execute;
 var
-  mode : Cardinal;
+  mode: Cardinal;
 begin
-  mode:=Info['mode'];
+  mode := Info['mode'];
   GL.CullFace(mode);
 end;
 
@@ -2240,9 +2246,9 @@ end;
 
 procedure TglFrontFace.Execute;
 var
-  mode : Cardinal;
+  mode: Cardinal;
 begin
-  mode:=Info['mode'];
+  mode := Info['mode'];
   GL.FrontFace(mode);
 end;
 
@@ -2252,10 +2258,10 @@ end;
 
 procedure TglPolygonMode.Execute;
 var
-  face, mode : Cardinal;
+  face, mode: Cardinal;
 begin
-  face:=Info['face'];
-  mode:=Info['mode'];
+  face := Info['face'];
+  mode := Info['mode'];
   GL.PolygonMode(face, mode);
 end;
 
@@ -2265,9 +2271,9 @@ end;
 
 procedure TglBegin.Execute;
 var
-  mode : Cardinal;
+  mode: Cardinal;
 begin
-  mode:=Info['mode'];
+  mode := Info['mode'];
   GL.Begin_(mode);
 end;
 
@@ -2286,11 +2292,11 @@ end;
 
 procedure TglColor3f.Execute;
 var
-  red, green, blue : Single;
+  red, green, blue: Single;
 begin
-  red:=Info['red'];
-  green:=Info['green'];
-  blue:=Info['blue'];
+  red := Info['red'];
+  green := Info['green'];
+  blue := Info['blue'];
   GL.Color3f(red, green, blue);
 end;
 
@@ -2300,12 +2306,12 @@ end;
 
 procedure TglColor4f.Execute;
 var
-  red, green, blue, alpha : Single;
+  red, green, blue, alpha: Single;
 begin
-  red:=Info['red'];
-  green:=Info['green'];
-  blue:=Info['blue'];
-  alpha:=Info['alpha'];
+  red := Info['red'];
+  green := Info['green'];
+  blue := Info['blue'];
+  alpha := Info['alpha'];
   GL.Color4f(red, green, blue, alpha);
 end;
 
@@ -2315,11 +2321,11 @@ end;
 
 procedure TglNormal3f.Execute;
 var
-  x, y, z : Single;
+  x, y, z: Single;
 begin
-  x:=Info['x'];
-  y:=Info['y'];
-  z:=Info['z'];
+  x := Info['x'];
+  y := Info['y'];
+  z := Info['z'];
   GL.Normal3f(x, y, z);
 end;
 
@@ -2329,11 +2335,11 @@ end;
 
 procedure TglVertex3f.Execute;
 var
-  x, y, z : Single;
+  x, y, z: Single;
 begin
-  x:=Info['x'];
-  y:=Info['y'];
-  z:=Info['z'];
+  x := Info['x'];
+  y := Info['y'];
+  z := Info['z'];
   GL.Vertex3f(x, y, z);
 end;
 
@@ -2343,9 +2349,9 @@ end;
 
 procedure TglTexCoord1f.Execute;
 var
-  s : Single;
+  s: Single;
 begin
-  s:=Info['s'];
+  s := Info['s'];
   GL.TexCoord1f(s);
 end;
 
@@ -2355,10 +2361,10 @@ end;
 
 procedure TglTexCoord2f.Execute;
 var
-  s, t : Single;
+  s, t: Single;
 begin
-  s:=Info['s'];
-  t:=Info['t'];
+  s := Info['s'];
+  t := Info['t'];
   GL.TexCoord2f(s, t);
 end;
 
@@ -2368,11 +2374,11 @@ end;
 
 procedure TglTexCoord3f.Execute;
 var
-  s, t, r : Single;
+  s, t, r: Single;
 begin
-  s:=Info['s'];
-  t:=Info['t'];
-  r:=Info['r'];
+  s := Info['s'];
+  t := Info['t'];
+  r := Info['r'];
   GL.TexCoord3f(s, t, r);
 end;
 
@@ -2382,12 +2388,12 @@ end;
 
 procedure TglTexCoord4f.Execute;
 var
-  s, t, r, q : Single;
+  s, t, r, q: Single;
 begin
-  s:=Info['s'];
-  t:=Info['t'];
-  r:=Info['r'];
-  q:=Info['q'];
+  s := Info['s'];
+  t := Info['t'];
+  r := Info['r'];
+  q := Info['q'];
   GL.TexCoord4f(s, t, r, q);
 end;
 
@@ -2397,9 +2403,9 @@ end;
 
 procedure TglLineWidth.Execute;
 var
-  width : Single;
+  width: Single;
 begin
-  width:=Info['width'];
+  width := Info['width'];
   GL.LineWidth(width);
 end;
 
@@ -2409,11 +2415,11 @@ end;
 
 procedure TglMultiTexCoord1f.Execute;
 var
-  target : Cardinal;
-  s : Single;
+  target: Cardinal;
+  s: Single;
 begin
-  target:=Info['target'];
-  s:=Info['s'];
+  target := Info['target'];
+  s := Info['s'];
   GL.MultiTexCoord1f(target, s);
 end;
 
@@ -2423,12 +2429,12 @@ end;
 
 procedure TglMultiTexCoord2f.Execute;
 var
-  target : Cardinal;
-  s, t : Single;
+  target: Cardinal;
+  s, t: Single;
 begin
-  target:=Info['target'];
-  s:=Info['s'];
-  t:=Info['t'];
+  target := Info['target'];
+  s := Info['s'];
+  t := Info['t'];
   GL.MultiTexCoord2f(target, s, t);
 end;
 
@@ -2438,13 +2444,13 @@ end;
 
 procedure TglMultiTexCoord3f.Execute;
 var
-  target : Cardinal;
-  s, t, r : Single;
+  target: Cardinal;
+  s, t, r: Single;
 begin
-  target:=Info['target'];
-  s:=Info['s'];
-  t:=Info['t'];
-  r:=Info['r'];
+  target := Info['target'];
+  s := Info['s'];
+  t := Info['t'];
+  r := Info['r'];
   GL.MultiTexCoord3f(target, s, t, r);
 end;
 
@@ -2454,14 +2460,14 @@ end;
 
 procedure TglMultiTexCoord4f.Execute;
 var
-  target : Cardinal;
-  s, t, r, q : Single;
+  target: Cardinal;
+  s, t, r, q: Single;
 begin
-  target:=Info['target'];
-  s:=Info['s'];
-  t:=Info['t'];
-  r:=Info['r'];
-  q:=Info['q'];
+  target := Info['target'];
+  s := Info['s'];
+  t := Info['t'];
+  r := Info['r'];
+  q := Info['q'];
   GL.MultiTexCoord4f(target, s, t, r, q);
 end;
 
@@ -2471,9 +2477,9 @@ end;
 
 procedure TglActiveTexture.Execute;
 var
-  target : Cardinal;
+  target: Cardinal;
 begin
-  target:=Info['target'];
+  target := Info['target'];
   GL.ActiveTexture(target);
 end;
 
@@ -2483,9 +2489,9 @@ end;
 
 procedure TglClientActiveTexture.Execute;
 var
-  target : Cardinal;
+  target: Cardinal;
 begin
-  target:=Info['target'];
+  target := Info['target'];
   GL.ClientActiveTexture(target);
 end;
 
@@ -2495,12 +2501,12 @@ end;
 
 procedure TglTexEnvf.Execute;
 var
-  target, pname : Cardinal;
-  param : Single;
+  target, pname: Cardinal;
+  param: Single;
 begin
-  target:=Info['target'];
-  pname:=Info['pname'];
-  param:=Info['param'];
+  target := Info['target'];
+  pname := Info['pname'];
+  param := Info['param'];
   GL.TexEnvf(target, pname, param);
 end;
 
@@ -2510,12 +2516,12 @@ end;
 
 procedure TglTexEnvi.Execute;
 var
-  target, pname : Cardinal;
-  param : Integer;
+  target, pname: Cardinal;
+  param: Integer;
 begin
-  target:=Info['target'];
-  pname:=Info['pname'];
-  param:=Info['param'];
+  target := Info['target'];
+  pname := Info['pname'];
+  param := Info['param'];
   GL.TexEnvi(target, pname, param);
 end;
 
@@ -2525,10 +2531,10 @@ end;
 
 procedure TglBlendFunc.Execute;
 var
-  sfactor, dfactor : Cardinal;
+  sfactor, dfactor: Cardinal;
 begin
-  sfactor:=Info['sfactor'];
-  dfactor:=Info['dfactor'];
+  sfactor := Info['sfactor'];
+  dfactor := Info['dfactor'];
   GL.BlendFunc(sfactor, dfactor);
 end;
 
@@ -2538,9 +2544,9 @@ end;
 
 procedure TglDepthFunc.Execute;
 var
-  func : Cardinal;
+  func: Cardinal;
 begin
-  func:=Info['func'];
+  func := Info['func'];
   GL.DepthFunc(func);
 end;
 
@@ -2550,9 +2556,9 @@ end;
 
 procedure TglDepthMask.Execute;
 var
-  flag : Byte;
+  flag: Byte;
 begin
-  flag:=Info['flag'];
+  flag := Info['flag'];
   GL.DepthMask(BYTEBOOL(flag));
 end;
 
@@ -2562,10 +2568,10 @@ end;
 
 procedure TglDepthRange.Execute;
 var
-  znear, zfar : Double;
+  znear, zfar: Double;
 begin
-  znear:=Info['znear'];
-  zfar:=Info['zfar'];
+  znear := Info['znear'];
+  zfar := Info['zfar'];
   GL.DepthRange(znear, zfar);
 end;
 
@@ -2575,12 +2581,12 @@ end;
 
 procedure TglStencilFunc.Execute;
 var
-  func, mask : Cardinal;
-  ref : Integer;
+  func, mask: Cardinal;
+  ref: Integer;
 begin
-  func:=Info['func'];
-  ref:=Info['ref'];
-  mask:=Info['mask'];
+  func := Info['func'];
+  ref := Info['ref'];
+  mask := Info['mask'];
   GL.StencilFunc(func, ref, mask);
 end;
 
@@ -2590,9 +2596,9 @@ end;
 
 procedure TglStencilMask.Execute;
 var
-  mask : Cardinal;
+  mask: Cardinal;
 begin
-  mask:=Info['mask'];
+  mask := Info['mask'];
   GL.StencilMask(mask);
 end;
 
@@ -2602,11 +2608,11 @@ end;
 
 procedure TglStencilOp.Execute;
 var
-  fail, zfail, zpass : Cardinal;
+  fail, zfail, zpass: Cardinal;
 begin
-  fail:=Info['fail'];
-  zfail:=Info['zfail'];
-  zpass:=Info['zpass'];
+  fail := Info['fail'];
+  zfail := Info['zfail'];
+  zpass := Info['zpass'];
   GL.StencilOp(fail, zfail, zpass);
 end;
 
@@ -2616,9 +2622,9 @@ end;
 
 procedure TglLogicOp.Execute;
 var
-  opcode : Cardinal;
+  opcode: Cardinal;
 begin
-  opcode:=Info['opcode'];
+  opcode := Info['opcode'];
   GL.LogicOp(opcode);
 end;
 

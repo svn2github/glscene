@@ -11,5 +11,6 @@ BRCC32 -r -foGLSceneNGD.dcr GLSceneNGD.rc
 BRCC32 -r -foGLSceneSDL.dcr GLSceneSDL.rc
 BRCC32 -r -foGLSceneCg.dcr GLSceneCg.rc
 BRCC32 -r -foGLSceneCUDA.dcr GLSceneCUDA.rc
+BRCC32 -r -foGLSceneDWS.dcr GLSceneDWS.rc
 BRCC32 -r -foGLSceneRunTime.dcr GLSceneRunTime.rc
 pause

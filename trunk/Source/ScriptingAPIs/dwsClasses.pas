@@ -1,22 +1,31 @@
-// dws2Classes
-{DelphiWebScriptII symbol creation for base Delphi classes. 
+//
+// This unit is part of the GLScene Project, http://glscene.org
+//
+{
+  DelphiWebScript symbol creation for base Delphi classes.
 
-    History :  
+  History :
        27/04/2004 - SG - Creation
-    
+
 }
-unit dws2Classes;
+unit dwsClasses;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   //dws
-  dws2Exprs, dws2Symbols, dws2Comp, dws2CompStrings, dws2Stack, 
-  dws2Functions, dws2HelperFunc;
+  dwsExprs, 
+  dwsSymbols, 
+  dwsComp, 
+  dwsCompStrings, 
+  dwsStack, 
+  dwsFunctions, 
+  dwsHelperFunc;
 
 type
-  Tdws2ClassesUnit = class(Tdws2UnitComponent)
+  TdwsClassesUnit = class(TdwsUnitComponent)
     private
 
       procedure AddClassTPersistent(SymbolTable : TSymbolTable);
@@ -296,12 +305,12 @@ end;
 
 
 // ----------
-// ---------- Tdws2ClassesUnit ----------
+// ---------- TdwsClassesUnit ----------
 // ----------
 
 // Create
 //
-constructor Tdws2ClassesUnit.Create(AOwner: TComponent);
+constructor TdwsClassesUnit.Create(AOwner: TComponent);
 begin
   inherited;
   FUnitName:='Classes';
@@ -309,7 +318,7 @@ end;
 
 // AddClassTPersistent
 //
-procedure Tdws2ClassesUnit.AddClassTPersistent(SymbolTable: TSymbolTable);
+procedure TdwsClassesUnit.AddClassTPersistent(SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
 begin
@@ -323,7 +332,7 @@ end;
 
 // AddClassTComponent
 //
-procedure Tdws2ClassesUnit.AddClassTComponent(SymbolTable: TSymbolTable);
+procedure TdwsClassesUnit.AddClassTComponent(SymbolTable: TSymbolTable);
 var
   ClassSym : TClassSymbol;
 begin
@@ -373,7 +382,7 @@ end;
 
 // AddUnitSymbols
 //
-procedure Tdws2ClassesUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
+procedure TdwsClassesUnit.AddUnitSymbols(SymbolTable: TSymbolTable);
 begin
   // Forward class declaration
   AddForwardDeclaration('TPersistent', SymbolTable);

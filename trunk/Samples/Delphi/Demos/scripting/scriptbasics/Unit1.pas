@@ -3,21 +3,38 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
   //GLS
-  GLScene, GLObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
-  dws2Classes, dws2VectorGeometry, dws2GLScene, GLDWS2Objects, dws2Comp,
-  GLScriptDWS2, GLCoordinates, GLCrossPlatform, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLAsyncTimer,
+  dwsClasses,
+  dwsVectorGeometry,
+  dwsGLScene,
+  GLDWSObjects,
+  dwsComp,
+  GLScriptDWS,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
     GLScene1: TGLScene;
     GLCadencer1: TGLCadencer;
-    GLDelphiWebScriptII1: TGLDelphiWebScriptII;
-    dws2VectorGeometryUnit1: Tdws2VectorGeometryUnit;
+    GLDelphiWebScript1: TGLDelphiWebScript;
+    dwsVectorGeometryUnit1: TdwsVectorGeometryUnit;
     GLSphere1: TGLSphere;
     Panel1: TPanel;
     Button3: TButton;
@@ -28,8 +45,8 @@ type
     GLCamera1: TGLCamera;
     GLLightSource1: TGLLightSource;
     GLCube1: TGLCube;
-    dws2ClassesUnit1: Tdws2ClassesUnit;
-    dws2GLSceneUnit1: Tdws2GLSceneUnit;
+    dwsClassesUnit1: TdwsClassesUnit;
+    dwsGLSceneUnit1: TdwsGLSceneUnit;
     Label1: TLabel;
     Label2: TLabel;
     AsyncTimer1: TGLAsyncTimer;
@@ -59,13 +76,13 @@ end;
 procedure TForm1.Button3Click(Sender: TObject);
 begin
   // Set GLSphere1's script and force a recompile
-  with TGLDWS2ActiveBehaviour(GLSphere1.Behaviours[0]) do begin
+  with TGLDWSActiveBehaviour(GLSphere1.Behaviours[0]) do begin
     Script.Text:=GLSphere1Script.Lines.Text;
     InvalidateScript;
   end;
 
   // Set GLCube1's script and force a recompile
-  with TGLDWS2ActiveBehaviour(GLCube1.Behaviours[0]) do begin
+  with TGLDWSActiveBehaviour(GLCube1.Behaviours[0]) do begin
     Script.Text:=GLCube1Script.Lines.Text;
     InvalidateScript;
   end;
@@ -78,7 +95,7 @@ end;
 
 procedure TForm1.AsyncTimer1Timer(Sender: TObject);
 begin
-  Form1.Caption:='GLScene DWS2 Scripting Basics - '+GLSceneViewer1.FramesPerSecondText;
+  Form1.Caption:='GLScene DWS Scripting Basics - '+GLSceneViewer1.FramesPerSecondText;
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

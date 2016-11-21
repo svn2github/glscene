@@ -37,12 +37,23 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes,
-  VCL.Forms, VCL.Controls, VCL.Buttons, VCL.StdCtrls, VCL.ComCtrls,
-  VCL.ExtCtrls, VCL.Graphics, VCL.Menus, VCL.Imaging.JPEG,
-
-  GLScene, GLWin32Viewer,
-  OpenGLTokens, OpenGLAdapter, GLContext, GLCrossPlatform;
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Forms,
+  Vcl.Controls,
+  Vcl.Buttons,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Graphics,
+  Vcl.Menus,
+  Vcl.Imaging.jpeg,
+  //GLS
+  GLScene,
+  GLWin32Viewer,
+  GLContext,
+  GLCrossPlatform;
 
 type
 

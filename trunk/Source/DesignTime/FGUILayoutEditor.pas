@@ -8,12 +8,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  Winapi.Windows, Winapi.ShellApi,
-  System.SysUtils, System.Variants, System.Classes,
-  VCL.Graphics,  VCL.Controls,  VCL.Forms,  VCL.Dialogs,  VCL.Buttons,
-  VCL.ExtDlgs, VCL.StdCtrls,  VCL.ExtCtrls,  Vcl.Samples.Spin,  VCL.Grids,
-   
-  GLCrossPlatform,  GLBaseClasses,  GLGui;
+  Winapi.Windows,
+  Winapi.ShellApi,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Buttons,
+  Vcl.ExtDlgs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Samples.Spin,
+  Vcl.Grids,
+  //GLS
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLGui;
 
 type
   TGLLayoutEditorForm = class(TForm)
