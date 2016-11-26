@@ -141,7 +141,6 @@
         <DCCReference Include="vcl.dcp"/>
         <DCCReference Include="xmlrtl.dcp"/>
         <DCCReference Include="GLScene_RunTime.dcp"/>
-        <DCCReference Include="..\..\Source\ParallelAPIs\GLSOpenCL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDARuntime.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDACompiler.pas"/>
@@ -154,6 +153,7 @@
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDA.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAApi.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFilePGM.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\CL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
@@ -188,12 +188,6 @@
                 <Platform value="Win64">True</Platform>
             </Platforms>
             <Deployment Version="3">
-                <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\17.0\Bpl\GLScene_Parallel_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
-                    <Platform Name="Win32">
-                        <RemoteName>GLScene_Parallel_RunTime.bpl</RemoteName>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
                 <DeployFile LocalName="C:\Users\Public\Documents\Embarcadero\Studio\18.0\Bpl\Win64\GLScene_Parallel_RunTime.bpl" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win64">
                         <RemoteName>GLScene_Parallel_RunTime.bpl</RemoteName>

@@ -20,22 +20,16 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  3DNow! SIMD instructions are automatically detected and used in *some* of the
-  functions/procedures, typical gains (over FPU implementation) are approx a
-  100% speed increase on K6-2/3, and 20-60% on K7, and sometimes more
-  (f.i. 650% on 4x4 matrix multiplication for the K6, 300% for RSqrt on K7).
-
-  Cyrix, NexGen and other "exotic" CPUs may fault in the 3DNow! detection
-  (initialization section), comment out or replace with your own detection
-  routines if you want to support these. All AMD processors after K5, and
-  all Intel processors after Pentium should be immune to this.
+  The whole history is logged in a former GLS version of the unit.
 }
 unit GLVectorGeometry;
 
 interface
 
 uses
-  System.SysUtils, System.Types, System.Math,
+  System.SysUtils,
+  System.Types,
+  System.Math,
   //GLS
   GLVectorTypes;
 

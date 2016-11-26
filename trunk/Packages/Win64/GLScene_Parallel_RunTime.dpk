@@ -37,7 +37,6 @@ requires
   GLScene_RunTime;
 
 contains
-  GLSOpenCL in '..\..\Source\ParallelAPIs\GLSOpenCL.pas',
   GLSCUDARuntime in '..\..\Source\ParallelAPIs\GLSCUDARuntime.pas',
   GLSCUDAFourierTransform in '..\..\Source\ParallelAPIs\GLSCUDAFourierTransform.pas',
   GLSCUDACompiler in '..\..\Source\ParallelAPIs\GLSCUDACompiler.pas',
@@ -50,6 +49,7 @@ contains
   GLSCUDA in '..\..\Source\ParallelAPIs\GLSCUDA.pas',
   GLSCUDAApi in '..\..\Source\ParallelAPIs\GLSCUDAApi.pas',
   GLFilePGM in '..\..\Source\FileFormats\GLFilePGM.pas',
+  CL in '..\..\Source\ParallelAPIs\CL.pas',
   CL_GL in '..\..\Source\ParallelAPIs\CL_GL.pas';
 
 end.

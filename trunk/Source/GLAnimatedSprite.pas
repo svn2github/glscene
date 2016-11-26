@@ -1,27 +1,17 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
-//
+//       Copyright (C) 2017 GLSteam, All Rights Reserved
+{
+  This Source Code is subject to the terms of the Mozilla Public License, 
+  v. 2.0. If a copy of the MPL was not distributed with this file, 
+  You can obtain one at http://mozilla.org/MPL/2.0/.
+}
 {
   A sprite that uses a scrolling texture for animation. 
 
-   History :  
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TSpriteAnimation (BugTracker ID = 1938988)
-       25/03/07 - DaStr - Added GLCrossPlatform to uses for Delphi5 compatibility
-       14/03/07 - DaStr - Added IGLMaterialLibrarySupported to TSpriteAnimation
-                             Published TGLAnimatedSprite.Visible
-                             Fixed TGLAnimatedSprite.SetMaterialLibrary
-                                                      (subcribed for notification)
-       21/07/04 - SG - Added Margins to Animations, Added comments.
-       20/07/04 - SG - Added FrameRate (alternative for Interval),
-                          Added Interval to Animations, will override
-                          sprite interval if not equal to zero.
-                          Some minor fixes.
-       13/07/04 - SG - Creation
+  History :  
+    13/07/04 - SG - Creation
+    The whole history is logged in previous versions of the unit
      
 }
 unit GLAnimatedSprite;
@@ -29,11 +19,20 @@ unit GLAnimatedSprite;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLScene, GLVectorGeometry, OpenGLTokens, GLMaterial,
-  GLPersistentClasses, GLXCollection, GLCrossPlatform, GLRenderContextInfo,
-  GLBaseClasses, GLContext, GLState;
+  System.Classes, 
+  System.SysUtils,
+  //GLS 
+  GLScene, 
+  GLVectorGeometry, 
+  OpenGLTokens, 
+  GLMaterial,
+  GLPersistentClasses, 
+  GLXCollection, 
+  GLCrossPlatform, 
+  GLRenderContextInfo,
+  GLBaseClasses, 
+  GLContext, 
+  GLState;
 
 type
   TSpriteAnimFrame = class;

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Conversion of OpenCL cl.h and cl_platform header files into Delphi
+   Conversion of OpenCL cl.h and cl_platform header files into CL.pas
    from http://www.khronos.org/registry/cl/.
 }
 // *****************************************************************************
@@ -33,7 +33,7 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // *****************************************************************************
 
-unit GLSOpenCL;
+unit CL;
 
 interface
 

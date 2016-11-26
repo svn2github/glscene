@@ -146,6 +146,7 @@
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDA.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\GLSCUDAApi.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\GLFilePGM.pas"/>
+        <DCCReference Include="..\..\Source\ParallelAPIs\CL.pas"/>
         <DCCReference Include="..\..\Source\ParallelAPIs\CL_GL.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

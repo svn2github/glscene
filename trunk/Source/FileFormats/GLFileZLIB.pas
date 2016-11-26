@@ -3,10 +3,7 @@
 //
 {
    Methods for archiving using ZLib 
-   History :  
-       04/02/15 - PW - Changed using GLSZLibEx to System.ZLib
-       22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII
-       04/06/10 - Yar - Added to GLScene (as created by Rustam Asmandiarov aka Predator)
+   The whole history is logged in a former version of the unit.
 }
 
 unit GLFileZLIB;

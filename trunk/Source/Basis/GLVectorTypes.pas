@@ -15,21 +15,9 @@
    
 
    Note : D3D types untested. 
-
-	 History :  
-     10/12/14 - PW - Renamed from "VectorTypes.pas" to "GLVectorTypes.pas"
-     18/12/12 - PW - Restored CPP compatibility: changed arrays to records
-     21/02/11 - Yar - Added half and signed byte vectors
-     03/03/07 - DaStr - Added TMatrix2[d/d/i/s/b/e/w/p] types
-     13/01/07 - DaStr - Added T[Matrix/Vector][2/3/4][e/w/p] types
-     19/12/04 - PhP - Added byte vectors
-     02/08/04 - LR, YHC - BCB corrections: use record instead array
-                             move PAffineVectorArray, PVectorArray and PMatrixArray
-                             from GLVectorGeometry to this Unit
-     28/06/04 - LR - Removed ..\ from the GLScene.inc
-     24/08/03 - PhP - Added smallint vectors
+	 History :
      04/07/01 - EG - Creation
-  
+     The whole history is logged in a former version of the unit.
 }
 unit GLVectorTypes;
 

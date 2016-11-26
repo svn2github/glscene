@@ -8,7 +8,7 @@ package GLScene_RunTime;
 {$DEBUGINFO OFF}
 {$EXTENDEDSYNTAX ON}
 {$IMPORTEDDATA ON}
-{$IOCHECKS OFF}
+{$IOCHECKS ON}
 {$LOCALSYMBOLS ON}
 {$LONGSTRINGS ON}
 {$OPENSTRINGS ON}
@@ -125,8 +125,8 @@ contains
   GLFileVRML in '..\..\Source\FileFormats\GLFileVRML.pas',
   GLFileWAV in '..\..\Source\FileFormats\GLFileWAV.pas',
   GLFileX in '..\..\Source\FileFormats\GLFileX.pas',
-  GLFileZLIB in '..\..\Source\FileFormats\GLFileZLIB.pas',
   GLFireFX in '..\..\Source\GLFireFX.pas',
+  GLFileZLIB in '..\..\Source\FileFormats\GLFileZLIB.pas',
   GLFullScreenViewer in '..\..\Source\GLFullScreenViewer.pas',
   GLGLUTesselation in '..\..\Source\GLGLUTesselation.pas',
   GLGameMenu in '..\..\Source\GameAPIs\GLGameMenu.pas',

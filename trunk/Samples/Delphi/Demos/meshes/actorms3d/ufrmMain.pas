@@ -138,7 +138,8 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 
 begin
   SetGLSceneMediaDir();
-  GLSArchiveManager1.Archives[0].LoadFromFile('ActorMS3D.zlib');
+  Matlib.TexturePaths := GetCurrentDir();
+  GLSArchiveManager1.Archives[0].LoadFromFile('\ActorMS3D.zlib');
   LoadTexture('floor_parquet', 'JPG');
   LoadTexture('Chair', 'PNG');
   LoadTexture('Hair', 'PNG');
@@ -209,8 +210,8 @@ begin
 
   FBiasMatrix := CreateScaleAndTranslationMatrix(VectorMake(0.5, 0.5, 0.5),
     VectorMake(0.5, 0.5, 0.5));
-  GLSLShader1.VertexProgram.LoadFromFile('shadowmap_vp.glsl');
-  GLSLShader1.FragmentProgram.LoadFromFile('shadowmap_fp.glsl');
+  GLSLShader1.VertexProgram.LoadFromFile('Shaders\shadowmap_vp.glsl');
+  GLSLShader1.FragmentProgram.LoadFromFile('Shaders\shadowmap_fp.glsl');
   GLSLShader1.Enabled := true;
 end;
 
