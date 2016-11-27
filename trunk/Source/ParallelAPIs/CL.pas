@@ -2,150 +2,51 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Conversion of OpenCL cl.h and cl_platform header files into CL.pas
+   Conversion of OpenCL cl.h header file into CL.pas
    from http://www.khronos.org/registry/cl/.
 }
-// *****************************************************************************
-// * Copyright (c) 2008-2015 The Khronos Group Inc.
-// *
-// * Permission is hereby granted, free of charge, to any person obtaining a
-// * copy of this software and/or associated documentation files (the
-// * "Materials"), to deal in the Materials without restriction, including
-// * without limitation the rights to use, copy, modify, merge, publish,
-// * distribute, sublicense, and/or sell copies of the Materials, and to
-// * permit persons to whom the Materials are furnished to do so, subject to
-// * the following conditions:
-// *
-// * The above copyright notice and this permission notice shall be included
-// * in all copies or substantial portions of the Materials.
-// *
-// * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
-// * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
-// * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
-// *    https://www.khronos.org/registry/
-// *
-// * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-// * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-// * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-// * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-// * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-// * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
-// *****************************************************************************
+(****************************************************************************
+ * Copyright (c) 2008-2015 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ **************************************************************************)
 
 unit CL;
 
 interface
 
 uses
-  Winapi.Windows;
+  Winapi.Windows,
+  CL_Platform;
 
 const
   LibOpenCL = 'OpenCL.dll';
 
-//+++++++++++++ Types and constants from CL_Platform.h ++++++++++++++
-type
-  Tsize_t = NativeUInt; // 32 or 64 bit unsigned integer
-  Psize_t = ^Tsize_t;
-  intptr_t = NativeUInt;
-  // Pintptr_t = ^intptr_t;
 
-  // scalar types
-  Tcl_char = ShortInt;
-  Tcl_uchar = Byte;
-  Tcl_short = SmallInt;
-  Tcl_ushort = Word;
-  Tcl_int = LongInt;
-  Tcl_uint = LongWord;
-  Tcl_long = Int64;
-  Tcl_ulong = UInt64;
 
-  Tcl_half = Word;
-  Tcl_float = Single;
-  Tcl_double = Double;
-
-  Pcl_char = ^Tcl_char;
-  Pcl_uchar = ^Tcl_uchar;
-  Pcl_short = ^Tcl_short;
-  Pcl_ushort = ^Tcl_ushort;
-  Pcl_int = ^Tcl_int;
-  Pcl_uint = ^Tcl_uint;
-  Pcl_long = ^Tcl_long;
-  Pcl_ulong = ^Tcl_ulong;
-
-  Pcl_half = ^Tcl_half;
-  Pcl_float = ^Tcl_float;
-  Pcl_double = ^Tcl_double;
-
-  /// *
-  // * Vector types
-  // *
-  // *  Note:   OpenCL requires that all types be naturally aligned.
-  // *          This means that vector types must be naturally aligned.
-  // *          For example, a vector of four floats must be aligned to
-  // *          a 16 byte boundary (calculated as 4 * the natural 4-byte
-  // *          alignment of the float).  The alignment qualifiers here
-  // *          will only function properly if your compiler supports them
-  // *          and if you don't actively work to defeat them.  For example,
-  // *          in order for a cl_float4 to be 16 byte aligned in a struct,
-  // *          the start of the struct must itself be 16-byte aligned.
-  // *
-  // *          Maintaining proper alignment is the user's responsibility.
-  // */
-//******************************************************************************//
-
-type
-  Tcl_char2 = array [0 .. 1] of Tcl_char;
-  Tcl_char4 = array [0 .. 3] of Tcl_char;
-  Tcl_char8 = array [0 .. 7] of Tcl_char;
-  Tcl_char16 = array [0 .. 15] of Tcl_char;
-
-  Tcl_uchar2 = array [0 .. 1] of Tcl_uchar;
-  Tcl_uchar4 = array [0 .. 3] of Tcl_uchar;
-  Tcl_uchar8 = array [0 .. 7] of Tcl_uchar;
-  Tcl_uchar16 = array [0 .. 15] of Tcl_uchar;
-
-  Tcl_short2 = array [0 .. 1] of Tcl_short;
-  Tcl_short4 = array [0 .. 3] of Tcl_short;
-  Tcl_short8 = array [0 .. 7] of Tcl_short;
-  Tcl_short16 = array [0 .. 15] of Tcl_short;
-
-  Tcl_ushort2 = array [0 .. 1] of Tcl_ushort;
-  Tcl_ushort4 = array [0 .. 3] of Tcl_ushort;
-  Tcl_ushort8 = array [0 .. 7] of Tcl_ushort;
-  Tcl_ushort16 = array [0 .. 15] of Tcl_ushort;
-
-  Tcl_int2 = array [0 .. 1] of Tcl_int;
-  Tcl_int4 = array [0 .. 3] of Tcl_int;
-  Tcl_int8 = array [0 .. 7] of Tcl_int;
-  Tcl_int16 = array [0 .. 15] of Tcl_int;
-
-  Tcl_uint2 = array [0 .. 1] of Tcl_uint;
-  Tcl_uint4 = array [0 .. 3] of Tcl_uint;
-  Tcl_uint8 = array [0 .. 7] of Tcl_uint;
-  Tcl_uint16 = array [0 .. 15] of Tcl_uint;
-
-  Tcl_long2 = array [0 .. 1] of Tcl_long;
-  Tcl_long4 = array [0 .. 3] of Tcl_long;
-  Tcl_long8 = array [0 .. 7] of Tcl_long;
-  Tcl_long16 = array [0 .. 15] of Tcl_long;
-
-  Tcl_ulong2 = array [0 .. 1] of Tcl_ulong;
-  Tcl_ulong4 = array [0 .. 3] of Tcl_ulong;
-  Tcl_ulong8 = array [0 .. 7] of Tcl_ulong;
-  Tcl_ulong16 = array [0 .. 15] of Tcl_ulong;
-
-  Tcl_float2 = array [0 .. 1] of Tcl_float;
-  Tcl_float4 = array [0 .. 3] of Tcl_float;
-  Tcl_float8 = array [0 .. 7] of Tcl_float;
-  Tcl_float16 = array [0 .. 15] of Tcl_float;
-
-  Tcl_double2 = array [0 .. 1] of Tcl_double;
-  Tcl_double4 = array [0 .. 3] of Tcl_double;
-  Tcl_double8 = array [0 .. 7] of Tcl_double;
-  Tcl_double16 = array [0 .. 15] of Tcl_double;
- // There are no vector types for half
-
+  
 type
   T_cl_platform_id = record end;
   Tcl_platform_id = ^T_cl_platform_id;
@@ -282,12 +183,12 @@ type
 
   Tcl_image_desc = record
     image_type: Tcl_mem_object_type;
-    image_width: Tsize_t;
-    image_height: Tsize_t;
-    image_depth: Tsize_t;
-    image_array_size: Tsize_t;
-    image_row_pitch: Tsize_t;
-    image_slice_pitch: Tsize_t;
+    image_width: NativeUInt;
+    image_height: NativeUInt;
+    image_depth: NativeUInt;
+    image_array_size: NativeUInt;
+    image_row_pitch: NativeUInt;
+    image_slice_pitch: NativeUInt;
     num_mip_levels: Tcl_uint;
     num_samples: Tcl_uint;
     case Word of
@@ -297,53 +198,15 @@ type
   Pcl_image_desc = ^Tcl_image_desc;
 
   Tcl_buffer_region = record
-    origin: Tsize_t;
-    size: Tsize_t;
+    origin: NativeUInt;
+    size: NativeUInt;
   end;
   Pcl_buffer_region = ^Tcl_buffer_region;
 
- const
-  CL_CHAR_BIT = 8;
-  CL_SCHAR_MAX = 127;
-  CL_SCHAR_MIN = (-127 - 1);
-  CL_CHAR_MAX = CL_SCHAR_MAX;
-  CL_CHAR_MIN = CL_SCHAR_MIN;
-  CL_UCHAR_MAX = 255;
-  CL_SHRT_MAX = 32767;
-  CL_SHRT_MIN = (-32767 - 1);
-  CL_USHRT_MAX = 65535;
-  CL_INT_MAX = 2147483647;
-  CL_INT_MIN = (-2147483647 - 1);
-  CL_UINT_MAX = $FFFFFFFF;
-  CL_LONG_MAX = $7FFFFFFFFFFFFFFF;
-  CL_LONG_MIN = -$7FFFFFFFFFFFFFFF - 1;
-  CL_ULONG_MAX = $FFFFFFFFFFFFFFFF;
-
-  CL_FLT_DIG = 6;
-  CL_FLT_MANT_DIG = 24;
-  CL_FLT_MAX_10_EXP = +38;
-  CL_FLT_MAX_EXP = +128;
-  CL_FLT_MIN_10_EXP = -37;
-  CL_FLT_MIN_EXP = -125;
-  CL_FLT_RADIX = 2;
-  CL_FLT_MAX = 1.7E38; // 0x1.fffffep127f;
-  CL_FLT_MIN = 1.17E-38; // 0x1.0p-126f;
-  CL_FLT_EPSILON = 1.0E-7; // 0x1.0p-23f;
-
-  CL_DBL_DIG = 15;
-  CL_DBL_MANT_DIG = 53;
-  CL_DBL_MAX_10_EXP = +308;
-  CL_DBL_MAX_EXP = +1024;
-  CL_DBL_MIN_10_EXP = -307;
-  CL_DBL_MIN_EXP = -1021;
-  CL_DBL_RADIX = 2;
-  CL_DBL_MAX = 8.98E307; // 0x1.fffffffffffffp1023;
-  CL_DBL_MIN = 2.2E-308; // 0x1.0p-1022;
-  CL_DBL_EPSILON = 2.2E-26; // 0x1.0p-52;
-//+++++++++ End of CL_Platform.h ++++++++++++++++++++ 
+(******************************************************************************)
   
  
-//* Error Codes *//
+(* Error Codes *)
 const
   CL_SUCCESS =                                     0;
   CL_DEVICE_NOT_FOUND =                           -1;
@@ -408,20 +271,20 @@ const
   CL_INVALID_PIPE_SIZE =                         -69;
   CL_INVALID_DEVICE_QUEUE =                      -70;
 
-  // OpenCL Version
+  (* OpenCL Version *)
   CL_VERSION_1_0 =                                 1;
   CL_VERSION_1_1 =                                 1;
   CL_VERSION_1_2 =                                 1;
   CL_VERSION_2_0 =                                 1;
   CL_VERSION_2_1 =                                 1;
 
-  //* cl_bool *//
+  (* cl_bool *)
   CL_FALSE =                                       0;
   CL_TRUE =                                        1;
   CL_BLOCKING =                                    CL_TRUE;
   CL_NON_BLOCKING =                                CL_FALSE;
 
-  //* cl_platform_info *//
+  (* cl_platform_info *)
   CL_PLATFORM_PROFILE =                            $0900;
   CL_PLATFORM_VERSION =                            $0901;
   CL_PLATFORM_NAME =                               $0902;
@@ -429,7 +292,7 @@ const
   CL_PLATFORM_EXTENSIONS =                         $0904;
   CL_PLATFORM_HOST_TIMER_RESOLUTION =              $0905;
 
-  //* cl_device_type - bitfield *//
+  (* cl_device_type - bitfield *)
   CL_DEVICE_TYPE_DEFAULT =                         (1 shl 0);
   CL_DEVICE_TYPE_CPU =                             (1 shl 1);
   CL_DEVICE_TYPE_GPU =                             (1 shl 2);
@@ -437,7 +300,7 @@ const
   CL_DEVICE_TYPE_CUSTOM =                          (1 shl 4);
   CL_DEVICE_TYPE_ALL =                             $FFFFFFFF;
 
-  //* cl_device_info *//
+  (* cl_device_info *)
   CL_DEVICE_TYPE =                                 $1000;
   CL_DEVICE_VENDOR_ID =                            $1001;
   CL_DEVICE_MAX_COMPUTE_UNITS =                    $1002;
@@ -490,7 +353,7 @@ const
   CL_DEVICE_EXTENSIONS =                           $1030;
   CL_DEVICE_PLATFORM =                             $1031;
   CL_DEVICE_DOUBLE_FP_CONFIG =                     $1032;
-//* 0x1033 reserved for CL_DEVICE_HALF_FP_CONFIG *//
+  CL_DEVICE_HALF_FP_CONFIG =                       $1033;
   CL_DEVICE_PREFERRED_VECTOR_WIDTH_HALF =          $1034;
   CL_DEVICE_HOST_UNIFIED_MEMORY =                  $1035;   //* deprecated *//
   CL_DEVICE_NATIVE_VECTOR_WIDTH_CHAR =             $1036;
@@ -534,7 +397,7 @@ const
   CL_DEVICE_MAX_NUM_SUB_GROUPS =                   $105C;
   CL_DEVICE_SUB_GROUP_INDEPENDENT_FORWARD_PROGRESS = $105D;
 
-  //* cl_device_fp_config - bitfield *//
+  (* cl_device_fp_config - bitfield *)
   CL_FP_DENORM =                               (1 shl 0);
   CL_FP_INF_NAN =                              (1 shl 1);
   CL_FP_ROUND_TO_NEAREST =                     (1 shl 2);
@@ -544,42 +407,42 @@ const
   CL_FP_SOFT_FLOAT =                           (1 shl 6);
   CL_FP_CORRECTLY_ROUNDED_DIVIDE_SQRT =        (1 shl 7);
 
-  //* cl_device_mem_cache_type *//
+  (* cl_device_mem_cache_type *)
   CL_NONE =                                     $0;
   CL_READ_ONLY_CACHE =                          $1;
   CL_READ_WRITE_CACHE =                         $2;
 
-  //* cl_device_local_mem_type *//
+  (* cl_device_local_mem_type *)
   CL_LOCAL =                                    $1;
   CL_GLOBAL =                                   $2;
 
-  //* cl_device_exec_capabilities - bitfield *//
+  (* cl_device_exec_capabilities - bitfield *)
   CL_EXEC_KERNEL =                              (1 shl 0);
   CL_EXEC_NATIVE_KERNEL =                       (1 shl 1);
 
-  //* cl_command_queue_properties - bitfield *//
+  (* cl_command_queue_properties - bitfield *)
   CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE =      (1 shl 0);
   CL_QUEUE_PROFILING_ENABLE =                   (1 shl 1);
   CL_QUEUE_ON_DEVICE =                          (1 shl 2);
   CL_QUEUE_ON_DEVICE_DEFAULT =                  (1 shl 3);
 
-  // cl_context_info
+  (* cl_context_info *)
   CL_CONTEXT_REFERENCE_COUNT =                      $1080;
   CL_CONTEXT_DEVICES =                              $1081;
   CL_CONTEXT_PROPERTIES =                           $1082;
   CL_CONTEXT_NUM_DEVICES =                          $1083;
 
-  //* cl_context_properties *//
+  (* cl_context_properties *)
   CL_CONTEXT_PLATFORM =                             $1084;
   CL_CONTEXT_INTEROP_USER_SYNC =                    $1085;
     
-  //* cl_device_partition_property *//
+  (* cl_device_partition_property *)
   CL_DEVICE_PARTITION_EQUALLY =                     $1086;
   CL_DEVICE_PARTITION_BY_COUNTS =                   $1087;
   CL_DEVICE_PARTITION_BY_COUNTS_LIST_END =          $0;
   CL_DEVICE_PARTITION_BY_AFFINITY_DOMAIN =          $1088;
     
-  //* cl_device_affinity_domain *//
+  (* cl_device_affinity_domain *)
   CL_DEVICE_AFFINITY_DOMAIN_NUMA =               (1 shl 0);
   CL_DEVICE_AFFINITY_DOMAIN_L4_CACHE =           (1 shl 1);
   CL_DEVICE_AFFINITY_DOMAIN_L3_CACHE =           (1 shl 2);
@@ -587,7 +450,7 @@ const
   CL_DEVICE_AFFINITY_DOMAIN_L1_CACHE =           (1 shl 4);
   CL_DEVICE_AFFINITY_DOMAIN_NEXT_PARTITIONABLE = (1 shl 5);
     
-  //* cl_device_svm_capabilities *//
+  (* cl_device_svm_capabilities *)
   CL_DEVICE_SVM_COARSE_GRAIN_BUFFER =            (1 shl 0);
   CL_DEVICE_SVM_FINE_GRAIN_BUFFER =              (1 shl 1);
   CL_DEVICE_SVM_FINE_GRAIN_SYSTEM =              (1 shl 2);
@@ -865,9 +728,9 @@ const
   CL_PROFILING_COMMAND_COMPLETE =                 $1284;
 
 
-  //********************************************************************************
+  (**************************************************************************************************)
 var
-  //* Platform API *//
+  (* Platform API *)
   clGetPlatformIDs: function(num_entries: Tcl_uint;
     platforms: Pcl_platform_id;
     num_platforms: Pcl_uint): Tcl_int;     // CL_API_SUFFIX__VERSION_1_0
@@ -875,7 +738,7 @@ var
 
   clGetPlatformInfo: function(cl_platform: Tcl_platform_id;
     param_name: Tcl_platform_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -890,7 +753,7 @@ var
 
   clGetDeviceInfo: function(device: Tcl_device_id;
     param_name: Tcl_device_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  // CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -926,7 +789,7 @@ var
 type
   Tcl_context_notify = procedure(errinfo: PAnsiChar;
     private_info: Pointer;
-    size: Tsize_t;
+    size: NativeUInt;
     user_data: Pointer);
    stdcall;
 
@@ -954,7 +817,7 @@ var
 
   clGetContextInfo: function(context: Tcl_context;
     param_name: Tcl_context_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -974,7 +837,7 @@ var
 
   clGetCommandQueueInfo: function(command_queue: Tcl_command_queue;
     param_name: Tcl_command_queue_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
   stdcall;
@@ -982,7 +845,7 @@ var
   //* Memory Object APIs *//
   clCreateBuffer: function(context: Tcl_context;
     flags: Tcl_mem_flags;
-    size: Tsize_t;
+    size: NativeUInt;
     host_ptr: Pointer;
     errcode_ret: Pcl_int): Tcl_mem;  //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1026,21 +889,21 @@ var
 
   clGetMemObjectInfo: function(memobj: Tcl_mem;
     param_name: Tcl_mem_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
 
   clGetImageInfo: function(image: Tcl_mem;
     param_name: Tcl_image_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
 
   clGetPipeInfo: function(pipe: Tcl_mem;
     param_name: Tcl_pipe_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
    stdcall;
@@ -1059,7 +922,7 @@ type
    //* SVM Allocation APIs *//
    clSVMAlloc: function(context: Tcl_context;
      flags: Tcl_svm_mem_flags;
-     size: Tsize_t;
+     size: NativeUInt;
      alignment: Tcl_uint): Pointer; //CL_API_SUFFIX__VERSION_2_0
    stdcall;
 
@@ -1082,7 +945,7 @@ type
 
   clGetSamplerInfo: function(sampler: Tcl_sampler;
     param_name: Tcl_sampler_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1113,7 +976,7 @@ type
 
   clCreateProgramWithIL: function(context: Tcl_context;
     il: Pointer;
-    length: Tsize_t;
+    length: NativeUInt;
     errcode_ret: Pcl_int): Tcl_program; //CL_API_SUFFIX__VERSION_2_1
    stdcall;
 
@@ -1164,7 +1027,7 @@ var
 
   clGetProgramInfo: function(_program: Tcl_program;
     param_name: Tcl_program_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1172,7 +1035,7 @@ var
   clGetProgramBuildInfo: function(_program: Tcl_program;
     device: Tcl_device_id;
     param_name: Tcl_program_build_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1201,7 +1064,7 @@ var
 
   clSetKernelArg: function(kernel: Tcl_kernel;
     arg_index: Tcl_uint;
-    arg_size: Tsize_t;
+    arg_size: NativeUInt;
     arg_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
 
@@ -1212,13 +1075,13 @@ var
 
   clSetKernelExecInfo: function(kernel: Tcl_kernel;
     param_name: Tcl_kernel_exec_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer): Tcl_int; //CL_API_SUFFIX__VERSION_2_0
    stdcall;
 
   clGetKernelInfo: function(kernel: Tcl_kernel;
     param_name: Tcl_kernel_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1226,7 +1089,7 @@ var
   clGetKernelArgInfo: function(kernel: Tcl_kernel;
     arg_indx: Tcl_uint;
     param_name: Tcl_kernel_arg_info;
-	param_value_size: Tsize_t;
+	param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
    stdcall;
@@ -1234,7 +1097,7 @@ var
   clGetKernelWorkGroupInfo: function(kernel: Tcl_kernel;
     device: Tcl_device_id;
     param_name: Tcl_kernel_work_group_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1242,9 +1105,9 @@ var
   clGetKernelSubGroupInfo: function(kernel: Tcl_kernel;
     device: Tcl_device_id;
     param_name: Tcl_kernel_sub_group_info;
-    input_value_size: Tsize_t;
+    input_value_size: NativeUInt;
     input_value: Pointer;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1256,7 +1119,7 @@ var
 
   clGetEventInfo: function(event: Tcl_event;
     param_name: Tcl_event_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;   //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1291,7 +1154,7 @@ var
   //* Profiling APIs *//
   clGetEventProfilingInfo: function(event: Tcl_event;
     param_name: Tcl_profiling_info;
-    param_value_size: Tsize_t;
+    param_value_size: NativeUInt;
     param_value: Pointer;
     param_value_size_ret: Psize_t): Tcl_int;  //CL_API_SUFFIX__VERSION_1_0
    stdcall;
@@ -1307,8 +1170,8 @@ var
   clEnqueueReadBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
     blocking_read: Tcl_bool;
-    offset: Tsize_t;
-    size: Tsize_t;
+    offset: NativeUInt;
+    size: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1321,10 +1184,10 @@ var
     buffer_offset: Psize_t;
     host_offset: Psize_t;
     region: Psize_t;
-    buffer_row_pitch: Tsize_t;
-    buffer_slice_pitch: Tsize_t;
-    host_row_pitch: Tsize_t;
-    host_slice_pitch: Tsize_t;
+    buffer_row_pitch: NativeUInt;
+    buffer_slice_pitch: NativeUInt;
+    host_row_pitch: NativeUInt;
+    host_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1334,8 +1197,8 @@ var
   clEnqueueWriteBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
     blocking_write: Tcl_bool;
-    offset: Tsize_t;
-    size: Tsize_t;
+    offset: NativeUInt;
+    size: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1348,10 +1211,10 @@ var
     buffer_offset: Psize_t;
     host_offset: Psize_t;
     region: Psize_t;
-    buffer_row_pitch: Tsize_t;
-    buffer_slice_pitch: Tsize_t;
-    host_row_pitch: Tsize_t;
-    host_slice_pitch: Tsize_t;
+    buffer_row_pitch: NativeUInt;
+    buffer_slice_pitch: NativeUInt;
+    host_row_pitch: NativeUInt;
+    host_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1361,9 +1224,9 @@ var
   clEnqueueFillBuffer: function(command_queue: Tcl_command_queue;
     buffer: Tcl_mem;
     pattern: Pointer;
-    pattern_size: Tsize_t;
-    offset: Tsize_t;
-    size: Tsize_t;
+    pattern_size: NativeUInt;
+    offset: NativeUInt;
+    size: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_2
@@ -1372,9 +1235,9 @@ var
   clEnqueueCopyBuffer: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
     dst_buffer: Tcl_mem;
-    src_offset: Tsize_t;
-    dst_offset: Tsize_t;
-    size: Tsize_t;
+    src_offset: NativeUInt;
+    dst_offset: NativeUInt;
+    size: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_0
@@ -1383,13 +1246,13 @@ var
   clEnqueueCopyBufferRect: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
     dst_buffer: Tcl_mem;
-    src_offset: Tsize_t;
-    dst_offset: Tsize_t;
-    region: Tsize_t;
-    src_row_pitch: Tsize_t;
-    src_slice_pitch: Tsize_t;
-    dst_row_pitch: Tsize_t;
-    dst_slice_pitch: Tsize_t;
+    src_offset: NativeUInt;
+    dst_offset: NativeUInt;
+    region: NativeUInt;
+    src_row_pitch: NativeUInt;
+    src_slice_pitch: NativeUInt;
+    dst_row_pitch: NativeUInt;
+    dst_slice_pitch: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; //CL_API_SUFFIX__VERSION_1_1
@@ -1400,8 +1263,8 @@ var
     blocking_read: Tcl_bool;
     origin: Psize_t; // x3
     region: Psize_t; // x3
-    row_pitch: Tsize_t;
-    slice_pitch: Tsize_t;
+    row_pitch: NativeUInt;
+    slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1413,8 +1276,8 @@ var
     blocking_write: Tcl_bool;
     origin: Psize_t; // x3
     region: Psize_t; // x3
-    input_row_pitch: Tsize_t;
-    input_slice_pitch: Tsize_t;
+    input_row_pitch: NativeUInt;
+    input_slice_pitch: NativeUInt;
     ptr: Pointer;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
@@ -1448,7 +1311,7 @@ var
     dst_buffer: Tcl_mem;
     src_origin: Psize_t; //x3
     region: Psize_t; //x3
-    dst_offset: Tsize_t;
+    dst_offset: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event): Tcl_int; // CL_API_SUFFIX__VERSION_1_0
@@ -1457,7 +1320,7 @@ var
   clEnqueueCopyBufferToImage: function(command_queue: Tcl_command_queue;
     src_buffer: Tcl_mem;
     dst_image: Tcl_mem;
-    src_offset: Tsize_t;
+    src_offset: NativeUInt;
     dst_origin: Psize_t; //x3
     region: Psize_t; //x3
     num_events_in_wait_list: Tcl_uint;
@@ -1469,8 +1332,8 @@ var
     buffer: Tcl_mem;
     blocking_map: Tcl_bool;
     map_flags: Tcl_map_flags;
-    offset: Tsize_t;
-    cb: Tsize_t;
+    offset: NativeUInt;
+    cb: NativeUInt;
     num_events_in_wait_list: Tcl_uint;
     event_wait_list: Pcl_event;
     event: Pcl_event;
@@ -1527,7 +1390,7 @@ var
   clEnqueueNativeKernel: function(command_queue: Tcl_command_queue;
     user_func: Tcl_EnqueueNativeKernel;
     args: Pointer;
-    cb_args: Tsize_t;
+    cb_args: NativeUInt;
     num_mem_objects: Tcl_uint;
     mem_list: Pcl_mem;
     args_mem_loc: PPointer;

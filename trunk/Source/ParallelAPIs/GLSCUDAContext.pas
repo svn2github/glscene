@@ -3,10 +3,7 @@
 //
 {  
    CUDA context  
-
-   History :  
-   19/03/10 - Yar - Creation
-    
+   History : see the previous version of the unit
 }
 
 unit GLSCUDAContext;
@@ -23,7 +20,6 @@ uses
   GLContext,
   GLSGenerics,
   GLSLog,
-  GLSOpenCL,
   GLSCUDARunTime,
   GLSCUDAApi;
 
@@ -92,20 +88,20 @@ type
   published
     { Published declarations }
     property Name: string read GetName;
-    property TotalGlobalMem: Tsize_t read fDeviceProperties.TotalGlobalMem;
-    property SharedMemPerBlock: Tsize_t read fDeviceProperties.SharedMemPerBlock;
+    property TotalGlobalMem: NativeUInt read fDeviceProperties.TotalGlobalMem;
+    property SharedMemPerBlock: NativeUInt read fDeviceProperties.SharedMemPerBlock;
     property RegsPerBlock: Integer read fDeviceProperties.RegsPerBlock;
     property WarpSize: Integer read fDeviceProperties.WarpSize;
-    property MemPitch: Tsize_t read fDeviceProperties.MemPitch;
+    property MemPitch: NativeUInt read fDeviceProperties.MemPitch;
     property MaxThreadsPerBlock: Integer
       read fDeviceProperties.MaxThreadsPerBlock;
     property MaxThreadsDim: TCUDADimensions read fMaxThreadsDim;
     property MaxGridSize: TCUDADimensions read fMaxGridSize;
     property ClockRate: Integer read fDeviceProperties.ClockRate;
-    property TotalConstMem: Tsize_t read fDeviceProperties.TotalConstMem;
+    property TotalConstMem: NativeUInt read fDeviceProperties.TotalConstMem;
     property Major: Integer read fDeviceProperties.Major;
     property Minor: Integer read fDeviceProperties.Minor;
-    property TextureAlignment: Tsize_t read fDeviceProperties.TextureAlignment;
+    property TextureAlignment: NativeUInt read fDeviceProperties.TextureAlignment;
     property DeviceOverlap: Integer read fDeviceProperties.DeviceOverlap;
     property MultiProcessorCount: Integer
       read fDeviceProperties.MultiProcessorCount;

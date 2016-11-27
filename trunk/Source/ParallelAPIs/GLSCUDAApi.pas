@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 /// *
-// * Copyright 1993-2009 NVIDIA Corporation.  All rights reserved.
+// * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
 // *
 // * NOTICE TO USER:
 // *
@@ -45,7 +45,6 @@ interface
 uses
   Winapi.Windows,
   GLCrossPlatform,
-  GLSopenCL,
   GLSLog;
 
 const
@@ -422,11 +421,11 @@ type
   *)
 
   TcudaFuncAttributes = record
-    sharedSizeBytes: TSize_t;
+    sharedSizeBytes: NativeUInt;
     /// < Size of shared memory in bytes
-    constSizeBytes: TSize_t;
+    constSizeBytes: NativeUInt;
     /// < Size of constant memory in bytes
-    localSizeBytes: TSize_t;
+    localSizeBytes: NativeUInt;
     /// < Size of local memory in bytes
     maxThreadsPerBlock: Integer;
     /// < Maximum number of threads per block

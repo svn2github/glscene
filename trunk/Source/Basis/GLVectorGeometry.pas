@@ -20,7 +20,7 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  The whole history is logged in a former GLS version of the unit.
+  The whole history is logged in a former version of the unit.
 }
 unit GLVectorGeometry;
 
@@ -1388,7 +1388,7 @@ function Log2(X: Single): Single; overload;
 { Log base N of X }
 function LogN(Base, X: Extended): Extended;
 { Raise base to an integer. }
-function IntPower(Base: Extended; Exponent: Integer): Extended;
+function PowerExtInteger(Base: Extended; Exponent: Integer): Extended;
 { Raise base to any power.
   For fractional exponents, or |exponents| > MaxInt, base must be > 0. }
 function PowerSingle(const Base, Exponent: Single): Single; overload;
@@ -7609,7 +7609,7 @@ end;
 
 // IntPower
 //
-function IntPower(Base: Extended; Exponent: Integer): Extended;
+function PowerExtInteger(Base: Extended; Exponent: Integer): Extended;
 begin
   result := IntPower(Base, Exponent);
 end;

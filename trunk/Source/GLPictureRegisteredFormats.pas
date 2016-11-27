@@ -3,7 +3,6 @@
 //
 {
    Hacks into the VCL to access the list of TPicture registered TGraphic formats 
-    
 }
 unit GLPictureRegisteredFormats;
 
@@ -115,4 +114,5 @@ end;
 {$endif}
 
 end.
+
 

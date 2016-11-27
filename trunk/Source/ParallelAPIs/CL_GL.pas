@@ -33,7 +33,8 @@ unit CL_GL;
 interface
 
 uses
-  GLSOpenCL;
+  CL,
+  CL_Platform;
 
 type
   PGLuint = ^Cardinal;
@@ -95,7 +96,7 @@ function clGetGLObjectInfo(memobj: Tcl_mem;
 
 function clGetGLTextureInfo(memobj: Tcl_mem;
            param_name: Tcl_gl_texture_info;
-           param_value_size: Tsize_t;
+           param_value_size: NativeUInt;
            param_value: Pointer;
            param_value_size_ret: Psize_t): Tcl_int; //< CL_API_SUFFIX__VERSION_1_0;
            stdcall; external LibOpenCL;
@@ -146,7 +147,7 @@ CL_CGL_SHAREGROUP_KHR =                         $200C;
 
 function clGetGLContextInfoKHR(properties: Tcl_context_properties;
            param_name: Tcl_gl_context_info;
-           param_value_size: Tsize_t;
+           param_value_size: NativeUInt;
            param_value: Pointer;
            param_value_size_ret: Psize_t): Tcl_int;
            stdcall; external LibOpenCL;

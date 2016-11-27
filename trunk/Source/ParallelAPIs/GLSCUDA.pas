@@ -3,18 +3,7 @@
 //
 {
    CUDA routines implementation 
-
-   History :  
-   26/03/12 - Maverick - Added vectors SetParam routines
-   07/05/11 - Yar - Added SubCopyTo for TCUDAMemData
-   13/04/11 - Yar - Bugfix functions KernelName mismatch with Ptx
-   12/04/11 - Yar - Bugfix TCUDAModule.LoadFromSource issue with unassigned compiler
-   05/03/11 - Yar - Added TCUDAConstant, TCUDAFuncParam, not yet fully implemented
-                       Changed TCUDAMemData data access, host memory can be mapped to device,
-                       device and array memory can be mapped to host
-   07/04/10 - Yar - Added linear copying in TCUDAMemData.CopyTo
-   01/04/10 - Yar - Creation
-    
+   History : see the previous version of the unit
 }
 unit GLSCUDA;
 
@@ -36,7 +25,6 @@ uses
   GLGraphics,
   GLStrings,
   GLUtils,
-  GLSOpenCL,
   GLSCUDAApi,
   GLSCUDARunTime,
   GLSCUDAParser,
@@ -47,7 +35,6 @@ uses
   GLSLog;
 
 type
-
   TCUDAChange = (cuchDevice, cuchContext, cuchSize, cuchAddresMode, cuchFlag,
     cuchFilterMode, cuchArray, cuchFormat, cuchMapping);
   TCUDAChanges = set of TCUDAChange;
@@ -1635,7 +1622,7 @@ end;
 
 procedure TCUDAFunction.SetSharedMemorySize(Value: Integer);
 var
-  MemPerBlock: Tsize_t;
+  MemPerBlock: NativeUInt;
 begin
   Context.Requires;
   MemPerBlock := TGLSCUDA(TCUDAModule(FMaster).FMaster)

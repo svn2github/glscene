@@ -51,7 +51,7 @@
   {$DEFINE GLS_MULTITHREAD}
 {$ENDIF}
 
-// Activate support of Linux
+// Activate support of Windows
 {$DEFINE MSWINDOWS}
 
 // Activate support of Linux

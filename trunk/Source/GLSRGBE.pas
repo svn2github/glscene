@@ -2,13 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   GLScene RGBE 
-
-   History :  
-   17/11/14 - PW - Renamed from RGBE.pas to GLSRGBE.pas
-   15/06/10 - Yar - Fixes for Linux x64
-   20/01/10 - Yar - Creation
-   
+   GLScene RGBE
+  The whole history is logged in a former version of the unit.
 }
 unit GLSRGBE;
 
@@ -17,9 +12,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorTypes, GLVectorGeometry, GLCrossPlatform;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLCrossPlatform;
 
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);
 procedure Rgbe2float(var Red, Green, Blue: Single; const RGBE: TVector4b);
@@ -55,7 +53,7 @@ end;
 
 function Ldexp(X: Extended; const P: Integer): Extended;
 begin
-  Ldexp := X * Intpower(2.0, P); // Result := X * (2^P)
+  Ldexp := X * PowerExtInteger(2.0, P); // Result := X * (2^P)
 end;
 
 // standard conversion from float pixels to rgbe pixels

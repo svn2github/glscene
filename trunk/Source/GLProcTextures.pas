@@ -3,41 +3,21 @@
 //
 {
   Procedural textures. 
-
-  History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       22/01/10 - Yar - Added bmp32.Blank:=false for memory allocation,
-                           Depth dimension, NativeTextureTarget becomes property
-       16/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       01/10/04 - ilh - Added SetPermFromData and SetPermToDefault
-                            moved PERM array to protected from inside Noise procedure
-                            so it can be changed by SetPermFromData and SetPermToDefault
-                           Added FNoiseRandSeed property so a Seed can be set
-                            Starts with a random Generated Seed...
-                            One must be set to BE Seeded
-       11/12/02 - ??? - Initial, procedural perlin noise texture
-                           code by Tobias Peirick
-   
-
-  I used the following references for my implementation: 
-
-  http://freespace.virgin.net/hugo.elias/models/m_perlin.htm
-  http://freespace.virgin.net/hugo.elias/models/m_clouds.htm
-  http://www.delphi3d.net 
-
-  Tobias Peirick
+  The whole history is logged in a former version of the unit.
 }
 unit GLProcTextures;
 
 interface
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLTexture, GLGraphics, OpenGLTokens, GLCrossPlatform,
-  GLTextureFormat, GLVectorGeometry;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLTexture,
+  GLGraphics,
+  GLCrossPlatform,
+  GLTextureFormat,
+  GLVectorGeometry;
 
 const
   GRADIENT_TABLE_SIZE = 256;
@@ -197,7 +177,7 @@ begin
           n := 0
         else
           // Noise Sharpness
-          n := 255 - Round(IntPower(FNoiseSharpness, C) * 255);
+          n := 255 - Round(PowerExtInteger(FNoiseSharpness, C) * 255);
       end;
       //if n < 13 then n:=13;
       // Write the result to the texture image.
