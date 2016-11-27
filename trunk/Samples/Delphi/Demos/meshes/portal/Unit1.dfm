@@ -124,6 +124,40 @@ object Form1: TForm1
     ScrollBars = ssNone
     TabOrder = 5
     OnSetEditText = SGMapSetEditText
+    ColWidths = (
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16)
+    RowHeights = (
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16
+      16)
   end
   object BBProcess: TButton
     Left = 200
@@ -167,7 +201,6 @@ object Form1: TForm1
         DepthOfView = 100.000000000000000000
         FocalLength = 50.000000000000000000
         Position.Coordinates = {000000000000003F000000000000803F}
-        Up.Coordinates = {000000800000803F0000000000000000}
         Left = 264
         Top = 144
       end

@@ -3,6 +3,7 @@ unit Unit1;
 interface
 
 uses
+  Winapi.OpenGL,
   System.SysUtils,
   System.Variants,
   System.Classes,

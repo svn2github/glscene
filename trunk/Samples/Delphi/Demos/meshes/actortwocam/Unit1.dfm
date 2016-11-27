@@ -115,7 +115,6 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object DummyCube1: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       CubeSize = 1.000000000000000000
       object FreeForm1: TGLFreeForm
         Material.FrontProperties.Diffuse.Color = {0AD7633FD7A3F03ECDCC4C3E0000803F}
@@ -127,7 +126,6 @@ object Form1: TForm1
       end
     end
     object DummyCube2: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Position.Coordinates = {000000000000803F000000000000803F}
       CubeSize = 0.100000001490116100
       object GLCamera2: TGLCamera
@@ -149,7 +147,6 @@ object Form1: TForm1
         object Actor2: TGLActor
           Material.Texture.MinFilter = miLinear
           Material.Texture.Disabled = False
-          Direction.Coordinates = {00000080000000000000803F00000000}
           Interval = 100
         end
       end

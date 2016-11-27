@@ -4,8 +4,19 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Imaging.Jpeg, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.Menus, Vcl.ExtDlgs, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.StdCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Imaging.Jpeg,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Menus,
+  Vcl.ExtDlgs,
+  Vcl.ExtCtrls,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
   //GLS
   GLScene, GLObjects, GLWin32Viewer, GLTree, GLTexture, GLVectorFileObjects,
   GLAsyncTimer, GLCadencer, GLCrossPlatform, GLMaterial, GLCoordinates,

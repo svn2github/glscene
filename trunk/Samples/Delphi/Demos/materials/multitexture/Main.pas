@@ -3,12 +3,29 @@ unit Main;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.ExtDlgs, Vcl.Imaging.Jpeg,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.ExtDlgs,
+  Vcl.Imaging.Jpeg,
 
-  //GLScene
-  GLScene, GLObjects, GLTexture, GLWin32Viewer, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLUtils;
+  //GLS
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLWin32Viewer,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 104
   BorderWidth = 3
   Caption = 'Mirror'
-  ClientHeight = 268
-  ClientWidth = 484
+  ClientHeight = 262
+  ClientWidth = 478
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,22 +21,22 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 379
-    Height = 268
+    Width = 373
+    Height = 262
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 139.075454711914100000
+    FieldOfView = 138.218353271484400000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
-    Left = 379
+    Left = 373
     Top = 0
     Width = 105
-    Height = 268
+    Height = 262
     Align = alRight
     BevelInner = bvLowered
     BevelOuter = bvNone
@@ -199,7 +199,6 @@ object Form1: TForm1
       Radius = 1.000000000000000000
       object Cadre: TGLExtrusionSolid
         Material.FrontProperties.Diffuse.Color = {00000000000000000000803F0000803F}
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Contours = <
           item
             Nodes = <

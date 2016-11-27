@@ -139,7 +139,7 @@ procedure TfrmMain.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
   Matlib.TexturePaths := GetCurrentDir();
-  GLSArchiveManager1.Archives[0].LoadFromFile('\ActorMS3D.zlib');
+  GLSArchiveManager1.Archives[0].LoadFromFile('ActorMS3D.zlib');
   LoadTexture('floor_parquet', 'JPG');
   LoadTexture('Chair', 'PNG');
   LoadTexture('Hair', 'PNG');

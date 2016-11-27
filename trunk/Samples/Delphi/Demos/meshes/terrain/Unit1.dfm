@@ -121,6 +121,7 @@ object Form1: TForm1
       TileSize = 256
       TilesPerTexture = 1.000000000000000000
       QualityDistance = 150.000000000000000000
+      ContourWidth = 0
     end
     object HUDText1: TGLHUDText
       Position.Coordinates = {000096420000C841000000000000803F}

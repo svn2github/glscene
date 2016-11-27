@@ -1,5 +1,9 @@
 //
-{: Procedural Textures for Clouds / Tobias Peirick }
+{
+  Procedural Textures for Clouds
+  / Tobias Peirick
+}
+
 //
 program procedural;
 

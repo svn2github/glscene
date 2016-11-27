@@ -4,8 +4,13 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls,
-  //GLScene
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  //GLS
   GLScene, GLWin32Viewer, GLObjects, GLTexture, GLCadencer,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLContext, GLDynamicTexture, GLUtils;

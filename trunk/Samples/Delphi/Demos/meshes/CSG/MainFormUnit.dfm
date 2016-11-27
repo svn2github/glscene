@@ -104,7 +104,6 @@ object Form1: TForm1
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000000000000000000096C30000803F}
       Direction.Coordinates = {00000000000000000000803F00000000}
-      Up.Coordinates = {000000000000803F0000008000000000}
       object GLLightSource1: TGLLightSource
         ConstAttenuation = 1.000000000000000000
         LightStyle = lsOmni

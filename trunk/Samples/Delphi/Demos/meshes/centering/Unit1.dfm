@@ -38,8 +38,6 @@ object Form1: TForm1
     TabOrder = 1
     ThumbLength = 10
     OnChange = TrackBar1Change
-    ExplicitLeft = 550
-    ExplicitTop = 47
   end
   object Panel1: TPanel
     Left = 0
