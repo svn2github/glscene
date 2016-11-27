@@ -2,7 +2,7 @@
 // VKScene Component Library, based on GLScene http://glscene.sourceforge.net 
 //
 {
-   Conversion of OpenCL header file: cl.h to VKS.OpenCL.pas,
+   Conversion of OpenCL header file: cl.h and cl_platforms.h to VKS.CL.pas,
    from http://www.khronos.org/registry/cl/.
 }
 // *****************************************************************************
@@ -28,7 +28,7 @@
 // * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 // *****************************************************************************
 
-unit VKS.OpenCL;
+unit VKS.CL;
 
 interface
 
