@@ -12,9 +12,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorTypes, GLVectorGeometry, GLPersistentClasses;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLPersistentClasses;
 
 type
   // TBaseListOption

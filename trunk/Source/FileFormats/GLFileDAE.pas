@@ -17,8 +17,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-  GLVectorFileObjects, GLApplicationFileIO {, Fmx.FileDAE};
+  System.Classes,
+  System.SysUtils,
+  GLVectorFileObjects,
+  GLApplicationFileIO {, Fmx.FileDAE};
 
 type
    // TGLDAEVectorFile

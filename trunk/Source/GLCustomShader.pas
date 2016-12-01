@@ -16,11 +16,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLVectorGeometry, GLVectorTypes, GLTexture, GLCadencer, OpenGLTokens, GLScene,
-  GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
-  GLVectorLists, GLTextureFormat, GLSLParameter;
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLTexture,
+  GLCadencer,
+  OpenGLTokens,
+  GLScene,
+  GLStrings,
+  GLCrossPlatform,
+  GLContext,
+  GLRenderContextInfo,
+  GLMaterial,
+  GLVectorLists,
+  GLTextureFormat,
+  GLSLParameter;
 
 const
   glsShaderMaxLightSources = 8;

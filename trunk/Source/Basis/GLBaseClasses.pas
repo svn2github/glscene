@@ -3,10 +3,8 @@
 //
 {
   Base classes for GLScene. 
-  History :  
-       24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject
-       05/10/08 - DanB - Creation, from GLMisc.pas + other places
-    
+  History : 05/10/08 - DanB - Creation, from GLMisc.pas + other places
+
 }
 
 unit GLBaseClasses;

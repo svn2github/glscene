@@ -3,14 +3,8 @@
 //
 {
   Main purpose is as a fallback in cases where there is no other way to process images. 
-  History :  
-   07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)
-   09/04/11 - Yar - Added AlphaGammaBrightCorrection
-   08/04/11 - Yar - Complete Build2DMipmap
-   07/11/10 - YP - Inline removed from local functions with external var access (Fixes error E2449)
-   04/11/10 - DaStr - Added $I GLScene.inc
-   22/10/10 - Yar - Created
-   
+  History : 22/10/10 - Yar - Created
+  The whole history is logged in a former version of the unit
 }
 
 unit GLImageUtils;
@@ -37,9 +31,10 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
+  //GLS
+  OpenGLTokens,
   GLStrings,
   GLCrossPlatform,
-  OpenGLTokens,
   GLTextureFormat,
   GLVectorGeometry;
 
@@ -85,10 +80,8 @@ procedure ImageAlphaInverseLuminanceSqrt(var AColor: TIntermediateFormat);
 procedure ImageAlphaBottomRightPointColorTransparent(var AColor: TIntermediateFormat);
 
 procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: TGLEnum; ASrcDataType, ADstDataType: TGLEnum; AWidth, AHeight: Integer);
-
 procedure RescaleImage(const ASrc: Pointer; const ADst: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight, ADstWidth, ADstHeight: Integer);
 procedure Build2DMipmap(const ASrc: Pointer; const ADst: TPointerArray; AColorFormat: TGLEnum; ADataType: TGLEnum; AFilter: TImageFilterFunction; ASrcWidth, ASrcHeight: Integer);
-
 procedure AlphaGammaBrightCorrection(const ASrc: Pointer; AColorFormat: TGLEnum; ADataType: TGLEnum; ASrcWidth, ASrcHeight: Integer; anAlphaProc: TImageAlphaProc; ABrightness: Single; AGamma: Single);
 
 //------------------------------------------------------------------------------
@@ -107,8 +100,7 @@ type
   TConvertFromInfProc = procedure(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: TGLEnum; AWidth, AHeight: Integer);
 
 procedure Swap(var A, B: Integer);
-{$IFDEF GLS_INLINE} inline;
-{$ENDIF}
+{$IFDEF GLS_INLINE} inline;{$ENDIF}
 var
   C: Integer;
 begin
@@ -140,7 +132,106 @@ procedure UbyteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     pSource := PByte(ASource);
 
     case AColorFormat of
-{$I ImgUtilCaseGL2Imf.inc}
+//{$I ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -244,9 +335,107 @@ procedure ByteToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
 
   begin
     pSource := PShortInt(ASource);
-
     case AColorFormat of
-{$I ImgUtilCaseGL2Imf.inc}
+//{$I ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -268,7 +457,105 @@ procedure UShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorF
     pSource := PWord(ASource);
 
     case AColorFormat of
-{$I ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -290,7 +577,105 @@ procedure ShortToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     pSource := PSmallInt(ASource);
 
     case AColorFormat of
-{$I ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -312,7 +697,105 @@ procedure UIntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFor
     pSource := PLongWord(ASource);
 
     case AColorFormat of
-{$I ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -334,7 +817,105 @@ procedure IntToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorForm
     pSource := PLongInt(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -356,7 +937,105 @@ procedure FloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFo
     pSource := PSingle(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -378,7 +1057,105 @@ procedure HalfFloatToImf(ASource: Pointer; ADest: PIntermediateFormatArray; ACol
     pSource := PHalfFloat(ASource);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseGL2Imf.inc}
+    GL_RGB, GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_BGR, GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := 255.0;
+      end;
+    GL_RGBA, GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_BGRA, GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].B := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].R := GetChannel;
+        ADest[n].A := GetChannel;
+      end;
+    GL_ALPHA, GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_LUMINANCE, GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := 255.0;
+      end;
+    GL_LUMINANCE_ALPHA, GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := GetChannel;
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        c0 := GetChannel;
+        ADest[n].R := c0;
+        ADest[n].G := c0;
+        ADest[n].B := c0;
+        ADest[n].A := c0;
+      end;
+    GL_RED, GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := 0;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_GREEN, GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
+    GL_BLUE, GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := 0;
+        ADest[n].G := 0;
+        ADest[n].B := GetChannel;
+        ADest[n].A := 255;
+      end;
+    GL_RG, GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        ADest[n].R := GetChannel;
+        ADest[n].G := GetChannel;
+        ADest[n].B := 0;
+        ADest[n].A := 255;
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2056,7 +2833,145 @@ procedure ImfToUbyte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     pDest := PByte(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2083,7 +2998,145 @@ procedure ImfToByte(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
     pDest := PShortInt(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2110,7 +3163,145 @@ procedure ImfToUShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorF
     pDest := PWord(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2137,7 +3328,145 @@ procedure ImfToShort(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     pDest := PSmallInt(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2164,7 +3493,145 @@ procedure ImfToUInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
     pDest := PLongWord(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2191,7 +3658,145 @@ procedure ImfToInt(ASource: PIntermediateFormatArray; ADest: Pointer; AColorForm
     pDest := PLongInt(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2221,7 +3826,145 @@ procedure ImfToFloat(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFo
     pDest := PSingle(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;
@@ -2251,7 +3994,145 @@ procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
     pDest := PHalfFloat(ADest);
 
     case AColorFormat of
-{$INCLUDE ImgUtilCaseImf2GL.inc}
+    GL_RGB:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+      end;
+    GL_RGB_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+      end;
+    GL_BGR:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+      end;
+    GL_BGR_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+      end;
+    GL_RGBA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].A);
+      end;
+    GL_RGBA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_BGRA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+        SetChannel(ASource[n].G);
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].A);
+      end;
+    GL_BGRA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+        SetChannelI(ASource[n].G);
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].A);
+      end;
+    GL_ALPHA_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].A);
+      end;
+    GL_LUMINANCE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_LUMINANCE_ALPHA:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannel(ASource[n].A);
+      end;
+    GL_LUMINANCE_ALPHA_INTEGER_EXT:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+        SetChannelI(ASource[n].A);
+      end;
+    GL_INTENSITY:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R + ASource[n].G + ASource[n].B / 3.0);
+      end;
+    GL_RED:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+      end;
+    GL_RED_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+      end;
+    GL_GREEN:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].G);
+      end;
+    GL_GREEN_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].G);
+      end;
+    GL_BLUE:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].B);
+      end;
+    GL_BLUE_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].B);
+      end;
+    GL_RG:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannel(ASource[n].R);
+        SetChannel(ASource[n].G);
+      end;
+    GL_RG_INTEGER:
+      for n := 0 to AWidth*AHeight-1 do
+      begin
+        SetChannelI(ASource[n].R);
+        SetChannelI(ASource[n].G);
+      end;
     else
       raise EGLImageUtils.Create(strInvalidType);
     end;

@@ -59,7 +59,7 @@ attrib -R "AdvDemos/Q3Demo/Model/animation.cfg"
 rem del *.res /s
 rem del *.ico /s  - some projects have own icos
 rem del *.cur /s  - cursors
-rem del *.obj /s  - obj models and resources for lazarus
+rem del *.obj /s  - obj models in media and resources for lazarus
 
 
 
@@ -69,6 +69,11 @@ for /r %1 %%R in (.svn) do if exist "%%R" (rd /s /q "%%R")
 echo---------------------------------------------------------
 echo delete debug and Platform directories with all subdirectories and files 
 for /r %1 %%R in (Debug_Build) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (Debug) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (Release_Build) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (Release) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__history) do if exist "%%R" (rd /s /q "%%R")
 for /r %1 %%R in (__recovery) do if exist "%%R" (rd /s /q "%%R")
+for /r %1 %%R in (staticobjs) do if exist "%%R" (rd /s /q "%%R")
+
+

@@ -140,11 +140,15 @@ begin
   SetGLSceneMediaDir();
   Matlib.TexturePaths := GetCurrentDir();
   GLSArchiveManager1.Archives[0].LoadFromFile('ActorMS3D.zlib');
+
+//  Actor1.Material.Texture.Image.LoadFromFile('floor_parquet.jpg');
+//  Actor1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
   LoadTexture('floor_parquet', 'JPG');
   LoadTexture('Chair', 'PNG');
   LoadTexture('Hair', 'PNG');
   LoadTexture('Woman4-Remap-texture', 'PNG');
   Actor1.LoadFromStream('Woman4.ms3d', GLSArchiveManager1.Archives[0].GetContent('Main/Woman4.ms3d'));
+
   Chair1.LoadFromStream('Chair.ms3d', GLSArchiveManager1.Archives[0].GetContent('Main/Chair.ms3d'));
   MatLib.TextureByName('Lightspot').Image.LoadFromFile('Flare1.bmp');
 
@@ -351,16 +355,13 @@ end;
 
 procedure TfrmMain.GLSLShader1Apply(Shader: TGLCustomGLSLShader);
 begin
-  with Shader do
-  begin
-    SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
-    SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));
-    SetTex('LightspotMap', MatLib.TextureByName('Lightspot'));
+  Shader.SetTex('TextureMap', MatLib.TextureByName('floor_parquet'));
+  Shader.SetTex('ShadowMap',MatLib.TextureByName(GLFrameBuffer.DepthTextureName));
+  Shader.SetTex('LightspotMap', MatLib.TextureByName('Lightspot'));
 
-    Param['Scale'].AsFloat := 16.0;
-    Param['Softly'].AsInteger := 1;
-    Param['EyeToLightMatrix'].AsMatrix4f := FEyeToLightMatrix;
-  end;
+  Shader.Param['Scale'].AsFloat := 16.0;
+  Shader.Param['Softly'].AsInteger := 1;
+  Shader.Param['EyeToLightMatrix'].AsMatrix4f := FEyeToLightMatrix;
 end;
 
 procedure TfrmMain.SetAppPath(const Value: string);

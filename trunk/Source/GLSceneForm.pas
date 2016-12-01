@@ -4,11 +4,9 @@
 {
    GLScene form loader
 
-   History :  
-   05/04/11 - Yar - Added property FullScreenVideoMode (thanks to ltyrosine)
-   08/12/10 - Yar - Added code for Lazarus (thanks Rustam Asmandiarov aka Predator)
-   23/08/10 - Yar - Creation
-   
+   History : 23/08/10 - Yar - Creation
+   The whole history is logged in a former version of the unit.
+
 }
 
 unit GLSceneForm;
