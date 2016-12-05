@@ -60,9 +60,9 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <IncludePath>..\..\Source\DesignTime\;$(GLSCENEDIR)\Packages\Win32\;$(IncludePath)</IncludePath>
+        <IncludePath>..\..\Resources\;..\..\Source\DesignTime\;$(GLSCENEDIR)\Packages\Win32\;$(IncludePath)</IncludePath>
         <Multithreaded>true</Multithreaded>
-        <ILINK_LibraryPath>..\..\Source\DesignTime\;$(GLSCENEDIR)\Packages\Win32\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>..\..\Resources\;..\..\Source\DesignTime\;$(GLSCENEDIR)\Packages\Win32\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ILINK_GenerateLibFile>true</ILINK_GenerateLibFile>
         <ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
@@ -172,6 +172,18 @@
         <PackageImport Include="xmlrtl.bpi">
             <BuildOrder>26</BuildOrder>
         </PackageImport>
+        <ResourceCompile Include="..\..\Resources\GLScene.rc">
+            <Form>GLScene.res</Form>
+            <BuildOrder>28</BuildOrder>
+        </ResourceCompile>
+        <ResourceCompile Include="..\..\Resources\GLSceneObjects.rc">
+            <Form>GLSceneObjects.res</Form>
+            <BuildOrder>29</BuildOrder>
+        </ResourceCompile>
+        <ResourceCompile Include="..\..\Resources\nonGLScene.rc">
+            <Form>nonGLScene.res</Form>
+            <BuildOrder>30</BuildOrder>
+        </ResourceCompile>
         <DelphiCompile Include="..\..\Source\DesignTime\FGUILayoutEditor.pas">
             <BuildOrder>4</BuildOrder>
         </DelphiCompile>
@@ -252,9 +264,9 @@
         </DelphiCompile>
         <FormResources Include="..\..\Source\DesignTime\FRTextureEdit.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FRTrackBarEdit.dfm"/>
-        <FormResources Include="..\..\Source\DesignTime\FSceneEditor.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FPlugInManagerEditor.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FRColorEditor.dfm"/>
+        <FormResources Include="..\..\Source\DesignTime\FSceneEditor.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FXCollectionEditor.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FShaderUniformEditor.dfm"/>
         <FormResources Include="..\..\Source\DesignTime\FVectorEditor.dfm"/>
@@ -375,16 +387,7 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -723,7 +726,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

@@ -32,7 +32,7 @@ uses
 {$IFDEF MSWINDOWS}
   Winapi.Windows,
 {$ENDIF}
-  GLS.Log,
+  GLSLog,
   fmodtypes;
 
 // ===============================================================================================

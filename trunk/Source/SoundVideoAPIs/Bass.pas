@@ -1,37 +1,23 @@
 {
   BASS 2.4 Delphi unit
-  Copyright (c) 1999-2013 Un4seen Developments Ltd.
+  Copyright (c) 1999-2017 Un4seen Developments Ltd.
 
   See the BASS.CHM file for more detailed documentation
+  The history is logged in a former version of the unit
 
   How to install
   --------------
   Copy BASS.PAS to the \LIB subdirectory of your Delphi path or your project dir
 
   NOTE: Delphi users should use the BASS_UNICODE flag where possible
-
-	 History :  
-       15/01/14 - PW - Attained C++Builder compatibility with MMSYSTEM.H in XE or UP
-       14/01/14 - PW - Updated to BASS 2.4 with thanks to Ian Luck
-       21/03/08 - DanB - Updated to BASS 2.3
-       06/06/07 - DaStr - Added $I GLScene.inc
-       06/07/04 - Mrqzzz- Updated to Bass 2.0 (Graham Kennedy)
-       27/08/02 -  EG   - Updated to Bass 1.6a
-       16/06/02 -  EG   - BASS 1.6
-       27/02/07 -  EG   - Misc.
-       05/02/02 -  EG   - BASS 1.4 support
-       28/07/01 -  EG   - Initial version based on Ian Luck BASS 1.2
-    
 }
 unit Bass;
 
 interface
 
-{$I GLScene.inc}
-
 {$IFDEF MSWINDOWS}
 uses
-  Windows;
+  Winapi.Windows;
 {$ENDIF}
 
 const
@@ -163,20 +149,6 @@ const
   DSCCAPS_CERTIFIED = DSCAPS_CERTIFIED;    // device driver has been certified by Microsoft
 
   // defines for formats field of BASS_RECORDINFO (from MMSYSTEM.H)
-  {$IFDEF GLS_DELPHI_XE_DOWN}
-  WAVE_FORMAT_1M08       = $00000001;      // 11.025 kHz, Mono,   8-bit
-  WAVE_FORMAT_1S08       = $00000002;      // 11.025 kHz, Stereo, 8-bit
-  WAVE_FORMAT_1M16       = $00000004;      // 11.025 kHz, Mono,   16-bit
-  WAVE_FORMAT_1S16       = $00000008;      // 11.025 kHz, Stereo, 16-bit
-  WAVE_FORMAT_2M08       = $00000010;      // 22.05  kHz, Mono,   8-bit
-  WAVE_FORMAT_2S08       = $00000020;      // 22.05  kHz, Stereo, 8-bit
-  WAVE_FORMAT_2M16       = $00000040;      // 22.05  kHz, Mono,   16-bit
-  WAVE_FORMAT_2S16       = $00000080;      // 22.05  kHz, Stereo, 16-bit
-  WAVE_FORMAT_4M08       = $00000100;      // 44.1   kHz, Mono,   8-bit
-  WAVE_FORMAT_4S08       = $00000200;      // 44.1   kHz, Stereo, 8-bit
-  WAVE_FORMAT_4M16       = $00000400;      // 44.1   kHz, Mono,   16-bit
-  WAVE_FORMAT_4S16       = $00000800;      // 44.1   kHz, Stereo, 16-bit
-  {$ENDIF}
   BASS_SAMPLE_8BITS       = 1;   // 8 bit
   BASS_SAMPLE_FLOAT       = 256; // 32-bit floating-point
   BASS_SAMPLE_MONO        = 2;   // mono
@@ -1118,10 +1090,10 @@ function BASS_Load(LibName: PChar ): Boolean;
 begin
   Result := False;
 
-  // Make sure the previous library is unloaded 
+  // Make sure the previous library is unloaded
   BASS_Unload;
 
-  // If no library name given, use the default library names 
+  // If no library name given, use the default library names
   if LibName = nil then
     LibName := bassdll;
 

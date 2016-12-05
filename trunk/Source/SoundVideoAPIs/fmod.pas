@@ -40,7 +40,7 @@ interface
 
 uses
 {$IFDEF MSWINDOWS}
-  Windows,
+  Winapi.Windows,
 {$ENDIF}
   fmodtypes;
 

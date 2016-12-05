@@ -1,6 +1,7 @@
 @echo off
 
 del *.bpl /s
+del *.res /s
 del *.dcu /s
 del *.o /s
 del *.~* /s
