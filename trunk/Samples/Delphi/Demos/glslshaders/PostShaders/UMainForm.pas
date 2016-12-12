@@ -3,15 +3,34 @@ unit UMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, CheckLst,
-  Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg, Vcl.ComCtrls,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  CheckLst,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.Imaging.Jpeg,
+  Vcl.ComCtrls,
 
   // GLS
-  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLPostEffects,
-  GLGraph, GLUtils, GLContext, GLVectorGeometry,
-  GLGeomObjects, GLCoordinates,
-  GLObjects, GLVectorFileObjects, GLSimpleNavigation, GLCrossPlatform,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer,
+  GLScene,
+  GLPostEffects,
+  GLGraph,
+  GLUtils,
+  GLContext,
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLCoordinates,
+  GLObjects,
+  GLVectorFileObjects,
+  GLSimpleNavigation,
+  GLCrossPlatform,
   GLMaterial,
   GLBaseClasses,
 
@@ -21,7 +40,10 @@ uses
   GLcgPostTransformationShader,
 
   // FileFormats
-  GLFileTGA, GLFileMD2, GLFileMS3D, GLFile3DS;
+  GLFileTGA,
+  GLFileMD2,
+  GLFileMS3D,
+  GLFile3DS;
 
 type
   TPostShaderDemoForm = class(TForm)

@@ -5,11 +5,11 @@
   Registration unit for GLScene library components, property editors and
   IDE experts.
   History : 05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
+            30-DEC-99 ml: scene editor added, structural changes
 }
 unit GLSceneRegister;
 
-// Registration unit for GLScene library
-// 30-DEC-99 ml: scene editor added, structural changes
+
 
 interface
 
@@ -25,7 +25,6 @@ uses
   VCL.Controls,
   VCL.StdCtrls,
   VCL.Graphics,
-
 
   ToolsAPI,
   DesignIntf,
@@ -489,6 +488,7 @@ uses
   GLVectorFileObjects,
   GLVfsPAK,
   GLWin32Viewer,
+///  GLWinFMXViewer,
   GLWaterPlane,
   GLWindows,
   GLWindowsFont,
@@ -553,9 +553,6 @@ begin
   Result := vObjectManager;
 end;
 
-{$IFDEF GLS_REGION}{$REGION 'TOpenGLCategory'}{$ENDIF}
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLSceneViewerEditor'}{$ENDIF}
 // ExecuteVerb
 //
 
@@ -589,8 +586,6 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLSceneEditor'}{$ENDIF}
 // Edit
 //
 
@@ -633,8 +628,6 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TResolutionProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -734,16 +727,12 @@ begin
     SetOrdValue(0);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureProperty'}{$ENDIF}
 
 function TGLTextureProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paSubProperties];
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureImageProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -761,8 +750,6 @@ begin
     Designer.Modified;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLImageClassProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -810,9 +797,6 @@ begin
     SetStrValue('');
   Modified;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLColorProperty'}{$ENDIF}
 
 procedure TGLColorProperty.Edit;
 var
@@ -928,8 +912,6 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TSoundFileProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -976,8 +958,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TSoundNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1001,8 +981,6 @@ begin
         Proc(Samples[i].Name);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLCoordinatesProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1030,8 +1008,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLMaterialProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1049,9 +1025,6 @@ begin
   then
     Modified;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLGUILayoutEditor'}{$ENDIF}
 
 procedure TGLGUILayoutEditor.Edit;
 begin
@@ -1079,8 +1052,6 @@ begin
   Result := 1;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TReuseableDefaultEditor'}{$ENDIF}
 // CheckEdit
 //
 
@@ -1148,9 +1119,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLMaterialLibraryEditor'}{$ENDIF}
-
 // EditProperty
 //
 procedure TGLMaterialLibraryEditor.EditProperty(const Prop: IProperty;
@@ -1183,8 +1151,6 @@ begin
   Result := 1
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterialNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1218,8 +1184,6 @@ begin
     SetStrValue(buf);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLAnimationNameProperty'}{$ENDIF}
 // GetAttributes
 //
 
@@ -1250,9 +1214,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLBaseSceneObjectSelectionEditor'}{$ENDIF}
-
 procedure TGLBaseSceneObjectSelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
   i, j: Integer;
@@ -1274,9 +1235,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLSoundLibrarySelectionEditor'}{$ENDIF}
-
 procedure TGLSoundLibrarySelectionEditor.RequiresUnits(Proc: TGetStrProc);
 var
   i, j: Integer;
@@ -1296,9 +1254,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLSArchiveManagerEditor'}{$ENDIF}
 
 procedure TGLSArchiveManagerEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
@@ -1329,9 +1284,6 @@ function TGLSArchiveManagerEditor.GetVerbCount: Integer;
 begin
   Result := 1
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLMaterialComponentNameProperty'}{$ENDIF}
 
 procedure TGLMaterialComponentNameProperty.Edit;
 var
@@ -1410,9 +1362,6 @@ begin
       .GetNames(Proc, TGLASMVertexProgram);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TPictureFileProperty'}{$ENDIF}
-
 function TPictureFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
@@ -1428,9 +1377,6 @@ begin
   end;
   Modified;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TShaderFileProperty'}{$ENDIF}
 
 procedure TShaderFileProperty.Edit;
 var
@@ -1454,9 +1400,6 @@ begin
   Result := [paDialog];
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TAsmProgFileProperty'}{$ENDIF}
-
 procedure TAsmProgFileProperty.Edit;
 var
   ODialog: TOpenDialog;
@@ -1478,9 +1421,6 @@ function TAsmProgFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TUniformAutoSetProperty'}{$ENDIF}
 
 function TUniformAutoSetProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1511,9 +1451,6 @@ begin
     end;
   end;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGION}{$REGION 'TGLShaderEditorProperty'}{$ENDIF}
 
 function TGLShaderEditorProperty.GetAttributes: TPropertyAttributes;
 begin
@@ -1569,7 +1506,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 // ******************************************************************************
 
 procedure GLRegisterPropertiesInCategories;
@@ -2094,7 +2030,7 @@ initialization
 // ------------------------------------------------------------------
 
   SplashScreenServices.AddPluginBitmap(GetGLSceneVersion,
-  LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 1.1 license', 'VCL version');
+  LoadBitmap(HInstance, 'TGLScene'), False, 'MPL 2.0 license', 'VCL version');
   GLCrossPlatform.IsDesignTime := True;
   GLCrossPlatform.vProjectTargetName := GetProjectTargetName;
   GLColor.vUseDefaultColorSets := True;
