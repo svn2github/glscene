@@ -900,21 +900,21 @@ function VectorNorm(const V: TVector): Single; overload;
   Also known as "Norm 2" in the math world, this is sqr(VectorLength). }
 function VectorNorm(var V: array of Single): Single; overload;
 
-// : Transforms a vector to unit length
+// Transforms a vector to unit length
 procedure NormalizeVector(var V: TVector2f); overload;
-// : Returns the vector transformed to unit length
-// : Transforms a vector to unit length
+// Returns the vector transformed to unit length
+// Transforms a vector to unit length
 procedure NormalizeVector(var V: TAffineVector); overload;
-// : Transforms a vector to unit length
+// Transforms a vector to unit length
 procedure NormalizeVector(var V: TVector); overload;
-// : Returns the vector transformed to unit length
+// Returns the vector transformed to unit length
 function VectorNormalize(const V: TVector2f): TVector2f; overload;
-// : Returns the vector transformed to unit length
+// Returns the vector transformed to unit length
 function VectorNormalize(const V: TAffineVector): TAffineVector; overload;
-// : Returns the vector transformed to unit length (w component dropped)
+// Returns the vector transformed to unit length (w component dropped)
 function VectorNormalize(const V: TVector): TVector; overload;
 
-// : Transforms vectors to unit length
+// Transforms vectors to unit length
 procedure NormalizeVectorArray(list: PAffineVectorArray; n: Integer); overload;
 
 { Calculates the cosine of the angle between Vector1 and Vector2.
@@ -950,26 +950,26 @@ procedure ScaleVector(var V: TVector; factor: Single); overload;
   v[x]:=v[x]*factor[x], v[y]:=v[y]*factor[y] etc. }
 procedure ScaleVector(var V: TVector; const factor: TVector); overload;
 
-// : Returns a vector scaled by a factor
+// Returns a vector scaled by a factor
 function VectorScale(const V: TVector2f; factor: Single): TVector2f; overload;
-// : Returns a vector scaled by a factor
+// Returns a vector scaled by a factor
 function VectorScale(const V: TAffineVector; factor: Single)
   : TAffineVector; overload;
-// : Scales a vector by a factor and places result in vr
+// Scales a vector by a factor and places result in vr
 procedure VectorScale(const V: TAffineVector; factor: Single;
   var vr: TAffineVector); overload;
-// : Returns a vector scaled by a factor
+// Returns a vector scaled by a factor
 function VectorScale(const V: TVector; factor: Single): TVector; overload;
-// : Scales a vector by a factor and places result in vr
+// Scales a vector by a factor and places result in vr
 procedure VectorScale(const V: TVector; factor: Single;
   var vr: TVector); overload;
-// : Scales a vector by a factor and places result in vr
+// Scales a vector by a factor and places result in vr
 procedure VectorScale(const V: TVector; factor: Single;
   var vr: TAffineVector); overload;
-// : Scales given vector by another vector
+// Scales given vector by another vector
 function VectorScale(const V: TAffineVector; const factor: TAffineVector)
   : TAffineVector; overload;
-// : RScales given vector by another vector
+// RScales given vector by another vector
 function VectorScale(const V: TVector; const factor: TVector): TVector;
   overload;
 
@@ -1011,15 +1011,13 @@ function VectorSpacing(const V1, V2: TAffineVector): Single; overload;
 { Calculates Abs(v1[x]-v2[x])+Abs(v1[y]-v2[y])+..., also know as "Norm1". }
 function VectorSpacing(const V1, V2: TVector): Single; overload;
 
-{ Calculates distance between two vectors.
-  ie. sqrt(sqr(v1[x]-v2[x])+...) }
+{ Calculates distance between two vectors. ie. sqrt(sqr(v1[x]-v2[x])+...) }
 function VectorDistance(const V1, V2: TAffineVector): Single; overload;
 { Calculates distance between two vectors.
   ie. sqrt(sqr(v1[x]-v2[x])+...) (w component ignored) }
 function VectorDistance(const V1, V2: TVector): Single; overload;
 
-{ Calculates the "Norm 2" between two vectors.
-  ie. sqr(v1[x]-v2[x])+... }
+{ Calculates the "Norm 2" between two vectors. ie. sqr(v1[x]-v2[x])+... }
 function VectorDistance2(const V1, V2: TAffineVector): Single; overload;
 { Calculates the "Norm 2" between two vectors.
   ie. sqr(v1[x]-v2[x])+... (w component ignored) }
@@ -1028,47 +1026,47 @@ function VectorDistance2(const V1, V2: TVector): Single; overload;
 { Calculates a vector perpendicular to N.
   N is assumed to be of unit length, subtract out any component parallel to N }
 function VectorPerpendicular(const V, n: TAffineVector): TAffineVector;
-// : Reflects vector V against N (assumes N is normalized)
+// Reflects vector V against N (assumes N is normalized)
 function VectorReflect(const V, n: TAffineVector): TAffineVector;
-// : Rotates Vector about Axis with Angle radians
+// Rotates Vector about Axis with Angle radians
 procedure RotateVector(var Vector: TVector; const axis: TAffineVector;
   angle: Single); overload;
-// : Rotates Vector about Axis with Angle radians
+// Rotates Vector about Axis with Angle radians
 procedure RotateVector(var Vector: TVector; const axis: TVector;
   angle: Single); overload;
 
-// : Rotate given vector around the Y axis (alpha is in rad)
+// Rotate given vector around the Y axis (alpha is in rad)
 procedure RotateVectorAroundY(var V: TAffineVector; alpha: Single);
-// : Returns given vector rotated around the X axis (alpha is in rad)
+// Returns given vector rotated around the X axis (alpha is in rad)
 function VectorRotateAroundX(const V: TAffineVector; alpha: Single)
   : TAffineVector; overload;
 // : Returns given vector rotated around the Y axis (alpha is in rad)
 function VectorRotateAroundY(const V: TAffineVector; alpha: Single)
   : TAffineVector; overload;
-// : Returns given vector rotated around the Y axis in vr (alpha is in rad)
+// Returns given vector rotated around the Y axis in vr (alpha is in rad)
 procedure VectorRotateAroundY(const V: TAffineVector; alpha: Single;
   var vr: TAffineVector); overload;
-// : Returns given vector rotated around the Z axis (alpha is in rad)
+// Returns given vector rotated around the Z axis (alpha is in rad)
 function VectorRotateAroundZ(const V: TAffineVector; alpha: Single)
   : TAffineVector; overload;
 
-// : Vector components are replaced by their Abs() value. }
+// Vector components are replaced by their Abs() value. }
 procedure AbsVector(var V: TVector); overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
-// : Vector components are replaced by their Abs() value. }
+// Vector components are replaced by their Abs() value. }
 procedure AbsVector(var V: TAffineVector); overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
-// : Returns a vector with components replaced by their Abs value. }
+// Returns a vector with components replaced by their Abs value. }
 function VectorAbs(const V: TVector): TVector; overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
-// : Returns a vector with components replaced by their Abs value. }
+// Returns a vector with components replaced by their Abs value. }
 function VectorAbs(const V: TAffineVector): TAffineVector; overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
-// : Returns true if both vector are colinear
+// Returns true if both vector are colinear
 function IsColinear(const V1, V2: TVector2f): Boolean; overload;
-// : Returns true if both vector are colinear
+// Returns true if both vector are colinear
 function IsColinear(const V1, V2: TAffineVector): Boolean; overload;
-// : Returns true if both vector are colinear
+// Returns true if both vector are colinear
 function IsColinear(const V1, V2: TVector): Boolean; overload;
 
 // ------------------------------------------------------------------------------

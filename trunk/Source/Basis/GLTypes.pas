@@ -4,12 +4,18 @@
 {
    Defines vector types for geometry only aiming to imply
    compatibility of GLScene for Delphi with C+Builder.
-   Do not include any other units in uses clause  
-   The history is logged in a former GLS version of the unit
+   Do not include any other units in uses clause
+   History:
+   17/05/11 - PW - Creation.
+   The whole history is logged in a former GLS version of the unit
 }
 unit GLTypes;
 
 interface
+
+uses
+  System.Types,
+  System.Math.Vectors;
 
 //-----------------------
 //Point types
@@ -50,6 +56,7 @@ type
 //-----------------------
 //Polygon types
 //-----------------------
+
   TGLPolygon2D = TGLPoint2DArray;
   TGLPolygon3D = TGLPoint3DArray;
 
