@@ -14,7 +14,8 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.UITypes,
+  System.Classes,
+  System.UITypes,
   FMX.Graphics,
   //VKS
   VKS.VectorGeometry,

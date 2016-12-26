@@ -34,7 +34,7 @@ interface
 
 uses
   Winapi.OpenGL,
-  VKS.OpenCL;
+  VKS.CL;
 
 
 type

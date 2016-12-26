@@ -47,7 +47,6 @@ contains
   VKS.CUDADataAccess in '..\..\Source\ParallelAPIs\VKS.CUDADataAccess.pas',
   VKS.CL in '..\..\Source\ParallelAPIs\VKS.CL.pas',
   VKS.CL_GL in '..\..\Source\ParallelAPIs\VKS.CL_GL.pas',
-  VKS.CL_Platform in '..\..\Source\ParallelAPIs\VKS.CL_Platform.pas',
   VKS.CUDAApi in '..\..\Source\ParallelAPIs\VKS.CUDAApi.pas';
 
 end.

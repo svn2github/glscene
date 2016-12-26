@@ -7,7 +7,7 @@
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Package</AppType>
         <FrameworkType>FMX</FrameworkType>
-        <ProjectVersion>18.1</ProjectVersion>
+        <ProjectVersion>18.2</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
@@ -88,7 +88,7 @@
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
         <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
@@ -125,7 +125,7 @@
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
         <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
@@ -361,17 +361,17 @@
         <DCCReference Include="..\..\Source\Basis\VKS.VectorGeometry.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.VectorLists.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.VectorTypes.pas"/>
-        <DCCReference Include="..\..\Source\VKS.VerletClasses.pas"/>
-        <DCCReference Include="..\..\Source\VKS.VerletClothify.pas"/>
-        <DCCReference Include="..\..\Source\VKS.VerletHairClasses.pas"/>
-        <DCCReference Include="..\..\Source\VKS.VerletSkeletonColliders.pas"/>
-        <DCCReference Include="..\..\Source\VKS.VerletTypes.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.VerletClasses.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.VerletClothify.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.VerletHairClasses.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.VerletSkeletonColliders.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.VerletTypes.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\VKS.VfsPAK.pas"/>
         <DCCReference Include="..\..\Source\SoundVideoAPIs\VKS.Vfw.pas"/>
         <DCCReference Include="..\..\Source\VKS.WaterPlane.pas"/>
         <DCCReference Include="..\..\Source\VKS.Windows.pas"/>
         <DCCReference Include="..\..\Source\VKS.WindowsFont.pas"/>
-        <DCCReference Include="..\..\Source\VKS.XCollection.pas"/>
+        <DCCReference Include="..\..\Source\Basis\VKS.XCollection.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.XOpenGL.pas"/>
         <DCCReference Include="..\..\Source\VKS.zBuffer.pas"/>
         <DCCReference Include="..\..\Source\FileFormats\HDRImage.pas"/>
@@ -538,6 +538,14 @@
                         <Extensions>.framework</Extensions>
                     </Platform>
                 </DeployClass>
+                <DeployClass Name="ProjectUWPManifest">
+                    <Platform Name="Win32">
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="Win64">
+                        <Operation>1</Operation>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="iPhone_Launch640">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>
@@ -640,6 +648,16 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
+                <DeployClass Name="UWP_DelphiLogo44">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="Win64">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectiOSEntitlements"/>
                 <DeployClass Name="Android_LauncherIcon72">
                     <Platform Name="Android">
@@ -655,6 +673,16 @@
                 </DeployClass>
                 <DeployClass Name="ProjectOSXInfoPList"/>
                 <DeployClass Name="ProjectOSXEntitlements"/>
+                <DeployClass Name="UWP_DelphiLogo150">
+                    <Platform Name="Win32">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                    <Platform Name="Win64">
+                        <RemoteDir>Assets</RemoteDir>
+                        <Operation>1</Operation>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="iPad_Launch2048">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>
