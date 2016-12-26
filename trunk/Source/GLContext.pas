@@ -109,7 +109,7 @@ uses
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
 const
-  MRT_BUFFERS: array[0..3] of TGLenum = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
+  MRT_BUFFERS: array[0..3] of Cardinal = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 type
 
@@ -748,7 +748,7 @@ type
   public
     procedure Bind; override;
     procedure UnBind; override;
-    procedure BeginTransformFeedback(primitiveMode: TGLenum);
+    procedure BeginTransformFeedback(primitiveMode: Cardinal);
     procedure EndTransformFeedback();
     procedure BindRange(index: TGLuint; offset: TGLintptr; size: TGLsizeiptr); override;
     procedure BindBase(index: TGLuint); override;
@@ -851,31 +851,31 @@ type
     procedure UnBindForReading;
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (attach to both READ + DRAW)
     // attachment = COLOR_ATTACHMENTi, DEPTH_ATTACHMENT, STENCIL_ATTACHMENT, DEPTH_STENCIL_ATTACHMENT
-    procedure Attach1DTexture(target: TGLenum; attachment: TGLenum; textarget:
-      TGLenum; texture: TGLuint; level: TGLint);
-    procedure Attach2DTexture(target: TGLenum; attachment: TGLenum; textarget:
-      TGLenum; texture: TGLuint; level: TGLint);
-    procedure Attach3DTexture(target: TGLenum; attachment: TGLenum; textarget:
-      TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
-    procedure AttachLayer(target: TGLenum; attachment: TGLenum; texture:
+    procedure Attach1DTexture(target: Cardinal; attachment: Cardinal; textarget:
+      Cardinal; texture: TGLuint; level: TGLint);
+    procedure Attach2DTexture(target: Cardinal; attachment: Cardinal; textarget:
+      Cardinal; texture: TGLuint; level: TGLint);
+    procedure Attach3DTexture(target: Cardinal; attachment: Cardinal; textarget:
+      Cardinal; texture: TGLuint; level: TGLint; layer: TGLint);
+    procedure AttachLayer(target: Cardinal; attachment: Cardinal; texture:
       TGLuint; level: TGLint; layer: TGLint);
-    procedure AttachRenderBuffer(target: TGLenum; attachment: TGLenum;
-      renderbuffertarget: TGLenum; renderbuffer: TGLuint);
+    procedure AttachRenderBuffer(target: Cardinal; attachment: Cardinal;
+      renderbuffertarget: Cardinal; renderbuffer: TGLuint);
     // OpenGL 3.2+ only.
     // If texture is the name of a three-dimensional texture, cube map texture, one-or
     // two-dimensional array texture, or two-dimensional multisample array texture, the
     // texture level attached to the framebuffer attachment point is an array of images,
     // and the framebuffer attachment is considered layered.
-    procedure AttachTexture(target: TGLenum; attachment: TGLenum; texture:
+    procedure AttachTexture(target: Cardinal; attachment: Cardinal; texture:
       TGLuint; level: TGLint);
     // OpenGL 3.2+ only
-    procedure AttachTextureLayer(target: TGLenum; attachment: TGLenum; texture:
+    procedure AttachTextureLayer(target: Cardinal; attachment: Cardinal; texture:
       TGLuint; level: TGLint; layer: TGLint);
 
     // copy rect from bound read framebuffer to bound draw framebuffer
     procedure Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint; srcY1: TGLint;
       dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-      mask: TGLbitfield; filter: TGLenum);
+      mask: TGLbitfield; filter: Cardinal);
     // target = GL_DRAW_FRAMEBUFFER, GL_READ_FRAMEBUFFER, GL_FRAMEBUFFER (equivalent to GL_DRAW_FRAMEBUFFER)
     // If default framebuffer (0) is bound:
     // attachment = GL_FRONT_LEFT, GL_FRONT_RIGHT, GL_BACK_LEFT, or GL_BACK_RIGHT, GL_DEPTH, GL_STENCIL
@@ -884,14 +884,14 @@ type
     // param = GL_FRAMEBUFFER_ATTACHMENT_(OBJECT_TYPE, OBJECT_NAME,
     //       RED_SIZE, GREEN_SIZE, BLUE_SIZE, ALPHA_SIZE, DEPTH_SIZE, STENCIL_SIZE,
     //       COMPONENT_TYPE, COLOR_ENCODING, TEXTURE_LEVEL, LAYERED, TEXTURE_CUBE_MAP_FACE, TEXTURE_LAYER
-    function GetAttachmentParameter(target: TGLenum; attachment: TGLenum; pname:
-      TGLenum): TGLint;
+    function GetAttachmentParameter(target: Cardinal; attachment: Cardinal; pname:
+      Cardinal): TGLint;
     // Returns the type of object bound to attachment point:
     // GL_NONE, GL_FRAMEBUFFER_DEFAULT, GL_TEXTURE, or GL_RENDERBUFFER
-    function GetAttachmentObjectType(target: TGLenum; attachment: TGLenum):
+    function GetAttachmentObjectType(target: Cardinal; attachment: Cardinal):
       TGLint;
     // Returns the name (ID) of the texture or renderbuffer attached to attachment point
-    function GetAttachmentObjectName(target: TGLenum; attachment: TGLenum):
+    function GetAttachmentObjectName(target: Cardinal; attachment: Cardinal):
       TGLint;
 
     function GetStatus: TGLFramebufferStatus;
@@ -914,8 +914,8 @@ type
   public
     procedure Bind;
     procedure UnBind;
-    procedure SetStorage(internalformat: TGLenum; width, height: TGLsizei);
-    procedure SetStorageMultisample(internalformat: TGLenum; samples: TGLsizei;
+    procedure SetStorage(internalformat: Cardinal; width, height: TGLsizei);
+    procedure SetStorageMultisample(internalformat: Cardinal; samples: TGLsizei;
       width, height: TGLsizei);
     class function IsSupported: Boolean; override;
   end;
@@ -930,7 +930,7 @@ type
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
-    class function GetTarget: TGLenum; virtual; abstract;
+    class function GetTarget: Cardinal; virtual; abstract;
   public
     { Public Declarations }
     procedure LoadARBProgram(AText: string);
@@ -944,7 +944,7 @@ type
   TGLARBVertexProgramHandle = class(TGLARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TGLenum; override;
+    class function GetTarget: Cardinal; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -953,7 +953,7 @@ type
   TGLARBFragmentProgramHandle = class(TGLARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TGLenum; override;
+    class function GetTarget: Cardinal; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -962,7 +962,7 @@ type
   TGLARBGeometryProgramHandle = class(TGLARBProgramHandle)
   protected
     { Protected Declarations }
-    class function GetTarget: TGLenum; override;
+    class function GetTarget: Cardinal; override;
   public
     { Public Declarations }
     class function IsSupported: Boolean; override;
@@ -3086,7 +3086,7 @@ end;
 //
 
 procedure TGLTransformFeedbackBufferHandle.BeginTransformFeedback(primitiveMode:
-  TGLenum);
+  Cardinal);
 begin
   GL.BeginTransformFeedback(primitiveMode);
 end;
@@ -3373,8 +3373,8 @@ end;
 // Attach1DTexture
 //
 
-procedure TGLFramebufferHandle.Attach1DTexture(target: TGLenum; attachment:
-  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
+procedure TGLFramebufferHandle.Attach1DTexture(target: Cardinal; attachment:
+  Cardinal; textarget: Cardinal; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture1D(target, attachment, textarget, texture, level);
 end;
@@ -3382,8 +3382,8 @@ end;
 // Attach2DTexture
 //
 
-procedure TGLFramebufferHandle.Attach2DTexture(target: TGLenum; attachment:
-  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint);
+procedure TGLFramebufferHandle.Attach2DTexture(target: Cardinal; attachment:
+  Cardinal; textarget: Cardinal; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture2D(target, attachment, textarget, texture, level);
 end;
@@ -3391,8 +3391,8 @@ end;
 // Attach3DTexture
 //
 
-procedure TGLFramebufferHandle.Attach3DTexture(target: TGLenum; attachment:
-  TGLenum; textarget: TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
+procedure TGLFramebufferHandle.Attach3DTexture(target: Cardinal; attachment:
+  Cardinal; textarget: Cardinal; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTexture3D(target, attachment, textarget, texture, level, layer);
 end;
@@ -3400,7 +3400,7 @@ end;
 // AttachLayer
 //
 
-procedure TGLFramebufferHandle.AttachLayer(target: TGLenum; attachment: TGLenum;
+procedure TGLFramebufferHandle.AttachLayer(target: Cardinal; attachment: Cardinal;
   texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
@@ -3409,8 +3409,8 @@ end;
 // AttachRenderBuffer
 //
 
-procedure TGLFramebufferHandle.AttachRenderBuffer(target: TGLenum; attachment:
-  TGLenum; renderbuffertarget: TGLenum; renderbuffer: TGLuint);
+procedure TGLFramebufferHandle.AttachRenderBuffer(target: Cardinal; attachment:
+  Cardinal; renderbuffertarget: Cardinal; renderbuffer: TGLuint);
 begin
   GL.FramebufferRenderbuffer(target, attachment, renderbuffertarget,
     renderbuffer);
@@ -3419,8 +3419,8 @@ end;
 // AttachTexture
 //
 
-procedure TGLFramebufferHandle.AttachTexture(target: TGLenum; attachment:
-  TGLenum; texture: TGLuint; level: TGLint);
+procedure TGLFramebufferHandle.AttachTexture(target: Cardinal; attachment:
+  Cardinal; texture: TGLuint; level: TGLint);
 begin
   GL.FramebufferTexture(target, attachment, texture, level);
 end;
@@ -3428,8 +3428,8 @@ end;
 // AttachTextureLayer
 //
 
-procedure TGLFramebufferHandle.AttachTextureLayer(target: TGLenum; attachment:
-  TGLenum; texture: TGLuint; level: TGLint; layer: TGLint);
+procedure TGLFramebufferHandle.AttachTextureLayer(target: Cardinal; attachment:
+  Cardinal; texture: TGLuint; level: TGLint; layer: TGLint);
 begin
   GL.FramebufferTextureLayer(target, attachment, texture, level, layer);
 end;
@@ -3440,7 +3440,7 @@ end;
 procedure TGLFramebufferHandle.Blit(srcX0: TGLint; srcY0: TGLint; srcX1: TGLint;
   srcY1: TGLint;
   dstX0: TGLint; dstY0: TGLint; dstX1: TGLint; dstY1: TGLint;
-  mask: TGLbitfield; filter: TGLenum);
+  mask: TGLbitfield; filter: Cardinal);
 begin
   GL.BlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1,
     mask, filter);
@@ -3449,8 +3449,8 @@ end;
 // GetAttachmentParameter
 //
 
-function TGLFramebufferHandle.GetAttachmentParameter(target: TGLenum;
-  attachment: TGLenum; pname: TGLenum): TGLint;
+function TGLFramebufferHandle.GetAttachmentParameter(target: Cardinal;
+  attachment: Cardinal; pname: Cardinal): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment, pname, @Result)
 end;
@@ -3458,8 +3458,8 @@ end;
 // GetAttachmentObjectType
 //
 
-function TGLFramebufferHandle.GetAttachmentObjectType(target: TGLenum;
-  attachment: TGLenum): TGLint;
+function TGLFramebufferHandle.GetAttachmentObjectType(target: Cardinal;
+  attachment: Cardinal): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, @Result);
@@ -3468,8 +3468,8 @@ end;
 // GetAttachmentObjectName
 //
 
-function TGLFramebufferHandle.GetAttachmentObjectName(target: TGLenum;
-  attachment: TGLenum): TGLint;
+function TGLFramebufferHandle.GetAttachmentObjectName(target: Cardinal;
+  attachment: Cardinal): TGLint;
 begin
   GL.GetFramebufferAttachmentParameteriv(target, attachment,
     GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, @Result);
@@ -3596,7 +3596,7 @@ end;
 // SetStorage
 //
 
-procedure TGLRenderbufferHandle.SetStorage(internalformat: TGLenum; width,
+procedure TGLRenderbufferHandle.SetStorage(internalformat: Cardinal; width,
   height: TGLsizei);
 begin
   GL.RenderbufferStorage(GL_RENDERBUFFER, internalformat, width, height);
@@ -3605,7 +3605,7 @@ end;
 // SetStorageMultisample
 //
 
-procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: TGLenum;
+procedure TGLRenderbufferHandle.SetStorageMultisample(internalformat: Cardinal;
   samples: TGLsizei; width, height: TGLsizei);
 begin
   GL.RenderbufferStorageMultisample(GL_RENDERBUFFER, samples, internalformat,
@@ -3668,7 +3668,7 @@ var
 begin
   Bind;
   GL.ProgramString(GetTarget, GL_PROGRAM_FORMAT_ASCII_ARB,
-    Length(AText), PGLChar(TGLString(AText)));
+    Length(AText), PAnsiChar(AnsiString(AText)));
   GL.GetIntegerv(GL_PROGRAM_ERROR_POSITION_ARB, @errPos);
   if errPos > -1 then
   begin
@@ -3707,7 +3707,7 @@ begin
   GL.BindProgram(GetTarget, Handle);
 end;
 
-class function TGLARBVertexProgramHandle.GetTarget: TGLenum;
+class function TGLARBVertexProgramHandle.GetTarget: Cardinal;
 begin
   Result := GL_VERTEX_PROGRAM_ARB;
 end;
@@ -3717,7 +3717,7 @@ begin
   Result := GL.ARB_vertex_program;
 end;
 
-class function TGLARBFragmentProgramHandle.GetTarget: TGLenum;
+class function TGLARBFragmentProgramHandle.GetTarget: Cardinal;
 begin
   Result := GL_FRAGMENT_PROGRAM_ARB;
 end;
@@ -3727,7 +3727,7 @@ begin
   Result := GL.ARB_vertex_program;
 end;
 
-class function TGLARBGeometryProgramHandle.GetTarget: TGLenum;
+class function TGLARBGeometryProgramHandle.GetTarget: Cardinal;
 begin
   Result := GL_GEOMETRY_PROGRAM_NV;
 end;
@@ -3761,7 +3761,7 @@ end;
 function TGLSLHandle.InfoLog: string;
 var
   maxLength: Integer;
-  log: TGLString;
+  log: AnsiString;
 begin
   maxLength := 0;
   GL.GetObjectParameteriv(GetHandle, GL_OBJECT_INFO_LOG_LENGTH_ARB, @maxLength);
@@ -3807,9 +3807,9 @@ end;
 
 procedure TGLShaderHandle.ShaderSource(const source: AnsiString);
 var
-  p: PGLChar;
+  p: PAnsiChar;
 begin
-  p := PGLChar(TGLString(source));
+  p := PAnsiChar(AnsiString(source));
   GL.ShaderSource(GetHandle, 1, @p, nil);
 end;
 
@@ -4014,7 +4014,7 @@ end;
 procedure TGLProgramHandle.BindAttribLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindAttribLocation(GetHandle, index, PGLChar(TGLString(aName)));
+  GL.BindAttribLocation(GetHandle, index, PAnsiChar(AnsiString(aName)));
 end;
 
 // BindFragDataLocation
@@ -4023,7 +4023,7 @@ end;
 procedure TGLProgramHandle.BindFragDataLocation(index: Integer; const aName:
   string);
 begin
-  GL.BindFragDataLocation(GetHandle, index, PGLChar(TGLString(name)));
+  GL.BindFragDataLocation(GetHandle, index, PAnsiChar(AnsiString(name)));
 end;
 
 // LinkProgram
@@ -4061,7 +4061,7 @@ end;
 
 function TGLProgramHandle.GetAttribLocation(const aName: string): Integer;
 begin
-  Result := GL.GetAttribLocation(GetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetAttribLocation(GetHandle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['attrib', aName, Name]));
 end;
 
@@ -4070,7 +4070,7 @@ end;
 
 function TGLProgramHandle.GetUniformLocation(const aName: string): Integer;
 begin
-  Result := GL.GetUniformLocation(GetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetUniformLocation(GetHandle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['uniform', aName, Name]));
 end;
 
@@ -4079,7 +4079,7 @@ end;
 
 function TGLProgramHandle.GetVaryingLocation(const aName: string): Integer;
 begin
-  Result := GL.GetVaryingLocation(GetHandle, PGLChar(TGLString(aName)));
+  Result := GL.GetVaryingLocation(GetHandle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['varying', aName, Name]));
 end;
 
@@ -4088,7 +4088,7 @@ end;
 
 procedure TGLProgramHandle.AddActiveVarying(const aName: string);
 begin
-  GL.ActiveVarying(GetHandle, PGLChar(TGLString(aName)));
+  GL.ActiveVarying(GetHandle, PAnsiChar(AnsiString(aName)));
 end;
 
 // GetAttribLocation
@@ -4417,7 +4417,7 @@ end;
 
 function TGLProgramHandle.GetUniformBlockIndex(const aName: string): Integer;
 begin
-  Result := GL.GetUniformBlockIndex(Handle, PGLChar(TGLString(aName)));
+  Result := GL.GetUniformBlockIndex(Handle, PAnsiChar(AnsiString(aName)));
   Assert(Result >= 0, Format(strUnknownParam, ['uniform block', aName, Name]));
 end;
 

@@ -14,6 +14,7 @@ unit GLGeomObjects;
 interface
 
 uses
+//  Winapi.OpenGL,
   System.Classes,
   System.Math,
   //GLS
@@ -26,7 +27,10 @@ uses
   GLSilhouette,
   GLVectorTypes,
   GLGeometryBB,
-  GLRenderContextInfo;
+  GLRenderContextInfo,
+  XOpenGL,
+  GLPolynomials;
+
 
 type
 
@@ -568,10 +572,6 @@ implementation
 // -------------------------------------------------------------
 // -------------------------------------------------------------
 
-uses
-  GLPolynomials,
-  XOpenGL;
-
 // ------------------
 // ------------------ TGLDisk ------------------
 // ------------------
@@ -596,6 +596,8 @@ end;
 procedure TGLDisk.BuildList(var rci: TGLRenderContextInfo);
 var
   quadric: PGLUquadric;
+//  quadric: GLUquadricObj;  from Winapi.OpenGL
+
 begin
   quadric := gluNewQuadric();
   SetupQuadricParams(quadric);
@@ -2288,9 +2290,9 @@ begin
     if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
       TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-        PGLChar(TangentAttributeName));
+        PAnsiChar(TangentAttributeName));
       BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-        PGLChar(BinormalAttributeName));
+        PAnsiChar(BinormalAttributeName));
     end
     else
     begin
@@ -3007,9 +3009,9 @@ begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
+            PAnsiChar(TangentAttributeName));
           BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
+            PAnsiChar(BinormalAttributeName));
         end
         else
         begin
@@ -3108,9 +3110,9 @@ begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
+            PAnsiChar(TangentAttributeName));
           BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
+            PAnsiChar(BinormalAttributeName));
         end
         else
         begin
@@ -3189,9 +3191,9 @@ begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
+            PAnsiChar(TangentAttributeName));
           BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
+            PAnsiChar(BinormalAttributeName));
         end
         else
         begin
@@ -3275,9 +3277,9 @@ begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
+            PAnsiChar(TangentAttributeName));
           BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
+            PAnsiChar(BinormalAttributeName));
         end
         else
         begin
@@ -3354,9 +3356,9 @@ begin
         if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
         begin
           TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(TangentAttributeName));
+            PAnsiChar(TangentAttributeName));
           BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram,
-            PGLChar(BinormalAttributeName));
+            PAnsiChar(BinormalAttributeName));
         end
         else
         begin

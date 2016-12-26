@@ -62,8 +62,8 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>
         <_TCHARMapping>char</_TCHARMapping>
-        <IncludePath>..\..\Source\ScriptingAPIs\;..\..\Source\GameAPIs\;..\..\Source\Shaders\;..\..\Source\SoundVideoAPIs\;..\..\Source\FileFormats\;..\..\Source\Basis\;..\..\Source\;$(GLSCENEDIR)\PackagesCPP\Win32\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>..\..\Source\ScriptingAPIs\;..\..\Source\GameAPIs\;..\..\Source\Shaders\;..\..\Source\SoundVideoAPIs\;..\..\Source\FileFormats\;..\..\Source\Basis\;..\..\Source\;D:\GLScene\PackagesCPP\Win32\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>..\..\Source\ScriptingAPIs\;..\..\Source\SoundVideoAPIs\;..\..\Source\Basis\;..\..\Source\FileFormats\;..\..\Source\;..\..\Source\Shaders\;..\..\Source\GameAPIs\;..\..\Source;..\..\Source\Basis;..\..\Source\FileFormats;..\..\Source\GameAPIs;..\..\Source\ScriptingAPIs;..\..\Source\Shaders;..\..\Source\SoundVideoAPIs;$(GLSCENEDIR)\PackagesCPP\Win32;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>..\..\Source\ScriptingAPIs\;..\..\Source\GameAPIs\;..\..\Source\Shaders\;..\..\Source\SoundVideoAPIs\;..\..\Source\FileFormats\;..\..\Source\Basis\;..\..\Source\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ProjectType>CppPackage</ProjectType>
         <ILINK_GenerateImportLibrary>true</ILINK_GenerateImportLibrary>
         <Multithreaded>true</Multithreaded>
@@ -234,6 +234,24 @@
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\Basis\GLVectorTypes.pas">
             <BuildOrder>8</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLVerletClasses.pas">
+            <BuildOrder>254</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLVerletClothify.pas">
+            <BuildOrder>255</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLVerletHairClasses.pas">
+            <BuildOrder>256</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLVerletSkeletonColliders.pas">
+            <BuildOrder>257</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLVerletTypes.pas">
+            <BuildOrder>258</BuildOrder>
+        </DelphiCompile>
+        <DelphiCompile Include="..\..\Source\Basis\GLXCollection.pas">
+            <BuildOrder>259</BuildOrder>
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\Basis\OpenGL1x.pas">
             <BuildOrder>29</BuildOrder>
@@ -808,21 +826,6 @@
         <DelphiCompile Include="..\..\Source\GLTriangulation.pas">
             <BuildOrder>220</BuildOrder>
         </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLVerletClasses.pas">
-            <BuildOrder>221</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLVerletClothify.pas">
-            <BuildOrder>222</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLVerletHairClasses.pas">
-            <BuildOrder>223</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLVerletSkeletonColliders.pas">
-            <BuildOrder>224</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLVerletTypes.pas">
-            <BuildOrder>225</BuildOrder>
-        </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLWaterPlane.pas">
             <BuildOrder>226</BuildOrder>
         </DelphiCompile>
@@ -837,9 +840,6 @@
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLWindowsFont.pas">
             <BuildOrder>230</BuildOrder>
-        </DelphiCompile>
-        <DelphiCompile Include="..\..\Source\GLXCollection.pas">
-            <BuildOrder>231</BuildOrder>
         </DelphiCompile>
         <DelphiCompile Include="..\..\Source\GLzBuffer.pas">
             <BuildOrder>232</BuildOrder>

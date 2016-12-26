@@ -6,7 +6,7 @@
 
    History :
        05/02/00 - Egg - Javadocisation, fixes and enhancements...
-       The whole history is logged in a former GLS version of the unit.
+       The whole history is logged in a prior version of the unit.
 }
 unit GLScene;
 
@@ -19,10 +19,11 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  VCL.Graphics,
-  VCL.Controls,
-  GLStrings,
+  Vcl.Graphics,
+  Vcl.Controls,
+  //GLS
   OpenGLTokens,
+  GLStrings,
   GLContext,
   GLVectorGeometry,
   GLXCollection,
@@ -47,9 +48,7 @@ uses
   GLUtils,
   GLSLog;
 
-
 type
-
   // TGLProxyObjectOption
   //
   {Defines which features are taken from the master object. }
@@ -65,7 +64,7 @@ type
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
   GLSCENE_REVISION = '$Revision: 6695$';
-  GLSCENE_VERSION = '1.4.0.%s';
+  GLSCENE_VERSION = '1.7.1.%s';
 
 type
 
@@ -1790,7 +1789,7 @@ type
     procedure CopyToTexture(aTexture: TGLTexture); overload;
     procedure CopyToTexture(aTexture: TGLTexture; xSrc, ySrc, AWidth, AHeight:
       Integer;
-      xDest, yDest: Integer; glCubeFace: TGLEnum = 0); overload;
+      xDest, yDest: Integer; glCubeFace: Cardinal = 0); overload;
     {Save as raw float data to a file }
     procedure SaveAsFloatToFile(const aFilename: string);
     {Event reserved for viewer-specific uses. }
@@ -8186,7 +8185,7 @@ end;
 procedure TGLSceneBuffer.CopyToTexture(aTexture: TGLTexture;
   xSrc, ySrc, AWidth, AHeight: Integer;
   xDest, yDest: Integer;
-  glCubeFace: TGLEnum = 0);
+  glCubeFace: Cardinal = 0);
 var
   bindTarget: TGLTextureTarget;
 begin

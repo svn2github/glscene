@@ -40,7 +40,7 @@ type
     procedure SaveToStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLenum; textureTarget: TGLTextureTarget;
+      const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
       reintroduce;
   end;
@@ -123,14 +123,14 @@ end;
 // AssignFromTexture
 //
 procedure TGLPGMImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLenum; textureTarget: TGLTextureTarget;
+  const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean; const intFormat: TGLInternalFormat);
 var
   oldContext: TGLContext;
   contextActivate: Boolean;
   texFormat: Cardinal;
   residentFormat: TGLInternalFormat;
-  glTarget: TGLenum;
+  glTarget: Cardinal;
 begin
   if not((textureTarget = ttTexture2D) or (textureTarget = ttTextureRect)) then
     exit;

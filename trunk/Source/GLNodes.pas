@@ -691,7 +691,7 @@ begin
   Result := @NewVertices[NbExtraVertices - 1];
 end;
 
-procedure TessError(Errno: TGLEnum);
+procedure TessError(Errno: Cardinal);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}

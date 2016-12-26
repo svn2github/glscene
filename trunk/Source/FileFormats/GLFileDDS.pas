@@ -389,7 +389,7 @@ var
   vtcBuffer, top, bottom: PGLubyte;
   i, j, k: Integer;
   cw, ch: Integer;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin

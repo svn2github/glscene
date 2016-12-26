@@ -3,22 +3,12 @@
 //
 {
   Adds a dynamic texture image, which allows for easy updating of
-  texture data. 
+  texture data.
 
-  History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       20/02/10 - DanB - Fix for TGLDynamicTextureImage.GetTexSize
-       23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
-                           simplify GetBitsPerPixel and GetDataFormat
-       22/01/10 - Yar - Added GLTextureFormat to uses 
-       08/10/08 - DanB - added FriendlyName/FriendlyDescription
-       16/10/07 - LC - Added DirtyRectangle to allow partial updates.
-       12/07/07 - DaStr - Added $I GLScene.inc
-       25/06/07 - LC - Added SysUtils (needed for AllocMem on D7 and down).
-       25/06/07 - LC - Fixed a bug where resizing a texture would fail. Introduced
-                          new methods for freeing PBO and buffer.
-       24/06/07 - LC - Creation
-    
+  History :
+    24/06/07 - LC - Creation
+    The whole history is logged in a prior version of the unit
+
 }
 
 unit GLDynamicTexture;
@@ -28,10 +18,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, 
-   
-  OpenGLTOkens, GLContext, GLTexture, GLTextureFormat,
-  GLGraphics, GLCrossPlatform;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  OpenGLTOkens,
+  GLContext,
+  GLTexture,
+  GLTextureFormat,
+  GLGraphics,
+  GLCrossPlatform;
 
 type
   // TGLDynamicTextureImage
@@ -282,7 +277,7 @@ end;
 
 function TGLDynamicTextureImage.GetDataFormat: integer;
 var
-  data, color: TGLEnum;
+  data, color: Cardinal;
 begin
   FindCompatibleDataFormat(TGLTexture(OwnerTexture).TextureFormatEx, color, data);
   Result := data;
@@ -295,7 +290,7 @@ end;
 
 function TGLDynamicTextureImage.GetTextureFormat: integer;
 var
-  data, color: TGLEnum;
+  data, color: Cardinal;
 begin
   FindCompatibleDataFormat(TGLTexture(OwnerTexture).TextureFormatEx, color, data);
   if FUseBGR then

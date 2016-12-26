@@ -437,7 +437,7 @@ type
 
     fWidth, fHeight, fDepth: Integer;
     {Store a icolor format, because fBitmap is not always defined}
-    fColorFormat: TGLenum;
+    fColorFormat: Cardinal;
     {Blank Cube Map }
     fCubeMap: Boolean;
     {Flag to interparate depth as layer }
@@ -470,7 +470,7 @@ type
     property Depth: Integer read GetDepth write SetDepth default 0;
     property CubeMap: Boolean read fCubeMap write SetCubeMap default false;
     property TextureArray: Boolean read fArray write SetArray default false;
-    property ColorFormat: TGLenum read fColorFormat write fColorFormat;
+    property ColorFormat: Cardinal read fColorFormat write fColorFormat;
   end;
 
   // TGLPictureImage
@@ -1046,7 +1046,7 @@ uses
   GLVectorTypes;
 
 const
-  cTextureMode: array[tmDecal..tmAdd] of TGLEnum =
+  cTextureMode: array[tmDecal..tmAdd] of Cardinal =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
   cOldTextureFormatToInternalFormat: array[tfRGB..tfRGBAFloat32] of
@@ -3531,7 +3531,7 @@ procedure TGLTexture.PrepareImage(target: TGLUInt);
 var
   bitmap32: TGLImage;
   texComp: TGLTextureCompression;
-  glFormat: TGLEnum;
+  glFormat: Cardinal;
 begin
   if Image.IsSelfLoading then
   begin
@@ -3656,29 +3656,29 @@ end;
 
 procedure TGLTexture.PrepareParams(target: TGLUInt);
 const
-  cTextureSWrap: array[twBoth..twHorizontal] of TGLEnum =
+  cTextureSWrap: array[twBoth..twHorizontal] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_REPEAT);
-  cTextureTWrap: array[twBoth..twHorizontal] of TGLEnum =
+  cTextureTWrap: array[twBoth..twHorizontal] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureRWrap: array[twBoth..twHorizontal] of TGLEnum =
+  cTextureRWrap: array[twBoth..twHorizontal] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_REPEAT, GL_CLAMP_TO_EDGE);
-  cTextureSWrapOld: array[twBoth..twHorizontal] of TGLEnum =
+  cTextureSWrapOld: array[twBoth..twHorizontal] of Cardinal =
     (GL_REPEAT, GL_CLAMP, GL_CLAMP, GL_REPEAT);
-  cTextureTWrapOld: array[twBoth..twHorizontal] of TGLEnum =
+  cTextureTWrapOld: array[twBoth..twHorizontal] of Cardinal =
     (GL_REPEAT, GL_CLAMP, GL_REPEAT, GL_CLAMP);
-  cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =
+  cTextureMagFilter: array[maNearest..maLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLEnum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
   cFilteringQuality: array[tfIsotropic..tfAnisotropic] of Integer = (1, 2);
-  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of TGLenum =
+  cSeparateTextureWrap: array[twRepeat..twMirrorClampToBorder] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI, GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of Cardinal =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
-  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of TGLenum =
+  cDepthTextureMode: array[dtmLuminance..dtmAlpha] of Cardinal =
     (GL_LUMINANCE, GL_INTENSITY, GL_ALPHA);
 
 var

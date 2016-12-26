@@ -40,73 +40,27 @@ type
     FComplexMappingN: Integer;
   public
     // Explicit texture coordinates specification
-    TexCoord2f: procedure(s, t: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexCoord2fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexCoord3f: procedure(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexCoord3fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexCoord4f: procedure(s, t, r, q: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexCoord4fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+    TexCoord2f: procedure(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexCoord2fv: procedure(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexCoord3f: procedure(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexCoord3fv: procedure(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexCoord4f: procedure(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexCoord4fv: procedure(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
     // TexGen texture coordinates specification
-    TexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexGeni: procedure(coord, pname: TGLEnum; param: TGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    TexGeniv: procedure(coord, pname: TGLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+    TexGenf: procedure(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexGenfv: procedure(coord, pname: Cardinal; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexGeni: procedure(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    TexGeniv: procedure(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
     // Vertex Arrays texture coordinates specification
-    TexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei;
-      data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    EnableClientState: procedure(aarray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    DisableClientState: procedure(aarray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+    TexCoordPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    EnableClientState: procedure(aarray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    DisableClientState: procedure(aarray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
     // Misc
-    Enable: procedure(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
-    Disable: procedure(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+    Enable: procedure(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+    Disable: procedure(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
     constructor Create(AOwner: TGLContext); override;
 
@@ -190,10 +144,7 @@ end;
 
   // --------- Complex (arbitrary) mapping
 
-procedure TexCoord2f_Arbitrary(s, t: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2f_Arbitrary(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -201,10 +152,7 @@ begin
     GL.MultiTexCoord2f(xgl.FComplexMapping[i], s, t);
 end;
 
-procedure TexCoord2fv_Arbitrary(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -212,10 +160,7 @@ begin
     GL.MultiTexCoord2fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexCoord3f_Arbitrary(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3f_Arbitrary(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -223,10 +168,7 @@ begin
     GL.MultiTexCoord3f(xgl.FComplexMapping[i], s, t, r);
 end;
 
-procedure TexCoord3fv_Arbitrary(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -234,10 +176,7 @@ begin
     GL.MultiTexCoord3fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexCoord4f_Arbitrary(s, t, r, q: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4f_Arbitrary(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -245,10 +184,7 @@ begin
     GL.MultiTexCoord4f(xgl.FComplexMapping[i], s, t, r, q);
 end;
 
-procedure TexCoord4fv_Arbitrary(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4fv_Arbitrary(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -256,10 +192,7 @@ begin
     GL.MultiTexCoord4fv(xgl.FComplexMapping[i], v);
 end;
 
-procedure TexGenf_Arbitrary(coord, pname: TGLEnum; param: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenf_Arbitrary(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -270,10 +203,7 @@ begin
   end;
 end;
 
-procedure TexGenfv_Arbitrary(coord, pname: TGLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenfv_Arbitrary(coord, pname: Cardinal; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -284,10 +214,7 @@ begin
   end;
 end;
 
-procedure TexGeni_Arbitrary(coord, pname: TGLEnum; param: TGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeni_Arbitrary(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -298,10 +225,7 @@ begin
   end;
 end;
 
-procedure TexGeniv_Arbitrary(coord, pname: TGLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeniv_Arbitrary(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -312,10 +236,7 @@ begin
   end;
 end;
 
-procedure Enable_Arbitrary(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Enable_Arbitrary(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -326,10 +247,7 @@ begin
   end;
 end;
 
-procedure Disable_Arbitrary(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Disable_Arbitrary(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -340,11 +258,8 @@ begin
   end;
 end;
 
-procedure TexCoordPointer_Arbitrary(size: TGLint; atype: TGLEnum; stride:
-  TGLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoordPointer_Arbitrary(size: TGLint; atype: Cardinal; stride: TGLsizei; data: pointer);
+{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -355,10 +270,7 @@ begin
   end;
 end;
 
-procedure EnableClientState_Arbitrary(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure EnableClientState_Arbitrary(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -369,10 +281,7 @@ begin
   end;
 end;
 
-procedure DisableClientState_Arbitrary(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure DisableClientState_Arbitrary(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 var
   i: Integer;
 begin
@@ -385,133 +294,88 @@ end;
 
 // --------- Second unit Texturing
 
-procedure TexCoord2f_Second(s, t: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2f_Second(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
-procedure TexCoord2fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Second(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3f_Second(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
-procedure TexCoord3fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Second(s, t, r, q: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4f_Second(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
-procedure TexCoord4fv_Second(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4fv_Second(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Second(coord, pname: TGLEnum; param: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenf_Second(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.TexGenf(coord, pname, param);
 end;
 
-procedure TexGenfv_Second(coord, pname: TGLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenfv_Second(coord, pname: Cardinal; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.TexGenfv(coord, pname, params);
 end;
 
-procedure TexGeni_Second(coord, pname: TGLEnum; param: TGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeni_Second(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.TexGeni(coord, pname, param);
 end;
 
-procedure TexGeniv_Second(coord, pname: TGLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeniv_Second(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.TexGeniv(coord, pname, params);
 end;
 
-procedure Enable_Second(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Enable_Second(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.Enable(cap);
 end;
 
-procedure Disable_Second(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Disable_Second(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   CurrentGLContext.GLStates.ActiveTexture := 1;
   GL.Disable(cap);
 end;
 
-procedure TexCoordPointer_Second(size: TGLint; atype: TGLEnum; stride:
-  TGLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoordPointer_Second(size: TGLint; atype: Cardinal; stride:
+  TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.ClientActiveTexture(GL_TEXTURE1);
   GL.TexCoordPointer(size, atype, stride, data);
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Second(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure EnableClientState_Second(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.ClientActiveTexture(GL_TEXTURE1);
   GL.EnableClientState(aArray);
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Second(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure DisableClientState_Second(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.ClientActiveTexture(GL_TEXTURE1);
   GL.DisableClientState(aArray);
@@ -520,64 +384,43 @@ end;
 
 // --------- Dual Texturing
 
-procedure TexCoord2f_Dual(s, t: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2f_Dual(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord2f(s, t);
   GL.MultiTexCoord2f(GL_TEXTURE1, s, t);
 end;
 
-procedure TexCoord2fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord2fv(v);
   GL.MultiTexCoord2fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord3f_Dual(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3f_Dual(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord3f(s, t, r);
   GL.MultiTexCoord3f(GL_TEXTURE1, s, t, r);
 end;
 
-procedure TexCoord3fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord3fv(v);
   GL.MultiTexCoord3fv(GL_TEXTURE1, v);
 end;
 
-procedure TexCoord4f_Dual(s, t, r, q: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4f_Dual(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord4f(s, t, r, q);
   GL.MultiTexCoord4f(GL_TEXTURE1, s, t, r, q);
 end;
 
-procedure TexCoord4fv_Dual(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4fv_Dual(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoord4fv(v);
   GL.MultiTexCoord4fv(GL_TEXTURE1, v);
 end;
 
-procedure TexGenf_Dual(coord, pname: TGLEnum; param: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenf_Dual(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -588,10 +431,8 @@ begin
   end;
 end;
 
-procedure TexGenfv_Dual(coord, pname: TGLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenfv_Dual(coord, pname: Cardinal; params: PGLfloat);
+{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -602,10 +443,7 @@ begin
   end;
 end;
 
-procedure TexGeni_Dual(coord, pname: TGLEnum; param: TGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeni_Dual(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -616,10 +454,7 @@ begin
   end;
 end;
 
-procedure TexGeniv_Dual(coord, pname: TGLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeniv_Dual(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -630,10 +465,7 @@ begin
   end;
 end;
 
-procedure Enable_Dual(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Enable_Dual(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -644,10 +476,7 @@ begin
   end;
 end;
 
-procedure Disable_Dual(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Disable_Dual(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   with CurrentGLContext.GLStates do
   begin
@@ -658,11 +487,8 @@ begin
   end;
 end;
 
-procedure TexCoordPointer_Dual(size: TGLint; atype: TGLEnum; stride:
-  TGLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoordPointer_Dual(size: TGLint; atype: Cardinal; stride:
+  TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.TexCoordPointer(size, atype, stride, data);
   GL.ClientActiveTexture(GL_TEXTURE1);
@@ -670,10 +496,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure EnableClientState_Dual(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure EnableClientState_Dual(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.EnableClientState(aArray);
   GL.ClientActiveTexture(GL_TEXTURE1);
@@ -681,10 +504,7 @@ begin
   GL.ClientActiveTexture(GL_TEXTURE0);
 end;
 
-procedure DisableClientState_Dual(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure DisableClientState_Dual(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
   GL.DisableClientState(aArray);
   GL.ClientActiveTexture(GL_TEXTURE1);
@@ -694,109 +514,65 @@ end;
 
 // --------- Null Texturing
 
-procedure TexCoord2f_Null(s, t: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2f_Null(s, t: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord2fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord2fv_Null(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
 procedure TexCoord3f_Null(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord3fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord3fv_Null(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord4f_Null(s, t, r, q: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4f_Null(s, t, r, q: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoord4fv_Null(v: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoord4fv_Null(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGenf_Null(coord, pname: TGLEnum; param: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenf_Null(coord, pname: Cardinal; param: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGenfv_Null(coord, pname: TGLEnum; params: PGLfloat);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGenfv_Null(coord, pname: Cardinal; params: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGeni_Null(coord, pname: TGLEnum; param: TGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeni_Null(coord, pname: Cardinal; param: TGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexGeniv_Null(coord, pname: TGLEnum; params: PGLint);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexGeniv_Null(coord, pname: Cardinal; params: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure Enable_Null(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Enable_Null(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure Disable_Null(cap: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure Disable_Null(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure TexCoordPointer_Null(size: TGLint; atype: TGLEnum; stride:
-  TGLsizei; data: pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure TexCoordPointer_Null(size: TGLint; atype: Cardinal; stride:
+  TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure EnableClientState_Null(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure EnableClientState_Null(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
-procedure DisableClientState_Null(aArray: TGLEnum);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF unix} cdecl;
-{$ENDIF}
+procedure DisableClientState_Null(aArray: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 

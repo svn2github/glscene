@@ -4,15 +4,10 @@
 {
   PNG files loading implementation
   History :
-         06/09/16 - PW - Replaced GLSPNG with VCL.Imaging.pngimage unit
-         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-         31/05/10 - Yar - Fixes for Linux x64
-         08/05/10 - Yar - Removed check for residency in AssignFromTexture
-         22/04/10 - Yar - Fixes after GLState revision
-         16/03/10 - Yar - Improved FPC compatibility
-         05/03/10 - Yar - Creation
-
+    05/03/10 - Yar - Creation
+    The whole history is logged in a prior version of the unit
 }
+
 unit GLFilePNG;
 
 interface
@@ -147,7 +142,7 @@ var
   contextActivate: Boolean;
   texFormat: Cardinal;
   residentFormat: TGLInternalFormat;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   if not ((textureTarget = ttTexture2D)
     or (textureTarget = ttTextureRect)) then

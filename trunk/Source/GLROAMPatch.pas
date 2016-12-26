@@ -2,31 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Class for managing a ROAM (square) patch. 
+   Class for managing a ROAM (square) patch.
 
-   History :  
-   29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
-                      and added contouring
-   22/08/10 - DaStr - Fixed compiler warning
-   27/07/10 - YP - Safe tesselation operation to avoid AV after a memory shift
-   26/07/10 - YP - Invalid range test when splitting, we need to check space for n and n+1
-   20/05/10 - Yar - Fixes for Linux x64
-   16/10/08 - UweR - Compatibility fix for Delphi 2009
-   30/03/07 - DaStr - Added $I GLScene.inc
-   19/10/06 - LC - Added code to gracefully handle the case when MaxCLODTriangles is reached.
-                 It will now increase the buffer instead of not splitting. Bugtracker ID=1574111
-   09/10/06 - Lin - Added OnMaxCLODTrianglesReached event.
-   09/06/06 - Lin - Bugfix: Stop splitting Triangles when MaxCLODTriangles is reached (prevents Access Violations)
-   10/06/05 - Mathx - Protection against cards that have GL_EXT_compiled_vertex_array
-                         but not GL_EXT_draw_range_elements
-   25/04/04 - EG - Occlusion testing support
-   06/02/03 - EG - Adaptative variance computation
-   03/12/02 - EG - Minor ROAM tessel/render optimizations
-   15/06/02 - EG - Fixed patch rendering bug "introduced" by TBaseList fix
-   24/02/02 - EG - Hybrid ROAM-stripifier engine
+   History :
    10/09/01 - EG - Creation
-   
+   The whole history is logged in a prior version of the unit
 }
+
 unit GLROAMPatch;
 
 interface
@@ -776,7 +758,7 @@ procedure TGLROAMPatch.RenderHighRes(Vertices: TAffineVectorList;
   VertexIndices: TIntegerList; TexCoords: TTexPointList; ForceROAM: Boolean);
 
 var
-  Primitive: TGLEnum;
+  Primitive: Cardinal;
 
 begin
   // Prepare display list if needed

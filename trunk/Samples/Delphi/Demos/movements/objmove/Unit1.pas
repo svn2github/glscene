@@ -4,9 +4,15 @@ interface
 
 uses
   Winapi.Windows,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Forms, Vcl.Dialogs, Vcl.Controls,
-  Vcl.Graphics, Vcl.StdCtrls, Vcl.ExtCtrls,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Controls,
+  Vcl.Graphics,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
   //GLS
   GLScene, GLObjects, GLGraph, GLCollision, GLTexture, GLVectorTypes,
   GLVectorGeometry, GLVectorFileObjects, GLWin32Viewer,
@@ -180,18 +186,12 @@ procedure TForm1.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   with GLCamera1 do
     case Key of
-      '2':
-        MoveAroundTarget(3, 0);
-      '4':
-        MoveAroundTarget(0, -3);
-      '6':
-        MoveAroundTarget(0, 3);
-      '8':
-        MoveAroundTarget(-3, 0);
-      '-':
-        AdjustDistanceToTarget(1.1);
-      '+':
-        AdjustDistanceToTarget(1 / 1.1);
+      '2':  MoveAroundTarget(3, 0);
+      '4':  MoveAroundTarget(0, -3);
+      '6':  MoveAroundTarget(0, 3);
+      '8':  MoveAroundTarget(-3, 0);
+      '-':  AdjustDistanceToTarget(1.1);
+      '+':  AdjustDistanceToTarget(1 / 1.1);
     end;
 end;
 

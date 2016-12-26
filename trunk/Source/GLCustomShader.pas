@@ -233,8 +233,8 @@ type
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget; const Value: Cardinal); virtual; abstract;
 
-    function GetAsUniformBuffer: TGLenum; virtual; abstract;
-    procedure SetAsUniformBuffer(UBO: TGLenum); virtual; abstract;
+    function GetAsUniformBuffer: Cardinal; virtual; abstract;
+    procedure SetAsUniformBuffer(UBO: Cardinal); virtual; abstract;
   public
     { Public Declarations }
 
@@ -288,7 +288,7 @@ type
 
     property AsCustomTexture[const TextureIndex: Integer; TextureTarget: TGLTextureTarget]: Cardinal read GetAsCustomTexture write SetAsCustomTexture;
 
-    property AsUniformBuffer: TGLenum read GetAsUniformBuffer write SetAsUniformBuffer;
+    property AsUniformBuffer: Cardinal read GetAsUniformBuffer write SetAsUniformBuffer;
   end;
 
 
@@ -494,7 +494,7 @@ procedure InitTexture(
   const TextureSize: TGLSize;
   const TextureTarget: TGLTextureTarget = ttTexture2D);
 var
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   with CurrentGLContext.GLStates do
   begin

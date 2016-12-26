@@ -4,6 +4,9 @@
 #define Unit1H
 //---------------------------------------------------------------------------
 #include <System.Classes.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+
 #include <GLFileZLIB.hpp>
 #include <Vcl.Controls.hpp>
 #include <Vcl.StdCtrls.hpp>
@@ -27,24 +30,6 @@
 #include "GLFilePNG.hpp"
 #include "GLCompositeImage.hpp"
 
-#include "GLUtils.hpp"
-#include "GLGeomObjects.hpp"
-#include "GLCameraController.hpp"
-#include "GLGraphics.hpp"
-#include "GLFileTGA.hpp"
-#include "GLVectorTypes.hpp"
-#include "GLRenderContextInfo.hpp"
-#include "GLShadowPlane.hpp"
-#include "GLVectorGeometry.hpp"
-#include "GLMesh.hpp"
-#include "GLGui.hpp"
-#include "GLWindows.hpp"
-#include "GLState.hpp"
-#include "OpenGLTokens.hpp"
-#include "GLContext.hpp"
-
-#include <Vcl.ComCtrls.hpp>
-#include <Vcl.ExtCtrls.hpp>
 //---------------------------------------------------------------------------
 class TForm1 : public TForm
 {

@@ -10,7 +10,7 @@
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found GLGeomObjects. 
-  The history is logged in a former GLS version of the unit.
+  The whole history is logged in a prior version of the unit
    
 }
 unit GLObjects;
@@ -1459,8 +1459,8 @@ begin
     Normal3fv(@ZVector);
     if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(BinormalAttributeName));
       if TanLoc > -1 then
         VertexAttrib3fv(TanLoc, @XVector);
       if BinLoc > -1 then
@@ -3061,8 +3061,8 @@ begin
   begin
     if ARB_shader_objects and (rci.GLStates.CurrentProgram > 0) then
     begin
-      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(TangentAttributeName));
-      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PGLChar(BinormalAttributeName));
+      TanLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(TangentAttributeName));
+      BinLoc := GetAttribLocation(rci.GLStates.CurrentProgram, PAnsiChar(BinormalAttributeName));
     end
     else
     begin
@@ -3447,7 +3447,7 @@ end;
 
 procedure TGLQuadricObject.SetupQuadricParams(quadric: PGLUquadricObj);
 const
-  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of TGLEnum = (GLU_FLAT,
+  cNormalSmoothinToEnum: array [nsFlat .. nsNone] of Cardinal = (GLU_FLAT,
     GLU_SMOOTH, GLU_NONE);
 begin
   gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -3461,7 +3461,7 @@ end;
 
 procedure TGLQuadricObject.SetNormalQuadricOrientation(quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLEnum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of Cardinal =
     (GLU_INSIDE, GLU_OUTSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);
@@ -3473,7 +3473,7 @@ end;
 procedure TGLQuadricObject.SetInvertedQuadricOrientation
   (quadric: PGLUquadricObj);
 const
-  cNormalDirectionToEnum: array [ndInside .. ndOutside] of TGLEnum =
+  cNormalDirectionToEnum: array [ndInside .. ndOutside] of Cardinal =
     (GLU_OUTSIDE, GLU_INSIDE);
 begin
   gluQuadricOrientation(quadric, cNormalDirectionToEnum[FNormalDirection]);

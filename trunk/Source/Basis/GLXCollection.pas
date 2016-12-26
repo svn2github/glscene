@@ -5,26 +5,8 @@
   A polymorphism-enabled TCollection-like set of classes 
 
   History :  
-   10/11/12 - PW - Added CPPB compatibility: used dummy method instead abstract
-                   definition in class function FriendlyName for GLS_CPPB
-   20/01/11 - DanB - TGLXCollectionItem no longer sets initial Name = FriendlyName
-   04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-   31/08/10 - Yar - Bugfixed TGLXCollectionItem.ReadFromFiler when Assertion off
-   07/11/09 - DaStr - Added DEBUG_XCOLLECTION option
-   10/04/08 - DaStr - TGLXCollectionItem now descends from
-                      TGLInterfacedPersistent (BugTracker ID = 1938988)
-   08/12/04 - SG - Added TGLXCollectionItem.CanAddTo class function
-   02/08/04 - LR, YHC - BCB corrections: use record instead array
-                   Add dummy method for the abstract problem
-   03/07/04 - LR - Removed ..\ from the GLScene.inc
-   12/07/03 - DanB - Added (De)RegisterXCollectionDestroyEvent
-   19/06/03 - DanB - Added TGLXCollection.GetOrCreate
-   18/02/01 - EG - Fixed TGLXCollectionItem.Destroy (count decrementation)
-   02/02/01 - EG - CanAdd now virtual
-   09/06/00 - EG - Added GetByClass
-   23/05/00 - EG - Added "Loaded" mechanism
-   17/04/00 - EG - Optimized TGLXCollection.Assign
    16/04/00 - EG - Creation from GLScene split
+   The whole history is logged in a prior version of the unit.
    
 }
 unit GLXCollection;

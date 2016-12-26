@@ -22,9 +22,11 @@ object Form1: TForm1
     Height = 407
     Camera = GLCamera1
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 53.929431915283200000
+    FieldOfView = 25.000000000000000000
     Align = alClient
     OnMouseDown = ScnMouseDown
+    OnMouseMove = ScnMouseMove
+    OnMouseWheel = FormMouseWheel
     TabOrder = 0
   end
   object Panel1: TPanel
@@ -38,52 +40,57 @@ object Form1: TForm1
     object Label2: TLabel
       Left = 0
       Top = 26
-      Width = 158
+      Width = 161
       Height = 26
       Align = alTop
       Caption = 'Select and move with the mouse any of the two cubes.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 158
     end
     object Label1: TLabel
       Left = 0
       Top = 0
-      Width = 114
+      Width = 161
       Height = 13
       Align = alTop
       Caption = 'Author: Rado Stoyanov'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 114
     end
     object Label3: TLabel
       Left = 0
       Top = 52
-      Width = 150
+      Width = 161
       Height = 26
       Align = alTop
       Caption = 'Default movement is on the XY plane.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 150
     end
     object Label4: TLabel
       Left = 0
       Top = 78
-      Width = 145
+      Width = 161
       Height = 26
       Align = alTop
       Caption = 'Shift + Drag moves on the XZ plane.'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 145
     end
     object Label5: TLabel
       Left = 0
       Top = 13
-      Width = 142
+      Width = 161
       Height = 13
       Align = alTop
       Caption = 'radostoyanov@softhome.net'
       ShowAccelChar = False
       WordWrap = True
+      ExplicitWidth = 142
     end
     object Button1: TButton
       Left = 618
@@ -107,6 +114,8 @@ object Form1: TForm1
         Width = 145
         Height = 17
         Caption = 'Show selection axes'
+        Checked = True
+        State = cbChecked
         TabOrder = 0
         OnClick = ShowAxesClick
       end
@@ -227,7 +236,7 @@ object Form1: TForm1
     end
     object GLCamera1: TGLCamera
       DepthOfView = 1000.000000000000000000
-      FocalLength = 400.000000000000000000
+      FocalLength = 917.929199218750000000
       NearPlaneBias = 0.001000000047497451
       TargetObject = DummyCube1
       Position.Coordinates = {0000B8410000A041000080410000803F}

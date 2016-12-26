@@ -6,17 +6,19 @@
    objects easy.
 
    History :  
-       23/08/10 - Yar - Added "VectorTypes.pas" unit to uses
-       13/04/04 - MF - Verlet call now uses TVerletProgressTimes
        06/03/04 - MF - Creation
-   
+	   The whole history is logged in a prior version of the unit
 }
 unit GLVerletClasses;
 
 interface
 
 uses
-  GLVerletTypes, GLVectorGeometry, GLScene, GLObjects, GLVectorTypes;
+  GLVerletTypes, 
+  GLVectorGeometry, 
+  GLScene, 
+  GLObjects, 
+  GLVectorTypes;
 
 type
   // TGLVerletNode

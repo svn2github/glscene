@@ -3,7 +3,7 @@
 //
 {
    TGLSLShader is a wrapper for GLS shaders.
-   The history is logged in a former GLS version of the unit.
+   The whole history is logged in a former version of the unit
 }
 unit GLSLShader;
 
@@ -12,10 +12,13 @@ interface
 {$I GLScene.inc}
 
 uses
+//  Winapi.OpenGL,
+//  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   // GLS
   OpenGLTokens,
+  OpenGLAdapter,
   GLVectorGeometry,
   GLVectorTypes,
   GLTexture,
@@ -41,7 +44,7 @@ type
 
   TGLActiveAttrib = record
     Name: string;
-    Size: TGLInt;
+    Size: Integer;
     AType: TGLSLDataType;
     Location: Integer;
   end;
@@ -102,13 +105,12 @@ type
     property TransformFeedBackMode: TGLTransformFeedBackMode read FTransformFeedBackMode write SetTransformFeedBackMode default tfbmInterleaved;
   end;
 
-
   {Wrapper around a parameter of a GLSL program. }
   TGLSLShaderParameter = class(TGLCustomShaderParameter)
   private
     { Private Declarations }
     FGLSLProg: TGLProgramHandle;
-    FParameterID: TGLInt;
+    FParameterID: Integer;
   protected
     { Protected Declarations }
     function GetAsVector1f: Single; override;
@@ -153,8 +155,8 @@ type
     procedure SetAsCustomTexture(const TextureIndex: Integer;
       TextureTarget: TGLTextureTarget; const Value: Cardinal); override;
 
-    function GetAsUniformBuffer: TGLenum; override;
-    procedure SetAsUniformBuffer( UBO: TGLenum); override;
+    function GetAsUniformBuffer: Cardinal; override;
+    procedure SetAsUniformBuffer( UBO: Cardinal); override;
 
    public
      // Nothing here ...yet.
@@ -201,12 +203,12 @@ end;
 
 procedure TGLCustomGLSLShader.DoInitialize(var rci: TGLRenderContextInfo; Sender: TObject);
 const
-  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of TGLenum = (
+  cBufferMode: array[tfbmInterleaved..tfbmSeparate] of Cardinal = (
     GL_INTERLEAVED_ATTRIBS_EXT, GL_SEPARATE_ATTRIBS_EXT);
 var
   i, NumVarying: Integer;
   sVaryings: array of AnsiString;
-  pVaryings: array of PGLChar;
+  pVaryings: array of PAnsiChar;
 begin
   try
     if not ShaderSupported then
@@ -319,9 +321,9 @@ var
   LRci: TGLRenderContextInfo;
   i, j: Integer;
   buff: array[0..127] of AnsiChar;
-  len: TGLsizei;
-  max: TGLInt;
-  glType: TGLEnum;
+  len: Integer;
+  max: Integer;
+  glType: Cardinal;
 begin
   DoInitialize(LRci, Self);
 
@@ -595,7 +597,7 @@ begin
   GL.Uniform4i(FParameterID, Value.X, Value.Y, Value.Z, Value.W);
 end;
 
-function TGLSLShaderParameter.GetAsUniformBuffer: TGLenum;
+function TGLSLShaderParameter.GetAsUniformBuffer: Cardinal;
 begin
   GL.GetUniformiv(FGLSLProg.Handle, FParameterID, @Result);
 end;

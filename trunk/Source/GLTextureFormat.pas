@@ -234,45 +234,45 @@ const
   cDefaultSwizzleVector: TSwizzleVector = (tswRed, tswGreen, tswBlue, tswAlpha);
 
 {Give a openGL texture format from GLScene texture format. }
-function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLEnum;
+function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): Cardinal;
 {Give a GLScene texture format from openGL texture format. }
-function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TGLInternalFormat;
+function OpenGLFormatToInternalFormat(glFormat: Cardinal): TGLInternalFormat;
 {Give a pixel size in bytes from texture format or data format. }
 function GetTextureElementSize(intFormat: TGLInternalFormat): Integer; overload;
-function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
+function GetTextureElementSize(colorFormat: Cardinal; dataType: Cardinal):
   Integer; overload;
 {Give compatible openGL image format and data type. }
 procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
-  TGLenum; out dType: TGLenum);
+  Cardinal; out dType: Cardinal);
 {Give a compressed openGL texture format from GLScene texture format
   if format is have not compression than return same openGL format. }
 function CompressedInternalFormatToOpenGL(intFormat: TGLInternalFormat):
   Integer;
 {True if texture target supported. }
-function IsTargetSupported(glTarget: TGLEnum): Boolean; overload;
+function IsTargetSupported(glTarget: Cardinal): Boolean; overload;
 function IsTargetSupported(target: TGLTextureTarget): Boolean; overload;
 {True if texture format is supported by hardware or software. }
 function IsFormatSupported(intFormat: TGLInternalFormat): Boolean;
 {True if texture format is float. }
 function IsFloatFormat(intFormat: TGLInternalFormat): Boolean; overload;
-function IsFloatFormat(glFormat: TGLEnum): Boolean; overload;
+function IsFloatFormat(glFormat: Cardinal): Boolean; overload;
 {True if depth texture. }
 function IsDepthFormat(intFormat: TGLInternalFormat): boolean; overload;
-function IsDepthFormat(glFormat: TGLEnum): Boolean; overload;
+function IsDepthFormat(glFormat: Cardinal): Boolean; overload;
 {True if texture compressed. }
 function IsCompressedFormat(intFormat: TGLInternalFormat): Boolean; overload;
-function IsCompressedFormat(glFormat: TGLEnum): Boolean; overload;
+function IsCompressedFormat(glFormat: Cardinal): Boolean; overload;
 {Give generic compressed OpenGL texture format. }
 function GetGenericCompressedFormat(const intFormat: TGLInternalFormat;
-  const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
+  const colorFormat: Cardinal; out internalFormat: Cardinal): Boolean;
 {Give uncompressed texture format and OpenGL color format. }
 function GetUncompressedFormat(const intFormat: TGLInternalFormat;
-  out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
+  out internalFormat: TGLInternalFormat; out colorFormat: Cardinal): Boolean;
 
-function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): TGLEnum;
-function EncodeGLTextureTarget(const glTarget: TGLEnum): TGLTextureTarget;
+function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
+function EncodeGLTextureTarget(const glTarget: Cardinal): TGLTextureTarget;
 function IsTargetSupportMipmap(const TextureTarget: TGLTextureTarget): Boolean; overload;
-function IsTargetSupportMipmap(const glTarget: TGLEnum): Boolean; overload;
+function IsTargetSupportMipmap(const glTarget: Cardinal): Boolean; overload;
 
 //---------------------------------------------------------------------------
 implementation
@@ -284,9 +284,9 @@ uses
 type
 
   TFormatDesc = record
-    IntFmt: TGLEnum;
-    ClrFmt: TGLEnum;
-    DataFmt: TGLEnum;
+    IntFmt: Cardinal;
+    ClrFmt: Cardinal;
+    DataFmt: Cardinal;
     RBit: Byte;
     GBit: Byte;
     BBit: Byte;
@@ -464,12 +464,12 @@ const
     (IntFmt: GL_RGBA16_SNORM; ClrFmt: GL_RGBA; DataFmt: GL_SHORT; RBit: 16; GBit: 16; BBit: 16; ABit: 16; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False)
     );
 
-function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): TGLEnum;
+function InternalFormatToOpenGLFormat(intFormat: TGLInternalFormat): Cardinal;
 begin
   Result := cTextureFormatToOpenGL[intFormat].IntFmt;
 end;
 
-function OpenGLFormatToInternalFormat(glFormat: TGLEnum): TGLInternalFormat;
+function OpenGLFormatToInternalFormat(glFormat: Cardinal): TGLInternalFormat;
 var
   i: TGLInternalFormat;
 begin
@@ -490,7 +490,7 @@ begin
     cTextureFormatToOpenGL[intFormat].DataFmt);
 end;
 
-function GetTextureElementSize(colorFormat: TGLEnum; dataType: TGLEnum):
+function GetTextureElementSize(colorFormat: Cardinal; dataType: Cardinal):
   Integer;
 var
   components: Byte;
@@ -584,7 +584,7 @@ begin
 end;
 
 procedure FindCompatibleDataFormat(intFormat: TGLInternalFormat; out dFormat:
-  TGLEnum; out dType: TGLenum);
+  Cardinal; out dType: Cardinal);
 begin
   dFormat := cTextureFormatToOpenGL[intFormat].ClrFmt;
   dType := cTextureFormatToOpenGL[intFormat].DataFmt;
@@ -595,7 +595,7 @@ begin
   Result := IsTargetSupported(DecodeGLTextureTarget(target));
 end;
 
-function IsTargetSupported(glTarget: TGLEnum): Boolean;
+function IsTargetSupported(glTarget: Cardinal): Boolean;
 begin
   case glTarget of
     GL_TEXTURE_1D: Result := GL.VERSION_1_1 or GL.EXT_texture_object;
@@ -745,7 +745,7 @@ begin
   Result := cTextureFormatToOpenGL[intFormat].Flt;
 end;
 
-function IsFloatFormat(glFormat: TGLEnum): boolean;
+function IsFloatFormat(glFormat: Cardinal): boolean;
 begin
   Result := IsFloatFormat(OpenGLFormatToInternalFormat(glFormat));
 end;
@@ -755,7 +755,7 @@ begin
   Result := cTextureFormatToOpenGL[intFormat].DBit > 0;
 end;
 
-function IsDepthFormat(glFormat: TGLEnum): boolean;
+function IsDepthFormat(glFormat: Cardinal): boolean;
 begin
   Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].DBit > 0;
 end;
@@ -765,13 +765,13 @@ begin
   Result := cTextureFormatToOpenGL[intFormat].Comp;
 end;
 
-function IsCompressedFormat(glFormat: TGLEnum): boolean;
+function IsCompressedFormat(glFormat: Cardinal): boolean;
 begin
   Result := cTextureFormatToOpenGL[OpenGLFormatToInternalFormat(glFormat)].Comp;
 end;
 
 function GetGenericCompressedFormat(const intFormat: TGLInternalFormat;
-  const colorFormat: TGLEnum; out internalFormat: TGLEnum): Boolean;
+  const colorFormat: Cardinal; out internalFormat: Cardinal): Boolean;
 
 begin
   Result := false;
@@ -807,7 +807,7 @@ begin
 end;
 
 function GetUncompressedFormat(const intFormat: TGLInternalFormat;
-  out internalFormat: TGLInternalFormat; out colorFormat: TGLEnum): Boolean;
+  out internalFormat: TGLInternalFormat; out colorFormat: Cardinal): Boolean;
 begin
   Result := false;
   if not IsCompressedFormat(intFormat) then
@@ -907,7 +907,7 @@ end;
 
 function DecodeGLTextureTarget(const TextureTarget: TGLTextureTarget): Cardinal;
 const
-  cTargetToEnum: array[TGLTextureTarget] of TGLEnum =
+  cTargetToEnum: array[TGLTextureTarget] of Cardinal =
   (
     0,
     GL_TEXTURE_1D,
@@ -927,7 +927,7 @@ begin
   Result := cTargetToEnum[TextureTarget];
 end;
 
-function EncodeGLTextureTarget(const glTarget: TGLEnum): TGLTextureTarget;
+function EncodeGLTextureTarget(const glTarget: Cardinal): TGLTextureTarget;
 begin
   case glTarget of
     GL_TEXTURE_1D: Result := ttTexture1d;
@@ -955,7 +955,7 @@ begin
     and (TextureTarget <> ttTexture2DMultisampleArray);
 end;
 
-function IsTargetSupportMipmap(const glTarget: TGLEnum): Boolean;
+function IsTargetSupportMipmap(const glTarget: Cardinal): Boolean;
 begin
   Result := (glTarget <> GL_TEXTURE_RECTANGLE)
     and (glTarget <> GL_TEXTURE_2D_MULTISAMPLE)

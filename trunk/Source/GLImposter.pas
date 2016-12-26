@@ -2,29 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Imposter building and rendering implementation for GLScene. 
+   Imposter building and rendering implementation for GLScene.
 
-    History :  
-       10/11/12 - PW - Added CPP compatibility: used direct HPPEMIT for
-                          TLoadingImposterEvent as procedure instead of function in Delphi
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       23/02/07 - DaStr - Fixed TGLFireFXManager.Create (TGLCoordinatesStyle stuff)
-       02/08/04 - LR, YHC - BCB corrections: use record instead array
-                               fixed BCB Compiler error "E2370 Simple type name expected"
-       07/05/04 - EG - Perspective distortion properly applied
-       06/05/04 - EG - Fixes, improvements, clean ups
-       04/05/04 - EG - Reworked architecture
-       14/04/04 - SG - Fixed texture clamping for old cards and
-                          switched to GL_NEAREST texture sampling.
-       24/03/04 - SG - Initial.
-     
+    History :
+       24/03/04 - SG - Initial
+       The whole history is logged in a prior version of the unit
 }
+
 unit GLImposter;
 
 interface
@@ -32,18 +16,31 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-
-  GLScene, GLContext, GLVectorTypes, GLVectorGeometry,
-  GLPersistentClasses, GLCrossPlatform, GLGraphics, GLColor,
-  GLRenderContextInfo, GLCoordinates, GLBaseClasses, GLState, GLTextureFormat,
-  OpenGLTokens, GLUtils;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  //GLS
+  OpenGLTokens,
+  GLScene,
+  GLContext,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLPersistentClasses,
+  GLCrossPlatform,
+  GLGraphics,
+  GLColor,
+  GLRenderContextInfo,
+  GLCoordinates,
+  GLBaseClasses,
+  GLState,
+  GLTextureFormat,
+  GLUtils;
 
 type
   // TImposterOptions
   //
-  {Imposter rendering options. 
-     Following options are supported: 
+  {Imposter rendering options.
+     Following options are supported:
       impoBlended : the imposters are transparently blended during renders,
      this will smooth their edges but requires them to be rendered sorted
      from back to front
@@ -542,7 +539,7 @@ end;
 procedure TImposter.BeginRender(var rci: TGLRenderContextInfo);
 var
   mat: TMatrix;
-  filter: TGLEnum;
+  filter: Cardinal;
   fx, fy, yOffset, cosAlpha, dynScale: Single;
 begin
   with rci.GLStates do

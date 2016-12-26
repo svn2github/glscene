@@ -35,8 +35,30 @@ uses
   GLVectorGeometry,
   GLVectorTypes;
 
-type
+const
+{$IFDEF MSWINDOWS}
+  opengl32 = 'OpenGL32.dll';
+  glu32 = 'GLU32.dll';
+  libEGL = 'libEGL.dll';
+  libGLES2 = 'libGLESv2.dll';
+{$ENDIF}
 
+{$IFDEF Linux}
+  opengl32 = 'libGL.so';
+  glu32 = 'libGLU.so';
+  libEGL = 'libEGL.so';
+  libGLES2 = 'libGLESv2.so';
+{$ENDIF}
+
+{$IFDEF DARWIN}
+  opengl32  = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGL.dylib';
+  glu32 = '/System/Library/Frameworks/OpenGL.framework/Libraries/libGLU.dylib';
+  libAGL = '/System/Library/Frameworks/AGL.framework/AGL';
+  libdl = '/usr/lib/libdl.dylib';
+  libGLES2 = '/System/Library/Frameworks/OpenGLES.framework/OpenGLES';
+{$ENDIF}
+
+type
   EOpenGLError = class(Exception);
 
   TGLExtensionsAndEntryPoints = class
@@ -156,9 +178,9 @@ type
     ARB_debug_output: boolean;
 
 {$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 core functions and procedures'}{$ENDIF}
-    BindTexture: procedure(target: TGLEnum; texture: TGLuint);
+    BindTexture: procedure(target: Cardinal; texture: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    BlendFunc: procedure(sfactor: TGLEnum; dfactor: TGLEnum);
+    BlendFunc: procedure(sfactor: Cardinal; dfactor: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Clear: procedure(mask: TGLbitfield);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -170,128 +192,128 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ColorMask: procedure(red, green, blue, alpha: TGLboolean);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CopyTexImage1D: procedure(target: TGLEnum; level: TGLint;
-      internalFormat: TGLEnum; X, y: TGLint; Width: TGLsizei; border: TGLint);
+    CopyTexImage1D: procedure(target: Cardinal; level: TGLint;
+      internalFormat: Cardinal; X, y: TGLint; Width: TGLsizei; border: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CopyTexImage2D: procedure(target: TGLEnum; level: TGLint;
-      internalFormat: TGLEnum; X, y: TGLint; Width, Height: TGLsizei;
+    CopyTexImage2D: procedure(target: Cardinal; level: TGLint;
+      internalFormat: Cardinal; X, y: TGLint; Width, Height: TGLsizei;
       border: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CopyTexSubImage1D: procedure(target: TGLEnum; level, xoffset, X, y: TGLint;
+    CopyTexSubImage1D: procedure(target: Cardinal; level, xoffset, X, y: TGLint;
       Width: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CopyTexSubImage2D: procedure(target: TGLEnum;
+    CopyTexSubImage2D: procedure(target: Cardinal;
       level, xoffset, yoffset, X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CullFace: procedure(mode: TGLEnum);
+    CullFace: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     DeleteTextures: procedure(n: TGLsizei; textures: PGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DepthFunc: procedure(func: TGLEnum);
+    DepthFunc: procedure(func: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     DepthMask: procedure(flag: TGLboolean);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     DepthRange: procedure(zNear, zFar: TGLclampd);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Disable: procedure(cap: TGLEnum);
+    Disable: procedure(cap: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DrawArrays: procedure(mode: TGLEnum; First: TGLint; Count: TGLsizei);
+    DrawArrays: procedure(mode: Cardinal; First: TGLint; Count: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DrawBuffer: procedure(mode: TGLEnum);
+    DrawBuffer: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DrawElements: procedure(mode: TGLEnum; Count: TGLsizei; atype: TGLEnum;
+    DrawElements: procedure(mode: Cardinal; Count: TGLsizei; atype: Cardinal;
       indices: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Enable: procedure(cap: TGLEnum);
+    Enable: procedure(cap: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Finish: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Flush: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    FrontFace: procedure(mode: TGLEnum);
+    FrontFace: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GenTextures: procedure(n: TGLsizei; textures: PGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetBooleanv: procedure(pname: TGLEnum; params: PGLboolean);
+    GetBooleanv: procedure(pname: Cardinal; params: PGLboolean);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetDoublev: procedure(pname: TGLEnum; params: PGLdouble);
+    GetDoublev: procedure(pname: Cardinal; params: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetError: function: TGLuint;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetFloatv: procedure(pname: TGLEnum; params: PGLfloat);
+    GetFloatv: procedure(pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetIntegerv: procedure(pname: TGLEnum; params: PGLint);
+    GetIntegerv: procedure(pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetPointerv: procedure(pname: TGLEnum; var params);
+    GetPointerv: procedure(pname: Cardinal; var params);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetString: function(Name: TGLEnum): PGLChar;
+    GetString: function(Name: Cardinal): PAnsiChar;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexImage: procedure(target: TGLEnum; level: TGLint;
-      format, atype: TGLEnum; pixels: Pointer);
+    GetTexImage: procedure(target: Cardinal; level: TGLint;
+      format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexLevelParameterfv: procedure(target: TGLEnum; level: TGLint;
-      pname: TGLEnum; params: PGLfloat);
+    GetTexLevelParameterfv: procedure(target: Cardinal; level: TGLint;
+      pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexLevelParameteriv: procedure(target: TGLEnum; level: TGLint;
-      pname: TGLEnum; params: PGLint);
+    GetTexLevelParameteriv: procedure(target: Cardinal; level: TGLint;
+      pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat);
+    GetTexParameterfv: procedure(target, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexParameteriv: procedure(target, pname: TGLEnum; params: PGLint);
+    GetTexParameteriv: procedure(target, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Hint: procedure(target, mode: TGLEnum);
+    Hint: procedure(target, mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    IsEnabled: function(cap: TGLEnum): TGLboolean;
+    IsEnabled: function(cap: Cardinal): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     IsTexture: function(texture: TGLuint): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LineWidth: procedure(Width: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LogicOp: procedure(opcode: TGLEnum);
+    LogicOp: procedure(opcode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelStoref: procedure(pname: TGLEnum; param: TGLfloat);
+    PixelStoref: procedure(pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelStorei: procedure(pname: TGLEnum; param: TGLint);
+    PixelStorei: procedure(pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PointSize: procedure(size: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PolygonMode: procedure(face, mode: TGLEnum);
+    PolygonMode: procedure(face, mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PolygonOffset: procedure(factor, units: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ReadBuffer: procedure(mode: TGLEnum);
+    ReadBuffer: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ReadPixels: procedure(X, y: TGLint; Width, Height: TGLsizei;
-      format, atype: TGLEnum; pixels: Pointer);
+      format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Scissor: procedure(X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    StencilFunc: procedure(func: TGLEnum; ref: TGLint; mask: TGLuint);
+    StencilFunc: procedure(func: Cardinal; ref: TGLint; mask: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     StencilMask: procedure(mask: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    StencilOp: procedure(fail, zfail, zpass: TGLEnum);
+    StencilOp: procedure(fail, zfail, zpass: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexImage1D: procedure(target: TGLEnum; level, internalFormat: TGLint;
-      Width: TGLsizei; border: TGLint; format, atype: TGLEnum; pixels: Pointer);
+    TexImage1D: procedure(target: Cardinal; level, internalFormat: TGLint;
+      Width: TGLsizei; border: TGLint; format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexImage2D: procedure(target: TGLEnum; level, internalFormat: TGLint;
-      Width, Height: TGLsizei; border: TGLint; format, atype: TGLEnum;
+    TexImage2D: procedure(target: Cardinal; level, internalFormat: TGLint;
+      Width, Height: TGLsizei; border: TGLint; format, atype: Cardinal;
       pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexParameterf: procedure(target, pname: TGLEnum; param: TGLfloat);
+    TexParameterf: procedure(target, pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexParameterfv: procedure(target, pname: TGLEnum; params: PGLfloat);
+    TexParameterfv: procedure(target, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexParameteri: procedure(target, pname: TGLEnum; param: TGLint);
+    TexParameteri: procedure(target, pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexParameteriv: procedure(target, pname: TGLEnum; params: PGLint);
+    TexParameteriv: procedure(target, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexSubImage1D: procedure(target: TGLEnum; level, xoffset: TGLint;
-      Width: TGLsizei; format, atype: TGLEnum; pixels: Pointer);
+    TexSubImage1D: procedure(target: Cardinal; level, xoffset: TGLint;
+      Width: TGLsizei; format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexSubImage2D: procedure(target: TGLEnum; level, xoffset, yoffset: TGLint;
-      Width, Height: TGLsizei; format, atype: TGLEnum; pixels: Pointer);
+    TexSubImage2D: procedure(target: Cardinal; level, xoffset, yoffset: TGLint;
+      Width, Height: TGLsizei; format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Viewport: procedure(X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -300,27 +322,27 @@ type
 {$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
     Accum: procedure(op: TGLuint; Value: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    AlphaFunc: procedure(func: TGLEnum; ref: TGLclampf);
+    AlphaFunc: procedure(func: Cardinal; ref: TGLclampf);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     AreTexturesResident: function(n: TGLsizei; textures: PGLuint;
       residences: PGLboolean): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ArrayElement: procedure(i: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Begin_: procedure(mode: TGLEnum);
+    Begin_: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Bitmap: procedure(Width: TGLsizei; Height: TGLsizei; xorig, yorig: TGLfloat;
       xmove: TGLfloat; ymove: TGLfloat; Bitmap: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     CallList: procedure(list: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CallLists: procedure(n: TGLsizei; atype: TGLEnum; lists: Pointer);
+    CallLists: procedure(n: TGLsizei; atype: Cardinal; lists: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ClearAccum: procedure(red, green, blue, alpha: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ClearIndex: procedure(c: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ClipPlane: procedure(plane: TGLEnum; equation: PGLdouble);
+    ClipPlane: procedure(plane: Cardinal; equation: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Color3b: procedure(red, green, blue: TGLbyte);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -386,19 +408,19 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Color4usv: procedure(v: PGLushort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ColorMaterial: procedure(face: TGLEnum; mode: TGLEnum);
+    ColorMaterial: procedure(face: Cardinal; mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ColorPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei;
+    ColorPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei;
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     CopyPixels: procedure(X, y: TGLint; Width, Height: TGLsizei;
-      atype: TGLEnum);
+      atype: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     DeleteLists: procedure(list: TGLuint; range: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DisableClientState: procedure(aarray: TGLEnum);
+    DisableClientState: procedure(aarray: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DrawPixels: procedure(Width, Height: TGLsizei; format, atype: TGLEnum;
+    DrawPixels: procedure(Width, Height: TGLsizei; format, atype: Cardinal;
       pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EdgeFlag: procedure(flag: TGLboolean);
@@ -407,7 +429,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EdgeFlagv: procedure(flag: PGLboolean);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EnableClientState: procedure(aarray: TGLEnum);
+    EnableClientState: procedure(aarray: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     End_: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -429,65 +451,65 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EvalCoord2fv: procedure(u: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalMesh1: procedure(mode: TGLEnum; i1, i2: TGLint);
+    EvalMesh1: procedure(mode: Cardinal; i1, i2: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalMesh2: procedure(mode: TGLEnum; i1, i2, j1, j2: TGLint);
+    EvalMesh2: procedure(mode: Cardinal; i1, i2, j1, j2: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EvalPoint1: procedure(i: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EvalPoint2: procedure(i, j: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    FeedbackBuffer: procedure(size: TGLsizei; atype: TGLEnum; buffer: PGLfloat);
+    FeedbackBuffer: procedure(size: TGLsizei; atype: Cardinal; buffer: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Fogf: procedure(pname: TGLEnum; param: TGLfloat);
+    Fogf: procedure(pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Fogfv: procedure(pname: TGLEnum; params: PGLfloat);
+    Fogfv: procedure(pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Fogi: procedure(pname: TGLEnum; param: TGLint);
+    Fogi: procedure(pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Fogiv: procedure(pname: TGLEnum; params: PGLint);
+    Fogiv: procedure(pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Frustum: procedure(left, right, bottom, top, zNear, zFar: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GenLists: function(range: TGLsizei): TGLuint;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetClipPlane: procedure(plane: TGLEnum; equation: PGLdouble);
+    GetClipPlane: procedure(plane: Cardinal; equation: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetLightfv: procedure(light, pname: TGLEnum; params: PGLfloat);
+    GetLightfv: procedure(light, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetLightiv: procedure(light, pname: TGLEnum; params: PGLint);
+    GetLightiv: procedure(light, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetMapdv: procedure(target, query: TGLEnum; v: PGLdouble);
+    GetMapdv: procedure(target, query: Cardinal; v: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetMapfv: procedure(target, query: TGLEnum; v: PGLfloat);
+    GetMapfv: procedure(target, query: Cardinal; v: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetMapiv: procedure(target, query: TGLEnum; v: PGLint);
+    GetMapiv: procedure(target, query: Cardinal; v: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetMaterialfv: procedure(face, pname: TGLEnum; params: PGLfloat);
+    GetMaterialfv: procedure(face, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetMaterialiv: procedure(face, pname: TGLEnum; params: PGLint);
+    GetMaterialiv: procedure(face, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetPixelMapfv: procedure(map: TGLEnum; values: PGLfloat);
+    GetPixelMapfv: procedure(map: Cardinal; values: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetPixelMapuiv: procedure(map: TGLEnum; values: PGLuint);
+    GetPixelMapuiv: procedure(map: Cardinal; values: PGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetPixelMapusv: procedure(map: TGLEnum; values: PGLushort);
+    GetPixelMapusv: procedure(map: Cardinal; values: PGLushort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetPolygonStipple: procedure(mask: PGLubyte);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexEnvfv: procedure(target, pname: TGLEnum; params: PGLfloat);
+    GetTexEnvfv: procedure(target, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexEnviv: procedure(target, pname: TGLEnum; params: PGLint);
+    GetTexEnviv: procedure(target, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexGendv: procedure(coord, pname: TGLEnum; params: PGLdouble);
+    GetTexGendv: procedure(coord, pname: Cardinal; params: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat);
+    GetTexGenfv: procedure(coord, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetTexGeniv: procedure(coord, pname: TGLEnum; params: PGLint);
+    GetTexGeniv: procedure(coord, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     IndexMask: procedure(mask: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    IndexPointer: procedure(atype: TGLEnum; stride: TGLsizei; Data: Pointer);
+    IndexPointer: procedure(atype: Cardinal; stride: TGLsizei; Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Indexd: procedure(c: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -511,26 +533,26 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     InitNames: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    InterleavedArrays: procedure(format: TGLEnum; stride: TGLsizei;
+    InterleavedArrays: procedure(format: Cardinal; stride: TGLsizei;
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     IsList: function(list: TGLuint): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LightModelf: procedure(pname: TGLEnum; param: TGLfloat);
+    LightModelf: procedure(pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LightModelfv: procedure(pname: TGLEnum; params: PGLfloat);
+    LightModelfv: procedure(pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LightModeli: procedure(pname: TGLEnum; param: TGLint);
+    LightModeli: procedure(pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LightModeliv: procedure(pname: TGLEnum; params: PGLint);
+    LightModeliv: procedure(pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Lightf: procedure(light, pname: TGLEnum; param: TGLfloat);
+    Lightf: procedure(light, pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Lightfv: procedure(light, pname: TGLEnum; params: PGLfloat);
+    Lightfv: procedure(light, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Lighti: procedure(light, pname: TGLEnum; param: TGLint);
+    Lighti: procedure(light, pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Lightiv: procedure(light, pname: TGLEnum; params: PGLint);
+    Lightiv: procedure(light, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LineStipple: procedure(factor: TGLint; pattern: TGLushort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -544,17 +566,17 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LoadName: procedure(Name: TGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Map1d: procedure(target: TGLEnum; u1, u2: TGLdouble; stride, order: TGLint;
+    Map1d: procedure(target: Cardinal; u1, u2: TGLdouble; stride, order: TGLint;
       points: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Map1f: procedure(target: TGLEnum; u1, u2: TGLfloat; stride, order: TGLint;
+    Map1f: procedure(target: Cardinal; u1, u2: TGLfloat; stride, order: TGLint;
       points: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Map2d: procedure(target: TGLEnum; u1, u2: TGLdouble;
+    Map2d: procedure(target: Cardinal; u1, u2: TGLdouble;
       ustride, uorder: TGLint; v1, v2: TGLdouble; vstride, vorder: TGLint;
       points: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Map2f: procedure(target: TGLEnum; u1, u2: TGLfloat; ustride, uorder: TGLint;
+    Map2f: procedure(target: Cardinal; u1, u2: TGLfloat; ustride, uorder: TGLint;
       v1, v2: TGLfloat; vstride, vorder: TGLint; points: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     MapGrid1d: procedure(un: TGLint; u1, u2: TGLdouble);
@@ -567,21 +589,21 @@ type
     MapGrid2f: procedure(un: TGLint; u1, u2: TGLfloat; vn: TGLint;
       v1, v2: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Materialf: procedure(face, pname: TGLEnum; param: TGLfloat);
+    Materialf: procedure(face, pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Materialfv: procedure(face, pname: TGLEnum; params: PGLfloat);
+    Materialfv: procedure(face, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Materiali: procedure(face, pname: TGLEnum; param: TGLint);
+    Materiali: procedure(face, pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Materialiv: procedure(face, pname: TGLEnum; params: PGLint);
+    Materialiv: procedure(face, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    MatrixMode: procedure(mode: TGLEnum);
+    MatrixMode: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     MultMatrixd: procedure(m: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     MultMatrixf: procedure(m: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    NewList: procedure(list: TGLuint; mode: TGLEnum);
+    NewList: procedure(list: TGLuint; mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Normal3b: procedure(nx, ny, nz: TGLbyte);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -603,21 +625,21 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Normal3sv: procedure(v: PGLshort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    NormalPointer: procedure(atype: TGLEnum; stride: TGLsizei; Data: Pointer);
+    NormalPointer: procedure(atype: Cardinal; stride: TGLsizei; Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Ortho: procedure(left, right, bottom, top, zNear, zFar: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PassThrough: procedure(token: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelMapfv: procedure(map: TGLEnum; mapsize: TGLsizei; values: PGLfloat);
+    PixelMapfv: procedure(map: Cardinal; mapsize: TGLsizei; values: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelMapuiv: procedure(map: TGLEnum; mapsize: TGLsizei; values: PGLuint);
+    PixelMapuiv: procedure(map: Cardinal; mapsize: TGLsizei; values: PGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelMapusv: procedure(map: TGLEnum; mapsize: TGLsizei; values: PGLushort);
+    PixelMapusv: procedure(map: Cardinal; mapsize: TGLsizei; values: PGLushort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelTransferf: procedure(pname: TGLEnum; param: TGLfloat);
+    PixelTransferf: procedure(pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PixelTransferi: procedure(pname: TGLEnum; param: TGLint);
+    PixelTransferi: procedure(pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PixelZoom: procedure(xfactor, yfactor: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -706,7 +728,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Rectsv: procedure(v1, v2: PGLshort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    RenderMode: function(mode: TGLEnum): TGLint;
+    RenderMode: function(mode: Cardinal): TGLint;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Rotated: procedure(ane, X, y, z: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -718,7 +740,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     SelectBuffer: procedure(size: TGLsizei; buffer: PGLuint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ShadeModel: procedure(mode: TGLEnum);
+    ShadeModel: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     TexCoord1d: procedure(s: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -784,28 +806,28 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     TexCoord4sv: procedure(v: PGLshort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexCoordPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei;
+    TexCoordPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei;
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexEnvf: procedure(target, pname: TGLEnum; param: TGLfloat);
+    TexEnvf: procedure(target, pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexEnvfv: procedure(target, pname: TGLEnum; params: PGLfloat);
+    TexEnvfv: procedure(target, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexEnvi: procedure(target, pname: TGLEnum; param: TGLint);
+    TexEnvi: procedure(target, pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexEnviv: procedure(target, pname: TGLEnum; params: PGLint);
+    TexEnviv: procedure(target, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGend: procedure(coord, pname: TGLEnum; param: TGLdouble);
+    TexGend: procedure(coord, pname: Cardinal; param: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGendv: procedure(coord, pname: TGLEnum; params: PGLdouble);
+    TexGendv: procedure(coord, pname: Cardinal; params: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGenf: procedure(coord, pname: TGLEnum; param: TGLfloat);
+    TexGenf: procedure(coord, pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGenfv: procedure(coord, pname: TGLEnum; params: PGLfloat);
+    TexGenfv: procedure(coord, pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGeni: procedure(coord, pname: TGLEnum; param: TGLint);
+    TexGeni: procedure(coord, pname: Cardinal; param: TGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    TexGeniv: procedure(coord, pname: TGLEnum; params: PGLint);
+    TexGeniv: procedure(coord, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Translated: procedure(X, y, z: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -859,7 +881,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Vertex4sv: procedure(v: PGLshort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    VertexPointer: procedure(size: TGLint; atype: TGLEnum; stride: TGLsizei;
+    VertexPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei;
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 
@@ -1550,7 +1572,7 @@ type
     // Special Gremedy debugger extension
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
-    DebugMessageEnableAMDX: procedure(category: TGLenum; severity: TGLenum;
+    DebugMessageEnableAMDX: procedure(category: Cardinal; severity: Cardinal;
       Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
 
     PushDebugGroup: PFNGLPushDebugGroup;
@@ -1564,13 +1586,13 @@ type
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
-    DebugMessageControl: procedure(type_: TGLenum; Source: TGLenum;
-      severity: TGLenum; Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
+    DebugMessageControl: procedure(type_: Cardinal; Source: Cardinal;
+      severity: Cardinal; Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
-    DebugMessageInsert: procedure(Source: TGLenum; severity: TGLenum; id: TGLuint;
-      length: TGLsizei; const buf: PGLChar);
+    DebugMessageInsert: procedure(Source: Cardinal; severity: Cardinal; id: TGLuint;
+      length: TGLsizei; const buf: PAnsiChar);
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
@@ -1579,8 +1601,8 @@ type
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
     GetDebugMessageLog: function(Count: TGLuint; bufSize: TGLsizei;
-      var severity: TGLenum; var severities: TGLuint; var ids: TGLuint;
-      var lengths: TGLsizei; messageLog: PGLChar): TGLuint;
+      var severity: Cardinal; var severities: TGLuint; var ids: TGLuint;
+      var lengths: TGLsizei; messageLog: PAnsiChar): TGLuint;
    {$IFDEF MSWINDOWS} stdcall;
    {$ENDIF}{$IFDEF UNIX} cdecl;
    {$ENDIF}
@@ -1594,22 +1616,22 @@ type
     VDPAUFiniNV: procedure();
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAURegisterVideoSurfaceNV: function(const vdpSurface: Pointer;
-      target: TGLEnum; numTextureNames: TGLsizei; const textureNames: PGLuint)
+      target: Cardinal; numTextureNames: TGLsizei; const textureNames: PGLuint)
       : TGLvdpauSurfaceNV;
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAURegisterOutputSurfaceNV: function(const vdpSurface: Pointer;
-      target: TGLEnum; numTextureNames: TGLsizei; const textureNames: PGLuint)
+      target: Cardinal; numTextureNames: TGLsizei; const textureNames: PGLuint)
       : TGLvdpauSurfaceNV;
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAUIsSurfaceNV: procedure(surface: TGLvdpauSurfaceNV);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAUUnregisterSurfaceNV: procedure(surface: TGLvdpauSurfaceNV);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    VDPAUGetSurfaceivNV: procedure(surface: TGLvdpauSurfaceNV; pname: TGLEnum;
+    VDPAUGetSurfaceivNV: procedure(surface: TGLvdpauSurfaceNV; pname: Cardinal;
       bufSize: TGLsizei; length: PGLsizei; values: PGLint);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAUSurfaceAccessNV: procedure(surface: TGLvdpauSurfaceNV;
-      access: TGLEnum);
+      access: Cardinal);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     VDPAUMapSurfacesNV: procedure(numSurfaces: TGLsizei;
       const surfaces: PGLvdpauSurfaceNV);
@@ -1949,15 +1971,15 @@ type
     ASetOffScreen: function(ctx: TAGLContext; Width, Height, rowbytes: TGLsizei;
       out baseaddr: Pointer): GLboolean; cdecl;
     // Getting and Setting Context Options
-    AEnable: function(ctx: TAGLContext; pname: TGLEnum): GLboolean; cdecl;
-    ADisable: function(ctx: TAGLContext; pname: TGLEnum): GLboolean; cdecl;
-    AIsEnabled: function(ctx: TAGLContext; pname: TGLEnum): GLboolean; cdecl;
+    AEnable: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
+    ADisable: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
+    AIsEnabled: function(ctx: TAGLContext; pname: Cardinal): GLboolean; cdecl;
     ASetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint)
       : GLboolean; cdecl;
     AGetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint)
       : GLboolean; cdecl;
     // Getting and Setting Global Information
-    AConfigure: function(pname: TGLEnum; param: TGLuint): TGLboolean; cdecl;
+    AConfigure: function(pname: Cardinal; param: TGLuint): TGLboolean; cdecl;
     AGetVersion: procedure(major: PGLint; minor: PGLint); cdecl;
     AResetLibrary: procedure(); cdecl;
     // Getting Renderer Information
@@ -1981,8 +2003,8 @@ type
       : TGLboolean; cdecl;
     AGetHIViewRef: function(ctx: TAGLContext): HIViewRef; cdecl;
     // Getting Error Information
-    AGetError: function(): TGLEnum; cdecl;
-    AErrorString: function(code: TGLEnum): PGLChar; cdecl;
+    AGetError: function(): Cardinal; cdecl;
+    AErrorString: function(code: Cardinal): PAnsiChar; cdecl;
 {$ENDIF}
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'EGL function/procedure'}{$ENDIF}
@@ -2103,7 +2125,7 @@ type
 {$IFDEF GLS_REGIONS}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
 
 {$IFDEF SUPPORT_WGL}
-function wglGetProcAddress(ProcName: PGLChar): Pointer; stdcall; external opengl32;
+function wglGetProcAddress(ProcName: PAnsiChar): Pointer; stdcall; external opengl32;
 function wglCopyContext(p1: HGLRC; p2: HGLRC; p3: cardinal): BOOL; stdcall; external opengl32;
 function wglCreateContext(DC: HDC): HGLRC; stdcall; external opengl32;
 function wglCreateLayerContext(p1: HDC; p2: integer): HGLRC; stdcall; external opengl32;
@@ -2171,11 +2193,11 @@ procedure glXUseXFont(font: XFont; First: TGLint; Count: TGLint; list: TGLint);
   cdecl; external opengl32;
 
 // GLX 1.1 and later
-function glXQueryExtensionsString(dpy: PDisplay; screen: TGLint): PGLChar;
+function glXQueryExtensionsString(dpy: PDisplay; screen: TGLint): PAnsiChar;
   cdecl; external opengl32;
 function glXQueryServerString(dpy: PDisplay; screen: TGLint; Name: TGLint)
-  : PGLChar; cdecl; external opengl32;
-function glXGetClientString(dpy: PDisplay; Name: TGLint): PGLChar; cdecl;
+  : PAnsiChar; cdecl; external opengl32;
+function glXGetClientString(dpy: PDisplay; Name: TGLint): PAnsiChar; cdecl;
   external opengl32;
 
 // GLX 1.2 and later
@@ -2196,8 +2218,8 @@ function aglSetDrawable(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl;
 {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS} {$REGION 'OpenGL utility (GLU) functions and procedures'}{$ENDIF}
 
-function gluErrorString(errCode: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluGetString(Name: TGLEnum): PGLChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluErrorString(errCode: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluGetString(Name: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluOrtho2D(left, right, bottom, top: TGLdouble);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluPerspective(fovy, aspect, zNear, zFar: TGLdouble);{$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
@@ -2213,23 +2235,23 @@ function gluUnProject(winx, winy, winz: TGLdouble; const modelMatrix: TMatrix4d;
   const projMatrix: TMatrix4d; const Viewport: TVector4i;
   objx, objy, objz: PGLdouble): TGLint; 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluScaleImage(format: TGLEnum; widthin, heightin: TGLint;
-  typein: TGLEnum; datain: Pointer; widthout, heightout: TGLint;
-  typeout: TGLEnum; dataout: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluBuild1DMipmaps(target: TGLEnum; Components, Width: TGLint;
-  format, atype: TGLEnum; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-function gluBuild2DMipmaps(target: TGLEnum; Components, Width, Height: TGLint;
-  format, atype: TGLEnum; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluScaleImage(format: Cardinal; widthin, heightin: TGLint;
+  typein: Cardinal; datain: Pointer; widthout, heightout: TGLint;
+  typeout: Cardinal; dataout: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluBuild1DMipmaps(target: Cardinal; Components, Width: TGLint;
+  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
+function gluBuild2DMipmaps(target: Cardinal; Components, Width, Height: TGLint;
+  format, atype: Cardinal; Data: Pointer): TGLint; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 function gluNewQuadric: PGLUquadric; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteQuadric(state: PGLUquadric); 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-procedure gluQuadricNormals(quadObject: PGLUquadric; normals: TGLEnum);
+procedure gluQuadricNormals(quadObject: PGLUquadric; normals: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluQuadricTexture(quadObject: PGLUquadric; textureCoords: TGLboolean);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluQuadricOrientation(quadObject: PGLUquadric; orientation: TGLEnum);
+procedure gluQuadricOrientation(quadObject: PGLUquadric; orientation: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluQuadricDrawStyle(quadObject: PGLUquadric; drawStyle: TGLEnum);
+procedure gluQuadricDrawStyle(quadObject: PGLUquadric; drawStyle: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluCylinder(quadObject: PGLUquadric;
   baseRadius, topRadius, Height: TGLdouble; slices, stacks: TGLint);
@@ -2244,7 +2266,7 @@ procedure gluPartialDisk(quadObject: PGLUquadric;
 procedure gluSphere(quadObject: PGLUquadric; radius: TGLdouble;
   slices, stacks: TGLint);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluQuadricCallback(quadObject: PGLUquadric; which: TGLEnum;
+procedure gluQuadricCallback(quadObject: PGLUquadric; which: Cardinal;
   fn: TGLUQuadricErrorProc); {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;
 {$ENDIF} external glu32;
 function gluNewTess: PGLUtesselator; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
@@ -2261,14 +2283,14 @@ procedure gluTessEndContour(tess: PGLUtesselator); {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluTessEndPolygon(tess: PGLUtesselator); 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-procedure gluTessProperty(tess: PGLUtesselator; which: TGLEnum;
+procedure gluTessProperty(tess: PGLUtesselator; which: Cardinal;
   Value: TGLdouble);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluTessNormal(tess: PGLUtesselator; X, y, z: TGLdouble);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluTessCallback(tess: PGLUtesselator; which: TGLEnum; fn: Pointer);
+procedure gluTessCallback(tess: PGLUtesselator; which: Cardinal; fn: Pointer);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluGetTessProperty(tess: PGLUtesselator; which: TGLEnum; Value: PGLdouble);
+procedure gluGetTessProperty(tess: PGLUtesselator; which: Cardinal; Value: PGLdouble);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 function gluNewNurbsRenderer: PGLUnurbs; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluDeleteNurbsRenderer(nobj: PGLUnurbs); 
@@ -2285,35 +2307,35 @@ procedure gluBeginTrim(nobj: PGLUnurbs);
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluEndTrim(nobj: PGLUnurbs); 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-procedure gluPwlCurve(nobj: PGLUnurbs; Count: TGLint; points: PGLfloat; stride: TGLint; atype: TGLEnum); 
+procedure gluPwlCurve(nobj: PGLUnurbs; Count: TGLint; points: PGLfloat; stride: TGLint; atype: Cardinal);
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluNurbsCurve(nobj: PGLUnurbs; nknots: TGLint; knot: PGLfloat;
-  stride: TGLint; ctlarray: PGLfloat; order: TGLint; atype: TGLEnum);
+  stride: TGLint; ctlarray: PGLfloat; order: TGLint; atype: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluNurbsSurface(nobj: PGLUnurbs; sknot_count: TGLint; sknot: PGLfloat;
   tknot_count: TGLint; tknot: PGLfloat; s_stride, t_stride: TGLint;
-  ctlarray: PGLfloat; sorder, torder: TGLint; atype: TGLEnum);
+  ctlarray: PGLfloat; sorder, torder: TGLint; atype: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluLoadSamplingMatrices(nobj: PGLUnurbs; const modelMatrix: TMatrix4f;
   const projMatrix: TMatrix4f; const Viewport: TVector4i);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluNurbsProperty(nobj: PGLUnurbs; aproperty: TGLEnum; Value: TGLfloat);
+procedure gluNurbsProperty(nobj: PGLUnurbs; aproperty: Cardinal; Value: TGLfloat);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluGetNurbsProperty(nobj: PGLUnurbs; aproperty: TGLEnum; Value: PGLfloat);
+procedure gluGetNurbsProperty(nobj: PGLUnurbs; aproperty: Cardinal; Value: PGLfloat);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
-procedure gluNurbsCallback(nobj: PGLUnurbs; which: TGLEnum;
+procedure gluNurbsCallback(nobj: PGLUnurbs; which: Cardinal;
   fn: TGLUNurbsErrorProc);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluBeginPolygon(tess: PGLUtesselator); 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
-procedure gluNextContour(tess: PGLUtesselator; atype: TGLEnum);
+procedure gluNextContour(tess: PGLUtesselator; atype: Cardinal);
 {$IFDEF MSWINDOWS} stdcall; {$ENDIF} {$IFDEF UNIX} cdecl;{$ENDIF} external glu32;
 procedure gluEndPolygon(tess: PGLUtesselator); 
 {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 
 {$IFDEF GLS_REGIONS} {$ENDREGION} {$ENDIF}
-function GetProcAddressGLLib(ProcName: PGLChar): Pointer;
-function GetProcAddressGLS(ProcName: PGLChar): Pointer;
+function GetProcAddressGLLib(ProcName: PAnsiChar): Pointer;
+function GetProcAddressGLS(ProcName: PAnsiChar): Pointer;
 
 procedure CloseOpenGL;
 function InitOpenGL: boolean;
@@ -2356,7 +2378,7 @@ var
   EGL2Handle: HINST;
 {$ENDIF}
 
-function GetProcAddressGLS(ProcName: PGLChar): Pointer;
+function GetProcAddressGLS(ProcName: PAnsiChar): Pointer;
 begin
 {$IFNDEF EGL_SUPPORT}
   Result := wglGetProcAddress(ProcName);
@@ -2367,7 +2389,7 @@ end;
 
 {$IFDEF EGL_SUPPORT}
 
-function GetProcAddressEGL(ProcName: PGLChar): Pointer;
+function GetProcAddressEGL(ProcName: PAnsiChar): Pointer;
 begin
   Result := getProcAddress(EGLHandle, ProcName);
 end;
@@ -2415,7 +2437,7 @@ begin
 end;
 {$ENDIF}
 
-function GetProcAddressGLS(ProcName: PGLChar): Pointer;
+function GetProcAddressGLS(ProcName: PAnsiChar): Pointer;
 begin
 {$IFNDEF EGL_SUPPORT}
 {$IFDEF SUPPORT_GLX}
@@ -2439,14 +2461,14 @@ end;
 
 {$IFDEF DARWIN}
 
-function GetProcAddressAGL(ProcName: PGLChar): Pointer;
+function GetProcAddressAGL(ProcName: PAnsiChar): Pointer;
 begin
   Result := getProcAddress(AGLHandle, ProcName);
 end;
 {$ELSE}
 {$IFDEF EGL_SUPPORT}
 
-function GetProcAddressEGL(ProcName: PGLChar): Pointer;
+function GetProcAddressEGL(ProcName: PAnsiChar): Pointer;
 begin
   Result := getProcAddress(EGLHandle, ProcName);
 end;
@@ -2454,7 +2476,7 @@ end;
 {$ENDIF DARWIN}
 {$ENDIF UNIX}
 
-function GetProcAddressGLLib(ProcName: PGLChar): Pointer;
+function GetProcAddressGLLib(ProcName: PAnsiChar): Pointer;
 begin
   Result := getProcAddress(GLHandle, ProcName);
 end;
@@ -2462,8 +2484,8 @@ end;
 var
   vNotInformed: boolean = True;
 
-procedure DebugCallBack(Source: TGLenum; type_: TGLenum; id: TGLuint;
-  severity: TGLenum; length: TGLsizei; const message: PGLChar;
+procedure DebugCallBack(Source: Cardinal; type_: Cardinal; id: TGLuint;
+  severity: Cardinal; length: TGLsizei; const message: PAnsiChar;
   userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
@@ -2475,8 +2497,8 @@ begin
 {$ENDIF}
 end;
 
-procedure DebugCallBackAMD(id: TGLuint; category: TGLenum; severity: TGLenum;
-  length: TGLsizei; message: PGLChar; userParam: Pointer);
+procedure DebugCallBackAMD(id: TGLuint; category: Cardinal; severity: Cardinal;
+  length: TGLsizei; message: PAnsiChar; userParam: Pointer);
 {$IFDEF MSWINDOWS} stdcall;
 {$ENDIF}{$IFDEF UNIX} cdecl;
 {$ENDIF}
@@ -2506,40 +2528,40 @@ var
   vName: string;
 begin
   vName := glPrefix + ProcName;
-  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+  Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
 {$IFDEF DARWIN}
   if Result = nil then
   begin
-    Result := GetProcAddressAGL(PGLChar(TGLString(vName)));
+    Result := GetProcAddressAGL(PAnsiChar(AnsiString(vName)));
     if Result = nil then
     begin
       vName := glPrefix + ProcName + 'APPLE';
-      Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+      Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
 {$ENDIF}
       if Result = nil then
       begin
         vName := glPrefix + ProcName + 'ARB';
-        Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+        Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
         if Result = nil then
         begin
           vName := glPrefix + ProcName;
-          Result := GetProcAddressGLLib(PGLChar(TGLString(vName)));
+          Result := GetProcAddressGLLib(PAnsiChar(AnsiString(vName)));
           if Result = nil then
           begin
             vName := glPrefix + ProcName + 'EXT';
-            Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+            Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
             if Result = nil then
             begin
               vName := glPrefix + ProcName + 'NV';
-              Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+              Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
               if Result = nil then
               begin
                 vName := glPrefix + ProcName + 'ATI';
-                Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+                Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
                 if Result = nil then
                 begin
                   vName := glPrefix + ProcName + 'OES';
-                  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+                  Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
                   if Result = nil then
                     Result := @glCap;
                 end;
@@ -2574,7 +2596,7 @@ var
   vName: string;
 begin
   vName := glPrefix + ProcName;
-  Result := GetProcAddressGLS(PGLChar(TGLString(vName)));
+  Result := GetProcAddressGLS(PAnsiChar(AnsiString(vName)));
   if Result = nil then
     Result := @glCap;
 {$IFDEF GLS_OPENGL_DEBUG}

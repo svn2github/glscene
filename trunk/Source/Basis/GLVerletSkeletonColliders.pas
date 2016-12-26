@@ -2,8 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Skeleton colliders for defining and controlling verlet
-   constraints. 
+   Skeleton colliders for defining and controlling verlet constraints. 
 
    History : 
       11/12/03 - SG - Now uses AddToVerletWorld to build the constraints.
@@ -36,14 +35,13 @@ type
       procedure ReadFromFiler(reader : TVirtualReader); override;
       procedure AddToVerletWorld(VerletWorld : TGLVerletWorld); virtual;
 
-      {The verlet constraint is created through the AddToVerletWorld
-         procedure. }
+     {The verlet constraint is created through the AddToVerletWorld procedure}
       property VerletConstraint : TVerletConstraint read FVerletConstraint;
   end;
 
   // TSCVerletSphere
   //
-  {Sphere shaped verlet constraint in a skeleton collider. }
+  {Sphere shaped verlet constraint in a skeleton collider}
   TSCVerletSphere = class(TSCVerletBase)
     private
       FRadius : Single;
@@ -63,7 +61,7 @@ type
 
   // TSCVerletCapsule
   //
-  {Capsule shaped verlet constraint in a skeleton collider. }
+  {Capsule shaped verlet constraint in a skeleton collider}
   TSCVerletCapsule = class(TSCVerletBase)
     private
       FRadius,

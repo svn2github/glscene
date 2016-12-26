@@ -91,9 +91,9 @@ type
     fData: PGLPixel32Array;
     FLOD: TGLImagePiramid;
     fLevelCount: TGLImageLODRange;
-    fColorFormat: TGLEnum;
+    fColorFormat: Cardinal;
     fInternalFormat: TGLInternalFormat;
-    fDataType: TGLEnum;
+    fDataType: Cardinal;
     fElementSize: Integer;
     fCubeMap: Boolean;
     fTextureArray: Boolean;
@@ -129,7 +129,7 @@ type
     procedure RegisterAsOpenGLTexture(
       AHandle: TGLTextureHandle;
       aMipmapGen: Boolean;
-      aTexFormat: TGLEnum;
+      aTexFormat: Cardinal;
       out texWidth: integer;
       out texHeight: integer;
       out texDepth: integer); virtual;
@@ -139,8 +139,8 @@ type
       AHandle: TGLTextureHandle;
       const CastToFormat: Boolean;
       const intFormat: TGLInternalFormat = tfRGBA8;
-      const colorFormat: TGLenum = 0;
-      const dataType: TGLenum = 0): Boolean; virtual;
+      const colorFormat: Cardinal = 0;
+      const dataType: Cardinal = 0): Boolean; virtual;
 
     {Convert vertical cross format of non compressed, non mipmaped image
        to six face of cube map }
@@ -187,8 +187,8 @@ type
     property LevelCount: TGLImageLODRange read fLevelCount;
 
     property InternalFormat: TGLInternalFormat read FInternalFormat;
-    property ColorFormat: TGLenum read fColorFormat;
-    property DataType: TGLenum read fDataType;
+    property ColorFormat: Cardinal read fColorFormat;
+    property DataType: Cardinal read fDataType;
     property ElementSize: Integer read fElementSize;
     property CubeMap: Boolean read fCubeMap;
     property TextureArray: Boolean read fTextureArray;
@@ -213,8 +213,8 @@ type
     { Private Declarations }
     FVerticalReverseOnAssignFromBitmap: Boolean;
     FBlank: boolean;
-    fOldColorFormat: TGLenum;
-    fOldDataType: TGLenum;
+    fOldColorFormat: Cardinal;
+    fOldDataType: Cardinal;
     procedure DataConvertTask;
   protected
     { Protected Declarations }
@@ -263,12 +263,12 @@ type
     {Depth of the bitmap. }
     property Depth: Integer read GetDepth write SetDepth;
     {OpenGL color format }
-    property ColorFormat: TGLenum read fColorFormat;
+    property ColorFormat: Cardinal read fColorFormat;
     {Recommended texture internal format }
     property InternalFormat: TGLInternalFormat read FInternalFormat write
       FInternalFormat;
     {OpenGL data type }
-    property DataType: TGLenum read fDataType;
+    property DataType: Cardinal read fDataType;
     {Size in bytes of pixel or block }
     property ElementSize: Integer read fElementSize;
 
@@ -291,7 +291,7 @@ type
     property Blank: boolean read FBlank write SetBlank;
 
     {Recast image OpenGL data type and color format. }
-    procedure SetColorFormatDataType(const AColorFormat, ADataType: TGLenum);
+    procedure SetColorFormatDataType(const AColorFormat, ADataType: Cardinal);
     {Set Alpha channel values to the pixel intensity. 
       The intensity is calculated as the mean of RGB components. }
     procedure SetAlphaFromIntensity;
@@ -1452,12 +1452,12 @@ end;
 procedure TGLBaseImage.RegisterAsOpenGLTexture(
   AHandle: TGLTextureHandle;
   aMipmapGen: Boolean;
-  aTexFormat: TGLEnum;
+  aTexFormat: Cardinal;
   out texWidth: integer;
   out texHeight: integer;
   out texDepth: integer);
 var
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
   glHandle: TGLuint;
   Level: integer;
   LLevelCount, face: integer;
@@ -1777,12 +1777,12 @@ function TGLBaseImage.AssignFromTexture(
   AHandle: TGLTextureHandle;
   const CastToFormat: Boolean;
   const intFormat: TGLInternalFormat = tfRGBA8;
-  const colorFormat: TGLenum = 0;
-  const dataType: TGLenum = 0): Boolean;
+  const colorFormat: Cardinal = 0;
+  const dataType: Cardinal = 0): Boolean;
 var
   LContext: TGLContext;
   texFormat, texLod, optLod: Cardinal;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
   level, maxFace, face: Integer;
   lData: PGLubyte;
   residentFormat: TGLInternalFormat;
@@ -1975,10 +1975,10 @@ begin
       Write(FLOD[0].Width, SizeOf(Integer));
       Write(FLOD[0].Height, SizeOf(Integer));
       Write(FLOD[0].Depth, SizeOf(Integer));
-      Write(fColorFormat, SizeOf(TGLenum));
+      Write(fColorFormat, SizeOf(Cardinal));
       Temp := Integer(fInternalFormat);
       Write(Temp, SizeOf(Integer));
-      Write(fDataType, SizeOf(TGLenum));
+      Write(fDataType, SizeOf(Cardinal));
       Write(fElementSize, SizeOf(Integer));
       Write(fLevelCount, SizeOf(TGLImageLODRange));
       Temp := Integer(fCubeMap);
@@ -2010,10 +2010,10 @@ begin
       Read(FLOD[0].Width, SizeOf(Integer));
       Read(FLOD[0].Height, SizeOf(Integer));
       Read(FLOD[0].Depth, SizeOf(Integer));
-      Read(fColorFormat, SizeOf(TGLenum));
+      Read(fColorFormat, SizeOf(Cardinal));
       Read(Temp, SizeOf(Integer));
       fInternalFormat := TGLInternalFormat(Temp);
-      Read(fDataType, SizeOf(TGLenum));
+      Read(fDataType, SizeOf(Cardinal));
       Read(fElementSize, SizeOf(Integer));
       Read(fLevelCount, SizeOf(TGLImageLODRange));
       Read(Temp, SizeOf(Integer));
@@ -2719,7 +2719,7 @@ end;
 // SetColorFormatDataType
 //
 
-procedure TGLImage.SetColorFormatDataType(const AColorFormat, ADataType: TGLenum);
+procedure TGLImage.SetColorFormatDataType(const AColorFormat, ADataType: Cardinal);
 begin
   if fBlank then
   begin

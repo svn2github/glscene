@@ -5,29 +5,8 @@
   Object with support for complex polygons. 
 
   History :  
-       14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
-       04/09/10 - Yar - Bugfixed RunError in TMultiPolygonBase.Destroy in Lazarus
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
-                            TMultiPolygonBase
-       30/03/07 - DaStr - Added $I GLScene.inc
-       14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       18/11/04 - SG - Fixed TGLMultiPolygonBase.Destroy memory leak (Neil)
-       05/09/03 - EG - TGLNotifyCollection moved to GLMisc
-       14/07/02 - EG - Code cleanups, dropped 'absolutes', fixed mem leaks
-       28/12/01 - EG - Added registration (Philipp Pammler)
-       19/12/01 - EG - Removed dependency to contnrs (D4 compatibility,
-                           TObjectList replaced with TPersistentObjectList)
-       29/03/01 - Uwe - Fixes and improvements to TGLMultiPolygon
-       21/02/01 - EG - Now XOpenGL based (multitexture)
-       08/01/01 - EG - Compatibility fix (TGLLineNodes change),
-                           Delphi 4 compatibility (removed TVectorPool) and
-                           added/renamed some properties, various fixes
-       08/10/00 - EG - Added header, code contributed by Uwe Raabe
-   
+     08/10/00 - EG - Added header, code contributed by Uwe Raabe
+     The whole history is logged in a prior version of the unit
 }
 { TODO
 
@@ -50,11 +29,25 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  OpenGLTokens, OpenGLAdapter, GLSpline, XOpenGL, GLContext, GLVectorTypes,
-  GLVectorGeometry, GLVectorLists, GLPersistentClasses, GLScene, GLObjects,
-  GLGeomObjects, GLNodes, GLBaseClasses, GLCoordinates, GLRenderContextInfo;
+  System.Classes,
+  System.SysUtils,
+  //
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLSpline,
+  XOpenGL,
+  GLContext,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLPersistentClasses,
+  GLScene,
+  GLObjects,
+  GLGeomObjects,
+  GLNodes,
+  GLBaseClasses,
+  GLCoordinates,
+  GLRenderContextInfo;
 
 type
 
@@ -579,7 +572,7 @@ end;
 var
   vVertexPool: TVectorPool;
 
-procedure tessError(errno: TGLEnum);
+procedure tessError(errno: Cardinal);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}
@@ -606,7 +599,7 @@ begin
   SetVector(PAffineVector(outData)^, coords^[0], coords^[1], coords^[2]);
 end;
 
-procedure tessBeginList(typ: TGLEnum; polygonData: Pointer);
+procedure tessBeginList(typ: Cardinal; polygonData: Pointer);
 {$IFDEF Win32} stdcall;
 {$ENDIF}{$IFDEF unix} cdecl;
 {$ENDIF}

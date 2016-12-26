@@ -105,7 +105,7 @@ type
   TGLFrameBuffer = class
   private
     FFrameBufferHandle: TGLFramebufferHandle;
-    FTarget: TGLEnum;
+    FTarget: Cardinal;
     FWidth: Integer;
     FHeight: Integer;
     FLayer: Integer;
@@ -123,8 +123,8 @@ type
     procedure SetLevel(const Value: Integer);
   protected
     procedure AttachTexture(
-      const attachment: TGLenum;
-      const textarget: TGLenum;
+      const attachment: Cardinal;
+      const textarget: Cardinal;
       const texture: TGLuint;
       const level: TGLint;
       const layer: TGLint); overload;
@@ -506,8 +506,8 @@ begin
 end;
 
 procedure TGLFrameBuffer.AttachTexture(
-  const attachment: TGLenum;
-  const textarget: TGLenum;
+  const attachment: Cardinal;
+  const textarget: Cardinal;
   const texture: TGLuint;
   const level: TGLint;
   const layer: TGLint);

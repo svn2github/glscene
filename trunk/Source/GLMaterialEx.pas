@@ -9,7 +9,7 @@
    - material can contain different level of applying accordingly to hardware i.e. Feateres scaling.
    - if automatically or by user selected level failed, material down to lower level.
    - direct state access can be used for uniforms setting.
-   - economy mode for texture bindig to active units,
+   - economy mode for texture binding to active units,
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
   History :  
@@ -26,13 +26,34 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-   
-  GLRenderContextInfo, GLBaseClasses, GLContext, GLVectorTypes, GLMaterial,
-  GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLGraphics,
-  GLPersistentClasses, GLCrossPlatform, GLState, GLTextureFormat, GLXCollection,
-  GLTextureCombiners, OpenGLTokens, GLSLParameter, GLApplicationFileIO,
-  GLStrings, GLImageUtils, GLUtils, XOpenGL, GLSLog;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  //GLS
+  OpenGLTokens,
+  GLRenderContextInfo,
+  GLBaseClasses,
+  GLContext,
+  GLVectorTypes,
+  GLMaterial,
+  GLTexture,
+  GLColor,
+  GLCoordinates,
+  GLVectorGeometry,
+  GLGraphics,
+  GLPersistentClasses,
+  GLCrossPlatform,
+  GLState,
+  GLTextureFormat,
+  GLXCollection,
+  GLTextureCombiners,
+  GLSLParameter,
+  GLApplicationFileIO,
+  GLStrings,
+  GLImageUtils,
+  GLUtils,
+  XOpenGL,
+  GLSLog;
 
 type
 
@@ -632,8 +653,8 @@ type
     FScript: TStringList;
     FCommandCache: TCombinerCache;
     procedure SetScript(AValue: TStringList);
-    procedure DoAllocate(Sender: TGLVirtualHandle; var handle: TGLUint);
-    procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: TGLUint);
+    procedure DoAllocate(Sender: TGLVirtualHandle; var handle: Cardinal);
+    procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: Cardinal);
   public
     { Public Declarations }
     constructor Create(AOwner: TGLXCollection); override;
@@ -781,13 +802,13 @@ type
     FInfoLog: string;
     FGeometryInput: TGLgsInTypes;
     FGeometryOutput: TGLgsOutTypes;
-    FGeometryVerticesOut: TGLint;
+    FGeometryVerticesOut: Integer;
     procedure SetSource(AValue: TStringList);
     procedure SetSourceFile(AValue: string);
     procedure SetShaderType(AValue: TGLShaderType);
     procedure SetGeometryInput(AValue: TGLgsInTypes);
     procedure SetGeometryOutput(AValue: TGLgsOutTypes);
-    procedure SetGeometryVerticesOut(AValue: TGLint);
+    procedure SetGeometryVerticesOut(AValue: Integer);
     function GetHandle: TGLShaderHandle;
   public
     { Public Declarations }
@@ -812,7 +833,7 @@ type
       write SetGeometryInput default gsInPoints;
     property GeometryOutput: TGLgsOutTypes read FGeometryOutput
       write SetGeometryOutput default gsOutPoints;
-    property GeometryVerticesOut: TGLint read FGeometryVerticesOut
+    property GeometryVerticesOut: Integer read FGeometryVerticesOut
       write SetGeometryVerticesOut default 1;
   end;
 
@@ -850,7 +871,7 @@ type
     function GetIVec3: TVector3i; virtual;
     function GetIVec4: TVector4i; virtual;
 
-    function GetUInt: TGLuint; virtual;
+    function GetUInt: Cardinal; virtual;
     function GetUVec2: TVector2ui; virtual;
     function GetUVec3: TVector3ui; virtual;
     function GetUVec4: TVector4ui; virtual;
@@ -894,27 +915,24 @@ type
   TGLShaderUniform = class(TGLAbstractShaderUniform, IShaderParameter)
   protected
     { Protected Declarations }
-    FLocation: TGLint;
-    FStoreProgram: TGLuint;
+    FLocation: Integer;
+    FStoreProgram: Cardinal;
     FAutoSet: TUniformAutoSetMethod;
-    function GetProgram: TGLuint;
-{$IFDEF GLS_INLINE} inline;{$ENDIF}
-    procedure PushProgram;
-{$IFDEF GLS_INLINE} inline;{$ENDIF}
-    procedure PopProgram;
-{$IFDEF GLS_INLINE} inline;{$ENDIF}
+    function GetProgram: Cardinal;{$IFDEF GLS_INLINE} inline;{$ENDIF}
+    procedure PushProgram;{$IFDEF GLS_INLINE} inline;{$ENDIF}
+    procedure PopProgram; {$IFDEF GLS_INLINE} inline;{$ENDIF}
 
     function GetFloat: Single; override;
     function GetVec2: TVector2f; override;
     function GetVec3: TVector3f; override;
     function GetVec4: TVector; override;
 
-    function GetInt: TGLint; override;
+    function GetInt: Integer; override;
     function GetIVec2: TVector2i; override;
     function GetIVec3: TVector3i; override;
     function GetIVec4: TVector4i; override;
 
-    function GetUInt: TGLuint; override;
+    function GetUInt: Cardinal; override;
     function GetUVec2: TVector2ui; override;
     function GetUVec3: TVector3ui; override;
     function GetUVec4: TVector4ui; override;
@@ -956,7 +974,7 @@ type
     procedure Apply(var ARci: TGLRenderContextInfo); override;
 
     property Name: string read GetName;
-    property Location: TGLint read FLocation;
+    property Location: Integer read FLocation;
     property GLSLType: TGLSLDataType read GetGLSLType;
   end;
 
@@ -1324,17 +1342,17 @@ procedure DeRegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 implementation
 
 const
-  cTextureMagFilter: array[maNearest..maLinear] of TGLEnum =
+  cTextureMagFilter: array[maNearest..maLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR);
-  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of TGLEnum =
+  cTextureMinFilter: array[miNearest..miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST,
     GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR,
     GL_LINEAR_MIPMAP_LINEAR);
-  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of TGLenum =
+  cTextureWrapMode: array[twRepeat..twMirrorClampToBorder] of Cardinal =
     (GL_REPEAT, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_BORDER,
     GL_MIRRORED_REPEAT, GL_MIRROR_CLAMP_TO_EDGE_ATI,
       GL_MIRROR_CLAMP_TO_BORDER_EXT);
-  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of TGLenum =
+  cTextureCompareMode: array[tcmNone..tcmCompareRtoTexture] of Cardinal =
     (GL_NONE, GL_COMPARE_R_TO_TEXTURE);
   cSamplerToTexture: array[TGLSLSamplerType] of TGLTextureTarget =
     (
@@ -1377,7 +1395,7 @@ const
     ttTexture2DMultisample
     );
 
-  cTextureSwizzle: array[TGLTextureSwizzle] of TGLEnum =
+  cTextureSwizzle: array[TGLTextureSwizzle] of Cardinal =
     (
     GL_RED,
     GL_GREEN,
@@ -1388,7 +1406,7 @@ const
     );
 
 const
-  cTextureMode: array[TGLTextureMode] of TGLEnum =
+  cTextureMode: array[TGLTextureMode] of Cardinal =
     (GL_DECAL, GL_MODULATE, GL_BLEND, GL_REPLACE, GL_ADD);
 
 const
@@ -1450,7 +1468,7 @@ type
 var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-  vStoreBegin: procedure(mode: TGLEnum);
+  vStoreBegin: procedure(mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall;{$ENDIF}
 {$IFDEF UNIX}cdecl;{$ENDIF}
 
@@ -2068,7 +2086,7 @@ end;
 procedure TGLTextureImageEx.FullTransfer;
 var
   LCompression: TGLTextureCompression;
-  glFormat: TGLEnum;
+  glFormat: Cardinal;
 begin
   with GL do
   begin
@@ -2189,7 +2207,7 @@ var
   bContinueStreaming: Boolean;
   OldBaseLevel, level: Integer;
   newTime: Double;
-  glInternalFormat: TGLEnum;
+  glInternalFormat: Cardinal;
   transferMethod: 0..3;
 begin
   LImage := TFriendlyImage(FImage);
@@ -2314,7 +2332,7 @@ var
   LGraphic: TGLGraphic;
   LImage: TGLImage;
   level: Integer;
-  glColorFormat, glDataType: TGLEnum;
+  glColorFormat, glDataType: Cardinal;
   bReadFromSource: Boolean;
   LStream: TStream;
   ptr: PByte;
@@ -3697,7 +3715,7 @@ end;
 
 procedure TGLTextureProperties.Apply(var ARci: TGLRenderContextInfo);
 var
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   if Assigned(FLibTexture) then
     with GL do
@@ -4733,7 +4751,7 @@ var
   Size: TGLInt;
   Len: TGLsizei;
   Loc: TGLint;
-  AType: TGLenum;
+  AType: Cardinal;
   UName: string;
   GLSLData: TGLSLDataType;
   GLSLSampler: TGLSLSamplerType;
@@ -5247,7 +5265,7 @@ begin
   Result := GL.ARB_gpu_shader5;
 end;
 
-procedure BeginPatch(mode: TGLEnum);
+procedure BeginPatch(mode: Cardinal);
 {$IFDEF MSWINDOWS} stdcall{$ELSE}cdecl{$ENDIF};
 begin
   if mode = GL_PATCHES then
@@ -5689,7 +5707,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
   end;
 
 var
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   if FLocation > -1 then
   begin
@@ -6691,7 +6709,7 @@ procedure TGLFrameBufferAttachment.DoOnPrepare(Sender: TGLContext);
 var
   LTarget: TGLTextureTarget;
   w, h, d, s, Level, MaxLevel: Integer;
-  glTarget, glFormat, glFace: TGLEnum;
+  glTarget, glFormat, glFace: Cardinal;
 begin
   if IsDesignTime and FDefferedInit then
     exit;

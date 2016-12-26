@@ -238,13 +238,13 @@ type
     FEnableDepthClamp: TGLboolean;
 
     // Coloring state
-    FClampReadColor: TGLenum; // GL_FIXED_ONLY
-    FProvokingVertex: TGLenum; // GL_LAST_VERTEX_CONVENTION
+    FClampReadColor: Cardinal; // GL_FIXED_ONLY
+    FProvokingVertex: Cardinal; // GL_LAST_VERTEX_CONVENTION
 
     // Rasterization state
     FPointSize: TGLfloat;
     FPointFadeThresholdSize: TGLfloat;
-    FPointSpriteCoordOrigin: TGLenum; // GL_UPPER_LEFT
+    FPointSpriteCoordOrigin: Cardinal; // GL_UPPER_LEFT
     FLineWidth: Single;
     FLineStippleFactor: TGLint;
     FLineStipplePattern: TGLushort;
@@ -415,12 +415,12 @@ type
     procedure SetDepthRangeNear(const Value: TGLclampd);
     procedure SetEnableDepthClamp(const enabled: TGLboolean);
     // Coloring state
-    procedure SetClampReadColor(const Value: TGLenum);
-    procedure SetProvokingVertex(const Value: TGLenum);
+    procedure SetClampReadColor(const Value: Cardinal);
+    procedure SetProvokingVertex(const Value: Cardinal);
     // Rasterization state
     procedure SetPointSize(const Value: TGLfloat);
     procedure SetPointFadeThresholdSize(const Value: TGLfloat);
-    procedure SetPointSpriteCoordOrigin(const Value: TGLenum);
+    procedure SetPointSpriteCoordOrigin(const Value: Cardinal);
     procedure SetLineWidth(const Value: TGLfloat);
     procedure SetLineStippleFactor(const Value: TGLint);
     procedure SetLineStipplePattern(const Value: TGLushort);
@@ -607,10 +607,10 @@ type
       read GetMaterialShininess;
 
     {Adjusts material alpha channel for a face. }
-    procedure SetGLMaterialAlphaChannel(const aFace: TGLEnum; const alpha: TGLFloat);
+    procedure SetGLMaterialAlphaChannel(const aFace: Cardinal; const alpha: TGLFloat);
 
     {Adjusts material diffuse color for a face. }
-    procedure SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
+    procedure SetGLMaterialDiffuseColor(const aFace: Cardinal; const diffuse: TVector);
 
     {Lighting states }
     property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
@@ -686,11 +686,11 @@ type
 
     // Coloring state
     {Controls read color clamping. }
-    property ClampReadColor: TGLenum read FClampReadColor write
+    property ClampReadColor: Cardinal read FClampReadColor write
       SetClampReadColor;
     {The provoking vertex used in flat shading.  All the vertices of each
        primitive will the same value determined by this property. }
-    property ProvokingVertex: TGLenum read FProvokingVertex write
+    property ProvokingVertex: Cardinal read FProvokingVertex write
       SetProvokingVertex;
 
     // Rasterization state
@@ -700,7 +700,7 @@ type
     property PointFadeThresholdSize: TGLfloat read FPointFadeThresholdSize write
       SetPointFadeThresholdSize;
     {The texture coordinate origin of point sprites. }
-    property PointSpriteCoordOrigin: TGLenum read FPointSpriteCoordOrigin write
+    property PointSpriteCoordOrigin: Cardinal read FPointSpriteCoordOrigin write
       SetPointSpriteCoordOrigin;
     {The line width. }
     property LineWidth: TGLfloat read FLineWidth write SetLineWidth;
@@ -720,7 +720,7 @@ type
     property CullFaceMode: TCullFaceMode read FCullFaceMode write
       SetCullFaceMode;
     {The winding direction that indicates a front facing primitive. }
-    property FrontFace: {TGLenum} TFaceWinding read FFrontFace write
+    property FrontFace: {Cardinal} TFaceWinding read FFrontFace write
     SetFrontFace;
     // Enables/Disables polygon smoothing.
     property EnablePolygonSmooth: TGLboolean read FEnablePolygonSmooth write
@@ -1083,7 +1083,7 @@ type
     {Indicates the current presence within the list. }
     property InsideList: Boolean read FInsideList;
     {Begin new display list. }
-    procedure NewList(list: Cardinal; mode: TGLEnum);
+    procedure NewList(list: Cardinal; mode: Cardinal);
     {End display list. }
     procedure EndList;
     {Call display list. }
@@ -1112,13 +1112,13 @@ type
 
 type
   TStateRecord = record
-    GLConst: TGLEnum;
+    GLConst: Cardinal;
     GLDeprecated: Boolean;
   end;
 
 const
 {$WARN SYMBOL_DEPRECATED OFF}
-  cGLStateTypeToGLEnum: array[TGLStateType] of TGLenum = (
+  cGLStateTypeToGLEnum: array[TGLStateType] of Cardinal = (
     GL_CURRENT_BIT, GL_POINT_BIT, GL_LINE_BIT, GL_POLYGON_BIT,
     GL_POLYGON_STIPPLE_BIT, GL_PIXEL_MODE_BIT, GL_LIGHTING_BIT, GL_FOG_BIT,
     GL_DEPTH_BUFFER_BIT, GL_ACCUM_BUFFER_BIT, GL_STENCIL_BUFFER_BIT,
@@ -1154,54 +1154,54 @@ const
     (GLConst: GL_DEPTH_CLAMP; GLDeprecated: False)
     );
 
-  cGLTexTypeToGLEnum: array[TGLTextureTarget] of TGLenum =
+  cGLTexTypeToGLEnum: array[TGLTextureTarget] of Cardinal =
     (0, GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D, GL_TEXTURE_1D_ARRAY,
     GL_TEXTURE_2D_ARRAY, GL_TEXTURE_RECTANGLE, GL_TEXTURE_BUFFER,
     GL_TEXTURE_CUBE_MAP, GL_TEXTURE_2D_MULTISAMPLE,
     GL_TEXTURE_2D_MULTISAMPLE_ARRAY, GL_TEXTURE_CUBE_MAP_ARRAY);
 
-  cGLQueryTypeToGLEnum: array[TQueryType] of TGLenum =
+  cGLQueryTypeToGLEnum: array[TQueryType] of Cardinal =
     (GL_SAMPLES_PASSED, GL_PRIMITIVES_GENERATED,
     GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
     GL_TIME_ELAPSED, GL_ANY_SAMPLES_PASSED);
 
-  cGLStencilOpToGLEnum: array[TStencilOp] of TGLenum =
+  cGLStencilOpToGLEnum: array[TStencilOp] of Cardinal =
     (GL_KEEP, GL_ZERO, GL_REPLACE, GL_INCR, GL_DECR, GL_INVERT, GL_INCR_WRAP,
     GL_DECR_WRAP);
 
-  cGLLogicOpToGLEnum: array[TLogicOp] of TGLEnum =
+  cGLLogicOpToGLEnum: array[TLogicOp] of Cardinal =
     (GL_CLEAR, GL_AND, GL_AND_REVERSE, GL_COPY, GL_AND_INVERTED, GL_NOOP,
     GL_XOR, GL_OR, GL_NOR, GL_EQUIV, GL_INVERT, GL_OR_REVERSE,
     GL_COPY_INVERTED, GL_OR_INVERTED, GL_NAND, GL_SET);
 
-  cGLComparisonFunctionToGLEnum: array[TComparisonFunction] of TGLenum =
+  cGLComparisonFunctionToGLEnum: array[TComparisonFunction] of Cardinal =
     (GL_NEVER, GL_ALWAYS, GL_LESS, GL_LEQUAL, GL_EQUAL, GL_GREATER,
     GL_NOTEQUAL, GL_GEQUAL);
 
-  cGLBlendFunctionToGLEnum: array[TBlendFunction] of TGLenum =
+  cGLBlendFunctionToGLEnum: array[TBlendFunction] of Cardinal =
     (GL_ZERO, GL_ONE, GL_SRC_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_DST_COLOR,
     GL_ONE_MINUS_DST_COLOR, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
     GL_DST_ALPHA, GL_ONE_MINUS_DST_ALPHA, GL_CONSTANT_COLOR,
     GL_ONE_MINUS_CONSTANT_COLOR, GL_CONSTANT_ALPHA,
     GL_ONE_MINUS_CONSTANT_ALPHA, GL_SRC_ALPHA_SATURATE {valid for src only});
 
-  cGLBlendEquationToGLEnum: array[TBlendEquation] of TGLEnum =
+  cGLBlendEquationToGLEnum: array[TBlendEquation] of Cardinal =
     (GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_MIN,
     GL_MAX);
 
-  cGLFaceWindingToGLEnum: array[TFaceWinding] of TGLenum =
+  cGLFaceWindingToGLEnum: array[TFaceWinding] of Cardinal =
     (GL_CCW, GL_CW);
 
-  cGLPolygonModeToGLEnum: array[TPolygonMode] of TGLEnum =
+  cGLPolygonModeToGLEnum: array[TPolygonMode] of Cardinal =
     (GL_FILL, GL_LINE, GL_POINT);
 
-  cGLCullFaceModeToGLEnum: array[TCullFaceMode] of TGLEnum =
+  cGLCullFaceModeToGLEnum: array[TCullFaceMode] of Cardinal =
     (GL_FRONT, GL_BACK, GL_FRONT_AND_BACK);
 
-  cGLHintToGLEnum: array[THintType] of TGLEnum =
+  cGLHintToGLEnum: array[THintType] of Cardinal =
     (GL_DONT_CARE, GL_FASTEST, GL_NICEST);
 
-  cGLBufferBindingTarget: array[TGLBufferBindingTarget] of TGLEnum =
+  cGLBufferBindingTarget: array[TGLBufferBindingTarget] of Cardinal =
     (GL_UNIFORM_BUFFER, GL_TRANSFORM_FEEDBACK_BUFFER);
   //------------------------------------------------------
   //------------------------------------------------------
@@ -1563,7 +1563,7 @@ procedure TGLStateCache.SetGLMaterialColors(const aFace: TCullFaceMode;
   const shininess: Integer);
 var
   i: Integer;
-  currentFace: TGLenum;
+  currentFace: Cardinal;
 begin
   if FForwardContext then
     exit;
@@ -1614,7 +1614,7 @@ end;
 // SetGLMaterialAlphaChannel
 //
 
-procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: TGLEnum; const
+procedure TGLStateCache.SetGLMaterialAlphaChannel(const aFace: Cardinal; const
   alpha: TGLFloat);
 var
   i: Integer;
@@ -1649,7 +1649,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
+procedure TGLStateCache.SetGLMaterialDiffuseColor(const aFace: Cardinal; const diffuse: TVector);
 var
   i: Integer;
 begin
@@ -1871,7 +1871,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetClampReadColor(const Value: TGLenum);
+procedure TGLStateCache.SetClampReadColor(const Value: Cardinal);
 begin
   if (Value <> FClampReadColor) or FInsideList then
   begin
@@ -2643,7 +2643,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetPointSpriteCoordOrigin(const Value: TGLenum);
+procedure TGLStateCache.SetPointSpriteCoordOrigin(const Value: Cardinal);
 begin
   if (Value <> FPointSpriteCoordOrigin) or FInsideList then
   begin
@@ -2722,7 +2722,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.SetProvokingVertex(const Value: TGLenum);
+procedure TGLStateCache.SetProvokingVertex(const Value: Cardinal);
 begin
   if Value <> FProvokingVertex then
   begin
@@ -3069,7 +3069,7 @@ end;
 procedure TGLStateCache.SetActiveTextureEnabled(Target: TGLTextureTarget;
   const Value: Boolean);
 var
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   glTarget := DecodeGLTextureTarget(Target);
   if FForwardContext or not IsTargetSupported(glTarget) then
@@ -3122,7 +3122,7 @@ begin
   end;
 end;
 
-procedure TGLStateCache.NewList(list: Cardinal; mode: TGLEnum);
+procedure TGLStateCache.NewList(list: Cardinal; mode: Cardinal);
 var
   I: Cardinal;
 begin
@@ -3733,7 +3733,7 @@ end;
 procedure TGLStateCache.ResetGLTexture(const TextureUnit: Integer);
 var
   t: TGLTextureTarget;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   GL.ActiveTexture(GL_TEXTURE0 + TextureUnit);
   for t := Low(TGLTextureTarget) to High(TGLTextureTarget) do
@@ -3756,7 +3756,7 @@ procedure TGLStateCache.ResetGLCurrentTexture;
 var
   a: TGLint;
   t: TGLTextureTarget;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   if GL.ARB_multitexture then
   begin

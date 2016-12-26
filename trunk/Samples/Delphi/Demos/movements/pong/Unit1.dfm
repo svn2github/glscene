@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 93
   BorderWidth = 5
   Caption = 'Pong'
-  ClientHeight = 192
-  ClientWidth = 482
+  ClientHeight = 324
+  ClientWidth = 630
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,15 +20,17 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 482
-    Height = 192
+    Width = 630
+    Height = 324
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 124.975997924804700000
+    FieldOfView = 145.000000000000000000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
+    ExplicitWidth = 472
+    ExplicitHeight = 182
   end
   object GLScene1: TGLScene
     Left = 32
@@ -74,7 +76,7 @@ object Form1: TForm1
       object Ball: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Ball'
-        Radius = 0.400000005960464500
+        Radius = 0.400000005960464400
         Slices = 12
         Stacks = 9
       end
@@ -86,10 +88,11 @@ object Form1: TForm1
       end
     end
     object DummyCube1: TGLDummyCube
+      Scale.Coordinates = {0000003F0000003F0000003F00000000}
       CubeSize = 1.000000000000000000
       object GLCamera1: TGLCamera
         DepthOfView = 100.000000000000000000
-        FocalLength = 50.000000000000000000
+        FocalLength = 51.078403472900390000
         TargetObject = DummyCube1
         Position.Coordinates = {00000000000070C1000020410000803F}
         Direction.Coordinates = {000000000000803F0000000000000000}

@@ -2,50 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Bitmap Fonts management classes for GLScene 
-  History :  
-   04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
-   20/11/12 - PW - CPP compatibility: replaced direct access to some properties with records
-   01/09/11 - Yar - Bugfixed StartASCII, StopASCII properties for non-Unicode compiler
-   30/06/11 - DaStr - Bugfixed TGLBitmapFontRanges.Add(for AnsiChar)
-   16/05/11 - Yar - Redesign to use multiple textures (by Gabriel Corneanu)
-   13/05/11 - Yar - Adapted to unicode (by Gabriel Corneanu)
-   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-   05/07/10 - Yar - Now HSpace and VSpace can take negative values (thanks Sandor Domokos) (BugtrackerID = 3024975)
-   22/04/10 - Yar - Fixes after GLState revision
-   05/03/10 - DanB - More state added to TGLStateCache
-   24/02/10 - Yar - Bugfix in TGLCustomBitmapFont.PrepareImage when image is not RGBA8
-   25/01/10 - Yar - Replace Char to AnsiChar
-   11/11/09 - DaStr - Added Delphi 2009 compatibility (thanks mal)
-   16/10/08 - UweR - Removed unneeded typecast in TGLBitmapFontRange.SetStartGlyphIdx
-   06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-   30/03/07 - DaStr - Added $I GLScene.inc
-   22/12/06 - LC - Fixed TGLCustomBitmapFont.RenderString, it now unbinds the texture.
-  Bugtracker ID=1619243 (thanks Da Stranger)
-   09/03/05 - EG - Fixed space width during rendering
-   12/15/04 - Eugene Kryukov - Moved FCharRects to protected declaration in TGLCustomBitmapFont
-   18/10/04 - NelC - Fixed a texture reset bug in RenderString
-   02/08/04 - LR, YHC - BCB corrections: use record instead array
-   28/06/04 - LR - Change TTextLayout to TGLTextLayout for Linux
-   27/06/04 - NelC - Added TGLFlatText.Assign
-   01/03/04 - SG - TGLCustomBitmapFont.RenderString now saves GL_CURRENT_BIT state
-   01/07/03 - EG - TGLCustomBitmapFont.TextOut now saves and restore state
-   07/05/03 - EG - TGLFlatText Notification fix, added Options
-   30/10/02 - EG - Added TGLFlatText
-   29/09/02 - EG - Added TexCoords LUT, faster RenderString,
-  removed TGLBitmapFontRange.Widths
-   28/09/02 - EG - Introduced TGLCustomBitmapFont
-   06/09/02 - JAJ - Prepared for TGLWindowsBitmapFont
-   28/08/02 - EG - Repaired fixed CharWidth, variable CharWidth not yet repaired
-   12/08/02 - JAJ - Merged Dual Development, Alpha Channel and CharWidth are now side by side
-   UNKNOWN  - EG - Added Alpha Channel.
-   02/06/02 - JAJ - Modified to flexible character width
-   20/01/02 - EG - Dropped 'Graphics' dependency
-   10/09/01 - EG - Fixed visibility of tile 0
-   12/08/01 - EG - Completely rewritten handles management
-   21/02/01 - EG - Now XOpenGL based (multitexture)
+  Bitmap Fonts management classes for GLScene
+  History :
    15/01/01 - EG - Creation
-   
+   The whole history is logged in a former version of the unit
 }
 unit GLBitmapFont;
 
@@ -54,19 +14,32 @@ unit GLBitmapFont;
 interface
 
 uses
-  System.Classes, System.SysUtils, System.Types,
-  VCL.Graphics,
-
-  GLScene, GLVectorGeometry, GLContext, GLCrossPlatform,
-  GLTexture, GLState, GLUtils, GLGraphics, GLColor, GLBaseClasses,
-  GLRenderContextInfo, GLTextureFormat,
-  OpenGLTokens, XOpenGL, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.Types,
+  Vcl.Graphics,
+  //GLS
+  OpenGLTokens,
+  GLScene,
+  GLVectorGeometry,
+  GLContext,
+  GLCrossPlatform,
+  GLTexture,
+  GLState,
+  GLUtils,
+  GLGraphics,
+  GLColor,
+  GLBaseClasses,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  XOpenGL,
+  GLVectorTypes;
 
 type
 
   // TGLBitmapFontRange
   //
-  {  An individual character range in a bitmap font. 
+  {  An individual character range in a bitmap font.
     A range allows mapping ASCII characters to character tiles in a font
     bitmap, tiles are enumerated line then column (raster). }
   TGLBitmapFontRange = class(TCollectionItem)
@@ -966,9 +939,9 @@ end;
 //
 procedure TGLCustomBitmapFont.PrepareParams(var ARci: TGLRenderContextInfo);
 const
-  cTextureMagFilter: array [maNearest .. maLinear] of TGLEnum = (GL_NEAREST,
+  cTextureMagFilter: array [maNearest .. maLinear] of Cardinal = (GL_NEAREST,
     GL_LINEAR);
-  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of TGLEnum =
+  cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 begin

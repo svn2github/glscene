@@ -4,14 +4,9 @@
 {
    HDR File support for GLScene.
    History :  
-         04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility  
-         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-         08/05/10 - Yar - Removed check for residency in AssignFromTexture
-         22/04/10 - Yar - Fixes after GLState revision
-         23/11/10 - DaStr - Added $I GLScene.inc
-         23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
-         20/01/10 - Yar - Creation
-    
+     20/01/10 - Yar - Creation
+     The whole history is logged in a prior version of the unit
+
 }
 unit GLFileHDR;
 
@@ -22,7 +17,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
+  //GLS
   OpenGLTokens,
   GLContext,
   GLGraphics,
@@ -54,7 +49,7 @@ type
     procedure LoadFromStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -252,7 +247,7 @@ end;
 //
 
 procedure TGLHDRImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint;
+  const textureHandle: Cardinal;
   textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
   const intFormat: TGLInternalFormat);
@@ -261,7 +256,7 @@ var
   contextActivate: Boolean;
   texFormat: Cardinal;
   residentFormat: TGLInternalFormat;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 begin
   glTarget := DecodeGLTextureTarget(textureTarget);
   if not ((glTarget = GL_TEXTURE_2D)

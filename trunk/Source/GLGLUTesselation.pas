@@ -4,20 +4,9 @@
 {
   Code to generate triangle strips and fans for polygons.
 
-  History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       06/06/10 - Yar - Fixed warnings
-       26/11/09 - DaStr - Improved Lazarus compatibility (BugtrackerID = 2893580)
-       10/03/09 - DanB - DoTesselate now accepts TGLBaseMesh instead of
-                            TGLFreeform, so can now use TGLActor with it too
-       29/05/08 - DaStr - Added $I GLScene.inc
-       08/09/03 - Jaj - Added single outline polygon support
-
-    
-
-  License:
-
-    Contributed to GLScene. 
+  History :
+    08/09/03 - Jaj - Added single outline polygon support
+    The whole history is logged in a prior version of the unit
 }
 unit GLGLUTesselation;
 
@@ -27,6 +16,10 @@ interface
 
 uses
   System.SysUtils,
+  //GLS
+  OpenGLAdapter,
+  OpenGLTokens,
+  GLVectorTypes,
   GLVectorFileObjects,
   GLVectorLists,
   GLVectorGeometry;
@@ -34,12 +27,9 @@ uses
 {Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TGLBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
+//---------------------------------------------------------------------------
 implementation
-
-uses
-  OpenGLAdapter,
-  OpenGLTokens,
-  GLVectorTypes;
+//---------------------------------------------------------------------------
 
 var
   TessMesh: TMeshObject;
@@ -47,10 +37,8 @@ var
   TessExtraVertices: Integer;
   TessVertices: PAffineVectorArray;
 
-procedure DoTessBegin(mode: TGLEnum);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+procedure DoTessBegin(mode: Cardinal);
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   TessFace := TFGIndexTexCoordList.CreateOwned(TessMesh.FaceGroups);
   case mode of
@@ -61,24 +49,18 @@ begin
 end;
 
 procedure DoTessVertex3fv(v: PAffineVector);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   TessFace.Add(TessMesh.Vertices.Add(v^), 0, 0);
 end;
 
 procedure DoTessEnd;
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
 end;
 
-procedure DoTessError(errno: TGLEnum);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+procedure DoTessError(errno: Cardinal);
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   Assert(False, IntToStr(errno) + ': ' + string(gluErrorString(errno)));
 end;
@@ -90,9 +72,7 @@ begin
 end;
 
 procedure DoTessCombine(coords: PDoubleVector; vertex_data: Pointer; weight: PGLFloat; var outData: Pointer);
-{$IFDEF Win32} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF Win32} stdcall;{$ENDIF}{$IFDEF UNIX} cdecl;{$ENDIF}
 begin
   outData := AllocNewVertex;
   SetVector(PAffineVector(outData)^, coords[0], coords[1], coords[2]);

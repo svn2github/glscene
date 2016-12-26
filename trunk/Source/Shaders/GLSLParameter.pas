@@ -2,11 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Shader Parameter 
-
-  History :  
-     14/03/11 - Yar - Creation
-  
+  Shader Parameter
+  History :
+    14/03/11 - Yar - Creation
+    The whole history is logged in a prior version of the unit.
 }
 unit GLSLParameter;
 
@@ -18,7 +17,7 @@ interface
 uses
   System.Classes,
   GLStrings,
-  OpenGLTokens, 
+  OpenGLTokens,
   GLVectorTypes, 
   GLTextureFormat, 
   GLRenderContextInfo;
@@ -118,12 +117,12 @@ type
     function GetVec3: TVector3f;
     function GetVec4: TVector4f;
 
-    function GetInt: TGLint;
+    function GetInt: Integer;
     function GetIVec2: TVector2i;
     function GetIVec3: TVector3i;
     function GetIVec4: TVector4i;
 
-    function GetUInt: TGLuint;
+    function GetUInt: Cardinal;
     function GetUVec2: TVector2ui;
     function GetUVec3: TVector3ui;
     function GetUVec4: TVector4ui;
@@ -159,8 +158,8 @@ type
     property GLSLSamplerType: TGLSLSamplerType read GetGLSLSamplerType;
     {Scalar types. }
     property float: TGLFloat read GetFloat write SetFloat;
-    property int: TGLint read GetInt write SetInt;
-    property uint: TGLUint read GetUInt write SetUInt;
+    property int: Integer read GetInt write SetInt;
+    property uint: Cardinal read GetUInt write SetUInt;
 
     {Float vector types. }
     property vec2: TVector2f read GetVec2 write SetVec2;
@@ -248,16 +247,16 @@ const
     'usamplerMSArray');
 
 const
-  cGLgsInTypes : array[TGLgsInTypes] of TGLenum =
+  cGLgsInTypes : array[TGLgsInTypes] of Cardinal =
     (GL_POINTS, GL_LINES, GL_LINES_ADJACENCY_EXT, GL_TRIANGLES,
      GL_TRIANGLES_ADJACENCY_EXT);
-  cGLgsOutTypes: array[TGLgsOutTypes] of TGLenum =
+  cGLgsOutTypes: array[TGLgsOutTypes] of Cardinal =
     (GL_POINTS, GL_LINE_STRIP, GL_TRIANGLE_STRIP);
 
 type
   TUniformAutoSetMethod = procedure(Sender: IShaderParameter; var ARci: TGLRenderContextInfo) of object;
 
-function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
+function GLSLTypeEnum(AType: TGLSLDataType): Cardinal;
 function GLSLTypeComponentCount(AType: TGLSLDataType): Integer;
 procedure RegisterUniformAutoSetMethod(AMethodName: string;
   AType: TGLSLDataType; AMethod: TUniformAutoSetMethod);
@@ -326,7 +325,7 @@ type
 var
   vMethods: array of TAutoSetMethodRec;
 
-function GLSLTypeEnum(AType: TGLSLDataType): TGLEnum;
+function GLSLTypeEnum(AType: TGLSLDataType): Cardinal;
 begin
   Result := cGLSLTypeEnum[AType];
 end;

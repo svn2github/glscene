@@ -105,10 +105,15 @@ type
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLUpdateAbleObject'}{$ENDIF}
-//---------------------- TGLUpdateAbleObject -----------------------------------------
+//---------------------- TGLUpdateAbleObject -----------------------------------
 
 // Create
 //
@@ -173,9 +178,7 @@ begin
     NotifyChange(Self);
   end;
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLCadenceAbleComponent'}{$ENDIF}
 // ------------------
 // ------------------ TGLCadenceAbleComponent ------------------
 // ------------------
@@ -201,9 +204,7 @@ begin
     if (Owner is TGLUpdateAbleComponent) then
       (Owner as TGLUpdateAbleComponent).NotifyChange(Self);
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLUpdateAbleObject'}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLNotifyCollection'}{$ENDIF}
 // ------------------
 // ------------------ TGLNotifyCollection ------------------
 // ------------------
@@ -227,7 +228,6 @@ begin
   if Assigned(FOnNotifyChange) then
     FOnNotifyChange(Self);
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'TGLNotifyCollection'}{$ENDIF}
 
 end.
 

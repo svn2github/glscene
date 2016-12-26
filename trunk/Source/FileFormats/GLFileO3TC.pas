@@ -5,16 +5,8 @@
   O3TC file loading
 
   History :  
-         23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-         31/05/10 - Yar - Fixes for Linux x64
-         08/05/10 - Yar - Removed check for residency in AssignFromTexture
-         22/04/10 - Yar - Fixes after GLState revision
-         27/01/10 - Yar   - Bugfix in BlockOffset with negative result
-         23/11/10 - DaStr - Added $I GLScene.inc
-         23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
-                             Fixed cube map loading bug
-         20/01/10 - Yar - Creation
-    
+    20/01/10 - Yar - Creation
+    The whole history is logged in a prior version of the unit
 }
 unit GLFileO3TC;
 
@@ -25,9 +17,9 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
-  GLCrossPlatform,
+  //GLS
   OpenGLTokens,
+  GLCrossPlatform,
   GLContext,
   GLGraphics,
   GLTextureFormat,
@@ -45,7 +37,7 @@ type
     procedure SaveToStream(stream: TStream); override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -293,7 +285,7 @@ var
   vtcBuffer, top, bottom: PByte;
   i, j, k: Integer;
   cw, ch: Integer;
-  glTarget: TGLEnum;
+  glTarget: Cardinal;
 
   function blockOffset(x, y, z: Integer): Integer;
   begin

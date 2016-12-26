@@ -482,21 +482,21 @@ function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            out iFormat: TGLInternalFormat;
-                           out colorFormat: TGLEnum;
-                           out dataType: TGLenum;
+                           out colorFormat: Cardinal;
+                           out dataType: Cardinal;
                            out bpe: Integer): Boolean;
 
 function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            const iFormat: TGLInternalFormat;
-                           const colorFormat: TGLEnum;
-                           const dataType: TGLenum;
+                           const colorFormat: Cardinal;
+                           const dataType: Cardinal;
                            const bpe: Integer): Boolean;
 
 function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
-                                     out colorFormat: TGLEnum;
-                                     out dataType: TGLEnum): Boolean;
+                                     out colorFormat: Cardinal;
+                                     out dataType: Cardinal): Boolean;
 
 implementation
 
@@ -914,8 +914,8 @@ function DDSHeaderToGLEnum(const DX9header: TDDSHeader;
                            const DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            out iFormat: TGLInternalFormat;
-                           out colorFormat: TGLEnum;
-                           out dataType: TGLenum;
+                           out colorFormat: Cardinal;
+                           out dataType: Cardinal;
                            out bpe: Integer): Boolean;
 var
   i: Integer;
@@ -1191,8 +1191,8 @@ function GLEnumToDDSHeader(var DX9header: TDDSHeader;
                            var DX11header: TDDS_HEADER_DXT10;
                            const useDX11: Boolean;
                            const iFormat: TGLInternalFormat;
-                           const colorFormat: TGLEnum;
-                           const dataType: TGLenum;
+                           const colorFormat: Cardinal;
+                           const dataType: Cardinal;
                            const bpe: Integer): Boolean;
 var
   i: Integer;
@@ -1313,8 +1313,8 @@ begin
 end;
 
 function FindDDSCompatibleDataFormat(const iFormat: TGLInternalFormat;
-                                     out colorFormat: TGLEnum;
-                                     out dataType: TGLEnum): Boolean;
+                                     out colorFormat: Cardinal;
+                                     out dataType: Cardinal): Boolean;
 var
   i: Integer;
 begin

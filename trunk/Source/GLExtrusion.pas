@@ -3,45 +3,14 @@
 //
 {
    Extrusion objects for GLScene. Extrusion objects are solids defined by the
-   surface described by a moving curve. 
+   surface described by a moving curve.
 
-   History :  
-       10/11/12 - PW - Added CPP compatibility: again changed vector arrays to records
-       15/11/11 - Vince - Fixes pipe texture coordinates missing initialisation
-       15/11/11 - Vince - Bugfixed issue with YOffsetPerTurn
-       07/05/11 - Yar - Fixed stColorMaterial state switching accordingly NodesColorMode
-       28/03/11 - Vince - Improve Normals generation on Pipes
-       28/03/11 - Vince - Improve Texture coordinates on Pipes Add Tile
-                              (Add TileS and TileT) and Manual Texture Mode
-                              (Add TexCoordT to set texture coordinate along pipe)
-       04/03/11 - Vince - Added Texture Coordinates on Pipes and fix cap bugs
-                              when ppInside/ppOutside are True
-                              Fix twist bugs on pipe
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       31/07/07 - DanB - Implemented AxisAlignedDimensionsUnscaled for
-                            TGLRevolutionSolid & TGLExtrusionSolid
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       14/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       02/01/06 - LC - Fixed TGLExtrusionSolid texuring. Bugtracker ID=1619318
-       02/08/04 - LR, YHC - BCB corrections: use record instead array
-       02/11/01 - Egg - TGLPipe.BuildList now has a "persistent" cache
-       25/11/01 - Egg - TGLPipe nodes can now be colored
-       19/07/01 - Egg - Fix in TGLRevolutionSolid due to RotateAround change
-       29/03/01 - Uwe - Added a TGLExtrusionSolid based on TMultiPolygonBase,
-                           Fixes in TGLRevolutionSolid
-       26/02/01 - Egg - Minor update to RenderSides by Michael Schuricht
-       21/02/01 - Egg - New RenderSides code by Michael Schuricht,
-                           now XOpenGL based (multitexture)
-       10/01/01 - Egg - Better aspect when nodeN = NodeN-2 in lines mode
-                           (should have only beend encountered when editing)
-       06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
+   History :
+     06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
+     The whole history is logged in a prior version of the unit
+
 }
 {  TODO
-
    ur:
      Suggestion:
        All extrusion objects use actually the same kind of "parts",
@@ -54,11 +23,21 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
-   
-  OpenGLTokens,  GLContext,  GLObjects,  GLScene, GLMultiPolygon,
-  GLColor, GLVectorGeometry, GLRenderContextInfo, GLNodes,
-  GLState, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  //GLS
+  OpenGLTokens,
+  GLContext,
+  GLObjects,
+  GLScene,
+  GLMultiPolygon,
+  GLColor,
+  GLVectorGeometry,
+  GLRenderContextInfo,
+  GLNodes,
+  GLState,
+  GLVectorTypes;
 
 type
 
@@ -1143,7 +1122,7 @@ type
   end;
   PRowData = ^TRowData;
 const
-  cPNCMtoEnum: array[pncmEmission..pncmAmbientAndDiffuse] of TGLEnum =
+  cPNCMtoEnum: array[pncmEmission..pncmAmbientAndDiffuse] of Cardinal =
     (GL_EMISSION, GL_AMBIENT, GL_DIFFUSE, GL_AMBIENT_AND_DIFFUSE);
 
   procedure CalculateRow(row: PRowData;

@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 119
   BorderWidth = 5
   Caption = 'Torque'
-  ClientHeight = 280
+  ClientHeight = 430
   ClientWidth = 735
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -20,9 +20,9 @@ object Form1: TForm1
     Left = 0
     Top = 78
     Width = 735
-    Height = 161
+    Height = 311
     Camera = GLCamera1
-    FieldOfView = 77.668128967285160000
+    FieldOfView = 114.510925292968800000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
@@ -90,20 +90,31 @@ object Form1: TForm1
   end
   object Panel2: TPanel
     Left = 0
-    Top = 239
+    Top = 389
     Width = 735
     Height = 41
     Align = alBottom
     Caption = 'Move your mouse over an object and it will start spinning'
     TabOrder = 2
+    ExplicitTop = 239
   end
   object GLScene1: TGLScene
     Left = 16
     Top = 80
+    object GLCamera1: TGLCamera
+      DepthOfView = 100.000000000000000000
+      FocalLength = 100.000000000000000000
+      TargetObject = DummyCube1
+      Position.Coordinates = {000020410000A040000000000000803F}
+    end
     object GLLightSource1: TGLLightSource
       ConstAttenuation = 1.000000000000000000
       Position.Coordinates = {0000704100002041000020C10000803F}
       SpotCutOff = 180.000000000000000000
+    end
+    object HUDText: TGLHUDText
+      BitmapFont = GLBitmapFont1
+      Rotation = 0.000000000000000000
     end
     object DummyCube1: TGLDummyCube
       CubeSize = 1.000000000000000000
@@ -135,17 +146,18 @@ object Form1: TForm1
         Scale.Coordinates = {9A99993F9A99993F9A99993F00000000}
       end
     end
-    object GLCamera1: TGLCamera
-      DepthOfView = 100.000000000000000000
-      FocalLength = 100.000000000000000000
-      TargetObject = DummyCube1
-      Position.Coordinates = {000020410000A040000000000000803F}
-    end
   end
   object GLCadencer1: TGLCadencer
     Scene = GLScene1
     OnProgress = GLCadencer1Progress
     Left = 88
+    Top = 80
+  end
+  object GLBitmapFont1: TGLBitmapFont
+    GlyphsIntervalX = 0
+    GlyphsIntervalY = 0
+    Ranges = <>
+    Left = 184
     Top = 80
   end
 end
