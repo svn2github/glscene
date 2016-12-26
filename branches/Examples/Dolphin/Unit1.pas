@@ -24,28 +24,29 @@ type
     GLBitmapHDS1: TGLBitmapHDS;
     CheckBox1: TCheckBox;
     procedure FormCreate(Sender: TObject);
-    procedure GLSceneViewer1MouseDown(Sender: TObject;
-      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
-    procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLCadencer1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
     procedure GLSceneViewer1AfterRender(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure GLDummyCube1Progress(Sender: TObject; const deltaTime,
-      newTime: Double);
+    procedure GLDummyCube1Progress(Sender: TObject;
+      const deltaTime, newTime: Double);
   private
     { Private declarations }
   public
     { Public declarations }
-    mx,my, mx2, my2: Integer;
+    mx, my, mx2, my2: Integer;
   end;
 
 var
   Form1: TForm1;
   angulo: Single;
   Fig: TAffineVectorList;
+
 implementation
 
 {$R *.dfm}
@@ -54,95 +55,110 @@ uses
   GLFile3ds, JPEG;
 
 procedure TForm1.FormCreate(Sender: TObject);
-var i:Integer;
+var
+  i: Integer;
 begin
- GLFreeForm1.LoadFromFile('.\media\dolphin.3ds');
- //Guardamos el estado inicial del delfin
- Fig := TAffineVectorList.Create;
- Fig.Assign(GLFreeForm1.MeshObjects.Items[0].Vertices);
- //cargamos el fondo marino...
-   GLBitmapHDS1.MaxPoolSize:=8*1024*1024;
-   GLBitmapHDS1.Picture.LoadFromFile('.\media\terrain.bmp');
-   GLTerrainRenderer1.TilesPerTexture:=256/GLTerrainRenderer1.TileSize;
-   GLTerrainRenderer1.Material.Texture.Image.LoadFromFile('.\media\tex.jpg');
-   GLTerrainRenderer1.Material.Texture.Disabled := False;
+  GLFreeForm1.LoadFromFile('.\media\dolphin.3ds');
+  // Guardamos el estado inicial del delfin
+  Fig := TAffineVectorList.Create;
+  Fig.Assign(GLFreeForm1.MeshObjects.Items[0].Vertices);
+  // cargamos el fondo marino...
+  GLBitmapHDS1.MaxPoolSize := 8 * 1024 * 1024;
+  GLBitmapHDS1.Picture.LoadFromFile('.\media\terrain.bmp');
+  GLTerrainRenderer1.TilesPerTexture := 256 / GLTerrainRenderer1.TileSize;
+  GLTerrainRenderer1.Material.Texture.Image.LoadFromFile('.\media\tex.jpg');
+  GLTerrainRenderer1.Material.Texture.Disabled := False;
 
-   GLSceneViewer1.Buffer.BackgroundColor:=rgb(0,0,160);
-    with GLSceneViewer1.Buffer.FogEnvironment do
-    begin
-      FogColor.AsWinColor:=rgb(0,0,110{160});
-      FogStart:=-FogStart; 
-    end;
+  GLSceneViewer1.Buffer.BackgroundColor := rgb(0, 0, 160);
+  with GLSceneViewer1.Buffer.FogEnvironment do
+  begin
+    FogColor.AsWinColor := rgb(0, 0, 110 { 160 } );
+    FogStart := -FogStart;
+  end;
 end;
 
-procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
-begin
-   mx:=x; my:=y;
-   mx2:=x; my2:=y;
-end;
-
-procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject;
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-  //Usamos esta técnica de mover el objeto para no interferir con la animación...
-   if ssLeft in Shift then
-   begin
-      mx2:=x; my2:=y;
-   end;
+  mx := X;
+  my := Y;
+  mx2 := X;
+  my2 := Y;
 end;
 
-procedure TForm1.GLCadencer1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
-  const AMPLITUD_ALETAZO = 20;
-        FRECUENCIA_DE_PATADA = 15;
-  var j:Integer; v: TAffineVector; f:Single;
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
+  X, Y: Integer);
 begin
- //Permitimos mover la cámara...
- if ((mx<>mx2)or(my<>my2)) then begin
-    GLCamera1.MoveAroundTarget(my-my2, mx-mx2);
-    mx:=mx2; my:=my2;
- end;
+  if ssLeft in Shift then
+  begin
+    mx2 := X;
+    my2 := Y;
+  end;
+end;
 
- if CheckBox1.Checked then
- begin
-   Angulo := NewTime;
-   //Aplicamos la animación al Delfin...
-   for j := 0  to GLFreeForm1.MeshObjects.Items[0].Vertices.Count -1 do
-     with GLFreeForm1.MeshObjects.Items[0].Vertices do
-     begin
-       f := sin(angulo*FRECUENCIA_DE_PATADA) * (sqr(Items[j].X)/AMPLITUD_ALETAZO);
-       v.X := 0; v.Y := 0; v.Z := f;
-       TranslateItem(j, v);
-     end;
-   GLFreeForm1.StructureChanged;
- end;
+procedure TForm1.GLCadencer1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
+const
+  AMPLITUD_ALETAZO = 20;
+  FRECUENCIA_DE_PATADA = 15;
+var
+  j: Integer;
+  v: TAffineVector;
+  f: Single;
+begin
+  // Permission to move around target...
+  if ((mx <> mx2) or (my <> my2)) then
+  begin
+    GLCamera1.MoveAroundTarget(my - my2, mx - mx2);
+    mx := mx2;
+    my := my2;
+  end;
+
+  if CheckBox1.Checked then
+  begin
+    angulo := newTime;
+    // Application of animation for Dolfin...
+    for j := 0 to GLFreeForm1.MeshObjects.Items[0].Vertices.Count - 1 do
+      with GLFreeForm1.MeshObjects.Items[0].Vertices do
+      begin
+        f := sin(angulo * FRECUENCIA_DE_PATADA) *
+          (sqr(Items[j].X) / AMPLITUD_ALETAZO);
+        v.X := 0;
+        v.Y := 0;
+        v.Z := f;
+        TranslateItem(j, v);
+      end;
+    GLFreeForm1.StructureChanged;
+  end;
 end;
 
 procedure TForm1.GLSceneViewer1AfterRender(Sender: TObject);
-  var j:Integer; v: TAffineVector; f:Single;
+var
+  j: Integer;
+  v: TAffineVector;
+  f: Single;
 begin
- //Despues de Presentar un cuadro regresamos al delfín
- //              a su estado inicial...
- GLFreeForm1.MeshObjects.Items[0].Vertices.Assign(Fig);
+  // Despues de Presentar un cuadro regresamos al delfín
+  // a su estado inicial...
+  GLFreeForm1.MeshObjects.Items[0].Vertices.Assign(Fig);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
-  //Liberamos el Objeto auxiliar...
   Fig.Free;
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 begin
-   Caption:=Format('%.2f FPS  Dolphin animation', [GLSceneViewer1.FramesPerSecond]);
-   GLSceneViewer1.ResetPerformanceMonitor;
+  Caption := Format('%.2f FPS  Dolphin animation',
+    [GLSceneViewer1.FramesPerSecond]);
+  GLSceneViewer1.ResetPerformanceMonitor;
 end;
 
-procedure TForm1.GLDummyCube1Progress(Sender: TObject; const deltaTime,
-  newTime: Double);
+procedure TForm1.GLDummyCube1Progress(Sender: TObject;
+  const deltaTime, newTime: Double);
 begin
- GLDummyCube1.Move(3);
+  GLDummyCube1.Move(3);
 end;
 
 end.

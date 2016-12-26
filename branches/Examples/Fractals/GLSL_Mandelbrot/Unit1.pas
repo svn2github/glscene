@@ -3,15 +3,29 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Winapi.OpenGL,
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
   //GLS
-  GLWin32Viewer, GLTexture, GLCadencer, GLScene,
-  GLContext, GLKeyboard, GLUtils, {OpenGL1x,} TGA, GLHUDObjects,
+  GLWin32Viewer,
+  GLTexture,
+  GLCadencer,
+  GLScene,
+  GLContext,
+  GLKeyboard, GLUtils, GLFileTGA, GLHUDObjects,
   GLBitmapFont, GLWindowsFont, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLRenderContextInfo, OpenGLTokens, GLBaseClasses;
+  GLRenderContextInfo, GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -32,7 +46,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure MandelbrotRender(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
   private
     { Private declarations }
   public
@@ -108,7 +122,6 @@ begin
   Viewer.Invalidate;
 end;
 
-
 procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 var
@@ -117,7 +130,7 @@ begin
 end;
 
 procedure TForm1.MandelbrotRender(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 begin
   // shader init
   if not Assigned(MandelbrotProgram) then begin
@@ -154,7 +167,6 @@ begin
   MandelbrotProgram.Uniform1f['scale']:=Scale;
 
   glEnable(GL_TEXTURE_2D);
-  GL.ActiveTexture(GL_TEXTURE0_ARB); //glActiveTextureARB(GL_TEXTURE0_ARB);
   glBindTexture(GL_TEXTURE_2D, GLMatLib.Materials[0].Material.Texture.Handle);
   MandelbrotProgram.Uniform1i['colorMap']:=0;
 

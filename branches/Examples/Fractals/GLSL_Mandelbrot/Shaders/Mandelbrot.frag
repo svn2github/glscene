@@ -20,7 +20,7 @@ void main() {
 
 	while(x2 + y2 < 4.0 && iteration < MAX_ITER) {
  		y = 2.0 * x * y + y0;
-	    x = x2 - y2 + x0;
+	        x = x2 - y2 + x0;
 
 		x2 = x*x;     
 		y2 = y*y;
