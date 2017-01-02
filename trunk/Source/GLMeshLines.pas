@@ -67,7 +67,7 @@ type
     FBreakAngle: Single;
     FDivision: Integer;
     FNodes: TLineNodes;
-    FSplineMode: TLineSplineMode;
+    FSplineMode: TGLLineSplineMode;
     FTextureLength: Single;
     FWidth: Single;
     FTextureCorrection: Boolean;
@@ -78,7 +78,7 @@ type
     procedure SetBreakAngle(const Value: Single);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const Value: TLineNodes);
-    procedure SetSplineMode(const Value:TLineSplineMode);
+    procedure SetSplineMode(const Value:TGLLineSplineMode);
     procedure SetTextureLength(const Value: Single);
     procedure SetWidth(const Value: Single);
   protected
@@ -94,7 +94,7 @@ type
     property BreakAngle: Single read FBreakAngle write SetBreakAngle;
     property Division: Integer read FDivision write SetDivision;
     property Nodes : TLineNodes read FNodes write SetNodes;
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode;
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode;
     property TextureLength: Single read FTextureLength write SetTextureLength;
     property Width: Single read FWidth write SetWidth;
   end;
@@ -340,7 +340,7 @@ begin
   DoChanged;
 end;
 
-procedure TLineItem.SetSplineMode(const Value:TLineSplineMode);
+procedure TLineItem.SetSplineMode(const Value:TGLLineSplineMode);
 begin
   FSplineMode := Value;
   DoChanged;

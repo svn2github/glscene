@@ -134,15 +134,14 @@ procedure TfrmMain.FormCreate(Sender: TObject);
     img := MatLib.TextureByName(AName).Image as TGLCompositeImage;
     strm := GLSArchiveManager1.Archives[0].GetContent('Main/'+AName+'.'+ext);
     img.LoadFromStream(strm);
+    img.LoadFromFile('beigemarble.jpg');
   end;
 
 begin
   SetGLSceneMediaDir();
-  Matlib.TexturePaths := GetCurrentDir();
   GLSArchiveManager1.Archives[0].LoadFromFile('ActorMS3D.zlib');
 
-//  Actor1.Material.Texture.Image.LoadFromFile('floor_parquet.jpg');
-//  Actor1.Material.Texture.Image.LoadFromFile('ashwood.jpg');
+//  MatLib.TextureByName('floor_parquet').Image.LoadFromFile('ashwood.jpg');
   LoadTexture('floor_parquet', 'JPG');
   LoadTexture('Chair', 'PNG');
   LoadTexture('Hair', 'PNG');

@@ -134,10 +134,12 @@ object frmMain: TfrmMain
     object Root: TGLDummyCube
       CubeSize = 1.000000000000000000
       object GLLightSource1: TGLLightSource
-        Ambient.Color = {CDCC0C3FCDCC0C3FCDCC0C3F0000803F}
+        Ambient.Color = {9A99593F9A99593FCDCCCC3D0000803F}
         ConstAttenuation = 1.000000000000000000
+        Diffuse.Color = {9A99593F9A99593FCDCCCC3D0000803F}
         Position.Coordinates = {0000A040000080400000A0400000803F}
         Shining = False
+        Specular.Color = {9A99593F9A99593FCDCCCC3D0000803F}
         SpotCutOff = 80.000000000000000000
       end
       object GLDirectOpenGL1: TGLDirectOpenGL
@@ -157,7 +159,6 @@ object frmMain: TfrmMain
         MaterialLibrary = MatLib
       end
       object GLPlane1: TGLPlane
-        Material.MaterialLibrary = MatLib
         Material.LibMaterialName = 'floor_parquet'
         Direction.Coordinates = {000000000000803F0000000000000000}
         Up.Coordinates = {0000000000000000000080BF00000000}
@@ -195,6 +196,7 @@ object frmMain: TfrmMain
         Material.Texture.Image.Depth = 0
         Material.Texture.TextureMode = tmModulate
         Material.Texture.Disabled = False
+        Material.MaterialLibrary = MatLib
         TextureScale.Coordinates = {0000803F0000803F0000000000000000}
         Shader = GLSLShader1
       end
@@ -218,6 +220,7 @@ object frmMain: TfrmMain
       item
         Name = 'Lightspot'
         Tag = 0
+        Material.FrontProperties.Emission.Color = {CDCC4C3FF8FEFE3EACC8483E0000803F}
         Material.Texture.TextureWrap = twNone
         Material.Texture.Disabled = False
         Shader = GLSLShader1
@@ -276,8 +279,8 @@ object frmMain: TfrmMain
         ShiftState = [ssRight]
         Action = snaMoveAroundTarget
       end>
-    Left = 104
-    Top = 152
+    Left = 112
+    Top = 144
   end
   object Timer1: TTimer
     Enabled = False

@@ -40,7 +40,7 @@ type
 
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -133,7 +133,7 @@ end;
 //
 
 procedure TGLPNGImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint;
+  const textureHandle: Cardinal;
   textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
   const intFormat: TGLInternalFormat);

@@ -52,6 +52,19 @@ object Form1: TForm1
   object GLScene1: TGLScene
     Left = 32
     Top = 40
+    object GLCamera1: TGLCamera
+      DepthOfView = 1000.000000000000000000
+      FocalLength = 50.000000000000000000
+      TargetObject = GLActor1
+      Position.Coordinates = {00004842000048420000A0C20000803F}
+      Direction.Coordinates = {00000000000000800000803F00000000}
+      object GLLightSource2: TGLLightSource
+        ConstAttenuation = 1.000000000000000000
+        Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
+        Specular.Color = {0000803F0000803F0000803F0000803F}
+        SpotCutOff = 180.000000000000000000
+      end
+    end
     object GLLightSource1: TGLLightSource
       Ambient.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       ConstAttenuation = 1.000000000000000000
@@ -113,19 +126,6 @@ object Form1: TForm1
       UseBuildList = False
       OnRender = OctreeRendererRender
       Blend = False
-    end
-    object GLCamera1: TGLCamera
-      DepthOfView = 1000.000000000000000000
-      FocalLength = 50.000000000000000000
-      TargetObject = GLActor1
-      Position.Coordinates = {00004842000048420000A0C20000803F}
-      Direction.Coordinates = {00000000000000800000803F00000000}
-      object GLLightSource2: TGLLightSource
-        ConstAttenuation = 1.000000000000000000
-        Diffuse.Color = {9A99193F9A99193F9A99193F0000803F}
-        Specular.Color = {0000803F0000803F0000803F0000803F}
-        SpotCutOff = 180.000000000000000000
-      end
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary

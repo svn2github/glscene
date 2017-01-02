@@ -23,7 +23,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-
+  //GLS
   GLVectorGeometry,
   GLVectorTypes,
   GLScene,
@@ -377,17 +377,17 @@ type
   // TLineNodesAspect
   //
   {  Possible aspects for the nodes of a TLine. }
-  TLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
+  TGLLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
 
   // TLineSplineMode
   //
   {  Available spline modes for a TLine. }
-  TLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
+  TGLLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
     lsmSegments, lsmLoop);
 
   // TGLLinesNode
   //
-  {  Specialized Node for use in a TGLLines objects. 
+  {  Specialized Node for use in a TGLLines objects.
     Adds a Color property (TGLColor). }
   TGLLinesNode = class(TGLNode)
   private
@@ -487,14 +487,14 @@ type
   private
     { Private Declarations }
     FNodes: TGLLinesNodes;
-    FNodesAspect: TLineNodesAspect;
+    FNodesAspect: TGLLineNodesAspect;
     FNodeColor: TGLColor;
     FNodeSize: Single;
     FOldNodeColor: TColorVector;
 
   protected
     { Protected Declarations }
-    procedure SetNodesAspect(const Value: TLineNodesAspect);
+    procedure SetNodesAspect(const Value: TGLLineNodesAspect);
     procedure SetNodeColor(const Value: TGLColor);
     procedure OnNodeColorChanged(Sender: TObject);
     procedure SetNodes(const aNodes: TGLLinesNodes);
@@ -519,15 +519,15 @@ type
 
   published
     { Published Declarations }
-    {  Default color for nodes. 
+    {  Default color for nodes.
       lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TGLColor read FNodeColor write SetNodeColor;
     {  The nodes list.  }
     property Nodes: TGLLinesNodes read FNodes write SetNodes;
 
-    {  Default aspect of line nodes. 
+    {  Default aspect of line nodes.
       May help you materialize nodes, segments and control points. }
-    property NodesAspect: TLineNodesAspect read FNodesAspect
+    property NodesAspect: TGLLineNodesAspect read FNodesAspect
       write SetNodesAspect default lnaAxes;
     {  Size for the various node aspects. }
     property NodeSize: Single read FNodeSize write SetNodeSize
@@ -536,8 +536,8 @@ type
 
   // TLinesOptions
   //
-  TLinesOption = (loUseNodeColorForLines, loColorLogicXor);
-  TLinesOptions = set of TLinesOption;
+  TGLLinesOption = (loUseNodeColorForLines, loColorLogicXor);
+  TGLLinesOptions = set of TGLLinesOption;
 
   // TGLLines
   //
@@ -552,17 +552,17 @@ type
   private
     { Private Declarations }
     FDivision: Integer;
-    FSplineMode: TLineSplineMode;
-    FOptions: TLinesOptions;
+    FSplineMode: TGLLineSplineMode;
+    FOptions: TGLLinesOptions;
     FNURBSOrder: Integer;
     FNURBSTolerance: Single;
     FNURBSKnots: TSingleList;
 
   protected
     { Protected Declarations }
-    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
-    procedure SetOptions(const val: TLinesOptions);
+    procedure SetOptions(const val: TGLLinesOptions);
     procedure SetNURBSOrder(const val: Integer);
     procedure SetNURBSTolerance(const val: Single);
 
@@ -581,21 +581,21 @@ type
 
   published
     { Published Declarations }
-    {  Number of divisions for each segment in spline modes. 
+    {  Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     {  Default spline drawing mode.  }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
-    {  Rendering options for the line. 
-      
+    {  Rendering options for the line.
+
        loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
       will be used (single color).
       loColorLogicXor: enable logic operation for color of XOR type.
        }
-    property Options: TLinesOptions read FOptions write SetOptions;
+    property Options: TGLLinesOptions read FOptions write SetOptions;
   end;
 
   TCubePart = (cpTop, cpBottom, cpFront, cpBack, cpLeft, cpRight);
@@ -754,13 +754,13 @@ type
   private
     { Private Declarations }
     FDivision: Integer;
-    FSplineMode: TLineSplineMode;
+    FSplineMode: TGLLineSplineMode;
 
   protected
     { Protected Declarations }
     FNodes: TGLNodes;
     procedure CreateNodes; dynamic;
-    procedure SetSplineMode(const val: TLineSplineMode);
+    procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetNodes(const aNodes: TGLNodes);
 
@@ -785,14 +785,14 @@ type
     property Division: Integer read FDivision write SetDivision default 10;
     {  Default spline drawing mode. 
       This mode is used only for the curve, not for the rotation path. }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
   end;
 
   // TGLSuperellipsoid
   //
-  {  A Superellipsoid object. 
+  {  A Superellipsoid object.
     The Superellipsoid can have top and bottom caps,
     as well as being just a slice of Superellipsoid. }
   TGLSuperellipsoid = class(TGLQuadricObject)
@@ -2587,7 +2587,7 @@ end;
 // SetNodesAspect
 //
 
-procedure TGLNodedLines.SetNodesAspect(const Value: TLineNodesAspect);
+procedure TGLNodedLines.SetNodesAspect(const Value: TGLLineNodesAspect);
 begin
   if Value <> FNodesAspect then
   begin
@@ -2808,7 +2808,7 @@ end;
 // SetOptions
 //
 
-procedure TGLLines.SetOptions(const val: TLinesOptions);
+procedure TGLLines.SetOptions(const val: TGLLinesOptions);
 begin
   FOptions := val;
   StructureChanged;
@@ -2817,7 +2817,7 @@ end;
 // SetSplineMode
 //
 
-procedure TGLLines.SetSplineMode(const val: TLineSplineMode);
+procedure TGLLines.SetSplineMode(const val: TGLLineSplineMode);
 begin
   if FSplineMode <> val then
   begin
@@ -3974,7 +3974,7 @@ end;
 // SetSplineMode
 //
 
-procedure TGLPolygonBase.SetSplineMode(const val: TLineSplineMode);
+procedure TGLPolygonBase.SetSplineMode(const val: TGLLineSplineMode);
 begin
   if FSplineMode <> val then
   begin

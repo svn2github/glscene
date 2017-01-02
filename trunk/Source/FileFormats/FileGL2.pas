@@ -16,7 +16,8 @@ unit FileGL2;
 interface
 
 uses
-  System.Classes, System.SysUtils, 
+  System.Classes,
+  System.SysUtils,
    
   GLVectorTypes,
   GLVectorGeometry;

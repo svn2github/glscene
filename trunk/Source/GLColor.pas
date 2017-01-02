@@ -4,17 +4,9 @@
 {
    All color types, constants and utilities should go here 
 
-   History :  
-     10/11/12 - PW - Added CPPB compatibility: restored $NODEFINE directives
-     04/11/10 - DaStr - Removed dependancy from OpenGL (this time for good)
-     24/10/10 - DaStr - Removed dependancy from OpenGL
-     23/08/10 - Yar - Added OpenGLTokens to uses
-     31/05/10 - Yar - Fixed warnings for Delhi2009/2010
-     04/03/10 - DanB - TGLColorManager.GetColor now uses CharInSet
-     05/10/08 - DanB - Moved TGLColor/ TGLColorManager in from GLTexture.pas
-     06/06/07 - DaStr - Initial version (BugtrackerID = 1732211)
-                          (separated from GLTexture.pas and GLCrossPlatform.pas)
-  
+   History :
+     06/06/07 - DaStr - separated from GLTexture.pas and GLCrossPlatform.pas
+     The whole history is logged in a prior version of the unit
 }
 unit GLColor;
 

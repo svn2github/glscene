@@ -3,7 +3,7 @@
 ;-----------------------------------------------------------------------------
 
 #define GLSceneName "GLScene"
-#define GLSceneVersion "v.1.4.2_for_Win32"
+#define GLSceneVersion "v.1.5_for_Win32"
 #define GLScenePublisher "GLSteam"
 #define GLSceneURL "http://www.glscene.org/"
 
@@ -11,7 +11,7 @@
 AppId={{8CF5F54E-C1FC-4716-BC82-908867D36AD6}
 AppName={#GLSceneName}
 AppVersion={#GLSceneVersion}
-AppVerName=GLScene for Win32
+AppVerName=GLScene for Win32_Win64
 AppCopyright=Copyright © 2000,2017 GLSteam
 AppPublisher={#GLScenePublisher}
 AppPublisherURL={#GLSceneURL}

@@ -2,35 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   This is a collection of GLSL diffuse-specular shaders. 
-
-   History :  
-       09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
-                           Deleted TGLSLDiffuseSpecularShaderAM, TGLSLDiffuseSpecularShaderAM
-       17/02/13 - Yar - Added fog support to TGLSLMLDiffuseSpecularShader
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       23/10/10 - Yar - Bugfixed memory leak
-       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-       07/01/10 - DaStr - Bugfixed all DoInitialize() calls
-                              (thanks YarUnderoaker)  
-       25/07/09 - DaStr - Fixed a bug with "dot(reflect_vec, LightVector)" clamping
-                              which occured on all GeForce 8x and later graphic cards
-       24/07/09 - DaStr - Added Fog support for single-light shaders and fixed
-                              a bug with material Alpha (thanks Controller)
-       02/09/07 - LC - Fixed texture bug in TGLSLMLDiffuseSpecularShader.
-                          (Bugtracker ID = 1786286)
-       03/04/07 - LC - Shader didn't respect the texture matrix. Changed
-                          vertex shader to fix this. (Bugtracker ID = 1693389)
-       20/03/07 - DaStr - Made changes related to the new parameter passing model
-       06/03/07 - DaStr - Again replaced DecimalSeparator stuff with
-                              a single Str procedure (thanks Uwe Raabe)
-       03/03/07 - DaStr - Made compatible with Delphi6
-                             Added more stuff to RegisterClasses()
-       21/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-    This is a collection of GLSL Diffuse Specular shaders, comes in these variaties
-              (to know what these suffixes and prefixes mean see GLCustomShader.pas):
+   This is a collection of GLSL diffuse-specular shaders
+   (to know what these suffixes and prefixes mean see GLCustomShader.pas):
       - TGLSLDiffuseSpecularShader
       - TGLSLDiffuseSpecularShaderMT
 
@@ -43,14 +16,9 @@
      2) TGLSLDiffuseSpecularShader takes all Light parameters directly
       from OpenGL (that includes TGLLightSource's)
 
-
-    Previous version history:
-      v1.0    01 November  '2006  Creation
-      v1.1    19 December  '2006  TGLBaseCustomGLSLDiffuseSpecular[MT] abstracted
-                                  5 different versions of this shader added
-      v1.1.2  06 February  '2007  IGLMaterialLibrarySupported renamed to
-                                   IGLMaterialLibrarySupported
-      v1.2    16 February  '2007  Updated to the latest CVS version of GLScene
+   History :
+     01/11/06 - DaStr - Initial version (contributed to GLScene)
+     The whole history is logged in a prior version of the unit.
 
 }
 unit GLSLDiffuseSpecularShader;
@@ -60,10 +28,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLTexture, GLScene, GLVectorGeometry, OpenGLTokens, GLStrings, GLCustomShader,
-  GLSLShader, GLColor, GLRenderContextInfo, GLMaterial;
+  OpenGLTokens,
+  GLTexture,
+  GLScene,
+  GLVectorGeometry,
+  GLStrings,
+  GLCustomShader,
+  GLSLShader,
+  GLColor,
+  GLRenderContextInfo,
+  GLMaterial;
 
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
@@ -129,7 +106,7 @@ type
 
   TLightRecord = record
     Enabled: Boolean;
-    Style: TLightStyle;
+    Style: TGLLightStyle;
   end;
 
   TGLCustomGLSLMLDiffuseSpecularShader = class(TGLBaseCustomGLSLDiffuseSpecular)
@@ -151,7 +128,6 @@ type
   public
     constructor Create(AOwner : TComponent); override;
   end;
-
 
                      {********  Published Stuff  ************}
 
@@ -397,7 +373,7 @@ begin
 end;
 
 procedure GetMLFragmentProgramCodeMid(const Code: TStrings;
-  const CurrentLight: Integer; AStyle: TLightStyle);
+  const CurrentLight: Integer; AStyle: TGLLightStyle);
 begin
   with Code do
   begin

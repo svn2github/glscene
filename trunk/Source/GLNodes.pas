@@ -5,15 +5,8 @@
   Nodes are used to describe lines, polygons + more. 
 
    History :  
-   01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
-   17/10/10 - Yar - Added TagObject property to TGLNode (thanks µAlexx)
-   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-   26/11/09 - DaStr - Improved Lazarus compatibility
-                    (thanks Predator) (BugtrackerID = 2893580)
-   22/11/09 - DaStr - Improved Unix compatibility
-                    (thanks Predator) (BugtrackerID = 2893580)
-   14/07/09 - DaStr - Added $I GLScene.inc
-   05/10/08 - DanB - Created from GLMisc.pas split
+     05/10/08 - DanB - Created from GLMisc.pas split
+     The whole history is logged in a prior version of the unit.
    
 }
 unit GLNodes;

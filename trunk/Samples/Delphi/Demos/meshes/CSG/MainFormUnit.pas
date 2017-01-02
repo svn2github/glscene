@@ -12,12 +12,24 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
   Vcl.Dialogs,
+  Vcl.StdCtrls,
 
   //GLS
-  GLScene, GLVectorFileObjects, Vcl.StdCtrls, GLBSP, GLMeshCSG,
-  GLWin32Viewer, GLObjects, GLTexture, GLFile3DS,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLState,
-  GLVectorGeometry, GLUtils;
+  GLScene,
+  GLVectorFileObjects,
+  GLBSP,
+  GLMeshCSG,
+  GLWin32Viewer,
+  GLObjects,
+  GLTexture,
+  GLFile3DS,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLState,
+  GLVectorGeometry,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -29,11 +41,11 @@ type
     GLFreeForm2: TGLFreeForm;
     GLFreeForm3: TGLFreeForm;
     Panel1: TPanel;
-    ButtonClear: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Button5: TButton;
+    btnClear: TButton;
+    btnUnion: TButton;
+    btnSubtractAB: TButton;
+    btnSubtractBA: TButton;
+    btnIntersect: TButton;
     CheckBox1: TCheckBox;
     GLLightSource1: TGLLightSource;
     GLDummyCube1: TGLDummyCube;
@@ -49,11 +61,11 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure FormCreate(Sender: TObject);
 // Demo starts here above is just navigation.
-    procedure ButtonClearClick(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
+    procedure btnClearClick(Sender: TObject);
+    procedure btnUnionClick(Sender: TObject);
+    procedure btnSubtractABClick(Sender: TObject);
+    procedure btnSubtractBAClick(Sender: TObject);
+    procedure btnIntersectClick(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
   private
     { Private declarations }
@@ -116,7 +128,7 @@ begin
   GLCamera1.AdjustDistanceToTarget(1/1.1);
 end;
 
-procedure TForm1.ButtonClearClick(Sender: TObject);
+procedure TForm1.btnClearClick(Sender: TObject);
 begin
   GLFreeForm3.MeshObjects.Clear;
   GLFreeForm3.StructureChanged;
@@ -125,11 +137,11 @@ begin
   GLFreeForm2.Material.PolygonMode := pmFill;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TForm1.btnUnionClick(Sender: TObject);
 var
   Mesh : TMeshObject;
 begin
-  ButtonClearClick(Sender);
+  btnClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
@@ -143,11 +155,11 @@ begin
   GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
+procedure TForm1.btnSubtractABClick(Sender: TObject);
 var
   Mesh : TMeshObject;
 begin
-  ButtonClearClick(Sender);
+  btnClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
@@ -161,11 +173,11 @@ begin
   GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
-procedure TForm1.Button4Click(Sender: TObject);
+procedure TForm1.btnSubtractBAClick(Sender: TObject);
 var
   Mesh : TMeshObject;
 begin
-  ButtonClearClick(Sender);
+  btnClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;
@@ -179,11 +191,11 @@ begin
   GLFreeForm2.Material.PolygonMode := pmLines;
 end;
 
-procedure TForm1.Button5Click(Sender: TObject);
+procedure TForm1.btnIntersectClick(Sender: TObject);
 var
   Mesh : TMeshObject;
 begin
-  ButtonClearClick(Sender);
+  btnClearClick(Sender);
 
   if GLFreeForm3.MeshObjects.Count = 0 then
     TMeshObject.CreateOwned(GLFreeForm3.MeshObjects).Mode := momFaceGroups;

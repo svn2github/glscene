@@ -5,15 +5,8 @@
   PFX particle effects revolving around the use of Perlin noise.
 
   History :
-  04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-  22/01/10 - Yar  - Added bmp32.Blank:=false for memory allocation
-  30/03/07 - DaStr - Added $I GLScene.inc
-  16/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  15/04/04 - Mrqzzz - Fixed range check error suggested by Graham Kennedy
-  15/04/04 - EG - Creation
-
+    15/04/04 - EG - Creation
+    The whole history is logged in a prior version of the unit.
 }
 unit GLPerlinPFX;
 
@@ -22,10 +15,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.Math,
+  System.Classes,
+  System.Math,
   // GLS
-  GLParticleFX, GLGraphics, GLCrossPlatform,
-  GLPerlinNoise3D, OpenGLTokens, GLVectorGeometry;
+  GLParticleFX,
+  GLGraphics,
+  GLCrossPlatform,
+  GLPerlinNoise3D,
+  OpenGLTokens,
+  GLVectorGeometry;
 
 type
 

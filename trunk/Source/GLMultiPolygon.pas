@@ -65,11 +65,11 @@ type
   private
     FNodes: TGLContourNodes;
     FDivision: Integer;
-    FSplineMode: TLineSplineMode;
+    FSplineMode: TGLLineSplineMode;
     FDescription: string;
     procedure SetNodes(const Value: TGLContourNodes);
     procedure SetDivision(Value: Integer);
-    procedure SetSplineMode(const Value: TLineSplineMode);
+    procedure SetSplineMode(const Value: TGLLineSplineMode);
     procedure SetDescription(const Value: string);
 
   protected
@@ -92,7 +92,7 @@ type
     property Division: Integer read FDivision write SetDivision default 10;
     {Default spline drawing mode. 
       This mode is used only for the curve, not for the rotation path. }
-    property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
   end;
 
   TGLContourClass = class of TGLContour;
@@ -374,7 +374,7 @@ begin
   Changed(false);
 end;
 
-procedure TGLContour.SetSplineMode(const Value: TLineSplineMode);
+procedure TGLContour.SetSplineMode(const Value: TGLLineSplineMode);
 begin
   if FSplineMode <> value then
   begin

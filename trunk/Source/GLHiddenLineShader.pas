@@ -7,19 +7,9 @@
    so that there is no z-fighting in rendering the same geometry multiple times. 
 
     History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       06/06/07 - DaStr - Added $I GLScene.inc
-                             Added GLColor to uses (BugtrackerID = 1732211)
-       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-       25/09/04 - NelC - Fixed bug of disabled blend (thx Carlos)
-       05/02/04 - NelC - Fixed memory leak in TGLHiddenLineShader.Destroy (thx Achim Hammes)
-       13/12/03 - NelC - Added SurfaceLit, ShadeModel
-       05/12/03 - NelC - Added ForceMaterial
        03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
                             the multipass demo.
-    
+      The whole history is logged in a prior version of the unit.
 }
 unit GLHiddenLineShader;
 

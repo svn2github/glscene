@@ -271,7 +271,7 @@ end;
 //
 
 procedure TGLO3TCImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint;
+  const textureHandle: Cardinal;
   textureTarget: TGLTextureTarget;
   const CurrentFormat: Boolean;
   const intFormat: TGLInternalFormat);

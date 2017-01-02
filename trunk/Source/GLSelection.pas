@@ -70,8 +70,8 @@ type
   TGLBaseSelectTechnique = class
   protected
     FObjectStack: array of TObject;
-    FNameStack: array[0..255] of TGLuint;
-    FCurrentName: TGLuint;
+    FNameStack: array[0..255] of Cardinal;
+    FCurrentName: Cardinal;
     FStackPosition: Integer;
     FObjectCountGuess: Integer;
     FHits: Integer;
@@ -292,7 +292,7 @@ end;
 procedure TGLSelectRenderModeTechnique.Start;
 begin
   SetLength(FBuffer, FObjectCountGuess * 4 + 32);
-  GL.SelectBuffer(FObjectCountGuess * SizeOf(TGLuint), @FBuffer[0]);
+  GL.SelectBuffer(FObjectCountGuess * SizeOf(Cardinal), @FBuffer[0]);
   GL.RenderMode(GL_SELECT);
   GL.InitNames;
   FCurrentName := 0;

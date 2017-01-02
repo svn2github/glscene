@@ -4,25 +4,13 @@
 {
   Implements FBO support for GLScene.
   Original author of the unit is Riz.
-  Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
+  Modified by DaStr, C4 and YarUnderoaker.
+  History :
+    09/11/09 - DaStr - Initial version (contributed to GLScene)
+    The whole history is logged in a prior version of the unit.
 
-   History :  
-   30/08/13 - NelC - Added OnSetTextureTargets
-   09/07/12 - Yar - Fixed DoPostInitialize and DoPreInitialize events (thanks to Gabriel Corneanu)
-   22/04/11 - Yar - Bugfixed lighting state restoration
-   13/02/11 - Yar - Added RenderContextInfo to BeforeRender and AfterRender event
-   07/01/11 - Yar - Added properties Active and PickableTarget
-   23/08/10 - Yar - Changes for forward core
-   02/06/10 - Yar - Replaced OpenGL functions to OpenGLAdapter
-   22/04/10 - Yar - Fixes after GLState revision
-   15/02/10 - Yar - Added notification of freeing RootObject
-   22/01/10 - Yar - Added ClearOptions, Level, Layer, PostGenerateMipmap
-                    UseBufferBackground moved to coUseBufferBackground
-   14/12/09 - DaStr - Fixed memory leak (thanks YarUnderoaker)
-   11/11/09 - DaStr - Added $I GLScene.inc
-   09/11/09 - DaStr - Initial version (contributed to GLScene)
-   
 }
+
 unit GLFBORenderer;
 
 interface
@@ -32,7 +20,8 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
+  //GLS
+  OpenGLTokens,
   GLVectorGeometry,
   GLScene,
   GLTexture,
@@ -41,7 +30,6 @@ uses
   GLMaterial,
   GLRenderContextInfo,
   GLState,
-  OpenGLTokens,
   GLTextureFormat,
   GLVectorTypes,
   GLMultisampleImage,
@@ -87,9 +75,9 @@ type
     FCamera: TGLCamera;
     FEnabledRenderBuffers: TGLEnabledRenderBuffers;
     FTargetVisibility: TGLFBOTargetVisibility;
-    FBeforeRender: TDirectRenderEvent;
+    FBeforeRender: TGLDirectRenderEvent;
     FPostInitialize: TNotifyEvent;
-    FAfterRender: TDirectRenderEvent;
+    FAfterRender: TGLDirectRenderEvent;
     FPreInitialize: TNotifyEvent;
     FBackgroundColor: TGLColor;
     FClearOptions: TGLFBOClearOptions;
@@ -218,9 +206,9 @@ type
       write SetStencilPrecision default spDefault;
 
     {  called before rendering to the FBO }
-    property BeforeRender: TDirectRenderEvent read FBeforeRender write FBeforeRender;
+    property BeforeRender: TGLDirectRenderEvent read FBeforeRender write FBeforeRender;
     {  called after the rendering to the FBO }
-    property AfterRender: TDirectRenderEvent read FAfterRender write FAfterRender;
+    property AfterRender: TGLDirectRenderEvent read FAfterRender write FAfterRender;
     {  Called before the FBO is initialized
       the FBO is bound before calling this event }
     property PreInitialize: TNotifyEvent read FPreInitialize

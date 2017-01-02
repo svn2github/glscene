@@ -5,7 +5,7 @@
    GLScene form loader
 
    History : 23/08/10 - Yar - Creation
-   The whole history is logged in a former version of the unit.
+   The whole history is logged in a prior version of the unit.
 
 }
 
@@ -82,7 +82,7 @@ type
   private
     { Private Declarations }
     FBuffer: TGLSceneBuffer;
-    FVSync: TVSyncMode;
+    FVSync: TGLVSyncMode;
     FOwnDC: HDC;
     FFullScreenVideoMode: TGLFullScreenVideoMode;
     procedure SetBeforeRender(const val: TNotifyEvent);
@@ -134,7 +134,7 @@ type
     {  Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
-    property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
+    property VSync: TGLVSyncMode read FVSync write FVSync default vsmNoSync;
 
     {  Triggered before the scene's objects get rendered. 
       You may use this event to execute your own OpenGL rendering. }

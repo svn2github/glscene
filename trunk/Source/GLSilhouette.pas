@@ -10,14 +10,8 @@
   CAUTION : both connectivity classes leak memory.
 
   History :
-  04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility
-  28/03/07 - DaStr - Renamed parameters in some methods
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-  16/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-  26/09/03 - EG - Improved performance of TConnectivity data construction
-  19/06/03 - MF - Split up Connectivity classes
-  10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
+    10/06/03 - EG - Creation (based on code from Mattias Fagerlund)
+    The whole history is logged in a prior version of the unit.
 
 }
 unit GLSilhouette;

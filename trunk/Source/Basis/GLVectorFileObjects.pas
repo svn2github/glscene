@@ -33,6 +33,7 @@ uses
   GLApplicationFileIO,
   GLSilhouette,
   GLContext,
+  GLStrings,
   GLColor,
   GLRenderContextInfo,
   GLCoordinates,
@@ -41,7 +42,7 @@ uses
 
 type
 
-  TMeshObjectList = class;
+  TGLMeshObjectList = class;
   TGLFaceGroups = class;
 
   // TGLMeshAutoCentering
@@ -51,7 +52,7 @@ type
 
   // TGLMeshObjectMode
   //
-  TMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
+  TGLMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
   // TGLBaseMeshObject
   //
@@ -99,7 +100,7 @@ type
        normals and indices are preserved.
        The only valid modes are currently momTriangles and momTriangleStrip
        (ie. momFaceGroups not supported). }
-    procedure BuildNormals(vertexIndices: TIntegerList; mode: TMeshObjectMode;
+    procedure BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode;
       normalIndices: TIntegerList = nil);
     {Extracts all mesh triangles as a triangles list.
        The resulting list size is a multiple of 3, each group of 3 vertices
@@ -407,10 +408,10 @@ type
 
   TGLBaseMesh = class;
 
-  // TBlendedLerpInfo
+  // TGLBlendedLerpInfo
   //
   {Small structure to store a weighted lerp for use in blending. }
-  TBlendedLerpInfo = record
+  TGLBlendedLerpInfo = record
     frameIndex1, frameIndex2: Integer;
     lerpFactor: Single;
     weight: Single;
@@ -472,7 +473,7 @@ type
     procedure MorphTo(frame: TGLSkeletonFrame); overload;
     procedure Lerp(frameIndex1, frameIndex2: Integer;
       lerpFactor: Single);
-    procedure BlendedLerps(const lerpInfos: array of TBlendedLerpInfo);
+    procedure BlendedLerps(const lerpInfos: array of TGLBlendedLerpInfo);
 
     {Linearly removes the translation component between skeletal frames. 
        This function will compute the translation of the first bone (index 0)
@@ -506,39 +507,37 @@ type
       FMorphInvisibleParts;
   end;
 
-  // TMeshObjectRenderingOption
+  // TGLMeshObjectRenderingOption
   //
-  {Rendering options per TMeshObject. 
+  {Rendering options per TMeshObject.
 
    moroGroupByMaterial : if set, the facegroups will be rendered by material
      in batchs, this will optimize rendering by reducing material switches, but
      also implies that facegroups will not be rendered in the order they are in
      the list.
    }
-  TMeshObjectRenderingOption = (moroGroupByMaterial);
-  TMeshObjectRenderingOptions = set of TMeshObjectRenderingOption;
+  TGLMeshObjectRenderingOption = (moroGroupByMaterial);
+  TGLMeshObjectRenderingOptions = set of TGLMeshObjectRenderingOption;
 
-  TVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords,
-    vbLightMapTexCoords,
-    vbTexCoordsEx);
-  TVBOBuffers = set of TVBOBuffer;
+  TGLVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords, vbLightMapTexCoords, vbTexCoordsEx);
+  TGLVBOBuffers = set of TGLVBOBuffer;
 
   // TMeshObject
   //
-  {Base mesh class. 
-     Introduces base methods and properties for mesh objects. 
-     Subclasses are named "TMOxxx". }
+  {Base mesh class.
+     Introduces base methods and properties for mesh objects.
+     Subclasses are named "TGLMOxxx". }
   TMeshObject = class(TGLBaseMeshObject)
   private
     { Private Declarations }
-    FOwner: TMeshObjectList;
+    FOwner: TGLMeshObjectList;
     FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
     FLightMapTexCoords: TAffineVectorList; // reserved for 2D surface needs
     FColors: TVectorList;
     FFaceGroups: TGLFaceGroups;
-    FMode: TMeshObjectMode;
-    FRenderingOptions: TMeshObjectRenderingOptions;
+    FMode: TGLMeshObjectMode;
+    FRenderingOptions: TGLMeshObjectRenderingOptions;
     FArraysDeclared: Boolean; // not persistent
     FLightMapArrayEnabled: Boolean; // not persistent
     FLastLightMapIndex: Integer; // not persistent
@@ -552,11 +551,11 @@ type
     FColorsVBO: TGLVBOHandle;
     FTexCoordsVBO: array of TGLVBOHandle;
     FLightmapTexCoordsVBO: TGLVBOHandle;
-    FValidBuffers: TVBOBuffers;
+    FValidBuffers: TGLVBOBuffers;
     FExtentCache: TAABB;
 
     procedure SetUseVBO(const Value: boolean);
-    procedure SetValidBuffers(Value: TVBOBuffers);
+    procedure SetValidBuffers(Value: TGLVBOBuffers);
   protected
     { Protected Declarations }
     procedure SetTexCoords(const val: TAffineVectorList);
@@ -582,11 +581,11 @@ type
     function GetTangents: TVectorList;
     procedure SetTangentsTexCoordIndex(const val: Integer);
 
-    property ValidBuffers: TVBOBuffers read FValidBuffers write SetValidBuffers;
+    property ValidBuffers: TGLVBOBuffers read FValidBuffers write SetValidBuffers;
   public
     { Public Declarations }
     {Creates, assigns Owner and adds to list. }
-    constructor CreateOwned(AOwner: TMeshObjectList);
+    constructor CreateOwned(AOwner: TGLMeshObjectList);
     constructor Create; override;
     destructor Destroy; override;
 
@@ -642,14 +641,14 @@ type
       buildBinormals: Boolean = True;
       buildTangents: Boolean = True);
 
-    property Owner: TMeshObjectList read FOwner;
-    property Mode: TMeshObjectMode read FMode write FMode;
+    property Owner: TGLMeshObjectList read FOwner;
+    property Mode: TGLMeshObjectMode read FMode write FMode;
     property TexCoords: TAffineVectorList read FTexCoords write SetTexCoords;
     property LightMapTexCoords: TAffineVectorList read FLightMapTexCoords write
       SetLightMapTexCoords;
     property Colors: TVectorList read FColors write SetColors;
     property FaceGroups: TGLFaceGroups read FFaceGroups;
-    property RenderingOptions: TMeshObjectRenderingOptions read FRenderingOptions
+    property RenderingOptions: TGLMeshObjectRenderingOptions read FRenderingOptions
       write FRenderingOptions;
 
     {If set, rendering will use VBO's instead of vertex arrays. }
@@ -683,10 +682,10 @@ type
 
   end;
 
-  // TMeshObjectList
+  // TGLMeshObjectList
   //
   {A list of TMeshObject objects. }
-  TMeshObjectList = class(TPersistentObjectList)
+  TGLMeshObjectList = class(TPersistentObjectList)
   private
     { Private Declarations }
     FOwner: TGLBaseMesh;
@@ -747,7 +746,7 @@ type
     property Items[Index: Integer]: TMeshObject read GetMeshObject; default;
   end;
 
-  TMeshObjectListClass = class of TMeshObjectList;
+  TGLMeshObjectListClass = class of TGLMeshObjectList;
 
   TGLMeshMorphTargetList = class;
 
@@ -905,7 +904,7 @@ type
 
   // TGLFaceGroup
   //
-  {Describes a face group of a TMeshObject. 
+  {Describes a face group of a TMeshObject.
      Face groups should be understood as "a way to use mesh data to render
      a part or the whole mesh object". 
      Subclasses implement the actual behaviours, and should have at least
@@ -941,14 +940,14 @@ type
     procedure BuildList(var mrci: TGLRenderContextInfo); virtual; abstract;
 
     {Add to the list the triangles corresponding to the facegroup. 
-       This function is used by TMeshObjects ExtractTriangles to retrieve
+       This function is used by TGLMeshObjects ExtractTriangles to retrieve
        all the triangles in a mesh. }
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); dynamic;
     {Returns number of triangles in the facegroup. }
     function TriangleCount: Integer; dynamic; abstract;
-    {Reverses the rendering order of faces. 
+    {Reverses the rendering order of faces.
        Default implementation does nothing }
     procedure Reverse; dynamic;
 
@@ -1063,7 +1062,7 @@ type
 
   // TFGIndexTexCoordList
   //
-  {Adds per index texture coordinates to its ancestor. 
+  {Adds per index texture coordinates to its ancestor.
      Per index texture coordinates allows having different texture coordinates
      per triangle, depending on the face it is used in. }
   TFGIndexTexCoordList = class(TFGVertexIndexList)
@@ -1208,7 +1207,7 @@ type
 
   protected
     { Protected Declarations }
-    FMeshObjects: TMeshObjectList; // a list of mesh objects
+    FMeshObjects: TGLMeshObjectList; // a list of mesh objects
     FSkeleton: TGLSkeleton; // skeleton data & frames
     procedure SetUseMeshMaterials(const val: Boolean);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
@@ -1218,7 +1217,7 @@ type
     procedure SetAutoScaling(const Value: TGLCoordinates);
     procedure DestroyHandle; override;
 
-    {Invoked after creating a TGLVectorFile and before loading. 
+    {Invoked after creating a TGLVectorFile and before loading.
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TGLVectorFile); dynamic;
@@ -1277,7 +1276,7 @@ type
        It basically caches the connectivity data.}
     procedure BuildSilhouetteConnectivityData;
 
-    property MeshObjects: TMeshObjectList read FMeshObjects;
+    property MeshObjects: TGLMeshObjectList read FMeshObjects;
     property Skeleton: TGLSkeleton read FSkeleton;
 
     {Computes the extents of the mesh.  }
@@ -1560,7 +1559,7 @@ type
     procedure SetActor(const val: TGLActor);
 
     procedure DoChange; virtual;
-    function Apply(var lerpInfo: TBlendedLerpInfo): Boolean; virtual;
+    function Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean; virtual;
 
   public
     { Public Declarations }
@@ -1593,7 +1592,7 @@ type
     procedure SetRatio(const val: Single);
 
     procedure DoChange; override;
-    function Apply(var lerpInfo: TBlendedLerpInfo): Boolean; override;
+    function Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean; override;
 
   published
     { Published Declarations }
@@ -1820,8 +1819,12 @@ implementation
 // ------------------------------------------------------------------
 
 uses
-  GLStrings, XOpenGL, GLCrossPlatform, GLMeshUtils, GLState, GLUtils,
-  GLBaseMeshSilhouette, GLVectorTypes;
+  XOpenGL,
+  GLCrossPlatform,
+  GLMeshUtils,
+  GLState, GLUtils,
+  GLBaseMeshSilhouette,
+  GLVectorTypes;
 
 var
   vVectorFileFormats: TGLVectorFileFormatsList;
@@ -2153,7 +2156,7 @@ end;
 //
 
 procedure TGLBaseMeshObject.BuildNormals(vertexIndices: TIntegerList; mode:
-  TMeshObjectMode;
+  TGLMeshObjectMode;
   normalIndices: TIntegerList = nil);
 var
   i, base: Integer;
@@ -3400,7 +3403,7 @@ end;
 // BlendedLerps
 //
 
-procedure TGLSkeleton.BlendedLerps(const lerpInfos: array of TBlendedLerpInfo);
+procedure TGLSkeleton.BlendedLerps(const lerpInfos: array of TGLBlendedLerpInfo);
 var
   i, n: Integer;
   blendPositions: TAffineVectorList;
@@ -3652,7 +3655,7 @@ end;
 // CreateOwned
 //
 
-constructor TMeshObject.CreateOwned(AOwner: TMeshObjectList);
+constructor TMeshObject.CreateOwned(AOwner: TGLMeshObjectList);
 begin
   FOwner := AOwner;
   Create;
@@ -3805,11 +3808,11 @@ begin
 
       FColors.ReadFromFiler(reader);
       FFaceGroups.ReadFromFiler(reader);
-      FMode := TMeshObjectMode(ReadInteger);
+      FMode := TGLMeshObjectMode(ReadInteger);
       size := ReadInteger;
       ro := 0;
       Read(ro, size);
-      FRenderingOptions := TMeshObjectRenderingOptions(Byte(ro));
+      FRenderingOptions := TGLMeshObjectRenderingOptions(Byte(ro));
       if archiveVersion >= 2 then
       begin
         Count := ReadInteger;
@@ -4428,7 +4431,7 @@ begin
   FUseVBO := Value;
 end;
 
-procedure TMeshObject.SetValidBuffers(Value: TVBOBuffers);
+procedure TMeshObject.SetValidBuffers(Value: TGLVBOBuffers);
 var
   I: Integer;
 begin
@@ -5100,7 +5103,7 @@ end;
 // CreateOwned
 //
 
-constructor TMeshObjectList.CreateOwned(aOwner: TGLBaseMesh);
+constructor TGLMeshObjectList.CreateOwned(aOwner: TGLBaseMesh);
 begin
   FOwner := AOwner;
   Create;
@@ -5109,7 +5112,7 @@ end;
 // Destroy
 //
 
-destructor TMeshObjectList.Destroy;
+destructor TGLMeshObjectList.Destroy;
 begin
   Clear;
   inherited;
@@ -5118,7 +5121,7 @@ end;
 // ReadFromFiler
 //
 
-procedure TMeshObjectList.ReadFromFiler(reader: TVirtualReader);
+procedure TGLMeshObjectList.ReadFromFiler(reader: TVirtualReader);
 var
   i: Integer;
   mesh: TMeshObject;
@@ -5136,7 +5139,7 @@ end;
 // PrepareMaterialLibraryCache
 //
 
-procedure TMeshObjectList.PrepareMaterialLibraryCache(matLib:
+procedure TGLMeshObjectList.PrepareMaterialLibraryCache(matLib:
   TGLMaterialLibrary);
 var
   i: Integer;
@@ -5148,7 +5151,7 @@ end;
 // DropMaterialLibraryCache
 //
 
-procedure TMeshObjectList.DropMaterialLibraryCache;
+procedure TGLMeshObjectList.DropMaterialLibraryCache;
 var
   i: Integer;
 begin
@@ -5159,7 +5162,7 @@ end;
 // PrepareBuildList
 //
 
-procedure TMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
+procedure TGLMeshObjectList.PrepareBuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5172,7 +5175,7 @@ end;
 // BuildList
 //
 
-procedure TMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
+procedure TGLMeshObjectList.BuildList(var mrci: TGLRenderContextInfo);
 var
   i: Integer;
 begin
@@ -5185,7 +5188,7 @@ end;
 // MorphTo
 //
 
-procedure TMeshObjectList.MorphTo(morphTargetIndex: Integer);
+procedure TGLMeshObjectList.MorphTo(morphTargetIndex: Integer);
 var
   i: Integer;
 begin
@@ -5197,7 +5200,7 @@ end;
 // Lerp
 //
 
-procedure TMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
+procedure TGLMeshObjectList.Lerp(morphTargetIndex1, morphTargetIndex2: Integer;
   lerpFactor: Single);
 var
   i: Integer;
@@ -5211,7 +5214,7 @@ end;
 // MorphTargetCount
 //
 
-function TMeshObjectList.MorphTargetCount: Integer;
+function TGLMeshObjectList.MorphTargetCount: Integer;
 var
   i: Integer;
 begin
@@ -5228,7 +5231,7 @@ end;
 // Clear
 //
 
-procedure TMeshObjectList.Clear;
+procedure TGLMeshObjectList.Clear;
 var
   i: Integer;
 begin
@@ -5245,7 +5248,7 @@ end;
 // GetMeshObject
 //
 
-function TMeshObjectList.GetMeshObject(Index: Integer): TMeshObject;
+function TGLMeshObjectList.GetMeshObject(Index: Integer): TMeshObject;
 begin
   Result := TMeshObject(List^[Index]);
 end;
@@ -5253,7 +5256,7 @@ end;
 // GetExtents
 //
 
-procedure TMeshObjectList.GetExtents(out min, max: TAffineVector);
+procedure TGLMeshObjectList.GetExtents(out min, max: TAffineVector);
 var
   i, k: Integer;
   lMin, lMax: TAffineVector;
@@ -5279,7 +5282,7 @@ end;
 // Translate
 //
 
-procedure TMeshObjectList.Translate(const delta: TAffineVector);
+procedure TGLMeshObjectList.Translate(const delta: TAffineVector);
 var
   i: Integer;
 begin
@@ -5290,7 +5293,7 @@ end;
 // ExtractTriangles
 //
 
-function TMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
+function TGLMeshObjectList.ExtractTriangles(texCoords: TAffineVectorList = nil;
   normals: TAffineVectorList = nil): TAffineVectorList;
 var
   i: Integer;
@@ -5340,7 +5343,7 @@ end;
 // TriangleCount
 //
 
-function TMeshObjectList.TriangleCount: Integer;
+function TGLMeshObjectList.TriangleCount: Integer;
 var
   i: Integer;
 begin
@@ -5352,7 +5355,7 @@ end;
 // Prepare
 //
 
-procedure TMeshObjectList.Prepare;
+procedure TGLMeshObjectList.Prepare;
 var
   i: Integer;
 begin
@@ -5363,7 +5366,7 @@ end;
 // FindMeshByName
 //
 
-function TMeshObjectList.FindMeshByName(MeshName: string): TMeshObject;
+function TGLMeshObjectList.FindMeshByName(MeshName: string): TMeshObject;
 var
   i: integer;
 begin
@@ -5379,7 +5382,7 @@ end;
 // BuildTangentSpace
 //
 
-procedure TMeshObjectList.BuildTangentSpace(buildBinormals,
+procedure TGLMeshObjectList.BuildTangentSpace(buildBinormals,
   buildTangents: Boolean);
 var
   I: Integer;
@@ -5392,7 +5395,7 @@ end;
 // GetUseVBO
 //
 
-function TMeshObjectList.GetUseVBO: Boolean;
+function TGLMeshObjectList.GetUseVBO: Boolean;
 var
   I: Integer;
 begin
@@ -5405,7 +5408,7 @@ end;
 // SetUseVBO
 //
 
-procedure TMeshObjectList.SetUseVBO(const Value: Boolean);
+procedure TGLMeshObjectList.SetUseVBO(const Value: Boolean);
 var
   I: Integer;
 begin
@@ -7039,7 +7042,7 @@ end;
 
 function TGLFaceGroups.MaterialLibrary: TGLMaterialLibrary;
 var
-  mol: TMeshObjectList;
+  mol: TGLMeshObjectList;
   bm: TGLBaseMesh;
 begin
   if Assigned(Owner) then
@@ -7169,7 +7172,7 @@ constructor TGLBaseMesh.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   if FMeshObjects = nil then
-    FMeshObjects := TMeshObjectList.CreateOwned(Self);
+    FMeshObjects := TGLMeshObjectList.CreateOwned(Self);
   if FSkeleton = nil then
     FSkeleton := TGLSkeleton.CreateOwned(Self);
   FUseMeshMaterials := True;
@@ -8522,7 +8525,7 @@ end;
 // Apply
 //
 
-function TGLBaseAnimationControler.Apply(var lerpInfo: TBlendedLerpInfo):
+function TGLBaseAnimationControler.Apply(var lerpInfo: TGLBlendedLerpInfo):
   Boolean;
 begin
   // virtual
@@ -8570,7 +8573,7 @@ end;
 // Apply
 //
 
-function TGLAnimationControler.Apply(var lerpInfo: TBlendedLerpInfo): Boolean;
+function TGLAnimationControler.Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean;
 var
   anim: TGLActorAnimation;
   baseDelta: Integer;
@@ -8881,7 +8884,7 @@ procedure TGLActor.DoAnimate();
 var
   i, k: Integer;
   nextFrameIdx: Integer;
-  lerpInfos: array of TBlendedLerpInfo;
+  lerpInfos: array of TGLBlendedLerpInfo;
 begin
   nextFrameIdx := NextFrameIndex;
   case Reference of
@@ -9151,12 +9154,12 @@ initialization
 
   RegisterVectorFileFormat('glsm', 'GLScene Mesh', TGLSMVectorFile);
 
-  RegisterClasses([TGLFreeForm, TGLActor, TGLSkeleton, TGLSkeletonFrame,
-    TGLSkeletonBone,
+  RegisterClasses(
+    [TGLFreeForm, TGLActor, TGLSkeleton, TGLSkeletonFrame, TGLSkeletonBone,
     TGLSkeletonMeshObject, TMeshObject, TGLSkeletonFrameList, TGLMeshMorphTarget,
-      TGLMorphableMeshObject, TGLFaceGroup, TFGVertexIndexList,
-      TFGVertexNormalTexIndexList, TGLAnimationControler,
-      TFGIndexTexCoordList, TGLSkeletonCollider, TGLSkeletonColliderList]);
+    TGLMorphableMeshObject, TGLFaceGroup, TFGVertexIndexList,
+    TFGVertexNormalTexIndexList, TGLAnimationControler,
+    TFGIndexTexCoordList, TGLSkeletonCollider, TGLSkeletonColliderList]);
 
 finalization
 

@@ -110,7 +110,7 @@ object Form1: TForm1
     Camera = GLCamera1
     Buffer.BackgroundColor = 10485760
     Buffer.ShadeModel = smSmooth
-    FieldOfView = 126.869895935058600000
+    FieldOfView = 50.000000000000000000
     Align = alClient
     TabOrder = 1
   end
@@ -119,7 +119,7 @@ object Form1: TForm1
     Top = 48
     object GLCamera1: TGLCamera
       DepthOfView = 70.000000000000000000
-      FocalLength = 100.000000000000000000
+      FocalLength = 428.901397705078100000
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000A0C000008040000040400000803F}
       object GLLightSource1: TGLLightSource

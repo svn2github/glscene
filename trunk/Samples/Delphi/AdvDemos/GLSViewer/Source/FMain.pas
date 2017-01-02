@@ -3,13 +3,33 @@ unit FMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Winapi.OpenGL,
-  System.SysUtils, System.Classes, System.IniFiles, System.Win.Registry,
-  System.ImageList, System.Math, System.Actions, System.Types,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.ActnList, Vcl.Menus, Vcl.ImgList, Vcl.ToolWin,
-  Vcl.ComCtrls, Vcl.ExtDlgs, Vcl.ExtCtrls,
-  Vcl.ActnMan, Vcl.ActnCtrls, Vcl.ActnMenus, Vcl.StdActns, Vcl.BandActn,
+  Winapi.Windows,
+  Winapi.Messages,
+  Winapi.OpenGL,
+  System.SysUtils,
+  System.Classes,
+  System.IniFiles,
+  System.Win.Registry,
+  System.ImageList,
+  System.Math,
+  System.Actions,
+  System.Types,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ActnList,
+  Vcl.Menus,
+  Vcl.ImgList,
+  Vcl.ToolWin,
+  Vcl.ComCtrls,
+  Vcl.ExtDlgs,
+  Vcl.ExtCtrls,
+  Vcl.ActnMan,
+  Vcl.ActnCtrls,
+  Vcl.ActnMenus,
+  Vcl.StdActns,
+  Vcl.BandActn,
   Vcl.PlatformDefaultStyleActnCtrls,
 
   // GLS
@@ -17,10 +37,10 @@ uses
   GLVectorGeometry,  GLTexture, GLContext, GLVectorLists, GLCadencer, GLCoordinates,
   GLCrossPlatform,  GLBaseClasses, GLMeshOptimizer, GLState, GLRenderContextInfo,
   GLTextureFormat, GLColor, GLKeyBoard, GLGraphics, GLPersistentClasses, GLMeshUtils,
-  GLVectorTypes,
+  GLVectorTypes, GLGnuGettext,
 
-  //GLSViewer
-  FGLForm, FGLAbout, GLGnuGettext, FGLOptions, DGLSViewer;
+  //GLSViewer Forms
+  FGLForm, FGLAbout, FGLOptions, DGLSViewer;
 
 type
   TMainForm = class(TGLForm)
@@ -205,7 +225,7 @@ begin
       begin
         PassCount := 2;
         PolygonMode := pmLines;
-        GL.Color3fv(@LinesColor);
+        glColor3fv(@LinesColor);
         Disable(stLighting);
         Result := True;
       end;
@@ -547,18 +567,13 @@ var
 begin
   if not FileExists(fileName) then
     Exit;
-
   Screen.Cursor := crHourGlass;
-
   Caption := 'GLSViewer - ' + ExtractFileName(fileName);
-
   GLMaterialLibrary.Materials.Clear;
 
   FreeForm.MeshObjects.Clear;
   FreeForm.LoadFromFile(fileName);
-
   SetupFreeFormShading;
-
   StatusBar.Panels[0].Text := IntToStr(FreeForm.MeshObjects.TriangleCount)
     + ' tris';
   StatusBar.Panels[2].Text := fileName;

@@ -2,18 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   The console is a popdown window that appears on a game for text output/input. 
+   The console is a popdown window that appears on a game for text output/input.
 
-    History :  
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
-       30/03/07 - DaStr - Replaced GLWin32Viewer with GLViewer
-       25/02/07 - DaStr - Made some fixes for Delphi5 compatibility
-       23/02/07 - DaStr - Cosmetic changes, replaced some strings with
-                              resource strings from GLStrings.pas
-       15/02/07 - DaStr - Some properties are not stored now, because they are
-                              read directly from HUDSprite and HUDText
-       07/02/07 - DaStr - Initial version (donated to GLScene)
+   History :
+      07/02/07 - DaStr - Initial version (donated to GLScene)
+      The whole history is logged in a prior version of the unit
 
    What is different compared to the original component?
      1) Can be aded to any object, not just the root one
@@ -43,27 +36,6 @@
       Blinking cursor, "Delete" key support
       Allow long lines to continue on the next line
       May be SceneViewer should be a TControl to support the FullScreenViewer...
-
-    Previous version history:
-      v1.0    23 November   '2005  Creation (based on TGLConsole from http://caperaven.co.za/
-      v1.1    17 June       '2006  Load/Save stuff upgraded
-      v1.2    07 July       '2006  Component completely rewritten
-                                     (New command classes added)
-      v1.2.4  31 August     '2006  A few memory leaks fixed
-                                   TGLCustomConsole.Size added
-                                   Fixed a bug in TGLCustomConsole.RefreshHud
-                                   "Console.Color" command fixed
-                                   Bug with saving of TypedCommands fixed
-      v1.2.5  11 September  '2006  TGLCustomConsole.AutoCompleteCommand() bugfixed
-      v1.2.6  08 October    '2006  Made compatible with the new persistance mechanism
-      1.3     23 October    '2006  TGLCustomConsole made descendant of TGLBaseSceneObject
-      1.4     07 February   '2007  TGLCustomConsole.NumLines bugfixed
-                                   TGLCustomConsole.RefreshHud bugfixed
-                                   TGLConsoleCommand.GetDisplayName added
-                                   TGLConsoleCommand default values added
-                                   TGLConsoleStringList.Changed fixed
-                                   TGLConsoleOptions added (united 4 Boolean properties)
-                                   Code ready to be donated to GLScene
 }
 
 unit GLConsole;

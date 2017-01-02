@@ -5,11 +5,8 @@
    Component for making screen-savers an easy task 
 
    History :  
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-       09/07/01 - Egg - Fix in PreviewSaver (from Marco Dissel)
-       12/04/00 - Egg - Added ssoEnhancedMouseMoveDetection
-       11/04/00 - Egg - Creation
+      11/04/00 - Egg - Creation
+      The whole history is logged in a prior version of the unit.
 	 
 
 	Parts of this code are based on DeskSpin sample by	Tom Nuydens

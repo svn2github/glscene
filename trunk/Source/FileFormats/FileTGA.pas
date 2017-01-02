@@ -4,8 +4,8 @@
 {
    Graphic engine friendly loading of TGA image.
    History :  
-         04/04/11 - Yar - Creation
-    
+     04/04/11 - Yar - Creation
+     The whole history is logged in a prior version of the unit.
 }
 
 unit FileTGA;
@@ -39,7 +39,7 @@ type
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -296,7 +296,7 @@ end;
 //
 
 procedure TGLTGAImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint; textureTarget: TGLTextureTarget;
+  const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
 begin
 {$MESSAGE Hint 'TGLTGAImage.AssignFromTexture not yet implemented' }

@@ -7,25 +7,10 @@
    materials/mirror demo before using this component. 
 
    History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       15/12/08- Paul Robello - corrected call to  FOnEndRenderingMirrors
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       18/07/04 - Orlando - added custom shapes
-       13/02/03 - DanB - added TGLMirror.AxisAlignedDimensionsUnscaled
-       13/11/02 - EG - Fixed TGLMirror.DoRender transform
-       06/11/02 - EG - Fixed Stencil setup
-       30/10/02 - EG - Added OnBegin/EndRenderingMirrors
-       25/10/02 - EG - Fixed Stencil cleanup
-       22/02/01 - EG - Fixed change notification,
-                          Fixed special effects support (PFX, etc.)
-       07/12/01 - EG - Creation
-    
+     07/12/01 - EG - Creation
+     The whole history is logged in a prior version of the unit
 }
+
 unit GLMirror;
 
 interface
@@ -34,17 +19,25 @@ interface
 
 uses
   System.Classes,
-   
-  GLScene, GLVectorGeometry, OpenGLAdapter, OpenGLTokens, GLContext,
-  GLMaterial, GLColor, GLRenderContextInfo, GLState, GLVectorTypes;
+  //GLS
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLScene,
+  GLVectorGeometry,
+  GLContext,
+  GLMaterial,
+  GLColor,
+  GLRenderContextInfo,
+  GLState,
+  GLVectorTypes;
 
 
 type
 
   // TMirrorOptions
   //
-  TMirrorOption = (moUseStencil, moOpaque, moMirrorPlaneClip, moClearZBuffer);
-  TMirrorOptions = set of TMirrorOption;
+  TGLMirrorOption = (moUseStencil, moOpaque, moMirrorPlaneClip, moClearZBuffer);
+  TGLMirrorOptions = set of TGLMirrorOption;
 
 const
   cDefaultMirrorOptions = [moUseStencil];
@@ -69,30 +62,30 @@ type
     { Private Declarations }
     FRendering: Boolean;
     FMirrorObject: TGLBaseSceneObject;
-    FWidth, FHeight: TGLFloat;
-    FMirrorOptions: TMirrorOptions;
+    FWidth, FHeight: Single;
+    FMirrorOptions: TGLMirrorOptions;
     FOnBeginRenderingMirrors, FOnEndRenderingMirrors: TNotifyEvent;
 
     FShape: TMirrorShapes; //ORL
-    FRadius: TGLFloat; //ORL
-    FSlices: TGLInt; //ORL
+    FRadius: Single; //ORL
+    FSlices: Integer; //ORL
 
   protected
     { Protected Declarations }
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetMirrorObject(const val: TGLBaseSceneObject);
-    procedure SetMirrorOptions(const val: TMirrorOptions);
+    procedure SetMirrorOptions(const val: TGLMirrorOptions);
     procedure ClearZBufferArea(aBuffer: TGLSceneBuffer);
 
-    procedure SetHeight(AValue: TGLFloat);
-    procedure SetWidth(AValue: TGLFloat);
+    procedure SetHeight(AValue: Single);
+    procedure SetWidth(AValue: Single);
 
     procedure SetRadius(const aValue: Single); //ORL
-    procedure SetSlices(const aValue: TGLInt); //ORL
+    procedure SetSlices(const aValue: Integer); //ORL
     procedure SetShape(aValue: TMirrorShapes); //ORL
     function GetRadius: single; //ORL
-    function GetSlices: TGLInt; //ORL
+    function GetSlices: Integer; //ORL
 
   public
     { Public Declarations }
@@ -107,8 +100,7 @@ type
 
   published
     { Public Declarations }
-          {Selects the object to mirror. 
-             If nil, the whole scene is mirrored. }
+    { Selects the object to mirror. If nil, the whole scene is mirrored. }
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;
     {Controls rendering options. 
@@ -125,11 +117,11 @@ type
           along with stenciling.
        
     }
-    property MirrorOptions: TMirrorOptions read FMirrorOptions write
+    property MirrorOptions: TGLMirrorOptions read FMirrorOptions write
       SetMirrorOptions default cDefaultMirrorOptions;
 
-    property Height: TGLFloat read FHeight write SetHeight;
-    property Width: TGLFloat read FWidth write SetWidth;
+    property Height: Single read FHeight write SetHeight;
+    property Width: Single read FWidth write SetWidth;
 
     {Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
@@ -138,8 +130,8 @@ type
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
 
-    property Radius: TGLFloat read FRadius write SetRadius; //ORL
-    property Slices: TGLInt read FSlices write SetSlices default 16; //ORL
+    property Radius: Single read FRadius write SetRadius; //ORL
+    property Slices: Integer read FSlices write SetSlices default 16; //ORL
     property Shape: TMirrorShapes read FShape write SetShape default msRect;
     //ORL
   end;
@@ -326,7 +318,7 @@ end;
 
 procedure TGLMirror.BuildList(var ARci: TGLRenderContextInfo);
 var
-  hw, hh: TGLFloat;
+  hw, hh: Single;
   quadric: PGLUquadricObj;
 begin
   if msRect = FShape then
@@ -430,7 +422,7 @@ end;
 // SetWidth
 //
 
-procedure TGLMirror.SetWidth(AValue: TGLFloat);
+procedure TGLMirror.SetWidth(AValue: Single);
 begin
   if AValue <> FWidth then
   begin
@@ -442,7 +434,7 @@ end;
 // SetHeight
 //
 
-procedure TGLMirror.SetHeight(AValue: TGLFloat);
+procedure TGLMirror.SetHeight(AValue: Single);
 begin
   if AValue <> FHeight then
   begin
@@ -478,7 +470,7 @@ end;
 // SetMirrorOptions
 //
 
-procedure TGLMirror.SetMirrorOptions(const val: TMirrorOptions);
+procedure TGLMirror.SetMirrorOptions(const val: TGLMirrorOptions);
 begin
   if FMirrorOptions <> val then
   begin
@@ -512,7 +504,7 @@ end;
 // SetSlices
 //
 
-procedure TGLMirror.SetSlices(const aValue: TGLInt);
+procedure TGLMirror.SetSlices(const aValue: Integer);
 begin
   if aValue <> FSlices then
   begin
@@ -528,7 +520,7 @@ end;
 // GetSlices
 //
 
-function TGLMirror.GetSlices: TGLInt;
+function TGLMirror.GetSlices: Integer;
 begin
   result := FSlices;
 end;

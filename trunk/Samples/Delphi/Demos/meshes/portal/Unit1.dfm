@@ -11,7 +11,10 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
+  OnMouseWheel = FormMouseWheel
   DesignSize = (
     709
     416)
@@ -70,6 +73,8 @@ object Form1: TForm1
     Buffer.BackgroundColor = clNavy
     FieldOfView = 152.521591186523400000
     Anchors = [akLeft, akTop, akRight, akBottom]
+    OnMouseDown = GLSceneViewer1MouseDown
+    OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object BUForward: TButton

@@ -15,48 +15,9 @@
   holds the data a renderer needs. 
 
    History :  
-   10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
-   18/07/10 - Yar - Improved FPC compatibility (thanks to Rustam Asmandiarov aka Predator)
-   17/07/07 - LIN - Bugfix: hdsNone tiles were not being released. (Now also deletes Queued tiles that are no longer needed).
-   17/07/07 - LIN - Reversed the order in which Queued tiles are prepared.
-   03/04/07 - DaStr - Commented out lines that caused compiler hints
-      Added more explicit pointer dereferencing
-      Renamed GLS_DELPHI_5_UP to GLS_DELPHI_4_DOWN for
-      FPC compatibility (thanks Burkhard Carstens)
-   27/03/07 - LIN- Data is now prepared in 3 stages, to prevent multi-threading issues:
-     -BeforePreparingData : (Main Thread) - Create empty data structures and textures here.
-     -PreparingData       : (Sub-Thread)  - Fill in the empty structures (MUST be thread safe)
-     -AfterPreparingData  : (Main Thread) - Perform any cleanup, which cant be done from a sub-thread
-   17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-   14/03/07 - DaStr - Added explicit pointer dereferencing (thanks Burkhard Carstens)
-   13/02/07 - LIN- Added TGLHeightDataSource.TextureCoordinates -
-     Called from TGLBitmapHDS and TGLHeightTileFileHDS
-     Many tweaks and changes to threading. (I hope I havent broken anything)
-   02/02/07 - LIN- Added TGLHeightDataSourceFilter
-   30/01/07 - LIN- Added GLHeightData.LibMaterial. (Use instead of MaterialName)
-     GLHeightData is now derived from TGLUpdateAbleObject
-     GLHeightData is now compatible with TGLLibMaterials.DeleteUnusedMaterials
-   19/01/07 - LIN- Added 'Inverted' property to TGLBitmapHDS
-   10/08/04 - SG - TGLHeightData.InterpolatedHeight fix (Alan Rose)
-   03/07/04 - LR - Corrections for Linux compatibility
-     CreateMonochromeBitmap NOT implemented for Linux
-   12/07/03 - EG - Further InterpolatedHeight fixes
-   26/06/03 - EG - Fixed InterpolatedHeight HDS selection
-   06/02/03 - EG - Added Hash index to HeightDataSource, HeightMin/Max
-   24/01/03 - EG - Fixed ByteHeight normalization scaling
-   07/01/03 - JJ - fixed InterpolatedHeight... Old code left in comment...
-   03/12/02 - EG - Added hdtDefault, InterpolatedHeight/Dirty fix (Phil Scadden)
-   25/08/02 - EG - TGLHeightData.MarkData/Release fix (Phil Scadden)
-   10/07/02 - EG - Support for non-wrapping TGLBitmapHDS
-   16/06/02 - EG - Changed HDS destruction sequence (notification-safe),
-     TGLHeightData now has a MaterialName property
-   24/02/02 - EG - Faster Cleanup & cache management
-   21/02/02 - EG - hdtWord replaced by hdtSmallInt, added MarkDirty
-   04/02/02 - EG - CreateMonochromeBitmap now shielded against Jpeg "Change" oddity
-   10/09/01 - EG - Added TGLTerrainBaseHDS
-   04/03/01 - EG - Added InterpolatedHeight
-   11/02/01 - EG - Creation
-   
+     11/02/01 - EG - Creation
+     The whole history is logged in a prior version of the unit.
+
 }
 unit GLHeightData;
 

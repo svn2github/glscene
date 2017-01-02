@@ -4,20 +4,10 @@
 {
    Implements FBO support for GLScene.
    Original author of the unit is Riz.
-   Modified by C4 and YarUnderoaker (hope, I didn't miss anybody).
+   Modified by DaStr, C4 and YarUnderoaker.
 
-    History :  
-       16/10/11 - Yar - Fixes for depth-stencil texture
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       16/05/10 - Yar - Added multisampling support (thanks C4)
-       22/04/10 - Yar - Fixes after GLState revision
-       15/04/10 - Yar   - Bugfix missing FBO state changing (thanks C4)
-       23/01/10 - Yar   - Replaced TextureFormat to TextureFormatEx
-       22/01/10 - Yar   - Adapted to Handles of GLContext,
-                             texture target unification, level and layer control
-       11/11/09 - DaStr - Added $I GLScene.inc
+   History :
        09/11/09 - DaStr - Initial version (contributed to GLScene)
-    
 }
 unit GLFBO;
 
@@ -27,7 +17,7 @@ interface
 
 uses
   System.SysUtils,
-   
+  //GLS
   OpenGLTokens,
   GLScene,
   GLContext,
@@ -52,7 +42,7 @@ type
     FWidth: Integer;
     FHeight: Integer;
     FStorageValid: Boolean;
-    function GetHandle: TGLuint;
+    function GetHandle: Cardinal;
     procedure SetHeight(const Value: Integer);
     procedure SetWidth(const Value: Integer);
   protected
@@ -69,7 +59,7 @@ type
     {Handle to the OpenGL render buffer object. 
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
-    property Handle: TGLuint read GetHandle;
+    property Handle: Cardinal read GetHandle;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
   end;
@@ -125,7 +115,7 @@ type
     procedure AttachTexture(
       const attachment: Cardinal;
       const textarget: Cardinal;
-      const texture: TGLuint;
+      const texture: Cardinal;
       const level: TGLint;
       const layer: TGLint); overload;
     procedure ReattachTextures;
@@ -508,11 +498,11 @@ end;
 procedure TGLFrameBuffer.AttachTexture(
   const attachment: Cardinal;
   const textarget: Cardinal;
-  const texture: TGLuint;
+  const texture: Cardinal;
   const level: TGLint;
   const layer: TGLint);
 var
-  storeDFB: TGLuint;
+  storeDFB: Cardinal;
   RC: TGLContext;
 begin
   RC := SafeCurrentGLContext;

@@ -12,19 +12,8 @@
     </p>
 
    History :  
-       16/03/11 - Yar - Fixes after emergence of GLMaterialEx
-       23/08/10 - Yar - Fixed light state changes
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around
-                              (BugTracker ID = 1938988).
-                             TGLTextureSharingShaderMaterial.GetTextureSharingShader()
-                              is now more safe
-       24/03/08 - DaStr - Small fixups with setting LibMaterial and for
-                               Delphi 5 compatibility (thanks Pascal)
-       21/03/08 - DaStr - Reformated according to VCL standard, made some renamings
-       17/03/08 - mrqzzz - Added IGLMaterialLibrarySupported, moved registration
-       14/03/08 - Pascal - Initial version (contributed to GLScene)
+     14/03/08 - Pascal - Initial version (contributed to GLScene)
+     The whole history is logged in a prior version of the unit
 
 }
 
@@ -51,7 +40,7 @@ type
     FLibMaterial: TGLLibMaterial;
     FTexOffset: TGLCoordinates2;
     FTexScale: TGLCoordinates2;
-    FBlendingMode: TBlendingMode;
+    FBlendingMode: TGLBlendingMode;
     FSpecular: TGLColor;
     FAmbient: TGLColor;
     FDiffuse: TGLColor;
@@ -67,7 +56,7 @@ type
     procedure SetSpecular(const Value: TGLColor);
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetLibMaterialName(const Value: TGLLibMaterialName);
-    procedure SetBlendingMode(const Value: TBlendingMode);
+    procedure SetBlendingMode(const Value: TGLBlendingMode);
     procedure SetLibMaterial(const Value: TGLLibMaterial);
     procedure SetTexOffset(const Value: TGLCoordinates2);
     procedure SetTexScale(const Value: TGLCoordinates2);
@@ -98,7 +87,7 @@ type
 
     property TexOffset: TGLCoordinates2 read FTexOffset write SetTexOffset;
     property TexScale: TGLCoordinates2 read FTexScale write SetTexScale;
-    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode;
+    property BlendingMode: TGLBlendingMode read FBlendingMode write SetBlendingMode;
     property Emission: TGLColor read FEmission write SetEmission;
     property Ambient: TGLColor read FAmbient write SetAmbient;
     property Diffuse: TGLColor read FDiffuse write SetDiffuse;
@@ -387,7 +376,7 @@ begin
   FAmbient.Assign(Value);
 end;
 
-procedure TGLTextureSharingShaderMaterial.SetBlendingMode(const Value: TBlendingMode);
+procedure TGLTextureSharingShaderMaterial.SetBlendingMode(const Value: TGLBlendingMode);
 begin
   FBlendingMode := Value;
 end;

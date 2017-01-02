@@ -2,18 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Editor window for a material (with preview). 
+   Editor window for a material (with preview).
 
-    History:  
-       07/05/10 - Yar - Fixed PolygonMode and texture image class lookup
-       05/10/08 - DanB - Removed Kylix support
-       29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-       19/12/06 - DaStr - All comboboxes get their Items using RTTI
-                             (thanks to dikoe Kenguru for the reminder and Roman Ganz for the code)
-       03/07/04 - LR  - Make change for Linux
-       24/03/00 - Egg - Added Blending
+    History:
        06/02/00 - Egg - Creation
-    
+      The whole history is logged in a prior version of the unit.
 }
 unit FMaterialEditorForm;
 
@@ -100,8 +93,8 @@ var
   I: Integer;
 begin
   inherited;
-  for i := 0 to Integer(High(TBlendingMode)) do
-    CBBlending.Items.Add(GetEnumName(TypeInfo(TBlendingMode), i));
+  for i := 0 to Integer(High(TGLBlendingMode)) do
+    CBBlending.Items.Add(GetEnumName(TypeInfo(TGLBlendingMode), i));
   for i := 0 to Integer(High(TPolygonMode)) do
     CBPolygonMode.Items.Add(GetEnumName(TypeInfo(TPolygonMode), i));
 
@@ -131,7 +124,7 @@ begin
       FrontProperties := FEFront.FaceProperties;
       BackProperties := FEBack.FaceProperties;
       Texture := RTextureEdit.Texture;
-      BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+      BlendingMode := TGLBlendingMode(CBBlending.ItemIndex);
       PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
     end;
 end;
@@ -146,7 +139,7 @@ begin
     FrontProperties := FEFront.FaceProperties;
     BackProperties := FEBack.FaceProperties;
     Texture := RTextureEdit.Texture;
-    BlendingMode := TBlendingMode(CBBlending.ItemIndex);
+    BlendingMode := TGLBlendingMode(CBBlending.ItemIndex);
     PolygonMode := TPolygonMode(CBPolygonMode.ItemIndex);
   end;
   MPPreview.GLSceneViewer.Invalidate;

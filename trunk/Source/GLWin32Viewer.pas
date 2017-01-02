@@ -5,34 +5,9 @@
    Win32 specific Scene viewer.
 
    History :
-       23/02/16 - PW - Added SetupVSync from GLViewer to here to exclude circular link
-       03/02/13 - Yar - Added Touch Events (thanks to nelsonchu)
-       28/09/11 - YP - Added support for keyboard arrows via WM_GETDLGCODE
-       23/08/10 - Yar - Moved TVSyncMode to GLContext
-       22/12/09 - DaStr - Published TabStop, TabOrder, OnEnter, OnExit
-                              properties (thanks Yury Plashenkov)
-       10/11/09 - DaStr - Added Delphi 2010 OnGesture and Touch support
-       13/03/09 - DanB - Removed OpenGL dependencies
-       10/04/08 - DaStr - Bugfixed TGLSceneViewer.Notification()
-                              (thanks z80maniac) (Bugtracker ID = 1936108)
-       12/09/07 - DaStr - Removed old IFDEFs. Moved SetupVSync()
-                              to GLViewer.pas (Bugtracker ID = 1786279)
-       04/12/04 - DaStr - OnMouseWheel, OnMouseWheelDown, OnMouseWheelUp
-                              are now published in TGLSceneViewer
-       04/12/04 - MF - Added FieldOfView, formula by Ivan Sivak Jr.
-       24/07/03 - EG - FullScreen Viewer moved to GLWin32FullScreenViewer
-       11/06/03 - EG - Now uses ViewerBeforeChange to adjust VSync
-       29/10/02 - EG - Added MouseEnter/Leave/InControl
-       27/09/02 - EG - Added Ability to set display frequency
-       22/08/02 - EG - Added TGLSceneViewer.RecreateWnd
-       19/08/02 - EG - Added GetHandle
-       14/03/02 - EG - No longer invalidates while rendering
-       11/02/02 - EG - Fixed BeforeRender
-       29/01/02 - EG - New StayOnTop/Maximize logic (Richard Smuts)
-       22/01/02 - EG - Added TGLFullScreenViewer
-       28/12/01 - EG - Event persistence change (GliGli / Dephi bug)
       12/12/01 - EG - Creation (split from GLScene.pas)
-  
+     The whole history is logged in a prior version of the unit.
+
 }
 unit GLWin32Viewer;
 
@@ -73,7 +48,7 @@ type
   private
     { Private Declarations }
     FBuffer: TGLSceneBuffer;
-    FVSync: TVSyncMode;
+    FVSync: TGLVSyncMode;
     FOwnDC: HDC;
     FOnMouseEnter, FOnMouseLeave: TNotifyEvent;
     FMouseInControl: Boolean;
@@ -152,7 +127,7 @@ type
     {Specifies if the refresh should be synchronized with the VSync signal. 
        If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
        extension, this property is ignored.  }
-    property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
+    property VSync: TGLVSyncMode read FVSync write FVSync default vsmNoSync;
 
     {Triggered before the scene's objects get rendered. 
        You may use this event to execute your own OpenGL rendering. }
@@ -221,7 +196,7 @@ type
   end;
 
 
-procedure SetupVSync(const AVSyncMode : TVSyncMode);
+procedure SetupVSync(const AVSyncMode : TGLVSyncMode);
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -231,7 +206,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-procedure SetupVSync(const AVSyncMode : TVSyncMode);
+procedure SetupVSync(const AVSyncMode : TGLVSyncMode);
 {$IFDEF MSWINDOWS}
 var
   I: Integer;

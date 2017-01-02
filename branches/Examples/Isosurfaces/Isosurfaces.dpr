@@ -2,8 +2,7 @@ program Isosurfaces;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1},
-  GLMarchingCubes in 'GLMarchingCubes.pas';
+  Unit1 in 'Unit1.pas' {Form1};
 
 {$R *.res}
 

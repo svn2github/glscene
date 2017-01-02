@@ -20,7 +20,7 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  The whole history is logged in a former version of the unit.
+  The whole history is logged in a prior version of the unit.
 }
 unit GLVectorGeometry;
 
@@ -508,66 +508,42 @@ function Vector4bMake(const Vector: TVector2b; const Z: Byte = 0;
 // : Vector comparison functions:
 // ComparedVector
 // 3f
-function VectorMoreThen(const SourceVector, ComparedVector: TVector3f)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector3f)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3f): Boolean; overload;
 // 4f
-function VectorMoreThen(const SourceVector, ComparedVector: TVector4f)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector4f)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4f): Boolean; overload;
 // 3i
-function VectorMoreThen(const SourceVector, ComparedVector: TVector3i)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector3i)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3i): Boolean; overload;
 // 4i
-function VectorMoreThen(const SourceVector, ComparedVector: TVector4i)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector4i)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4i): Boolean; overload;
 
 // 3s
-function VectorMoreThen(const SourceVector, ComparedVector: TVector3s)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector3s)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector3s): Boolean; overload;
 // 4s
-function VectorMoreThen(const SourceVector, ComparedVector: TVector4s)
-  : Boolean; overload;
-function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s)
-  : Boolean; overload;
+function VectorMoreThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorMoreEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
 
-function VectorLessThen(const SourceVector, ComparedVector: TVector4s)
-  : Boolean; overload;
-function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s)
-  : Boolean; overload;
+function VectorLessThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
+function VectorLessEqualThen(const SourceVector, ComparedVector: TVector4s): Boolean; overload;
 
 // ComparedNumber
 // 3f
@@ -673,8 +649,7 @@ procedure TexPointArrayScaleAndAdd(const src: PTexPointArray;
   dest: PTexPointArray); overload;
 // : Adds delta to nb vectors in src and places result in dest
 procedure VectorArrayAdd(const src: PAffineVectorArray;
-  const delta: TAffineVector; const nb: Integer;
-  dest: PAffineVectorArray); overload;
+  const delta: TAffineVector; const nb: Integer; dest: PAffineVectorArray); overload;
 
 // : Returns V1-V2
 function VectorSubtract(const V1, V2: TVector2f): TVector2f; overload;
@@ -704,8 +679,7 @@ function VectorSubtract(const V1: TAffineVector; delta: Single): TAffineVector;
 function VectorSubtract(const V1: TVector; delta: Single): TVector; overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
 // : Subtracts V2 from V1, result is placed in V1
-procedure SubtractVector(var V1: TAffineVector;
-  const V2: TAffineVector); overload;
+procedure SubtractVector(var V1: TAffineVector; const V2: TAffineVector); overload;
 // : Subtracts V2 from V1, result is placed in V1
 procedure SubtractVector(var V1: TVector; const V2: TVector); overload;
 
@@ -768,15 +742,13 @@ function VectorDotProduct(const V1, V2: TAffineVector): Single; overload;
 function VectorDotProduct(const V1, V2: TVector): Single; overload;
 { Calculates the dot product between V1 and V2.
   Result:=V1[X] * V2[X] + V1[Y] * V2[Y] + V1[Z] * V2[Z] }
-function VectorDotProduct(const V1: TVector; const V2: TAffineVector)
-  : Single; overload;
+function VectorDotProduct(const V1: TVector; const V2: TAffineVector): Single; overload;
 
 { Projects p on the line defined by o and direction.
   Performs VectorDotProduct(VectorSubtract(p, origin), direction), which,
   if direction is normalized, computes the distance between origin and the
   projection of p on the (origin, direction) line. }
-function PointProject(const p, origin, direction: TAffineVector)
-  : Single; overload;
+function PointProject(const p, origin, direction: TAffineVector): Single; overload;
 function PointProject(const p, origin, direction: TVector): Single; overload;
 
 // : Calculates the cross product between vector 1 and 2
@@ -814,21 +786,17 @@ function DistanceBetweenAngles(angle1, angle2: Single): Single;
 function TexPointLerp(const t1, t2: TTexPoint; T: Single): TTexPoint; overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
 // : Calculates linear interpolation between vector1 and vector2 at point t
-function VectorLerp(const V1, V2: TAffineVector; T: Single)
-  : TAffineVector; overload;
+function VectorLerp(const V1, V2: TAffineVector; T: Single): TAffineVector; overload;
 // : Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
-procedure VectorLerp(const V1, V2: TAffineVector; T: Single;
-  var vr: TAffineVector); overload;
+procedure VectorLerp(const V1, V2: TAffineVector; T: Single; var vr: TAffineVector); overload;
 // : Calculates linear interpolation between vector1 and vector2 at point t
 function VectorLerp(const V1, V2: TVector; T: Single): TVector; overload;
 {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
 // : Calculates linear interpolation between vector1 and vector2 at point t, places result in vr
 procedure VectorLerp(const V1, V2: TVector; T: Single; var vr: TVector);
   overload; {$IFDEF GLS_INLINE_VICE_ASM}inline; {$ENDIF}
-function VectorAngleLerp(const V1, V2: TAffineVector; T: Single)
-  : TAffineVector; overload;
-function VectorAngleCombine(const V1, V2: TAffineVector; f: Single)
-  : TAffineVector; overload;
+function VectorAngleLerp(const V1, V2: TAffineVector; T: Single): TAffineVector; overload;
+function VectorAngleCombine(const V1, V2: TAffineVector; f: Single): TAffineVector; overload;
 
 // : Calculates linear interpolation between vector arrays
 procedure VectorArrayLerp(const src1, src2: PVectorArray; T: Single; n: Integer;
@@ -843,12 +811,9 @@ type
     itLn, itExp);
 
   { There functions that do the same as "Lerp", but add some distortions. }
-function InterpolatePower(const start, stop, delta: Single;
-  const DistortionDegree: Single): Single;
-function InterpolateLn(const start, stop, delta: Single;
-  const DistortionDegree: Single): Single;
-function InterpolateExp(const start, stop, delta: Single;
-  const DistortionDegree: Single): Single;
+function InterpolatePower(const start, stop, delta: Single; const DistortionDegree: Single): Single;
+function InterpolateLn(const start, stop, delta: Single; const DistortionDegree: Single): Single;
+function InterpolateExp(const start, stop, delta: Single; const DistortionDegree: Single): Single;
 
 { Only valid where Delta belongs to [0..1] }
 function InterpolateSin(const start, stop, delta: Single): Single;
@@ -1567,13 +1532,11 @@ function ClampInteger(const value, min, max: Cardinal): Cardinal; overload;
 // Computes the triangle's area
 function TriangleArea(const p1, p2, p3: TAffineVector): Single; overload;
 // Computes the polygons's area. Points must be coplanar. Polygon needs not be convex
-function PolygonArea(const p: PAffineVectorArray; nSides: Integer)
-  : Single; overload;
+function PolygonArea(const p: PAffineVectorArray; nSides: Integer): Single; overload;
 // Computes a 2D triangle's signed area. Only X and Y coordinates are used, Z is ignored
 function TriangleSignedArea(const p1, p2, p3: TAffineVector): Single; overload;
 // Computes a 2D polygon's signed area. Only X and Y coordinates are used, Z is ignored. Polygon needs not be convex
-function PolygonSignedArea(const p: PAffineVectorArray; nSides: Integer)
-  : Single; overload;
+function PolygonSignedArea(const p: PAffineVectorArray; nSides: Integer): Single; overload;
 
 { Multiplies values in the array by factor.
   This function is especially efficient for large arrays, it is not recommended
@@ -11690,3 +11653,4 @@ initialization
 vSIMD := 0;
 
 end.
+

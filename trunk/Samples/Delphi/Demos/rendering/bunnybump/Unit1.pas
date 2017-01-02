@@ -15,10 +15,22 @@ uses
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
   // GLS
-  GLScene, GLObjects, GLTexture, GLBumpShader,
-  GLVectorFileObjects, GLCadencer, GLWin32Viewer, GLAsyncTimer,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLVectorGeometry, GLContext, GLUtils;
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLBumpShader,
+  GLVectorFileObjects,
+  GLCadencer,
+  GLWin32Viewer,
+  GLAsyncTimer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLVectorGeometry,
+  GLContext,
+  GLFileOBJ,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -48,7 +60,7 @@ type
     ComboBox2: TComboBox;
     Label2: TLabel;
     LabelFPS: TLabel;
-    Bunny: TGLFreeForm;
+    ffBunny: TGLFreeForm;
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -84,8 +96,9 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
   // Load the bunny mesh and scale for viewing
-  Bunny.LoadFromFile('bunny.glsm');
-  Bunny.Scale.Scale(2 / Bunny.BoundingSphereRadius);
+  ffBunny.LoadFromFile('bunny.glsm');
+//  ffBunny.LoadFromFile('bunny.obj');
+  ffBunny.Scale.Scale(2 / ffBunny.BoundingSphereRadius);
 
   // Load the normal map
   with GLMaterialLibrary1.Materials[0].Material.Texture.Image do
@@ -145,15 +158,15 @@ end;
 procedure TForm1.ComboBox1Change(Sender: TObject);
 begin
   if ComboBox1.Text = 'Per-Vertex' then
-    Bunny.Material.LibMaterialName := ''
+    ffBunny.Material.LibMaterialName := ''
   else if ComboBox1.Text = 'Dot3 Texture Combiner' then
   begin
-    Bunny.Material.LibMaterialName := 'Bump';
+    ffBunny.Material.LibMaterialName := 'Bump';
     GLBumpShader1.BumpMethod := bmDot3TexCombiner;
   end
   else if ComboBox1.Text = 'Basic Fragment Program' then
   begin
-    Bunny.Material.LibMaterialName := 'Bump';
+    ffBunny.Material.LibMaterialName := 'Bump';
     GLBumpShader1.BumpMethod := bmBasicARBFP;
   end;
 end;

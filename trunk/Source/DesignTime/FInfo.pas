@@ -1,33 +1,12 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{  
-  Informations on OpenGL driver. 
+{
+  Informations on OpenGL driver.
 
-   History :  
-   23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-   13/06/10 - DaStr - Removed compiler hints
-   04/05/10 - Yar - Redecoration (thanks Conferno and Predator)
-   20/02/10 - DanB - Now uses correct DC, rather than using
-  the info form (bug due to "with" keyword)
-   25/10/08 - DanB - Delphi 2009 compatibility, extensions are now looked
-  up from www.opengl.org/registry/
-   29/03/07 - DaStr - Renamed LINUX to KYLIX (BugTrackerID=1681585)
-   08/07/04 - LR - Suppress CommCtrl in the uses of Linux
-   06/07/04 - LR - Display some infos for Linux
-   03/07/04 - LR - Make change for Linux
-   21/02/04 - EG - Added extensions popup menu and hyperlink to
-  Delphi3D's hardware registry
-   08/02/04 - NelC - Added option for modal
-   09/09/03 - NelC - Added Renderer info
-   26/06/03 - EG - Double-clicking an extension will now go to its OpenGL
-  registry webpage
-   22/05/03 - EG - Added Texture Units info
-   21/07/02 - EG - No longer modal
-   03/02/02 - EG - InfoForm registration mechanism
-   24/08/01 - EG - Compatibility with new Buffer classes
-   17/04/00 - EG - Creation of header, minor layout changes
-   
+   History :
+     17/04/00 - EG - Creation of header, minor layout changes
+     The whole history is logged in a prior version of the unit.
 }
 unit FInfo;
 
@@ -202,7 +181,7 @@ var
   i: Integer;
   ExtStr: String;
 
-  procedure IntLimitToLabel(const aLabel: TLabel; const aLimit: TLimitType);
+  procedure IntLimitToLabel(const aLabel: TLabel; const aLimit: TGLLimitType);
   begin
     aLabel.Caption := IntToStr(aSceneBuffer.LimitOf[aLimit]);
   end;

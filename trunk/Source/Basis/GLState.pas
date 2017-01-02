@@ -5,7 +5,7 @@
    Tools for managing an application-side cache of OpenGL state.
    History :
      05/09/03 - EG - Creation from GLMisc split
-     The whole history is logged in a former GLS version of the unit.
+     The whole history is logged in a prior version of the unit.
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
@@ -202,7 +202,7 @@ type
     FFrontBackColors: array[0..1, 0..3] of TVector;
     FFrontBackShininess: array[0..1] of Integer;
     FAlphaFunc: TComparisonFunction;
-    FAlphaRef: TGLclampf;
+    FAlphaRef: Single;
     FPolygonBackMode: TPolygonMode; // Front + back have same polygon mode
 
     // Lighting state
@@ -643,7 +643,7 @@ type
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
 
     {Blending states }
-    procedure SetGLAlphaFunction(func: TComparisonFunction; ref: TGLclampf);
+    procedure SetGLAlphaFunction(func: TComparisonFunction; ref: Single);
 
     // Vertex Array Data state
     {The currently bound array buffer (calling glVertexAttribPointer
@@ -2240,7 +2240,7 @@ begin
 end;
 
 procedure TGLStateCache.SetGLAlphaFunction(func: TComparisonFunction;
-  ref: TGLclampf);
+  ref: Single);
 {$IFDEF GLS_CACHE_MISS_CHECK}
 var I: Cardinal; E: Single;
 {$ENDIF}

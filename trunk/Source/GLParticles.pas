@@ -5,19 +5,8 @@
   Particle systems for GLScene, based on replication of full-featured scene objects. 
 
   History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       27/07/04 - EG - Added KillParticles
-       18/04/04 - EG - Added Before/After events
-       12/07/01 - EG - Fixed FEdgeColor memory leak
-       18/07/01 - EG - VisibilityCulling compatibility changes
-   17/04/00 - EG - Added Assign, Removed ActivateParticle
      16/04/00 - EG - Creation
+     The whole history is logged in a prior version of the unit.
   
 }
 unit GLParticles;
@@ -78,7 +67,7 @@ type
     FOnActivateParticle: TGLParticleEvent;
     FOnKillParticle: TGLParticleEvent;
     FOnDestroyParticle: TGLParticleEvent;
-    FOnBeforeRenderParticles, FOnAfterRenderParticles: TDirectRenderEvent;
+    FOnBeforeRenderParticles, FOnAfterRenderParticles: TGLDirectRenderEvent;
 
   protected
     { Protected Declarations }
@@ -137,9 +126,9 @@ type
        The particle can be in the pool (ie. not parented). }
     property OnDestroyParticle: TGLParticleEvent read FOnDestroyParticle write FOnDestroyParticle;
     {Fired before rendering the first of the particles. }
-    property OnBeforeRenderParticles: TDirectRenderEvent read FOnBeforeRenderParticles write FOnBeforeRenderParticles;
+    property OnBeforeRenderParticles: TGLDirectRenderEvent read FOnBeforeRenderParticles write FOnBeforeRenderParticles;
     {Fired after rendering the last of the particles. }
-    property OnAfterRenderParticles: TDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
+    property OnAfterRenderParticles: TGLDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
   end;
 
   // ------------------------------------------------------------------

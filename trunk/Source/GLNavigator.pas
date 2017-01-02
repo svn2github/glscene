@@ -2,31 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Unit for navigating TGLBaseObjects. 
+    Unit for navigating TGLBaseObjects.
 
-    History :  
-       20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),
-                             SetVirtualUp(), CalcRight() to the "protected" section
-                             Private "point1" renamed to FPrevPoint
-                             Updated comments
-                             TGLNavigator.SetObject made virtual
-       19/02/07 - DaStr - TGLNavigator.Create - FVirtualUp creation fixed
-                             Added default values to TGLNavigator and TGLUserInterface
-       29/01/07 - DaStr - Moved registration to GLSceneRegister.pas
-       08/03/06 - ur - Fixed warnigs for Delphi 2006
-       31/10/05 - Mathx - Fixed bug 1340637 relating to freeNotifications on 
-                             the TGLUserInterface component.
-       18/12/04 - PhP - Added FlyForward
-       03/07/04 - LR - Added GLShowCursor, GLSetCursorPos, GLGetCursorPos,
-                          GLGetScreenWidth, GLGetScreenHeight for Linux compatibility       
-       11/05/04 - JAJ - Added some features and fixed a bug.
-       01/06/03 - JAJ - Added notification to movingobject...
-       01/06/03 - fig - CurrentHangle implementet...
-       14/07/02 - EG - InvertMouse (Joen A. Joensen)
-       18/03/02 - EG - Added MouseLookActive property, Fixed framerate dependency
-       15/03/02 - JAJ - Structure Change - Mouselook moved to newly created TGLUserInterface.
-       15/03/02 - RMCH - Added Mouselook capability.
-       09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
+    History :
+      09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
+      The whole history is logged in a prior version of the unit.
 }
 unit GLNavigator;
 

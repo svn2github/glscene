@@ -25,7 +25,7 @@ object Form1: TForm1
     Camera = Camera
     BeforeRender = GLSceneViewer1BeforeRender
     Buffer.BackgroundColor = clBackground
-    FieldOfView = 150.512878417968700000
+    FieldOfView = 150.512878417968800000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
@@ -186,7 +186,7 @@ object Form1: TForm1
         SpotCutOff = 180.000000000000000000
       end
     end
-    object Bunny: TGLFreeForm
+    object ffBunny: TGLFreeForm
       Material.FrontProperties.Shininess = 64
       Material.FrontProperties.Specular.Color = {CDCC4C3ECDCC4C3ECDCC4C3E0000803F}
       Material.MaterialLibrary = GLMaterialLibrary1
@@ -195,7 +195,7 @@ object Form1: TForm1
     object Camera: TGLCamera
       DepthOfView = 100.000000000000000000
       FocalLength = 50.000000000000000000
-      TargetObject = Bunny
+      TargetObject = ffBunny
       Position.Coordinates = {000080400000803F000000000000803F}
     end
   end

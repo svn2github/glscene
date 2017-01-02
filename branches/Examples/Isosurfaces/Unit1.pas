@@ -3,19 +3,21 @@ unit Unit1;
 interface
 
 uses
-  Windows,
-  Messages,
-  SysUtils,
-  Variants,
-  Classes,
-  Graphics,
-  Controls,
-  ExtCtrls,
-  StdCtrls,
-  ComCtrls,
-  Buttons,
-  Forms,
-  Dialogs,
+  Winapi.OpenGL,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.Buttons,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  //GLS
   GLWin32Viewer,
   GLCrossPlatform,
   GLBaseClasses,
@@ -29,7 +31,8 @@ uses
   GLState,
   GLGeomObjects,
   GLExtrusion,
-  GLMarchingCubes,
+  GLTypes,
+  GLIsosurface,
   GLSimpleNavigation,
   GLMaterial;
 
@@ -59,10 +62,11 @@ type
     procedure ComboBox2Change(Sender: TObject);
   private
     mo: TMeshObject;
-    MC: TMarchingCube;
+    MC: TGLMarchingCube;
   public
-
+    //Public declarations
   end;
+
 
 var
   Form1: TForm1;
@@ -70,6 +74,7 @@ var
 implementation
 
 {$R *.dfm}
+
 // comment next line to use GLMesh instead GLFreeForm
 {$DEFINE UseGLFreeForm}
 
@@ -105,7 +110,7 @@ begin
 {$ELSE}
   GLFreeForm1.Visible := False;
 {$ENDIF}
-  MC := TMarchingCube.Create(100, 100, 100);
+  MC := TGLMarchingCube.Create(100, 100, 100);
   BitBtn1Click(nil)
 end;
 
@@ -131,7 +136,7 @@ end;
 
 procedure TForm1.BitBtn1Click(Sender: TObject);
 var
-  IsoValue: TScalarValue;
+  IsoValue: TGLScalarValue;
 begin
   // try to accept user value, but if uncorrect assign a correct demo value
   IsoValue := StrToFloatDef(Edit1.Text, DemoScalarField[ComboBox1.ItemIndex]

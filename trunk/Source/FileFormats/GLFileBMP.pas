@@ -54,7 +54,7 @@ type
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
       const CurrentFormat: boolean;
       const intFormat: TGLInternalFormat); reintroduce;
@@ -560,7 +560,7 @@ end;
 //
 
 procedure TGLBMPImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint; textureTarget: TGLTextureTarget;
+  const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
 begin
   {$Message Hint 'TGLBMPImage.AssignFromTexture not yet implemented' }

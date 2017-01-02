@@ -3,6 +3,7 @@
 //
 {
   OpenGL adapter
+  The whole history is logged in a prior version of the unit.
 }
 
 unit OpenGLAdapter;
@@ -66,7 +67,7 @@ type
     FBuffer: string;
     FInitialized: boolean;
     FDebug: boolean;
-    FDebugIds: TGLuint;
+    FDebugIds: Cardinal;
     function CheckExtension(const Extension: string): boolean;
 {$IFDEF SUPPORT_WGL}
     procedure ReadWGLExtensions;
@@ -177,14 +178,14 @@ type
     GREMEDY_frame_terminator, GREMEDY_string_marker, AMDX_debug_output,
     ARB_debug_output: boolean;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 core functions and procedures'}{$ENDIF}
-    BindTexture: procedure(target: Cardinal; texture: TGLuint);
+// OpenGL 1.1 core functions and procedures
+    BindTexture: procedure(target: Cardinal; texture: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     BlendFunc: procedure(sfactor: Cardinal; dfactor: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Clear: procedure(mask: TGLbitfield);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ClearColor: procedure(red, green, blue, alpha: TGLclampf);
+    ClearColor: procedure(red, green, blue, alpha: Single);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     ClearDepth: procedure(depth: TGLclampd);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -238,7 +239,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetDoublev: procedure(pname: Cardinal; params: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GetError: function: TGLuint;
+    GetError: function: Cardinal;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetFloatv: procedure(pname: Cardinal; params: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -265,7 +266,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     IsEnabled: function(cap: Cardinal): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    IsTexture: function(texture: TGLuint): TGLboolean;
+    IsTexture: function(texture: Cardinal): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LineWidth: procedure(Width: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -288,9 +289,9 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Scissor: procedure(X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    StencilFunc: procedure(func: Cardinal; ref: TGLint; mask: TGLuint);
+    StencilFunc: procedure(func: Cardinal; ref: TGLint; mask: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    StencilMask: procedure(mask: TGLuint);
+    StencilMask: procedure(mask: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     StencilOp: procedure(fail, zfail, zpass: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -318,131 +319,71 @@ type
     Viewport: procedure(X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 {$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
-    Accum: procedure(op: TGLuint; Value: TGLfloat);
+    Accum: procedure(op: Cardinal; Value: TGLfloat); {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    AlphaFunc: procedure(func: Cardinal; ref: Single);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    AreTexturesResident: function(n: TGLsizei; textures: PGLuint; residences: PGLboolean): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    AlphaFunc: procedure(func: Cardinal; ref: TGLclampf);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    AreTexturesResident: function(n: TGLsizei; textures: PGLuint;
-      residences: PGLboolean): TGLboolean;
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ArrayElement: procedure(i: TGLint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Begin_: procedure(mode: Cardinal);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ArrayElement: procedure(i: TGLint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Begin_: procedure(mode: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Bitmap: procedure(Width: TGLsizei; Height: TGLsizei; xorig, yorig: TGLfloat;
-      xmove: TGLfloat; ymove: TGLfloat; Bitmap: Pointer);
+      xmove: TGLfloat; ymove: TGLfloat; Bitmap: Pointer);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    CallList: procedure(list: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    CallLists: procedure(n: TGLsizei; atype: Cardinal; lists: Pointer);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ClearAccum: procedure(red, green, blue, alpha: TGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ClearIndex: procedure(c: TGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ClipPlane: procedure(plane: Cardinal; equation: PGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3b: procedure(red, green, blue: TGLbyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3bv: procedure(v: PGLbyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3d: procedure(red, green, blue: TGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3dv: procedure(v: PGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3f: procedure(red, green, blue: TGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3fv: procedure(v: PGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3i: procedure(red, green, blue: TGLint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3iv: procedure(v: PGLint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3s: procedure(red, green, blue: TGLshort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3sv: procedure(v: PGLshort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3ub: procedure(red, green, blue: TGLubyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3ubv: procedure(v: PGLubyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3ui: procedure(red, green, blue: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3uiv: procedure(v: PGLuint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3us: procedure(red, green, blue: TGLushort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color3usv: procedure(v: PGLushort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4b: procedure(red, green, blue, alpha: TGLbyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4bv: procedure(v: PGLbyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4d: procedure(red, green, blue, alpha: TGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4dv: procedure(v: PGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4f: procedure(red, green, blue, alpha: TGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4fv: procedure(v: PGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4i: procedure(red, green, blue, alpha: TGLint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4iv: procedure(v: PGLint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4s: procedure(red, green, blue, alpha: TGLshort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4sv: procedure(v: TGLshort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4ub: procedure(red, green, blue, alpha: TGLubyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4ubv: procedure(v: PGLubyte);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4ui: procedure(red, green, blue, alpha: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4uiv: procedure(v: PGLuint);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4us: procedure(red, green, blue, alpha: TGLushort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    Color4usv: procedure(v: PGLushort);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ColorMaterial: procedure(face: Cardinal; mode: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    ColorPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei; Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CallList: procedure(list: TGLuint);
+    CopyPixels: procedure(X, y: TGLint; Width, Height: TGLsizei; atype: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CallLists: procedure(n: TGLsizei; atype: Cardinal; lists: Pointer);
+    DeleteLists: procedure(list: Cardinal; range: TGLsizei);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    DisableClientState: procedure(aarray: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    DrawPixels: procedure(Width, Height: TGLsizei; format, atype: Cardinal; pixels: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ClearAccum: procedure(red, green, blue, alpha: TGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ClearIndex: procedure(c: TGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ClipPlane: procedure(plane: Cardinal; equation: PGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3b: procedure(red, green, blue: TGLbyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3bv: procedure(v: PGLbyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3d: procedure(red, green, blue: TGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3dv: procedure(v: PGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3f: procedure(red, green, blue: TGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3i: procedure(red, green, blue: TGLint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3iv: procedure(v: PGLint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3s: procedure(red, green, blue: TGLshort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3sv: procedure(v: PGLshort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3ub: procedure(red, green, blue: TGLubyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3ubv: procedure(v: PGLubyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3ui: procedure(red, green, blue: TGLuint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3uiv: procedure(v: PGLuint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3us: procedure(red, green, blue: TGLushort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color3usv: procedure(v: PGLushort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4b: procedure(red, green, blue, alpha: TGLbyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4bv: procedure(v: PGLbyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4d: procedure(red, green, blue, alpha: TGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4dv: procedure(v: PGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4f: procedure(red, green, blue, alpha: TGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4fv: procedure(v: PGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4i: procedure(red, green, blue, alpha: TGLint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4iv: procedure(v: PGLint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4s: procedure(red, green, blue, alpha: TGLshort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4sv: procedure(v: TGLshort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4ub: procedure(red, green, blue, alpha: TGLubyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4ubv: procedure(v: PGLubyte);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4ui: procedure(red, green, blue, alpha: TGLuint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4uiv: procedure(v: PGLuint);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4us: procedure(red, green, blue, alpha: TGLushort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    Color4usv: procedure(v: PGLushort);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ColorMaterial: procedure(face: Cardinal; mode: Cardinal);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ColorPointer: procedure(size: TGLint; atype: Cardinal; stride: TGLsizei;
-      Data: Pointer);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    CopyPixels: procedure(X, y: TGLint; Width, Height: TGLsizei;
-      atype: Cardinal);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DeleteLists: procedure(list: TGLuint; range: TGLsizei);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DisableClientState: procedure(aarray: Cardinal);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    DrawPixels: procedure(Width, Height: TGLsizei; format, atype: Cardinal;
-      pixels: Pointer);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EdgeFlag: procedure(flag: TGLboolean);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EdgeFlagPointer: procedure(stride: TGLsizei; Data: Pointer);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EdgeFlagv: procedure(flag: PGLboolean);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EnableClientState: procedure(aarray: Cardinal);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    End_: procedure();
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EndList: procedure();
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalCoord1d: procedure(u: TGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalCoord1dv: procedure(u: PGLdouble);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalCoord1f: procedure(u: TGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    EvalCoord1fv: procedure(u: PGLfloat);
-{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EdgeFlag: procedure(flag: TGLboolean);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EdgeFlagPointer: procedure(stride: TGLsizei; Data: Pointer);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EdgeFlagv: procedure(flag: PGLboolean);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EnableClientState: procedure(aarray: Cardinal);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    End_: procedure();{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EndList: procedure();{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EvalCoord1d: procedure(u: TGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EvalCoord1dv: procedure(u: PGLdouble);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EvalCoord1f: procedure(u: TGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
+    EvalCoord1fv: procedure(u: PGLfloat);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EvalCoord2d: procedure(u: TGLdouble; v: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     EvalCoord2dv: procedure(u: PGLdouble);
@@ -471,7 +412,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Frustum: procedure(left, right, bottom, top, zNear, zFar: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    GenLists: function(range: TGLsizei): TGLuint;
+    GenLists: function(range: TGLsizei): Cardinal;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetClipPlane: procedure(plane: Cardinal; equation: PGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -507,7 +448,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     GetTexGeniv: procedure(coord, pname: Cardinal; params: PGLint);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    IndexMask: procedure(mask: TGLuint);
+    IndexMask: procedure(mask: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     IndexPointer: procedure(atype: Cardinal; stride: TGLsizei; Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -536,7 +477,7 @@ type
     InterleavedArrays: procedure(format: Cardinal; stride: TGLsizei;
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    IsList: function(list: TGLuint): TGLboolean;
+    IsList: function(list: Cardinal): TGLboolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LightModelf: procedure(pname: Cardinal; param: TGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -556,7 +497,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LineStipple: procedure(factor: TGLint; pattern: TGLushort);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    ListBase: procedure(base: TGLuint);
+    ListBase: procedure(base: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LoadIdentity: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -564,7 +505,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     LoadMatrixf: procedure(m: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    LoadName: procedure(Name: TGLuint);
+    LoadName: procedure(Name: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Map1d: procedure(target: Cardinal; u1, u2: TGLdouble; stride, order: TGLint;
       points: PGLdouble);
@@ -603,7 +544,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     MultMatrixf: procedure(m: PGLfloat);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    NewList: procedure(list: TGLuint; mode: Cardinal);
+    NewList: procedure(list: Cardinal; mode: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     Normal3b: procedure(nx, ny, nz: TGLbyte);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -654,7 +595,7 @@ type
     PopName: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PrioritizeTextures: procedure(n: TGLsizei; textures: PGLuint;
-      priorities: PGLclampf);
+      priorities: PSingle);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PushAttrib: procedure(mask: TGLbitfield);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -662,7 +603,7 @@ type
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     PushMatrix: procedure();
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
-    PushName: procedure(Name: TGLuint);
+    PushName: procedure(Name: Cardinal);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     RasterPos2d: procedure(X, y: TGLdouble);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
@@ -1573,7 +1514,7 @@ type
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
     DebugMessageEnableAMDX: procedure(category: Cardinal; severity: Cardinal;
-      Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
+      Count: TGLsizei; var ids: Cardinal; Enabled: boolean);
 
     PushDebugGroup: PFNGLPushDebugGroup;
     PopDebugGroup: PFNGLPopDebugGroup;
@@ -1584,27 +1525,27 @@ type
     DebugMessageCallbackAMDX: procedure(callback: TDebugProcAMD;
       userParam: Pointer);
    {$IFDEF MSWINDOWS} stdcall;
-   {$ENDIF}{$IFDEF UNIX} cdecl;
+   {$ELSE} cdecl;
    {$ENDIF}
     DebugMessageControl: procedure(type_: Cardinal; Source: Cardinal;
-      severity: Cardinal; Count: TGLsizei; var ids: TGLuint; Enabled: boolean);
+      severity: Cardinal; Count: TGLsizei; var ids: Cardinal; Enabled: boolean);
    {$IFDEF MSWINDOWS} stdcall;
-   {$ENDIF}{$IFDEF UNIX} cdecl;
+   {$ELSE} cdecl;
    {$ENDIF}
-    DebugMessageInsert: procedure(Source: Cardinal; severity: Cardinal; id: TGLuint;
+    DebugMessageInsert: procedure(Source: Cardinal; severity: Cardinal; id: Cardinal;
       length: TGLsizei; const buf: PAnsiChar);
    {$IFDEF MSWINDOWS} stdcall;
-   {$ENDIF}{$IFDEF UNIX} cdecl;
+   {$ELSE} cdecl;
    {$ENDIF}
     DebugMessageCallback: procedure(callback: TDebugProc; userParam: Pointer);
    {$IFDEF MSWINDOWS} stdcall;
-   {$ENDIF}{$IFDEF UNIX} cdecl;
+   {$ELSE} cdecl;
    {$ENDIF}
-    GetDebugMessageLog: function(Count: TGLuint; bufSize: TGLsizei;
-      var severity: Cardinal; var severities: TGLuint; var ids: TGLuint;
-      var lengths: TGLsizei; messageLog: PAnsiChar): TGLuint;
+    GetDebugMessageLog: function(Count: Cardinal; bufSize: TGLsizei;
+      var severity: Cardinal; var severities: Cardinal; var ids: Cardinal;
+      var lengths: TGLsizei; messageLog: PAnsiChar): Cardinal;
    {$IFDEF MSWINDOWS} stdcall;
-   {$ENDIF}{$IFDEF UNIX} cdecl;
+   {$ELSE} cdecl;
    {$ENDIF}
    {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
    {$IFDEF GLS_REGIONS}{$REGION 'Interrop'}{$ENDIF}
@@ -1939,7 +1880,7 @@ type
     // Managing context
     ACreateContext: function(pix: TAGLPixelFormat; share: TAGLContext)
       : TAGLContext; cdecl;
-    ACopyContext: function(src: TAGLContext; dst: TAGLContext; mask: TGLuint)
+    ACopyContext: function(src: TAGLContext; dst: TAGLContext; mask: Cardinal)
       : TGLboolean; cdecl;
     ADestroyContext: function(ctx: TAGLContext): GLboolean; cdecl;
     AUpdateContext: function(ctx: TAGLContext): GLboolean; cdecl;
@@ -1979,7 +1920,7 @@ type
     AGetInteger: function(ctx: TAGLContext; pname: GLenum; params: PGLint)
       : GLboolean; cdecl;
     // Getting and Setting Global Information
-    AConfigure: function(pname: Cardinal; param: TGLuint): TGLboolean; cdecl;
+    AConfigure: function(pname: Cardinal; param: Cardinal): TGLboolean; cdecl;
     AGetVersion: procedure(major: PGLint; minor: PGLint); cdecl;
     AResetLibrary: procedure(); cdecl;
     // Getting Renderer Information
@@ -2170,7 +2111,7 @@ procedure glXDestroyContext(dpy: PDisplay; ctx: GLXContext); cdecl;
 function glXMakeCurrent(dpy: PDisplay; drawable: GLXDrawable; ctx: GLXContext)
   : TGLboolean; cdecl; external opengl32;
 procedure glXCopyContext(dpy: PDisplay; src: GLXContext; dst: GLXContext;
-  mask: TGLuint); cdecl; external opengl32;
+  mask: Cardinal); cdecl; external opengl32;
 procedure glXSwapBuffers(dpy: PDisplay; drawable: GLXDrawable); cdecl;
   external opengl32;
 function glXCreateGLXPixmap(dpy: PDisplay; visual: PXVisualInfo;
@@ -2484,12 +2425,10 @@ end;
 var
   vNotInformed: boolean = True;
 
-procedure DebugCallBack(Source: Cardinal; type_: Cardinal; id: TGLuint;
+procedure DebugCallBack(Source: Cardinal; type_: Cardinal; id: Cardinal;
   severity: Cardinal; length: TGLsizei; const message: PAnsiChar;
   userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
 {$IFDEF GLS_LOGGING}
   if length > 0 then
@@ -2497,11 +2436,9 @@ begin
 {$ENDIF}
 end;
 
-procedure DebugCallBackAMD(id: TGLuint; category: Cardinal; severity: Cardinal;
+procedure DebugCallBackAMD(id: Cardinal; category: Cardinal; severity: Cardinal;
   length: TGLsizei; message: PAnsiChar; userParam: Pointer);
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
   if length > 0 then
     GLSLogger.LogDebug(string(message));
@@ -2512,10 +2449,7 @@ begin
   FInitialized := False;
 end;
 
-procedure glCap;
-{$IFDEF MSWINDOWS} stdcall;
-{$ENDIF}{$IFDEF UNIX} cdecl;
-{$ENDIF}
+procedure glCap;{$IFDEF MSWINDOWS} stdcall;{$ELSE} cdecl;{$ENDIF}
 begin
 {$IFDEF GLS_LOGGING}
   GLSLogger.LogError('Call OpenGL function with undefined entry point');
@@ -2614,7 +2548,7 @@ end;
 
 procedure TGLExtensionsAndEntryPoints.CheckError;
 var
-  glError: TGLuint;
+  glError: Cardinal;
   Count: word;
 begin
   if FInitialized then

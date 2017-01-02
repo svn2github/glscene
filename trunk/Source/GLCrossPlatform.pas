@@ -5,7 +5,7 @@
    Cross platform support functions and types for GLScene.
    Ultimately, *no* cross-platform or cross-version defines should be present
    in the core GLScene units, and have all moved here instead.
-   The  history is logged in a previous version of the unit
+   The whole history is logged in a prior version of the unit
 }
 unit GLCrossPlatform;
 

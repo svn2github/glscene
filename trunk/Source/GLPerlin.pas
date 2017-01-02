@@ -8,13 +8,8 @@
   A Perlin Height Data Source have been included as an example. Use this combined with a terrain renderer for an infinite random landscape  
 
    History :  
-   20/05/10 - Yar - Fixes for Linux x64
-   31/03/07 - DaStr - Added $I GLScene.inc
-   28/03/07 - DaStr - Added explicit pointer dereferencing
-  (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-   08/07/04 - LR - Correction for Linux
-   29/01/03 - JaJ - Submitted to GLScene.
-   
+     29/01/03 - JaJ - Submitted to GLScene.
+     The whole history is logged in a prior version of the unit.
 }
 unit GLPerlin;
 

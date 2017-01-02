@@ -5,14 +5,9 @@
   Stores contextual info useful during rendering methods. 
 
   History :  
-       23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
-       22/02/10 - Yar - Added bufferLighting, bufferFog, bufferDepthTest to TGLRenderContextInfo
-       14/03/09 - DanB - Removed IsVolumeClipped functions, instead replaced with
-                            IsVolumeClipped functions in GLVectorGeometry.pas that use TFrustrum
-       09/10/08 - DanB - Added TRenderContextClippingInfo + IsVolumeClipped
-                            functions from GLVectorGeometry.pas, added nearClippingDistance
-       05/10/08 - DanB - Created from GLTexture.pas split
-    
+    05/10/08 - DanB - Created from GLTexture.pas split
+    The whole history is logged in a prior version of the unit.
+
 }
 unit GLRenderContextInfo;
 

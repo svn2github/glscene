@@ -11,15 +11,8 @@
   with DoActivate DoDeactivate.
 
    History :
-   22/08/10 - DaStr - Restored backward-compatibility after previous changes
-   11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release
-   28/04/10 - Yar - Merged GLFullScreenViewer and GLWin32FullScreenViewer into one unit
-  (by Rustam Asmandiarov aka Predator)
-   08/04/10 - Yar - Added more UNIX compatibility (thanks Rustam Asmandiarov aka Predator)
-   07/01/10 - DaStr - Added UNIX compatibility (thanks Predator)
-   07/11/09 - DaStr - Added to main GLScene CVS repository (from GLScene-Lazarus)
    24/07/03 - EG - Creation from GLWin32Viewer split
-
+   The whole history is logged in a prior version of the unit.
 }
 unit GLFullScreenViewer;
 
@@ -83,7 +76,7 @@ type
     FOnClose: TCloseEvent;
     FOnCloseQuery: TCloseQueryEvent;
     FStayOnTop: Boolean;
-    FVSync: TVSyncMode;
+    FVSync: TGLVSyncMode;
     FRefreshRate: Integer;
     FCursor: TCursor;
     FPopupMenu: TPopupMenu;
@@ -179,7 +172,7 @@ type
     {  Specifies if the refresh should be synchronized with the VSync signal. 
       If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
       extension, this property is ignored. }
-    property VSync: TVSyncMode read FVSync write FVSync default vsmSync;
+    property VSync: TGLVSyncMode read FVSync write FVSync default vsmSync;
     {  Screen refresh rate. 
       Use zero for system default. This property allows you to work around
       the winxp bug that limits uses a refresh rate of 60hz when changeing

@@ -31,9 +31,9 @@ var
   vDefaultMeshOptimizerOptions: TGLMeshOptimizerOptions = [mooStandardize,
     mooVertexCache, mooSortByMaterials, mooMergeObjects];
 
-procedure OptimizeMesh(aList: TMeshObjectList;
+procedure OptimizeMesh(aList: TGLMeshObjectList;
   options: TGLMeshOptimizerOptions); overload;
-procedure OptimizeMesh(aList: TMeshObjectList); overload;
+procedure OptimizeMesh(aList: TGLMeshObjectList); overload;
 procedure OptimizeMesh(aMeshObject: TMeshObject;
   options: TGLMeshOptimizerOptions); overload;
 procedure OptimizeMesh(aMeshObject: TMeshObject); overload;
@@ -55,14 +55,14 @@ uses
 
 // OptimizeMesh (list, default options)
 //
-procedure OptimizeMesh(aList: TMeshObjectList);
+procedure OptimizeMesh(aList: TGLMeshObjectList);
 begin
   OptimizeMesh(aList, vDefaultMeshOptimizerOptions);
 end;
 
 // OptimizeMesh (list, with options)
 //
-procedure OptimizeMesh(aList: TMeshObjectList;
+procedure OptimizeMesh(aList: TGLMeshObjectList;
   options: TGLMeshOptimizerOptions);
 var
   i, k: Integer;

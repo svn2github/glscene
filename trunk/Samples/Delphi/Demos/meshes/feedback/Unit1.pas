@@ -12,8 +12,15 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   //GLS
-  GLVectorFileObjects, GLScene, GLObjects, GLWin32Viewer,
-  GLFeedback, GLTeapot, GLPolyhedron,  GLCrossPlatform, GLCoordinates,
+  GLVectorFileObjects,
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLFeedback,
+  GLTeapot,
+  GLPolyhedron,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type

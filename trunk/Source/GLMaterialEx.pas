@@ -582,7 +582,7 @@ type
     FFrontProperties: TGLFaceProperties;
     FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
-    FBlendingMode: TBlendingMode;
+    FBlendingMode: TGLBlendingMode;
     FBlendingParams: TGLBlendingParameters;
     FTexProp: TGLTextureProperties;
     FMaterialOptions: TMaterialOptions;
@@ -593,7 +593,7 @@ type
     procedure SetBackProperties(AValues: TGLFaceProperties);
     procedure SetFrontProperties(AValues: TGLFaceProperties);
     procedure SetDepthProperties(AValues: TGLDepthProperties);
-    procedure SetBlendingMode(const AValue: TBlendingMode);
+    procedure SetBlendingMode(const AValue: TGLBlendingMode);
     procedure SetMaterialOptions(const AValue: TMaterialOptions);
     procedure SetFaceCulling(const AValue: TFaceCulling);
     procedure SetPolygonMode(AValue: TPolygonMode);
@@ -622,7 +622,7 @@ type
       SetFrontProperties;
     property DepthProperties: TGLDepthProperties read FDepthProperties write
       SetDepthProperties;
-    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode
+    property BlendingMode: TGLBlendingMode read FBlendingMode write SetBlendingMode
       default bmOpaque;
     property BlendingParams: TGLBlendingParameters read FBlendingParams write
       SetBlendingParams;
@@ -1181,8 +1181,8 @@ type
     procedure SetSM3(AValue: TGLShaderModel3);
     procedure SetSM4(AValue: TGLShaderModel4);
     procedure SetSM5(AValue: TGLShaderModel5);
-    procedure DoAllocate(Sender: TGLVirtualHandle; var handle: TGLUint);
-    procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: TGLUint);
+    procedure DoAllocate(Sender: TGLVirtualHandle; var handle: Cardinal);
+    procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: Cardinal);
   protected
     procedure Loaded; override;
     procedure RemoveDefferedInit;
@@ -1828,7 +1828,7 @@ begin
 end;
 
 procedure TGLFixedFunctionProperties.SetBlendingMode(const AValue:
-  TBlendingMode);
+  TGLBlendingMode);
 begin
   if AValue <> FBlendingMode then
   begin
@@ -2777,7 +2777,7 @@ end;
 
 procedure TGLTextureSampler.DoOnPrepare(Sender: TGLContext);
 var
-  ID: TGLUint;
+  ID: Cardinal;
 begin
   if IsDesignTime and FDefferedInit then
     exit;
@@ -3023,13 +3023,13 @@ begin
 end;
 
 procedure TGLTextureCombiner.DoAllocate(Sender: TGLVirtualHandle;
-  var handle: TGLUint);
+  var handle: Cardinal);
 begin
   handle := 1;
 end;
 
 procedure TGLTextureCombiner.DoDeallocate(Sender: TGLVirtualHandle;
-  var handle: TGLUint);
+  var handle: Cardinal);
 begin
   handle := 0;
 end;
@@ -3254,13 +3254,13 @@ begin
 end;
 
 procedure TGLLibMaterialEx.DoAllocate(Sender: TGLVirtualHandle;
-  var handle: TGLUint);
+  var handle: Cardinal);
 begin
   handle := 1;
 end;
 
 procedure TGLLibMaterialEx.DoDeallocate(Sender: TGLVirtualHandle;
-  var handle: TGLUint);
+  var handle: Cardinal);
 begin
   handle := 0;
 end;
@@ -4745,7 +4745,7 @@ var
   T: TGLShaderType;
   LUniforms: TPersistentObjectList;
   LUniform, LUniform2: TGLShaderUniform;
-  ID: TGLuint;
+  ID: Cardinal;
   I, J, C: Integer;
   buff: array[0..255] of AnsiChar;
   Size: TGLInt;
@@ -4841,7 +4841,7 @@ begin
               begin
                 GetActiveUniform(
                   ID,
-                  TGLuint(I),
+                  Cardinal(I),
                   Length(buff),
                   @Len,
                   @Size,
@@ -5639,7 +5639,7 @@ procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
 
   function FindHotActiveUnit: Boolean;
   var
-    ID: TGLuint;
+    ID: Cardinal;
     I, J: Integer;
     bindTime, minTime: Double;
     LTex: TGLTextureImageEx;
@@ -6053,7 +6053,7 @@ begin
   Result := cDefaultSwizzleVector;
 end;
 
-function TGLAbstractShaderUniform.GetUInt: TGLuint;
+function TGLAbstractShaderUniform.GetUInt: Cardinal;
 begin
   FillChar(Result, SizeOf(Result), $00);
 end;
@@ -6233,7 +6233,7 @@ begin
   GL.GetUniformfv(GetProgram, FLocation, @Result);
 end;
 
-function TGLShaderUniform.GetProgram: TGLuint;
+function TGLShaderUniform.GetProgram: Cardinal;
 begin
   Result := TGLBaseShaderModel(Owner).FHandle.Handle;
 end;
@@ -6265,7 +6265,7 @@ begin
   Result := GetUniformAutoSetMethodName(FAutoSet);
 end;
 
-function TGLShaderUniform.GetUInt: TGLuint;
+function TGLShaderUniform.GetUInt: Cardinal;
 begin
   GL.GetUniformuiv(GetProgram, FLocation, @Result);
 end;

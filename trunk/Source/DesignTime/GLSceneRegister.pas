@@ -70,9 +70,9 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TResolutionProperty
+  // TGLResolutionProperty
   //
-  TResolutionProperty = class(TPropertyEditor)
+  TGLResolutionProperty = class(TPropertyEditor)
   public
     { Public Declarations }
     function GetAttributes: TPropertyAttributes; override;
@@ -631,7 +631,7 @@ end;
 // GetAttributes
 //
 
-function TResolutionProperty.GetAttributes: TPropertyAttributes;
+function TGLResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
@@ -639,7 +639,7 @@ end;
 // GetValue
 //
 
-function TResolutionProperty.GetValue: string;
+function TGLResolutionProperty.GetValue: string;
 begin
   Result := vVideoModes[GetOrdValue].Description;
 end;
@@ -647,7 +647,7 @@ end;
 // GetValues
 //
 
-procedure TResolutionProperty.GetValues(Proc: TGetStrProc);
+procedure TGLResolutionProperty.GetValues(Proc: TGetStrProc);
 var
   i: Integer;
 begin
@@ -658,7 +658,7 @@ end;
 // SetValue
 //
 
-procedure TResolutionProperty.SetValue(const Value: string);
+procedure TGLResolutionProperty.SetValue(const Value: string);
 
 const
   Nums = ['0' .. '9'];
@@ -1515,7 +1515,7 @@ begin
   // property types
 {$IFDEF WIN32}
   RegisterPropertiesInCategory(strOpenGLCategoryName,
-    [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TVSyncMode),
+    [TypeInfo(TGLCamera), TypeInfo(TGLSceneBuffer), TypeInfo(TGLVSyncMode),
     TypeInfo(TGLScreenDepth)]); // TGLScreenDepth in GLWin32FullScreenViewer
 {$ENDIF}
   // TGLSceneViewer
@@ -1526,12 +1526,12 @@ begin
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLObjectsSorting), TypeInfo(TGLProgressEvent),
     TypeInfo(TGLBehaviours), TypeInfo(TGLObjectEffects),
-    TypeInfo(TDirectRenderEvent), TypeInfo(TGLCameraStyle),
+    TypeInfo(TGLDirectRenderEvent), TypeInfo(TGLCameraStyle),
     TypeInfo(TOnCustomPerspective), TypeInfo(TGLScene)]);
   RegisterPropertiesInCategory(strLayoutCategoryName,
     [TypeInfo(TGLObjectsSorting), TypeInfo(TNormalDirection)]);
   RegisterPropertiesInCategory(strVisualCategoryName,
-    [TypeInfo(TGLVisibilityCulling), TypeInfo(TLightStyle), TypeInfo(TGLColor),
+    [TypeInfo(TGLVisibilityCulling), TypeInfo(TGLLightStyle), TypeInfo(TGLColor),
     TypeInfo(TNormalDirection), TypeInfo(TGLCameraStyle)]);
   // TGLBaseSceneObject
   RegisterPropertiesInCategory(strVisualCategoryName, TGLBaseSceneObject,
@@ -1559,13 +1559,13 @@ begin
 
   { GLObjects }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
-    [TypeInfo(TGLLinesNodes), TypeInfo(TLineNodesAspect),
-    TypeInfo(TLineSplineMode), TypeInfo(TLinesOptions)]);
+    [TypeInfo(TGLLinesNodes), TypeInfo(TGLLineNodesAspect),
+    TypeInfo(TGLLineSplineMode), TypeInfo(TGLLinesOptions)]);
 {$IFDEF WIN32} // unit GLSpaceText
   RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TGLTextAdjust)]);
   RegisterPropertiesInCategory(strLocalizableCategoryName,
     [TypeInfo(TGLSpaceTextCharRange)]);
-  RegisterPropertiesInCategory(strVisualCategoryName, [TypeInfo(TLineSplineMode),
+  RegisterPropertiesInCategory(strVisualCategoryName, [TypeInfo(TGLLineSplineMode),
     TypeInfo(TCapType), TypeInfo(TNormalSmoothing),
     TypeInfo(TArrowHeadStackingStyle), TypeInfo(TGLTextAdjust)]);
 {$ENDIF}
@@ -1637,11 +1637,9 @@ begin
   RegisterPropertiesInCategory(strVisualCategoryName, TGLRevolutionSolid,
     ['Division', 'Slices', 'YOffsetPerTurn']);
   // TGLExtrusionSolid
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLExtrusionSolid,
-    ['Stacks']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLExtrusionSolid, ['Stacks']);
   // TGLPipe
-  RegisterPropertiesInCategory(strVisualCategoryName, TGLPipeNode,
-    ['RadiusFactor']);
+  RegisterPropertiesInCategory(strVisualCategoryName, TGLPipeNode, ['RadiusFactor']);
   RegisterPropertiesInCategory(strVisualCategoryName, TGLPipe,
     ['Division', 'Radius', 'Slices']);
 
@@ -1709,13 +1707,13 @@ begin
     ['Slices', 'Stacks', 'SunElevation', 'Turbidity']);
 
   { GLMirror }
-  RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TMirrorOptions),
+  RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLMirrorOptions),
     TypeInfo(TGLBaseSceneObject)]);
 
   { GLParticleFX }
-  RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TBlendingMode)]);
+  RegisterPropertiesInCategory(strOpenGLCategoryName, [TypeInfo(TGLBlendingMode)]);
   RegisterPropertiesInCategory(strVisualCategoryName,
-    [TypeInfo(TBlendingMode), TypeInfo(TPFXLifeColors),
+    [TypeInfo(TGLBlendingMode), TypeInfo(TPFXLifeColors),
     TypeInfo(TSpriteColorMode)]);
   // TGLParticleFXRenderer
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLParticleFXRenderer,
@@ -1754,17 +1752,16 @@ begin
     ['DepthFade', '*Shadow', 'Soft', 'Tolerance']);
 
   { GLHUDObjects }
-  RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TTextLayout)]);
+  RegisterPropertiesInCategory(strLayoutCategoryName, [TypeInfo(TGLTextLayout)]);
   RegisterPropertiesInCategory(strVisualCategoryName,
-    [TypeInfo(TGLBitmapFont), TypeInfo(TTextLayout)]);
+    [TypeInfo(TGLBitmapFont), TypeInfo(TGLTextLayout)]);
 
-  RegisterPropertiesInCategory(strLocalizableCategoryName,
-    [TypeInfo(TGLBitmapFont)]);
+  RegisterPropertiesInCategory(strLocalizableCategoryName,[TypeInfo(TGLBitmapFont)]);
 
   { GLTexture }
   RegisterPropertiesInCategory(strOpenGLCategoryName,
     [TypeInfo(TGLMaterial), TypeInfo(TGLMaterialLibrary),
-    TypeInfo(TGLLibMaterials), TypeInfo(TTextureNeededEvent)]);
+    TypeInfo(TGLLibMaterials), TypeInfo(TGLTextureNeededEvent)]);
   // TGLLibMaterial
   RegisterPropertiesInCategory(strOpenGLCategoryName, TGLLibMaterial,
     ['Texture2Name']);
@@ -1863,7 +1860,7 @@ begin
 
   GLRegisterPropertiesInCategories;
 
-  RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TResolutionProperty);
+  RegisterPropertyEditor(TypeInfo(TResolution), nil, '', TGLResolutionProperty);
   RegisterPropertyEditor(TypeInfo(TGLTexture), TGLMaterial, '',
     TGLTextureProperty);
   RegisterPropertyEditor(TypeInfo(TGLTextureImage), TGLTexture, '',
@@ -2057,32 +2054,21 @@ begin
   RegisterSceneObject(TGLCone, 'Cone', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLCylinder, 'Cylinder', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLCapsule, 'Capsule', strOCBasicGeometry, HInstance);
-  RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', strOCBasicGeometry,
-    HInstance);
-  RegisterSceneObject(TGLIcosahedron, 'Icosahedron', strOCBasicGeometry,
-    HInstance);
-  RegisterSceneObject(TGLOctahedron, 'Octahedron', strOCBasicGeometry,
-    HInstance);
-  RegisterSceneObject(TGLTetrahedron, 'Tetrahedron', strOCBasicGeometry,
-    HInstance);
-  RegisterSceneObject(TGLSuperellipsoid, 'Superellipsoid', strOCBasicGeometry,
-    HInstance);
+  RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TGLIcosahedron, 'Icosahedron', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TGLOctahedron, 'Octahedron', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TGLTetrahedron, 'Tetrahedron', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TGLSuperellipsoid, 'Superellipsoid', strOCBasicGeometry, HInstance);
 
   // Advanced geometry
-  RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite',
-    strOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TGLArrowLine, 'ArrowLine', strOCAdvancedGeometry,
-    HInstance);
-  RegisterSceneObject(TGLArrowArc, 'ArrowArc', strOCAdvancedGeometry,
-    HInstance);
+  RegisterSceneObject(TGLAnimatedSprite, 'Animated Sprite', strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TGLArrowLine, 'ArrowLine', strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TGLArrowArc, 'ArrowArc', strOCAdvancedGeometry, HInstance);
   RegisterSceneObject(TGLAnnulus, 'Annulus', strOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TGLExtrusionSolid, 'ExtrusionSolid',
-    strOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TGLMultiPolygon, 'MultiPolygon', strOCAdvancedGeometry,
-    HInstance);
+  RegisterSceneObject(TGLExtrusionSolid, 'ExtrusionSolid', strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TGLMultiPolygon, 'MultiPolygon', strOCAdvancedGeometry, HInstance);
   RegisterSceneObject(TGLPipe, 'Pipe', strOCAdvancedGeometry, HInstance);
-  RegisterSceneObject(TGLRevolutionSolid, 'RevolutionSolid',
-    strOCAdvancedGeometry, HInstance);
+  RegisterSceneObject(TGLRevolutionSolid, 'RevolutionSolid', strOCAdvancedGeometry, HInstance);
   RegisterSceneObject(TGLTorus, 'Torus', strOCAdvancedGeometry, HInstance);
 
   // Mesh objects
@@ -2091,45 +2077,34 @@ begin
   RegisterSceneObject(TGLMesh, 'Mesh', strOCMeshObjects, HInstance);
   RegisterSceneObject(TGLTilePlane, 'TilePlane', strOCMeshObjects, HInstance);
   RegisterSceneObject(TGLPortal, 'Portal', strOCMeshObjects, HInstance);
-  RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', strOCMeshObjects,
-    HInstance);
+  RegisterSceneObject(TGLTerrainRenderer, 'TerrainRenderer', strOCMeshObjects, HInstance);
 
   // Graph-plotting objects
-  RegisterSceneObject(TGLFlatText, 'FlatText', strOCGraphPlottingObjects,
-    HInstance);
-  RegisterSceneObject(TGLHeightField, 'HeightField', strOCGraphPlottingObjects,
-    HInstance);
-  RegisterSceneObject(TGLXYZGrid, 'XYZGrid', strOCGraphPlottingObjects,
-    HInstance);
+  RegisterSceneObject(TGLFlatText, 'FlatText', strOCGraphPlottingObjects, HInstance);
+  RegisterSceneObject(TGLHeightField, 'HeightField', strOCGraphPlottingObjects, HInstance);
+  RegisterSceneObject(TGLXYZGrid, 'XYZGrid', strOCGraphPlottingObjects, HInstance);
 
   // Particle systems
-  RegisterSceneObject(TGLParticles, 'Particles', strOCParticleSystems,
-    HInstance);
-  RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer',
-    strOCParticleSystems, HInstance);
+  RegisterSceneObject(TGLParticles, 'Particles', strOCParticleSystems, HInstance);
+  RegisterSceneObject(TGLParticleFXRenderer, 'PFX Renderer', strOCParticleSystems, HInstance);
 
   // Environment objects
-  RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', strOCEnvironmentObjects,
-    HInstance);
-  RegisterSceneObject(TGLSkyDome, 'SkyDome', strOCEnvironmentObjects,
-    HInstance);
+  RegisterSceneObject(TGLEarthSkyDome, 'EarthSkyDome', strOCEnvironmentObjects, HInstance);
+  RegisterSceneObject(TGLSkyDome, 'SkyDome', strOCEnvironmentObjects, HInstance);
   RegisterSceneObject(TGLSkyBox, 'SkyBox', strOCEnvironmentObjects, HInstance);
-  RegisterSceneObject(TGLAtmosphere, 'Atmosphere', strOCEnvironmentObjects,
-    HInstance);
+  RegisterSceneObject(TGLAtmosphere, 'Atmosphere', strOCEnvironmentObjects, HInstance);
 
   // HUD objects.
   RegisterSceneObject(TGLHUDSprite, 'HUD Sprite', strOCHUDObjects, HInstance);
   RegisterSceneObject(TGLHUDText, 'HUD Text', strOCHUDObjects, HInstance);
   RegisterSceneObject(TGLResolutionIndependantHUDText,
     'Resolution Independant HUD Text', strOCHUDObjects, HInstance);
-  RegisterSceneObject(TGLAbsoluteHUDText, 'Absolute HUD Text', strOCHUDObjects,
-    HInstance);
+  RegisterSceneObject(TGLAbsoluteHUDText, 'Absolute HUD Text', strOCHUDObjects, HInstance);
   RegisterSceneObject(TGLGameMenu, 'GameMenu', strOCHUDObjects, HInstance);
   RegisterSceneObject(TGLConsole, 'Console', strOCHUDObjects, HInstance);
 
   // GUI objects.
-  RegisterSceneObject(TGLBaseControl, 'Root Control', strOCGuiObjects,
-    HInstance);
+  RegisterSceneObject(TGLBaseControl, 'Root Control', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLPopupMenu, 'GLPopupMenu', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLForm, 'GLForm', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLPanel, 'GLPanel', strOCGuiObjects, HInstance);
@@ -2137,44 +2112,31 @@ begin
   RegisterSceneObject(TGLCheckBox, 'GLCheckBox', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLEdit, 'GLEdit', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLLabel, 'GLLabel', strOCGuiObjects, HInstance);
-  RegisterSceneObject(TGLAdvancedLabel, 'GLAdvancedLabel', strOCGuiObjects,
-    HInstance);
+  RegisterSceneObject(TGLAdvancedLabel, 'GLAdvancedLabel', strOCGuiObjects, HInstance);
   RegisterSceneObject(TGLScrollbar, 'GLScrollbar', strOCGuiObjects, HInstance);
-  RegisterSceneObject(TGLStringGrid, 'GLStringGrid', strOCGuiObjects,
-    HInstance);
-  RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', strOCGuiObjects,
-    HInstance);
+  RegisterSceneObject(TGLStringGrid, 'GLStringGrid', strOCGuiObjects, HInstance);
+  RegisterSceneObject(TGLCustomControl, 'GLBitmapControl', strOCGuiObjects, HInstance);
 
   // Special objects
-  RegisterSceneObject(TGLLensFlare, 'LensFlare', strOCSpecialObjects,
-    HInstance);
-  RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare',
-    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLLensFlare, 'LensFlare', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLTextureLensFlare, 'TextureLensFlare', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLMirror, 'Mirror', strOCSpecialObjects, HInstance);
-  RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', strOCSpecialObjects,
-    HInstance);
-  RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', strOCSpecialObjects,
-    HInstance);
+  RegisterSceneObject(TGLShadowPlane, 'ShadowPlane', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLShadowVolume, 'ShadowVolume', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLZShadows, 'ZShadows', strOCSpecialObjects, HInstance);
-  RegisterSceneObject(TGLSLTextureEmitter, 'GLSL Texture Emitter',
-    strOCSpecialObjects, HInstance);
-  RegisterSceneObject(TGLSLProjectedTextures, 'GLSL Projected Textures',
-    strOCSpecialObjects, HInstance);
-  RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', strOCSpecialObjects,
-    HInstance);
-  RegisterSceneObject(TGLProjectedTextures, 'Projected Textures',
-    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLSLTextureEmitter, 'GLSL Texture Emitter', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLSLProjectedTextures, 'GLSL Projected Textures', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLTextureEmitter, 'Texture Emitter', strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLProjectedTextures, 'Projected Textures', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLBlur, 'Blur', strOCSpecialObjects, HInstance);
-  RegisterSceneObject(TGLMotionBlur, 'MotionBlur', strOCSpecialObjects,
-    HInstance);
+  RegisterSceneObject(TGLMotionBlur, 'MotionBlur', strOCSpecialObjects, HInstance);
 {$IFDEF WIN32}
   RegisterSceneObject(TGLSpaceText, 'SpaceText', strOCDoodad, HInstance);
 {$ENDIF}
   RegisterSceneObject(TGLTrail, 'GLTrail', strOCSpecialObjects, HInstance);
   RegisterSceneObject(TGLPostEffect, 'PostEffect', strOCSpecialObjects,
     HInstance);
-  RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder',
-    strOCSpecialObjects, HInstance);
+  RegisterSceneObject(TGLPostShaderHolder, 'PostShaderHolder', strOCSpecialObjects, HInstance);
 
   // Doodad objects.
   RegisterSceneObject(TGLTeapot, 'Teapot', strOCDoodad, HInstance);
@@ -2182,20 +2144,13 @@ begin
   RegisterSceneObject(TGLWaterPlane, 'WaterPlane', strOCDoodad, HInstance);
 
   // Proxy objects.
-  RegisterSceneObject(TGLProxyObject, 'ProxyObject', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLColorProxy, 'ColorProxy', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLMaterialProxy, 'MaterialProxy', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLActorProxy, 'ActorProxy', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLMultiProxy, 'MultiProxy', strOCProxyObjects,
-    HInstance);
-  RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy',
-    strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLProxyObject, 'ProxyObject', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLColorProxy, 'ColorProxy', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLFreeFormProxy, 'FreeFormProxy', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLMaterialProxy, 'MaterialProxy', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLActorProxy, 'ActorProxy', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLMultiProxy, 'MultiProxy', strOCProxyObjects, HInstance);
+  RegisterSceneObject(TGLMaterialMultiProxy, 'MaterialMultiProxy', strOCProxyObjects, HInstance);
 
   // Other objects.
   RegisterSceneObject(TGLDirectOpenGL, 'Direct OpenGL', '', HInstance);

@@ -2,20 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Methods for turning a TGLBaseMesh into a Verlet cloth / jelly 
+   Methods for turning a TGLBaseMesh into a Verlet cloth / jelly
 
-   History :  
-       16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       06/06/10 - Yar - Fixed warnings
-       05/03/10 - DanB - More state added to TGLStateCache
-       22/02/10 - Yar - Optimization of switching states
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Added explicit pointer dereferencing (even more)
-       16/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       27/05/04 - MF - Added some length information to edges
-       24/06/03 - MF - Removed several embarrassing warnings
+   History :
        17/06/03 - MF - Creation
    
 }
@@ -27,11 +16,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorFileObjects, GLVerletTypes, GLVectorTypes, GLVectorLists,
-  GLVectorGeometry, GLTexture, OpenGLTokens, GLRenderContextInfo,
-  GLState, GLContext;
+  System.Classes, 
+  System.SysUtils,
+  //GLS 
+  OpenGLTokens,
+  GLVectorFileObjects, 
+  GLVerletTypes, 
+  GLVectorTypes, 
+  GLVectorLists,
+  GLVectorGeometry, 
+  GLTexture,  
+  GLRenderContextInfo,
+  GLState, 
+  GLContext;
 
 
 type
@@ -416,7 +413,8 @@ begin
   FreeAndNil(FEdgeList);
 end;
 
-function TEdgeDetector.AddEdge(const Vi0, Vi1: integer; const Face: TFace; const AMeshObject : TMeshObject): TEdge;
+function TEdgeDetector.AddEdge(const Vi0, Vi1: integer;
+   const Face: TFace; const AMeshObject : TMeshObject): TEdge;
 var
   i : integer;
   Edge : TEdge;

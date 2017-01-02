@@ -3,14 +3,35 @@ unit FMain;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Math, System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls,
-  Vcl.ExtCtrls, Vcl.Menus, Vcl.ComCtrls,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Math,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Vcl.Menus,
+  Vcl.ComCtrls,
   // GLS
-  GLScene, GLWin32Viewer, GLObjects, GLVectorFileObjects, GLVectorGeometry,
-  GLState, GLMesh, GLColor, GLCoordinates, GLCrossPlatform, GLBaseClasses,
-  GLIsosurface, GLSpline, GLMaterial;
+  GLScene,
+  GLWin32Viewer,
+  GLObjects,
+  GLVectorFileObjects,
+  GLVectorGeometry,
+  GLState,
+  GLMesh,
+  GLColor,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLIsosurface,
+  GLSpline,
+  GLMaterial;
 
 type
   TFrmMain = class(TForm)

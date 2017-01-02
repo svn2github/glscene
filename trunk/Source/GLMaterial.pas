@@ -2,45 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Handles all the material + material library stuff. 
+  Handles all the material + material library stuff.
 
-  History :  
-       10/11/12 - PW - Added CPPB compatibility: used dummy instead abstract methods
-                          in TGLShader and TGLAbstractLibMaterial using GLS_CPPB define
-       11/03/11 - Yar - Extracted abstract classes from TGLLibMaterial, TGLLibMaterials, TGLMaterialLibrary
-       20/02/11 - Yar - Fixed TGLShader's virtual handle behavior with multicontext situation
-       07/01/11 - Yar - Added separate blending function factors for alpha in TGLBlendingParameters
-       20/10/10 - Yar - Added property TextureRotate to TGLLibMaterial, make TextureMatrix writable
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       07/05/10 - Yar - Fixed TGLMaterial.Assign (BugTracker ID = 2998153)
-       22/04/10 - Yar - Fixes after GLState revision
-       06/03/10 - Yar - Added to TGLDepthProperties DepthClamp property
-       05/03/10 - DanB - More state added to TGLStateCache
-       21/02/10 - Yar - Added TGLDepthProperties,
-                           optimization of switching states
-       22/01/10 - Yar - Remove Texture.Border and
-                           added MappingRCoordinates, MappingQCoordinates
-                           to WriteToFiler, ReadFromFiler
-       07/01/10 - DaStr - TexturePaths are now cross-platform (thanks Predator)
-       22/12/09 - DaStr - Updated TGLMaterialLibrary.WriteToFiler(),
-                              ReadFromFiler() (thanks dAlex)
-                             Small update for blending constants
-       13/12/09 - DaStr - Added a temporary work-around for multithread
-                              mode (thanks Controller)
-                             Added TGLBlendingParameters and bmCustom blending
-                              mode(thanks DungeonLords, Fantom)
-                             Fixed code formating in some places
-       24/08/09 - DaStr - Updated TGLLibMaterial.DoOnTextureNeeded:
-                              Replaced IncludeTrailingBackslash() with
-                              IncludeTrailingPathDelimiter()
-       28/07/09 - DaStr - Updated TGLShader.GetStardardNotSupportedMessage()
-                              to use component name instead class name
-       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)
-       14/07/09 - DaStr - Added $I GLScene.inc
-       08/10/08 - DanB - Created from split from GLTexture.pas,
-                            Textures + materials are no longer so tightly bound
- 
+  History :
+    08/10/08 - DanB - Created from split from GLTexture.pas,
+    Textures + materials are no longer so tightly bound
+    The whole history is logged in a prior version of the unit.
+
 }
 unit GLMaterial;
 
@@ -52,9 +20,10 @@ uses
   System.Classes, 
   System.SysUtils, 
   System.Types,
-  GLRenderContextInfo, 
-  GLBaseClasses, 
-  OpenGLTokens, 
+  //GLS
+  OpenGLTokens,
+  GLRenderContextInfo,
+  GLBaseClasses,
   GLContext,
   GLTexture, 
   GLColor, 
@@ -152,7 +121,7 @@ type
     {Request to apply the shader. 
        Always followed by a DoUnApply when the shader is no longer needed. }
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); virtual;
-    {Request to un-apply the shader. 
+    {Request to un-apply the shader.
        Subclasses can assume the shader has been applied previously.
        Return True to request a multipass. }
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; virtual;
@@ -345,7 +314,7 @@ type
     FUseBlendFunc: Boolean;
     FSeparateBlendFunc: Boolean;
     FAlphaFuncType: TGlAlphaFunc;
-    FAlphaFuncRef: TGLclampf;
+    FAlphaFuncRef: Single;
     FBlendFuncSFactor: TBlendFunction;
     FBlendFuncDFactor: TBlendFunction;
     FAlphaBlendFuncSFactor: TBlendFunction;
@@ -353,7 +322,7 @@ type
     procedure SetUseAlphaFunc(const Value: Boolean);
     procedure SetUseBlendFunc(const Value: Boolean);
     procedure SetSeparateBlendFunc(const Value: Boolean);
-    procedure SetAlphaFuncRef(const Value: TGLclampf);
+    procedure SetAlphaFuncRef(const Value: Single);
     procedure SetAlphaFuncType(const Value: TGlAlphaFunc);
     procedure SetBlendFuncDFactor(const Value: TBlendFunction);
     procedure SetBlendFuncSFactor(const Value: TBlendFunction);
@@ -368,7 +337,7 @@ type
       default False;
     property AlphaFunctType: TGlAlphaFunc read FAlphaFuncType write
       SetAlphaFuncType default cfGreater;
-    property AlphaFuncRef: TGLclampf read FAlphaFuncRef write SetAlphaFuncRef
+    property AlphaFuncRef: Single read FAlphaFuncRef write SetAlphaFuncRef
       stored StoreAlphaFuncRef;
 
     property UseBlendFunc: Boolean read FUseBlendFunc write SetUseBlendFunc
@@ -385,9 +354,9 @@ type
       SetAlphaBlendFuncDFactor default bfOneMinusSrcAlpha;
   end;
 
-  // TBlendingMode
+  // TGLBlendingMode
   //
-  {Simplified blending options. 
+  {Simplified blending options.
      bmOpaque : disable blending
      bmTransparency : uses standard alpha blending
      bmAdditive : activates additive blending (with saturation)
@@ -397,7 +366,7 @@ type
      bmModulate : uses modulation blending
      bmCustom : uses TGLBlendingParameters options
      }
-  TBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
+  TGLBlendingMode = (bmOpaque, bmTransparency, bmAdditive,
     bmAlphaTest50, bmAlphaTest100, bmModulate, bmCustom);
 
   // TFaceCulling
@@ -406,20 +375,20 @@ type
 
   // TMaterialOptions
   //
-  {Control special rendering options for a material. 
+  {Control special rendering options for a material.
      moIgnoreFog : fog is deactivated when the material is rendered }
   TMaterialOption = (moIgnoreFog, moNoLighting);
   TMaterialOptions = set of TMaterialOption;
 
   // TGLMaterial
    //
-   {Describes a rendering material. 
+   {Describes a rendering material.
       A material is basicly a set of face properties (front and back) that take
       care of standard material rendering parameters (diffuse, ambient, emission
       and specular) and texture mapping.
       An instance of this class is available for almost all objects in GLScene
       to allow quick definition of material properties. It can link to a
-      TGLLibMaterial (taken for a material library). 
+      TGLLibMaterial (taken for a material library).
       The TGLLibMaterial has more adavanced properties (like texture transforms)
       and provides a standard way of sharing definitions and texture maps. }
   TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported,
@@ -428,7 +397,7 @@ type
     { Private Declarations }
     FFrontProperties, FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
-    FBlendingMode: TBlendingMode;
+    FBlendingMode: TGLBlendingMode;
     FBlendingParams: TGLBlendingParameters;
     FTexture: TGLTexture;
     FTextureEx: TGLTextureEx;
@@ -447,7 +416,7 @@ type
     procedure SetBackProperties(Values: TGLFaceProperties);
     procedure SetFrontProperties(Values: TGLFaceProperties);
     procedure SetDepthProperties(Values: TGLDepthProperties);
-    procedure SetBlendingMode(const val: TBlendingMode);
+    procedure SetBlendingMode(const val: TGLBlendingMode);
     procedure SetMaterialOptions(const val: TMaterialOptions);
     function GetTexture: TGLTexture;
     procedure SetTexture(ATexture: TGLTexture);
@@ -511,7 +480,7 @@ type
       SetFrontProperties stored StoreMaterialProps;
     property DepthProperties: TGLDepthProperties read FDepthProperties write
       SetDepthProperties stored StoreMaterialProps;
-    property BlendingMode: TBlendingMode read FBlendingMode write SetBlendingMode
+    property BlendingMode: TGLBlendingMode read FBlendingMode write SetBlendingMode
       stored StoreMaterialProps default bmOpaque;
     property BlendingParams: TGLBlendingParameters read FBlendingParams write
       SetBlendingParams;
@@ -770,7 +739,7 @@ type
   private
     { Private Declarations }
     FDoNotClearMaterialsOnLoad: Boolean;
-    FOnTextureNeeded: TTextureNeededEvent;
+    FOnTextureNeeded: TGLTextureNeededEvent;
   protected
     { Protected Declarations }
     function GetMaterials: TGLLibMaterials;
@@ -830,7 +799,7 @@ type
     {This event is fired whenever a texture needs to be loaded from disk. 
        The event is triggered before even attempting to load the texture,
        and before TexturePaths is used. }
-    property OnTextureNeeded: TTextureNeededEvent read FOnTextureNeeded write
+    property OnTextureNeeded: TGLTextureNeededEvent read FOnTextureNeeded write
       FOnTextureNeeded;
     {Paths to lookup when attempting to load a texture. 
        You can specify multiple paths when loading a texture, the separator
@@ -1459,7 +1428,7 @@ end;
 // SetBlendingMode
 //
 
-procedure TGLMaterial.SetBlendingMode(const val: TBlendingMode);
+procedure TGLMaterial.SetBlendingMode(const val: TGLBlendingMode);
 begin
   if val <> FBlendingMode then
   begin
@@ -3288,7 +3257,7 @@ begin
             Read(FShininess, 1);
             {PolygonMode := TPolygonMode(} ReadInteger;
           end;
-          libMat.Material.BlendingMode := TBlendingMode(ReadInteger);
+          libMat.Material.BlendingMode := TGLBlendingMode(ReadInteger);
 
           // version 3
           if archiveVersion >= 3 then
@@ -3601,7 +3570,7 @@ begin
   FAlphaBlendFuncDFactor := bfOneMinusSrcAlpha;
 end;
 
-procedure TGLBlendingParameters.SetAlphaFuncRef(const Value: TGLclampf);
+procedure TGLBlendingParameters.SetAlphaFuncRef(const Value: Single);
 begin
   if (FAlphaFuncRef <> Value) then
   begin

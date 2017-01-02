@@ -51,9 +51,9 @@ type
 
     {Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
-      const textureHandle: TGLuint;
+      const textureHandle: Cardinal;
       textureTarget: TGLTextureTarget;
-      const CurrentFormat: boolean;
+      const CurrentFormat: Boolean;
       const intFormat: TGLInternalFormat); reintroduce;
 
     property DivScale: longword read FDivScale write FDivScale;
@@ -157,7 +157,7 @@ end;
 // AssignFromTexture
 
 procedure TGLJPEGImage.AssignFromTexture(textureContext: TGLContext;
-  const textureHandle: TGLuint; textureTarget: TGLTextureTarget;
+  const textureHandle: Cardinal; textureTarget: TGLTextureTarget;
   const CurrentFormat: boolean; const intFormat: TGLInternalFormat);
 begin
 

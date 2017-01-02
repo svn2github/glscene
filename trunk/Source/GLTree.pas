@@ -27,7 +27,7 @@ uses
    System.Classes, 
    System.SysUtils, 
    System.Math,
-   
+   //GLS
    OpenGLTokens,
    GLScene, 
    GLMaterial, 

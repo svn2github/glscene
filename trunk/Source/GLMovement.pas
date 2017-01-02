@@ -2,40 +2,16 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Movement path behaviour by Roger Cao 
+   Movement path behaviour by Roger Cao
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
 
-   History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-                          Replaced direct access to properties by methods
-                          GetPositionCoordinate, GetRotationCoordinate, GetScaleCoordinate,
-                          GetDirectionCoordinate and GetUpCoordinate
-       21/01/01 - DanB - Added "inherited" call to TGLMovement.WriteToFiler
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       12/11/09 - DaStr - Bugfix after previous commit
-       25/10/09 - DaStr - Bugfixed TGLMovementPath.StartTime (thanks Zsolt Laky)
-       14/03/09 - DanB - Changes to Start/StopAllMovements due to TGLScene.Cameras removal
-       05/10/08 - DaStr - Added Delphi5 compatibility
-       21/06/08 - DaStr - A lot of cosmetic fixes
-                             Bugfixed same position rotation / scale interpolation
-                               in TGLMovementPath.CalculateState()
-                             Bugfixed destroying TGLMovement with multiple paths.
-                             Added TGLMovementPath.RotationMode
-                            (Bugtracker ID = 1999464) (thanks VirusX)
-       02/04/07 - DaStr - All cross-version stuff abstracted into GLCrossPlatform
-       25/03/07 - DaStr - Small fix for Delphi5 compatibility
-       15/02/07 - DaStr - Fixed TGLMovementPath.SetShowPath - SubComponent support
-       27/10/06 - LC - Fixed memory leak in TGLMovementPath. Bugtracker ID=1548615 (thanks Da Stranger)
-       28/09/04 - Mrqzzz - Fixed bug in proc. Interpolation (skipped a line from Carlos' code, oops)
-       09/09/04 - Mrqzzz - CalculateState change by Carlos (NG) to make speed interpolated between nodes
-       20/11/01 - Egg - DoProgress fix suggested by Philipp Pammler (NG)
-       14/01/01 - Egg - Minor changes, integrated to v0.8RC2, still needed:
-                           use of standard classes and documentation
-       22/09/00 - RoC - Added StartAllPathTravel and StopAllPathTravel methods
-       24/08/00 - RoC - TGLMovement and relative class added
-    
+   History :
+     24/08/00 - RoC - TGLMovement and relative class added
+     The whole history is logged in a prior version of the unit
+
 }
+
 unit GLMovement;
 
 interface
@@ -43,11 +19,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
 
   // GLS
-  GLScene, GLVectorGeometry, GLXCollection, OpenGLTokens, GLSpline, GLObjects,
-  GLCrossPlatform, GLStrings, GLBaseClasses;
+  OpenGLTokens,
+  GLScene,
+  GLVectorGeometry,
+  GLXCollection,
+  GLSpline,
+  GLObjects,
+  GLCrossPlatform,
+  GLStrings,
+  GLBaseClasses;
 
 type
 
@@ -162,7 +146,7 @@ type
   private
     FPathLine: TGLLines;
     FShowPath: Boolean;
-    FPathSplineMode: TLineSplineMode;
+    FPathSplineMode: TGLLineSplineMode;
 
     FNodes: TGLPathNodes;
 
@@ -196,7 +180,7 @@ type
     procedure SetCurrentNodeIndex(const Value: integer);
 
     procedure SetShowPath(const Value: Boolean);
-    procedure SetPathSplineMode(const Value: TLineSplineMode);
+    procedure SetPathSplineMode(const Value: TGLLineSplineMode);
   protected
     procedure WriteToFiler(writer : TWriter);
     procedure ReadFromFiler(reader : TReader);
@@ -244,7 +228,7 @@ type
     property Name: string Read FName Write FName;
 
     {This property is currently ignored. }
-    property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
+    property PathSplineMode: TGLLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TGLMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
 
     property StartTime: double Read FStartTime Write SetStartTime;
@@ -719,7 +703,7 @@ begin
   UpdatePathLine;
 end;
 
-procedure TGLMovementPath.SetPathSplineMode(const Value: TLineSplineMode);
+procedure TGLMovementPath.SetPathSplineMode(const Value: TGLLineSplineMode);
 begin
   if Value<>FPathSplineMode then
   begin

@@ -1458,7 +1458,7 @@ procedure TGLBaseImage.RegisterAsOpenGLTexture(
   out texDepth: integer);
 var
   glTarget: Cardinal;
-  glHandle: TGLuint;
+  glHandle: Cardinal;
   Level: integer;
   LLevelCount, face: integer;
   bCompress, bBlank: boolean;

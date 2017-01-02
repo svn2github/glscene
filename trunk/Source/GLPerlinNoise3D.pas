@@ -5,11 +5,9 @@
    Classes and function for generation of PerlinNoise. 
 
     History :  
-       17/11/14 - PW - Refactored TPerlin3DNoise to TGLPerlin3DNoise, renamed unit
-       31/08/10 - Bugfixed range error in TPerlin3DNoise.Initialize
-       30/03/07 - DaStr - Added $I GLScene.inc
        14/04/04 - EG - Creation
-    
+       The whole history is logged in a prior version of the unit.
+
 
    Loosely based on Tom Nuydens's (www.delphi3d.com) Noise.pas unit, itself based on
    http://students.vassar.edu/mazucker/code/perlin-noise-math-faq.html

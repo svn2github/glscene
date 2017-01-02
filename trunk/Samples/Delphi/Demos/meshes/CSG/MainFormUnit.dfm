@@ -38,50 +38,50 @@ object Form1: TForm1
     Height = 42
     Align = alBottom
     TabOrder = 1
-    object ButtonClear: TButton
+    object btnClear: TButton
       Left = 8
       Top = 8
       Width = 49
       Height = 25
       Caption = 'Clear'
       TabOrder = 0
-      OnClick = ButtonClearClick
+      OnClick = btnClearClick
     end
-    object Button2: TButton
+    object btnUnion: TButton
       Left = 63
       Top = 8
       Width = 83
       Height = 25
       Caption = 'Union A and B'
       TabOrder = 1
-      OnClick = Button2Click
+      OnClick = btnUnionClick
     end
-    object Button3: TButton
-      Left = 156
-      Top = 8
+    object btnSubtractAB: TButton
+      Left = 158
+      Top = 6
       Width = 75
       Height = 25
       Caption = 'Subtract A-B'
       TabOrder = 2
-      OnClick = Button3Click
+      OnClick = btnSubtractABClick
     end
-    object Button4: TButton
+    object btnSubtractBA: TButton
       Left = 239
       Top = 8
       Width = 75
       Height = 25
       Caption = 'Subtract B-A'
       TabOrder = 3
-      OnClick = Button4Click
+      OnClick = btnSubtractBAClick
     end
-    object Button5: TButton
+    object btnIntersect: TButton
       Left = 320
       Top = 8
       Width = 97
       Height = 25
       Caption = 'Intersection A or B'
       TabOrder = 4
-      OnClick = Button5Click
+      OnClick = btnIntersectClick
     end
     object CheckBox1: TCheckBox
       Left = 457

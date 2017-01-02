@@ -64,30 +64,30 @@ type
 const
   cDefaultProxyOptions = [pooEffects, pooObjects, pooTransformation];
   GLSCENE_REVISION = '$Revision: 6695$';
-  GLSCENE_VERSION = '1.7.1.%s';
+  GLSCENE_VERSION = '1.5.0.%s';
 
 type
 
   TNormalDirection = (ndInside, ndOutside);
 
-  // TObjectChanges
+  // TGLObjectChanges
   //
   // used to decribe only the changes in an object,
   // which have to be reflected in the scene
-  TObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
+  TGLObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
     ocStructure);
-  TObjectChanges = set of TObjectChange;
+  TGLObjectChanges = set of TGLObjectChange;
 
   TObjectBBChange = (oBBcChild, oBBcStructure);
   TObjectBBChanges = set of TObjectBBChange;
 
   // flags for design notification
-  TSceneOperation = (soAdd, soRemove, soMove, soRename, soSelect, soBeginUpdate,
+  TGLSceneOperation = (soAdd, soRemove, soMove, soRename, soSelect, soBeginUpdate,
     soEndUpdate);
 
-  // TContextOption
+  // TGLContextOption
   //
-  {Options for the rendering context. 
+  {Options for the rendering context.
      roSoftwareMode: force software rendering.
      roDoubleBuffer: enables double-buffering.
      roRenderToWindows: ignored (legacy).
@@ -102,15 +102,15 @@ type
      roNoDepthBufferClear: do not clear the depth buffer automatically. Useful for
          early-z culling.
      roForwardContext: force OpenGL forward context }
-  TContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
+  TGLContextOption = (roSoftwareMode, roDoubleBuffer, roStencilBuffer,
     roRenderToWindow, roTwoSideLighting, roStereo,
     roDestinationAlpha, roNoColorBuffer, roNoColorBufferClear,
     roNoSwapBuffers, roNoDepthBufferClear, roDebugContext,
     roForwardContext, roOpenGL_ES2_Context);
-  TContextOptions = set of TContextOption;
+  TGLContextOptions = set of TGLContextOption;
 
   // IDs for limit determination
-  TLimitType = (limClipPlanes, limEvalOrder, limLights, limListNesting,
+  TGLLimitType = (limClipPlanes, limEvalOrder, limLights, limListNesting,
     limModelViewStack, limNameStack, limPixelMapTable, limProjectionStack,
     limTextureSize, limTextureStack, limViewportDims, limAccumAlphaBits,
     limAccumBlueBits, limAccumGreenBits, limAccumRedBits, limAlphaBits,
@@ -195,7 +195,7 @@ type
     FPosition: TGLCoordinates;
     FDirection, FUp: TGLCoordinates;
     FScaling: TGLCoordinates;
-    FChanges: TObjectChanges;
+    FChanges: TGLObjectChanges;
     FParent: TGLBaseSceneObject;
     FScene: TGLScene;
 
@@ -633,7 +633,7 @@ type
 
     property ShowAxes: Boolean read FShowAxes write SetShowAxes default False;
 
-    property Changes: TObjectChanges read FChanges;
+    property Changes: TGLObjectChanges read FChanges;
     property BBChanges: TObjectBBChanges read fBBChanges write SetBBChanges;
 
     property Parent: TGLBaseSceneObject read FParent write SetParent;
@@ -960,15 +960,15 @@ type
     property Hint;
   end;
 
-  // TDirectRenderEvent
+  // TGLDirectRenderEvent
   //
   {Event for user-specific rendering in a TGLDirectOpenGL object. }
-  TDirectRenderEvent = procedure(Sender: TObject; var rci: TGLRenderContextInfo)
+  TGLDirectRenderEvent = procedure(Sender: TObject; var rci: TGLRenderContextInfo)
     of object;
 
   // TGLDirectOpenGL
   //
-  {Provides a way to issue direct OpenGL calls during the rendering. 
+  {Provides a way to issue direct OpenGL calls during the rendering.
      You can use this object to do your specific rendering task in its OnRender
      event. The OpenGL calls shall restore the OpenGL states they found when
      entering, or exclusively use the GLMisc utility functions to alter the
@@ -977,7 +977,7 @@ type
   private
     { Private Declarations }
     FUseBuildList: Boolean;
-    FOnRender: TDirectRenderEvent;
+    FOnRender: TGLDirectRenderEvent;
     FBlend: Boolean;
 
   protected
@@ -1007,7 +1007,7 @@ type
        The OpenGL calls shall restore the OpenGL states they found when
        entering, or exclusively use the GLMisc utility functions to alter
        the states. }
-    property OnRender: TDirectRenderEvent read FOnRender write FOnRender;
+    property OnRender: TGLDirectRenderEvent read FOnRender write FOnRender;
     {Defines if the object uses blending. 
        This property will allow direct opengl objects to be flagged as
        blended for object sorting purposes. }
@@ -1025,7 +1025,7 @@ type
   TGLRenderPoint = class(TGLImmaterialSceneObject)
   private
     { Private Declarations }
-    FCallBacks: array of TDirectRenderEvent;
+    FCallBacks: array of TGLDirectRenderEvent;
     FFreeCallBacks: array of TNotifyEvent;
 
   protected
@@ -1037,9 +1037,9 @@ type
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
 
-    procedure RegisterCallBack(renderEvent: TDirectRenderEvent;
+    procedure RegisterCallBack(renderEvent: TGLDirectRenderEvent;
       renderPointFreed: TNotifyEvent);
-    procedure UnRegisterCallBack(renderEvent: TDirectRenderEvent);
+    procedure UnRegisterCallBack(renderEvent: TGLDirectRenderEvent);
     procedure Clear;
 
   published
@@ -1112,10 +1112,10 @@ type
 
   TGLProxyObjectClass = class of TGLProxyObject;
 
-  // TLightStyle
+  // TGLLightStyle
   //
-  {Defines the various styles for lightsources. 
-     
+  {Defines the various styles for lightsources.
+
       lsSpot : a spot light, oriented and with a cutoff zone (note that if
         cutoff is 180, the spot is rendered as an omni source)
       lsOmni : an omnidirectionnal source, punctual and sending light in
@@ -1123,7 +1123,7 @@ type
       lsParallel : a parallel light, oriented as the light source is (this
         type of light can help speed up rendering)
        }
-  TLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
+  TGLLightStyle = (lsSpot, lsOmni, lsParallel, lsParallelSpot);
 
   // TGLLightSource
   //
@@ -1147,7 +1147,7 @@ type
     FConstAttenuation, FLinearAttenuation, FQuadraticAttenuation: Single;
     FShining: Boolean;
     FAmbient, FDiffuse, FSpecular: TGLColor;
-    FLightStyle: TLightStyle;
+    FLightStyle: TGLLightStyle;
 
   protected
     { Protected Declarations }
@@ -1161,7 +1161,7 @@ type
     procedure SetSpotDirection(AVector: TGLCoordinates);
     procedure SetSpotExponent(AValue: Single);
     procedure SetSpotCutOff(const val: Single);
-    procedure SetLightStyle(const val: TLightStyle);
+    procedure SetLightStyle(const val: TGLLightStyle);
 
   public
     { Public Declarations }
@@ -1193,7 +1193,7 @@ type
     property QuadraticAttenuation: Single read FQuadraticAttenuation write
       SetQuadraticAttenuation;
     property Position;
-    property LightStyle: TLightStyle read FLightStyle write SetLightStyle default
+    property LightStyle: TGLLightStyle read FLightStyle write SetLightStyle default
       lsSpot;
     property Shining: Boolean read FShining write SetShining default True;
     property Specular: TGLColor read FSpecular write SetSpecular;
@@ -1637,7 +1637,7 @@ type
     FAntiAliasing: TGLAntiAliasing;
     FDepthPrecision: TGLDepthPrecision;
     FColorDepth: TGLColorDepth;
-    FContextOptions: TContextOptions;
+    FContextOptions: TGLContextOptions;
     FShadeModel: TGLShadeModel;
     FRenderDPI: Integer;
     FFogEnvironment: TGLFogEnvironment;
@@ -1667,8 +1667,8 @@ type
     FViewerBeforeRender: TNotifyEvent;
     FPostRender: TNotifyEvent;
     FAfterRender: TNotifyEvent;
-    FInitiateRendering: TDirectRenderEvent;
-    FWrapUpRendering: TDirectRenderEvent;
+    FInitiateRendering: TGLDirectRenderEvent;
+    FWrapUpRendering: TGLDirectRenderEvent;
     procedure SetLayer(const Value: TGLContextLayer);
 
   protected
@@ -1676,9 +1676,9 @@ type
     procedure SetBackgroundColor(AColor: TColor);
     procedure SetBackgroundAlpha(alpha: Single);
     procedure SetAmbientColor(AColor: TGLColor);
-    function GetLimit(Which: TLimitType): Integer;
+    function GetLimit(Which: TGLLimitType): Integer;
     procedure SetCamera(ACamera: TGLCamera);
-    procedure SetContextOptions(Options: TContextOptions);
+    procedure SetContextOptions(Options: TGLContextOptions);
     procedure SetDepthTest(AValue: Boolean);
     procedure SetFaceCulling(AValue: Boolean);
     procedure SetLighting(AValue: Boolean);
@@ -1925,7 +1925,7 @@ type
 
     {Retrieve one of the OpenGL limits for the current viewer. 
        Limits include max texture size, OpenGL stack depth, etc. }
-    property LimitOf[Which: TLimitType]: Integer read GetLimit;
+    property LimitOf[Which: TGLLimitType]: Integer read GetLimit;
     {Current rendering context. 
        The context is a wrapper around platform-specific contexts
        (see TGLContext) and takes care of context activation and handle
@@ -1953,7 +1953,7 @@ type
 
     {Context options allows to setup specifics of the rendering context. 
        Not all contexts support all options. }
-    property ContextOptions: TContextOptions read FContextOptions write
+    property ContextOptions: TGLContextOptions read FContextOptions write
       SetContextOptions default [roDoubleBuffer, roRenderToWindow, roDebugContext];
     {Number of precision bits for the accumulation buffer. }
     property AccumBufferBits: Integer read FAccumBufferBits write
@@ -2016,20 +2016,20 @@ type
        This one is fired after the rci has been initialized and can be used
        to alter it or perform early renderings that require an rci,
        the Sender is the buffer. }
-    property InitiateRendering: TDirectRenderEvent read FInitiateRendering write
+    property InitiateRendering: TGLDirectRenderEvent read FInitiateRendering write
       FInitiateRendering stored False;
-    {Triggered after rendering all scene objects, before PostRender. 
+    {Triggered after rendering all scene objects, before PostRender.
        This is the last point after which the rci becomes unavailable,
        the Sender is the buffer. }
-    property WrapUpRendering: TDirectRenderEvent read FWrapUpRendering write
+    property WrapUpRendering: TGLDirectRenderEvent read FWrapUpRendering write
       FWrapUpRendering stored False;
-    {Triggered just after all the scene's objects have been rendered. 
+    {Triggered just after all the scene's objects have been rendered.
        The OpenGL context is still active in this event, and you may use it
        to execute your own OpenGL rendering (usually for HUD, 2D overlays
        or after effects).  }
     property PostRender: TNotifyEvent read FPostRender write FPostRender stored
       False;
-    {Called after rendering. 
+    {Called after rendering.
        You cannot issue OpenGL calls in this event, if you want to do your own
        OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read FAfterRender write FAfterRender
@@ -4090,7 +4090,7 @@ procedure TGLBaseSceneObject.RecTransformationChanged;
 var
   i: Integer;
   list: PPointerObjectList;
-  matSet: TObjectChanges;
+  matSet: TGLObjectChanges;
 begin
   matSet := [ocAbsoluteMatrix, ocInvAbsoluteMatrix];
   if matSet * FChanges <> matSet then
@@ -6513,7 +6513,7 @@ end;
 // RegisterCallBack
 //
 
-procedure TGLRenderPoint.RegisterCallBack(renderEvent: TDirectRenderEvent;
+procedure TGLRenderPoint.RegisterCallBack(renderEvent: TGLDirectRenderEvent;
   renderPointFreed: TNotifyEvent);
 var
   n: Integer;
@@ -6528,10 +6528,10 @@ end;
 // UnRegisterCallBack
 //
 
-procedure TGLRenderPoint.UnRegisterCallBack(renderEvent: TDirectRenderEvent);
+procedure TGLRenderPoint.UnRegisterCallBack(renderEvent: TGLDirectRenderEvent);
 type
   TEventContainer = record
-    event: TDirectRenderEvent;
+    event: TGLDirectRenderEvent;
   end;
 var
   i, j, n: Integer;
@@ -6915,7 +6915,7 @@ end;
 // SetLightStyle
 //
 
-procedure TGLLightSource.SetLightStyle(const val: TLightStyle);
+procedure TGLLightSource.SetLightStyle(const val: TGLLightStyle);
 begin
   if FLightStyle <> val then
   begin
@@ -7995,7 +7995,7 @@ end;
 // GetLimit
 //
 
-function TGLSceneBuffer.GetLimit(Which: TLimitType): Integer;
+function TGLSceneBuffer.GetLimit(Which: TGLLimitType): Integer;
 var
   VP: array[0..1] of Double;
 begin
@@ -9261,7 +9261,7 @@ end;
 // SetContextOptions
 //
 
-procedure TGLSceneBuffer.SetContextOptions(Options: TContextOptions);
+procedure TGLSceneBuffer.SetContextOptions(Options: TGLContextOptions);
 begin
   if FContextOptions <> Options then
   begin

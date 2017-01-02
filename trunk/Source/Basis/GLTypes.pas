@@ -15,12 +15,24 @@ interface
 
 uses
   System.Types,
-  System.Math.Vectors;
+  System.Math.Vectors,
+  GLVectorTypes;
 
 //-----------------------
 //Point types
 //-----------------------
 type
+
+  TGLScalarValue = Single;
+  TGLScalarField = function(X, Y, Z: Single): TGLScalarValue;
+
+  // If data are made on integer XYZ index
+  TGLScalarFieldInt = function(iX, iY, iZ: Integer): TGLScalarValue of object;
+
+  TGLVertex = record
+    P, N: TVector3f;  //Point and Normal
+    Density: Single;
+  end;
 
   PGLPoint2D = ^TGLPoint2D;
   TGLPoint2D = record
@@ -63,6 +75,32 @@ type
 const
    ClosedPolygon2D: TGLPoint2D = (X: $FFFF; Y: $FFFF);
    ClosedPolygon3D: TGLPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
+
+// Triangle types
+type
+  TGLTriangle = record
+    v1, v2, v3: Integer;
+  end;
+
+  TGLTriangleArray = array [0 .. (MaxInt shr 8)] of TGLTriangle;
+  PGLTriangleArray = ^TGLTriangleArray;
+
+  TGLVertexArray = array [0 .. (MaxInt shr 8)] of TGLVertex;
+  PGLVertexArray = ^TGLVertexArray;
+
+
+// Voxel types
+  TGLVoxelStatus = (bpExternal, bpInternal);
+  TGLVoxel = record
+    P: TVector3f;
+    Density: TGLScalarValue;
+    Status: TGLVoxelStatus;
+  end;
+  PGLVoxel = ^TGLVoxel;
+
+  TGLVoxelData = array [0 .. (MaxInt shr 8)] of TGLVoxel;
+  PGLVoxelData = ^TGLVoxelData;
+
 
 //-----------------------
 //Polyhedron types

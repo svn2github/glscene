@@ -6,6 +6,7 @@ uses
   Winapi.OpenGL,
   System.SysUtils,
   System.Classes,
+  System.Math,
   Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
@@ -15,9 +16,19 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
   //GLS
-  GLScene, GLTexture, GLVectorFileObjects, GLObjects, GLCadencer, GLPortal,
-  GLWin32Viewer, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
-  GLKeyboard, GLUtils;
+  GLScene,
+  GLTexture,
+  GLVectorFileObjects,
+  GLObjects,
+  GLCadencer,
+  GLPortal,
+  GLWin32Viewer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLKeyboard,
+  GLUtils;
 
 
 type
@@ -54,8 +65,15 @@ type
     procedure SGMapSetEditText(Sender: TObject; ACol, ARow: Integer;
       const Value: String);
     procedure CBFogClick(Sender: TObject);
+    procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+      Y: Integer);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
+      WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
     { Private declarations }
+    mx, my: Integer;
   public
     { Public declarations }
     portalCount, triangleCount : Integer;
@@ -85,6 +103,12 @@ begin
       end;
    end;
    BBProcessClick(Self);
+end;
+
+procedure TForm1.FormMouseWheel(Sender: TObject; Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
+begin
+   GLCamera1.AdjustDistanceToTarget(Power(1.1, WheelDelta / 120));
 end;
 
 procedure TForm1.BBProcessClick(Sender: TObject);
@@ -220,6 +244,24 @@ begin
    else if IsKeyDown('D') then
       DummyCube1.Turn(60*deltaTime);
    GLCamera1.TransformationChanged;
+end;
+
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  mx := X;
+  my := Y;
+end;
+
+procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if ssLeft in Shift then
+  begin
+    GLCamera1.MoveAroundTarget(my - Y, mx - X);
+  end;
+  mx := X;
+  my := Y;
 end;
 
 procedure TForm1.SGMapSetEditText(Sender: TObject; ACol, ARow: Integer;

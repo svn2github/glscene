@@ -16,9 +16,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
-  GLVectorTypes,  GLVectorFileObjects,  GLApplicationFileIO;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorTypes,
+  GLVectorFileObjects,
+  GLApplicationFileIO;
 
 type
    // TGLTINVectorFile
