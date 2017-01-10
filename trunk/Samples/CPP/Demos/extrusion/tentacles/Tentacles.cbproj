@@ -64,8 +64,8 @@
         <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_RunTime.lib</AllPackageLibs>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\extrusion\tentacles\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\extrusion\tentacles\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\extrusion\tentacles\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\extrusion\tentacles\;$(IncludePath)</IncludePath>
         <ProjectType>CppVCLApplication</ProjectType>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>

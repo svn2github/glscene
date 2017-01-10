@@ -836,7 +836,7 @@ end;
 procedure TGLCustomBitmapFont.PrepareImage(var ARci: TGLRenderContextInfo);
 var
   bitmap: TGLBitmap;
-  bitmap32: TGLBitmap32;
+  bitmap32: TGLImage;
   cap: Integer;
   X, Y, w, h: Integer;
   t: TGLTextureHandle;
@@ -879,7 +879,7 @@ begin
       RoundUpToPowerOf2(FTextureHeight));
   end;
 
-  bitmap32 := TGLBitmap32.Create;
+  bitmap32 := TGLImage.Create;
 
   while (X < w) and (Y < h) do
   begin
@@ -939,8 +939,7 @@ end;
 //
 procedure TGLCustomBitmapFont.PrepareParams(var ARci: TGLRenderContextInfo);
 const
-  cTextureMagFilter: array [maNearest .. maLinear] of Cardinal = (GL_NEAREST,
-    GL_LINEAR);
+  cTextureMagFilter: array [maNearest .. maLinear] of Cardinal = (GL_NEAREST, GL_LINEAR);
   cTextureMinFilter: array [miNearest .. miLinearMipmapLinear] of Cardinal =
     (GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST,
     GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -961,10 +960,8 @@ begin
     TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-      cTextureMinFilter[FMinFilter]);
-    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-      cTextureMagFilter[FMagFilter]);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, cTextureMinFilter[FMinFilter]);
+    TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, cTextureMagFilter[FMagFilter]);
   end;
 end;
 
@@ -1014,10 +1011,8 @@ procedure TGLCustomBitmapFont.RenderString(var ARci: TGLRenderContextInfo;
       if aText[i] = #13 then
         Inc(n);
     case TGLTextLayout(aLayout) of
-      tlTop:
-        Result := 0;
-      tlBottom:
-        Result := (n * (CharHeight + VSpace) - VSpace);
+      tlTop:     Result := 0;
+      tlBottom:  Result := (n * (CharHeight + VSpace) - VSpace);
     else // tlCenter
       Result := Round((n * (CharHeight + VSpace) - VSpace) * 0.5);
     end;
@@ -1125,7 +1120,7 @@ begin
   V.X := X;
   V.Y := Y;
   V.Z := 0;
-  V.w := 1;
+  V.W := 1;
   RenderString(rci, Text, taLeftJustify, tlTop, Color, @V, true);
 end;
 

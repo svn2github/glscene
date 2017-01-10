@@ -64,9 +64,9 @@
         <ProjectType>CppVCLApplication</ProjectType>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Multithreaded>true</Multithreaded>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\interface\WinFont\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\interface\WinFont\;$(IncludePath)</IncludePath>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\interface\WinFont\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\interface\WinFont\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>
         <UsePackages>true</UsePackages>

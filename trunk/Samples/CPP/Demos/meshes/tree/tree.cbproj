@@ -63,9 +63,9 @@
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <AllPackageLibs>rtl.lib;vcl.lib;xmlrtl.lib;vclimg.lib;fmx.lib;GLScene_RunTime.lib</AllPackageLibs>
         <_TCHARMapping>wchar_t</_TCHARMapping>
-        <IncludePath>D:\Library\GLScene\CPP\Demos\meshes\tree\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\CPP\Demos\meshes\tree\;$(IncludePath)</IncludePath>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <ILINK_LibraryPath>D:\Library\GLScene\CPP\Demos\meshes\tree\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>D:\GLScene\CPP\Demos\meshes\tree\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Multithreaded>true</Multithreaded>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
         <DynamicRTL>true</DynamicRTL>

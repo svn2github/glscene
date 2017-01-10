@@ -770,10 +770,8 @@ type
     { Published Decalarations }
     property Texture: TGLTexture read FTexture write SetTexture;
     property TextureIndex: Integer read FTextureIndex write SetTextureIndex;
-    property TextureOffset: TGLCoordinates read FTextureOffset write
-      SetTextureOffset;
-    property TextureScale: TGLCoordinates read FTextureScale write
-      SetTextureScale;
+    property TextureOffset: TGLCoordinates read FTextureOffset write SetTextureOffset;
+    property TextureScale: TGLCoordinates read FTextureScale write SetTextureScale;
 
   end;
 
@@ -1054,7 +1052,6 @@ end;
 // ------------------ TGLTextureImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureImage'}{$ENDIF}
 
 // Create
 //
@@ -1162,13 +1159,11 @@ procedure TGLTextureImage.LoadTexture(AInternalFormat: TGLInternalFormat);
 begin
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLBlankImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLBlankImage'}{$ENDIF}
 
 // Create
 //
@@ -1440,13 +1435,11 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPictureImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPictureImage'}{$ENDIF}
 
 // Create
 //
@@ -1619,13 +1612,11 @@ begin
   Result := ttTexture2D;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLPersistentImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPersistentImage'}{$ENDIF}
 
 // Create
 //
@@ -1700,13 +1691,10 @@ begin
     + 'ie. in the DFM at design-time, and embedded in the EXE at run-time.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
 // ------------------
 // ------------------ TGLPicFileImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPicFileImage'}{$ENDIF}
 
 // Create
 //
@@ -1882,13 +1870,9 @@ begin
   Result := 'Image data is retrieved from a file.';
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
 // ------------------
 // ------------------ TGLCubeMapImage ------------------
 // ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLCubeMapImage'}{$ENDIF}
 
 // Create
 //
@@ -2144,13 +2128,10 @@ begin
   Result := FPicture[index];
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLTexture ------------------
 // ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTexture'}{$ENDIF}
 
 // Create
 //
@@ -3592,13 +3573,9 @@ begin
 end;
 
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
 // ---------------
 // --------------- TGLTextureExItem ---------------
 // ---------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureExItem'}{$ENDIF}
 
 // Create
 //
@@ -3836,13 +3813,9 @@ begin
   CalculateTextureMatrix;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
 // ---------------
 // --------------- TGLTextureEx ---------------
 // ---------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLTextureEx'}{$ENDIF}
 
 // Create
 //
@@ -3962,7 +3935,6 @@ begin
       Result := Result or Items[i].Texture.Enabled;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   // ------------------------------------------------------------------

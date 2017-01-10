@@ -2056,6 +2056,7 @@ begin
   RegisterSceneObject(TGLCapsule, 'Capsule', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLDodecahedron, 'Dodecahedron', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLIcosahedron, 'Icosahedron', strOCBasicGeometry, HInstance);
+  RegisterSceneObject(TGLHexahedron, 'Hexahedron', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLOctahedron, 'Octahedron', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLTetrahedron, 'Tetrahedron', strOCBasicGeometry, HInstance);
   RegisterSceneObject(TGLSuperellipsoid, 'Superellipsoid', strOCBasicGeometry, HInstance);

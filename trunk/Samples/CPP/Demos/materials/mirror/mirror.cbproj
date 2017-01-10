@@ -60,9 +60,9 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <SanitizedProjectName>mirror</SanitizedProjectName>
         <ProjectType>CppVCLApplication</ProjectType>
-        <ILINK_LibraryPath>D:\Library\GLScene\CPP\Demos\materials\mirror\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>D:\GLScene\CPP\Demos\materials\mirror\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
-        <IncludePath>D:\Library\GLScene\CPP\Demos\materials\mirror\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\CPP\Demos\materials\mirror\;$(IncludePath)</IncludePath>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <Multithreaded>true</Multithreaded>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
@@ -126,7 +126,7 @@
         <Defines>_DEBUG;$(Defines)</Defines>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
-        <FinalOutputDir>D:\Library\GLScene\CPP\Demos\materials\mirror\Win32\Release\</FinalOutputDir>
+        <FinalOutputDir>D:\GLScene\CPP\Demos\materials\mirror\Win32\Release\</FinalOutputDir>
         <VerInfo_Locale>1049</VerInfo_Locale>
         <Manifest_File>None</Manifest_File>
         <VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>

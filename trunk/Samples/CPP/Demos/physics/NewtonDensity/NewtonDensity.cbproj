@@ -63,7 +63,7 @@
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\physics\NewtonDensity\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\physics\NewtonDensity\;$(IncludePath)</IncludePath>
         <ProjectType>CppVCLApplication</ProjectType>
         <AllPackageLibs>rtl.lib;vcl.lib;VclSmp.lib;vclx.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_Physics_RunTime.lib</AllPackageLibs>
         <DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>

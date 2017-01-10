@@ -86,7 +86,7 @@ procedure TForm1.Timer1Timer(Sender: TObject);
 begin
   FormatSettings.DecimalSeparator := ',';
   HUDTextFPS.Text := FloatToStr(-2.01);
-  HUDTextFPS.Text :=Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
+  HUDTextFPS.Text := Format('%.1f FPS', [GLSceneViewer1.FramesPerSecond]);
   GLSceneViewer1.ResetPerformanceMonitor;
 end;
 

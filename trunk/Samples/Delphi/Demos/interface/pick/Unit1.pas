@@ -51,36 +51,36 @@ implementation
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
-  pick: TGLCustomSceneObject;
+  pickedObject: TGLCustomSceneObject;
 begin
   // find what's under the mouse
-  pick := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
+  pickedObject := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
   // if it has changed since last MouseMove...
-  if (pick <> oldPick) then
+  if (pickedObject <> oldPick) then
   begin
     // ...turn to black previous "hot" object...
     if Assigned(oldPick) then
       oldPick.Material.FrontProperties.Emission.Color := clrBlack;
     // ...and heat up the new selection...
-    if Assigned(pick) then
-      pick.Material.FrontProperties.Emission.Color := clrRed;
+    if Assigned(pickedObject) then
+      pickedObject.Material.FrontProperties.Emission.Color := clrRed;
     // ...and don't forget it !
-    oldPick := pick;
+    oldPick := pickedObject;
   end;
 end;
 
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  pick: TGLCustomSceneObject;
+  pickedObject: TGLCustomSceneObject;
 begin
   // if an object is picked...
-  pick := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
-  if Assigned(pick) then
+  pickedObject := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
+  if Assigned(pickedObject) then
   begin
     // ...turn it to yellow and show its name
-    pick.Material.FrontProperties.Emission.Color := clrYellow;
-    ShowMessage('You clicked the ' + pick.Name);
+    pickedObject.Material.FrontProperties.Emission.Color := clrYellow;
+    ShowMessage('You clicked the ' + pickedObject.Name);
   end;
 end;
 

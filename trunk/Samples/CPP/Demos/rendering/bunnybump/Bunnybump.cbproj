@@ -60,8 +60,8 @@
     <PropertyGroup Condition="'$(Base)'!=''">
         <SanitizedProjectName>Bunnybump</SanitizedProjectName>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\rendering\bunnybump\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\rendering\bunnybump\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\rendering\bunnybump\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\rendering\bunnybump\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ProjectType>CppVCLApplication</ProjectType>
         <Multithreaded>true</Multithreaded>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>

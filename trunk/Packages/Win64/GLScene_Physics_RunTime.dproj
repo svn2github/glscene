@@ -88,7 +88,7 @@
         <DCC_N>false</DCC_N>
         <GenPackage>true</GenPackage>
         <DCC_ImageBase>00400000</DCC_ImageBase>
-        <DCC_Description>GLSceneVCL NGD Manager</DCC_Description>
+        <DCC_Description>GLScene NGD Manager</DCC_Description>
         <VerInfo_Locale>1049</VerInfo_Locale>
         <DCC_S>false</DCC_S>
         <RuntimeOnlyPackage>true</RuntimeOnlyPackage>

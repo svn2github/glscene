@@ -5,7 +5,7 @@
    Utility class and functions to manipulate a bitmap in OpenGL's default
    byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
-   Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
+   Note: TGLBitmap32 = TGLImage has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
    is active in GLScene.inc and recompile.
 }

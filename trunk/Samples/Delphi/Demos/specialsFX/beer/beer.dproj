@@ -131,7 +131,7 @@
         <DCC_DebugDCUs>true</DCC_DebugDCUs>
         <DCC_RemoteDebug>true</DCC_RemoteDebug>
         <DCC_MapFile>3</DCC_MapFile>
-        <Debugger_DebugSourcePath>D:\Library\GLScene\Source\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
+        <Debugger_DebugSourcePath>D:\GLScene\Source\;$(Debugger_DebugSourcePath)</Debugger_DebugSourcePath>
         <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>

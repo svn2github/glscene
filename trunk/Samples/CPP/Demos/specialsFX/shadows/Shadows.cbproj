@@ -59,10 +59,10 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <SanitizedProjectName>Shadows</SanitizedProjectName>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\specialsFX\shadows\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\specialsFX\shadows\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;fmx.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\specialsFX\shadows\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\specialsFX\shadows\;$(IncludePath)</IncludePath>
         <Multithreaded>true</Multithreaded>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <ProjectType>CppVCLApplication</ProjectType>

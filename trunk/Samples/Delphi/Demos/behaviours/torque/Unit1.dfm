@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 119
   BorderWidth = 5
   Caption = 'Torque'
-  ClientHeight = 430
-  ClientWidth = 735
+  ClientHeight = 390
+  ClientWidth = 695
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,28 +13,31 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  WindowState = wsMaximized
   OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 78
-    Width = 735
-    Height = 311
+    Width = 695
+    Height = 271
     Camera = GLCamera1
-    FieldOfView = 114.510925292968800000
+    Buffer.BackgroundColor = clBlack
+    FieldOfView = 107.144798278808600000
     Align = alClient
+    OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 735
+    Width = 695
     Height = 78
     Align = alTop
     TabOrder = 1
-    object Label2: TLabel
+    object lHexahedron: TLabel
       Left = 280
       Top = 8
       Width = 116
@@ -43,7 +46,7 @@ object Form1: TForm1
       Caption = 'Hexahedron has a small constant'#13#10'and linear damping'
       WordWrap = True
     end
-    object Label3: TLabel
+    object lDodecahedron: TLabel
       Left = 472
       Top = 8
       Width = 100
@@ -52,7 +55,7 @@ object Form1: TForm1
       Caption = 'Dodecahedron has a'#13#10'small constant and'#13#10'quadratic damping'
       WordWrap = True
     end
-    object Label4: TLabel
+    object lOctagedron: TLabel
       Left = 128
       Top = 8
       Width = 109
@@ -61,7 +64,7 @@ object Form1: TForm1
       Caption = 'Octahedron has a'#13#10'only quadratic damping'
       WordWrap = True
     end
-    object Label1: TLabel
+    object lTetrahedron: TLabel
       Left = 8
       Top = 10
       Width = 84
@@ -69,7 +72,7 @@ object Form1: TForm1
       Caption = 'Tetrahedron has an only quadratic damping'
       WordWrap = True
     end
-    object Label5: TLabel
+    object lIcosahedron: TLabel
       Left = 604
       Top = 8
       Width = 117
@@ -88,15 +91,16 @@ object Form1: TForm1
       OnClick = CheckBox1Click
     end
   end
-  object Panel2: TPanel
+  object PanelBottom: TPanel
     Left = 0
-    Top = 389
-    Width = 735
+    Top = 349
+    Width = 695
     Height = 41
     Align = alBottom
-    Caption = 'Move your mouse over an object and it will start spinning'
+    Caption = 
+      'Move your mouse over an object and it will start spinning. Click' +
+      ' to get info.'
     TabOrder = 2
-    ExplicitTop = 239
   end
   object GLScene1: TGLScene
     Left = 16
@@ -113,7 +117,9 @@ object Form1: TForm1
       SpotCutOff = 180.000000000000000000
     end
     object HUDText: TGLHUDText
+      Position.Coordinates = {00009643000048430000F0410000803F}
       BitmapFont = GLBitmapFont1
+      Text = 'Hello'
       Rotation = 0.000000000000000000
     end
     object DummyCube1: TGLDummyCube
@@ -130,9 +136,17 @@ object Form1: TForm1
         Position.Coordinates = {0000000000000000000000400000803F}
         Scale.Coordinates = {CDCC4C3FCDCC4C3FCDCC4C3F00000000}
       end
-      object Hexahedron: TGLCube
+      object Cube: TGLCube
         Material.FrontProperties.Diffuse.Color = {F8FEFE3E0000803F000000000000803F}
         Direction.Coordinates = {0000003F00000000D7B35D3F00000000}
+        TurnAngle = 30.000000000000000000
+      end
+      object Hexahedron: TGLHexahedron
+        Material.FrontProperties.Diffuse.Color = {9A99593F9A99593FCDCCCC3D0000803F}
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Direction.Coordinates = {0000003F00000000D7B35D3F00000000}
+        Position.Coordinates = {0000A0C000000000333333C00000803F}
+        Scale.Coordinates = {0000003F0000003F0000003F00000000}
         TurnAngle = 30.000000000000000000
       end
       object Dodecahedron: TGLDodecahedron
@@ -145,6 +159,33 @@ object Form1: TForm1
         Position.Coordinates = {0000000000000000000080C00000803F}
         Scale.Coordinates = {9A99993F9A99993F9A99993F00000000}
       end
+      object Teapot: TGLTeapot
+        Material.FrontProperties.Diffuse.Color = {1F856B3F14AE473F52B81E3F0000803F}
+        Direction.Coordinates = {010000BF00000000D7B35D3F00000000}
+        Position.Coordinates = {0000404000000000000000000000803F}
+        Scale.Coordinates = {0000C03F0000C03F0000C03F00000000}
+        TurnAngle = -30.000000000000000000
+      end
+      object Torus: TGLTorus
+        Material.FrontProperties.Diffuse.Color = {85EB513F85EB113F1F85EB3E0000803F}
+        Material.FaceCulling = fcCull
+        Position.Coordinates = {0000C03F00000040CDCCCC3F0000803F}
+        MajorRadius = 0.400000005960464500
+        MinorRadius = 0.100000001490116100
+        StopAngle = 360.000000000000000000
+        Parts = [toSides, toStartDisk, toStopDisk]
+      end
+      object Superellipsoid: TGLSuperellipsoid
+        Material.FrontProperties.Diffuse.Color = {0000803F0000003F000000000000803F}
+        Material.Texture.ImageClassName = 'TGLPicFileImage'
+        Position.Coordinates = {000090C000000000000000000000803F}
+        Scale.Coordinates = {0000C03F0000C03F0000C03F00000000}
+        Radius = 0.500000000000000000
+        VCurve = 1.000000000000000000
+        HCurve = 1.000000000000000000
+        Slices = 8
+        Stacks = 8
+      end
     end
   end
   object GLCadencer1: TGLCadencer
@@ -154,9 +195,13 @@ object Form1: TForm1
     Top = 80
   end
   object GLBitmapFont1: TGLBitmapFont
-    GlyphsIntervalX = 0
-    GlyphsIntervalY = 0
+    GlyphsIntervalX = 1
+    GlyphsIntervalY = 1
     Ranges = <>
+    CharWidth = 30
+    CharHeight = 30
+    HSpace = 3
+    VSpace = 6
     Left = 184
     Top = 80
   end

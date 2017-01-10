@@ -43,9 +43,9 @@
         <SanitizedProjectName>FullScreen</SanitizedProjectName>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <_TCHARMapping>wchar_t</_TCHARMapping>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\rendering\fullscreen\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\rendering\fullscreen\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <ProjectType>CppVCLApplication</ProjectType>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\rendering\fullscreen\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\rendering\fullscreen\;$(IncludePath)</IncludePath>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Multithreaded>true</Multithreaded>
         <AllPackageLibs>rtl.lib;vcl.lib;GLScene_RunTime.lib;xmlrtl.lib;vclimg.lib</AllPackageLibs>

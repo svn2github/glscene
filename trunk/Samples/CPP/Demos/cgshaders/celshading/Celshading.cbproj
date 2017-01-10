@@ -59,7 +59,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <SanitizedProjectName>Celshading</SanitizedProjectName>
-        <IncludePath>D:\Library\GLScene\Samples\CPP\Demos\cgshaders\celshading\;$(IncludePath)</IncludePath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\cgshaders\celshading\;$(IncludePath)</IncludePath>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Multithreaded>true</Multithreaded>

@@ -11,6 +11,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Controls,
   Vcl.Dialogs,
+  Vcl.Imaging.jpeg,
   // GLS
   GLObjects,
   GLScene,
@@ -20,7 +21,13 @@ uses
   GLCrossPlatform,
   GLCoordinates,
   GLBaseClasses,
-  GLBehaviours, GLHUDObjects, GLBitmapFont;
+  GLBehaviours,
+  GLHUDObjects,
+  GLColor,
+  GLBitmapFont,
+  GLTeapot,
+  GLGeomObjects,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -31,26 +38,32 @@ type
     DummyCube1: TGLDummyCube;
     GLCadencer1: TGLCadencer;
     Panel1: TPanel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
+    lHexahedron: TLabel;
+    lDodecahedron: TLabel;
+    lOctagedron: TLabel;
     CheckBox1: TCheckBox;
-    Panel2: TPanel;
-    Label1: TLabel;
-    Label5: TLabel;
+    PanelBottom: TPanel;
+    lTetrahedron: TLabel;
+    lIcosahedron: TLabel;
     Dodecahedron: TGLDodecahedron;
     Icosahedron: TGLIcosahedron;
-    Hexahedron: TGLCube;
+    Cube: TGLCube;
     Octahedron: TGLOctahedron;
     Tetrahedron: TGLTetrahedron;
     HUDText: TGLHUDText;
     GLBitmapFont1: TGLBitmapFont;
+    Teapot: TGLTeapot;
+    Superellipsoid: TGLSuperellipsoid;
+    Hexahedron: TGLHexahedron;
+    Torus: TGLTorus;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
+    procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     lastTime: Double;
     pickedObject: TGLBaseSceneObject;
@@ -67,26 +80,50 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
+  // Load the font bitmap from media dir
+  SetGLSceneMediaDir();
+  GLBitmapFont1.Glyphs.LoadFromFile('darkgold_font.bmp');
   // Initialize last time
   lastTime := Now * 3600 * 24;
   // Initialize rotation dampings...
   // ...using properties...
-  with GetOrCreateInertia(Hexahedron.Behaviours).RotationDamping do
+  with GetOrCreateInertia(Cube.Behaviours).RotationDamping do
   begin
     Constant := 1;
     Linear := 1;
     Quadratic := 0;
   end;
   // ...using helper function on the TGLBehaviours...
-  GetOrCreateInertia(Dodecahedron.Behaviours).RotationDamping.SetDamping
-    (10, 0, 0.01);
+  GetOrCreateInertia(Tetrahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
   // ...or using helper function directly on the TGLBaseSceneObject
-  GetOrCreateInertia(Octahedron.Behaviours).RotationDamping.SetDamping
-    (0, 0, 0.01);
-  GetOrCreateInertia(Icosahedron.Behaviours).RotationDamping.SetDamping
-    (0, 0, 0.01);
-  GetOrCreateInertia(Tetrahedron.Behaviours).RotationDamping.SetDamping
-    (0, 0, 0.01);
+  GetOrCreateInertia(Octahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
+  GetOrCreateInertia(Hexahedron.Behaviours).RotationDamping.SetDamping(5, 0, 0.01);
+  GetOrCreateInertia(Dodecahedron.Behaviours).RotationDamping.SetDamping(10, 0, 0.01);
+  GetOrCreateInertia(Icosahedron.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
+
+  GetOrCreateInertia(Torus.Behaviours).RotationDamping.SetDamping(10, 0, 0.01);
+  GetOrCreateInertia(Superellipsoid.Behaviours).RotationDamping.SetDamping(10, 0, 0.01);
+  GetOrCreateInertia(Teapot.Behaviours).RotationDamping.SetDamping(0, 0, 0.01);
+end;
+
+procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  pickedObject: TGLCustomSceneObject;
+  oldColor: TColorVector;
+begin
+  // if an object is picked...
+  pickedObject := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
+  if Assigned(pickedObject) then
+  begin
+    oldColor := pickedObject.Material.FrontProperties.Emission.Color;
+    //...turn it to yellow and show its name
+    pickedObject.Material.FrontProperties.Emission.Color := clrYellow;
+    ShowMessage('You clicked the ' + pickedObject.Name);
+    HUDText.Text := 'Calculated Volume:+ '#13#10 +
+      'Vertices:'#13#10#13#10 + 'Faces:'#13#10#13#10 + 'Edges:';
+    pickedObject.Material.FrontProperties.Emission.Color := oldColor;
+  end;
 end;
 
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
@@ -94,8 +131,6 @@ procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
 begin
   // Mouse moved, get what's underneath
   pickedObject := GLSceneViewer1.Buffer.GetPickedObject(X, Y);
-//  HUDText := pickedObject.Name;
-//  ShowMessage('You clicked the ' + pickedObject.Name);
 end;
 
 procedure TForm1.GLCadencer1Progress(Sender: TObject;
@@ -104,6 +139,7 @@ begin
   // apply some "torque" to the pickedObject if any
   if Assigned(pickedObject) then
     GetOrCreateInertia(pickedObject).ApplyTorque(deltaTime, 200, 0, 0);
+  GLSceneViewer1.Invalidate;
 end;
 
 procedure TForm1.CheckBox1Click(Sender: TObject);

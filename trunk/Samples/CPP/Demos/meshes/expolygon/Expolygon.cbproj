@@ -62,8 +62,8 @@
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <ProjectType>CppVCLApplication</ProjectType>
         <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_RunTime.lib</AllPackageLibs>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\meshes\expolygon\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\meshes\expolygon\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\meshes\expolygon\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\meshes\expolygon\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Multithreaded>true</Multithreaded>
         <_TCHARMapping>wchar_t</_TCHARMapping>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>

@@ -61,8 +61,8 @@
         <SanitizedProjectName>dceDemo</SanitizedProjectName>
         <ProjectType>CppVCLApplication</ProjectType>
         <_TCHARMapping>wchar_t</_TCHARMapping>
-        <IncludePath>D:\Library\GLSceneVCL\Samples\CPP\Demos\behaviours\DCEDemo\;$(IncludePath)</IncludePath>
-        <ILINK_LibraryPath>D:\Library\GLSceneVCL\Samples\CPP\Demos\behaviours\DCEDemo\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <IncludePath>D:\GLScene\Samples\CPP\Demos\behaviours\DCEDemo\;$(IncludePath)</IncludePath>
+        <ILINK_LibraryPath>D:\GLScene\Samples\CPP\Demos\behaviours\DCEDemo\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <AllPackageLibs>rtl.lib;vcl.lib;fmx.lib;xmlrtl.lib;vclimg.lib;GLScene_RunTime.lib;GLScene_DesignTime.lib;vclactnband.lib;vclx.lib;VclSmp.lib</AllPackageLibs>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <Multithreaded>true</Multithreaded>

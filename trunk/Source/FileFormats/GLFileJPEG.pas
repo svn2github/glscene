@@ -4,11 +4,8 @@
 {
    Methods for loading Jpeg images
    History :
-       06/09/16 - PW - Replaced GLSJPG with VCL.Imaging.Jpeg unit
-       23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-       29/06/10 - Yar - Improved FPC compatibility
-       29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
-       27/02/10 - Yar - Creation
+     27/02/10 - Yar - Creation
+     The whole history is logged in a prior version of the unit
 
 }
 unit GLFileJPEG;
@@ -20,6 +17,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
+  Vcl.Graphics,
   Vcl.Imaging.Jpeg,
   //GLS
   GLCrossPlatform,
@@ -62,10 +60,35 @@ type
     property ProgressiveEncoding: boolean read FProgressiveEncoding;
   end;
 
+procedure Jpeg2Bmp(const BmpFileName, JpgFileName: string);
+
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 //---------------------------------------------------------------------
 implementation
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+//---------------------------------------------------------------------
+
+procedure Jpeg2Bmp(const BmpFileName, JpgFileName: string);
+var
+  Bmp: TBitmap;
+  Jpg: TJPEGImage;
+begin
+  Bmp := TBitmap.Create;
+  Jpg := TJPEGImage.Create;
+  try
+    Jpg.LoadFromFile(JpgFileName);
+    Bmp.Assign(Jpg);
+    Bmp.SaveToFile(BmpFileName);
+  finally
+    Jpg.Free;
+    Bmp.Free;
+  end;
+end;
+
+
+
 // ------------------
 // ------------------ TGLJPEGImage ------------------
 // ------------------

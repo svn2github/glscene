@@ -119,7 +119,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <BT_BuildType>Debug</BT_BuildType>
-        <BCC_IncludePath>D:\Library\GLScene\include;$(BCC_IncludePath)</BCC_IncludePath>
+        <BCC_IncludePath>D:\GLScene\include;$(BCC_IncludePath)</BCC_IncludePath>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Defines>_DEBUG;$(Defines)</Defines>

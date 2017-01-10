@@ -10,6 +10,7 @@ uses
   Vcl.Forms,
   Vcl.Controls,
   Vcl.ExtCtrls,
+  Vcl.Dialogs,
   // GLS
   GLScene,
   GLObjects,
@@ -34,7 +35,6 @@ type
     Cylinder: TGLCylinder;
     Torus: TGLTorus;
     Cone: TGLCone;
-    Timer1: TTimer;
     TIPickTimer: TTimer;
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
@@ -57,8 +57,6 @@ implementation
 
 {$R *.DFM}
 
-uses Dialogs;
-
 procedure TForm1.GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 begin
@@ -80,15 +78,15 @@ end;
 procedure TForm1.GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  pick: TGLCustomSceneObject;
+  pickedObject: TGLCustomSceneObject;
 begin
   // if an object is picked...
-  pick := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
-  if Assigned(pick) then
+  pickedObject := (GLSceneViewer1.Buffer.GetPickedObject(X, Y) as TGLCustomSceneObject);
+  if Assigned(pickedObject) then
   begin
-    // ...turn it to yellow and show its name
-    pick.Material.FrontProperties.Emission.Color := clrYellow;
-    ShowMessage('You clicked the ' + pick.Name);
+    //...turn it to yellow and show its name
+    pickedObject.Material.FrontProperties.Emission.Color := clrYellow;
+    ShowMessage('You clicked the ' + pickedObject.Name);
   end;
 end;
 

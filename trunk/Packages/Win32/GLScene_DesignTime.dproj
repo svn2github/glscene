@@ -74,7 +74,7 @@
         <DCC_K>false</DCC_K>
         <GenPackage>true</GenPackage>
         <GenDll>true</GenDll>
-        <DCC_Description>GLSceneVCL OpenGL 3D library</DCC_Description>
+        <DCC_Description>GLScene OpenGL 3D library</DCC_Description>
         <DCC_S>false</DCC_S>
         <DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;System;Xml;Data;Datasnap;Web;Soap;$(DCC_Namespace)</DCC_Namespace>
         <VerInfo_Locale>1049</VerInfo_Locale>
@@ -101,7 +101,7 @@
         <DCC_ObjOutput>..\lib\</DCC_ObjOutput>
         <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
-        <DCC_UsePackage>rtl;vcl;vclimg;VclSmp;GLSceneVCL_RunTime;GLScene_RunTime;GLScene_Parallel_RunTime;GLScene_Cg_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;vclimg;VclSmp;GLScene_RunTime;GLScene_RunTime;GLScene_Parallel_RunTime;GLScene_Cg_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>

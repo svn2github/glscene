@@ -14,13 +14,27 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   VCL.Graphics,
 
   // GLS
-  GLScene, GLVectorGeometry, GLObjects, GLBitmapFont, GLTexture, GLMaterial,
-  GLHudObjects, GLColor, GLGraphics, GLContext, OpenGLTokens,
-  XOpenGL, GLState, GLTextureFormat, GLBaseClasses, GLRenderContextInfo;
+  OpenGLTokens,
+  GLScene,
+  GLVectorGeometry,
+  GLObjects,
+  GLBitmapFont,
+  GLTexture,
+  GLMaterial,
+  GLHudObjects,
+  GLColor,
+  GLGraphics,
+  GLContext,
+  XOpenGL,
+  GLState,
+  GLTextureFormat,
+  GLBaseClasses,
+  GLRenderContextInfo;
 
 type
 
@@ -30,7 +44,7 @@ type
     R, G, B: TGLubyte;
   end;
   TRGBPixelBuffer = array of TRGBPixel;
-  TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TGLBitmap32; var DoBlur: boolean) of object;
+  TGLAdvancedBlurImagePrepareEvent = procedure(Sender: TObject; BMP32: TGLImage; var DoBlur: boolean) of object;
 
   EGLMotionBlurException = class(Exception);
 
@@ -153,7 +167,13 @@ type
     property Hint;
   end;
 
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 implementation
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 
 const
   EPS = 0.001;
@@ -229,7 +249,7 @@ procedure TGLBlur.DoMemView(baseObject: TGLBaseSceneObject);
 var
   OldFocalLength: single;
   refsiz: single;
-  BMP: TGLBitmap32;
+  BMP: TGLImage;
   x, y: integer;
   line: PGLPixel32Array;
   by: Integer;

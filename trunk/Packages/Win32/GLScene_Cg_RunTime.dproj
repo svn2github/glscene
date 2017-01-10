@@ -78,7 +78,7 @@
         <DCC_F>false</DCC_F>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
-        <DCC_Description>GLSceneVCL Cg Shaders</DCC_Description>
+        <DCC_Description>GLScene Cg Shaders</DCC_Description>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Android)'!=''">
         <EnabledSysJars>android-support-v4.dex.jar;apk-expansion.dex.jar;cloud-messaging.dex.jar;fmx.dex.jar;google-analytics-v2.dex.jar;google-play-billing.dex.jar;google-play-licensing.dex.jar;google-play-services.dex.jar</EnabledSysJars>

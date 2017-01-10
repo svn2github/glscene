@@ -2,14 +2,14 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Implementation of basic scene objects plus some management routines. 
+  Implementation of basic scene objects plus some management routines.
 
   All objects declared in this unit are part of the basic GLScene package,
   these are only simple objects and should be kept simple and lightweight.
 
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
-  objects can be found GLGeomObjects. 
+  objects can be found GLGeomObjects.
   The whole history is logged in a prior version of the unit
    
 }
@@ -377,7 +377,7 @@ type
   // TLineNodesAspect
   //
   {  Possible aspects for the nodes of a TLine. }
-  TGLLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube, lnaDodecahedron);
+  TGLLineNodesAspect = (lnaInvisible, lnaAxes, lnaCube);
 
   // TLineSplineMode
   //
@@ -849,15 +849,6 @@ type
 {  Issues OpenGL for a unit-size cube stippled wireframe. }
 procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);
-{  Issues OpenGL for a unit-size dodecahedron. }
-procedure DodecahedronBuildList;
-{  Issues OpenGL for a unit-size icosahedron. }
-procedure IcosahedronBuildList;
-{  Issues OpenGL for a unit-size octahedron. }
-procedure OctahedronBuildList;
-{  Issues OpenGL for a unit-size tetrahedron. }
-procedure TetrahedronBuildList;
-
 
 
 var
@@ -934,172 +925,6 @@ begin
   GL.Vertex3f(ma, mi, ma);
   GL.Vertex3f(mi, mi, ma);
   GL.End_;
-end;
-
-// DodecahedronBuildList
-//
-procedure DodecahedronBuildList;
-const
-  A = 1.61803398875 * 0.3; // (Sqrt(5)+1)/2
-  B = 0.61803398875 * 0.3; // (Sqrt(5)-1)/2
-  C = 1 * 0.3;
-const
-  Vertices: packed array [0 .. 19] of TAffineVector = ((X: - A; Y: 0; Z: B),
-    (X: - A; Y: 0; Z: - B), (X: A; Y: 0; Z: - B), (X: A; Y: 0; Z: B), (X: B;
-    Y: - A; Z: 0), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: A;
-    Z: 0), (X: 0; Y: B; Z: - A), (X: 0; Y: - B; Z: - A), (X: 0; Y: - B; Z: A),
-    (X: 0; Y: B; Z: A), (X: - C; Y: - C; Z: C), (X: - C; Y: - C; Z: - C), (X: C;
-    Y: - C; Z: - C), (X: C; Y: - C; Z: C), (X: - C; Y: C; Z: C), (X: - C; Y: C;
-    Z: - C), (X: C; Y: C; Z: - C), (X: C; Y: C; Z: C));
-
-  Polygons: packed array [0 .. 11] of packed array [0 .. 4]
-    of Byte = ((0, 12, 10, 11, 16), (1, 17, 8, 9, 13), (2, 14, 9, 8, 18),
-    (3, 19, 11, 10, 15), (4, 14, 2, 3, 15), (5, 12, 0, 1, 13),
-    (6, 17, 1, 0, 16), (7, 19, 3, 2, 18), (8, 17, 6, 7, 18), (9, 14, 4, 5, 13),
-    (10, 12, 5, 4, 15), (11, 19, 7, 6, 16));
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 11 do
-  begin
-    faceIndices := @polygons[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
-
-//    GL.Begin_(GL_TRIANGLE_FAN);
-//    for j := 0 to 4 do
-//      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-//    GL.End_;
-
-    GL.Begin_(GL_TRIANGLES);
-
-    for j := 1 to 3 do
-    begin
-      GL.Vertex3fv(@vertices[faceIndices^[0]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-      GL.Vertex3fv(@vertices[faceIndices^[j+1]]);
-    end;
-    GL.End_;
-  end;
-end;
-
-// IcosahedronBuildList
-//
-procedure IcosahedronBuildList;
-const
-  A = 0.5;
-  B = 0.30901699437; // 1/(1+Sqrt(5))
-const
-  Vertices: packed array [0 .. 11] of TAffineVector = ((X: 0; Y: - B; Z: - A),
-    (X: 0; Y: - B; Z: A), (X: 0; Y: B; Z: - A), (X: 0; Y: B; Z: A), (X: - A;
-    Y: 0; Z: - B), (X: - A; Y: 0; Z: B), (X: A; Y: 0; Z: - B), (X: A; Y: 0;
-    Z: B), (X: - B; Y: - A; Z: 0), (X: - B; Y: A; Z: 0), (X: B; Y: - A; Z: 0),
-    (X: B; Y: A; Z: 0));
-  Triangles: packed array [0 .. 19] of packed array [0 .. 2]
-    of Byte = ((2, 9, 11), (3, 11, 9), (3, 5, 1), (3, 1, 7), (2, 6, 0),
-    (2, 0, 4), (1, 8, 10), (0, 10, 8), (9, 4, 5), (8, 5, 4), (11, 7, 6),
-    (10, 6, 7), (3, 9, 5), (3, 7, 11), (2, 4, 9), (2, 11, 6), (0, 8, 4),
-    (0, 6, 10), (1, 5, 8), (1, 10, 7));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 19 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
-
-    GL.Begin_(GL_TRIANGLES);
-    for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
-  end;
-end;
-
-// OctahedronBuildList
-//
-procedure OctahedronBuildList;
-const
-  Vertices: packed array [0 .. 5] of TAffineVector =
-      ((X: 1.0; Y: 0.0; Z: 0.0),
-       (X: -1.0; Y: 0.0; Z: 0.0),
-       (X: 0.0; Y: 1.0; Z: 0.0),
-       (X: 0.0; Y: -1.0; Z: 0.0),
-       (X: 0.0; Y: 0.0; Z: 1.0),
-       (X: 0.0; Y: 0.0; Z: -1.0));
-
-  Triangles: packed array [0 .. 7] of packed array [0 .. 2]
-    of Byte = ((0, 4, 2), (1, 2, 4), (0, 3, 4), (1, 4, 3),
-               (0, 2, 5), (1, 5, 2), (0, 5, 3), (1, 3, 5));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 7 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
-
-    GL.Begin_(GL_TRIANGLES);
-    for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
-  end;
-end;
-
-// TetrahedronBuildList
-//
-procedure TetrahedronBuildList;
-const
-  TetT = 1.73205080756887729;
-const
-  Vertices: packed array [0 .. 3] of TAffineVector =
-{
-       ((X: TetT;  Y: TetT;  Z: TetT),
-        (X: TetT;  Y: -TetT; Z: -TetT),
-        (X: -TetT; Y: TetT;  Z: -TetT),
-        (X: -TetT; Y: -TetT; Z: TetT));
-}
-       ((X: 1.0;  Y: 1.0;  Z: 1.0),
-        (X: 1.0;  Y: -1.0; Z: -1.0),
-        (X: -1.0; Y: 1.0;  Z: -1.0),
-        (X: -1.0; Y: -1.0; Z: 1.0));
-
-  Triangles: packed array [0 .. 3] of packed array [0 .. 2]
-    of Byte = ((0, 1, 3), (2, 1, 0), (3, 2, 0), (1, 2, 3));
-
-var
-  i, j: Integer;
-  n: TAffineVector;
-  faceIndices: PByteArray;
-begin
-  for i := 0 to 3 do
-  begin
-    faceIndices := @triangles[i, 0];
-
-    n := CalcPlaneNormal(vertices[faceIndices^[0]], vertices[faceIndices^[1]],
-      vertices[faceIndices^[2]]);
-    GL.Normal3fv(@n);
-
-    GL.Begin_(GL_TRIANGLES);
-    for j := 0 to 2 do
-      GL.Vertex3fv(@vertices[faceIndices^[j]]);
-    GL.End_;
-  end;
 end;
 
 // ------------------
@@ -2676,24 +2501,6 @@ begin
       AxesBuildList(rci, $CCCC, FNodeSize * 0.5);
     lnaCube:
       CubeWireframeBuildList(rci, FNodeSize, False, Color.Color);
-    lnaDodecahedron:
-      begin
-        if FNodeSize <> 1 then
-        begin
-          GL.PushMatrix;
-          GL.Scalef(FNodeSize, FNodeSize, FNodeSize);
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-          GL.PopMatrix;
-        end
-        else
-        begin
-          rci.GLStates.SetGLMaterialColors(cmFront, clrBlack, clrGray20,
-            Color.Color, clrBlack, 0);
-          DodecahedronBuildList;
-        end;
-      end;
   else
     Assert(False)
   end;

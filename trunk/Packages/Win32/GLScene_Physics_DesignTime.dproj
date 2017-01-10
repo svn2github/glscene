@@ -79,7 +79,7 @@
         <DCC_N>false</DCC_N>
         <VerInfo_Locale>1049</VerInfo_Locale>
         <DCC_S>false</DCC_S>
-        <DCC_Description>GLSceneVCL NGD Manager</DCC_Description>
+        <DCC_Description>GLScene NGD Manager</DCC_Description>
         <DCC_K>false</DCC_K>
         <GenDll>true</GenDll>
         <SanitizedProjectName>GLScene_Physics_DesignTime</SanitizedProjectName>
@@ -98,7 +98,7 @@
         <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSDevice64)'!=''">
-        <DCC_UsePackage>rtl;GLSceneVCL_Physics_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;GLScene_Physics_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_iOSSimulator)'!=''">
         <DCC_UsePackage>rtl;$(DCC_UsePackage)</DCC_UsePackage>
@@ -107,15 +107,15 @@
         <DCC_ObjOutput>..\lib\</DCC_ObjOutput>
         <DCC_BpiOutput>..\lib\</DCC_BpiOutput>
         <DCC_HppOutput>..\include\</DCC_HppOutput>
-        <DCC_Description>GLSceneVCL Physics Managers</DCC_Description>
-        <DCC_UsePackage>rtl;vcl;GLSceneVCL_RunTime;GLSceneVCL_Physics_RunTime;GLScene_RunTime;GLScene_Physics_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_Description>GLScene Physics Managers</DCC_Description>
+        <DCC_UsePackage>rtl;vcl;GLScene_RunTime;GLScene_Physics_RunTime;GLScene_RunTime;GLScene_Physics_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>rtl;vcl;GLSceneVCL_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>rtl;vcl;GLScene_RunTime;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
@@ -126,7 +126,7 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <DCC_Description>GLSceneVCL Physics Managers</DCC_Description>
+        <DCC_Description>GLScene Physics Managers</DCC_Description>
         <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">

@@ -25,7 +25,7 @@
   or even more often.
 
   History :
-   15/03/16 - RB - TMarchingCube class implementation based on a Thomas Lewiner algorithm
+   15/03/16 - RB - TGLMarchingCube class implementation based on a Thomas Lewiner algorithm
                    from http://www.acm.org/jgt/papers/LewinerEtAl03
    10/12/15 - PW - Implemented a polished mode of interpolation by Chris Rorden
    05/08/12 - PW - Adapted to use with GLScene v.1.2 and later
@@ -523,22 +523,22 @@ const
   // Marching Tetrahedra TriTable
   //
   (*
-    + 0
-    /|\
-    / | \
-    /  |  0
-    3   |   \
-    /    2    \
+        + 0
+         /|\
+        / | \
+       /  |  0
+      3   |   \
+     /    2    \
     /     |     \
-    +----4--------+ 1
-    3 \     |     /
-    \    |    /
-    5   |   1
-    \  |  /
-    \ | /
-    \|/
-    + 2
-  *)
+   +----4--------+ 1
+  3 \     |     /
+     \    |    /
+      5   |   1
+       \  |  /
+        \ | /
+         \|/
+        + 2
+*)
   MT_TRITABLE: array [0 .. 15, 0 .. 6] of Integer =
     ((-1, -1, -1, -1, -1, -1, -1), (2, 3, 0, -1, -1, -1, -1),
     (4, 1, 0, -1, -1, -1, -1), (2, 4, 1, 3, 4, 2, -1),
@@ -774,14 +774,14 @@ var
   end;
 
 begin
-  (*
+(*
       1----2
      /|   /|
     0----3 |
     | 5--|-6
     |/   |/
     4----7
-  *)
+*)
   SetLength(CubeVertices, 8);
   for k := 0 to Dimensions['z'] - 2 do
   begin
