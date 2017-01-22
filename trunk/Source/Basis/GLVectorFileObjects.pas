@@ -6,7 +6,7 @@
 
    History :
      09/02/00 - EG - Creation from split of GLObjects,
-     The whole history is logged in a former version of GLScene
+     The whole history is logged in a previous version of GLScene
 }
 unit GLVectorFileObjects;
 
@@ -322,7 +322,7 @@ type
     {Set the bone's GlobalMatrix. Used for Ragdoll. }
     procedure SetGlobalMatrixForRagDoll(RagDollMatrix: TMatrix); // Ragdoll
 
-    {Calculates the global matrix for the bone and its sub-bone. 
+    {Calculates the global matrix for the bone and its sub-bone.
        Call this function directly only the RootBone. }
     procedure PrepareGlobalMatrices; override;
     {Global Matrix for the bone in the current frame. 
@@ -422,7 +422,7 @@ type
 
   // TGLSkeleton
   //
-    {Main skeleton object. 
+    {Main skeleton object.
        This class stores the bones hierarchy and animation frames.
        It is also responsible for maintaining the "CurrentFrame" and allowing
        various frame blending operations. }
@@ -963,7 +963,7 @@ type
 
   // TGLFaceGroupMeshMode
   //
-  {Known descriptions for face group mesh modes. 
+  {Known descriptions for face group mesh modes.
      - fgmmTriangles : issue all vertices with GL_TRIANGLES.
      - fgmmTriangleStrip : issue all vertices with GL_TRIANGLE_STRIP.
      - fgmmFlatTriangles : same as fgmmTriangles, but take advantage of having
@@ -1222,7 +1222,7 @@ type
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareVectorFile(aFile: TGLVectorFile); dynamic;
 
-    {Invoked after a mesh has been loaded/added. 
+    {Invoked after a mesh has been loaded/added.
        Triggered by LoadFromFile/Stream and AddDataFromFile/Stream.
        Allows to adjust/transfer subclass-specific features. }
     procedure PrepareMesh; dynamic;
@@ -1313,7 +1313,7 @@ type
        The VectorFile importer must be able to handle addition of data
        flawlessly. }
     procedure AddDataFromFile(const filename: string); dynamic;
-    {Loads additionnal data from stream. 
+    {Loads additionnal data from stream.
        See AddDataFromFile. }
     procedure AddDataFromStream(const filename: string; aStream: TStream);
       dynamic;
@@ -1382,11 +1382,11 @@ type
   TGLFreeForm = class(TGLBaseMesh)
   private
     { Private Declarations }
-    FOctree: TOctree;
+    FOctree: TGLOctree;
 
   protected
     { Protected Declarations }
-    function GetOctree: TOctree;
+    function GetOctree: TGLOctree;
 
   public
     { Public Declarations }
@@ -1408,9 +1408,9 @@ type
       TMatrix; triangles: TAffineVectorList = nil): boolean;
     //         TODO:  function OctreeSphereIntersect
 
-             {Octree support *experimental*. 
+             {Octree support *experimental*.
                 Use only if you understand what you're doing! }
-    property Octree: TOctree read GetOctree;
+    property Octree: TGLOctree read GetOctree;
     procedure BuildOctree(TreeDepth: integer = 3);
 
   published
@@ -1447,7 +1447,7 @@ type
 
   // TGLActorAnimation
   //
-    {An actor animation sequence. 
+    {An actor animation sequence.
        An animation sequence is a named set of contiguous frames that can be used
        for animating an actor. The referred frames can be either morph or skeletal
        frames (choose which via the Reference property). 
@@ -1610,7 +1610,7 @@ type
   // TGLActorActionMode
   //
   {Defines how an actor plays between its StartFrame and EndFrame. 
-     
+
       aamNone : no animation is performed
       aamPlayOnce : play from current frame to EndFrame, once end frame has
         been reached, switches to aamNone
@@ -1797,7 +1797,7 @@ function GetVectorFileFormats: TGLVectorFileFormatsList;
 function VectorFileFormatsFilter: string;
 //: A file extension filter suitable for a savedialog's 'Filter' property
 function VectorFileFormatsSaveFilter: string;
-{Returns an extension by its index in the vector files dialogs filter. 
+{Returns an extension by its index in the vector files dialogs filter.
    Use VectorFileFormatsFilter to obtain the filter. }
 function VectorFileFormatExtensionByIndex(index: Integer): string;
 
@@ -7902,7 +7902,7 @@ end;
 // GetOctree
 //
 
-function TGLFreeForm.GetOctree: TOctree;
+function TGLFreeForm.GetOctree: TGLOctree;
 begin
   //   if not Assigned(FOctree) then     //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
   //     FOctree:=TOctree.Create;        //moved this code to BuildOctree
@@ -7918,7 +7918,7 @@ var
   tl: TAffineVectorList;
 begin
   if not Assigned(FOctree) then //moved here from GetOctree
-    FOctree := TOctree.Create;
+    FOctree := TGLOctree.Create;
 
   GetExtents(emin, emax);
   tl := MeshObjects.ExtractTriangles;
@@ -7942,8 +7942,7 @@ function TGLFreeForm.OctreeRayCastIntersect(const rayStart, rayVector: TVector;
 var
   locRayStart, locRayVector: TVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), strOctreeMustBePreparedBeforeUse);
   SetVector(locRayStart, AbsoluteToLocal(rayStart));
   SetVector(locRayVector, AbsoluteToLocal(rayVector));
   Result := Octree.RayCastIntersect(locRayStart, locRayVector,
@@ -7973,8 +7972,7 @@ var
   HitCount: integer;
   hitDot: double;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), strOctreeMustBePreparedBeforeUse);
 
   result := false;
 
@@ -8032,8 +8030,7 @@ function TGLFreeForm.OctreeSphereSweepIntersect(const rayStart, rayVector:
 var
   locRayStart, locRayVector: TVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), strOctreeMustBePreparedBeforeUse);
   SetVector(locRayStart, AbsoluteToLocal(rayStart));
   SetVector(locRayVector, AbsoluteToLocal(rayVector));
   Result := Octree.SphereSweepIntersect(locRayStart, locRayVector,
@@ -8060,8 +8057,7 @@ function TGLFreeForm.OctreeTriangleIntersect(const v1, v2, v3: TAffineVector):
 var
   t1, t2, t3: TAffineVector;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), strOctreeMustBePreparedBeforeUse);
   SetVector(t1, AbsoluteToLocal(v1));
   SetVector(t2, AbsoluteToLocal(v2));
   SetVector(t3, AbsoluteToLocal(v3));
@@ -8078,8 +8074,7 @@ function TGLFreeForm.OctreeAABBIntersect(const AABB: TAABB;
 var
   m1to2, m2to1: TMatrix;
 begin
-  Assert(Assigned(FOctree),
-    'Octree must have been prepared and setup before use.');
+  Assert(Assigned(FOctree), strOctreeMustBePreparedBeforeUse);
 
   //get matrixes needed
   //object to self

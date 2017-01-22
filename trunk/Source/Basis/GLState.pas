@@ -5,7 +5,7 @@
    Tools for managing an application-side cache of OpenGL state.
    History :
      05/09/03 - EG - Creation from GLMisc split
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,

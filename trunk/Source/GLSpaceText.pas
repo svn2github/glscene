@@ -12,7 +12,7 @@
 
    History :
    12/12/01 - EG - Creation (split from GLScene.pas)
-   The whole history is logged in a prior version of the unit
+   The whole history is logged in a previous version of the unit
    
 }
 unit GLSpaceText;

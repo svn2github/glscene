@@ -67,7 +67,6 @@ resourcestring
   //
   // File3DS
   str3DSMapNotFound = 'Loading %s map texture failed: %s in %s';
-
   strError3DS_NO_MEM = 'Not enough memory to complete operation.';
   strError3DS_INVALID_ARG = 'The argument passed to the function is invalid.'#13+
                          'Usually caused by a nil pointer or an out of range numeric argument.';
@@ -101,7 +100,6 @@ resourcestring
   // FilePGM
   strCUTILFailed = 'Can not initialize cutil32.dll';
 
-
   //
   // Graphics
   strCantConvertImg = '%s: can''t convert image to RGBA8 format';
@@ -116,6 +114,9 @@ resourcestring
   // Material
   strCyclicRefMat = 'Cyclic reference detected in material "%s"';
 
+  //
+  // Octree
+  strOctreeMustBePreparedBeforeUse = 'Octree must be prepared before use';
 
   //
   // PersistentClasses

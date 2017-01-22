@@ -5,7 +5,7 @@
   Applies a blur effect over the viewport.
   History :
     11/06/04 - Mrqzzz - Creation
-    The whole history is logged in a prior version of the unit
+    The whole history is logged in a previous version of the unit
 }
 unit GLBlur;
 

@@ -20,7 +20,7 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  The whole history is logged in a prior version of the unit.
+  The whole history is logged in a previous version of the unit.
 }
 unit GLVectorGeometry;
 

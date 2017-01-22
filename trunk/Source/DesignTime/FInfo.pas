@@ -6,7 +6,7 @@
 
    History :
      17/04/00 - EG - Creation of header, minor layout changes
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 unit FInfo;
 

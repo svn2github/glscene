@@ -6,7 +6,7 @@
 
    History :
     17/02/03 - SG - Creation
-    The whole history is logged in a prior version of the unit.
+    The whole history is logged in a previous version of the unit.
 
 }
 unit Q3MD3;

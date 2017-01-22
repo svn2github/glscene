@@ -18,7 +18,7 @@
 
    History :
      01/11/06 - DaStr - Initial version (contributed to GLScene)
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 
 }
 unit GLSLDiffuseSpecularShader;

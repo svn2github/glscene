@@ -6,7 +6,7 @@
 
   History :
     08/09/03 - Jaj - Added single outline polygon support
-    The whole history is logged in a prior version of the unit
+    The whole history is logged in a previous version of the unit
 }
 unit GLGLUTesselation;
 

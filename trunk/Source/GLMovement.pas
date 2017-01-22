@@ -8,7 +8,7 @@
 
    History :
      24/08/00 - RoC - TGLMovement and relative class added
-     The whole history is logged in a prior version of the unit
+     The whole history is logged in a previous version of the unit
 
 }
 

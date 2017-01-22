@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { FireMonkey fit GLScene viewer
-  The history is logged in a former version of the unit
+  The history is logged in a previous version of the unit
 }
 
 unit GLWinFMXViewer;

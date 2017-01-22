@@ -7,7 +7,7 @@
    to the GLScene core units (only to base units).
 
    History : 19/01/02 - EG - Creation
-   The whole history is logged in a former version of the unit.
+   The whole history is logged in a previous version of the unit.
 }
 unit GLCanvas;
 

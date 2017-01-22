@@ -6,7 +6,7 @@
 
    History : 
      02/11/05 - LucasG - First version created.
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 
 unit GLRagdoll;
@@ -14,8 +14,12 @@ unit GLRagdoll;
 interface
 
 uses
-  GLScene, GLPersistentClasses, GLVectorGeometry, GLVectorFileObjects,
-  GLVectorLists, GLObjects;
+  GLScene, 
+  GLPersistentClasses, 
+  GLVectorGeometry, 
+  GLVectorFileObjects,
+  GLVectorLists, 
+  GLObjects;
 
 type
   TGLRagdoll = class;
@@ -126,7 +130,13 @@ type
     property Enabled : Boolean read FEnabled;
 	end;
 
+//------------------------------------------------------------------------	
+//------------------------------------------------------------------------	
+//------------------------------------------------------------------------	
 implementation
+//------------------------------------------------------------------------	
+//------------------------------------------------------------------------	
+//------------------------------------------------------------------------	
 
 uses
   GLVectorTypes;

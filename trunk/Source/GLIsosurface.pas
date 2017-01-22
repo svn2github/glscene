@@ -86,10 +86,10 @@ type
     procedure Init_all;
     procedure Init_space;
 
-    procedure clean_temps;
-    procedure clean_all(keepFacets: Boolean = False);
-    procedure clean_space;
-    procedure test_vertex_addiction;
+    procedure Clean_temps;
+    procedure Clean_all(keepFacets: Boolean = False);
+    procedure Clean_space;
+    procedure Test_vertex_addiction;
 
   protected
     FOriginalMC: Boolean; // now only original MC is implemented
@@ -128,9 +128,9 @@ type
     function Get_y_vert(i, j, k: Integer): Integer;
     function Get_z_vert(i, j, k: Integer): Integer;
 
-    procedure set_x_vert(a_val, i, j, k: Integer);
-    procedure set_y_vert(a_val, i, j, k: Integer);
-    procedure set_z_vert(a_val, i, j, k: Integer);
+    procedure Set_x_vert(a_val, i, j, k: Integer);
+    procedure Set_y_vert(a_val, i, j, k: Integer);
+    procedure Set_z_vert(a_val, i, j, k: Integer);
 
     function GetVoxelValue(i, j, k: Integer): TGLScalarValue;
     procedure SetVoxelValue(i, j, k: Integer; HfValue: TGLScalarValue);
@@ -138,7 +138,7 @@ type
     function GetVoxelData(i, j, k: Integer): TGLVoxel;
     function Voxel(i, j, k: Integer): PGLVoxel;
 
-    function calc_u(v1, v2: Single): Single; virtual;
+    function Calc_u(v1, v2: Single): Single; virtual;
   public
     ScalarField: TGLScalarField;
 
@@ -168,7 +168,7 @@ type
     procedure CalcMeshObject(AMeshObject: TMeshObject; Alpha: Single = 1);
 
     property IsoValue: TGLScalarValue read FIsoValue write FIsoValue;
-    // TODO SetIsoValue che chiama in automatico la Run
+    // TODO SetIsoValue to Run
   end;
 
   // TIsoSurfaceExtractor

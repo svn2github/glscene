@@ -6,7 +6,7 @@
   
    History :  
 	    20/05/00 - RoC - Created, based on the C source code from Eric
-      The whole history is logged in a prior version of the unit.
+      The whole history is logged in a previous version of the unit.
 
 }
 unit GLSpline;

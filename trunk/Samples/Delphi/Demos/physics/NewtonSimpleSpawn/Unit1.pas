@@ -3,12 +3,29 @@ unit Unit1;
 interface
 
 uses
-  System.SysUtils, System.Variants, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLCadencer, GLWin32Viewer,
-  GLColor, GLCrossPlatform, GLBaseClasses, GLNGDManager, GLGeomObjects, GLBitmapFont,
-  GLWindowsFont, GLHUDObjects;
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  GLScene,
+  GLObjects,
+  GLCoordinates,
+  GLSimpleNavigation,
+  GLCadencer,
+  GLWin32Viewer,
+  GLColor,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLNGDManager,
+  GLGeomObjects,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLHUDObjects;
 
 type
   TForm1 = class(TForm)
@@ -23,20 +40,20 @@ type
     GLNGDManager1: TGLNGDManager;
     GLResolutionIndependantHUDText1: TGLResolutionIndependantHUDText;
     Panel1: TPanel;
-    Button1: TButton;
-    Button2: TButton;
-    Button3: TButton;
-    Button4: TButton;
-    Button5: TButton;
-    Button6: TButton;
+    btnAddCube: TButton;
+    btnAddSphere: TButton;
+    btnAddCone: TButton;
+    btnAddCylinder: TButton;
+    btnAddCapsule: TButton;
+    btnRemoveAll: TButton;
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
+    procedure btnAddCubeClick(Sender: TObject);
+    procedure btnAddSphereClick(Sender: TObject);
+    procedure btnAddConeClick(Sender: TObject);
+    procedure btnAddCylinderClick(Sender: TObject);
+    procedure btnAddCapsuleClick(Sender: TObject);
+    procedure btnRemoveAllClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -50,7 +67,7 @@ implementation
 
 {$R *.dfm}
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TForm1.btnAddCubeClick(Sender: TObject);
 var
   GLCube1: TGLCube;
   DynNGDBehav: TGLNGDDynamic;
@@ -61,7 +78,7 @@ begin
   DynNGDBehav.Manager := GLNGDManager1;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TForm1.btnAddSphereClick(Sender: TObject);
 var
   GLSphere1: TGLSphere;
   DynNGDBehav: TGLNGDDynamic;
@@ -72,7 +89,7 @@ begin
   DynNGDBehav.Manager := GLNGDManager1;
 end;
 
-procedure TForm1.Button3Click(Sender: TObject);
+procedure TForm1.btnAddConeClick(Sender: TObject);
 var
   GLCone1: TGLCone;
   DynNGDBehav: TGLNGDDynamic;
@@ -83,7 +100,7 @@ begin
   DynNGDBehav.Manager := GLNGDManager1;
 end;
 
-procedure TForm1.Button4Click(Sender: TObject);
+procedure TForm1.btnAddCylinderClick(Sender: TObject);
 var
   GLCylinder1: TGLCylinder;
   DynNGDBehav: TGLNGDDynamic;
@@ -95,7 +112,7 @@ begin
   DynNGDBehav.Manager := GLNGDManager1;
 end;
 
-procedure TForm1.Button5Click(Sender: TObject);
+procedure TForm1.btnAddCapsuleClick(Sender: TObject);
 var
   GLCapsule1: TGLCapsule;
   DynNGDBehav: TGLNGDDynamic;
@@ -107,7 +124,7 @@ begin
   DynNGDBehav.Manager := GLNGDManager1;
 end;
 
-procedure TForm1.Button6Click(Sender: TObject);
+procedure TForm1.btnRemoveAllClick(Sender: TObject);
 begin
   GLDummyCube1.DeleteChildren;
   GLSceneViewer1.Invalidate;

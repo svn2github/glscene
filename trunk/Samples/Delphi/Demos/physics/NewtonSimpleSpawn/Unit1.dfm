@@ -33,59 +33,59 @@ object Form1: TForm1
     Align = alLeft
     Caption = ' '
     TabOrder = 1
-    object Button1: TButton
+    object btnAddCube: TButton
       Left = 14
       Top = 8
       Width = 75
       Height = 25
       Caption = 'AddCube'
       TabOrder = 0
-      OnClick = Button1Click
+      OnClick = btnAddCubeClick
     end
-    object Button2: TButton
+    object btnAddSphere: TButton
       Left = 14
       Top = 39
       Width = 75
       Height = 25
       Caption = 'AddSphere'
       TabOrder = 1
-      OnClick = Button2Click
+      OnClick = btnAddSphereClick
     end
-    object Button3: TButton
+    object btnAddCone: TButton
       Left = 14
       Top = 70
       Width = 75
       Height = 25
       Caption = 'AddCone'
       TabOrder = 2
-      OnClick = Button3Click
+      OnClick = btnAddConeClick
     end
-    object Button4: TButton
+    object btnAddCylinder: TButton
       Left = 14
       Top = 101
       Width = 75
       Height = 25
       Caption = 'AddCylinder'
       TabOrder = 3
-      OnClick = Button4Click
+      OnClick = btnAddCylinderClick
     end
-    object Button5: TButton
+    object btnAddCapsule: TButton
       Left = 14
       Top = 132
       Width = 75
       Height = 25
       Caption = 'AddCapsule'
       TabOrder = 4
-      OnClick = Button5Click
+      OnClick = btnAddCapsuleClick
     end
-    object Button6: TButton
+    object btnRemoveAll: TButton
       Left = 14
       Top = 163
       Width = 75
       Height = 25
       Caption = 'Remove All'
       TabOrder = 5
-      OnClick = Button6Click
+      OnClick = btnRemoveAllClick
     end
   end
   object GLScene1: TGLScene

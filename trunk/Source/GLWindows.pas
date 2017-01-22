@@ -7,7 +7,7 @@
   History :
     24/05/02 - JAJ - Base Unit built on basis of Jan Horn's demo at
                      (http://www.sulaco.co.za/opengl/windows.zip)
-    The whole history is logged in a prior version of the unit
+    The whole history is logged in a previous version of the unit
 }
 
 unit GLWindows;

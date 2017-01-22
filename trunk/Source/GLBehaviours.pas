@@ -5,7 +5,7 @@
    Standard TGLBehaviour subclasses for GLScene 
    History :
      05/04/00 - Egg - Creation
-     The whole history is logged in a prior version of the unit
+     The whole history is logged in a previous version of the unit
 }
 unit GLBehaviours;
 

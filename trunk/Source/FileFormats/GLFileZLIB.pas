@@ -3,7 +3,7 @@
 //
 {
    Methods for archiving using ZLib 
-   The whole history is logged in a former version of the unit.
+   The whole history is logged in a previous version of the unit.
 }
 
 unit GLFileZLIB;

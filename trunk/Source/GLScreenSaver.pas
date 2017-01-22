@@ -6,7 +6,7 @@
 
    History :  
       11/04/00 - Egg - Creation
-      The whole history is logged in a prior version of the unit.
+      The whole history is logged in a previous version of the unit.
 	 
 
 	Parts of this code are based on DeskSpin sample by	Tom Nuydens

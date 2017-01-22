@@ -10,7 +10,7 @@
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found GLGeomObjects.
-  The whole history is logged in a prior version of the unit
+  The whole history is logged in a previous version of the unit
    
 }
 unit GLObjects;

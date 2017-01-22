@@ -6,7 +6,7 @@
 
     History :
       09/11/00 - JAJ - First submitted. Base Class TGLNavigator included.
-      The whole history is logged in a prior version of the unit.
+      The whole history is logged in a previous version of the unit.
 }
 unit GLNavigator;
 

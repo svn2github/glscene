@@ -9,14 +9,11 @@
 
    Author: Joen Joensen.
    Contributed to the GLScene community.
-
    Features: CSG_Union, CSG_Subtraction, CSG_Intersection.
 
-  History :  
-       06/06/10 - Yar - Added GLVectorTypes to uses
-       30/03/07 - DaStr - Added $I GLScene.inc
-       18/07/04 - JAJ - Bug fix, causing triangles to dissapear, once in a while.
-       29/11/03 - JAJ - Created and Submitted to GLScene.
+  History :
+    29/11/03 - JAJ - Created and Submitted to GLScene.
+    The whole history is logged in a previous version of the unit.
   
 }
 unit GLMeshCSG;
@@ -42,7 +39,13 @@ type
 
 procedure CSG_Operation(obj1, obj2: TMeshObject; Operation: TCSGOperation; Res: TMeshObject; const MaterialName1, MaterialName2: string);
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 implementation
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 const
   cOwnTriangleEpsilon = 1e-5;

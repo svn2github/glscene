@@ -6,7 +6,7 @@
 
    History :
      22/07/01 - EG - Creation (glcontext.omm)
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 unit GLContext;
 

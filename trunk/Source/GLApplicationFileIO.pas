@@ -8,7 +8,7 @@
 
   History :  
      21/11/02 - EG - Creation
-     The whole history is logged in a prior version of the unit
+     The whole history is logged in a previous version of the unit
 }
 
 unit GLApplicationFileIO;

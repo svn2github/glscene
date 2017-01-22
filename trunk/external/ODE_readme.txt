@@ -2,14 +2,18 @@ You will need to place ODE.DLL in your System32 directory
 or in the ODE application(s) directory.
 
 Credits:
+Russell L. Smith is the original author of ODE
 
 ODE / Open Dynamics Engine
-Copyright (c) 2001,2002, Russell L. Smith 
+Copyright (c) 2001, 2015 
+http://ode.org/
 
-http://www.q12.org/ode/
+You can download the last version from
+https://bitbucket.org/odedevs/ode/downloads
 
-DelphiODE was created and is maintained by
- 	Mattias Fagerlund ( mattias@cambrianlabs.com )
- 	Christophe Hosten ( chroma@skynet.be )
-
-http://www.cambrianlabs.com/Mattias/DelphiODE/
+DelphiODE was initially created by
+  Mattias Fagerlund ( mattias@cambrianlabs.com )
+  Christophe Hosten ( chroma@skynet.be )
+  and now maintained by 
+GLS Team
+http://www.glscene.org

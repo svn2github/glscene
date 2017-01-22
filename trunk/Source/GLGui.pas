@@ -6,7 +6,7 @@
 
   History :  
     01/06/02 - JAJ - Base Unit built..
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 
 }
 unit GLGui;

@@ -6,7 +6,7 @@
    History :
    01/01/07 - Dave Gravel - Modification to make it work.
    10/09/03 - Domin - Creation
-   The whole history is logged in a prior version of the unit
+   The whole history is logged in a previous version of the unit
 
 }
 unit GLFileLMTS;

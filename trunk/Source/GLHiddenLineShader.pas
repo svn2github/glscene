@@ -9,7 +9,7 @@
     History :  
        03/12/03 - NelC - Creation. Modified from the HiddenLineShader in
                             the multipass demo.
-      The whole history is logged in a prior version of the unit.
+      The whole history is logged in a previous version of the unit.
 }
 unit GLHiddenLineShader;
 

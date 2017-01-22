@@ -7,7 +7,7 @@
   Modified by DaStr, C4 and YarUnderoaker.
   History :
     09/11/09 - DaStr - Initial version (contributed to GLScene)
-    The whole history is logged in a prior version of the unit.
+    The whole history is logged in a previous version of the unit.
 
 }
 

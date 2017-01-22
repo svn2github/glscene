@@ -9,7 +9,7 @@
 
    History :  
      29/01/03 - JaJ - Submitted to GLScene.
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 unit GLPerlin;
 

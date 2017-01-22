@@ -8,7 +8,7 @@
        29/10/02 - EG - Initial, added defaults and encapsulation,
                        fixed positionning, RandSeed now preserved,
                        minor speedup
-       The whole history is logged in a prior version of the unit.
+       The whole history is logged in a previous version of the unit.
 }
 unit GLLensFlare;
 

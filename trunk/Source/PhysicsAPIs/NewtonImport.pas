@@ -1,43 +1,6 @@
-{*******************************************************************************}
-{                                                                               }
-{      Newton Game Dynamics Delphi-Headertranslation                            }
-{       Current SDK version 2.35 (Beta)(Revision #1)                            }
-{                                                                               }
-{      Copyright (c) 2004-2012                                                  }
-{          Currently maintained by :                                            }
-{            Sascha Willems                                                     }
-{          Additional contributors :                                            }
-{           Stuart "Stucuk" Carey                                               }
-{           Executor                                                            }
-{           Jon Walton                                                          }
-{           Dominique Louis                                                     }
-{                                                                               }
-{      Initial Author : S.Spasov (Sury)                                         }
-{                                                                               }
-{*******************************************************************************}
-{                                                                               }
-{ License :                                                                     }
-{                                                                               }
-{  The contents of this file are used with permission, subject to               }
-{  the Mozilla Public License Version 1.1 (the "License"); you may              }
-{  not use this file except in compliance with the License. You may             }
-{  obtain a copy of the License at                                              }
-{  http://www.mozilla.org/MPL/MPL-1.1.html                                      }
-{                                                                               }
-{  Software distributed under the License is distributed on an                  }
-{  "AS IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or               }
-{  implied. See the License for the specific language governing                 }
-{  rights and limitations under the License.                                    }
-{                                                                               }
-{*******************************************************************************}
-{                                                                               }
-{  See "Readme_NewtonImport.txt" for more information and detailed history      }
-{                                                                               }
-{*******************************************************************************}
 
-{ Original copyright from newton.h :
 
- * Copyright (c) <2003-2011> <Julio Jerez, Newton Game Dynamics>
+(* Copyright (c) <2003-2017> <Julio Jerez, Newton Game Dynamics>
  *
  * This software is provided 'as-is', without any express or implied
  * warranty. In no event will the authors be held liable for any damages
@@ -56,14 +19,14 @@
  * misrepresented as being the original software.
  *
  * 3. This notice may not be removed or altered from any source distribution.
- *
-}
+ *)
+
 
 unit NewtonImport;
 
 {$I delphinewton.inc}
 
-// Note: Declare the following in Projects->Options->Conditionals not in this unit! - Stucuk
+// Note: Declare the following in Projects->Options->Conditionals not in this unit! 
 //{$DEFINE NEWTON_DOUBLE_PRECISION} // This is needed when you want to use double precision
 
 interface
@@ -110,8 +73,8 @@ const
 //{$DEFINE NEWTON_DOUBLE_PRECISION} // This is needed when you want to use double precision
 
 const
-NEWTON_MAJOR_VERSION                            =  2;
-NEWTON_MINOR_VERSION                            = 35;
+NEWTON_MAJOR_VERSION                            =  3;
+NEWTON_MINOR_VERSION                            = 14;
 
 NEWTON_PROFILER_WORLD_UPDATE                    =  0;
 NEWTON_PROFILER_COLLISION_UPDATE                =  1;

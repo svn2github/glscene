@@ -7,7 +7,7 @@
    History :
      05/02/00 - EG - Javadocisation, fixes and enhancements :
      TGLColor.Update, ConvertWinColor, TPicImage, TGLMaterial.Apply
-     The whole history is logged in a prior version of the unit.
+     The whole history is logged in a previous version of the unit.
 }
 unit GLTexture;
 
