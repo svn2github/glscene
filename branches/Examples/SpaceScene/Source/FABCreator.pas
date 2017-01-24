@@ -91,7 +91,7 @@ uses
   ///UFireFxBase,// MRQZZZ 5/5/2003
   ///UGLImposter,
   GLBitmapFont, GLWindowsFont, GLCoordinates, GLBaseClasses, GLCrossPlatform,
-  GLMaterial, GLImposter, GLColor, TGA;
+  GLMaterial, GLImposter, GLColor, GLFileTGA;
 
   //GLHUDObjects;
   //TGLHUDSprite = class (TGLSprite)
@@ -2011,7 +2011,7 @@ begin
         Name:='FF'+DebrisDataTmpArray[i].Name;
         Tag:=10;
         Hint:=inttostr(i);//+','+inttostr(j);
-        Temp:=TMeshObject.CreateOwned((FFDebris As TGLDebrisFreeForm){MasterAsteroidF}.MeshObjects);
+        Temp:=TGLMeshObject.CreateOwned((FFDebris As TGLDebrisFreeForm){MasterAsteroidF}.MeshObjects);
         BuildPotatoid(Temp,0.5,3,2);
         Scale.X:=          DebrisDataTmpArray[i].RCDXYSize+0.00007;
         //(DebrisDataTmpArray[i].Radius);

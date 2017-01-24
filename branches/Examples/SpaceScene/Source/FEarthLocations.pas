@@ -17,10 +17,11 @@ The Planet maker (ABCDE) could be another page}
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes,
-  Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Buttons, ComCtrls, ExtCtrls,
-
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes,
+  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
+  VCL.StdCtrls, VCL.Buttons, VCL.ComCtrls, VCL.ExtCtrls,
+  //GLS
   GLTexture, GLColor;
 
 type
@@ -88,8 +89,8 @@ type
     procedure SaveBtnClick(Sender: TObject);
     procedure PrintBtnClick(Sender: TObject);
     procedure AddtoTypeBtnClick(Sender: TObject);
-procedure SaveTypeList;
-procedure SaveColors;
+    procedure SaveTypeList;
+    procedure SaveColors;
     procedure ColorPanelClick(Sender: TObject);
     procedure ResetDefaultsBtnClick(Sender: TObject);
     procedure SaveListBtnClick(Sender: TObject);
@@ -106,7 +107,9 @@ procedure SaveColors;
 var
   EarthLocationsFrm: TEarthLocationsFrm;
 
+//-------------------------------------------------------------------
 implementation
+//-------------------------------------------------------------------
 
 uses
   FSpaceScene, uGlobals;

@@ -449,38 +449,38 @@ object Form1: TForm1
         Height = 73
         Align = alBottom
         TabOrder = 3
-        object SpeedButton1: TSpeedButton
+        object sbNewLine: TSpeedButton
           Left = 3
           Top = 4
           Width = 64
           Height = 22
           Hint = 'Start new line'
           Caption = 'New line'
-          OnClick = SpeedButton1Click
+          OnClick = sbNewLineClick
         end
-        object SpeedButton2: TSpeedButton
+        object sbDelNode: TSpeedButton
           Left = 133
           Top = 27
           Width = 64
           Height = 22
           Caption = 'Del node'
-          OnClick = SpeedButton2Click
+          OnClick = sbDelNodeClick
         end
-        object SpeedButton3: TSpeedButton
+        object sbDelLine: TSpeedButton
           Left = 133
           Top = 4
           Width = 64
           Height = 22
           Caption = 'Del line'
-          OnClick = SpeedButton3Click
+          OnClick = sbDelLineClick
         end
-        object SpeedButton4: TSpeedButton
+        object sbEndLine: TSpeedButton
           Left = 68
           Top = 4
           Width = 64
           Height = 22
           Caption = 'End line'
-          OnClick = SpeedButton4Click
+          OnClick = sbEndLineClick
         end
         object SpeedButton5: TSpeedButton
           Left = 68
@@ -549,7 +549,6 @@ object Form1: TForm1
       TargetObject = GLDummyCube1
       Position.Coordinates = {0000F0410000F0410000A0410000803F}
       Direction.Coordinates = {00000000000000000000803F00000000}
-      Up.Coordinates = {000000000000803F0000008000000000}
     end
   end
   object GLMaterialLibrary1: TGLMaterialLibrary

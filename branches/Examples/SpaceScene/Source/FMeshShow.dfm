@@ -106,6 +106,10 @@ object MeshShowFrm: TMeshShowFrm
       TabOrder = 0
       object TabSheet1: TTabSheet
         Caption = 'Control'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label6: TLabel
           Left = 8
           Top = 192
@@ -258,10 +262,18 @@ object MeshShowFrm: TMeshShowFrm
       object TabSheet2: TTabSheet
         Caption = 'Attributes'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
       end
       object TabSheet3: TTabSheet
         Caption = 'Data'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label1: TLabel
           Left = 16
           Top = 90

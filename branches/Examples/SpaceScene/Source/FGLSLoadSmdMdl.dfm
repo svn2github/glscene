@@ -150,6 +150,10 @@ object GlsLoadSmdMdlFrm: TGlsLoadSmdMdlFrm
       HelpContext = 8500
       Caption = 'qc'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object QcPrintBtn: TSpeedButton
         Left = 8
         Top = 0

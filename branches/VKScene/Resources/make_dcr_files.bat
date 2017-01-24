@@ -11,5 +11,6 @@ BRCC32 -r -foVKSceneNGD.dcr VKSceneNGD.rc
 BRCC32 -r -foVKSceneSDL.dcr VKSceneSDL.rc
 BRCC32 -r -foVKSceneCg.dcr VKSceneCg.rc
 BRCC32 -r -foVKSceneCUDA.dcr VKSceneCUDA.rc
+BRCC32 -r -foVKSceneDWS.dcr VKSceneDWS.rc
 BRCC32 -r -foVKSceneRunTime.dcr VKSceneRunTime.rc
 pause

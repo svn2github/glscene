@@ -209,11 +209,11 @@ type
     BackgroundColor: TColorVector;
     PassCount: Integer;
   public
-    procedure DoApply(var rci: TRenderContextInfo; Sender: TObject); override;
-    function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
+    procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
+    function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
   end;
 
-procedure THiddenLineShader.DoApply(var rci: TRenderContextInfo;
+procedure THiddenLineShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
   PassCount := 1;
@@ -226,7 +226,7 @@ begin
   glPolygonOffset(1, 2);
 end;
 
-function THiddenLineShader.DoUnApply(var rci: TRenderContextInfo): Boolean;
+function THiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case PassCount of
     1:
@@ -814,7 +814,7 @@ end;
 procedure TGLSViewerFrm.ACReverseRenderingOrderExecute(Sender: TObject);
 var
   i, j, n: Integer;
-  fg: TFaceGroup;
+  fg: TGLFaceGroup;
 begin
   ReverseRenderingOrder1.Checked := (not ReverseRenderingOrder1.Checked);
   with FreeForm.MeshObjects do

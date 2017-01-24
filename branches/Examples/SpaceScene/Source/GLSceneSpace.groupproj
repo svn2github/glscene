@@ -3,7 +3,7 @@
         <ProjectGuid>{6EB6A966-ECFE-406C-87D9-FABEE4BA950B}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
-        <Projects Include="SpaceScene.dproj">
+        <Projects Include="SpaceGLScene.dproj">
             <Dependencies/>
         </Projects>
         <Projects Include="EarthAbcde.dproj">
@@ -20,14 +20,14 @@
             <Default.Personality/>
         </BorlandProject>
     </ProjectExtensions>
-    <Target Name="SpaceScene">
-        <MSBuild Projects="SpaceScene.dproj"/>
+    <Target Name="SpaceGLScene">
+        <MSBuild Projects="SpaceGLScene.dproj"/>
     </Target>
-    <Target Name="SpaceScene:Clean">
-        <MSBuild Projects="SpaceScene.dproj" Targets="Clean"/>
+    <Target Name="SpaceGLScene:Clean">
+        <MSBuild Projects="SpaceGLScene.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="SpaceScene:Make">
-        <MSBuild Projects="SpaceScene.dproj" Targets="Make"/>
+    <Target Name="SpaceGLScene:Make">
+        <MSBuild Projects="SpaceGLScene.dproj" Targets="Make"/>
     </Target>
     <Target Name="EarthAbcde">
         <MSBuild Projects="EarthAbcde.dproj"/>
@@ -48,13 +48,13 @@
         <MSBuild Projects="EarthPilot.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="SpaceScene;EarthAbcde;EarthPilot"/>
+        <CallTarget Targets="SpaceGLScene;EarthAbcde;EarthPilot"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="SpaceScene:Clean;EarthAbcde:Clean;EarthPilot:Clean"/>
+        <CallTarget Targets="SpaceGLScene:Clean;EarthAbcde:Clean;EarthPilot:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="SpaceScene:Make;EarthAbcde:Make;EarthPilot:Make"/>
+        <CallTarget Targets="SpaceGLScene:Make;EarthAbcde:Make;EarthPilot:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

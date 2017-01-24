@@ -66,8 +66,6 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
     HelpContext = 8000
     Align = alRight
     TabOrder = 1
-    ExplicitLeft = 405
-    ExplicitHeight = 360
     object Bevel2: TBevel
       Left = 8
       Top = 200
@@ -167,7 +165,7 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
     object Label15: TLabel
       Left = 1
       Top = 390
-      Width = 236
+      Width = 246
       Height = 26
       Align = alBottom
       Alignment = taCenter
@@ -177,6 +175,7 @@ object GlsSmdQcFrm: TGlsSmdQcFrm
       Color = clGray
       ParentColor = False
       WordWrap = True
+      ExplicitWidth = 236
     end
     object HelpBtn: TSpeedButton
       Left = 184

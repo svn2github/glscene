@@ -27,12 +27,6 @@
         <Projects Include="Win32\VKScene_Parallel_DesignTime.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="Win32\VKScene_Cg_RunTime.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="Win32\VKScene_Cg_DesignTime.dproj">
-            <Dependencies/>
-        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -113,32 +107,14 @@
     <Target Name="VKScene_Parallel_DesignTime:Make">
         <MSBuild Projects="Win32\VKScene_Parallel_DesignTime.dproj" Targets="Make"/>
     </Target>
-    <Target Name="VKScene_Cg_RunTime">
-        <MSBuild Projects="Win32\VKScene_Cg_RunTime.dproj"/>
-    </Target>
-    <Target Name="VKScene_Cg_RunTime:Clean">
-        <MSBuild Projects="Win32\VKScene_Cg_RunTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="VKScene_Cg_RunTime:Make">
-        <MSBuild Projects="Win32\VKScene_Cg_RunTime.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="VKScene_Cg_DesignTime">
-        <MSBuild Projects="Win32\VKScene_Cg_DesignTime.dproj"/>
-    </Target>
-    <Target Name="VKScene_Cg_DesignTime:Clean">
-        <MSBuild Projects="Win32\VKScene_Cg_DesignTime.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="VKScene_Cg_DesignTime:Make">
-        <MSBuild Projects="Win32\VKScene_Cg_DesignTime.dproj" Targets="Make"/>
-    </Target>
     <Target Name="Build">
-        <CallTarget Targets="VKScene_RunTime;VKScene_DesignTime;VKScene_Sounds_RunTime;VKScene_Sounds_DesignTime;VKScene_Physics_RunTime;VKScene_Physics_DesignTime;VKScene_Parallel_RunTime;VKScene_Parallel_DesignTime;VKScene_Cg_RunTime;VKScene_Cg_DesignTime"/>
+        <CallTarget Targets="VKScene_RunTime;VKScene_DesignTime;VKScene_Sounds_RunTime;VKScene_Sounds_DesignTime;VKScene_Physics_RunTime;VKScene_Physics_DesignTime;VKScene_Parallel_RunTime;VKScene_Parallel_DesignTime"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="VKScene_RunTime:Clean;VKScene_DesignTime:Clean;VKScene_Sounds_RunTime:Clean;VKScene_Sounds_DesignTime:Clean;VKScene_Physics_RunTime:Clean;VKScene_Physics_DesignTime:Clean;VKScene_Parallel_RunTime:Clean;VKScene_Parallel_DesignTime:Clean;VKScene_Cg_RunTime:Clean;VKScene_Cg_DesignTime:Clean"/>
+        <CallTarget Targets="VKScene_RunTime:Clean;VKScene_DesignTime:Clean;VKScene_Sounds_RunTime:Clean;VKScene_Sounds_DesignTime:Clean;VKScene_Physics_RunTime:Clean;VKScene_Physics_DesignTime:Clean;VKScene_Parallel_RunTime:Clean;VKScene_Parallel_DesignTime:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="VKScene_RunTime:Make;VKScene_DesignTime:Make;VKScene_Sounds_RunTime:Make;VKScene_Sounds_DesignTime:Make;VKScene_Physics_RunTime:Make;VKScene_Physics_DesignTime:Make;VKScene_Parallel_RunTime:Make;VKScene_Parallel_DesignTime:Make;VKScene_Cg_RunTime:Make;VKScene_Cg_DesignTime:Make"/>
+        <CallTarget Targets="VKScene_RunTime:Make;VKScene_DesignTime:Make;VKScene_Sounds_RunTime:Make;VKScene_Sounds_DesignTime:Make;VKScene_Physics_RunTime:Make;VKScene_Physics_DesignTime:Make;VKScene_Parallel_RunTime:Make;VKScene_Parallel_DesignTime:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

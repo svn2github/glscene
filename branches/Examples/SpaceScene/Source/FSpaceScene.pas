@@ -172,7 +172,7 @@ type
     miDisplay: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure GLDirectOpenGL1Render(Sender: TObject;
-      var rci: TRenderContextInfo);
+      var rci: TGLRenderContextInfo);
     procedure TimerTimer(Sender: TObject);
     procedure GLCadencerProgress(Sender: TObject;
       const deltaTime, newTime: Double);
@@ -729,7 +729,7 @@ end;
   Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
 }
 procedure TSpaceSceneFrm.GLDirectOpenGL1Render(Sender: TObject;
-  var rci: TRenderContextInfo);
+  var rci: TGLRenderContextInfo);
 const
   // unrealisticly thick atmospheres look better :)
   cAtmosphereRadius: single = 0.55;

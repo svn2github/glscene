@@ -8,8 +8,10 @@ unit FGlsSmdQc;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Buttons,
-  Graphics, Controls, Forms, Dialogs, Spin, ComCtrls, StdCtrls, ExtCtrls,
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes,
+  Vcl.Buttons, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
+  Vcl.Samples.Spin, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls,
   // GLS
   GLVectorFileObjects, GLScene, GLObjects, GLTexture,
   GLCadencer, GLWin32Viewer, GLGraph, GLVectorTypes,

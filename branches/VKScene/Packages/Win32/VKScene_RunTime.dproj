@@ -125,7 +125,7 @@
         <DCC_CBuilderOutput>All</DCC_CBuilderOutput>
         <DCC_HppOutput>$(VKSCENEDIR)\include\Win32</DCC_HppOutput>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
-        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(ModuleName);FileDescription=$(ModuleName);ProductName=$(ModuleName)</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName);FileDescription=$(MSBuildProjectName);ProductName=$(MSBuildProjectName)</VerInfo_Keys>
         <DCC_ObjOutput>$(VKSCENEDIR)\lib\Win32</DCC_ObjOutput>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win64)'!=''">
@@ -178,6 +178,7 @@
         <DCCReference Include="..\..\Source\VKS.Cadencer.pas"/>
         <DCCReference Include="..\..\Source\VKS.CameraController.pas"/>
         <DCCReference Include="..\..\Source\Basis\VKS.Canvas.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\VKS.CelShader.pas"/>
         <DCCReference Include="..\..\Source\VKS.Collision.pas"/>
         <DCCReference Include="..\..\Source\VKS.Color.pas"/>
         <DCCReference Include="..\..\Source\VKS.CompositeImage.pas"/>

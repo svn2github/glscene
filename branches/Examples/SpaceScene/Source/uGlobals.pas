@@ -1,10 +1,11 @@
-unit uGlobals;
+unit UGlobals;
 
 interface
 
 uses
-  Windows, SysUtils, Db, Graphics,
-
+  Winapi.Windows, System.SysUtils,
+  VCL.Graphics,
+  //GLS
   GLColor, GLTexture;
 
 const SELDIRHELP: INTEGER = 180;
@@ -107,11 +108,11 @@ procedure SetPreferences;
 procedure DoSaver;
 procedure GetPreferences;
 
+//--------------------------------------------------------------------
 implementation
+//--------------------------------------------------------------------
+
 {uses LOResMess;}
-{---------------------------------------------------------------------}
-
-
 
 procedure DoLoader;
 var P_File: PrefFile;

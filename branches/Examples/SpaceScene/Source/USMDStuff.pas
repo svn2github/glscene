@@ -175,7 +175,7 @@ procedure RotateBone(Ac: TGLActor; BoneIndex: integer; aa, bb, cc: single;
   SlowerCoeff: single; Maxaa, Minaa, Maxbb, Minbb, Maxcc, Mincc: single);
 var
   BoneRotation: Tvector3f;
-  BoneFrame: TSkeletonFrame;
+  BoneFrame: TGLSkeletonFrame;
   t: integer;
 begin
   for t := Ac.Animations.FindName(Ac.CurrentAnimation)

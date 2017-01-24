@@ -4,11 +4,11 @@ unit FGLSLoadSmdMdl;
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes,
-  Graphics, Controls, Forms, Dialogs,
-  StdCtrls, Buttons, Printers, ComCtrls;
+  Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes,
+  VCL.Graphics, VCL.Controls, VCL.Forms, VCL.Dialogs,
+  VCL.StdCtrls, VCL.Buttons, VCL.Printers, VCL.ComCtrls;
 
-  
 
 type
   TVec3 = array[0..2] of single;
@@ -261,7 +261,9 @@ procedure DoMdlOpen(const FileName : TFileName);
 var
   GlsLoadSmdMdlFrm: TGlsLoadSmdMdlFrm;
 
+//---------------------------------------------------------------
 implementation
+//---------------------------------------------------------------
 
 {$R *.DFM}
 

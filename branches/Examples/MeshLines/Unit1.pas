@@ -3,16 +3,41 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Graphics, Vcl.Buttons,
-  Vcl.ActnList, Vcl.Imaging.JPeg, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.OpenGL,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.Graphics,
+  Vcl.Buttons,
+  Vcl.ActnList,
+  Vcl.Imaging.JPeg,
+  Vcl.ComCtrls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
   // GLS
-  GLWin32Viewer, GLScene, GLObjects, GLTexture, GLGeomObjects,
+  GLWin32Viewer,
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLGeomObjects,
   GLVectorFileObjects,
-  GLExtrusion, GLSLProjectedTextures, GLMultiMaterialShader, GLNodes,
-  TGA, GLCadencer, GLVectorGeometry, GLMaterial, GLCoordinates, GLCrossPlatform,
-  GLBaseClasses, GLMeshLines, OpenGL1x, XOpenGL;
+  GLExtrusion,
+  GLSLProjectedTextures,
+  GLMultiMaterialShader,
+  GLNodes,
+  GLFileTGA,
+  GLCadencer,
+  GLVectorGeometry,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLMeshLines;
 
 type
   TLineOperation = (loSelectLine, loNewLine, loInsertNode, loMoveNode);
@@ -70,10 +95,10 @@ type
     LineHidecb: TCheckBox;
     Label14: TLabel;
     NameEdt: TEdit;
-    SpeedButton1: TSpeedButton;
-    SpeedButton2: TSpeedButton;
-    SpeedButton3: TSpeedButton;
-    SpeedButton4: TSpeedButton;
+    sbNewLine: TSpeedButton;
+    sbDelNode: TSpeedButton;
+    sbDelLine: TSpeedButton;
+    sbEndLine: TSpeedButton;
     SpeedButton5: TSpeedButton;
     SpeedButton6: TSpeedButton;
     CheckBox1: TCheckBox;
@@ -104,10 +129,10 @@ type
     procedure LineTextureLengthEdtChange(Sender: TObject);
     procedure LineHidecbClick(Sender: TObject);
     procedure NameEdtChange(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
-    procedure SpeedButton2Click(Sender: TObject);
-    procedure SpeedButton3Click(Sender: TObject);
-    procedure SpeedButton4Click(Sender: TObject);
+    procedure sbNewLineClick(Sender: TObject);
+    procedure sbDelNodeClick(Sender: TObject);
+    procedure sbDelLineClick(Sender: TObject);
+    procedure sbEndLineClick(Sender: TObject);
     procedure SpeedButton5Click(Sender: TObject);
   private
     mx, my: single;
@@ -673,26 +698,26 @@ begin
     FCurrentLine.SelectedLineItem.Name := NameEdt.text;
 end;
 
-procedure TForm1.SpeedButton1Click(Sender: TObject);
+procedure TForm1.sbNewLineClick(Sender: TObject);
 begin
   EndLineOperation;
   FLineOperation := loNewLine;
 end;
 
-procedure TForm1.SpeedButton2Click(Sender: TObject);
+procedure TForm1.sbDelNodeClick(Sender: TObject);
 begin
   EndLineOperation;
   if assigned(FCurrentLine.SelectedNode) then
     DeleteLineNode(FCurrentLine.SelectedNode);
 end;
 
-procedure TForm1.SpeedButton3Click(Sender: TObject);
+procedure TForm1.sbDelLineClick(Sender: TObject);
 begin
   EndLineOperation;
   DeleteLine(FCurrentLine.SelectedLineItem);
 end;
 
-procedure TForm1.SpeedButton4Click(Sender: TObject);
+procedure TForm1.sbEndLineClick(Sender: TObject);
 begin
   EndLineOperation;
 end;

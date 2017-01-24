@@ -1,8 +1,8 @@
-gls_camera BITMAP objects\gls_camera.bmp
-gls_lights BITMAP objects\gls_lights.bmp
-gls_objects BITMAP objects\gls_objects.bmp
-gls_root BITMAP objects\gls_root.bmp
-gls_cross BITMAP objects\gls_cross.bmp
+vks_camera BITMAP objects\vks_camera.bmp
+vks_lights BITMAP objects\vks_lights.bmp
+vks_objects BITMAP objects\vks_objects.bmp
+vks_root BITMAP objects\vks_root.bmp
+vks_cross BITMAP objects\vks_cross.bmp
 
 TVKCamera BITMAP objects\TVKCamera.bmp
 TVKDirectOpenGL BITMAP objects\TVKDirectOpenGL.bmp
@@ -40,6 +40,7 @@ TVKCylinder BITMAP objects\basic_geometry\TVKCylinder.bmp
 TVKDisk BITMAP objects\basic_geometry\TVKDisk.bmp
 TVKDodecahedron BITMAP objects\basic_geometry\TVKDodecahedron.bmp
 TVKFrustrum BITMAP objects\basic_geometry\TVKFrustrum.bmp
+TVKHexahedron BITMAP objects\basic_geometry\TVKHexahedron.bmp
 TVKIcosahedron BITMAP objects\basic_geometry\TVKIcosahedron.bmp
 TVKTetrahedron BITMAP objects\basic_geometry\TVKTetrahedron.bmp
 TVKOctahedron BITMAP objects\basic_geometry\TVKOctahedron.bmp

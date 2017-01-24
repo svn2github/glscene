@@ -67,6 +67,7 @@ contains
   VKS.Cadencer in '..\..\Source\VKS.Cadencer.pas',
   VKS.CameraController in '..\..\Source\VKS.CameraController.pas',
   VKS.Canvas in '..\..\Source\Basis\VKS.Canvas.pas',
+  VKS.CelShader in '..\..\Source\Shaders\VKS.CelShader.pas',
   VKS.Collision in '..\..\Source\VKS.Collision.pas',
   VKS.Color in '..\..\Source\VKS.Color.pas',
   VKS.CompositeImage in '..\..\Source\VKS.CompositeImage.pas',

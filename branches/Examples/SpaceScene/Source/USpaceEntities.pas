@@ -143,7 +143,7 @@ uses
 
 //RandSeed:=Seed;
 //  MasterAsteroidF:=TFreeForm(dumMasters.AddNewChild(TFreeForm));
-//  Temp:=TMeshObject.CreateOwned(MasterAsteroidF.MeshObjects);
+//  Temp:=TGLMeshObject.CreateOwned(MasterAsteroidF.MeshObjects);
 //  BuildPotatoid(Temp,0.5,0,2);
 //procedure Normalize(var v:array of single);
 //var
