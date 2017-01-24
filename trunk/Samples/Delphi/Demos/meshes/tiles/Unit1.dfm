@@ -189,29 +189,22 @@ object Form1: TForm1
       item
         Name = 'beigemarble'
         Tag = 0
-        Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'beigemarble.jpg'
         Material.Texture.Disabled = False
       end
       item
         Name = 'marbletiles'
         Tag = 0
-        Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'marbletiles.jpg'
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {0000803E0000803E0000803F00000000}
       end
       item
         Name = 'walkway'
         Tag = 0
-        Material.Texture.ImageClassName = 'TGLPicFileImage'
-        Material.Texture.Image.PictureFileName = 'walkway.jpg'
         Material.Texture.Disabled = False
         TextureScale.Coordinates = {0000003F0000003F0000803F00000000}
       end>
-    TexturePaths = '..\..\..\..\media'
     Left = 24
-    Top = 64
+    Top = 72
   end
   object Timer1: TTimer
     OnTimer = Timer1Timer

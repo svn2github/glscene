@@ -40,6 +40,7 @@ TGLCylinder BITMAP objects\basic_geometry\TGLCylinder32.bmp
 TGLDisk BITMAP objects\basic_geometry\TGLDisk32.bmp
 TGLDodecahedron BITMAP objects\basic_geometry\TGLDodecahedron32.bmp
 TGLFrustrum BITMAP objects\basic_geometry\TGLFrustrum32.bmp
+TGLHexahedron BITMAP objects\basic_geometry\TGLHexahedron32.bmp
 TGLIcosahedron BITMAP objects\basic_geometry\TGLIcosahedron32.bmp
 TGLTetrahedron BITMAP objects\basic_geometry\TGLTetrahedron32.bmp
 TGLOctahedron BITMAP objects\basic_geometry\TGLOctahedron32.bmp

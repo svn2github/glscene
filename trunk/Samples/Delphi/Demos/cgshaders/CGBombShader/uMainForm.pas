@@ -95,7 +95,7 @@ type
 
 var
   Form1:    TForm1;
-  MyShader: TGLCgBombShader;
+  MyShader: TCgBombShader;
 
 implementation
 
@@ -121,7 +121,7 @@ begin
   GLMaterialLibrary1.LibMaterialByName('Fire').Material.Texture.Image.LoadFromFile('FireGrade.bmp');
   GLMaterialLibrary1.LibMaterialByName('FighterTexture').Material.Texture.Image.LoadFromFile('waste.jpg');
 
-  Myshader := TGLCgBombShader.Create(Self);
+  Myshader := TCgBombShader.Create(Self);
   Myshader.MainTexture := GLMaterialLibrary1.LibMaterialByName('FighterTexture').Material.Texture;
   MyShader.Cadencer := GLCadencer1;
 

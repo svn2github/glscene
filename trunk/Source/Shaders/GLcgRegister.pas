@@ -2,11 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Registration unit for CG shader. 
+   Registration unit for CG shader.
    History :
-       11/11/09 - DaStr - Improved FPC compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       23/02/07 - DaStr - Initial version
+     23/02/07 - DaStr - Initial version
 
 }
 unit GLCgRegister;
@@ -40,10 +38,10 @@ implementation
 procedure Register;
 begin
   // Register components.
-  RegisterComponents('GLScene Shaders', [TCgShader, TGLCgBombShader]);
+  RegisterComponents('GLScene Shaders', [TCgShader, TCgBombShader]);
 
   // Register property editors.
-  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TGLCgBombShader, '', TGLLibMaterialNameProperty);
+  RegisterPropertyEditor(TypeInfo(TGLLibMaterialName), TCgBombShader, '', TGLLibMaterialNameProperty);
 end;
 
 end.

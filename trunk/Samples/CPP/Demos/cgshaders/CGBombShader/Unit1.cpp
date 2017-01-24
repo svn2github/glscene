@@ -70,7 +70,7 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
   GLMaterialLibrary1->LibMaterialByName("FighterTexture")->
 	 Material->Texture->Image->LoadFromFile("waste.jpg");
 
-  MyShader = new TGLCgBombShader(this);
+  MyShader = new TCgBombShader(this);
   MyShader->MainTexture = GLMaterialLibrary1->LibMaterialByName("FighterTexture")->Material->Texture;
   MyShader->Cadencer = GLCadencer1;
 

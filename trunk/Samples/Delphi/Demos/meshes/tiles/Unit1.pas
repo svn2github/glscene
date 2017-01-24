@@ -3,18 +3,36 @@ unit Unit1;
 interface
 
 uses
-  Winapi.Windows,
   Winapi.OpenGL,
-  System.SysUtils, System.Classes, System.Math,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
-  Vcl.Imaging.Jpeg, Vcl.StdCtrls,
+  Winapi.Windows,
+  System.SysUtils,
+  System.Classes,
+  System.Math,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.ExtCtrls,
+  Vcl.Imaging.Jpeg,
+  Vcl.StdCtrls,
   // GLS
-  OpenGLTokens,
-  GLObjects, GLGraph,
-  GLScene, GLWin32Viewer, GLVectorGeometry, GLTilePlane,
-  GLTexture, GLCadencer, GLContext, GLCrossPlatform, GLMaterial,
-  GLCoordinates, GLBaseClasses, GLRenderContextInfo, GLTextureFormat,
-  GLKeyboard, GLUtils;
+  GLObjects,
+  GLGraph,
+  GLScene,
+  GLWin32Viewer,
+  GLVectorGeometry,
+  GLTilePlane,
+  GLTexture,
+  GLCadencer,
+  GLContext,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLKeyboard,
+  GLUtils;
 
 type
   TForm1 = class(TForm)
@@ -74,6 +92,10 @@ var
 begin
   SetGLSceneMediaDir();
   GLMaterialLibrary.TexturePaths := GetCurrentDir();
+  GLMaterialLibrary.LibMaterialByName('beigemarble').Material.Texture.Image.LoadFromFile('beigemarble.jpg');
+  GLMaterialLibrary.LibMaterialByName('marbletiles').Material.Texture.Image.LoadFromFile('marbletiles.jpg');
+  GLMaterialLibrary.LibMaterialByName('walkway').Material.Texture.Image.LoadFromFile('walkway.jpg');
+
   // fill the tiled area with random tiles
   RandSeed := 0;
   for i := -20 to 20 do
@@ -184,7 +206,7 @@ procedure TForm1.GLDirectOpenGLRender(Sender: TObject;
 begin
   // we clear the depth buffer, so that the grid is always in front of the
   // tile plane and won't Z-Fight with it
-  GL.Clear(GL_DEPTH_BUFFER_BIT);
+  glClear(GL_DEPTH_BUFFER_BIT);
 end;
 
 procedure TForm1.BUPackClick(Sender: TObject);

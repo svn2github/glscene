@@ -4,30 +4,7 @@
 {
     Just a good looking shader. And my first one;)
     History : 
-       22/04/10 - Yar - Fixes after GLState revision
-       24/07/09 - DaStr - TGLShader.DoInitialize() now passes rci
-                              (BugTracker ID = 2826217)   
-       14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.DoInitialize
-                             (Shader is disabled if GradientTexture is not assigned)
-       14/03/07 - DaStr - Bugfixed TGLCustomCGBombShader.SetMaterialLibrary
-                             Alpha is not stored now
-                             Added design-time checks
-       22/02/07 - DaStr - Initial version (contributed to GLScene)
-
-
-
-    Previous version history:
-     v1.0   08 March     '2006  Creation (based on NVIdia's FXComposer demo shader)
-     v1.1   04 April     '2006  I found a way to use the Current Texture!
-                                  See the TextureSource property for details...
-     v1.2   14 August    '2006  TGLCgBombShader became child of
-                                  TGLCgShader to support IShaderSuppoted
-                                TShaderTextureSource added
-     v1.3   19 August    '2006  TGLCustomCGBombShader added
-                                GLS_OPTIMIZATIONS support added
-                                TGLCustomCGBombShader.Set[Main/Gradient]Texture() updated
-                                Cadencer stuff abstracted into TCadencableCustomCgShader
-
+       19/08/06 - DaStr - Initial version (contributed to GLScene)
 }
 unit GLCgBombShader;
 
@@ -36,22 +13,30 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLTexture, GLCadencer, GLContext, OpenGLTokens, GLStrings, GLMaterial,
-  GLRenderContextInfo, GLTextureFormat,
+  //OpenGLTokens,
+  GLTexture,
+  GLCadencer,
+  GLContext,
+  GLStrings,
+  GLMaterial,
+  GLRenderContextInfo,
+  GLTextureFormat,
 
   // CG Shaders
-  CgGL, GLCgShader;
+  CgGL,
+  GLCgShader;
 
 type
-  EGLCgBombShaderException = class(EGLCGShaderException);
+  ECgBombShaderException = class(ECgShaderException);
 
   TGLCgBombShaderTextureSource = (stsPrimaryTexture, stsSecondadyTexture,
                                   stsThirdTexture, stsUserSelectedTexture);
 
   {Just a good-looking shader. }
-  TGLCustomCGBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
+  TCgCustomBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLAbstractMaterialLibrary;
 
@@ -127,7 +112,7 @@ type
     property MaterialLibrary: TGLAbstractMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
   end;
 
-  TGLCgBombShader = class(TGLCustomCGBombShader)
+  TCgBombShader = class(TCgCustomBombShader)
   protected
     procedure DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject); override;
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
@@ -160,7 +145,7 @@ const
 
 { TGLCustomCGBombShader }
 
-constructor TGLCustomCGBombShader.Create(AOwner: TComponent);
+constructor TCgCustomBombShader.Create(AOwner: TComponent);
 begin
   inherited;
   VertexProgram.OnApply := OnApplyVP;
@@ -184,7 +169,7 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
+procedure TCgCustomBombShader.DoApply(var rci: TGLRenderContextInfo; Sender: TObject);
 begin
   VertexProgram.Apply(rci, Sender);
   FragmentProgram.Apply(rci, Sender);
@@ -206,7 +191,7 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
+procedure TCgCustomBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
   if FGradientTexture = nil then
   try
@@ -318,24 +303,24 @@ begin
 end;
 
 
-function TGLCustomCGBombShader.GetGradientTextureName: TGLLibMaterialName;
+function TCgCustomBombShader.GetGradientTextureName: TGLLibMaterialName;
 begin
   Result := TGLMaterialLibrary(FMaterialLibrary).GetNameOfTexture(FGradientTexture);
   if Result = '' then Result := FGradientTextureName;
 end;
 
-function TGLCustomCGBombShader.GetMainTextureName: TGLLibMaterialName;
+function TCgCustomBombShader.GetMainTextureName: TGLLibMaterialName;
 begin
   Result := TGLMaterialLibrary(FMaterialLibrary).GetNameOfTexture(FMainTexture);
   if Result = '' then Result := FMainTextureName;
 end;
 
-function TGLCustomCGBombShader.GetMaterialLibrary: TGLAbstractMaterialLibrary;
+function TCgCustomBombShader.GetMaterialLibrary: TGLAbstractMaterialLibrary;
 begin
   Result := FMaterialLibrary;
 end;
 
-procedure TGLCustomCGBombShader.Notification(AComponent: TComponent;
+procedure TCgCustomBombShader.Notification(AComponent: TComponent;
   Operation: TOperation);
 var
   Index: Integer;
@@ -364,7 +349,7 @@ begin
       end;
 end;
 
-procedure TGLCustomCGBombShader.OnApplyFP(CgProgram: TCgProgram; Sender: TObject);
+procedure TCgCustomBombShader.OnApplyFP(CgProgram: TCgProgram; Sender: TObject);
 begin
   CgProgram.ParamByName('Alpha').SetAsScalar(FAlpha);
   CgProgram.ParamByName('GradientTextureShare').SetAsScalar(FGradientTextureShare);
@@ -377,7 +362,7 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.OnApplyVP(CgProgram: TCgProgram; Sender: TObject);
+procedure TCgCustomBombShader.OnApplyVP(CgProgram: TCgProgram; Sender: TObject);
 begin
   CgProgram.ParamByName('WorldViewProj').SetAsStateMatrix(CG_GL_MODELVIEW_PROJECTION_MATRIX, CG_GL_MATRIX_IDENTITY);
   CgProgram.ParamByName('Timer').SetAsScalar(Cadencer.CurrentTime);
@@ -390,21 +375,21 @@ begin
 end;
 
 
-procedure TGLCustomCGBombShader.OnUnApplyFP(CgProgram: TCgProgram);
+procedure TCgCustomBombShader.OnUnApplyFP(CgProgram: TCgProgram);
 begin
   CgProgram.ParamByName('GradeSampler').DisableTexture;
   if FMainTexture <> nil then
     CgProgram.ParamByName('MainTextureSampler').DisableTexture;
 end;
 
-procedure TGLCustomCGBombShader.SetGradientTexture(const Value: TGLTexture);
+procedure TCgCustomBombShader.SetGradientTexture(const Value: TGLTexture);
 begin
   if FGradientTexture = Value then Exit;
   FGradientTexture := Value;
   NotifyChange(Self);
 end;
 
-procedure TGLCustomCGBombShader.SetGradientTextureName(
+procedure TCgCustomBombShader.SetGradientTextureName(
   const Value: TGLLibMaterialName);
 begin
   FGradientTextureName := Value;
@@ -412,7 +397,7 @@ begin
     NotifyChange(Self);
 end;
 
-procedure TGLCustomCGBombShader.SetMainTexture(
+procedure TCgCustomBombShader.SetMainTexture(
   const Value: TGLTexture);
 begin
   if FMainTexture = Value then Exit;
@@ -420,7 +405,7 @@ begin
   NotifyChange(Self);
 end;
 
-procedure TGLCustomCGBombShader.SetMainTextureName(
+procedure TCgCustomBombShader.SetMainTextureName(
   const Value: TGLLibMaterialName);
 begin
   FMainTextureName := Value;
@@ -428,7 +413,7 @@ begin
     NotifyChange(Self);
 end;
 
-procedure TGLCustomCGBombShader.SetMaterialLibrary(
+procedure TCgCustomBombShader.SetMaterialLibrary(
   const Value: TGLAbstractMaterialLibrary);
 begin
   if FMaterialLibrary <> nil then FMaterialLibrary.RemoveFreeNotification(Self);
@@ -438,49 +423,49 @@ begin
       FMaterialLibrary.FreeNotification(Self);
 end;
 
-function TGLCustomCGBombShader.StoreColorRange: Boolean;
+function TCgCustomBombShader.StoreColorRange: Boolean;
 begin
   Result := Abs(FColorRange - 0.24) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreColorSharpness: Boolean;
+function TCgCustomBombShader.StoreColorSharpness: Boolean;
 begin
   Result := Abs(FColorSharpness - 1) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreDisplacement: Boolean;
+function TCgCustomBombShader.StoreDisplacement: Boolean;
 begin
   Result := Abs(FDisplacement - 0.3) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreGradientTextureShare: Boolean;
+function TCgCustomBombShader.StoreGradientTextureShare: Boolean;
 begin
   Result := Abs(FGradientTextureShare - 0.7) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreMainTextureShare: Boolean;
+function TCgCustomBombShader.StoreMainTextureShare: Boolean;
 begin
   Result := Abs(FMainTextureShare - 0.7) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreSharpness: Boolean;
+function TCgCustomBombShader.StoreSharpness: Boolean;
 begin
   Result := Abs(FSharpness - 3) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreSpeed: Boolean;
+function TCgCustomBombShader.StoreSpeed: Boolean;
 begin
   Result := Abs(FSpeed - 0.3) > EPS;
 end;
 
-function TGLCustomCGBombShader.StoreTurbDensity: Boolean;
+function TCgCustomBombShader.StoreTurbDensity: Boolean;
 begin
   Result := Abs(FTurbDensity - 1) > EPS;
 end;
 
 { TGLCgBombShader }
 
-procedure TGLCgBombShader.DoApply(var rci: TGLRenderContextInfo;
+procedure TCgBombShader.DoApply(var rci: TGLRenderContextInfo;
   Sender: TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -489,7 +474,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLCgBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
+procedure TCgBombShader.DoInitialize(var rci : TGLRenderContextInfo; Sender : TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
@@ -497,7 +482,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLCgBombShader.OnApplyFP(CgProgram: TCgProgram;
+procedure TCgBombShader.OnApplyFP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -506,7 +491,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLCgBombShader.OnApplyVP(CgProgram: TCgProgram;
+procedure TCgBombShader.OnApplyVP(CgProgram: TCgProgram;
   Sender: TObject);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
@@ -515,7 +500,7 @@ begin
 {$ENDIF}
 end;
 
-procedure TGLCgBombShader.OnUnApplyFP(CgProgram: TCgProgram);
+procedure TCgBombShader.OnUnApplyFP(CgProgram: TCgProgram);
 begin
 {$IFNDEF GLS_OPTIMIZATIONS}
   if (not (csDesigning in ComponentState)) or DesignEnable then
@@ -524,7 +509,7 @@ begin
 end;
 
 initialization
-  RegisterClasses([TGLCustomCGBombShader, TGLCgBombShader]);
+  RegisterClasses([TCgCustomBombShader, TCgBombShader]);
 
 end.
 

@@ -1,2 +1,2 @@
-TCGShader BITMAP gls\TCGShader.bmp
-TGLCgBombShader BITMAP gls\TGLCgBombShader.bmp
+TCgShader BITMAP gls\TCgShader.bmp
+TCgBombShader BITMAP gls\TCgBombShader.bmp

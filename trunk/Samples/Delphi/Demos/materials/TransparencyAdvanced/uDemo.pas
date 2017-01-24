@@ -6,13 +6,16 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
+  GLSJPG,
   //GLS
   GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
   GLCadencer, GLCrossPlatform, GLBaseClasses, GLWin32Viewer, GLCustomShader,
   GLSLShader, GLTexture, GLFBORenderer, GLRenderContextInfo, GLGeomObjects,
   GLMesh, GLHUDObjects, GLBitmapFont, GLWindowsFont, GLVectorGeometry,
   GLVectorTypes, GLContext, GLState, OpenGLTokens, GLColor, GLKeyBoard,
-  GLCompositeImage, GLFileJPEG, GLUtils;
+  GLCompositeImage,
+  //GLFileJPEG,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

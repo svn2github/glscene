@@ -83,7 +83,7 @@ __published:	// IDE-managed Components
 
 private:	// User declarations
 	int mx, my;
-	TGLCgBombShader *MyShader;
+	TCgBombShader *MyShader;
 	void __fastcall ResetPositions();
 public:		// User declarations
 	__fastcall TForm1(TComponent* Owner);
