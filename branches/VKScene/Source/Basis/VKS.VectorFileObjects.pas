@@ -408,7 +408,7 @@ type
   // TBlendedLerpInfo
   //
   { Small structure to store a weighted lerp for use in blending. }
-  TBlendedLerpInfo = record
+  TVKBlendedLerpInfo = record
     frameIndex1, frameIndex2: Integer;
     lerpFactor: Single;
     weight: Single;
@@ -470,7 +470,7 @@ type
     procedure MorphTo(frame: TVKSkeletonFrame); overload;
     procedure Lerp(frameIndex1, frameIndex2: Integer;
       lerpFactor: Single);
-    procedure BlendedLerps(const lerpInfos: array of TBlendedLerpInfo);
+    procedure BlendedLerps(const lerpInfos: array of TVKBlendedLerpInfo);
 
     { Linearly removes the translation component between skeletal frames.
        This function will compute the translation of the first bone (index 0)
@@ -845,7 +845,7 @@ type
 
   // TVKSkeletonMeshObject
   //
-    { A mesh object with vertice bone attachments. 
+    { A mesh object with vertice bone attachments.
        The class adds per vertex bone weights to the standard morphable mesh. 
        The TVertexBoneWeight structures are accessed via VerticesBonesWeights,
        they must be initialized by adjusting the BonesPerVertex and
@@ -1170,7 +1170,7 @@ type
 
   // TVKGLSMVectorFile
   //
-  { GLSM (GLScene Mesh) vector file. 
+  { GLSM (GLScene Mesh) vector file.
      This corresponds to the 'native' GLScene format, and object persistence
      stream, which should be the 'fastest' of all formats to load, and supports
      all of GLScene features. }
@@ -1270,7 +1270,7 @@ type
     function GenerateSilhouette(const silhouetteParameters:
       TVKSilhouetteParameters): TVKSilhouette; override;
 
-    { This method allows fast shadow volumes for GLActors. 
+    { This method allows fast shadow volumes for GLActors.
        If your actor/mesh doesn't change, you don't need to call this.
        It basically caches the connectivity data.}
     procedure BuildSilhouetteConnectivityData;
@@ -1381,11 +1381,11 @@ type
   TVKFreeForm = class(TVKBaseMesh)
   private
     { Private Declarations }
-    FOctree: TOctree;
+    FOctree: TVKOctree;
 
   protected
     { Protected Declarations }
-    function GetOctree: TOctree;
+    function GetOctree: TVKOctree;
 
   public
     { Public Declarations }
@@ -1409,7 +1409,7 @@ type
 
              { Octree support *experimental*. 
                 Use only if you understand what you're doing! }
-    property Octree: TOctree read GetOctree;
+    property Octree: TVKOctree read GetOctree;
     procedure BuildOctree(TreeDepth: integer = 3);
 
   published
@@ -1558,7 +1558,7 @@ type
     procedure SetActor(const val: TVKActor);
 
     procedure DoChange; virtual;
-    function Apply(var lerpInfo: TBlendedLerpInfo): Boolean; virtual;
+    function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; virtual;
 
   public
     { Public Declarations }
@@ -1591,7 +1591,7 @@ type
     procedure SetRatio(const val: Single);
 
     procedure DoChange; override;
-    function Apply(var lerpInfo: TBlendedLerpInfo): Boolean; override;
+    function Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean; override;
 
   published
     { Published Declarations }
@@ -3398,7 +3398,7 @@ end;
 // BlendedLerps
 //
 
-procedure TVKSkeleton.BlendedLerps(const lerpInfos: array of TBlendedLerpInfo);
+procedure TVKSkeleton.BlendedLerps(const lerpInfos: array of TVKBlendedLerpInfo);
 var
   i, n: Integer;
   blendPositions: TAffineVectorList;
@@ -7897,7 +7897,7 @@ end;
 // GetOctree
 //
 
-function TVKFreeForm.GetOctree: TOctree;
+function TVKFreeForm.GetOctree: TVKOctree;
 begin
   //   if not Assigned(FOctree) then     //If auto-created, can never use "if Assigned(GLFreeform1.Octree)"
   //     FOctree:=TOctree.Create;        //moved this code to BuildOctree
@@ -7913,7 +7913,7 @@ var
   tl: TAffineVectorList;
 begin
   if not Assigned(FOctree) then //moved here from GetOctree
-    FOctree := TOctree.Create;
+    FOctree := TVKOctree.Create;
 
   GetExtents(emin, emax);
   tl := MeshObjects.ExtractTriangles;
@@ -8520,7 +8520,7 @@ end;
 // Apply
 //
 
-function TVKBaseAnimationControler.Apply(var lerpInfo: TBlendedLerpInfo):
+function TVKBaseAnimationControler.Apply(var lerpInfo: TVKBlendedLerpInfo):
   Boolean;
 begin
   // virtual
@@ -8568,7 +8568,7 @@ end;
 // Apply
 //
 
-function TVKAnimationControler.Apply(var lerpInfo: TBlendedLerpInfo): Boolean;
+function TVKAnimationControler.Apply(var lerpInfo: TVKBlendedLerpInfo): Boolean;
 var
   anim: TVKActorAnimation;
   baseDelta: Integer;
@@ -8879,7 +8879,7 @@ procedure TVKActor.DoAnimate();
 var
   i, k: Integer;
   nextFrameIdx: Integer;
-  lerpInfos: array of TBlendedLerpInfo;
+  lerpInfos: array of TVKBlendedLerpInfo;
 begin
   nextFrameIdx := NextFrameIndex;
   case Reference of
@@ -9143,18 +9143,16 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-  RegisterVectorFileFormat('glsm', 'GLScene Mesh', TVKGLSMVectorFile);
+  RegisterVectorFileFormat('glsm', 'VKScene Mesh', TVKGLSMVectorFile);
 
   RegisterClasses([TVKFreeForm, TVKActor, TVKSkeleton, TVKSkeletonFrame,
-    TVKSkeletonBone,
-    TVKSkeletonMeshObject, TVKMeshObject, TVKSkeletonFrameList, TVKMeshMorphTarget,
-      TVKMorphableMeshObject, TVKFaceGroup, TFGVertexIndexList,
-      TFGVertexNormalTexIndexList, TVKAnimationControler,
-      TFGIndexTexCoordList, TVKSkeletonCollider, TVKSkeletonColliderList]);
+    TVKSkeletonBone, TVKSkeletonMeshObject, TVKMeshObject, TVKSkeletonFrameList, TVKMeshMorphTarget,
+    TVKMorphableMeshObject, TVKFaceGroup, TFGVertexIndexList, TFGVertexNormalTexIndexList,
+    TVKAnimationControler, TFGIndexTexCoordList, TVKSkeletonCollider, TVKSkeletonColliderList]);
 
 finalization
 

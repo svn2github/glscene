@@ -47,28 +47,28 @@ const
 
 type
 
-  TVertexData = packed record
+  TVKVertexData = packed record
     textCoord: TTexPoint;
     color: TVector;
     normal: TAffineVector;
     coord: TVertex;
   end;
 
-  PVertexData = ^TVertexData;
-  TVertexDataArray = array[0..(MAXINT shr 6)] of TVertexData;
-  PVertexDataArray = ^TVertexDataArray;
+  PVKVertexData = ^TVKVertexData;
+  TVKVertexDataArray = array[0..(MAXINT shr 6)] of TVKVertexData;
+  PVKVertexDataArray = ^TVKVertexDataArray;
 
   // TVKVertexList
   //
-  { Stores an interlaced vertex list for direct use in OpenGL. 
+  { Stores an interlaced vertex list for direct use in OpenGL.
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TVKVertexList = class(TVKUpdateAbleObject)
   private
     { Private Declarations }
-    FValues: PVertexDataArray;
+    FValues: PVKVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
-    FLockedOldValues: PVertexDataArray;
+    FLockedOldValues: PVKVertexDataArray;
 
   protected
     { Protected Declarations }
@@ -76,8 +76,8 @@ type
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
-    procedure SetVertices(index: Integer; const val: TVertexData);
-    function GetVertices(index: Integer): TVertexData;
+    procedure SetVertices(index: Integer; const val: TVKVertexData);
+    function GetVertices(index: Integer): TVKVertexData;
     procedure SetVertexCoord(index: Integer; const val: TAffineVector);
     function GetVertexCoord(index: Integer): TAffineVector;
     procedure SetVertexNormal(index: Integer; const val: TAffineVector);
@@ -105,9 +105,9 @@ type
       : TVKVertexList;
 
     { Adds a vertex to the list, fastest method. }
-    procedure AddVertex(const vertexData: TVertexData); overload;
+    procedure AddVertex(const vertexData: TVKVertexData); overload;
     { Adds a vertex to the list, fastest method for adding a triangle. }
-    procedure AddVertex3(const vd1, vd2, vd3: TVertexData); overload;
+    procedure AddVertex3(const vd1, vd2, vd3: TVKVertexData); overload;
     { Adds a vertex to the list. 
       Use the NullVector, NullHmgVector or NullTexPoint constants for
       params you don't want to set. }
@@ -125,7 +125,7 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure Clear;
 
-    property Vertices[index: Integer]: TVertexData read GetVertices
+    property Vertices[index: Integer]: TVKVertexData read GetVertices
     write SetVertices; default;
     property VertexCoord[index: Integer]: TAffineVector read GetVertexCoord
     write SetVertexCoord;
@@ -256,7 +256,7 @@ begin
   Assert(Count = list2.Count);
   Result := TVKVertexList.Create(nil);
   Result.Capacity := Count;
-  Move(FValues[0], Result.FValues[0], Count * SizeOf(TVertexData));
+  Move(FValues[0], Result.FValues[0], Count * SizeOf(TVKVertexData));
   // interpolate vertices
   for i := 0 to Count - 1 do
     VectorLerp(FValues^[i].coord, list2.FValues^[i].coord, lerpFactor,
@@ -272,7 +272,7 @@ begin
   FCapacity := val;
   if FCapacity < FCount then
     FCapacity := FCount;
-  ReallocMem(FValues, FCapacity * SizeOf(TVertexData));
+  ReallocMem(FValues, FCapacity * SizeOf(TVKVertexData));
 end;
 
 // SetGrowth
@@ -293,7 +293,7 @@ procedure TVKVertexList.Grow;
 begin
   Assert(not Locked, 'Cannot add to a locked list !');
   FCapacity := FCapacity + FGrowth;
-  ReallocMem(FValues, FCapacity * SizeOf(TVertexData));
+  ReallocMem(FValues, FCapacity * SizeOf(TVKVertexData));
 end;
 
 // GetFirstColor
@@ -356,7 +356,7 @@ begin
     //! Only supported with NVidia's right now
     if GL_NV_vertex_array_range and (CurrentVKContext <> nil) then
     begin
-      size := FCount * SizeOf(TVertexData);
+      size := FCount * SizeOf(TVKVertexData);
       if val then
       begin
         // Lock
@@ -394,7 +394,7 @@ procedure TVKVertexList.EnterLockSection;
 begin
   if Locked then
   begin
-    glVertexArrayRangeNV(FCount * SizeOf(TVertexData), FValues);
+    glVertexArrayRangeNV(FCount * SizeOf(TVKVertexData), FValues);
     glEnableClientState(GL_VERTEX_ARRAY_RANGE_NV);
   end;
 end;
@@ -414,7 +414,7 @@ end;
 // SetVertices
 //
 
-procedure TVKVertexList.SetVertices(index: Integer; const val: TVertexData);
+procedure TVKVertexList.SetVertices(index: Integer; const val: TVKVertexData);
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   FValues^[index] := val;
@@ -424,7 +424,7 @@ end;
 // GetVertices
 //
 
-function TVKVertexList.GetVertices(index: Integer): TVertexData;
+function TVKVertexList.GetVertices(index: Integer): TVKVertexData;
 begin
   Assert(Cardinal(index) < Cardinal(Count));
   Result := FValues^[index];
@@ -501,7 +501,7 @@ end;
 // AddVertex (direct)
 //
 
-procedure TVKVertexList.AddVertex(const vertexData: TVertexData);
+procedure TVKVertexList.AddVertex(const vertexData: TVKVertexData);
 begin
   if FCount = FCapacity then
     Grow;
@@ -513,7 +513,7 @@ end;
 // AddVertex3
 //
 
-procedure TVKVertexList.AddVertex3(const vd1, vd2, vd3: TVertexData);
+procedure TVKVertexList.AddVertex3(const vd1, vd2, vd3: TVKVertexData);
 begin
   // extend memory space
   if FCount + 2 >= FCapacity then
@@ -658,13 +658,13 @@ end;
 procedure TVKVertexList.DefineOpenGLArrays;
 begin
   glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(3, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  glVertexPointer(3, GL_FLOAT, SizeOf(TVKVertexData) - SizeOf(TAffineVector),
     FirstVertex);
   glEnableClientState(GL_NORMAL_ARRAY);
-  glNormalPointer(GL_FLOAT, SizeOf(TVertexData) - SizeOf(TAffineVector),
+  glNormalPointer(GL_FLOAT, SizeOf(TVKVertexData) - SizeOf(TAffineVector),
     FirstNormal);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-  glTexCoordPointer(2, GL_FLOAT, SizeOf(TVertexData) - SizeOf(TTexPoint),
+  glTexCoordPointer(2, GL_FLOAT, SizeOf(TVKVertexData) - SizeOf(TTexPoint),
     FirstTexPoint);
 end;
 
@@ -677,8 +677,8 @@ begin
   begin
     FCount := TVKVertexList(Source).FCount;
     FCapacity := FCount;
-    ReallocMem(FValues, FCount * SizeOf(TVertexData));
-    Move(TVKVertexList(Source).FValues^, FValues^, FCount * SizeOf(TVertexData));
+    ReallocMem(FValues, FCount * SizeOf(TVKVertexData));
+    Move(TVKVertexList(Source).FValues^, FValues^, FCount * SizeOf(TVKVertexData));
   end
   else
     inherited Assign(Source);
@@ -732,12 +732,12 @@ begin
     FVertices.EnterLockSection;
   case FVertexMode of
     vmV:
-      glInterleavedArrays(GL_V3F, SizeOf(TVertexData), FVertices.FirstVertex);
+      glInterleavedArrays(GL_V3F, SizeOf(TVKVertexData), FVertices.FirstVertex);
     vmVN:
-      glInterleavedArrays(GL_N3F_V3F, SizeOf(TVertexData),
+      glInterleavedArrays(GL_N3F_V3F, SizeOf(TVKVertexData),
         FVertices.FirstNormal);
     vmVNC:
-      glInterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVertexData),
+      glInterleavedArrays(GL_C4F_N3F_V3F, SizeOf(TVKVertexData),
         FVertices.FirstColor);
     vmVNT, vmVNCT:
       glInterleavedArrays(GL_T2F_C4F_N3F_V3F, 0, FVertices.FirstEntry);

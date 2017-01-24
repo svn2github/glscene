@@ -13,16 +13,26 @@ interface
 {$I VKScene.inc}
 
 uses
-  System.Classes, System.SysUtils, 
+  Winapi.OpenGL,
+  Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //VKS
-  VKS.Texture, VKS.Context, VKS.Graphics, VKS.Utils,
-  VKS.VectorGeometry, Winapi.OpenGL, Winapi.OpenGLext,  VKS.Color, VKS.RenderContextInfo,
-  VKS.Material, VKS.State, VKS.TextureFormat;
+  VKS.Texture,
+  VKS.Context,
+  VKS.Graphics,
+  VKS.Utils,
+  VKS.VectorGeometry,
+  VKS.Color,
+  VKS.RenderContextInfo,
+  VKS.Material,
+  VKS.State,
+  VKS.TextureFormat;
 
 type
   // TVKCelShaderOption
   //
-  { Cel shading options. 
+  { Cel shading options.
      csoOutlines: Render a second outline pass.
      csoTextured: Allows for a primary texture that the cel shading
                   is modulated with and forces the shade definition
@@ -32,7 +42,7 @@ type
 
   // TVKCelShaderGetIntensity
   //
-  //: An event for user defined cel intensity.
+  // An event for user defined cel intensity.
   TVKCelShaderGetIntensity = procedure(Sender: TObject; var intensity: Byte) of
     object;
 
@@ -252,7 +262,7 @@ begin
   glGetLightfv(GL_LIGHT0, GL_POSITION, @light.X);
   FVPHandle.Enable;
   FVPHandle.Bind;
-  glProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, 0, @light.X);
+  glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, @light.X);
 
   if (csoTextured in FCelShaderOptions) then
     FShadeTexture.ApplyAsTexture2(rci, nil)

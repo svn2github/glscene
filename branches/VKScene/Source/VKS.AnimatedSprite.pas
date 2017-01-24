@@ -3,7 +3,7 @@
 //
 {
   A sprite that uses a scrolling texture for animation.
-  The history is logged in a former GLS version of the unit.
+  The history is logged in a previous version of the unit.
 }
 
 unit VKS.AnimatedSprite;
@@ -11,10 +11,10 @@ unit VKS.AnimatedSprite;
 interface
 
 uses
-  System.Classes,
-  System.SysUtils,
   Winapi.OpenGL,
   Winapi.OpenGLext,
+  System.Classes,
+  System.SysUtils,
   //VKS
   VKS.Scene,
   VKS.Context,

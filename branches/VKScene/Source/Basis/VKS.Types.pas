@@ -11,16 +11,25 @@ unit VKS.Types;
 
 interface
 
-type
-  TVKBox = record
-    ALeft, ATop, ANear, ARight, ABottom, AFar: Single;
-  end;
+uses
+  System.Types,
+  VKS.VectorTypes;
 
 //-----------------------
 //Point types
 //-----------------------
 type
 
+  TVKScalarValue = Single;
+  TVKScalarField = function(X, Y, Z: Single): TVKScalarValue;
+
+  // If data are made on integer XYZ index
+  TVKScalarFieldInt = function(iX, iY, iZ: Integer): TVKScalarValue of object;
+
+  TVKVertex = record
+    P, N: TVector3f;  //Point and Normal
+    Density: Single;
+  end;
   PGLPoint2D = ^TVKPoint2D;
   TVKPoint2D = record
     X: Single;
@@ -61,6 +70,36 @@ type
 const
    ClosedPolygon2D: TVKPoint2D = (X: $FFFF; Y: $FFFF);
    ClosedPolygon3D: TVKPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
+
+// Triangle types
+type
+  TVKTriangle = record
+    v1, v2, v3: Integer;
+  end;
+
+  TVKTriangleArray = array [0 .. (MaxInt shr 8)] of TVKTriangle;
+  PVKTriangleArray = ^TVKTriangleArray;
+
+  TVKVertexArray = array [0 .. (MaxInt shr 8)] of TVKVertex;
+  PVKVertexArray = ^TVKVertexArray;
+
+
+// Voxel types
+  TVKVoxelStatus = (bpExternal, bpInternal);
+  TVKVoxel = record
+    P: TVector3f;
+    Density: TVKScalarValue;
+    Status: TVKVoxelStatus;
+  end;
+  PVKVoxel = ^TVKVoxel;
+
+  TVKVoxelData = array [0 .. (MaxInt shr 8)] of TVKVoxel;
+  PVKVoxelData = ^TVKVoxelData;
+
+
+  TVKBox = record
+    ALeft, ATop, ANear, ARight, ABottom, AFar: Single;
+  end;
 
 
 //-----------------------
