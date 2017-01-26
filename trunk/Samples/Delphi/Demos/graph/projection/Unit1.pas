@@ -9,9 +9,19 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   // GLS
-  GLScene, GLObjects, GLWin32Viewer, GLTexture, GLVectorGeometry,
-  GLGeomObjects, GLRenderContextInfo, GLState, GLVectorTypes,
-  GLGraph, GLCoordinates, GLCrossPlatform, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLTexture,
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLRenderContextInfo,
+  GLState,
+  GLVectorTypes,
+  GLGraph,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -54,12 +64,10 @@ var
 begin
   // generate a bunch of random points
   for i := 1 to 1000 do
-    GLPoints.Positions.Add((Random - 0.5) * 5, (Random - 0.5) * 5,
-      (Random - 0.5) * 5);
+    GLPoints.Positions.Add((Random - 0.5) * 5, (Random - 0.5) * 5, (Random - 0.5) * 5);
 end;
 
-procedure TForm1.DirectOpenGLRender(Sender: TObject;
-  var rci: TGLRenderContextInfo);
+procedure TForm1.DirectOpenGLRender(Sender: TObject; var rci: TGLRenderContextInfo);
 var
   i: Integer;
   mat: TMatrix;

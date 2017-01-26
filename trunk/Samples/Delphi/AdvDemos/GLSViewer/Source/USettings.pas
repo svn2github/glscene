@@ -7,9 +7,14 @@ unit uSettings;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Win.Registry, System.IniFiles, System.SysUtils,
-  Vcl.Forms, Vcl.Graphics, Vcl.ActnList,
+  Winapi.Windows,
+  Winapi.Messages,
+  System.Win.Registry,
+  System.IniFiles,
+  System.SysUtils,
+  Vcl.Forms,
+  Vcl.Graphics,
+  Vcl.ActnList,
   //
   GLGnuGettext;
 

@@ -2,12 +2,13 @@
 //  uGlobals for GLSViewer
 //
 
-unit UGlobals;
+unit uGlobals;
 
 interface
 
 uses
-  System.SysUtils, System.IniFiles;
+  System.SysUtils,
+  System.IniFiles;
 
 
 const
@@ -28,6 +29,8 @@ var
   TipOfTheDay : Boolean;
 
 
+//==========================================================================
 implementation
+//==========================================================================
 
 end.

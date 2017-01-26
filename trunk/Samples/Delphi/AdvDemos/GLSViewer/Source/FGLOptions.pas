@@ -1,15 +1,25 @@
-unit FGLOptions;
+unit fGLOptions;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants, System.Classes, System.IniFiles,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.SysUtils, 
+  System.Variants, 
+  System.Classes, 
+  System.IniFiles,
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms, 
+  Vcl.Dialogs,
+  Vcl.StdCtrls, 
+  Vcl.ExtCtrls,
 
   //
-  DGLSViewer, FGLForm, FGLDialog;
+  dGLSViewer, 
+  fGLForm, 
+  fGLDialog;
 
 type
   TGLOptions = class(TGLDialog)
@@ -40,7 +50,8 @@ implementation
 {$R *.dfm}
 
 uses
-  GLGnuGettext, FMain;
+  GLGnuGettext, 
+  fMain;
 
 
 procedure TGLOptions.FormCreate(Sender: TObject);

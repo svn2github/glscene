@@ -12,7 +12,7 @@ object frmRagdoll: TfrmRagdoll
   Font.Style = []
   KeyPreview = True
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
@@ -52,7 +52,6 @@ object frmRagdoll: TfrmRagdoll
       object GLShadowPlane1: TGLShadowPlane
         Material.FrontProperties.Diffuse.Color = {F5F4743E9392123F9F9E9E3E0000803F}
         Position.Coordinates = {0000000000000000CDCC4CBD0000803F}
-        Up.Coordinates = {000000000000803F0000008000000000}
         Height = 100.000000000000000000
         Width = 100.000000000000000000
         XTiles = 50

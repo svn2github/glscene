@@ -33,6 +33,18 @@ object dmGLSViewer: TdmGLSViewer
     Top = 80
   end
   object opDialog: TOpenPictureDialog
+    Filter = 
+      'All (*.tga;*.dds;*.gif;*.png;*.jpg;*.jpeg;*.bmp;*.jpg;*.jpeg;*.g' +
+      'if;*.png;*.tif;*.tiff;*.ico;*.emf;*.wmf)|*.tga;*.dds;*.gif;*.png' +
+      ';*.jpg;*.jpeg;*.bmp;*.jpg;*.jpeg;*.gif;*.png;*.tif;*.tiff;*.ico;' +
+      '*.emf;*.wmf|Targa (*.tga)|*.tga|Microsoft DirectDraw Surface (*.' +
+      'dds)|*.dds|GIF Image (*.gif)|*.gif|Portable Network Graphics (*.' +
+      'png)|*.png|JPEG Image File (*.jpg)|*.jpg|JPEG Image File (*.jpeg' +
+      ')|*.jpeg|Bitmaps (*.bmp)|*.bmp|JPEG Images (*.jpg)|*.jpg|JPEG Im' +
+      'ages (*.jpeg)|*.jpeg|GIF Images (*.gif)|*.gif|PNG Images (*.png)' +
+      '|*.png|TIFF Images (*.tif)|*.tif|TIFF Images (*.tiff)|*.tiff|Ico' +
+      'ns (*.ico)|*.ico|Enhanced Metafiles (*.emf)|*.emf|Metafiles (*.w' +
+      'mf)|*.wmf'
     Options = [ofHideReadOnly, ofFileMustExist, ofEnableSizing]
     Left = 230
     Top = 80

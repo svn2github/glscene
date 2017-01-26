@@ -6,7 +6,7 @@
         <Base>True</Base>
         <Config Condition="'$(Config)'==''">Debug</Config>
         <FrameworkType>VCL</FrameworkType>
-        <ProjectVersion>16.0</ProjectVersion>
+        <ProjectVersion>18.2</ProjectVersion>
         <Platform Condition="'$(Platform)'==''">Win32</Platform>
         <TargetedPlatforms>1</TargetedPlatforms>
         <AppType>Application</AppType>
@@ -87,6 +87,9 @@
         <BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
+        <UWP_CppLogo44>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_44.png</UWP_CppLogo44>
+        <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
+        <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
         <TASM_Defines>_DEBUG;$(TASM_Defines)</TASM_Defines>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve</BCC_UserSuppliedOptions>
         <OutputExt>exe</OutputExt>
@@ -99,6 +102,8 @@
         <IncludePath>$(BDSINCLUDE)\windows\vcl;$(IncludePath)</IncludePath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
+        <UWP_CppLogo150>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_150.png</UWP_CppLogo150>
+        <UWP_CppLogo44>$(BDS)\bin\Artwork\Windows\UWP\cppreg_UwpDefault_44.png</UWP_CppLogo44>
         <TASM_Defines>_DEBUG;$(TASM_Defines)</TASM_Defines>
         <BRCC_Defines>_DEBUG;$(BRCC_Defines)</BRCC_Defines>
         <Icon_MainIcon>pointto_Icon.ico</Icon_MainIcon>
@@ -115,9 +120,10 @@
         <TASM_Debugging>Full</TASM_Debugging>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <BT_BuildType>Debug</BT_BuildType>
         <BCC_Defines>_DEBUG;$(BCC_Defines);$(BCC_Defines)</BCC_Defines>
         <BCC_UserSuppliedOptions> -tWM -6 -ff -Vx -r- -k -Ve -k</BCC_UserSuppliedOptions>
-        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(BDS)\lib\win32\release\;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+        <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <Icon_MainIcon>$(BDS)\bin\cbuilder_PROJECTICON.ico</Icon_MainIcon>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>

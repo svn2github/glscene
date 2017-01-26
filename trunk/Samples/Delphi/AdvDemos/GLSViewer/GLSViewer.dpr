@@ -6,21 +6,24 @@ program GLSViewer;
 
 uses
   Forms,
-  DGLSViewer in 'Source\DGLSViewer.pas' {dmGLSViewer: TDataModule},
-  FGLForm in 'Source\FGLForm.pas' {GLForm},
-  FGLDialog in 'Source\FGLDialog.pas' {GLDialog},
-  FGLOptions in 'Source\FGLOptions.pas' {GLOptions},
-  FMain in 'Source\FMain.pas' {MainForm},
-  FGLAbout in 'Source\FGLAbout.pas' {GLAbout},
-  UGlobals in 'Source\UGlobals.pas',
-  USettings in 'Source\USettings.pas';
+  fGLForm in 'Source\fGLForm.pas' {GLForm},
+  fGLDialog in 'Source\fGLDialog.pas' {GLDialog},
+  fMain in 'Source\fMain.pas' {MainForm},
+  uNavCube in 'Source\uNavCube.pas',
+  uGlobals in 'Source\uGlobals.pas',
+  uSettings in 'Source\uSettings.pas',
+  dGLSViewer in 'Source\dGLSViewer.pas' {dmGLSViewer: TDataModule},
+  fGLAbout in 'Source\fGLAbout.pas' {GLAbout},
+  fGLOptions in 'Source\fGLOptions.pas' {GLOptions};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.Title := 'GLSViewer';
-  Application.CreateForm(TdmGLSViewer, dmGLSViewer);
   Application.CreateForm(TMainForm, MainForm);
+  Application.CreateForm(TdmGLSViewer, dmGLSViewer);
+  Application.CreateForm(TGLAbout, GLAbout);
+  Application.CreateForm(TGLOptions, GLOptions);
   Application.Run;
 end.

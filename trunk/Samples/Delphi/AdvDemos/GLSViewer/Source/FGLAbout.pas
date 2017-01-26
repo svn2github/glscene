@@ -1,4 +1,4 @@
-unit FGLAbout;
+unit fGLAbout;
 
 interface
 
@@ -17,7 +17,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.jpeg,
   //
-  FGLDialog;
+  fGLDialog;
 
 type
   TGLAbout = class(TGLDialog)

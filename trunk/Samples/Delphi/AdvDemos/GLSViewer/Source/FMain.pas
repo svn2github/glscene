@@ -1,4 +1,4 @@
-unit FMain;
+unit fMain;
 
 interface
 
@@ -33,31 +33,54 @@ uses
   Vcl.PlatformDefaultStyleActnCtrls,
 
   // GLS
-  GLMaterial, GLScene, GLWin32Viewer, GLVectorFileObjects, GLObjects,
-  GLVectorGeometry,  GLTexture, GLContext, GLVectorLists, GLCadencer, GLCoordinates,
-  GLCrossPlatform,  GLBaseClasses, GLMeshOptimizer, GLState, GLRenderContextInfo,
-  GLTextureFormat, GLColor, GLKeyBoard, GLGraphics, GLPersistentClasses, GLMeshUtils,
-  GLVectorTypes, GLGnuGettext,
+  GLMaterial,
+  GLScene,
+  GLWin32Viewer,
+  GLVectorFileObjects,
+  GLObjects,
+  GLVectorGeometry,
+  GLTexture,
+  GLContext,
+  GLVectorLists,
+  GLCadencer,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLMeshOptimizer,
+  GLState,
+  GLRenderContextInfo,
+  GLTextureFormat,
+  GLColor,
+  GLKeyBoard,
+  GLGraphics,
+  GLPersistentClasses,
+  GLMeshUtils,
+  GLVectorTypes,
+  GLGnuGettext,
 
   //GLSViewer Forms
-  FGLForm, FGLAbout, FGLOptions, DGLSViewer;
+  fGLForm,
+  fGLAbout,
+  fGLOptions,
+  uNavCube,
+  dGLSViewer, GLAsyncTimer, GLGraph;
 
 type
   TMainForm = class(TGLForm)
     ImageList: TImageList;
     StatusBar: TStatusBar;
-    GLScene: TGLScene;
-    FreeForm: TGLFreeForm;
-    GLLightSource: TGLLightSource;
-    GLMaterialLibrary: TGLMaterialLibrary;
+    Scene: TGLScene;
+    ffObject: TGLFreeForm;
+    LightSource: TGLLightSource;
+    MaterialLib: TGLMaterialLibrary;
     CubeExtents: TGLCube;
-    DCTarget: TGLDummyCube;
-    GLCamera: TGLCamera;
-    DCAxis: TGLDummyCube;
-    GLCadencer: TGLCadencer;
+    dcTarget: TGLDummyCube;
+    Camera: TGLCamera;
+    dcAxis: TGLDummyCube;
+    Cadencer: TGLCadencer;
     Timer: TTimer;
-    GLLightmapLibrary: TGLMaterialLibrary;
-    GLSceneViewer: TGLSceneViewer;
+    LightmapLib: TGLMaterialLibrary;
+    snViewer: TGLSceneViewer;
     ActionManager: TActionManager;
     acOptimizeMesh: TAction;
     acProcessInvertNormals: TAction;
@@ -99,7 +122,6 @@ type
     acEditSelectAll: TEditSelectAll;
     acEditDelete: TEditDelete;
     ImageListMenu: TImageList;
-    acViewAxes: TAction;
     ControlBar: TControlBar;
     amMenuBar: TActionMainMenuBar;
     acAA8X: TAction;
@@ -109,25 +131,30 @@ type
     atbTools: TActionToolBar;
     atbView: TActionToolBar;
     atbFile: TActionToolBar;
+    acObjects: TAction;
+    AsyncTimer: TGLAsyncTimer;
+    dcWorld: TGLDummyCube;
+    grdXYZ: TGLXYZGrid;
+    acNavCube: TAction;
     procedure FormCreate(Sender: TObject);
-    procedure GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+    procedure snViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+    procedure snViewerMouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
-    procedure GLSceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
+    procedure snViewerMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-    procedure GLSceneViewerBeforeRender(Sender: TObject);
-    procedure GLSceneViewerAfterRender(Sender: TObject);
+    procedure snViewerBeforeRender(Sender: TObject);
+    procedure snViewerAfterRender(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure GLMaterialLibraryTextureNeeded(Sender: TObject;
+    procedure MaterialLibTextureNeeded(Sender: TObject;
       var textureFileName: String);
     procedure acInvertNormalsExecute(Sender: TObject);
     procedure acSaveAsUpdate(Sender: TObject);
     procedure acReverseRenderingOrderExecute(Sender: TObject);
     procedure acConvertToIndexedTrianglesExecute(Sender: TObject);
-    procedure GLCadencerProgress(Sender: TObject;
+    procedure CadencerProgress(Sender: TObject;
       const deltaTime, newTime: Double);
     procedure TimerTimer(Sender: TObject);
     procedure acOptimizeExecute(Sender: TObject);
@@ -150,10 +177,12 @@ type
     procedure acViewFlatLinesExecute(Sender: TObject);
     procedure acViewHiddenLinesExecute(Sender: TObject);
     procedure acViewWireFrameExecute(Sender: TObject);
-    procedure acViewAxesExecute(Sender: TObject);
     procedure acViewResetExecute(Sender: TObject);
     procedure acViewZoomOutExecute(Sender: TObject);
     procedure acViewZoomInExecute(Sender: TObject);
+    procedure acObjectsExecute(Sender: TObject);
+    procedure AsyncTimerTimer(Sender: TObject);
+    procedure acNavCubeExecute(Sender: TObject);
   private
     { Private declarations }
     procedure DoResetCamera;
@@ -180,8 +209,12 @@ type
 
 var
   MainForm: TMainForm;
+  NavCube: TGLNavCube;
 
+
+//=======================================================================
 implementation
+//=======================================================================
 
 {$R *.dfm}
 
@@ -245,11 +278,15 @@ procedure TMainForm.FormCreate(Sender: TObject);
 
 begin
   inherited;
+  GetCurrentDir;
+
+  NavCube := TGLNavCube.CreateAsChild(Scene.Objects);
+  NavCube.SceneViewer := snViewer;
+  NavCube.FPS := 30;
+
  // instantiate our specific hidden-lines shader
   hlShader := THiddenLineShader.Create(Self);
-
-  FreeForm.IgnoreMissingTextures := True;
-
+  ffObject.IgnoreMissingTextures := True;
 end;
 
 procedure TMainForm.FormShow(Sender: TObject);
@@ -262,12 +299,12 @@ begin
     dmGLSViewer.SaveDialog.Filter := VectorFileFormatsSaveFilter;
     ApplyFSAA;
     ApplyFaceCull;
-    ApplyBgColor;
     ApplyFPS;
     if ParamCount > 0 then
       DoOpen(ParamStr(1));
     nthShow := True;
   end;
+///  Cadencer.Enabled := True;  // for button navigation
 end;
 
 procedure TMainForm.acFileExitExecute(Sender: TObject);
@@ -277,6 +314,8 @@ end;
 
 procedure TMainForm.acFileOpenExecute(Sender: TObject);
 begin
+  NavCube.ActiveMouse := False;
+
   if dmGLSViewer.OpenDialog.Execute then
     DoOpen(dmGLSViewer.OpenDialog.fileName);
 end;
@@ -286,7 +325,7 @@ var
   I: Integer;
 begin
   if dmGLSViewer.ODTextures.Execute then
-    with GLMaterialLibrary do
+    with MaterialLib do
     begin
       LoadFromFile(dmGLSViewer.ODTextures.fileName);
       for I := 0 to Materials.Count - 1 do
@@ -301,7 +340,7 @@ procedure TMainForm.acFilePickExecute(Sender: TObject);
 begin
   if dmGLSViewer.opDialog.Execute then
   begin
-    with GLMaterialLibrary.Materials do
+    with MaterialLib.Materials do
     begin
       with Items[Count - 1] do
       begin
@@ -331,23 +370,23 @@ begin
     then
       ShowMessage(_('Unsupported or unspecified file extension.'))
     else
-      FreeForm.SaveToFile(dmGLSViewer.SaveDialog.fileName);
+      ffObject.SaveToFile(dmGLSViewer.SaveDialog.fileName);
   end;
 end;
 
 procedure TMainForm.acFileSaveTexturesExecute(Sender: TObject);
 begin
   if dmGLSViewer.SDTextures.Execute then
-    GLMaterialLibrary.SaveToFile(dmGLSViewer.SDTextures.fileName);
+    MaterialLib.SaveToFile(dmGLSViewer.SDTextures.fileName);
 end;
 
 
-procedure TMainForm.GLSceneViewerBeforeRender(Sender: TObject);
+procedure TMainForm.snViewerBeforeRender(Sender: TObject);
 begin
   THiddenLineShader(hlShader).LinesColor := VectorMake(107 / 256, 123 / 256,
     173 / 256, 1);
   THiddenLineShader(hlShader).BackgroundColor :=
-    ConvertWinColor(GLSceneViewer.Buffer.BackgroundColor);
+    ConvertWinColor(snViewer.Buffer.BackgroundColor);
   if not GL.ARB_multisample then
   begin
     acAADefault.Checked := True;
@@ -360,7 +399,7 @@ begin
   end;
 end;
 
-procedure TMainForm.GLSceneViewerAfterRender(Sender: TObject);
+procedure TMainForm.snViewerAfterRender(Sender: TObject);
 begin
   ApplyFSAA;
   Screen.Cursor := crDefault;
@@ -370,61 +409,58 @@ procedure TMainForm.DoResetCamera;
 var
   objSize: Single;
 begin
-  DCTarget.Position.AsVector := NullHmgPoint;
-  GLCamera.Position.SetPoint(7, 3, 5);
-  FreeForm.Position.AsVector := NullHmgPoint;
-  FreeForm.Up.Assign(DCAxis.Up);
-  FreeForm.Direction.Assign(DCAxis.Direction);
+  dcTarget.Position.AsVector := NullHmgPoint;
+  Camera.Position.SetPoint(7, 3, 5);
+  ffObject.Position.AsVector := NullHmgPoint;
+  ffObject.Up.Assign(DCAxis.Up);
+  ffObject.Direction.Assign(DCAxis.Direction);
 
-  objSize := FreeForm.BoundingSphereRadius;
+  objSize := ffObject.BoundingSphereRadius;
   if objSize > 0 then
   begin
     if objSize < 1 then
     begin
-      GLCamera.SceneScale := 1 / objSize;
+      Camera.SceneScale := 1 / objSize;
       objSize := 1;
     end
     else
-      GLCamera.SceneScale := 1;
-    GLCamera.AdjustDistanceToTarget(objSize * 0.27);
-    GLCamera.DepthOfView := 1.5 * GLCamera.DistanceToTarget + 2 * objSize;
+      Camera.SceneScale := 1;
+      Camera.AdjustDistanceToTarget(objSize * 0.27);
+      Camera.DepthOfView := 1.5 * Camera.DistanceToTarget + 2 * objSize;
   end;
 end;
 
 procedure TMainForm.ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
 begin
-  with aMaterial do
+  if acViewSmoothShading.Checked then
   begin
-    if acViewSmoothShading.Checked then
-    begin
-      GLSceneViewer.Buffer.Lighting := True;
-      GLSceneViewer.Buffer.ShadeModel := smSmooth;
-      aMaterial.PolygonMode := pmFill;
-    end
-    else if acViewFlatShading.Checked then
-    begin
-      GLSceneViewer.Buffer.Lighting := True;
-      GLSceneViewer.Buffer.ShadeModel := smFlat;
-      aMaterial.PolygonMode := pmFill;
-    end
-    else if acViewFlatLines.Checked then
-    begin
-      GLSceneViewer.Buffer.Lighting := True;
-      GLSceneViewer.Buffer.ShadeModel := smFlat;
-      aMaterial.PolygonMode := pmLines;
-    end
-    else if acViewHiddenLines.Checked then
-    begin
-      GLSceneViewer.Buffer.Lighting := False;
-      GLSceneViewer.Buffer.ShadeModel := smSmooth;
-      aMaterial.PolygonMode := pmLines;
-    end
-    else if acViewWireframe.Checked then
-    begin
-      GLSceneViewer.Buffer.Lighting := False;
-      GLSceneViewer.Buffer.ShadeModel := smSmooth;
-      aMaterial.PolygonMode := pmLines;
-    end;
+    snViewer.Buffer.Lighting := True;
+    snViewer.Buffer.ShadeModel := smSmooth;
+    aMaterial.PolygonMode := pmFill;
+  end
+  else if acViewFlatShading.Checked then
+  begin
+    snViewer.Buffer.Lighting := True;
+    snViewer.Buffer.ShadeModel := smFlat;
+    aMaterial.PolygonMode := pmFill;
+  end
+  else if acViewFlatLines.Checked then
+  begin
+    snViewer.Buffer.Lighting := True;
+    snViewer.Buffer.ShadeModel := smFlat;
+    aMaterial.PolygonMode := pmLines;
+  end
+  else if acViewHiddenLines.Checked then
+  begin
+    snViewer.Buffer.Lighting := False;
+    snViewer.Buffer.ShadeModel := smSmooth;
+    aMaterial.PolygonMode := pmLines;
+  end
+  else if acViewWireframe.Checked then
+  begin
+    snViewer.Buffer.Lighting := False;
+    snViewer.Buffer.ShadeModel := smSmooth;
+    aMaterial.PolygonMode := pmLines;
   end;
 end;
 
@@ -432,7 +468,7 @@ procedure TMainForm.ApplyShadeMode;
 var
   i: Integer;
 begin
-  with GLMaterialLibrary.Materials do
+  with MaterialLib.Materials do
     for i := 0 to Count - 1 do
     begin
       ApplyShadeModeToMaterial(Items[i].Material);
@@ -441,13 +477,13 @@ begin
       else
         Items[i].Shader := nil;
     end;
-  GLSceneViewer.Buffer.Lighting := acToolsLighting.Checked;
-  FreeForm.StructureChanged;
+  snViewer.Buffer.Lighting := acToolsLighting.Checked;
+  ffObject.StructureChanged;
 end;
 
 procedure TMainForm.ApplyFSAA;
 begin
-  with GLSceneViewer.Buffer do
+  with snViewer.Buffer do
   begin
     if acAADefault.Checked then
       AntiAliasing := aaDefault
@@ -468,7 +504,7 @@ end;
 
 procedure TMainForm.ApplyFaceCull;
 begin
-  with GLSceneViewer.Buffer do
+  with snViewer.Buffer do
   begin
     if acToolsFaceCulling.Checked then
     begin
@@ -493,7 +529,7 @@ begin
     bmp.Width := 16;
     bmp.Height := 16;
     col := ColorToRGB(dmGLSViewer.ColorDialog.Color);
-    GLSceneViewer.Buffer.BackgroundColor := col;
+    snViewer.Buffer.BackgroundColor := col;
     with bmp.Canvas do
     begin
       Pen.Color := col xor $FFFFFF;
@@ -509,7 +545,7 @@ procedure TMainForm.ApplyTexturing;
 var
   i: Integer;
 begin
-  with GLMaterialLibrary.Materials do
+  with MaterialLib.Materials do
     for i := 0 to Count - 1 do
     begin
       with Items[i].Material.Texture do
@@ -520,7 +556,13 @@ begin
           acToolsTexturing.Checked;
       end;
     end;
-  FreeForm.StructureChanged;
+  ffObject.StructureChanged;
+end;
+
+procedure TMainForm.AsyncTimerTimer(Sender: TObject);
+begin
+  Caption := 'NavCube: ' + snViewer.FramesPerSecondText(2);
+  snViewer.ResetPerformanceMonitor;
 end;
 
 procedure TMainForm.ApplyFPS;
@@ -528,12 +570,12 @@ begin
   if acToolsShowFPS.Checked then
   begin
     Timer.Enabled := True;
-    GLCadencer.Enabled := True;
+    Cadencer.Enabled := True;
   end
   else
   begin
     Timer.Enabled := False;
-    GLCadencer.Enabled := False;
+    Cadencer.Enabled := False;
     StatusBar.Panels[1].Text := '--- FPS';
   end;
 end;
@@ -541,21 +583,18 @@ end;
 procedure TMainForm.SetupFreeFormShading;
 var
   i: Integer;
-  libMat: TGLLibMaterial;
+  LibMat: TGLLibMaterial;
 begin
-  with GLMaterialLibrary do
+  if MaterialLib.Materials.Count = 0 then
   begin
-    if Materials.Count = 0 then
-    begin
-      FreeForm.Material.MaterialLibrary := GLMaterialLibrary;
-      libMat := Materials.Add;
-      FreeForm.Material.LibMaterialName := libMat.Name;
-      libMat.Material.FrontProperties.Diffuse.Red := 0;
-    end;
-    for i := 0 to Materials.Count - 1 do
-      with Materials[i].Material do
-        BackProperties.Assign(FrontProperties);
+    ffObject.Material.MaterialLibrary := MaterialLib;
+    LibMat := MaterialLib.Materials.Add;
+    ffObject.Material.LibMaterialName := LibMat.Name;
+    libMat.Material.FrontProperties.Diffuse.Red := 0;
   end;
+  for i := 0 to MaterialLib.Materials.Count - 1 do
+    with MaterialLib.Materials[i].Material do
+      BackProperties.Assign(FrontProperties);
   ApplyShadeMode;
   ApplyTexturing;
   ApplyFPS;
@@ -569,20 +608,20 @@ begin
     Exit;
   Screen.Cursor := crHourGlass;
   Caption := 'GLSViewer - ' + ExtractFileName(fileName);
-  GLMaterialLibrary.Materials.Clear;
+  MaterialLib.Materials.Clear;
 
-  FreeForm.MeshObjects.Clear;
-  FreeForm.LoadFromFile(fileName);
+  ffObject.MeshObjects.Clear;
+  ffObject.LoadFromFile(fileName);
   SetupFreeFormShading;
-  StatusBar.Panels[0].Text := IntToStr(FreeForm.MeshObjects.TriangleCount)
+  StatusBar.Panels[0].Text := IntToStr(ffObject.MeshObjects.TriangleCount)
     + ' tris';
   StatusBar.Panels[2].Text := fileName;
-  acFileSaveTextures.Enabled := (GLMaterialLibrary.Materials.Count > 0);
-  acFileOpenTexLib.Enabled := (GLMaterialLibrary.Materials.Count > 0);
+  acFileSaveTextures.Enabled := (MaterialLib.Materials.Count > 0);
+  acFileOpenTexLib.Enabled := (MaterialLib.Materials.Count > 0);
   lastFileName := fileName;
   lastLoadWithTextures := acToolsTexturing.Enabled;
 
-  FreeForm.GetExtents(min, max);
+  ffObject.GetExtents(min, max);
   with CubeExtents do
   begin
     CubeWidth := max.X - min.X;
@@ -593,7 +632,7 @@ begin
   DoResetCamera;
 end;
 
-procedure TMainForm.GLSceneViewerMouseDown(Sender: TObject; Button: TMouseButton;
+procedure TMainForm.snViewerMouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   mx := X;
@@ -601,7 +640,7 @@ begin
   md := True;
 end;
 
-procedure TMainForm.GLSceneViewerMouseMove(Sender: TObject; Shift: TShiftState;
+procedure TMainForm.snViewerMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   d: Single;
@@ -610,24 +649,24 @@ begin
   begin
     if ssLeft in Shift then
       if ssShift in Shift then
-        GLCamera.MoveAroundTarget((my - Y) * 0.1, (mx - X) * 0.1)
+        Camera.MoveAroundTarget((my - Y) * 0.1, (mx - X) * 0.1)
       else
-        GLCamera.MoveAroundTarget(my - Y, mx - X)
+        Camera.MoveAroundTarget(my - Y, mx - X)
     else if ssRight in Shift then
     begin
-      d := GLCamera.DistanceToTarget * 0.01 * (X - mx + Y - my);
+      d := Camera.DistanceToTarget * 0.01 * (X - mx + Y - my);
       if IsKeyDown('x') then
-        FreeForm.Translate(d, 0, 0)
+        ffObject.Translate(d, 0, 0)
       else if IsKeyDown('y') then
-        FreeForm.Translate(0, d, 0)
+        ffObject.Translate(0, d, 0)
       else if IsKeyDown('z') then
-        FreeForm.Translate(0, 0, d)
+        ffObject.Translate(0, 0, d)
       else
       begin
         if ssShift in Shift then
-          GLCamera.RotateObject(FreeForm, (my - Y) * 0.1, (mx - X) * 0.1)
+          Camera.RotateObject(ffObject, (my - Y) * 0.1, (mx - X) * 0.1)
         else
-          GLCamera.RotateObject(FreeForm, my - Y, mx - X);
+          Camera.RotateObject(ffObject, my - Y, mx - X);
       end;
     end;
     mx := X;
@@ -635,7 +674,7 @@ begin
   end;
 end;
 
-procedure TMainForm.GLSceneViewerMouseUp(Sender: TObject; Button: TMouseButton;
+procedure TMainForm.snViewerMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   md := False;
@@ -644,16 +683,16 @@ end;
 procedure TMainForm.FormMouseWheel(Sender: TObject; Shift: TShiftState;
   WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
 begin
-  if FreeForm.MeshObjects.Count > 0 then
+  if ffObject.MeshObjects.Count > 0 then
   begin
-    GLCamera.AdjustDistanceToTarget(Power(1.05, WheelDelta / 120));
-    GLCamera.DepthOfView := 2 * GLCamera.DistanceToTarget + 2 *
-      FreeForm.BoundingSphereRadius;
+    Camera.AdjustDistanceToTarget(Power(1.05, WheelDelta / 120));
+    Camera.DepthOfView := 2 * Camera.DistanceToTarget + 2 *
+      ffObject.BoundingSphereRadius;
   end;
   Handled := True;
 end;
 
-procedure TMainForm.GLMaterialLibraryTextureNeeded(Sender: TObject;
+procedure TMainForm.MaterialLibTextureNeeded(Sender: TObject;
   var textureFileName: String);
 begin
   if not acToolsTexturing.Enabled then
@@ -664,10 +703,10 @@ procedure TMainForm.acInvertNormalsExecute(Sender: TObject);
 var
   i: Integer;
 begin
-  with FreeForm.MeshObjects do
+  with ffObject.MeshObjects do
     for i := 0 to Count - 1 do
       Items[i].Normals.Scale(-1);
-  FreeForm.StructureChanged;
+  ffObject.StructureChanged;
 end;
 
 procedure TMainForm.acReverseRenderingOrderExecute(Sender: TObject);
@@ -675,7 +714,7 @@ var
   i, j, n: Integer;
   fg: TGLFaceGroup;
 begin
-  with FreeForm.MeshObjects do
+  with ffObject.MeshObjects do
   begin
     // invert meshobjects order
     for i := 0 to (Count div 2) do
@@ -696,12 +735,12 @@ begin
         end;
       end;
   end;
-  FreeForm.StructureChanged;
+  ffObject.StructureChanged;
 end;
 
 procedure TMainForm.acSaveAsUpdate(Sender: TObject);
 begin
-  acFileSaveAs.Enabled := (FreeForm.MeshObjects.Count > 0);
+  acFileSaveAs.Enabled := (ffObject.MeshObjects.Count > 0);
 end;
 
 procedure TMainForm.acHelpAboutExecute(Sender: TObject);
@@ -727,29 +766,29 @@ var
   m: TMeshObject;
   fg: TFGVertexIndexList;
 begin
- v := FreeForm.MeshObjects.ExtractTriangles;
+ v := ffObject.MeshObjects.ExtractTriangles;
   try
     i := BuildVectorCountOptimizedIndices(v);
     try
       RemapAndCleanupReferences(v, i);
       IncreaseCoherency(i, 12);
       i.Capacity := i.Count;
-      FreeForm.MeshObjects.Clean;
-      m := TMeshObject.CreateOwned(FreeForm.MeshObjects);
+      ffObject.MeshObjects.Clean;
+      m := TMeshObject.CreateOwned(ffObject.MeshObjects);
       m.Vertices := v;
       m.BuildNormals(i, momTriangles);
       m.Mode := momFaceGroups;
       fg := TFGVertexIndexList.CreateOwned(m.FaceGroups);
       fg.VertexIndices := i;
       fg.Mode := fgmmTriangles;
-      FreeForm.StructureChanged;
+      ffObject.StructureChanged;
     finally
       i.Free;
     end;
   finally
     v.Free;
   end;
-  GLMaterialLibrary.Materials.Clear;
+  MaterialLib.Materials.Clear;
   SetupFreeFormShading;
 end;
 
@@ -761,7 +800,7 @@ var
   strips: TPersistentObjectList;
 begin
   acConvertToTriangles.Execute;
-  mo := FreeForm.MeshObjects[0];
+  mo := ffObject.MeshObjects[0];
   fg := (mo.FaceGroups[0] as TFGVertexIndexList);
   strips := StripifyMesh(fg.VertexIndices, mo.Vertices.Count, True);
   try
@@ -778,11 +817,6 @@ begin
   finally
     strips.Free;
   end;
-end;
-
-procedure TMainForm.acViewAxesExecute(Sender: TObject);
-begin
-  (Sender as TGLOptions).CheckBoxAxisClick(nil);
 end;
 
 procedure TMainForm.acViewFlatShadingExecute(Sender: TObject);
@@ -831,8 +865,8 @@ end;
 
 procedure TMainForm.acOptimizeExecute(Sender: TObject);
 begin
-  OptimizeMesh(FreeForm.MeshObjects, [mooVertexCache, mooSortByMaterials]);
-  FreeForm.StructureChanged;
+  OptimizeMesh(ffObject.MeshObjects, [mooVertexCache, mooSortByMaterials]);
+  ffObject.StructureChanged;
   SetupFreeFormShading;
 end;
 
@@ -879,19 +913,47 @@ begin
     ApplyTexturing;
 end;
 
-procedure TMainForm.GLCadencerProgress(Sender: TObject;
-  const deltaTime, newTime: Double);
+procedure TMainForm.acObjectsExecute(Sender: TObject);
 begin
-  if Self.Focused then
-    GLSceneViewer.Invalidate;
+  inherited;
+  // Show Base and Additional Objects
 end;
 
+procedure TMainForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
+begin
+  if NavCube.InactiveTime > 5 then
+  begin
+    if NavCube.InactiveTime < 8 then
+      Camera.TurnAngle := Camera.TurnAngle + (NavCube.InactiveTime - 5) * deltaTime * 2
+    else
+      Camera.TurnAngle := Camera.TurnAngle + deltatime * 6;
+  end;
+  snViewer.Refresh;
+
+  if Self.Focused then
+    snViewer.Invalidate;
+end;
+
+procedure TMainForm.acNavCubeExecute(Sender: TObject);
+begin
+  acNavCube.Checked := not acNavCube.Checked;
+  if acNavCube.Checked = True then
+  begin
+    Cadencer.Enabled := True;
+  end
+  else
+  begin
+    NavCube.Destroy;
+    snViewer.Refresh;
+    Cadencer.Enabled := False;
+  end;
+end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
   StatusBar.Panels[1].Text := Format('%.1f FPS',
-    [GLSceneViewer.FramesPerSecond]);
-  GLSceneViewer.ResetPerformanceMonitor;
+    [snViewer.FramesPerSecond]);
+  snViewer.ResetPerformanceMonitor;
 end;
 
 procedure TMainForm.ReadIniFile;
@@ -902,10 +964,12 @@ begin
     try
       Top := ReadInteger(Name, 'Top', 100);
       Left := ReadInteger(Name, 'Left', 200);
+{
       if ReadBool(Name, 'InitMax', False) then
         WindowState := wsMaximized
       else
         WindowState := wsNormal;
+}
     finally
       IniFile.Free;
     end;
@@ -918,7 +982,7 @@ begin
     try
       WriteInteger(Name, 'Top', Top);
       WriteInteger(Name, 'Left', Left);
-      WriteBool(Name, 'InitMax', WindowState = wsMaximized);
+//      WriteBool(Name, 'InitMax', WindowState = wsMaximized);
     finally
       IniFile.Free;
     end;

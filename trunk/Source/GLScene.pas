@@ -5,6 +5,7 @@
    Base classes and structures for GLScene.
 
    History :
+       26/06/97 - Mike Lischke - last change of version 0.3.2
        05/02/00 - Egg - Javadocisation, fixes and enhancements...
        The whole history is logged in a previous version of the unit.
 }

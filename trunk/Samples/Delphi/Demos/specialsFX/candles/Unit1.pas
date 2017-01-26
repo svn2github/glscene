@@ -14,8 +14,15 @@ uses
   Vcl.ExtCtrls,
 
   //GLS
-  GLObjects, GLExtrusion, GLScene, GLCadencer, GLFireFX,
-  GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
+  GLObjects,
+  GLExtrusion,
+  GLScene,
+  GLCadencer,
+  GLFireFX,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type

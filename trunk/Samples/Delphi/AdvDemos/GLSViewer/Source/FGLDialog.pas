@@ -1,15 +1,22 @@
-unit FGLDialog;
+unit fGLDialog;
 
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.SysUtils, 
+  System.Variants,
+  System.Classes, 
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms,
+  Vcl.Dialogs, 
+  Vcl.StdCtrls, 
+  Vcl.ExtCtrls,
 
-  //GLScene
-  FGLForm;
+  //GLS
+  fGLForm;
 
 type
   TGLDialog = class(TGLForm)
