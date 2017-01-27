@@ -5,16 +5,8 @@
    Implements a tiled texture plane. 
 
    History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       23/03/07 - DaStr - Added explicit pointer dereferencing
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678644)
-       19/08/05 - Mathx - Made index of materials start from 0 not from 1 (thanks to uhfath)
-       23/03/04 - EG - Added NoZWrite
-       09/01/04 - EG - Creation
-    
+     09/01/04 - EG - Creation
+     The whole history is logged in a previous version of the unit.
 }
 unit GLTilePlane;
 
@@ -23,11 +15,19 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, 
-   
-  GLScene, GLVectorGeometry, OpenGLTokens, GLContext, GLMaterial,
-  GLObjects, GLCrossPlatform, GLPersistentClasses, GLVectorLists,
-  GLRenderContextInfo, XOpenGL;
+  System.Classes,
+  //GLS
+  OpenGLTokens,
+  GLScene,
+  GLVectorGeometry,
+  GLContext,
+  GLMaterial,
+  GLObjects,
+  GLCrossPlatform,
+  GLPersistentClasses,
+  GLVectorLists,
+  GLRenderContextInfo,
+  XOpenGL;
 
 type
 

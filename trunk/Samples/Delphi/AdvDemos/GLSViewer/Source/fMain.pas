@@ -57,13 +57,15 @@ uses
   GLMeshUtils,
   GLVectorTypes,
   GLGnuGettext,
+  GLAsyncTimer,
+  GLGraph,
 
   //GLSViewer Forms
   fGLForm,
   fGLAbout,
   fGLOptions,
   uNavCube,
-  dGLSViewer, GLAsyncTimer, GLGraph;
+  dGLSViewer;
 
 type
   TMainForm = class(TGLForm)
@@ -136,6 +138,7 @@ type
     dcWorld: TGLDummyCube;
     grdXYZ: TGLXYZGrid;
     acNavCube: TAction;
+    GLPoints: TGLPoints;
     procedure FormCreate(Sender: TObject);
     procedure snViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -202,6 +205,7 @@ type
     hlShader: TGLShader;
     lastFileName: String;
     lastLoadWithTextures: Boolean;
+    Points: TGLPoints;
     procedure ApplyBgColor;
     procedure ReadIniFile; override;
     procedure WriteIniFile; override;
@@ -210,6 +214,9 @@ type
 var
   MainForm: TMainForm;
   NavCube: TGLNavCube;
+
+const
+  NumObjects: Integer = 1000;
 
 
 //=======================================================================
@@ -914,9 +921,44 @@ begin
 end;
 
 procedure TMainForm.acObjectsExecute(Sender: TObject);
+var
+  i: Integer;
+  Color : TVector3f;
+  Points: TGLPoints;
+const
+  RandMax: Integer = 1000;
+
 begin
-  inherited;
+  for i := 0 to NumObjects - 1 do
+  begin
+///    Points := TGLPoints.Create(dcWorld.AddNewChild(TGLPoints));
+    GLPoints := TGLPoints(dcWorld.AddNewChild(TGLPoints));
+    Color.X := Random(256)/256;
+    Color.Y := Random(256)/256;
+    Color.Z := Random(256)/256;
+//    GLPoints.Colors.Add(Color);
+    GLPoints.Colors.AddPoint(Color);
+
+    GLPoints.Size := 5;
+	  GLPoints.Position.X := Random(10) - 5;
+	  GLPoints.Position.Y := Random(10) - 5;
+	  GLPoints.Position.Z := Random(10) - 5;
+
+		{ c++ code
+		  P[i] = new TGLPoints(GLDummyCube1);
+		  P[i]->Colors->Add(((float)(rand()%256))/256.0,((float)(rand()%256))/256.0,
+							((float)(rand()%256))/256.0,0.5);
+		  P[i]->Size = 5;
+		  P[i]->Position->X = 1.0*rand()/RAND_MAX-0.5;
+		  P[i]->Position->Y = 1.0*rand()/RAND_MAX-0.5;
+		  P[i]->Position->Z = 1.0*rand()/RAND_MAX-0.5;
+		}
+
+
+  end;
+
   // Show Base and Additional Objects
+
 end;
 
 procedure TMainForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);

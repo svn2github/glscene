@@ -5,15 +5,8 @@
    A PFX whose particles are lines
 
     History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       12/10/08 - DanB - updated to use RCI
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       20/02/05 - EG - Creation
-    
+      20/02/05 - EG - Creation
+      The whole history is logged in previous version of the unit
 }
 unit GLLinePFX;
 
@@ -22,11 +15,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, 
-   
-  GLPersistentClasses, GLVectorGeometry,
-  GLParticleFX, GLTexture, GLColor, GLRenderContextInfo,
-  OpenGLTokens, GLContext , GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  OpenGLTokens,
+  GLPersistentClasses,
+  GLVectorGeometry,
+  GLParticleFX,
+  GLTexture,
+  GLColor,
+  GLRenderContextInfo,
+  GLContext,
+  GLVectorTypes;
 
 type
 

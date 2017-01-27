@@ -44,6 +44,7 @@ TSpaceText>>>TGLSpaceText
 TTerrainRenderer>>>TGLTerrainRenderer
 TScreenSaver>>>TGLScreenSaver
 TWindowsBitmapFont>>>TGLWindowsBitmapFont
+TXCollection>>>TGLXCollection
 TXYZGrid>>>TGLXYZGrid
 TZShadows>>>TGLZShadows
 ApplicationFileIO>>>GLApplicationFileIO

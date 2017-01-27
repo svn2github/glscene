@@ -6,11 +6,8 @@
   TGLO3TCImage, TGLHDRImage etc.
 
   History :  
-         23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-         22/04/10 - Yar - Fixes after GLState revision
-         22/02/10 - Yar - Added LoadFromStream (thanks to mif)
-         23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
-         21/01/10 - Yar - Creation
+    21/01/10 - Yar - Creation
+   The whole history is logged in previous version of the unit
     
 }
 

@@ -5,27 +5,8 @@
   Miscellaneous support utilities & classes. 
 
   History :  
-       26/02/15 - PW - Added SaveStringToFile and LoadStringFromFile
-       02/01/13 - Yar - Added SetGLSceneMediaDir
-       07/01/11 - Yar - Added SaveModelDialog, OpenModelDialog
-       04/03/10 - DanB - Now uses CharInSet
-       27/05/09 - DanB - Re-added TryStrToFloat, since it ignores user's locale.
-       24/03/09 - DanB - Removed TryStrToFloat (exists in SysUtils or GLCrossPlatform already)
-                            changed StrToFloatDef to accept only 1 param + now overloaded
-       24/03/09 - DanB - Moved Dialog utilities here from GLCrossPlatform, because
-                            they work on all platforms (with FPC)
-       16/10/08 - UweR - corrected typo in TryStringToColorAdvanced parameter
-       16/10/08 - DanB - renamed Save/LoadStringFromFile to Save/LoadAnsiStringFromFile
-       24/03/08 - DaStr - Removed OpenGL1x dependancy
-                             Moved TGLMinFilter and TGLMagFilter from GLUtils.pas
-                              to GLGraphics.pas (BugTracker ID = 1923844)
-       25/03/07 - DaStr - Replaced StrUtils with GLCrossPlatform
-       23/03/07 - DaStr - Removed compiler warnings caused by
-                               SaveComponentToFile and LoadComponentFromFile
-       22/03/07 - DaStr - Added SaveComponentToFile, LoadComponentFromFile
-       07/02/07 - DaStr - Added StringToColorAdvanced() functions
-       05/09/03 - EG - Creation from GLMisc split
-    
+    05/09/03 - EG - Creation from GLMisc split
+    The whole history is logged in previous version of the unit
 }
 unit GLUtils;
 

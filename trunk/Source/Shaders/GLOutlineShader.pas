@@ -11,19 +11,9 @@
        3. Doesn't Works with visible backfaces. 
 
     History :  
-       12/02/11 - Yar - Added skipping shader when enabled stencil test to avvoid conflict with shadow volume
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       06/06/07 - DaStr - Added $I GLScene.inc
-                             Added GLColor to uses (BugtrackerID = 1732211)
-       25/02/07 - DaStr - Moved registration to GLSceneRegister.pas
-       05/06/04 - NelC - Fixed bug with textured object
-       14/12/03 - NelC - Removed BlendLine, automatically determine if blend
-       20/10/03 - NelC - Removed unnecessary properties. Shader now honors
-                            rci.ignoreMaterials.
-       04/09/03 - NelC - Converted into a component from the TOutlineShader
-                            in the multipass demo.
+      04/09/03 - NelC - Converted into a component from the TOutlineShader
+                        in the multipass demo.
+    The whole history is logged in a previous version of the unit.
     
 }
 unit GLOutlineShader;
@@ -34,9 +24,14 @@ interface
 
 uses
   System.Classes, 
-   
-  GLMaterial,  GLContext, OpenGLTokens,
-  GLCrossPlatform, GLColor, GLRenderContextInfo;
+  //GLS
+  OpenGLTokens,
+  GLMaterial,
+  GLContext,
+  GLCrossPlatform,
+  GLColor,
+  GLState,
+  GLRenderContextInfo;
 
 type
 
@@ -81,7 +76,7 @@ implementation
 // ------------------------------------------------------------------
 
 uses 
-  GLState, GLTextureFormat;
+  GLTextureFormat;
 
 // ------------------
 // ------------------ TGLOutlineShader ------------------

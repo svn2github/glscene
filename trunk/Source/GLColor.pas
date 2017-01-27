@@ -15,10 +15,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.SysUtils, System.Classes, Vcl.Dialogs, Vcl.Graphics,
+  System.SysUtils,
+  System.Classes,
+  Vcl.Dialogs,
+  Vcl.Graphics,
   // GLS
-  GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
-  GLPersistentClasses, GLBaseClasses;
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLCrossPlatform,
+  GLPersistentClasses,
+  GLBaseClasses;
 
 type
   PColorVector = ^TColorVector;
@@ -124,7 +130,7 @@ function ConvertWinColor(aColor: TColor; alpha : Single = 1) : TColorVector;
 
 //: Converts a color vector (containing float values)
 function ConvertColorVector(const AColor: TColorVector): TColor; overload;
-{Converts a color vector (containing float values) and alter intensity. 
+{Converts a color vector (containing float values) and alter intensity.
    intensity is in [0..1] }
 function ConvertColorVector(const AColor: TColorVector; intensity: Single): TColor; overload;
 //: Converts RGB components into a color vector with correct range

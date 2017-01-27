@@ -5,7 +5,7 @@
    Tools for managing an application-side cache of OpenGL state.
    History :
      05/09/03 - EG - Creation from GLMisc split
-     The whole history is logged in a previous version of the unit.
+     The whole history is logged in previous version of the unit.
 }
 
 // TODO: Proper client-side pushing + popping of state, in OpenGL 3+ contexts,
@@ -29,13 +29,13 @@ interface
 {.$DEFINE GLS_CACHE_MISS_CHECK}
 
 uses
-  System.Classes, 
+  System.Classes,
   System.SysUtils,
-   
+  //GLS
+  OpenGLTokens,
   GLCrossPlatform,
   GLVectorTypes,
   GLVectorGeometry,
-  OpenGLTokens,
   GLTextureFormat;
 
 const
@@ -116,9 +116,7 @@ type
     bfSrcAlphaSat);
 
   TDstBlendFunction = bfZero..bfOneMinusConstantAlpha;
-
   TBlendEquation = (beAdd, beSubtract, beReverseSubtract, beMin, beMax);
-
   TStencilOp = (soKeep, soZero, soReplace, soIncr, soDecr, soInvert, soIncrWrap,
     soDecrWrap);
 
@@ -135,7 +133,7 @@ type
 
   // TFaceWinding
   //
-//: Describe what kind of winding has a front face
+  // Describe what kind of winding has a front face
   TFaceWinding = (fwCounterClockWise, fwClockWise);
 
   TPolygonMode = (pmFill, pmLines, pmPoints);

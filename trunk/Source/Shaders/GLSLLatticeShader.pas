@@ -20,10 +20,21 @@ interface
 uses
   System.Classes,
   // GLS
-  GLScene, GLCrossPlatform, GLBaseClasses, GLState, OpenGLTokens, OpenGL1x, GLContext, GLRenderContextInfo,
-  GLVectorGeometry, GLCoordinates,
-  GLTextureFormat,GLColor, GLTexture, GLMaterial,
-  GLSLShader, GLCustomShader;
+  OpenGLTokens,
+  GLScene,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLState,
+  GLContext,
+  GLRenderContextInfo,
+  GLVectorGeometry,
+  GLCoordinates,
+  GLTextureFormat,
+  GLColor,
+  GLTexture,
+  GLMaterial,
+  GLSLShader,
+  GLCustomShader;
 
 //TGLCustomGLSLSimpleLatticeShader
 //

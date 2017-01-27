@@ -2,30 +2,15 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a basic shadow plane. 
+   Implements a basic shadow plane.
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component. 
+   materials/mirror demo before using this component.
 
-  History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/06/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       22/02/10 - Yar - Optimization of switching states
-       12/03/09 - DanB - Bug-fix for scissor test on recent NVidia drivers
-       06/06/07 - DaStr - Added GLColor to uses (BugtrackerID = 1732211)
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       02/08/04 - LR, YHC - BCB corrections: use record instead array
-       23/03/04 - EG - Added spoTransparent
-       29/11/03 - EG - Scissors turned of if camera is withing bounding volume
-       30/10/02 - EG - Added OnBegin/EndRenderingShadows
-       25/10/02 - EG - Fixed Stencil cleanup and shadow projection bug
-       02/10/02 - EG - Added spoScissor
-       23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
-    
+  History :
+    23/09/02 - EG - Creation (from GLMirror and Mattias FagerLund ShadowPlane.pas)
+    The whole history is logged in previous version of the unit
+
 }
 unit GLShadowPlane;
 
@@ -35,7 +20,8 @@ interface
 
 uses
   System.Classes,
-   
+  //GLS
+  OpenGLTokens,
   GLScene,
   GLVectorGeometry,
   GLObjects,
@@ -43,7 +29,9 @@ uses
   GLColor,
   GLRenderContextInfo,
   GLState,
-  GLTextureFormat;
+  GLTextureFormat,
+  GLContext;
+
 
 type
 
@@ -59,8 +47,8 @@ type
 
   // TGLShadowPlane
   //
-  {A simple shadow plane. 
-     This mirror requires a stencil buffer for optimal rendering! 
+  {A simple shadow plane.
+     This mirror requires a stencil buffer for optimal rendering!
      The object is a mix between a plane and a proxy object, in that the plane
      defines where the shadows are cast, while the proxy part is used to reference
      the objects that should be shadowing (it is legal to self-shadow, but no
@@ -142,7 +130,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 //-------------------------------------------------------------
-uses OpenGLTokens, GLContext;
 // ------------------
 // ------------------ TGLShadowPlane ------------------
 // ------------------

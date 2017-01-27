@@ -5,10 +5,8 @@
    TGLBExplosionFX Effect 
 
    History :  
-     23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-     23/02/07 - DaStr - Fixed TGLBExplosionFx.Create (TGLCoordinatesStyle stuff)
-     23/12/04 - PhP - GLScene Headerized, replaced some VectorXXX functions with XXXVector procedures
      07/03/04 - Matheus Degiovani - Creation
+     The whole history is logged in previous version of the unit
    
 
   Description: this effect explodes a mesh object into triangles
@@ -32,8 +30,18 @@ interface
 {$I GLScene.inc}
 
 uses
-  OpenGLTokens, GLVectorGeometry, GLScene, GLVectorFileObjects, GLVectorTypes,
-  GLVectorLists, GLXCollection, GLCoordinates, GLRenderContextInfo;
+  OpenGLTokens,
+  GLVectorGeometry,
+  GLScene,
+  GLVectorFileObjects,
+  GLVectorTypes,
+  GLVectorLists,
+  GLXCollection,
+  GLCoordinates,
+  GLRenderContextInfo,
+  GLContext,
+  GLState;
+
 
 type
   TGLBExplosionFX = class(TGLObjectPreEffect)
@@ -78,10 +86,13 @@ type
     property Direction: TGLCoordinates read FDirection write SetDirection;
   end;
 
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 implementation
-
-uses
-  GLContext, GLState;
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 
 { TGLBExplosionFx }
 

@@ -13,10 +13,10 @@ unit GLPolyhedron;
 interface
 
 uses
+  Winapi.OpenGL,
   System.Classes,
   //GLS
   GLScene,
-  OpenGL1x,
   GLVectorGeometry,
   GLObjects,
   GLRenderContextInfo;

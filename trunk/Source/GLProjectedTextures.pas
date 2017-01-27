@@ -4,17 +4,8 @@
 {
    Implements projected textures through a GLScene object.
    History :
-       10/11/12 - PW - Added CPP compatibility: changed const cBase matrix
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       15/06/05 - Mathx - Added the Style property and inverse rendering
-       07/05/05 - Mathx - Support for tmBlend textures (by Ruben Javier)
-       01/10/04 - SG - Initial (by Matheus Degiovani)
-    
+     01/10/04 - SG - Initial (by Matheus Degiovani)
+    The whole history is logged in previous version of the unit
 }
 unit GLProjectedTextures;
 
@@ -183,7 +174,7 @@ end;
 procedure TGLTextureEmitter.SetupTexMatrix(var ARci: TGLRenderContextInfo);
 const
   cBaseMat: TMatrix =
-  (V:((X:0.5; Y:0;   Z:0; W:0),
+      (V:((X:0.5; Y:0;   Z:0; W:0),
           (X:0;   Y:0.5; Z:0; W:0),
           (X:0;   Y:0; Z:1; W:0),
           (X:0.5; Y:0.5; Z:0; W:1)));

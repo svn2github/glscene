@@ -6,14 +6,8 @@
    Allows assign a unique material for each proxy master. 
 
     History :  
-       30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       10/04/08 - DaStr - Added a Delpi 5 interface bug work-around to
-                              TGLMaterialMultiProxyMaster (BugTracker ID = 1938988)
-       25/03/07 - Added GLCrossPlatform to uses for Delphi5 compatibility
-       17/02/07 - DaStr - Initial version (contributed to GLScene)
-          
+      17/02/07 - DaStr - Initial version (contributed to GLScene)
+      The whole history is logged in a previous version of the unit
 
   What changed compared to GLMultiProxy:
     1) Allows assign a unique material for each proxy master
@@ -27,13 +21,6 @@
       (they are connected on assigning, not while rendering; full persistency support;
        allows to assign directly to TGLLibMaterial)
     9) VCL-style code formating
-
-
-  Previous version history:
-          v1.0    12 December  '2005  Creation (based on MultiProxy.pas)
-          v1.0.1  18 June      '2006  Some IFDEFs added
-          v1.0.2  20 December  '2006  STRANGE_GLSCENE_VERSION checks removed
-          v1.1    17 February  '2007  Made design-time compatible
 }
 
 unit GLMaterialMultiProxy;
@@ -43,15 +30,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-
+  System.Classes,
+  System.SysUtils,
   // GLS
-  GLScene, GLVectorGeometry, GLTexture, GLMaterial, GLSilhouette, GLStrings,
-  GLCrossPlatform, GLPersistentClasses, GLRenderContextInfo, GLBaseClasses,
-  GLContext , GLVectorTypes;
+  GLScene,
+  GLVectorGeometry,
+  GLTexture,
+  GLMaterial,
+  GLSilhouette,
+  GLStrings,
+  GLCrossPlatform,
+  GLPersistentClasses,
+  GLRenderContextInfo,
+  GLBaseClasses,
+  GLContext,
+  GLVectorTypes;
 
 type
-
   TGLMaterialMultiProxy = class;
 
   // TGLMaterialMultiProxyMaster

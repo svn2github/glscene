@@ -23,7 +23,5 @@ begin
   Application.Title := 'GLSViewer';
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TdmGLSViewer, dmGLSViewer);
-  Application.CreateForm(TGLAbout, GLAbout);
-  Application.CreateForm(TGLOptions, GLOptions);
   Application.Run;
 end.

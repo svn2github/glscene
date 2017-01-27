@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 119
   BorderWidth = 5
   Caption = 'Torque'
-  ClientHeight = 370
-  ClientWidth = 675
+  ClientHeight = 360
+  ClientWidth = 665
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,26 +20,23 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 78
-    Width = 675
-    Height = 251
+    Width = 665
+    Height = 241
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
-    FieldOfView = 102.903434753418000000
+    FieldOfView = 100.623100280761700000
     Align = alClient
     OnMouseDown = GLSceneViewer1MouseDown
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 685
-    ExplicitHeight = 261
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 675
+    Width = 665
     Height = 78
     Align = alTop
     TabOrder = 1
-    ExplicitWidth = 685
     object lHexahedron: TLabel
       Left = 280
       Top = 8
@@ -96,16 +93,14 @@ object Form1: TForm1
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 329
-    Width = 675
+    Top = 319
+    Width = 665
     Height = 41
     Align = alBottom
     Caption = 
       'Move your mouse over an object and it will start spinning. Click' +
       ' to get info.'
     TabOrder = 2
-    ExplicitTop = 339
-    ExplicitWidth = 685
   end
   object GLScene1: TGLScene
     Left = 16

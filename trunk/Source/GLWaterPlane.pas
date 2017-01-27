@@ -3,23 +3,13 @@
 //
 {
    A plane simulating animated water 
-
-   History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       30/03/07 - DaStr - Added $I GLScene.inc
-       22/09/04 - R.Cao - Added AxisAlignedDimensionsUnscaled to fix visibility culling
-       02/04/03 - EG - More optimizations, mask support
-       01/04/03 - EG - Cleanup and optimizations
-       14/11/03 - Mrqzzz - Tried "CreateRippleAtWorldPos" to work at any position/rotation, but need expert's help.. :(
-       13/11/03 - Mrqzzz - Tried to add timing indipendence (quite not precise yet)
-       12/11/03 - Mrqzzz - Added some properties & small optims added
-       01/01/03 - Sternas Stefanos - Original code
-    
-
-    The Original Code is part of Cosmos4D
+   The Original Code is part of Cosmos4D
    http://users.hol.gr/~sternas/
-   Sternas Stefanos 2003
+
+   History :
+     01/01/03 - Sternas Stefanos - Original code
+     The whole history is logged in a previous version of the unit.
+
 }
 unit GLWaterPlane;
 
@@ -29,10 +19,17 @@ interface
 
 uses
   System.Classes,
-
-  GLVectorGeometry, GLScene, OpenGLTokens, GLVectorLists,
-  GLCrossPlatform, GLPersistentClasses, GLBaseClasses,
-  GLContext, GLRenderContextInfo, GLVectorTypes;
+  //GLS
+  OpenGLTokens,
+  GLVectorGeometry,
+  GLScene,
+  GLVectorLists,
+  GLCrossPlatform,
+  GLPersistentClasses,
+  GLBaseClasses,
+  GLContext,
+  GLRenderContextInfo,
+  GLVectorTypes;
 
 type
 

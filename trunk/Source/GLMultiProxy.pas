@@ -4,12 +4,9 @@
 {
    Implements a multi-proxy objects, useful for discreet LOD. 
    History :  
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       19/12/06 - DaS - Fixed a bug in TGLMultiProxy.Destroy
-       26/11/03 - EG - Added bounding, raycast and silhouette proxying
-       25/11/03 - EG - Added per-master visibility boolean
-       24/11/03 - EG - Creation
-    
+     24/11/03 - EG - Creation
+     The whole history is logged in a previous version of the unit
+
 }
 unit GLMultiProxy;
 
@@ -17,9 +14,15 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-
-  OpenGLTokens, GLContext,  GLScene, GLVectorGeometry, GLSilhouette,
-  GLRenderContextInfo, GLBaseClasses, GLVectorTypes;
+  //GLS
+  OpenGLTokens,
+  GLContext,
+  GLScene,
+  GLVectorGeometry,
+  GLSilhouette,
+  GLRenderContextInfo,
+  GLBaseClasses,
+  GLVectorTypes;
 
 type
 

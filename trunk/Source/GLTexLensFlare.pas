@@ -5,15 +5,9 @@
   Texture-based Lens flare object. 
 
   History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       30/03/07 - DaStr - Added $I GLScene.inc
-       23/03/07 - DaStr - Added missing parameters in procedure's implementation
-                             (thanks Burkhard Carstens) (Bugtracker ID = 1681409)
-       25/09/03 - EG - Creation from GLLensFlare split
-   
+    25/09/03 - EG - Creation from GLLensFlare split
+    The whole history is logged in a previous version of the unit.
+
 }
 unit GLTexLensFlare;
 
@@ -23,9 +17,17 @@ interface
 
 uses
   System.Classes,
-
-  GLScene, GLVectorGeometry, GLObjects, GLTexture, OpenGLTokens,
-  GLContext, GLRenderContextInfo, GLBaseClasses, GLState, GLVectorTypes;
+  //GLS
+  GLScene,
+  GLVectorGeometry,
+  GLObjects,
+  GLTexture,
+  OpenGLTokens,
+  GLContext,
+  GLRenderContextInfo,
+  GLBaseClasses,
+  GLState,
+  GLVectorTypes;
 
 type
 

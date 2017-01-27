@@ -3,7 +3,7 @@
 //
 {
    OpenGL tokens
-   The whole history is logged in a former GLS version of the unit.
+   The whole history is logged in previous version of the unit
 }
 unit OpenGLTokens;
 
@@ -22,7 +22,7 @@ uses
   LCLType,
   dynlibs,
 {$ENDIF}
- GLVectorTypes;
+  GLVectorTypes;
 
 type
 //  PGLenum = System.PCardinal;
@@ -63,19 +63,18 @@ type
   TGLushort = Word;
   PGLushort = System.PWord;
 
-//  TGLuint = Cardinal;
+  TGLuint = Cardinal;
   PGLuint = System.PCardinal;
 
   TGLfloat = Single;
   PGLfloat = System.PSingle;
-//  PGLclampf = System.PSingle;
+  PGLclampf = System.PSingle;
 
   TGLdouble = Double;
   PGLdouble = System.PDouble;
 
-  GLclampd = Double;
   TGLclampd = Double;
-  PGLclampd = ^TGLclampd;
+  PGLclampd = System.PDouble;
 
   GLhandleARB = Cardinal;
   PGLhandleARB = ^GLhandleARB;
@@ -3849,7 +3848,7 @@ const
 
   // DanB : "GL_EXT_texture_cube_map (can't find this extension in OpenGL registry so removed)"
   // Mrqzzz : The following block was commented by DanB
-  // But the constants are currently used in dws2openGL1x.pas, so i re-add them. If they
+  // But the constants are currently used in dws2openGL.pas, so i re-add them. If they
   // result harmful, we will remove them again.
   GL_NORMAL_MAP_EXT = $8511;
   GL_REFLECTION_MAP_EXT = $8512;
@@ -7127,7 +7126,7 @@ const
   PFNGLSHADERBINARYPROC = procedure(count: TGLsizei; shaders: PGLuint; binaryformat: Cardinal; binary: Pointer; length: TGLsizei);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   PFNGLGETSHADERPRECISIONFORMATPROC = procedure(shadertype: Cardinal; precisiontype: Cardinal; range: PGLint; precision: PGLint);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
   PFNGLDEPTHRANGEFPROC = procedure(n: Single; f: Single);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
-  PFNGLCLEARDEPTHFPROC = procedure(d: Single);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+  PFNGLCLEARDEPTHFPROC = procedure(depth: TGLclampd);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 
   // GL_ARB_get_program_binary (ARB #96)
   PFNGLGETPROGRAMBINARYPROC = procedure(_program: Cardinal; bufSize: TGLsizei; length: PGLsizei; binaryFormat: PCardinal; binary: Pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}

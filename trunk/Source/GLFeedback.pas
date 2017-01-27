@@ -13,17 +13,8 @@
    will indicate if there is valid data in the buffer. 
 
     History :  
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-       01/03/11 - Yar - Added Colors list to BuildMeshFromBuffer
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       15/06/10 - Yar - Bugfixed face culling on in feedback mode drawing (thanks Radli)
-       22/04/10 - Yar - Fixes after GLState revision
-       05/03/10 - DanB - More state added to TGLStateCache
-       30/03/07 - DaStr - Added $I GLScene.inc
-       28/03/07 - DaStr - Renamed parameters in some methods
-                            (thanks Burkhard Carstens) (Bugtracker ID = 1678658)
-       23/07/04 - SG - Creation.
-    
+      23/07/04 - SG - Creation.
+      The whole history is logged in previous version of the unit
 
 }
 unit GLFeedback;
@@ -33,12 +24,20 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorGeometry, GLVectorLists, GLScene, GLVectorFileObjects,
-  GLTexture, GLRenderContextInfo, GLContext, GLState, OpenGLTokens,
-  GLMeshUtils
-  , GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  //GLS
+  GLVectorGeometry,
+  GLVectorLists,
+  GLScene,
+  GLVectorFileObjects,
+  GLTexture,
+  GLRenderContextInfo,
+  GLContext,
+  GLState,
+  OpenGLTokens,
+  GLMeshUtils,
+  GLVectorTypes;
 
 type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);

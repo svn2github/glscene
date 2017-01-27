@@ -4,18 +4,10 @@
 {
   Ode Dynamic Engine for GLScene
   History :  
-   10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
-   10/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens
-   05/04/10 - Yar - Added GLSceneMatrixToODER (thanks Vovik)
-   22/11/09 - DaStr - Improved Unix compatibility (thanks Predator)
-                 (BugtrackerID = 2893580)
-   08/12/08 - PR dBodySetMass no longer accepts zero mass. check added
-   06/02/08 - Mrqzzz - Upgrade to ODE 0.9 (upgrade by Paul Robello)
-   11/09/07 - Mrqzzz - added reference to odeimport
-   02/08/04 - LR, YHC - BCB corrections: use record instead array
-   03/02/03 - EG - Fixed CopyPosFromGeomToGL
-   11/02/03 - MF - Added a couple of vector functions for copying between
-    ODE formats and GLScene formats
+    03/02/03 - EG - Fixed CopyPosFromGeomToGL
+    11/02/03 - MF - Added a couple of vector functions for copying between
+                   ODE formats and GLScene formats
+    The whole history is logged in a previous version of the unit.
 }
 
 unit ODEGL;

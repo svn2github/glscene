@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Defines base vector types for use in Geometry.pas and OpenGL1x.pas. 
-   The sole aim of this unit is to limit dependency between the Geometry
-   and OpenGL1x units by introducing the base compatibility types
+   Defines base vector types for use in GLVectorGeometry.pas.
+   The sole aim of this unit is to limit dependency between the GLVectorGeometry
+   and OpenGL units by introducing the base compatibility types
    (and only the *base* types). 
 
    Conventions: 
@@ -17,7 +17,7 @@
    Note : D3D types untested. 
 	 History :
      04/07/01 - EG - Creation
-     The whole history is logged in a previous version of the unit.
+     The whole history is logged in previous version of the unit
 }
 unit GLVectorTypes;
 

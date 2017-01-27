@@ -7,11 +7,10 @@
     mechanisms to fetch a specific sample from such a texture in a shader,
     and to attach such textures to FBOs for rendering.
 
-    History :  
-       04/11/10- DaStr - Added $I GLScene.inc   
-       23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
-       16/05/10 - Yar - Creation (thanks to C4)
-    
+    History :
+      16/05/10 - Yar - Creation (thanks to C4)
+      The whole history is logged in previous version of the unit
+
 }
 unit GLMultisampleImage;
 
@@ -21,7 +20,7 @@ interface
 
 uses
   System.Classes,
-   
+  //GLS
   OpenGLTokens,
   GLContext,
   GLTexture,
@@ -29,7 +28,6 @@ uses
   GLTextureFormat;
 
 type
-
   // TGLMultisampleImage
   //
   TGLMultisampleImage = class(TGLTextureImage)
@@ -87,8 +85,6 @@ implementation
 // ------------------
 // ------------------ TGLMultisampleImage ------------------
 // ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLMultisampleImage'}{$ENDIF}
 
 // Create
 //
@@ -347,8 +343,6 @@ begin
         FFixedSamplesLocation);
   end;
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 initialization
   RegisterGLTextureImageClass(TGLMultisampleImage);
