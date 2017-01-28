@@ -5,7 +5,7 @@
   ThorFX  for GLScene
   History :  
    09/03/01 - René Lindsay - unit created
-   The whole history is logged in a previous version of the unit.
+   The whole history is logged in previous version of the unit.
 
 }
 unit GLThorFX;

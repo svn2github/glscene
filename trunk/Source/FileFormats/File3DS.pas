@@ -37,7 +37,8 @@ uses
   System.Classes, 
   System.SysUtils,
    
-  Types3DS, GLCrossPlatform;
+  Types3DS, 
+  GLCrossPlatform;
 
 type
   TFile3DS = class;
@@ -83,14 +84,16 @@ type
 
     property Count: Integer read GetCount;
     property Material[Index: Integer]: PMaterial3DS read GetMaterial; default;
-    property MaterialByName[const Name: String]: PMaterial3DS
-      read GetMaterialByName;
+    property MaterialByName[const Name: String]: PMaterial3DS read GetMaterialByName;
   end;
 
   TObjectList = class
   private
     FOwner: TFile3DS;
-    FMeshList, FOmniList, FSpotList, FCameraList: TList;
+    FMeshList, 
+	FOmniList, 
+	FSpotList, 
+	FCameraList: TList;
     function GetCamera(Index: Integer): PCamera3DS;
     function GetCamCount: Integer;
     function GetMeshObjectCount: Integer;
@@ -118,7 +121,10 @@ type
   TKeyFramer = class
   private
     FOwner: TFile3DS;
-    FMeshMotionList, FOmniMotionList, FSpotMotionList, FCameraMotionList: TList;
+    FMeshMotionList, 
+	FOmniMotionList, 
+	FSpotMotionList, 
+	FCameraMotionList: TList;
     FAmbientMotion: PKFAmbient3DS;
     function GetAmbientMotion: PKFAmbient3DS;
     function GetCameraMotion(Index: Integer): PKFCamera3DS;
@@ -143,11 +149,9 @@ type
     property SpotLightMotionCount: Integer read GetSpotMotionCount;
     property MeshMotion[Index: Integer]: PKFMesh3DS read GetMeshMotion; default;
     property CameraMotion[Index: Integer]: PKFCamera3DS read GetCameraMotion;
-    property OmniLightMotion[Index: Integer]: PKFOmni3DS
-      read GetOmniLightMotion;
+    property OmniLightMotion[Index: Integer]: PKFOmni3DS read GetOmniLightMotion;
     property Settings: TKFSets3DS read GetKFSets;
-    property SpotLightMotion[Index: Integer]: PKFSpot3DS
-      read GetSpotLightMotion;
+    property SpotLightMotion[Index: Integer]: PKFSpot3DS read GetSpotLightMotion;
   end;
 
   // TFile3DS is the  main class and supplies the user with all available data
@@ -251,8 +255,7 @@ type
     property MeshSettings: TMeshSet3DS read GetMeshSettings;
     property Objects: TObjectList read FObjectList;
     property Viewport: TViewport3DS read GetViewportData;
-    property OnLoadProgress: TLoadProgress read FOnLoadProgress
-      write FOnLoadProgress;
+    property OnLoadProgress: TLoadProgress read FOnLoadProgress write FOnLoadProgress;
   end;
 
  // ---------------------------------------------------------------------------------------------------------------------
@@ -264,7 +267,9 @@ implementation
  // ---------------------------------------------------------------------------------------------------------------------
 
 uses 
-  Const3DS, Utils3DS, GLApplicationFileIO;
+  Const3DS, 
+  Utils3DS, 
+  GLApplicationFileIO;
 
 function StrPasFree(P: PChar3DS): String;
 begin
@@ -886,8 +891,7 @@ begin
                   if assigned(NameChunk.Data.InstanceName) then
                   begin
                     NameChunk.Data.InstanceName := AllocMem(Length(Name) + 1);
-                    Move(Name[1], NameChunk.Data.InstanceName^,
-                      Length(Name) + 1);
+                    Move(Name[1], NameChunk.Data.InstanceName^,  Length(Name) + 1);
                   end;
                 end
                 else
@@ -1089,9 +1093,20 @@ begin
     // Validate the child chunk...
     // First, is it a valid header?
     case Child.Tag of
-      XDATA_APPNAME, XDATA_STRING, XDATA_FLOAT, XDATA_DOUBLE, XDATA_SHORT,
-        XDATA_LONG, XDATA_VOID, XDATA_GROUP, XDATA_RFU6, XDATA_RFU5, XDATA_RFU4,
-        XDATA_RFU3, XDATA_RFU2, XDATA_RFU1:
+      XDATA_APPNAME, 
+	  XDATA_STRING, 
+	  XDATA_FLOAT, 
+	  XDATA_DOUBLE, 
+	  XDATA_SHORT,
+      XDATA_LONG, 
+	  XDATA_VOID, 
+	  XDATA_GROUP, 
+	  XDATA_RFU6, 
+	  XDATA_RFU5, 
+	  XDATA_RFU4,
+      XDATA_RFU3, 
+	  XDATA_RFU2, 
+	  XDATA_RFU1:
         begin
           // second, does the size fit inside the XDATA_ENTRY chunk?
           if (Child.Position + Child.Size) <= ParentBody then
@@ -1368,7 +1383,12 @@ begin
       Chunk.Data.LayerFog := AllocMem(SizeOf(TLayerFog));
     DISTANCE_CUE:
       Chunk.Data.DistanceCue := AllocMem(SizeOf(TDistanceCue));
-    VIEW_TOP, VIEW_BOTTOM, VIEW_LEFT, VIEW_RIGHT, VIEW_FRONT, VIEW_BACK:
+    VIEW_TOP, 
+	VIEW_BOTTOM, 
+	VIEW_LEFT, 
+	VIEW_RIGHT, 
+	VIEW_FRONT, 
+	VIEW_BACK:
       Chunk.Data.ViewStandard := AllocMem(SizeOf(TViewStandard));
     VIEW_USER:
       Chunk.Data.ViewUser := AllocMem(SizeOf(TViewUser));
@@ -1380,11 +1400,22 @@ begin
       Chunk.Data.MatShading := AllocMem(SizeOf(TMatShading));
     MAT_ACUBIC:
       Chunk.Data.MatAcubic := AllocMem(SizeOf(TMatAcubic));
-    MAT_SXP_TEXT_DATA, MAT_SXP_TEXT2_DATA, MAT_SXP_OPAC_DATA, MAT_SXP_BUMP_DATA,
-      MAT_SXP_SPEC_DATA, MAT_SXP_SHIN_DATA, MAT_SXP_SELFI_DATA,
-      MAT_SXP_TEXT_MASKDATA, MAT_SXP_TEXT2_MASKDATA, MAT_SXP_OPAC_MASKDATA,
-      MAT_SXP_BUMP_MASKDATA, MAT_SXP_SPEC_MASKDATA, MAT_SXP_SHIN_MASKDATA,
-      MAT_SXP_SELFI_MASKDATA, MAT_SXP_REFL_MASKDATA, PROC_DATA:
+    MAT_SXP_TEXT_DATA, 
+	MAT_SXP_TEXT2_DATA, 
+	MAT_SXP_OPAC_DATA, 
+	MAT_SXP_BUMP_DATA,
+    MAT_SXP_SPEC_DATA, 
+	MAT_SXP_SHIN_DATA, 
+	MAT_SXP_SELFI_DATA,
+    MAT_SXP_TEXT_MASKDATA, 
+	MAT_SXP_TEXT2_MASKDATA, 
+	MAT_SXP_OPAC_MASKDATA,
+    MAT_SXP_BUMP_MASKDATA, 
+	MAT_SXP_SPEC_MASKDATA, 
+	MAT_SXP_SHIN_MASKDATA,
+    MAT_SXP_SELFI_MASKDATA, 
+	MAT_SXP_REFL_MASKDATA, 
+	PROC_DATA:
       Chunk.Data.IpasData := AllocMem(SizeOf(TIpasData));
     MAT_WIRESIZE:
       Chunk.Data.MatWireSize := AllocMem(SizeOf(TMatWireSize));
@@ -1468,7 +1499,8 @@ begin
       Chunk.Data.ViewportLayout := AllocMem(SizeOf(TViewportLayout));
     VIEWPORT_SIZE:
       Chunk.Data.ViewportSize := AllocMem(SizeOf(TViewportSize));
-    VIEWPORT_DATA_3, VIEWPORT_DATA:
+    VIEWPORT_DATA_3, 
+	VIEWPORT_DATA:
       Chunk.Data.ViewportData := AllocMem(SizeOf(TViewportData));
     XDATA_ENTRY:
       Chunk.Data.XDataEntry := AllocMem(SizeOf(TXDataEntry));
@@ -1515,15 +1547,50 @@ begin
     HIDE_TRACK_TAG:
       Chunk.Data.HideTrackTag := AllocMem(SizeOf(THideTrackTag));
     M3DMAGIC, // Chunks who consist entirely of children
-    MLIBMAGIC, MDATA, AMBIENT_LIGHT, SOLID_BGND, DEFAULT_VIEW, MAT_ENTRY,
-      MAT_AMBIENT, MAT_DIFFUSE, MAT_SPECULAR, MAT_SHININESS, MAT_SHIN2PCT,
-      MAT_SHIN3PCT, MAT_TRANSPARENCY, MAT_XPFALL, MAT_REFBLUR, MAT_SELF_ILPCT,
-      MAT_TEXMAP, MAT_TEXMASK, MAT_TEX2MAP, MAT_TEX2MASK, MAT_OPACMAP,
-      MAT_OPACMASK, MAT_REFLMAP, MAT_REFLMASK, MAT_BUMPMAP, MAT_BUMPMASK,
-      MAT_SPECMAP, MAT_SPECMASK, MAT_SHINMAP, MAT_SHINMASK, MAT_SELFIMAP,
-      MAT_SELFIMASK, N_TRI_OBJECT, KFDATA, AMBIENT_NODE_TAG, OBJECT_NODE_TAG,
-      CAMERA_NODE_TAG, TARGET_NODE_TAG, LIGHT_NODE_TAG, SPOTLIGHT_NODE_TAG,
-      L_TARGET_NODE_TAG, CMAGIC, XDATA_SECTION, XDATA_GROUP:
+    MLIBMAGIC, 
+	MDATA, 
+	AMBIENT_LIGHT, 
+	SOLID_BGND, 
+	DEFAULT_VIEW, 
+	MAT_ENTRY,
+    MAT_AMBIENT, 
+	MAT_DIFFUSE, 
+	MAT_SPECULAR, 
+	MAT_SHININESS, 
+	MAT_SHIN2PCT,
+    MAT_SHIN3PCT, 
+	MAT_TRANSPARENCY, 
+	MAT_XPFALL, 
+	MAT_REFBLUR, 
+	MAT_SELF_ILPCT,
+    MAT_TEXMAP, 
+	MAT_TEXMASK, 
+	MAT_TEX2MAP, 
+	MAT_TEX2MASK, 
+	MAT_OPACMAP,
+    MAT_OPACMASK, 
+	MAT_REFLMAP, 
+	MAT_REFLMASK, 
+	MAT_BUMPMAP, 
+	MAT_BUMPMASK,
+    MAT_SPECMAP, 
+	MAT_SPECMASK, 
+	MAT_SHINMAP, 
+	MAT_SHINMASK, 
+	MAT_SELFIMAP,
+    MAT_SELFIMASK, 
+	N_TRI_OBJECT, 
+	KFDATA, 
+	AMBIENT_NODE_TAG, 
+	OBJECT_NODE_TAG,
+    CAMERA_NODE_TAG, 
+	TARGET_NODE_TAG, 
+	LIGHT_NODE_TAG, 
+	SPOTLIGHT_NODE_TAG,
+    L_TARGET_NODE_TAG, 
+	CMAGIC, 
+	XDATA_SECTION, 
+	XDATA_GROUP:
       Chunk.Data.Dummy := nil;
   else // A truely hideous thing to do but it helps with unknown chunks
     // Don't mess with dataless chunks
@@ -1877,16 +1944,14 @@ var
   I: Integer;
 
 begin
-  if Chunk.Data.Dummy = nil then
-  // don't try to read the data if its already been read
+  if Chunk.Data.Dummy = nil then // don't try to read the data if its already been read
   begin
     // seek to the beginning of the Chunk's data (harmless if the Chunk has no data)
     FStream.Position := Chunk.Position + 6;
     case Chunk.Tag of
       COLOR_F:
         begin
-          Chunk.Data.ColorF := AllocMem(SizeOf(TColorF));
-          // allocate the memory to hold the data
+          Chunk.Data.ColorF := AllocMem(SizeOf(TColorF));  // allocate the memory to hold the data
           with Chunk.Data.ColorF^ do
           begin
             Red := ReadSingle; // Read the data out of the file
@@ -2037,7 +2102,12 @@ begin
             FarPlaneDimming := ReadSingle;
           end;
         end;
-      VIEW_TOP, VIEW_BOTTOM, VIEW_LEFT, VIEW_RIGHT, VIEW_FRONT, VIEW_BACK:
+      VIEW_TOP, 
+	  VIEW_BOTTOM, 
+	  VIEW_LEFT, 
+	  VIEW_RIGHT, 
+	  VIEW_FRONT, 
+	  VIEW_BACK:
         begin
           Chunk.Data.ViewStandard := AllocMem(SizeOf(TViewStandard));
           with Chunk.Data.ViewStandard^ do
@@ -2086,11 +2156,21 @@ begin
             FrameInterval := ReadCardinal;
           end;
         end;
-      MAT_SXP_TEXT_DATA, MAT_SXP_TEXT2_DATA, MAT_SXP_OPAC_DATA,
-        MAT_SXP_BUMP_DATA, MAT_SXP_SPEC_DATA, MAT_SXP_SHIN_DATA,
-        MAT_SXP_SELFI_DATA, MAT_SXP_TEXT_MASKDATA, MAT_SXP_TEXT2_MASKDATA,
-        MAT_SXP_OPAC_MASKDATA, MAT_SXP_BUMP_MASKDATA, MAT_SXP_SPEC_MASKDATA,
-        MAT_SXP_SHIN_MASKDATA, MAT_SXP_SELFI_MASKDATA, MAT_SXP_REFL_MASKDATA,
+      MAT_SXP_TEXT_DATA, 
+	  MAT_SXP_TEXT2_DATA, 
+	  MAT_SXP_OPAC_DATA,
+      MAT_SXP_BUMP_DATA, 
+	  MAT_SXP_SPEC_DATA, 
+	  MAT_SXP_SHIN_DATA,
+      MAT_SXP_SELFI_DATA, 
+	  MAT_SXP_TEXT_MASKDATA, 
+	  MAT_SXP_TEXT2_MASKDATA,
+      MAT_SXP_OPAC_MASKDATA, 
+	  MAT_SXP_BUMP_MASKDATA, 
+	  MAT_SXP_SPEC_MASKDATA,
+      MAT_SXP_SHIN_MASKDATA, 
+	  MAT_SXP_SELFI_MASKDATA, 
+	  MAT_SXP_REFL_MASKDATA,
         PROC_DATA:
         begin
           Chunk.Data.IpasData := AllocMem(SizeOf(TIpasData));
@@ -2422,7 +2502,8 @@ begin
             Height := ReadWord;
           end;
         end;
-      VIEWPORT_DATA_3, VIEWPORT_DATA:
+      VIEWPORT_DATA_3, 
+	  VIEWPORT_DATA:
         begin
           Chunk.Data.ViewportData := AllocMem(SizeOf(TViewportData));
           with Chunk.Data.ViewportData^ do
@@ -2678,15 +2759,50 @@ begin
           end;
         end;
       M3DMAGIC, // Chunks that do not contain data, or only contain children
-      MLIBMAGIC, MDATA, AMBIENT_LIGHT, SOLID_BGND, DEFAULT_VIEW, MAT_ENTRY,
-        MAT_AMBIENT, MAT_DIFFUSE, MAT_SPECULAR, MAT_SHININESS, MAT_SHIN2PCT,
-        MAT_SHIN3PCT, MAT_TRANSPARENCY, MAT_XPFALL, MAT_REFBLUR, MAT_SELF_ILPCT,
-        MAT_TEXMAP, MAT_TEXMASK, MAT_TEX2MAP, MAT_TEX2MASK, MAT_OPACMAP,
-        MAT_OPACMASK, MAT_REFLMAP, MAT_REFLMASK, MAT_BUMPMAP, MAT_BUMPMASK,
-        MAT_SPECMAP, MAT_SPECMASK, MAT_SHINMAP, MAT_SHINMASK, MAT_SELFIMAP,
-        MAT_SELFIMASK, N_TRI_OBJECT, KFDATA, AMBIENT_NODE_TAG, OBJECT_NODE_TAG,
-        CAMERA_NODE_TAG, TARGET_NODE_TAG, LIGHT_NODE_TAG, SPOTLIGHT_NODE_TAG,
-        L_TARGET_NODE_TAG, CMAGIC, XDATA_SECTION, XDATA_GROUP:
+      MLIBMAGIC, 
+	  MDATA, 
+	  AMBIENT_LIGHT, 
+	  SOLID_BGND, 
+	  DEFAULT_VIEW, 
+	  MAT_ENTRY,
+      MAT_AMBIENT, 
+	  MAT_DIFFUSE, 
+	  MAT_SPECULAR, 
+	  MAT_SHININESS, 
+	  MAT_SHIN2PCT,
+      MAT_SHIN3PCT, 
+	  MAT_TRANSPARENCY, 
+	  MAT_XPFALL, 
+	  MAT_REFBLUR, 
+	  MAT_SELF_ILPCT,
+      MAT_TEXMAP, 
+	  MAT_TEXMASK, 
+	  MAT_TEX2MAP, 
+	  MAT_TEX2MASK, 
+	  MAT_OPACMAP,
+      MAT_OPACMASK, 
+	  MAT_REFLMAP, 
+	  MAT_REFLMASK, 
+	  MAT_BUMPMAP, 
+	  MAT_BUMPMASK,
+      MAT_SPECMAP, 
+	  MAT_SPECMASK, 
+	  MAT_SHINMAP, 
+	  MAT_SHINMASK, 
+	  MAT_SELFIMAP,
+      MAT_SELFIMASK, 
+	  N_TRI_OBJECT, 
+	  KFDATA, 
+	  AMBIENT_NODE_TAG, 
+	  OBJECT_NODE_TAG,
+      CAMERA_NODE_TAG, 
+	  TARGET_NODE_TAG, 
+	  LIGHT_NODE_TAG, 
+	  SPOTLIGHT_NODE_TAG,
+      L_TARGET_NODE_TAG, 
+	  CMAGIC, 
+	  XDATA_SECTION, 
+	  XDATA_GROUP:
         ; // do nothing
     else // a truely hideous thing to do, but it helps with unknown chunks
       if Chunk.Size > 6 then // don't mess with dataless chunks
@@ -2698,7 +2814,7 @@ begin
   end;
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 procedure TFile3DS.SeekChild(Chunk: PChunk3DS);
 
@@ -2709,16 +2825,54 @@ var
 begin
   Offset := 0;
   case Chunk.Tag of
-    M3DMAGIC, SMAGIC, LMAGIC, MATMAGIC, MLIBMAGIC, MDATA, AMBIENT_LIGHT,
-      SOLID_BGND, DEFAULT_VIEW, MAT_ENTRY, MAT_AMBIENT, MAT_DIFFUSE,
-      MAT_SPECULAR, MAT_SHININESS, MAT_SHIN2PCT, MAT_SHIN3PCT, MAT_TRANSPARENCY,
-      MAT_XPFALL, MAT_REFBLUR, MAT_SELF_ILPCT, MAT_TEXMAP, MAT_TEXMASK,
-      MAT_TEX2MAP, MAT_TEX2MASK, MAT_OPACMAP, MAT_OPACMASK, MAT_REFLMAP,
-      MAT_REFLMASK, MAT_BUMPMAP, MAT_BUMPMASK, MAT_SPECMAP, MAT_SPECMASK,
-      MAT_SHINMAP, MAT_SHINMASK, MAT_SELFIMAP, MAT_SELFIMASK, N_TRI_OBJECT,
-      XDATA_SECTION, XDATA_ENTRY, KFDATA, OBJECT_NODE_TAG, CAMERA_NODE_TAG,
-      TARGET_NODE_TAG, LIGHT_NODE_TAG, SPOTLIGHT_NODE_TAG, L_TARGET_NODE_TAG,
-      AMBIENT_NODE_TAG, CMAGIC:
+    M3DMAGIC, 
+    SMAGIC, 
+    LMAGIC, 
+    MATMAGIC, 
+    MLIBMAGIC, 
+    MDATA, 
+    AMBIENT_LIGHT, 
+    SOLID_BGND, 
+    DEFAULT_VIEW, 
+    MAT_ENTRY, 
+    MAT_AMBIENT, 
+    MAT_DIFFUSE, 
+    MAT_SPECULAR, 
+    MAT_SHININESS, 
+    MAT_SHIN2PCT, 
+    MAT_SHIN3PCT, 
+    MAT_TRANSPARENCY, 
+    MAT_XPFALL, 
+    MAT_REFBLUR, 
+    MAT_SELF_ILPCT, 
+    MAT_TEXMAP, 
+    MAT_TEXMASK, 
+    MAT_TEX2MAP, 
+    MAT_TEX2MASK, 
+    MAT_OPACMAP, 
+    MAT_OPACMASK, 
+    MAT_REFLMAP, 
+    MAT_REFLMASK, 
+    MAT_BUMPMAP, 
+    MAT_BUMPMASK, 
+    MAT_SPECMAP, 
+    MAT_SPECMASK, 
+    MAT_SHINMAP, 
+    MAT_SHINMASK, 
+    MAT_SELFIMAP, 
+    MAT_SELFIMASK, 
+    N_TRI_OBJECT, 
+    XDATA_SECTION, 
+    XDATA_ENTRY, 
+    KFDATA, 
+    OBJECT_NODE_TAG, 
+    CAMERA_NODE_TAG, 
+    TARGET_NODE_TAG, 
+    LIGHT_NODE_TAG, 
+    SPOTLIGHT_NODE_TAG, 
+    L_TARGET_NODE_TAG, 
+    AMBIENT_NODE_TAG, 
+    CMAGIC :
       ; // do nothing
     M3D_VERSION:
       Offset := SizeOf(Integer);
@@ -2766,7 +2920,12 @@ begin
       Offset := 24 + 2 * SizeOf(Single);
     VIEWPORT_LAYOUT:
       Offset := 7 * SizeOf(SmallInt);
-    VIEW_TOP, VIEW_BOTTOM, VIEW_LEFT, VIEW_RIGHT, VIEW_FRONT, VIEW_BACK:
+    VIEW_TOP,
+    VIEW_BOTTOM,
+    VIEW_LEFT,
+    VIEW_RIGHT,
+    VIEW_FRONT,
+    VIEW_BACK:
       Offset := 12 + SizeOf(Single);
     VIEW_USER:
       Offset := 12 + 4 * SizeOf(Single);
@@ -2776,7 +2935,8 @@ begin
       FreeMem(ReadString);
     MAT_ACUBIC:
       Offset := 2 * SizeOf(Byte) + 2 * SizeOf(Integer) + SizeOf(SmallInt);
-    POINT_ARRAY, POINT_FLAG_ARRAY:
+    POINT_ARRAY,
+    POINT_FLAG_ARRAY:
       Offset := Chunk.Size - 6;
     FACE_ARRAY:
       Offset := ReadWord * SizeOf(SmallInt) * 4;
@@ -2827,7 +2987,7 @@ begin
   FStream.Seek(Offset, soFromCurrent);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 function TFile3DS.GetDatabaseRelease: TReleaseLevel;
 
@@ -2835,7 +2995,7 @@ begin
   Result := Utils3DS.GetDatabaseRelease(Self, FDatabase);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 function TFile3DS.GetMeshRelease: TReleaseLevel;
 
@@ -2843,6 +3003,7 @@ begin
   Result := Utils3DS.GetMeshRelease(Self, FDatabase);
 end;
 
-// ---------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------
 
 end.
+

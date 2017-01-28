@@ -336,7 +336,7 @@ const
   cGLFILE3DS_FIXDEFAULTUPAXISY_ROTATIONVALUE = PI/2;
   CGLFILE3DS_DEFAULT_FRAME = 0;
 
-{$IFDEF GLS_REGIONS}{$REGION 'Misc functions'}{$ENDIF}
+
 
 // AnimKeysClassTypeToClass
 
@@ -456,11 +456,6 @@ end;
 // ------------------
 // ------------------ Support classes ------------------
 // ------------------
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSAnimationKeys'}{$ENDIF}
-
 procedure TGLFile3DSAnimationKeys.InterpolateFrame(var I: integer;
   var w: real; const AFrame: real);
 begin
@@ -546,10 +541,8 @@ begin
     ((FKeys[I - 1].Time) < AFrame) then
   begin
     with AValues[I] do
-    begin
       Result := MatrixMultiply(Result, CreateRotationMatrix(
         AffineVectorMake(X, Y, Z), AngleLerp(0, Angle, w)));
-    end;
   end;
 end;
 
@@ -594,9 +587,6 @@ begin
     Reader.Read(FKeys[0], FNumKeys * SizeOf(TKeyHeader3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSScaleAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSScaleAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -668,9 +658,6 @@ begin
     Reader.Read(FScale[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSRotationAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSRotationAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -716,7 +703,6 @@ begin
   end;
 end;
 
-
 procedure TGLFile3DSRotationAnimationKeys.Apply(var DataTransf: TGLFile3DSAnimationData;
   const AFrame: real);
 begin
@@ -753,9 +739,6 @@ begin
     Reader.Read(FRot[0], FNumKeys * SizeOf(TKFRotKey3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -811,9 +794,6 @@ begin
     Reader.Read(FPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSColorAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSColorAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -863,9 +843,6 @@ begin
     Reader.Read(FCol[0], FNumKeys * SizeOf(TFColor3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TTGLFile3DSPositionAnimationKeys'}{$ENDIF}
 
 procedure TTGLFile3DSPositionAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -922,9 +899,6 @@ begin
     Reader.Read(FTPos[0], FNumKeys * SizeOf(TPoint3DS));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSSpotLightCutOffAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSSpotLightCutOffAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -974,9 +948,6 @@ begin
     Reader.Read(FFall[0], FNumKeys * SizeOf(single));
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSLightHotSpotAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSLightHotSpotAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1024,10 +995,6 @@ begin
   if FNumKeys > 0 then
     Reader.Read(FHot[0], FNumKeys * SizeOf(single));
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSRollAnimationKeys'}{$ENDIF}
 
 procedure TGLFile3DSRollAnimationKeys.LoadData(const ANumKeys: integer;
   const Keys: PKeyHeaderList; const AData: Pointer);
@@ -1086,10 +1053,6 @@ begin
   SetLength(FAnimKeysList, ind + 1);
   FAnimKeysList[ind] := AItem;
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSAnimationKeyList'}{$ENDIF}
 
 procedure TGLFile3DSAnimationKeyList.ApplyAnimKeys(
   var DataTransf: TGLFile3DSAnimationData; const AFrame: real);
@@ -1164,10 +1127,6 @@ begin
   ClearKeys;
   inherited Destroy;
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSDummyObject'}{$ENDIF}
 
 constructor TGLFile3DSDummyObject.Create;
 begin
@@ -1295,9 +1254,6 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSMeshObject'}{$ENDIF}
 
 procedure TGLFile3DSMeshObject.LoadAnimation(const AData: Pointer);
 var
@@ -1370,10 +1326,6 @@ begin
   inherited;
   GL.PopMatrix;
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSOmniLightObject'}{$ENDIF}
 
 constructor TGLFile3DSOmniLightObject.Create;
 begin
@@ -1484,9 +1436,6 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSSpotLightObject'}{$ENDIF}
 
 procedure TGLFile3DSSpotLightObject.LoadData(const AOwner: TGLBaseMesh;
   const AData: PLight3DS);
@@ -1540,9 +1489,6 @@ begin
   FLightSrc.HotSpot := FAnimTransf.HotSpot / 2;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLFile3DSCameraObject'}{$ENDIF}
 
 constructor TGLFile3DSCameraObject.Create;
 begin
@@ -1646,9 +1592,11 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGL3DSVectorFile'}{$ENDIF}
+
+// ------------------
+// ------------------ TGL3DSVectorFile ------------------
+// ------------------
 
 // Capabilities
 
@@ -1671,8 +1619,6 @@ var
   mesh: TGLFile3DSMeshObject;
   hasLightmap: boolean;
 
-
-  {$IFDEF GLS_REGIONS}{$REGION 'TGL3DSVectorFile.LoadFromStream Local functions'}{$ENDIF}
   //--------------- local functions -------------------------------------------
 
   function GetOrAllocateMaterial(materials: TMaterialList; const Name: string): string;
@@ -1851,8 +1797,8 @@ var
       begin
         if Trim(string(material.IllumMap.Map.NameStr)) <> '' then
         begin
-          libMat := matLib.Materials.GetLibMaterialByName(string(
-            material.IllumMap.Map.NameStr));
+          libMat := matLib.Materials.GetLibMaterialByName(
+		    string(material.IllumMap.Map.NameStr));
           if not Assigned(libMat) then
           begin
             libMat := matLib.Materials.Add;
@@ -2076,7 +2022,7 @@ var
         end;
   end;
 
-  {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+  //--------------- end local functions ---------------------------------------
 
 var
   CurrentMotionIndex, iMaterial, i, j, x: integer;
@@ -2226,10 +2172,8 @@ begin
                           DuplicateVertex(CurrentIndex);
                           FaceRec[Vertex] := CurrentVertexCount - 1;
                           mesh.Normals[CurrentVertexCount - 1] := Normal;
-                          StoreSmoothIndex(CurrentIndex, SmoothingGroup,
-                            CurrentVertexCount - 1, SmoothIndices);
-                          StoreSmoothIndex(CurrentVertexCount - 1,
-                            SmoothingGroup, CurrentVertexCount - 1, SmoothIndices);
+                          StoreSmoothIndex(CurrentIndex, SmoothingGroup, CurrentVertexCount - 1, SmoothIndices);
+                          StoreSmoothIndex(CurrentVertexCount - 1, SmoothingGroup, CurrentVertexCount - 1, SmoothIndices);
                           // mark new vertex also as touched
                           MarkVertex(Marker, CurrentVertexCount - 1);
                         end;  
@@ -2238,8 +2182,7 @@ begin
                       begin
                         // vertex has already been duplicated,
                         // so just add normal vector to other vertex...
-                        mesh.Normals[TargetVertex] :=
-                          VectorAdd(mesh.Normals[TargetVertex], Normal);
+                        mesh.Normals[TargetVertex] := VectorAdd(mesh.Normals[TargetVertex], Normal);
                         // ...and tell which new vertex has to be used from now on
                         FaceRec[Vertex] := TargetVertex;
                       end;
@@ -2250,11 +2193,9 @@ begin
                     // vertex not yet touched, so just store the normal
                     mesh.Normals[CurrentIndex] := Normal;
                     // initialize smooth indices for this vertex
-                    FillChar(SmoothIndices[CurrentIndex],
-                      SizeOf(TSmoothIndexEntry), $FF);
+                    FillChar(SmoothIndices[CurrentIndex], SizeOf(TSmoothIndexEntry), $FF);
                     if SmoothingGroup <> 0 then
-                      StoreSmoothIndex(CurrentIndex, SmoothingGroup,
-                        CurrentIndex, SmoothIndices);
+                      StoreSmoothIndex(CurrentIndex, SmoothingGroup,  CurrentIndex, SmoothIndices);
                     MarkVertex(Marker, CurrentIndex);
                   end;
                 end;
@@ -2295,10 +2236,8 @@ begin
               aFaceGroup := TFGVertexIndexList.CreateOwned(mesh.FaceGroups);
               with aFaceGroup do
               begin
-                MaterialName :=
-                  GetOrAllocateMaterial(Materials, string(MatArray[iMaterial].NameStr));
-                LightMapIndex :=
-                  GetOrAllocateLightMap(Materials, string(MatArray[iMaterial].NameStr));
+                MaterialName := GetOrAllocateMaterial(Materials, string(MatArray[iMaterial].NameStr));
+                LightMapIndex := GetOrAllocateLightMap(Materials, string(MatArray[iMaterial].NameStr));
                 // copy all vertices belonging to the current face into our index array,
                 // there won't be redundant vertices since this would mean a face has more than one
                 // material
@@ -2320,8 +2259,7 @@ begin
 
       // Adding non-mesh objects (for example, dummies).
       for I := 0 to KeyFramer.MeshMotionCount - 1 do
-        if (Owner.MeshObjects.FindMeshByName(string(
-          KeyFramer.MeshMotion[I].NameStr)) = nil) then
+        if (Owner.MeshObjects.FindMeshByName(string(KeyFramer.MeshMotion[I].NameStr)) = nil) then
         begin
           mesh := TGLFile3DSMeshObject.CreateOwned(Owner.MeshObjects);
           mesh.Name := string(KeyFramer.MeshMotion[I].NameStr);
@@ -2400,8 +2338,6 @@ begin
       Free;
     end;
 end;
-
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

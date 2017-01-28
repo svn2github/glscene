@@ -6,7 +6,7 @@
 
   History :  
      08/10/00 - EG - Added header, code contributed by Uwe Raabe
-     The whole history is logged in a previous version of the unit
+     The whole history is logged in previous version of the unit
 }
 { TODO
 

@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Archive manager -  the component to work with archives
-  History :  
+  Archive manager -  the class to work with archives
+  History :
      04/06/10 - Yar - Added to GLScene
                      (Created by Rustam Asmandiarov aka Predator)
 }
@@ -42,9 +42,7 @@ Type
   //****************************************************************************
 
   //Base class for archivers
-
-  { TGLBaseArchive }
-
+  //
   TGLBaseArchive= class(TGLDataFile)
     protected
       FFileName: string;
@@ -54,30 +52,21 @@ Type
     public
       constructor Create(AOwner: TPersistent); override;
       destructor Destroy; override;
-
       property ContentList: TStrings read FContentList;
-
       property CompressionLevel: TCompressionLevel
                read FCompressionLevel
                write SetCompressionLevel default clNone;
-
       procedure Clear; virtual;abstract;
-
       function ContentExists(ContentName: string): boolean;virtual;abstract;
-
       function GetContent(Stream: TStream; index: integer): TStream; overload;virtual;abstract;
       function GetContent(ContentName: string): TStream; overload;virtual;abstract;
       function GetContent(index: integer): TStream; overload;virtual;abstract;
-
       function GetContentSize(index: integer): integer; overload;virtual;abstract;
       function GetContentSize(ContentName: string): integer; overload;virtual;abstract;
-
       procedure AddFromStream(ContentName, Path: string; FS: TStream);virtual;abstract;
       procedure AddFromFile(FileName, Path: string);virtual;abstract;
-
       procedure RemoveContent(index: integer); overload;virtual;abstract;
       procedure RemoveContent(ContentName: string); overload;virtual;abstract;
-
       procedure Extract(index: integer; NewName: string); overload; virtual;abstract;
       procedure Extract(ContentName, NewName: string); overload; virtual;abstract;
   end;
@@ -86,12 +75,12 @@ Type
 
   //****************************************************************************
 
-  //Классы регистрации архивов, для того, чтобы по расширениям архива можно было
-  //использовать соответсвующий архиватор. Например: GLFilePak, GLFileZLib
+  //Archive registration classes to use proper srchiver for extensions like:
+  // GLFilePak, GLFileZLib etc.
 
-  {TArchiveFileFormat}
-  {The type to record a registered class}
-
+  // TArchiveFileFormat
+  // The type to record a registered class}
+  //
   TArchiveFileFormat = class
   public
     BaseArchiveClass: TGLBaseArchiveClass;
@@ -117,11 +106,8 @@ Type
 
   //*****************************************************************************
 
-  //Для одновременной работы с несколькими архивами ввел коллекции
-
-  { TLibArchive }
-  {Итем для работы с одним архивом}
-
+  //Using the collection item for simultaneous work with several archives
+  //
   TLibArchive = class(TCollectionItem)
   private
     { Private Declarations }
@@ -152,24 +138,18 @@ Type
 
     procedure LoadFromFile(aFileName: string); overload;
     procedure LoadFromFile(aFileName, aAchiverType: string); overload;
-
     procedure Clear;
-
     function ContentExists(aContentName: string): boolean;
     property FileName: string read FFileName;
 
     function GetContent(aindex: integer): TStream; overload;
     function GetContent(aContentName: string): TStream; overload;
-
     function GetContentSize(aindex: integer): integer; overload;
     function GetContentSize(aContentName: string): integer; overload;
-
     procedure AddFromStream(aContentName, aPath: string; aF: TStream); overload;
     procedure AddFromStream(aContentName: string; aF: TStream); overload;
-
     procedure AddFromFile(aFileName, aPath: string); overload;
     procedure AddFromFile(aFileName: string); overload;
-
     procedure RemoveContent(aindex: integer); overload;
     procedure RemoveContent(aContentName: string); overload;
 
@@ -189,18 +169,16 @@ Type
   public
     { Public Declarations }
     constructor Create(AOwner: TComponent);
-
     function Owner: TPersistent;
-
     function IndexOf(const Item: TLibArchive)                  : Integer;
     function Add: TLibArchive;
     function FindItemID(ID: Integer)                           : TLibArchive;
     property Items[index: Integer]: TLibArchive read GetItems
                                                 write SetItems; default;
-    //Ищем архиватор по именыи открытого архива
+    //searching archiver by name
     function GetArchiveByFileName(const AName: string)         : TLibArchive;
     function GetFileNameOfArchive(aValue: TLibArchive)         : string;
-    //ищем нужный итем
+    //searching needed item
     function MakeUniqueName(const nameRoot: string)            : string;
     function GetLibArchiveByName(const AName: string)          : TLibArchive;
     function GetNameOfLibArchive(const Archive: TLibArchive)  : string;
@@ -232,10 +210,8 @@ Type
 
   EInvalidArchiveFile = class(Exception);
 
-  //Получение класса доступных архиваторов
+  //getting a class of accessed archiver
   function GetArchiveFileFormats: TGLArchiveFileFormatsList;
-
-  //Регистрация архиватора.
   procedure RegisterArchiveFormat(const AExtension, ADescription: string;
     AClass: TGLBaseArchiveClass);
   procedure UnregisterArchiveFormat(AClass: TGLBaseArchiveClass);

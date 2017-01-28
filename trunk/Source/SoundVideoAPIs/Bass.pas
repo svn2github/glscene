@@ -3,7 +3,7 @@
   Copyright (c) 1999-2017 Un4seen Developments Ltd.
 
   See the BASS.CHM file for more detailed documentation
-  The history is logged in a previous version of the unit
+  The whole history is logged in previous version of the unit
 
   How to install
   --------------

@@ -5,9 +5,10 @@
    Handles all the color and texture stuff.
 
    History :
-     05/02/00 - EG - Javadocisation, fixes and enhancements :
-     TGLColor.Update, ConvertWinColor, TPicImage, TGLMaterial.Apply
-     The whole history is logged in a previous version of the unit.
+     26/06/97 - Mike Lischke - version 0.3.2
+     05/02/00 - EG - fixes and enhancements: TGLColor.Update,
+                     ConvertWinColor, TGLPicImage, TGLMaterial.Apply
+     The whole history is logged in previous version of the unit.
 }
 unit GLTexture;
 
@@ -16,6 +17,8 @@ interface
 {$I GLScene.inc}
 
 uses
+//  Winapi.OpenGL,
+//  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
   Vcl.Imaging.jpeg,
@@ -156,8 +159,7 @@ type
     function GetWidth: Integer; virtual;
     function GetDepth: Integer; virtual;
 
-    property OnTextureNeeded: TGLTextureNeededEvent read FOnTextureNeeded write
-      FOnTextureNeeded;
+    property OnTextureNeeded: TGLTextureNeededEvent read FOnTextureNeeded write FOnTextureNeeded;
   public
     { Public Properties }
     constructor Create(AOwner: TPersistent); override;
@@ -180,7 +182,7 @@ type
      This denomination is used for picking a texture image class
      in the IDE expert. }
     class function FriendlyName: string; virtual;
-    {Returns a user-friendly description for the class. 
+    {Returns a user-friendly description for the class.
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
      takes its value from FriendlyName. }
@@ -373,8 +375,7 @@ type
 
   published
     {Filename of the picture to use. }
-    property PictureFileName: string read FPictureFileName write
-      SetPictureFileName;
+    property PictureFileName: string read FPictureFileName write SetPictureFileName;
   end;
 
 
@@ -426,8 +427,7 @@ type
     property NativeTextureTarget;
 
     {Indexed access to the cube map's sub pictures. }
-    property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write
-    SetPicture;
+    property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write SetPicture;
 
   published
     { Public Declarations }
@@ -830,10 +830,10 @@ implementation
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-// TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
+
 
 uses
-  GLScene,
+  GLScene, // TODO: remove dependancy on GLScene.pas unit (related to tmmCubeMapLight0)
   XOpenGL,
   GLPictureRegisteredFormats,
   GLVectorTypes;
@@ -900,8 +900,6 @@ begin
 end;
 
 
-
-{$IFDEF GLS_REGIONS}{$REGION 'Helper functions'}{$ENDIF}
 
   // RegisterTGraphicClassFileExtension
   //
@@ -1046,7 +1044,7 @@ begin
   SetGLTextureImageClassesToStrings(Result);
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+
 
 // ------------------
 // ------------------ TGLTextureImage ------------------
@@ -2696,8 +2694,7 @@ end;
 function TGLTexture.GetMappingSCoordinates: TGLCoordinates4;
 begin
   if not Assigned(FMapSCoordinates) then
-    FMapSCoordinates := TGLCoordinates4.CreateInitialized(Self, XHmgVector,
-      csVector);
+    FMapSCoordinates := TGLCoordinates4.CreateInitialized(Self, XHmgVector, csVector);
   Result := FMapSCoordinates;
 end;
 

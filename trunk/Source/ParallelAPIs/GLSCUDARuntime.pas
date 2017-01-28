@@ -3,7 +3,8 @@
 //
 {  
    GLScene CUDA Runtime 
-   History : see the history log in a previous version of the unit
+     History : 
+	   The whole history is logged in previous version of the unit
 }
 
 /// *

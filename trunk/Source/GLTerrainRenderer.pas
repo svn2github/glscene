@@ -6,7 +6,7 @@
 
   History :
    12/02/01 - EG - Creation
-   The whole history is logged in a previous version of the unit.
+   The whole history is logged in previous version of the unit.
 
 
   NOTA : multi-materials terrain support is not yet optimized to minimize

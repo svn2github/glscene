@@ -6,7 +6,7 @@
 
   History :
     13/03/02 - EG - Made in a standalone unit, based on Robert Hayes code
-    The whole history is logged in a previous version of the unit
+    The whole history is logged in previous version of the unit
 
   TODO: move the many public vars/fields to private/protected
 

@@ -7,7 +7,7 @@
     03/02/03 - EG - Fixed CopyPosFromGeomToGL
     11/02/03 - MF - Added a couple of vector functions for copying between
                    ODE formats and GLScene formats
-    The whole history is logged in a previous version of the unit.
+    The whole history is logged in previous version of the unit.
 }
 
 unit ODEGL;

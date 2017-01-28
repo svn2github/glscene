@@ -7,7 +7,7 @@
 
    History :
    01/04/00 - EG - Re-Creation, minor changes over Carlos's code
-   The whole history is logged in a previous version of the unit.
+   The whole history is logged in previous version of the unit.
 }
 unit GLAsyncTimer;
 

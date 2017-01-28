@@ -16,7 +16,7 @@
 
   History :
   01/03/03 - SG - Creation.
-  The whole history is logged in a previous version of the unit
+  The whole history is logged in previous version of the unit
 
 }
 

@@ -14,7 +14,7 @@
   
    History :  
    15/07/10 - FP - Creation by Franck Papouin
-   The whole history is logged in a previous version of the unit.   
+   The whole history is logged in previous version of the unit.   
 
 }
 

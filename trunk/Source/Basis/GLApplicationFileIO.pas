@@ -1,14 +1,13 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{GLApplicationFileIO 
-
+{
    Components and fonction that abstract file I/O access for an application.
    Allows re-routing file reads to reads from a single archive file f.i. 
 
   History :  
      21/11/02 - EG - Creation
-     The whole history is logged in a previous version of the unit
+     The whole history is logged in previous version of the unit
 }
 
 unit GLApplicationFileIO;
@@ -53,7 +52,7 @@ type
 
   // TAFIOFileStreamEvent
   //
-   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word;var stream : TStream) of object;
+  TAFIOFileStreamEvent = function(const fileName: string; mode: Word): TStream of object;
 
   // TAFIOFileStreamExistsEvent
   //
@@ -123,7 +122,7 @@ type
 
     procedure LoadFromFile(const fileName: string); dynamic;
     procedure SaveToFile(const fileName: string); dynamic;
-    procedure LoadFromStream(stream: TStream); dynamic;
+    procedure LoadFromStream(stream: TStream); virtual;
     procedure SaveToStream(stream: TStream); dynamic;
     procedure Initialize; dynamic;
     {Optionnal resource name. 
@@ -189,8 +188,9 @@ begin
   begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
-         vAFIO.FOnFileStream(fileName, mode, Result);
-      if not Assigned(Result) then begin
+      Result := vAFIO.FOnFileStream(fileName, mode);
+      if not Assigned(Result) then 
+	  begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
             Result:=TFileStream.Create(fileName, mode)
          else raise Exception.Create('File not found: "'+fileName+'"');
@@ -251,7 +251,6 @@ begin
   inherited Destroy;
 end;
 
-
 // ------------------
 // ------------------ TGLDataFile ------------------
 // ------------------
@@ -311,7 +310,7 @@ end;
 
 procedure TGLDataFile.LoadFromStream(stream: TStream);
 begin
-  Assert(False, 'Imaport for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
+  Assert(False, 'Import for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
 
 // SaveToStream

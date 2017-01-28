@@ -5,7 +5,7 @@
    Implements a multi-proxy objects, useful for discreet LOD. 
    History :  
      24/11/03 - EG - Creation
-     The whole history is logged in a previous version of the unit
+     The whole history is logged in previous version of the unit
 
 }
 unit GLMultiProxy;

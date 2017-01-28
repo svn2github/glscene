@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Classes and methods for 2D triangulation of scatter points. 
-  
-   History :  
-      17/05/15 - PW - Created, based on code from Paul Bourke (http://paulbourke.net/)
-         and conversion from VB to Delphi by Dr Steve Evans (steve@lociuk.com)
-	 
+   Classes and methods for triangulation of scatter points.
+
+   History :
+      17/05/15 - PW - Created TGLDelaunay2D class for RAD Studio, based on code
+         from Paul Bourke (http://paulbourke.net/) and conversion
+         from VB to Delphi6 by Dr Steve Evans (steve@lociuk.com)
 }
 
 unit GLTriangulation;
@@ -19,17 +19,13 @@ uses
   System.Types,
   Vcl.Dialogs,
   Vcl.Graphics,
-   
+  //GLS
   GLVectorGeometry;
 
 // Set these as applicable
 const
   MaxVertices = 500000;
-
-const
   MaxTriangles = 1000000;
-
-const
   ExPtTolerance = 0.000001;
 
 type
@@ -63,11 +59,12 @@ type
   TDComplete = array of Boolean;
   TDEdges = array of array of LongInt;
 
-{  TGLDelaunay2D is a class for Delaunay triangulation of arbitrary points
+(*
+  TGLDelaunay2D is a class for Delaunay triangulation of arbitrary points
   Credit to Paul Bourke (http://paulbourke.net/) for the original Fortran 77 Program :))
   Conversion to Visual Basic by EluZioN (EluZioN@casesladder.com)
   Conversion from VB to Delphi6 by Dr Steve Evans (steve@lociuk.com)
-  June 2002 Update by Dr Steve Evans (steve@lociuk.com): Heap memory allocation
+  June 2002 Update by Dr Steve Evans: Heap memory allocation
   added to prevent stack overflow when MaxVertices and MaxTriangles are very large.
   Additional Updates in June 2002: Bug in InCircle function fixed. Radius r := Sqrt(rsqr).
   Check for duplicate points added when inserting new point.
@@ -75,8 +72,7 @@ type
   triangles flagged when no longer needed. The circumcircle centre and radius of
   the triangles are now stored to improve calculation time.
   You can use this code however you like providing the above credits remain in tact
-}
-
+*)
 type
   TGLDelaunay2D = class
   private

@@ -6,7 +6,7 @@
 
     History :
        24/03/04 - SG - Initial
-       The whole history is logged in a previous version of the unit
+       The whole history is logged in previous version of the unit
 }
 
 unit GLImposter;

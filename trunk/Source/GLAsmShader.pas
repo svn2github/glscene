@@ -8,7 +8,7 @@
 
   History :  
      22/02/07 - DaStr - Initial version (contributed to GLScene)
-     The whole history is logged in a previous version of the unit
+     The whole history is logged in previous version of the unit
 }
 unit GLAsmShader;
 

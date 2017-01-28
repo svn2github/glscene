@@ -5,7 +5,7 @@
   Preliminary VRML vector file support for GLScene.
   History :
   14/01/05 - SG - Added to GLScene
-  The whole history is logged in a previous version of the unit.
+  The whole history is logged in previous version of the unit.
 
 }
 unit GLFileVRML;

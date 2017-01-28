@@ -6,8 +6,9 @@
    This class can be used for generic OpenGL applications and has no dependencies
    to the GLScene core units (only to base units).
 
-   History : 19/01/02 - EG - Creation
-   The whole history is logged in a previous version of the unit.
+   History :
+     19/01/02 - EG - Creation
+     The whole history is logged in previous version of the unit
 }
 unit GLCanvas;
 
@@ -132,7 +133,7 @@ type
     {Similar to Polyline but also connects the last point to the first. }
     procedure Polygon(const points: array of TGLPoint);
 
-    {Plots a pixel at given coordinate. 
+    {Plots a pixel at given coordinate.
        PenWidth affects pixel size.
        The current position is NOT updated. }
     procedure PlotPixel(const x, y: Integer); overload;
@@ -182,7 +183,7 @@ type
     {Draw an elliptical arc. 
        The points (x1, y1) and (x2, y2) specify the bounding rectangle. 
        An ellipse formed by the specified bounding rectangle defines the curve of the arc. 
-       The arc extends in the current drawing direction from the point where it intersects the radial from the center of the bounding rectangle to the (x3, y3) point. 
+       The arc extends in the current drawing direction from the point where it intersects the radial from the center of the bounding rectangle to the (x3, y3) point.
        The arc ends where it intersects the radial from the center of the bounding rectangle to the (x4, y4) point. 
        If the starting point and ending point are the same, a complete ellipse is drawn. 
        Use the ArcDirection property to get and set the current drawing direction for a device context. 

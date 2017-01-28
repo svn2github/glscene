@@ -10,8 +10,10 @@
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
   objects can be found GLGeomObjects.
-  The whole history is logged in a previous version of the unit
-   
+  History:
+    26/06/97 - Mike Lischke - the last change of version 0.1.13
+    The whole history is logged in previous version of the unit
+
 }
 unit GLObjects;
 
@@ -89,8 +91,7 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
@@ -104,8 +105,7 @@ type
     {  If true the dummycube's edges will be visible at runtime. 
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
-    property VisibleAtRunTime: Boolean read FVisibleAtRunTime
-      write SetVisibleAtRunTime default False;
+    property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
     {  Amalgamate the dummy's children in a single OpenGL entity. 
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
@@ -118,8 +118,7 @@ type
       In short, this features is best used for static, non-transparent
       geometry, or when the point of view won't change over a large
       number of frames. }
-    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
-      default False;
+    property Amalgamate: Boolean read FAmalgamate write SetAmalgamate default False;
     {  Camera Invariance Options. 
       These options allow to "deactivate" sensitivity to camera, f.i. by
       centering the object on the camera or ignoring camera orientation. }
@@ -176,8 +175,7 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
     {  Computes the screen coordinates of the smallest rectangle encompassing the plane. 
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
@@ -196,8 +194,7 @@ type
     property YOffset: TGLFloat read FYOffset write SetYOffset;
     property YScope: TGLFloat read FYScope write SetYScope stored StoreYScope;
     property YTiles: Cardinal read FYTiles write SetYTiles default 1;
-    property Style: TGLPlaneStyles read FStyle write SetStyle
-      default [psSingleQuad, psTileTexture];
+    property Style: TGLPlaneStyles read FStyle write SetStyle default [psSingleQuad, psTileTexture];
   end;
 
   // TGLSprite
@@ -247,8 +244,7 @@ type
       Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
     {  If different from 1, this value will replace that of Diffuse.Alpha }
-    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel
-      stored StoreAlphaChannel;
+    property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored StoreAlphaChannel;
     {  Reverses the texture coordinates in the U and V direction to mirror
       the texture. }
     property MirrorU: Boolean read FMirrorU write SetMirrorU default False;
@@ -300,11 +296,9 @@ type
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MinSize: Single read FMinSize write SetMinSize stored False;
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
-    property FadeTresholdSize: Single read FFadeTresholdSize
-      write SetFadeTresholdSize stored False;
+    property FadeTresholdSize: Single read FFadeTresholdSize write SetFadeTresholdSize stored False;
     {  Components XYZ are for constant, linear and quadratic attenuation. }
-    property DistanceAttenuation: TGLCoordinates read FDistanceAttenuation
-      write SetDistanceAttenuation;
+    property DistanceAttenuation: TGLCoordinates read FDistanceAttenuation write SetDistanceAttenuation;
   end;
 
   // TGLPoints
@@ -369,8 +363,7 @@ type
     {  Point parameters as of ARB_point_parameters. 
       Allows to vary the size and transparency of points depending
       on their distance to the observer. }
-    property PointParameters: TGLPointParameters read FPointParameters
-      write SetPointParameters;
+    property PointParameters: TGLPointParameters read FPointParameters write SetPointParameters;
 
   end;
 
@@ -382,8 +375,7 @@ type
   // TLineSplineMode
   //
   {  Available spline modes for a TLine. }
-  TGLLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve,
-    lsmSegments, lsmLoop);
+  TGLLineSplineMode = (lsmLines, lsmCubicSpline, lsmBezierSpline, lsmNURBSCurve, lsmSegments, lsmLoop);
 
   // TGLLinesNode
   //
@@ -464,18 +456,15 @@ type
     {  Indicates if OpenGL should smooth line edges. 
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
-    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
-      default False;
+    property AntiAliased: Boolean read FAntiAliased write SetAntiAliased default False;
     {  Default color of the lines. }
     property LineColor: TGLColor read FLineColor write SetLineColor;
     {  Bitwise line pattern. 
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
-    property LinePattern: TGLushort read FLinePattern write SetLinePattern
-      default $FFFF;
+    property LinePattern: TGLushort read FLinePattern write SetLinePattern default $FFFF;
     {  Default width of the lines. }
-    property LineWidth: Single read FLineWidth write SetLineWidth
-      stored StoreLineWidth;
+    property LineWidth: Single read FLineWidth write SetLineWidth stored StoreLineWidth;
     property Visible;
   end;
 
@@ -527,11 +516,9 @@ type
 
     {  Default aspect of line nodes.
       May help you materialize nodes, segments and control points. }
-    property NodesAspect: TGLLineNodesAspect read FNodesAspect
-      write SetNodesAspect default lnaAxes;
+    property NodesAspect: TGLLineNodesAspect read FNodesAspect write SetNodesAspect default lnaAxes;
     {  Size for the various node aspects. }
-    property NodeSize: Single read FNodeSize write SetNodeSize
-      stored StoreNodeSize;
+    property NodeSize: Single read FNodeSize write SetNodeSize stored StoreNodeSize;
   end;
 
   // TLinesOptions
@@ -585,8 +572,7 @@ type
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
     {  Default spline drawing mode.  }
-    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode
-      default lsmLines;
+    property SplineMode: TGLLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
 
     {  Rendering options for the line.
 
@@ -634,8 +620,7 @@ type
     procedure Assign(Source: TPersistent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
 
   published
     { Published Declarations }
@@ -643,8 +628,7 @@ type
       stored False;
     property CubeHeight: TGLFloat index 1 read GetCubeWHD write SetCubeWHD
       stored False;
-    property CubeDepth: TGLFloat index 2 read GetCubeWHD write SetCubeWHD
-      stored False;
+    property CubeDepth: TGLFloat index 2 read GetCubeWHD write SetCubeWHD stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
     property Parts: TCubeParts read FParts write SetParts
@@ -685,10 +669,8 @@ type
 
   published
     { Published Declarations }
-    property Normals: TNormalSmoothing read FNormals write SetNormals
-      default nsSmooth;
-    property NormalDirection: TNormalDirection read FNormalDirection
-      write SetNormalDirection default ndOutside;
+    property Normals: TNormalSmoothing read FNormals write SetNormals default nsSmooth;
+    property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
   end;
 
   TAngleLimit1 = -90 .. 90;

@@ -25,6 +25,7 @@ TFreeForm>>>TGLFreeForm
 TJoystick>>>TGLJoystick
 TPlane>>>TGLPlane
 TSprite>>>TGLSprite
+TSkeletonFrame>>>TGLSkeletonFrame
 TLineBase>>>TGLLineBase
 TLines>>>TGLLines
 TMultiPolygon>>>TGLMultiPolygon

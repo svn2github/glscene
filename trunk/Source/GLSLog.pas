@@ -8,7 +8,7 @@
 
    History :  
      06/03/10 - Yar - Added to GLScene
-     The whole history is logged in a previous version of the unit.
+     The whole history is logged in previous version of the unit.
    
 
   (C) 2004-2007 George "Mirage" Bakhtadze.

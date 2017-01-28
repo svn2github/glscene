@@ -7,7 +7,7 @@
 
    History :
      06/08/00 - Egg - Creation (from split of GLObjects), Added TGLPipe
-     The whole history is logged in a previous version of the unit
+     The whole history is logged in previous version of the unit
 
 }
 {  TODO

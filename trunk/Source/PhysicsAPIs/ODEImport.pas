@@ -64,7 +64,7 @@ unit ODEImport;
 
   History
   2002.09.16 - Mattias Fagerlund & Christophe Hosten - Conversion started
-  The whole history is logged in a previous version of the unit
+  The whole history is logged in previous version of the unit
 
  }
 

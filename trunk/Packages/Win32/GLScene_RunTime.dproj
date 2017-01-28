@@ -150,7 +150,7 @@
         <DCCReference Include="..\..\Source\SoundVideoAPIs\GLAVIRecorder.pas"/>
         <DCCReference Include="..\..\Source\GLAnimatedSprite.pas"/>
         <DCCReference Include="..\..\Source\GLAnimationUtils.pas"/>
-        <DCCReference Include="..\..\Source\GLApplicationFileIO.pas"/>
+        <DCCReference Include="..\..\Source\Basis\GLApplicationFileIO.pas"/>
         <DCCReference Include="..\..\Source\GLAsmShader.pas"/>
         <DCCReference Include="..\..\Source\GLAsyncHDS.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLAsyncTimer.pas"/>
@@ -270,8 +270,8 @@
         <DCCReference Include="..\..\Source\GLMultisampleImage.pas"/>
         <DCCReference Include="..\..\Source\GLNavigator.pas"/>
         <DCCReference Include="..\..\Source\GLNodes.pas"/>
-        <DCCReference Include="..\..\Source\GLObjectManager.pas"/>
-        <DCCReference Include="..\..\Source\GLObjects.pas"/>
+        <DCCReference Include="..\..\Source\Basis\GLObjectManager.pas"/>
+        <DCCReference Include="..\..\Source\Basis\GLObjects.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLOctree.pas"/>
         <DCCReference Include="..\..\Source\Shaders\GLOutlineShader.pas"/>
         <DCCReference Include="..\..\Source\GLParametricSurfaces.pas"/>

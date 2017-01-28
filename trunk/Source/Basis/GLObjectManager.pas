@@ -9,6 +9,12 @@
 
    TODO: add some notification code, so that when a scene object is registered/
    unregistered, any editor that is using the object manager can be notified.
+
+   History :
+      14/03/09 - DanB - Created the unit by moving TGLObjectManager class in
+                 from GLSceneRegister.pas, made some slight adjustments
+                 to allow resources being loaded from separate packages.
+      The whole history is logged in previous version of the unit
 }
 
 unit GLObjectManager;
@@ -23,7 +29,7 @@ uses
   VCL.Graphics,
   VCL.Controls,
   VCL.Menus,
-
+  //GLS
   GLCrossPlatform,
   GLScene;
 

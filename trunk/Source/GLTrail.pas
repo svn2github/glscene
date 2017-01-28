@@ -6,7 +6,7 @@
 
   History :
     12/10/04 - Mrqzzz - Creation (Based on Jason Lanford's demo - june 2003)
-    The whole history is logged in a previous version of the unit.
+    The whole history is logged in previous version of the unit.
 
 }
 

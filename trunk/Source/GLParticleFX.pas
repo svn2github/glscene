@@ -10,7 +10,7 @@
 
    History :
      08/09/01 - EG - Creation (GLParticleFX.omm)
-     The whole history is logged in a previous version of the unit.
+     The whole history is logged in previous version of the unit.
 
 }
 

@@ -7,7 +7,7 @@
 
   History :  
    30/01/03 - EG - Creation
-   The whole history is logged in a previous version of the unit.
+   The whole history is logged in previous version of the unit.
 
 }
 

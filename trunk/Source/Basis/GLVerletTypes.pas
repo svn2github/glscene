@@ -11,7 +11,7 @@
 
    History :  
      21/06/02 - EG - Creation (original code by Mattias Fagerlund)
-	 The whole history is logged in a previous version of the unit
+	 The whole history is logged in previous version of the unit
    
 }
 unit GLVerletTypes;

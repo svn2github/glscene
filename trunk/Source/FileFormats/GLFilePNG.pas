@@ -5,7 +5,7 @@
   PNG files loading implementation
   History :
     05/03/10 - Yar - Creation
-    The whole history is logged in a previous version of the unit
+    The whole history is logged in previous version of the unit
 }
 
 unit GLFilePNG;

@@ -20,7 +20,7 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  The whole history is logged in a previous version of the unit.
+  The whole history is logged in previous version of the unit.
 }
 unit GLVectorGeometry;
 
@@ -1714,7 +1714,7 @@ function SphereVisibleRadius(distance, radius: Single): Single;
 function ExtractFrustumFromModelViewProjection(const modelViewProj: TMatrix)
   : TFrustum;
 
-// : Determines if volume is clipped or not
+// Determines if volume is clipped or not
 function IsVolumeClipped(const objPos: TAffineVector; const objRadius: Single;
   const Frustum: TFrustum): Boolean; overload;
 function IsVolumeClipped(const objPos: TVector; const objRadius: Single;

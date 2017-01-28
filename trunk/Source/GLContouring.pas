@@ -20,7 +20,7 @@ uses
   System.Classes, 
   System.Math,
   System.Generics.Collections,
-   
+  //GLS 
   GLVectorGeometry, 
   GLVectorLists, 
   GLObjects, 

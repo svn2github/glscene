@@ -5,9 +5,9 @@
    Base classes and structures for GLScene.
 
    History :
-       26/06/97 - Mike Lischke - last change of version 0.3.2
-       05/02/00 - Egg - Javadocisation, fixes and enhancements...
-       The whole history is logged in a previous version of the unit.
+       26/06/97 - Mike Lischke - the last change of version 0.3.2
+       05/02/00 - Eric Grange - started fixes and enhancements of version 0.5.8 from ML...
+       The whole history is logged in previous version of the unit
 }
 unit GLScene;
 
@@ -73,7 +73,7 @@ type
 
   // TGLObjectChanges
   //
-  // used to decribe only the changes in an object,
+  // used to describe only the changes in an object,
   // which have to be reflected in the scene
   TGLObjectChange = (ocTransformation, ocAbsoluteMatrix, ocInvAbsoluteMatrix,
     ocStructure);
