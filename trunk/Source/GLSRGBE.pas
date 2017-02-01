@@ -53,7 +53,7 @@ end;
 
 function Ldexp(X: Extended; const P: Integer): Extended;
 begin
-  Ldexp := X * PowerExtInteger(2.0, P); // Result := X * (2^P)
+  Ldexp := X * PowerSingle(2.0, P); // Result := X * (2^P)
 end;
 
 // standard conversion from float pixels to rgbe pixels

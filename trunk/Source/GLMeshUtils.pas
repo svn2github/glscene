@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   General utilities for mesh manipulations. 
+   General utilities for mesh manipulations.
 
-   History :  
+   History :
        10/12/14 - PW - Renamed MeshUtils unit to GLMeshUtils
        20/05/10 - Yar - Fixes for Linux x64
        26/02/10 - Yar - Added functions to work with adjacent triangles
@@ -30,9 +30,14 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes,  System.SysUtils,
-   
-  GLPersistentClasses, GLVectorLists, GLVectorGeometry, GLVectorTypes;
+  System.Classes,
+  System.SysUtils,
+  System.Math,
+  //GLS
+  GLPersistentClasses,
+  GLVectorLists,
+  GLVectorGeometry,
+  GLVectorTypes;
 
 {Converts a triangle strips into a triangle list. 
    Vertices are added to list, based on the content of strip. Both non-indexed
@@ -341,7 +346,7 @@ begin
 
    // Initialize data structures for a hash table
    // (each vertex will only be compared to vertices of similar hash value)
-   hashSize:=(1 shl MaxInteger(Integer(0), Integer(Trunc(log2(vertices.Count*cInvVerticesPerHashKey)))))-1;
+   hashSize:=(1 shl MaxInteger(Integer(0), Integer(Trunc(Log2(vertices.Count*cInvVerticesPerHashKey)))))-1;
    if hashSize<7 then hashSize:=7;
    if hashSize>65535 then hashSize:=65535;
    SetLength(hashTable, hashSize+1);

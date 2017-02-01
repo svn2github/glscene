@@ -13,8 +13,16 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
   //GLS
-  GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours,
-  GLVectorGeometry, GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates,
+  GLFireFX,
+  GLCadencer,
+  GLScene,
+  GLObjects,
+  GLBehaviours,
+  GLVectorGeometry,
+  GLWin32Viewer,
+  GLGeomObjects,
+  GLCrossPlatform,
+  GLCoordinates,
   GLBaseClasses;
 
 type

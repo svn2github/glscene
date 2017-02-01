@@ -1,6 +1,6 @@
 The directory for PasDoc scripts
 ------------------------------------------------------------
-To generate GLSysHelp.chm you need to follow the next steps -
+To generate GLSysHelp.chm you need to follow next steps -
 1.Download the PasDoc program from http://pasdoc.sourceforge.net/ and setup it.
 2.Run the pasdoc_gui program and Open GLSysHelp.pds script 
 3.Click on Generate button and create GLScene's system help files in HTML folder

@@ -473,9 +473,9 @@ type
 
   // TGLPolygon
   //
-  {  A basic polygon object. 
+  {  A basic polygon object.
     The curve is described by the Nodes and SplineMode properties, should be
-    planar and is automatically tessellated. 
+    planar and is automatically tessellated.
     Texture coordinates are deduced from X and Y coordinates only. 
     This object allows only for polygons described by a single curve, if you
     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
@@ -500,8 +500,7 @@ type
     {  Parts of polygon. 
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
-    property Parts: TPolygonParts read FParts write SetParts
-      default [ppTop, ppBottom];
+    property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
   // TFrustrumParts
@@ -550,17 +549,13 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
     { Published Declarations }
-    property ApexHeight: Single read FApexHeight write SetApexHeight
-      stored False;
-    property BaseDepth: Single read FBaseDepth write SetBaseDepth
-      stored False;
-    property BaseWidth: Single read FBaseWidth write SetBaseWidth
-      stored False;
+    property ApexHeight: Single read FApexHeight write SetApexHeight stored False;
+    property BaseDepth: Single read FBaseDepth write SetBaseDepth stored False;
+    property BaseWidth: Single read FBaseWidth write SetBaseWidth stored False;
     property Height: Single read FHeight write SetHeight stored False;
     property NormalDirection: TNormalDirection read FNormalDirection
       write SetNormalDirection default ndOutside;
-    property Parts: TFrustrumParts read FParts write SetParts
-      default cAllFrustrumParts;
+    property Parts: TFrustrumParts read FParts write SetParts default cAllFrustrumParts;
   end;
 
   // -------------------------------------------------------------

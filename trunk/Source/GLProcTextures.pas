@@ -177,7 +177,7 @@ begin
           n := 0
         else
           // Noise Sharpness
-          n := 255 - Round(PowerExtInteger(FNoiseSharpness, C) * 255);
+          n := 255 - Round(PowerInteger(FNoiseSharpness, C) * 255);
       end;
       //if n < 13 then n:=13;
       // Write the result to the texture image.

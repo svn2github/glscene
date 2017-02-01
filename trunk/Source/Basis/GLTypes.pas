@@ -2,12 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Defines vector types for geometry only aiming to imply
-   compatibility of GLScene for Delphi with C+Builder.
-   Do not include any other units in uses clause
+   Defines vector types as advanced records.
    History:
-   17/05/11 - PW - Creation.
-   The whole history is logged in a former GLS version of the unit
+     17/05/11 - PW - Creation.
+   The whole history is logged in previous version of the unit
 }
 unit GLTypes;
 
@@ -42,8 +40,10 @@ type
       function Create(X, Y : Single): TGLPoint2D;
       procedure SetPosition(const X, Y : Single);
       function Add(const APoint2D: TGLPoint2D): TGLPoint2D;
-      function Length: Single; //distance to origin
+      function Length: Single; //distance from origin
       function Distance(const APoint2D : TGLPoint2D) : Single;
+      class function PointInCircle(const Point, Center: TGLPoint2D;
+        const Radius: Integer):Boolean; static; inline;
       procedure Offset(const ADeltaX, ADeltaY : Single);
   end;
 
@@ -54,39 +54,16 @@ type
     Z: Single;
     public
       function Create(X, Y, Z: Single): TGLPoint3D;
-      procedure SetPosition(const X, Y, Z : Single);
+      procedure SetPosition(const X, Y, Z: Single);
       function Add(const AGLPoint3D: TGLPoint3D): TGLPoint3D;
       function Length: Single; //distance to origin
-      function Distance(const APoint3D : TGLPoint3D) : Single;
-      procedure Offset(const ADeltaX, ADeltaY, ADeltaZ : Single);
+      function Distance(const APoint3D : TGLPoint3D): Single;
+      procedure Offset(const ADeltaX, ADeltaY, ADeltaZ: Single);
   end;
 
 //Point Arrays
   TGLPoint2DArray = array of TGLPoint2D;
   TGLPoint3DArray = array of TGLPoint3D;
-
-//-----------------------
-//Polygon types
-//-----------------------
-
-  TGLPolygon2D = TGLPoint2DArray;
-  TGLPolygon3D = TGLPoint3DArray;
-
-const
-   ClosedPolygon2D: TGLPoint2D = (X: $FFFF; Y: $FFFF);
-   ClosedPolygon3D: TGLPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
-
-// Triangle types
-type
-  TGLTriangle = record
-    v1, v2, v3: Integer;
-  end;
-
-  TGLTriangleArray = array [0 .. (MaxInt shr 8)] of TGLTriangle;
-  PGLTriangleArray = ^TGLTriangleArray;
-
-  TGLVertexArray = array [0 .. (MaxInt shr 8)] of TGLVertex;
-  PGLVertexArray = ^TGLVertexArray;
 
 
 // Voxel types
@@ -103,12 +80,6 @@ type
 
 
 //-----------------------
-//Polyhedron types
-//-----------------------
-type
-  TGLPolyhedron = array of TGLPolygon3D;
-
-//-----------------------
 // Vector types
 //-----------------------
 
@@ -116,12 +87,13 @@ type
   TGLVector3DType = array [0..2] of Single;
 
   TGLVector2D = record
-    private
-      function Norm: Single;
-    public
       function Create(const AX, AY, AW : Single): TGLVector2D;
       function Add(const AVector2D: TGLVector2D): TGLVector2D;
       function Length: Single;
+      function Norm: Single;
+      function Normalize: TGLVector2D;
+      function CrossProduct(const AVector: TGLVector2D): TGLVector2D;
+      function DotProduct(const AVector: TGLVector2D): Single;
     case Integer of
       0: (V: TGLVector2DType;);
       1: (X: Single;
@@ -130,12 +102,13 @@ type
   end;
 
   TGLVector3D = record
-    private
-      function Norm: Single;
-    public
       function Create(const AX, AY, AZ, AW : Single): TGLVector3D;
       function Add(const AVector3D: TGLVector3D): TGLVector3D;
       function Length: Single;
+      function Norm: Single;
+      function Normalize: TGLVector3D;
+      function CrossProduct(const AVector3D: TVector3D): TVector3D;
+      function DotProduct(const AVector3D: TVector3D): Single; inline;
     case Integer of
       0: (V: TGLVector3DType;);
       1: (X: Single;
@@ -188,17 +161,66 @@ type
   TGLMatrix3DArray = array of TGLMatrix3D;
 
 
+//-----------------------
+// Polygon types
+//-----------------------
+
+  TGLPolygon2D = TGLPoint2DArray;
+
+  TGLPolygon3D = TGLPoint3DArray;
+{
+  TGLPolygon3D = record
+    Vertices: array of TGLPoint3D;
+    function Area;
+  end;
+}
+
+const
+   ClosedPolygon2D: TGLPoint2D = (X: $FFFF; Y: $FFFF);
+   ClosedPolygon3D: TGLPoint3D = (X: $FFFF; Y: $FFFF; Z: $FFFF);
+
+type
+  TGLVertexArray = array [0 .. (MaxInt shr 8)] of TGLVertex;
+  PGLVertexArray = ^TGLVertexArray;
+
+type
+  TGLTriangle = record
+    v1, v2, v3: Integer;
+    ///Vertices: array[0..2] of TGLPoint3D;
+    ///function Area;
+  end;
+
+  TGLTriangleArray = array [0 .. (MaxInt shr 8)] of TGLTriangle;
+  PGLTriangleArray = ^TGLTriangleArray;
+
+
+
+//-----------------------
+// Polyhedron types
+//-----------------------
+type
+  TGLPolyhedron = array of TGLPolygon3D;
+
+{
+  TGLPolyhedron = record
+    Facets: array of TGLPolygon3D;
+    function NetLength;
+    function Area;
+    function Volume;
+  end;
+}
+
 //--------------------------
 // Mesh simple record types
 //--------------------------
 type
-   TGLMesh2DVertex = packed record
+   TGLMesh2DVertex = record
     X, Y: Single;
     NX, NY: Single;
     tU, tV: Single;
   end;
 
-   TGLMesh3DVertex = packed record
+   TGLMesh3DVertex = record
     X, Y, Z: Single;
     NX, NY, NZ: Single;
     tU, tV: Single;
@@ -269,6 +291,12 @@ begin
   Self.Y := Self.Y + ADeltaY;
 end;
 
+class function TGLPoint2D.PointInCircle(const Point, Center: TGLPoint2D;
+  const Radius: Integer): Boolean;
+begin
+  Result := Point.Distance(Center) <= Radius;
+end;
+
 { TGLPoint3D }
 //
 function TGLPoint3D.Create(X, Y, Z: Single): TGLPoint3D;
@@ -318,6 +346,18 @@ begin
   Result.W := AW;
 end;
 
+function TGLVector2D.CrossProduct(const AVector: TGLVector2D): TGLVector2D;
+begin
+  Result.X := (Self.Y * AVector.W) - (Self.W * AVector.Y);
+  Result.Y := (Self.W * AVector.X) - (Self.X * AVector.W);
+  Result.W := (Self.X * AVector.Y) - (Self.Y * AVector.X);
+end;
+
+function TGLVector2D.DotProduct(const AVector: TGLVector2D): Single;
+begin
+  Result := (Self.X * AVector.X) + (Self.Y * AVector.Y) + (Self.W * AVector.W);
+end;
+
 function TGLVector2D.Add(const AVector2D: TGLVector2D): TGLVector2D;
 begin
   Result.X := Self.X + AVector2D.X;
@@ -327,12 +367,30 @@ end;
 
 function TGLVector2D.Length: Single;
 begin
-  Result := Sqrt(Self.Norm);
+  Result := Sqrt((Self.X * Self.X) + (Self.Y * Self.Y));
 end;
 
 function TGLVector2D.Norm: Single;
 begin
-  Result := (Self.X * Self.X) + (Self.Y * Self.Y);
+  result := Sqr(Self.X) + Sqr(Self.Y);
+end;
+
+function TGLVector2D.Normalize: TGLVector2D;
+var
+  invLen: Single;
+  vn: Single;
+const
+  Tolerance: Single = 1E-12;
+begin
+  vn := Self.Norm;
+  if vn > Tolerance then
+  begin
+    invLen := 1/Sqrt(vn);
+    Result.X := Self.X * invLen;
+    Result.Y := Self.Y * invLen;
+  end
+  else
+    Result := Self;
 end;
 
 { TGLVector3D }
@@ -355,12 +413,44 @@ end;
 
 function TGLVector3D.Norm: Single;
 begin
-  Result := (Self.X * Self.X) + (Self.Y * Self.Y) + (Self.Z * Self.Z);
+  result := Self.X * Self.X + Self.Y * Self.Y + Self.Z * Self.Z;
+end;
+
+function TGLVector3D.Normalize: TGLVector3D;
+var
+  invLen: Single;
+  vn: Single;
+const
+  Tolerance: Single = 1E-12;
+begin
+  vn := Self.Norm;
+  if vn > 0 then
+  begin
+    invLen := 1/Sqrt(vn);
+    Result.X := Self.X * invLen;
+    Result.Y := Self.Y * invLen;
+    Result.Z := Self.Z * invLen;
+    Result.W := 0;
+  end
+  else
+    Result := Self;
+end;
+
+function TGLVector3D.DotProduct(const AVector3D: TVector3D): Single;
+begin
+  Result := (Self.X * AVector3D.X) + (Self.Y * AVector3D.Y) + (Self.Z * AVector3D.Z);
+end;
+
+function TGLVector3D.CrossProduct(const AVector3D: TVector3D): TVector3D;
+begin
+  Result.X := (Self.Y * AVector3D.Z) - (Self.Z * AVector3D.Y);
+  Result.Y := (Self.Z * AVector3D.X) - (Self.X * AVector3D.Z);
+  Result.Z := (Self.X * AVector3D.Y) - (Self.Y * AVector3D.X);
 end;
 
 function TGLVector3D.Length: Single;
 begin
-  Result := Sqrt(Self.Norm);
+  Result := Sqrt((Self.X * Self.X) + (Self.Y * Self.Y) + (Self.Z * Self.Z));
 end;
 
 end.
