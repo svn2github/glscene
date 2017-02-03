@@ -1,0 +1,72 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{75A1D581-C0C9-4C4D-8D29-FEAB86228EE3}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="01-LandscapeTutorial\ShortestLandscapeApp.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="03-DuneFighter\DuneFighter.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="02-FractalLandscape\FractalLandscape.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="04-FractalArchipelago\FractalArchipelago.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="ShortestLandscapeApp">
+        <MSBuild Projects="01-LandscapeTutorial\ShortestLandscapeApp.dproj"/>
+    </Target>
+    <Target Name="ShortestLandscapeApp:Clean">
+        <MSBuild Projects="01-LandscapeTutorial\ShortestLandscapeApp.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ShortestLandscapeApp:Make">
+        <MSBuild Projects="01-LandscapeTutorial\ShortestLandscapeApp.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DuneFighter">
+        <MSBuild Projects="03-DuneFighter\DuneFighter.dproj"/>
+    </Target>
+    <Target Name="DuneFighter:Clean">
+        <MSBuild Projects="03-DuneFighter\DuneFighter.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DuneFighter:Make">
+        <MSBuild Projects="03-DuneFighter\DuneFighter.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FractalLandscape">
+        <MSBuild Projects="02-FractalLandscape\FractalLandscape.dproj"/>
+    </Target>
+    <Target Name="FractalLandscape:Clean">
+        <MSBuild Projects="02-FractalLandscape\FractalLandscape.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FractalLandscape:Make">
+        <MSBuild Projects="02-FractalLandscape\FractalLandscape.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="FractalArchipelago">
+        <MSBuild Projects="04-FractalArchipelago\FractalArchipelago.dproj"/>
+    </Target>
+    <Target Name="FractalArchipelago:Clean">
+        <MSBuild Projects="04-FractalArchipelago\FractalArchipelago.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="FractalArchipelago:Make">
+        <MSBuild Projects="04-FractalArchipelago\FractalArchipelago.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="ShortestLandscapeApp;DuneFighter;FractalLandscape;FractalArchipelago"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="ShortestLandscapeApp:Clean;DuneFighter:Clean;FractalLandscape:Clean;FractalArchipelago:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="ShortestLandscapeApp:Make;DuneFighter:Make;FractalLandscape:Make;FractalArchipelago:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
