@@ -19,7 +19,7 @@ uses
   System.SysUtils,
   System.Types,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   GLScene,
   GLXCollection,
@@ -57,7 +57,7 @@ type
   {  Thor special effect manager. }
   TGLThorFXManager = class(TGLCadenceAbleComponent)
   private
-    { Private Declarations }
+     
     FClients: TList;
     FThorpoints: PThorpointArray;
     FTarget: TGLCoordinates;
@@ -71,7 +71,7 @@ type
     FDisabled, FCore, FGlow: boolean;
     FOnCalcPoint: TCalcPointEvent;
   protected
-    { Protected Declarations }
+    
     procedure RegisterClient(aClient: TGLBThorFX);
     procedure DeRegisterClient(aClient: TGLBThorFX);
     procedure DeRegisterAllClients;
@@ -89,12 +89,12 @@ type
     procedure CalcThor;
     procedure CalcFrac(left, right: integer; lh, rh: single; xyz: integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    { Published Declarations }
+    
     property Target: TGLCoordinates read FTarget write SetTarget;
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
     property Maxpoints: integer read FMaxpoints write SetMaxpoints default 256;
@@ -118,19 +118,19 @@ type
   {  Thor special effect }
   TGLBThorFX = class(TGLObjectPostEffect)
   private
-    { Private Declarations }
+     
     FManager: TGLThorFXManager;
     FManagerName: String; // NOT persistent, temporarily used for persistence
     FTarget: TGLCoordinates;
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val: TGLThorFXManager);
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
     procedure SetTarget(const val: TGLCoordinates);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -138,7 +138,7 @@ type
     class function FriendlyDescription: String; override;
     procedure Render(var rci: TGLRenderContextInfo); override;
   published
-    { Published Declarations }
+    
     {  Refers the collision manager. }
     property Manager: TGLThorFXManager read FManager write SetManager;
   end;

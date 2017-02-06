@@ -30,7 +30,7 @@ type
     without specified normals, and will ignore most header specifications. }
   TGLPLYVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;

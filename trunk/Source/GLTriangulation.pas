@@ -19,7 +19,7 @@ uses
   System.Types,
   Vcl.Dialogs,
   Vcl.Graphics,
-  //GLS
+  
   GLVectorGeometry;
 
 // Set these as applicable
@@ -76,16 +76,14 @@ type
 type
   TGLDelaunay2D = class
   private
-    { Private declarations }
     function InCircle(Xp, Yp, X1, Y1, X2, Y2, X3, Y3: Single; var Xc: Single;
       var Yc: Single; var R: Single; j: Integer): Boolean;
     function Triangulate(nvert: Integer): Integer;
   public
-    { Public declarations }
     Vertex: TDVertex;
     Triangle: TDTriangle;
     HowMany: Integer;
-    tPoints: Integer; // Variable for total number of points (vertices)
+    TPoints: Integer; //< Total number of points (vertices)
     OnProgress: TDProgressEvent;
     constructor Create;
     destructor Destroy;

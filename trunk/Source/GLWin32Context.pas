@@ -21,7 +21,7 @@ uses
   System.SysUtils,
   System.Classes,
   Vcl.Forms,
-  //GLS
+  
   GLStrings,
   OpenGLTokens,
   OpenGLAdapter,
@@ -38,7 +38,7 @@ type
   {A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)
   protected
-    { Protected Declarations }
+    
     FDC: HDC;
     FRC: HGLRC;
     FShareContext: TGLWin32Context;
@@ -73,7 +73,7 @@ type
     {DoGetHandles must be implemented in child classes,
        and return the display + window }
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 

@@ -78,7 +78,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    { Private declarations }
+     
     FXCollection: TGLXCollection;
     // ownerComponent : TComponent;
     FDesigner: IDesigner;
@@ -92,7 +92,7 @@ type
     procedure Notification(AComponent: TComponent;
       Operation: TOperation); override;
   public
-    { Public declarations }
+    
     procedure SetXCollection(aXCollection: TGLXCollection; designer: IDesigner );
   end;
 

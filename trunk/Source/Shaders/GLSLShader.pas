@@ -108,11 +108,11 @@ type
   {Wrapper around a parameter of a GLSL program. }
   TGLSLShaderParameter = class(TGLCustomShaderParameter)
   private
-    { Private Declarations }
+     
     FGLSLProg: TGLProgramHandle;
     FParameterID: Integer;
   protected
-    { Protected Declarations }
+    
     function GetAsVector1f: Single; override;
     function GetAsVector2f: TVector2f; override;
     function GetAsVector3f: TVector3f; override;

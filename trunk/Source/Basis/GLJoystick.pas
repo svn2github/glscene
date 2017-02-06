@@ -48,7 +48,7 @@ type
    {A component interfacing the Joystick via the (regular) windows API. }
 	TGLJoystick = class (TComponent)
 	   private
-	      { Private Declarations }
+	       
          FWindowHandle : HWND;
          FNumButtons, FLastX, FLastY, FLastZ : Integer;
          FThreshold, FInterval : Cardinal;
@@ -66,7 +66,7 @@ type
          procedure SetThreshold(AValue: Cardinal);
 
 	   protected
-	      { Protected Declarations }
+	      
          function MakeJoyButtons(Param: UINT): TJoystickButtons;
          procedure DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
          procedure DoJoystickRelease(AJoystick: TJoystickID);
@@ -77,7 +77,7 @@ type
          procedure Loaded; override;
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
@@ -88,7 +88,7 @@ type
          property YPosition : Integer read FYPosition;
 
 	   published
-	      { Published Declarations }
+	      
          {When set to True, the component attempts to capture the joystick. 
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }

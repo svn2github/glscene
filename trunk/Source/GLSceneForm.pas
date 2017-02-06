@@ -80,7 +80,7 @@ type
 
   TGLSceneForm = class(TForm)
   private
-    { Private Declarations }
+     
     FBuffer: TGLSceneBuffer;
     FVSync: TGLVSyncMode;
     FOwnDC: HDC;
@@ -107,7 +107,7 @@ type
     procedure StartupFS;
     procedure ShutdownFS;
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure CreateWnd; override;
@@ -127,7 +127,7 @@ type
       GetIsRenderingContextAvailable;
     property RenderDC: HDC read FOwnDC;
   published
-    { Published Declarations }
+    
     {  Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
 

@@ -51,20 +51,20 @@ type
     need some helper methods for generating the indexed sets. }
   TGLSilhouette = class
   private
-    { Private Declarations }
+     
     FVertices: TVectorList;
     FIndices: TIntegerList;
     FCapIndices: TIntegerList;
     FParameters: TGLSilhouetteParameters;
 
   protected
-    { Protected Declarations }
+    
     procedure SetIndices(const value: TIntegerList);
     procedure SetCapIndices(const value: TIntegerList);
     procedure SetVertices(const value: TVectorList);
 
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     destructor Destroy; override;
 

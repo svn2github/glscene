@@ -20,7 +20,9 @@
   (the single-based functions have been optimized and are up to 100% faster,
   than extended-based ones from "Math").
 
-  The whole history is logged in previous version of the unit.
+  History:
+    14/02/1999 - Mike Lischke - last change of Version 2.3
+    The whole history is logged in previous version of the unit
 }
 unit GLVectorGeometry;
 
@@ -30,7 +32,7 @@ uses
   System.SysUtils,
   System.Types,
   System.Math,
-  //GLS
+  
   GLVectorTypes;
 
 const

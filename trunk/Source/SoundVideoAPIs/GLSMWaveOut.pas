@@ -40,23 +40,23 @@ type
       (ie. no 4bits samples playback etc.). }
 	TGLSMWaveOut = class (TGLSoundManager)
 	   private
-	      { Private Declarations }
+	       
 
 	   protected
-	      { Protected Declarations }
+	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
 
          procedure KillSource(aSource : TGLBaseSoundSource); override;
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
         procedure UpdateSources; override;
       published
-	      { Published Declarations }
+	      
          property MaxChannels default 4;
 	end;
 

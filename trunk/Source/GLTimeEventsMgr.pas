@@ -35,7 +35,7 @@ type
 	//
    TGLTimeEventsMGR = class(TGLUpdateAbleComponent)
    private
-      { Private declarations }
+       
       FCadencer : TGLCadencer;
       FEnabled : boolean;
       FFreeEventOnEnd : boolean;
@@ -49,7 +49,7 @@ type
       procedure SetEvents(const val : TTimeEvents);
 
    public
-      { Public declarations }
+      
       constructor Create(aOwner : TComponent); override;
       destructor Destroy; override;
 
@@ -68,14 +68,14 @@ type
 	//
 	TTimeEvents = class (TCollection)
    protected
-      { Protected Declarations }
+      
       Owner : TComponent;
       function GetOwner: TPersistent; override;
       procedure SetItems(index : Integer; const val : TTimeEvent);
       function GetItems(index : Integer) : TTimeEvent;
 
    public
-      { Public Declarations }
+      
       constructor Create(AOwner : TComponent);
 
       function Add: TTimeEvent;
@@ -92,7 +92,7 @@ type
    //
    TTimeEvent = class (TCollectionItem)
       private
-         { Private Declarations }
+          
          FName: String;
          FStartTime, FEndTime, FElapsedTime : Double;
          FPeriod : Double;
@@ -104,14 +104,14 @@ type
          procedure SetEnabled(const Value: Boolean);
 
       protected
-         { Protected Declarations }
+         
          function GetDisplayName : String; override;
          procedure SetName(Val : String);
 
          procedure DoEvent(const CurTime : Double);
 
       public
-         { Public Declarations }
+         
          constructor Create(Collection : TCollection); override;
          destructor Destroy; override;
 
@@ -121,7 +121,7 @@ type
          property ElapsedTime : Double read FElapsedTime;
 
       published
-         { Published Declarations }
+         
          property Name : String read FName write SetName;
          property StartTime : Double read FStartTime write FStartTime;
          property EndTime : Double read FEndTime write FEndTime;

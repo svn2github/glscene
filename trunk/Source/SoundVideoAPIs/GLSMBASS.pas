@@ -51,12 +51,12 @@ type
 	//
 	TGLSMBASS = class (TGLSoundManager)
 	   private
-	      { Private Declarations }
+	       
          FActivated : Boolean;
          FAlgorithm3D : TBASS3DAlgorithm;
 
 	   protected
-	      { Protected Declarations }
+	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -71,7 +71,7 @@ type
          function GetDefaultFrequency(aSource : TGLBaseSoundSource) : Integer;
          
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
@@ -81,7 +81,7 @@ type
          function EAXSupported : Boolean; override;
 
 	   published
-	      { Published Declarations }
+	      
          property Algorithm3D : TBASS3DAlgorithm read FAlgorithm3D write FAlgorithm3D default algDefault;
 	end;
 

@@ -222,14 +222,14 @@ type
        calculated at run-time (with a TGLMemoryViewer for instance). }
   TGLBlankImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     procedure SetWidth(val: Integer);
     procedure SetHeight(val: Integer);
     procedure SetDepth(val: Integer);
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
   protected
-    { Protected Declarations }
+    
     fBitmap: TGLImage;
 
     fWidth, fHeight, fDepth: Integer;
@@ -245,7 +245,7 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -260,7 +260,7 @@ type
     class function FriendlyDescription: string; override;
 
   published
-    { Published Declarations }
+    
     {Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
@@ -275,13 +275,13 @@ type
   {Base class for image data classes internally based on a TPicture. }
   TGLPictureImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     FBitmap: TGLImage;
     FGLPicture: TGLPicture;
     FUpdateCounter: Integer;
 
   protected
-    { Protected Declarations }
+    
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
     function GetDepth: Integer; override;
@@ -292,7 +292,7 @@ type
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -323,7 +323,7 @@ type
   private
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -333,7 +333,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
   published
-    { Published Declarations }
+    
     property Picture;
   end;
 
@@ -355,7 +355,7 @@ type
     function GetDepth: Integer; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -390,12 +390,12 @@ type
        Saving & loading as a whole currently not supported. }
   TGLCubeMapImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     FImage: TGLImage;
     FUpdateCounter: Integer;
     FPicture: array[cmtPX..cmtNZ] of TGLPicture;
   protected
-    { Protected Declarations }
+    
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
@@ -406,7 +406,7 @@ type
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -430,7 +430,7 @@ type
     property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write SetPicture;
 
   published
-    { Public Declarations }
+    
     property PicturePX: TGLPicture index cmtPX read GetPicture write SetPicture;
     property PictureNX: TGLPicture index cmtNX read GetPicture write SetPicture;
     property PicturePY: TGLPicture index cmtPY read GetPicture write SetPicture;
@@ -454,7 +454,7 @@ type
        Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
   TGLTexture = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FTextureHandle: TGLTextureHandle;
     FSamplerHandle: TGLVirtualHandle;
     FTextureFormat: TGLInternalFormat;
@@ -490,7 +490,7 @@ type
     fDepthTextureMode: TGLDepthTextureMode;
     FKeepImageAfterTransfer: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetImage(AValue: TGLTextureImage);
     procedure SetImageAlpha(const val: TGLTextureImageAlpha);
     procedure SetImageBrightness(const val: Single);
@@ -548,7 +548,7 @@ type
     //: Shows a special image that indicates an error
     procedure SetTextureErrorImage;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -612,7 +612,7 @@ type
     property TexDepth: Integer read FTexDepth;
     {Give texture rendering context }
   published
-    { Published Declarations }
+    
 
     {Image ClassName for enabling True polymorphism. 
     This is ugly, but since the default streaming mechanism does a

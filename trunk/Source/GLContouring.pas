@@ -20,7 +20,6 @@ uses
   System.Classes, 
   System.Math,
   System.Generics.Collections,
-  //GLS 
   GLVectorGeometry, 
   GLVectorLists, 
   GLObjects, 
@@ -105,7 +104,7 @@ procedure Initialize_Contouring(var DataGrid: TGLMatrix;
 procedure Release_Memory_Isoline;
 function GetNextIsoline(var Isoline: TGLIsoline): Boolean;
 
-{  Defines contouring segments inside a triangle using elevations }
+{Defines contouring segments inside a triangle using elevations }
 procedure TriangleElevationSegments(const p1, p2, p3: TAffineVector;
   ElevationDelta: Single; Segments: TAffineVectorList);
 

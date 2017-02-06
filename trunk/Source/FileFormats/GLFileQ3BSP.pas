@@ -36,7 +36,7 @@ type
   {The Q3BSP vector file (Quake III BSP).  }
   TGLQ3BSPVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;

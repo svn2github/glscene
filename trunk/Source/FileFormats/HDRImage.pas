@@ -34,7 +34,7 @@ type
 
   THDRImage = class(TGLBitmap)
   public
-    { Public Declarations }
+    
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;

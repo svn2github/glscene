@@ -54,7 +54,7 @@ type
     procedure ListBox1Click(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { Private declarations }
+     
     FClassList: TList;
     FCUDA: TGLSCUDA;
     FCurrentDesigner: IDesigner;
@@ -64,7 +64,7 @@ type
       override;
     procedure OnCUDAComponentNameChanged(Sender : TObject);
   public
-    { Public declarations }
+    
     procedure SetCUDAEditorClient(Client: TGLSCUDA; Designer: IDesigner);
 
   end;

@@ -33,7 +33,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //GLS
+  
   GLPersistentClasses,
   GLVectorLists,
   GLVectorGeometry,

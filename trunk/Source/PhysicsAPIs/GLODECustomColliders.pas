@@ -58,7 +58,7 @@ type
      normal. These points are then sorted and the deepest are applied to ODE. }
   TGLODECustomCollider = class(TGLODEBehaviour)
   private
-    { Private Declarations }
+     
     FGeom: PdxGeom;
     FContactList,
       FContactCache: TList;
@@ -71,7 +71,7 @@ type
     FContactColor: TGLColor;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     procedure Finalize; override;
 
@@ -103,7 +103,7 @@ type
     procedure SetContactColor(const Value: TGLColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -134,7 +134,7 @@ type
      and cones. }
   TGLODEHeightField = class(TGLODECustomCollider)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
@@ -142,7 +142,7 @@ type
       var cPos, cNorm: TAffineVector): Boolean; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
 
     class function FriendlyName: string; override;

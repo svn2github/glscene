@@ -25,7 +25,6 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //GLS
   GLVectorGeometry,
   GLVectorTypes,
   GLScene,
@@ -59,7 +58,7 @@ type
 
   // TGLDummyCube
   //
-  {  A simple cube, invisible at run-time. 
+  {  A simple cube, invisible at run-time.
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
     mechanism needs be described, you can use DummyCubes.
@@ -68,7 +67,6 @@ type
     display list (see Amalgamate property). }
   TGLDummyCube = class(TGLCameraInvariantObject)
   private
-    { Private Declarations }
     FCubeSize: TGLFloat;
     FEdgeColor: TGLColor;
     FVisibleAtRunTime, FAmalgamate: Boolean;
@@ -76,19 +74,15 @@ type
     FOnVisibilityDetermination: TGLVisibilityDeterminationEvent;
 
   protected
-    { Protected Declarations }
     procedure SetCubeSize(const val: TGLFloat);
     procedure SetEdgeColor(const val: TGLColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
     procedure SetAmalgamate(const val: Boolean);
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
@@ -99,10 +93,9 @@ type
     function BarycenterAbsolutePosition: TVector; override;
 
   published
-    { Published Declarations }
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
     property EdgeColor: TGLColor read FEdgeColor write SetEdgeColor;
-    {  If true the dummycube's edges will be visible at runtime. 
+    {  If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
@@ -137,12 +130,11 @@ type
 
   // TGLPlane
   //
-  {  A simple plane object. 
+  {  A simple plane object.
     Note that a plane is always made of a single quad (two triangles) and the
     tiling is only applied to texture coordinates. }
   TGLPlane = class(TGLSceneObject)
   private
-    { Private Declarations }
     FXOffset, FYOffset: TGLFloat;
     FXScope, FYScope: TGLFloat;
     FWidth, FHeight: TGLFloat;
@@ -150,7 +142,6 @@ type
     FStyle: TGLPlaneStyles;
     FMesh: array of array of TVertexRec;
   protected
-    { Protected Declarations }
     procedure SetHeight(const aValue: Single);
     procedure SetWidth(const aValue: Single);
     procedure SetXOffset(const Value: TGLFloat);
@@ -164,11 +155,8 @@ type
     procedure SetStyle(const val: TGLPlaneStyles);
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
@@ -179,13 +167,12 @@ type
     {  Computes the screen coordinates of the smallest rectangle encompassing the plane. 
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
-
-    {  Computes the signed distance to the point. 
+    {  Computes the signed distance to the point.
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
 
   published
-    { Public Declarations }
+    
     property Height: TGLFloat read FHeight write SetHeight;
     property Width: TGLFloat read FWidth write SetWidth;
     property XOffset: TGLFloat read FXOffset write SetXOffset;
@@ -199,12 +186,11 @@ type
 
   // TGLSprite
   //
-  {  A rectangular area, perspective projected, but always facing the camera. 
+  {  A rectangular area, perspective projected, but always facing the camera.
     A TGLSprite is perspective projected and as such is scaled with distance,
     if you want a 2D sprite that does not get scaled, see TGLHUDSprite. }
   TGLSprite = class(TGLSceneObject)
   private
-    { Private Declarations }
     FWidth: TGLFloat;
     FHeight: TGLFloat;
     FRotation: TGLFloat;
@@ -212,7 +198,6 @@ type
     FMirrorU, FMirrorV: Boolean;
 
   protected
-    { Protected Declarations }
     procedure SetWidth(const val: TGLFloat);
     procedure SetHeight(const val: TGLFloat);
     procedure SetRotation(const val: TGLFloat);
@@ -222,20 +207,15 @@ type
     procedure SetMirrorV(const val: Boolean);
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
-
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
-
     function AxisAlignedDimensionsUnscaled: TVector; override;
-
     procedure SetSize(const Width, Height: TGLFloat);
-    // : Set width and height to "size"
+    // Set width and height to "size"
     procedure SetSquareSize(const Size: TGLFloat);
 
   published
-    { Published Declarations }
     {  Sprite Width in 3D world units. }
     property Width: TGLFloat read FWidth write SetWidth;
     {  Sprite Height in 3D world units. }
@@ -263,14 +243,13 @@ type
     what each parameter does. }
   TGLPointParameters = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
     FEnabled: Boolean;
     FMinSize, FMaxSize: Single;
     FFadeTresholdSize: Single;
     FDistanceAttenuation: TGLCoordinates;
 
   protected
-    { Protected Declarations }
+    
     procedure SetEnabled(const val: Boolean);
     procedure SetMinSize(const val: Single);
     procedure SetMaxSize(const val: Single);
@@ -282,7 +261,7 @@ type
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -292,7 +271,7 @@ type
     procedure UnApply;
 
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property MinSize: Single read FMinSize write SetMinSize stored False;
     property MaxSize: Single read FMaxSize write SetMaxSize stored False;
@@ -308,7 +287,7 @@ type
     and Colors properties. }
   TGLPoints = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FPositions: TAffineVectorList;
     FColors: TVectorList;
     FSize: Single;
@@ -317,7 +296,7 @@ type
     FStatic, FNoZWrite: Boolean;
 
   protected
-    { Protected Declarations }
+    
     function StoreSize: Boolean;
     procedure SetNoZWrite(const val: Boolean);
     procedure SetStatic(const val: Boolean);
@@ -328,7 +307,7 @@ type
     procedure SetPointParameters(const val: TGLPointParameters);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -339,7 +318,7 @@ type
       If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
     {  Defines the points colors. 
-      
+
        if empty, point color will be opaque white
        if contains a single color, all points will use that color
        if contains N colors, the first N points (at max) will be rendered
@@ -348,7 +327,7 @@ type
     property Colors: TVectorList read FColors write SetColors;
 
   published
-    { Published Declarations }
+    
     {  If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
     {  Tells the component if point coordinates are static. 
@@ -383,23 +362,23 @@ type
     Adds a Color property (TGLColor). }
   TGLLinesNode = class(TGLNode)
   private
-    { Private Declarations }
+     
     FColor: TGLColor;
 
   protected
-    { Protected Declarations }
+    
     procedure SetColor(const val: TGLColor);
     procedure OnColorChange(Sender: TObject);
     function StoreColor: Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
 
     {  The node color. 
       Can also defined the line color (interpolated between nodes) if
@@ -413,7 +392,7 @@ type
     Stores TGLLinesNode items. }
   TGLLinesNodes = class(TGLNodes)
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); overload;
 
     procedure NotifyChange; override;
@@ -425,34 +404,34 @@ type
     Introduces line style properties (width, color...). }
   TGLLineBase = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FLineColor: TGLColor;
     FLinePattern: TGLushort;
     FLineWidth: Single;
     FAntiAliased: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetLineColor(const Value: TGLColor);
     procedure SetLinePattern(const Value: TGLushort);
     procedure SetLineWidth(const val: Single);
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
 
-    {  Setup OpenGL states according to line style. 
+    {  Setup OpenGL states according to line style.
       You must call RestoreLineStyle after drawing your lines. 
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TGLRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange(Sender: TObject); override;
 
   published
-    { Published Declarations }
+    
     {  Indicates if OpenGL should smooth line edges. 
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
@@ -474,7 +453,7 @@ type
     Base class, does not render anything. }
   TGLNodedLines = class(TGLLineBase)
   private
-    { Private Declarations }
+     
     FNodes: TGLLinesNodes;
     FNodesAspect: TGLLineNodesAspect;
     FNodeColor: TGLColor;
@@ -482,7 +461,7 @@ type
     FOldNodeColor: TColorVector;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNodesAspect(const Value: TGLLineNodesAspect);
     procedure SetNodeColor(const Value: TGLColor);
     procedure OnNodeColorChanged(Sender: TObject);
@@ -494,7 +473,7 @@ type
       Color: TGLColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -507,7 +486,7 @@ type
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
-    { Published Declarations }
+    
     {  Default color for nodes.
       lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TGLColor read FNodeColor write SetNodeColor;
@@ -537,7 +516,7 @@ type
     the node aspect that suits you. }
   TGLLines = class(TGLNodedLines)
   private
-    { Private Declarations }
+     
     FDivision: Integer;
     FSplineMode: TGLLineSplineMode;
     FOptions: TGLLinesOptions;
@@ -546,7 +525,7 @@ type
     FNURBSKnots: TSingleList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetSplineMode(const val: TGLLineSplineMode);
     procedure SetDivision(const Value: Integer);
     procedure SetOptions(const val: TGLLinesOptions);
@@ -554,7 +533,7 @@ type
     procedure SetNURBSTolerance(const val: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -567,7 +546,7 @@ type
       write SetNURBSTolerance;
 
   published
-    { Published Declarations }
+    
     {  Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
@@ -589,13 +568,13 @@ type
 
   // TGLCube
   //
-  {  A simple cube object. 
+  {  A simple cube object.
     This cube use the same material for each of its faces, ie. all faces look
     the same. If you want a multi-material cube, use a mesh in conjunction
     with a TGLFreeForm and a material library. }
   TGLCube = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FCubeSize: TAffineVector;
     FParts: TCubeParts;
     FNormalDirection: TNormalDirection;
@@ -604,13 +583,13 @@ type
     procedure SetParts(aValue: TCubeParts);
     procedure SetNormalDirection(aValue: TNormalDirection);
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     function GenerateSilhouette(const silhouetteParameters
@@ -623,7 +602,7 @@ type
       intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
 
   published
-    { Published Declarations }
+    
     property CubeWidth: TGLFloat index 0 read GetCubeWHD write SetCubeWHD
       stored False;
     property CubeHeight: TGLFloat index 1 read GetCubeWHD write SetCubeWHD
@@ -650,12 +629,12 @@ type
     math is part of the GLU library). }
   TGLQuadricObject = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FNormals: TNormalSmoothing;
     FNormalDirection: TNormalDirection;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormals(aValue: TNormalSmoothing);
     procedure SetNormalDirection(aValue: TNormalDirection);
     procedure SetupQuadricParams(quadric: PGLUquadricObj);
@@ -663,12 +642,12 @@ type
     procedure SetInvertedQuadricOrientation(quadric: PGLUquadricObj);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property Normals: TNormalSmoothing read FNormals write SetNormals default nsSmooth;
     property NormalDirection: TNormalDirection read FNormalDirection write SetNormalDirection default ndOutside;
   end;
@@ -684,7 +663,7 @@ type
     of sphere. }
   TGLSphere = class(TGLQuadricObject)
   private
-    { Private Declarations }
+     
     FRadius: TGLFloat;
     FSlices, FStacks: TGLInt;
     FTop: TAngleLimit1;
@@ -703,7 +682,7 @@ type
     procedure SetTopCap(aValue: TCapType);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -716,7 +695,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
   published
-    { Published Declarations }
+    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
@@ -734,12 +713,12 @@ type
   {  Base class for objects based on a polygon. }
   TGLPolygonBase = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FDivision: Integer;
     FSplineMode: TGLLineSplineMode;
 
   protected
-    { Protected Declarations }
+
     FNodes: TGLNodes;
     procedure CreateNodes; dynamic;
     procedure SetSplineMode(const val: TGLLineSplineMode);
@@ -747,7 +726,7 @@ type
     procedure SetNodes(const aNodes: TGLNodes);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -759,7 +738,7 @@ type
     procedure AddNode(const Value: TAffineVector); overload;
 
   published
-    { Published Declarations }
+    
     {  The nodes list.  }
     property Nodes: TGLNodes read FNodes write SetNodes;
     {  Number of divisions for each segment in spline modes. 
@@ -779,7 +758,7 @@ type
     as well as being just a slice of Superellipsoid. }
   TGLSuperellipsoid = class(TGLQuadricObject)
   private
-    { Private Declarations }
+     
     FRadius, FVCurve, FHCurve: TGLFloat;
     FSlices, FStacks: TGLInt;
     FTop: TAngleLimit1;
@@ -799,7 +778,7 @@ type
     procedure SetTop(aValue: TAngleLimit1);
     procedure SetTopCap(aValue: TCapType);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -812,7 +791,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
   published
-    { Published Declarations }
+    
     property Bottom: TAngleLimit1 read FBottom write SetBottom default -90;
     property BottomCap: TCapType read FBottomCap write SetBottomCap
       default ctNone;
@@ -854,8 +833,8 @@ uses
 const
   cDefaultPointSize: Single = 1.0;
 
-  // CubeWireframeBuildList
-  //
+// CubeWireframeBuildList
+//
 
 procedure CubeWireframeBuildList(var rci: TGLRenderContextInfo; Size: TGLFloat;
   Stipple: Boolean; const Color: TColorVector);

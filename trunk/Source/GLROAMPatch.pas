@@ -46,7 +46,7 @@ type
   //
   TGLROAMPatch = class(TObject)
   private
-    { Private Declarations }
+     
     FID: Integer;
     FHeightData: TGLHeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
@@ -71,7 +71,7 @@ type
     FContourWidth: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure SetHeightData(Val: TGLHeightData);
     procedure SetOcclusionSkip(Val: Integer);
 
@@ -81,7 +81,7 @@ type
       VertexIndices: TIntegerList; TexCoords: TTexPointList);
 
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
 

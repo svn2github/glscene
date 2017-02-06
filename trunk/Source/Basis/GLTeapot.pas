@@ -16,7 +16,7 @@ interface
 uses
   Winapi.OpenGL,
   System.Classes,
-  //GLS
+  
   GLScene,
   GLVectorGeometry,
   GLContext,
@@ -31,11 +31,11 @@ type
      The only use of this object is as placeholder for testing... }
   TGLTeapot = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FGrid: Cardinal;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;

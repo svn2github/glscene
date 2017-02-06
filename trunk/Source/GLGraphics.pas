@@ -210,14 +210,14 @@ type
        as for directly drawing/reading from the current OpenGL buffer. }
   TGLImage = class(TGLBaseImage)
   private
-    { Private Declarations }
+     
     FVerticalReverseOnAssignFromBitmap: Boolean;
     FBlank: boolean;
     fOldColorFormat: Cardinal;
     fOldDataType: Cardinal;
     procedure DataConvertTask;
   protected
-    { Protected Declarations }
+    
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
     procedure SetDepth(const val: Integer);
@@ -233,7 +233,7 @@ type
     procedure AssignFromPngImage(aPngImage: TPngImage);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
     {Accepts TGLImage and TGraphic subclasses. }
@@ -361,7 +361,7 @@ type
   {Stores registered raster file formats. }
   TRasterFileFormatsList = class(TPersistentObjectList)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:

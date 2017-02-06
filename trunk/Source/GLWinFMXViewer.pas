@@ -37,7 +37,7 @@ type
 
   TGLSceneViewport = class(TControl)
   private
-    { Private Declarations }
+     
     FGLSBuffer: TGLSceneBuffer;
     FFMXBuffer: TBitmap;
     FFMXContext: TContext3D;
@@ -55,16 +55,16 @@ type
     procedure SetAfterRender(const Value: TNotifyEvent);
     function GetAfterRender: TNotifyEvent;
   protected
-    { Protected Declarations }
+    
     procedure Paint; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     //procedure Realign; override; - E2179, removed override;
     procedure Realign;
   published
-    { Published Declarations }
+    
 
     { Triggered before the scene's objects get rendered.
        You may use this event to execute your own OpenGL rendering. }

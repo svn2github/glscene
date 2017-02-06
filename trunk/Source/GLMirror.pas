@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  
   OpenGLTokens,
   OpenGLAdapter,
   GLScene,
@@ -59,7 +59,7 @@ type
      materials/mirror demo before using this component. }
   TGLMirror = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FRendering: Boolean;
     FMirrorObject: TGLBaseSceneObject;
     FWidth, FHeight: Single;
@@ -71,7 +71,7 @@ type
     FSlices: Integer; //ORL
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetMirrorObject(const val: TGLBaseSceneObject);
@@ -88,7 +88,7 @@ type
     function GetSlices: Integer; //ORL
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure DoRender(var ARci: TGLRenderContextInfo;
@@ -99,7 +99,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
   published
-    { Public Declarations }
+    
     { Selects the object to mirror. If nil, the whole scene is mirrored. }
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;

@@ -43,20 +43,20 @@ type
      the color. }
   TGLColorProxy = class(TGLProxyObject)
   private
-    { Private Declarations }
+     
     FFrontColor: TGLFaceProperties;
     function GetMasterMaterialObject: TGLCustomSceneObject;
     procedure SetMasterMaterialObject(const Value: TGLCustomSceneObject);
     procedure SetFrontColor(AValue: TGLFaceProperties);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
   published
-    { Published Declarations }
+    
     property FrontColor: TGLFaceProperties read FFrontColor write
       SetFrontColor;
     // Redeclare as TGLCustomSceneObject.
@@ -71,7 +71,7 @@ type
      a material library. }
   TGLMaterialProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+     
     FTempLibMaterialName: string;
     FMasterLibMaterial: TGLLibMaterial;
     FMaterialLibrary: TGLMaterialLibrary;
@@ -83,7 +83,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
@@ -97,7 +97,7 @@ type
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write
       FMasterLibMaterial stored False;
   published
-    { Published Declarations }
+    
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     {Specifies the Material, that current master object will use. }
@@ -116,10 +116,10 @@ type
     function GetMasterFreeFormObject: TGLFreeForm;
     procedure SetMasterFreeFormObject(const Value: TGLFreeForm);
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
 
     {If the MasterObject is a FreeForm, you can raycast against the Octree,
        which is alot faster.  You must build the octree before using. }
@@ -132,7 +132,7 @@ type
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
   published
-    { Published Declarations }
+    
    // Redeclare as TGLFreeForm.
     property MasterObject: TGLFreeForm read GetMasterFreeFormObject write
       SetMasterFreeFormObject;
@@ -157,7 +157,7 @@ type
   {A proxy object specialized for Actors.  }
   TGLActorProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+     
     FCurrentFrame: Integer;
     FStartFrame: Integer;
     FEndFrame: Integer;
@@ -188,11 +188,11 @@ type
     procedure SetStoredBoneNames(const Value: TStrings);
     procedure SetOnBeforeRender(const Value: TGLProgressEvent);
   protected
-    { Protected Declarations }
+    
     procedure DoStoreBonesMatrices;
       // stores matrices of bones of the current frame rendered
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -229,7 +229,7 @@ type
       intersectNormal: PVector = nil): Boolean; overload;
 
   published
-    { Published Declarations }
+    
     property AnimationMode: TGLActorProxyAnimationMode read FAnimationMode write
       FAnimationMode default pamInherited;
     property Animation: TGLActorAnimationName read FAnimation write SetAnimation;

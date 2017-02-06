@@ -31,7 +31,7 @@ type
 
   TGLTGAImage = class(TGLBaseImage)
   public
-    { Public Declarations }
+    
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;

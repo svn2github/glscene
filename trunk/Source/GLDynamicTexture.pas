@@ -20,7 +20,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   OpenGLTOkens,
   GLContext,
   GLTexture,

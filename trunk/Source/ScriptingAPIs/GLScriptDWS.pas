@@ -40,13 +40,13 @@ type
      abstracted GLScriptBase . }
   TGLScriptDWS = class(TGLScriptBase)
     private
-      { Private Declarations }
+       
       FDWSProgram : TProgram;
       FCompiler : TGLDelphiWebScript;
       FCompilerName : String;
 
     protected
-      { Protected Declarations }
+      
       procedure SetCompiler(const Value : TGLDelphiWebScriptII);
 
       procedure ReadFromFiler(reader : TReader); override;
@@ -57,7 +57,7 @@ type
       function GetState : TGLScriptState; override;
 
     public
-      { Public Declarations }
+      
       destructor Destroy; override;
 
       procedure Assign(Source: TPersistent); override;
@@ -77,7 +77,7 @@ type
       property DWS2Program : TProgram read FDWS2Program;
 
     published
-      { Published Declarations }
+      
       property Compiler : TGLDelphiWebScriptII read FCompiler write SetCompiler;
 
   end;

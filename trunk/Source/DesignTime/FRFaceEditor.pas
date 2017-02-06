@@ -43,7 +43,7 @@ type
     procedure TBEShininessTrackBarChange(Sender: TObject);
 
   private
-    { Private declarations }
+     
     FOnChange: TNotifyEvent;
     Updating: Boolean;
     FFaceProperties: TGLFaceProperties;
@@ -51,7 +51,7 @@ type
     procedure OnColorChange(Sender: TObject);
 
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 

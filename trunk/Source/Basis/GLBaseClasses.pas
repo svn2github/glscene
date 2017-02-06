@@ -15,7 +15,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLStrings,
   GLPersistentClasses,
   GLCrossPlatform;
@@ -50,13 +50,13 @@ type
   {An abstract class describing the "update" interface.  }
   TGLUpdateAbleObject = class(TGLInterfacedPersistent, IGLNotifyAble)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
     FUpdating: Integer;
     FOnNotifyChange: TNotifyEvent;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); virtual;
 
     procedure NotifyChange(Sender: TObject); virtual;
@@ -76,7 +76,7 @@ type
   {A base class describing the "cadenceing" interface.  }
   TGLCadenceAbleComponent = class(TGLComponent, IGLProgessAble)
   public
-    { Public Declarations }
+    
     procedure DoProgress(const progressTime: TProgressTimes); virtual;
   end;
 
@@ -85,7 +85,7 @@ type
   {A base class describing the "update" interface.  }
   TGLUpdateAbleComponent = class(TGLCadenceAbleComponent, IGLNotifyAble)
   public
-    { Public Declarations }
+    
     procedure NotifyChange(Sender: TObject); virtual;
   end;
 
@@ -93,15 +93,15 @@ type
   //
   TGLNotifyCollection = class(TOwnedCollection)
   private
-    { Private Declarations }
+     
     FOnNotifyChange: TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure Update(item: TCollectionItem); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent; AItemClass: TCollectionItemClass);
     property OnNotifyChange: TNotifyEvent read FOnNotifyChange write FOnNotifyChange;
   end;

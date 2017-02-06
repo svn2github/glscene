@@ -54,7 +54,7 @@ type
       Stores TLineNode items. }
    TLineNodes = class(TGLNodes)
    public
-     { Public Declarations }
+     
      constructor Create(AOwner : TComponent); overload;
      destructor destroy; override;
      procedure NotifyChange; override;

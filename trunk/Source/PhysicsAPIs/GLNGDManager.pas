@@ -168,7 +168,7 @@ type
   TGLNGDManager = class(TComponent)
 
   strict private
-    { Private Declarations }
+     
     FVisible: Boolean; // Show Debug at design time
     FVisibleAtRunTime: Boolean; // Show Debug at run time
     FDllVersion: Integer;
@@ -212,13 +212,13 @@ type
     procedure NotifyChange(Sender: TObject); // Debug view
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Step(deltatime: Single);
 
   published
-    { Published Declarations }
+    
 
     property Visible: Boolean read FVisible write SetVisible default True;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write
@@ -271,7 +271,7 @@ type
     FNGDSurfaceItem: TGLNGDSurfaceItem;
     FHeightFieldOptions: TGLNGDHeightField;
   protected
-    { Protected Declarations }
+    
     procedure Initialize; virtual;
     procedure Finalize; virtual;
     procedure WriteToFiler(writer: TWriter); override;
@@ -315,7 +315,7 @@ type
       buffer: Pointer; size: Cardinal); static; cdecl;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Reinitialize;
@@ -330,7 +330,7 @@ type
       SetHeightFieldOptions;
 
   published
-    { Published Declarations }
+    
     property Manager: TGLNGDManager read FManager write SetManager;
     property ContinuousCollisionMode
       : Boolean read FContinuousCollisionMode write
@@ -350,7 +350,7 @@ type
 
   TGLNGDDynamic = class(TGLNGDBehaviour)
   strict private
-    { Private Declarations }
+     
     FAABBmin: TGLCoordinates;
     FAABBmax: TGLCoordinates;
     FForce: TGLCoordinates;
@@ -378,7 +378,7 @@ type
     function StoredLinearDamping: Boolean;
     function StoredNullCollisionVolume: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetAutoSleep(const Value: Boolean);
     procedure SetLinearDamping(const Value: Single);
     procedure SetDensity(const Value: Single); virtual;
@@ -405,7 +405,7 @@ type
 
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure AddImpulse(const veloc, pointposit: TVector);
@@ -420,7 +420,7 @@ type
     property Velocity: TVector read GetVelocity write SetVelocity;
     property Omega: TVector read GetOmega write SetOmega;
   published
-    { Published Declarations }
+    
     property Force: TGLCoordinates read FForce write FForce;
     property Torque: TGLCoordinates read FTorque write FTorque;
     property CenterOfMass
@@ -450,18 +450,18 @@ type
 
   TGLNGDStatic = class(TGLNGDBehaviour)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
     procedure Render; override;
 
   public
-    { Public Declarations }
+    
     class function FriendlyName: string; override;
 
   published
-    { Published Declarations }
+    
   end;
 
   TGLNGDSurfaceItem = class(TCollectionItem)

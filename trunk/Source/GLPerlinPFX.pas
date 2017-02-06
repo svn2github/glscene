@@ -37,7 +37,7 @@ type
     intensity and a perlin noise. }
   TGLPerlinPFXManager = class(TGLBaseSpritePFXManager)
   private
-    { Private Declarations }
+     
     FTexMapSize: Integer;
     FNoiseSeed: Integer;
     FNoiseScale: Integer;
@@ -46,7 +46,7 @@ type
     FBrightness, FGamma: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure PrepareImage(bmp32: TGLBitmap32; var texFormat: Integer);
       override;
 
@@ -59,12 +59,12 @@ type
     procedure SetGamma(const val: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     { Underlying texture map size, as a power of two.
       Min value is 3 (size=8), max value is 9 (size=512). }
     property TexMapSize: Integer read FTexMapSize write SetTexMapSize default 6;

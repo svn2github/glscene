@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  
   OpenGLTokens,
   GLContext,
   GLTexture,
@@ -32,7 +32,7 @@ type
   //
   TGLMultisampleImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     FBitmap: TGLBitmap32;
     FSamplesCount: Integer;
     FWidth, FHeight, FDepth: Integer;
@@ -43,13 +43,13 @@ type
     procedure SetSamplesCount(val: Integer);
     procedure SetFixedSamplesLocation(val: Boolean);
   protected
-    { Protected Declarations }
+    
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -68,7 +68,7 @@ type
     property NativeTextureTarget;
 
   published
-    { Published Declarations }
+    
     {Width of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     {Width of the blank image (for memory allocation). }

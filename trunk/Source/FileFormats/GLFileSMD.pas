@@ -34,7 +34,7 @@ type
       (the one with mesh data) be read first. }
    TGLSMDVectorFile = class(TGLVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TGLDataFileCapabilities; override;
 
          procedure LoadFromStream(aStream : TStream); override;

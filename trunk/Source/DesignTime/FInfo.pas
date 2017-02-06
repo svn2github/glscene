@@ -28,7 +28,7 @@ uses
   Vcl.Graphics,
   Vcl.Menus,
   Vcl.Imaging.jpeg,
-  //GLS
+  
   GLScene,
   GLWin32Viewer,
   GLContext,

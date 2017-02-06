@@ -40,9 +40,9 @@ type
     procedure LBMaterialsKeyPress(Sender: TObject; var Key: Char);
     procedure LBMaterialsDblClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+    
     function Execute(var materialName: TGLLibMaterialName;
       materialLibrary: TGLAbstractMaterialLibrary): Boolean;
   end;

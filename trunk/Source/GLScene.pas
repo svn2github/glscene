@@ -22,7 +22,7 @@ uses
   System.Math,
   Vcl.Graphics,
   Vcl.Controls,
-  //GLS
+  
   OpenGLTokens,
   GLStrings,
   GLContext,
@@ -188,7 +188,7 @@ type
 
   TGLBaseSceneObject = class(TGLCoordinatesUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FAbsoluteMatrix, FInvAbsoluteMatrix: PMatrix;
     FLocalMatrix: PMatrix;
     FObjectStyle: TGLObjectStyles;
@@ -264,7 +264,7 @@ type
     procedure SetAbsoluteMatrix(const Value: TMatrix);
     procedure SetBBChanges(const Value: TObjectBBChanges);
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
     procedure SetScene(const Value: TGLScene); virtual;
 
@@ -318,7 +318,7 @@ type
     procedure CalculateBoundingBoxPersonalUnscaled(var ANewBoundingBox:
       THmgBoundingBox); virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     constructor CreateAsChild(aParentOwner: TGLBaseSceneObject);
     destructor Destroy; override;
@@ -661,7 +661,7 @@ type
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    { Published Declarations }
+    
     property TagFloat: Single read FTagFloat write FTagFloat;
 
   end;
@@ -690,7 +690,7 @@ type
       }
   TGLBaseBehaviour = class(TGLXCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure SetName(const val: string); override;
 
     {Override this function to write subclass data. }
@@ -703,7 +703,7 @@ type
     function OwnerBaseSceneObject: TGLBaseSceneObject;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -730,11 +730,11 @@ type
      be TGLBehaviour subclasses. }
   TGLBehaviours = class(TGLXCollection)
   protected
-    { Protected Declarations }
+    
     function GetBehaviour(index: Integer): TGLBehaviour;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
@@ -768,14 +768,14 @@ type
 
   TGLObjectEffect = class(TGLBaseBehaviour)
   protected
-    { Protected Declarations }
+    
     {Override this function to write subclass data. }
     procedure WriteToFiler(writer: TWriter); override;
     {Override this function to read subclass data. }
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+    
     procedure Render(var rci: TGLRenderContextInfo); virtual;
   end;
 
@@ -806,11 +806,11 @@ type
      This object expects itself to be owned by a TGLBaseSceneObject.  }
   TGLObjectEffects = class(TGLXCollection)
   protected
-    { Protected Declarations }
+    
     function GetEffect(index: Integer): TGLObjectEffect;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TPersistent); override;
 
     function GetNamePath: string; override;
@@ -835,12 +835,12 @@ type
      see TGLMaterial. }
   TGLCustomSceneObject = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FMaterial: TGLMaterial;
     FHint: string;
 
   protected
-    { Protected Declarations }
+    
     function Blended: Boolean; override;
 
     procedure SetGLMaterial(AValue: TGLMaterial);
@@ -848,7 +848,7 @@ type
     procedure Loaded; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -869,7 +869,7 @@ type
      only take cares of disabling the build list. }
   TGLSceneRootObject = class(TGLBaseSceneObject)
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
   end;
 
@@ -882,12 +882,12 @@ type
      have no material of their own. }
   TGLImmaterialSceneObject = class(TGLCustomSceneObject)
   public
-    { Public Declarations }
+    
     procedure DoRender(var ARci: TGLRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     property ObjectsSorting;
     property VisibilityCulling;
     property Direction;
@@ -915,18 +915,18 @@ type
      (object always has same orientation as camera). }
   TGLCameraInvariantObject = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FCamInvarianceMode: TGLCameraInvarianceMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCamInvarianceMode(const val: TGLCameraInvarianceMode);
 
     property CamInvarianceMode: TGLCameraInvarianceMode read FCamInvarianceMode
       write SetCamInvarianceMode;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -940,7 +940,7 @@ type
      Publishes the Material property. }
   TGLSceneObject = class(TGLCustomSceneObject)
   published
-    { Published Declarations }
+    
     property Material;
     property ObjectsSorting;
     property VisibilityCulling;
@@ -976,18 +976,18 @@ type
      states. }
   TGLDirectOpenGL = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FUseBuildList: Boolean;
     FOnRender: TGLDirectRenderEvent;
     FBlend: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetUseBuildList(const val: Boolean);
     function Blended: Boolean; override;
     procedure SetBlend(const val: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -995,7 +995,7 @@ type
 
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    { Published Declarations }
+    
     {Specifies if a build list be made. 
        If True, GLScene will generate a build list (OpenGL-side cache),
        ie. OnRender will only be invoked once for the first render, or after
@@ -1025,15 +1025,15 @@ type
      Callbacks must be explicitly unregistered. }
   TGLRenderPoint = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FCallBacks: array of TGLDirectRenderEvent;
     FFreeCallBacks: array of TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
@@ -1044,7 +1044,7 @@ type
     procedure Clear;
 
   published
-    { Published Declarations }
+    
   end;
 
   // TGLProxyObject
@@ -1055,12 +1055,12 @@ type
      Use it for duplicates of an object. }
   TGLProxyObject = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FMasterObject: TGLBaseSceneObject;
     FProxyOptions: TGLProxyObjectOptions;
 
   protected
-    { Protected Declarations }
+    
     FRendering: Boolean;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -1069,7 +1069,7 @@ type
     procedure SetProxyOptions(const val: TGLProxyObjectOptions);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1087,7 +1087,7 @@ type
       TGLSilhouetteParameters): TGLSilhouette; override;
 
   published
-    { Published Declarations }
+    
     {Specifies the Master object which will be proxy'ed. }
     property MasterObject: TGLBaseSceneObject read FMasterObject write
       SetMasterObject;
@@ -1141,7 +1141,7 @@ type
      like lightmapping. }
   TGLLightSource = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FLightID: Cardinal;
     FSpotDirection: TGLCoordinates;
     FSpotExponent, FSpotCutOff: Single;
@@ -1151,7 +1151,7 @@ type
     FLightStyle: TGLLightStyle;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAmbient(AValue: TGLColor);
     procedure SetDiffuse(AValue: TGLColor);
     procedure SetSpecular(AValue: TGLColor);
@@ -1165,7 +1165,7 @@ type
     procedure SetLightStyle(const val: TGLLightStyle);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TGLRenderContextInfo;
@@ -1184,7 +1184,7 @@ type
     function Attenuated: Boolean;
 
   published
-    { Published Declarations }
+    
     property Ambient: TGLColor read FAmbient write SetAmbient;
     property ConstAttenuation: Single read FConstAttenuation write
       SetConstAttenuation;
@@ -1226,7 +1226,7 @@ type
      defining a point of view and optical characteristics. }
   TGLCamera = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FFocalLength: Single;
     FDepthOfView: Single;
     FNearPlane: Single; // nearest distance to the camera
@@ -1243,7 +1243,7 @@ type
     FFOVY, FFOVX: Double;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetTargetObject(const val: TGLBaseSceneObject);
@@ -1257,7 +1257,7 @@ type
     function StoreNearPlaneBias: Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1352,7 +1352,7 @@ type
     dimension (width or height). }
     procedure SetFieldOfView(const AFieldOfView, AViewportDimension: single);
   published
-    { Published Declarations }
+    
     {Depth of field/view. 
        Adjusts the maximum distance, beyond which objects will be clipped
        (ie. not visisble). 
@@ -1432,7 +1432,7 @@ type
      at runtime, use the AddNewChild method of TGLBaseSceneObject. }
   TGLScene = class(TGLUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FUpdateCount: Integer;
     FObjects: TGLSceneRootObject;
     FBaseContext: TGLContext; //reference, not owned!
@@ -1447,7 +1447,7 @@ type
     FInitializableObjects: TGLInitializableObjectList;
 
   protected
-    { Protected Declarations }
+    
     procedure AddLight(aLight: TGLLightSource);
     procedure RemoveLight(aLight: TGLLightSource);
     //: Adds all lights in the subtree (anObj included)
@@ -1462,7 +1462,7 @@ type
 
     procedure ReadState(Reader: TReader); override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1517,7 +1517,7 @@ type
       FInitializableObjects;
     property CurrentDeltaTime: Double read FCurrentDeltaTime;
   published
-    { Published Declarations }
+    
     {Defines default ObjectSorting option for scene objects. }
     property ObjectsSorting: TGLObjectsSorting read FObjectsSorting write
       SetObjectsSorting default osRenderBlendedLast;
@@ -1552,7 +1552,7 @@ type
      intensity is used for blending to a fixed color. }
   TGLFogEnvironment = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FSceneBuffer: TGLSceneBuffer;
     FFogColor: TGLColor; // alpha value means the fog density
     FFogStart, FFogEnd: Single;
@@ -1560,7 +1560,7 @@ type
     FFogDistance: TFogDistance;
 
   protected
-    { Protected Declarations }
+    
     procedure SetFogColor(Value: TGLColor);
     procedure SetFogStart(Value: Single);
     procedure SetFogEnd(Value: Single);
@@ -1568,7 +1568,7 @@ type
     procedure SetFogDistance(const val: TFogDistance);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -1578,7 +1578,7 @@ type
     function IsAtDefaultValues: Boolean;
 
   published
-    { Published Declarations }
+    
     {Color of the fog when it is at 100% intensity. }
     property FogColor: TGLColor read FFogColor write SetFogColor;
     {Minimum distance for fog, what is closer is not affected. }
@@ -1617,7 +1617,7 @@ type
   {Encapsulates an OpenGL frame/rendering buffer.  }
   TGLSceneBuffer = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     // Internal state
     FRendering: Boolean;
     FRenderingContext: TGLContext;
@@ -1673,7 +1673,7 @@ type
     procedure SetLayer(const Value: TGLContextLayer);
 
   protected
-    { Protected Declarations }
+    
     procedure SetBackgroundColor(AColor: TColor);
     procedure SetBackgroundAlpha(alpha: Single);
     procedure SetAmbientColor(AColor: TGLColor);
@@ -1711,7 +1711,7 @@ type
       FOnPrepareGLContext;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -1939,7 +1939,7 @@ type
     property Layer: TGLContextLayer read FLayer write SetLayer
       default clMainPlane;
   published
-    { Published Declarations }
+    
     {Fog environment options. 
        See TGLFogEnvironment. }
     property FogEnvironment: TGLFogEnvironment read FFogEnvironment write
@@ -2045,7 +2045,7 @@ type
      or full-screen viewers. }
   TGLNonVisualViewer = class(TComponent)
   private
-    { Private Declarations }
+     
     FBuffer: TGLSceneBuffer;
     FWidth, FHeight: Integer;
     FCubeMapRotIdx: Integer;
@@ -2054,7 +2054,7 @@ type
     //FCreateTexture : Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -2074,7 +2074,7 @@ type
     procedure DoBufferStructuralChange(Sender: TObject); virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -2102,7 +2102,7 @@ type
       zNear: Single = 0;
       zFar: Single = 0);
   published
-    { Public Declarations }
+    
     {Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
 
@@ -2133,15 +2133,15 @@ type
      WGL_ARB_pbuffer extension (indirectly). }
   TGLMemoryViewer = class(TGLNonVisualViewer)
   private
-    { Private Declarations }
+     
     FBufferCount: integer;
     procedure SetBufferCount(const Value: integer);
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure InstantiateRenderingContext;
@@ -2149,7 +2149,7 @@ type
     procedure Render(baseObject: TGLBaseSceneObject = nil); override;
 
   published
-    { Public Declarations }
+    
     {Set BufferCount > 1 for multiple render targets.  
        Users should check if the corresponding extension (GL_ATI_draw_buffers)
        is supported. Current hardware limit is BufferCount = 4. }

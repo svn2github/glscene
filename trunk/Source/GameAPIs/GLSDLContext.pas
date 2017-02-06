@@ -18,7 +18,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   OpenGLAdapter,
   GLContext,
   GLSDLWindow,
@@ -35,14 +35,14 @@ type
      Will also close the application when the window is closed! }
   TGLSDLViewer = class(TGLNonVisualViewer)
   private
-    { Private Declarations }
+     
     FCaption: string;
     FOnSDLEvent: TGLSDLEvent;
     FOnEventPollDone: TNotifyEvent;
     FOnResize: TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCaption(const val: string);
 
     procedure DoOnOpen(sender: TObject);
@@ -55,7 +55,7 @@ type
     procedure PrepareGLContext; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -64,7 +64,7 @@ type
     function Active: Boolean;
 
   published
-    { Public Declarations }
+    
     property Caption: string read FCaption write SetCaption;
 
     property OnResize: TNotifyEvent read FOnResize write FOnResize;
@@ -87,12 +87,12 @@ type
       }
   TGLSDLContext = class(TGLScreenControlingContext)
   private
-    { Private Declarations }
+     
     FSDLWin: TGLSDLWindow;
     FSimulatedValidity: Boolean; // Hack around SDL's post-notified destruction of context
 
   protected
-    { Protected Declarations }
+    
     procedure DoCreateContext(outputDevice: HDC); override;
     procedure DoCreateMemoryContext(outputDevice: HWND; width, height: Integer; BufferCount: integer); override;
     function DoShareLists(aContext: TGLContext): Boolean; override;
@@ -101,7 +101,7 @@ type
     procedure DoDeactivate; override;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 

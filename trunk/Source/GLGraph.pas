@@ -18,7 +18,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLScene,
   OpenGLTokens,
   GLContext,
@@ -39,21 +39,21 @@ type
   //
   TGLSamplingScale = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FMin: Single;
     FMax: Single;
     FOrigin: Single;
     FStep: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMin(const val: Single);
     procedure SetMax(const val: Single);
     procedure SetOrigin(const val: Single);
     procedure SetStep(const val: Single);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -72,7 +72,7 @@ type
       SamplingEnabled: Boolean = True);
 
   published
-    { Published Declarations }
+    
     property Min: Single read FMin write SetMin;
     property Max: Single read FMax write SetMax;
     property Origin: Single read FOrigin write SetOrigin;
@@ -107,7 +107,7 @@ type
     point may have an additionnal color and texture coordinate. }
   TGLHeightField = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FOnGetHeight: TGLHeightFieldGetHeightEvent;
     FOnGetHeight2: TGLHeightFieldGetHeight2Event;
     FXSamplingScale: TGLSamplingScale;
@@ -117,7 +117,7 @@ type
     FColorMode: TGLHeightFieldColorMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetXSamplingScale(const val: TGLSamplingScale);
     procedure SetYSamplingScale(const val: TGLSamplingScale);
     procedure SetOptions(const val: TGLHeightFieldOptions);
@@ -131,7 +131,7 @@ type
       var Color: TColorVector; var texPoint: TTexPoint);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -142,7 +142,7 @@ type
     property TriangleCount: Integer read FTriangleCount;
 
   published
-    { Published Declarations }
+    
     property XSamplingScale: TGLSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TGLSamplingScale read FYSamplingScale
@@ -184,7 +184,7 @@ type
     Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
   private
-    { Private Declarations }
+     
     FXSamplingScale: TGLSamplingScale;
     FYSamplingScale: TGLSamplingScale;
     FZSamplingScale: TGLSamplingScale;
@@ -192,7 +192,7 @@ type
     FLinesStyle: TGLXYZGridLinesStyle;
 
   protected
-    { Protected Declarations }
+    
     procedure SetXSamplingScale(const val: TGLSamplingScale);
     procedure SetYSamplingScale(const val: TGLSamplingScale);
     procedure SetZSamplingScale(const val: TGLSamplingScale);
@@ -201,7 +201,7 @@ type
     procedure SetLinesSmoothing(const val: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -210,7 +210,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
 
   published
-    { Published Declarations }
+    
     property XSamplingScale: TGLSamplingScale read FXSamplingScale
       write SetXSamplingScale;
     property YSamplingScale: TGLSamplingScale read FYSamplingScale

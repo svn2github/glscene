@@ -54,11 +54,11 @@ type
   //
   TCharStyle = class(TPersistent)
   private
-    { Private Declarations }
+     
     FTextColor, FBkColor: TColor;
     FStyle: TFontStyles;
   published
-    { Published Declarations }
+    
     property TextColor: TColor read FTextColor write FTextColor;
     property BkColor: TColor read FBkColor write FBkColor;
     property Style: TFontStyles read FStyle write FStyle;
@@ -69,7 +69,7 @@ type
 
   TStyleList = class(TList)
   private
-    { Private Declarations }
+     
     procedure CheckRange(Index: integer);
     function GetTextColor(Index: Integer): TColor;
     procedure SetTextColor(Index: Integer; Value: TColor);
@@ -78,13 +78,13 @@ type
     function GetStyle(Index: Integer): TFontStyles;
     procedure SetStyle(Index: Integer; Value: TFontStyles);
   protected
-    { Protected Declarations }
+    
     property TextColor[Index: Integer]: TColor read GetTextColor write
     SetTextColor;
     property BkColor[Index: Integer]: TColor read GetBkColor write SetBkColor;
     property Style[Index: Integer]: TFontStyles read GetStyle write SetStyle;
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
     procedure Clear; override;
     procedure Delete(Index: Integer);
@@ -98,7 +98,7 @@ type
 
   TGLAbstractMemoObject = class(TObject)
   public
-    { Public Declarations }
+    
     function MouseDown(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
       Boolean; virtual; abstract;
     function MouseUp(Button: TMouseButton; Shift: TShiftState; X, Y: Integer):
@@ -114,7 +114,7 @@ type
 
   TGLSMemoAbstractScrollableObject = class(TCustomControl)
   protected
-    { Protected Declarations }
+    
     procedure DoScroll(Sender: TGLSMemoScrollBar; ByValue: integer);
       virtual; abstract;
     procedure DoScrollPage(Sender: TGLSMemoScrollBar; ByValue: integer);
@@ -138,7 +138,7 @@ type
 
   TGLSMemoScrollBar = class(TGLAbstractMemoObject)
   private
-    { Private Declarations }
+     
     FKind: TScrollBarKind;
     FParent: TGLSMemoAbstractScrollableObject;
     FLeft, FTop, FWidth, FHeight: integer;
@@ -156,7 +156,7 @@ type
     function GetPgBackRect: TRect;
     function GetPgForwardRect: TRect;
   public
-    { Public Declarations }
+    
     constructor Create(AParent: TGLSMemoAbstractScrollableObject;
       AKind: TScrollBarKind);
     procedure PaintTo(ACanvas: TCanvas);
@@ -194,7 +194,7 @@ type
 
   TGLSMemoStrings = class(TStringList)
   private
-    { Private Declarations }
+     
     FMemo: TGLSCustomMemo;
     FLockCount: integer;
     FDeleting: Boolean;
@@ -212,7 +212,7 @@ type
     function GetCharAttrs(Index: Integer): string;
     procedure SetCharAttrs(Index: Integer; Value: string);
   protected
-    { Protected Declarations }
+    
     function GetObject(Index: Integer): TObject; override;
     procedure PutObject(Index: Integer; AObject: TObject); override;
     procedure SetUpdateState(Updating: Boolean); override;
@@ -229,7 +229,7 @@ type
     property CharAttrs[Index: integer]: string read GetCharAttrs write
     SetCharAttrs;
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
     procedure Clear; override;
     function DoAdd(const S: string): Integer;
@@ -249,18 +249,18 @@ type
 
   TGLSMemoGutter = class(TObject)
   private
-    { Private Declarations }
+     
     FMemo: TGLSCustomMemo;
     FLeft, FTop, FWidth, FHeight: integer;
     FColor: TColor;
     procedure SetParams(Index: integer; Value: integer);
     function GetRect: TRect;
   protected
-    { Protected Declarations }
+    
     procedure PaintTo(ACanvas: TCanvas);
     procedure Invalidate;
   public
-    { Public Declarations }
+    
     property Left: integer index 0 read FLeft write SetParams;
     property Top: integer index 1 read FTop write SetParams;
     property Width: integer index 2 read FWidth write SetParams;
@@ -273,13 +273,13 @@ type
 
   TGLSMemoUndo = class
   private
-    { Private Declarations }
+     
     FMemo: TGLSCustomMemo;
     FUndoCurX0, FUndoCurY0: integer;
     FUndoCurX, FUndoCurY: integer;
     FUndoText: string;
   public
-    { Public Declarations }
+    
     constructor Create(ACurX0, ACurY0, ACurX, ACurY: integer; AText: string);
     function Append(NewUndo: TGLSMemoUndo): Boolean; virtual;
     procedure Undo;
@@ -294,7 +294,7 @@ type
 
   TGLSMemoInsCharUndo = class(TGLSMemoUndo)
   public
-    { Public Declarations }
+    
     function Append(NewUndo: TGLSMemoUndo): Boolean; override;
     procedure PerformUndo; override;
     procedure PerformRedo; override;
@@ -302,10 +302,10 @@ type
 
   TGLSMemoDelCharUndo = class(TGLSMemoUndo)
   private
-    { Private Declarations }
+     
     FIsBackspace: Boolean;
   public
-    { Public Declarations }
+    
     function Append(NewUndo: TGLSMemoUndo): Boolean; override;
     procedure PerformUndo; override;
     procedure PerformRedo; override;
@@ -314,10 +314,10 @@ type
 
   TGLSMEmoDelLineUndo = class(TGLSMemoUndo)
   private
-    { Private Declarations }
+     
     FIndex: integer;
   public
-    { Public Declarations }
+    
     constructor Create(AIndex, ACurX0, ACurY0, ACurX, ACurY: integer; AText:
       string);
     procedure PerformUndo; override;
@@ -326,11 +326,11 @@ type
 
   TGLSMemoSelUndo = class(TGLSMemoUndo)
   private
-    { Private Declarations }
+     
     FUndoSelStartX, FUndoSelStartY,
       FUndoSelEndX, FUndoSelEndY: integer;
   public
-    { Public Declarations }
+    
     property UndoSelStartX: integer read FUndoSelStartX write FUndoSelStartX;
     property UndoSelStartY: integer read FUndoSelStartY write FUndoSelStartY;
     property UndoSelEndX: integer read FUndoSelEndX write FUndoSelEndX;
@@ -339,31 +339,31 @@ type
 
   TGLSMemoDeleteBufUndo = class(TGLSMemoSelUndo)
   public
-    { Public Declarations }
+    
     procedure PerformUndo; override;
     procedure PerformRedo; override;
   end;
 
   TGLSMemoPasteUndo = class(TGLSMemoUndo)
   public
-    { Public Declarations }
+    
     procedure PerformUndo; override;
     procedure PerformRedo; override;
   end;
 
   TGLSMemoUndoList = class(TList)
   private
-    { Private Declarations }
+     
     FPos: integer;
     FMemo: TGLSCustomMemo;
     FIsPerforming: Boolean;
     FLimit: integer;
   protected
-    { Protected Declarations }
+    
     function Get(Index: Integer): TGLSMemoUndo;
     procedure SetLimit(Value: integer);
   public
-    { Public Declarations }
+    
     constructor Create;
     destructor Destroy; override;
     function Add(Item: Pointer): Integer;
@@ -394,7 +394,7 @@ type
 
   TGLSCustomMemo = class(TGLSMemoAbstractScrollableObject)
   private
-    { Private Declarations }
+     
     FAutoIndent: Boolean;
     FMargin: integer;
     FHiddenCaret, FCaretVisible: Boolean;
@@ -502,7 +502,7 @@ type
     procedure SetUndoLimit(Value: integer);
 
   protected
-    { Protected Declarations }
+    
     procedure WndProc(var Message: TMessage); override;
 
     function EditorRect: TRect;
@@ -607,7 +607,7 @@ type
       FOnUndoChange;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure CopyToClipBoard;
@@ -652,7 +652,7 @@ type
 
   TGLSMemo = class(TGLSCustomMemo)
   published
-    { Published Declarations }
+    
     {TControl }
     property PopupMenu;
     {TCustomControl }
@@ -711,11 +711,11 @@ type
 
   TGLSMemoStringList = class(TStringList)
   private
-    { Private Declarations }
+     
     procedure ReadStrings(Reader: TReader);
     procedure WriteStrings(Writer: TWriter);
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
   end;
 
@@ -739,7 +739,7 @@ type
   //--------------------------------------------------------------
   TGLSSynHiMemo = class(TGLSCustomMemo)
   private
-    { Private declarations }
+     
     FIsPainting: Boolean;
     FInComment: Boolean;
 
@@ -768,10 +768,10 @@ type
     procedure SetStyle(Index: integer; Value: TCharStyle);
     procedure SetCaseSensitive(Value: Boolean);
   protected
-    { Protected declarations }
+    
     procedure Paint; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddWord(StyleNo: integer; ArrS: array of string);
@@ -780,7 +780,7 @@ type
 
     property Delimiters: TDelimiters read FDelimiters write FDelimiters;
   published
-    { Published declarations }
+    
 
     {TControl}
     property PopupMenu;

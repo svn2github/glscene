@@ -30,4 +30,4 @@ FMOD, BASS, OpenAL and WaveOut.
 
 --------------------------------------------------------------
 
-GLScene Development Team
+GLSTeam

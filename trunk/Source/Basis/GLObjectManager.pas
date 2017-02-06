@@ -29,7 +29,7 @@ uses
   VCL.Graphics,
   VCL.Controls,
   VCL.Menus,
-  //GLS
+  
   GLCrossPlatform,
   GLScene;
 
@@ -49,7 +49,7 @@ type
   //
   TGLObjectManager = class(TComponent)
   private
-    { Private Declarations }
+     
     FSceneObjectList: TList;
     FObjectIcons: TImageList; // a list of icons for scene objects
 {$IFDEF MSWINDOWS}
@@ -60,13 +60,13 @@ type
       FLightsourceRootIndex,
       FObjectRootIndex: Integer;
   protected
-    { Protected Declarations }
+    
     procedure DestroySceneObjectList;
     function FindSceneObjectClass(AObjectClass: TGLSceneObjectClass;
       const ASceneObject: string = ''): PSceneObjectEntry;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 

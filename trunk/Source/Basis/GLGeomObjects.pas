@@ -14,10 +14,9 @@ unit GLGeomObjects;
 interface
 
 uses
-//  Winapi.OpenGL,
   System.Classes,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   OpenGLAdapter,
   GLScene,
@@ -34,15 +33,12 @@ uses
 
 type
 
-  // TGLDisk
-  //
-  {  A Disk object.
-    The disk may not be complete, it can have a hole (controled by the
+  { A Disk object that may not be complete, it can have a hole (controled by the
     InnerRadius property) and can only be a slice (controled by the StartAngle
     and SweepAngle properties). }
   TGLDisk = class(TGLQuadricObject)
   private
-    { Private Declarations }
+
     FStartAngle, FSweepAngle, FOuterRadius, FInnerRadius: Single;
     FSlices, FLoops: Integer;
     procedure SetOuterRadius(const aValue: Single);
@@ -53,7 +49,7 @@ type
     procedure SetSweepAngle(const aValue: Single);
 
   public
-    { Public Declarations }
+
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
 
@@ -64,37 +60,33 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
     {  Allows defining a "hole" in the disk. }
     property InnerRadius: Single read FInnerRadius write SetInnerRadius;
     {  Number of radial mesh subdivisions. }
     property Loops: Integer read FLoops write SetLoops default 2;
-    {  Outer radius for the disk. 
+    {  Outer radius for the disk.
       If you leave InnerRadius at 0, this is the disk radius. }
     property OuterRadius: Single read FOuterRadius write SetOuterRadius;
-    {  Number of mesh slices. 
+    {  Number of mesh slices.
       For instance, if Slices=6, your disk will look like an hexagon. }
     property Slices: Integer read FSlices write SetSlices default 16;
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property SweepAngle: Single read FSweepAngle write SetSweepAngle;
   end;
 
-  // TGLCylinderBase
-  //
-  {  Base class to cylinder-like objects. 
-    Introduces the basic cylinder description properties. 
+  { Base class to cylinder-like objects that introduces the basic cylinder description properties.
     Be aware teh default slices and stacks make up for a high-poly cylinder,
     unless you're after high-quality lighting it is recommended to reduce the
     Stacks property to 1. }
   TGLCylinderBase = class(TGLQuadricObject)
   private
-    { Private Declarations }
+
     FBottomRadius: Single;
     FSlices, FStacks, FLoops: Integer;
     FHeight: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBottomRadius(const aValue: Single);
     procedure SetHeight(const aValue: Single);
     procedure SetSlices(aValue: Integer);
@@ -102,7 +94,7 @@ type
     procedure SetLoops(aValue: Integer);
     function GetTopRadius: Single; virtual;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure Assign(Source: TPersistent); override;
@@ -110,7 +102,7 @@ type
     function GenerateSilhouette(const silhouetteParameters
       : TGLSilhouetteParameters): TGLSilhouette; override;
   published
-    { Published Declarations }
+
     property BottomRadius: Single read FBottomRadius write SetBottomRadius;
     property Height: Single read FHeight write SetHeight;
     property Slices: Integer read FSlices write SetSlices default 16;
@@ -119,29 +111,21 @@ type
     property Loops: Integer read FLoops write SetLoops default 1;
   end;
 
-  // TConePart
-  //
   TConePart = (coSides, coBottom);
   TConeParts = set of TConePart;
 
-  // TGLCone
-  //
   {  A cone object. }
   TGLCone = class(TGLCylinderBase)
   private
-    { Private Declarations }
     FParts: TConeParts;
 
   protected
-    { Protected Declarations }
     procedure SetParts(aValue: TConeParts);
     function GetTopRadius: Single; override;
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
-
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
@@ -149,39 +133,30 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
     property Parts: TConeParts read FParts write SetParts
       default [coSides, coBottom];
   end;
 
-  // TCylinderPart
-  //
   TCylinderPart = (cySides, cyBottom, cyTop);
   TCylinderParts = set of TCylinderPart;
 
-  // TCylinderAlignment
-  //
   TCylinderAlignment = (caCenter, caTop, caBottom);
 
-  // TGLCylinder
-  //
   {  Cylinder object, can also be used to make truncated cones }
   TGLCylinder = class(TGLCylinderBase)
   private
-    { Private Declarations }
     FParts: TCylinderParts;
     FTopRadius: Single;
     FAlignment: TCylinderAlignment;
 
   protected
-    { Protected Declarations }
     procedure SetTopRadius(const aValue: Single);
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
     function GetTopRadius: Single; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -196,7 +171,6 @@ type
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
 
   published
-    { Published Declarations }
     property TopRadius: Single read FTopRadius write SetTopRadius;
     property Parts: TCylinderParts read FParts write SetParts
       default [cySides, cyBottom, cyTop];
@@ -207,7 +181,7 @@ type
   {  Capsule object, can also be used to make truncated cones }
   TGLCapsule = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FParts: TCylinderParts;
     FRadius: Single;
     FSlices: Integer;
@@ -215,7 +189,7 @@ type
     FHeight: Single;
     FAlignment: TCylinderAlignment;
   protected
-    { Protected Declarations }
+
     procedure SetHeight(const aValue: Single);
     procedure SetRadius(const aValue: Single);
     procedure SetSlices(const aValue: integer);
@@ -223,7 +197,7 @@ type
     procedure SetParts(aValue: TCylinderParts);
     procedure SetAlignment(val: TCylinderAlignment);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
@@ -235,7 +209,7 @@ type
     procedure Align(const startObj, endObj: TGLBaseSceneObject); overload;
     procedure Align(const startPoint, endPoint: TAffineVector); overload;
   published
-    { Published Declarations }
+    
     property Height: Single read FHeight write SetHeight;
     property Slices: Integer read FSlices write SetSlices;
     property Stacks: Integer read FStacks write SetStacks;
@@ -246,31 +220,24 @@ type
       default caCenter;
   end;
 
-  // TAnnulusPart
-  //
   TAnnulusPart = (anInnerSides, anOuterSides, anBottom, anTop);
   TAnnulusParts = set of TAnnulusPart;
 
-  // TGLAnnulus
-  //
   {  An annulus is a cylinder that can be made hollow (pipe-like). }
   TGLAnnulus = class(TGLCylinderBase)
   private
-    { Private Declarations }
     FParts: TAnnulusParts;
     FBottomInnerRadius: Single;
     FTopInnerRadius: Single;
     FTopRadius: Single;
 
   protected
-    { Protected Declarations }
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopInnerRadius(const aValue: Single);
     procedure SetBottomInnerRadius(const aValue: Single);
     procedure SetParts(aValue: TAnnulusParts);
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
 
@@ -281,7 +248,7 @@ type
       : Boolean; override;
 
   published
-    { Published Declarations }
+    
     property BottomInnerRadius: Single read FBottomInnerRadius
       write SetBottomInnerRadius;
     property TopInnerRadius: Single read FTopInnerRadius
@@ -291,24 +258,20 @@ type
       default [anInnerSides, anOuterSides, anBottom, anTop];
   end;
 
-  // TTorusPart
-  //
   TTorusPart = (toSides, toStartDisk, toStopDisk);
   TTorusParts = set of TTorusPart;
 
-  // TGLTorus
-  //
   {  A Torus object. }
   TGLTorus = class(TGLSceneObject)
   private
-    { Private Declarations }
+
     FParts: TTorusParts;
     FRings, FSides: Cardinal;
     FStartAngle, FStopAngle: Single;
     FMinorRadius, FMajorRadius: Single;
     FMesh: array of array of TVertexRec;
   protected
-    { Protected Declarations }
+    
     procedure SetMajorRadius(const aValue: Single);
     procedure SetMinorRadius(const aValue: Single);
     procedure SetRings(aValue: Cardinal);
@@ -318,17 +281,15 @@ type
     procedure SetParts(aValue: TTorusParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function RayCastIntersect(const rayStart, rayVector: TVector;
-      intersectPoint: PVector = nil; intersectNormal: PVector = nil)
-      : Boolean; override;
+      intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean; override;
 
   published
-    { Published Declarations }
     property MajorRadius: Single read FMajorRadius write SetMajorRadius;
     property MinorRadius: Single read FMinorRadius write SetMinorRadius;
     property Rings: Cardinal read FRings write SetRings default 25;
@@ -338,18 +299,12 @@ type
     property Parts: TTorusParts read FParts write SetParts default [toSides];
   end;
 
-  // TArrowLinePart
-  //
   TArrowLinePart = (alLine, alTopArrow, alBottomArrow);
   TArrowLineParts = set of TArrowLinePart;
 
-  // TArrowHeadStackingStyle
-  //
   TArrowHeadStackingStyle = (ahssStacked, ahssCentered, ahssIncluded);
 
-  // TGLArrowLine
-  //
-  {  Draws an arrowhead (cylinder + cone). 
+  {  Draws an arrowhead (cylinder + cone).
     The arrow head is a cone that shares the attributes of the cylinder
     (ie stacks/slices, materials etc). Seems to work ok.
     This is useful for displaying a vector based field (eg velocity) or
@@ -357,7 +312,7 @@ type
     By default the bottom arrow is off }
   TGLArrowLine = class(TGLCylinderBase)
   private
-    { Private Declarations }
+
     FParts: TArrowLineParts;
     FTopRadius: Single;
     fTopArrowHeadHeight: Single;
@@ -367,7 +322,7 @@ type
     FHeadStackingStyle: TArrowHeadStackingStyle;
 
   protected
-    { Protected Declarations }
+
     procedure SetTopRadius(const aValue: Single);
     procedure SetTopArrowHeadHeight(const aValue: Single);
     procedure SetTopArrowHeadRadius(const aValue: Single);
@@ -377,13 +332,13 @@ type
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 
   public
-    { Public Declarations }
+
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+
     property TopRadius: Single read FTopRadius write SetTopRadius;
     property HeadStackingStyle: TArrowHeadStackingStyle read FHeadStackingStyle
       write SetHeadStackingStyle default ahssStacked;
@@ -399,14 +354,10 @@ type
       write SetBottomArrowHeadRadius;
   end;
 
-  // TArrowArcPart
-  //
   TArrowArcPart = (aaArc, aaTopArrow, aaBottomArrow);
   TArrowArcParts = set of TArrowArcPart;
 
-  // TGLArrowArc
-  //
-  {  Draws an arrowhead (Sliced Torus + cone). 
+  {  Draws an arrowhead (Sliced Torus + cone).
     The arrow head is a cone that shares the attributes of the Torus
     (ie stacks/slices, materials etc).
     This is useful for displaying a movement (eg twist) or
@@ -414,7 +365,7 @@ type
     By default the bottom arrow is off }
   TGLArrowArc = class(TGLCylinderBase)
   private
-    { Private Declarations }
+
     fArcRadius: Single;
     FStartAngle: Single;
     FStopAngle: Single;
@@ -428,7 +379,7 @@ type
     FMesh: array of array of TVertexRec;
 
   protected
-    { Protected Declarations }
+
     procedure SetArcRadius(const aValue: Single);
     procedure SetStartAngle(const aValue: Single);
     procedure SetStopAngle(const aValue: Single);
@@ -441,13 +392,13 @@ type
     procedure SetHeadStackingStyle(const val: TArrowHeadStackingStyle);
 
   public
-    { Public Declarations }
+
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+
     property ArcRadius: Single read fArcRadius write SetArcRadius;
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StopAngle: Single read FStopAngle write SetStopAngle;
@@ -466,45 +417,35 @@ type
       write SetBottomArrowHeadRadius;
   end;
 
-  // TPolygonParts
-  //
   TPolygonPart = (ppTop, ppBottom);
   TPolygonParts = set of TPolygonPart;
 
-  // TGLPolygon
-  //
   {  A basic polygon object.
     The curve is described by the Nodes and SplineMode properties, should be
     planar and is automatically tessellated.
-    Texture coordinates are deduced from X and Y coordinates only. 
+    Texture coordinates are deduced from X and Y coordinates only.
     This object allows only for polygons described by a single curve, if you
     need "complex polygons" with holes, patches and cutouts, see GLMultiPolygon. }
   TGLPolygon = class(TGLPolygonBase)
   private
-    { Private Declarations }
     FParts: TPolygonParts;
 
   protected
-    { Protected Declarations }
     procedure SetParts(const val: TPolygonParts);
 
   public
-    { Public Declarations }
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
 
   published
-    { Published Declarations }
-    {  Parts of polygon. 
+    {  Parts of polygon.
       The 'top' of the polygon is the position were the curve describing
       the polygon spin counter-clockwise (i.e. right handed convention). }
     property Parts: TPolygonParts read FParts write SetParts default [ppTop, ppBottom];
   end;
 
-  // TFrustrumParts
-  //
   TFrustrumPart = (fpTop, fpBottom, fpFront, fpBack, fpLeft, fpRight);
   TFrustrumParts = set of TFrustrumPart;
 
@@ -512,16 +453,14 @@ const
   cAllFrustrumParts = [fpTop, fpBottom, fpFront, fpBack, fpLeft, fpRight];
 
 type
-  // TGLFrustrum
-  //
-  { A frustrum is a pyramid with the top chopped off. 
+  { A frustrum is a pyramid with the top chopped off.
     The height of the imaginary pyramid is ApexHeight, the height of the
     frustrum is Height. If ApexHeight and Height are the same, the frustrum
     degenerates into a pyramid.
     Height cannot be greater than ApexHeight. }
   TGLFrustrum = class(TGLSceneObject)
   private
-    { Private Declarations }
+
     FApexHeight, FBaseDepth, FBaseWidth, FHeight: Single;
     FParts: TFrustrumParts;
     FNormalDirection: TNormalDirection;
@@ -533,13 +472,13 @@ type
     procedure SetNormalDirection(aValue: TNormalDirection);
 
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream);
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+
     constructor Create(AOwner: TComponent); override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure Assign(Source: TPersistent); override;
@@ -548,7 +487,7 @@ type
     function AxisAlignedBoundingBoxUnscaled: TAABB;
     function AxisAlignedDimensionsUnscaled: TVector; override;
   published
-    { Published Declarations }
+    
     property ApexHeight: Single read FApexHeight write SetApexHeight stored False;
     property BaseDepth: Single read FBaseDepth write SetBaseDepth stored False;
     property BaseWidth: Single read FBaseWidth write SetBaseWidth stored False;
@@ -558,21 +497,13 @@ type
     property Parts: TFrustrumParts read FParts write SetParts default cAllFrustrumParts;
   end;
 
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
-  // -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// -------------------------------------------------------------
 implementation
-
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-// -------------------------------------------------------------
-
 // ------------------
 // ------------------ TGLDisk ------------------
 // ------------------
-
-// Create
-//
 
 constructor TGLDisk.Create(AOwner: TComponent);
 begin
@@ -585,8 +516,6 @@ begin
   FSweepAngle := 360;
 end;
 
-// BuildList
-//
 
 procedure TGLDisk.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -601,9 +530,6 @@ begin
   gluDeleteQuadric(quadric);
 end;
 
-// SetOuterRadius
-//
-
 procedure TGLDisk.SetOuterRadius(const aValue: Single);
 begin
   if aValue <> FOuterRadius then
@@ -612,9 +538,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetInnerRadius
-//
 
 procedure TGLDisk.SetInnerRadius(const aValue: Single);
 begin
@@ -625,9 +548,6 @@ begin
   end;
 end;
 
-// SetSlices
-//
-
 procedure TGLDisk.SetSlices(aValue: integer);
 begin
   if aValue <> FSlices then
@@ -636,9 +556,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetLoops
-//
 
 procedure TGLDisk.SetLoops(aValue: integer);
 begin
@@ -649,9 +566,6 @@ begin
   end;
 end;
 
-// SetStartAngle
-//
-
 procedure TGLDisk.SetStartAngle(const aValue: Single);
 begin
   if aValue <> FStartAngle then
@@ -661,9 +575,6 @@ begin
   end;
 end;
 
-// SetSweepAngle
-//
-
 procedure TGLDisk.SetSweepAngle(const aValue: Single);
 begin
   if aValue <> FSweepAngle then
@@ -672,9 +583,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TGLDisk.Assign(Source: TPersistent);
 begin
@@ -690,9 +598,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TGLDisk.AxisAlignedDimensionsUnscaled: TVector;
 var
   r: Single;
@@ -700,9 +605,6 @@ begin
   r := Abs(FOuterRadius);
   Result := VectorMake(r, r, 0);
 end;
-
-// RayCastIntersect
-//
 
 function TGLDisk.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -757,9 +659,6 @@ end;
 // ------------------ TGLCylinderBase ------------------
 // ------------------
 
-// Create
-//
-
 constructor TGLCylinderBase.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -770,9 +669,6 @@ begin
   FLoops := 1;
 end;
 
-// SetBottomRadius
-//
-
 procedure TGLCylinderBase.SetBottomRadius(const aValue: Single);
 begin
   if aValue <> FBottomRadius then
@@ -782,16 +678,10 @@ begin
   end;
 end;
 
-// GetTopRadius
-//
-
 function TGLCylinderBase.GetTopRadius: Single;
 begin
   Result := FBottomRadius;
 end;
-
-// SetHeight
-//
 
 procedure TGLCylinderBase.SetHeight(const aValue: Single);
 begin
@@ -802,9 +692,6 @@ begin
   end;
 end;
 
-// SetSlices
-//
-
 procedure TGLCylinderBase.SetSlices(aValue: Integer);
 begin
   if aValue <> FSlices then
@@ -813,9 +700,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// SetStack
-//
 
 procedure TGLCylinderBase.SetStacks(aValue: Integer);
 begin
@@ -826,9 +710,6 @@ begin
   end;
 end;
 
-// SetLoops
-//
-
 procedure TGLCylinderBase.SetLoops(aValue: Integer);
 begin
   if (aValue >= 1) and (aValue <> FLoops) then
@@ -837,9 +718,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TGLCylinderBase.Assign(Source: TPersistent);
 begin
@@ -854,8 +732,6 @@ begin
   inherited Assign(Source);
 end;
 
-// GenerateSilhouette
-//
 
 function TGLCylinderBase.GenerateSilhouette(const silhouetteParameters
   : TGLSilhouetteParameters): TGLSilhouette;
@@ -939,17 +815,11 @@ end;
 // ------------------ TGLCone ------------------
 // ------------------
 
-// Create
-//
-
 constructor TGLCone.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FParts := [coSides, coBottom];
 end;
-
-// BuildList
-//
 
 procedure TGLCone.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -972,9 +842,6 @@ begin
   GL.PopMatrix;
 end;
 
-// SetParts
-//
-
 procedure TGLCone.SetParts(aValue: TConeParts);
 begin
   if aValue <> FParts then
@@ -983,9 +850,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TGLCone.Assign(Source: TPersistent);
 begin
@@ -996,9 +860,6 @@ begin
   inherited Assign(Source);
 end;
 
-// AxisAlignedDimensions
-//
-
 function TGLCone.AxisAlignedDimensionsUnscaled: TVector;
 var
   r: Single;
@@ -1008,16 +869,10 @@ begin
     r { *Scale.DirectZ } );
 end;
 
-// GetTopRadius
-//
-
 function TGLCone.GetTopRadius: Single;
 begin
   Result := 0;
 end;
-
-// RayCastIntersect
-//
 
 function TGLCone.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1093,9 +948,6 @@ end;
 // ------------------ TGLCylinder ------------------
 // ------------------
 
-// Create
-//
-
 constructor TGLCylinder.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -1103,9 +955,6 @@ begin
   FParts := [cySides, cyBottom, cyTop];
   FAlignment := caCenter;
 end;
-
-// BuildList
-//
 
 procedure TGLCylinder.BuildList(var rci: TGLRenderContextInfo);
 var
@@ -1142,9 +991,6 @@ begin
   GL.PopMatrix;
 end;
 
-// SetTopRadius
-//
-
 procedure TGLCylinder.SetTopRadius(const aValue: Single);
 begin
   if aValue <> FTopRadius then
@@ -1154,16 +1000,10 @@ begin
   end;
 end;
 
-// GetTopRadius
-//
-
 function TGLCylinder.GetTopRadius: Single;
 begin
   Result := FTopRadius;
 end;
-
-// SetParts
-//
 
 procedure TGLCylinder.SetParts(aValue: TCylinderParts);
 begin
@@ -1174,9 +1014,6 @@ begin
   end;
 end;
 
-// SetAlignment
-//
-
 procedure TGLCylinder.SetAlignment(val: TCylinderAlignment);
 begin
   if val <> FAlignment then
@@ -1185,9 +1022,6 @@ begin
     StructureChanged;
   end;
 end;
-
-// Assign
-//
 
 procedure TGLCylinder.Assign(Source: TPersistent);
 begin
@@ -1198,9 +1032,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// AxisAlignedDimensions
-//
 
 function TGLCylinder.AxisAlignedDimensionsUnscaled: TVector;
 var
@@ -1213,9 +1044,6 @@ begin
   Result := VectorMake(r, 0.5 * FHeight, r);
   // ScaleVector(Result, Scale.AsVector);
 end;
-
-// RayCastIntersect
-//
 
 function TGLCylinder.RayCastIntersect(const rayStart, rayVector: TVector;
   intersectPoint: PVector = nil; intersectNormal: PVector = nil): Boolean;
@@ -1339,9 +1167,6 @@ begin
     SetLength(roots, 0);
 end;
 
-// Align
-//
-
 procedure TGLCylinder.Align(const startPoint, endPoint: TVector);
 var
   dir: TAffineVector;
@@ -1356,16 +1181,10 @@ begin
   Alignment := caCenter;
 end;
 
-// Align
-//
-
 procedure TGLCylinder.Align(const startObj, endObj: TGLBaseSceneObject);
 begin
   Align(startObj.AbsolutePosition, endObj.AbsolutePosition);
 end;
-
-// Align
-//
 
 procedure TGLCylinder.Align(const startPoint, endPoint: TAffineVector);
 begin
@@ -1375,9 +1194,6 @@ end;
 // ------------------
 // ------------------ TGLCapsule ------------------
 // ------------------
-
-// Create
-//
 
 constructor TGLCapsule.Create(AOwner: TComponent);
 begin
@@ -1516,9 +1332,6 @@ begin
   end;
   GL.PopMatrix;
 end;
-
-// SetLength
-//
 
 procedure TGLCapsule.SetHeight(const aValue: Single);
 begin
@@ -3692,9 +3505,6 @@ begin
   end;
 end;
 
-// Assign
-//
-
 procedure TGLPolygon.Assign(Source: TPersistent);
 begin
   if Source is TGLPolygon then
@@ -3703,9 +3513,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// BuildList
-//
 
 procedure TGLPolygon.BuildList(var rci: TGLRenderContextInfo);
 var

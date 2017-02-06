@@ -13,6 +13,8 @@
    Copyright 2001 - Eric Grange (egrange@glscene.org)
    http://glscene.org
 
+   History:
+     |21/02/01 - EG - Added TexGen and vertex arrays mappings
 }
 unit XOpenGL;
 
@@ -522,8 +524,7 @@ procedure TexCoord2fv_Null(v: PGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdec
 begin
 end;
 
-procedure TexCoord3f_Null(s, t, r: TGLfloat);
-{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure TexCoord3f_Null(s, t, r: TGLfloat);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 
@@ -563,8 +564,7 @@ procedure Disable_Null(cap: Cardinal);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl;
 begin
 end;
 
-procedure TexCoordPointer_Null(size: TGLint; atype: Cardinal; stride:
-  TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
+procedure TexCoordPointer_Null(size: TGLint; atype: Cardinal; stride: TGLsizei; data: pointer);{$IFDEF MSWINDOWS} stdcall; {$ELSE} cdecl; {$ENDIF}
 begin
 end;
 

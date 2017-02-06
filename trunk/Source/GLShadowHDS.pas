@@ -32,7 +32,7 @@ interface
 uses
   System.Classes, 
   System.SysUtils,
-  //GLS
+  
   GLHeightData,
   GLGraphics,
   GLVectorGeometry,
@@ -55,7 +55,7 @@ type
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TGLShadowHDS = class (TGLHeightDataSourceFilter)
 	   private
-	      { Private Declarations }
+	       
          FTileSize:integer;
 
          FShadowmapLibrary : TGLMaterialLibrary;
@@ -74,7 +74,7 @@ type
          FAmbient:single;
          OwnerHDS:TGLHeightDataSource; //The owner of the tile
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetShadowmapLibrary(const val : TGLMaterialLibrary);
          procedure SetScale(AValue: TGLCoordinates);
          procedure SetLightVector(AValue: TGLCoordinates);
@@ -92,7 +92,7 @@ type
          procedure WorldToLocal(wx,wy:single;var HD:TGLHeightData;var lx:single; var ly:single);
 
 	   public
-	      { Public Declarations }
+	      
          SkipGenerate:boolean;  //When true, only a blank ShadowMap is generated (FAST), but OnThreadBmp32 is still called in a subthread.
 	        constructor Create(AOwner: TComponent); override;
          destructor  Destroy; override;
@@ -110,7 +110,7 @@ type
          function    Shade(HeightData:TGLHeightData;x,y:integer;ShadowHeight,TerrainHeight:single):byte;
 	   published
 
-	      { Published Declarations }
+	      
          property ShadowmapLibrary : TGLMaterialLibrary read FShadowmapLibrary write SetShadowmapLibrary;
          property OnThreadBmp32 : TThreadBmp32 read FOnThreadBmp32 write FOnThreadBmp32; //WARNING: This runs in a subthread
          property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;

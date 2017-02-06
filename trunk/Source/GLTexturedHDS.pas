@@ -39,7 +39,7 @@ uses
 type
 	TGLTexturedHDS = class (TGLHeightDataSource)
 	   private
-	      { Private Declarations }
+	       
          FOnStartPreparingData : TStartPreparingDataEvent;
          FOnMarkDirty : TMarkDirtyEvent;
          FHeightDataSource : TGLHeightDataSource;
@@ -48,17 +48,17 @@ type
          FTileSize         : integer;
          FTilesPerTexture  : integer;
 	   protected
-	      { Protected Declarations }
+	      
          procedure SetHeightDataSource(val:TGLHeightDataSource);
 	   public
-	      { Public Declarations }
+	      
   	     constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure StartPreparingData(heightData : TGLHeightData); override;
          procedure MarkDirty(const area : TGLRect); override;
 
 	   published
-	      { Published Declarations }
+	      
          property MaxPoolSize;
          property OnStartPreparingData : TStartPreparingDataEvent read FOnStartPreparingData write FOnStartPreparingData;
          property OnMarkDirtyEvent : TMarkDirtyEvent read FOnMarkDirty write FOnMarkDirty;

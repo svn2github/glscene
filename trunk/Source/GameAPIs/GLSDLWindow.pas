@@ -72,7 +72,7 @@ type
     so you may have multiple components, but only one can be used. }
   TGLSDLWindow = class(TComponent)
   private
-    { Private Declarations }
+     
     FWidth: Integer;
     FHeight: Integer;
     FPixelDepth: TGLSDLWindowPixelDepth;
@@ -92,7 +92,7 @@ type
     FWindowHandle: Longword;
 
   protected
-    { Protected Declarations }
+    
     procedure SetWidth(const val: Integer);
     procedure SetHeight(const val: Integer);
     procedure SetPixelDepth(const val: TGLSDLWindowPixelDepth);
@@ -113,7 +113,7 @@ type
     procedure StopThread;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -144,7 +144,7 @@ type
     property WindowHandle: Cardinal read FWindowHandle write FWindowHandle;
 
   published
-    { Published Declarations }
+    
     {  Width of the SDL window.
       To apply changes to an active window, call UpdateWindow. }
     property Width: Integer read FWidth write SetWidth default 640;

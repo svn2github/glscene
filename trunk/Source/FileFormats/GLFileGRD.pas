@@ -33,7 +33,7 @@ type
 
   TGLGRDVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     GLHeightField: TGLHeightField;
     Nodes: array of TSingleArray;
     class function Capabilities: TGLDataFileCapabilities; override;

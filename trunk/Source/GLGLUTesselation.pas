@@ -16,7 +16,7 @@ interface
 
 uses
   System.SysUtils,
-  //GLS
+  
   OpenGLAdapter,
   OpenGLTokens,
   GLVectorTypes,

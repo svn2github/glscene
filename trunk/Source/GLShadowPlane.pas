@@ -20,7 +20,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -63,7 +63,7 @@ type
      }
   TGLShadowPlane = class(TGLPlane)
   private
-    { Private Declarations }
+     
     FRendering: Boolean;
     FShadowingObject: TGLBaseSceneObject;
     FShadowedLight: TGLLightSource;
@@ -72,7 +72,7 @@ type
     FOnBeginRenderingShadows, FOnEndRenderingShadows: TNotifyEvent;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure SetShadowingObject(const val: TGLBaseSceneObject);
     procedure SetShadowedLight(const val: TGLLightSource);
@@ -80,7 +80,7 @@ type
     procedure SetShadowOptions(const val: TShadowPlaneOptions);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -90,7 +90,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Public Declarations }
+    
           {Selects the object to mirror. 
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TGLBaseSceneObject read FShadowingObject write SetShadowingObject;

@@ -29,7 +29,7 @@ type
    {Support for Windows WAV format. }
    TGLWAVFile = class (TGLSoundFile)
       private
-         { Public Declarations }
+         
          {$IFDEF MSWINDOWS}
          waveFormat : TWaveFormatEx;
          pcmOffset : Integer;
@@ -38,10 +38,10 @@ type
          data : array of Byte; // used to store WAVE bitstream
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Private Declarations }
+          
          function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
 
          class function Capabilities : TGLDataFileCapabilities; override;

@@ -31,7 +31,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   OpenGLTokens,
   GLCrossPlatform,
   GLVectorTypes,
@@ -195,7 +195,7 @@ type
      OpenGL context. }
   TGLStateCache = class
   private
-    { Private Declarations }
+     
     // Legacy state
     FFrontBackColors: array[0..1, 0..3] of TVector;
     FFrontBackShininess: array[0..1] of Integer;
@@ -391,7 +391,7 @@ type
 
     FOnLightsChanged: TOnLightsChanged;
   protected
-    { Protected Declarations }
+    
     // Vertex Array Data state
     procedure SetVertexArrayBinding(const Value: Cardinal);
     function GetArrayBufferBinding: Cardinal;
@@ -566,7 +566,7 @@ type
     function GetMaterialEmission(const aFace: TCullFaceMode): TVector;
     function GetMaterialShininess(const aFace: TCullFaceMode): Integer;
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     destructor Destroy; override;
 

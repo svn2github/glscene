@@ -20,7 +20,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLBaseClasses,
   GLSLog;
 
@@ -67,20 +67,20 @@ type
        the last one created will be the active one. }
   TGLApplicationFileIO = class(TComponent)
   private
-    { Private declarations }
+     
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
 
   protected
-    { Protected declarations }
+    
 
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published declarations }
+    
       {Event that allows you to specify a stream for the file. 
          Destruction of the stream is at the discretion of the code that
          invoked CreateFileStream. Return nil to let the default mechanism
@@ -106,11 +106,11 @@ type
      to this class, without the need to rewrite subclasses. }
   TGLDataFile = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FResourceName: string;
     procedure SetResourceName(const AName: string);
   public
-    { Public Declarations }
+    
 
     {Describes what the TGLDataFile is capable of. 
        Default value is [dfcRead]. }

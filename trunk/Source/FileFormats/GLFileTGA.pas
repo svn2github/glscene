@@ -39,13 +39,13 @@ type
       saves only to uncompressed TGA. }
         TTGAImage = class (TGLBitmap)
 	   private
-	      { Private Declarations }
+	       
 
 	   protected
-	      { Protected Declarations }
+	      
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor Create; override;
          destructor Destroy; override;
 

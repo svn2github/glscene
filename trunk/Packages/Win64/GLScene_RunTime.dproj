@@ -160,7 +160,7 @@
         <DCCReference Include="..\..\Source\GLAnimatedSprite.pas"/>
         <DCCReference Include="..\..\Source\GLAnimationUtils.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLApplicationFileIO.pas"/>
-        <DCCReference Include="..\..\Source\GLAsmShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLAsmShader.pas"/>
         <DCCReference Include="..\..\Source\GLAsyncHDS.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLAsyncTimer.pas"/>
         <DCCReference Include="..\..\Source\GLAtmosphere.pas"/>
@@ -186,7 +186,7 @@
         <DCCReference Include="..\..\Source\GLCoordinates.pas"/>
         <DCCReference Include="..\..\Source\GLCrossPlatform.pas"/>
         <DCCReference Include="..\..\Source\GLCurvesAndSurfaces.pas"/>
-        <DCCReference Include="..\..\Source\GLCustomShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLCustomShader.pas"/>
         <DCCReference Include="..\..\Source\GLDCE.pas"/>
         <DCCReference Include="..\..\Source\GLDCEMisc.pas"/>
         <DCCReference Include="..\..\Source\GLDynamicTexture.pas"/>
@@ -252,7 +252,7 @@
         <DCCReference Include="..\..\Source\GLHeightData.pas"/>
         <DCCReference Include="..\..\Source\GLHeightTileFile.pas"/>
         <DCCReference Include="..\..\Source\GLHeightTileFileHDS.pas"/>
-        <DCCReference Include="..\..\Source\GLHiddenLineShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLHiddenLineShader.pas"/>
         <DCCReference Include="..\..\Source\GLImageUtils.pas"/>
         <DCCReference Include="..\..\Source\GLImposter.pas"/>
         <DCCReference Include="..\..\Source\GLIsosurface.pas"/>
@@ -273,7 +273,7 @@
         <DCCReference Include="..\..\Source\GLMeshUtils.pas"/>
         <DCCReference Include="..\..\Source\GLMirror.pas"/>
         <DCCReference Include="..\..\Source\GLMovement.pas"/>
-        <DCCReference Include="..\..\Source\GLMultiMaterialShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLMultiMaterialShader.pas"/>
         <DCCReference Include="..\..\Source\GLMultiPolygon.pas"/>
         <DCCReference Include="..\..\Source\GLMultiProxy.pas"/>
         <DCCReference Include="..\..\Source\GLMultisampleImage.pas"/>
@@ -291,7 +291,7 @@
         <DCCReference Include="..\..\Source\GLPerlinNoise3D.pas"/>
         <DCCReference Include="..\..\Source\GLPerlinPFX.pas"/>
         <DCCReference Include="..\..\Source\Basis\GLPersistentClasses.pas"/>
-        <DCCReference Include="..\..\Source\GLPhongShader.pas"/>
+        <DCCReference Include="..\..\Source\Shaders\GLPhongShader.pas"/>
         <DCCReference Include="..\..\Source\GLPictureRegisteredFormats.pas"/>
         <DCCReference Include="..\..\Source\GLPipelineTransformation.pas"/>
         <DCCReference Include="..\..\Source\GLPlugInManager.pas"/>
@@ -446,7 +446,16 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
                     <Platform Name="OSX32">
                         <RemoteDir>Contents\Resources</RemoteDir>
@@ -786,16 +795,7 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                </DeployClass>
+                <DeployClass Name="ProjectiOSDeviceResourceRules"/>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Win64" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="iOSDevice32" Name="$(PROJECTNAME).app"/>

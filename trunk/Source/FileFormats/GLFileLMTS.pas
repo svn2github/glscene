@@ -19,7 +19,7 @@ uses
   System.Classes,
   System.SysUtils,
   Vcl.Graphics,
-  //GLS
+  
   GLVectorFileObjects,
   GLApplicationFileIO,
   GLVectorLists,

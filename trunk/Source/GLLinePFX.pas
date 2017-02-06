@@ -17,7 +17,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   OpenGLTokens,
   GLPersistentClasses,
   GLVectorGeometry,
@@ -35,15 +35,15 @@ type
    {Linear particle.  }
    TGLLineParticle = class (TGLParticle)
       private
-         { Private Declarations }
+          
          FDirection : TAffineVector;
          FLength : Single;
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Public Declarations }
+         
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
@@ -62,13 +62,13 @@ type
       using TGLPointLightPFXManager. }
    TGLLinePFXManager = class (TGLLifeColoredPFXManager)
       private
-         { Private Declarations }
+          
          Fvx, Fvy : TAffineVector;        // NOT persistent
          FNvx, FNvy : TAffineVector;        // NOT persistent
          FDefaultLength : Single;
 
       protected
-         { Protected Declarations }
+         
          function StoreDefaultLength : Boolean;
 
          function TexturingMode : Cardinal; override;
@@ -79,7 +79,7 @@ type
          procedure FinalizeRendering(var rci: TGLRenderContextInfo); override;
 
       public
-         { Public Declarations }
+         
          constructor Create(aOwner : TComponent); override;
          destructor Destroy; override;
 
@@ -87,7 +87,7 @@ type
          function CreateParticle : TGLParticle; override;
 
 	   published
-	      { Published Declarations }
+	      
          property DefaultLength : Single read FDefaultLength write FDefaultLength stored StoreDefaultLength;
 
          property ParticleSize;

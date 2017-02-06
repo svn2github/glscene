@@ -26,7 +26,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLVectorGeometry,
   GLVectorLists,
   GLScene,
@@ -46,7 +46,7 @@ type
   {An object encapsulating the OpenGL feedback rendering mode. }
   TGLFeedback = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FActive: Boolean;
     FBuffer: TSingleList;
     FMaxBufferSize: Cardinal;
@@ -55,12 +55,12 @@ type
     FMode: TFeedbackMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetMaxBufferSize(const Value: Cardinal);
     procedure SetMode(const Value: TFeedbackMode);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -87,7 +87,7 @@ type
     property CorrectionScaling: Single read FCorrectionScaling;
 
   published
-    { Published Declarations }
+    
 
     //: Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;

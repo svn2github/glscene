@@ -14,9 +14,18 @@ uses
   Vcl.Imaging.Jpeg,
   Vcl.ExtCtrls,
   //GLS
-  GLScene, GLTexture, GLObjects, GLWin32Viewer, GLTexCombineShader,
-  GLHUDObjects, GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses,
-  GLTextureCombiners, GLUtils;
+  GLScene,
+  GLTexture,
+  GLObjects,
+  GLWin32Viewer,
+  GLTexCombineShader,
+  GLHUDObjects,
+  GLMaterial,
+  GLCoordinates,
+  GLCrossPlatform,
+  GLBaseClasses,
+  GLTextureCombiners,
+  GLUtils;
 
 type
   TForm1 = class(TForm)

@@ -10,24 +10,8 @@
     
 
 	 History :  
-       12/01/16 - PW - Removed RegisterComponent to GLSoundRegister unit 
-       07/01/10 - DaStr - Fixed a bug with an initial Paused or Muted state of
-                              sound source and with sscSample in aSource.Changes
-       17/03/08 - mrqzzz - Fixed "Consant cannot be pased as var parameter" in NotifyEnvironmentChanged
-       15/03/08 - DaStr - Updated to Fmod v3.7.4 (thanks Chen, Pei)
-       07/06/07 - DaStr - Added $I GLScene.inc
-       18/10/03 - EG - Dynamic support is back
-       18/09/03 - ARH - updated for fmod 3.7
-       24/09/02 - EG - FMOD activation errors no longer result in Asserts (ignored)
-       28/08/02 - EG - Fixed EAX capability detection
-       27/08/02 - EG - Now uses dynamically linked version by Steve Williams,
-                          Added support for EAX environments
-       26/08/02 - EG - Updated to FMOD 3.6
-       27/02/02 - EG - Updated to FMOD 3.5, added 3D Factors
-       05/02/02 - EG - Updated to FMOD 3.4, now uses DSound by default
-       13/01/01 - EG - Updated for API 3.3 compatibility
-	    09/06/00 - EG - Creation
-	 
+    09/06/00 - EG - Creation
+    The whole history is logged in previous version of unit
 }
 unit GLSMFMOD;
 
@@ -36,10 +20,16 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLSound, GLScene, GLVectorGeometry,
-  FMod, FmodTypes, FmodPresets;
+  System.Classes,
+  System.SysUtils,
+  
+  GLSound,
+  GLScene,
+  GLVectorGeometry,
+  //FMod
+  FMod,
+  FmodTypes,
+  FmodPresets;
 
 type
 
@@ -47,12 +37,12 @@ type
 	//
 	TGLSMFMOD = class (TGLSoundManager)
 	   private
-	      { Private Declarations }
+	       
          FActivated : Boolean;
          FEAXCapable : Boolean; // not persistent
 
 	   protected
-	      { Protected Declarations }
+	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -67,7 +57,7 @@ type
          function GetDefaultFrequency(aSource : TGLBaseSoundSource) : Integer;
 
       public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 
@@ -77,7 +67,7 @@ type
          function EAXSupported : Boolean; override;
 
 	   published
-	      { Published Declarations }
+	      
          property MaxChannels default 32;
 	end;
 

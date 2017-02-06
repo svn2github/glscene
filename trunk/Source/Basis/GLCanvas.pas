@@ -20,7 +20,7 @@ uses
   System.Classes,
   System.Math,
   Vcl.Graphics,
-  //GLS
+  
   OpenGLTokens,
   GLVectorGeometry,
   GLColor,
@@ -47,7 +47,7 @@ type
        unespected behaviour). }
   TGLCanvas = class
   private
-    { Private Declarations }
+     
     FBufferSizeX, FBufferSizeY: Integer;
 
     FLastPrimitive: Integer;
@@ -57,7 +57,7 @@ type
     FCurrentPenColorVector: TVector;
     FArcDirection: TArcDirection;
   protected
-    { Protected Declarations }
+    
     procedure BackupOpenGLStates;
 
     procedure StartPrimitive(const primitiveType: Integer);
@@ -80,7 +80,7 @@ type
       AngleBegin, AngleEnd: Single;
       UpdateCurrentPos: Boolean); overload;
   public
-    { Public Declarations }
+    
     constructor Create(bufferSizeX, bufferSizeY: Integer;
       const baseTransform: TMatrix); overload;
     constructor Create(bufferSizeX, bufferSizeY: Integer); overload;

@@ -72,7 +72,7 @@ type
   {  Component to make it easy to record GLScene frames into an AVI file. }
   TGLAVIRecorder = class(TComponent)
   private
-    { Private Declarations }
+     
     AVIBitmap: TBitmap;
     AVIFrameIndex: integer;
 
@@ -108,7 +108,7 @@ type
     procedure SetGLNonVisualViewer(const Value: TGLNonVisualViewer);
 
   protected
-    { Protected Declarations }
+    
     // Now, TAVIRecorder is tailored for GLScene. Maybe we should make a generic
     // TAVIRecorder, and then sub-class it to use with GLScene
     FGLSceneViewer: TGLSceneViewer;
@@ -130,7 +130,7 @@ type
     procedure InternalAddAVIFrame;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -141,7 +141,7 @@ type
     function Recording: boolean;
 
   published
-    { Published Declarations }
+    
     property FPS: byte read FFPS write FFPS default 25;
     property GLSceneViewer: TGLSceneViewer read FGLSceneViewer
       write SetGLSceneViewer;

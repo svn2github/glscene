@@ -6,16 +6,17 @@
   textures, samplers, combiners, shaders and etc.
 
   Features:
-   - material can contain different level of applying accordingly to hardware i.e. Feateres scaling.
+   - material can contain different level of applying accordingly to hardware i.e.
+     Feateres scaling.
    - if automatically or by user selected level failed, material down to lower level.
    - direct state access can be used for uniforms setting.
    - economy mode for texture binding to active units,
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
-  History :  
-       13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
-       11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
-       11/03/11 - Yar - Created
+  History :
+    13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
+    11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
+    11/03/11 - Yar - Created
     
 }
 
@@ -29,7 +30,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   GLRenderContextInfo,
   GLBaseClasses,
@@ -77,7 +78,7 @@ type
       TGLXCollectionItem,
       IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+     
     FNameHashKey: Integer;
     FUserList: TPersistentObjectList;
     FDefferedInit: Boolean;
@@ -86,13 +87,13 @@ type
     function GetUserList: TPersistentObjectList;
     function GetMaterialLibraryEx: TGLMaterialLibraryEx;
   protected
-    { Protected Declarations }
+    
     procedure SetName(const AValue: TGLMaterialComponentName); override;
     procedure NotifyChange(Sender: TObject); virtual;
     property UserList: TPersistentObjectList read GetUserList;
     procedure DoOnPrepare(Sender: TGLContext); virtual; abstract;
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure RegisterUser(AUser: TGLUpdateAbleObject);
@@ -103,7 +104,7 @@ type
     property MaterialLibrary: TGLMaterialLibraryEx read GetMaterialLibraryEx;
     property IsValid: Boolean read FIsValid;
   published
-    { Published Declarations }
+    
     property Name: TGLMaterialComponentName read GetName write SetName;
     {Run-time flag, indicate that resource
        should initialize in case of failure material's level. }
@@ -120,7 +121,7 @@ type
       TGLUpdateAbleObject,
       IGLMaterialLibrarySupported)
   protected
-    { Protected Declarations }
+    
     FEnabled: Boolean;
     FNextPassName: TGLLibMaterialName;
     function GetMaterial: TGLLibMaterialEx;
@@ -130,13 +131,13 @@ type
     procedure Loaded; virtual;
     property NextPass: TGLLibMaterialName read FNextPassName write SetNextPass;
   public
-    { Public Declarations }
+    
     procedure NotifyChange(Sender: TObject); override;
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
 
     property MaterialLibrary: TGLMaterialLibraryEx read GetMaterialLibraryEx;
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled;
   end;
 
@@ -145,11 +146,11 @@ type
 
   TGLTextureSampler = class(TGLBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FHandle: TGLSamplerHandle;
     FMinFilter: TGLMinFilter;
     FMagFilter: TGLMagFilter;
@@ -172,7 +173,7 @@ type
     procedure SetCompareFunc(AValue: TDepthFunction);
     procedure SetDecodeSRGB(AValue: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -187,7 +188,7 @@ type
 
     property Handle: TGLSamplerHandle read FHandle;
   published
-    { Published Declarations }
+    
 
     {Texture magnification filter. }
     property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter
@@ -225,7 +226,7 @@ type
 
   TGLAbstractTexture = class(TGLBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     FHandle: TGLTextureHandle;
     FInternalFormat: TGLInternalFormat;
     FWidth: Integer;
@@ -238,10 +239,10 @@ type
     procedure Apply(var ARci: TGLRenderContextInfo); virtual; abstract;
     procedure UnApply(var ARci: TGLRenderContextInfo); virtual; abstract;
   public
-    { Public Declarations }
+    
     property Handle: TGLTextureHandle read FHandle;
   published
-    { Published Declarations }
+    
     property Shape: TGLTextureTarget read GetTextureTarget;
   end;
 
@@ -264,11 +265,11 @@ type
 
   TGLTextureImageEx = class(TGLAbstractTexture)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FCompression: TGLTextureCompression;
     FImage: TGLBaseImage;
     FImageAlpha: TGLTextureImageAlpha;
@@ -301,7 +302,7 @@ type
     procedure StreamTransfer;
     procedure CalcLODRange(out AFirstLOD, ALastLOD: Integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -314,7 +315,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
 
     // Factual texture properties
     property InternalWidth: Integer read FWidth;
@@ -369,11 +370,11 @@ type
 
   TGLFrameBufferAttachment = class(TGLAbstractTexture)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FRenderBufferHandle: TGLRenderbufferHandle;
     FLayered: Boolean;
     FCubeMap: Boolean;
@@ -390,7 +391,7 @@ type
     procedure SetSamples(AValue: Integer);
     procedure SetFixedSamplesLocation(AValue: Boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -403,7 +404,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
     property InternalWidth: Integer read FWidth
       write SetWidth default 256;
     property InternalHeight: Integer read FHeight
@@ -439,7 +440,7 @@ type
         shader or fixed-function pipeline. }
   TGLTextureSwizzling = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FSwizzles: TSwizzleVector;
     function GetSwizzle(AIndex: Integer): TGLTextureSwizzle;
     procedure SetSwizzle(AIndex: Integer; AValue: TGLTextureSwizzle);
@@ -451,7 +452,7 @@ type
     procedure WriteToFiler(AWriter: TWriter);
     procedure ReadFromFiler(AReader: TReader);
   published
-    { Published Declarations }
+    
     property RedFrom: TGLTextureSwizzle index 0 read GetSwizzle
       write SetSwizzle stored StoreSwizzle;
     property GreenFrom: TGLTextureSwizzle index 1 read GetSwizzle
@@ -467,7 +468,7 @@ type
 
   TGLTextureProperties = class(TGLLibMaterialProperty)
   private
-    { Private Declarations }
+     
     FLibTextureName: TGLMaterialComponentName;
     FLibSamplerName: TGLMaterialComponentName;
     FLibTexture: TGLAbstractTexture;
@@ -520,7 +521,7 @@ type
   protected
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -534,7 +535,7 @@ type
 
     property TextureMatrix: TMatrix read FTextureMatrix write SetTextureMatrix;
   published
-    { Published Declarations }
+    
     property LibTextureName: TGLMaterialComponentName read GetLibTextureName
       write SetLibTextureName;
     property LibSamplerName: TGLMaterialComponentName read GetLibSamplerName
@@ -578,7 +579,7 @@ type
   //
   TGLFixedFunctionProperties = class(TGLLibMaterialProperty)
   private
-    { Private Declarations }
+     
     FFrontProperties: TGLFaceProperties;
     FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
@@ -601,7 +602,7 @@ type
     procedure SetTexProp(AValue: TGLTextureProperties);
     procedure SetTextureMode(AValue: TGLTextureMode);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -612,7 +613,7 @@ type
     function Blended: Boolean;
 
   published
-    { Published Declarations }
+    
     property MaterialOptions: TMaterialOptions read FMaterialOptions write
       SetMaterialOptions default [];
 
@@ -644,11 +645,11 @@ type
 
   TGLTextureCombiner = class(TGLBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FHandle: TGLVirtualHandle;
     FScript: TStringList;
     FCommandCache: TCombinerCache;
@@ -656,7 +657,7 @@ type
     procedure DoAllocate(Sender: TGLVirtualHandle; var handle: Cardinal);
     procedure DoDeallocate(Sender: TGLVirtualHandle; var handle: Cardinal);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -667,7 +668,7 @@ type
 
     class function FriendlyName: string; override;
   published
-    { Published Declarations }
+    
     property Script: TStringList read FScript write SetScript;
   end;
 
@@ -676,11 +677,11 @@ type
 
   TGLASMVertexProgram = class(TGLBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FHandle: TGLARBVertexProgramHandle;
     FSource: TStringList;
     FSourceFile: string;
@@ -689,7 +690,7 @@ type
     procedure SetSourceFile(AValue: string);
     function GetHandle: TGLARBVertexProgramHandle;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -701,7 +702,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TGLARBVertexProgramHandle read GetHandle;
   published
-    { Published Declarations }
+    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property InfoLog: string read FInfoLog;
@@ -739,7 +740,7 @@ type
   protected
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -749,7 +750,7 @@ type
     procedure Apply(var ARci: TGLRenderContextInfo);
     procedure UnApply(var ARci: TGLRenderContextInfo);
   published
-    { Published Declarations }
+    
     property LibCombinerName: string read GetLibCombinerName
       write SetLibCombinerName;
     property LibAsmProgName: string read GetLibAsmProgName
@@ -790,11 +791,11 @@ type
 
   TGLShaderEx = class(TGLBaseMaterialCollectionItem)
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   private
-    { Private Declarations }
+     
     FHandle: array[TGLShaderType] of TGLShaderHandle;
     FSource: TStringList;
     FSourceFile: string;
@@ -811,7 +812,7 @@ type
     procedure SetGeometryVerticesOut(AValue: Integer);
     function GetHandle: TGLShaderHandle;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -823,7 +824,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
     property Handle: TGLShaderHandle read GetHandle;
   published
-    { Published Declarations }
+    
     property Source: TStringList read FSource write SetSource;
     property SourceFile: string read FSourceFile write SetSourceFile;
     property ShaderType: TGLShaderType read FShaderType
@@ -842,7 +843,7 @@ type
 
   TGLAbstractShaderUniform = class(TGLUpdateAbleObject, IShaderParameter)
   protected
-    { Protected Declarations }
+    
     FName: string;
     FNameHashCode: Integer;
     FType: TGLSLDataType;
@@ -914,7 +915,7 @@ type
 
   TGLShaderUniform = class(TGLAbstractShaderUniform, IShaderParameter)
   protected
-    { Protected Declarations }
+    
     FLocation: Integer;
     FStoreProgram: Cardinal;
     FAutoSet: TUniformAutoSetMethod;
@@ -965,7 +966,7 @@ type
     procedure WriteToFiler(AWriter: TWriter); override;
     procedure ReadFromFiler(AReader: TReader); override;
   public
-    { Public Declarations }
+    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
@@ -983,7 +984,7 @@ type
 
   TGLShaderUniformDSA = class(TGLShaderUniform)
   protected
-    { Protected Declarations }
+    
     procedure SetFloat(const Value: TGLFloat); override;
     procedure SetVec2(const Value: TVector2f); override;
     procedure SetVec3(const Value: TVector3f); override;
@@ -1003,7 +1004,7 @@ type
     procedure SetMat3(const Value: TMatrix3f); override;
     procedure SetMat4(const Value: TMatrix4f); override;
   public
-    { Public Declarations }
+    
     procedure SetFloatArray(const Values: PGLFloat; Count: Integer); override;
     procedure SetIntArray(const Values: PGLInt; Count: Integer); override;
     procedure SetUIntArray(const Values: PGLUInt; Count: Integer); override;
@@ -1014,13 +1015,13 @@ type
 
   TGLShaderUniformTexture = class(TGLShaderUniform)
   private
-    { Private Declarations }
+     
     FLibTexture: TGLAbstractTexture;
     FLibSampler: TGLTextureSampler;
     FTarget: TGLTextureTarget;
     FSwizzling: TSwizzleVector;
   protected
-    { Protected Declarations }
+    
     FLibTexureName: TGLMaterialComponentName;
     FLibSamplerName: TGLMaterialComponentName;
     function GetTextureName: string; override;
@@ -1034,7 +1035,7 @@ type
     procedure ReadFromFiler(AReader: TReader); override;
     procedure Loaded;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1056,7 +1057,7 @@ type
 
   TGLBaseShaderModel = class(TGLLibMaterialProperty)
   protected
-    { Protected Declarations }
+    
     FHandle: TGLProgramHandle;
     FLibShaderName: array[TGLShaderType] of string;
     FShaders: array[TGLShaderType] of TGLShaderEx;
@@ -1089,7 +1090,7 @@ type
     class function IsSupported: Boolean; virtual; abstract;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1107,7 +1108,7 @@ type
     property IsValid: Boolean read FIsValid;
     property Uniforms[const AName: string]: IShaderParameter read GetUniform;
   published
-    { Published Declarations }
+    
     // Compilation info log for design time
     property InfoLog: string read FInfoLog;
     // Turn on autofill of uniforms
@@ -1118,20 +1119,20 @@ type
 
   TGLShaderModel3 = class(TGLBaseShaderModel)
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibVertexShaderName;
     property LibFragmentShaderName;
   end;
 
   TGLShaderModel4 = class(TGLBaseShaderModel)
   public
-    { Public Declarations }
+    
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibVertexShaderName;
     property LibGeometryShaderName;
     property LibFragmentShaderName;
@@ -1139,12 +1140,12 @@ type
 
   TGLShaderModel5 = class(TGLBaseShaderModel)
   public
-    { Public Declarations }
+    
     procedure Apply(var ARci: TGLRenderContextInfo); override;
     procedure UnApply(var ARci: TGLRenderContextInfo); override;
     class function IsSupported: Boolean; override;
   published
-    { Published Declarations }
+    
     property LibTessControlShaderName;
     property LibTessEvalShaderName;
     property LibVertexShaderName;
@@ -1157,7 +1158,7 @@ type
 
   TGLLibMaterialEx = class(TGLAbstractLibMaterial)
   private
-    { Private Declarations }
+     
     FHandle: TGLVirtualHandle;
     FApplicableLevel: TGLMaterialLevel;
     FSelectedLevel: TGLMaterialLevel;
@@ -1188,7 +1189,7 @@ type
     procedure RemoveDefferedInit;
     procedure DoOnPrepare(Sender: TGLContext);
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -1200,7 +1201,7 @@ type
 
     function Blended: Boolean; override;
   published
-    { Published Declarations }
+    
     property ApplicableLevel: TGLMaterialLevel read FApplicableLevel write
       SetLevel
       default mlAuto;
@@ -1241,7 +1242,7 @@ type
     procedure SetItems(AIndex: Integer; const AValue: TGLLibMaterialEx);
     function GetItems(AIndex: Integer): TGLLibMaterialEx;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     function MaterialLibrary: TGLMaterialLibraryEx;
@@ -1260,10 +1261,10 @@ type
 
   TGLMatLibComponents = class(TGLXCollection)
   protected
-    { Protected Declarations }
+    
     function GetItems(index: Integer): TGLBaseMaterialCollectionItem;
   public
-    { Public Declarations }
+    
     function GetNamePath: string; override;
     class function ItemsClass: TGLXCollectionItemClass; override;
     property Items[index: Integer]: TGLBaseMaterialCollectionItem
@@ -1292,10 +1293,10 @@ type
 
   TGLMaterialLibraryEx = class(TGLAbstractMaterialLibrary)
   private
-    { Private Declarations }
+     
     FComponents: TGLMatLibComponents;
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
     function GetMaterials: TGLLibMaterialsEx;
     procedure SetMaterials(AValue: TGLLibMaterialsEx);
@@ -1306,7 +1307,7 @@ type
     procedure WriteComponents(AStream: TStream);
     procedure ReadComponents(AStream: TStream);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1327,7 +1328,7 @@ type
 
     procedure SetLevelForAll(const ALevel: TGLMaterialLevel);
   published
-    { Published Declarations }
+    
       {The materials collection. }
     property Materials: TGLLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
@@ -1419,58 +1420,35 @@ type
   TStandartUniformAutoSetExecutor = class
   public
     constructor Create;
-    procedure SetModelMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetViewMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetInvModelMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetNormalModelMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetInvModelViewMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetWorldViewProjectionMatrix(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetCameraPosition(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
+    procedure SetModelMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetViewMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetProjectionMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetInvModelMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetModelViewMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetNormalModelMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetInvModelViewMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetViewProjectionMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetWorldViewProjectionMatrix(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetCameraPosition(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
     // Lighting
-    procedure SetLightSource0Position(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
+    procedure SetLightSource0Position(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
     // Material
-    procedure SetMaterialFrontAmbient(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialFrontDiffuse(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialFrontSpecular(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialFrontEmission(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialFrontShininess(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialBackAmbient(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialBackDiffuse(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialBackSpecular(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialBackShininess(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
-    procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci:
-      TGLRenderContextInfo);
+    procedure SetMaterialFrontAmbient(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialFrontDiffuse(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialFrontSpecular(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialFrontEmission(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialFrontShininess(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialBackAmbient(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialBackDiffuse(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialBackSpecular(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialBackShininess(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
+    procedure SetMaterialBackEmission(Sender: IShaderParameter; var ARci: TGLRenderContextInfo);
   end;
 
 var
   vGLMaterialExNameChangeEvent: TNotifyEvent;
   vStandartUniformAutoSetExecutor: TStandartUniformAutoSetExecutor;
-  vStoreBegin: procedure(mode: Cardinal);
-{$IFDEF MSWINDOWS}stdcall;{$ENDIF}
-{$IFDEF UNIX}cdecl;{$ENDIF}
+  vStoreBegin: procedure(mode: Cardinal);{$IFDEF MSWINDOWS}stdcall;{$ELSE}cdecl;{$ENDIF}
 
 procedure RegisterGLMaterialExNameChangeEvent(AEvent: TNotifyEvent);
 begin
@@ -1493,8 +1471,7 @@ begin
     Result := (Result shl 1) + Byte(AName[i]);
 end;
 
-procedure Div2(var Value: Integer);
-{$IFDEF GLS_INLINE} inline;{$ENDIF}
+procedure Div2(var Value: Integer);{$IFDEF GLS_INLINE} inline;{$ENDIF}
 begin
   Value := Value div 2;
   if Value = 0 then
@@ -1505,11 +1482,8 @@ function CalcTextureLevelNumber(ATarget: TGLTextureTarget; w, h, d: Integer):
   Integer;
 begin
   Result := 0;
-
   case ATarget of
-
     ttNoShape: ;
-
     ttTexture1D, ttTexture1DArray, ttTextureCube, ttTextureCubeArray:
       repeat
         Inc(Result);
@@ -1536,8 +1510,6 @@ begin
       Result := 1;
   end;
 end;
-
-{$IFDEF GLS_REGION}{$REGION 'TGLBaseMaterialCollectionItem'}{$ENDIF}
 
 destructor TGLBaseMaterialCollectionItem.Destroy;
 var
@@ -1638,10 +1610,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLFixedFunctionProperties'}{$ENDIF}
-
 procedure TGLFixedFunctionProperties.Apply(var ARci: TGLRenderContextInfo);
 begin
   with ARci.GLStates do
@@ -1663,10 +1631,8 @@ begin
         Enable(stLighting);
         FFrontProperties.Apply(ARci, cmFront);
       end;
-
       if FPolygonMode = pmLines then
         Disable(stLineStipple);
-
       // Fog switch
       if (moIgnoreFog in MaterialOptions) or not ARci.bufferFog then
         Disable(stFog)
@@ -1906,18 +1872,10 @@ begin
     FTexProp.UnApply(ARci);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLAbstractTexture'}{$ENDIF}
-
 function TGLAbstractTexture.GetTextureTarget: TGLTextureTarget;
 begin
   Result := FHandle.Target;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureImageEx'}{$ENDIF}
 
 procedure TGLTextureImageEx.Apply(var ARci: TGLRenderContextInfo);
 begin
@@ -2704,10 +2662,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureSampler'}{$ENDIF}
-
 procedure TGLTextureSampler.Apply(var ARci: TGLRenderContextInfo);
 begin
   if FIsValid then
@@ -2979,10 +2933,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureCombiner'}{$ENDIF}
-
 procedure TGLTextureCombiner.Assign(Source: TPersistent);
 var
   LCombiner: TGLTextureCombiner;
@@ -3103,9 +3053,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterialEx'}{$ENDIF}
 
 procedure TGLLibMaterialEx.Apply(var ARci: TGLRenderContextInfo);
 var
@@ -3452,10 +3399,6 @@ begin
     FNextPass.Apply(ARCi);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLMultitexturingProperties'}{$ENDIF}
-
 procedure TGLMultitexturingProperties.Apply(var ARci: TGLRenderContextInfo);
 var
   N, U: Integer;
@@ -3708,10 +3651,6 @@ begin
   if Assigned(FLibAsmProg) then
     GL.Disable(GL_VERTEX_PROGRAM_ARB);
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureProperties'}{$ENDIF}
 
 procedure TGLTextureProperties.Apply(var ARci: TGLRenderContextInfo);
 var
@@ -4309,10 +4248,6 @@ begin
     end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLShaderEx'}{$ENDIF}
-
 procedure TGLShaderEx.Assign(Source: TPersistent);
 var
   LShader: TGLShaderEx;
@@ -4535,9 +4470,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterialProperty'}{$ENDIF}
 
 function TGLLibMaterialProperty.GetMaterial: TGLLibMaterialEx;
 begin
@@ -4601,9 +4533,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLLibMaterialsEx'}{$ENDIF}
 
 function TGLLibMaterialsEx.Add: TGLLibMaterialEx;
 begin
@@ -4661,10 +4590,6 @@ procedure TGLLibMaterialsEx.SetItems(AIndex: Integer;
 begin
   inherited Items[AIndex] := AValue;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLBaseShaderModel'}{$ENDIF}
 
 procedure TGLBaseShaderModel.Apply(var ARci: TGLRenderContextInfo);
 var
@@ -5265,8 +5190,7 @@ begin
   Result := GL.ARB_gpu_shader5;
 end;
 
-procedure BeginPatch(mode: Cardinal);
-{$IFDEF MSWINDOWS} stdcall{$ELSE}cdecl{$ENDIF};
+procedure BeginPatch(mode: Cardinal);{$IFDEF MSWINDOWS} stdcall{$ELSE}cdecl{$ENDIF};
 begin
   if mode = GL_PATCHES then
     vStoreBegin(GL_PATCHES)
@@ -5307,10 +5231,6 @@ begin
     GL.Begin_ := vStoreBegin;
   ARci.amalgamating := False;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLMatLibComponents'}{$ENDIF}
 
 function TGLMatLibComponents.GetAttachmentByName(
   const AName: TGLMaterialComponentName): TGLFrameBufferAttachment;
@@ -5488,9 +5408,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLMaterialLibraryEx'}{$ENDIF}
 
 function TGLMaterialLibraryEx.AddAttachment(
   const AName: TGLMaterialComponentName): TGLFrameBufferAttachment;
@@ -5631,9 +5548,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLShaderUniformTexture'}{$ENDIF}
 
 procedure TGLShaderUniformTexture.Apply(var ARci: TGLRenderContextInfo);
 
@@ -5970,10 +5884,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLAbstractShaderUniform'}{$ENDIF}
-
 function TGLAbstractShaderUniform.GetFloat: Single;
 begin
   FillChar(Result, SizeOf(Result), $00);
@@ -6188,9 +6098,6 @@ procedure TGLAbstractShaderUniform.WriteToFiler(AWriter: TWriter);
 begin
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLShaderUniform'}{$ENDIF}
 
 function TGLShaderUniform.GetFloat: Single;
 begin
@@ -6469,10 +6376,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLShaderUniformDSA'}{$ENDIF}
-
 procedure TGLShaderUniformDSA.SetFloat(const Value: TGLFloat);
 begin
   GL.ProgramUniform1f(GetProgram, FLocation, Value);
@@ -6568,10 +6471,6 @@ begin
     Value.W);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLTextureSwizzling'}{$ENDIF}
-
 procedure TGLTextureSwizzling.Assign(Source: TPersistent);
 var
   LSwizzling: TGLTextureSwizzling;
@@ -6636,10 +6535,6 @@ begin
     WriteInteger(Integer(FSwizzles[3]));
   end;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLFrameBufferAttachment'}{$ENDIF}
 
 procedure TGLFrameBufferAttachment.Apply(var ARci: TGLRenderContextInfo);
 begin
@@ -7071,10 +6966,6 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TStandartUniformAutoSetExecutor'}{$ENDIF}
-
 constructor TStandartUniformAutoSetExecutor.Create;
 begin
   RegisterUniformAutoSetMethod('Camera world position', GLSLType4F,
@@ -7248,9 +7139,6 @@ begin
     ARci.PipelineTransformation.ProjectionMatrix);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
-
-{$IFDEF GLS_REGION}{$REGION 'TGLASMVertexProgram'}{$ENDIF}
 
 procedure TGLASMVertexProgram.Assign(Source: TPersistent);
 var
@@ -7404,8 +7292,6 @@ begin
     WriteString(FSourceFile);
   end;
 end;
-
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 initialization
 

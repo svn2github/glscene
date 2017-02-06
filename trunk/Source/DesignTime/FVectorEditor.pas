@@ -62,11 +62,11 @@ type
     procedure SpeedButton9Click(Sender: TObject);
     procedure SBInvertClick(Sender: TObject);
   private
-    { Private declarations }
+     
     vx, vy, vz : Single;
     procedure TestInput(edit : TEdit; imError : TImage; var dest : Single);
   public
-    { Public declarations }
+    
     function Execute(var x, y, z : Single) : Boolean;
   end;
 

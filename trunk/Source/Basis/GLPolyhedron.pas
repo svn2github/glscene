@@ -15,7 +15,7 @@ interface
 uses
   Winapi.OpenGL,
   System.Classes,
-  //GLS
+  
   GLScene,
   GLVectorGeometry,
   GLObjects,
@@ -27,7 +27,7 @@ type
     a texture generation mode, no texture will be mapped. }
   TGLTetrahedron = class(TGLSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
@@ -35,7 +35,7 @@ type
     a texture generation mode, no texture will be mapped. }
   TGLOctahedron = class(TGLSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
@@ -43,7 +43,7 @@ type
     a texture generation mode, no texture will be mapped. }
   TGLHexahedron = class(TGLSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure GetVolume;
   end;
@@ -52,7 +52,7 @@ type
    a texture generation mode, no texture will be mapped. }
   TGLDodecahedron = class(TGLSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 
@@ -60,7 +60,7 @@ type
      a texture generation mode, no texture will be mapped. }
   TGLIcosahedron = class(TGLSceneObject)
   public
-    { Public Declarations }
+    
     procedure BuildList(var rci: TGLRenderContextInfo); override;
   end;
 

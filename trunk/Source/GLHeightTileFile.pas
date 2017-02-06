@@ -90,7 +90,7 @@ type
   { Interfaces a Tiled file }
   TGLHeightTileFile = class(TObject)
   private
-    { Private Declarations }
+     
     FFile: TStream;
     FHeader: THTFHeader;
     FTileIndex: packed array of TGLHeightTileInfo;
@@ -104,7 +104,7 @@ type
     FInBuf: array of ShortInt;
 
   protected
-    { Protected Declarations }
+    
     function GetTiles(index: Integer): PHeightTileInfo;
     function QuadTableX(x: Integer): Integer;
     function QuadTableY(y: Integer): Integer;
@@ -116,7 +116,7 @@ type
       write FHeader.TileIndexOffset;
 
   public
-    { Public Declarations }
+    
     { Creates a new HTF file.
       Read and data access methods are not available when creating. }
     constructor CreateNew(const fileName: String;

@@ -31,7 +31,7 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   GLStrings,
   GLCrossPlatform,

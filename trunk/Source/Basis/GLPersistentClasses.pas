@@ -61,11 +61,11 @@ type
   {Virtual layer similar to VCL's TReader (but reusable) }
   TVirtualReader = class
   private
-    { Private Declarations }
+     
     FStream: TStream;
 
   public
-    { Public Declarations }
+    
     constructor Create(Stream: TStream); virtual;
 
     property Stream: TStream read FStream;
@@ -92,11 +92,11 @@ type
   {Virtual layer similar to VCL's TWriter (but reusable) }
   TVirtualWriter = class
   private
-    { Private Declarations }
+     
     FStream: TStream;
 
   public
-    { Public Declarations }
+    
     constructor Create(Stream: TStream); virtual;
 
     property Stream: TStream read FStream;
@@ -140,10 +140,10 @@ type
        reference counting. }
   TPersistentObject = class(TPersistent, IPersistentObject)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
     procedure RaiseFilerException(const archiveVersion: Integer);
 
     function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
@@ -151,7 +151,7 @@ type
     function _Release: Integer; stdcall;
 
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     constructor CreateFromFiler(reader: TVirtualReader);
     destructor Destroy; override;
@@ -193,14 +193,14 @@ type
      Note: the IndexOf implementation is up to 3 times faster than that of TList }
   TPersistentObjectList = class(TPersistentObject)
   private
-    { Private Declarations }
+     
     FList: PPointerObjectList;
     FCount: Integer;
     FCapacity: Integer;
     FGrowthDelta: integer;
 
   protected
-    { Protected Declarations }
+    
     procedure Error; virtual;
     function Get(Index: Integer): TObject;
     procedure Put(Index: Integer; Item: TObject);
@@ -216,7 +216,7 @@ type
     procedure DoClean;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -279,15 +279,15 @@ type
   {Wraps a TReader-compatible reader. }
   TBinaryReader = class(TVirtualReader)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
     function ReadValue: TValueType;
     function ReadWideString(vType: TValueType): WideString;
 
   public
-    { Public Declarations }
+    
     procedure Read(var Buf; Count: Longint); override;
     function NextValue: TValueType; override;
 
@@ -306,15 +306,15 @@ type
   {Wraps a TWriter-compatible writer. }
   TBinaryWriter = class(TVirtualWriter)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
     procedure WriteAnsiString(const aString: AnsiString); virtual;
     procedure WriteWideString(const aString: WideString); virtual;
 
   public
-    { Public Declarations }
+    
     procedure Write(const Buf; Count: Longint); override;
     procedure WriteInteger(anInteger: Integer); override;
     procedure WriteBoolean(aBoolean: Boolean); override;
@@ -330,16 +330,16 @@ type
   {Reads object persistence in Text format. }
   TTextReader = class(TVirtualReader)
   private
-    { Private Declarations }
+     
     FValueType: string;
     FData: string;
 
   protected
-    { Protected Declarations }
+    
     procedure ReadLine(const requestedType: string = '');
 
   public
-    { Public Declarations }
+    
     procedure Read(var Buf; Count: Longint); override;
     function NextValue: TValueType; override;
 
@@ -358,15 +358,15 @@ type
   {Writes object persistence in Text format. }
   TTextWriter = class(TVirtualWriter)
   private
-    { Private Declarations }
+     
     FIndentLevel: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteLine(const valueType, data: string);
 
   public
-    { Public Declarations }
+    
     constructor Create(aStream: TStream); override;
     destructor Destroy; override;
 

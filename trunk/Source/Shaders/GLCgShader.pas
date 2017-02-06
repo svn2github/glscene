@@ -64,7 +64,7 @@ type
   { Wrapper around a Cg program. }
   TCgProgram = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FCgContext: PcgContext;
     FCode: TStrings; // the Cg program itself
     FProgramName: String;
@@ -83,7 +83,7 @@ type
     procedure SetManualNotification(const Value: boolean);
 
   protected
-    { Protected Declarations }
+    
     FProgramType: TcgProgramType;
     FProfile: TcgProfile;
 
@@ -100,7 +100,7 @@ type
     procedure ClearParamsList;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -156,7 +156,7 @@ type
     property ManualNotification: boolean read GetManualNotification
       write SetManualNotification default False;
   published
-    { Published Declarations }
+    
     property Code: TStrings read FCode write SetCode;
     property ProgramName: String read FProgramName write SetProgramName;
     property Enabled: boolean read FEnabled write FEnabled default True;
@@ -174,7 +174,7 @@ type
   { Wrapper around a Cg parameter of the main program. }
   TCgParameter = class(TObject)
   private
-    { Private Declarations }
+     
     FOwner: TCgProgram;
     FName: String;
     FHandle: PCGParameter;
@@ -182,7 +182,7 @@ type
     FDirection: TCGenum; // e.g. CG_INOUT
     FVariability: TCGenum; // e.g. CG_UNIFORM
   protected
-    { Protected Declarations }
+    
     function TypeMismatchMessage: string;
     procedure CheckValueType(aType: TCGtype); overload;
     procedure CheckValueType(const types: array of TCGtype); overload;
@@ -197,7 +197,7 @@ type
     procedure SetAsVector3f(const val: TVector3f);
     procedure SetAsVector4f(const val: TVector4f);
   public
-    { Public Declarations }
+    
     constructor Create; virtual;
     destructor Destroy; override;
 
@@ -259,7 +259,7 @@ type
     FVPProfile: TCgVPProfile;
     procedure SetVPProfile(v: TCgVPProfile);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     function GetLatestProfile: TcgProfile; override;
   published
@@ -277,7 +277,7 @@ type
     procedure SetManageTexture(const Value: boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     procedure Initialize; override;
     function GetLatestProfile: TcgProfile; override;
@@ -295,7 +295,7 @@ type
   //
   TCustomCgShader = class(TGLShader)
   private
-    { Private Declarations }
+     
     FVertexProgram: TCgVertexProgram;
     FFragmentProgram: TCgFragmentProgram;
 
@@ -304,7 +304,7 @@ type
     FDesignEnable: boolean;
 
   protected
-    { Protected Declarations }
+    
     // Vertex Program
     procedure SetVertexProgram(const val: TCgVertexProgram);
     procedure SetOnApplyVertexProgram(const val: TCgApplyEvent);
@@ -360,7 +360,7 @@ type
       write SetFragmentProgram;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -387,7 +387,7 @@ type
   //
   TCgShader = class(TCustomCgShader)
   published
-    { Published Declarations }
+    
     property DesignEnable;
     property ShaderStyle;
     property FailedInitAction;

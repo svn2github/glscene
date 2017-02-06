@@ -49,10 +49,10 @@ type
     procedure UnloadButtonClick(Sender: TObject);
     procedure ServiceBoxChange(Sender: TObject);
   private
-    { Private declarations }
+     
     FManager: TGLPlugInManager;
   public
-    { Public declarations }
+    
     class procedure EditPlugIns(AManager: TGLPlugInManager);
   end;
 

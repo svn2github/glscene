@@ -49,24 +49,24 @@ type
     can't be used to duplicate an hud sprite. }
   TGLHUDSprite = class(TGLSprite)
   private
-    { Private Declarations }
+     
     FXTiles, FYTiles: Integer;
     function StoreWidth: Boolean;
     function StoreHeight: Boolean;
   protected
-    { Protected Declarations }
+    
     procedure SetXTiles(const val: Integer);
     procedure SetYTiles(const val: Integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
 
     procedure DoRender(var rci: TGLRenderContextInfo;
       renderSelf, renderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     property XTiles: Integer read FXTiles write SetXTiles default 1;
     property YTiles: Integer read FYTiles write SetYTiles default 1;
     // Redeclare them with new default values.
@@ -82,7 +82,7 @@ type
     alignment can also be controled. }
   TGLHUDText = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FBitmapFont: TGLCustomBitmapFont;
     FText: UnicodeString;
     FRotation: Single;
@@ -91,7 +91,7 @@ type
     FModulateColor: TGLColor;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetRotation(const val: Single);
@@ -105,7 +105,7 @@ type
       var rci: TGLRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -113,7 +113,7 @@ type
       renderSelf, renderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+    
     {  Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }

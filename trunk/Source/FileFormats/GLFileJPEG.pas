@@ -19,7 +19,7 @@ uses
   System.SysUtils,
   Vcl.Graphics,
   Vcl.Imaging.Jpeg,
-  //GLS
+  
   GLCrossPlatform,
   OpenGLTokens,
   GLContext,

@@ -18,9 +18,20 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
   //GLS
-  GLScene, GLObjects, GLWin32Viewer, GLTree, GLTexture, GLVectorFileObjects,
-  GLAsyncTimer, GLCadencer, GLCrossPlatform, GLMaterial, GLCoordinates,
-  GLBaseClasses, GLUtils, GLFileTGA;
+  GLScene,
+  GLObjects,
+  GLWin32Viewer,
+  GLTree,
+  GLTexture,
+  GLVectorFileObjects,
+  GLAsyncTimer,
+  GLCadencer,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils,
+  GLFileTGA;
 
 type
   TForm1 = class(TForm)

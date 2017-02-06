@@ -29,6 +29,7 @@ uses
   GLCoordinates,
   GLCrossPlatform,
   GLBaseClasses,
+  GLUtils,
   GLFileSMD;
 
 type
@@ -71,9 +72,6 @@ var
 implementation
 
 {$R *.dfm}
-
-uses
-  GLUtils;
 
 procedure TForm1.FormCreate(Sender: TObject);
 var

@@ -5,17 +5,8 @@
    Base classes and interface for GLScene Sound System 
 
    History :  
-       24/04/11 - Yar - Bugfixed TGLSoundSample.Assign (thanks to Anonymous)
-       06/06/10 - Yar - Fixed warnings
-       06/05/09 - DanB - Split TGLSMWaveOut to GLSMWaveOut.pas, to remove windows dependancy
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       22/07/02 - EG - SetMute/SetPause fix (Sternas Stefanos)
-       02/07/02 - EG - Persistence fix (MP3 / Sternas Stefanos)
-       05/03/02 - EG - TGLBSoundEmitter.Loaded
-       27/02/02 - EG - Added 3D Factors, special listener-is-camera support
-       13/01/01 - EG - Added CPUUsagePercent
-       09/06/00 - EG - Various enhancements
      04/06/00 - EG - Creation
+    The whole history is logged in previous version of the unit
 
 }
 unit GLSound;
@@ -45,13 +36,13 @@ type
     {Stores a single PCM coded sound sample. }
   TGLSoundSample = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FName: string;
     FData: TGLSoundFile;
     FTag: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure DefineProperties(Filer: TFiler); override;
     procedure ReadData(Stream: TStream); virtual;
     procedure WriteData(Stream: TStream); virtual;
@@ -59,7 +50,7 @@ type
     procedure SetData(const val: TGLSoundFile);
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -77,7 +68,7 @@ type
     property ManagerTag: Integer read FTag write FTag;
 
   published
-    { Published Declarations }
+    
     property Name: string read FName write FName;
     property Data: TGLSoundFile read FData write SetData stored False;
   end;
@@ -86,14 +77,14 @@ type
   //
   TGLSoundSamples = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSoundSample);
     function GetItems(index: Integer): TGLSoundSample;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     function Add: TGLSoundSample;
     function FindItemID(ID: Integer): TGLSoundSample;
@@ -109,23 +100,23 @@ type
   //
   TGLSoundLibrary = class(TComponent)
   private
-    { Private Declarations }
+     
     FSamples: TGLSoundSamples;
 
   protected
-    { Protected Declarations }
+    
     procedure SetSamples(const val: TGLSoundSamples);
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Samples: TGLSoundSamples read FSamples write SetSamples;
   end;
 
@@ -141,7 +132,7 @@ type
     {Base class for origin of sound playback. }
   TGLBaseSoundSource = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FBehaviourToNotify: TGLBSoundEmitter;
       // private only, NOT persistent, not assigned
     FPriority: Integer;
@@ -161,7 +152,7 @@ type
     FFrequency: Integer;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
 
@@ -183,7 +174,7 @@ type
     procedure SetFrequency(const val: Integer);
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -205,7 +196,7 @@ type
     property Origin: TGLBaseSceneObject read FOrigin write SetOrigin;
 
   published
-    { Published Declarations }
+    
     property SoundLibrary: TGLSoundLibrary read GetSoundLibrary write
       SetSoundLibrary;
     property SoundName: string read FSoundName write SetSoundName;
@@ -260,11 +251,11 @@ type
        vector. }
   TGLSoundSource = class(TGLBaseSoundSource)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Origin;
   end;
 
@@ -272,7 +263,7 @@ type
   //
   TGLSoundSources = class(TCollection)
   protected
-    { Protected Declarations }
+    
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSoundSource);
@@ -282,7 +273,7 @@ type
     function FindItemID(ID: Integer): TGLSoundSource;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
 
     property Items[index: Integer]: TGLSoundSource read GetItems write SetItems;
@@ -311,7 +302,7 @@ type
        occur in destructor however. }
   TGLSoundManager = class(TGLCadenceAbleComponent)
   private
-    { Private Declarations }
+     
     FActive: Boolean;
     FMute: Boolean;
     FPause: Boolean;
@@ -336,7 +327,7 @@ type
     procedure ReadDoppler(reader: TReader);
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetSources(const val: TGLSoundSources);
@@ -394,7 +385,7 @@ type
       virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -416,7 +407,7 @@ type
     function EAXSupported: Boolean; dynamic;
 
   published
-    { Published Declarations }
+    
       {Activation/deactivation of the low-level sound API }
     property Active: Boolean read FActive write SetActive default False;
 
@@ -492,13 +483,13 @@ type
        convenience. }
   TGLBSoundEmitter = class(TGLBehaviour)
   private
-    { Private Declarations }
+     
     FPlaying: Boolean; // used at design-time ONLY
     FSource: TGLBaseSoundSource;
     FPlayingSource: TGLSoundSource;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
     procedure Loaded; override;
@@ -510,7 +501,7 @@ type
     procedure NotifySourceDestruction(aSource: TGLSoundSource);
 
   public
-    { Public Declarations }
+    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -525,7 +516,7 @@ type
     property PlayingSource: TGLSoundSource read FPlayingSource;
 
   published
-    { Published Declarations }
+    
     property Source: TGLBaseSoundSource read FSource write SetSource;
     property Playing: Boolean read GetPlaying write SetPlaying default False;
 

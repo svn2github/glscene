@@ -45,7 +45,7 @@ type
     data, and to a MaterialLibrary where bumpmaps will be placed. }
   TGLBumpmapHDS = class(TGLHeightDataSourceFilter)
   private
-    { Private Declarations }
+     
     // FElevationHDS : TGLHeightDataSource;
     FBumpmapLibrary: TGLMaterialLibrary;
     FOnNewTilePrepared: TNewTilePreparedEvent;
@@ -54,14 +54,14 @@ type
     FMaxTextures: Integer;
     Uno: TCriticalSection;
   protected
-    { Protected Declarations }
+    
     procedure SetBumpmapLibrary(const val: TGLMaterialLibrary);
     procedure SetBumpScale(const val: Single);
     function StoreBumpScale: Boolean;
     procedure SetSubSampling(const val: Integer);
     procedure Trim(MaxTextureCount: Integer);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: TGLHeightData); override;
@@ -73,7 +73,7 @@ type
     // procedure  TileTextureCoordinates(heightData : TGLHeightData; TextureScale:TTexPoint; TextureOffset:TTexPoint);
     procedure PreparingData(heightData: TGLHeightData); override;
   published
-    { Published Declarations }
+    
     property BumpmapLibrary: TGLMaterialLibrary read FBumpmapLibrary
       write SetBumpmapLibrary;
     property OnNewTilePrepared: TNewTilePreparedEvent read FOnNewTilePrepared

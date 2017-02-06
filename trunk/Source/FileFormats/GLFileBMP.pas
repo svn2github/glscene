@@ -29,7 +29,7 @@ type
 
   TGLBMPImage = class(TGLBaseImage)
   private
-    { Private declarations }
+     
     FTopDown: Boolean;
     RedMask, GreenMask, BlueMask: LongWord;
     RedShift, GreenShift, BlueShift: ShortInt;
@@ -46,7 +46,7 @@ type
     function Quadrochrome(N: Integer): Integer;
     function Octochrome(N: Integer): Integer;
   public
-    { Public Declarations }
+    
     procedure LoadFromFile(const filename: string); override;
     procedure SaveToFile(const filename: string); override;
     procedure LoadFromStream(stream: TStream); override;

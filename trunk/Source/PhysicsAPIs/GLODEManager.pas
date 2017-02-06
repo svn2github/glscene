@@ -74,7 +74,7 @@ type
   //
   TGLODEManager = class(TComponent)
   private
-    { Private Declarations }
+     
     FWorld: PdxWorld;
     FSpace: PdxSpace;
     FContactGroup: TdJointGroupID;
@@ -93,7 +93,7 @@ type
     FGeomColorDynD, FGeomColorDynE, FGeomColorStat: TGLColor;
 
   protected
-    { Protected Declarations }
+    
     procedure Loaded; override;
 
     procedure CalcContact(Object1, Object2: TObject; var Contact: TdContact);
@@ -126,7 +126,7 @@ type
       read GetODEBehaviour;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Step(deltaTime: double);
@@ -139,7 +139,7 @@ type
     property NumContactJoints: Integer read FNumContactJoints;
 
   published
-    { Published Declarations }
+    
     property Gravity: TGLCoordinates read FGravity write SetGravity;
     property OnCollision: TGLODECollisionEvent read FOnCollision
       write FOnCollision;
@@ -162,14 +162,14 @@ type
   //
   TGLODECollisionSurface = class(TPersistent)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
     FSurfaceParams: TdSurfaceParameters;
     FRFCoeff: Single;
     FRFEnabled: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
 
@@ -198,13 +198,13 @@ type
     procedure SetSlip2(Value: TdReal);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
     function GetOwner: TPersistent; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property RollingFrictionCoeff: Single read FRFCoeff write FRFCoeff;
     property RollingFrictionEnabled: Boolean read FRFEnabled write FRFEnabled;
     property SurfaceMode: TGLODESurfaceModes read GetSurfaceMode
@@ -237,7 +237,7 @@ type
     FInitialized: Boolean;
     FOwnerBaseSceneObject: TGLBaseSceneObject;
   protected
-    { Protected Declarations }
+    
     procedure Initialize; virtual;
     procedure Finalize; virtual;
 
@@ -250,7 +250,7 @@ type
     function GetAbsoluteMatrix: TMatrix;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -262,7 +262,7 @@ type
     property AbsoluteMatrix: TMatrix read GetAbsoluteMatrix;
 
   published
-    { Published Declarations }
+    
     property Manager: TGLODEManager read FManager write SetManager;
     property Surface: TGLODECollisionSurface read FSurface write SetSurface;
     property OnCollision: TGLODEObjectCollisionEvent read FOnCollision
@@ -274,7 +274,7 @@ type
   //
   TGLODEDynamic = class(TGLODEBehaviour)
   private
-    { Private Declarations }
+     
     FBody: PdxBody;
     FMass: TdMass;
     FElements: TGLODEElements;
@@ -282,7 +282,7 @@ type
     FJointRegister: TList;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     procedure Finalize; override;
     procedure WriteToFiler(writer: TWriter); override;
@@ -298,7 +298,7 @@ type
     procedure UnregisterJoint(Joint: TGLODEJointBase);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -325,7 +325,7 @@ type
     property Mass: TdMass read GetMass write SetMass;
 
   published
-    { Published Declarations }
+    
     property Elements: TGLODEElements read FElements;
     property Enabled: Boolean read GetEnabled write SetEnabled;
 
@@ -335,11 +335,11 @@ type
   //
   TGLODEStatic = class(TGLODEBehaviour)
   private
-    { Private Declarations }
+     
     FElements: TGLODEElements;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     procedure Finalize; override;
     procedure WriteToFiler(writer: TWriter); override;
@@ -347,7 +347,7 @@ type
     procedure AlignElements;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -358,7 +358,7 @@ type
     function AddNewElement(AChild: TGLODEElementClass): TGLODEElementBase; dynamic;
 
   published
-    { Published Declarations }
+    
     property Elements: TGLODEElements read FElements;
 
   end;
@@ -367,11 +367,11 @@ type
   //
   TGLODEElements = class(TGLXCollection)
   private
-    { Private Declarations }
+     
     function GetElement(index: Integer): TGLODEElementBase;
 
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
     class function ItemsClass: TGLXCollectionItemClass; override;
     procedure Initialize;
@@ -389,7 +389,7 @@ type
   //
   TGLODEElementBase = class(TGLXCollectionItem)
   private
-    { Private Declarations }
+     
     FMass: TdMass;
     FDensity: TdReal;
     FGeomTransform, FGeomElement: PdxGeom;
@@ -398,7 +398,7 @@ type
     FRealignODE, FInitialized, FDynamic, FIsCalculating: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; virtual;
     procedure Finalize; virtual;
     function CalculateMass: TdMass; virtual;
@@ -426,7 +426,7 @@ type
     procedure SetUp(const Value: TGLCoordinates);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -441,7 +441,7 @@ type
     property Initialized: Boolean read FInitialized;
 
   published
-    { Published Declarations }
+    
     property Density: TdReal read FDensity write SetDensity;
     property Position: TGLCoordinates read FPosition write SetPosition;
     property Direction: TGLCoordinates read FDirection write SetDirection;
@@ -454,11 +454,11 @@ type
   { ODE box implementation. }
   TODEElementBox = class(TGLODEElementBase)
   private
-    { Private Declarations }
+     
     FBoxWidth, FBoxHeight, FBoxDepth: TdReal;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
     procedure ODERebuild; override;
@@ -473,7 +473,7 @@ type
     procedure SetBoxDepth(const Value: TdReal);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
 
     procedure Render(var rci: TGLRenderContextInfo); override;
@@ -493,11 +493,11 @@ type
   { ODE sphere implementation. }
   TODEElementSphere = class(TGLODEElementBase)
   private
-    { Private Declarations }
+     
     FRadius: TdReal;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
     procedure ODERebuild; override;
@@ -509,7 +509,7 @@ type
     procedure SetRadius(const Value: TdReal);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
 
     procedure Render(var rci: TGLRenderContextInfo); override;
@@ -519,7 +519,7 @@ type
     class function ItemCategory: String; override;
 
   published
-    { Published Declarations }
+    
     property Radius: TdReal read GetRadius write SetRadius;
 
   end;
@@ -529,11 +529,11 @@ type
   { ODE capped cylinder implementation. }
   TODEElementCapsule = class(TGLODEElementBase)
   private
-    { Private Declarations }
+     
     FRadius, FLength: TdReal;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
     procedure ODERebuild; override;
@@ -547,7 +547,7 @@ type
     procedure SetLength(const Value: TdReal);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
 
     procedure Render(var rci: TGLRenderContextInfo); override;
@@ -557,7 +557,7 @@ type
     class function ItemCategory: String; override;
 
   published
-    { Published Declarations }
+    
     property Radius: TdReal read GetRadius write SetRadius;
     property Length: TdReal read GetLength write SetLength;
 
@@ -568,11 +568,11 @@ type
   { ODE cylinder implementation. }
   TODEElementCylinder = class(TGLODEElementBase)
   private
-    { Private Declarations }
+     
     FRadius, FLength: TdReal;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     function CalculateMass: TdMass; override;
     procedure ODERebuild; override;
@@ -586,7 +586,7 @@ type
     procedure SetLength(const Value: TdReal);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
 
     procedure Render(var rci: TGLRenderContextInfo); override;
@@ -596,7 +596,7 @@ type
     class function ItemCategory: String; override;
 
   published
-    { Published Declarations }
+    
     property Radius: TdReal read GetRadius write SetRadius;
     property Length: TdReal read GetLength write SetLength;
 
@@ -607,13 +607,13 @@ type
   { ODE tri-mesh implementation. }
   TGLODEElementTriMesh = class(TGLODEElementBase)
   private
-    { Private Declarations }
+     
     FTriMeshData: PdxTriMeshData;
     FVertices: TAffineVectorList;
     FIndices: TIntegerList;
 
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
     procedure Finalize; override;
     function CalculateMass: TdMass; override;
@@ -625,7 +625,7 @@ type
     procedure SetIndices(const Value: TIntegerList);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -645,7 +645,7 @@ type
   { ODE plane implementation. }
   TODEElementPlane = class(TGLODEElementBase)
   protected
-    { Protected Declarations }
+    
     procedure Initialize; override;
 
     procedure WriteToFiler(writer: TWriter); override;
@@ -654,7 +654,7 @@ type
     procedure AlignGeomElementToMatrix(Mat: TMatrix); override;
 
   public
-    { Public Declarations }
+    
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
     class function ItemCategory: String; override;
@@ -667,11 +667,11 @@ type
   { An XCollection decendant for ODE Joints. }
   TGLODEJoints = class(TGLXCollection)
   protected
-    { Protected Declarations }
+    
     function GetJoint(index: Integer): TGLODEJointBase;
 
   public
-    { Public Declarations }
+    
     class function ItemsClass: TGLXCollectionItemClass; override;
 
     procedure Initialize;
@@ -686,11 +686,11 @@ type
   { Component front-end for storing ODE Joints. }
   TGLODEJointList = class(TComponent)
   private
-    { Private Declarations }
+     
     FJoints: TGLODEJoints;
 
   protected
-    { Protected Declarations }
+    
     procedure WriteJoints(stream: TStream);
     procedure ReadJoints(stream: TStream);
     procedure DefineProperties(Filer: TFiler); override;
@@ -700,12 +700,12 @@ type
       Operation: TOperation); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Joints: TGLODEJoints read FJoints;
 
   end;
@@ -718,7 +718,7 @@ type
   { Base structures for ODE Joints. }
   TGLODEJointBase = class(TGLXCollectionItem)
   private
-    { Private Declarations }
+     
     FJointID: TdJointID;
     FObject1, FObject2: TGLBaseSceneObject;
     FManager: TGLODEManager;
@@ -727,7 +727,7 @@ type
     FJointOptions: TJointOptions;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -750,7 +750,7 @@ type
       write SetJointOptions;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; virtual;
@@ -765,7 +765,7 @@ type
     property Initialized: Boolean read FInitialized;
 
   published
-    { Published Declarations }
+    
     property Manager: TGLODEManager read FManager write SetManager;
     property Object1: TGLBaseSceneObject read FObject1 write SetObject1;
     property Object2: TGLBaseSceneObject read FObject2 write SetObject2;
@@ -780,7 +780,7 @@ type
 
   TGLODEJointParams = class(TPersistent)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
     FSetCallback: TGLODESetParamCallback;
     FGetCallback: TGLODEGetParamCallback;
@@ -793,7 +793,7 @@ type
       FFlagSuspensionCFM: Boolean;
 
   protected
-    { Protected Declarations }
+    
     function GetLoStop: TdReal;
     function GetHiStop: TdReal;
     function GetVel: TdReal;
@@ -822,7 +822,7 @@ type
     procedure ReadFromFiler(reader: TReader);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent);
     function GetOwner: TPersistent; override;
     procedure Assign(Source: TPersistent); override;
@@ -835,7 +835,7 @@ type
       write FGetCallback;
 
   published
-    { Published Declarations }
+    
     property LoStop: TdReal read GetLoStop write SetLoStop;
     property HiStop: TdReal read GetHiStop write SetHiStop;
     property Vel: TdReal read GetVel write SetVel;
@@ -855,12 +855,12 @@ type
   { ODE hinge joint implementation. }
   TGLODEJointHinge = class(TGLODEJointBase)
   private
-    { Private Declarations }
+     
     FAnchor, FAxis: TGLCoordinates;
     FAxisParams: TGLODEJointParams;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -875,7 +875,7 @@ type
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
     procedure StructureChanged; override;
@@ -885,7 +885,7 @@ type
     class function FriendlyDescription: String; override;
 
   published
-    { Published Declarations }
+    
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis: TGLCoordinates read FAxis write SetAxis;
     property AxisParams: TGLODEJointParams read FAxisParams write SetAxisParams;
@@ -897,11 +897,11 @@ type
   { ODE ball joint implementation. }
   TGLODEJointBall = class(TGLODEJointBase)
   private
-    { Private Declarations }
+     
     FAnchor: TGLCoordinates;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -910,7 +910,7 @@ type
     procedure AnchorChange(Sender: TObject);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -921,7 +921,7 @@ type
     class function FriendlyDescription: String; override;
 
   published
-    { Published Declarations }
+    
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
 
   end;
@@ -931,12 +931,12 @@ type
   { ODE slider joint implementation. }
   TGLODEJointSlider = class(TGLODEJointBase)
   private
-    { Private Declarations }
+     
     FAxis: TGLCoordinates;
     FAxisParams: TGLODEJointParams;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -949,7 +949,7 @@ type
     function GetAxisParam(Param: Integer; var Value: TdReal): Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -960,7 +960,7 @@ type
     class function FriendlyDescription: String; override;
 
   published
-    { Published Declarations }
+    
     property Axis: TGLCoordinates read FAxis write SetAxis;
     property AxisParams: TGLODEJointParams read FAxisParams write SetAxisParams;
 
@@ -971,13 +971,13 @@ type
   { ODE fixed joint implementation. }
   TGLODEJointFixed = class(TGLODEJointBase)
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+    
     class function FriendlyName: String; override;
     class function FriendlyDescription: String; override;
     procedure Initialize; override;
@@ -989,12 +989,12 @@ type
   { ODE hinge2 joint implementation. }
   TGLODEJointHinge2 = class(TGLODEJointBase)
   private
-    { Private Declarations }
+     
     FAnchor, FAxis1, FAxis2: TGLCoordinates;
     FAxis1Params, FAxis2Params: TGLODEJointParams;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -1014,7 +1014,7 @@ type
     function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -1025,7 +1025,7 @@ type
     class function FriendlyDescription: String; override;
 
   published
-    { Published Declarations }
+    
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis1: TGLCoordinates read FAxis1 write SetAxis1;
     property Axis2: TGLCoordinates read FAxis2 write SetAxis2;
@@ -1041,12 +1041,12 @@ type
   { ODE universal joint implementation. }
   TGLODEJointUniversal = class(TGLODEJointBase)
   private
-    { Private Declarations }
+     
     FAnchor, FAxis1, FAxis2: TGLCoordinates;
     FAxis1Params, FAxis2Params: TGLODEJointParams;
 
   protected
-    { Protected Declarations }
+    
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
@@ -1066,7 +1066,7 @@ type
     function GetAxis2Param(Param: Integer; var Value: TdReal): Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -1077,7 +1077,7 @@ type
     class function FriendlyDescription: String; override;
 
   published
-    { Published Declarations }
+    
     property Anchor: TGLCoordinates read FAnchor write SetAnchor;
     property Axis1: TGLCoordinates read FAxis1 write SetAxis1;
     property Axis2: TGLCoordinates read FAxis2 write SetAxis2;

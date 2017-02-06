@@ -19,9 +19,11 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-   
-  GLVectorGeometry, GLVectorLists,
-  GLVectorFileObjects, GLApplicationFileIO,
+
+  GLVectorGeometry,
+  GLVectorLists,
+  GLVectorFileObjects,
+  GLApplicationFileIO,
   GLUtils, GLCrossPlatform;
 
 type
@@ -56,7 +58,7 @@ type
     Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
   TGLSTLVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;

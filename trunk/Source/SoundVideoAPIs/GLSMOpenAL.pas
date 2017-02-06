@@ -15,15 +15,9 @@
        No system in place to limit number of sources playing simultaneously,
           can crash if too playing at once.
        ???
-    
-
-    History :  
-	   12/01/16 - PW - Removed RegisterComponent to GLSoundRegister unit 
-       11/11/09 - DaStr - Added $I GLScene.inc
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       25/03/08 - DanB - Added design-time support, linked to new OpenAL headers
-                            (see OpenAL.pas).
-       ??/??/03 - Mrqzz - Creation
+    History :
+      ??/??/03 - Mrqzz - Creation
+     The whole history is logged in previous version of the unit
 	 
 }
 unit GLSMOpenAL;
@@ -33,10 +27,14 @@ interface
 {$I GLScene.inc}
 
 uses
-   System.Classes, System.SysUtils,
-   Vcl.Forms, Vcl.Dialogs,
-    
-   GLScene, GLSound, GLSoundFileObjects;
+   System.Classes,
+   System.SysUtils,
+   Vcl.Forms,
+   Vcl.Dialogs,
+   
+   GLScene,
+   GLSound,
+   GLSoundFileObjects;
 
 type
 
@@ -46,7 +44,7 @@ type
       private
          FActivated : Boolean;
       protected
-	      { Protected Declarations }
+	      
          function DoActivate : Boolean; override;
          procedure DoDeActivate; override;
          procedure NotifyMasterVolumeChange; override;
@@ -63,7 +61,7 @@ type
          function GetALFormat(sampling : TGLSoundSampling) : Integer;
          
       public
-	      { Public Declarations }
+	      
          constructor Create(AOwner : TComponent); override;
 	      destructor Destroy; override;
 

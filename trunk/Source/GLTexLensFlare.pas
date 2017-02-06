@@ -17,7 +17,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  
   GLScene,
   GLVectorGeometry,
   GLObjects,
@@ -35,7 +35,7 @@ type
   //
   TGLTextureLensFlare = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FSize: integer;
     FCurrSize: Single;
     FNumSecs: integer;
@@ -53,18 +53,18 @@ type
     procedure SetImgSecondaries(const Value: TGLTexture);
     procedure SetSeed(const Value: Integer);
   protected
-    { Protected Declarations }
+    
     procedure SetSize(aValue: integer);
     procedure SetNumSecs(aValue: integer);
     procedure SetAutoZTest(aValue: boolean);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
-    { Public Declarations }
+    
     //: MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
     //: Random seed

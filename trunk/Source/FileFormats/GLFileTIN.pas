@@ -18,7 +18,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLVectorTypes,
   GLVectorFileObjects,
   GLApplicationFileIO;
@@ -32,7 +32,7 @@ type
       This format is encountered in the DEM/DTED world and used in place of grids. }
    TGLTINVectorFile = class(TGLVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

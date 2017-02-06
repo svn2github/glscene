@@ -24,7 +24,7 @@ interface
 
 uses
   System.Classes, 
-  //GLS
+  
   OpenGLTokens,
   GLMaterial,
   GLContext,
@@ -39,7 +39,7 @@ type
   //
   TGLOutlineShader = class(TGLShader)
   private
-    { Private Declarations }
+     
     FPassCount: integer;
     FLineColor: TGLColor;
     FOutlineSmooth: Boolean;
@@ -49,17 +49,17 @@ type
     procedure SetOutlineSmooth(v: boolean);
 
   protected
-    { Protected Declarations }
+    
     procedure DoApply(var rci: TGLRenderContextInfo; Sender: TObject); override;
     function DoUnApply(var rci: TGLRenderContextInfo): Boolean; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property LineColor: TGLColor read FLineColor write FLineColor;
     {Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth

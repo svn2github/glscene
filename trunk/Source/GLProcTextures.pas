@@ -12,7 +12,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLTexture,
   GLGraphics,
   GLCrossPlatform,

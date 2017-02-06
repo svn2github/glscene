@@ -28,7 +28,7 @@ type
    //
    TGLNurbsVectorFile = class(TGLVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(stream : TStream); override;
    end;

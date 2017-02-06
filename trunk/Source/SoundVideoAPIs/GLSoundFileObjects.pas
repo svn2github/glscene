@@ -6,18 +6,8 @@
    These classes work together like vector file formats or Delphi's TGraphic classes. 
 
    History :  
-       17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       13/07/09 - DanB - replaced sAllFilter with glsAllFilter (for FPC)
-       30/05/09 - DanB - TGLSoundSampling.WaveFormat now returns correct nBlockAlign, cbSize.
-       16/10/08 - UweR - Compatibility fix for Delphi 2009
-       07/06/07 - DaStr - Added $I GLScene.inc
-       26/01/05 - JAJ - Removed leak formed by never freeing vSoundFileFormats.
-                            Reported by Dikoe Kenguru.
-       16/03/01 - Egg - TGLWAVFile.Capabilities
-       16/07/00 - Egg - Made use of new TGLDataFile class
-       09/06/00 - Egg - Added WAVDataSize
-       04/06/00 - Egg - Creation
+     04/06/00 - Egg - Creation
+     The whole history is logged in previous version of the unit.
 	 
 }
 unit GLSoundFileObjects;
@@ -41,18 +31,18 @@ type
    {Defines a sound sampling quality. }
 	TGLSoundSampling = class (TPersistent)
 	   private
-	      { Private Declarations }
+	       
          FOwner : TPersistent;
          FFrequency : Integer;
          FNbChannels : Integer;
          FBitsPerSample : Integer;
 
 	   protected
-	      { Protected Declarations }
+	      
          function GetOwner : TPersistent; override;
 
 	   public
-	      { Public Declarations }
+	      
 	      constructor Create(AOwner: TPersistent);
          destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
@@ -62,7 +52,7 @@ type
 
          function WaveFormat : TWaveFormatEx;
      published
-	      { Published Declarations }
+	      
          {Sampling frequency in Hz (= samples per sec) }
          property Frequency : Integer read FFrequency write FFrequency default 22050;
          {Nb of sampling channels. 
@@ -84,15 +74,15 @@ type
       methods in most cases. }
    TGLSoundFile = class (TGLDataFile)
       private
-         { Private Declarations }
+          
          FSampling : TGLSoundSampling;
 
       protected
-         { Protected Declarations }
+         
          procedure SetSampling(const val : TGLSoundSampling);
 
       public
-         { Public Declarations }
+         
 	      constructor Create(AOwner: TPersistent); override;
          destructor Destroy; override;
 
@@ -130,7 +120,7 @@ type
    //
    TGLSoundFileFormatsList = class(TList)
       public
-         { Public Declarations }
+         
          destructor Destroy; override;
          procedure Add(const Ext, Desc: String; DescID: Integer; AClass: TGLSoundFileClass);
          function FindExt(Ext: string): TGLSoundFileClass;

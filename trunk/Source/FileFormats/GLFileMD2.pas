@@ -31,7 +31,7 @@ type
       Based on code by Roger Cao. }
    TGLMD2VectorFile = class(TGLVectorFile)
       public
-         { Public Declarations }
+         
          class function Capabilities : TGLDataFileCapabilities; override;
          procedure LoadFromStream(aStream : TStream); override;
    end;

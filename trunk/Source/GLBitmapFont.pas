@@ -18,7 +18,7 @@ uses
   System.SysUtils,
   System.Types,
   Vcl.Graphics,
-  //GLS
+  
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -47,7 +47,7 @@ type
     function GetStartASCII: WideString;
     function GetStopASCII: WideString;
   protected
-    { Protected Declarations }
+    
     FStartASCII, FStopASCII: WideChar;
     FStartGlyphIdx, FStopGlyphIdx, FCharCount: Integer;
     procedure SetStartASCII(const val: WideString);
@@ -55,14 +55,14 @@ type
     procedure SetStartGlyphIdx(val: Integer);
     function GetDisplayName: string; override;
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
     procedure NotifyChange;
   published
-    { Published Declarations }
+    
     property StartASCII: WideString read GetStartASCII write SetStartASCII;
     property StopASCII: WideString read GetStopASCII write SetStopASCII;
     property StartGlyphIdx: Integer read FStartGlyphIdx write SetStartGlyphIdx;
@@ -76,7 +76,7 @@ type
   private
     FCharCount: Integer;
   protected
-    { Protected Declarations }
+    
     FOwner: TComponent;
 
     function GetOwner: TPersistent; override;
@@ -86,7 +86,7 @@ type
     procedure Update(Item: TCollectionItem); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     destructor Destroy; override;
 
@@ -128,7 +128,7 @@ type
     when rendering with linear filtering. }
   TGLCustomBitmapFont = class(TGLUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FRanges: TGLBitmapFontRanges;
     FGlyphs: TGLPicture;
     FCharWidth, FCharHeight: Integer;
@@ -144,7 +144,7 @@ type
     FTextureModified: boolean;
     FLastTexture: TGLTextureHandle;
   protected
-    { Protected Declarations }
+    
     FChars: array of TCharInfo;
     FCharsLoaded: boolean;
     procedure ResetCharWidths(w: Integer = -1);
@@ -208,7 +208,7 @@ type
       write FGlyphsAlpha default tiaDefault;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -260,7 +260,7 @@ type
     This class only publuishes some of the properties. }
   TGLBitmapFont = class(TGLCustomBitmapFont)
   published
-    { Published Declarations }
+    
     property Glyphs;
     property GlyphsIntervalX;
     property GlyphsIntervalY;
@@ -286,7 +286,7 @@ type
     component. Default character scale is 1 font pixel = 1 space unit. }
   TGLFlatText = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FBitmapFont: TGLCustomBitmapFont;
     FText: UnicodeString;
     FAlignment: TAlignment;
@@ -295,7 +295,7 @@ type
     FOptions: TGLFlatTextOptions;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBitmapFont(const val: TGLCustomBitmapFont);
     procedure SetText(const val: UnicodeString);
     procedure SetAlignment(const val: TAlignment);
@@ -307,7 +307,7 @@ type
       Operation: TOperation); override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -317,7 +317,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     {  Refers the bitmap font to use. 
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }

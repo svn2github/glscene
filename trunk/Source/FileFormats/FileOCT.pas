@@ -68,7 +68,7 @@ type
    //
    TOCTFile = class (TObject)
       public
-         { Public Declarations }
+         
          Header         : TOCTHeader;
          Vertices       : array of TOCTVertex;
          Faces          : array of TOCTFace;

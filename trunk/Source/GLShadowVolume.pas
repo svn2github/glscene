@@ -22,7 +22,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  //GLS
+  
   GLScene,
   GLVectorGeometry,
   OpenGLTokens,
@@ -78,14 +78,14 @@ type
      Can be a light or an opaque object. }
   TGLShadowVolumeCaster = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FCaster: TGLBaseSceneObject;
     FEffectiveRadius: Single;
     FCapping: TGLShadowVolumeCapping;
     FCastingMode: TGLShadowCastingMode;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCaster(const val: TGLBaseSceneObject);
     function GetGLShadowVolume: TGLShadowVolume;
 
@@ -93,7 +93,7 @@ type
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -106,7 +106,7 @@ type
     property GLShadowVolume: TGLShadowVolume read GetGLShadowVolume;
 
   published
-    { Published Declarations }
+    
 
           {Radius beyond which the caster can be ignored. 
              Zero (default value) means the caster can never be ignored. }
@@ -129,7 +129,7 @@ type
   {Specifies an individual shadow casting occluder.  }
   TGLShadowVolumeOccluder = class(TGLShadowVolumeCaster)
   published
-    { Published Declarations }
+    
     property Caster;
   end;
 
@@ -138,11 +138,11 @@ type
   {Specifies an individual shadow casting light.  }
   TGLShadowVolumeLight = class(TGLShadowVolumeCaster)
   private
-    { Private Declarations }
+     
     FSilhouettes: TPersistentObjectList;
 
   protected
-    { Protected Declarations }
+    
     function GetLightSource: TGLLightSource;
     procedure SetLightSource(const ls: TGLLightSource);
 
@@ -155,14 +155,14 @@ type
       Boolean;
 
   public
-    { Public Declarations }
+    
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
     procedure FlushSilhouetteCache;
 
   published
-    { Published Declarations }
+    
           {Shadow casting lightsource.  }
     property LightSource: TGLLightSource read GetLightSource write
       SetLightSource;
@@ -173,15 +173,15 @@ type
   {Collection of TGLShadowVolumeCaster. }
   TGLShadowVolumeCasters = class(TOwnedCollection)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
     function GetItems(index: Integer): TGLShadowVolumeCaster;
     procedure RemoveNotification(aComponent: TComponent);
 
   public
-    { Public Declarations }
+    
     function AddCaster(obj: TGLBaseSceneObject; effectiveRadius: Single = 0;
       CastingMode: TGLShadowCastingMode = scmRecursivelyVisible):
       TGLShadowVolumeCaster;
@@ -237,7 +237,7 @@ type
       }
   TGLShadowVolume = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FActive: Boolean;
     FRendering: Boolean;
     FLights: TGLShadowVolumeCasters;
@@ -248,7 +248,7 @@ type
     FDarkeningColor: TGLColor;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
 
@@ -260,7 +260,7 @@ type
     procedure SetDarkeningColor(const val: TGLColor);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -272,7 +272,7 @@ type
     procedure FlushSilhouetteCache;
 
   published
-    { Public Declarations }
+    
           {Determines if shadow volume rendering is active. 
              When set to false, children will be rendered without any shadowing
              or multipass lighting. }

@@ -16,7 +16,7 @@ uses
   System.Classes, 
   System.SysUtils, 
   System.ZLib,
-  //GLS
+  
   GLSArchiveManager;
 
 const

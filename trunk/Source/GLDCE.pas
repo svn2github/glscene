@@ -94,7 +94,7 @@ type
 
   TGLDCEManager = class (TComponent)
   private
-    { Private Declarations }
+     
     FStatics : TList;
     FDynamics : TList;
     FGravity: Single;
@@ -109,7 +109,7 @@ type
     function GetDynamicCount: Integer;
     function GetStaticCount: Integer;
   protected
-    { Protected Declarations }
+    
     procedure RegisterStatic(aClient : TGLDCEStatic);
     procedure DeRegisterStatic(aClient : TGLDCEStatic);
     procedure DeRegisterAllStatics;
@@ -117,7 +117,7 @@ type
     procedure DeRegisterDynamic(aClient : TGLDCEDynamic);
     procedure DeRegisterAllDynamics;
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     //Moves the body by the distance and returns the average friction
@@ -126,7 +126,7 @@ type
     property DynamicCount: Integer read GetDynamicCount;
     property StaticCount: Integer read GetStaticCount;
   published
-    { Published Declarations }
+    
     property Gravity : Single read FGravity write FGravity;
     property WorldDirection : TGLCoordinates read FWorldDirection write SetWorldDirection;
     property WorldScale : Single read FWorldScale write SetWorldScale;
@@ -138,7 +138,7 @@ type
 
   TGLDCEStatic = class (TGLBehaviour)
 	private
-		{ Private Declarations }
+		 
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -155,13 +155,13 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TGLCoordinates);
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val : TGLDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -169,7 +169,7 @@ type
     class function FriendlyDescription : String; override;
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    { Published Declarations }
+    
     property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
     property Shape : TDCEShape read FShape write SetShape;
@@ -184,7 +184,7 @@ type
 
   TGLDCEDynamic = class (TGLBehaviour)
 	private
-		{ Private Declarations }
+		 
     FManager : TGLDCEManager;
     FManagerName : String; // NOT persistent, temporarily used for persistence
     FActive: Boolean;
@@ -213,13 +213,13 @@ type
     procedure SetBounceFactor(const Value: Single);
     procedure SetSize(const Value: TGLCoordinates);
   protected
-    { Protected Declarations }
+    
     procedure SetManager(const val : TGLDCEManager);
     procedure WriteToFiler(writer : TWriter); override;
     procedure ReadFromFiler(reader : TReader); override;
     procedure Loaded; override;
   public
-    { Public Declarations }
+    
     constructor Create(aOwner : TGLXCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -242,7 +242,7 @@ type
     property MaxRecursionDepth:byte read FMaxRecursionDepth write FMaxRecursionDepth;//gak20041119
     property OnCollision : TDCEObjectCollisionEvent read FOnCollision write FOnCollision;
   published
-    { Published Declarations }
+    
     property Active : Boolean read FActive write FActive;
     property Manager : TGLDCEManager read FManager write SetManager;
     property UseGravity : Boolean read FUseGravity write FUseGravity;

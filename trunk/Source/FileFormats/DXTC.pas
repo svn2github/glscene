@@ -18,7 +18,7 @@ interface
 
 uses
    System.SysUtils,
-   //GLS
+   
    OpenGLTokens,
    GLCrossPlatform,
    GLTextureFormat;

@@ -6,7 +6,7 @@
 
    History :
      09/02/00 - EG - Creation from split of GLObjects,
-     The whole history is logged in a previous version of GLScene
+     The whole history is logged in previous version of the unit
 }
 unit GLVectorFileObjects;
 
@@ -19,7 +19,7 @@ uses
   System.SysUtils,
   System.Types,
   System.Math,
-  //GLS
+
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -45,49 +45,35 @@ type
   TGLMeshObjectList = class;
   TGLFaceGroups = class;
 
-  // TGLMeshAutoCentering
-  //
   TGLMeshAutoCentering = (macCenterX, macCenterY, macCenterZ, macUseBarycenter, macRestorePosition);
   TGLMeshAutoCenterings = set of TGLMeshAutoCentering;
 
-  // TGLMeshObjectMode
-  //
   TGLMeshObjectMode = (momTriangles, momTriangleStrip, momFaceGroups);
 
-  // TGLBaseMeshObject
-  //
   {A base class for mesh objects.
      The class introduces a set of vertices and normals for the object but
      does no rendering of its own. }
   TGLBaseMeshObject = class(TPersistentObject)
   private
-    { Private Declarations }
     FName: string;
     FVertices: TAffineVectorList;
     FNormals: TAffineVectorList;
     FVisible: Boolean;
 
   protected
-    { Protected Declarations }
     procedure SetVertices(const val: TAffineVectorList);
     procedure SetNormals(const val: TAffineVectorList);
-
     procedure ContributeToBarycenter(var currentSum: TAffineVector;
       var nb: Integer); dynamic;
 
   public
-    { Public Declarations }
     constructor Create; override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
-
     {Clears all mesh object data, submeshes, facegroups, etc. }
     procedure Clear; dynamic;
-
     {Translates all the vertices by the given delta. }
     procedure Translate(const delta: TAffineVector); dynamic;
     {Builds (smoothed) normals for the vertex list.
@@ -102,13 +88,13 @@ type
        (ie. momFaceGroups not supported). }
     procedure BuildNormals(vertexIndices: TIntegerList; mode: TGLMeshObjectMode;
       normalIndices: TIntegerList = nil);
-    {Extracts all mesh triangles as a triangles list.
-       The resulting list size is a multiple of 3, each group of 3 vertices
-       making up and independant triangle.
-       The returned list can be used independantly from the mesh object
-       (all data is duplicated) and should be freed by caller.
-       If texCoords is specified, per vertex texture coordinates will be
-       placed there, when available. }
+    { Extracts all mesh triangles as a triangles list.
+      The resulting list size is a multiple of 3, each group of 3 vertices
+      making up and independant triangle.
+      The returned list can be used independantly from the mesh object
+      (all data is duplicated) and should be freed by caller.
+      If texCoords is specified, per vertex texture coordinates will be
+      placed there, when available. }
     function ExtractTriangles(texCoords: TAffineVectorList = nil;
       normals: TAffineVectorList = nil): TAffineVectorList; dynamic;
 
@@ -130,7 +116,7 @@ type
        not recalculate the matrices, but marks the current ones as dirty). }
   TGLSkeletonFrame = class(TPersistentObject)
   private
-    { Private Declarations }
+     
     FOwner: TGLSkeletonFrameList;
     FName: string;
     FPosition: TAffineVectorList;
@@ -140,13 +126,13 @@ type
     FTransformMode: TGLSkeletonFrameTransform;
 
   protected
-    { Protected Declarations }
+    
     procedure SetPosition(const val: TAffineVectorList);
     procedure SetRotation(const val: TAffineVectorList);
     procedure SetQuaternion(const val: TQuaternionList);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TGLSkeletonFrameList);
     constructor Create; override;
     destructor Destroy; override;
@@ -186,15 +172,15 @@ type
   {A list of TGLSkeletonFrame objects. }
   TGLSkeletonFrameList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonFrame(Index: Integer): TGLSkeletonFrame;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
@@ -220,18 +206,18 @@ type
     {A list of skeleton bones.  }
   TGLSkeletonBoneList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FSkeleton: TGLSkeleton; // not persistent
 
   protected
-    { Protected Declarations }
+    
     FGlobalMatrix: TMatrix;
 
     function GetSkeletonBone(Index: Integer): TGLSkeletonBone;
     procedure AfterObjectCreatedByReader(Sender: TObject); override;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TGLSkeleton);
     constructor Create; override;
     destructor Destroy; override;
@@ -260,13 +246,13 @@ type
     {This list store skeleton root bones exclusively.  }
   TGLSkeletonRootBoneList = class(TGLSkeletonBoneList)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;
 
@@ -284,19 +270,19 @@ type
        matrices are stored here. }
   TGLSkeletonBone = class(TGLSkeletonBoneList)
   private
-    { Private Declarations }
+     
     FOwner: TGLSkeletonBoneList; // indirectly persistent
     FBoneID: Integer;
     FName: string;
     FColor: Cardinal;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonBone(Index: Integer): TGLSkeletonBone;
     procedure SetColor(const val: Cardinal);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TGLSkeletonBoneList);
     constructor Create; override;
     destructor Destroy; override;
@@ -344,7 +330,7 @@ type
      Overriden classes should be named as TSCxxxxx. }
   TGLSkeletonCollider = class(TPersistentObject)
   private
-    { Private Declarations }
+     
     FOwner: TGLSkeletonColliderList;
     FBone: TGLSkeletonBone;
     FBoneID: Integer;
@@ -352,12 +338,12 @@ type
     FAutoUpdate: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetBone(const val: TGLSkeletonBone);
     procedure SetLocalMatrix(const val: TMatrix);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     constructor CreateOwned(AOwner: TGLSkeletonColliderList);
     procedure WriteToFiler(writer: TVirtualWriter); override;
@@ -384,15 +370,15 @@ type
   {List class for storing TGLSkeletonCollider objects. }
   TGLSkeletonColliderList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GetSkeletonCollider(index: Integer): TGLSkeletonCollider;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
@@ -428,7 +414,7 @@ type
        various frame blending operations. }
   TGLSkeleton = class(TPersistentObject)
   private
-    { Private Declarations }
+     
     FOwner: TGLBaseMesh;
     FRootBones: TGLSkeletonRootBoneList;
     FFrames: TGLSkeletonFrameList;
@@ -439,7 +425,7 @@ type
     FMorphInvisibleParts: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetRootBones(const val: TGLSkeletonRootBoneList);
     procedure SetFrames(const val: TGLSkeletonFrameList);
     function GetCurrentFrame: TGLSkeletonFrame;
@@ -447,7 +433,7 @@ type
     procedure SetColliders(const val: TGLSkeletonColliderList);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TGLBaseMesh);
     constructor Create; override;
     destructor Destroy; override;
@@ -522,14 +508,11 @@ type
   TGLVBOBuffer = (vbVertices, vbNormals, vbColors, vbTexCoords, vbLightMapTexCoords, vbTexCoordsEx);
   TGLVBOBuffers = set of TGLVBOBuffer;
 
-  // TMeshObject
-  //
   {Base mesh class.
      Introduces base methods and properties for mesh objects.
      Subclasses are named "TGLMOxxx". }
   TMeshObject = class(TGLBaseMeshObject)
   private
-    { Private Declarations }
     FOwner: TGLMeshObjectList;
     FExtentCacheRevision: Cardinal;
     FTexCoords: TAffineVectorList; // provision for 3D textures
@@ -556,14 +539,13 @@ type
 
     procedure SetUseVBO(const Value: boolean);
     procedure SetValidBuffers(Value: TGLVBOBuffers);
+
   protected
-    { Protected Declarations }
+
     procedure SetTexCoords(const val: TAffineVectorList);
     procedure SetLightmapTexCoords(const val: TAffineVectorList);
     procedure SetColors(const val: TVectorList);
-
     procedure BufferArrays;
-
     procedure DeclareArraysToOpenGL(var mrci: TGLRenderContextInfo;
       evenIfAlreadyDeclared: Boolean = False);
     procedure DisableOpenGLArrays(var mrci: TGLRenderContextInfo);
@@ -580,10 +562,10 @@ type
     procedure SetTangents(const val: TVectorList);
     function GetTangents: TVectorList;
     procedure SetTangentsTexCoordIndex(const val: Integer);
-
     property ValidBuffers: TGLVBOBuffers read FValidBuffers write SetValidBuffers;
+
   public
-    { Public Declarations }
+
     {Creates, assigns Owner and adds to list. }
     constructor CreateOwned(AOwner: TGLMeshObjectList);
     constructor Create; override;
@@ -610,25 +592,25 @@ type
     //: Similar to regular scene object's BuildList method
     procedure BuildList(var mrci: TGLRenderContextInfo); virtual;
 
-    //: The extents of the object (min and max coordinates)
+    // The extents of the object (min and max coordinates)
     procedure GetExtents(out min, max: TAffineVector); overload; virtual;
     procedure GetExtents(out aabb: TAABB); overload; virtual;
 
-    //: Barycenter from vertices data
+    // Barycenter from vertices data
     function GetBarycenter: TVector;
 
-    //: Precalculate whatever is needed for rendering, called once
+    // Precalculate whatever is needed for rendering, called once
     procedure Prepare; dynamic;
 
     function PointInObject(const aPoint: TAffineVector): Boolean; virtual;
 
-    //: Returns the triangle data for a given triangle
+    // Returns the triangle data for a given triangle
     procedure GetTriangleData(tri: Integer; list: TAffineVectorList;
       var v0, v1, v2: TAffineVector); overload;
     procedure GetTriangleData(tri: Integer; list: TVectorList;
       var v0, v1, v2: TVector); overload;
 
-    //: Sets the triangle data of a given triangle
+    // Sets the triangle data of a given triangle
     procedure SetTriangleData(tri: Integer; list: TAffineVectorList;
       const v0, v1, v2: TAffineVector); overload;
     procedure SetTriangleData(tri: Integer; list: TVectorList;
@@ -687,18 +669,18 @@ type
   {A list of TMeshObject objects. }
   TGLMeshObjectList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FOwner: TGLBaseMesh;
 
     {Resturns True if all its MeshObjects use VBOs. }
     function GetUseVBO: Boolean;
     procedure SetUseVBO(const Value: Boolean);
   protected
-    { Protected Declarations }
+    
     function GetMeshObject(Index: Integer): TMeshObject;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(aOwner: TGLBaseMesh);
     destructor Destroy; override;
 
@@ -755,14 +737,14 @@ type
   {A morph target, stores alternate lists of vertices and normals. }
   TGLMeshMorphTarget = class(TGLBaseMeshObject)
   private
-    { Private Declarations }
+     
     FOwner: TGLMeshMorphTargetList;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TGLMeshMorphTargetList);
     destructor Destroy; override;
 
@@ -777,15 +759,15 @@ type
   {A list of TGLMeshMorphTarget objects. }
   TGLMeshMorphTargetList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
 
   protected
-    { Protected Declarations }
+    
     function GeTGLMeshMorphTarget(Index: Integer): TGLMeshMorphTarget;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TPersistent);
     destructor Destroy; override;
 
@@ -806,14 +788,14 @@ type
      existing "morph targets". }
   TGLMorphableMeshObject = class(TMeshObject)
   private
-    { Private Declarations }
+     
     FMorphTargets: TGLMeshMorphTargetList;
 
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -855,7 +837,7 @@ type
        When BonesPerVertex is 1, the weight is ignored (set to 1.0). }
   TGLSkeletonMeshObject = class(TGLMorphableMeshObject)
   private
-    { Private Declarations }
+     
     FVerticesBonesWeights: PVerticesBoneWeights;
     FVerticeBoneWeightCount, FVerticeBoneWeightCapacity: Integer;
     FBonesPerVertex: Integer;
@@ -865,14 +847,14 @@ type
     procedure BackupBoneMatrixInvertedMeshes; // ragdoll
     procedure RestoreBoneMatrixInvertedMeshes; // ragdoll
   protected
-    { Protected Declarations }
+    
     procedure SetVerticeBoneWeightCount(const val: Integer);
     procedure SetVerticeBoneWeightCapacity(const val: Integer);
     procedure SetBonesPerVertex(const val: Integer);
     procedure ResizeVerticesBonesWeights;
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -912,7 +894,7 @@ type
      a single base facegroup element. }
   TGLFaceGroup = class(TPersistentObject)
   private
-    { Private Declarations }
+     
     FOwner: TGLFaceGroups;
     FMaterialName: string;
     FMaterialCache: TGLLibMaterial;
@@ -921,13 +903,13 @@ type
       // NOT Persistent, internal use only (rendering options)
 
   protected
-    { Protected Declarations }
+    
     procedure AttachLightmap(lightMap: TGLTexture; var mrci:
       TGLRenderContextInfo);
     procedure AttachOrDetachLightmap(var mrci: TGLRenderContextInfo);
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TGLFaceGroups); virtual;
     destructor Destroy; override;
 
@@ -981,7 +963,7 @@ type
      in the order given by the vertices.  }
   TFGVertexIndexList = class(TGLFaceGroup)
   private
-    { Private Declarations }
+     
     FVertexIndices: TIntegerList;
     FIndexVBO: TGLVBOElementArrayHandle;
     FMode: TGLFaceGroupMeshMode;
@@ -989,14 +971,14 @@ type
     procedure SetupVBO;
     procedure InvalidateVBO;
   protected
-    { Protected Declarations }
+    
     procedure SetVertexIndices(const val: TIntegerList);
 
     procedure AddToList(source, destination: TAffineVectorList;
       indices: TIntegerList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1030,17 +1012,17 @@ type
      indices are optionnal, if missing (empty), VertexIndices will be used. }
   TFGVertexNormalTexIndexList = class(TFGVertexIndexList)
   private
-    { Private Declarations }
+     
     FNormalIndices: TIntegerList;
     FTexCoordIndices: TIntegerList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormalIndices(const val: TIntegerList);
     procedure SetTexCoordIndices(const val: TIntegerList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1067,15 +1049,15 @@ type
      per triangle, depending on the face it is used in. }
   TFGIndexTexCoordList = class(TFGVertexIndexList)
   private
-    { Private Declarations }
+     
     FTexCoords: TAffineVectorList;
 
   protected
-    { Protected Declarations }
+    
     procedure SetTexCoords(const val: TAffineVectorList);
 
   public
-    { Public Declarations }
+    
     constructor Create; override;
     destructor Destroy; override;
 
@@ -1098,15 +1080,15 @@ type
   {A list of TGLFaceGroup objects. }
   TGLFaceGroups = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     FOwner: TMeshObject;
 
   protected
-    { Protected Declarations }
+    
     function GetFaceGroup(Index: Integer): TGLFaceGroup;
 
   public
-    { Public Declarations }
+    
     constructor CreateOwned(AOwner: TMeshObject);
     destructor Destroy; override;
 
@@ -1149,16 +1131,16 @@ type
      (see Delphi Help). }
   TGLVectorFile = class(TGLDataFile)
   private
-    { Private Declarations }
+     
     FNormalsOrientation: TGLMeshNormalsOrientation;
 
   protected
-    { Protected Declarations }
+    
     procedure SetNormalsOrientation(const val: TGLMeshNormalsOrientation);
       virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TPersistent); override;
 
     function Owner: TGLBaseMesh;
@@ -1177,7 +1159,7 @@ type
      all of GLScene features. }
   TGLSMVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;
@@ -1189,7 +1171,7 @@ type
   {Base class for mesh objects. }
   TGLBaseMesh = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FNormalsOrientation: TGLMeshNormalsOrientation;
     FMaterialLibrary: TGLMaterialLibrary;
     FLightmapLibrary: TGLMaterialLibrary;
@@ -1206,7 +1188,7 @@ type
     FLastLoadedFilename: string;
 
   protected
-    { Protected Declarations }
+    
     FMeshObjects: TGLMeshObjectList; // a list of mesh objects
     FSkeleton: TGLSkeleton; // skeleton data & frames
     procedure SetUseMeshMaterials(const val: Boolean);
@@ -1242,7 +1224,7 @@ type
     procedure PrepareBuildList(var mrci: TGLRenderContextInfo); dynamic;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1381,15 +1363,15 @@ type
      as a single object in a scene. }
   TGLFreeForm = class(TGLBaseMesh)
   private
-    { Private Declarations }
+     
     FOctree: TGLOctree;
 
   protected
-    { Protected Declarations }
+    
     function GetOctree: TGLOctree;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -1414,7 +1396,7 @@ type
     procedure BuildOctree(TreeDepth: integer = 3);
 
   published
-    { Published Declarations }
+    
     property AutoCentering;
     property AutoScaling;
     property MaterialLibrary;
@@ -1455,14 +1437,14 @@ type
        SwitchAnimation, and can also be "blended" via a TGLAnimationControler. }
   TGLActorAnimation = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FName: string;
     FStartFrame: Integer;
     FEndFrame: Integer;
     FReference: TGLActorAnimationReference;
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     function FrameCount: Integer;
     procedure SetStartFrame(const val: Integer);
@@ -1472,7 +1454,7 @@ type
     function GetAsString: string;
 
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1495,7 +1477,7 @@ type
     procedure MakeSkeletalRotationDelta;
 
   published
-    { Published Declarations }
+    
     property Name: string read FName write FName;
     {Index of the initial frame of the animation. }
     property StartFrame: Integer read FStartFrame write SetStartFrame;
@@ -1513,17 +1495,17 @@ type
     {Collection of actor animations sequences. }
   TGLActorAnimations = class(TCollection)
   private
-    { Private Declarations }
+     
     FOwner: TGLActor;
 
   protected
-    { Protected Declarations }
+    
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLActorAnimation);
     function GetItems(index: Integer): TGLActorAnimation;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TGLActor);
     function Add: TGLActorAnimation;
     function FindItemID(ID: Integer): TGLActorAnimation;
@@ -1547,12 +1529,12 @@ type
     {Base class for skeletal animation control.  }
   TGLBaseAnimationControler = class(TComponent)
   private
-    { Private Declarations }
+     
     FEnabled: Boolean;
     FActor: TGLActor;
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetEnabled(const val: Boolean);
@@ -1562,12 +1544,12 @@ type
     function Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean; virtual;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
   published
-    { Published Declarations }
+    
     property Enabled: Boolean read FEnabled write SetEnabled default True;
     property Actor: TGLActor read FActor write SetActor;
   end;
@@ -1582,12 +1564,12 @@ type
        make the head turn toward a target. }
   TGLAnimationControler = class(TGLBaseAnimationControler)
   private
-    { Private Declarations }
+     
     FAnimationName: TGLActorAnimationName;
     FRatio: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure SetAnimationName(const val: TGLActorAnimationName);
     procedure SetRatio(const val: Single);
 
@@ -1595,7 +1577,7 @@ type
     function Apply(var lerpInfo: TGLBlendedLerpInfo): Boolean; override;
 
   published
-    { Published Declarations }
+    
     property AnimationName: string read FAnimationName write SetAnimationName;
     property Ratio: Single read FRatio write SetRatio;
   end;
@@ -1633,7 +1615,7 @@ type
      animation blending (via TGLAnimationControler components). }
   TGLActor = class(TGLBaseMesh)
   private
-    { Private Declarations }
+     
     FStartFrame, FEndFrame: Integer;
     FReference: TGLActorAnimationReference;
     FCurrentFrame: Integer;
@@ -1649,7 +1631,7 @@ type
     FOptions: TGLActorOptions;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCurrentFrame(val: Integer);
     procedure SetStartFrame(val: Integer);
     procedure SetEndFrame(val: Integer);
@@ -1666,7 +1648,7 @@ type
     procedure UnRegisterControler(aControler: TGLBaseAnimationControler);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -1707,7 +1689,7 @@ type
     function isSwitchingAnimation: boolean;
 
   published
-    { Published Declarations }
+    
     property StartFrame: Integer read FStartFrame write SetStartFrame default 0;
     property EndFrame: Integer read FEndFrame write SetEndFrame default 0;
 
@@ -1772,7 +1754,7 @@ type
   {Stores registered vector file formats. }
   TGLVectorFileFormatsList = class(TPersistentObjectList)
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:

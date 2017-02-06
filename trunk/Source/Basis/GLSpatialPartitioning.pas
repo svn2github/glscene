@@ -13,7 +13,7 @@ interface
 
 uses
   Winapi.OpenGL,
-  //GLS
+  
   GLScene,
   GLVectorGeometry,
   GLVectorTypes,

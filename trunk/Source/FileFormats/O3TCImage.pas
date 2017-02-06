@@ -34,7 +34,7 @@ type
 
   TO3TCImage = class(TGLBitmap)
   public
-    { Public Declarations }
+    
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
   end;

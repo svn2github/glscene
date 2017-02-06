@@ -27,14 +27,14 @@ type
       *Partial* support only, access to PCMData is NOT supported. }
    TGLMP3File = class (TGLSoundFile)
       private
-         { Public Declarations }
+         
          data : array of Byte; // used to store MP3 bitstream
 
       protected
-         { Protected Declarations }
+         
 
       public
-         { Private Declarations }
+          
          function CreateCopy(AOwner: TPersistent) : TGLDataFile; override;
 
          class function Capabilities : TGLDataFileCapabilities; override;

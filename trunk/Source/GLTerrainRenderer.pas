@@ -66,7 +66,7 @@ type
     expressed as z=f(x, y) data. }
   TGLTerrainRenderer = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FHeightDataSource: TGLHeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: Single;
@@ -90,7 +90,7 @@ type
     FContourWidth: Integer;
 
   protected
-    { Protected Declarations }
+    
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
 
     procedure MarkAllTilesAsUnused;
@@ -119,7 +119,7 @@ type
       TexFactor: Single; HDList: TList): TGLROAMPatch;
 
   public
-    { Public Declarations }
+    
 
     { TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
@@ -142,7 +142,7 @@ type
     function HashedTileCount: Integer;
 
   published
-    { Published Declarations }
+    
     {  Specifies the HeightData provider component. }
     property HeightDataSource: TGLHeightDataSource read FHeightDataSource
       write SetHeightDataSource;

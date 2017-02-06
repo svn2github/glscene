@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes,
-  //GLS
+  
   OpenGLTokens,
   GLVectorGeometry,
   GLScene,
@@ -47,7 +47,7 @@ type
    //
    TGLWaterPlane = class (TGLSceneObject)
 		private
-         { Private Declarations }
+          
          FLocks : packed array of ByteBool;
          FPositions, FVelocity : packed array of Single;
          FPlaneQuadIndices : TPersistentObjectList;
@@ -68,7 +68,7 @@ type
          FOptions : TGLWaterPlaneOptions;
 
       protected
-         { Protected Declarations }
+         
          procedure SetElastic(const value : Single);
          procedure SetResolution(const value : Integer);
          procedure SetRainTimeInterval(const val : Integer);
@@ -87,7 +87,7 @@ type
          procedure Iterate;
 
       public
-         { Public Declarations }
+         
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
@@ -107,7 +107,7 @@ type
          property LastIterationStepTime : Single read FLastIterationStepTime;
 
       published
-         { Published Declarations }
+         
          
          property Active : Boolean read FActive write FActive default True;
 

@@ -58,7 +58,7 @@ type
    TimeReference (setting CurrentTime does NOT trigger progression). }
   TGLCadencer = class(TComponent)
   private
-    { Private Declarations }
+     
     FSubscribedCadenceableComponents: TList;
     FScene: TGLScene;
     FTimeMultiplier: Double;
@@ -75,7 +75,7 @@ type
     procedure SetCurrentTime(const Value: Double);
 
   protected
-    { Protected Declarations }
+    
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     function StoreTimeMultiplier: Boolean;
@@ -92,7 +92,7 @@ type
     procedure OnIdleEvent(Sender: TObject; var Done: Boolean);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -122,7 +122,7 @@ type
     property CurrentTime: Double read FCurrentTime write SetCurrentTime;
 
   published
-    { Published Declarations }
+    
     {The TGLScene that will be cadenced (progressed). }
     property Scene: TGLScene read FScene write SetScene;
     {Enables/Disables cadencing. 
@@ -191,17 +191,17 @@ type
   {Adds a property to connect/subscribe to a cadencer.  }
   TGLCustomCadencedComponent = class(TGLUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FCadencer: TGLCadencer;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCadencer(const val: TGLCadencer);
 
     property Cadencer: TGLCadencer read FCadencer write SetCadencer;
 
   public
-    { Public Declarations }
+    
     destructor Destroy; override;
 
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -212,7 +212,7 @@ type
   //
   TGLCadencedComponent = class(TGLCustomCadencedComponent)
   published
-    { Published Declarations }
+    
     property Cadencer;
   end;
 

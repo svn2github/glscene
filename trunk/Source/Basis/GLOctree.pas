@@ -63,13 +63,13 @@ type
   {  Manages an Octree containing references to triangles.  }
   TGLOctree = class(TObject)
   private
-    { Private Declarations }
+     
 {$IFDEF DEBUG}
     Intersections: Integer;
     // for debugging  - number of triangles intersecting an AABB plane
 {$ENDIF}
   protected
-    { Protected Declarations }
+    
     // Find the exact centre of an AABB
     function GetMidPoint(Min, Max: Single): Single;
     // Check if a point lies within the AABB specified by min and max entents
@@ -107,7 +107,7 @@ type
     procedure CutMesh;
 
   public
-    { Public Declarations }
+    
     WorldMinExtent, WorldMaxExtent: TAffineFLTVector;
     RootNode: POctreeNode; // always points to root node
     MaxOlevel: Integer; // max depth level of TOctreeNode

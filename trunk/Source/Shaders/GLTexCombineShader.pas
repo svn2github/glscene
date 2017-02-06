@@ -37,7 +37,7 @@ type
   {A shader that can setup the texture combiner.  }
   TGLTexCombineShader = class(TGLShader)
   private
-    { Protected Declarations }
+    
     FCombiners: TStringList;
     FCommandCache: TCombinerCache;
     FCombinerIsValid: Boolean; // to avoid reparsing invalid stuff
@@ -52,7 +52,7 @@ type
     FApplied3, FApplied4: Boolean;
 
   protected
-    { Protected Declarations }
+    
     procedure SetCombiners(const val: TStringList);
     procedure SetDesignTimeEnabled(const val: Boolean);
     procedure SetMaterialLibrary(const val: TGLMaterialLibrary);
@@ -68,14 +68,14 @@ type
     procedure DoFinalize; override;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
     procedure NotifyChange(Sender: TObject); override;
 
   published
-    { Published Declarations }
+    
     property Combiners: TStringList read FCombiners write SetCombiners;
     property DesignTimeEnabled: Boolean read FDesignTimeEnabled write SetDesignTimeEnabled;
 

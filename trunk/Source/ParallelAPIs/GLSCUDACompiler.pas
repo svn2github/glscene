@@ -69,7 +69,7 @@ type
 
   TGLSCUDACompiler = class(TComponent)
   private
-    { Private declarations }
+     
     FNVCCPath: string;
     FCppCompilerPath: string;
     FProduct: TStringList;
@@ -88,10 +88,10 @@ type
     procedure SetNVCCPath(const AValue: string);
     procedure SetCppCompilerPath(const AValue: string);
   protected
-    { Protected declarations }
+    
     procedure Loaded; override;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -105,7 +105,7 @@ type
     property ModuleInfo: TCUDAModuleInfo read FModuleInfo;
     property ConsoleContent: string read FConsoleContent;
   published
-    { Published declarations }
+    
     {  NVidia CUDA Compiler. }
     property NVCCPath: string read FNVCCPath write SetNVCCPath;
     {  Microsoft Visual Studio Compiler.

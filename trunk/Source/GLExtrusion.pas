@@ -26,7 +26,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   GLContext,
   GLObjects,
@@ -63,7 +63,7 @@ type
      the curve start/finish on the Y axis. }
   TGLRevolutionSolid = class(TGLPolygonBase)
   private
-    { Private Declarations }
+     
     FSlices: Integer;
     FStartAngle, FStopAngle: Single;
     FNormals: TNormalSmoothing;
@@ -73,7 +73,7 @@ type
     FParts: TRevolutionSolidParts;
     FAxisAlignedDimensionsCache: TVector;
   protected
-    { Protected Declarations }
+    
     procedure SetStartAngle(const val: Single);
     procedure SetStopAngle(const val: Single);
     function StoreStopAngle: Boolean;
@@ -84,7 +84,7 @@ type
     procedure SetParts(const val: TRevolutionSolidParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -96,7 +96,7 @@ type
     procedure StructureChanged; override;
 
   published
-    { Published Declarations }
+    
           {Parts of the rotation solid to be generated for rendering. 
              rspInside and rspOutside are generated from the curve and make the
              inside/outside as long as NormalDirection=ndOutside and the solid
@@ -139,7 +139,7 @@ type
   }
   TGLExtrusionSolid = class(TMultiPolygonBase)
   private
-    { Private Declarations }
+     
     FStacks: Integer;
     FNormals: TNormalSmoothing;
     FTriangleCount: Integer;
@@ -153,14 +153,14 @@ type
     procedure SetMinSmoothAngle(const Value: Single);
 
   protected
-    { Protected Declarations }
+    
     procedure SetStacks(const val: Integer);
     procedure SetNormals(const val: TNormalSmoothing);
     procedure SetNormalDirection(const val: TNormalDirection);
     procedure SetParts(const val: TExtrusionSolidParts);
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -172,7 +172,7 @@ type
     procedure StructureChanged; override;
 
   published
-    { Published Declarations }
+    
     property Parts: TExtrusionSolidParts read FParts write SetParts default
       [espOutside];
 
@@ -191,13 +191,13 @@ type
   //
   TGLPipeNode = class(TGLNode)
   private
-    { Private Declarations }
+     
     FRadiusFactor: Single;
     FColor: TGLColor;
     FTexCoordT: Single;
 
   protected
-    { Protected Declarations }
+    
     function GetDisplayName: string; override;
     procedure SetRadiusFactor(const val: Single);
     function StoreRadiusFactor: Boolean;
@@ -205,13 +205,13 @@ type
     procedure ColorChanged(sender: TObject);
     function StoreTexCoordT: Boolean;
   public
-    { Public Declarations }
+    
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+    
     property RadiusFactor: Single read FRadiusFactor write SetRadiusFactor stored
       StoreRadiusFactor;
     property Color: TGLColor read FColor write SetColor;
@@ -224,12 +224,12 @@ type
   //
   TGLPipeNodes = class(TGLLinesNodes)
   protected
-    { Protected Declarations }
+    
     procedure SetItems(index: Integer; const val: TGLPipeNode);
     function GetItems(index: Integer): TGLPipeNode;
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent);
     function Add: TGLPipeNode;
     function FindItemID(ID: Integer): TGLPipeNode;
@@ -261,7 +261,7 @@ type
      Texture coordinates NOT supported yet. }
   TGLPipe = class(TGLPolygonBase)
   private
-    { Private Declarations }
+     
     FSlices: Integer;
     FParts: TPipeParts;
     FTriangleCount: Integer;
@@ -274,7 +274,7 @@ type
     FNormalSmoothAngle: Single;
 
   protected
-    { Protected Declarations }
+    
     procedure CreateNodes; override;
     procedure SetSlices(const val: Integer);
     procedure SetParts(const val: TPipeParts);
@@ -290,7 +290,7 @@ type
     procedure SetNormalMode(const val: TPipeNormalMode);
     procedure SetNormalSmoothAngle(const val: Single);
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -300,7 +300,7 @@ type
     property TriangleCount: Integer read FTriangleCount;
 
   published
-    { Published Declarations }
+    
     property Parts: TPipeParts read FParts write SetParts default [ppOutside];
     property Slices: Integer read FSlices write SetSlices default 16;
     property Radius: Single read FRadius write SetRadius;

@@ -30,7 +30,7 @@ type
 
   TCUDADimensions = class(TGLUpdateAbleObject)
   private
-    { Private declarations }
+     
     FXYZ: TDim3;
     FMaxXYZ: TDim3;
     FReadOnly: Boolean;
@@ -39,7 +39,7 @@ type
     function GetMaxDimComponent(index: Integer): Integer;
     procedure SetMaxDimComponent(index: Integer; Value: Integer);
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TPersistent); override;
     procedure Assign(Source: TPersistent); override;
     property MaxSizeX: Integer index 0 read GetMaxDimComponent
@@ -65,7 +65,7 @@ type
 
   TCUDADevice = class(TPersistent)
   private
-    { Private declarations }
+     
     fID: Integer;
     fHandle: TCUdevice;
     fGFlops: Integer;
@@ -75,10 +75,10 @@ type
     fMaxThreadsDim: TCUDADimensions;
     fMaxGridSize: TCUDADimensions;
   protected
-    { Protected declarations }
+    
     function GetName: string;
   public
-    { Public declarations }
+    
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -86,7 +86,7 @@ type
       available on the device dev in bytes. }
     function TotalMemory: Cardinal;
   published
-    { Published declarations }
+    
     property Name: string read GetName;
     property TotalGlobalMem: NativeUInt read fDeviceProperties.TotalGlobalMem;
     property SharedMemPerBlock: NativeUInt read fDeviceProperties.SharedMemPerBlock;
@@ -109,18 +109,18 @@ type
 
   TGLSCUDADevice = class(TComponent)
   private
-    { Private declarations }
+     
     FSelectDeviceName: string;
     function GetDevice: TCUDADevice;
     procedure SetDevice(AValue: TCUDADevice);
     procedure SetDeviceName(const AName: string);
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function Suitable: Boolean;
   published
-    { Published declarations }
+    
     property SelectDevice: string read FSelectDeviceName write SetDeviceName;
     property Device: TCUDADevice read GetDevice write SetDevice;
   end;
@@ -136,16 +136,16 @@ type
 
   TCUDAContext = class(TObject)
   private
-    { Private declarations }
+     
     fHandle: PCUcontext;
     FDevice: TCUDADevice;
     FOnOpenGLInteropInit: TOnOpenGLInteropInit;
     FHandleList: TCUDAHandleList;
     procedure SetDevice(ADevice: TCUDADevice);
   protected
-    { Protected declarations }
+    
   public
-    { Public declarations }
+    
     constructor Create;
     destructor Destroy; override;
 
@@ -172,14 +172,14 @@ type
 
   CUDAContextManager = class
   private
-    { Private declarations }
+     
     class var fDeviceList: TCUDADeviceList;
 
   class var
     fContextList: TCUDAContextList;
     class var FContextStacks: array of TCUDAContextList;
   protected
-    { Protected declarations }
+    
     class function GetDevice(i: Integer): TCUDADevice;
     class function GetNextUnusedDevice: TCUDADevice;
     class procedure RegisterContext(aContext: TCUDAContext);
@@ -187,7 +187,7 @@ type
     class function GetThreadStack: TCUDAContextList;
     class function GetContext(i: Integer): TCUDAContext;
   public
-    { Public declarations }
+    
     {  Managment. }
     class procedure Init;
     class procedure Done;

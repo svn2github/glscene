@@ -230,7 +230,7 @@ type
 
   TGLSLogger = class(TComponent)
   private
-    { Private Declarations }
+     
     FReplaceAssertion: Boolean;
     FTimeFormat: TLogTimeFormat;
     FLogLevels: TLogLevels;
@@ -238,17 +238,17 @@ type
     procedure SetReplaceAssertion(Value: Boolean);
     function GetLog: TGLLogSession;
   protected
-    { Protected Declarations }
+    
 
   public
-    { Public Declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {  Set component primary and then UserLog return it's log }
     procedure DoPrimary;
     property Log: TGLLogSession read GetLog;
   published
-    { Published Declarations }
+    
     property ReplaceAssertion: Boolean read FReplaceAssertion
       write SetReplaceAssertion default False;
     {  Only design time sets. Define Log initial properties }

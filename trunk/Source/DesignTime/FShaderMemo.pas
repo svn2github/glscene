@@ -95,12 +95,12 @@ type
     procedure TBUncomentClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    { Private declarations }
+     
     FLightLineStyle: Integer;
     FOnCheck: TNotifyEvent;
     procedure OnTemplateClick(Sender: TObject);
   public
-    { Public declarations }
+    
     property OnCheck: TNotifyEvent read FOnCheck write FOnCheck;
   end;
 

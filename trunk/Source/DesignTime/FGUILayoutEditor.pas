@@ -23,7 +23,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Samples.Spin,
   Vcl.Grids,
-  //GLS
+  
   GLCrossPlatform,
   GLBaseClasses,
   GLGui;
@@ -87,14 +87,14 @@ type
     procedure BitBtn6Click(Sender: TObject);
     procedure elements_gridDblClick(Sender: TObject);
   private
-    { Private declarations }
+     
     procedure SyncImages;
     procedure DrawCurrentElement;
     procedure RefreshComponentBox;
     function GetEnabledSpins: Boolean;
     procedure SetEnabledSpins(Value: Boolean);
   public
-    { Public declarations }
+    
     procedure Execute(AGUILayout: TGLGuiLayout);
     property EnabledSpins: Boolean read GetEnabledSpins write SetEnabledSpins;
   end;

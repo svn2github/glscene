@@ -60,16 +60,16 @@ type
     procedure CBFilteringQualityChange(Sender: TObject);
 
   private
-    { Private declarations }
+     
     FTexture: TGLTexture;
     FOnChange: TNotifyEvent;
     Changeing: Boolean;
   protected
-    { Protected declarations }
+    
     procedure SetTexture(const val: TGLTexture);
     procedure DoOnChange; dynamic;
   public
-    { Public declarations }
+    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 

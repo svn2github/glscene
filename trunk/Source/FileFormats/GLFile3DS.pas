@@ -18,7 +18,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  //GLS
+  
   OpenGLTokens,
   GLStrings,
   GLScene,
@@ -289,7 +289,7 @@ type
      information and require textures when loading. }
   TGL3DSVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
     procedure LoadFromStream(aStream: TStream); override;
   end;

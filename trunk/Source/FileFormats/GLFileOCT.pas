@@ -33,7 +33,7 @@ type
   {The OCT vector file (FSRad output).  }
   TGLOCTGLVectorFile = class(TGLVectorFile)
   public
-    { Public Declarations }
+    
     class function Capabilities: TGLDataFileCapabilities; override;
 
     procedure LoadFromStream(aStream: TStream); override;

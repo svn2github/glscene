@@ -15,17 +15,9 @@
     
 
 	 History :  
-       22/04/10 - Yar - Fixes after GLState revision
-       11/10/07 - DaStr - Added $I GLScene.inc, removed unused dependancy
-       25/03/07 - DaStr - Replaced Dialogs with GLCrossPlatform for Delphi5 compatibility
-       22/03/07 - LIN - Added UseDirtyTiles property - Specifies how dirty tiles are replaced.
-       22/03/07 - LIN - Data is now prepared in 3 stages:
-                            BeforePreparingData : (Main Thread)
-                            PreparingData       : (Sub-Thread)   (Main Thread if MaxThreads=0)
-                            AfterPreparingData  : (Main Thread)
-       05/03/07 - LIN - Added ThreadCount and WaitFor
        12/02/07 - LIN - Creation
-	 
+      The whole history is logged in previous version of the unit
+
 }
 
 unit GLAsyncHDS;
@@ -67,16 +59,16 @@ type
 
 	 TGLAsyncHDS = class (TGLHeightDataSourceFilter)
 	   private
-	      { Private Declarations }
+	       
        FOnIdleEvent :TIdleEvent;
        FOnNewTilePrepared : TNewTilePreparedEvent;
        FUseDirtyTiles:TUseDirtyTiles;
        FTilesUpdated:boolean;
 	   protected
-	      { Protected Declarations }
+	      
     public
       //TilesUpdated:boolean;
-	      { Public Declarations }
+	      
       constructor Create(AOwner: TComponent); override;
       destructor Destroy; override;
       procedure BeforePreparingData(heightData : TGLHeightData); override;
@@ -89,7 +81,7 @@ type
       function  TilesUpdated:boolean;        //Returns true if tiles have been updated since the flag was last reset
       procedure TilesUpdatedFlagReset;       //sets the TilesUpdatedFlag to false; (is ThreadSafe)
 	   published
-	      { Published Declarations }
+	      
       property OnIdle : TIdleEvent read FOnIdleEvent write FOnIdleEvent;
       property OnNewTilePrepared : TNewTilePreparedEvent read FOnNewTilePrepared write FOnNewTilePrepared;
       property UseDirtyTiles :TUseDirtyTiles read FUseDirtyTiles write FUseDirtyTiles;
