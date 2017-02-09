@@ -29,9 +29,16 @@ uses
   System.SysUtils,
    
   GLApplicationFileIO,
-  GLCrossPlatform, GLPersistentClasses, GLVectorGeometry,
-  GLScene,  GLVectorFileObjects, GLVectorLists,  GLTexture,  GLColor,
-  GLRenderContextInfo, GLMaterial;
+  GLCrossPlatform, 
+  GLPersistentClasses, 
+  GLVectorGeometry,
+  GLScene,  
+  GLVectorFileObjects, 
+  GLVectorLists,  
+  GLTexture,  
+  GLColor,
+  GLRenderContextInfo, 
+  GLMaterial;
 
 const
   BufSize = 10240; { Load input data in chunks of BufSize Bytes. }
@@ -40,8 +47,6 @@ const
 
 type
 
-  // TGLOBJVectorFile
-  //
   TGLOBJVectorFile = class(TGLVectorFile)
   private
     FSourceStream: TStream; { Load from this stream }
@@ -56,29 +61,20 @@ type
     procedure ReadLine;
     // Raise a class-specific exception
     procedure Error(const msg: string);
-
     procedure CalcMissingOBJNormals(mesh: TMeshObject);
-
   public
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
   end;
 
-  // EGLOBJFileError
-  //
   EGLOBJFileError = class(Exception)
   private
     FLineNo: Integer;
-
   public
     property LineNo: Integer read FLineNo;
-
   end;
 
-  // TGLMTLFile
-  //
   {A simple class that know how to extract infos from a mtl file. 
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
@@ -100,7 +96,6 @@ type
   TGLMTLFile = class(TStringList)
   public
     procedure Prepare;
-
     function MaterialStringProperty(const materialName, propertyName: string): string;
     function MaterialVectorProperty(const materialName, propertyName: string;
       const defaultValue: TVector): TVector;
@@ -112,9 +107,9 @@ var
 
   vGLFileOBJ_SplitMesh: boolean = False;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -129,9 +124,6 @@ uses
   GLMeshUtils,
   GLUtils;
 
-// StreamEOF
-//
-
 function StreamEOF(S: TStream): Boolean;
 begin
   { Is the stream at its end? }
@@ -143,9 +135,6 @@ function Rest(const s: string; Count: integer): string;
 begin
   Result := copy(s, Count, Length(s) - Count + 1);
 end;
-
-// NextToken
-//
 
 function NextToken(var s: string; delimiter: Char): string;
 { Return the next Delimiter-delimited Token from the string s and
@@ -199,17 +188,14 @@ type
     procedure Assign(Source: TPersistent); override;
     constructor CreateOwned(aOwner: TGLFaceGroups); override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TVirtualWriter); override;
     procedure ReadFromFiler(reader: TVirtualReader); override;    
-
     procedure Add(VertexIdx, NormalIdx, TexCoordIdx: Integer);
     procedure BuildList(var mrci: TGLRenderContextInfo); override;
     procedure AddToTriangles(aList: TAffineVectorList;
       aTexCoords: TAffineVectorList = nil;
       aNormals: TAffineVectorList = nil); override;
     function TriangleCount: Integer; override;
-
     property Mode: TOBJFGMode read FMode write SetMode;
     property Name: string read FName write FName;
     property PolygonVertices: TIntegerList read FPolygonVertices;
@@ -398,9 +384,6 @@ begin
   end;
 end;
 
-// AddToTriangles
-//
-
 procedure TOBJFGVertexNormalTexIndexList.AddToTriangles(aList: TAffineVectorList;
   aTexCoords: TAffineVectorList = nil;
   aNormals: TAffineVectorList = nil);
@@ -472,9 +455,6 @@ begin
   end;
 end;
 
-// TriangleCount
-//
-
 function TOBJFGVertexNormalTexIndexList.TriangleCount: Integer;
 var
   i: Integer;
@@ -503,9 +483,6 @@ end;
 // ------------------
 // ------------------ TGLOBJVectorFile ------------------
 // ------------------
-
-// ReadLine
-//
 
 procedure TGLOBJVectorFile.ReadLine;
 var
@@ -573,9 +550,6 @@ begin
   SetLength(FLine, j - 1);
 end;
 
-// Error
-//
-
 procedure TGLOBJVectorFile.Error(const msg: string);
 var
   E: EGLOBJFileError;
@@ -585,16 +559,10 @@ begin
   raise E;
 end;
 
-// Capabilities
-//
-
 class function TGLOBJVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
-
-// CalcMissingOBJNormals
-//
 
 procedure TGLOBJVectorFile.CalcMissingOBJNormals(mesh: TMeshObject);
 var
@@ -672,9 +640,6 @@ begin
     end;
   end;
 end;
-
-// LoadFromStream
-//
 
 procedure TGLOBJVectorFile.LoadFromStream(aStream: TStream);
 var
@@ -1072,7 +1037,7 @@ begin
       end
       else if command = 'MTLLIB' then
       begin
-        objMtlFileName := NextToken(FLine, ' ');
+        objMtlFileName := NextToken(FLine, #13);
       end
       else if command = 'USEMTL' then
       begin
@@ -1364,9 +1329,6 @@ end;
 // ------------------ TGLMTLFile ------------------
 // ------------------
 
-// Prepare
-//
-
 procedure TGLMTLFile.Prepare;
 var
   i: Integer;
@@ -1384,9 +1346,6 @@ begin
     end;
   end;
 end;
-
-// MaterialStringProperty
-//
 
 function TGLMTLFile.MaterialStringProperty(const materialName, propertyName: string): string;
 var
@@ -1415,9 +1374,6 @@ begin
   end;
   Result := '';
 end;
-
-// MaterialVectorProperty
-//
 
 function TGLMTLFile.MaterialVectorProperty(const materialName, propertyName: string;
   const defaultValue: TVector): TVector;
