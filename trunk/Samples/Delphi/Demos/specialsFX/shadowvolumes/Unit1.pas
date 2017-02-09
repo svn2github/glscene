@@ -77,9 +77,9 @@ type
     procedure ScrollBar_ShadowResolutionChange(Sender: TObject);
     procedure Button_GenerateSilhouetteClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
   end;
 

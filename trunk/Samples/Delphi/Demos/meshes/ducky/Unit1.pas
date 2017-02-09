@@ -51,9 +51,9 @@ type
     procedure TrackBar1Change(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
   end;
 

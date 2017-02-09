@@ -97,9 +97,9 @@ type
   private
     FAppPath: string;
     procedure SetAppPath(const Value: string);
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     property AppPath: string read FAppPath write SetAppPath;
   end;
 

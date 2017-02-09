@@ -46,9 +46,9 @@ type
       x, y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     grid: array [-5 .. 5, -5 .. 5] of TColor;
   end;

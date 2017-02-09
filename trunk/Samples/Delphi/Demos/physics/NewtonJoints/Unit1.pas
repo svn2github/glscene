@@ -49,11 +49,11 @@ type
       X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
        point3d, FPaneNormal: TVector;
 
   public
-    { Public declarations }
+     
         PickJoint: TGLNGDJoint;
     MousePoint: TPoint;
   end;

@@ -13,9 +13,9 @@ type
     ShellView: TShellTreeView;
     Label1: TLabel;
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

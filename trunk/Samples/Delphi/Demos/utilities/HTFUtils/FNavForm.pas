@@ -16,10 +16,10 @@ type
     procedure ImageMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer; Layer: TCustomLayer);
   private
-    { Private declarations }
+     
     FPickX, FPickY : Integer;
   public
-    { Public declarations }
+     
     function Execute(htf : TGLHeightTileFile) : Boolean;
 
     property PickX : Integer read FPickX;

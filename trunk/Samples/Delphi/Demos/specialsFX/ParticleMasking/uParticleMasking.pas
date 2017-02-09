@@ -87,9 +87,9 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     procedure RefreshMask;
   end;

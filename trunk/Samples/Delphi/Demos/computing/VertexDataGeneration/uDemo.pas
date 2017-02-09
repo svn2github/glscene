@@ -34,9 +34,9 @@ type
     procedure GLSLShader1Apply(Shader: TGLCustomGLSLShader);
     procedure GLSCUDA1OpenGLInteropInit(out Context: TGLContext);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     FieldWidth: Integer;
     FieldHeight: Integer;
   end;

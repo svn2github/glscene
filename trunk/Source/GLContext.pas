@@ -16,26 +16,26 @@ interface
 
 uses
   Winapi.Windows,
-  System.Classes, 
-  System.SysUtils, 
-  System.Types, 
+  System.Classes,
+  System.SysUtils,
+  System.Types,
   System.SyncObjs,
-  VCL.Forms, 
-  VCL.Controls, 
+  VCL.Forms,
+  VCL.Controls,
   VCL.Consts,
 
 {$IFDEF GLS_SERVICE_CONTEXT}
   GLSGenerics,
 {$ENDIF}
   GLSLog,
-  GLCrossPlatform, 
-  OpenGLTokens, 
-  OpenGLAdapter,  
-  GLVectorGeometry, 
+  GLCrossPlatform,
+  OpenGLTokens,
+  OpenGLAdapter,
+  GLVectorGeometry,
   GLStrings,
-  GLVectorTypes,  
-  GLState,  
-  GLPipelineTransformation,  
+  GLVectorTypes,
+  GLState,
+  GLPipelineTransformation,
   GLTextureFormat;
 
 // Buffer ID's for Multiple-Render-Targets (using GL_ATI_draw_buffers)
@@ -43,9 +43,6 @@ const
   MRT_BUFFERS: array[0..3] of Cardinal = (GL_FRONT_LEFT, GL_AUX0, GL_AUX1, GL_AUX2);
 
 type
-
-  // TGLRCOptions
-  //
   TGLRCOption = (rcoDoubleBuffered, rcoStereo, rcoDebug, rcoOGL_ES);
   TGLRCOptions = set of TGLRCOption;
 
@@ -79,32 +76,23 @@ type
 
   TAbstractMultitextureCoordinatorClass = class of TAbstractMultitextureCoordinator;
 
-  // TGLContextAcceleration
-  //
   TGLContextAcceleration = (chaUnknown, chaHardware, chaSoftware);
 
-  // TGLAntiAliasing
-  //
   TGLAntiAliasing = (// Multisample Antialiasing
     aaDefault, aaNone, aa2x, aa2xHQ, aa4x, aa4xHQ,
     aa6x, aa8x, aa16x,
     // Coverage Sampling Antialiasing
     csa8x, csa8xHQ, csa16x, csa16xHQ);
 
-  // TGLVSyncMode
-  //
   TGLVSyncMode = (vsmSync, vsmNoSync);
 
-  // TGLContext
-  //
-  {Wrapper around an OpenGL rendering context. 
-     The aim of this class is to offer platform-independant
-     initialization, activation and management of OpenGL
-     rendering context. The class also offers notifications
-     event and error/problems detection.
-     This is a virtual abstract a class, and platform-specific
-     subclasses must be used.
-     All rendering context share the same lists. }
+  { Wrapper around an OpenGL rendering context.
+    The aim of this class is to offer platform-independant
+    initialization, activation and management of OpenGL
+    rendering context. The class also offers notifications
+    event and error/problems detection.
+    This is a virtual abstract a class, and platform-specific
+    subclasses must be used. All rendering context share the same lists. }
   TGLContext = class
   private
      
@@ -162,16 +150,12 @@ type
     
     constructor Create; virtual;
     destructor Destroy; override;
-
     {An application-side cache of global per-context OpenGL states
        and parameters }
     property GLStates: TGLStateCache read FGLStates;
-
     property PipelineTransformation: TGLTransformation read FTransformation;
-
-    //: Context manager reference
+    // Context manager reference
     property Manager: TGLContextManager read FManager;
-
     {Color bits for the rendering context }
     property ColorBits: Integer read FColorBits write SetColorBits;
     {Alpha bits for the rendering context }
@@ -184,8 +168,8 @@ type
     property AccumBits: Integer read FAccumBits write SetAccumBits;
     {Auxiliary buffers bits for the rendering context }
     property AuxBuffers: Integer read FAuxBuffers write SetAuxBuffers;
-    {AntiAliasing option. 
-       Ignored if not hardware supported, currently based on ARB_multisample. }
+    { AntiAliasing option.
+      Ignored if not hardware supported, currently based on ARB_multisample. }
     property AntiAliasing: TGLAntiAliasing read FAntiAliasing write
       SetAntiAliasing;
     {Specifies the layer plane that the rendering context is bound to. }
@@ -204,11 +188,10 @@ type
        still occur here. }
     property OnDestroyContext: TNotifyEvent read FOnDestroyContext write
       FOnDestroyContext;
-
-    {Creates the context. 
+    {Creates the context.
        This method must be invoked before the context can be used. }
     procedure CreateContext(ADeviceHandle: HDC); overload;
-    {Creates an in-memory context. 
+    {Creates an in-memory context.
        The function should fail if no hardware-accelerated memory context
        can be created (the CreateContext method can handle software OpenGL
        contexts). }
@@ -228,9 +211,9 @@ type
        deactivated the same number of times), but this function
        will fail if another context is already active. }
     procedure Activate;
-    {Deactivates the context. 
-       Will fail if the context is not active or another
-       context has been activated. }
+    { Deactivates the context.
+      Will fail if the context is not active or another
+      context has been activated. }
     procedure Deactivate;
     {Call OnPrepare for all handles.  }
     procedure PrepareHandlesData;
@@ -240,11 +223,9 @@ type
     function IsValid: Boolean; virtual; abstract;
     {Request to swap front and back buffers if they were defined. }
     procedure SwapBuffers; virtual; abstract;
-
     {Returns the first compatible context that isn't self in the shares. }
     function FindCompatibleContext: TGLContext;
     procedure DestroyAllHandles;
-
     function RenderOutputDevice: Pointer; virtual; abstract;
     {Access to OpenGL command and extension. }
     property GL: TGLExtensionsAndEntryPoints read FGL;
@@ -254,9 +235,7 @@ type
 
   TGLContextClass = class of TGLContext;
 
-  // TGLScreenControlingContext
-  //
-  {A TGLContext with screen control property and methods. 
+  {A TGLContext with screen control property and methods.
      This variety of contexts is for drivers that access windows and OpenGL
      through an intermediate opaque cross-platform API. 
      TGLSceneViewer won't use them, TGLMemoryViewer may be able to use them,
@@ -287,9 +266,7 @@ type
 
   TOnPrepareHandleData = procedure(AContext: TGLContext) of object;
 
-  // TGLContextHandle
-  //
-  {Wrapper around an OpenGL context handle. 
+  {Wrapper around an OpenGL context handle.
      This wrapper also takes care of context registrations and data releases
      related to context releases an cleanups. This is an abstract class,
      use the TGLListHandle and TGLTextureHandle subclasses. }
@@ -305,23 +282,17 @@ type
     function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
-    
-    //: Invoked by when there is no compatible context left for relocation
+    // Invoked by when there is no compatible context left for relocation
     procedure ContextDestroying;
-
-    //: Specifies if the handle can be transfered across shared contexts
+    // Specifies if the handle can be transfered across shared contexts
     class function Transferable: Boolean; virtual;
     class function IsValid(const ID: Cardinal): Boolean; virtual;
-
     function DoAllocateHandle: Cardinal; virtual; abstract;
     procedure DoDestroyHandle(var AHandle: Cardinal); virtual; abstract;
-
   public
-    
     constructor Create; virtual;
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
-
     {Return OpenGL identifier in current context. }
     property Handle: Cardinal read GetHandle;
     {Return current rendering context if handle is allocated in it
@@ -333,17 +304,14 @@ type
     function IsDataComplitelyUpdated: Boolean;
     {Notify the data was updated in current context. }
     procedure NotifyDataUpdated;
-    {Notify the data was changed through all context. }
+    { Notify the data was changed through all context. }
     procedure NotifyChangesOfData;
-
-    //: Checks if required extensions / OpenGL version are met
+    // Checks if required extensions / OpenGL version are met
     class function IsSupported: Boolean; virtual;
     function IsAllocatedForContext(AContext: TGLContext = nil): Boolean;
     function IsShared: Boolean;
-
     function  AllocateHandle: Cardinal;
     procedure DestroyHandle;
-
     property OnPrapare: TOnPrepareHandleData read FOnPrepare write FOnPrepare;
   end;
 
@@ -351,57 +319,40 @@ type
   TGLVirtualHandleEvent = procedure(Sender: TGLVirtualHandle; var handle:
     Cardinal) of object;
 
-  // TGLVirtualHandle
-  //
   {A context handle with event-based handle allocation and destruction. }
   TGLVirtualHandle = class(TGLContextHandle)
   private
-     
     FOnAllocate, FOnDestroy: TGLVirtualHandleEvent;
     FTag: Integer;
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function Transferable: Boolean; override;
   public
-    
     property OnAllocate: TGLVirtualHandleEvent read FOnAllocate write
       FOnAllocate;
     property OnDestroy: TGLVirtualHandleEvent read FOnDestroy write FOnDestroy;
-
     property Tag: Integer read FTag write FTag;
   end;
 
-  // TGLVirtualHandleTransf
-  //
   {Transferable virtual handle. }
   TGLVirtualHandleTransf = class(TGLVirtualHandle)
   protected
     class function Transferable: Boolean; override;
   end;
 
-  // TGLListHandle
-  //
   {Manages a handle to a display list. }
   TGLListHandle = class(TGLContextHandle)
-  private
-     
-
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
     procedure NewList(mode: Cardinal);
     procedure EndList;
     procedure CallList;
   end;
 
-  // TGLTextureHandle
-  //
   {Manages a handle to a texture. }
   TGLTextureHandle = class(TGLContextHandle)
   private
@@ -413,26 +364,20 @@ type
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
     property Target: TGLTextureTarget read FTarget write SetTarget;
   end;
 
-  // TGLSamplerHandle
-  //
-  {Manages a handle to a sampler. }
+  { Manages a handle to a sampler. }
   TGLSamplerHandle = class(TGLContextHandle)
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
+
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLQueryHandle
-  //
   {Manages a handle to a query.
      Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
@@ -448,10 +393,8 @@ type
     function GetQueryType: TQueryType; virtual; abstract;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
     procedure BeginQuery;
     procedure EndQuery;
-
     // Check if result is available from the query.  Result may not be available
     // immediately after ending the query
     function IsResultAvailable: boolean;
@@ -471,8 +414,6 @@ type
     property Active: Boolean read FActive;
   end;
 
-  // TGLOcclusionQueryHandle
-  //
   {Manages a handle to an occlusion query.
      Requires OpenGL 1.5+
      Does *NOT* check for extension availability, this is assumed to have been
@@ -496,12 +437,10 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLTimerQueryHandle
-  //
-  {Manages a handle to a timer query.
-     Requires GL_EXT_timer_query extension.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+  { Manages a handle to a timer query.
+    Requires GL_EXT_timer_query extension.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TGLTimerQueryHandle = class(TGLQueryHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -514,8 +453,6 @@ type
     function Time: Integer;
   end;
 
-  // TGLPrimitiveQueryHandle
-  //
   {Manages a handle to a primitive query.
      Requires OpenGL 3.0+
      Does *NOT* check for extension availability, this is assumed to have been
@@ -531,31 +468,23 @@ type
     function PrimitivesGenerated: Integer;
   end;
 
-  // TGLBufferObjectHandle
-  //
-  {Manages a handle to a Buffer Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user. }
+  { Manages a handle to a Buffer Object.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user. }
   TGLBufferObjectHandle = class(TGLContextHandle)
   private
-     
     FSize: Integer;
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
-
     function GetTarget: Cardinal; virtual; abstract;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
     {Creates the buffer object buffer and initializes it. }
     constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: Cardinal);
-
     procedure Bind; virtual; abstract;
     {Note that it is not necessary to UnBind before Binding another buffer. }
     procedure UnBind; virtual; abstract;
-
     {Bind a buffer object to an indexed target, used by transform feedback
        buffer objects and uniform buffer objects. (OpenGL 3.0+) }
     procedure BindRange(index: Cardinal; offset: TGLintptr; size: TGLsizeiptr);
@@ -563,17 +492,16 @@ type
     {Equivalent to calling BindRange with offset = 0, and size = the size of buffer.}
     procedure BindBase(index: Cardinal); virtual;
     procedure UnBindBase(index: Cardinal); virtual;
-
-    {Specifies buffer content. 
-       Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
-       change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
-       once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
-       that is re-specified very often. 
-       Valid only if the buffer has been bound. }
+    { Specifies buffer content.
+      Common bufferUsage values are GL_STATIC_DRAW_ARB for data that will
+      change rarely, but be used often, GL_STREAM_DRAW_ARB for data specified
+      once but used only a few times, and GL_DYNAMIC_DRAW_ARB for data
+      that is re-specified very often.
+      Valid only if the buffer has been bound. }
     procedure BufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
-    //: Invokes Bind then BufferData
+    // Invokes Bind then BufferData
     procedure BindBufferData(p: Pointer; size: Integer; bufferUsage: Cardinal);
-    {Updates part of an already existing buffer. 
+    {Updates part of an already existing buffer.
        offset and size indicate which part of the data in the buffer is
        to bo modified and p where the data should be taken from. }
     procedure BufferSubData(offset, size: Integer; p: Pointer);
@@ -589,33 +517,23 @@ type
     {Unmap buffer content from memory. 
        Must follow a MapBuffer, and happen before the buffer is unbound. }
     function UnmapBuffer: Boolean;
-
     class function IsSupported: Boolean; override;
-
     property Target: Cardinal read GetTarget;
     property BufferSize: Integer read FSize;
   end;
 
-  // TGLVBOHandle
-  //
-  {Manages a handle to an Vertex Buffer Object.
-     Does *NOT* check for extension availability, this is assumed to have been
-     checked by the user.
-     Do not use this class directly, use one of its subclasses instead. }
+  { Manages a handle to an Vertex Buffer Object.
+    Does *NOT* check for extension availability, this is assumed to have been
+    checked by the user.
+    Do not use this class directly, use one of its subclasses instead. }
   TGLVBOHandle = class(TGLBufferObjectHandle)
   private
-     
-
     function GetVBOTarget: Cardinal;
   public
-
     property VBOTarget: Cardinal read GetVBOTarget;
   end;
 
-  // TGLVBOArrayBufferHandle
-  //
-  {Manages a handle to VBO Array Buffer. 
-     Typically used to store vertices, normals, texcoords, etc. }
+  { Manages a handle to VBO Array Buffer. Typically used to store vertices, normals, texcoords, etc.}
   TGLVBOArrayBufferHandle = class(TGLVBOHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -624,10 +542,7 @@ type
     procedure UnBind; override;
   end;
 
-  // TGLVBOElementArrayHandle
-  //
-  {Manages a handle to VBO Element Array Buffer. 
-     Typically used to store vertex indices. }
+  {Manages a handle to VBO Element Array Buffer. Typically used to store vertex indices. }
   TGLVBOElementArrayHandle = class(TGLVBOHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -636,11 +551,8 @@ type
     procedure UnBind; override;
   end;
 
-  // TGLPackPBOHandle
-  //
-  {Manages a handle to PBO Pixel Pack Buffer. 
-     When bound, commands such as ReadPixels write
-     their data into a buffer object. }
+  { Manages a handle to PBO Pixel Pack Buffer.
+    When bound, commands such as ReadPixels write their data into a buffer object. }
   TGLPackPBOHandle = class(TGLBufferObjectHandle)
   protected
     function GetTarget: Cardinal; override;
@@ -650,9 +562,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLUnpackPBOHandle
-  //
-  {Manages a handle to PBO Pixel Unpack Buffer. 
+  {Manages a handle to PBO Pixel Unpack Buffer.
      When bound, commands such as DrawPixels read
      their data from a buffer object. }
   TGLUnpackPBOHandle = class(TGLBufferObjectHandle)
@@ -664,9 +574,7 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLTransformFeedbackBufferHandle
-  //
-  {Manages a handle to a Transform Feedback Buffer Object. 
+  {Manages a handle to a Transform Feedback Buffer Object.
      Transform feedback buffers can be used to capture vertex data from the
      vertex or geometry shader stage to perform further processing without
      going on to the fragment shader stage. }
@@ -688,8 +596,6 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLTextureBufferHandle
-  //
   {Manages a handle to a Buffer Texture. (TBO) }
   TGLTextureBufferHandle = class(TGLBufferObjectHandle)
   protected
@@ -700,8 +606,6 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLUniformBufferHandle
-  //
   {Manages a handle to a Uniform Buffer Object (UBO).
      Uniform buffer objects store "uniform blocks"; groups of uniforms
      that can be passed as a group into a GLSL program. }
@@ -720,8 +624,6 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLVertexArrayHandle
-  //
   {Manages a handle to a Vertex Array Object (VAO).
      Vertex array objects are used to rapidly switch between large sets
      of array state. }
@@ -745,8 +647,6 @@ type
     fsIncompleteMultisample,
     fsStatusError);
 
-  // TGLFramebufferHandle
-  //
   {Manages a handle to a Framebuffer Object (FBO).
      Framebuffer objects provide a way of drawing to rendering
      destinations other than the buffers provided to the GL by the
@@ -831,8 +731,6 @@ type
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLRenderbufferHandle
-  //
   {Manages a handle to a Renderbuffer Object.
      A Renderbuffer is a "framebuffer-attachable image" for generalized offscreen
      rendering and it also provides a means to support rendering to GL logical
@@ -857,13 +755,11 @@ type
     FReady: Boolean;
     FInfoLog: string;
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
     class function IsValid(const ID: Cardinal): Boolean; override;
     class function GetTarget: Cardinal; virtual; abstract;
   public
-    
     procedure LoadARBProgram(AText: string);
     procedure Enable;
     procedure Disable;
@@ -874,10 +770,8 @@ type
 
   TGLARBVertexProgramHandle = class(TGLARBProgramHandle)
   protected
-    
     class function GetTarget: Cardinal; override;
   public
-    
     class function IsSupported: Boolean; override;
   end;
 
@@ -886,115 +780,80 @@ type
     
     class function GetTarget: Cardinal; override;
   public
-    
     class function IsSupported: Boolean; override;
   end;
 
   TGLARBGeometryProgramHandle = class(TGLARBProgramHandle)
   protected
-    
     class function GetTarget: Cardinal; override;
   public
-    
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLSLHandle
-  //
-  {Base class for GLSL handles (programs and shaders). 
+  {Base class for GLSL handles (programs and shaders).
      Do not use this class directly, use one of its subclasses instead. }
   TGLSLHandle = class(TGLContextHandle)
-  private
-     
-
   protected
-    
     procedure DoDestroyHandle(var AHandle: Cardinal); override;
-
   public
-    
     function InfoLog: string;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLShaderHandle
-  //
   {Manages a handle to a Shader Object.
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user.
      Do not use this class directly, use one of its subclasses instead. }
   TGLShaderHandle = class(TGLSLHandle)
   private
-     
     FShaderType: Cardinal;
-
   protected
-    
     function DoAllocateHandle: Cardinal; override;
     class function IsValid(const ID: Cardinal): Boolean; override;
   public
-    
     procedure ShaderSource(const source: AnsiString); overload;
-    //: Returns True if compilation sucessful
+    // Returns True if compilation sucessful
     function CompileShader: Boolean;
-
     property ShaderType: Cardinal read FShaderType;
   end;
 
   TGLShaderHandleClass = class of TGLShaderHandle;
 
-  // TGLVertexShaderHandle
-  //
   {Manages a handle to a Vertex Shader Object. }
   TGLVertexShaderHandle = class(TGLShaderHandle)
   public
-    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLGeometryShaderHandle
-  //
   {Manages a handle to a Geometry Shader Object. }
   TGLGeometryShaderHandle = class(TGLShaderHandle)
   public
-    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLFragmentShaderHandle
-  //
   {Manages a handle to a Fragment Shader Object. }
   TGLFragmentShaderHandle = class(TGLShaderHandle)
   public
-    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLTessControlShaderHandle
-  //
   {Manages a handle to a Tessellation Control Shader Object. }
   TGLTessControlShaderHandle = class(TGLShaderHandle)
   public
-    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLTessEvaluationShaderHandle
-  //
   {Manages a handle to a Tessellation Evaluation Shader Object. }
   TGLTessEvaluationShaderHandle = class(TGLShaderHandle)
   public
-    
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
 
-  // TGLProgramHandle
-  //
   {Manages a GLSL Program Object.
      Does *NOT* check for extension availability, this is assumed to have been
      checked by the user. }
@@ -1002,7 +861,6 @@ type
   public
     class function IsValid(const ID: Cardinal): Boolean; override;
   private
-     
     FName: string;
     function GetUniform1i(const index: string): Integer;
     procedure SetUniform1i(const index: string; val: Integer);
@@ -1012,7 +870,6 @@ type
     procedure SetUniform3i(const index: string; const Value: TVector3i);
     function GetUniform4i(const index: string): TVector4i;
     procedure SetUniform4i(const index: string; const Value: TVector4i);
-
     function GetUniform1f(const index: string): Single;
     procedure SetUniform1f(const index: string; val: Single);
     function GetUniform2f(const index: string): TVector2f;
@@ -1021,14 +878,12 @@ type
     procedure SetUniform3f(const index: string; const val: TAffineVector);
     function GetUniform4f(const index: string): TVector;
     procedure SetUniform4f(const index: string; const val: TVector);
-
     function GetUniformMatrix2fv(const index: string): TMatrix2f;
     procedure SetUniformMatrix2fv(const index: string; const val: TMatrix2f);
     function GetUniformMatrix3fv(const index: string): TMatrix3f;
     procedure SetUniformMatrix3fv(const index: string; const val: TMatrix3f);
     function GetUniformMatrix4fv(const index: string): TMatrix;
     procedure SetUniformMatrix4fv(const index: string; const val: TMatrix);
-
     function GetUniformTextureHandle(const index: string;
       const TextureIndex: Integer; const TextureTarget: TGLTextureTarget):
       Cardinal;
@@ -1038,21 +893,15 @@ type
     procedure SetUniformBuffer(const index: string;
       Value: TGLUniformBufferHandle);
   protected
-    
     function DoAllocateHandle: cardinal; override;
-
   public
-    
     property Name: string read FName write FName;
-
     constructor Create; override;
-
-    {Compile and attach a new shader. 
+    {Compile and attach a new shader.
        Raises an EGLShader exception in case of failure. }
     procedure AddShader(shaderType: TGLShaderHandleClass; const shaderSource:
       string;
       treatWarningsAsErrors: Boolean = False);
-
     procedure AttachObject(shader: TGLShaderHandle);
     procedure DetachAllObject;
     procedure BindAttribLocation(index: Integer; const aName: string);
@@ -1063,27 +912,21 @@ type
     function GetUniformLocation(const aName: string): Integer;
     function GetUniformOffset(const aName: string): PGLInt;
     function GetUniformBlockIndex(const aName: string): Integer;
-
     function GetVaryingLocation(const aName: string): Integer;
     // Currently, NVidia-specific.
     procedure AddActiveVarying(const aName: string);
     // Currently, NVidia-specific.
-
     function GetUniformBufferSize(const aName: string): Integer;
-
     procedure UseProgramObject;
     procedure EndUseProgramObject;
-
     procedure SetUniformi(const index: string; const val: integer); overload;
     procedure SetUniformi(const index: string; const val: TVector2i); overload;
     procedure SetUniformi(const index: string; const val: TVector3i); overload;
     procedure SetUniformi(const index: string; const val: TVector4i); overload;
-
     procedure SetUniformf(const index: string; const val: single); overload;
     procedure SetUniformf(const index: string; const val: TVector2f); overload;
     procedure SetUniformf(const index: string; const val: TVector3f); overload;
     procedure SetUniformf(const index: string; const val: TVector4f); overload;
-
     {Shader parameters. }
     property Uniform1i[const index: string]: Integer read GetUniform1i write
     SetUniform1i;
@@ -1093,7 +936,6 @@ type
     SetUniform3i;
     property Uniform4i[const index: string]: TVector4i read GetUniform4i write
     SetUniform4i;
-
     property Uniform1f[const index: string]: Single read GetUniform1f write
     SetUniform1f;
     property Uniform2f[const index: string]: TVector2f read GetUniform2f write
@@ -1102,14 +944,12 @@ type
     write SetUniform3f;
     property Uniform4f[const index: string]: TVector read GetUniform4f write
     SetUniform4f;
-
     property UniformMatrix2fv[const index: string]: TMatrix2f read
     GetUniformMatrix2fv write SetUniformMatrix2fv;
     property UniformMatrix3fv[const index: string]: TMatrix3f read
     GetUniformMatrix3fv write SetUniformMatrix3fv;
     property UniformMatrix4fv[const index: string]: TMatrix read
     GetUniformMatrix4fv write SetUniformMatrix4fv;
-
     property UniformTextureHandle[const index: string; const TextureIndex:
     Integer; const TextureTarget: TGLTextureTarget]: Cardinal read
     GetUniformTextureHandle write SetUniformTextureHandle;
@@ -1117,19 +957,15 @@ type
     SetUniformBuffer;
   end;
 
-  // TGLContextNotification
-  //
   TGLContextNotification = record
     obj: TObject;
     event: TNotifyEvent;
   end;
 
-  // TGLContextManager
-  //
   {Stores and manages all the TGLContext objects.  }
   TGLContextManager = class
   private
-     
+
     FList: TThreadList;
     FTerminated: Boolean;
     FNotifications: array of TGLContextNotification;
@@ -1148,13 +984,10 @@ type
 {$ENDIF}
     FServiceContext: TGLContext;
   protected
-    
     procedure Lock;
     procedure UnLock;
-
     procedure RegisterContext(aContext: TGLContext);
     procedure UnRegisterContext(aContext: TGLContext);
-
     procedure ContextCreatedBy(aContext: TGLContext);
     procedure DestroyingContextBy(aContext: TGLContext);
 
@@ -1166,18 +999,15 @@ type
 {$ENDIF}
     property ServiceContext: TGLContext read FServiceContext;
   public
-    
     constructor Create;
     destructor Destroy; override;
-
-    {Returns an appropriate, ready-to use context. 
+    {Returns an appropriate, ready-to use context.
        The returned context should be freed by caller. }
     function CreateContext(AClass: TGLContextClass = nil): TGLContext;
-
-    {Returns the number of TGLContext object. 
+    {Returns the number of TGLContext object.
        This is *not* the number of OpenGL rendering contexts! }
     function ContextCount: Integer;
-    {Registers a new object to notify when the last context is destroyed. 
+    {Registers a new object to notify when the last context is destroyed.
        When the last rendering context is destroyed, the 'anEvent' will
        be invoked with 'anObject' as parameter.
        Note that the registration is kept until the notification is triggered
@@ -1186,26 +1016,21 @@ type
       TNotifyEvent);
     {Unregisters an object from the notification lists.  }
     procedure RemoveNotification(anObject: TObject);
-
-    //: Marks the context manager for termination
+    // Marks the context manager for termination
     procedure Terminate;
-
     {Request all contexts to destroy all their handles. }
     procedure DestroyAllHandles;
-
     {Notify all contexts about necessity of handles preparation. }
     procedure NotifyPreparationNeed;
   end;
 
   EGLContext = class(Exception);
-
   EPBuffer = class(Exception);
-
   EGLShader = class(EGLContext);
 
   {Drivers should register themselves via this function. }
 procedure RegisterGLContextClass(aGLContextClass: TGLContextClass);
-{The TGLContext that is the currently active context, if any. 
+{The TGLContext that is the currently active context, if any.
    Returns nil if no context is active. }
 function CurrentGLContext: TGLContext;
 function SafeCurrentGLContext: TGLContext;

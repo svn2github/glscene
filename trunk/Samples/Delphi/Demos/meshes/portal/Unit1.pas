@@ -72,10 +72,10 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+     
     mx, my: Integer;
   public
-    { Public declarations }
+     
     portalCount, triangleCount : Integer;
   end;
 

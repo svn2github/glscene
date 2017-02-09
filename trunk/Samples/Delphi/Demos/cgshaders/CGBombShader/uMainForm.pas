@@ -86,9 +86,9 @@ type
     procedure TrackBar9Change(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     procedure ResetPositions;
   end;

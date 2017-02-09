@@ -60,12 +60,12 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     colTotalTime : Single; // for timing collision detection
     colCount : Integer;
     procedure AddToTrail(const p : TVector);
   public
-    { Public declarations }
+     
     mousex, mousey: integer;
   end;
 

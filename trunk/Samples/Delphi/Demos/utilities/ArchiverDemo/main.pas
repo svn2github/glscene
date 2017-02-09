@@ -36,9 +36,9 @@ type
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
   private
-    { private declarations }
+     
   public
-    { public declarations }
+     
   end;
 
 var

@@ -61,9 +61,9 @@ type
     procedure GLDirectOpenGL1Render(Sender: TObject;
       var rci: TGLRenderContextInfo);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     Jumped: boolean;
     procedure Load;

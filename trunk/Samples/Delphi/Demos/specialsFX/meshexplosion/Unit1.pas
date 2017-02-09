@@ -48,9 +48,9 @@ type
     procedure SpeedBarChange(Sender: TObject);
     procedure MaxStepsBarChange(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

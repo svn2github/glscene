@@ -60,10 +60,10 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
-    { Private declarations }
+     
     my,mx: integer;
   public
-    { Public declarations }
+     
   end;
 
 var

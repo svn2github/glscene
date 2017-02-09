@@ -54,10 +54,10 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewerBeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
     procedure LoadConstellationLines;
   public
-    { Public declarations }
+     
     constellationsAlpha: Single;
     timeMultiplier: Single;
     mx, my, dmx, dmy: Integer;

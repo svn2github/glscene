@@ -65,9 +65,9 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure CompileButtonClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
     Prog : TProgram;
     Errors : Boolean;

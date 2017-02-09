@@ -45,10 +45,10 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Private declarations }
+     
     oldx, oldy: integer;
   public
-    { Public declarations }
+     
     B: TGLBlur;
 
   end;

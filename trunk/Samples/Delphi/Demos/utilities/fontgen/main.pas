@@ -30,9 +30,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     FFont: TGLWindowsBitmapFont;
   end;
 

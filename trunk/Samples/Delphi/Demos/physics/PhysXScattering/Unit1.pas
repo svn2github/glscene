@@ -31,10 +31,10 @@ type
     procedure TimerTimer(Sender: TObject);
     procedure GLSVMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
   public
     mx, my: Integer;
-    { Public declarations }
+     
   end;
 
 var

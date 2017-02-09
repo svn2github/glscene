@@ -101,7 +101,7 @@ type
       Sender: TGLVertexAttribute);
     procedure GLSCUDA1OpenGLInteropInit(out Context: TGLContext);
   private
-    { Private declarations }
+     
     clicked: Boolean;
     lastx: Integer;
     lasty: Integer;
@@ -115,7 +115,7 @@ type
     ForceX: Single;
     ForceY: Single;
   public
-    { Public declarations }
+     
     ParticlesDim: Integer;
     DeltaTime: Single;
     ViscosityConst: Single;

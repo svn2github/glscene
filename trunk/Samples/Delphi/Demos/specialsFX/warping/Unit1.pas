@@ -60,10 +60,10 @@ type
     procedure MIRadiusSettingClick(Sender: TObject);
     procedure MIZoomEffectClick(Sender: TObject);
   private
-    { Private declarations }
+     
     warpX, warpY, warpRadius, warpEffect : Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

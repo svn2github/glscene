@@ -49,9 +49,9 @@ type
     procedure TrackBar1Change(Sender: TObject);
     procedure CBClampTex2Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

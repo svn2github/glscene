@@ -5,7 +5,7 @@
    Defines vector types as advanced records.
    History:
      17/05/11 - PW - Creation.
-   The whole history is logged in previous version of the unit
+     The whole history is logged in previous version of the unit
 }
 unit GLTypes;
 
@@ -30,6 +30,14 @@ type
   TGLVertex = record
     P, N: TVector3f;  //Point and Normal
     Density: Single;
+  end;
+
+  TGLFace = record
+    Normal: TVector3f;
+    V1: TVector3f; // vertex 1
+    V2: TVector3f; // vertex 2
+    V3: TVector3f; // vertex 3
+    Padding: array [0 .. 1] of Byte;
   end;
 
   PGLPoint2D = ^TGLPoint2D;

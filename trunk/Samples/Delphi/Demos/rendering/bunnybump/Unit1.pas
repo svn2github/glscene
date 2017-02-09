@@ -77,9 +77,9 @@ type
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure ComboBox2Change(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my, dx, dy: Integer;
     IsInitialized: Boolean;
     StartHeight: Integer;

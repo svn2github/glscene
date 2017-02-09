@@ -44,9 +44,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure btnHowlClick(Sender: TObject);
   private
-    { private declarations }
+     
   public
-    { public declarations }
+     
   end;
 
 var

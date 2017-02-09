@@ -52,10 +52,10 @@ type
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure TBScaleChange(Sender: TObject);
   private
-    { Private declarations }
+     
     mx, my : Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

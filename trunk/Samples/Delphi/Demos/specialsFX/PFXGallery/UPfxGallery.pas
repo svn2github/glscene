@@ -71,9 +71,9 @@ type
     procedure FormCreate(Sender: TObject);
   private
     procedure HandleKeys(const deltaTime: Double);
-    // Private declarations
+     
   public
-    // Public declarations
+     
 
   end;
 

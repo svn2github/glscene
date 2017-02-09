@@ -168,9 +168,9 @@ type
     function ObjectName(value: string): string;
     procedure Timer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     MousePos,LostMousePos: TVector;
     MouseMoving: boolean;

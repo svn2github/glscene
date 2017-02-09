@@ -32,9 +32,9 @@ type
     procedure GLTimeEventsMGR1Events4Event(event: TTimeEvent);
     procedure GLTimeEventsMGR1Events5Event(event: TTimeEvent);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

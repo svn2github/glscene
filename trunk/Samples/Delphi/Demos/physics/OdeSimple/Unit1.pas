@@ -64,9 +64,9 @@ type
     procedure ComboBox2Change(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
 
     procedure DoSphere;

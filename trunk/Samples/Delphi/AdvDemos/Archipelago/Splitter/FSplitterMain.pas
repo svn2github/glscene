@@ -21,9 +21,9 @@ type
     RBLow: TRadioButton;
     procedure Button1Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -12,7 +12,7 @@ uses
   Vcl.Graphics,
   Vcl.Forms,
   Vcl.Controls,
-  // GLS
+   
   GLScene,
   GLObjects,
   GLHUDObjects,

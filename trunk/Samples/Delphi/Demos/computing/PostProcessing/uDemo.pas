@@ -64,9 +64,9 @@ type
     procedure TrackBar1Change(Sender: TObject);
     procedure GLSCUDA1OpenGLInteropInit(out Context: TGLContext);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     Radius: Integer;
     Threshold: Single;
     Highlight: SIngle;

@@ -84,10 +84,10 @@ type
     procedure TerrainRendererHeightDataPostRender(var rci: TGLRenderContextInfo;
       var HeightDatas: TList);
   private
-    { Private declarations }
+     
 
   public
-    { Public declarations }
+     
     FullScreen: Boolean;
     CamHeight: Single;
     WaterPolyCount: Integer;

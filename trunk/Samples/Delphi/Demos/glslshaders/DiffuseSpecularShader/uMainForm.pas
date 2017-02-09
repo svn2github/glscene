@@ -54,10 +54,10 @@ type
     procedure MultiLightShaderCheckBoxClick(Sender: TObject);
     procedure EnableFogCheckBoxClick(Sender: TObject);
   private
-    { Private declarations }
+     
 
   public
-    { Public declarations }
+     
   end;
 
 var

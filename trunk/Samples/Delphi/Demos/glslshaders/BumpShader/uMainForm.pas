@@ -86,10 +86,10 @@ type
     procedure UseNormalTextureCheckBoxClick(Sender: TObject);
     procedure ShowNotGLSceneObjectsCheckBoxClick(Sender: TObject);
   private
-    { Private declarations }
+     
 
   public
-    { Public declarations }
+     
   end;
 
 var

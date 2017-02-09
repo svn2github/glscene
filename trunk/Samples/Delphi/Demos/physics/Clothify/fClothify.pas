@@ -93,9 +93,9 @@ type
     procedure Button_CancelLoadClick(Sender: TObject);
     procedure ComboBox_ShadowChange(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : integer;
 
     VerletWorld : TGLVerletWorld;

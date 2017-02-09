@@ -48,9 +48,9 @@ type
     procedure CBShadowsClick(Sender: TObject);
     procedure CBStencilClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

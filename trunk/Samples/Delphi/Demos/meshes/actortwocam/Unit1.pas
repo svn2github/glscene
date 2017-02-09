@@ -57,7 +57,7 @@ type
     procedure HandleKeys(const deltaTime: Double);
 
   public
-    { Private declarations }
+     
 
   end;
 

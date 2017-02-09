@@ -65,7 +65,7 @@ type
       var rci: TGLRenderContextInfo);
     procedure Button1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     cullingMode: string;
     visiblecount,treecount: integer;
     SpacePartition: TSectoredSpacePartition;

@@ -48,9 +48,9 @@ type
     procedure GLPostEffect1CustomEffect(Sender: TObject;
       var rci: TGLRenderContextInfo; var Buffer: TGLPostEffectBuffer);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
 
   end;
 

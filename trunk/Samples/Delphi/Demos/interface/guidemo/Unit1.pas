@@ -64,9 +64,9 @@ type
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure GLButton1ButtonClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     constructor Create(AOwner: TComponent); override;
   end;
 

@@ -79,7 +79,7 @@ type
     procedure cbCollisionModeClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
     mdx, mdy : Integer;
     CollisionDetected : Boolean;
   public

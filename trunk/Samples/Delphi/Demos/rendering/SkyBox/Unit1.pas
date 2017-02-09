@@ -50,9 +50,9 @@ type
   private
     procedure HandleKeys(d: double);
     function LoadTexture(Matname,Filename : string) : TGLLibMaterial;
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

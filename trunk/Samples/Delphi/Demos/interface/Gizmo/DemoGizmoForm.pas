@@ -104,9 +104,9 @@ type
     procedure FormDestroy(Sender: TObject);
   private
     procedure FillPickableObjectsList(root: TGLBaseSceneObject; doClearList: Boolean);
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     //    gizmo: TGLGizmoEx;
     noMouseMotion: Boolean;

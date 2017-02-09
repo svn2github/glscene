@@ -30,9 +30,9 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure MoveCenterNodeTo(x, y : Integer);
   end;
 

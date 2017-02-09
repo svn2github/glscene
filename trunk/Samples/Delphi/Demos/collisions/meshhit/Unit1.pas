@@ -39,9 +39,9 @@ type
     procedure GLSceneViewer2MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

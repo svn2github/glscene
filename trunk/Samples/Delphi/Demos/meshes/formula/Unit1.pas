@@ -43,14 +43,14 @@ type
     procedure GLSceneViewer1MouseMove(Sender: TObject; Shift: TShiftState;
       X, Y: Integer);
   private
-    { Private declarations }
+     
     mx, my : Integer;
     invRes1, invRes2 : Single;
     function MakeVect(const aX, aY : Single) : TAffineVector;
     procedure AddTriangle(const p1, p2, p3 : TAffineVector;
                           const color : TColorVector);
   public
-    { Public declarations }
+     
   end;
 
 var

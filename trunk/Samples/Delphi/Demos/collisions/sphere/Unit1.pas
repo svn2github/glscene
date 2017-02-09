@@ -41,7 +41,7 @@ type
   private
     { Private declarations  }
   public
-    { Public declarations }
+     
   end;
 
 var

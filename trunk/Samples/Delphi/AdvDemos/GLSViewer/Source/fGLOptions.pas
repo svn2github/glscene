@@ -34,9 +34,9 @@ type
     procedure PanelBackgroundClick(Sender: TObject);
     procedure CheckBoxAxisClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     CurLangID : Word;
     procedure ReadIniFile; override;
     procedure WriteIniFile; override;

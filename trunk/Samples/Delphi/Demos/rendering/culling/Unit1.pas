@@ -47,9 +47,9 @@ type
     procedure RBNoneClick(Sender: TObject);
     procedure RBSpheresClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

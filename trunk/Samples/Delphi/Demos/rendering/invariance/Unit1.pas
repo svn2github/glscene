@@ -36,9 +36,9 @@ type
       X, Y: Integer);
     procedure FormActivate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

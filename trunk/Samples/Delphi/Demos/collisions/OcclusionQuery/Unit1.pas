@@ -52,9 +52,9 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

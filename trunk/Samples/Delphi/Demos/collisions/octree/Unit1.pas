@@ -58,9 +58,9 @@ type
       newTime: Double);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mousex, mousey: integer;
   end;
 

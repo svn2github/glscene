@@ -42,10 +42,10 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-    { Private declarations }
+     
     procedure AddMushrooms;
   public
-    { Public declarations }
+     
     mx, my : Integer;
     MushRoomCounter : Integer;
   end;

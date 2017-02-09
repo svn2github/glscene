@@ -55,9 +55,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure AsyncTimer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

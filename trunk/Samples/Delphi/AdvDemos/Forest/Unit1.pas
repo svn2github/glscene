@@ -111,14 +111,14 @@ type
     procedure FormDeactivate(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
-    { Private declarations }
+     
 //      hscale, mapwidth, mapheight : Single;
     lmp: TPoint;
     camPitch, camTurn, camTime, curPitch, curTurn: Single;
 
     function GetTextureReflectionMatrix: TMatrix;
   public
-    { Public declarations }
+     
     TestTree: TGLTree;
     TreesShown: Integer;
     nearTrees: TPersistentObjectList;

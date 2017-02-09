@@ -46,10 +46,10 @@ type
       newTime: Double);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
     procedure GenerateCubeMap;
   public
-    { Public declarations }
+     
     mx, my : Integer;
     CubmapSupported : Boolean;
     cubeMapWarnDone : Boolean;

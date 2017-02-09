@@ -52,11 +52,11 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure SBClick(Sender: TObject);
   private
-    { Private declarations }
+     
     Triger: Boolean;
     FramerateRatio, N: Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

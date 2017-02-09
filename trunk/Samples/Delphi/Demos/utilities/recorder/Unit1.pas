@@ -33,10 +33,10 @@ type
     procedure AVIRecorder1PostProcessEvent(Sender: TObject;
       frame: TBitmap);
   private
-    { Private declarations }
+     
      UserAbort : boolean;
   public
-    { Public declarations }
+     
   end;
 
 var

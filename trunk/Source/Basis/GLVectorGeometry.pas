@@ -100,7 +100,6 @@ type
 
   PHomogeneousByteVector = ^THomogeneousByteVector;
   THomogeneousByteVector = TVector4b;
-
   PHomogeneousWordVector = ^THomogeneousWordVector;
   THomogeneousWordVector = TVector4w;
 
@@ -167,27 +166,16 @@ type
 
   // matrices
   THomogeneousByteMatrix = TMatrix4b;
-
   THomogeneousWordMatrix = array [0 .. 3] of THomogeneousWordVector;
-
   THomogeneousIntMatrix = TMatrix4i;
-
   THomogeneousFltMatrix = TMatrix4f;
-
   THomogeneousDblMatrix = TMatrix4d;
-
   THomogeneousExtMatrix = array [0 .. 3] of THomogeneousExtVector;
-
   TAffineByteMatrix = TMatrix3b;
-
   TAffineWordMatrix = array [0 .. 2] of TAffineWordVector;
-
   TAffineIntMatrix = TMatrix3i;
-
   TAffineFltMatrix = TMatrix3f;
-
   TAffineDblMatrix = TMatrix3d;
-
   TAffineExtMatrix = array [0 .. 2] of TAffineExtVector;
 
   // some simplified names
@@ -241,8 +229,6 @@ type
   TPackedRotationMatrix = array [0 .. 2] of SmallInt;
 
 const
-  // useful constants
-
   // TexPoints (2D space)
   XTexPoint: TTexPoint = (S: 1; T: 0);
   YTexPoint: TTexPoint = (S: 0; T: 1);
@@ -294,7 +280,6 @@ const
 
 
   // Quaternions
-
   IdentityQuaternion: TQuaternion = (ImagPart: (X: 0; Y: 0; Z: 0); RealPart: 1);
 
   // some very small numbers
@@ -1582,11 +1567,10 @@ var
   // + 2 : use Intel SSE code (Pentium III, NOT IMPLEMENTED YET !)
   vSIMD: Byte = 0;
 
-  // --------------------------------------------------------------
-  // --------------------------------------------------------------
-  // --------------------------------------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
 implementation
-
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 // --------------------------------------------------------------
@@ -1606,8 +1590,6 @@ const
   cOne: Single = 1.0;
   cOneDotFive: Single = 0.5;
 
-  // OptimizationMode
-  //
 function GeometryOptimizationMode: String;
 begin
   case vSIMD of
@@ -1633,8 +1615,6 @@ begin
   vSIMD := 0;
 end;
 
-// EndFPUOnlySection
-//
 procedure EndFPUOnlySection;
 begin
   Dec(vFPUOnlySectionCounter);
@@ -1647,16 +1627,12 @@ end;
 // ----------------- vector functions -------------------------------------------
 // ------------------------------------------------------------------------------
 
-// TexPointMake
-//
 function TexPointMake(const S, T: Single): TTexPoint;
 begin
   result.S := S;
   result.T := T;
 end;
 
-// AffineVectorMake
-//
 function AffineVectorMake(const X, Y, Z: Single): TAffineVector; overload;
 begin
   result.X := X;
@@ -1664,8 +1640,6 @@ begin
   result.Z := Z;
 end;
 
-// AffineVectorMake
-//
 function AffineVectorMake(const V: TVector): TAffineVector;
 begin
   result.X := V.X;
@@ -1673,8 +1647,6 @@ begin
   result.Z := V.Z;
 end;
 
-// SetAffineVector
-//
 procedure SetAffineVector(out V: TAffineVector; const X, Y, Z: Single);
   overload;
 begin
@@ -1683,8 +1655,6 @@ begin
   V.Z := Z;
 end;
 
-// SetVector (affine)
-//
 procedure SetVector(out V: TAffineVector; const X, Y, Z: Single);
 begin
   V.X := X;
@@ -1692,8 +1662,6 @@ begin
   V.Z := Z;
 end;
 
-// SetVector (affine-hmg)
-//
 procedure SetVector(out V: TAffineVector; const vSrc: TVector);
 begin
   V.X := vSrc.X;
@@ -1701,8 +1669,6 @@ begin
   V.Z := vSrc.Z;
 end;
 
-// SetVector (affine-affine)
-//
 procedure SetVector(out V: TAffineVector; const vSrc: TAffineVector);
 begin
   V.X := vSrc.X;
@@ -1710,8 +1676,6 @@ begin
   V.Z := vSrc.Z;
 end;
 
-// SetVector (affine double - affine single)
-//
 procedure SetVector(out V: TAffineDblVector; const vSrc: TAffineVector);
 begin
   V.X := vSrc.X;
@@ -1719,8 +1683,6 @@ begin
   V.Z := vSrc.Z;
 end;
 
-// SetVector (affine double - hmg single)
-//
 procedure SetVector(out V: TAffineDblVector; const vSrc: TVector);
 begin
   V.X := vSrc.X;
@@ -1728,8 +1690,6 @@ begin
   V.Z := vSrc.Z;
 end;
 
-// VectorMake
-//
 function VectorMake(const V: TAffineVector; W: Single = 0): TVector;
 begin
   result.X := V.X;
@@ -1738,8 +1698,6 @@ begin
   result.W := W;
 end;
 
-// VectorMake
-//
 function VectorMake(const X, Y, Z: Single; W: Single = 0): TVector;
 begin
   result.X := X;
@@ -1748,8 +1706,6 @@ begin
   result.W := W;
 end;
 
-// PointMake (xyz)
-//
 function PointMake(const X, Y, Z: Single): TVector; overload;
 begin
   result.X := X;
@@ -1758,8 +1714,6 @@ begin
   result.W := 1;
 end;
 
-// PointMake (affine)
-//
 function PointMake(const V: TAffineVector): TVector; overload;
 begin
   result.X := V.X;
@@ -1768,8 +1722,6 @@ begin
   result.W := 1;
 end;
 
-// PointMake (hmg)
-//
 function PointMake(const V: TVector): TVector; overload;
 begin
   result.X := V.X;
@@ -1778,8 +1730,6 @@ begin
   result.W := 1;
 end;
 
-// SetVector
-//
 procedure SetVector(out V: TVector; const X, Y, Z: Single; W: Single = 0);
 begin
   V.X := X;
@@ -1788,8 +1738,6 @@ begin
   V.W := W;
 end;
 
-// SetVector
-//
 procedure SetVector(out V: TVector; const av: TAffineVector; W: Single = 0);
 begin
   V.X := av.X;
@@ -1798,8 +1746,6 @@ begin
   V.W := W;
 end;
 
-// SetVector
-//
 procedure SetVector(out V: TVector; const vSrc: TVector);
 begin
   // faster than memcpy, move or ':=' on the TVector...
@@ -1809,8 +1755,6 @@ begin
   V.W := vSrc.W;
 end;
 
-// MakePoint
-//
 procedure MakePoint(out V: TVector; const X, Y, Z: Single);
 begin
   V.X := X;
@@ -1819,8 +1763,6 @@ begin
   V.W := 1.0;
 end;
 
-// MakePoint
-//
 procedure MakePoint(out V: TVector; const av: TAffineVector);
 begin
   V.X := av.X;
@@ -1829,8 +1771,6 @@ begin
   V.W := 1.0; // cOne
 end;
 
-// MakePoint
-//
 procedure MakePoint(out V: TVector; const av: TVector);
 begin
   V.X := av.X;
@@ -1839,8 +1779,6 @@ begin
   V.W := 1.0; // cOne
 end;
 
-// MakeVector
-//
 procedure MakeVector(out V: TAffineVector; const X, Y, Z: Single); overload;
 begin
   V.X := X;
@@ -1848,8 +1786,6 @@ begin
   V.Z := Z;
 end;
 
-// MakeVector
-//
 procedure MakeVector(out V: TVector; const X, Y, Z: Single);
 begin
   V.X := X;
@@ -1858,8 +1794,6 @@ begin
   V.W := 0.0 // cZero;
 end;
 
-// MakeVector
-//
 procedure MakeVector(out V: TVector; const av: TAffineVector);
 begin
   V.X := av.X;
@@ -1868,8 +1802,6 @@ begin
   V.W := 0.0 // cZero;
 end;
 
-// MakeVector
-//
 procedure MakeVector(out V: TVector; const av: TVector);
 begin
   V.X := av.X;
@@ -1878,8 +1810,6 @@ begin
   V.W := 0.0; // cZero;
 end;
 
-// RstVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure RstVector(var V: TAffineVector);
 asm
@@ -1897,8 +1827,6 @@ begin
 end;
 {$ENDIF}
 
-// RstVector (hmg)
-//
 {$IFDEF GLS_ASM}
 procedure RstVector(var V: TVector);
 asm
@@ -1918,8 +1846,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (func)
-//
 {$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TVector2f): TVector2f;
 // EAX contains address of V1
@@ -1941,8 +1867,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (func, affine)
-//
 {$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
@@ -1968,8 +1892,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (proc, affine)
-//
 {$IFDEF GLS_ASM}
 procedure VectorAdd(const V1, V2: TAffineVector;
   var vr: TAffineVector); overload;
@@ -1996,8 +1918,7 @@ begin
   vr.Z := V1.Z + V2.Z;
 end;
 {$ENDIF}
-// VectorAdd (proc, affine)
-//
+
 {$IFDEF GLS_ASM}
 procedure VectorAdd(const V1, V2: TAffineVector; vr: PAffineVector); overload;
 // EAX contains address of V1
@@ -2023,8 +1944,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorAdd(const V1, V2: TVector): TVector;
 // EAX contains address of V1
@@ -2067,8 +1986,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (hmg, proc)
-//
 {$IFDEF GLS_ASM}
 procedure VectorAdd(const V1, V2: TVector; var vr: TVector);
 // EAX contains address of V1
@@ -2111,8 +2028,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAdd (affine, single)
-//
 function VectorAdd(const V: TAffineVector; const f: Single): TAffineVector;
 begin
   result.X := V.X + f;
@@ -2120,8 +2035,6 @@ begin
   result.Z := V.Z + f;
 end;
 
-// VectorAdd (hmg, single)
-//
 function VectorAdd(const V: TVector; const f: Single): TVector;
 begin
   result.X := V.X + f;
@@ -2130,8 +2043,6 @@ begin
   result.W := V.W + f;
 end;
 
-// PointAdd (hmg, W = 1)
-//
 function PointAdd(var V1: TVector; const V2: TVector): TVector;
 begin
   result.X := V1.X + V2.X;
@@ -2140,8 +2051,6 @@ begin
   result.W := 1;
 end;
 
-// AddVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure AddVector(var V1: TAffineVector; const V2: TAffineVector);
 // EAX contains address of V1
@@ -2166,8 +2075,6 @@ begin
 end;
 {$ENDIF}
 
-// AddVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure AddVector(var V1: TAffineVector; const V2: TVector);
 // EAX contains address of V1
@@ -2192,8 +2099,6 @@ begin
 end;
 {$ENDIF}
 
-// AddVector (hmg)
-//
 {$IFDEF GLS_ASM}
 procedure AddVector(var V1: TVector; const V2: TVector);
 // EAX contains address of V1
@@ -2234,8 +2139,6 @@ begin
 end;
 {$ENDIF}
 
-// AddVector (affine)
-//
 procedure AddVector(var V: TAffineVector; const f: Single);
 begin
   V.X := V.X + f;
@@ -2243,8 +2146,6 @@ begin
   V.Z := V.Z + f;
 end;
 
-// AddVector (hmg)
-//
 procedure AddVector(var V: TVector; const f: Single);
 begin
   V.X := V.X + f;
@@ -2253,8 +2154,6 @@ begin
   V.W := V.W + f;
 end;
 
-// AddPoint (hmg, W = 1)
-//
 procedure AddPoint(var V1: TVector; const V2: TVector);
 begin
   V1.X := V1.X + V2.X;
@@ -2263,8 +2162,6 @@ begin
   V1.W := 1;
 end;
 
-// TexPointArrayAdd
-//
 procedure TexPointArrayAdd(const src: PTexPointArray; const delta: TTexPoint;
   const nb: Integer; dest: PTexPointArray); overload;
 var
@@ -2275,11 +2172,8 @@ begin
     dest^[i].S := src^[i].S + delta.S;
     dest^[i].T := src^[i].T + delta.T;
   end;
-
 end;
 
-// TexPointArrayScaleAndAdd
-//
 procedure TexPointArrayScaleAndAdd(const src: PTexPointArray;
   const delta: TTexPoint; const nb: Integer; const scale: TTexPoint;
   dest: PTexPointArray); overload;
@@ -2293,8 +2187,6 @@ begin
   end;
 end;
 
-// VectorArrayAdd
-//
 procedure VectorArrayAdd(const src: PAffineVectorArray;
   const delta: TAffineVector; const nb: Integer; dest: PAffineVectorArray);
 
@@ -2309,8 +2201,6 @@ begin
   end;
 end;
 
-// VectorSubtract (func, affine)
-//
 {$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
@@ -2336,8 +2226,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (func, 2f)
-//
 {$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TVector2f): TVector2f;
 // EAX contains address of V1
@@ -2359,8 +2247,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (proc, affine)
-//
 {$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TAffineVector;
   var result: TAffineVector);
@@ -2388,8 +2274,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (proc, affine-hmg)
-//
 {$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TAffineVector; var result: TVector);
 // EAX contains address of V1
@@ -2418,8 +2302,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract
-//
 {$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1: TVector; V2: TAffineVector;
   var result: TVector);
@@ -2450,8 +2332,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorSubtract(const V1, V2: TVector): TVector;
 // EAX contains address of V1
@@ -2493,8 +2373,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (proc, hmg)
-//
 {$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TVector; var result: TVector);
 // EAX contains address of V1
@@ -2536,8 +2414,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (proc, affine)
-//
 {$IFDEF GLS_ASM}
 procedure VectorSubtract(const V1, V2: TVector;
   var result: TAffineVector); overload;
@@ -2565,8 +2441,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSubtract (affine, single)
-//
 function VectorSubtract(const V1: TAffineVector; delta: Single): TAffineVector;
 begin
   result.X := V1.X - delta;
@@ -2574,8 +2448,6 @@ begin
   result.Z := V1.Z - delta;
 end;
 
-// VectorSubtract (hmg, single)
-//
 function VectorSubtract(const V1: TVector; delta: Single): TVector;
 begin
   result.X := V1.X - delta;
@@ -2584,8 +2456,6 @@ begin
   result.W := V1.W - delta;
 end;
 
-// SubtractVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TAffineVector; const V2: TAffineVector);
 // EAX contains address of V1
@@ -2610,8 +2480,6 @@ begin
 end;
 {$ENDIF}
 
-// SubtractVector (2f)
-//
 {$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TVector2f; const V2: TVector2f);
 // EAX contains address of V1
@@ -2632,8 +2500,6 @@ begin
 end;
 {$ENDIF}
 
-// SubtractVector (hmg)
-//
 {$IFDEF GLS_ASM}
 procedure SubtractVector(var V1: TVector; const V2: TVector);
 // EAX contains address of V1
@@ -2674,8 +2540,6 @@ begin
 end;
 {$ENDIF}
 
-// CombineVector (var)
-//
 {$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   var f: Single);
@@ -2706,8 +2570,6 @@ begin
 end;
 {$ENDIF}
 
-// CombineVector (pointer)
-//
 {$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TAffineVector; const V: TAffineVector;
   pf: PFloat);
@@ -2738,8 +2600,6 @@ begin
 end;
 {$ENDIF}
 
-// TexPointCombine
-//
 function TexPointCombine(const t1, t2: TTexPoint; f1, f2: Single): TTexPoint;
 begin
   result.S := (f1 * t1.S) + (f2 * t2.S);
@@ -2756,8 +2616,6 @@ begin
   result.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]);
 end;
 
-// VectorCombine3 (func)
-//
 function VectorCombine3(const V1, V2, V3: TAffineVector;
   const f1, f2, F3: Single): TAffineVector;
 begin
@@ -2766,8 +2624,6 @@ begin
   result.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]) + (F3 * V3.V[Z]);
 end;
 
-// VectorCombine3 (vector)
-//
 procedure VectorCombine3(const V1, V2, V3: TAffineVector;
   const f1, f2, F3: Single; var vr: TAffineVector);
 begin
@@ -2776,8 +2632,6 @@ begin
   vr.V[Z] := (f1 * V1.V[Z]) + (f2 * V2.V[Z]) + (F3 * V3.V[Z]);
 end;
 
-// CombineVector
-//
 {$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TVector; const V: TVector;
   var f: Single); overload;
@@ -2829,8 +2683,6 @@ begin
 end;
 {$ENDIF}
 
-// CombineVector
-//
 {$IFDEF GLS_ASM}
 procedure CombineVector(var vr: TVector; const V: TAffineVector;
   var f: Single); overload;
@@ -2861,8 +2713,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCombine
-//
 function VectorCombine(const V1, V2: TVector; const F1, F2: Single): TVector;
 begin
   result.V[X] := (F1 * V1.V[X]) + (F2 * V2.V[X]);
@@ -2871,8 +2721,6 @@ begin
   result.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]);
 end;
 
-// VectorCombine
-//
 function VectorCombine(const V1: TVector; const V2: TAffineVector;
   const F1, F2: Single): TVector; overload;
 begin
@@ -2882,8 +2730,6 @@ begin
   result.V[W] := F1 * V1.V[W];
 end;
 
-// VectorCombine
-//
 procedure VectorCombine(const V1, V2: TVector; const F1, F2: Single;
   var vr: TVector); overload;
 begin
@@ -2893,8 +2739,6 @@ begin
   vr.W := (F1 * V1.W) + (F2 * V2.W);
 end;
 
-// VectorCombine (F1=1.0)
-//
 procedure VectorCombine(const V1, V2: TVector; const f2: Single;
   var vr: TVector); overload;
 begin // 201283
@@ -2904,8 +2748,6 @@ begin // 201283
   vr.W := V1.W + (f2 * V2.W);
 end;
 
-// VectorCombine
-//
 procedure VectorCombine(const V1: TVector; const V2: TAffineVector;
   const F1, F2: Single; var vr: TVector);
 begin
@@ -2915,8 +2757,6 @@ begin
   vr.V[W] := F1 * V1.V[W];
 end;
 
-// VectorCombine3
-//
 function VectorCombine3(const V1, V2, V3: TVector;
   const F1, F2, F3: Single): TVector;
 begin
@@ -2926,8 +2766,6 @@ begin
   result.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]) + (F3 * V3.V[W]);
 end;
 
-// VectorCombine3
-//
 procedure VectorCombine3(const V1, V2, V3: TVector; const F1, F2, F3: Single;
   var vr: TVector);
 begin
@@ -2937,15 +2775,11 @@ begin
   vr.V[W] := (F1 * V1.V[W]) + (F2 * V2.V[W]) + (F3 * V3.V[W]);
 end;
 
-// VectorDotProduct (2f)
-//
 function VectorDotProduct(const V1, V2: TVector2f): Single;
 begin
   result := V1.X * V2.X + V1.Y * V2.Y;
 end;
 
-// VectorDotProduct (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorDotProduct(const V1, V2: TAffineVector): Single;
 // EAX contains address of V1
@@ -2968,8 +2802,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDotProduct (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorDotProduct(const V1, V2: TVector): Single;
 // EAX contains address of V1
@@ -2995,8 +2827,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDotProduct
-//
 {$IFDEF GLS_ASM}
 function VectorDotProduct(const V1: TVector; const V2: TAffineVector): Single;
 // EAX contains address of V1
@@ -3019,8 +2849,6 @@ begin
 end;
 {$ENDIF}
 
-// PointProject (affine)
-//
 {$IFDEF GLS_ASM}
 function PointProject(const p, origin, direction: TAffineVector): Single;
 // EAX -> p, EDX -> origin, ECX -> direction
@@ -3045,8 +2873,6 @@ begin
 end;
 {$ENDIF}
 
-// PointProject (vector)
-//
 {$IFDEF GLS_ASM}
 function PointProject(const p, origin, direction: TVector): Single;
 // EAX -> p, EDX -> origin, ECX -> direction
@@ -3071,8 +2897,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 function VectorCrossProduct(const V1, V2: TAffineVector): TAffineVector;
 // EAX contains address of V1
@@ -3109,8 +2933,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 function VectorCrossProduct(const V1, V2: TVector): TVector;
 // EAX contains address of V1
@@ -3151,8 +2973,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TVector; var vr: TVector);
 // EAX contains address of V1
@@ -3193,8 +3013,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TVector); overload;
@@ -3237,8 +3055,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TVector;
   var vr: TAffineVector); overload;
@@ -3277,8 +3093,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorCrossProduct
-//
 {$IFDEF GLS_ASM}
 procedure VectorCrossProduct(const V1, V2: TAffineVector;
   var vr: TAffineVector); overload;
@@ -3317,15 +3131,11 @@ begin
 end;
 {$ENDIF}
 
-// Lerp
-//
 function Lerp(const start, stop, T: Single): Single;
 begin
   result := start + (stop - start) * T;
 end;
 
-// Angle Lerp
-//
 function AngleLerp(start, stop, T: Single): Single;
 var
   d: Single;
@@ -3346,8 +3156,6 @@ begin
   result := start + d * T;
 end;
 
-// DistanceBetweenAngles
-//
 function DistanceBetweenAngles(angle1, angle2: Single): Single;
 begin
   angle1 := NormalizeAngle(angle1);
@@ -3357,16 +3165,12 @@ begin
     result := c2PI - result;
 end;
 
-// TexPointLerp
-//
 function TexPointLerp(const t1, t2: TTexPoint; T: Single): TTexPoint; overload;
 begin
   result.S := t1.S + (t2.S - t1.S) * T;
   result.T := t1.T + (t2.T - t1.T) * T;
 end;
 
-// VectorAffineLerp
-//
 function VectorLerp(const V1, V2: TAffineVector; T: Single): TAffineVector;
 begin
   result.V[X] := V1.V[X] + (V2.V[X] - V1.V[X]) * T;
@@ -3374,8 +3178,6 @@ begin
   result.V[Z] := V1.V[Z] + (V2.V[Z] - V1.V[Z]) * T;
 end;
 
-// VectorLerp
-//
 procedure VectorLerp(const V1, V2: TAffineVector; T: Single;
   var vr: TAffineVector);
 begin
@@ -3384,8 +3186,6 @@ begin
   vr.V[Z] := V1.V[Z] + (V2.V[Z] - V1.V[Z]) * T;
 end;
 
-// VectorLerp
-//
 function VectorLerp(const V1, V2: TVector; T: Single): TVector;
 begin
   result.V[X] := V1.V[X] + (V2.V[X] - V1.V[X]) * T;
@@ -3394,8 +3194,6 @@ begin
   result.V[W] := V1.V[W] + (V2.V[W] - V1.V[W]) * T;
 end;
 
-// VectorLerp
-//
 procedure VectorLerp(const V1, V2: TVector; T: Single; var vr: TVector);
 begin
   vr.V[X] := V1.V[X] + (V2.V[X] - V1.V[X]) * T;
@@ -3404,8 +3202,6 @@ begin
   vr.V[W] := V1.V[W] + (V2.V[W] - V1.V[W]) * T;
 end;
 
-// VectorAngleLerp
-//
 function VectorAngleLerp(const V1, V2: TAffineVector; T: Single): TAffineVector;
 var
   q1, q2, qR: TQuaternion;
@@ -4862,22 +4658,16 @@ begin
 end;
 {$ENDIF}
 
-// VectorIsNull (hmg)
-//
 function VectorIsNull(const V: TVector): Boolean;
 begin
   result := ((V.X = 0) and (V.Y = 0) and (V.Z = 0));
 end;
 
-// VectorIsNull (affine)
-//
 function VectorIsNull(const V: TAffineVector): Boolean; overload;
 begin
   result := ((V.X = 0) and (V.Y = 0) and (V.Z = 0));
 end;
 
-// VectorSpacing (texpoint)
-//
 {$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TTexPoint): Single; overload;
 // EAX contains address of v1
@@ -5344,8 +5134,6 @@ begin
   result.W.Z := V.V[Z];
 end;
 
-// CreateTranslationMatrix (hmg)
-//
 function CreateTranslationMatrix(const V: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
@@ -5354,8 +5142,6 @@ begin
   result.W.Z := V.V[Z];
 end;
 
-// CreateScaleAndTranslationMatrix
-//
 function CreateScaleAndTranslationMatrix(const scale, offset: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
@@ -5367,8 +5153,6 @@ begin
   result.W.Z := offset.V[Z];
 end;
 
-// CreateRotationMatrixX
-//
 function CreateRotationMatrixX(const sine, cosine: Single): TMatrix;
 begin
   result := EmptyHmgMatrix;
@@ -5380,8 +5164,6 @@ begin
   result.W.W := 1;
 end;
 
-// CreateRotationMatrixX
-//
 function CreateRotationMatrixX(const angle: Single): TMatrix;
 var
   S, c: Single;
@@ -5390,8 +5172,6 @@ begin
   result := CreateRotationMatrixX(S, c);
 end;
 
-// CreateRotationMatrixY
-//
 function CreateRotationMatrixY(const sine, cosine: Single): TMatrix;
 begin
   result := EmptyHmgMatrix;
@@ -5403,8 +5183,6 @@ begin
   result.W.W := 1;
 end;
 
-// CreateRotationMatrixY
-//
 function CreateRotationMatrixY(const angle: Single): TMatrix;
 var
   S, c: Single;
@@ -5413,8 +5191,6 @@ begin
   result := CreateRotationMatrixY(S, c);
 end;
 
-// CreateRotationMatrixZ
-//
 function CreateRotationMatrixZ(const sine, cosine: Single): TMatrix;
 begin
   result := EmptyHmgMatrix;
@@ -5426,8 +5202,6 @@ begin
   result.W.W := 1;
 end;
 
-// CreateRotationMatrixZ
-//
 function CreateRotationMatrixZ(const angle: Single): TMatrix;
 var
   S, c: Single;
@@ -5436,8 +5210,6 @@ begin
   result := CreateRotationMatrixZ(S, c);
 end;
 
-// CreateRotationMatrix (affine)
-//
 function CreateRotationMatrix(const anAxis: TAffineVector;
   angle: Single): TMatrix;
 var
@@ -5469,15 +5241,11 @@ begin
   result.W.W := 1;
 end;
 
-// CreateRotationMatrix (hmg)
-//
 function CreateRotationMatrix(const anAxis: TVector; angle: Single): TMatrix;
 begin
   result := CreateRotationMatrix(PAffineVector(@anAxis)^, angle);
 end;
 
-// CreateAffineRotationMatrix
-//
 function CreateAffineRotationMatrix(const anAxis: TAffineVector; angle: Single)
   : TAffineMatrix;
 var
@@ -5501,8 +5269,6 @@ begin
   result.Z.Z := (one_minus_cosine * Sqr(axis.Z)) + cosine;
 end;
 
-// MatrixMultiply (3x3 func)
-//
 function MatrixMultiply(const m1, m2: TAffineMatrix): TAffineMatrix;
 begin
   result.X.X := m1.X.X * m2.X.X + m1.X.Y * m2.Y.X + m1.X.Z * m2.Z.X;
@@ -5516,8 +5282,6 @@ begin
   result.Z.Z := m1.Z.X * m2.X.Z + m1.Z.Y * m2.Y.Z + m1.Z.Z * m2.Z.Z;
 end;
 
-// MatrixMultiply (4x4, func)
-//
 function MatrixMultiply(const m1, m2: TMatrix): TMatrix;
 begin
   result.X.X := m1.X.X * m2.X.X + m1.X.Y * m2.Y.X + m1.X.Z * m2.Z.X +
@@ -5554,15 +5318,11 @@ begin
     m1.W.W * m2.W.W;
 end;
 
-// MatrixMultiply (4x4, proc)
-//
 procedure MatrixMultiply(const m1, m2: TMatrix; var MResult: TMatrix);
 begin
   MResult := MatrixMultiply(m1, m2);
 end;
 
-// VectorTransform
-//
 function VectorTransform(const V: TVector; const M: TMatrix): TVector;
 begin
     result.V[X] := V.V[X] * M.X.X + V.V[Y] * M.Y.X + V.V[Z] * M.Z.X +
@@ -5575,8 +5335,6 @@ begin
       V.V[W] * M.W.W;
 end;
 
-// VectorTransform
-//
 function VectorTransform(const V: TVector; const M: TAffineMatrix): TVector;
 begin
   result.V[X] := V.V[X] * M.X.X + V.V[Y] * M.Y.X + V.V[Z] * M.Z.X;
@@ -5585,8 +5343,6 @@ begin
   result.V[W] := V.V[W];
 end;
 
-// VectorTransform
-//
 function VectorTransform(const V: TAffineVector; const M: TMatrix)
   : TAffineVector;
 begin
@@ -5595,8 +5351,6 @@ begin
   result.V[Z] := V.V[X] * M.X.Z + V.V[Y] * M.Y.Z + V.V[Z] * M.Z.Z + M.W.Z;
 end;
 
-// VectorTransform
-//
 function VectorTransform(const V: TAffineVector; const M: TAffineMatrix)
   : TAffineVector;
 begin
@@ -5605,16 +5359,12 @@ begin
   result.V[Z] := V.V[X] * M.X.Z + V.V[Y] * M.Y.Z + V.V[Z] * M.Z.Z;
 end;
 
-// MatrixDeterminant (affine)
-//
 function MatrixDeterminant(const M: TAffineMatrix): Single;
 begin
   result := M.X.X * (M.Y.Y * M.Z.Z - M.Z.Y * M.Y.Z) - M.X.Y *
     (M.Y.X * M.Z.Z - M.Z.X * M.Y.Z) + M.X.Z * (M.Y.X * M.Z.Y - M.Z.X * M.Y.Y);
 end;
 
-// MatrixDetInternal
-//
 function MatrixDetInternal(const a1, a2, a3, b1, b2, b3, c1, c2,
   c3: Single): Single;
 // internal version for the determinant of a 3x3 matrix
@@ -5623,8 +5373,6 @@ begin
     (a2 * b3 - a3 * b2);
 end;
 
-// MatrixDeterminant (hmg)
-//
 function MatrixDeterminant(const M: TMatrix): Single;
 begin
   result := M.X.X * MatrixDetInternal(M.Y.Y, M.Z.Y, M.W.Y, M.Y.Z, M.Z.Z, M.W.Z,
@@ -5635,8 +5383,6 @@ begin
     M.Z.Z, M.W.Z);
 end;
 
-// AdjointMatrix
-//
 procedure AdjointMatrix(var M: TMatrix);
 var
   a1, a2, a3, a4, b1, b2, b3, b4, c1, c2, c3, c4, d1, d2, d3, d4: Single;
@@ -5680,8 +5426,6 @@ begin
   M.W.W := MatrixDetInternal(a1, a2, a3, b1, b2, b3, c1, c2, c3);
 end;
 
-// AdjointMatrix (affine)
-//
 procedure AdjointMatrix(var M: TAffineMatrix);
 var
   a1, a2, a3, b1, b2, b3, c1, c2, c3: Single;
@@ -5708,8 +5452,6 @@ begin
   M.Z.Z := (a1 * b2 - b1 * a2);
 end;
 
-// ScaleMatrix (affine)
-//
 procedure ScaleMatrix(var M: TAffineMatrix; const factor: Single);
 var
   i: Integer;
@@ -5737,8 +5479,6 @@ begin
   end;
 end;
 
-// TranslateMatrix (affine vec)
-//
 procedure TranslateMatrix(var M: TMatrix; const V: TAffineVector);
 begin
   M.W.X := M.W.X + V.X;
@@ -5746,8 +5486,6 @@ begin
   M.W.Z := M.W.Z + V.Z;
 end;
 
-// TranslateMatrix
-//
 procedure TranslateMatrix(var M: TMatrix; const V: TVector);
 begin
   M.W.X := M.W.X + V.X;
@@ -5755,8 +5493,6 @@ begin
   M.W.Z := M.W.Z + V.Z;
 end;
 
-// NormalizeMatrix
-//
 procedure NormalizeMatrix(var M: TMatrix);
 begin
   M.X.W := 0;
@@ -5768,8 +5504,6 @@ begin
   M.W := WHmgVector;
 end;
 
-// TransposeMatrix
-//
 procedure TransposeMatrix(var M: TAffineMatrix);
 var
   f: Single;
@@ -5785,8 +5519,6 @@ begin
   M.Z.Y := f;
 end;
 
-// TransposeMatrix
-//
 procedure TransposeMatrix(var M: TMatrix);
 var
   f: Single;
@@ -5811,8 +5543,6 @@ begin
   M.W.Z := f;
 end;
 
-// InvertMatrix
-//
 procedure InvertMatrix(var M: TMatrix);
 var
   det: Single;
@@ -5827,16 +5557,12 @@ begin
   end;
 end;
 
-// MatrixInvert
-//
 function MatrixInvert(const M: TMatrix): TMatrix;
 begin
   result := M;
   InvertMatrix(result);
 end;
 
-// InvertMatrix (affine)
-//
 procedure InvertMatrix(var M: TAffineMatrix);
 var
   det: Single;
@@ -5851,16 +5577,12 @@ begin
   end;
 end;
 
-// MatrixInvert (affine)
-//
 function MatrixInvert(const M: TAffineMatrix): TAffineMatrix;
 begin
   result := M;
   InvertMatrix(result);
 end;
 
-// transpose_scale_m33
-//
 {$IFDEF GLS_ASM}
 procedure Transpose_Scale_M33(const src: TMatrix; var dest: TMatrix;
   var scale: Single);
@@ -5923,8 +5645,6 @@ begin
 end;
 {$ENDIF}
 
-// AnglePreservingMatrixInvert
-//
 function AnglePreservingMatrixInvert(const mat: TMatrix): TMatrix;
 var
   scale: Single;
@@ -5962,8 +5682,6 @@ begin
     mat.W.Y + result.Z.Z * mat.W.Z);
 end;
 
-// MatrixDecompose
-//
 function MatrixDecompose(const M: TMatrix; var Tran: TTransformations): Boolean;
 var
   i, J: Integer;
@@ -6240,8 +5958,6 @@ begin
   result := True;
 end;
 
-// CalcPlaneNormal (func, affine)
-//
 function CalcPlaneNormal(const p1, p2, p3: TAffineVector): TAffineVector;
 var
   V1, V2: TAffineVector;
@@ -6252,8 +5968,6 @@ begin
   NormalizeVector(result);
 end;
 
-// CalcPlaneNormal (proc, affine)
-//
 procedure CalcPlaneNormal(const p1, p2, p3: TAffineVector;
   var vr: TAffineVector);
 var
@@ -6265,8 +5979,6 @@ begin
   NormalizeVector(vr);
 end;
 
-// CalcPlaneNormal (proc, hmg)
-//
 procedure CalcPlaneNormal(const p1, p2, p3: TVector;
   var vr: TAffineVector); overload;
 var
@@ -6278,16 +5990,12 @@ begin
   NormalizeVector(vr);
 end;
 
-// PlaneMake (point + normal, affine)
-//
 function PlaneMake(const point, normal: TAffineVector): THmgPlane;
 begin
   PAffineVector(@result)^ := normal;
   result.W := -VectorDotProduct(point, normal);
 end;
 
-// PlaneMake (point + normal, hmg)
-//
 function PlaneMake(const point, normal: TVector): THmgPlane;
 begin
   PAffineVector(@result)^ := PAffineVector(@normal)^;
@@ -6295,24 +6003,18 @@ begin
     PAffineVector(@normal)^);
 end;
 
-// PlaneMake (3 points, affine)
-//
 function PlaneMake(const p1, p2, p3: TAffineVector): THmgPlane;
 begin
   CalcPlaneNormal(p1, p2, p3, PAffineVector(@result)^);
   result.W := -VectorDotProduct(p1, PAffineVector(@result)^);
 end;
 
-// PlaneMake (3 points, hmg)
-//
 function PlaneMake(const p1, p2, p3: TVector): THmgPlane;
 begin
   CalcPlaneNormal(p1, p2, p3, PAffineVector(@result)^);
   result.W := -VectorDotProduct(p1, PAffineVector(@result)^);
 end;
 
-// SetPlane
-//
 procedure SetPlane(var dest: TDoubleHmgPlane; const src: THmgPlane);
 begin
   dest.X := src.X;
@@ -6321,8 +6023,6 @@ begin
   dest.W := src.W;
 end;
 
-// NormalizePlane
-//
 procedure NormalizePlane(var plane: THmgPlane);
 var
   n: Single;
@@ -6332,8 +6032,6 @@ begin
   ScaleVector(plane, n);
 end;
 
-// PlaneEvaluatePoint (affine)
-//
 {$IFDEF GLS_ASM}
 function PlaneEvaluatePoint(const plane: THmgPlane;
   const point: TAffineVector): Single;
@@ -6361,8 +6059,6 @@ begin
 end;
 {$ENDIF}
 
-// PlaneEvaluatePoint (hmg)
-//
 {$IFDEF GLS_ASM}
 function PlaneEvaluatePoint(const plane: THmgPlane;
   const point: TVector): Single;
@@ -6390,8 +6086,6 @@ begin
 end;
 {$ENDIF}
 
-// PointIsInHalfSpace
-//
 {$IFDEF GLS_ASM}
 function PointIsInHalfSpace(const point, planePoint,
   planeNormal: TVector): Boolean;
@@ -6421,24 +6115,18 @@ begin
 end;
 {$ENDIF}
 
-// PointIsInHalfSpace
-//
 function PointIsInHalfSpace(const point, planePoint,
   planeNormal: TAffineVector): Boolean;
 begin
   result := (PointPlaneDistance(point, planePoint, planeNormal) > 0);
 end;
 
-// PointIsInHalfSpace
-//
 function PointIsInHalfSpace(const point: TAffineVector;
   plane: THmgPlane): Boolean;
 begin
   result := (PointPlaneDistance(point, plane) > 0);
 end;
 
-// PointPlaneDistance
-//
 {$IFDEF GLS_ASM}
 function PointPlaneDistance(const point, planePoint,
   planeNormal: TVector): Single;
@@ -6471,8 +6159,6 @@ begin
 end;
 {$ENDIF}
 
-// PointPlaneDistance
-//
 {$IFDEF GLS_ASM}
 function PointPlaneDistance(const point, planePoint,
   planeNormal: TAffineVector): Single;
@@ -6505,16 +6191,12 @@ begin
 end;
 {$ENDIF}
 
-// PointPlaneDistance
-//
 function PointPlaneDistance(const point: TAffineVector;
   plane: THmgPlane): Single;
 begin
   result := PlaneEvaluatePoint(plane, point);
 end;
 
-// PointPlaneOrthoProjection
-//
 function PointPlaneOrthoProjection(const point: TAffineVector;
   const plane: THmgPlane; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6534,8 +6216,6 @@ begin
   result := True;
 end;
 
-// PointPlaneProjection
-//
 function PointPlaneProjection(const point, direction: TAffineVector;
   const plane: THmgPlane; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6559,8 +6239,6 @@ begin
   end;
 end;
 
-// SegmentPlaneIntersection
-//
 function SegmentPlaneIntersection(const ptA, ptB: TAffineVector;
   const plane: THmgPlane; var inter: TAffineVector): Boolean;
 var
@@ -6583,8 +6261,6 @@ begin
   end;
 end;
 
-// PointTriangleOrthoProjection
-//
 function PointTriangleOrthoProjection(const point, ptA, ptB, ptC: TAffineVector;
   var inter: TAffineVector; bothface: Boolean = True): Boolean;
 var
@@ -6599,8 +6275,6 @@ begin
   result := PointPlaneOrthoProjection(point, plane, inter, bothface);
 end;
 
-// PointTriangleProjection
-//
 function PointTriangleProjection(const point, direction, ptA, ptB,
   ptC: TAffineVector; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6616,8 +6290,6 @@ begin
   result := PointPlaneProjection(point, direction, plane, inter, bothface);
 end;
 
-// IsLineIntersectTriangle
-//
 function IsLineIntersectTriangle(const point, direction, ptA, ptB,
   ptC: TAffineVector): Boolean;
 var
@@ -6625,14 +6297,11 @@ var
   crossAB, crossBC, crossCA: TAffineVector;
 begin
   result := False;
-
   PA := VectorSubtract(ptA, point);
   PB := VectorSubtract(ptB, point);
   PC := VectorSubtract(ptC, point);
-
   crossAB := VectorCrossProduct(PA, PB);
   crossBC := VectorCrossProduct(PB, PC);
-
   if VectorDotProduct(crossAB, direction) > 0 then
   begin
     if VectorDotProduct(crossBC, direction) > 0 then
@@ -6650,8 +6319,6 @@ begin
   end
 end;
 
-// PointQuadOrthoProjection
-//
 function PointQuadOrthoProjection(const point, ptA, ptB, ptC,
   ptD: TAffineVector; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6659,17 +6326,13 @@ var
   plane: THmgPlane;
 begin
   result := False;
-
   plane := PlaneMake(ptA, ptB, ptC);
   if not IsLineIntersectQuad(point, Vector3fMake(plane), ptA, ptB, ptC, ptD)
   then
     Exit;
-
   result := PointPlaneOrthoProjection(point, plane, inter, bothface);
 end;
 
-// PointQuadProjection
-//
 function PointQuadProjection(const point, direction, ptA, ptB, ptC,
   ptD: TAffineVector; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6677,16 +6340,12 @@ var
   plane: THmgPlane;
 begin
   result := False;
-
   if not IsLineIntersectQuad(point, direction, ptA, ptB, ptC, ptD) then
     Exit;
-
   plane := PlaneMake(ptA, ptB, ptC);
   result := PointPlaneProjection(point, direction, plane, inter, bothface);
 end;
 
-// IsLineIntersectQuad
-//
 function IsLineIntersectQuad(const point, direction, ptA, ptB, ptC,
   ptD: TAffineVector): Boolean;
 var
@@ -6694,15 +6353,12 @@ var
   crossAB, crossBC, crossCD, crossDA: TAffineVector;
 begin
   result := False;
-
   PA := VectorSubtract(ptA, point);
   PB := VectorSubtract(ptB, point);
   PC := VectorSubtract(ptC, point);
   PD := VectorSubtract(ptD, point);
-
   crossAB := VectorCrossProduct(PA, PB);
   crossBC := VectorCrossProduct(PB, PC);
-
   if VectorDotProduct(crossAB, direction) > 0 then
   begin
     if VectorDotProduct(crossBC, direction) > 0 then
@@ -6728,8 +6384,6 @@ begin
   end
 end;
 
-// PointDiskOrthoProjection
-//
 function PointDiskOrthoProjection(const point, center, up: TAffineVector;
   const radius: Single; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6741,8 +6395,6 @@ begin
     result := False;
 end;
 
-// PointDiskProjection
-//
 function PointDiskProjection(const point, direction, center, up: TAffineVector;
   const radius: Single; var inter: TAffineVector;
   bothface: Boolean = True): Boolean;
@@ -6754,8 +6406,6 @@ begin
     result := False;
 end;
 
-// PointLineClosestPoint
-//
 function PointLineClosestPoint(const point, linePoint, lineDirection
   : TAffineVector): TAffineVector;
 var
@@ -6771,10 +6421,7 @@ begin
   VectorAdd(linePoint, VectorScale(lineDirection, b), result);
 end;
 
-// PointLineDistance
-//
-function PointLineDistance(const point, linePoint, lineDirection
-  : TAffineVector): Single;
+function PointLineDistance(const point, linePoint, lineDirection: TAffineVector): Single;
 var
   PB: TAffineVector;
 begin
@@ -6782,8 +6429,6 @@ begin
   result := VectorDistance(point, PB);
 end;
 
-// PointSegmentClosestPoint
-//
 function PointSegmentClosestPoint(const point, segmentStart,
   segmentStop: TVector): TVector;
 var
@@ -6792,16 +6437,12 @@ var
 begin
   lineDirection := VectorSubtract(segmentStop, segmentStart);
   W := VectorSubtract(point, segmentStart);
-
   c1 := VectorDotProduct(W, lineDirection);
   c2 := VectorDotProduct(lineDirection, lineDirection);
   b := ClampValue(c1 / c2, 0, 1);
-
   VectorAdd(segmentStart, VectorScale(lineDirection, b), result);
 end;
 
-// PointSegmentClosestPoint
-//
 function PointSegmentClosestPoint(const point, segmentStart,
   segmentStop: TAffineVector): TAffineVector;
 var
@@ -6818,8 +6459,6 @@ begin
   VectorAdd(segmentStart, VectorScale(lineDirection, b), result);
 end;
 
-// PointSegmentDistance
-//
 function PointSegmentDistance(const point, segmentStart,
   segmentStop: TAffineVector): Single;
 var
@@ -6928,8 +6567,6 @@ begin
   Segment1Closest := VectorAdd(S1Start, VectorScale(V, tc));
 end;
 
-// SegmentSegmentDistance
-//
 function SegmentSegmentDistance(const S0Start, S0Stop, S1Start,
   S1Stop: TAffineVector): Single;
 var
@@ -6939,8 +6576,6 @@ begin
   result := VectorDistance(Pb0, PB1);
 end;
 
-// LineLineDistance
-//
 function LineLineDistance(const linePt0, lineDir0, linePt1,
   lineDir1: TAffineVector): Single;
 const
@@ -6959,8 +6594,6 @@ begin
     result := det / VectorLength(VectorCrossProduct(lineDir0, lineDir1));
 end;
 
-// QuaternionMake
-//
 function QuaternionMake(const Imag: array of Single; Real: Single): TQuaternion;
 var
   n: Integer;
@@ -6985,15 +6618,11 @@ begin
   result.RealPart := Q.RealPart;
 end;
 
-// QuaternionMagnitude
-//
 function QuaternionMagnitude(const Q: TQuaternion): Single;
 begin
   result := Sqrt(VectorNorm(Q.ImagPart) + Sqr(Q.RealPart));
 end;
 
-// NormalizeQuaternion
-//
 procedure NormalizeQuaternion(var Q: TQuaternion);
 var
   M, f: Single;
@@ -7009,16 +6638,12 @@ begin
     Q := IdentityQuaternion;
 end;
 
-// QuaternionFromPoints
-//
 function QuaternionFromPoints(const V1, V2: TAffineVector): TQuaternion;
 begin
   result.ImagPart := VectorCrossProduct(V1, V2);
   result.RealPart := Sqrt((VectorDotProduct(V1, V2) + 1) / 2);
 end;
 
-// QuaternionFromMatrix
-//
 function QuaternionFromMatrix(const mat: TMatrix): TQuaternion;
 // the matrix must be a rotation matrix!
 var
@@ -7068,8 +6693,6 @@ begin
   NormalizeQuaternion(result);
 end;
 
-// QuaternionMultiply
-//
 function QuaternionMultiply(const qL, qR: TQuaternion): TQuaternion;
 var
   Temp: TQuaternion;
@@ -7089,8 +6712,6 @@ begin
   result := Temp;
 end;
 
-// QuaternionToMatrix
-//
 function QuaternionToMatrix(quat: TQuaternion): TMatrix;
 var
   W, X, Y, Z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
@@ -7127,8 +6748,6 @@ begin
   result.W.W := 1;
 end;
 
-// QuaternionToAffineMatrix
-//
 function QuaternionToAffineMatrix(quat: TQuaternion): TAffineMatrix;
 var
   W, X, Y, Z, xx, xy, xz, xw, yy, yz, yw, zz, zw: Single;
@@ -7158,8 +6777,6 @@ begin
   result.Z.Z := 1 - 2 * (xx + yy);
 end;
 
-// QuaternionFromAngleAxis
-//
 function QuaternionFromAngleAxis(const angle: Single; const axis: TAffineVector)
   : TQuaternion;
 var
@@ -7173,8 +6790,6 @@ begin
   result.ImagPart.Z := axis.Z * f;
 end;
 
-// QuaternionFromRollPitchYaw
-//
 function QuaternionFromRollPitchYaw(const r, p, Y: Single): TQuaternion;
 var
   qp, qy: TQuaternion;
@@ -7187,8 +6802,6 @@ begin
   result := QuaternionMultiply(qy, result);
 end;
 
-// QuaternionFromEuler
-//
 function QuaternionFromEuler(const X, Y, Z: Single; eulerOrder: TEulerOrder)
   : TQuaternion;
 // input angles in degrees
@@ -7255,8 +6868,6 @@ begin
   end;
 end;
 
-// QuaternionToPoints
-//
 procedure QuaternionToPoints(const Q: TQuaternion;
   var ArcFrom, ArcTo: TAffineVector);
 var
@@ -7278,8 +6889,6 @@ begin
     SetAffineVector(ArcFrom, -ArcFrom.V[X], -ArcFrom.V[Y], 0);
 end;
 
-// PowerSingle
-//
 function PowerSingle(const Base, Exponent: Single): Single;
 begin
 {$HINTS OFF}
@@ -7294,8 +6903,6 @@ begin
 {$HINTS ON}
 end;
 
-// Power (int exponent)
-//
 function PowerInteger(Base: Single; Exponent: Integer): Single;
 begin
 {$HINTS OFF}
@@ -7310,15 +6917,11 @@ begin
 {$HINTS ON}
 end;
 
-// DegToRad (extended)
-//
 function DegToRadian(const Degrees: Extended): Extended;
 begin
   result := Degrees * (PI / 180);
 end;
 
-// DegToRadian (single)
-//
 {$IFDEF GLS_ASM}
 function DegToRadian(const Degrees: Single): Single;
 // Result:=Degrees * cPIdiv180;
@@ -7335,15 +6938,11 @@ begin
 end;
 {$ENDIF}
 
-// RadianToDeg (extended)
-//
 function RadianToDeg(const Radians: Extended): Extended;
 begin
   result := Radians * (180 / PI);
 end;
 
-// RadianToDeg (single)
-//
 {$IFDEF GLS_ASM}
 function RadianToDeg(const Radians: Single): Single;
 // Result:=Radians * c180divPI;
@@ -7360,8 +6959,6 @@ begin
 end;
 {$ENDIF}
 
-// NormalizeAngle
-//
 function NormalizeAngle(angle: Single): Single;
 begin
   result := angle - Int(angle * cInv2PI) * c2PI;
@@ -7371,8 +6968,6 @@ begin
     result := result + 2 * PI;
 end;
 
-// NormalizeDegAngle
-//
 function NormalizeDegAngle(angle: Single): Single;
 begin
   result := angle - Int(angle * cInv360) * c360;
@@ -7384,8 +6979,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCosine (Extended)
-//
 {$IFDEF GLS_ASM}
 procedure SinCosine(const Theta: Extended; out Sin, Cos: Extended);
 // EAX contains address of Sin
@@ -7405,8 +6998,6 @@ end;
 {$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCosine (Double)
-//
 procedure SinCosine(const Theta: Double; out Sin, Cos: Double);
 var
   S, c: Extended;
@@ -7418,8 +7009,6 @@ begin
 {$HINTS ON}
 end;
 
-// SinCosine (Single)
-//
 procedure SinCosine(const Theta: Single; out Sin, Cos: Single);
 // EAX contains address of Sin
 // EDX contains address of Cos
@@ -7436,8 +7025,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCosine (Extended w radius)
-//
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Extended);
 // EAX contains address of Sin
 // EDX contains address of Cos
@@ -7452,8 +7039,6 @@ end;
 
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// SinCosine (Double w radius)
-//
 procedure SinCosine(const Theta, radius: Double; out Sin, Cos: Double);
 var
   S, c: Extended;
@@ -7463,8 +7048,6 @@ begin
   Cos := c * radius;
 end;
 
-// SinCosine (Single w radius)
-//
 procedure SinCosine(const Theta, radius: Single; out Sin, Cos: Single);
 var
   S, c: Extended;
@@ -7474,8 +7057,6 @@ begin
   Cos := c * radius;
 end;
 
-// PrepareSinCosCache
-//
 procedure PrepareSinCosCache(var S, c: array of Single;
   startAngle, stopAngle: Single);
 var
@@ -7513,15 +7094,11 @@ begin
   end;
 end;
 
-// ArcCosine (Extended)
-//
 function ArcCosine(const X: Extended): Extended;
 begin
   result := ArcTangent2(Sqrt(1 - Sqr(X)), X);
 end;
 
-// ArcCosine (Single)
-//
 function ArcCosine(const X: Single): Single;
 // Result:=ArcTan2(Sqrt(c1 - X * X), X);
 begin
@@ -7530,15 +7107,11 @@ begin
 {$HINTS ON}
 end;
 
-// ArcSine (Extended)
-//
 function ArcSine(const X: Extended): Extended;
 begin
   result := ArcTangent2(X, Sqrt(1 - Sqr(X)))
 end;
 
-// ArcSine (Single)
-//
 function ArcSine(const X: Single): Single;
 // Result:=ArcTan2(X, Sqrt(1 - X * X))
 begin
@@ -7547,15 +7120,11 @@ begin
 {$HINTS ON}
 end;
 
-// ArcTangent2 (Extended)
-//
 function ArcTangent2(const Y, X: Extended): Extended;
 begin
   result := ArcTan2(Y, X);
 end;
 
-// ArcTangent2 (Single)
-//
 function ArcTangent2(const Y, X: Single): Single;
 begin
 {$HINTS OFF}
@@ -7563,8 +7132,6 @@ begin
 {$HINTS ON}
 end;
 
-// FastArcTangent2
-//
 function FastArcTangent2(Y, X: Single): Single;
 // accuracy of about 0.07 rads
 const
@@ -7589,15 +7156,11 @@ begin
   end;
 end;
 
-// Tangent (Extended)
-//
 function Tangent(const X: Extended): Extended;
 begin
   result := Tan(X);
 end;
 
-// Tangent (Single)
-//
 function Tangent(const X: Single): Single;
 begin
 {$HINTS OFF}
@@ -7605,15 +7168,11 @@ begin
 {$HINTS ON}
 end;
 
-// CoTangent (Extended)
-//
 function CoTangent(const X: Extended): Extended;
 begin
   result := CoTan(X);
 end;
 
-// CoTangent (Single)
-//
 function CoTangent(const X: Single): Single;
 begin
 {$HINTS OFF}
@@ -7621,8 +7180,6 @@ begin
 {$HINTS ON}
 end;
 
-// Sinh
-//
 function Sinh(const X: Single): Single;
 begin
   result := 0.5 * (Exp(X) - Exp(-X));
@@ -7635,29 +7192,21 @@ begin
   result := 0.5 * (Exp(X) - Exp(-X));
 end;
 
-// Cosh
-//
 function Cosh(const X: Single): Single;
 begin
   result := 0.5 * (Exp(X) + Exp(-X));
 end;
 
-// Cosh
-//
 function Cosh(const X: Double): Double;
 begin
   result := 0.5 * (Exp(X) + Exp(-X));
 end;
 
-// RSqrt
-//
 function RSqrt(V: Single): Single;
 begin
   result := 1 / Sqrt(V);
 end;
 
-// ISqrt
-//
 function ISqrt(i: Integer): Integer;
 begin
 {$HINTS OFF}
@@ -7665,8 +7214,6 @@ begin
 {$HINTS ON}
 end;
 
-// ILength
-//
 function ILength(X, Y: Integer): Integer;
 begin
 {$HINTS OFF}
@@ -7674,8 +7221,6 @@ begin
 {$HINTS ON}
 end;
 
-// ILength
-//
 function ILength(X, Y, Z: Integer): Integer;
 begin
 {$HINTS OFF}
@@ -7683,15 +7228,11 @@ begin
 {$HINTS ON}
 end;
 
-// RLength
-//
 function RLength(X, Y: Single): Single;
 begin
   result := 1 / Sqrt(X * X + Y * Y);
 end;
 
-// RegisterBasedExp
-//
 {$IFDEF GLS_ASM}
 procedure RegisterBasedExp;
 asm   // Exp(x) = 2^(x.log2(e))
@@ -7709,8 +7250,6 @@ asm   // Exp(x) = 2^(x.log2(e))
 end;
 {$ENDIF}
 
-// RandomPointOnSphere
-//
 procedure RandomPointOnSphere(var p: TAffineVector);
 var
   T, W: Single;
@@ -7721,8 +7260,6 @@ begin
   SinCosine(T, W, p.Y, p.X);
 end;
 
-// RoundInt (single)
-//
 function RoundInt(V: Single): Single;
 begin
 {$HINTS OFF}
@@ -7730,15 +7267,11 @@ begin
 {$HINTS ON}
 end;
 
-// RoundInt (extended)
-//
 function RoundInt(V: Extended): Extended;
 begin
   result := Int(V + 0.5);
 end;
 
-// Int (Extended)
-//
 {$IFDEF GLS_ASM}
 function Int(V: Extended): Extended;
 asm
@@ -7750,8 +7283,7 @@ asm
   FLDCW   [ESP]
   ADD     ESP,4
 end;
-// Int (Single)
-//
+
 function Int(V: Single): Single;
 asm
   SUB     ESP,4
@@ -7763,8 +7295,6 @@ asm
   ADD     ESP,4
 end;
 
-// Frac (Extended)
-//
 function Frac(V: Extended): Extended;
 asm
   SUB     ESP,4
@@ -7778,8 +7308,6 @@ asm
   ADD     ESP,4
 end;
 
-// Frac (Extended)
-//
 function Frac(V: Single): Single;
 asm
   SUB     ESP,4
@@ -7793,8 +7321,6 @@ asm
   ADD     ESP,4
 end;
 
-// Round64 (Extended);
-//
 function Round64(V: Extended): Int64;
 asm
   FLD      DWORD PTR[V]
@@ -7803,8 +7329,6 @@ asm
   MOV      EDX, dword ptr [v+4]
 end;
 
-// Round (Single);
-//
 function Round(V: Single): Integer;
 asm
   FLD     DWORD PTR[V]
@@ -7831,8 +7355,6 @@ end;
 
 {$ENDIF}
 
-// Ceil64 (Extended)
-//
 function Ceil64(V: Extended): Int64; overload;
 begin
   if Frac(V) > 0 then
@@ -7841,8 +7363,6 @@ begin
     result := Trunc(V);
 end;
 
-// Ceil (Single)
-//
 function Ceil(V: Single): Integer; overload;
 begin
 {$HINTS OFF}
@@ -7853,8 +7373,6 @@ begin
 {$HINTS ON}
 end;
 
-// Floor64 (Extended)
-//
 function Floor64(V: Extended): Int64; overload;
 begin
   if V < 0 then
@@ -7863,8 +7381,6 @@ begin
     result := Trunc(V);
 end;
 
-// Floor (Single)
-//
 function Floor(V: Single): Integer; overload;
 begin
 {$HINTS OFF}
@@ -7875,8 +7391,6 @@ begin
 {$HINTS ON}
 end;
 
-// Sign
-//
 function Sign(X: Single): Integer;
 begin
   if X < 0 then
@@ -7887,8 +7401,6 @@ begin
     result := 0;
 end;
 
-// SignStrict
-//
 function SignStrict(X: Single): Integer;
 begin
   if X < 0 then
@@ -7897,8 +7409,6 @@ begin
     result := 1
 end;
 
-// ScaleAndRound
-//
 function ScaleAndRound(i: Integer; var S: Single): Integer;
 begin
 {$HINTS OFF}
@@ -7906,8 +7416,6 @@ begin
 {$HINTS ON}
 end;
 
-// IsInRange (single)
-//
 function IsInRange(const X, a, b: Single): Boolean;
 begin
   if a < b then
@@ -7916,8 +7424,6 @@ begin
     result := (b <= X) and (X <= a);
 end;
 
-// IsInRange (double)
-//
 function IsInRange(const X, a, b: Double): Boolean;
 begin
   if a < b then
@@ -7926,8 +7432,6 @@ begin
     result := (b <= X) and (X <= a);
 end;
 
-// IsInCube (affine)
-//
 function IsInCube(const p, d: TAffineVector): Boolean; overload;
 begin
   result := ((p.X >= -d.X) and (p.X <= d.X)) and
@@ -7935,8 +7439,6 @@ begin
     ((p.Z >= -d.Z) and (p.Z <= d.Z));
 end;
 
-// IsInCube (hmg)
-//
 function IsInCube(const p, d: TVector): Boolean; overload;
 begin
   result := ((p.X >= -d.X) and (p.X <= d.X)) and
@@ -7944,8 +7446,6 @@ begin
     ((p.Z >= -d.Z) and (p.Z <= d.Z));
 end;
 
-// MinFloat (single)
-//
 function MinFloat(values: PSingleArray; nbItems: Integer): Single;
 var
   i, k: Integer;
@@ -7962,8 +7462,6 @@ begin
     result := 0;
 end;
 
-// MinFloat (double)
-//
 function MinFloat(values: PDoubleArray; nbItems: Integer): Double;
 var
   i, k: Integer;
@@ -7980,8 +7478,6 @@ begin
     result := 0;
 end;
 
-// MinFloat (extended)
-//
 function MinFloat(values: PExtendedArray; nbItems: Integer): Extended;
 var
   i, k: Integer;
@@ -7998,8 +7494,6 @@ begin
     result := 0;
 end;
 
-// MinFloat (array)
-//
 function MinFloat(const V: array of Single): Single;
 var
   i: Integer;
@@ -8015,8 +7509,6 @@ begin
     result := 0;
 end;
 
-// MinFloat (single 2)
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2: Single): Single;
 asm
@@ -8036,8 +7528,6 @@ begin
 end;
 {$ENDIF}
 
-// MinFloat (double 2)
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2: Double): Double;
 asm
@@ -8059,8 +7549,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// MinFloat (extended 2)
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2: Extended): Extended;
 asm
@@ -8082,8 +7570,6 @@ end;
 
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// MinFloat
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2, V3: Single): Single;
 asm
@@ -8116,8 +7602,6 @@ begin
 end;
 {$ENDIF}
 
-// MinFloat (double)
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2, V3: Double): Double;
 asm
@@ -8153,8 +7637,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// MinFloat
-//
 {$IFDEF GLS_ASM}
 function MinFloat(const V1, V2, V3: Extended): Extended;
 asm
@@ -8187,8 +7669,6 @@ begin
 {$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// MaxFloat (single)
-//
 function MaxFloat(values: PSingleArray; nbItems: Integer): Single; overload;
 var
   i, k: Integer;
@@ -8205,8 +7685,6 @@ begin
     result := 0;
 end;
 
-// MaxFloat (double)
-//
 function MaxFloat(values: PDoubleArray; nbItems: Integer): Double; overload;
 var
   i, k: Integer;
@@ -8223,8 +7701,6 @@ begin
     result := 0;
 end;
 
-// MaxFloat (extended)
-//
 function MaxFloat(values: PExtendedArray; nbItems: Integer): Extended; overload;
 var
   i, k: Integer;
@@ -8241,8 +7717,6 @@ begin
     result := 0;
 end;
 
-// MaxFloat
-//
 function MaxFloat(const V: array of Single): Single;
 var
   i: Integer;
@@ -8258,8 +7732,6 @@ begin
     result := 0;
 end;
 
-// MaxFloat
-//
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Single): Single;
 asm
@@ -8278,8 +7750,7 @@ begin
     result := V2;
 end;
 {$ENDIF}
-// MaxFloat
-//
+
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Double): Double;
 asm
@@ -8301,8 +7772,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// MaxFloat
-//
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2: Extended): Extended;
 asm
@@ -8323,8 +7792,6 @@ end;
 {$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// MaxFloat
-//
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2, V3: Single): Single;
 asm
@@ -8357,8 +7824,6 @@ begin
 end;
 {$ENDIF}
 
-// MaxFloat
-//
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2, V3: Double): Double;
 asm
@@ -8393,8 +7858,6 @@ end;
 
 {$IFDEF GLS_PLATFORM_HAS_EXTENDED}
 
-// MaxFloat
-//
 {$IFDEF GLS_ASM}
 function MaxFloat(const V1, V2, V3: Extended): Extended;
 asm
@@ -8428,8 +7891,6 @@ end;
 {$ENDIF}
 {$ENDIF GLS_PLATFORM_HAS_EXTENDED}
 
-// MinInteger (2 int)
-//
 {$IFDEF GLS_ASM}
 function MinInteger(const V1, V2: Integer): Integer;
 asm
@@ -8446,8 +7907,6 @@ begin
 end;
 {$ENDIF}
 
-// MinInteger (2 card)
-//
 {$IFDEF GLS_ASM}
 function MinInteger(const V1, V2: Cardinal): Cardinal;
 asm
@@ -8464,8 +7923,6 @@ begin
 end;
 {$ENDIF}
 
-// MinInteger
-//
 function MinInteger(const V1, V2, V3: Integer): Integer;
 begin
   if V1 <= V2 then
@@ -8483,8 +7940,6 @@ begin
     result := V1;
 end;
 
-// MinInteger
-//
 function MinInteger(const V1, V2, V3: Cardinal): Cardinal;
 begin
   if V1 <= V2 then
@@ -8502,8 +7957,6 @@ begin
     result := V1;
 end;
 
-// MaxInteger (2 int)
-//
 {$IFDEF GLS_ASM}
 function MaxInteger(const V1, V2: Integer): Integer;
 asm
@@ -8521,8 +7974,6 @@ begin
 end;
 {$ENDIF}
 
-// MaxInteger (2 card)
-//
 {$IFDEF GLS_ASM}
 function MaxInteger(const V1, V2: Cardinal): Cardinal;
 asm
@@ -8539,8 +7990,6 @@ begin
 end;
 {$ENDIF}
 
-// MaxInteger
-//
 function MaxInteger(const V1, V2, V3: Integer): Integer;
 begin
   if V1 >= V2 then
@@ -8558,8 +8007,6 @@ begin
     result := V1;
 end;
 
-// MaxInteger
-//
 function MaxInteger(const V1, V2, V3: Cardinal): Cardinal;
 begin
   if V1 >= V2 then
@@ -8587,16 +8034,12 @@ begin
   result := MinInteger(MaxInteger(value, min), max);
 end;
 
-// TriangleArea
-//
 function TriangleArea(const p1, p2, p3: TAffineVector): Single;
 begin
   result := 0.5 * VectorLength(VectorCrossProduct(VectorSubtract(p2, p1),
     VectorSubtract(p3, p1)));
 end;
 
-// PolygonArea
-//
 function PolygonArea(const p: PAffineVectorArray; nSides: Integer): Single;
 var
   r: TAffineVector;
@@ -8620,16 +8063,12 @@ begin
   end;
 end;
 
-// TriangleSignedArea
-//
 function TriangleSignedArea(const p1, p2, p3: TAffineVector): Single;
 begin
   result := 0.5 * ((p2.X - p1.X) * (p3.Y - p1.Y) -
     (p3.X - p1.X) * (p2.Y - p1.Y));
 end;
 
-// PolygonSignedArea
-//
 function PolygonSignedArea(const p: PAffineVectorArray;
   nSides: Integer): Single;
 var
@@ -8652,8 +8091,6 @@ begin
   end;
 end;
 
-// ScaleFloatArray (raw)
-//
 procedure ScaleFloatArray(values: PSingleArray; nb: Integer;
   var factor: Single);
 var
@@ -8663,16 +8100,12 @@ begin
     values^[i] := values^[i] * factor;
 end;
 
-// ScaleFloatArray (array)
-//
 procedure ScaleFloatArray(var values: TSingleArray; factor: Single);
 begin
   if Length(values) > 0 then
     ScaleFloatArray(@values[0], Length(values), factor);
 end;
 
-// OffsetFloatArray (raw)
-//
 procedure OffsetFloatArray(values: PSingleArray; nb: Integer;
   var delta: Single);
 var
@@ -8682,16 +8115,12 @@ begin
     values^[i] := values^[i] + delta;
 end;
 
-// ScaleFloatArray (array)
-//
 procedure OffsetFloatArray(var values: array of Single; delta: Single);
 begin
   if Length(values) > 0 then
     ScaleFloatArray(@values[0], Length(values), delta);
 end;
 
-// OffsetFloatArray (raw, raw)
-//
 {$IFDEF GLS_ASM}
 procedure OffsetFloatArray(valuesDest, valuesDelta: PSingleArray; nb: Integer);
 asm
@@ -8717,22 +8146,16 @@ begin
 end;
 {$ENDIF}
 
-// MaxXYZComponent
-//
 function MaxXYZComponent(const V: TVector): Single; overload;
 begin
   result := MaxFloat(V.X, V.Y, V.Z);
 end;
 
-// MaxXYZComponent
-//
 function MaxXYZComponent(const V: TAffineVector): Single; overload;
 begin
   result := MaxFloat(V.X, V.Y, V.Z);
 end;
 
-// MinXYZComponent
-//
 function MinXYZComponent(const V: TVector): Single; overload;
 begin
   if V.X <= V.Y then
@@ -9565,8 +8988,6 @@ begin
   end;
 end;
 
-// SphereVisibleRadius
-//
 function SphereVisibleRadius(distance, radius: Single): Single;
 var
   d2, r2, ir, tr: Single;
@@ -9579,8 +9000,6 @@ begin
   result := Sqrt(r2 + Sqr(tr));
 end;
 
-// IntersectLinePlane
-//
 function IntersectLinePlane(const point, direction: TVector;
   const plane: THmgPlane; intersectPoint: PVector = nil): Integer;
 var
@@ -9610,8 +9029,6 @@ begin
   end;
 end;
 
-// TriangleBoxIntersect
-//
 function IntersectTriangleBox(const p1, p2, p3, aMinExtent,
   aMaxExtent: TAffineVector): Boolean;
 var
@@ -9687,8 +9104,6 @@ begin
       VectorLength(VectorSubtract(BoxDiagPt, BoxDiagPt));
 end;
 
-// IntersectSphereBox
-//
 function IntersectSphereBox(const SpherePos: TVector;
   const SphereRadius: Single; const BoxMatrix: TMatrix;
   // Up Direction and Right must be normalized!
@@ -9818,8 +9233,6 @@ begin
   end;
 end;
 
-// ExtractFrustumFromModelViewProjection
-//
 function ExtractFrustumFromModelViewProjection(const modelViewProj: TMatrix)
   : TFrustum;
 begin

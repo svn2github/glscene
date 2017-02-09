@@ -53,9 +53,9 @@ type
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure MyForceAndTorqueDensity(const cbody: PNewtonBody;
       timestep: NGDFloat; threadIndex: Integer);
 

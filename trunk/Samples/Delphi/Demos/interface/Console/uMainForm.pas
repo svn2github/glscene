@@ -69,7 +69,7 @@ type
     procedure Button7Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
-    { Private declarations }
+     
     procedure OnHelloCommand(const Sender: TGLConsoleCommand;
           const Console: TGLCustomConsole; var Command: TGLUserInputCommand);
   public

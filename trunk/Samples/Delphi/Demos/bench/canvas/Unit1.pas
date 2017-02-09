@@ -53,11 +53,11 @@ type
       var rci: TGLRenderContextInfo);
     procedure BUArcClick(Sender: TObject);
   private
-    { Private declarations }
+     
     procedure PaintTheBox;
     procedure Bench;
   public
-    { Public declarations }
+     
   end;
 
 var

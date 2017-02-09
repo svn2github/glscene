@@ -44,9 +44,9 @@ type
     procedure CBPointParamsClick(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer
   end;
 

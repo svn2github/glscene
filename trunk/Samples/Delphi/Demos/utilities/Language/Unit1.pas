@@ -33,10 +33,10 @@ type
     procedure mRussianClick(Sender: TObject);
     procedure mDeutschClick(Sender: TObject);
   private
-    { private declarations }
+     
     procedure SetLanguage(const AFile: string);
   public
-    { public declarations }
+     
   end;
 
 

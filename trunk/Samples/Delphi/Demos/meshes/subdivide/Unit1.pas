@@ -52,9 +52,9 @@ type
     procedure RBSolidClick(Sender: TObject);
     procedure CBAnimateClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

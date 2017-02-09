@@ -133,9 +133,9 @@ type
     procedure CgShader1Initialize(CgShader: TCustomCgShader);
     procedure CheckBox2Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

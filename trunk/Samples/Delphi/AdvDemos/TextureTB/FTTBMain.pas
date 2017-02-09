@@ -119,7 +119,7 @@ type
     procedure ACAlphaNegateExecute(Sender: TObject);
 
   private
-    { Private declarations }
+     
     mx, my : Integer;
 
     procedure ResetAlpha;
@@ -133,7 +133,7 @@ type
     procedure BreakupTexture(bmp : TBitmap);
 
   public
-    { Public declarations }
+     
   end;
 
 var

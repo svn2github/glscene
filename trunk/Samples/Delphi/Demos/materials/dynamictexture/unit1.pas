@@ -34,11 +34,11 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const DeltaTime, newTime: Double);
   private
-    { Private declarations }
+     
     frame: Integer;
     partial: boolean;
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -63,9 +63,9 @@ type
     procedure CheckBox_InertiaClick(Sender: TObject);
     procedure TrackBar_WindForceChange(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
 
     odeFurBallBody : PdxBody;
     odeFurBallGeom : PdxGeom;

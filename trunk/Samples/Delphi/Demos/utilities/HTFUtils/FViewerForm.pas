@@ -52,9 +52,9 @@ type
     procedure ACNavMapUpdate(Sender: TObject);
     procedure ACPaletteExecute(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     htf : TGLHeightTileFile;
     bmpTile : TBitmap32;
     curX, curY, mx, my : Integer;

@@ -75,9 +75,9 @@ type
       var rci: TGLRenderContextInfo);
     procedure GLMemoryViewer1BeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my, dmx, dmy: Integer;
     programObject: TGLProgramHandle;
   end;

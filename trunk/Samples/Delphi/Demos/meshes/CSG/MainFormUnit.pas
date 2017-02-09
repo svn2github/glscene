@@ -68,7 +68,7 @@ type
     procedure btnIntersectClick(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
     mx : Integer;
     my : Integer;

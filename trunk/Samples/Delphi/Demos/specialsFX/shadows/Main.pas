@@ -97,7 +97,7 @@ type
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
   private
-    { Private declarations }
+     
   public
     mx, my: Integer;
     mx2, my2: Integer;

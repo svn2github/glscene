@@ -48,10 +48,10 @@ type
     procedure BUBitmap300Click(Sender: TObject);
     procedure BUViewerSnapShotClick(Sender: TObject);
   private
-    { Private declarations }
+     
     procedure RenderToBitmap(scale : Single);
   public
-    { Public declarations }
+     
   end;
 
 var

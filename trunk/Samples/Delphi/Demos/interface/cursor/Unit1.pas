@@ -68,10 +68,10 @@ type
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
   private
-    { Private declarations }
+     
     handleMouseMoves: Boolean;
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -110,7 +110,7 @@ type
     procedure EDZFilterChange(Sender: TObject);
     procedure EDZScaleChange(Sender: TObject);
   private
-    { Private declarations }
+     
     sources : array of TSrc;
     defaultZ : SmallInt;
     filterZ : SmallInt;
@@ -123,7 +123,7 @@ type
     procedure WorldExtract(x, y, len : Integer; dest : PSmallInt);
 
   public
-    { Public declarations }
+     
   end;
 
 var

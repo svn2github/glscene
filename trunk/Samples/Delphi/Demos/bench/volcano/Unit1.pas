@@ -44,9 +44,9 @@ type
     procedure RadioGroup1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

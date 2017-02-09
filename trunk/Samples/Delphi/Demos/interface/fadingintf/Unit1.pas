@@ -44,10 +44,10 @@ type
     procedure SphereProgress(Sender: TObject; const deltaTime, newTime: Double);
     procedure TIPickTimerTimer(Sender: TObject);
   private
-    { Private declarations }
+     
     currentPick: TGLCustomSceneObject;
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -44,9 +44,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure GLSceneViewer1Click(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

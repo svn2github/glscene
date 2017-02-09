@@ -66,9 +66,9 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 

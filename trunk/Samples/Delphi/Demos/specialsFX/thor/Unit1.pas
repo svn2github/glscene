@@ -62,9 +62,9 @@ type
     procedure HeightField1GetHeight(const x, y: Single; var z: Single;
       var color: TVector4f; var texPoint: TTexPoint);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -41,9 +41,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLCustomHDSStartPreparingData(heightData: TGLHeightData);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
     fullScreen : Boolean;
     FCamHeight : Single;

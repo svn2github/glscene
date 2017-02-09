@@ -51,9 +51,9 @@ type
       X, Y: Integer);
     procedure FormResize(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

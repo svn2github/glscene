@@ -76,9 +76,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure TISoundTimer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     fullScreen: Boolean;
     FCamHeight: Single;

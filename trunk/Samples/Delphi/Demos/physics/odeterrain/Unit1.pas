@@ -47,9 +47,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure DropODEObject(anElementClass : TGLODEElementClass);
   end;
 

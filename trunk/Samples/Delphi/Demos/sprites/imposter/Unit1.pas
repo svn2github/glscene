@@ -48,9 +48,9 @@ type
     procedure CBShowImposterClick(Sender: TObject);
     procedure CBShowTeapotClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     impBuilder: TGLStaticImposterBuilder;
     renderPoint: TGLRenderPoint;
     mx, my: Integer;

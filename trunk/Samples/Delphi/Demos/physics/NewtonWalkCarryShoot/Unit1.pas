@@ -41,7 +41,7 @@ type
     procedure GLSceneViewer1MouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
     procedure ScaleMesh(freeform: TGLFreeForm; val: Single);
     procedure MoveCam(const deltaTime, newTime: Double);
     procedure MoveGrab;

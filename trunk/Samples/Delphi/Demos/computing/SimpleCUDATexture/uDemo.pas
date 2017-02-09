@@ -26,9 +26,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     pgm: TGLPGMImage;
   end;
 

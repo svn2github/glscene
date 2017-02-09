@@ -20,9 +20,9 @@ type
     sdTextures: TSaveDialog;
     opDialog: TOpenPictureDialog;
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

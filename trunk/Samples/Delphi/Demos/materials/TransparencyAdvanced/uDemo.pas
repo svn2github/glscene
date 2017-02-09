@@ -52,11 +52,11 @@ type
     procedure GLSceneViewer1AfterRender(Sender: TObject);
     procedure FormResize(Sender: TObject);
   private
-    { Private declarations }
+     
     FOITEnabled: Boolean;
     procedure CreateShapes;
   public
-    { Public declarations }
+     
   end;
 
 var

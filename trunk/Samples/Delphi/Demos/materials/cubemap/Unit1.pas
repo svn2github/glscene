@@ -42,10 +42,10 @@ type
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
     CubmapSupported: Boolean;
   public
-    { Public declarations }
+     
     mx, my: Integer;
   end;
 

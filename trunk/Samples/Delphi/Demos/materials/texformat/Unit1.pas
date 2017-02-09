@@ -50,9 +50,9 @@ type
     procedure FormResize(Sender: TObject);
     procedure GLSceneViewer1AfterRender(Sender: TObject);
   private
-    // Private declarations
+     
   public
-    // Public declarations
+     
     newSelection: Boolean;
   end;
 

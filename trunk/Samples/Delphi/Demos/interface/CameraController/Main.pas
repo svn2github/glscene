@@ -139,7 +139,7 @@ type
     procedure btSmoothOrbitClick(Sender: TObject);
     procedure btSmoothOrbitAndZoomClick(Sender: TObject);
   private
-    { Private declarations }
+     
     FGLCameraController : TGLCameraController;
     DextX, DextY, DextZ, Time, ZoomDistance: double;
     mx, my : Integer;
@@ -149,7 +149,7 @@ type
     function OnGetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector): TVector;
     procedure OnSetCameraPosition(const ASender: TGLNavigatorSmoothChangeVector; const AValue: TVector);
   public
-    { Public declarations }
+     
   end;
 
 var

@@ -65,9 +65,9 @@ type
     procedure ConverttocompressedClick(Sender: TObject);
     procedure ConverttouncompressedClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure RefreshMenu;
   end;
 

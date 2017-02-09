@@ -33,9 +33,9 @@ type
     procedure GLFullScreenViewer1KeyPress(Sender: TObject; var Key: Char);
     procedure GLFullScreenViewer1PostRender(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     firstPassDone : Boolean;
   end;
 

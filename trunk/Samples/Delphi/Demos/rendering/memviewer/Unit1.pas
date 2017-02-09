@@ -54,10 +54,10 @@ type
     procedure FormCreate(Sender: TObject);
     procedure RB1to1Click(Sender: TObject);
   private
-    { Private declarations }
+     
     textureFramerateRatio, n: Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

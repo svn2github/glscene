@@ -52,9 +52,9 @@ type
     procedure CgCellShaderUnApplyFP(CgProgram: TCgProgram);
     procedure AsyncTimer1Timer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

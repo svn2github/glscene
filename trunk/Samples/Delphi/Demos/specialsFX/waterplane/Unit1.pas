@@ -53,9 +53,9 @@ type
     procedure GLUserShader1DoUnApply(Sender: TObject; Pass: Integer;
       var rci: TGLRenderContextInfo; var Continue: Boolean);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     reflectionToggle: Boolean;
     procedure ClickWater(X, Y: Integer);

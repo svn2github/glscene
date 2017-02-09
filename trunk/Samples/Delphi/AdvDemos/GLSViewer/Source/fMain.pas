@@ -32,7 +32,6 @@ uses
   Vcl.BandActn,
   Vcl.PlatformDefaultStyleActnCtrls,
 
-  // GLS
   GLMaterial,
   GLScene,
   GLWin32Viewer,
@@ -60,7 +59,6 @@ uses
   GLAsyncTimer,
   GLGraph,
 
-  //GLSViewer Forms
   fGLForm,
   fGLAbout,
   fGLOptions,
@@ -187,7 +185,6 @@ type
     procedure AsyncTimerTimer(Sender: TObject);
     procedure acNavCubeExecute(Sender: TObject);
   private
-    { Private declarations }
     procedure DoResetCamera;
     procedure SetupFreeFormShading;
     procedure ApplyShadeModeToMaterial(aMaterial: TGLMaterial);
@@ -196,10 +193,8 @@ type
     procedure ApplyFaceCull;
     procedure ApplyTexturing;
     procedure ApplyFPS;
-
-    procedure DoOpen(const fileName: String);
+    procedure DoOpen(const FileName: String);
   public
-    { Public declarations }
     md, nthShow: Boolean;
     mx, my: Integer;
     hlShader: TGLShader;
@@ -217,7 +212,6 @@ var
 
 const
   NumObjects: Integer = 1000;
-
 
 //=======================================================================
 implementation
@@ -282,11 +276,9 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-
 begin
   inherited;
   GetCurrentDir;
-
   NavCube := TGLNavCube.CreateAsChild(Scene.Objects);
   NavCube.SceneViewer := snViewer;
   NavCube.FPS := 30;
@@ -311,7 +303,6 @@ begin
       DoOpen(ParamStr(1));
     nthShow := True;
   end;
-///  Cadencer.Enabled := True;  // for button navigation
 end;
 
 procedure TMainForm.acFileExitExecute(Sender: TObject);
@@ -322,7 +313,6 @@ end;
 procedure TMainForm.acFileOpenExecute(Sender: TObject);
 begin
   NavCube.ActiveMouse := False;
-
   if dmGLSViewer.OpenDialog.Execute then
     DoOpen(dmGLSViewer.OpenDialog.fileName);
 end;
@@ -417,7 +407,7 @@ var
   objSize: Single;
 begin
   dcTarget.Position.AsVector := NullHmgPoint;
-  Camera.Position.SetPoint(7, 3, 5);
+  Camera.Position.SetPoint(0, 4, 5);
   ffObject.Position.AsVector := NullHmgPoint;
   ffObject.Up.Assign(DCAxis.Up);
   ffObject.Direction.Assign(DCAxis.Direction);
@@ -607,35 +597,31 @@ begin
   ApplyFPS;
 end;
 
-procedure TMainForm.DoOpen(const fileName: String);
+procedure TMainForm.DoOpen(const FileName: String);
 var
   min, max: TAffineVector;
 begin
   if not FileExists(fileName) then
     Exit;
   Screen.Cursor := crHourGlass;
-  Caption := 'GLSViewer - ' + ExtractFileName(fileName);
+  Caption := 'GLSViewer - ' + FileName; //ExtractFileName(FileName);
   MaterialLib.Materials.Clear;
 
   ffObject.MeshObjects.Clear;
-  ffObject.LoadFromFile(fileName);
+  ffObject.LoadFromFile(FileName);
   SetupFreeFormShading;
-  StatusBar.Panels[0].Text := IntToStr(ffObject.MeshObjects.TriangleCount)
-    + ' tris';
-  StatusBar.Panels[2].Text := fileName;
+  StatusBar.Panels[0].Text := IntToStr(ffObject.MeshObjects.TriangleCount) + ' tris';
+  StatusBar.Panels[2].Text := FloatToStr(ffObject.MeshObjects.Volume) + ' vol';
   acFileSaveTextures.Enabled := (MaterialLib.Materials.Count > 0);
   acFileOpenTexLib.Enabled := (MaterialLib.Materials.Count > 0);
-  lastFileName := fileName;
+  lastFileName := FileName;
   lastLoadWithTextures := acToolsTexturing.Enabled;
 
   ffObject.GetExtents(min, max);
-  with CubeExtents do
-  begin
-    CubeWidth := max.X - min.X;
-    CubeHeight := max.Y - min.Y;
-    CubeDepth := max.Z - min.Z;
-    Position.AsAffineVector := VectorLerp(min, max, 0.5);
-  end;
+  CubeExtents.CubeWidth := max.X - min.X;
+  CubeExtents.CubeHeight := max.Y - min.Y;
+  CubeExtents.CubeDepth := max.Z - min.Z;
+  CubeExtents.Position.AsAffineVector := VectorLerp(min, max, 0.5);
   DoResetCamera;
 end;
 
@@ -931,34 +917,18 @@ const
 begin
   for i := 0 to NumObjects - 1 do
   begin
-///    Points := TGLPoints.Create(dcWorld.AddNewChild(TGLPoints));
     GLPoints := TGLPoints(dcWorld.AddNewChild(TGLPoints));
     Color.X := Random(256)/256;
     Color.Y := Random(256)/256;
     Color.Z := Random(256)/256;
-//    GLPoints.Colors.Add(Color);
     GLPoints.Colors.AddPoint(Color);
 
     GLPoints.Size := 5;
 	  GLPoints.Position.X := Random(10) - 5;
 	  GLPoints.Position.Y := Random(10) - 5;
 	  GLPoints.Position.Z := Random(10) - 5;
-
-		{ c++ code
-		  P[i] = new TGLPoints(GLDummyCube1);
-		  P[i]->Colors->Add(((float)(rand()%256))/256.0,((float)(rand()%256))/256.0,
-							((float)(rand()%256))/256.0,0.5);
-		  P[i]->Size = 5;
-		  P[i]->Position->X = 1.0*rand()/RAND_MAX-0.5;
-		  P[i]->Position->Y = 1.0*rand()/RAND_MAX-0.5;
-		  P[i]->Position->Z = 1.0*rand()/RAND_MAX-0.5;
-		}
-
-
   end;
-
   // Show Base and Additional Objects
-
 end;
 
 procedure TMainForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
@@ -993,8 +963,7 @@ end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-  StatusBar.Panels[1].Text := Format('%.1f FPS',
-    [snViewer.FramesPerSecond]);
+  StatusBar.Panels[1].Text := Format('%.1f FPS', [snViewer.FramesPerSecond]);
   snViewer.ResetPerformanceMonitor;
 end;
 
@@ -1024,7 +993,7 @@ begin
     try
       WriteInteger(Name, 'Top', Top);
       WriteInteger(Name, 'Left', Left);
-//      WriteBool(Name, 'InitMax', WindowState = wsMaximized);
+//     WriteBool(Name, 'InitMax', WindowState = wsMaximized);
     finally
       IniFile.Free;
     end;

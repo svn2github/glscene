@@ -66,9 +66,9 @@ type
     procedure Button_ResetOctreeSizeClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     Octree : TOctreeSpacePartition;
     procedure CreateBox;
     procedure VerifySpacialMisc;

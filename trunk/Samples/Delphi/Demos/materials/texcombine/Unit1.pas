@@ -62,9 +62,9 @@ type
     procedure CBTex0Click(Sender: TObject);
     procedure PAPrimaryClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

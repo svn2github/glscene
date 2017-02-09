@@ -49,7 +49,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+     
     UI:  TGLSmoothUserInterface;
     Navigator: TGLSmoothNavigator;
     //  RealPos: TPoint;
@@ -59,7 +59,7 @@ type
     NewXX, NewYY: Integer;
     procedure CheckControls(DeltaTime, newTime: Double);
   public
-    { Public declarations }
+     
   end;
 
 var

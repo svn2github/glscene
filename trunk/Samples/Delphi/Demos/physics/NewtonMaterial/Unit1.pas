@@ -34,9 +34,9 @@ type
       const deltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

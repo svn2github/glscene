@@ -61,9 +61,9 @@ type
     procedure Timer_OnVelocityTimer(Sender: TObject);
     procedure On_DropTimer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     procedure Menu_Load;
     procedure Game_Load;
   end;

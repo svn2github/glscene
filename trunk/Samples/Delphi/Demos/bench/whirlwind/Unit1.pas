@@ -50,10 +50,10 @@ type
     procedure GLSceneViewer1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   private
-    { Private declarations }
+     
     mx, my : Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

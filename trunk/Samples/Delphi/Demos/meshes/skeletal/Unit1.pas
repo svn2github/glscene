@@ -55,9 +55,9 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { private declarations }
+     
   public
-    { public declarations }
+     
     baseAnimation : String;
     mx, my : Integer;
   end;

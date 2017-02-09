@@ -70,11 +70,11 @@ type
     procedure AddODECubeClick(Sender: TObject);
 
   private
-    { Private declarations }
+     
     FUserDirection: TVector;
     FDirectionVector: TVector;
   public
-    { Public declarations }
+     
   end;
 
 var

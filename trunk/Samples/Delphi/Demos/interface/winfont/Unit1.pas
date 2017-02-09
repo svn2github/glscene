@@ -52,9 +52,9 @@ type
     procedure MIPickFontClick(Sender: TObject);
     procedure MIViewTextureClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

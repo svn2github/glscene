@@ -39,9 +39,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure BuiltWithDelphiDblClick(Sender: TObject);
   public
-    { Public declarations }
+     
   private
-    { Private declarations }
+     
     function GetFileInfo(const FileName: TFileName): TVSFixedFileInfo;
     function ReadVersionInfo(FileName: TFileName): TFileName;
   end;

@@ -54,9 +54,9 @@ type
       newTime: Double);
     procedure RBUseLODsClick(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

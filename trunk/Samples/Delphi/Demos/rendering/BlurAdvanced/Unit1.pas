@@ -54,10 +54,10 @@ type
     procedure GLBlur1BeforeTargetRender(Sender: TObject);
     procedure GLBlur1AfterTargetRender(Sender: TObject);
   private
-    { Private declarations }
+     
     mx, my: Integer;
   public
-    { Public declarations }
+     
   end;
 
 var

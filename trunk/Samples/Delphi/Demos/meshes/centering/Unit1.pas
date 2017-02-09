@@ -40,9 +40,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

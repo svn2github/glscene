@@ -103,9 +103,9 @@ type
     procedure FormKeyPress(Sender: TObject; var Key: Char);
     procedure CgShader1Initialize(CgShader: TCustomCgShader);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

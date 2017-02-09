@@ -68,9 +68,9 @@ type
     procedure OctreeRendererRender(Sender: TObject;
       var rci: TGLRenderContextInfo);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
     VerletWorld: TGLVerletWorld;
     EdgeDetector: TEdgeDetector;

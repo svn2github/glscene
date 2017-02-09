@@ -26,9 +26,9 @@ type
   TGLForm = class(TForm)
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     IniFile : TIniFile;
     procedure ReadIniFile; virtual;
     procedure WriteIniFile; virtual;

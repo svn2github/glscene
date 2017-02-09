@@ -58,7 +58,7 @@ type
     procedure LightFBORendererAfterRender(Sender: TObject; var rci: TGLRenderContextInfo);
     procedure GLSceneViewer1BeforeRender(Sender: TObject);
   private
-    { Private declarations }
+     
 
     FBiasMatrix: TMatrix;
     FLightModelViewMatrix: TMatrix;
@@ -66,7 +66,7 @@ type
     FInvCameraMatrix: TMatrix;
     FEyeToLightMatrix: TMatrix;
   public
-    { Public declarations }
+     
   end;
 
 var

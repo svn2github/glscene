@@ -37,9 +37,9 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     timeToNextFrame : Double;
   end;
 

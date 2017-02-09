@@ -61,9 +61,9 @@ type
   private
     mouseX, mouseY : Integer;
     procedure DoRaycastStuff;
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

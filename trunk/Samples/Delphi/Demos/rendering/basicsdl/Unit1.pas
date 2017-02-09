@@ -30,9 +30,9 @@ type
     procedure GLSDLViewer1EventPollDone(Sender: TObject);
     procedure GLSDLViewer1Resize(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     firstPassDone : Boolean;
   end;
 

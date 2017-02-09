@@ -33,9 +33,9 @@ type
       newTime: Double);
     procedure TimerTimer(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

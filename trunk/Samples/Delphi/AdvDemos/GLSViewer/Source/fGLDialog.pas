@@ -28,12 +28,12 @@ type
     ButtonHelp: TButton;
     procedure ButtonHelpClick(Sender: TObject);
   public
-    { Public declarations }
+     
     function Execute: boolean; virtual;
     procedure ReadIniFile; override;
     procedure WriteIniFile; override;
   private
-    { Private declarations }
+     
   end;
 
 var

@@ -34,10 +34,10 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
     point3d, FPaneNormal: TVector;
   public
-    { Public declarations }
+     
     pickjoint: TGLNGDJoint;
   end;
 

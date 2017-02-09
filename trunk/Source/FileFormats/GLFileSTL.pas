@@ -32,35 +32,24 @@ type
     nbFaces: Longint;
   end;
 
-  TSTLVertex = TAffineVector;
-  { Original specs : = packed record
-    x : single;
-    y : single;
-    z : single;
-    end; }
-
   TSTLFace = packed record
-    normal: TSTLVertex; // facet surface normal
-    v1: TSTLVertex; // vertex 1
-    v2: TSTLVertex; // vertex 2
-    v3: TSTLVertex; // vertex 3
+    normal: TAffineVector; // facet surface normal
+    v1: TAffineVector; // vertex 1
+    v2: TAffineVector; // vertex 2
+    v3: TAffineVector; // vertex 3
     padding: array [0 .. 1] of byte;
   end;
 
 type
-  // TGLSTLVectorFile
-  //
-  {  The STL vector file (stereolithography format). 
+  {  The STL vector file (stereolithography format).
     It is a list of the triangular surfaces that describe a computer generated
-    solid model. This is the standard input for most rapid prototyping machines. 
+    solid model. This is the standard input for most rapid prototyping machines.
     There are two flavors of STL, the "text" and the "binary", this class
-    reads both, but exports only the "binary" version. 
+    reads both, but exports only the "binary" version.
     Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
   TGLSTLVectorFile = class(TGLVectorFile)
   public
-    
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
     procedure SaveToStream(aStream: TStream); override;
   end;
@@ -69,7 +58,6 @@ type
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -84,24 +72,20 @@ const
   cENDSOLID_LABEL = 'ENDSOLID';
   cFULL_HEADER_LEN = 84;
 
-  // ------------------
-  // ------------------ TGLSTLVectorFile ------------------
-  // ------------------
+// ------------------
+// ------------------ TGLSTLVectorFile ------------------
+// ------------------
 
-  // Capabilities
-  //
 class function TGLSTLVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead, dfcWrite];
 end;
 
-// LoadFromStream
-//
 procedure TGLSTLVectorFile.LoadFromStream(aStream: TStream);
 var
   sl: TStringList;
 
-  procedure DecodeSTLNormals(const aString: String; var aNormal: TSTLVertex);
+  procedure DecodeSTLNormals(const aString: String; var aNormal: TAffineVector);
   begin
     sl.CommaText := aString;
     if sl.Count <> 5 then
@@ -114,7 +98,7 @@ var
     end;
   end;
 
-  procedure DecodeSTLVertex(const aString: String; var aVertex: TSTLVertex);
+  procedure DecodeSTLVertex(const aString: String; var aVertex: TAffineVector);
   begin
     sl.CommaText := aString;
     if (sl.Count <> 4) or (CompareText(sl[0], cVERTEX_LABEL) <> 0) then
@@ -142,7 +126,6 @@ begin
   positionBackup := aStream.Position;
   aStream.Read(headerBuf[0], cFULL_HEADER_LEN);
   aStream.Position := positionBackup;
-
   isBinary := True;
   i := 0;
   while i < 80 do
@@ -157,12 +140,9 @@ begin
 
   mesh := TMeshObject.CreateOwned(Owner.MeshObjects);
   try
-
     mesh.Mode := momTriangles;
-
     if isBinary then
     begin
-
       aStream.Read(header, SizeOf(TSTLHeader));
       for i := 0 to header.nbFaces - 1 do
       begin
@@ -184,7 +164,6 @@ begin
     end
     else
     begin
-
       fileContent := TStringList.Create;
       sl := TStringList.Create;
       try
@@ -195,7 +174,6 @@ begin
         begin
           mesh.Vertices.Capacity := (fileContent.Count - 2) div 7;
           mesh.Normals.Capacity := (fileContent.Count - 2) div 7;
-
           Inc(i);
           curLine := Trim(UpperCase(fileContent[i]));
           while i < fileContent.Count do
@@ -249,7 +227,6 @@ begin
         sl.Free;
         fileContent.Free;
       end;
-
     end;
   except
     on E: Exception do
@@ -259,8 +236,6 @@ begin
   end;
 end;
 
-// SaveToStream
-//
 procedure TGLSTLVectorFile.SaveToStream(aStream: TStream);
 var
   i: Integer;
@@ -295,11 +270,10 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-RegisterVectorFileFormat('stl', 'Stereolithography files', TGLSTLVectorFile);
+  RegisterVectorFileFormat('stl', 'Stereolithography files', TGLSTLVectorFile);
 
 end.

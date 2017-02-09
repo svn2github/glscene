@@ -63,9 +63,9 @@ type
     procedure CBPlaneClipClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx, my: Integer;
   end;
 

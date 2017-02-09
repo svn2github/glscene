@@ -17,7 +17,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ExtDlgs,
   Vcl.Imaging.Jpeg,
-  // GLS
+   
   GLScene, GLObjects, GLTexture, GLKeyBoard, GLCadencer, GLWin32Viewer,
   GLMaterial, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLUtils,
   GLVectorGeometry;
@@ -51,12 +51,12 @@ type
       const deltaTime, newTime: Double);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
     mx, my: Integer;
     pitch, yaw: single; // in degree
     procedure PanCameraAround(dx, dy: single);
   public
-    { Public declarations }
+     
   end;
 
 var

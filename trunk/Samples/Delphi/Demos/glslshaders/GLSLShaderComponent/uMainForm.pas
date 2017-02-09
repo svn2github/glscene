@@ -56,10 +56,10 @@ type
     procedure GLSLShaderInitializeEx(Shader: TGLCustomGLSLShader;
       Sender: TObject);
   private
-    { Private declarations }
+     
 
   public
-    { Public declarations }
+     
 
   end;
 

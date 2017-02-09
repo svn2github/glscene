@@ -60,7 +60,7 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+     
     procedure Formula1(const x, y: Single; var z: Single;
       var color: TColorVector; var texPoint: TTexPoint);
     procedure Formula2(const x, y: Single; var z: Single;
@@ -68,7 +68,7 @@ type
     procedure Formula3(const x, y: Single; var z: Single;
       var color: TColorVector; var texPoint: TTexPoint);
   public
-    { Public declarations }
+     
     mx, my : Integer;
   end;
 

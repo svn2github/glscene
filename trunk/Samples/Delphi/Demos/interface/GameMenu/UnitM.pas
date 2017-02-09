@@ -57,9 +57,9 @@ type
     procedure ShowTitleCheckboxClick(Sender: TObject);
     procedure MainPanelResize(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     GameMenu: TGLGameMenu;
   end;
 

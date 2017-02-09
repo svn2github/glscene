@@ -35,9 +35,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure GLScreenSaver1PropertiesRequested(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

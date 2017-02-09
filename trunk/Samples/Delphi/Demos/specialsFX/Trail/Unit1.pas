@@ -40,9 +40,9 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx,my : integer;
     Trail: TGLTrail;
     Direction : TVector3f;

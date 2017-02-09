@@ -10,9 +10,9 @@ type
   TForm2 = class(TForm)
     Image1: TImage;
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
   end;
 
 var

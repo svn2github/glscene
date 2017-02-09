@@ -15,13 +15,13 @@ type
     procedure BtnForCancelClick(Sender: TObject);
     procedure BtnForOkClick(Sender: TObject);
   private
-    { Private declarations }
+     
     FCompressionRatio: TZCompressedMode;
     FDefaultCbrMode: TZCompressedMode;
     procedure SetDefaultCbrMode(const Value: TZCompressedMode);
 
   public
-    { Public declarations }
+     
     property CompressionRatio: TZCompressedMode read FCompressionRatio
       write FCompressionRatio;
     property DefaultCbrMode: TZCompressedMode read FDefaultCbrMode

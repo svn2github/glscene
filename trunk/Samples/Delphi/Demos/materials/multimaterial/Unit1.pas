@@ -42,9 +42,9 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
   private
-    { Private declarations }
+     
   public
-    { Public declarations }
+     
     mx,my : integer;
   end;
 

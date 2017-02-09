@@ -47,12 +47,12 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Button2Click(Sender: TObject);
   private
-    { Private declarations }
+     
     FLastHotNb: Integer;
     procedure SetSelected(nb: Integer);
     procedure SetHot(nb: Integer);
   public
-    { Public declarations }
+     
   end;
 
 var
