@@ -1,0 +1,12 @@
+GeneticArt by Mattias Fagerlund, mattias@octagate.com
+
+Visit the official GeneticArt homepage at http://www.cambrianlabs.com/mattias/GeneticArt/
+
+
+GeneticArt uses NEAT (evolvable Neural Networks) to evolve black and white images. The user clicks on the images he likes best and requests a new generation. The system crosses the most popular images with each other, creating  a new generation of images.
+
+Instructions:
+Click one one or more images that you like
+Click "New Generation" to create a new batch of images
+
+Right Click to either zoom an image, or to enter "Ken's God Mode" where you get to alter the weights of the connections in the neural network.

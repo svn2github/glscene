@@ -1,0 +1,108 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{46F6E87A-751E-40F1-9AA7-81EA5E47AA4B}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="ArtificialAnt\AAnt.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="GeneticArt\Src\GeneticArt.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Obstacle Navigator\ObstacleNavigator.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="OCR\OCR.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="PoleCart\PoleCart.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="SymbolicRegression\SymbolicRegression.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="XOR\XORFunction.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="AAnt">
+        <MSBuild Projects="ArtificialAnt\AAnt.dproj"/>
+    </Target>
+    <Target Name="AAnt:Clean">
+        <MSBuild Projects="ArtificialAnt\AAnt.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="AAnt:Make">
+        <MSBuild Projects="ArtificialAnt\AAnt.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="GeneticArt">
+        <MSBuild Projects="GeneticArt\Src\GeneticArt.dproj"/>
+    </Target>
+    <Target Name="GeneticArt:Clean">
+        <MSBuild Projects="GeneticArt\Src\GeneticArt.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="GeneticArt:Make">
+        <MSBuild Projects="GeneticArt\Src\GeneticArt.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="ObstacleNavigator">
+        <MSBuild Projects="Obstacle Navigator\ObstacleNavigator.dproj"/>
+    </Target>
+    <Target Name="ObstacleNavigator:Clean">
+        <MSBuild Projects="Obstacle Navigator\ObstacleNavigator.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="ObstacleNavigator:Make">
+        <MSBuild Projects="Obstacle Navigator\ObstacleNavigator.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="OCR">
+        <MSBuild Projects="OCR\OCR.dproj"/>
+    </Target>
+    <Target Name="OCR:Clean">
+        <MSBuild Projects="OCR\OCR.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="OCR:Make">
+        <MSBuild Projects="OCR\OCR.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="PoleCart">
+        <MSBuild Projects="PoleCart\PoleCart.dproj"/>
+    </Target>
+    <Target Name="PoleCart:Clean">
+        <MSBuild Projects="PoleCart\PoleCart.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="PoleCart:Make">
+        <MSBuild Projects="PoleCart\PoleCart.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SymbolicRegression">
+        <MSBuild Projects="SymbolicRegression\SymbolicRegression.dproj"/>
+    </Target>
+    <Target Name="SymbolicRegression:Clean">
+        <MSBuild Projects="SymbolicRegression\SymbolicRegression.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SymbolicRegression:Make">
+        <MSBuild Projects="SymbolicRegression\SymbolicRegression.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="XORFunction">
+        <MSBuild Projects="XOR\XORFunction.dproj"/>
+    </Target>
+    <Target Name="XORFunction:Clean">
+        <MSBuild Projects="XOR\XORFunction.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="XORFunction:Make">
+        <MSBuild Projects="XOR\XORFunction.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="AAnt;GeneticArt;ObstacleNavigator;OCR;PoleCart;SymbolicRegression;XORFunction"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="AAnt:Clean;GeneticArt:Clean;ObstacleNavigator:Clean;OCR:Clean;PoleCart:Clean;SymbolicRegression:Clean;XORFunction:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="AAnt:Make;GeneticArt:Make;ObstacleNavigator:Make;OCR:Make;PoleCart:Make;SymbolicRegression:Make;XORFunction:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

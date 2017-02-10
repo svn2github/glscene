@@ -1,0 +1,45 @@
+package DelphiNEAT;
+
+{$R *.res}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO ON}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'Delphi NEAT 1.0'}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  tee,
+  dclact;
+
+contains
+  uTransferFunctionClasses in 'uTransferFunctionClasses.pas',
+  uNEATClasses in 'uNEATClasses.pas',
+  uNEATStrFunctions in 'uNEATStrFunctions.pas',
+  fFitnessMonitor in 'fFitnessMonitor.pas' {frmFitnessMonitor},
+  uDrawGenotype in 'uDrawGenotype.pas',
+  uNEATMisc in 'uNEATMisc.pas';
+
+end.

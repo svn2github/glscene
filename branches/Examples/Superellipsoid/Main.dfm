@@ -491,13 +491,11 @@ object MainForm: TMainForm
       end
     end
     object ObjectsCube: TGLDummyCube
-      Direction.Coordinates = {00000000000000800000803F00000000}
       Position.Coordinates = {000000000000803F000000000000803F}
       CubeSize = 1.000000000000000000
       EdgeColor.Color = {0000803F00000000000000000000803F}
       object ArrowZ: TGLArrowLine
         Material.FrontProperties.Emission.Color = {00000000000000000000803F0000803F}
-        Direction.Coordinates = {00000000000000800000803F00000000}
         Position.Coordinates = {0000000000000000000000400000803F}
         BottomRadius = 0.050000000745058060
         Height = 4.000000000000000000
@@ -524,7 +522,6 @@ object MainForm: TMainForm
         Material.FrontProperties.Emission.Color = {0000803F00000000000000000000803F}
         Direction.Coordinates = {0000803F000000000000000000000000}
         Position.Coordinates = {0000004000000000000000000000803F}
-        Up.Coordinates = {000000800000803F0000000000000000}
         BottomRadius = 0.050000000745058060
         Height = 4.000000000000000000
         TopRadius = 0.050000000745058060
@@ -534,7 +531,6 @@ object MainForm: TMainForm
         BottomArrowHeadRadius = 0.200000002980232200
       end
       object GLXYZGridXZ: TGLXYZGrid
-        Direction.Coordinates = {00000000000000800000803F00000000}
         LineColor.Color = {B1A8A83EB1A8A83EB1A8A83E0000803F}
         XSamplingScale.Min = -10.000000000000000000
         XSamplingScale.Max = 10.000000000000000000
