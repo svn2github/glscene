@@ -4446,8 +4446,8 @@ begin
     begin
       Tri.Normal := CalcPlaneNormal(List[i], List[i+1], List[i+2]);
       Tri.V1 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-      Tri.V2 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
-      Tri.V3 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V2 := VectorTransform(List[i+1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V3 := VectorTransform(List[i+2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
       Inc(i, 3);
       Result := Result + VectorDotProduct(Tri.V1, VectorCrossProduct(Tri.V2, Tri.V3));
     end;
