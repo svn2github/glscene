@@ -549,7 +549,9 @@ type
       normals: TAffineVectorList = nil): TAffineVectorList;
     {Returns number of triangles in the meshes of the list. }
     function TriangleCount: Integer;
-    {Returns volume of meshes in the list. }
+    {Returns the total Area of meshes in the list. }
+    function Area: Single;
+    {Returns the total volume of meshes in the list. }
     function Volume: Single;
     {Build the tangent space from the mesh object's vertex, normal
        and texcoord data, filling the binormals and tangents where specified. }
@@ -4428,6 +4430,32 @@ begin
   Result := 0;
   for i := 0 to Count - 1 do
     Result := Result + Items[i].TriangleCount;
+end;
+
+function TGLMeshObjectList.Area: Single;
+var
+  i: Integer;
+  Tri: TGLFace;
+  List: TAffineVectorList;
+
+begin
+  Result := 0;
+  List := Self.ExtractTriangles;
+  if List.Count > 0 then
+  try
+    i := 0;
+    while i < List.Count do
+    begin
+      Tri.Normal := CalcPlaneNormal(List[i], List[i+1], List[i+2]);
+      Tri.V1 := VectorTransform(List[i], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V2 := VectorTransform(List[i+1], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Tri.V3 := VectorTransform(List[i+2], TGLBaseSceneObject(Owner).AbsoluteMatrix);
+      Inc(i, 3);
+      Result := Result + TriangleArea(Tri.V1, Tri.V2, Tri.V3);
+    end;
+  finally
+    List.Free();
+  end;
 end;
 
 function TGLMeshObjectList.Volume: Single;

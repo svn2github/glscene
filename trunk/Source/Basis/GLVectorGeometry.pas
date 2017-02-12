@@ -836,7 +836,7 @@ procedure RotateVector(var Vector: TVector; const axis: TVector; angle: Single);
 procedure RotateVectorAroundY(var V: TAffineVector; alpha: Single);
 // Returns given vector rotated around the X axis (alpha is in rad)
 function VectorRotateAroundX(const V: TAffineVector; alpha: Single): TAffineVector; overload;
-// : Returns given vector rotated around the Y axis (alpha is in rad)
+// Returns given vector rotated around the Y axis (alpha is in rad)
 function VectorRotateAroundY(const V: TAffineVector; alpha: Single): TAffineVector; overload;
 // Returns given vector rotated around the Y axis in vr (alpha is in rad)
 procedure VectorRotateAroundY(const V: TAffineVector; alpha: Single; var vr: TAffineVector); overload;
@@ -1349,10 +1349,6 @@ procedure BeginFPUOnlySection;
 procedure EndFPUOnlySection;
 
 // --------------------- Unstandardized functions after these lines
-// --------------------- Unstandardized functions after these lines
-// --------------------- Unstandardized functions after these lines
-// --------------------- Unstandardized functions after these lines
-// --------------------- Unstandardized functions after these lines
 
 // mixed functions
 
@@ -1363,14 +1359,19 @@ function ConvertRotation(const Angles: TAffineVector): TVector;
 
 function MakeAffineDblVector(var V: array of Double): TAffineDblVector;
 function MakeDblVector(var V: array of Double): THomogeneousDblVector;
+// Converts a vector containing double sized values into a vector with single sized values
 function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
+// Converts a vector containing double sized values into a vector with single sized values
 function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
+// Converts a vector containing single sized values into a vector with double sized values
 function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
+// Converts a vector containing single sized values into a vector with double sized values
 function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
-
+{ The code below is from Wm. Randolph Franklin <wrf@ecse.rpi.edu>
+  with some minor modifications for speed. It returns 1 for strictly
+  interior points, 0 for strictly exterior, and 0 or 1 for points on the boundary.}
 function PointInPolygon(var xp, yp: array of Single; X, Y: Single): Boolean;
 function IsPointInPolygon(Polygon: array of TPoint; p: TPoint): Boolean;
-
 procedure DivMod(Dividend: Integer; Divisor: Word; var result, Remainder: Word);
 
 // coordinate system manipulation functions
@@ -3227,16 +3228,12 @@ begin
   end;
 end;
 
-// VectorAngleCombine
-//
 function VectorAngleCombine(const V1, V2: TAffineVector; f: Single)
   : TAffineVector;
 begin
   result := VectorCombine(V1, V2, 1, f);
 end;
 
-// VectorArrayLerp (hmg)
-//
 procedure VectorArrayLerp(const src1, src2: PVectorArray; T: Single; n: Integer;
   dest: PVectorArray);
 var
@@ -3251,9 +3248,6 @@ begin
   end;
  end;
 
-
-// VectorArrayLerp (affine)
-//
 procedure VectorArrayLerp(const src1, src2: PAffineVectorArray; T: Single;
   n: Integer; dest: PAffineVectorArray);
 var
@@ -3279,8 +3273,6 @@ begin
   end;
 end;
 
-// InterpolateCombined
-//
 function InterpolateCombined(const start, stop, delta: Single;
   const DistortionDegree: Single;
   const InterpolationType: TGLInterpolationType): Single;
@@ -3308,8 +3300,6 @@ begin
   end;
 end;
 
-// InterpolateCombinedFastPower
-//
 function InterpolateCombinedFastPower(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single): Single;
@@ -3319,8 +3309,6 @@ begin
     DistortionDegree);
 end;
 
-// InterpolateCombinedSafe
-//
 function InterpolateCombinedSafe(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
@@ -3339,8 +3327,6 @@ begin
   end;
 end;
 
-// InterpolateCombinedFast
-//
 function InterpolateCombinedFast(const OriginalStart, OriginalStop,
   OriginalCurrent: Single; const TargetStart, TargetStop: Single;
   const DistortionDegree: Single;
@@ -3363,37 +3349,27 @@ begin
     Ln(1 + DistortionDegree) + start;
 end;
 
-// InterpolateExp
-//
 function InterpolateExp(const start, stop, delta: Single;
   const DistortionDegree: Single): Single;
 begin
   result := (stop - start) * Exp(-DistortionDegree * (1 - delta)) + start;
 end;
 
-// InterpolateSinAlt
-//
 function InterpolateSinAlt(const start, stop, delta: Single): Single;
 begin
   result := (stop - start) * delta * Sin(delta * PI / 2) + start;
 end;
 
-// InterpolateSin
-//
 function InterpolateSin(const start, stop, delta: Single): Single;
 begin
   result := (stop - start) * Sin(delta * PI / 2) + start;
 end;
 
-// InterpolateTan
-//
 function InterpolateTan(const start, stop, delta: Single): Single;
 begin
   result := (stop - start) * Tan(delta * PI / 4) + start;
 end;
 
-// InterpolatePower
-//
 function InterpolatePower(const start, stop, delta: Single;
   const DistortionDegree: Single): Single;
 var
@@ -3408,8 +3384,6 @@ begin
     result := (stop - start) * Power(delta, DistortionDegree) + start;
 end;
 
-// MatrixLerp
-//
 function MatrixLerp(const m1, m2: TMatrix; const delta: Single): TMatrix;
 var
   i, J: Integer;
@@ -3419,8 +3393,6 @@ begin
       result.V[i].V[J] := m1.V[i].V[J] + (m2.V[i].V[J] - m1.V[i].V[J]) * delta;
 end;
 
-// VectorLength (array)
-//
 {$IFDEF GLS_ASM}
 function VectorLength(const V: array of Single): Single;
 // EAX contains address of V
@@ -3448,29 +3420,21 @@ begin
 end;
 {$ENDIF}
 
-// VectorLength  (x, y)
-//
 function VectorLength(const X, Y: Single): Single;
 begin
   result := Sqrt(X * X + Y * Y);
 end;
 
-// VectorLength (x, y, z)
-//
 function VectorLength(const X, Y, Z: Single): Single;
 begin
   result := Sqrt(X * X + Y * Y + Z * Z);
 end;
 
-// VectorLength
-//
 function VectorLength(const V: TVector2f): Single;
 begin
   result := Sqrt(VectorNorm(V.X, V.Y));
 end;
 
-// VectorLength
-//
 function VectorLength(const V: TAffineVector): Single;
 // EAX contains address of V
 // result is passed in ST(0)
@@ -3478,8 +3442,6 @@ begin
   result := Sqrt(VectorNorm(V));
 end;
 
-// VectorLength
-//
 {$IFDEF GLS_ASM}
 function VectorLength(const V: TVector): Single;
 // EAX contains address of V
@@ -3502,15 +3464,11 @@ begin
 end;
 {$ENDIF}
 
-// VectorNorm
-//
 function VectorNorm(const X, Y: Single): Single;
 begin
   result := Sqr(X) + Sqr(Y);
 end;
 
-// VectorNorm (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorNorm(const V: TAffineVector): Single;
 // EAX contains address of V
@@ -3532,8 +3490,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNorm (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorNorm(const V: TVector): Single;
 // EAX contains address of V
@@ -3555,8 +3511,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNorm
-//
 {$IFDEF GLS_ASM}
 function VectorNorm(var V: array of Single): Single;
 // EAX contains address of V
@@ -3582,8 +3536,6 @@ begin
 end;
 {$ENDIF}
 
-// NormalizeVector (2f)
-//
 {$IFDEF GLS_ASM}
 procedure NormalizeVector(var V: TVector2f);
 asm
@@ -3627,8 +3579,6 @@ begin
 end;
 {$ENDIF}
 
-// NormalizeVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure NormalizeVector(var V: TAffineVector);
 asm
@@ -3703,8 +3653,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNormalize
-//
 function VectorNormalize(const V: TVector2f): TVector2f;
 var
   invLen: Single;
@@ -3721,8 +3669,6 @@ begin
   end;
 end;
 
-// VectorNormalize
-//
 {$IFDEF GLS_ASM}
 function VectorNormalize(const V: TAffineVector): TAffineVector;
 asm
@@ -3799,8 +3745,6 @@ begin
 end;
 {$ENDIF}
 
-// NormalizeVectorArray
-//
 {$IFDEF GLS_ASM}
 procedure NormalizeVectorArray(list: PAffineVectorArray; n: Integer);
 // EAX contains list
@@ -3881,8 +3825,6 @@ begin
 end;
 {$ENDIF}
 
-// NormalizeVector (hmg)
-//
 {$IFDEF GLS_ASM}
 procedure NormalizeVector(var V: TVector);
 asm
@@ -3962,8 +3904,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNormalize (hmg, func)
-//
 {$IFDEF GLS_ASM}
 function VectorNormalize(const V: TVector): TVector;
 asm
@@ -4045,8 +3985,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAngleCosine
-//
 {$IFDEF GLS_ASM}
 function VectorAngleCosine(const V1, V2: TAffineVector): Single;
 // EAX contains address of Vector1
@@ -4089,8 +4027,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAngleCosine
-//
 {$IFDEF GLS_ASM}
 function VectorAngleCosine(const V1, V2: TVector): Single;
 // EAX contains address of Vector1
@@ -4133,8 +4069,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNegate (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorNegate(const Vector: TAffineVector): TAffineVector;
 // EAX contains address of v
@@ -4159,8 +4093,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorNegate (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorNegate(const Vector: TVector): TVector;
 // EAX contains address of v
@@ -4189,8 +4121,6 @@ begin
 end;
 {$ENDIF}
 
-// NegateVector
-//
 {$IFDEF GLS_ASM}
 procedure NegateVector(var V: TAffineVector);
 // EAX contains address of v
@@ -4214,8 +4144,6 @@ begin
 end;
 {$ENDIF}
 
-// NegateVector
-//
 {$IFDEF GLS_ASM}
 procedure NegateVector(var V: TVector);
 // EAX contains address of v
@@ -4243,8 +4171,6 @@ begin
 end;
 {$ENDIF}
 
-// NegateVector
-//
 {$IFDEF GLS_ASM}
 procedure NegateVector(var V: array of Single);
 // EAX contains address of V
@@ -4268,8 +4194,6 @@ begin
 end;
 {$ENDIF}
 
-// ScaleVector (2f)
-//
 {$IFDEF GLS_ASM}
 procedure ScaleVector(var V: TVector2f; factor: Single);
 asm
@@ -4288,8 +4212,6 @@ begin
 end;
 {$ENDIF}
 
-// ScaleVector (affine)
-//
 {$IFDEF GLS_ASM}
 procedure ScaleVector(var V: TAffineVector; factor: Single);
 asm
@@ -4312,8 +4234,6 @@ begin
 end;
 {$ENDIF}
 
-// ScaleVector (hmg)
-//
 procedure ScaleVector(var V: TVector; factor: Single);
 begin
   V.X := V.X * factor;
@@ -4322,8 +4242,6 @@ begin
   V.W := V.W * factor;
 end;
 
-// ScaleVector (affine vector)
-//
 procedure ScaleVector(var V: TAffineVector; const factor: TAffineVector);
 begin
   V.X := V.X * factor.X;
@@ -4331,8 +4249,6 @@ begin
   V.Z := V.Z * factor.Z;
 end;
 
-// ScaleVector (hmg vector)
-//
 procedure ScaleVector(var V: TVector; const factor: TVector);
 begin
   V.X := V.X * factor.X;
@@ -4341,8 +4257,6 @@ begin
   V.W := V.W * factor.W;
 end;
 
-// VectorScale (2f)
-//
 {$IFDEF GLS_ASM}
 function VectorScale(const V: TVector2f; factor: Single): TVector2f;
 asm
@@ -4360,8 +4274,7 @@ begin
   result.Y := V.Y * factor;
 end;
 {$ENDIF}
-// VectorScale (affine)
-//
+
 {$IFDEF GLS_ASM}
 function VectorScale(const V: TAffineVector; factor: Single): TAffineVector;
 asm
@@ -4384,8 +4297,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorScale (proc, affine)
-//
 {$IFDEF GLS_ASM}
 procedure VectorScale(const V: TAffineVector; factor: Single;
   var vr: TAffineVector);
@@ -4410,8 +4321,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorScale (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorScale(const V: TVector; factor: Single): TVector;
 asm
@@ -4438,8 +4347,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorScale (proc, hmg)
-//
 {$IFDEF GLS_ASM}
 procedure VectorScale(const V: TVector; factor: Single; var vr: TVector);
 asm
@@ -4466,8 +4373,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorScale (proc, hmg-affine)
-//
 {$IFDEF GLS_ASM}
 procedure VectorScale(const V: TVector; factor: Single; var vr: TAffineVector);
 asm
@@ -4490,8 +4395,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorScale (func, affine)
-//
 function VectorScale(const V: TAffineVector; const factor: TAffineVector)
   : TAffineVector;
 begin
@@ -4520,8 +4423,6 @@ begin
   V.W := V.W / divider.W;
 end;
 
-// DivideVector
-//
 procedure DivideVector(var V: TAffineVector;
   const divider: TAffineVector); overload;
 begin
@@ -4530,8 +4431,6 @@ begin
   V.Z := V.Z / divider.Z;
 end;
 
-// VectorDivide
-//
 function VectorDivide(const V: TVector; const divider: TVector)
   : TVector; overload;
 begin
@@ -4541,8 +4440,6 @@ begin
   result.W := V.W / divider.W;
 end;
 
-// VectorDivide
-//
 function VectorDivide(const V: TAffineVector; const divider: TAffineVector)
   : TAffineVector; overload;
 begin
@@ -4551,23 +4448,17 @@ begin
   result.Z := V.Z / divider.Z;
 end;
 
-// TexpointEquals
-//
 function TexpointEquals(const p1, p2: TTexPoint): Boolean;
 begin
   result := (p1.S = p2.S) and (p1.T = p2.T);
 end;
 
-// RectEquals
-//
 function RectEquals(const Rect1, Rect2: TRect): Boolean;
 begin
   result := (Rect1.Left = Rect2.Left) and (Rect1.Right = Rect2.Right) and
     (Rect1.Top = Rect2.Top) and (Rect1.Bottom = Rect2.Left);
 end;
 
-// VectorEquals (hmg vector)
-//
 {$IFDEF GLS_ASM}
 function VectorEquals(const V1, V2: TVector): Boolean;
 // EAX contains address of v1
@@ -4599,8 +4490,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorEquals (affine vector)
-//
 {$IFDEF GLS_ASM}
 function VectorEquals(const V1, V2: TAffineVector): Boolean;
 // EAX contains address of v1
@@ -4629,8 +4518,6 @@ begin
 end;
 {$ENDIF}
 
-// AffineVectorEquals (hmg vector)
-//
 {$IFDEF GLS_ASM}
 function AffineVectorEquals(const V1, V2: TVector): Boolean;
 // EAX contains address of v1
@@ -4689,8 +4576,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSpacing (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
@@ -4717,8 +4602,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorSpacing (Hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorSpacing(const V1, V2: TVector): Single;
 // EAX contains address of v1
@@ -4749,8 +4632,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDistance (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorDistance(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
@@ -4778,8 +4659,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDistance (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorDistance(const V1, V2: TVector): Single;
 // EAX contains address of v1
@@ -4807,8 +4686,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDistance2 (affine)
-//
 {$IFDEF GLS_ASM}
 function VectorDistance2(const V1, V2: TAffineVector): Single;
 // EAX contains address of v1
@@ -4835,8 +4712,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorDistance2 (hmg)
-//
 {$IFDEF GLS_ASM}
 function VectorDistance2(const V1, V2: TVector): Single;
 // EAX contains address of v1
@@ -4863,8 +4738,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorPerpendicular
-//
 function VectorPerpendicular(const V, n: TAffineVector): TAffineVector;
 var
   dot: Single;
@@ -4875,15 +4748,11 @@ begin
   result.V[Z] := V.V[Z] - dot * n.V[Z];
 end;
 
-// VectorReflect
-//
 function VectorReflect(const V, n: TAffineVector): TAffineVector;
 begin
   result := VectorCombine(V, n, 1, -2 * VectorDotProduct(V, n));
 end;
 
-// RotateVector
-//
 procedure RotateVector(var Vector: TVector; const axis: TAffineVector;
   angle: Single);
 var
@@ -4893,8 +4762,6 @@ begin
   Vector := VectorTransform(Vector, rotMatrix);
 end;
 
-// RotateVector
-//
 procedure RotateVector(var Vector: TVector; const axis: TVector;
   angle: Single); overload;
 var
@@ -4904,8 +4771,6 @@ begin
   Vector := VectorTransform(Vector, rotMatrix);
 end;
 
-// RotateVectorAroundY
-//
 procedure RotateVectorAroundY(var V: TAffineVector; alpha: Single);
 var
   c, S, v0: Single;
@@ -4916,8 +4781,6 @@ begin
   V.Z := c * V.Z - S * v0;
 end;
 
-// VectorRotateAroundX (func)
-//
 function VectorRotateAroundX(const V: TAffineVector; alpha: Single)
   : TAffineVector;
 var
@@ -4929,8 +4792,6 @@ begin
   result.Z := c * V.Z - S * V.Y;
 end;
 
-// VectorRotateAroundY (func)
-//
 function VectorRotateAroundY(const V: TAffineVector; alpha: Single)
   : TAffineVector;
 var
@@ -4942,8 +4803,6 @@ begin
   result.Z := c * V.Z - S * V.X;
 end;
 
-// VectorRotateAroundY (proc)
-//
 procedure VectorRotateAroundY(const V: TAffineVector; alpha: Single;
   var vr: TAffineVector);
 var
@@ -4955,8 +4814,6 @@ begin
   vr.Z := c * V.Z - S * V.X;
 end;
 
-// VectorRotateAroundZ (func)
-//
 function VectorRotateAroundZ(const V: TAffineVector; alpha: Single)
   : TAffineVector;
 var
@@ -4968,8 +4825,6 @@ begin
   result.Z := V.Z;
 end;
 
-// AbsVector (hmg)
-//
 procedure AbsVector(var V: TVector);
 begin
   V.X := Abs(V.X);
@@ -4978,8 +4833,6 @@ begin
   V.W := Abs(V.W);
 end;
 
-// AbsVector (affine)
-//
 procedure AbsVector(var V: TAffineVector);
 begin
   V.X := Abs(V.X);
@@ -4987,8 +4840,6 @@ begin
   V.Z := Abs(V.Z);
 end;
 
-// VectorAbs (hmg)
-//
 function VectorAbs(const V: TVector): TVector;
 begin
   result.X := Abs(V.X);
@@ -4997,8 +4848,6 @@ begin
   result.W := Abs(V.W);
 end;
 
-// VectorAbs (affine)
-//
 function VectorAbs(const V: TAffineVector): TAffineVector;
 begin
   result.X := Abs(V.X);
@@ -5006,8 +4855,6 @@ begin
   result.Z := Abs(V.Z);
 end;
 
-// IsColinear (2f)
-//
 function IsColinear(const V1, V2: TVector2f): Boolean; overload;
 var
   a, b, c: Single;
@@ -5018,8 +4865,6 @@ begin
   result := (a * c - b * b) < cColinearBias;
 end;
 
-// IsColinear (affine)
-//
 function IsColinear(const V1, V2: TAffineVector): Boolean; overload;
 var
   a, b, c: Single;
@@ -5030,8 +4875,6 @@ begin
   result := (a * c - b * b) < cColinearBias;
 end;
 
-// IsColinear (hmg)
-//
 function IsColinear(const V1, V2: TVector): Boolean; overload;
 var
   a, b, c: Single;
@@ -5042,8 +4885,6 @@ begin
   result := (a * c - b * b) < cColinearBias;
 end;
 
-// SetMatrix (single->double)
-//
 procedure SetMatrix(var dest: THomogeneousDblMatrix; const src: TMatrix);
 var
   i: Integer;
@@ -5057,8 +4898,6 @@ begin
   end;
 end;
 
-// SetMatrix (hmg->affine)
-//
 procedure SetMatrix(var dest: TAffineMatrix; const src: TMatrix);
 begin
   dest.X.X := src.X.X;
@@ -5072,8 +4911,6 @@ begin
   dest.Z.Z := src.Z.Z;
 end;
 
-// SetMatrix (affine->hmg)
-//
 procedure SetMatrix(var dest: TMatrix; const src: TAffineMatrix);
 begin
   dest.X.X := src.X.X;
@@ -5094,8 +4931,6 @@ begin
   dest.W.W := 1;
 end;
 
-// SetMatrixRow
-//
 procedure SetMatrixRow(var dest: TMatrix; rowNb: Integer; const aRow: TVector);
 begin
   dest.X.V[rowNb] := aRow.X;
@@ -5104,8 +4939,6 @@ begin
   dest.W.V[rowNb] := aRow.W;
 end;
 
-// CreateScaleMatrix (affine)
-//
 function CreateScaleMatrix(const V: TAffineVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
@@ -5114,8 +4947,6 @@ begin
   result.Z.Z := V.V[Z];
 end;
 
-// CreateScaleMatrix (Hmg)
-//
 function CreateScaleMatrix(const V: TVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
@@ -5124,8 +4955,6 @@ begin
   result.Z.Z := V.V[Z];
 end;
 
-// CreateTranslationMatrix (affine)
-//
 function CreateTranslationMatrix(const V: TAffineVector): TMatrix;
 begin
   result := IdentityHmgMatrix;
@@ -8173,31 +8002,23 @@ begin
     result := V.X;
 end;
 
-// MinXYZComponent
-//
 function MinXYZComponent(const V: TAffineVector): Single; overload;
 begin
   result := MinFloat(V.X, V.Y, V.Z);
 end;
 
-// MaxAbsXYZComponent
-//
 function MaxAbsXYZComponent(V: TVector): Single;
 begin
   AbsVector(V);
   result := MaxXYZComponent(V);
 end;
 
-// MinAbsXYZComponent
-//
 function MinAbsXYZComponent(V: TVector): Single;
 begin
   AbsVector(V);
   result := MinXYZComponent(V);
 end;
 
-// MaxVector (hmg)
-//
 procedure MaxVector(var V: TVector; const V1: TVector);
 begin
   if V1.X > V.X then
@@ -8210,8 +8031,6 @@ begin
     V.W := V1.W;
 end;
 
-// MaxVector (affine)
-//
 procedure MaxVector(var V: TAffineVector; const V1: TAffineVector); overload;
 begin
   if V1.X > V.X then
@@ -8222,8 +8041,6 @@ begin
     V.Z := V1.Z;
 end;
 
-// MinVector (hmg)
-//
 procedure MinVector(var V: TVector; const V1: TVector);
 begin
   if V1.X < V.X then
@@ -8236,8 +8053,6 @@ begin
     V.W := V1.W;
 end;
 
-// MinVector (affine)
-//
 procedure MinVector(var V: TAffineVector; const V1: TAffineVector);
 begin
   if V1.X < V.X then
@@ -8248,8 +8063,6 @@ begin
     V.Z := V1.Z;
 end;
 
-// SortArrayAscending (extended)
-//
 procedure SortArrayAscending(var a: array of Extended);
 var
   i, J, M: Integer;
@@ -8270,8 +8083,6 @@ begin
   end;
 end;
 
-// ClampValue (min-max)
-//
 function ClampValue(const aValue, aMin, aMax: Single): Single;
 begin
   if aValue < aMin then
@@ -8282,8 +8093,6 @@ begin
     result := aValue;
 end;
 
-// ClampValue (min-)
-//
 function ClampValue(const aValue, aMin: Single): Single;
 begin
   if aValue < aMin then
@@ -8292,8 +8101,6 @@ begin
     result := aValue;
 end;
 
-// MakeAffineDblVector
-//
 function MakeAffineDblVector(var V: array of Double): TAffineDblVector;
 begin
   result.X := V[0];
@@ -8301,8 +8108,6 @@ begin
   result.Z := V[2];
 end;
 
-// MakeDblVector
-//
 function MakeDblVector(var V: array of Double): THomogeneousDblVector;
 begin
   result.X := V[0];
@@ -8311,13 +8116,7 @@ begin
   result.W := V[3];
 end;
 
-// PointInPolygon
-//
 function PointInPolygon(var xp, yp: array of Single; X, Y: Single): Boolean;
-// The code below is from Wm. Randolph Franklin <wrf@ecse.rpi.edu>
-// with some minor modifications for speed.  It returns 1 for strictly
-// interior points, 0 for strictly exterior, and 0 or 1 for points on
-// the boundary.
 var
   i, J: Integer;
 begin
@@ -8335,8 +8134,6 @@ begin
   end;
 end;
 
-// IsPointInPolygon
-//
 function IsPointInPolygon(Polygon: array of TPoint; p: TPoint): Boolean;
 var
   a: array of TPoint;
@@ -8360,20 +8157,15 @@ begin
       inside := not inside;
   end;
   inside := not inside;
-
   result := inside;
 end;
 
-// DivMod
-//
 procedure DivMod(Dividend: Integer; Divisor: Word; var result, Remainder: Word);
 begin
   result := Dividend div Divisor;
   Remainder := Dividend mod Divisor;
 end;
 
-// ConvertRotation
-//
 function ConvertRotation(const Angles: TAffineVector): TVector;
 
 { Rotation of the Angle t about the axis (X, Y, Z) is given by:
@@ -8500,8 +8292,6 @@ begin
   end;
 end;
 
-// QuaternionSlerp
-//
 function QuaternionSlerp(const QStart, QEnd: TQuaternion; Spin: Integer;
   T: Single): TQuaternion;
 var
@@ -8549,8 +8339,6 @@ begin
   result.RealPart := beta * QStart.RealPart + T * QEnd.RealPart;
 end;
 
-// QuaternionSlerp
-//
 function QuaternionSlerp(const source, dest: TQuaternion; const T: Single)
   : TQuaternion;
 var
@@ -8601,9 +8389,6 @@ begin
   NormalizeQuaternion(result);
 end;
 
-// VectorDblToFlt
-//
-// converts a vector containing double sized values into a vector with single sized values
 {$IFDEF GLS_ASM}
 function VectorDblToFlt(const V: THomogeneousDblVector): THomogeneousVector;
 asm
@@ -8628,9 +8413,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAffineDblToFlt
-//
-// converts a vector containing double sized values into a vector with single sized values
 {$IFDEF GLS_ASM}
 function VectorAffineDblToFlt(const V: TAffineDblVector): TAffineVector;
 asm
@@ -8652,9 +8434,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorAffineFltToDbl
-//
-// converts a vector containing single sized values into a vector with double sized values
 {$IFDEF GLS_ASM}
 function VectorAffineFltToDbl(const V: TAffineVector): TAffineDblVector;
 asm
@@ -8674,9 +8453,6 @@ begin
 end;
 {$ENDIF}
 
-// VectorFltToDbl
-//
-// converts a vector containing single sized values into a vector with double sized values
 {$IFDEF GLS_ASM}
 function VectorFltToDbl(const V: TVector): THomogeneousDblVector;
 asm

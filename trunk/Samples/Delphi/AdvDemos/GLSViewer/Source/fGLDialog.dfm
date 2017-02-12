@@ -22,6 +22,18 @@ inherited GLDialog: TGLDialog
     Height = 286
     Align = alClient
     TabOrder = 1
+    object Memo: TMemo
+      Left = 1
+      Top = 1
+      Width = 482
+      Height = 284
+      Align = alClient
+      Lines.Strings = (
+        'Tris'
+        'Area'
+        'Volume')
+      TabOrder = 0
+    end
   end
   object PanelBottom: TPanel
     Left = 0

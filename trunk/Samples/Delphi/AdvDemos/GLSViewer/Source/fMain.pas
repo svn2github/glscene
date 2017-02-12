@@ -62,6 +62,7 @@ uses
   fGLForm,
   fGLAbout,
   fGLOptions,
+  fGLDialog,
   uNavCube,
   dGLSViewer;
 
@@ -137,6 +138,7 @@ type
     grdXYZ: TGLXYZGrid;
     acNavCube: TAction;
     GLPoints: TGLPoints;
+    acToolsInfo: TAction;
     procedure FormCreate(Sender: TObject);
     procedure snViewerMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -184,6 +186,7 @@ type
     procedure acObjectsExecute(Sender: TObject);
     procedure AsyncTimerTimer(Sender: TObject);
     procedure acNavCubeExecute(Sender: TObject);
+    procedure acToolsInfoExecute(Sender: TObject);
   private
     procedure DoResetCamera;
     procedure SetupFreeFormShading;
@@ -254,20 +257,18 @@ end;
 function THiddenLineShader.DoUnApply(var rci: TGLRenderContextInfo): Boolean;
 begin
   case PassCount of
-    1:
-      with rci.GLStates do
-      begin
-        PassCount := 2;
-        PolygonMode := pmLines;
-        glColor3fv(@LinesColor);
-        Disable(stLighting);
-        Result := True;
-      end;
-    2:
-      begin
-        rci.GLStates.Disable(stPolygonOffsetFill);
-        Result := False;
-      end;
+    1: with rci.GLStates do
+       begin
+         PassCount := 2;
+         PolygonMode := pmLines;
+         glColor3fv(@LinesColor);
+         Disable(stLighting);
+         Result := True;
+       end;
+    2: begin
+         rci.GLStates.Disable(stPolygonOffsetFill);
+         Result := False;
+       end;
   else
     // doesn't hurt to be cautious
     Assert(False);
@@ -573,7 +574,7 @@ begin
   begin
     Timer.Enabled := False;
     Cadencer.Enabled := False;
-    StatusBar.Panels[1].Text := '--- FPS';
+    StatusBar.Panels[3].Text := ' FPS';
   end;
 end;
 
@@ -604,24 +605,24 @@ begin
   if not FileExists(fileName) then
     Exit;
   Screen.Cursor := crHourGlass;
-  Caption := 'GLSViewer - ' + FileName; //ExtractFileName(FileName);
+  Caption := 'GLSViewer - ' + FileName;
   MaterialLib.Materials.Clear;
-
   ffObject.MeshObjects.Clear;
   ffObject.LoadFromFile(FileName);
   SetupFreeFormShading;
-  StatusBar.Panels[0].Text := IntToStr(ffObject.MeshObjects.TriangleCount) + ' tris';
-  StatusBar.Panels[2].Text := FloatToStr(ffObject.MeshObjects.Volume) + ' vol';
   acFileSaveTextures.Enabled := (MaterialLib.Materials.Count > 0);
   acFileOpenTexLib.Enabled := (MaterialLib.Materials.Count > 0);
   lastFileName := FileName;
   lastLoadWithTextures := acToolsTexturing.Enabled;
-
   ffObject.GetExtents(min, max);
   CubeExtents.CubeWidth := max.X - min.X;
   CubeExtents.CubeHeight := max.Y - min.Y;
   CubeExtents.CubeDepth := max.Z - min.Z;
   CubeExtents.Position.AsAffineVector := VectorLerp(min, max, 0.5);
+  StatusBar.Panels[0].Text := 'X: ' + ' ';
+  StatusBar.Panels[1].Text := 'Y: ' + ' ';
+  StatusBar.Panels[2].Text := 'Z: ' + ' ';
+
   DoResetCamera;
 end;
 
@@ -879,6 +880,19 @@ begin
   ApplyFaceCull;
 end;
 
+procedure TMainForm.acToolsInfoExecute(Sender: TObject);
+begin
+  with TGLDialog.Create(Self) do
+  try
+    Memo.Lines[0] := 'Tris: ' + IntToStr(ffObject.MeshObjects.TriangleCount);
+    Memo.Lines[1] := 'Area: ' + FloatToStr(ffObject.MeshObjects.Area);
+    Memo.Lines[2] := 'Volume: ' + FloatToStr(ffObject.MeshObjects.Volume);
+    ShowModal;
+  finally
+     Free;
+   end;
+end;
+
 procedure TMainForm.acToolsLightingExecute(Sender: TObject);
 begin
   acToolsLighting.Checked := not acToolsLighting.Checked;
@@ -906,6 +920,7 @@ begin
     ApplyTexturing;
 end;
 
+// Show Base and Additional Objects
 procedure TMainForm.acObjectsExecute(Sender: TObject);
 var
   i: Integer;
@@ -913,7 +928,6 @@ var
   Points: TGLPoints;
 const
   RandMax: Integer = 1000;
-
 begin
   for i := 0 to NumObjects - 1 do
   begin
@@ -922,13 +936,11 @@ begin
     Color.Y := Random(256)/256;
     Color.Z := Random(256)/256;
     GLPoints.Colors.AddPoint(Color);
-
     GLPoints.Size := 5;
 	  GLPoints.Position.X := Random(10) - 5;
 	  GLPoints.Position.Y := Random(10) - 5;
 	  GLPoints.Position.Z := Random(10) - 5;
   end;
-  // Show Base and Additional Objects
 end;
 
 procedure TMainForm.CadencerProgress(Sender: TObject; const deltaTime, newTime: Double);
@@ -941,7 +953,6 @@ begin
       Camera.TurnAngle := Camera.TurnAngle + deltatime * 6;
   end;
   snViewer.Refresh;
-
   if Self.Focused then
     snViewer.Invalidate;
 end;
@@ -963,7 +974,7 @@ end;
 
 procedure TMainForm.TimerTimer(Sender: TObject);
 begin
-  StatusBar.Panels[1].Text := Format('%.1f FPS', [snViewer.FramesPerSecond]);
+  StatusBar.Panels[3].Text := Format('%.1f  FPS', [snViewer.FramesPerSecond]);
   snViewer.ResetPerformanceMonitor;
 end;
 

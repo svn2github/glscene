@@ -15,7 +15,6 @@ uses
   Vcl.StdCtrls, 
   Vcl.ExtCtrls,
 
-  //GLS
   fGLForm;
 
 type
@@ -26,6 +25,7 @@ type
     ButtonOK: TButton;
     ButtonCancel: TButton;
     ButtonHelp: TButton;
+    Memo: TMemo;
     procedure ButtonHelpClick(Sender: TObject);
   public
      

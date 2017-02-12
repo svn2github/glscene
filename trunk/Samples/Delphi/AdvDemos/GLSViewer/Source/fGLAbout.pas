@@ -38,10 +38,7 @@ type
     procedure imgOpenGLDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure BuiltWithDelphiDblClick(Sender: TObject);
-  public
-     
   private
-     
     function GetFileInfo(const FileName: TFileName): TVSFixedFileInfo;
     function ReadVersionInfo(FileName: TFileName): TFileName;
   end;
