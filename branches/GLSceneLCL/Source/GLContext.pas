@@ -171,7 +171,7 @@ type
      All rendering context share the same lists. }
   TGLContext = class
   private
-    { Private Declarations }
+     
     FColorBits, FAlphaBits: Integer;
     FDepthBits: Integer;
     FStencilBits: Integer;
@@ -197,7 +197,7 @@ type
     procedure SetActive(const aActive: Boolean);
     procedure SetLayer(const Value: TGLContextLayer);
   protected
-    { Protected Declarations }
+     
     FGL: TGLExtensionsAndEntryPoints;
     FXGL: TAbstractMultitextureCoordinator;
     FGLStates: TGLStateCache;
@@ -223,7 +223,7 @@ type
     procedure MakeGLCurrent;
     function GetXGL: TAbstractMultitextureCoordinator;
   public
-    { Public Declarations }
+     
     constructor Create; virtual;
     destructor Destroy; override;
 
@@ -328,15 +328,15 @@ type
      class/subclass. }
   TGLScreenControlingContext = class(TGLContext)
   private
-    { Private Declarations }
+     
     FWidth, FHeight: Integer;
     FFullScreen: Boolean;
 
   protected
-    { Protected Declarations }
+     
 
   public
-    { Public Declarations }
+     
     property Width: Integer read FWidth write FWidth;
     property Height: Integer read FHeight write FHeight;
     property FullScreen: Boolean read FFullScreen write FFullScreen;
@@ -359,7 +359,7 @@ type
      use the TGLListHandle and TGLTextureHandle subclasses. }
   TGLContextHandle = class
   private
-    { Private Declarations }
+     
     FHandles: TList;
     FLastHandle : PGLRCHandle;
     FOnPrepare: TOnPrepareHandleData;
@@ -369,7 +369,7 @@ type
     function RCItem(AIndex: integer): PGLRCHandle; {$IFDEF GLS_INLINE}inline;{$ENDIF}
     procedure CheckCurrentRC;
   protected
-    { Protected Declarations }
+     
     //: Invoked by when there is no compatible context left for relocation
     procedure ContextDestroying;
 
@@ -381,7 +381,7 @@ type
     procedure DoDestroyHandle(var AHandle: TGLuint); virtual; abstract;
 
   public
-    { Public Declarations }
+     
     constructor Create; virtual;
     constructor CreateAndAllocate(failIfAllocationFailed: Boolean = True);
     destructor Destroy; override;
@@ -420,16 +420,16 @@ type
   {: A context handle with event-based handle allocation and destruction. }
   TGLVirtualHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
     FOnAllocate, FOnDestroy: TGLVirtualHandleEvent;
     FTag: Integer;
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function Transferable: Boolean; override;
   public
-    { Public Declarations }
+     
     property OnAllocate: TGLVirtualHandleEvent read FOnAllocate write
       FOnAllocate;
     property OnDestroy: TGLVirtualHandleEvent read FOnDestroy write FOnDestroy;
@@ -450,15 +450,15 @@ type
   {: Manages a handle to a display list. }
   TGLListHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     procedure NewList(mode: Cardinal);
     procedure EndList;
     procedure CallList;
@@ -472,12 +472,12 @@ type
     FTarget: TGLTextureTarget;
     procedure SetTarget(ATarget: TGLTextureTarget);
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     property Target: TGLTextureTarget read FTarget write SetTarget;
   end;
 
@@ -486,12 +486,12 @@ type
   {: Manages a handle to a sampler. }
   TGLSamplerHandle = class(TGLContextHandle)
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     class function IsSupported: Boolean; override;
   end;
 
@@ -501,10 +501,10 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TGLQueryHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
     FActive: Boolean;
   protected
-    { Protected Declarations }
+     
     class function Transferable: Boolean; override;
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
@@ -512,7 +512,7 @@ type
     function GetQueryType: TQueryType; virtual; abstract;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     procedure BeginQuery;
     procedure EndQuery;
 
@@ -602,17 +602,17 @@ type
      checked by the user.  }
   TGLBufferObjectHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
     FSize: Integer;
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
     function GetTarget: TGLuint; virtual; abstract;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     {: Creates the buffer object buffer and initializes it. }
     constructor CreateFromData(p: Pointer; size: Integer; bufferUsage: TGLuint);
 
@@ -668,7 +668,7 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TGLVBOHandle = class(TGLBufferObjectHandle)
   private
-    { Private Declarations }
+     
 
     function GetVBOTarget: TGLuint;
   public
@@ -917,17 +917,17 @@ type
 
   TGLARBProgramHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
     FReady: Boolean;
     FInfoLog: string;
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
     class function IsValid(const ID: GLuint): Boolean; override;
     class function GetTarget: TGLenum; virtual; abstract;
   public
-    { Public Declarations }
+     
     procedure LoadARBProgram(AText: string);
     procedure Enable;
     procedure Disable;
@@ -938,28 +938,28 @@ type
 
   TGLARBVertexProgramHandle = class(TGLARBProgramHandle)
   protected
-    { Protected Declarations }
+     
     class function GetTarget: TGLenum; override;
   public
-    { Public Declarations }
+     
     class function IsSupported: Boolean; override;
   end;
 
   TGLARBFragmentProgramHandle = class(TGLARBProgramHandle)
   protected
-    { Protected Declarations }
+     
     class function GetTarget: TGLenum; override;
   public
-    { Public Declarations }
+     
     class function IsSupported: Boolean; override;
   end;
 
   TGLARBGeometryProgramHandle = class(TGLARBProgramHandle)
   protected
-    { Protected Declarations }
+     
     class function GetTarget: TGLenum; override;
   public
-    { Public Declarations }
+     
     class function IsSupported: Boolean; override;
   end;
 
@@ -969,14 +969,14 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TGLSLHandle = class(TGLContextHandle)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
     procedure DoDestroyHandle(var AHandle: TGLuint); override;
 
   public
-    { Public Declarations }
+     
     function InfoLog: string;
     class function IsSupported: Boolean; override;
   end;
@@ -989,15 +989,15 @@ type
      Do not use this class directly, use one of its subclasses instead. }
   TGLShaderHandle = class(TGLSLHandle)
   private
-    { Private Declarations }
+     
     FShaderType: Cardinal;
 
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: Cardinal; override;
     class function IsValid(const ID: GLuint): Boolean; override;
   public
-    { Public Declarations }
+     
     procedure ShaderSource(const source: AnsiString); overload;
     //: Returns True if compilation sucessful
     function CompileShader: Boolean;
@@ -1012,7 +1012,7 @@ type
   {: Manages a handle to a Vertex Shader Object. }
   TGLVertexShaderHandle = class(TGLShaderHandle)
   public
-    { Public Declarations }
+     
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -1022,7 +1022,7 @@ type
   {: Manages a handle to a Geometry Shader Object. }
   TGLGeometryShaderHandle = class(TGLShaderHandle)
   public
-    { Public Declarations }
+     
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -1032,7 +1032,7 @@ type
   {: Manages a handle to a Fragment Shader Object. }
   TGLFragmentShaderHandle = class(TGLShaderHandle)
   public
-    { Public Declarations }
+     
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -1042,7 +1042,7 @@ type
   {: Manages a handle to a Tessellation Control Shader Object. }
   TGLTessControlShaderHandle = class(TGLShaderHandle)
   public
-    { Public Declarations }
+     
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -1052,7 +1052,7 @@ type
   {: Manages a handle to a Tessellation Evaluation Shader Object. }
   TGLTessEvaluationShaderHandle = class(TGLShaderHandle)
   public
-    { Public Declarations }
+     
     constructor Create; override;
     class function IsSupported: Boolean; override;
   end;
@@ -1066,7 +1066,7 @@ type
   public
     class function IsValid(const ID: GLuint): Boolean; override;
   private
-    { Private Declarations }
+     
     FName: string;
     function GetUniform1i(const index: string): Integer;
     procedure SetUniform1i(const index: string; val: Integer);
@@ -1102,11 +1102,11 @@ type
     procedure SetUniformBuffer(const index: string;
       Value: TGLUniformBufferHandle);
   protected
-    { Protected Declarations }
+     
     function DoAllocateHandle: cardinal; override;
 
   public
-    { Public Declarations }
+     
     property Name: string read FName write FName;
 
     constructor Create; override;
@@ -1193,7 +1193,7 @@ type
   {: Stores and manages all the TGLContext objects.<p> }
   TGLContextManager = class
   private
-    { Private Declarations }
+     
     FList: TThreadList;
     FTerminated: Boolean;
     FNotifications: array of TGLContextNotification;
@@ -1212,7 +1212,7 @@ type
 {$ENDIF}
     FServiceContext: TGLContext;
   protected
-    { Protected Declarations }
+     
     procedure Lock;
     procedure UnLock;
 
@@ -1230,7 +1230,7 @@ type
 {$ENDIF}
     property ServiceContext: TGLContext read FServiceContext;
   public
-    { Public Declarations }
+     
     constructor Create;
     destructor Destroy; override;
 

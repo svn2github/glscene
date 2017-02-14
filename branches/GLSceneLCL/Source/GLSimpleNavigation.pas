@@ -49,7 +49,7 @@ interface
 
 uses
   Classes, SysUtils, TypInfo, Forms, Controls, ExtCtrls,
-  // GLS
+   
   GLSceneForm, GLVectorGeometry, GLScene,
   GLViewer, GLStrings, GLCrossPlatform;
 

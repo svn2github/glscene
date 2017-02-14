@@ -15,7 +15,7 @@ unit GLManager;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   Classes, Types;

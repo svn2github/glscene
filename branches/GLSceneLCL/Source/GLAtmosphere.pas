@@ -70,7 +70,7 @@ uses
   // VCL
   SysUtils, Classes,
 
-  // GLScene
+   cene
   GLScene, GLObjects, GLCadencer, OpenGLTokens, GLVectorGeometry,
   GLContext, GLStrings, GLColor, GLRenderContextInfo, GLState, GLCrossPlatform,
   GLVectorTypes;

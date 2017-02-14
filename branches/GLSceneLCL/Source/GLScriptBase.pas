@@ -35,13 +35,13 @@ type
      base class.  }
   TGLScriptBase = class(TGLXCollectionItem)
 		private
-      { Private Declarations }
+       
       FText : TStringList;
       FDescription : String;
       FErrors : TStringList; // not persistent
 
 		protected
-			{ Protected Declarations }
+			 
       procedure WriteToFiler(writer : TWriter); override;
       procedure ReadFromFiler(reader : TReader); override;
       function GetState : TGLScriptState; virtual; abstract;
@@ -49,7 +49,7 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); virtual;
 
 		public
-      { Public Declarations }
+       
       constructor Create(aOwner : TGLXCollection); override;
       destructor Destroy; override;
 
@@ -68,7 +68,7 @@ type
       property State : TGLScriptState read GetState;
 
 		published
-      { Published Declarations }
+       
       property Text : TStringList read FText write SetText;
       property Description : String read FDescription write FDescription;
 
@@ -79,14 +79,14 @@ type
   {: XCollection descendant for storing and handling scripts. }
   TGLScripts = class(TGLXCollection)
 		private
-			{ Private Declarations }
+			 
 
 		protected
-			{ Protected Declarations }
+			 
       function GetItems(index : Integer) : TGLScriptBase;
 
 		public
-			{ Public Declarations }
+			 
 			procedure Assign(Source: TPersistent); override;
 
       class function ItemsClass : TGLXCollectionItemClass; override;
@@ -102,11 +102,11 @@ type
      design-time. Links the scripts to Delphi's persistence model. }
   TGLScriptLibrary = class (TComponent)
     private
-      { Private Declarations }
+       
       FScripts : TGLScripts;
 
     protected
-      { Protected Declarations }
+       
       procedure DefineProperties(Filer : TFiler); override;
       procedure WriteScriptsData(Stream : TStream);
       procedure ReadScriptsData(Stream : TStream);
@@ -114,12 +114,12 @@ type
       procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
     public
-      { Public Declarations }
+       
       constructor Create(AOwner : TComponent); override;
       destructor Destroy; override;
 
     published
-      { Published Declarations }
+       
       property Scripts : TGLScripts read FScripts;
 
   end;
@@ -148,7 +148,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 procedure TGLScriptBase.Assign(Source: TPersistent);
 begin
@@ -206,7 +206,7 @@ end;
 // --------------- TGLScripts ---------------
 // ---------------
 
-// Assign
+ 
 //
 procedure TGLScripts.Assign(Source: TPersistent);
 begin

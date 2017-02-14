@@ -25,7 +25,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLHeightData, GLHeightTileFile;
 
 type
@@ -35,7 +35,7 @@ type
    {: An Height Data Source for the HTF format.<p> }
 	TGLHeightTileFileHDS = class (THeightDataSource)
 	   private
-	      { Private Declarations }
+	       
          FInfiniteWrap : Boolean;
          FInverted     : Boolean;
          FHTFFileName : String;
@@ -43,14 +43,14 @@ type
          FMinElevation : Integer;
 
 	   protected
-	      { Protected Declarations }
+	       
          procedure SetHTFFileName(const val : String);
          procedure SetInfiniteWrap(val : Boolean);
          procedure SetInverted(val : Boolean);
          procedure SetMinElevation(val : Integer);
 
 	   public
-	      { Public Declarations }
+	       
 	        constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
          procedure StartPreparingData(HeightData : THeightData); override;
@@ -59,7 +59,7 @@ type
          function OpenHTF:THeightTileFile; //gives you direct access to the HTF object
 
 	   published
-	      { Published Declarations }
+	       
 
          {: FileName of the HTF file.<p>
             Note that it is accessed via the services of GLApplicationFileIO,

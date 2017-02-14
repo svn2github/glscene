@@ -88,7 +88,7 @@ type
 {$IFDEF MSWINDOWS}
   TGLWidgetContext = class(TGLWin32Context)
   protected
-    { Protected Declarations }
+     
     procedure DoGetHandles(outputDevice: HWND; out XWin: HWND);
       override;
   end;
@@ -97,7 +97,7 @@ type
 {$IFDEF Darwin}
   TGLWidgetContext = class(TGLCarbonContext)
   protected
-    { Protected Declarations }
+     
    // procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
   end;
 {$ENDIF}
@@ -105,7 +105,7 @@ type
 {$IFDEF LINUX}
   TGLWidgetContext = class(TGLGLXContext)
   protected
-    { Protected Declarations }
+     
     procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); override;
   end;
 {$ENDIF}

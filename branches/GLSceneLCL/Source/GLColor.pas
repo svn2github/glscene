@@ -19,11 +19,11 @@ unit GLColor;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   SysUtils, Classes, Dialogs, Graphics,
-  // GLS
+   
   GLVectorTypes, GLVectorGeometry, GLCrossPlatform,
   GLPersistentClasses, GLBaseClasses;
 
@@ -617,7 +617,7 @@ begin
   Result := FColor.V[Index];
 end;
 
-// Assign
+ 
 //
 procedure TGLColor.Assign(Source: TPersistent);
 begin

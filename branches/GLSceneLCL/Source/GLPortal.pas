@@ -31,13 +31,13 @@ type
       The items are treated as being sectors. } 
    TPortalMeshObjectList = class (TGLMeshObjectList)
       private
-         { Private Declarations }
+          
 
       protected
-         { Protected Declarations }
+          
 
       public
-         { Public Declarations }
+          
          constructor CreateOwned(AOwner : TGLBaseMesh);
          destructor Destroy; override;
 
@@ -50,14 +50,14 @@ type
    {: A portal renderer sector.<p> }
    TSectorMeshObject = class (TMorphableMeshObject)
       private
-         { Private Declarations }
+          
          FRenderDone : Boolean;
 
       protected
-         { Protected Declarations }
+          
 
       public
-         { Public Declarations }
+          
          constructor CreateOwned(AOwner : TGLMeshObjectList);
          destructor Destroy; override;
 
@@ -74,13 +74,13 @@ type
       implements the portal. }
 	TFGPolygon = class (TFGVertexNormalTexIndexList)
 	   private
-	      { Private Declarations }
+	       
 
 	   protected
-	      { Protected Declarations }
+	       
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor CreateOwned(AOwner : TGLFaceGroups); override;
          destructor Destroy; override;
 
@@ -94,16 +94,16 @@ type
       implements the portal. }
 	TFGPortalPolygon = class (TFGPolygon)
 	   private
-	      { Private Declarations }
+	       
          FDestinationSectorIndex : Integer;
          FCenter, FNormal : TAffineVector;
          FRadius : Single;
 
 	   protected
-	      { Protected Declarations }
+	       
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor CreateOwned(AOwner : TGLFaceGroups); override;
          destructor Destroy; override;
 
@@ -119,18 +119,18 @@ type
    {: Portal Renderer class. }
    TGLPortal = class(TGLBaseMesh)
       private
-         { Private Declarations }
+          
 
       protected
-         { Protected Declarations }
+          
 
       public
-         { Public Declarations }
+          
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
       published
-         { Published Declarations }
+          
          property MaterialLibrary;
     end;
 

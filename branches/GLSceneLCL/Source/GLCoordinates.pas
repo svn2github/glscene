@@ -18,7 +18,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLVectorGeometry, GLVectorTypes, OpenGLTokens, GLBaseClasses,
   GLCrossPlatform;
 
@@ -45,7 +45,7 @@ type
     Handles dynamic default values to save resource file space.<p> }
   TGLCustomCoordinates = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FCoords: TVector;
     FStyle: TGLCoordinatesStyle; // NOT Persistent
     FPDefaultCoords: PVector;
@@ -61,7 +61,7 @@ type
     procedure SetDirectCoordinate(const Index: Integer; const AValue: TGLFloat);
 
   protected
-    { Protected Declarations }
+     
     procedure SetDirectVector(const V: TVector);
 
     procedure DefineProperties(Filer: TFiler); override;
@@ -69,7 +69,7 @@ type
     procedure WriteData(Stream: TStream);
 
   public
-    { Public Declarations }
+     
     constructor CreateInitialized(AOwner: TPersistent; const AValue: TVector;
       const AStyle: TGLCoordinatesStyle = CsUnknown);
     destructor Destroy; override;
@@ -204,7 +204,7 @@ type
   TGLCoordinatesUpdateAbleComponent = class(TGLUpdateAbleComponent,
     IGLCoordinatesUpdateAble)
   public
-    { Public Declarations }
+     
     procedure CoordinateChanged(Sender: TGLCustomCoordinates); virtual;
       abstract;
   end;
@@ -260,7 +260,7 @@ begin
   end;
 end;
 
-// Assign
+ 
 //
 procedure TGLCustomCoordinates.Assign(Source: TPersistent);
 begin

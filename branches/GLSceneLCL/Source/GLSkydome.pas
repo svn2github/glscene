@@ -47,7 +47,7 @@ interface
 uses
   Classes,
   Graphics,
-  // GLSCene
+   Cene
   GLScene,
   GLVectorGeometry,
   GLGraphics,
@@ -62,7 +62,7 @@ type
   //
   TGLSkyDomeBand = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FStartAngle: Single;
     FStopAngle: Single;
     FStartColor: TGLColor;
@@ -71,7 +71,7 @@ type
     FStacks: Integer;
 
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
     procedure SetStartAngle(const val: Single);
     procedure SetStartColor(const val: TGLColor);
@@ -82,7 +82,7 @@ type
     procedure OnColorChange(sender: TObject);
 
   public
-    { Public Declarations }
+     
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -90,7 +90,7 @@ type
     procedure BuildList(var rci: TRenderContextInfo);
 
   published
-    { Published Declarations }
+     
     property StartAngle: Single read FStartAngle write SetStartAngle;
     property StartColor: TGLColor read FStartColor write SetStartColor;
     property StopAngle: Single read FStopAngle write SetStopAngle;
@@ -103,14 +103,14 @@ type
   //
   TGLSkyDomeBands = class(TCollection)
   protected
-    { Protected Declarations }
+     
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSkyDomeBand);
     function GetItems(index: Integer): TGLSkyDomeBand;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent);
     function Add: TGLSkyDomeBand;
     function FindItemID(ID: Integer): TGLSkyDomeBand;
@@ -125,25 +125,25 @@ type
   //
   TGLSkyDomeStar = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FRA, FDec: Single;
     FMagnitude: Single;
     FColor: TColor;
     FCacheCoord: TAffineVector; // cached cartesian coordinates
 
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
 
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
       {: Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
     {: Declination, in degrees. }
@@ -159,7 +159,7 @@ type
   //
   TGLSkyDomeStars = class(TCollection)
   protected
-    { Protected Declarations }
+     
     owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(index: Integer; const val: TGLSkyDomeStar);
@@ -168,7 +168,7 @@ type
     procedure PrecomputeCartesianCoordinates;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent);
 
     function Add: TGLSkyDomeStar;
@@ -207,19 +207,19 @@ type
          }
   TGLSkyDome = class(TGLCameraInvariantObject)
   private
-    { Private Declarations }
+     
     FOptions: TGLSkyDomeOptions;
     FBands: TGLSkyDomeBands;
     FStars: TGLSkyDomeStars;
 
   protected
-    { Protected Declarations }
+     
     procedure SetBands(const val: TGLSkyDomeBands);
     procedure SetStars(const val: TGLSkyDomeStars);
     procedure SetOptions(const val: TGLSkyDomeOptions);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -227,7 +227,7 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
 
   published
-    { Published Declarations }
+     
     property Bands: TGLSkyDomeBands read FBands write SetBands;
     property Stars: TGLSkyDomeStars read FStars write SetStars;
     property Options: TGLSkyDomeOptions read FOptions write SetOptions default [];
@@ -248,7 +248,7 @@ type
      for using TGLEarthSkyDome. }
   TGLEarthSkyDome = class(TGLSkyDome)
   private
-    { Private Declarations }
+     
     FSunElevation: Single;
     FTurbidity: Single;
     FCurSunColor, FCurSkyColor, FCurHazeColor: TColorVector;
@@ -263,7 +263,7 @@ type
     FExtendedOptions: TEarthSkydomeOptions;
     FMorning: boolean;
   protected
-    { Protected Declarations }
+     
     procedure Loaded; override;
 
     procedure SetSunElevation(const val: Single);
@@ -283,7 +283,7 @@ type
     function CalculateColor(const theta, cosGamma: Single): TColorVector;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -293,7 +293,7 @@ type
     procedure SetSunAtTime(HH, MM: Single);
 
   published
-    { Published Declarations }
+     
       {: Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
     {: Expresses the purity of air.<p> Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
@@ -355,7 +355,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLSkyDomeBand.Assign(Source: TPersistent);
@@ -605,7 +605,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLSkyDomeStar.Assign(Source: TPersistent);
@@ -924,7 +924,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLSkyDome.Assign(Source: TPersistent);
@@ -1039,7 +1039,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLEarthSkyDome.Assign(Source: TPersistent);

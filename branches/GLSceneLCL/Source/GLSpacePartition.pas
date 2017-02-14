@@ -41,7 +41,7 @@ interface
 
 uses
   Classes, SysUtils, Math,
-  //GLS
+   
   GLVectorTypes, GLVectorGeometry,  GLGeometryBB, GLPersistentClasses;
 
 const

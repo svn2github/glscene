@@ -39,7 +39,7 @@ uses
   // VCL
   SysUtils, Classes,
 
-  // GLScene
+   cene
   GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, GLScreen
   , GLVectorTypes;
 

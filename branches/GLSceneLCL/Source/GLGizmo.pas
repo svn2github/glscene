@@ -69,7 +69,7 @@ uses
   // Standard
   Classes, SysUtils,
 
-  // GLScene
+   cene
   GLScene, GLColor, GLObjects, GLVectorGeometry, GLMaterial, GLStrings,
   GLGeomObjects, GLBitmapFont, GLViewer, GLVectorFileObjects, GLCrossPlatform,
   GLCoordinates, GLRenderContextInfo, GLState, GLSelection

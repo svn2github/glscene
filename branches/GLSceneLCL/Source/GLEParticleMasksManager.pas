@@ -51,7 +51,7 @@ uses
   // System
   SysUtils, Classes,
   Graphics,
-  // GLScene
+   cene
   GLTexture, GLMaterial, GLScene, GLVectorGeometry, GLVectorTypes,
   GLParticleFX, GLCrossPlatform, GLCoordinates;
 
@@ -64,7 +64,7 @@ type
 
   TGLEParticleMask = class(TCollectionItem, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+     
     FName: string;
     FScale: TGLCoordinates;
     FPosition: TGLCoordinates;
@@ -114,10 +114,10 @@ type
     function _Release: Integer; stdcall;
 {$ENDIF}
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
   public
-    { Public Declarations }
+     
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -130,7 +130,7 @@ type
     procedure GenerateMaskFromProjection(FromMask, ToMask:
       TGLEProjectedParticleMask; Depth: Integer);
   published
-    { Published Declarations }
+     
     // scales and positions
     property Scale: TGLCoordinates read FScale write FScale;
     property Position: TGLCoordinates read FPosition write FPosition;
@@ -155,14 +155,14 @@ type
 
   TGLEParticleMasks = class(TCollection)
   protected
-    { Protected Declarations }
+     
     Owner: TComponent;
     function GetOwner: TPersistent; override;
     procedure SetItems(Index: Integer; const Val: TGLEParticleMask);
     function GetItems(Index: Integer): TGLEParticleMask;
 
   public
-    { Public Declarations }
+     
     function Add: TGLEParticleMask;
     constructor Create(AOwner: TComponent);
     property Items[Index: Integer]: TGLEParticleMask read GetItems write
@@ -172,9 +172,9 @@ type
   TGLEParticleMasksManager = class(TComponent)
   private
     FParticleMasks: TGLEParticleMasks;
-    { Private declarations }
+     
   protected
-    { Protected declarations }
+     
     procedure ApplyOrthoGraphic(var Vec: TVector3f; Mask: TGLEParticleMask);
     procedure ApplyRotation(var Vec: TVector3f; Mask: TGLEParticleMask);
     procedure ApplyRotationTarget(var Vec: TVector3f; Mask: TGLEParticleMask;
@@ -184,7 +184,7 @@ type
       TGLEParticleMask; TargetObject: TGLBaseSceneObject);
     procedure FindParticlePosition(var Vec: TVector3f; Mask: TGLEParticleMask);
   public
-    { Public declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     function CreateParticlePositionFromMask(MaskName: string): TVector3f;
@@ -197,7 +197,7 @@ type
     function ParticleMaskByName(MaskName: string): TGLEParticleMask;
 
   published
-    { Published declarations }
+     
     property ParticleMasks: TGLEParticleMasks read FParticleMasks write
       FParticleMasks;
   end;

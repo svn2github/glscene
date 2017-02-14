@@ -223,7 +223,7 @@ interface
 uses
   Classes, SysUtils,
 
-  // GLScene
+   cene
   GLStrings, GLCrossPlatform, GLBaseClasses, OpenGLTokens,
   GLVectorGeometry, GLGraphics, GLContext, GLState, GLColor, GLCoordinates,
   GLRenderContextInfo, GLTextureFormat, GLApplicationFileIO, GLUtils;
@@ -411,14 +411,14 @@ type
        calculated at run-time (with a TGLMemoryViewer for instance). }
   TGLBlankImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     procedure SetWidth(val: Integer);
     procedure SetHeight(val: Integer);
     procedure SetDepth(val: Integer);
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
   protected
-    { Protected Declarations }
+     
     fBitmap: TGLImage;
 
     fWidth, fHeight, fDepth: Integer;
@@ -434,7 +434,7 @@ type
     function GetDepth: Integer; override;
     function GetTextureTarget: TGLTextureTarget; override;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -449,7 +449,7 @@ type
     class function FriendlyDescription: string; override;
 
   published
-    { Published Declarations }
+     
     {: Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
@@ -464,13 +464,13 @@ type
   {: Base class for image data classes internally based on a TPicture. }
   TGLPictureImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     FBitmap: TGLImage;
     FGLPicture: TGLPicture;
     FUpdateCounter: Integer;
 
   protected
-    { Protected Declarations }
+     
     function GetHeight: Integer; override;
     function GetWidth: Integer; override;
     function GetDepth: Integer; override;
@@ -481,7 +481,7 @@ type
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -512,7 +512,7 @@ type
   private
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -522,7 +522,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
   published
-    { Published Declarations }
+     
     property Picture;
   end;
 
@@ -544,7 +544,7 @@ type
     function GetDepth: Integer; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -580,12 +580,12 @@ type
        Saving & loading as a whole currently not supported. }
   TGLCubeMapImage = class(TGLTextureImage)
   private
-    { Private Declarations }
+     
     FImage: TGLImage;
     FUpdateCounter: Integer;
     FPicture: array[cmtPX..cmtNZ] of TGLPicture;
   protected
-    { Protected Declarations }
+     
     function GetWidth: Integer; override;
     function GetHeight: Integer; override;
     function GetDepth: Integer; override;
@@ -596,7 +596,7 @@ type
     procedure PictureChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -621,7 +621,7 @@ type
     SetPicture;
 
   published
-    { Public Declarations }
+     
     property PicturePX: TGLPicture index cmtPX read GetPicture write SetPicture;
     property PictureNX: TGLPicture index cmtNX read GetPicture write SetPicture;
     property PicturePY: TGLPicture index cmtPY read GetPicture write SetPicture;
@@ -645,7 +645,7 @@ type
        Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
   TGLTexture = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FTextureHandle: TGLTextureHandle;
     FSamplerHandle: TGLVirtualHandle;
     FTextureFormat: TGLInternalFormat;
@@ -681,7 +681,7 @@ type
     fDepthTextureMode: TGLDepthTextureMode;
     FKeepImageAfterTransfer: Boolean;
   protected
-    { Protected Declarations }
+     
     procedure SetImage(AValue: TGLTextureImage);
     procedure SetImageAlpha(const val: TGLTextureImageAlpha);
     procedure SetImageBrightness(const val: Single);
@@ -739,7 +739,7 @@ type
     //: Shows a special image that indicates an error
     procedure SetTextureErrorImage;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -803,7 +803,7 @@ type
     property TexDepth: Integer read FTexDepth;
     {: Give texture rendering context }
   published
-    { Published Declarations }
+     
 
     {: Image ClassName for enabling True polymorphism.<p>
     This is ugly, but since the default streaming mechanism does a
@@ -1282,9 +1282,6 @@ begin
   Result := FriendlyName;
 end;
 
-// Invalidate
-//
-
 procedure TGLTextureImage.Invalidate;
 begin
   ReleaseBitmap32;
@@ -1332,7 +1329,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLTextureImage.LoadFromFile(const fileName: string);
@@ -1392,7 +1389,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLBlankImage.Assign(Source: TPersistent);
@@ -1552,7 +1549,7 @@ begin
     #13#10'Depth=' + IntToStr(Depth)));
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLBlankImage.LoadFromFile(const fileName: string);
@@ -1585,7 +1582,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLBlankImage.FriendlyName: string;
@@ -1667,7 +1664,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLPictureImage.Assign(Source: TPersistent);
@@ -1853,7 +1850,7 @@ begin
   FResourceFile := fileName;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLPersistentImage.LoadFromFile(const fileName: string);
@@ -1884,7 +1881,7 @@ begin
   raise ETexture.CreateFmt(glsFailedOpenFile, [fileName]);
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLPersistentImage.FriendlyName: string;
@@ -1925,7 +1922,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLPicFileImage.Assign(Source: TPersistent);
@@ -1953,9 +1950,6 @@ begin
   end;
 end;
 
-// Invalidate
-//
-
 procedure TGLPicFileImage.Invalidate;
 begin
   Picture.OnChange := nil;
@@ -1967,9 +1961,6 @@ begin
   end;
   inherited;
 end;
-
-// GetHeight
-//
 
 function TGLPicFileImage.GetHeight: Integer;
 begin
@@ -1984,16 +1975,10 @@ begin
   Result := FWidth;
 end;
 
-// GetDepth
-//
-
 function TGLPicFileImage.GetDepth: Integer;
 begin
   Result := 0;
 end;
-
-// GetBitmap32
-//
 
 function TGLPicFileImage.GetBitmap32: TGLImage;
 var
@@ -2044,7 +2029,7 @@ begin
   SaveAnsiStringToFile(fileName, AnsiString(PictureFileName));
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLPicFileImage.LoadFromFile(const fileName: string);
@@ -2067,7 +2052,7 @@ begin
   FResourceFile := FPictureFileName;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLPicFileImage.FriendlyName: string;
@@ -2119,7 +2104,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLCubeMapImage.Assign(Source: TPersistent);
@@ -2270,7 +2255,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLCubeMapImage.LoadFromFile(const fileName: string);
@@ -2296,7 +2281,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLCubeMapImage.FriendlyName: string;
@@ -2403,7 +2388,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLTexture.Assign(Source: TPersistent);
@@ -3890,7 +3875,7 @@ begin
   Result := -1; //ignore
 end;
 
-// Assign
+ 
 //
 
 procedure TGLTextureExItem.Assign(Source: TPersistent);

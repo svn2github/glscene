@@ -27,8 +27,10 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes,  SysUtils, Graphics,
-  // GLS
+  Classes,  
+  SysUtils, 
+  Graphics,
+   
   OpenGLTokens, GLContext, GLCrossPlatform,
   GLVectorGeometry, GLScene, GLVectorFileObjects,
   GLVectorLists, GLXCollection, GLGeomObjects,
@@ -116,8 +118,7 @@ type
     // limit iterations to 4 or 5 for now, may need to be higher for more complex maps or fast motion
     function SphereSweepAndSlide(freeform: TGLFreeForm;
       behaviour: TGLBFPSMovement; SphereStart: TVector;
-      var Velocity, newPosition: TVector; sphereRadius: single)
-      : boolean; overload;
+      var Velocity, newPosition: TVector; sphereRadius: single): boolean; overload;
 
     procedure SphereSweepAndSlide(behaviour: TGLBFPSMovement;
       SphereStart: TVector; var Velocity, newPosition: TVector;
@@ -128,7 +129,7 @@ type
     property Navigator: TGLNavigator read FNavigator write SetNavigator;
     property Scene: TGLScene read FScene write setScene;
 
-    { : Display Time for the arrow lines. }
+    { Display Time for the arrow lines. }
     property DisplayTime: integer read FDisplayTime write FDisplayTime;
     property MovementScale: single read FMovementScale write FMovementScale;
   end;
@@ -197,10 +198,8 @@ type
 
 function GetFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 function GetFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overload;
-function GetOrCreateFPSMovement(behaviours: TGLBehaviours)
-  : TGLBFPSMovement; overload;
-function GetOrCreateFPSMovement(obj: TGLBaseSceneObject)
-  : TGLBFPSMovement; overload;
+function GetOrCreateFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
+function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overload;
 
 
 implementation
@@ -221,8 +220,7 @@ begin
   Result := GetFPSMovement(obj.behaviours);
 end;
 
-function GetOrCreateFPSMovement(behaviours: TGLBehaviours)
-  : TGLBFPSMovement; overload;
+function GetOrCreateFPSMovement(behaviours: TGLBehaviours): TGLBFPSMovement; overload;
 var
   i: integer;
 begin
@@ -233,8 +231,7 @@ begin
     Result := TGLBFPSMovement.Create(behaviours);
 end;
 
-function GetOrCreateFPSMovement(obj: TGLBaseSceneObject)
-  : TGLBFPSMovement; overload;
+function GetOrCreateFPSMovement(obj: TGLBaseSceneObject): TGLBFPSMovement; overload;
 begin
   Result := GetOrCreateFPSMovement(obj.behaviours);
 end;
@@ -915,11 +912,11 @@ begin
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0],
       CollisionState.Contact.intPoint.V[1], CollisionState.Contact.intPoint.V[2]);
     GL.Vertex3f(CollisionState.Contact.intPoint.V[0] +
-      CollisionState.Contact.intNormal.V[0], // GLSphere4.Radius,
+      CollisionState.Contact.intNormal.V[0],  phere4.Radius,
       CollisionState.Contact.intPoint.V[1] + CollisionState.Contact.intNormal.V[1],
-      // GLSphere4.Radius,
+       phere4.Radius,
       CollisionState.Contact.intPoint.V[2] + CollisionState.Contact.intNormal.V[2]);
-    // GLSphere4.Radius);
+     phere4.Radius);
   end;
   GL.End_();
 end;

@@ -38,7 +38,7 @@ interface
 uses
   GLVectorGeometry;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
   
 type
   TSingle3DArray = array of array of array of Single;

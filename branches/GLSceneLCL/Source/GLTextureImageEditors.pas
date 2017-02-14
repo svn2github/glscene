@@ -16,7 +16,7 @@ unit GLTextureImageEditors;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   Classes, GLTexture, GLProcTextures;

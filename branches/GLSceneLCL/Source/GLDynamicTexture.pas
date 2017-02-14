@@ -253,7 +253,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLDynamicTextureImage.FriendlyName : String;
 begin

@@ -67,17 +67,17 @@ type
      lens flare elements. }
   TGLFlareGradient = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FFromColor: TGLColor;
     FToColor: TGLColor;
 
   protected
-    { Protected Declarations }
+     
     procedure SetFromColor(const val: TGLColor);
     procedure SetToColor(const val: TGLColor);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     constructor CreateInitialized(AOwner: TPersistent;
       const fromColor, toColor: TColorVector);
@@ -85,7 +85,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Public Declarations }
+     
     property FromColor: TGLColor read FFromColor write SetFromColor;
     property ToColor: TGLColor read FToColor write SetToColor;
   end;
@@ -99,7 +99,7 @@ type
   //
   TGLLensFlare = class(TGLBaseSceneObject)
   private
-    { Private Declarations }
+     
     FSize: Integer;
     FDeltaTime: Single;
     FCurrSize: Single;
@@ -125,7 +125,7 @@ type
     FPreRenderPoint: TGLRenderPoint;
 
   protected
-    { Protected Declarations }
+     
     procedure SetGlowGradient(const val: TGLFlareGradient);
     procedure SetRingGradient(const val: TGLFlareGradient);
     procedure SetStreaksGradient(const val: TGLFlareGradient);
@@ -159,7 +159,7 @@ type
     procedure RenderSecondaries(const posVector: TAffineVector);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -181,7 +181,7 @@ type
     property FlareInstantaneousSize: Single read FCurrSize write FCurrSize;
 
   published
-    { Public Declarations }
+     
     property GlowGradient: TGLFlareGradient read FGlowGradient write
       SetGlowGradient;
     property RingGradient: TGLFlareGradient read FRingGradient;
@@ -283,7 +283,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLFlareGradient.Assign(Source: TPersistent);

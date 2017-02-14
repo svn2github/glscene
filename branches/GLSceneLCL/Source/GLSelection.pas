@@ -17,7 +17,7 @@ interface
 
 uses
   SysUtils, Classes,
-  //GLS
+   
   OpenGLTokens, GLContext, GLVectorLists, GLVectorGeometry,
   GLBaseClasses, GLPersistentClasses;
 
@@ -43,15 +43,15 @@ type
      This list is used to store the results of a PickObjects call. }
   TGLPickList = class(TPersistentObjectList)
   private
-    { Private Declarations }
+     
     function GetFar(aValue: Integer): Single;
     function GetHit(aValue: Integer): TObject;
     function GetNear(aValue: Integer): Single;
     function GetSubObjects(aValue: Integer): TPickSubObjects;
   protected
-    { Protected Declarations }
+     
   public
-    { Public Declarations }
+     
     constructor Create(aSortType: TPickSortType); reintroduce;
 
     procedure AddHit(obj: TObject; const subObj: TPickSubObjects;

@@ -270,7 +270,7 @@ begin
   inherited Create(Collection);
 end;
 
-// Assign
+ 
 //
 
 procedure TGLSLTextureEmitterItem.Assign(Source: TPersistent);

@@ -31,7 +31,7 @@ uses
     Classes, SysUtils,
   {$ENDIF}
 
-  // GLScene
+   cene
   GLScene, GLVectorTypes, GLMeshUtils, GLVectorGeometry, GLVectorFileObjects,
   GLMesh, GLObjects, GLMaterial, GLStrings, GLBaseClasses;
 

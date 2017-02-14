@@ -90,7 +90,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLCompositeImage.Assign(Source: TPersistent);
@@ -246,7 +246,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLCompositeImage.LoadFromFile(const fileName: string);
@@ -304,7 +304,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLCompositeImage.FriendlyName: string;

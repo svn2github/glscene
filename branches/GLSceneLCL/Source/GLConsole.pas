@@ -74,7 +74,7 @@ interface
 
 uses
   Classes, SysUtils, TypInfo, Graphics,
-  // GLS
+   
   GLScene, GLObjects, GLHUDObjects, GLViewer, GLBitmapFont,
   GLPersistentClasses, GLContext, GLTexture, GLUtils, GLStrings,
   GLCrossPlatform, GLMaterial, GLVectorTypes;

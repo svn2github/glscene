@@ -56,22 +56,22 @@ type
      Can be places anywhere in the scene. }
   TGLTextureEmitter = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FFOVy: single;
     FAspect: single;
 
   protected
-    { Protected Declarations }
+     
     {: Sets up the base texture matrix for this emitter<p>
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TRenderContextInfo);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
 
   published
-    { Published Declarations }
+     
     {: Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
 
@@ -85,22 +85,22 @@ type
   {: Specifies an item on the TGLTextureEmitters collection. }
   TGLTextureEmitterItem = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FEmitter: TGLTextureEmitter;
 
   protected
-    { Protected Declarations }
+     
     procedure SetEmitter(const val: TGLTextureEmitter);
     procedure RemoveNotification(aComponent: TComponent);
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(ACollection: TCollection); override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     property Emitter: TGLTextureEmitter read FEmitter write SetEmitter;
 
   end;
@@ -110,17 +110,17 @@ type
   {: Collection of TGLTextureEmitter. }
   TGLTextureEmitters = class(TCollection)
   private
-    { Private Declarations }
+     
     FOwner: TGLProjectedTextures;
 
   protected
-    { Protected Declarations }
+     
     function GetOwner: TPersistent; override;
     function GetItems(index: Integer): TGLTextureEmitterItem;
     procedure RemoveNotification(aComponent: TComponent);
 
   public
-    { Public Declarations }
+     
     procedure AddEmitter(texEmitter: TGLTextureEmitter);
 
     property Items[index: Integer]: TGLTextureEmitterItem read GetItems; default;
@@ -134,19 +134,19 @@ type
      and receivers (children of this object). }
   TGLProjectedTextures = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FEmitters: TGLTextureEmitters;
     FStyle: TGLProjectedTexturesStyle;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+     
 
     {: List of texture emitters. }
     property Emitters: TGLTextureEmitters read FEmitters write FEmitters;
@@ -210,7 +210,7 @@ begin
   inherited Create(ACollection);
 end;
 
-// Assign
+ 
 //
 
 procedure TGLTextureEmitterItem.Assign(Source: TPersistent);

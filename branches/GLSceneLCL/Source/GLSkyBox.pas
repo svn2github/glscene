@@ -50,7 +50,7 @@ type
   //
   TGLSkyBox = class(TGLCameraInvariantObject, IGLMaterialLibrarySupported)
   private
-    { Private Declarations }
+     
     FMatNameTop: string;
     FMatNameRight: string;
     FMatNameFront: string;
@@ -66,7 +66,7 @@ type
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
-    { Protected Declarations }
+     
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetMatNameBack(const Value: string);
     procedure SetMatNameBottom(const Value: string);
@@ -80,7 +80,7 @@ type
     procedure SetStyle(const value: TGLSkyBoxStyle);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -91,7 +91,7 @@ type
       override;
 
   published
-    { Published Declarations }
+     
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
     property MatNameTop: TGLLibMaterialName read FMatNameTop write

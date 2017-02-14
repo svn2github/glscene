@@ -14,7 +14,7 @@
 }
 unit GLCarbonContext;
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 interface
 
@@ -29,7 +29,7 @@ type
    {: A context driver for standard XOpenGL. }
    TGLCarbonContext = class (TGLContext)
       private
-         { Private Declarations }
+          
          FRC: TAGLContext;
          FShareContext: TGLCarbonContext;
          FHPBUFFER: PAGLPBuffer;
@@ -50,7 +50,7 @@ type
          procedure CreateNewContext;
          procedure Validate;
       protected
-         { Protected Declarations }
+          
          procedure ClearIAttribs;
          procedure AddIAttrib(attrib, value : Integer);
          procedure ChangeIAttrib(attrib, newValue : Integer);
@@ -72,7 +72,7 @@ type
          //property DC: HWND read FDC;
          property RenderingContext: TAGLContext read FRC;
       public
-         { Public Declarations }
+          
          constructor Create; override;
          destructor Destroy; override;
 

@@ -39,7 +39,7 @@ uses
   Classes,
   SysUtils,
   Types,
-  // GLS
+   
   GLCrossPlatform,
   GLPersistentClasses
   {$IFDEF DEBUG_XCOLLECTION}, TypInfo {$ENDIF};
@@ -61,12 +61,12 @@ type
       }
   TGLXCollectionItem = class(TGLInterfacedPersistent)
   private
-    { Private Declarations }
+     
     FOwner: TGLXCollection;
     FName: string;
 
   protected
-    { Protected Declarations }
+     
     function GetName: string; virtual;
     procedure SetName(const val: string); virtual;
     function GetOwner: TPersistent; override;
@@ -82,7 +82,7 @@ type
     procedure RaiseFilerException(const archiveVersion: integer);
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TGLXCollection); virtual;
     destructor Destroy; override;
 
@@ -123,7 +123,7 @@ type
     class function CanAddTo(collection: TGLXCollection): Boolean; virtual;
 
   published
-    { Published Declarations }
+     
     property Name: string read FName write SetName;
   end;
 
@@ -140,7 +140,7 @@ type
     with polymorphism-support and full backward compatibility). }
   TGLXCollection = class(TPersistent)
   private
-    { Private Declarations }
+     
     FOwner: TPersistent;
     FList: TList;
     FCount: integer;
@@ -148,7 +148,7 @@ type
     { : Archive Version is used to update the way data items is loaded. }
     FArchiveVersion: integer;
   protected
-    { Protected Declarations }
+     
     function GetItems(Index: integer): TGLXCollectionItem;
     function GetOwner: TPersistent; override;
 
@@ -156,7 +156,7 @@ type
     procedure WriteToFiler(writer: TWriter);
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TPersistent); virtual;
     destructor Destroy; override;
 
@@ -353,7 +353,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 
 procedure TGLXCollectionItem.Assign(Source: TPersistent);
 begin
@@ -527,7 +527,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 
 procedure TGLXCollection.Assign(Source: TPersistent);
 var

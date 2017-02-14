@@ -26,7 +26,7 @@
 }
 unit GLScreen;
 
-// GLScreen    - This units contains routines to interact with the screen/desktop.
+ creen    - This units contains routines to interact with the screen/desktop.
 // Version     - 0.0.8
 // Last Change - 30. September 1998
 // for more information see help file
@@ -157,7 +157,7 @@ const
     ColorDepth: 24), (Width: 512; Height: 384; ColorDepth: 32));
 {$ENDIF}
 
-  // Assign
+   
   //
 procedure TGLDisplayOptions.Assign(Source: TPersistent);
 begin

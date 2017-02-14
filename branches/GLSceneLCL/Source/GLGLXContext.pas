@@ -40,7 +40,7 @@ type
   {: A context driver for GLX. }
   TGLGLXContext = class(TGLContext)
   private
-    { Private Declarations }
+     
     FDisplay: PDisplay;
     FCurScreen: Integer;
     FDC: GLXDrawable;
@@ -59,7 +59,7 @@ type
     procedure Validate;
     function _glXMakeCurrent(dpy: PDisplay; draw: GLXDrawable; ctx: GLXContext):boolean;
   protected
-    { Protected Declarations }
+     
     procedure ClearIAttribs;
     procedure FreeIAttribs;
     procedure AddIAttrib(attrib, value: Integer);
@@ -85,7 +85,7 @@ type
     property RenderingContext: GLXContext read FRC;
     property CurXWindow: HWND read FCurXWindow;
   public
-    { Public Declarations }
+     
     constructor Create; override;
     destructor Destroy; override;
 

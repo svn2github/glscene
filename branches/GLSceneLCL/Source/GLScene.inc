@@ -39,7 +39,7 @@
 {$DEFINE GLS_DELPHI_OR_CPPB}
 
 // Activate support for png images (using pngimage.pas library)
-// GLS_PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
+ _PngImage_SUPPORT is automatically defined if Delphi>=2009 (see below)
 // Also, Define "Auto" Resize To Nearest 8 Multiple Size
 {.$DEFINE GLS_PngImage_SUPPORT}
 {.$DEFINE GLS_PngImage_RESIZENEAREST}
@@ -272,7 +272,7 @@
    {$ENDIF}
  {$ENDIF}
 
-// GLS_ENABLE_UNSAFE_WARNINGS.
+ _ENABLE_UNSAFE_WARNINGS.
 {$IFDEF GLS_COMPILER_7_UP}
   {$IFDEF GLS_ENABLE_UNSAFE_WARNINGS}
     {$WARN UNSAFE_TYPE ON}

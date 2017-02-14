@@ -30,7 +30,7 @@ interface
 
 uses
   Classes, SysUtils,
-  // GLScene
+   cene
   GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
   GLPersistentClasses, GLVectorGeometry, GLCoordinates, GLBaseClasses;
 
@@ -531,7 +531,7 @@ begin
       TGLUpdateAbleComponent(FGuiComponentList[I]).FreeNotification(Self);
   end
   else
-    inherited; // Assign Error
+    inherited; // Assigned Error
 end;
 
 procedure TGLGuiLayout.Clear;

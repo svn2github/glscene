@@ -270,7 +270,7 @@ end;
 
 {$IFDEF MSWINDOWS}
 const
-   cRegistryKey = 'Software\GLScene.org\GLSceneEdit';
+   cRegistryKey = 'Software\GLScene\GLSceneEditor';
 
 function ReadRegistryInteger(reg : TRegistry; const name : String;
                              defaultValue : Integer) : Integer;

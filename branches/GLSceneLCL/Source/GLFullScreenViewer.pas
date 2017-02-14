@@ -67,7 +67,7 @@ type
     the original resolution isn't restored. }
   TGLFullScreenViewer = class(TGLNonVisualViewer)
   private
-    { Private Declarations }
+     
     FFormIsOwned: Boolean;
     FForm: TForm;
     FOwnDC: HWND;
@@ -114,7 +114,7 @@ type
     procedure SetForm(aVal: TForm);
     procedure SetManualRendering(const val: Boolean);
   protected
-    { Protected Declarations }
+     
     function GetHandle: HWND;
 
     procedure DoBeforeRender(Sender: TObject);
@@ -130,7 +130,7 @@ type
     procedure DoDeactivate(Sender: TObject);
     procedure DoFormDestroy(Sender: TObject);
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -162,7 +162,7 @@ type
 
     property RenderDC: HWND read FOwnDC;
   published
-    { Public Declarations }
+     
     property Form: TForm read FForm write SetForm;
 
     property ManualRendering: Boolean read FManualRendering

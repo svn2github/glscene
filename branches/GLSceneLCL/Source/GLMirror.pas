@@ -68,7 +68,7 @@ type
      materials/mirror demo before using this component. }
   TGLMirror = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FRendering: Boolean;
     FMirrorObject: TGLBaseSceneObject;
     FWidth, FHeight: TGLFloat;
@@ -80,7 +80,7 @@ type
     FSlices: TGLInt; //ORL
 
   protected
-    { Protected Declarations }
+     
     procedure Notification(AComponent: TComponent; Operation: TOperation);
       override;
     procedure SetMirrorObject(const val: TGLBaseSceneObject);
@@ -97,7 +97,7 @@ type
     function GetSlices: TGLInt; //ORL
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
 
     procedure DoRender(var ARci: TRenderContextInfo;
@@ -108,7 +108,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
 
   published
-    { Public Declarations }
+     
           {: Selects the object to mirror.<p>
              If nil, the whole scene is mirrored. }
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
@@ -453,7 +453,7 @@ begin
   end;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLMirror.Assign(Source: TPersistent);

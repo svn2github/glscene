@@ -30,14 +30,14 @@ type
    {: MasterObject description for a MultiProxy object. }
 	TGLMultiProxyMaster = class (TCollectionItem)
 	   private
-	      { Private Declarations }
+	       
          FMasterObject : TGLBaseSceneObject;
          FDistanceMin, FDistanceMin2 : Single;
          FDistanceMax, FDistanceMax2 : Single;
          FVisible : Boolean;
 
 	   protected
-	      { Protected Declarations }
+	       
          function GetDisplayName : String; override;
          procedure SetMasterObject(const val : TGLBaseSceneObject);
          procedure SetDistanceMin(const val : Single);
@@ -45,7 +45,7 @@ type
          procedure SetVisible(const val : Boolean);
 
       public
-	      { Public Declarations }
+	       
 	      constructor Create(Collection : TCollection); override;
 	      destructor Destroy; override;
 	      procedure Assign(Source: TPersistent); override;
@@ -54,7 +54,7 @@ type
          procedure NotifyChange;
 
       published
-         { Published Declarations }
+          
          {: Specifies the Master object which will be proxy'ed. }
          property MasterObject : TGLBaseSceneObject read FMasterObject write SetMasterObject;
          {: Minimum visibility distance (inclusive). }
@@ -72,16 +72,16 @@ type
    {: Collection of TGLMultiProxyMaster. }
 	TGLMultiProxyMasters = class (TOwnedCollection)
 	   private
-	      { Private Declarations }
+	       
 
 	   protected
-	      { Protected Declarations }
+	       
          procedure SetItems(index : Integer; const val : TGLMultiProxyMaster);
 	      function GetItems(index : Integer) : TGLMultiProxyMaster;
          procedure Update(Item: TCollectionItem); override;
 
       public
-	      { Public Declarations }
+	       
 	      constructor Create(AOwner : TPersistent);
 
          function Add : TGLMultiProxyMaster; overload;
@@ -105,19 +105,19 @@ type
       (item zero in the MasterObjects collection). }
    TGLMultiProxy = class (TGLSceneObject)
       private
-			{ Private Declarations }
+			 
          FMasterObjects : TGLMultiProxyMasters;
          FRendering : Boolean; // internal use (loop protection)
 
 	   protected
-	      { Protected Declarations }
+	       
          procedure SetMasterObjects(const val : TGLMultiProxyMasters);
          procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
          function PrimaryMaster : TGLBaseSceneObject;
 
       public
-			{ Public Declarations }
+			 
          constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
@@ -132,7 +132,7 @@ type
          function GenerateSilhouette(const silhouetteParameters : TGLSilhouetteParameters) : TGLSilhouette; override;
 
       published
-         { Published Declarations }
+          
          property MasterObjects : TGLMultiProxyMasters read FMasterObjects write SetMasterObjects;
          
          property ObjectsSorting;
@@ -177,7 +177,7 @@ begin
 	inherited Destroy;
 end;
 
-// Assign
+ 
 //
 procedure TGLMultiProxyMaster.Assign(Source: TPersistent);
 begin
@@ -381,7 +381,7 @@ begin
    StructureChanged;
 end;
 
-// Assign
+ 
 //
 procedure TGLMultiProxy.Assign(Source: TPersistent);
 begin

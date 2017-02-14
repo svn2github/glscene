@@ -50,7 +50,7 @@ interface
 uses
   Windows, Messages, Classes,
   Dialogs, Graphics, Controls,
-  // GLS
+   
   GLScene, OpenGLTokens, GLTexture, GLContext, GLVectorGeometry, GLStrings,
   GLRenderContextInfo, GLState;
 
@@ -75,7 +75,7 @@ type
   //
   TGLTextAdjust = class(TPersistent)
   private
-    { Private Declarations }
+     
     FHorz: TGLTextHorzAdjust;
     FVert: TGLTextVertAdjust;
     FOnChange: TNotifyEvent;
@@ -83,14 +83,14 @@ type
     procedure SetVert(const Value: TGLTextVertAdjust);
 
   public
-    { public Declarations }
+     
     constructor Create;
     procedure Assign(Source: TPersistent); override;
 
     property OnChange: TNotifyEvent read FOnChange write FOnChange;
 
   published
-    { Published Declarations }
+     
     property Horz: TGLTextHorzAdjust read FHorz write SetHorz default haLeft;
     property Vert: TGLTextVertAdjust read FVert write SetVert
       default vaBaseLine;
@@ -116,7 +116,7 @@ type
   { : Renders a text in 3D. }
   TGLSpaceText = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FFont: TFont;
     FExtrusion: Single;
     FAllowedDeviation: Single;
@@ -138,7 +138,7 @@ type
     procedure SetOblique(const Value: Single);
     procedure SetTextHeight(const Value: Single);
   protected
-    { Protected Declarations }
+     
     FTextFontEntry: PFontEntry;
     FontChanged: Boolean;
     procedure DestroyHandle; override;
@@ -146,7 +146,7 @@ type
     procedure GetFirstAndLastChar(var firstChar, lastChar: Integer);
     procedure DoOnLinesChange(sender: TObject); virtual;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -170,7 +170,7 @@ type
     function AxisAlignedDimensionsUnscaled: TVector; override;
     function BarycenterAbsolutePosition: TVector; override;
   published
-    { Published Declarations }
+     
     { : Adjusts the 3D font extrusion.<p>
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
@@ -196,11 +196,11 @@ type
   { : Manages a list of fonts for which display lists were created. }
   TFontManager = class(TList)
   private
-    { Private Declarations }
+     
     FCurrentBase: Integer;
 
   protected
-    { Protected Declarations }
+     
     procedure NotifyClients(Clients: TList);
     procedure VirtualHandleAlloc(sender: TGLVirtualHandle;
       var handle: Cardinal);
@@ -208,7 +208,7 @@ type
       var handle: Cardinal);
 
   public
-    { Public Declarations }
+     
     constructor Create;
     destructor Destroy; override;
 
@@ -280,7 +280,7 @@ begin
   FVert := vaBaseLine;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLTextAdjust.Assign(Source: TPersistent);
@@ -422,7 +422,7 @@ begin
   TextMetrics(str, w, mh, Result);
 end;
 
-// Assign
+ 
 
 procedure TGLSpaceText.Assign(Source: TPersistent);
 begin

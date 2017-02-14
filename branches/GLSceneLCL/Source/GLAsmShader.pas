@@ -31,7 +31,7 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
+   cene
   GLVectorGeometry, GLVectorTypes, GLTexture, OpenGLTokens, GLContext,
   GLCustomShader, GLRenderContextInfo;
 
@@ -42,9 +42,9 @@ type
 
   TGLAsmShaderParameter = class(TGLCustomShaderParameter)
   private
-    { Private Declarations }
+     
   protected
-    { Protected Declarations }
+     
 {
     function GetAsVector1f: Single; override;
     function GetAsVector1i: Integer; override;
@@ -91,7 +91,7 @@ type
 
   TGLCustomAsmShader = class(TGLCustomShader)
   private
-    { Private Declarations }
+     
     FVPHandle: TGLARBVertexProgramHandle;
     FFPHandle: TGLARBFragmentProgramHandle;
     FGPHandle: TGLARBGeometryProgramHandle;
@@ -100,7 +100,7 @@ type
     FOnApply: TGLAsmShaderEvent;
     FOnUnApply: TGLAsmShaderUnUplyEvent;
   protected
-    { Protected Declarations }
+     
     procedure ApplyShaderPrograms;
     procedure UnApplyShaderPrograms;
     procedure DestroyARBPrograms; virtual;
@@ -114,7 +114,7 @@ type
     function DoUnApply(var rci: TRenderContextInfo): Boolean; override;
     procedure DoFinalize; override;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;

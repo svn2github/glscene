@@ -62,7 +62,7 @@ type
   //
   TGLROAMPatch = class(TObject)
   private
-    { Private Declarations }
+     
     FID: Integer;
     FHeightData: THeightData; // Referred, not owned
     FHeightRaster: PSmallIntRaster;
@@ -84,7 +84,7 @@ type
     FLastOcclusionTestPassed: Boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure SetHeightData(val: THeightData);
     procedure SetOcclusionSkip(val: Integer);
 
@@ -96,7 +96,7 @@ type
     function Tesselate: boolean;
     // Returns false if MaxCLODTriangles limit is reached(Lin)
   public
-    { Public Declarations }
+     
     constructor Create;
     destructor Destroy; override;
 

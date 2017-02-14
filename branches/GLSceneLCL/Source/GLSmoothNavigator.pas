@@ -54,7 +54,7 @@ uses
   // VCL
   Classes,
 
-  // GLScene
+   cene
   GLNavigator, GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates,
   GLScreen, XCollection;
 

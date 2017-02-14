@@ -109,7 +109,7 @@ uses
   // VCL
   Classes, SysUtils,
 
-  // GLScene
+   cene
   GLVectorGeometry, GLVectorTypes, GLTexture, GLCadencer, OpenGLTokens, GLScene,
   GLStrings, GLCrossPlatform, GLContext, GLRenderContextInfo, GLMaterial,
   GLVectorLists, GLTextureFormat, GLSLParameter;
@@ -255,9 +255,9 @@ type
   {: Wrapper around a parameter of the main program. }
   TGLCustomShaderParameter = class(TObject)
   private
-    { Private Declarations }
+     
   protected
-    { Protected Declarations }
+     
     function GetAsVector1f: Single; virtual; abstract;
     function GetAsVector2f: TVector2f; virtual; abstract;
     function GetAsVector3f: TVector3f; virtual; abstract;
@@ -316,7 +316,7 @@ type
     function GetAsUniformBuffer: GLenum; virtual; abstract;
     procedure SetAsUniformBuffer(UBO: GLenum); virtual; abstract;
   public
-    { Public Declarations }
+     
 
     {: This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVectorF([0.1, 0.2]). Array length must between 1-4. }

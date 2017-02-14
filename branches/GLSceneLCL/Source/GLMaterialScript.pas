@@ -52,7 +52,7 @@ interface
 uses
   SysUtils, Classes,
   StdCtrls,
-  // GLScene
+   cene
   GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
   GLMaterial, GLState;
 
@@ -63,32 +63,32 @@ type
     FName: string;
     procedure SetShader(const Value: TGLShader);
     procedure SetName(const Value: string);
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     property Shader: TGLShader read FShader write SetShader;
     property Name: string read FName write SetName;
   end;
 
   TGLShaderItems = class(TOwnedCollection)
   private
-    { Protected Declarations }
+     
     procedure SetItems(Index: Integer; const Val: TGLShaderItem);
     function GetItems(Index: Integer): TGLShaderItem;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TGLShaderItem read GetItems write SetItems; default;
 
@@ -100,32 +100,32 @@ type
     FName: string;
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
     procedure SetName(const Value: string);
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(Collection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Name: string read FName write SetName;
   end;
 
   TGLMaterialLibraryItems = class(TOwnedCollection)
   private
-    { Protected Declarations }
+     
     procedure SetItems(Index: Integer; const Val: TGLMaterialLibraryItem);
     function GetItems(Index: Integer): TGLMaterialLibraryItem;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent);
     property Items[Index: Integer]: TGLMaterialLibraryItem read GetItems write SetItems; default;
 
@@ -134,7 +134,7 @@ type
 
   TGLMaterialScripter = class(TComponent)
   private
-    { Private declarations }
+     
     FShaderItems: TGLShaderItems;
     FMaterialLibraryItems: TGLMaterialLibraryItems;
     FAppend: Boolean;
@@ -231,11 +231,11 @@ type
     procedure XPictureNZ;
 
   protected
-    { Protected declarations }
+     
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
 
   public
-    { Public declarations }
+     
     property DebugMemo: TMemo read FMemo write SetMemo;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -243,7 +243,7 @@ type
     procedure CompileScript;
 
   published
-    { Published declarations }
+     
     property Script: TStrings read FScript write SetScript;
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write SetMaterialLibrary;
     property Shaders: TGLShaderItems read FShaderItems write SeTGLShaderItems;
@@ -1132,7 +1132,7 @@ begin
       tmpstr := extractvalue;
       tmpstr := deletespaces(tmpstr);
 
-      if valueexists('persistentimage{') then // loadfromfile
+      if valueexists('persistentimage{') then  
       repeat
          inc(count);
          Newmat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
@@ -1140,7 +1140,7 @@ begin
          checkerror;
       until checkrepeatdone;
 
-      if valueexists('blankimage{') then // loadfromfile
+      if valueexists('blankimage{') then  
       repeat
          inc(count);
          Newmat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;

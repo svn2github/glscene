@@ -42,7 +42,7 @@ interface
 uses
   Windows, Messages, Classes,  SysUtils, Types,
   Graphics, Forms, Controls,
-  // GLScene
+   cene
   GLScene, GLWin32Context,  GLContext;
 
 type
@@ -61,7 +61,7 @@ type
      depth testing, etc. and can take care of framerate calculation.<p> }
   TGLSceneViewer = class(TWinControl)
   private
-    { Private Declarations }
+     
     FBuffer: TGLSceneBuffer;
     FVSync: TVSyncMode;
     FOwnDC: HDC;
@@ -88,7 +88,7 @@ type
     function GetIsRenderingContextAvailable: Boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure SetBeforeRender(const val: TNotifyEvent);
     function GetBeforeRender: TNotifyEvent;
     procedure SetPostRender(const val: TNotifyEvent);
@@ -110,7 +110,7 @@ type
     procedure MouseMove(Shift: TShiftState; X, Y: Integer); override;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -137,7 +137,7 @@ type
     property MouseInControl: Boolean read FMouseInControl;
 
   published
-    { Published Declarations }
+     
     {: Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
 

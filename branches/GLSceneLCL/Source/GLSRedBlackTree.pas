@@ -60,13 +60,13 @@ type
   generic
 {$ENDIF}
   GRedBlackTree < TKey, TValue > = class
-  { Public Declarations }
+   
   public
     type
       TKeyCompareFunc = function(const Item1, Item2: TKey): Integer;
       TValueCompareFunc = function(const Item1, Item2: TValue): Boolean;
       TForEachProc = procedure (AKey: TKey; AValue: TValue; out AContinue: Boolean);
-    { Private Declarations }
+     
     {$IFDEF GLS_DELPHI_OR_CPPB}
        TRBNode = class
          Key: TKey;
@@ -106,7 +106,7 @@ type
     class procedure FastErase(x: TRBNode);
 
   public
-    { Public Declarations }
+     
     constructor Create(KeyCompare: TKeyCompareFunc; ValueCompare: TValueCompareFunc);
     destructor Destroy; override;
 

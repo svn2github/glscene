@@ -35,7 +35,7 @@ interface
 
 uses
   Classes, SysUtils,  Graphics,
-  // GLS
+   
   GLScene, GLVectorGeometry, GLObjects, GLBitmapFont, GLTexture, GLMaterial,
   GLHudObjects, GLColor, GLGraphics, GLContext, OpenGLTokens,
   XOpenGL, GLState, GLTextureFormat, GLBaseClasses, GLRenderContextInfo;

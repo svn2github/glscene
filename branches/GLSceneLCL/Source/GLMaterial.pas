@@ -48,7 +48,7 @@ interface
 
 uses
   Classes, SysUtils, Types,
-  //GLS
+   
   GLRenderContextInfo, GLBaseClasses, OpenGLTokens, GLContext,
   GLTexture, GLColor, GLCoordinates, GLVectorGeometry, GLPersistentClasses,
   GLCrossPlatform, GLState, GLTextureFormat, GLStrings, XOpenGL,
@@ -118,7 +118,7 @@ type
      DoApply, DoUnApply and DoFinalize. }
   TGLShader = class(TGLUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FEnabled: Boolean;
     FLibMatUsers: TList;
     FVirtualHandle: TGLVirtualHandle;
@@ -128,7 +128,7 @@ type
     FFailedInitAction: TGLShaderFailedInitAction;
 
   protected
-    { Protected Declarations }
+     
           {: Invoked once, before the first call to DoApply.<p>
              The call happens with the OpenGL context being active. }
     procedure DoInitialize(var rci: TRenderContextInfo; Sender: TObject);
@@ -169,7 +169,7 @@ type
     function GetStardardNotSupportedMessage: string; virtual;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -207,7 +207,7 @@ type
       fiaRaiseStandardException;
 
   published
-    { Published Declarations }
+     
       {: Turns on/off shader application.<p>
          Note that this only turns on/off the shader application, if the
          ShaderStyle is ssReplace, the material won't be applied even if
@@ -228,12 +228,12 @@ type
      polygon mode (lines / fill). }
   TGLFaceProperties = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FAmbient, FDiffuse, FSpecular, FEmission: TGLColor;
     FShininess: TShininess;
 
   protected
-    { Protected Declarations }
+     
     procedure SetAmbient(AValue: TGLColor);
     procedure SetDiffuse(AValue: TGLColor);
     procedure SetEmission(AValue: TGLColor);
@@ -241,7 +241,7 @@ type
     procedure SetShininess(AValue: TShininess);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -251,7 +251,7 @@ type
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     property Ambient: TGLColor read FAmbient write SetAmbient;
     property Diffuse: TGLColor read FDiffuse write SetDiffuse;
     property Emission: TGLColor read FEmission write SetEmission;
@@ -261,14 +261,14 @@ type
 
   TGLDepthProperties = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FDepthTest: boolean;
     FDepthWrite: boolean;
     FZNear, FZFar: Single;
     FCompareFunc: TDepthfunction;
     FDepthClamp: Boolean;
   protected
-    { Protected Declarations }
+     
     procedure SetZNear(Value: Single);
     procedure SetZFar(Value: Single);
     procedure SetCompareFunc(Value: TGLDepthCompareFunc);
@@ -279,14 +279,14 @@ type
     function StoreZNear: Boolean;
     function StoreZFar: Boolean;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
 
     procedure Apply(var rci: TRenderContextInfo);
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     {: Specifies the mapping of the near clipping plane to
        window coordinates.  The initial value is 0.  }
     property ZNear: Single read FZNear write SetZNear stored StoreZNear;
@@ -411,7 +411,7 @@ type
   TGLMaterial = class(TGLUpdateAbleObject, IGLMaterialLibrarySupported,
       IGLNotifyAble, IGLTextureNotifyAble)
   private
-    { Private Declarations }
+     
     FFrontProperties, FBackProperties: TGLFaceProperties;
     FDepthProperties: TGLDepthProperties;
     FBlendingMode: TBlendingMode;
@@ -428,7 +428,7 @@ type
     // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
-    { Protected Declarations }
+     
     function GetBackProperties: TGLFaceProperties;
     procedure SetBackProperties(Values: TGLFaceProperties);
     procedure SetFrontProperties(Values: TGLFaceProperties);
@@ -451,7 +451,7 @@ type
     function StoreMaterialProps: Boolean;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -490,7 +490,7 @@ type
     procedure QuickAssignMaterial(const MaterialLibrary: TGLMaterialLibrary;
       const Material: TGLLibMaterial);
   published
-    { Published Declarations }
+     
     property BackProperties: TGLFaceProperties read GetBackProperties write
       SetBackProperties stored StoreMaterialProps;
     property FrontProperties: TGLFaceProperties read FFrontProperties write
@@ -527,7 +527,7 @@ type
     IGLMaterialLibrarySupported,
     IGLNotifyAble)
   protected
-    { Protected Declarations }
+     
     FUserList: TList;
     FName: TGLLibMaterialName;
     FNameHashKey: Integer;
@@ -552,14 +552,14 @@ type
     function _Release: Integer; stdcall;
   {$EndIf}
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
     class function ComputeNameHashKey(const name: string): Integer;
     procedure SetName(const val: TGLLibMaterialName);
     procedure Loaded; virtual;{$IFNDEF GLS_CPPB} abstract; {$ENDIF}
 
   public
-    { Public Declarations }
+     
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -582,7 +582,7 @@ type
     function Blended: Boolean; virtual;
     property MaterialLibrary: TGLAbstractMaterialLibrary read GetMaterialLibrary;
   published
-    { Published Declarations }
+     
     property Name: TGLLibMaterialName read FName write SetName;
     property Tag: Integer read FTag write FTag;
   end;
@@ -595,7 +595,7 @@ type
        materials (which are used in almost all objects). }
   TGLLibMaterial = class(TGLAbstractLibMaterial, IGLTextureNotifyAble)
   private
-    { Private Declarations }
+     
     FMaterial: TGLMaterial;
     FTextureOffset, FTextureScale: TGLCoordinates;
     FTextureRotate: Single;
@@ -606,7 +606,7 @@ type
     FShader: TGLShader;
     libMatTexture2: TGLLibMaterial; // internal cache
   protected
-    { Protected Declarations }
+     
     procedure Loaded; override;
     procedure SetMaterial(const val: TGLMaterial);
     procedure SetTextureOffset(const val: TGLCoordinates);
@@ -622,7 +622,7 @@ type
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnNotifyChange(Sender: TObject);
   public
-    { Public Declarations }
+     
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
 
@@ -639,7 +639,7 @@ type
     procedure NotifyTexMapChange(Sender: TObject);
     function Blended: Boolean; override;
   published
-    { Published Declarations }
+     
     property Material: TGLMaterial read FMaterial write SetMaterial;
 
     {: Texture offset in texture coordinates.<p>
@@ -671,7 +671,7 @@ type
 
   TGLAbstractLibMaterials = class(TOwnedCollection)
   protected
-    { Protected Declarations }
+     
     procedure Loaded;
     function GetMaterial(const AName: TGLLibMaterialName): TGLAbstractLibMaterial;
     {$IFDEF GLS_INLINE}inline;{$ENDIF}
@@ -686,13 +686,13 @@ type
 
   TGLLibMaterials = class(TGLAbstractLibMaterials)
   protected
-    { Protected Declarations }
+     
     procedure SetItems(index: Integer; const val: TGLLibMaterial);
     function GetItems(index: Integer): TGLLibMaterial;
     procedure DestroyHandles;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent);
 
     function Owner: TPersistent;
@@ -730,7 +730,7 @@ type
 
   TGLAbstractMaterialLibrary = class(TGLCadenceAbleComponent)
   protected
-    { Protected Declarations }
+     
     FMaterials: TGLAbstractLibMaterials;
     FLastAppliedMaterial: TGLAbstractLibMaterial;
     FTexturePaths: string;
@@ -739,7 +739,7 @@ type
     property TexturePaths: string read FTexturePaths write SetTexturePaths;
     procedure Loaded; override;
   public
-    { Public Declarations }
+     
 
     procedure SetNamesToTStrings(AStrings: TStrings);
     {: Applies the material of given name.<p>
@@ -766,16 +766,16 @@ type
      like texture coordinates transforms. }
   TGLMaterialLibrary = class(TGLAbstractMaterialLibrary)
   private
-    { Private Declarations }
+     
     FDoNotClearMaterialsOnLoad: Boolean;
     FOnTextureNeeded: TTextureNeededEvent;
   protected
-    { Protected Declarations }
+     
     function GetMaterials: TGLLibMaterials;
     procedure SetMaterials(const val: TGLLibMaterials);
     function StoreMaterials: Boolean;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure DestroyHandles;
@@ -821,7 +821,7 @@ type
       TGLLibMaterialName;
 
   published
-    { Published Declarations }
+     
       {: The materials collection. }
     property Materials: TGLLibMaterials read GetMaterials write SetMaterials stored
       StoreMaterials;
@@ -930,7 +930,7 @@ begin
   GL.Color4fv(Diffuse.AsAddress);
 end;
 
-// Assign
+ 
 //
 procedure TGLFaceProperties.Assign(Source: TPersistent);
 begin
@@ -1319,7 +1319,7 @@ begin
     FLibMatUsers.Remove(libMat);
 end;
 
-// Assign
+ 
 //
 
 procedure TGLShader.Assign(Source: TPersistent);
@@ -1334,7 +1334,7 @@ begin
     inherited Assign(Source); //to the pit of doom ;)
 end;
 
-// Assign
+ 
 //
 
 function TGLShader.ShaderSupported: Boolean;
@@ -1801,7 +1801,7 @@ begin
   end;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLMaterial.Assign(Source: TPersistent);
@@ -1991,7 +1991,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLAbstractLibMaterial.Assign(Source: TPersistent);
@@ -2268,7 +2268,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLLibMaterial.Assign(Source: TPersistent);
@@ -3436,7 +3436,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLMaterialLibrary.LoadFromFile(const fileName: string);

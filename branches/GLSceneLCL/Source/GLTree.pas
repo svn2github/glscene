@@ -47,7 +47,7 @@ interface
 
 uses
    Classes, SysUtils,
-   //GLS
+    
    GLScene, GLMaterial, GLVectorGeometry, GLVectorLists,
    OpenGLTokens, GLVectorFileObjects, GLApplicationFileIO, GLRenderContextInfo,
    XOpenGL, GLContext , GLVectorTypes;
@@ -61,7 +61,7 @@ type
    //
    TGLTreeLeaves = class
       private
-         { Private Declarations }
+          
          FOwner : TGLTree;
          FCount : Integer;
          FVertices : TAffineVectorList;
@@ -69,7 +69,7 @@ type
          FTexCoords : TAffineVectorList;
 
       public
-         { Public Declarations }
+          
          constructor Create(AOwner : TGLTree);
          destructor Destroy; override;
 
@@ -88,7 +88,7 @@ type
    //
    TGLTreeBranch = class
       private
-         { Private Declarations }
+          
          FOwner : TGLTreeBranches;
          FLeft : TGLTreeBranch;
          FCenter : TGLTreeBranch;
@@ -105,7 +105,7 @@ type
                                TexCoordY, Twist : Single; Level : Integer);
 
       public
-         { Public Declarations }
+          
          constructor Create(AOwner : TGLTreeBranches; AParent : TGLTreeBranch);
          destructor Destroy; override;
 
@@ -123,7 +123,7 @@ type
    //
    TGLTreeBranches = class
       private
-         { Private Declarations }
+          
          FOwner : TGLTree;
          FSinList : TSingleList;
          FCosList : TSingleList;
@@ -139,7 +139,7 @@ type
          procedure BuildBranches;
 
       public
-         { Public Declarations }
+          
          constructor Create(AOwner : TGLTree);
          destructor Destroy; override;
 
@@ -159,7 +159,7 @@ type
    //
    TGLTreeBranchNoise = class
       private
-         { Private Declarations }
+          
          FBranchNoise : Single;
          FLeft, FRight, FCenter : TGLTreeBranchNoise;
 
@@ -168,7 +168,7 @@ type
          function GetRight : TGLTreeBranchNoise;
 
       public
-         { Public Declarations }
+          
          constructor Create;
          destructor Destroy; override;
 
@@ -182,7 +182,7 @@ type
    //
    TGLTree = class (TGLImmaterialSceneObject)
       private
-         { Private Declarations }
+          
          FDepth : Integer;
          FBranchFacets : Integer;
          FLeafSize : Single;
@@ -214,7 +214,7 @@ type
          FAxisAlignedDimensionsCache : TVector;
 
       protected
-         { Protected Declarations }
+          
          procedure SetDepth(const Value : Integer);
          procedure SetBranchFacets(const Value : Integer);
          procedure SetLeafSize(const Value : Single);
@@ -240,7 +240,7 @@ type
          procedure Loaded; override;
 
       public
-         { Public Declarations }
+          
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
 
@@ -268,7 +268,7 @@ type
          property Noise : TGLTreeBranchNoise read FNoise;
 
       published
-         { Published Declarations }
+          
          {: The depth of tree branch recursion. }
          property Depth : Integer read FDepth write SetDepth;
          {: The number of facets for each branch in the tree. }
@@ -1318,7 +1318,7 @@ begin
    StrList.Free;
 end;
 
-// LoadFromFile
+ 
 //
 procedure TGLTree.LoadFromFile(aFileName: String);
 var

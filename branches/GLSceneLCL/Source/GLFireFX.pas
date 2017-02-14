@@ -36,11 +36,23 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils,
-  GLScene,  GLXCollection,  GLVectorGeometry,
-  OpenGLTokens,  GLContext,  GLVectorLists, GLVectorTypes,
-  GLCadencer,  GLColor,  GLBaseClasses,  GLCoordinates,
-  GLManager,  GLRenderContextInfo,  GLState,  GLTextureFormat;
+  Classes, 
+  SysUtils,
+  GLScene,  
+  GLXCollection,  
+  GLVectorGeometry,
+  OpenGLTokens,  
+  GLContext,  
+  GLVectorLists, 
+  GLVectorTypes,
+  GLCadencer,  
+  GLColor,  
+  GLBaseClasses,  
+  GLCoordinates,
+  GLManager,  
+  GLRenderContextInfo,  
+  GLState,  
+  GLTextureFormat;
 
 type
 
@@ -63,7 +75,7 @@ type
        to look fire-like. }
   TGLFireFXManager = class(TGLCadenceAbleComponent)
   private
-    { Private Declarations }
+     
     FClients: TList;
     FFireParticles: PFireParticleArray;
     FFireDir, FInitialDir: TGLCoordinates;
@@ -79,7 +91,7 @@ type
     FNoZWrite: Boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure RegisterClient(aClient: TGLBFireFX);
     procedure DeRegisterClient(aClient: TGLBFireFX);
     procedure DeRegisterAllClients;
@@ -100,7 +112,7 @@ type
     procedure AffParticle3d(Color2: TColorVector; const mat: TMatrix);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -126,7 +138,7 @@ type
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
   published
-    { Published Declarations }
+     
           {: Adjusts the acceleration direction (abs coordinates). }
     property FireDir: TGLCoordinates read FFireDir write SetFireDir;
     {: Adjusts the initial direction (abs coordinates). }
@@ -184,12 +196,12 @@ type
      This effect works as a client of TFireFXManager }
   TGLBFireFX = class(TGLObjectPostEffect)
   private
-    { Private Declarations }
+     
     FManager: TGLFireFXManager;
     FManagerName: string; // NOT persistent, temporarily used for persistence
 
   protected
-    { Protected Declarations }
+     
     procedure SetManager(const val: TGLFireFXManager);
 
     procedure WriteToFiler(writer: TWriter); override;
@@ -197,7 +209,7 @@ type
     procedure Loaded; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -209,7 +221,7 @@ type
     procedure Render(var rci: TRenderContextInfo); override;
 
   published
-    { Published Declarations }
+     
           {: Refers the collision manager. }
     property Manager: TGLFireFXManager read FManager write SetManager;
   end;
@@ -674,7 +686,7 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLBFireFX.FriendlyName: string;
@@ -742,7 +754,7 @@ begin
   end;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLBFireFX.Assign(Source: TPersistent);

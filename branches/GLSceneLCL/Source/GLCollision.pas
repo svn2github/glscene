@@ -29,7 +29,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLScene, GLXCollection, GLVectorGeometry, GLVectorLists, GLVectorFileObjects,
   GLGeometryBB, GLCrossPlatform,
   GLManager , GLVectorTypes;
@@ -62,25 +62,25 @@ type
 	//
 	TGLCollisionManager = class (TComponent)
 	   private
-	      { Private Declarations }
+	       
          FClients : TList;
          FOnCollision : TObjectCollisionEvent;
 
 	   protected
-	      { Protected Declarations }
+	       
 	      procedure RegisterClient(aClient : TGLBCollision);
 	      procedure DeRegisterClient(aClient : TGLBCollision);
 	      procedure DeRegisterAllClients;
 
 	   public
-	      { Public Declarations }
+	       
 	      constructor Create(AOwner: TComponent); override;
          destructor Destroy; override;
 
 	      procedure CheckCollisions;
 
 		published
-			{ Published Declarations }
+			 
          property OnCollision : TObjectCollisionEvent read FOnCollision write FOnCollision;
 	end;
 
@@ -94,14 +94,14 @@ type
       of them will be accounted for, others will be ignored. }
 	TGLBCollision = class (TGLBehaviour)
 		private
-			{ Private Declarations }
+			 
          FBoundingMode : TCollisionBoundingMode;
          FManager : TGLCollisionManager;
          FManagerName : String; // NOT persistent, temporarily used for persistence
          FGroupIndex : Integer;
 
 		protected
-			{ Protected Declarations }
+			 
          procedure SetGroupIndex(const value : Integer);
          procedure SetManager(const val : TGLCollisionManager);
 
@@ -110,7 +110,7 @@ type
          procedure Loaded; override;
 
 		public
-			{ Public Declarations }
+			 
 			constructor Create(aOwner : TGLXCollection); override;
 			destructor Destroy; override;
 
@@ -120,7 +120,7 @@ type
 			class function FriendlyDescription : String; override;
 
 		published
-			{ Published Declarations }
+			 
          {: Refers the collision manager. }
          property Manager : TGLCollisionManager read FManager write SetManager;
          property BoundingMode : TCollisionBoundingMode read FBoundingMode write FBoundingMode;
@@ -843,7 +843,7 @@ begin
    inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLBCollision.FriendlyName : String;
 begin
@@ -909,7 +909,7 @@ begin
    end;
 end;
 
-// Assign
+ 
 //
 procedure TGLBCollision.Assign(Source: TPersistent);
 begin

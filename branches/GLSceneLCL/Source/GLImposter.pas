@@ -76,7 +76,7 @@ type
      Note: Remeber to enable Destination Alpha on your viewer.}
   TImposter = class(TObject)
   private
-    { Private Declarations }
+     
     FRequestCount: Integer;
     FBuilder: TGLImposterBuilder;
     FTexture: TGLTextureHandle;
@@ -85,7 +85,7 @@ type
     FModulated: Boolean;
 
   protected
-    { Protected Declarations }
+     
     FVx, FVy: TVector;
     FStaticOffset: TVector;
     FQuad: array[0..3] of TVector;
@@ -95,7 +95,7 @@ type
     procedure RenderQuad(const texExtents, objPos: TVector; size: Single);
 
   public
-    { Public Declarations }
+     
     constructor Create(aBuilder: TGLImposterBuilder); virtual;
     destructor Destroy; override;
 
@@ -139,7 +139,7 @@ type
   {: Abstract ImposterBuilder class. }
   TGLImposterBuilder = class(TGLUpdateAbleComponent)
   private
-    { Private Declarations }
+     
     FBackColor: TGLColor;
     FBuildOffset: TGLCoordinates;
     FImposterRegister: TPersistentObjectList;
@@ -151,7 +151,7 @@ type
     FOnImposterLoaded: TImposterLoadedEvent;
 
   protected
-    { Protected Declarations }
+     
     procedure SetRenderPoint(AValue: TGLRenderPoint);
     procedure RenderPointFreed(Sender: TObject);
     procedure SetBackColor(AValue: TGLColor);
@@ -175,7 +175,7 @@ type
       bmp32: TGLBitmap32); virtual;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -192,7 +192,7 @@ type
     procedure UnRequestImposterFor(impostoredObject: TGLBaseSceneObject);
 
   published
-    { Published Declarations }
+     
       {: Specifies the render point at which the impostor texture(s) can be prepared.<p>
          For best result, the render point should happen in viewer that has
          a destination alpha (otherwise, impostors will be opaque). }
@@ -235,25 +235,25 @@ type
     {: Describes a set of orientation in a corona fashion. }
   TGLStaticImposterBuilderCorona = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FSamples: Integer;
     FElevation: Single;
     FSampleBaseIndex: Integer;
 
   protected
-    { Protected Declarations }
+     
     function GetDisplayName: string; override;
     procedure SetSamples(AValue: Integer);
     procedure SetElevation(AValue: Single);
 
   public
-    { Public Declarations }
+     
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
 
   published
-    { Published Declarations }
+     
     property Samples: Integer read FSamples write SetSamples default 8;
     property Elevation: Single read FElevation write SetElevation;
   end;
@@ -267,11 +267,11 @@ type
   //
   TGLStaticImposterBuilderCoronas = class(TOwnedCollection)
   private
-    { Private Declarations }
+     
     FCoronaTangentLookup: array of TCoronaTangentLookup;
 
   protected
-    { Protected Declarations }
+     
     procedure SetItems(AIndex: Integer; const AValue:
       TGLStaticImposterBuilderCorona);
     function GetItems(AIndex: Integer): TGLStaticImposterBuilderCorona;
@@ -283,7 +283,7 @@ type
       TGLStaticImposterBuilderCorona;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent);
 
     function Add: TGLStaticImposterBuilderCorona; overload;
@@ -302,13 +302,13 @@ type
   {: Imposter class whose texture contains several views from different angles. }
   TStaticImposter = class(TImposter)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
 
   public
-    { Public Declarations }
+     
     procedure Render(var rci: TRenderContextInfo;
       const objPos, localCameraPos: TVector;
       size: Single); override;
@@ -323,7 +323,7 @@ type
   {: Builds imposters whose texture is a catalog of prerendered views. }
   TGLStaticImposterBuilder = class(TGLImposterBuilder)
   private
-    { Private Declarations }
+     
     FCoronas: TGLStaticImposterBuilderCoronas;
     FSampleSize: Integer;
     FTextureSize: TGLPoint;
@@ -334,7 +334,7 @@ type
     FSamplesAlphaScale: Single;
 
   protected
-    { Protected Declarations }
+     
     procedure SetCoronas(AValue: TGLStaticImposterBuilderCoronas);
     procedure SetSampleSize(AValue: Integer);
     procedure SetSamplingRatioBias(AValue: Single);
@@ -360,7 +360,7 @@ type
     procedure ComputeStaticParams(destImposter: TImposter);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -379,7 +379,7 @@ type
     property SamplesPerAxis: TGLPoint read FSamplesPerAxis;
 
   published
-    { Published Declarations }
+     
       {: Description of the samples looking orientations. }
     property Coronas: TGLStaticImposterBuilderCoronas read FCoronas write
       SetCoronas;
@@ -414,24 +414,24 @@ type
   //
   TGLDynamicImposterBuilder = class(TGLImposterBuilder)
   private
-    { Private Declarations }
+     
     FMinTexSize, FMaxTexSize: Integer;
     FMinDistance, FTolerance: Single;
     FUseMatrixError: Boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure SetMinDistance(const AValue: Single);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {         procedure DoRender(var rci : TRenderContextInfo;
                                 renderSelf, renderChildren : Boolean); override; }
 
   published
-    { Published Declarations }
+     
     property MinTexSize: Integer read FMinTexSize write FMinTexSize;
     property MaxTexSize: Integer read FMaxTexSize write FMaxTexSize;
     property MinDistance: Single read FMinDistance write SetMinDistance;
@@ -444,17 +444,17 @@ type
   //
   TGLImposter = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FBuilder: TGLImposterBuilder;
     FImpostoredObject: TGLBaseSceneObject;
 
   protected
-    { Protected Declarations }
+     
     procedure SetBuilder(const AValue: TGLImposterBuilder);
     procedure SetImpostoredObject(const AValue: TGLBaseSceneObject);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Notification(AComponent: TComponent; Operation: TOperation);
@@ -463,7 +463,7 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
 
   published
-    { Published Declarations }
+     
     property Builder: TGLImposterBuilder read FBuilder write SetBuilder;
     property ImpostoredObject: TGLBaseSceneObject read FImpostoredObject write
       SetImpostoredObject;
@@ -952,7 +952,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLStaticImposterBuilderCorona.Assign(Source: TPersistent);
@@ -1858,8 +1858,6 @@ begin
   Result:=FTextureHandle;
 end;
 
-// Invalidate
-//
 procedure TGLImposter.Invalidate;
 begin
   FInvalidated:=True;

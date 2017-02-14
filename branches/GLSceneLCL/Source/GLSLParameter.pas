@@ -10,7 +10,7 @@ unit GLSLParameter;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 {$M-}
 
 uses

@@ -289,10 +289,10 @@ type
 
     property CameraJobList: TGLCameraJobList read FCameraJobList;
   published
-    // Assign a Moving object (usually a TGLCamera).
+    // Moving object (usually a TGLCamera).
     property Camera: TGLBaseSceneObject read FCamera write SetCamera;
 
-    // Assign a target, around which Moving object should rotate(usually TGLCamera.TargetObject).
+    // Target, around which Moving object should rotate(usually TGLCamera.TargetObject).
     property CameraTarget: TGLBaseSceneObject read FCameraTarget write SetCameraTarget;
 
     //specifies whether user should be able interract with the GLSceneViewer

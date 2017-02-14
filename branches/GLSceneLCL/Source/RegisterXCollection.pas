@@ -16,7 +16,7 @@ unit RegisterXCollection;
 
 interface
 
-{$i GLScene.inc}
+{$I GLScene.inc}
 
 uses
   Classes, GLXCollection,
@@ -33,7 +33,7 @@ type
 	//
 	TGLXCollectionProperty = class(TClassProperty)
 		public
-			{ Public Declarations }
+			 
 			function GetAttributes: TPropertyAttributes; override;
 			procedure Edit; override;
 	end;

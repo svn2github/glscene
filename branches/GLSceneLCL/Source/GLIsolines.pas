@@ -17,10 +17,10 @@ interface
 
 uses
   System.SysUtils, System.Classes, System.Math,
-  //GLS
+   
   GLVectorGeometry, GLVectorLists, GLTypes, GLSpline;
 
-{$i GLScene.inc}  
+{$I GLScene.inc}  
   
 type
   TVectorL4D = array [0 .. 4] of Single;

@@ -18,7 +18,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLVectorTypes, GLVectorGeometry, GLCrossPlatform;
 
 procedure Float2rgbe(var RGBE: TVector4b; const Red, Green, Blue: Single);

@@ -114,7 +114,7 @@ type
 
   THeightDataSource = class(TComponent)
   private
-    { Private Declarations }
+     
     FData: TThreadList; // stores all THeightData, whatever their state/type
     FDataHash: array [0 .. 255] of TList; // X/Y hash references for HeightDatas
     FThread: TThread; // queue manager
@@ -124,7 +124,7 @@ type
     // FReleaseLatency : TDateTime;      //Not used anymore???
     FDefaultHeight: Single;
   protected
-    { Protected Declarations }
+     
     procedure SetMaxThreads(const Val: Integer);
 
     function HashKey(XLeft, YTop: Integer): Integer;
@@ -137,7 +137,7 @@ type
     function FindMatchInList(XLeft, YTop, size: Integer;
       DataType: THeightDataType): THeightData;
   public
-    { Public Declarations }
+     
 
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -272,7 +272,7 @@ type
   // THeightData = class (TObject)
   THeightData = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FUsers: array of THeightDataUser;
     FOwner: THeightDataSource;
     FDataState: THeightDataState;
@@ -309,7 +309,7 @@ type
     procedure ConvertSingleToSmallInt;
 
   protected
-    { Protected Declarations }
+     
     FThread: THeightDataThread;
     // thread used for multi-threaded processing (if any)
 
@@ -325,7 +325,7 @@ type
     NewVersion: THeightData; // the replacement tile
     DontUse: boolean; // Tells TerrainRenderer which version to use
 
-    { Public Declarations }
+     
 
     // constructor Create(AOwner : TComponent); override;
     constructor Create(AOwner: THeightDataSource; aXLeft, aYTop, aSize: Integer;
@@ -466,11 +466,11 @@ type
       }
   THeightDataThread = class(TThread)
   protected
-    { Protected Declarations }
+     
     FHeightData: THeightData;
 
   public
-    { Public Declarations }
+     
     destructor Destroy; override;
     { : The Height Data the thread is to prepare.<p> }
     property HeightData: THeightData read FHeightData write FHeightData;
@@ -487,7 +487,7 @@ type
     (gray) bitmap. }
   TGLBitmapHDS = class(THeightDataSource)
   private
-    { Private Declarations }
+     
     FScanLineCache: array of PByteArray;
     FBitmap: TGLBitmap;
 {$IFDEF FPC}
@@ -498,7 +498,7 @@ type
     FInverted: boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure SetPicture(const Val: TGLPicture);
     procedure OnPictureChanged(sender: TObject);
     procedure SetInfiniteWrap(Val: boolean);
@@ -508,7 +508,7 @@ type
     procedure FreeMonochromeBitmap;
     function GetScanLine(y: Integer): PByteArray;
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -518,7 +518,7 @@ type
     function Height: Integer; override;
 
   published
-    { Published Declarations }
+     
     { : The picture serving as Height field data reference.<p>
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
@@ -545,15 +545,15 @@ type
     application-side (for application-specific needs). }
   TGLCustomHDS = class(THeightDataSource)
   private
-    { Private Declarations }
+     
     FOnStartPreparingData: TStartPreparingDataEvent;
     FOnMarkDirty: TMarkDirtyEvent;
 
   protected
-    { Protected Declarations }
+     
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: THeightData); override;
@@ -561,7 +561,7 @@ type
     procedure MarkDirty(const Area: TGLRect); override;
 
   published
-    { Published Declarations }
+     
     property MaxPoolSize;
 
     property OnStartPreparingData: TStartPreparingDataEvent
@@ -582,19 +582,19 @@ type
     (this component expects to find "tbase.bin" in the current directory). }
   TGLTerrainBaseHDS = class(THeightDataSource)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure StartPreparingData(HeightData: THeightData); override;
 
   published
-    { Published Declarations }
+     
     property MaxPoolSize;
   end;
 
@@ -618,12 +618,12 @@ type
   }
   THeightDataSourceFilter = Class(THeightDataSource)
   private
-    { Private Declarations }
+     
     FHDS: THeightDataSource;
     FOnSourceDataFetched: TSourceDataFetchedEvent;
     FActive: boolean;
   protected
-    { Protected Declarations }
+     
     { : PreparingData:  <p>
       Override this function in your filter subclasses, to make any
       updates/changes to HeightData, before it goes into the cache.
@@ -631,7 +631,7 @@ type
     procedure PreparingData(HeightData: THeightData); virtual; abstract;
     procedure SetHDS(Val: THeightDataSource);
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Release(aHeightData: THeightData); override;
@@ -644,7 +644,7 @@ type
       read FOnSourceDataFetched write FOnSourceDataFetched;
 
   published
-    { Published Declarations }
+     
     property MaxPoolSize;
     property HeightDataSource: THeightDataSource read FHDS write SetHDS;
     property Active: boolean read FActive write FActive;

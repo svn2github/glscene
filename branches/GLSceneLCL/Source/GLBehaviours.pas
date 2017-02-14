@@ -52,16 +52,16 @@ type
        }
   TGLDamping = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FConstant: single;
     FLinear: single;
     FQuadratic: single;
 
   protected
-    { Protected Declarations }
+     
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -80,7 +80,7 @@ type
       const quadratic: single = 0);
 
   published
-    { Published Declarations }
+     
     property Constant: single read FConstant write FConstant;
     property Linear: single read FLinear write FLinear;
     property Quadratic: single read FQuadratic write FQuadratic;
@@ -96,7 +96,7 @@ type
     if this approximation does not suits your needs :). }
   TGLBInertia = class(TGLBehaviour)
   private
-    { Private Declarations }
+     
     FMass: single;
     FTranslationSpeed: TGLCoordinates;
     FTurnSpeed, FRollSpeed, FPitchSpeed: single;
@@ -104,7 +104,7 @@ type
     FDampingEnabled: boolean;
 
   protected
-    { Protected Declarations }
+     
     procedure SetTranslationSpeed(const val: TGLCoordinates);
     procedure SetTranslationDamping(const val: TGLDamping);
     procedure SetRotationDamping(const val: TGLDamping);
@@ -113,7 +113,7 @@ type
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -144,7 +144,7 @@ type
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
 
   published
-    { Published Declarations }
+     
     property Mass: single read FMass write FMass;
     property TranslationSpeed: TGLCoordinates
       read FTranslationSpeed write SetTranslationSpeed;
@@ -175,18 +175,18 @@ type
   {: Applies a constant acceleration to a TGLBInertia.<p> }
   TGLBAcceleration = class(TGLBehaviour)
   private
-    { Private Declarations }
+     
     FAcceleration: TGLCoordinates;
 
   protected
-    { Protected Declarations }
+     
     procedure SetAcceleration(const val: TGLCoordinates);
 
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
   public
-    { Public Declarations }
+     
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
 
@@ -199,7 +199,7 @@ type
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
   published
-    { Published Declarations }
+     
     property Acceleration: TGLCoordinates read FAcceleration write FAcceleration;
   end;
 
@@ -292,7 +292,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 
 procedure TGLDamping.Assign(Source: TPersistent);
 begin
@@ -414,7 +414,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 
 procedure TGLBInertia.Assign(Source: TPersistent);
 begin
@@ -491,7 +491,7 @@ begin
   FRotationDamping.Assign(val);
 end;
 
-// FriendlyName
+ 
 
 class function TGLBInertia.FriendlyName: string;
 begin
@@ -655,7 +655,7 @@ begin
   FAcceleration.Free;
 end;
 
-// Assign
+ 
 
 procedure TGLBAcceleration.Assign(Source: TPersistent);
 begin
@@ -697,7 +697,7 @@ begin
   FAcceleration.Assign(val);
 end;
 
-// FriendlyName
+ 
 
 class function TGLBAcceleration.FriendlyName: string;
 begin

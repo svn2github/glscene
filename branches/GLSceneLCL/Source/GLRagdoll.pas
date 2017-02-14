@@ -30,13 +30,13 @@ type
 
   TGLRagdolBoneList = class (TPersistentObjectList)
   private
-    { Private Declarations }
+     
      FRagdoll : TGLRagdoll;
   protected
-    { Protected Declarations }
+     
     function GetRagdollBone(Index: Integer) : TGLRagdolBone;
   public
-    { Public Declarations }
+     
     constructor Create(Ragdoll: TGLRagdoll); reintroduce;
     destructor Destroy; override;
 
@@ -49,7 +49,7 @@ type
 
 	TGLRagdolBone = class (TGLRagdolBoneList)
   private
-    { Private Declarations }
+     
     FOwner : TGLRagdolBoneList;
     FName : String;
     FBoneID : Integer; //Refering to TGLActor Bone
@@ -72,14 +72,14 @@ type
     procedure UpdateChild;
     procedure StopChild;
   protected
-    { Protected Declarations }
+     
     function GetRagdollBone(Index: Integer) : TGLRagdolBone;
     procedure Start; virtual; abstract;
     procedure Align; virtual; abstract;
     procedure Update; virtual; abstract;
     procedure Stop; virtual; abstract;
   public
-    { Public Declarations }
+     
     constructor CreateOwned(aOwner : TGLRagdolBoneList);
     constructor Create(Ragdoll: TGLRagdoll);
     destructor Destroy; override;
@@ -101,15 +101,15 @@ type
 
   TGLRagdoll = class(TPersistentObject)
 	private
-    { Private Declarations }
+     
     FOwner : TGLBaseMesh;
     FRootBone : TGLRagdolBone;
     FEnabled: Boolean;
     FBuilt: Boolean;
   protected
-    { Protected Declarations }
+     
   public
-    { Public Declarations }
+     
     constructor Create(AOwner : TGLBaseMesh); reintroduce;
     destructor Destroy; override;
 

@@ -53,7 +53,7 @@ interface
 
 uses
   Classes, SysUtils,
-  // GLS
+   
   GLScene, GLHeightData, GLMaterial, GLVectorGeometry, GLContext, GLROAMPatch,
   GLVectorLists, GLRenderContextInfo, OpenGLTokens, XOpenGL, GLUtils
 , GLVectorTypes;
@@ -90,7 +90,7 @@ type
   // TGLTerrainRenderer = class (TGLSceneObject)
   TGLTerrainRenderer = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FHeightDataSource: THeightDataSource;
     FTileSize: Integer;
     FQualityDistance, FinvTileSize: single;
@@ -111,7 +111,7 @@ type
     FOcclusionTesselate: TTerrainOcclusionTesselate;
 
   protected
-    { Protected Declarations }
+     
     FTilesHash: packed array [0 .. cTilesHashSize] of TList;
 
     procedure MarkAllTilesAsUnused;
@@ -140,7 +140,7 @@ type
       texFactor: single; hdList: TList): TGLROAMPatch;
 
   public
-    { Public Declarations }
+     
 
     { :TileManagement flags can be used to turn off various Tile cache management features.
       This helps to prevent unnecessary tile cache flushes, when rendering from multiple cameras. }
@@ -163,7 +163,7 @@ type
     function HashedTileCount: Integer;
 
   published
-    { Published Declarations }
+     
     { : Specifies the HeightData provider component. }
     property HeightDataSource: THeightDataSource read FHeightDataSource
       write SetHeightDataSource;

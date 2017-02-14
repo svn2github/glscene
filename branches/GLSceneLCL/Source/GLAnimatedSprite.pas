@@ -30,7 +30,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLScene, GLVectorGeometry, OpenGLTokens, GLMaterial,
   GLPersistentClasses, GLXCollection, GLCrossPlatform, GLRenderContextInfo,
   GLBaseClasses, GLContext, GLState;
@@ -343,7 +343,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TSpriteAnimFrame.FriendlyName: string;
@@ -573,7 +573,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TSpriteAnimation.FriendlyName: string;

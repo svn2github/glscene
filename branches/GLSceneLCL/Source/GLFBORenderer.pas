@@ -32,7 +32,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLVectorGeometry, GLScene, GLTexture, GLContext, GLFBO, GLColor,
   GLMaterial, GLRenderContextInfo, GLState, OpenGLTokens,
   GLTextureFormat,

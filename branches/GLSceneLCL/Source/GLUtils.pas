@@ -39,7 +39,7 @@ uses
   {$ELSE}
   Classes, SysUtils, Graphics, Controls,
 {$ENDIF}
-  // GLScene
+   cene
   GLVectorGeometry, GLCrossPlatform;
 
 type

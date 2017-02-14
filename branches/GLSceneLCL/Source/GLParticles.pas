@@ -67,7 +67,7 @@ type
   }
   TGLParticles = class(TGLImmaterialSceneObject)
   private
-    { Private Declarations }
+     
     FCubeSize: TGLFloat;
     FEdgeColor: TGLColor;
     FVisibleAtRunTime: Boolean;
@@ -80,7 +80,7 @@ type
     FOnBeforeRenderParticles, FOnAfterRenderParticles: TDirectRenderEvent;
 
   protected
-    { Protected Declarations }
+     
     procedure SetCubeSize(const val: TGLFloat);
     procedure SetEdgeColor(const val: TGLColor);
     procedure SetVisibleAtRunTime(const val: Boolean);
@@ -89,7 +89,7 @@ type
     procedure ClearParticlePool;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
@@ -110,7 +110,7 @@ type
     procedure KillParticles;
 
   published
-    { Published Declarations }
+     
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
     property EdgeColor: TGLColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
@@ -175,7 +175,7 @@ begin
   inherited;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLParticles.Assign(Source: TPersistent);

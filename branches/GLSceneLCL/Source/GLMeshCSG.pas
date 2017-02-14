@@ -28,7 +28,7 @@ interface
 
 uses
   SysUtils, Classes, Math,
-  //GLS
+   
   GLScene, GLVectorTypes, GLVectorFileObjects,
   GLVectorGeometry, GLBSP, GLVectorLists;
 

@@ -73,14 +73,14 @@ type
     Locking (hardware passthrough) is supported, see "Locked" property for details. }
   TGLVertexList = class(TGLUpdateAbleObject)
   private
-    { Private Declarations }
+     
     FValues: PVertexDataArray;
     FCount: Integer;
     FCapacity, FGrowth: Integer;
     FLockedOldValues: PVertexDataArray;
 
   protected
-    { Protected Declarations }
+     
     procedure SetCapacity(const val: Integer);
     procedure SetGrowth(const val: Integer);
     procedure Grow;
@@ -105,7 +105,7 @@ type
     procedure SetLocked(val: Boolean);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent); override;
     destructor Destroy; override;
 
@@ -190,14 +190,14 @@ type
     up the mesh (triangles, strips...) }
   TGLMesh = class(TGLSceneObject)
   private
-    { Private Declarations }
+     
     FVertices: TGLVertexList;
     FMode: TMeshMode;
     FVertexMode: TVertexMode;
     FAxisAlignedDimensionsCache: TVector;
 
   protected
-    { Protected Declarations }
+     
     procedure SetMode(AValue: TMeshMode);
     procedure SetVertices(AValue: TGLVertexList);
     procedure SetVertexMode(AValue: TVertexMode);
@@ -205,7 +205,7 @@ type
     procedure VerticesChanged(Sender: TObject);
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -217,7 +217,7 @@ type
     procedure StructureChanged; override;
 
   published
-    { Published Declarations }
+     
     property Mode: TMeshMode read FMode write SetMode;
     property VertexMode: TVertexMode read FVertexMode write SetVertexMode
       default vmVNCT;
@@ -681,7 +681,7 @@ begin
     FirstTexPoint);
 end;
 
-// Assign
+ 
 //
 
 procedure TGLVertexList.Assign(Source: TPersistent);
@@ -901,7 +901,7 @@ begin
   StructureChanged;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLMesh.Assign(Source: TPersistent);

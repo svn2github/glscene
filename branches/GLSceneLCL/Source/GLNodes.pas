@@ -22,7 +22,7 @@ interface
 
 uses
   Classes, SysUtils,
-  //GLS
+   
   GLVectorGeometry, OpenGLTokens, OpenGLAdapter, GLContext, GLBaseClasses,
   GLCoordinates, GLSpline,
   XOpenGL
@@ -36,7 +36,7 @@ type
   //
   TGLNode = class(TCollectionItem)
   private
-    { Private Declarations }
+     
     FCoords: TVector;
     FTagObject: TObject;
     procedure SetAsVector(const Value: TVector);
@@ -46,13 +46,13 @@ type
     function GetCoordinate(const Index: Integer): TGLFloat;
 
   protected
-    { Protected Declarations }
+     
     function StoreCoordinate(AIndex: Integer): Boolean;
 
     function GetDisplayName: string; override;
 
   public
-    { Public Declarations }
+     
     constructor Create(ACollection: TCollection); override;
     destructor Destroy; override;
     procedure Assign(Source: TPersistent); override;
@@ -74,7 +74,7 @@ type
 
     property TagObject: TObject read FTagObject write FTagObject;
   published
-    { Published Declarations }
+     
     property X: TGLFloat index 0 read GetCoordinate write SetCoordinate
       stored StoreCoordinate;
     property Y: TGLFloat index 1 read GetCoordinate write SetCoordinate
@@ -87,16 +87,16 @@ type
   //
   TGLNodes = class(TOwnedCollection)
   private
-    { Private Declarations }
+     
 
   protected
-    { Protected Declarations }
+     
     procedure SetItems(Index: Integer; const Val: TGLNode);
     function GetItems(Index: Integer): TGLNode;
     procedure Update(Item: TCollectionItem); override;
 
   public
-    { Public Declarations }
+     
     constructor Create(AOwner: TPersistent;
       AItemClass: TCollectionItemClass = nil);
     function CreateCopy(AOwner: TPersistent): TGLNodes;
@@ -177,7 +177,7 @@ begin
   inherited Destroy;
 end;
 
-// Assign
+ 
 //
 
 procedure TGLNode.Assign(Source: TPersistent);

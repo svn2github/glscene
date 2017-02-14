@@ -19,9 +19,12 @@ interface
 {$I GLScene.inc}
 
 uses
-  SysUtils, Classes,
-  //GLS
-  GLCrossPlatform, GLVectorTypes, GLVectorGeometry;
+  SysUtils, 
+  Classes,
+   
+  GLCrossPlatform, 
+  GLVectorTypes, 
+  GLVectorGeometry;
 
 type
 
