@@ -3,7 +3,7 @@
 //
 {
    A shader that applies cel shading through a vertex program
-   and shade definition texture.<p>
+   and shade definition texture.
 
     History :  
        23/08/10 - Yar - Upgraded program hadles
@@ -34,7 +34,7 @@ uses
 type
   // TGLCelShaderOption
   //
-  {: Cel shading options.<p>
+  { Cel shading options.
      csoOutlines: Render a second outline pass.
      csoTextured: Allows for a primary texture that the cel shading
                   is modulated with and forces the shade definition
@@ -44,13 +44,13 @@ type
 
   // TGLCelShaderGetIntensity
   //
-  //: An event for user defined cel intensity.
+  // An event for user defined cel intensity.
   TGLCelShaderGetIntensity = procedure(Sender: TObject; var intensity: Byte) of
     object;
 
   // TGLCelShader
   //
-  {: A generic cel shader.<p> }
+  { A generic cel shader. }
   TGLCelShader = class(TGLShader)
   private
     FOutlineWidth: Single;

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements the standard Teapot, build from evaluators.<p>
+   Implements the standard Teapot, build from evaluators.
 
 	 History :  
        06/04/08 - DaStr - Fixed sizes of some array pointer types.

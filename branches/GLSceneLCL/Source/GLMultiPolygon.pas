@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Object with support for complex polygons.<p>
+   Object with support for complex polygons.
 
   History :  
        14/07/11 - DaStr - Bugfixed a rare case in TMultiPolygonBase.Destroy
@@ -93,12 +93,12 @@ type
   published
      
     property Description: string read FDescription write SetDescription;
-    {: The nodes list.<p> }
+    { The nodes list. }
     property Nodes: TGLContourNodes read FNodes write SetNodes;
-    {: Number of divisions for each segment in spline modes.<p>
+    { Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    {: Default spline drawing mode.<p>
+    { Default spline drawing mode.
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode default lsmLines;
   end;
@@ -137,7 +137,7 @@ type
 
   // TMultiPolygonBase
   //
-  {: Multipolygon is defined with multiple contours.<p>
+  { Multipolygon is defined with multiple contours.
      The contours have to be in the X-Y plane, otherwise they are projected
      to it (this is done automatically by the tesselator). 
      The plane normal is pointing in +Z. All contours are automatically closed,
@@ -145,7 +145,7 @@ type
      Contours should be defined counterclockwise, the first contour (index = 0)
      is taken as is, all following are reversed. This means you can define the
      outer contour first and the holes and cutouts after that. If you give the
-     following contours in clockwise order, the first contour is extended.<p>
+     following contours in clockwise order, the first contour is extended.
 
      TMultiPolygonBase will take the input contours and let the tesselator
      make an outline from it (this is done in RetreiveOutline). This outline is
@@ -197,7 +197,7 @@ type
 
   // TGLMultiPolygon
   //
-  {: A polygon that can have holes and multiple contours.<p>
+  { A polygon that can have holes and multiple contours.
      Use the Path property to access a contour or one of the AddNode methods
      to add a node to a contour (contours are allocated automatically). }
   TGLMultiPolygon = class(TMultiPolygonBase)

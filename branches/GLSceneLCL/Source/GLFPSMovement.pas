@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   FPS-like movement behaviour and manager.<p>
+   FPS-like movement behaviour and manager.
 
    History :  
    23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

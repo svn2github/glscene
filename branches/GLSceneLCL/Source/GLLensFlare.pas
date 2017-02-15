@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Lens flare object.<p>
+   Lens flare object.
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -37,7 +37,7 @@
        29/10/02 - EG - Initial, added defaults and encapsulation,
                           fixed positionning, RandSeed now preserved,
                           minor speedup
-  <p>
+  
 
    Author  : Tobias Peirick 
    eMail   : peirick@onlinehome.de 
@@ -62,7 +62,7 @@ type
   TFlareElement = (feGlow, feRing, feStreaks, feRays, feSecondaries);
   TFlareElements = set of TFlareElement;
 
-  {: The actual gradients between two colors are, of course, calculated by OpenGL.<p>
+  { The actual gradients between two colors are, of course, calculated by OpenGL.
      The start and end colors of a gradient are stored to represent the color of
      lens flare elements. }
   TGLFlareGradient = class(TGLUpdateAbleObject)
@@ -168,13 +168,13 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Prepares pre-rendered texture to speed up actual rendering.<p>
+    { Prepares pre-rendered texture to speed up actual rendering.
        Will use the currently active context as scratch space, and will
        automatically do nothing if things have already been prepared,
        thus you can invoke it systematically in a Viewer.BeforeRender
        event f.i. }
     procedure PreRender(activeBuffer: TGLSceneBuffer);
-    {: Access to the Flare's current size.<p>
+    { Access to the Flare's current size.
        Flares decay or grow back over several frames, depending on their
        occlusion status, and this property allows to track or manually
        alter this instantaneous size. }
@@ -189,45 +189,45 @@ type
     property RaysGradient: TGLFlareGradient read FRaysGradient;
     property SecondariesGradient: TGLFlareGradient read FSecondariesGradient;
 
-    //: MaxRadius of the flare.
+    // MaxRadius of the flare.
     property Size: Integer read FSize write SetSize default 50;
-    //: Random seed
+    // Random seed
     property Seed: Integer read FSeed write SetSeed;
-    //: To create elliptic flares.
+    // To create elliptic flares.
     property Squeeze: Single read FSqueeze write SetSqueeze stored StoreSqueeze;
-    //: Number of streaks.
+    // Number of streaks.
     property NumStreaks: Integer read FNumStreaks write SetNumStreaks default 4;
-    //: Width of the streaks.
+    // Width of the streaks.
     property StreakWidth: Single read FStreakWidth write SetStreakWidth stored
       StoreStreakWidth;
-    //: Angle of the streaks (in degrees)
+    // Angle of the streaks (in degrees)
     property StreakAngle: Single read FStreakAngle write SetStreakAngle;
-    //: Number of secondary flares.
+    // Number of secondary flares.
     property NumSecs: Integer read FNumSecs write SetNumSecs default 8;
-    //: Number of segments used when rendering circles.
+    // Number of segments used when rendering circles.
     property Resolution: Integer read FResolution write SetResolution default
       64;
-    {: Automatically computes FlareIsNotOccluded depending on ZBuffer test.<p>
+    { Automatically computes FlareIsNotOccluded depending on ZBuffer test.
        Not that the automated test may use test result from the previous
        frame into the next (to avoid a rendering stall). }
     property AutoZTest: Boolean read FAutoZTest write SetAutoZTest default True;
-    {: Is the LensFlare not occluded?.<p>
+    { Is the LensFlare not occluded?.
        If false the flare will fade away, if true, it will fade in and stay.
        This value is automatically updated if AutoZTest is set. }
     property FlareIsNotOccluded: Boolean read FFlareIsNotOccluded write
       FFlareIsNotOccluded;
-    //: Which elements should be rendered?
+    // Which elements should be rendered?
     property Elements: TFlareElements read FElements write SetElements default
       cDefaultFlareElements;
-    {: Is the flare size adjusted dynamically?<p>
+    { Is the flare size adjusted dynamically?
        If true, the flare size will be grown and reduced over a few frames
        when it switches between occluded and non-occluded states. This
        requires animation to be active, but results in a smoother appearance. 
-       When false, flare will either be at full size or hidden.<p>
+       When false, flare will either be at full size or hidden.
        The flare is always considered non-dynamic at design-time. }
     property Dynamic: Boolean read FDynamic write FDynamic default True;
 
-    {: PreRender point for pre-rendered flare textures.<p>
+    { PreRender point for pre-rendered flare textures.
        See PreRender method for more details. }
     property PreRenderPoint: TGLRenderPoint read FPreRenderPoint write
       SetPreRenderPoint;

@@ -3,7 +3,7 @@
 //
 {
    A shader that applies a render pass for each material in
-   its assigned MaterialLibrary.<p>
+   its assigned MaterialLibrary.
 
     History :  
        22/04/10 - Yar - Fixes after GLState revision

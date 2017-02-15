@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A GLSL shader that applies bump mapping.<p>
+   A GLSL shader that applies bump mapping.
 
 	 History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
@@ -234,7 +234,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    { Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;
@@ -251,7 +251,7 @@ type
   public
     constructor Create(AOwner : TComponent); override;
     property LightSources: TGLLightSourceSet read FLightSources write SetLightSources default [1];
-    {: Setting LightCompensation to a value less than 1 decreeses individual
+    { Setting LightCompensation to a value less than 1 decreeses individual
        light intensity when using multiple lights }
     property LightCompensation: Single read FLightCompensation write SetLightCompensation;
   end;

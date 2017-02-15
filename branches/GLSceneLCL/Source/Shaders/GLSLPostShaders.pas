@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Post shaders that simulate shader visions for a mask or the entire scene.<p>
+   Post shaders that simulate shader visions for a mask or the entire scene.
 
     History :  
      04/11/15 - PW - Combined all post shaders into GLSLPostShaders unit
@@ -32,7 +32,7 @@ uses
 
   //TGLCustomGLSLPostBlurShader
   //
-  {: Custom class for GLSLPostBlurShader.<p>
+  { Custom class for GLSLPostBlurShader.
    A shader that blurs the entire scene }
 type
   TGLCustomGLSLPostBlurShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -61,11 +61,11 @@ type
 
   //TGLCustomGLSLPostThermalVisionShader
   //
-  {: Custom class for GLSLPostThermalVisionShader.<p>
+  { Custom class for GLSLPostThermalVisionShader.
    A Shader that simulate a thermal vision of the entire scene }
 
 type
-  {: A shader that simulate a Thermal Vision of the entire scene}
+  { A shader that simulate a Thermal Vision of the entire scene}
   TGLCustomGLSLPostThermalVisionShader = class(TGLCustomGLSLShader, IGLPostShader)
   private
 
@@ -98,7 +98,7 @@ type
 
   //TGLCustomGLSLPostDreamVisionShader
   //
-  {: Custom class for GLSLPostDreamVisionShader.<p>
+  { Custom class for GLSLPostDreamVisionShader.
    A shader that simulate a grayscale threshold vision (aka dream) of the entire scene}
 type
   TGLCustomGLSLPostDreamVisionShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -129,7 +129,7 @@ type
 
   //TGLCustomGLSLPostNightVisionShader
   //
-  {: Custom class for GLSLPostNightVisionShader.<p>
+  { Custom class for GLSLPostNightVisionShader.
    A shader that simulate a Night Vision of the scene throw a mask if enabled,
    or of the entire scene}
 
@@ -199,7 +199,7 @@ type
 
   //TGLCustomGLSLPostPixelateShader
   //
-  {: Custom class for GLSLPostPixelateShader.<p>
+  { Custom class for GLSLPostPixelateShader.
    A shader that pixelate of the entire scene}
 type
   TGLCustomGLSLPostPixelateShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -233,7 +233,7 @@ type
 
   //TGLCustomGLSLPostPosterizeShader
   //
-  {: Custom class for GLSLPostPosterizeShader.<p>
+  { Custom class for GLSLPostPosterizeShader.
    A shader that posterize of the entire scene}
 type
   TGLCustomGLSLPostPosterizeShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -267,7 +267,7 @@ type
 
   //TGLCustomGLSLPostFrostShader
   //
-  {: Custom class for GLSLPostFrostShader.<p>
+  { Custom class for GLSLPostFrostShader.
    A shader that frost of the entire scene}
 type
   TGLCustomGLSLPostFrostShader = class(TGLCustomGLSLShader, IGLPostShader)
@@ -301,8 +301,8 @@ type
 
   //TGLCustomGLSLPostTroubleShader
   //
-  {: Custom class for GLSLPostTroubleShader.<p>
-   A shader that trouble of the entire scene. v2 <p>
+  { Custom class for GLSLPostTroubleShader.
+   A shader that trouble of the entire scene. v2 
    This Shader is experimental it can do smooth the scene or double the scene and it's
    depends of PixelX, PixelY and Freq values if they are less than 1 or greater
    the effects will be very different}

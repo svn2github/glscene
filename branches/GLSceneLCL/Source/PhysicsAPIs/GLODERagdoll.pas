@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   TGLRagdoll extended using Open Dynamics Engine (ODE). <p>
+   TGLRagdoll extended using Open Dynamics Engine (ODE). 
 
 	 History : 
      10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
@@ -55,7 +55,7 @@ type
 
   public
     constructor Create;
-    {: Create the world from any existing ODE world }
+    { Create the world from any existing ODE world }
     constructor CreateFrom(World: PdxWorld; Space: PdxSpace; ContactGroup: TdJointGroupID);
     destructor Destroy; override;
     procedure WorldUpdate;

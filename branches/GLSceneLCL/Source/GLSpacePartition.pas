@@ -3,7 +3,7 @@
 //
 {
   Space Partition speeds up geometrical queries, like what objects does A
-  overlap.<p>
+  overlap.
 
   Nota that the class TOctreeSpacePartition is optimized for dynamic scenes with
   objects that are small in relation to the size of the Octree space. This from
@@ -12,7 +12,7 @@
   <i>The non-duplicating octree shouldn't really be used if  you have big objects,
   and this especially if you have lots of big objects (the more objects you have
   the less efficient the partitionning, due to the "magnifying glass" effect of
-  the non-discriminating volume).</i><p>
+  the non-discriminating volume).</i>
 
 
    History :  
@@ -561,9 +561,9 @@ type
     function GetChildForAABB(AABB: TAABB): TSectorNode; override;
   end;
 
-  { : Implements quadtrees.<p>
+  { : Implements quadtrees.
     Quadtrees are hardcoded to completely ignore the Y axis, only using X and Z
-    to determine positioning.<p>
+    to determine positioning.
     This means that they're well suited for 2d-ish situations (landscapes with
     trees for instance) but not for fully 3d situations (space fighting). }
   TQuadtreeSpacePartition = class(TSectoredSpacePartition)

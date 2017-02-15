@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Handles all the color and texture stuff.<p>
+    Handles all the color and texture stuff.
 
   History :  
         04/01/13 - PW - Added ReleaseBitmap32 in TGLBlankImage destructor to remove
@@ -261,7 +261,7 @@ type
   // Specifies the depth comparison function.
   TGLDepthCompareFunc = TDepthFunction;
 
-  {: Texture format for OpenGL (rendering) use.<p>
+  { Texture format for OpenGL (rendering) use.
   Internally, GLScene handles all "base" images as 32 Bits RGBA, but you can
   specify a generic format to reduce OpenGL texture memory use: }
   TGLTextureFormat = (
@@ -298,7 +298,7 @@ type
   TGLTextureChange = (tcImage, tcParams);
   TGLTextureChanges = set of TGLTextureChange;
 
-  {: Defines how and if Alpha channel is defined for a texture image. 
+  { Defines how and if Alpha channel is defined for a texture image. 
     tiaDefault : uses the alpha channel in the image if any
     tiaAlphaFromIntensity : the alpha channel value is deduced from other
     RGB components intensity (the brighter, the more opaque)
@@ -328,7 +328,7 @@ type
 
   // TGLTextureImage
   //
-  {: Base class for texture image data.<p>
+  { Base class for texture image data.
    Basicly, subclasses are to be considered as different ways of getting
    a HBitmap (interfacing the actual source). 
    SubClasses should be registered using RegisterGLTextureImageClass to allow
@@ -357,47 +357,47 @@ type
     property OwnerTexture: TGLTexture read FOwnerTexture write FOwnerTexture;
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Save textureImage to file.<p>
+    { Save textureImage to file.
      This may not save a picture, but for instance, parameters, if the
      textureImage is a procedural texture. }
     procedure SaveToFile(const fileName: string); dynamic;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Load textureImage from a file.<p>
+    { Load textureImage from a file.
      This may not load a picture, but for instance, parameters, if the
      textureImage is a procedural texture. 
              Subclasses should invoke inherited which will take care of the
              "OnTextureNeeded" stuff. }
     procedure LoadFromFile(const fileName: string); dynamic;
-    {: Returns a user-friendly denomination for the class.<p>
+    { Returns a user-friendly denomination for the class.
      This denomination is used for picking a texture image class
      in the IDE expert. }
     class function FriendlyName: string; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Returns a user-friendly description for the class.<p>
+    { Returns a user-friendly description for the class.
      This denomination is used for helping the user when picking a
      texture image class in the IDE expert. If it's not overriden,
      takes its value from FriendlyName. }
     class function FriendlyDescription: string; virtual;
 
-    {: Request reload/refresh of data upon next use. }
+    { Request reload/refresh of data upon next use. }
     procedure Invalidate; dynamic;
 
-    {: Returns image's bitmap handle.<p>
+    { Returns image's bitmap handle.
      If the actual image is not a windows bitmap (BMP), descendants should
      take care of properly converting to bitmap. }
     function GetBitmap32: TGLImage; virtual; {$IFNDEF GLS_CPPB}abstract;{$ENDIF}
-    {: Request for unloading bitmapData, to free some memory.<p>
+    { Request for unloading bitmapData, to free some memory.
      This one is invoked when GLScene no longer needs the Bitmap data
      it got through a call to GetHBitmap. 
      Subclasses may ignore this call if the HBitmap was obtained at
      no particular memory cost. }
     procedure ReleaseBitmap32; virtual;
-    //{: AsBitmap : Returns the TextureImage as a TBitmap }
+    //{ AsBitmap : Returns the TextureImage as a TBitmap }
     function AsBitmap: TGLBitmap;
     procedure AssignToBitmap(aBitmap: TGLBitmap);
 
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
     property Depth: Integer read GetDepth;
-    {: Native opengl texture target.<p> }
+    { Native opengl texture target. }
     property NativeTextureTarget: TGLTextureTarget read GetTextureTarget;
     property ResourceName: string read GetResourceName;
   end;
@@ -406,7 +406,7 @@ type
 
   // TGLBlankImage
   //
-  {: A texture image with no specified content, only a size.<p>
+  { A texture image with no specified content, only a size.
        This texture image type is of use if the context of your texture is
        calculated at run-time (with a TGLMemoryViewer for instance). }
   TGLBlankImage = class(TGLTextureImage)
@@ -422,11 +422,11 @@ type
     fBitmap: TGLImage;
 
     fWidth, fHeight, fDepth: Integer;
-    {: Store a icolor format, because fBitmap is not always defined}
+    { Store a icolor format, because fBitmap is not always defined}
     fColorFormat: GLenum;
-    {: Blank Cube Map }
+    { Blank Cube Map }
     fCubeMap: Boolean;
-    {: Flag to interparate depth as layer }
+    { Flag to interparate depth as layer }
     fArray: Boolean;
 
     function GetWidth: Integer; override;
@@ -450,7 +450,7 @@ type
 
   published
      
-    {: Width, heigth and depth of the blank image (for memory allocation). }
+    { Width, heigth and depth of the blank image (for memory allocation). }
     property Width: Integer read GetWidth write SetWidth default 256;
     property Height: Integer read GetHeight write SetHeight default 256;
     property Depth: Integer read GetDepth write SetDepth default 0;
@@ -461,7 +461,7 @@ type
 
   // TGLPictureImage
   //
-  {: Base class for image data classes internally based on a TPicture. }
+  { Base class for image data classes internally based on a TPicture. }
   TGLPictureImage = class(TGLTextureImage)
   private
      
@@ -487,25 +487,25 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    { Use this function if you are going to modify the Picture directly.
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
-    {: Ends a direct picture modification session.<p>
+    { Ends a direct picture modification session.
        Follows a BeginUpdate. }
     procedure EndUpdate;
     function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Holds the image content. }
+    { Holds the image content. }
     property Picture: TGLPicture read GetPicture write SetPicture;
   end;
 
   // TGLPersistentImage
   //
-  {: Stores any image compatible with Delphi's TPicture mechanism.<p>
+  { Stores any image compatible with Delphi's TPicture mechanism.
    The picture's data is actually stored into the DFM, the original
    picture name or path is not remembered. It is similar in behaviour
-   to Delphi's TImage.<p>
+   to Delphi's TImage.
    Note that if original image is for instance JPEG format, only the JPEG
    data will be stored in the DFM (compact) }
   TGLPersistentImage = class(TGLPictureImage)
@@ -528,7 +528,7 @@ type
 
   // TGLPicFileImage
   //
-  {: Uses a picture whose data is found in a file (only filename is stored).<p>
+  { Uses a picture whose data is found in a file (only filename is stored).
        The image is unloaded after upload to OpenGL. }
   TGLPicFileImage = class(TGLPictureImage)
   private
@@ -550,9 +550,9 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    //: Only picture file name is saved
+    // Only picture file name is saved
     procedure SaveToFile(const fileName: string); override;
-    {: Load picture file name or use fileName as picture filename.<p>
+    { Load picture file name or use fileName as picture filename.
        The autodetection is based on the filelength and presence of zeros. }
     procedure LoadFromFile(const fileName: string); override;
     class function FriendlyName: string; override;
@@ -563,7 +563,7 @@ type
     procedure Invalidate; override;
 
   published
-    {: Filename of the picture to use. }
+    { Filename of the picture to use. }
     property PictureFileName: string read FPictureFileName write
       SetPictureFileName;
   end;
@@ -575,7 +575,7 @@ type
 
   // TGLCubeMapImage
   //
-  {: A texture image used for specifying and stroing a cube map.<p>
+  { A texture image used for specifying and stroing a cube map.
        Not unlike TGLPictureImage, but storing 6 of them instead of just one. 
        Saving & loading as a whole currently not supported. }
   TGLCubeMapImage = class(TGLTextureImage)
@@ -605,7 +605,7 @@ type
     function GetBitmap32: TGLImage; override;
     procedure ReleaseBitmap32; override;
 
-    {: Use this function if you are going to modify the Picture directly.<p>
+    { Use this function if you are going to modify the Picture directly.
      Each invokation MUST be balanced by a call to EndUpdate. }
     procedure BeginUpdate;
     procedure EndUpdate;
@@ -616,7 +616,7 @@ type
     class function FriendlyDescription: string; override;
     property NativeTextureTarget;
 
-    {: Indexed access to the cube map's sub pictures. }
+    { Indexed access to the cube map's sub pictures. }
     property Picture[index: TGLCubeMapTarget]: TGLPicture read GetPicture write
     SetPicture;
 
@@ -638,9 +638,9 @@ type
 
   // TGLTexture
   //
-    {: Defines basic texturing properties.<p>
+    { Defines basic texturing properties.
        You can control texture wrapping, smoothing/filtering and of course define
-       the texture map (note that texturing is disabled by default).<p>
+       the texture map (note that texturing is disabled by default).
        A built-in mechanism (through ImageAlpha) allows auto-generation of an
        Alpha channel for all bitmaps (see TGLTextureImageAlpha). }
   TGLTexture = class(TGLUpdateAbleObject)
@@ -728,15 +728,15 @@ type
     function StoreImageClassName: Boolean;
 
     function GetHandle: TGLuint; virtual;
-    //: Load texture to OpenGL subsystem
+    // Load texture to OpenGL subsystem
     procedure PrepareImage(target: TGLUInt); virtual;
-    //: Setup OpenGL texture parameters
+    // Setup OpenGL texture parameters
     procedure PrepareParams(target: TGLUInt); virtual;
 
     procedure DoOnTextureNeeded(Sender: TObject; var textureFileName: string);
     procedure OnSamplerAllocate(Sender: TGLVirtualHandle; var Handle: Cardinal);
     procedure OnSamplerDestroy(Sender: TGLVirtualHandle; var Handle: Cardinal);
-    //: Shows a special image that indicates an error
+    // Shows a special image that indicates an error
     procedure SetTextureErrorImage;
   public
      
@@ -751,12 +751,12 @@ type
     procedure UnApplyMappingMode;
     procedure Apply(var rci: TRenderContextInfo);
     procedure UnApply(var rci: TRenderContextInfo);
-    {: Applies to TEXTURE1 }
+    { Applies to TEXTURE1 }
     procedure ApplyAsTexture2(var rci: TRenderContextInfo; textureMatrix: PMatrix
       = nil);
     procedure UnApplyAsTexture2(var rci: TRenderContextInfo;
       reloadIdentityTextureMatrix: boolean);
-    {: N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
+    { N=1 for TEXTURE0, N=2 for TEXTURE1, etc. }
     procedure ApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
       textureMatrix: PMatrix = nil);
     procedure UnApplyAsTextureN(n: Integer; var rci: TRenderContextInfo;
@@ -772,40 +772,40 @@ type
     procedure SetImageClassName(const val: string);
     function GetImageClassName: string;
 
-    {: Returns the OpenGL memory used by the texture.<p>
+    { Returns the OpenGL memory used by the texture.
       The compressed size is returned if, and only if texture compression
       if active and possible, and the texture has been allocated (Handle
       is defined), otherwise the estimated size (from TextureFormat
       specification) is returned. }
     function TextureImageRequiredMemory: Integer;
-    {: Allocates the texture handle if not already allocated.<p>
+    { Allocates the texture handle if not already allocated.
       The texture is binded and parameters are setup, but no image data
       is initialized by this call - for expert use only. }
     function AllocateHandle: TGLuint;
     function IsHandleAllocated: Boolean;
-    {: Returns OpenGL texture format corresponding to current options. }
+    { Returns OpenGL texture format corresponding to current options. }
     function OpenGLTextureFormat: Integer;
-    {: Returns if of float data type}
+    { Returns if of float data type}
     function IsFloatType: Boolean;
-    {: Is the texture enabled?.<p>
+    { Is the texture enabled?.
       Always equals to 'not Disabled'. }
     property Enabled: Boolean read GetEnabled write SetEnabled;
-    {: Handle to the OpenGL texture object.<p>
+    { Handle to the OpenGL texture object.
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: TGLuint read GetHandle;
     property TextureHandle: TGLTextureHandle read FTextureHandle;
 
-    {: Actual width, height and depth used for last texture
+    { Actual width, height and depth used for last texture
       specification binding. }
     property TexWidth: Integer read FTexWidth;
     property TexHeight: Integer read FTexHeight;
     property TexDepth: Integer read FTexDepth;
-    {: Give texture rendering context }
+    { Give texture rendering context }
   published
      
 
-    {: Image ClassName for enabling True polymorphism.<p>
+    { Image ClassName for enabling True polymorphism.
     This is ugly, but since the default streaming mechanism does a
     really bad job at storing	polymorphic owned-object properties,
     and neither TFiler nor TPicture allow proper use of the built-in
@@ -813,41 +813,41 @@ type
     mechanism. }
     property ImageClassName: string read GetImageClassName write
       SetImageClassName stored StoreImageClassName;
-    {: Image data for the texture.<p> }
+    { Image data for the texture. }
     property Image: TGLTextureImage read FImage write SetImage;
 
-    {: Automatic Image Alpha setting.<p>
+    { Automatic Image Alpha setting.
     Allows to control how and if the image's Alpha channel (transparency)
     is computed. }
     property ImageAlpha: TGLTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {: Texture brightness correction.<p>
+    { Texture brightness correction.
     This correction is applied upon loading a TGLTextureImage, it's a
     simple saturating scaling applied to the RGB components of
     the 32 bits image, before it is passed to OpenGL, and before
     gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
-    {: Texture gamma correction.<p>
+    { Texture gamma correction.
     The gamma correction is applied upon loading a TGLTextureImage,
     applied to the RGB components of the 32 bits image, before it is
     passed to OpenGL, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
 
-    {: Texture magnification filter. }
+    { Texture magnification filter. }
     property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter default
       maLinear;
-    {: Texture minification filter. }
+    { Texture minification filter. }
     property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter default
       miLinearMipMapLinear;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Wrapping mode for the texture. }
+    { Wrapping mode for the texture. }
     property TextureWrap: TGLTextureWrap read FTextureWrap write SetTextureWrap
       default twBoth;
-    {: Wrapping mode for the texture when TextureWrap=twSeparate. }
+    { Wrapping mode for the texture when TextureWrap=twSeparate. }
     property TextureWrapS: TGLSeparateTextureWrap read FTextureWrapS write
       SetTextureWrapS default twRepeat;
     property TextureWrapT: TGLSeparateTextureWrap read FTextureWrapT write
@@ -855,30 +855,30 @@ type
     property TextureWrapR: TGLSeparateTextureWrap read FTextureWrapR write
       SetTextureWrapR default twRepeat;
 
-    {: Texture format for use by the renderer.<p>
+    { Texture format for use by the renderer.
     See TGLTextureFormat for details. }
     property TextureFormat: TGLTextureFormat read GetTextureFormat write
       SetTextureFormat default tfDefault;
     property TextureFormatEx: TGLInternalFormat read FTextureFormat write
       SetTextureFormatEx stored StoreTextureFormatEx;
 
-    {: Texture compression control.<p>
+    { Texture compression control.
     If True the compressed TextureFormat variant (the OpenGL ICD must
     support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TGLTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {: Specifies texture filtering quality.<p>
-    You can choose between bilinear and trilinear filetring (anisotropic).<p>
+    { Specifies texture filtering quality.
+    You can choose between bilinear and trilinear filetring (anisotropic).
     The OpenGL ICD must support GL_EXT_texture_filter_anisotropic or
     this property is ignored. }
     property FilteringQuality: TGLTextureFilteringQuality read FFilteringQuality
       write SetFilteringQuality default tfIsotropic;
 
-    {: Texture coordinates mapping mode.<p>
+    { Texture coordinates mapping mode.
     This property controls automatic texture coordinates generation. }
     property MappingMode: TGLTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {: Texture mapping coordinates mode for S, T, R and Q axis.<p>
+    { Texture mapping coordinates mode for S, T, R and Q axis.
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TGLCoordinates4 read GetMappingSCoordinates
@@ -890,14 +890,14 @@ type
     property MappingQCoordinates: TGLCoordinates4 read GetMappingQCoordinates
       write SetMappingQCoordinates stored StoreMappingQCoordinates;
 
-    {: Texture Environment color. }
+    { Texture Environment color. }
     property EnvColor: TGLColor read FEnvColor write SetEnvColor;
-    {: Texture Border color. }
+    { Texture Border color. }
     property BorderColor: TGLColor read FBorderColor write SetBorderColor;
-    {: If true, the texture is disabled (not used). }
+    { If true, the texture is disabled (not used). }
     property Disabled: Boolean read FDisabled write SetDisabled default True;
 
-    {: Normal Map scaling.<p>
+    { Normal Map scaling.
     Only applies when TextureFormat is tfNormalMap, this property defines
     the scaling that is applied during normal map generation (ie. controls
     the intensity of the bumps). }
@@ -911,7 +911,7 @@ type
     property DepthTextureMode: TGLDepthTextureMode read fDepthTextureMode write
       SetDepthTextureMode default dtmLuminance;
 
-    {: Disable image release after transfering it to VGA. }
+    { Disable image release after transfering it to VGA. }
     property KeepImageAfterTransfer: Boolean read FKeepImageAfterTransfer
       write FKeepImageAfterTransfer default False;
   end;
@@ -1010,16 +1010,16 @@ type
   ETexture = class(Exception);
   EGLShaderException = class(Exception);
 
-  //: Register a TGLTextureImageClass (used for persistence and IDE purposes)
+  // Register a TGLTextureImageClass (used for persistence and IDE purposes)
 procedure RegisterGLTextureImageClass(textureImageClass: TGLTextureImageClass);
-//: Finds a registerer TGLTextureImageClass using its classname
+// Finds a registerer TGLTextureImageClass using its classname
 function FindGLTextureImageClass(const className: string): TGLTextureImageClass;
-//: Finds a registerer TGLTextureImageClass using its FriendlyName
+// Finds a registerer TGLTextureImageClass using its FriendlyName
 function FindGLTextureImageClassByFriendlyName(const friendlyName: string):
   TGLTextureImageClass;
-//: Defines a TStrings with the list of registered TGLTextureImageClass.
+// Defines a TStrings with the list of registered TGLTextureImageClass.
 procedure SetGLTextureImageClassesToStrings(aStrings: TStrings);
-{: Creates a TStrings with the list of registered TGLTextureImageClass.<p>
+{ Creates a TStrings with the list of registered TGLTextureImageClass.
  To be freed by caller. }
 function GetGLTextureImageClassesAsStrings: TStrings;
 

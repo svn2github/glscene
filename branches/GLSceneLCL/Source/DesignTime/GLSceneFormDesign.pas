@@ -3,10 +3,7 @@
 //
 {
     History :  
-     03/04/11 - Yar - Added three project wizard for Delphi
-     05/12/10 - PREDATOR - Added three form wizard and three project wizard for Lazarus
      23/08/10 - Yar - Creation
-  
 }
 
 unit GLSceneFormDesign;
@@ -32,8 +29,6 @@ type
 {$REGION 'DELPHI'}
 
 {$IFDEF GLS_DELPHI_OR_CPPB}
-  // TGLBaseSceneFormWizard
-  //
 
   TGLBaseSceneFormWizard = class(
       TNotifierObject,
@@ -88,9 +83,6 @@ type
     function GetPersonality: string;
   end;
 
-  // TGLSimpleSceneFormWizard
-  //
-
   TGLSimpleSceneFormWizard = class(TGLBaseSceneFormWizard)
   protected
     function GetIDString: string; override;
@@ -101,9 +93,6 @@ type
       const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile; override;
   end;
 
-  // TGLExtendedSceneFormWizard
-  //
-
   TGLExtendedSceneFormWizard = class(TGLBaseSceneFormWizard)
   protected
     function GetIDString: string; override;
@@ -113,9 +102,6 @@ type
     function NewImplSource(
       const ModuleIdent, FormIdent, AncestorIdent: string): IOTAFile; override;
   end;
-
-  // TGLBaseSceneProjectCreator
-  //
 
   TGLBaseSceneProjectCreator = class(
     TInterfacedObject,
@@ -146,9 +132,6 @@ type
     procedure NewDefaultProjectModule(const Project: IOTAProject); virtual;
   end;
 
-  // TGLBaseSceneProjectWizard
-  //
-
   TGLBaseSceneProjectWizard = class(
       TNotifierObject,
       IOTAWizard,
@@ -173,9 +156,6 @@ type
     function GetPersonality: string;
   end;
 
-  // TGLSimpleSceneProjectWizard
-  //
-
   TGLSimpleSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
     function GetIDString: string; override;
@@ -183,16 +163,10 @@ type
     procedure Execute; override;
   end;
 
-  // TGLSimpleSceneProjectCreator
-  //
-
   TGLSimpleSceneProjectCreator = class(TGLBaseSceneProjectCreator)
   public
     procedure NewDefaultProjectModule(const Project: IOTAProject); override;
   end;
-
-  // TGLSimpleSceneProjectWizard
-  //
 
   TGLExtendedSceneProjectWizard = class(TGLBaseSceneProjectWizard)
   public
@@ -200,9 +174,6 @@ type
     function GetName: string; override;
     procedure Execute; override;
   end;
-
-  // TGLSimpleSceneProjectCreator
-  //
 
   TGLExtendedSceneProjectCreator = class(TGLBaseSceneProjectCreator)
   public
@@ -1371,7 +1342,7 @@ const
     '  ReportMemoryLeaksOnShutdown := True;' + LineEnding +
     '  Application.Initialize;' + LineEnding +
     '  Application.MainFormOnTaskbar := True;' + LineEnding +
-{: This line inserted automatically by IDE
+{ This line inserted automatically by IDE
     '  Application.CreateForm(T%2:s, %2:s);' + LineEnding + }
     '  Application.Run;' + LineEnding +
     'end.' + LineEnding;
@@ -1952,7 +1923,7 @@ begin
 
  AProject.MainFile.SetSourceText(NewSource);
 
- AProject.AddPackageDependency('glscenelcl_designtime');
+ AProject.AddPackageDependency('GLScene_designtime');
 
  AProject.Flags := AProject.Flags - [pfMainUnitHasCreateFormStatements,
  pfMainUnitHasTitleStatement,
@@ -2063,7 +2034,7 @@ begin
   inherited Create;
   Name:=rBaseFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscenelcl_designtime' ;
+  RequiredPackages:= 'GLScene_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;
@@ -2150,7 +2121,7 @@ begin
   inherited Create;
   Name:=rSimpleFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscenelcl_designtime' ;
+  RequiredPackages:= 'GLScene_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;
@@ -2280,7 +2251,7 @@ begin
   inherited Create;
   Name:=rExtendedFormLocalizedName;
   DefaultResourceName :=  'GLSceneForm';
-  RequiredPackages:= 'glscenelcl_designtime' ;
+  RequiredPackages:= 'GLScene_designtime' ;
   ResourceClass:=TGLSceneForm;
   UseCreateFormStatements:=True;
 end;

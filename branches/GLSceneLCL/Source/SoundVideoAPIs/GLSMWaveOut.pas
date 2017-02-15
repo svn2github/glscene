@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Basic sound manager based on WinMM <p>
+   Basic sound manager based on WinMM 
 
 	 History :  
        17/11/09 - DaStr - Improved Unix compatibility
@@ -25,10 +25,10 @@ type
 
 	// TGLSMWaveOut
 	//
-   {: Basic sound manager based on WinMM <i>waveOut</i> function.<p>
+   { Basic sound manager based on WinMM <i>waveOut</i> function.
       This manager has NO 3D miximing capacity, this is merely a default manager
       that should work on any windows based system, and help showcasing/testing
-      basic GLSS core functionality.<p>
+      basic GLSS core functionality.
       Apart from 3D, mute, pause, priority and volume are ignored too, and only
       sampling conversions supported by the windows ACM driver are supported
       (ie. no 4bits samples playback etc.). }

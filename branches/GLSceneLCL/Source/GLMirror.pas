@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).<p>
+   Implements a basic, stencil-based mirror (as in Mark Kilgard's demo).
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component.<p>
+   materials/mirror demo before using this component.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -58,12 +58,12 @@ type
 
   // TGLMirror
   //
-  {: A simple plane mirror.<p>
-     This mirror requires a stencil buffer for optimal rendering!<p>
+  { A simple plane mirror.
+     This mirror requires a stencil buffer for optimal rendering!
      The object is a mix between a plane and a proxy object, in that the plane
      defines the mirror's surface, while the proxy part is used to reference
      the objects that should be mirrored (it is legal to self-mirror, but no
-     self-mirror visuals will be rendered).<p>
+     self-mirror visuals will be rendered).
      It is strongly recommended to read and understand the explanations in the
      materials/mirror demo before using this component. }
   TGLMirror = class(TGLSceneObject)
@@ -109,11 +109,11 @@ type
 
   published
      
-          {: Selects the object to mirror.<p>
+          { Selects the object to mirror.
              If nil, the whole scene is mirrored. }
     property MirrorObject: TGLBaseSceneObject read FMirrorObject write
       SetMirrorObject;
-    {: Controls rendering options.<p>
+    { Controls rendering options.
         
         moUseStencil: mirror area is stenciled, prevents reflected
           objects to be visible on the sides of the mirror (stencil buffer
@@ -133,10 +133,10 @@ type
     property Height: TGLFloat read FHeight write SetHeight;
     property Width: TGLFloat read FWidth write SetWidth;
 
-    {: Fired before the object's mirror images are rendered. }
+    { Fired before the object's mirror images are rendered. }
     property OnBeginRenderingMirrors: TNotifyEvent read FOnBeginRenderingMirrors
       write FOnBeginRenderingMirrors;
-    {: Fired after the object's mirror images are rendered. }
+    { Fired after the object's mirror images are rendered. }
     property OnEndRenderingMirrors: TNotifyEvent read FOnEndRenderingMirrors
       write FOnEndRenderingMirrors;
 

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  In GL windows management classes and structures<p>
+  In GL windows management classes and structures
 
   History :  
        15/04/11 - Yar - Added TGLGuiLayout.Assign
@@ -43,9 +43,9 @@ type
     FHeight: Single;
 
   protected
-    //: self notification on hide. Also notifies children.
+    // self notification on hide. Also notifies children.
     procedure NotifyHide; dynamic;
-    //: child notification on show. Also notifies children.
+    // child notification on show. Also notifies children.
     procedure NotifyShow; dynamic;
 
     procedure SetLeft(const Value: TGLFloat);
@@ -62,13 +62,13 @@ type
     procedure AddChild(AChild: TGLBaseSceneObject); override;
     procedure Insert(aIndex: Integer; aChild: TGLBaseSceneObject); override;
 
-    {: GuiComponent Width in 3D world units. }
+    { GuiComponent Width in 3D world units. }
     property Width: Single read FWidth write SetWidth;
-    {: GuiComponent Height in 3D world units. }
+    { GuiComponent Height in 3D world units. }
     property Height: Single read FHeight write SetHeight;
-    {: GuiComponent Left in 3D world units. }
+    { GuiComponent Left in 3D world units. }
     property Left: TGLFloat read GetLeft write SetLeft;
-    {: GuiComponent Top in 3D world units. }
+    { GuiComponent Top in 3D world units. }
     property Top: TGLFloat read GetTop write SetTop;
 
     property RecursiveVisible: Boolean read FRecursiveVisible;

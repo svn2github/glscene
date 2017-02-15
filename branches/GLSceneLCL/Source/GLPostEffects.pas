@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    A collection of components that generate post effects.<p>
+    A collection of components that generate post effects.
 
 	 History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -81,7 +81,7 @@ type
     property Items[const Index: Integer]: TGLPostShaderCollectionItem read GetItems write SetItems; default;
   end;
 
-  {: A class that allows several post-shaders to be applied to the scene,
+  { A class that allows several post-shaders to be applied to the scene,
     one after another. It does not provide any optimizations related to
     multi-shader rendering, just a convenient interface. }
   TGLPostShaderHolder = class(TGLBaseSCeneObject)
@@ -103,7 +103,7 @@ type
     property TempTextureTarget: TGLTextureTarget read FTempTextureTarget write FTempTextureTarget default ttTexture2d;
     property Shaders: TGLPostShaderCollection read FShaders write SetShaders;
 
-    //: Publish some stuff from TGLBaseSceneObject.
+    // Publish some stuff from TGLBaseSceneObject.
     property Visible;
     property OnProgress;
   end;
@@ -117,7 +117,7 @@ type
 
   TGLOnCustomPostEffectEvent = procedure(Sender: TObject; var rci : TRenderContextInfo; var Buffer: TGLPostEffectBuffer) of object;
 
-  {: Some presets for TGLPostEffect:
+  { Some presets for TGLPostEffect:
        pepNone - does nothing.
        pepGray - makes picture gray.
        pepNegative - inverts all colors.
@@ -130,7 +130,7 @@ type
   TGLPostEffectPreset = (pepNone, pepGray, pepNegative, pepDistort, pepNoise,
                          pepNightVision, pepBlur, pepCustom);
 
-  {: Provides a simple way to producing post-effects without shaders.<p>
+  { Provides a simple way to producing post-effects without shaders.
      It is slow as hell, but it's worth it in some cases.}
   TGLPostEffect = class(TGLBaseSCeneObject)
   private
@@ -138,7 +138,7 @@ type
     FPreset: TGLPostEffectPreset;
     FRenderBuffer: TGLPostEffectBuffer;
   protected
-    //: May be should be private...
+    // May be should be private...
     procedure MakeGrayEffect; virtual;
     procedure MakeNegativeEffect; virtual;
     procedure MakeDistortEffect; virtual;
@@ -152,9 +152,9 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     property Preset: TGLPostEffectPreset read FPreset write FPreset default pepNone;
-    //: User creates this effect.
+    // User creates this effect.
     property OnCustomEffect: TGLOnCustomPostEffectEvent read FOnCustomEffect write FOnCustomEffect;
-    //: Publish some stuff from TGLBaseSCeneObject.
+    // Publish some stuff from TGLBaseSCeneObject.
     property Visible;
     property OnProgress;
   end;

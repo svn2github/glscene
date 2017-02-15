@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Base abstract ragdoll class. Should be extended to use any physics system. <p>
+    Base abstract ragdoll class. Should be extended to use any physics system. 
 
 	 History : 
      10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records
@@ -116,9 +116,9 @@ type
     procedure WriteToFiler(writer : TVirtualWriter); override;
     procedure ReadFromFiler(reader : TVirtualReader); override;
 
-    {: Must be set before build the ragdoll }
+    { Must be set before build the ragdoll }
     procedure SetRootBone(RootBone: TGLRagdolBone);
-    {: Create the bounding box and setup the ragdoll do be started later }
+    { Create the bounding box and setup the ragdoll do be started later }
     procedure BuildRagdoll;
 
     procedure Start;

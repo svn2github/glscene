@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Support-code to load STL Files into TGLFreeForm-Components in GLScene.<p>
+    Support-code to load STL Files into TGLFreeForm-Components in GLScene.
     Note that you must manually add this unit to one of your project's uses
-    to enable support for STL files at run-time.<p>
+    to enable support for STL files at run-time.
 
 	History : 
        16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -49,11 +49,11 @@ type
 type
    // TGLSTLVectorFile
    //
-   {: The STL vector file (stereolithography format).<p>
+   { The STL vector file (stereolithography format).
       It is a list of the triangular surfaces that describe a computer generated
-      solid model. This is the standard input for most rapid prototyping machines.<p>
+      solid model. This is the standard input for most rapid prototyping machines.
       There are two flavors of STL, the "text" and the "binary", this class
-      reads both, but exports only the "binary" version.<p>
+      reads both, but exports only the "binary" version.
       Original Binary importer code by Paul M. Bearne, Text importer by Adem. }
    TGLSTLVectorFile = class(TGLVectorFile)
       public

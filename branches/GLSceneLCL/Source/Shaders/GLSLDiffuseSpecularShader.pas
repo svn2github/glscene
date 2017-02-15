@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    This is a collection of GLSL diffuse-specular shaders.<p>
+    This is a collection of GLSL diffuse-specular shaders.
 
 	 History :  
        09/03/13 - Yar - Added point, parallel, spot and parallel spot light's style support to TGLSLMLDiffuseSpecularShader
@@ -69,7 +69,7 @@ uses
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
 
-  //: Abstract class.
+  // Abstract class.
   TGLBaseCustomGLSLDiffuseSpecular = class(TGLCustomGLSLShader)
   private
     FLightPower: Single;
@@ -85,11 +85,11 @@ type
     property LightPower: Single read FLightPower write FLightPower;
     property RealisticSpecular: Boolean read FRealisticSpecular write SetRealisticSpecular;
 
-    //: User can disable fog support and save some FPS if he doesn't need it.
+    // User can disable fog support and save some FPS if he doesn't need it.
     property FogSupport: TGLShaderFogSupport read FFogSupport write SetFogSupport default sfsAuto;
   end;
 
-  //: Abstract class.
+  // Abstract class.
   TGLBaseGLSLDiffuseSpecularShaderMT = class(TGLBaseCustomGLSLDiffuseSpecular, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLMaterialLibrary;
@@ -97,7 +97,7 @@ type
     FMainTextureName: TGLLibMaterialName;
     function GetMainTextureName: TGLLibMaterialName;
     procedure SetMainTextureName(const Value: TGLLibMaterialName);
-    //: Implementing IGLMaterialLibrarySupported.
+    // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;
@@ -125,7 +125,7 @@ type
 
                      {********  Multi Light  ************}
 
-  {: Note: probably LightCount should be replaced by LightSources, like in
+  { Note: probably LightCount should be replaced by LightSources, like in
      GLSLBumpShader.pas }
 
   TLightRecord = record

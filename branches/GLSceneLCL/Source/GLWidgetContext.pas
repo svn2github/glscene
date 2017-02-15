@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Widget specific Context.<p>
-   GLWidgetContext replaces old GLLinGTKContext.<p>
+   Widget specific Context.
+   GLWidgetContext replaces old GLLinGTKContext.
 
     History :  
        11/06/10 - Yar - Fixed uses section after lazarus-0.9.29.26033 release

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Base classes for GLScene.<p>
+   Base classes for GLScene.
 
     History :  
        24/03/11 - Yar - Added Notification method to TGLUpdateAbleObject
@@ -29,7 +29,7 @@ type
 
   // TGLProgressEvent
   //
-  {: Progression event for time-base animations/simulations.<p>
+  { Progression event for time-base animations/simulations.
      deltaTime is the time delta since last progress and newTime is the new
      time after the progress event is completed. }
   TGLProgressEvent = procedure(Sender: TObject; const deltaTime, newTime: Double) of object;
@@ -46,7 +46,7 @@ type
 
   // TGLUpdateAbleObject
   //
-  {: An abstract class describing the "update" interface.<p> }
+  { An abstract class describing the "update" interface. }
   TGLUpdateAbleObject = class(TGLInterfacedPersistent, IGLNotifyAble)
   private
      
@@ -72,7 +72,7 @@ type
 
   // TGLCadenceAbleComponent
   //
-  {: A base class describing the "cadenceing" interface.<p> }
+  { A base class describing the "cadenceing" interface. }
   TGLCadenceAbleComponent = class(TGLComponent, IGLProgessAble)
   public
      
@@ -81,7 +81,7 @@ type
 
   // TGLUpdateAbleComponent
   //
-  {: A base class describing the "update" interface.<p> }
+  { A base class describing the "update" interface. }
   TGLUpdateAbleComponent = class(TGLCadenceAbleComponent, IGLNotifyAble)
   public
      

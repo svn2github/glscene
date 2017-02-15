@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Polygonising a scalar field by construction of isosurfaces <p>
+  Polygonising a scalar field by construction of isosurfaces 
 
 Algorithms
 ----------
@@ -47,9 +47,9 @@ type
 
 // TIsoSurfaceExtractor
 //
-{: 3D Isosurface extractor class.<p>
+{ 3D Isosurface extractor class.
    This class allows to calculate and extract isosurfaces from scalar field
-   voxel models using a given isovalue.<p>
+   voxel models using a given isovalue.
 }
   TIsoSurfaceExtractor = class(TObject)
   private

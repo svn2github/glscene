@@ -43,15 +43,15 @@ uses
   GLContext;
 
 type
-   { Component where the GLScene objects get rendered.<p>
+   { Component where the GLScene objects get rendered.
       This component delimits the area where OpenGL renders the scene,
       it represents the 3D scene viewed from a camera (specified in the
-      camera property). This component can also render to a file or to a bitmap.<p>
+      camera property). This component can also render to a file or to a bitmap.
       It is primarily a windowed component, but it can handle full-screen
       operations : simply make this component fit the whole screen (use a
-      borderless form).<p>
+      borderless form).
       This viewer also allows to define rendering options such a fog, face culling,
-      depth testing, etc. and can take care of framerate calculation.<p> }
+      depth testing, etc. and can take care of framerate calculation. }
   TGLSceneViewer = class(TWinControl)
   private
     FBuffer: TGLSceneBuffer;
@@ -97,7 +97,7 @@ type
     destructor Destroy; override;
     procedure Render;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
-    { Makes TWinControl's RecreateWnd public.<p>
+    { Makes TWinControl's RecreateWnd public.
             This procedure allows to work around limitations in some OpenGL
             drivers (like MS Software OpenGL) that are not able to share lists
             between RCs that already have display lists. }
@@ -113,30 +113,30 @@ type
     property MouseInControl: boolean read FMouseInControl;
   published
      
-    {: Camera from which the scene is rendered. }
+    { Camera from which the scene is rendered. }
     property Camera: TGLCamera read GetCamera write SetCamera;
 
-         {: Specifies if the refresh should be synchronized with the VSync signal.<p>
+         { Specifies if the refresh should be synchronized with the VSync signal.
             If the underlying OpenGL ICD does not support the WGL_EXT_swap_control
             extension, this property is ignored.  }
     property VSync: TVSyncMode read FVSync write FVSync default vsmNoSync;
 
-         { Triggered before the scene's objects get rendered.<p>
+         { Triggered before the scene's objects get rendered.
             You may use this event to execute your own OpenGL rendering. }
     property BeforeRender: TNotifyEvent read GetBeforeRender write SetBeforeRender;
-         { Triggered just after all the scene's objects have been rendered.<p>
+         { Triggered just after all the scene's objects have been rendered.
             The OpenGL context is still active in this event, and you may use it
-            to execute your own OpenGL rendering.<p> }
+            to execute your own OpenGL rendering. }
     property PostRender: TNotifyEvent read GetPostRender write SetPostRender;
-         { Called after rendering.<p>
+         { Called after rendering.
             You cannot issue OpenGL calls in this event, if you want to do your own
             OpenGL stuff, use the PostRender event. }
     property AfterRender: TNotifyEvent read GetAfterRender write SetAfterRender;
 
-    {: Access to buffer properties. }
+    { Access to buffer properties. }
     property Buffer: TGLSceneBuffer read FBuffer write SetBuffer;
 
-         { Returns or sets the field of view for the viewer, in degrees.<p>
+         { Returns or sets the field of view for the viewer, in degrees.
          This value depends on the camera and the width and height of the scene.
          The value isn't persisted, if the width/height or camera.focallength is
          changed, FieldOfView is changed also. }

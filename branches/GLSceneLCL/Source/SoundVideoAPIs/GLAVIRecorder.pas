@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Component to make it easy to record GLScene frames into an AVI file<p>
+  Component to make it easy to record GLScene frames into an AVI file
 
    History :  
    17/11/14 - PW - Refactored TAVIRecorder to TGLAVIRecorder
@@ -43,7 +43,7 @@ type
 
   // TAVISizeRestriction
   //
-  { : Frame size restriction.<p>
+  { Frame size restriction.
     Forces frame dimensions to be a multiple of 2, 4, or 8. Some compressors
     require this. e.g. DivX 5.2.1 requires mutiples of 2. }
   TAVISizeRestriction = (srNoRestriction, srForceBlock2x2, srForceBlock4x4,
@@ -53,8 +53,8 @@ type
 
   // TAVIImageRetrievalMode
   //
-  { : Image retrieval mode for frame capture.<p>
-    Following modes are supported:<p>
+  { Image retrieval mode for frame capture.
+    Following modes are supported:
      irmSnapShot : retrieve OpenGL framebuffer content using glReadPixels
      irmRenderToBitmap : renders the whole scene to a bitmap, this is
     the slowest mode, but it won't be affected by driver-side specifics.
@@ -68,7 +68,7 @@ type
 
   // TGLAVIRecorder
   //
-  { : Component to make it easy to record GLScene frames into an AVI file. }
+  { Component to make it easy to record GLScene frames into an AVI file. }
   TGLAVIRecorder = class(TComponent)
   private
      

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Hacks into the VCL to access the list of TPicture registered TGraphic formats<p>
+   Hacks into the VCL to access the list of TPicture registered TGraphic formats
 
     History :  
        19/06/11 - Yar - Improved for Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 1586936)
@@ -44,11 +44,11 @@ uses
   {$Message Warn 'PRF hack not tested for this Delphi version!'}
 {$endif}
 
-{: Returns the TGraphicClass associated to the extension, if any.<p>
+{ Returns the TGraphicClass associated to the extension, if any.
    Accepts anExtension with or without the '.' }
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 
-{: Adds to the passed TStrings the list of registered formats.<p>
+{ Adds to the passed TStrings the list of registered formats.
    Convention is "extension=description" for the string, the Objects hold
    the corresponding TGraphicClass (extensions do not include the '.'). }
 procedure HackTPictureRegisteredFormats(destList: TStrings);

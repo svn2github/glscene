@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A pretty particle mask effect manager.<p>
+   A pretty particle mask effect manager.
 
     History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Main purpose is to give an easy way to create an interpolation.<p>
+  Main purpose is to give an easy way to create an interpolation.
 
   History :  
    17/11/14 - PW - Renamed from AnimationUtils.pas to GLAnimationUtils.pas

@@ -3,7 +3,7 @@
 //
 {
   Invisible component for helping to Move, Rotate and Scale an Object
-  under GLScene (usefull for an Editor).<p>
+  under GLScene (usefull for an Editor).
 
    History :  
    10/11/12 - PW - Added CPP compatibility by changing arrays to records for vectors;

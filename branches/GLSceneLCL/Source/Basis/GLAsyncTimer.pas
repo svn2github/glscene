@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { 
-  Asynchronous timer component (actual 1 ms resolution).<p>
+  Asynchronous timer component (actual 1 ms resolution).
 
-  This component is based on ThreadedTimer by Carlos Barbosa.<p>
+  This component is based on ThreadedTimer by Carlos Barbosa.
 
    History :  
    17/11/14 - PW - Refactored TAsyncTimer to TGLAsyncTimer
@@ -25,7 +25,9 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, SysUtils, SyncObjs,
+  Classes, 
+  SysUtils, 
+  SyncObjs,
   GLCrossPlatform;
 
 
@@ -33,14 +35,11 @@ const
   cDEFAULT_TIMER_INTERVAL = 1000;
 
 type
-
-  // TGLAsyncTimer
-  //
-  { : Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).<p>
+  { Asynchronous timer component (actual 1 ms resolution, if CPU fast enough).
     Keep in mind timer resolution is obtained <i>in-between</i> events, but
     events are not triggered every x ms. For instance if you set the interval to
     5 ms, and your Timer event takes 1 ms to complete, Timer events will actually
-    be triggered every 5+1=6 ms (that's why it's "asynchronous").<p>
+    be triggered every 5+1=6 ms (that's why it's "asynchronous").
     This component is based on ThreadedTimer by Carlos Barbosa. }
   TGLAsyncTimer = class(TComponent)
   private
@@ -73,15 +72,12 @@ type
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 type
 
-  // TTimerThread
-  //
   TTimerThread = class(TThread)
   private
     FOwner: TGLAsyncTimer;
@@ -92,15 +88,11 @@ type
     constructor Create(CreateSuspended: Boolean); virtual;
   end;
 
-  // Create
-  //
 constructor TTimerThread.Create(CreateSuspended: Boolean);
 begin
   inherited Create(CreateSuspended);
 end;
 
-// Execute
-//
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
@@ -136,8 +128,6 @@ end;
 
 { TGLAsyncTimer }
 
-// Create
-//
 constructor TGLAsyncTimer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -155,8 +145,6 @@ begin
   end;
 end;
 
-// Destroy
-//
 destructor TGLAsyncTimer.Destroy;
 begin
   Enabled := False;
@@ -170,16 +158,12 @@ begin
   inherited Destroy;
 end;
 
-// DoTimer
-//
 procedure TGLAsyncTimer.DoTimer;
 begin
   if Enabled and Assigned(FOnTimer) then
     FOnTimer(Self);
 end;
 
-// SetEnabled
-//
 procedure TGLAsyncTimer.SetEnabled(Value: Boolean);
 begin
   if Value <> FEnabled then

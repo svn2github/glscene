@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Bitmap Fonts management classes for GLScene<p>
+  Bitmap Fonts management classes for GLScene
 
    History :  
    04/12/14 - PW - Corrected the usage of pixel formats for Lazarus (by Gabriel Corneanu)
@@ -74,7 +74,7 @@ type
 
   // TGLBitmapFontRange
   //
-  { : An individual character range in a bitmap font.<p>
+  { : An individual character range in a bitmap font.
     A range allows mapping ASCII characters to character tiles in a font
     bitmap, tiles are enumerated line then column (raster). }
   TGLBitmapFontRange = class(TCollectionItem)
@@ -134,7 +134,7 @@ type
     property Items[index: Integer]: TGLBitmapFontRange read GetItems
       write SetItems; default;
 
-    { : Converts an ASCII character into a tile index.<p>
+    { : Converts an ASCII character into a tile index.
       Return -1 if character cannot be rendered. }
     function CharacterToTileIndex(aChar: WideChar): Integer;
     function TileIndexToChar(aIndex: Integer): WideChar;
@@ -152,11 +152,11 @@ type
 
   // TGLCustomBitmapFont
   //
-  { : Provides access to individual characters in a BitmapFont.<p>
+  { : Provides access to individual characters in a BitmapFont.
     Only fixed-width bitmap fonts are supported, the characters are enumerated
     in a raster fashion (line then column). 
     Transparency is all or nothing, the transparent color being that of the
-    top left pixel of the Glyphs bitmap.<p>
+    top left pixel of the Glyphs bitmap.
     Performance note: as usual, for best performance, you base font bitmap
     dimensions should be close to a power of two, and have at least 1 pixel
     spacing between characters (horizontally and vertically) to avoid artefacts
@@ -211,7 +211,7 @@ type
     procedure PrepareImage(var ARci: TRenderContextInfo); virtual;
     procedure PrepareParams(var ARci: TRenderContextInfo);
 
-    { : A single bitmap containing all the characters.<p>
+    { : A single bitmap containing all the characters.
       The transparent color is that of the top left pixel. }
     property Glyphs: TGLPicture read FGlyphs write SetGlyphs;
     { : Nb of horizontal pixels between two columns in the Glyphs. }
@@ -220,7 +220,7 @@ type
     { : Nb of vertical pixels between two rows in the Glyphs. }
     property GlyphsIntervalY: Integer read FGlyphsIntervalY
       write SetGlyphsIntervalY;
-    { : Ranges allow converting between ASCII and tile indexes.<p>
+    { : Ranges allow converting between ASCII and tile indexes.
       See TGLCustomBitmapFontRange. }
     property Ranges: TGLBitmapFontRanges read FRanges write SetRanges;
 
@@ -230,7 +230,7 @@ type
     property HSpace: Integer read FHSpace write SetHSpace default 1;
     { : Pixels in between rendered lines (vertically). }
     property VSpace: Integer read FVSpace write SetVSpace default 1;
-    { : Horizontal spacing fix offset.<p>
+    { : Horizontal spacing fix offset.
       This property is for internal use, and is added to the hspacing
       of each character when rendering, typically to fix extra spacing. }
     property HSpaceFix: Integer read FHSpaceFix write FHSpaceFix;
@@ -250,7 +250,7 @@ type
     procedure RegisterUser(anObject: TGLBaseSceneObject); virtual;
     procedure UnRegisterUser(anObject: TGLBaseSceneObject); virtual;
 
-    { : Renders the given string at current position or at position given by the optional position variable.<p>
+    { : Renders the given string at current position or at position given by the optional position variable.
       The current matrix is blindly used, meaning you can render all kinds
       of rotated and linear distorted text with this method, OpenGL
       Enable states are also possibly altered. }
@@ -259,7 +259,7 @@ type
       aLayout: TGLTextLayout; const aColor: TColorVector;
       aPosition: PVector = nil; aReverseY: boolean = False); overload; virtual;
 
-    { : A simpler canvas-style TextOut helper for RenderString.<p>
+    { : A simpler canvas-style TextOut helper for RenderString.
       The rendering is reversed along Y by default, to allow direct use
       with TGLCanvas }
     procedure TextOut(var rci: TRenderContextInfo; X, Y: Single;
@@ -291,7 +291,7 @@ type
 
   // TGLBitmapFont
   //
-  { : See TGLCustomBitmapFont.<p>
+  { : See TGLCustomBitmapFont.
     This class only publuishes some of the properties. }
   TGLBitmapFont = class(TGLCustomBitmapFont)
   published
@@ -316,7 +316,7 @@ type
 
   // TGLFlatText
   //
-  { : A 2D text displayed and positionned in 3D coordinates.<p>
+  { : A 2D text displayed and positionned in 3D coordinates.
     The FlatText uses a character font defined and stored by a TGLBitmapFont
     component. Default character scale is 1 font pixel = 1 space unit. }
   TGLFlatText = class(TGLImmaterialSceneObject)
@@ -353,24 +353,24 @@ type
 
   published
      
-    { : Refers the bitmap font to use.<p>
+    { : Refers the bitmap font to use.
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render.<p>
+    { : Text to render.
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
-    { : Controls the text alignment (horizontal).<p>
+    { : Controls the text alignment (horizontal).
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment;
-    { : Controls the text layout (vertical).<p>
+    { : Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout;
     { : Color modulation, can be used for fade in/out too. }
     property ModulateColor: TGLColor read FModulateColor write SetModulateColor;
-    { : Flat text options.<p>
+    { : Flat text options.
         ftoTwoSided : when set the text will be visible from its two
       sides even if faceculling is on (at the scene-level).
         }

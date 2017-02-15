@@ -3,10 +3,10 @@
 //
 {
    OpenGL 1.x import unit for GLScene. Unit remains "general purpose", but with
-   a more "pragmatic" approach :)<p>
+   a more "pragmatic" approach :)
 
    This unit is based on OpenGL12.pas orginally written by Mike Lischke,
-   please refer to OpenGL12.pas header.<p>
+   please refer to OpenGL12.pas header.
 
 	 History :  
        23/01/11 - DanB - Entry points now use procedural types from OpenGLTokens.pas
@@ -2776,11 +2776,11 @@ function IsOpenGLVersionMet(MajorVersion,MinorVersion: Integer): boolean;
 type
   EOpenGLError = class(Exception);
 
-{: Gets the oldest error from OpenGL engine and tries to clear the error queue.<p> }
+{ Gets the oldest error from OpenGL engine and tries to clear the error queue. }
 procedure CheckOpenGLError;
-{: Clears all pending OpenGL errors. }
+{ Clears all pending OpenGL errors. }
 procedure ClearGLError;
-{: Raises an EOpenGLError with 'msg' error string. }
+{ Raises an EOpenGLError with 'msg' error string. }
 procedure RaiseOpenGLError(const msg : String);
 
 var

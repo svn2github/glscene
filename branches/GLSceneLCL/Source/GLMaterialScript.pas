@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Material Script Batch loader for TGLMaterialLibrary for runtime.<p>
+   Material Script Batch loader for TGLMaterialLibrary for runtime.
 
 	 History :  
        22/04/10 - Yar - Fixes after GLState revision

@@ -30,7 +30,7 @@ uses
   OpenGLTokens, GLGeometryBB, GLRenderContextInfo, GLState;
 
 type
-  {: Object for holding glscene objects in a spatial partitioning }
+  { Object for holding glscene objects in a spatial partitioning }
   TSceneObj = class(TSpacePartitionLeaf)
   public
     Obj: TGLBaseSceneObject;
@@ -39,12 +39,12 @@ type
     destructor Destroy; override;
   end;
 
-  {: Render a spacial partitioning descending from TSectoredSpacePartition
+  { Render a spacial partitioning descending from TSectoredSpacePartition
   (octree and quadtree) as a grid - great for debugging and visualisation }
 procedure RenderSpatialPartitioning(var rci: TRenderContextInfo;
   const Space: TSectoredSpacePartition);
 
-{: Create an extended frustum from a GLSceneViewer - this makes the unit
+{ Create an extended frustum from a GLSceneViewer - this makes the unit
 specific to the windows platform!}
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
   const vWidth, vHeight: integer; AGLCamera: TGLCamera): TExtendedFrustum; overload;
@@ -52,7 +52,7 @@ function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
 function ExtendedFrustumMakeFromSceneViewer(const AFrustum: TFrustum;
   const AGLSceneViewer: TGLSceneViewer): TExtendedFrustum; overload;
 
-{: Renders an AABB as a line }
+{ Renders an AABB as a line }
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB; w, r, g, b: single); overload;
 procedure RenderAABB(var rci: TRenderContextInfo; AABB: TAABB); overload;
 

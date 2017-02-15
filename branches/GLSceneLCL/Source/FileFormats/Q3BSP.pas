@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Simple Quake III BSP file loader.<p>
+   Simple Quake III BSP file loader.
 
     History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009

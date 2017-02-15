@@ -2,14 +2,14 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Implementation of basic scene objects plus some management routines.<p>
+  Implementation of basic scene objects plus some management routines.
 
   All objects declared in this unit are part of the basic GLScene package,
   these are only simple objects and should be kept simple and lightweight. 
 
   More complex or more specialized versions should be placed in dedicated
   units where they can grow and prosper untammed. "Generic" geometrical
-  objects can be found GLGeomObjects.<p>
+  objects can be found GLGeomObjects.
 
    History :  
    12/03/13 - Yar - Added TGLSuperellipsoid (contributed by Eric Hardinge)
@@ -171,7 +171,7 @@ type
 
   // TGLDummyCube
   //
-  { : A simple cube, invisible at run-time.<p>
+  { : A simple cube, invisible at run-time.
     This is a usually non-visible object -except at design-time- used for
     building hierarchies or groups, when some kind of joint or movement
     mechanism needs be described, you can use DummyCubes. 
@@ -215,12 +215,12 @@ type
      
     property CubeSize: TGLFloat read FCubeSize write SetCubeSize;
     property EdgeColor: TGLColor read FEdgeColor write SetEdgeColor;
-    { : If true the dummycube's edges will be visible at runtime.<p>
+    { : If true the dummycube's edges will be visible at runtime.
       The default behaviour of the dummycube is to be visible at design-time
       only, and invisible at runtime. }
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime
       write SetVisibleAtRunTime default False;
-    { : Amalgamate the dummy's children in a single OpenGL entity.<p>
+    { : Amalgamate the dummy's children in a single OpenGL entity.
       This activates a special rendering mode, which will compile
       the rendering of all of the dummycube's children objects into a
       single display list. This may provide a significant speed up in some
@@ -228,17 +228,17 @@ type
       be ignored untill you call StructureChanged on the dummy cube. 
       Some objects, that have their own display list management, may not
       be compatible with this behaviour. This will also prevents sorting
-      and culling to operate as usual.<p>
+      and culling to operate as usual.
       In short, this features is best used for static, non-transparent
       geometry, or when the point of view won't change over a large
       number of frames. }
     property Amalgamate: Boolean read FAmalgamate write SetAmalgamate
       default False;
-    { : Camera Invariance Options.<p>
+    { : Camera Invariance Options.
       These options allow to "deactivate" sensitivity to camera, f.i. by
       centering the object on the camera or ignoring camera orientation. }
     property CamInvarianceMode default cimNone;
-    { : Event for custom visibility determination.<p>
+    { : Event for custom visibility determination.
       Event handler should return True if the dummycube and its children
       are to be considered visible for the current render. }
     property OnVisibilityDetermination: TGLVisibilityDeterminationEvent
@@ -252,7 +252,7 @@ type
 
   // Plane
   //
-  { : A simple plane object.<p>
+  { : A simple plane object.
     Note that a plane is always made of a single quad (two triangles) and the
     tiling is only applied to texture coordinates. }
   TGLPlane = class(TGLSceneObject)
@@ -292,11 +292,11 @@ type
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : Boolean; override;
-    { : Computes the screen coordinates of the smallest rectangle encompassing the plane.<p>
+    { : Computes the screen coordinates of the smallest rectangle encompassing the plane.
       Returned extents are NOT limited to any physical screen extents. }
     function ScreenRect(aBuffer: TGLSceneBuffer): TGLRect;
 
-    { : Computes the signed distance to the point.<p>
+    { : Computes the signed distance to the point.
       Point coordinates are expected in absolute coordinates. }
     function PointDistance(const aPoint: TVector): Single;
 
@@ -316,7 +316,7 @@ type
 
   // TGLSprite
   //
-  { : A rectangular area, perspective projected, but always facing the camera.<p>
+  { : A rectangular area, perspective projected, but always facing the camera.
     A TGLSprite is perspective projected and as such is scaled with distance,
     if you want a 2D sprite that does not get scaled, see TGLHUDSprite. }
   TGLSprite = class(TGLSceneObject)
@@ -357,7 +357,7 @@ type
     property Width: TGLFloat read FWidth write SetWidth;
     { : Sprite Height in 3D world units. }
     property Height: TGLFloat read FHeight write SetHeight;
-    { : This the ON-SCREEN rotation of the sprite.<p>
+    { : This the ON-SCREEN rotation of the sprite.
       Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
     { : If different from 1, this value will replace that of Diffuse.Alpha }
@@ -376,7 +376,7 @@ type
 
   // TGLPointParameters
   //
-  { : Point parameters as in ARB_point_parameters.<p>
+  { : Point parameters as in ARB_point_parameters.
     Make sure to read the ARB_point_parameters spec if you want to understand
     what each parameter does. }
   TGLPointParameters = class(TGLUpdateAbleObject)
@@ -423,7 +423,7 @@ type
 
   // TGLPoints
   //
-  { : Renders a set of non-transparent colored points.<p>
+  { : Renders a set of non-transparent colored points.
     The points positions and their color are defined through the Positions
     and Colors properties. }
   TGLPoints = class(TGLImmaterialSceneObject)
@@ -455,10 +455,10 @@ type
     procedure Assign(Source: TPersistent); override;
     procedure BuildList(var rci: TRenderContextInfo); override;
 
-    { : Points positions.<p>
+    { : Points positions.
       If empty, a single point is assumed at (0, 0, 0) }
     property Positions: TAffineVectorList read FPositions write SetPositions;
-    { : Defines the points colors.<p>
+    { : Defines the points colors.
        
        if empty, point color will be opaque white
        if contains a single color, all points will use that color
@@ -471,16 +471,16 @@ type
      
     { : If true points do not write their Z to the depth buffer. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
-    { : Tells the component if point coordinates are static.<p>
+    { : Tells the component if point coordinates are static.
       If static, changes to the positions should be notified via an
       explicit StructureChanged call, or may not refresh. 
       Static sets of points may render faster than dynamic ones. }
     property Static: Boolean read FStatic write SetStatic;
     { : Point size, all points have a fixed size. }
     property Size: Single read FSize write SetSize stored StoreSize;
-    { : Points style.<p> }
+    { : Points style. }
     property Style: TGLPointStyle read FStyle write SetStyle default psSquare;
-    { : Point parameters as of ARB_point_parameters.<p>
+    { : Point parameters as of ARB_point_parameters.
       Allows to vary the size and transparency of points depending
       on their distance to the observer. }
     property PointParameters: TGLPointParameters read FPointParameters
@@ -501,7 +501,7 @@ type
 
   // TGLLinesNode
   //
-  { : Specialized Node for use in a TGLLines objects.<p>
+  { : Specialized Node for use in a TGLLines objects.
     Adds a Color property (TGLColor). }
   TGLLinesNode = class(TGLNode)
   private
@@ -523,7 +523,7 @@ type
   published
      
 
-    { : The node color.<p>
+    { : The node color.
       Can also defined the line color (interpolated between nodes) if
       loUseNodeColorForLines is set (in TGLLines). }
     property Color: TGLColor read FColor write SetColor stored StoreColor;
@@ -531,7 +531,7 @@ type
 
   // TGLLinesNodes
   //
-  { : Specialized collection for Nodes in a TGLLines objects.<p>
+  { : Specialized collection for Nodes in a TGLLines objects.
     Stores TGLLinesNode items. }
   TGLLinesNodes = class(TGLNodes)
   public
@@ -543,7 +543,7 @@ type
 
   // TGLLineBase
   //
-  { : Base class for line objects.<p>
+  { : Base class for line objects.
     Introduces line style properties (width, color...). }
   TGLLineBase = class(TGLImmaterialSceneObject)
   private
@@ -561,8 +561,8 @@ type
     function StoreLineWidth: Boolean;
     procedure SetAntiAliased(const val: Boolean);
 
-    { : Setup OpenGL states according to line style.<p>
-      You must call RestoreLineStyle after drawing your lines.<p>
+    { : Setup OpenGL states according to line style.
+      You must call RestoreLineStyle after drawing your lines.
       You may use nested calls with SetupLineStyle/RestoreLineStyle. }
     procedure SetupLineStyle(var rci: TRenderContextInfo);
 
@@ -575,14 +575,14 @@ type
 
   published
      
-    { : Indicates if OpenGL should smooth line edges.<p>
+    { : Indicates if OpenGL should smooth line edges.
       Smoothed lines looks better but are poorly implemented in most OpenGL
       drivers and take *lots* of rendering time. }
     property AntiAliased: Boolean read FAntiAliased write SetAntiAliased
       default False;
     { : Default color of the lines. }
     property LineColor: TGLColor read FLineColor write SetLineColor;
-    { : Bitwise line pattern.<p>
+    { : Bitwise line pattern.
       For instance $FFFF (65535) is a white line (stipple disabled), $0000
       is a black line, $CCCC is the stipple used in axes and dummycube, etc. }
     property LinePattern: TGLushort read FLinePattern write SetLinePattern
@@ -595,7 +595,7 @@ type
 
   // TGLNodedLines
   //
-  { : Class that defines lines via a series of nodes.<p>
+  { : Class that defines lines via a series of nodes.
     Base class, does not render anything. }
   TGLNodedLines = class(TGLLineBase)
   private
@@ -633,13 +633,13 @@ type
 
   published
      
-    { : Default color for nodes.<p>
+    { : Default color for nodes.
       lnaInvisible and lnaAxes ignore this setting. }
     property NodeColor: TGLColor read FNodeColor write SetNodeColor;
-    { : The nodes list.<p> }
+    { : The nodes list. }
     property Nodes: TGLLinesNodes read FNodes write SetNodes;
 
-    { : Default aspect of line nodes.<p>
+    { : Default aspect of line nodes.
       May help you materialize nodes, segments and control points. }
     property NodesAspect: TLineNodesAspect read FNodesAspect
       write SetNodesAspect default lnaAxes;
@@ -655,10 +655,10 @@ type
 
   // TGLLines
   //
-  { : Set of 3D line segments.<p>
+  { : Set of 3D line segments.
     You define a 3D Line by adding its nodes in the "Nodes" property. The line
     may be rendered as a set of segment or as a curve (nodes then act as spline
-    control points).<p>
+    control points).
     Alternatively, you can also use it to render a set of spacial nodes (points
     in space), just make the lines transparent and the nodes visible by picking
     the node aspect that suits you. }
@@ -695,14 +695,14 @@ type
 
   published
      
-    { : Number of divisions for each segment in spline modes.<p>
+    { : Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    { : Default spline drawing mode.<p> }
+    { : Default spline drawing mode. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
 
-    { : Rendering options for the line.<p>
+    { : Rendering options for the line.
        
        loUseNodeColorForLines: if set lines will be drawn using node
       colors (and color interpolation between nodes), if not, LineColor
@@ -717,7 +717,7 @@ type
 
   // TGLCube
   //
-  { : A simple cube object.<p>
+  { : A simple cube object.
     This cube use the same material for each of its faces, ie. all faces look
     the same. If you want a multi-material cube, use a mesh in conjunction
     with a TGLFreeForm and a material library. }
@@ -767,7 +767,7 @@ type
 
   // TNormalSmoothing
   //
-  { : Determines how and if normals are smoothed.<p>
+  { : Determines how and if normals are smoothed.
     - nsFlat : facetted look 
     - nsSmooth : smooth look 
     - nsNone : unlighted rendering, usefull for decla texturing }
@@ -775,7 +775,7 @@ type
 
   // TGLQuadricObject
   //
-  { : Base class for quadric objects.<p>
+  { : Base class for quadric objects.
     Introduces some basic Quadric interaction functions (the actual quadric
     math is part of the GLU library). }
   TGLQuadricObject = class(TGLSceneObject)
@@ -811,7 +811,7 @@ type
 
   // TGLSphere
   //
-  { : A sphere object.<p>
+  { : A sphere object.
     The sphere can have to and bottom caps, as well as being just a slice
     of sphere. }
   TGLSphere = class(TGLQuadricObject)
@@ -892,12 +892,12 @@ type
 
   published
      
-    { : The nodes list.<p> }
+    { : The nodes list. }
     property Nodes: TGLNodes read FNodes write SetNodes;
-    { : Number of divisions for each segment in spline modes.<p>
+    { : Number of divisions for each segment in spline modes.
       Minimum 1 (disabled), ignored in lsmLines mode. }
     property Division: Integer read FDivision write SetDivision default 10;
-    { : Default spline drawing mode.<p>
+    { : Default spline drawing mode.
       This mode is used only for the curve, not for the rotation path. }
     property SplineMode: TLineSplineMode read FSplineMode write SetSplineMode
       default lsmLines;
@@ -906,7 +906,7 @@ type
 
   // TGLSuperellipsoid
   //
-  { : A Superellipsoid object.<p>
+  { : A Superellipsoid object.
     The Superellipsoid can have top and bottom caps,
     as well as being just a slice of Superellipsoid. }
   TGLSuperellipsoid = class(TGLQuadricObject)

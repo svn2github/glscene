@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLScene objects that get rendered in 2D coordinates<p>
+  GLScene objects that get rendered in 2D coordinates
 
    History :  
    27/01/12 - Yar - Added texture coordinates mirroring for HUDSprite (thanks Tamahome)
@@ -54,12 +54,12 @@ type
 
   // TGLHUDSprite
   //
-  { : A rectangular area, NOT perspective projected.<p>
+  { : A rectangular area, NOT perspective projected.
     (x, y) coordinates map directly to the viewport (in pixels) and refer
     the center of the area. 
     The coordinate system is that of an equivalent TCanvas, ie. top-left
-    point is the origin (0, 0).<p>
-    The z component is ignored and Z-Buffer is disabled when rendering.<p>
+    point is the origin (0, 0).
+    The z component is ignored and Z-Buffer is disabled when rendering.
      Using TGLHUDSprite in 2D only scenes :  
     The most convenient way to use a TGLHUDSprite as a simple 2D sprite with
     blending capabilities (transparency or additive), is to set the texture
@@ -68,7 +68,7 @@ type
     to control transparency (while setting the other RGB components to 0). 
     You can also control aplha-blending by defining a <1 value in the sprite's
     AlphaChannel field. This provides you with hardware accelerated,
-    alpha-blended blitting.<p>
+    alpha-blended blitting.
     Note : since TGLHUDSprite works in absolute coordinates, TGLProxyObject
     can't be used to duplicate an hud sprite. }
   TGLHUDSprite = class(TGLSprite)
@@ -100,7 +100,7 @@ type
 
   // TGLHUDText
   //
-  { : A 2D text displayed and positionned in 2D coordinates.<p>
+  { : A 2D text displayed and positionned in 2D coordinates.
     The HUDText uses a character font defined and stored by a TGLBitmapFont
     component. The text can be scaled and rotated (2D), the layout and
     alignment can also be controled. }
@@ -138,22 +138,22 @@ type
 
   published
      
-    { : Refers the bitmap font to use.<p>
+    { : Refers the bitmap font to use.
       The referred bitmap font component stores and allows access to
       individual character bitmaps. }
     property BitmapFont: TGLCustomBitmapFont read FBitmapFont
       write SetBitmapFont;
-    { : Text to render.<p>
+    { : Text to render.
       Be aware that only the characters available in the bitmap font will
       be rendered. CR LF sequences are allowed. }
     property Text: UnicodeString read FText write SetText;
     { : Rotation angle in degrees (2d). }
     property Rotation: Single read FRotation write SetRotation;
-    { : Controls the text alignment (horizontal).<p>
+    { : Controls the text alignment (horizontal).
       Possible values : taLeftJustify, taRightJustify, taCenter }
     property Alignment: TAlignment read FAlignment write SetAlignment
       default taLeftJustify;
-    { : Controls the text layout (vertical).<p>
+    { : Controls the text layout (vertical).
       Possible values : tlTop, tlCenter, tlBottom }
     property Layout: TGLTextLayout read FLayout write SetLayout default tlTop;
     { : Color modulation, can be used for fade in/out too. }

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  3ds-specific scene objects.<p>
+  3ds-specific scene objects.
 
    History : 
        23/08/10 - Yar - Replaced OpenGL1x to OpenGLTokens

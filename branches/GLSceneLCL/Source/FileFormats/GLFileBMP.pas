@@ -6,7 +6,7 @@
 
   History :  
          04/04/11 - Yar - Creation
-    <p>
+    
 }
 
 unit GLFileBMP;

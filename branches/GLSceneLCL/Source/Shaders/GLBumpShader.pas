@@ -2,26 +2,26 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A shader that applies bump mapping.<p>
+   A shader that applies bump mapping.
 
    Notes:
-   The normal map is expected to be the primary texture.<p>
+   The normal map is expected to be the primary texture.
 
    The secondary texture is used for the diffuse texture,
-   to enable set boDiffuseTexture2 in the BumpOptions property.<p>
+   to enable set boDiffuseTexture2 in the BumpOptions property.
 
    The tertiary texture is used for the specular texture,
    to enable set boSpecularTexture3 in the BumpOptions property.
    The SpecularMode determines the specular highlight calculation
    (Blinn or Phong), smOff disables specular highlights in the
-   shader.<p>
+   shader.
 
    External tangent bump space expects tangent data under
-   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.<p>
+   GL_TEXTURE1_ARB and binormal data under GL_TEXTURE2_ARB.
 
    The boUseSecondaryTexCoords bump option tells the shader to use
    the secondary texture coordinates for the diffuse and specular
-   texture lookups.<p>
+   texture lookups.
 
     History :  
        23/08/10 - Yar - Upgraded program hadles
@@ -87,7 +87,7 @@ type
 
   // TGLBumpShader
   //
-  {: A generic bump shader.<p> }
+  { A generic bump shader. }
   TGLBumpShader = class(TGLShader)
   private
     FVertexProgramHandle: TGLARBVertexProgramHandle;

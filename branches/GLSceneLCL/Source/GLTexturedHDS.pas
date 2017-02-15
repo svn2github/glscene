@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a HDS, which automatically maps textures onto a parent HDS .<p>
+   Implements a HDS, which automatically maps textures onto a parent HDS .
    This HDS links to and extracts its height data from a parent HDS. (like TGLHeightTileFile)
 
    The HDS also links to a TGLMaterial Library, and maps ALL textures from the

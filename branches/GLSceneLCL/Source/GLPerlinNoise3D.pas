@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Classes and function for generation of PerlinNoise.<p>
+   Classes and function for generation of PerlinNoise.
 
     History :  
        17/11/14 - PW - Refactored TPerlin3DNoise to TGLPerlin3DNoise, renamed unit
@@ -32,7 +32,7 @@ type
 
    // TGLPerlin3DNoise
    //
-   {: Generates Perlin Noise in the [-1; 1] range.<p>
+   { Generates Perlin Noise in the [-1; 1] range.
       2D noise requests are taken in the Z=0 slice }
    TGLPerlin3DNoise = class (TObject)
       protected

@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements basic shadow volumes support.<p>
+   Implements basic shadow volumes support.
 
    Be aware that only objects that support silhouette determination have a chance
    to cast correct shadows. Transparent/blended/shader objects among the receivers
-   or the casters will be rendered incorrectly.<p>
+   or the casters will be rendered incorrectly.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -46,7 +46,7 @@ type
 
   TGLShadowVolume = class;
 
-  {: Determines when a shadow volume should generate a cap at the beginning and
+  { Determines when a shadow volume should generate a cap at the beginning and
    end of the volume. This is ONLY necessary when there's a chance that the
    camera could end up inside the shadow _or_ between the light source and
    the camera. If those two situations can't occur then not using capping is
@@ -62,7 +62,7 @@ type
    }
   TGLShadowVolumeCapping = (svcDefault, svcAlways, svcNever);
 
-  {: Determines when a caster should actually produce a shadow;
+  { Determines when a caster should actually produce a shadow;
    
     scmAlways : Caster always produces a shadow, ignoring visibility
     scmVisible : Caster casts shadow if the object has visible=true
@@ -78,7 +78,7 @@ type
 
   // TGLShadowVolumeCaster
   //
-  {: Specifies an individual shadow caster.<p>
+  { Specifies an individual shadow caster.
      Can be a light or an opaque object. }
   TGLShadowVolumeCaster = class(TCollectionItem)
   private
@@ -103,7 +103,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    {: Shadow casting object.<p>
+    { Shadow casting object.
        Can be an opaque object or a lightsource. }
     property Caster: TGLBaseSceneObject read FCaster write SetCaster;
 
@@ -112,15 +112,15 @@ type
   published
      
 
-          {: Radius beyond which the caster can be ignored.<p>
+          { Radius beyond which the caster can be ignored.
              Zero (default value) means the caster can never be ignored. }
     property EffectiveRadius: Single read FEffectiveRadius write
       FEffectiveRadius;
-    {: Specifies if the shadow volume should be capped.<p>
+    { Specifies if the shadow volume should be capped.
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TGLShadowVolumeCapping read FCapping write FCapping default
       svcDefault;
-    {: Determines when an object should cast a shadow or not. Typically, objects
+    { Determines when an object should cast a shadow or not. Typically, objects
     should only cast shadows when recursively visible. But if you're using
     dummy shadow casters which are less complex than their parent objects,
     you should use scmParentRecursivelyVisible.}
@@ -130,7 +130,7 @@ type
 
   // TGLShadowVolumeOccluder
   //
-  {: Specifies an individual shadow casting occluder.<p> }
+  { Specifies an individual shadow casting occluder. }
   TGLShadowVolumeOccluder = class(TGLShadowVolumeCaster)
   published
      
@@ -139,7 +139,7 @@ type
 
   // TGLShadowVolumeLight
   //
-  {: Specifies an individual shadow casting light.<p> }
+  { Specifies an individual shadow casting light. }
   TGLShadowVolumeLight = class(TGLShadowVolumeCaster)
   private
      
@@ -153,7 +153,7 @@ type
     function GetCachedSilhouette(AIndex: Integer): TGLSilhouette;
     procedure StoreCachedSilhouette(AIndex: Integer; ASil: TGLSilhouette);
 
-    {: Compute and setup scissor clipping rect for the light.<p>
+    { Compute and setup scissor clipping rect for the light.
        Returns true if a scissor rect was setup }
     function SetupScissorRect(worldAABB: PAABB; var rci: TRenderContextInfo):
       Boolean;
@@ -167,7 +167,7 @@ type
 
   published
      
-          {: Shadow casting lightsource.<p> }
+          { Shadow casting lightsource. }
     property LightSource: TGLLightSource read GetLightSource write
       SetLightSource;
 
@@ -175,7 +175,7 @@ type
 
   // TGLShadowVolumeCasters
   //
-  {: Collection of TGLShadowVolumeCaster. }
+  { Collection of TGLShadowVolumeCaster. }
   TGLShadowVolumeCasters = class(TOwnedCollection)
   private
      
@@ -199,7 +199,7 @@ type
 
   // TGLShadowVolumeOption
   //
-  {: Shadow volume rendering options/optimizations.<p>
+  { Shadow volume rendering options/optimizations.
       
       svoShowVolumes : make the shadow volumes visible
       svoDesignVisible : the shadow are visible at design-time
@@ -216,7 +216,7 @@ type
 
   // TGLShadowVolumeMode
   //
-  {: Shadow rendering modes.<p>
+  { Shadow rendering modes.
       
       svmAccurate : will render the scene with ambient lighting only, then
         for each light will make a diffuse+specular pass
@@ -229,13 +229,13 @@ type
 
   // TGLShadowVolume
   //
-  {: Simple shadow volumes.<p>
+  { Simple shadow volumes.
      Shadow receiving objects are the ShadowVolume's children, shadow casters
      (opaque objects or lights) must be explicitly specified in the Casters
-     collection.<p>
+     collection.
      Shadow volumes require that the buffer allows stencil buffers,
      GLSceneViewer.Buffer.ContextOptions contain roStencinBuffer. Without stencil
-     buffers, shadow volumes will not work properly.<p>
+     buffers, shadow volumes will not work properly.
      Another issue to look out for is the fact that shadow volume capping requires
      that the camera depth of view is either very high (fi 1e9) or that the
      camera style is csInfinitePerspective.
@@ -278,27 +278,27 @@ type
 
   published
      
-          {: Determines if shadow volume rendering is active.<p>
+          { Determines if shadow volume rendering is active.
              When set to false, children will be rendered without any shadowing
              or multipass lighting. }
     property Active: Boolean read FActive write SetActive default True;
-    {: Lights that cast shadow volumes. }
+    { Lights that cast shadow volumes. }
     property Lights: TGLShadowVolumeCasters read FLights write SetLights;
-    {: Occluders that cast shadow volumes. }
+    { Occluders that cast shadow volumes. }
     property Occluders: TGLShadowVolumeCasters read FOccluders write
       SetOccluders;
 
-    {: Specifies if the shadow volume should be capped.<p>
+    { Specifies if the shadow volume should be capped.
        Capping helps solve shadowing artefacts, at the cost of performance. }
     property Capping: TGLShadowVolumeCapping read FCapping write FCapping default
       svcAlways;
-    {: Shadow volume rendering options. }
+    { Shadow volume rendering options. }
     property Options: TGLShadowVolumeOptions read FOptions write SetOptions
       default [svoCacheSilhouettes, svoScissorClips];
-    {: Shadow rendering mode. }
+    { Shadow rendering mode. }
     property Mode: TGLShadowVolumeMode read FMode write SetMode default
       svmAccurate;
-    {: Darkening color used in svmDarkening mode. }
+    { Darkening color used in svmDarkening mode. }
     property DarkeningColor: TGLColor read FDarkeningColor write
       SetDarkeningColor;
   end;

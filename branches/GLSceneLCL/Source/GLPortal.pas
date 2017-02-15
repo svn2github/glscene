@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Portal Rendering support for GLScene.<p>
+   Portal Rendering support for GLScene.
 
    The portal structures are subclasses of the Mesh structures, with a "sector"
-   being assimilated to a "MeshObject" and sector polygons to facegroups.<p>
+   being assimilated to a "MeshObject" and sector polygons to facegroups.
 
 	History :  
        30/03/07 - DaStr - Added $I GLScene.inc
@@ -27,7 +27,7 @@ type
 
    // TPortalMeshObjectList
    //
-   {: A mesh object list that handles portal rendering.<p>
+   { A mesh object list that handles portal rendering.
       The items are treated as being sectors. } 
    TPortalMeshObjectList = class (TGLMeshObjectList)
       private
@@ -47,7 +47,7 @@ type
 
    // TSectorMeshObject
    //
-   {: A portal renderer sector.<p> }
+   { A portal renderer sector. }
    TSectorMeshObject = class (TMorphableMeshObject)
       private
           
@@ -69,7 +69,7 @@ type
 
 	// TFGPolygon
 	//
-   {: A portal polygon.<p>
+   { A portal polygon.
       This is the base class for portal polygons, the TFGPortalPolygon class
       implements the portal. }
 	TFGPolygon = class (TFGVertexNormalTexIndexList)
@@ -89,7 +89,7 @@ type
 
 	// TFGPolygon
 	//
-   {: A portal polygon.<p>
+   { A portal polygon.
       This is the base class for portal polygons, the TFGPortalPolygon class
       implements the portal. }
 	TFGPortalPolygon = class (TFGPolygon)
@@ -116,7 +116,7 @@ type
 
    // TGLPortal
    //
-   {: Portal Renderer class. }
+   { Portal Renderer class. }
    TGLPortal = class(TGLBaseMesh)
       private
           

@@ -19,7 +19,7 @@
                              (thanks to Rustam Asmandiarov aka Predator)
          24/01/10 - Yar - Improved FPC compatibility
          21/01/10 - Yar - Creation
-    <p>
+    
 }
 
 unit DDSImage;

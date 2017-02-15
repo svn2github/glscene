@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Added GLScene's toolbar to Delphi IDE.<p>
+  Added GLScene's toolbar to Delphi IDE.
 
    History :  
    21/11/10 - Yar - Creation

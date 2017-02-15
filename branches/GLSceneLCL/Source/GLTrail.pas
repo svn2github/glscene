@@ -3,7 +3,7 @@
 //
 {
   Creates a trail-like mesh.
-  Based on Jason Lanford's demo. <p>
+  Based on Jason Lanford's demo. 
 
 	 History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -96,14 +96,14 @@ type
     procedure ClearMarks;
 
   published
-    {: Add a tiny bit of offset to help prevent z-fighting..
+    { Add a tiny bit of offset to help prevent z-fighting..
        Need a better solution here as this will get out of whack on really
        long trails and is dependant on scene scale. }
      property AntiZFightOffset: Single read FAntiZFightOffset write FAntiZFightOffset stored StoreAntiZFightOffset;
 
      property VertLimit: integer  read FVertLimit write SetVertLimit default 150;
      property TimeLimit: single  read FTimeLimit write SetTimeLimit;
-     {: Don't create mark unless moved at least this distance. }
+     { Don't create mark unless moved at least this distance. }
      property MinDistance: single  read FMinDistance write SetMinDistance;
      property Alpha: single  read FAlpha write SetAlpha;
      property AlphaFade: Boolean  read FAlphaFade write SetAlphaFade default True;

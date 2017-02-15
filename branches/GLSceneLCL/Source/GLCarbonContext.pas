@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Carbon specific Context.<p>
+   Carbon specific Context.
 
     History :  
        19/02/11 - PREDATOR - Added Share Context, MemoryViewerContext. 
@@ -26,7 +26,7 @@ uses
 type
    // TGLCarbonContext
    //
-   {: A context driver for standard XOpenGL. }
+   { A context driver for standard XOpenGL. }
    TGLCarbonContext = class (TGLContext)
       private
           
@@ -58,7 +58,7 @@ type
 
          procedure DestructionEarlyWarning(sender: TObject);
 
-         {: DoGetHandles must be implemented in child classes,
+         { DoGetHandles must be implemented in child classes,
             and return the display + window }
          procedure DoGetHandles(outputDevice: HWND; out XWin: HWND); virtual;
            abstract;
@@ -109,7 +109,7 @@ var
   var
     I, Res, OverRes: integer;
   begin
-    {: Appointment of a function to look for equal or approximate values
+    { Appointment of a function to look for equal or approximate values
        of attributes from the list AGL.
       If you just ask all the attributes
       that the user can put it out of ignorance

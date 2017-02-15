@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   ASE (ASCI Scene Export) file format support for GLScene<p>
+   ASE (ASCI Scene Export) file format support for GLScene
 
     History : 
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to arrays of records

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   VRML file format parser.<p>
+   VRML file format parser.
 
     History : 
        02/04/07 - DaStr - Added $I GLScene.inc

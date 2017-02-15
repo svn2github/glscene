@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  B3D VectorFile class to load Blitz 3D model files<p>
+  B3D VectorFile class to load Blitz 3D model files
 
    History :
    10/11/12 - PW - Added CPP compatibility: changed vector arrays to records

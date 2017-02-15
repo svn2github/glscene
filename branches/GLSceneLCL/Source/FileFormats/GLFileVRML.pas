@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Preliminary VRML vector file support for GLScene.<p>
+   Preliminary VRML vector file support for GLScene.
     10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
     History : 
        29/03/07 - DaStr - RecursNodes bugfixed (thanks Burkhard Carstens)

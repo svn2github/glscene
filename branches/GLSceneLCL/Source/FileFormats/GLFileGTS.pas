@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   GTS (GNU Triangulated Surface) vector file format implementation.<p>
+   GTS (GNU Triangulated Surface) vector file format implementation.
 
 	 History : 
        16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -22,7 +22,7 @@ uses
 type
    // TGLGTSVectorFile
    //
-   {: The GTS vector file (GNU Triangulated Surface library).<p>
+   { The GTS vector file (GNU Triangulated Surface library).
       It is a simple text format, with indexed vertices. The first line contains
       the number of vertices, the number of edges and the number of faces separated
       by spaces. 

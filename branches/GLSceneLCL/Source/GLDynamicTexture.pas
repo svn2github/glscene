@@ -3,7 +3,7 @@
 //
 {
   Adds a dynamic texture image, which allows for easy updating of
-  texture data.<p>
+  texture data.
 
 	 History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -34,7 +34,7 @@ uses
 type
   // TGLDynamicTextureImage
   //
-  {: Allows for fast updating of the texture at runtime. }
+  { Allows for fast updating of the texture at runtime. }
   TGLDynamicTextureImage = class(TGLBlankImage)
   private
     FUpdating: integer;
@@ -67,30 +67,30 @@ type
 
     procedure NotifyChange(Sender: TObject); override;
 
-    {: Must be called before using the Data pointer.<p>
+    { Must be called before using the Data pointer.
       Rendering context must be active! }
     procedure BeginUpdate;
 
-    {: Must be called after data is changed.<p>
+    { Must be called after data is changed.
        This will upload the new data. }
     procedure EndUpdate;
 
-    {: Pointer to buffer data.<p> Will be nil
+    { Pointer to buffer data. Will be nil
        outside a BeginUpdate / EndUpdate block. }
     property Data: pointer read FData;
 
-    {: Marks the dirty rectangle inside the texture.<p> BeginUpdate sets
+    { Marks the dirty rectangle inside the texture. BeginUpdate sets
        it to ((0, 0), (Width, Height)), ie the entire texture.
        Override it if you're only changing a small piece of the texture.
        Note that the Data pointer is relative to the DirtyRectangle,
        NOT the entire texture. }
     property DirtyRectangle: TGLRect read FDirtyRect write SetDirtyRectangle;
 
-    {: Indicates that the data is stored as BGR(A) instead of
-       RGB(A).<p> The default is to use BGR(A). }
+    { Indicates that the data is stored as BGR(A) instead of
+       RGB(A). The default is to use BGR(A). }
     property UseBGR: boolean read FUseBGR write FUseBGR;
 
-    {: Enables or disables use of a PBO. Default is true. }
+    { Enables or disables use of a PBO. Default is true. }
     property UsePBO: boolean read FUsePBO write SetUsePBO;
   end;
 

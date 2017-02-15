@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Custom ODE collider implementations.<p>
+  Custom ODE collider implementations.
 
    Credits :  
       Heightfield collider code originally adapted from Mattias Fagerlund's
@@ -81,9 +81,9 @@ type
 
   // TGLODECustomCollider
   //
-  {: The custom collider is designed for generic contact handling. There is a
+  { The custom collider is designed for generic contact handling. There is a
      contact point generator for sphere, box, capped cylinder, cylinder and
-     cone geoms.<p>
+     cone geoms.
 
      Once the contact points for a collision are generated the abstract Collide
      function is called to generate the depth and the contact position and
@@ -110,22 +110,22 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
-    //: Test a position for a collision and fill out the contact information.
+    // Test a position for a collision and fill out the contact information.
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; virtual; abstract;
 
-    //: Clears the contact list so it's ready for another collision.
+    // Clears the contact list so it's ready for another collision.
     procedure ClearContacts;
 
-    //: Add a contact point to the list for ApplyContacts to processes.
+    // Add a contact point to the list for ApplyContacts to processes.
     procedure AddContact(x, y, z: TdReal); overload;
     procedure AddContact(pos: TAffineVector); overload;
 
-    //: Sort the current contact list and apply the deepest to ODE.
+    // Sort the current contact list and apply the deepest to ODE.
     function ApplyContacts(o1, o2: PdxGeom; flags: Integer;
       contact: PdContactGeom; skip: Integer): Integer;
 
-    {: Set the transform used that transforms contact points generated with
+    { Set the transform used that transforms contact points generated with
        AddContact. }
     procedure SetTransform(ATransform: TMatrix);
 
@@ -144,24 +144,24 @@ type
     property Geom: PdxGeom read FGeom;
 
   published
-    {: Defines the resolution of the contact points created for the colliding
+    { Defines the resolution of the contact points created for the colliding
        Geom. The number of contact points generated change base don the size
        of the object and the ContactResolution. Lower values generate higher
        resolution contact boundaries, and thus smoother but slower collisions. }
     property ContactResolution: Single read FContactResolution write SetContactResolution;
-    {: Toggle contact point rendering on and off. (Rendered through the assigned
+    { Toggle contact point rendering on and off. (Rendered through the assigned
        Manager.RenderPoint. }
     property RenderContacts: Boolean read FRenderContacts write SetRenderContacts;
-    //: Contact point rendering size (in pixels).
+    // Contact point rendering size (in pixels).
     property PointSize: Single read FPointSize write SetPointSize;
-    //: Contact point rendering color.
+    // Contact point rendering color.
     property ContactColor: TGLColor read FContactColor write SetContactColor;
 
   end;
 
   // TGLODEHeightField
   //
-  {: Add this behaviour to a TGLHeightField or TGLTerrainRenderer to enable
+  { Add this behaviour to a TGLHeightField or TGLTerrainRenderer to enable
      height based collisions for spheres, boxes, capped cylinders, cylinders
      and cones. }
   TGLODEHeightField = class(TGLODECustomCollider)

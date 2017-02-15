@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Doom3 MD5 mesh and animation vector file format implementation.<p>
+   Doom3 MD5 mesh and animation vector file format implementation.
 
     History : 
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records

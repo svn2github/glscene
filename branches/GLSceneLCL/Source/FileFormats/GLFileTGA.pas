@@ -6,7 +6,7 @@
 
   History :  
          04/04/11 - Yar - Creation
-    <p>
+    
 }
 
 unit GLFileTGA;
@@ -27,8 +27,6 @@ uses
 
 type
 
-  // TGLTGAImage
-  //
 
   TGLTGAImage = class(TGLBaseImage)
   public
@@ -71,8 +69,7 @@ type
   // ReadAndUnPackRLETGA24
   //
 
-procedure ReadAndUnPackRLETGA24(stream: TStream; destBuf: PAnsiChar;
-  totalSize: Integer);
+procedure ReadAndUnPackRLETGA24(stream: TStream; destBuf: PAnsiChar; totalSize: Integer);
 type
   TRGB24 = packed record
     r, g, b: Byte;
@@ -112,8 +109,7 @@ end;
 // ReadAndUnPackRLETGA32
 //
 
-procedure ReadAndUnPackRLETGA32(stream: TStream; destBuf: PAnsiChar;
-  totalSize: Integer);
+procedure ReadAndUnPackRLETGA32(stream: TStream; destBuf: PAnsiChar; totalSize: Integer);
 type
   TRGB32 = packed record
     r, g, b, a: Byte;

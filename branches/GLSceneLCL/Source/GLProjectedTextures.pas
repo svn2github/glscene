@@ -34,7 +34,7 @@ uses
   GLState;
 
 type
-  {: Possible styles of texture projection. Possible values: 
+  { Possible styles of texture projection. Possible values: 
       ptsOriginal: Original projection method (first pass,
          is default scene render, second pass is texture
          projection).
@@ -51,7 +51,7 @@ type
 
   // TGLTextureEmmiter
   //
-  {: A projected texture emmiter.<p>
+  { A projected texture emmiter.
      It's material property will be used as the projected texture.
      Can be places anywhere in the scene. }
   TGLTextureEmitter = class(TGLSceneObject)
@@ -62,7 +62,7 @@ type
 
   protected
      
-    {: Sets up the base texture matrix for this emitter<p>
+    { Sets up the base texture matrix for this emitter
        Should be called whenever a change on its properties is made.}
     procedure SetupTexMatrix(var ARci: TRenderContextInfo);
 
@@ -72,17 +72,17 @@ type
 
   published
      
-    {: Indicates the field-of-view of the projection frustum.}
+    { Indicates the field-of-view of the projection frustum.}
     property FOVy: single read FFOVy write FFOVy;
 
-    {: x/y ratio. For no distortion, this should be set to
+    { x/y ratio. For no distortion, this should be set to
        texture.width/texture.height.}
     property Aspect: single read FAspect write FAspect;
   end;
 
   // TGLTextureEmitterItem
   //
-  {: Specifies an item on the TGLTextureEmitters collection. }
+  { Specifies an item on the TGLTextureEmitters collection. }
   TGLTextureEmitterItem = class(TCollectionItem)
   private
      
@@ -107,7 +107,7 @@ type
 
   // TGLTextureEmitters
   //
-  {: Collection of TGLTextureEmitter. }
+  { Collection of TGLTextureEmitter. }
   TGLTextureEmitters = class(TCollection)
   private
      
@@ -129,7 +129,7 @@ type
 
   // TGLProjectedTexture
   //
-  {: Projected Textures Manager.<p>
+  { Projected Textures Manager.
      Specifies active texture Emitters (whose texture will be projected)
      and receivers (children of this object). }
   TGLProjectedTextures = class(TGLImmaterialSceneObject)
@@ -148,10 +148,10 @@ type
   published
      
 
-    {: List of texture emitters. }
+    { List of texture emitters. }
     property Emitters: TGLTextureEmitters read FEmitters write FEmitters;
 
-    {: Indicates the style of the projected textures. }
+    { Indicates the style of the projected textures. }
     property Style: TGLProjectedTexturesStyle read FStyle write FStyle;
   end;
 

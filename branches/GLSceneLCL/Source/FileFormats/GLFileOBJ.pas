@@ -3,9 +3,9 @@
 //
 {
     Support-Code to load Wavefront OBJ Files into TGLFreeForm-Components
-    in GLScene.<p>
+    in GLScene.
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time.<p>
+    to enable support for OBJ & OBJF at run-time.
 
   History :  
 
@@ -44,19 +44,19 @@
        08/10/00 - Egg - Added standard header, basic htmlification of old header,
                            removed specific trim funcs,
                            renamed TMBAGLOBJVectorFile to TGLOBJVectorFile
-    <p>
+    
 
    (c) 2000 Marian Aldenhövel 
        Hainstraße 8 
        53121 Bonn 
-       info@MBA-Software.de<p>
+       info@MBA-Software.de
 
   License: 
 
     Contributed to Eric Grange and GLScene,
-    same licensing, batteries not included.<p>
+    same licensing, batteries not included.
 
-  History:<p>
+  History:
 
     26.9.2000:  - OBJF-Support (t- and q-lines) see
                   http://www.cs.sunysb.edu/~stripe/ 
@@ -134,7 +134,7 @@ type
 
   // TGLMTLFile
   //
-  {: A simple class that know how to extract infos from a mtl file.<p>
+  { A simple class that know how to extract infos from a mtl file.
      mtl files are companion files of the obj, they store material
      information. Guessed content (imported ones denoted with a '*',
      please help if you know more): 
@@ -162,7 +162,7 @@ type
   end;
 
 var
-  {: If enabled, main mesh will be splitted into multiple mesh from facegroup
+  { If enabled, main mesh will be splitted into multiple mesh from facegroup
      data.}
 
   vGLFileOBJ_SplitMesh: boolean = False;

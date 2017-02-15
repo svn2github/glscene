@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a basic shadow plane.<p>
+   Implements a basic shadow plane.
 
    It is strongly recommended to read and understand the explanations in the
-   materials/mirror demo before using this component.<p>
+   materials/mirror demo before using this component.
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -58,14 +58,14 @@ type
 
   // TGLShadowPlane
   //
-  {: A simple shadow plane.<p>
-     This mirror requires a stencil buffer for optimal rendering!<p>
+  { A simple shadow plane.
+     This mirror requires a stencil buffer for optimal rendering!
      The object is a mix between a plane and a proxy object, in that the plane
      defines where the shadows are cast, while the proxy part is used to reference
      the objects that should be shadowing (it is legal to self-shadow, but no
      self-shadow visuals will be rendered). 
      If stenciling isn't used, the shadow will 'paint' the ShadowColor instead
-     of blending it transparently.<p>
+     of blending it transparently.
      You can have lower quality shadow geometry: add a dummycube, set it to
      invisible (so it won't be rendered in the "regular" pass), and under
      it place another visible dummycube under which you have all your
@@ -102,17 +102,17 @@ type
 
   published
      
-          {: Selects the object to mirror.<p>
+          { Selects the object to mirror.
              If nil, the whole scene is mirrored. }
     property ShadowingObject: TGLBaseSceneObject read FShadowingObject write SetShadowingObject;
-    {: The light which casts shadows.<p>
+    { The light which casts shadows.
        The light must be enabled otherwise shadows won't be cast. }
     property ShadowedLight: TGLLightSource read FShadowedLight write SetShadowedLight;
-    {: The shadow's color.<p>
+    { The shadow's color.
        This color is transparently blended to make shadowed area darker. }
     property ShadowColor: TGLColor read FShadowColor write SetShadowColor;
 
-    {: Controls rendering options.<p>
+    { Controls rendering options.
         
         spoUseStencil: plane area is stenciled, prevents shadowing
           objects to be visible on the sides of the mirror (stencil buffer
@@ -128,9 +128,9 @@ type
     }
     property ShadowOptions: TShadowPlaneOptions read FShadowOptions write SetShadowOptions default cDefaultShadowPlaneOptions;
 
-    {: Fired before the shadows are rendered. }
+    { Fired before the shadows are rendered. }
     property OnBeginRenderingShadows: TNotifyEvent read FOnBeginRenderingShadows write FOnBeginRenderingShadows;
-    {: Fired after the shadows are rendered. }
+    { Fired after the shadows are rendered. }
     property OnEndRenderingShadows: TNotifyEvent read FOnEndRenderingShadows write FOnEndRenderingShadows;
   end;
 

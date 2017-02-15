@@ -3,15 +3,15 @@
 //
 {
    Utility class and functions to manipulate a bitmap in OpenGL's default
-   byte order (GL_RGBA vs TBitmap's GL_BGRA)<p>
+   byte order (GL_RGBA vs TBitmap's GL_BGRA)
 
    Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
-   is active in GLScene.inc and recompile.<p>
+   is active in GLScene.inc and recompile.
 
    Note: TGLBitmap32 has support for Alex Denissov's Graphics32 library
    (http://www.g32.org), just make sure the GLS_Graphics32_SUPPORT conditionnal
-   is active in GLScene.inc and recompile.<p>
+   is active in GLScene.inc and recompile.
 
  History :  
        25/11/11 - YP - Assertion removed from AssignFromBitmap32
@@ -203,7 +203,7 @@ type
 
     function GetTextureTarget: TGLTextureTarget;
 
-    {: Registers the bitmap's content as an OpenGL texture map. }
+    { Registers the bitmap's content as an OpenGL texture map. }
     procedure RegisterAsOpenGLTexture(
       AHandle: TGLTextureHandle;
       aMipmapGen: Boolean;
@@ -212,7 +212,7 @@ type
       out texHeight: integer;
       out texDepth: integer); virtual;
 
-    {: Assigns from any Texture.}
+    { Assigns from any Texture.}
     function AssignFromTexture(
       AHandle: TGLTextureHandle;
       const CastToFormat: Boolean;
@@ -220,29 +220,29 @@ type
       const colorFormat: TGLenum = 0;
       const dataType: TGLenum = 0): Boolean; virtual;
 
-    {: Convert vertical cross format of non compressed, non mipmaped image
+    { Convert vertical cross format of non compressed, non mipmaped image
        to six face of cube map }
     function ConvertCrossToCubeMap: Boolean;
-    {: Convert flat image to volume by dividing it into slice. }
+    { Convert flat image to volume by dividing it into slice. }
     function ConvertToVolume(const col, row: Integer; const MakeArray: Boolean): Boolean;
-    {: Return size in byte of all image }
+    { Return size in byte of all image }
     function DataSize: PtrUint;
-    {: True if the bitmap is empty (ie. width or height is zero). }
+    { True if the bitmap is empty (ie. width or height is zero). }
     function IsEmpty: Boolean;
     function IsCompressed: Boolean;
     function IsVolume: Boolean;
-    {: Narrow image data to simple RGBA8 ubyte }
+    { Narrow image data to simple RGBA8 ubyte }
     procedure Narrow;
-    {: Generate LOD pyramid }
+    { Generate LOD pyramid }
     procedure GenerateMipmap(AFilter: TImageFilterFunction); virtual;
-    {: Leave top level and remove other }
+    { Leave top level and remove other }
     procedure UnMipmap; virtual;
-    {: Direct Access to image data}
+    { Direct Access to image data}
     property Data: PGLPixel32Array read GetData;
-    {: Set image of error. }
+    { Set image of error. }
     procedure SetErrorImage;
 
-    {: Recalculate levels information based on first level. }
+    { Recalculate levels information based on first level. }
     procedure UpdateLevelsInfo;
 
     property LevelWidth[ALOD: TGLImageLODRange]: Integer
@@ -253,15 +253,15 @@ type
       read GetLevelDepth;
     property LevelPixelBuffer[ALOD: TGLImageLODRange]: TGLUnpackPBOHandle
       read GetLevelPBO;
-    {: LOD offset in byte }
+    { LOD offset in byte }
     property LevelOffset[ALOD: TGLImageLODRange]: Integer
       read GetLevelOffset;
-    {: LOD size in byte }
+    { LOD size in byte }
     property LevelSizeInByte[ALOD: TGLImageLODRange]: Integer
       read GetLevelSizeInByte;
     property LevelStreamingState[ALOD: TGLImageLODRange]: TGLLODStreamingState
       read GetLevelStreamingState write SetLevelStreamingState;
-    {: Number of levels. }
+    { Number of levels. }
     property LevelCount: TGLImageLODRange read fLevelCount;
 
     property InternalFormat: TGLInternalFormat read FInternalFormat;
@@ -276,14 +276,14 @@ type
 
   // TGLImage
   //
-    {: Contains and manipulates a 32 bits (24+8) bitmap.<p>
+    { Contains and manipulates a 32 bits (24+8) bitmap.
        This is the base class for preparing and manipulating textures in GLScene,
        this function does not rely on a windows handle and should be used for
        in-memory manipulations only. 
        16 bits textures are automatically converted to 24 bits and an opaque (255)
        alpha channel is assumed for all planes, the byte order is as specified
        in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
-       data for use in OpenGL.<p>
+       data for use in OpenGL.
        The class has support for registering its content as a texture, as well
        as for directly drawing/reading from the current OpenGL buffer. }
   TGLImage = class(TGLBaseImage)
@@ -316,47 +316,47 @@ type
      
     constructor Create; override;
     destructor Destroy; override;
-    {: Accepts TGLImage and TGraphic subclasses. }
+    { Accepts TGLImage and TGraphic subclasses. }
     procedure Assign(Source: TPersistent); override;
-    {: Assigns from a 24 bits bitmap without swapping RGB.<p>
+    { Assigns from a 24 bits bitmap without swapping RGB.
       This is faster than a regular assignment, but R and B channels
       will be reversed (from what you would view in a TImage). Suitable
       if you do your own drawing and reverse RGB on the drawing side. 
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
     procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
-    {: Assigns from a 2D Texture.<p>
+    { Assigns from a 2D Texture.
       The context which holds the texture must be active and the texture
       handle valid. }
     procedure AssignFromTexture2D(textureHandle: Cardinal); overload;
-    {: Assigns from a Texture handle.<p>
+    { Assigns from a Texture handle.
       If the handle is invalid, the bitmap32 will be empty. }
     procedure AssignFromTexture2D(textureHandle: TGLTextureHandle); overload;
 
-    {: Create a 32 bits TBitmap from self content. }
+    { Create a 32 bits TBitmap from self content. }
     function Create32BitsBitmap: TGLBitmap;
 
-    {: Width of the bitmap.<p> }
+    { Width of the bitmap. }
     property Width: Integer read GetWidth write SetWidth;
-    {: Height of the bitmap. }
+    { Height of the bitmap. }
     property Height: Integer read GetHeight write SetHeight;
-    {: Depth of the bitmap. }
+    { Depth of the bitmap. }
     property Depth: Integer read GetDepth write SetDepth;
-    {: OpenGL color format }
+    { OpenGL color format }
     property ColorFormat: GLenum read fColorFormat;
-    {: Recommended texture internal format }
+    { Recommended texture internal format }
     property InternalFormat: TGLInternalFormat read FInternalFormat write
       FInternalFormat;
-    {: OpenGL data type }
+    { OpenGL data type }
     property DataType: GLenum read fDataType;
-    {: Size in bytes of pixel or block }
+    { Size in bytes of pixel or block }
     property ElementSize: Integer read fElementSize;
 
     property CubeMap: Boolean read fCubeMap write SetCubeMap;
 
     property TextureArray: Boolean read fTextureArray write SetArray;
-    {: Access to a specific Bitmap ScanLine.<p>
-      index should be in the [0; Height[ range.<p>
+    { Access to a specific Bitmap ScanLine.
+      index should be in the [0; Height[ range.
       Warning : this function is NOT protected against invalid indexes,
       and invoking it is invalid if the bitmap is Empty. }
     property ScanLine[index: Integer]: PGLPixel32Array read GetScanLine;
@@ -365,62 +365,62 @@ type
       FVerticalReverseOnAssignFromBitmap write
       FVerticalReverseOnAssignFromBitmap;
 
-    {: Set Blank to true if you actually don't need to allocate data in main
-      menory.<p>
+    { Set Blank to true if you actually don't need to allocate data in main
+      menory.
       Useful for textures that are generated by the GPU on the fly. }
     property Blank: boolean read FBlank write SetBlank;
 
-    {: Recast image OpenGL data type and color format. }
+    { Recast image OpenGL data type and color format. }
     procedure SetColorFormatDataType(const AColorFormat, ADataType: GLenum);
-    {: Set Alpha channel values to the pixel intensity.<p>
+    { Set Alpha channel values to the pixel intensity.
       The intensity is calculated as the mean of RGB components. }
     procedure SetAlphaFromIntensity;
-    {: Set Alpha channel to 0 for pixels of given color, 255 for others).<p>
+    { Set Alpha channel to 0 for pixels of given color, 255 for others).
       This makes pixels of given color totally transparent while the others
       are completely opaque. }
     procedure SetAlphaTransparentForColor(const aColor: TColor); overload;
     procedure SetAlphaTransparentForColor(const aColor: TGLPixel32); overload;
     procedure SetAlphaTransparentForColor(const aColor: TGLPixel24); overload;
-    {: Set Alpha channel values to given byte value. }
+    { Set Alpha channel values to given byte value. }
     procedure SetAlphaToValue(const aValue: Byte);
-    {: Set Alpha channel values to given float [0..1] value. }
+    { Set Alpha channel values to given float [0..1] value. }
     procedure SetAlphaToFloatValue(const aValue: Single);
-    {: Inverts the AlphaChannel component.<p>
+    { Inverts the AlphaChannel component.
       What was transparent becomes opaque and vice-versa. }
     procedure InvertAlpha;
-    {: AlphaChannel components are replaced by their sqrt.<p> }
+    { AlphaChannel components are replaced by their sqrt. }
     procedure SqrtAlpha;
 
-    {: Apply a brightness (scaled saturating) correction to the RGB components. }
+    { Apply a brightness (scaled saturating) correction to the RGB components. }
     procedure BrightnessCorrection(const factor: Single);
-    {: Apply a gamma correction to the RGB components. }
+    { Apply a gamma correction to the RGB components. }
     procedure GammaCorrection(const gamma: Single);
 
-    {: Downsample the bitmap by a factor of 2 in both dimensions.<p>
+    { Downsample the bitmap by a factor of 2 in both dimensions.
       If one of the dimensions is 1 or less, does nothing. }
     procedure DownSampleByFactor2;
 
-    {: Reads the given area from the current active OpenGL rendering context.<p>
+    { Reads the given area from the current active OpenGL rendering context.
       The best spot for reading pixels is within a SceneViewer's PostRender
       event : the scene has been fully rendered and the OpenGL context
       is still active. }
     procedure ReadPixels(const area: TGLRect);
-    {: Draws the whole bitmap at given position in the current OpenGL context.<p>
-      This function must be called with a rendering context active.<p>
+    { Draws the whole bitmap at given position in the current OpenGL context.
+      This function must be called with a rendering context active.
       Blending and Alpha channel functions are not altered by this function
       and must be adjusted separately. }
     procedure DrawPixels(const x, y: Single);
 
-    {: Converts a grayscale 'elevation' bitmap to normal map.<p>
+    { Converts a grayscale 'elevation' bitmap to normal map.
       Actually, only the Green component in the original bitmap is used. }
     procedure GrayScaleToNormalMap(const scale: Single;
       wrapX: Boolean = True; wrapY: Boolean = True);
-    {: Assumes the bitmap content is a normal map and normalizes all pixels.<p> }
+    { Assumes the bitmap content is a normal map and normalizes all pixels. }
     procedure NormalizeNormalMap;
     procedure AssignToBitmap(aBitmap: TGLBitmap);
-    {: Generate level of detail. }
+    { Generate level of detail. }
     procedure GenerateMipmap(AFilter: TImageFilterFunction); override;
-    {: Clear all levels except first. }
+    { Clear all levels except first. }
     procedure UnMipmap; override;
   end;
 
@@ -438,7 +438,7 @@ type
 
   // TRasterFileFormatsList
   //
-  {: Stores registered raster file formats. }
+  { Stores registered raster file formats. }
   TRasterFileFormatsList = class(TPersistentObjectList)
   public
      
@@ -472,17 +472,17 @@ procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
 procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
   factor: Single);
-//: Read access to the list of registered vector file formats
+// Read access to the list of registered vector file formats
 function GetRasterFileFormats: TRasterFileFormatsList;
-{: Returns an extension by its index
-   in the internal image files dialogs filter.<p>
+{ Returns an extension by its index
+   in the internal image files dialogs filter.
    Use InternalImageFileFormatsFilter to obtain the filter. }
 function RasterFileFormatExtensionByIndex(index: Integer): string;
 
 procedure RegisterRasterFormat(const AExtension, ADescription: string;
   AClass: TGLBaseImageClass);
 procedure UnregisterRasterFormat(AClass: TGLBaseImageClass);
-//: Return an optimal number of texture pyramid
+// Return an optimal number of texture pyramid
 function GetImageLodNumber(w, h, d: integer; IsVolume: Boolean): Integer;
 
 var
@@ -2263,7 +2263,7 @@ begin
     PBO.AllocateHandle;
     if PBO.IsDataNeedUpdate then
     begin
-      {: This may work with multiple unshared context, but never tested
+      { This may work with multiple unshared context, but never tested
         because unlikely. }
       PBO.BindBufferData(nil, MaxInteger(Size, 1024), GL_STREAM_DRAW);
       if Assigned(MapAddress) then

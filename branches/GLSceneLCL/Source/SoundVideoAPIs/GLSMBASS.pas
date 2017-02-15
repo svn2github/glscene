@@ -2,13 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).<p>
+   BASS based sound-manager (http://www.un4seen.com/music/, free for freeware).
 
    Unsupported feature(s) : 
        sound source velocity
        looping (sounds are played either once or forever)
        source priorities (not relevant, channels are not limited)
-    <p>
+    
 
 	 History :  
        14/01/14 - PW - Updated to BASS 2.4 thanks to Ian Luck

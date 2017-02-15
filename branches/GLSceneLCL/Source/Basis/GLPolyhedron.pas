@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Standard polyhedrons.<p>
+   Standard polyhedrons.
 
   History :  
        10/03/13 - PW - Added TGLTetrahedron and TGLOctahedron classes
@@ -23,7 +23,7 @@ type
 
   // TGLDodecahedron
   //
-  {: A Dodecahedron.<p>
+  { A Dodecahedron.
      The dodecahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLDodecahedron = class(TGLSceneObject)
@@ -34,7 +34,7 @@ type
 
   // TGLIcosahedron
   //
-  {: A Icosahedron.<p>
+  { A Icosahedron.
      The icosahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLIcosahedron = class(TGLSceneObject)
@@ -45,7 +45,7 @@ type
 
   // TGLOctahedron
   //
-  {: A Octahedron.<p>
+  { A Octahedron.
      The octahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLOctahedron = class(TGLSceneObject)
@@ -56,7 +56,7 @@ type
 
   // TGLTetrahedron
   //
-  {: A Tetrahedron.<p>
+  { A Tetrahedron.
      The tetrahedron has no texture coordinates defined, ie. without using
      a texture generation mode, no texture will be mapped. }
   TGLTetrahedron = class(TGLSceneObject)

@@ -2,12 +2,12 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Enhanced silhouette classes.<p>
+   Enhanced silhouette classes.
 
    Introduces more evolved/specific silhouette generation and management
-   classes.<p>
+   classes.
 
-   CAUTION : both connectivity classes leak memory.<p>
+   CAUTION : both connectivity classes leak memory.
 
 	 History :  
        04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility  
@@ -35,7 +35,7 @@ type
 
    // TGLSilhouetteParameters
    //
-   {: Silouhette generation parameters.<p>
+   { Silouhette generation parameters.
       SeenFrom and LightDirection are expected in local coordinates. }
    TGLSilhouetteParameters = packed record
       SeenFrom, LightDirection : TAffineVector;
@@ -45,7 +45,7 @@ type
 
    // TGLSilhouette
    //
-   {: Base class storing a volume silhouette.<p>
+   { Base class storing a volume silhouette.
       Made of a set of indexed vertices defining an outline, and another set
       of indexed vertices defining a capping volume. Coordinates system
       is the object's unscaled local coordinates system. 
@@ -80,7 +80,7 @@ type
 
          procedure ExtrudeVerticesToInfinity(const origin : TAffineVector);
 
-         {: Adds an edge (two vertices) to the silhouette.<p>
+         { Adds an edge (two vertices) to the silhouette.
             If TightButSlow is true, no vertices will be doubled in the
             silhouette list. This should only be used when creating re-usable
             silhouettes, because it's much slower. }
@@ -88,7 +88,7 @@ type
                                        tightButSlow : Boolean);
          procedure AddIndexedEdgeToSilhouette(const Vi0, Vi1 : integer);
 
-         {: Adds a capping triangle to the silhouette.<p>
+         { Adds a capping triangle to the silhouette.
             If TightButSlow is true, no vertices will be doubled in the
             silhouette list. This should only be used when creating re-usable
             silhouettes, because it's much slower. }
@@ -138,7 +138,7 @@ type
           function ReuseOrFindVertexID(const seenFrom : TAffineVector;
                      aSilhouette : TGLSilhouette; index : Integer) : Integer;
        public
-          {: Clears out all connectivity information. }
+          { Clears out all connectivity information. }
           procedure Clear; virtual;
 
           procedure CreateSilhouette(const silhouetteParameters : TGLSilhouetteParameters; var aSilhouette : TGLSilhouette; AddToSilhouette : boolean); override;

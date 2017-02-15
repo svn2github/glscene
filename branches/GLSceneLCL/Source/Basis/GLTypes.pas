@@ -4,7 +4,7 @@
 {
    Defines vector types for geometry only aiming to imply
    compatibility of GLScene for Delphi with C+Builder.
-   Do not include any other units in uses clause <p>
+   Do not include any other units in uses clause 
 
 	 History :  
      01/11/13 - PW - Fixed XE5 error: E2376 static can only be used on non-virtual class methods

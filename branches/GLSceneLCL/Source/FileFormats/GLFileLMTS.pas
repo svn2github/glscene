@@ -27,7 +27,7 @@
    02/01/07 - PvD - Mirrored mesh in X to original orientation.
    01/01/07 - Dave Gravel - Modification to make it work.
    10/09/03 - Domin - Creation
-   <p>
+   
 }
 unit GLFileLMTS;
 

@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a multi-proxy object, useful for discreet LOD.<p>
-   Allows assign a unique material for each proxy master.<p>
+   Implements a multi-proxy object, useful for discreet LOD.
+   Allows assign a unique material for each proxy master.
 
     History :  
        30/08/10 - Yar - Fixed transformation in TGLMaterialMultiProxy.DoRender
@@ -55,7 +55,7 @@ type
 
   // TGLMaterialMultiProxyMaster
   //
-  {: MasterObject description for a MultiProxy object. }
+  { MasterObject description for a MultiProxy object. }
   TGLMaterialMultiProxyMaster = class(TGLInterfacedCollectionItem, IGLMaterialLibrarySupported)
   private
      
@@ -87,25 +87,25 @@ type
     function OwnerObject: TGLMaterialMultiProxy;
     procedure NotifyChange;
 
-    {: Specifies the Material, that current master object will use.
+    { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write FMasterLibMaterial stored False;
   published
      
-    {: Specifies the Master object which will be proxy'ed. }
+    { Specifies the Master object which will be proxy'ed. }
     property MasterObject: TGLBaseSceneObject read FMasterObject write SetMasterObject;
-    {: Specifies the Material, that current master object will use. }
+    { Specifies the Material, that current master object will use. }
     property MasterLibMaterialName: TGLLibMaterialName read GetMasterLibMaterialName write SetMasterLibMaterialName;
-    {: Minimum visibility Distance (inclusive). }
+    { Minimum visibility Distance (inclusive). }
     property DistanceMin: Single read GetDistanceMin write SetDistanceMin;
-    {: Maximum visibility Distance (exclusive). }
+    { Maximum visibility Distance (exclusive). }
     property DistanceMax: Single read GetDistanceMax write SetDistanceMax;
   end;
 
   // TGLMaterialMultiProxyMasters
   //
-  {: Collection of TGLMaterialMultiProxyMaster. }
+  { Collection of TGLMaterialMultiProxyMaster. }
   TGLMaterialMultiProxyMasters = class(TOwnedCollection)
   private
      
@@ -131,11 +131,11 @@ type
 
   // TGLMaterialMultiProxy
   //
-   {: Multiple Proxy object.<p>
+   { Multiple Proxy object.
       This proxy has multiple Master objects, which are individually made visible
       depending on a Distance to the camera criterion. It can be used to implement
       discreet level of detail directly for static objects, or objects that
-      go through cyclic animation.<p>
+      go through cyclic animation.
       For dimensionsn raycasting and silhouette purposes, the first Master is used
       (item zero in the MasterObjects collection). }
   TGLMaterialMultiProxy = class(TGLBaseSceneObject)

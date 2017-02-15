@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a HDS Filter that generates HeightData tiles in a seperate thread.<p>
+   Implements a HDS Filter that generates HeightData tiles in a seperate thread.
 
    This component is a THeightDataSourceFilter, which uses a THeightDataSourceThread,
    to asyncronously search the HeightData cache for any queued tiles.
@@ -12,7 +12,7 @@
    being prepared.  Although this keeps the framerate up, it may cause holes in the
    terrain to show, if the HeightDataThreads cant keep up with the TerrainRenderer's
    requests for new tiles.
-   <p>
+   
 
 	 History :  
        22/04/10 - Yar - Fixes after GLState revision
@@ -43,7 +43,7 @@ type
 
   // TUseDirtyTiles
   //
-  {:  TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
+  {  TUseDirtyTiles determines if/how dirty tiles are displayed and when they are released.
       
       TUseDirtyTiles
       
@@ -51,7 +51,7 @@ type
        However, the replacement cant be used until the HDThread has finished preparing it.
        Dirty tiles can be deleted as soon as they are no longer used/displayed.
 
-     Possible states for a TUseDirtyTiles.<p>
+     Possible states for a TUseDirtyTiles.
        hdsNever :            Dirty tiles get released immediately, leaving a hole in the terrain, until the replacement is hdsReady.
        hdsUntilReplaced :    Dirty tiles are used, until the HDThread has finished preparing the queued replacement.
        hdsUntilAllReplaced : Waits until the HDSThread has finished preparing ALL queued tiles,

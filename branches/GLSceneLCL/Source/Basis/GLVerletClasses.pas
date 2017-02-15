@@ -21,7 +21,7 @@ uses
 type
   // TGLVerletNode
   //
-  {: Specialized verlet node that can be anchored to a GLScene object. If it's
+  { Specialized verlet node that can be anchored to a GLScene object. If it's
      anchored and has the property "NailedDown" set, it will remain in the same
      relative position to the GLScene object.}
   TGLVerletNode = class(TVerletNode)

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Geometric objects.<p>
+  Geometric objects.
 
    History :  
    03/02/13 - Yar - Object stack now dynamic array (thanks to  maverick)
@@ -39,7 +39,7 @@ type
 
   // TGLPickList
   //
-  {: List class for object picking.<p>
+  { List class for object picking.
      This list is used to store the results of a PickObjects call. }
   TGLPickList = class(TPersistentObjectList)
   private

@@ -58,7 +58,7 @@ type
   {Only csEllipsoid can have dynamic behaviour}
   TDCEShape = (csEllipsoid, csBox, csFreeform, csTerrain);
 
-  {: Indicates which type of layer comparison is made when trying to detect
+  { Indicates which type of layer comparison is made when trying to detect
      collisions between 2 bodies (A and B). Possible values are:  
 	  ccsDCEStandard: Collides bodies if A.layer <= B.layer
 	  ccsCollisionStandard: Collides bodies if either A or B have

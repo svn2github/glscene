@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Fur shader that simulate Fur / Hair / Grass.<p>
+   Fur shader that simulate Fur / Hair / Grass.
    At this time only one light source is supported
 
     History :  

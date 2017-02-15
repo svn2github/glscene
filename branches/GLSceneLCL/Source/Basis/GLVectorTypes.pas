@@ -2,11 +2,11 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Defines base vector types for use in Geometry.pas and OpenGL1x.pas.<p>
+   Defines base vector types for use in Geometry.pas and OpenGL1x.pas.
 
    The sole aim of this unit is to limit dependency between the Geometry
    and OpenGL1x units by introducing the base compatibility types
-   (and only the *base* types).<p>
+   (and only the *base* types).
 
    Conventions: 
         d  is used for Double precision floating points values (64 bits)
@@ -15,7 +15,7 @@
         s  is uses for 16 bits signed integers (smallint)
     
 
-   Note : D3D types untested.<p>
+   Note : D3D types untested.
 
 	 History :  
      10/12/14 - PW - Renamed from "VectorTypes.pas" to "GLVectorTypes.pas"

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Procedural textures.<p>
+  Procedural textures.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -19,13 +19,13 @@
                             One must be set to BE Seeded
        11/12/02 - ??? - Initial, procedural perlin noise texture
                            code by Tobias Peirick
-  <p>
+  
 
-  I used the following references for my implementation:<p>
+  I used the following references for my implementation:
 
   http://freespace.virgin.net/hugo.elias/models/m_perlin.htm 
   http://freespace.virgin.net/hugo.elias/models/m_clouds.htm 
-  http://www.delphi3d.net<p>
+  http://www.delphi3d.net
 
   Tobias Peirick
 }

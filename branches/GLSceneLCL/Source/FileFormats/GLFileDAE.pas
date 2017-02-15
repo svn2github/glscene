@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Quake2 MD2 vector file format implementation.<p>
+   Quake2 MD2 vector file format implementation.
 
 	 History : 
        17/01/14 - PW - Bugfixed for XE5
@@ -23,10 +23,10 @@ uses
 type
    // TGLDAEVectorFile
    //
-   {: The DAE vector file (COLLADA actor file).<p>
+   { The DAE vector file (COLLADA actor file).
       Stores a set of "frames" describing the different postures of the actor,
       it may be animated by TGLActor. The "Skin" must be loaded indepentendly
-      (the whole mesh uses a single texture bitmap).<p>}
+      (the whole mesh uses a single texture bitmap).}
    TGLDAEVectorFile = class(TGLVectorFile)
       public
           

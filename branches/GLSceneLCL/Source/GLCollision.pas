@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Collision-detection management for GLScene<p>
+   Collision-detection management for GLScene
 
 	History :  
        17/11/14 - PW - Refactored TCollisionManager to TGLCollisionManager
@@ -43,7 +43,7 @@ type
 
    // TCollisionBoundingMode
    //
-   {: Defines how fine collision bounding is for a particular object.<p>
+   { Defines how fine collision bounding is for a particular object.
       Possible values are : 
        cbmPoint : the object is punctual and may only collide with volumes
        cbmSphere : the object is defined by its bounding sphere (sphere radius
@@ -86,9 +86,9 @@ type
 
   	// TGLBCollision
 	//
-	{: Collision detection behaviour.<p>
+	{ Collision detection behaviour.
 		Allows an object to register to a TCollisionManager and be accounted for
-      in collision-detection and distance calculation mechanisms.<p>
+      in collision-detection and distance calculation mechanisms.
       An object may have multiple TGLBCollision, registered to multiple collision
       managers, however if multiple behaviours share the same manager, only one
       of them will be accounted for, others will be ignored. }
@@ -121,7 +121,7 @@ type
 
 		published
 			 
-         {: Refers the collision manager. }
+         { Refers the collision manager. }
          property Manager : TGLCollisionManager read FManager write SetManager;
          property BoundingMode : TCollisionBoundingMode read FBoundingMode write FBoundingMode;
          property GroupIndex : Integer read FGroupIndex write SetGroupIndex;
@@ -147,14 +147,14 @@ function FastCheckCubeVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //exp
 function FastCheckFaceVsCube(obj1, obj2 : TGLBaseSceneObject) : Boolean;   //experimental
 function FastCheckFaceVsFace(obj1, obj2 : TGLBaseSceneObject) : Boolean;
 
-{: Returns true when the bounding box cubes does intersect the other.<p>
+{ Returns true when the bounding box cubes does intersect the other.
    Also true when the one cube does contain the other completely. }
 function IntersectCubes(obj1, obj2 : TGLBaseSceneObject) : Boolean; overload;
 
-{: Returns or creates the TGLBCollision within the given behaviours.<p>
+{ Returns or creates the TGLBCollision within the given behaviours.
 	This helper function is convenient way to access a TGLBCollision. }
 function GetOrCreateCollision(behaviours : TGLBehaviours) : TGLBCollision; overload;
-{: Returns or creates the TGLBCollision within the given object's behaviours.<p>
+{ Returns or creates the TGLBCollision within the given object's behaviours.
 	This helper function is convenient way to access a TGLBCollision. }
 function GetOrCreateCollision(obj : TGLBaseSceneObject) : TGLBCollision; overload;
 

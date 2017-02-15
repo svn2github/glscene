@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Design time registration code for the Newton Manager.<p>
+  Design time registration code for the Newton Manager.
 
    History :  
    04/01/11 - FP - Removed Joint

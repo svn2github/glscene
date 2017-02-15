@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  A Newton Game Dynamics Manager for GLScene.<p>
+  A Newton Game Dynamics Manager for GLScene.
 
   Where can I find ... ? 
    GLScene                                   (http://glscene.org)
@@ -12,7 +12,7 @@
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
-  To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.<p>
+  To install use the GLS_NGD?.dpk in the GLScene/Delphi? folder.
 
    History :  
    10/11/12 - PW - Added CPP compatibility: used records with arrays instead of vector arrays
@@ -296,7 +296,7 @@ type
       FNewtonJointGroup;
   end;
 
-  { : Basis structures for GLScene behaviour style implementations. }
+  { Basis structures for GLScene behaviour style implementations. }
   TGLNGDBehaviour = class(TGLBehaviour)
   private
     { Private Declartions }

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Implements an HDS that automatically generates a terrain lightmap texture.<p>
+  Implements an HDS that automatically generates a terrain lightmap texture.
 	 History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -51,7 +51,7 @@ type
 
 	// TGLShadowHDS
 	//
-   {: An Height Data Source that generates terrain shadow maps automatically.<p>
+   { An Height Data Source that generates terrain shadow maps automatically.
       The HDS must be connected to another HDS, which will provide the elevation
       data, and to a MaterialLibrary where shadowmaps will be placed. }
 	 TGLShadowHDS = class (THeightDataSourceFilter)

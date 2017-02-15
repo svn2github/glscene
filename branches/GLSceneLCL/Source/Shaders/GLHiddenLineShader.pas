@@ -4,7 +4,7 @@
 {
    A shader that renders hidden (back-faced) lines differently from visible
    (front) lines. Polygon offset is used to displace fragments depths a little
-   so that there is no z-fighting in rendering the same geometry multiple times.<p>
+   so that there is no z-fighting in rendering the same geometry multiple times.
 
     History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -59,7 +59,7 @@ type
     property Width: Single read FWidth write SetWidth;
     property Color: TGLColor read FColor write SetColor;
     property Pattern: TGLushort read FPattern write SetPattern default $FFFF;
-    {: Set ForceMaterial to true to enforce the application of the line settings
+    { Set ForceMaterial to true to enforce the application of the line settings
        for objects that sets their own color, line width and pattern. }
     property ForceMaterial: Boolean read FForceMaterial write SetForceMaterial
       default false;
@@ -99,18 +99,18 @@ type
      
     property FrontLine: TGLLineSettings read FFrontLine write FFrontLine;
     property BackLine: TGLLineSettings read FBackLine write FBackLine;
-    {: Line smoothing control }
+    { Line smoothing control }
     property LineSmooth: Boolean read FlineSmooth write SetlineSmooth default
       false;
-    {: Solid controls if you can see through the front-line wireframe. }
+    { Solid controls if you can see through the front-line wireframe. }
     property Solid: Boolean read FSolid write SetSolid default false;
-    {: Color used for solid fill. }
+    { Color used for solid fill. }
     property BackgroundColor: TGLColor read FBackgroundColor write
       SetBackgroundColor;
-    {: When Solid is True, determines if lighting or background color is used. }
+    { When Solid is True, determines if lighting or background color is used. }
     property SurfaceLit: Boolean read FLighting write SetLighting default true;
-    {: Shade model.<p>
-       Default is "Smooth".<p> }
+    { Shade model.
+       Default is "Smooth". }
     property ShadeModel: TGLShadeModel read FShadeModel write SetShadeModel
       default smDefault;
   end;

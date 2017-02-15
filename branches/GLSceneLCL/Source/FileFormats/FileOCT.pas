@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Loader for FSRad OCT files.<p>
+   Loader for FSRad OCT files.
 
 	 History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -76,7 +76,7 @@ type
          constructor Create; overload;
          constructor Create(octStream : TStream); overload;
 
-         {: Saves content to stream in OCT format.<p>
+         { Saves content to stream in OCT format.
             The Header is automatically prepared before streaming. }
          procedure SaveToStream(aStream : TStream);
 

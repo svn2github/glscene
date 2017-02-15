@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   This unit contains classes that imitate an atmosphere around a planet.<p>
+   This unit contains classes that imitate an atmosphere around a planet.
 
     History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -78,7 +78,7 @@ uses
 type
    EGLAtmosphereException = class(Exception);
 
-   {:
+   {
    With aabmOneMinusSrcAlpha atmosphere is transparent to other objects,
    but has problems, which are best seen when the Atmosphere radius is big.
 
@@ -87,7 +87,7 @@ type
   }
   TGLAtmosphereBlendingMode = (abmOneMinusDstColor, abmOneMinusSrcAlpha);
 
-  {: This class imitates an atmosphere around a planet. }
+  { This class imitates an atmosphere around a planet. }
   TGLCustomAtmosphere = class(TGLBaseSceneObject)
   private
     // Used in DoRenderl
@@ -122,11 +122,11 @@ type
     property Slices: Integer read FSlices write SetSlices default 60;
     property Opacity: Single read FOpacity write FOpacity stored StoreOpacity;
 
-    //: AtmosphereRadius > PlanetRadius!!!
+    // AtmosphereRadius > PlanetRadius!!!
     property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius stored StoreAtmosphereRadius;
     property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
 
-    //: Use value slightly lower than actual radius, for antialiasing effect.
+    // Use value slightly lower than actual radius, for antialiasing effect.
     property LowAtmColor: TGLColor read FLowAtmColor write SetLowAtmColor stored StoreLowAtmColor;
     property HighAtmColor: TGLColor read FHighAtmColor write SetHighAtmColor stored StoreHighAtmColor;
     property BlendingMode: TGLAtmosphereBlendingMode read FBlendingMode
@@ -136,14 +136,14 @@ type
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
     procedure TogleBlendingMode; //changes between 2 blending modes
 
-    //: Standard component stuff.
+    // Standard component stuff.
     procedure Assign(Source: TPersistent); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    //: Main rendering procedure.
+    // Main rendering procedure.
     procedure DoRender(var rci: TRenderContextInfo; renderSelf, renderChildren: Boolean); override;
-    //: Used to determine extents.
+    // Used to determine extents.
     function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
 

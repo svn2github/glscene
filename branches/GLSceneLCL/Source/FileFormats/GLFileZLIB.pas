@@ -6,7 +6,7 @@
        22/08/10 - DaStr - Removed warnings, converted comments from Unicode to ASCII  
        04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-   <p>
+   
 }
 
 unit GLFileZLIB;

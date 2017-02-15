@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    String constants that are used in many GLScene units<p>
+    String constants that are used in many GLScene units
 
 	 History : 
        16/09/10 - YP - Added glsUnknownParam

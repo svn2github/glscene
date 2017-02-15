@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Class and routines to output isolines.<p>
+  Class and routines to output isolines.
 
    History :  
   25/04/15 - PW - Fixed TriangleElevationSegments procedure

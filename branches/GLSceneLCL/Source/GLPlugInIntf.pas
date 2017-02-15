@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  An interface unit to GLScene plug-ins.<p>
-  For more information see help file for writing plug-ins.<p>
+  An interface unit to GLScene plug-ins.
+  For more information see help file for writing plug-ins.
 
    History :  
    17/11/14 - PW - Renamed from PlugInIntf.pas to GLPlugInIntf.pas

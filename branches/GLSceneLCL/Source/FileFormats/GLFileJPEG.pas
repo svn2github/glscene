@@ -7,7 +7,7 @@
        29/06/10 - Yar - Improved FPC compatibility
        29/04/10 - Yar - Bugfixed loading of fliped image (thanks mif)
        27/02/10 - Yar - Creation
-   <p>
+   
 }
 unit GLFileJPEG;
 
@@ -39,7 +39,7 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
       textureTarget: TGLTextureTarget;

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  An old PlugIn Manager unit. Don't know if if ever wa used...<p>
+  An old PlugIn Manager unit. Don't know if if ever wa used...
 
   History :  
    31/03/07 - DaStr - Added $I GLScene.inc

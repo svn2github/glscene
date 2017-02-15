@@ -86,7 +86,7 @@ type
 
   { TGLSLanguage }
 
-  { : Abstract class for control Language.<p> }
+  { : Abstract class for control Language. }
   TGLSLanguage = class(TComponent)
   private
     FLanguage: TGLLanguageExt;

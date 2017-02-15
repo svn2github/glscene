@@ -5,7 +5,7 @@
    History :  
        04/06/10 - Yar - Added to GLScene
                            (Created by Rustam Asmandiarov aka Predator)
-   <p>
+   
 }
 
 unit GLFilePAK;

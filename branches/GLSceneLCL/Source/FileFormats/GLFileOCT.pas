@@ -3,7 +3,7 @@
 //
 {
     Support-code to load OCT Files into TGLFreeForm-Components in GLScene. 
-    (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).<p>
+    (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).
 
    History :  
        19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
@@ -12,7 +12,7 @@
        19/09/03 - EG - "Lighmap" -&gt; "LightMap"
        06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
        02/02/03 - EG     - Creation
-    <p>
+    
 }
 unit GLFileOCT;
 
@@ -31,7 +31,7 @@ type
 
   // TGLOCTGLVectorFile
 
-  {: The OCT vector file (FSRad output).<p> }
+  { The OCT vector file (FSRad output). }
   TGLOCTGLVectorFile = class(TGLVectorFile)
   public
      

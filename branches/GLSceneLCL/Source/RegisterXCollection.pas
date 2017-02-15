@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Register TGLXCollection property editor<p>
+   Register TGLXCollection property editor
 
 	 History :  
        20/05/10 - Yar - Fixes for Linux x64

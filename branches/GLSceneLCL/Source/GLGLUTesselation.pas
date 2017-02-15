@@ -13,11 +13,11 @@
        29/05/08 - DaStr - Added $I GLScene.inc
        08/09/03 - Jaj - Added single outline polygon support
 
-    <p>
+    
 
   License: 
 
-    Contributed to GLScene.<p>
+    Contributed to GLScene.
 }
 unit GLGLUTesselation;
 
@@ -30,7 +30,7 @@ uses
   GLVectorLists,
   GLVectorGeometry;
 
-{: Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
+{ Tesselates the polygon outlined by the Vertexes. And addeds them to the first facegroup of the Mesh. }
 procedure DoTesselate(Vertexes: TAffineVectorList; Mesh: TGLBaseMesh; normal: PAffineVector = nil; invertNormals: Boolean = False);
 
 implementation

@@ -5,7 +5,7 @@
    History :  
    08/05/10 - Yar - Removed check for residency in AssignFromTexture
    04/02/10 - Yar - Creation
-   <p>
+   
 }
 unit GLFilePGM;
 

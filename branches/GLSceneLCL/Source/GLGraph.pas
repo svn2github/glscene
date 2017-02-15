@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Graph plotting objects for GLScene<p>
+  Graph plotting objects for GLScene
 
    History :  
    25/01/13 - PW - Added compatibility with Cppb, changed 
@@ -69,7 +69,7 @@ type
 
     procedure Assign(Source: TPersistent); override;
 
-    { : Returns the Base value for Step browsing.<p>
+    { : Returns the Base value for Step browsing.
       ie. the lowest value (superior to Min) that verifies
       Frac((Origin-StepBase)/Step)=0.0, this value may be superior to Max. }
     function StepBase: Single;
@@ -106,11 +106,11 @@ type
 
   // TGLHeightField
   //
-  { : Renders a sampled height-field.<p>
+  { : Renders a sampled height-field.
     HeightFields are used to materialize z=f(x, y) surfaces, you can use it to
     render anything from math formulas to statistics. Most important properties
     of an height field are its sampling scales (X & Y) that determine the extents
-    and the resolution of the base grid.<p>
+    and the resolution of the base grid.
 
     The component will then invoke it OnGetHeight event to retrieve Z values for
     all of the grid points (values are retrieved only once for each point). Each
@@ -166,7 +166,7 @@ type
     { : Primary event to return heights. }
     property OnGetHeight: THeightFieldGetHeightEvent read FOnGetHeight
       write SetOnGetHeight;
-    { : Alternate this event to return heights.<p>
+    { : Alternate this event to return heights.
       This events passes an extra "Sender" parameter, it will be invoked
       only if OnGetHeight isn't defined. }
     property OnGetHeight2: THeightFieldGetHeight2Event read FOnGetHeight2
@@ -180,7 +180,7 @@ type
 
   // TXYZGridLinesStyle
   //
-  { : Rendering Style for grid lines.<p>
+  { : Rendering Style for grid lines.
     - glsLine : a single line is used for each grid line (from Min to Max),
     this provides the fastest rendering 
     - glsSegments : line segments are used between each node of the grid,
@@ -190,7 +190,7 @@ type
 
   // TGLXYZGrid
   //
-  { : An XYZ Grid object.<p>
+  { : An XYZ Grid object.
     Renders an XYZ grid using lines. }
   TGLXYZGrid = class(TGLLineBase)
   private
@@ -230,7 +230,7 @@ type
     property Parts: TXYZGridParts read FParts write SetParts default [gpX, gpY];
     property LinesStyle: TXYZGridLinesStyle read FLinesStyle write SetLinesStyle
       default glsSegments;
-    { : Adjusts lines smoothing (or antialiasing).<p>
+    { : Adjusts lines smoothing (or antialiasing).
       Obsolete, now maps to Antialiased property. }
     property LinesSmoothing: Boolean write SetLinesSmoothing stored False;
   end;

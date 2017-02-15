@@ -2,16 +2,16 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A scene object encapsulating the OpenGL feedback buffer.<p>
+   A scene object encapsulating the OpenGL feedback buffer.
 
    This object, when Active, will render it's children using
    the GL_FEEDBACK render mode. This will render the children
-   into the feedback Buffer rather than into the frame buffer.<p>
+   into the feedback Buffer rather than into the frame buffer.
 
    Mesh data can be extracted from the buffer using the
    BuildMeshFromBuffer procedure. For custom parsing of the
    buffer use the Buffer SingleList. The Buffered property
-   will indicate if there is valid data in the buffer.<p>
+   will indicate if there is valid data in the buffer.
 
     History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -45,7 +45,7 @@ type
   TFeedbackMode = (fm2D, fm3D, fm3DColor, fm3DColorTexture, fm4DColorTexture);
 
   // TGLFeedback
-  {: An object encapsulating the OpenGL feedback rendering mode. }
+  { An object encapsulating the OpenGL feedback rendering mode. }
   TGLFeedback = class(TGLBaseSceneObject)
   private
      
@@ -69,7 +69,7 @@ type
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
 
-    {: Parse the the feedback buffer for polygon data and build
+    { Parse the the feedback buffer for polygon data and build
        a mesh into the assigned lists. }
     procedure BuildMeshFromBuffer(
       Vertices: TAffineVectorList = nil;
@@ -78,24 +78,24 @@ type
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
 
-    //: True when there is data in the buffer ready for parsing
+    // True when there is data in the buffer ready for parsing
     property Buffered: Boolean read FBuffered;
 
-    //: The feedback buffer
+    // The feedback buffer
     property Buffer: TSingleList read FBuffer;
 
-    {: Vertex positions in the buffer needs to be scaled by
+    { Vertex positions in the buffer needs to be scaled by
        CorrectionScaling to get correct coordinates. }
     property CorrectionScaling: Single read FCorrectionScaling;
 
   published
      
 
-    //: Maximum size allocated for the feedback buffer
+    // Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;
-    //: Toggles the feedback rendering
+    // Toggles the feedback rendering
     property Active: Boolean read FActive write FActive;
-    //: The type of data that is collected in the feedback buffer
+    // The type of data that is collected in the feedback buffer
     property Mode: TFeedbackMode read FMode write SetMode;
 
     property Visible;

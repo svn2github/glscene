@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   HeightDataSource for the HTF (HeightTileFile) format.<p>
+   HeightDataSource for the HTF (HeightTileFile) format.
 
 	 History :  
        10/03/09 - DanB - Bug fix for invisible terrain, now changes
@@ -32,7 +32,7 @@ type
 
 	// TGLHeightTileFileHDS
 	//
-   {: An Height Data Source for the HTF format.<p> }
+   { An Height Data Source for the HTF format. }
 	TGLHeightTileFileHDS = class (THeightDataSource)
 	   private
 	       
@@ -61,15 +61,15 @@ type
 	   published
 	       
 
-         {: FileName of the HTF file.<p>
+         { FileName of the HTF file.
             Note that it is accessed via the services of GLApplicationFileIO,
             so this may not necessarily be a regular file on a disk... }
          property HTFFileName : String read FHTFFileName write SetHTFFileName;
-         {: If true the height field is wrapped indefinetely. }
+         { If true the height field is wrapped indefinetely. }
          property InfiniteWrap : Boolean read FInfiniteWrap write SetInfiniteWrap default True;
-         {: If true the height data is inverted.(Top to bottom) }
+         { If true the height data is inverted.(Top to bottom) }
          property Inverted : Boolean read FInverted write SetInverted default True;
-         {: Minimum elevation of the tiles that are considered to exist.<p>
+         { Minimum elevation of the tiles that are considered to exist.
             This property can typically be used to hide underwater tiles. }
          property MinElevation : Integer read FMinElevation write SetMinElevation default -32768;
 

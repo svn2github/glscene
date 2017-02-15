@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Base Cg shader classes.<p>
+   Base Cg shader classes.
 
     History : 
        19/12/12 - PW - Added CPPB compatibility:  changed cg.lib's name of function
@@ -109,7 +109,7 @@ type
 
   // TCgProgram
   //
-  {: Wrapper around a Cg program. }
+  { Wrapper around a Cg program. }
   TCgProgram = class (TGLUpdateAbleObject)
   private
      
@@ -140,7 +140,7 @@ type
     function GetParam(index : String) : TCgParameter;
 
     procedure AddParamsItem(const Param : PCGParameter);
-    {: Build a list of parameters used in the shader code.<p>
+    { Build a list of parameters used in the shader code.
        Iteratively queries all parameters so that we can manage and access them
        easily. Currently only collects leaf parameters i.e. data structure is
        not retrieved. }
@@ -159,9 +159,9 @@ type
     procedure Apply(var rci : TRenderContextInfo; Sender : TObject);
     procedure UnApply(var rci : TRenderContextInfo);
 
-    {: ParamByName returns CgParameter; returns nil if not found. }
+    { ParamByName returns CgParameter; returns nil if not found. }
     function ParamByName(const name : String) : TCgParameter;
-    {: Use Param instead of ParamByName if you want implicit check for the
+    { Use Param instead of ParamByName if you want implicit check for the
        existence of your requested parameter. }
     property Param[index : String] : TCgParameter read GetParam;
     property Params : TList read FParams;
@@ -188,7 +188,7 @@ type
     // retruns ShaderName.[program type].ProgramName
     function LongName : string;
 
-    {: Direct access to the profile. <p>
+    { Direct access to the profile. 
        Set Profile of the sub-classes to any but DetectLatest if you want to
        specify the profile directly. }
     property DirectProfile : TcgProfile read FProfile write FProfile;
@@ -196,14 +196,14 @@ type
     { DaStr: Seams, that this event is never called. Probably should be deleted... }
     property OnProgramChanged : TNotifyEvent read FOnProgramChanged write FOnProgramChanged;
 
-    {: If True, that shader is not reset when TCgProgram' parameters change. }
+    { If True, that shader is not reset when TCgProgram' parameters change. }
     property ManualNotification: Boolean read GetManualNotification write SetManualNotification default False;
   published
      
     property Code : TStrings read FCode write SetCode;
     property ProgramName : String read FProgramName write SetProgramName;
     property Enabled : boolean read FEnabled write FEnabled default True;
-    {: Precision controls data precision of GPU operation. <p>
+    { Precision controls data precision of GPU operation. 
        Possible options are 16-bit (psFast) or 32-bit (psFull). 16-bit operation
        is generally faster. }
     property Precision : TPrecisionSetting read FPrecision write SetPrecision default psFull;
@@ -213,7 +213,7 @@ type
 
   // TCgParameter
   //
-  {: Wrapper around a Cg parameter of the main program. }
+  { Wrapper around a Cg parameter of the main program. }
   TCgParameter = class (TObject)
   private
      
@@ -243,20 +243,20 @@ type
     constructor Create; virtual;
     destructor Destroy; override;
 
-    {: Procedures for setting uniform pamareters.<p>
+    { Procedures for setting uniform pamareters.
        Implicitly check for data type. }
     procedure SetAsScalar(const val : Single); overload;
     procedure SetAsScalar(const val : boolean); overload;
     procedure SetAsVector(const val : TVector2f); overload;
     procedure SetAsVector(const val : TVector3f); overload;
     procedure SetAsVector(const val : TVector4f); overload;
-    {: This overloaded SetAsVector accepts open array as input. e.g.
+    { This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVector([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVector(const val : array of single); overload;
     procedure SetAsStateMatrix(matrix, Transform: Cardinal);
     procedure SetAsMatrix(const val: TMatrix4f);
 
-    {: Procedures for dealing with texture pamareters.}
+    { Procedures for dealing with texture pamareters.}
     // SetAsTexture checks for all texture types
     procedure SetAsTexture(TextureID : Cardinal);
     // SetAsTexture* check for specific type
@@ -265,20 +265,20 @@ type
     procedure SetAsTexture3D(TextureID : Cardinal);
     procedure SetAsTextureCUBE(TextureID : Cardinal);
     procedure SetAsTextureRECT(TextureID : Cardinal);
-    {: SetToTextureOf determines texture type on-the-fly.}
+    { SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(LibMaterial  : TGLLibMaterial);
 
     procedure EnableTexture;
     procedure DisableTexture;
 
-    {: Procedures for setting varying parameters with an array of values.}
+    { Procedures for setting varying parameters with an array of values.}
     procedure SetParameterPointer(Values : TVectorList); overload;
     procedure SetParameterPointer(Values : TAffineVectorList); overload;
 
     procedure EnableClientState;
     procedure DisableClientState;
 
-    {: LongName retruns ShaderName.[program type].ProgramName.ParamName. }
+    { LongName retruns ShaderName.[program type].ProgramName.ParamName. }
     function LongName : string;
 
     property Owner : TCgProgram read FOwner;
@@ -382,7 +382,7 @@ type
     property OnUnApplyVP : TCgUnApplyEvent read GetOnUnApplyVertexProgram write SetOnUnApplyVertexProgram;
     property OnUnApplyFP : TCgUnApplyEvent read GetOnUnApplyFragmentProgram write SetOnUnApplyFragmentProgram;
 
-    {: OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example. }
+    { OnInitialize can be use to set parameters that need to be set once only. See demo "Cg Texture" for example. }
     property OnInitialize : TCgShaderEvent read GetOnInitialize write SetOnInitialize;
 
     property DesignEnable : Boolean read FDesignEnable write FDesignEnable default False;
@@ -399,7 +399,7 @@ type
 
   end;
 
-  {: Allows to use a Cadencer, which is used for noise generation in many shaders. }
+  { Allows to use a Cadencer, which is used for noise generation in many shaders. }
   TCadencableCustomCgShader = class(TCustomCgShader)
   private
     FCadencer: TGLCadencer;
@@ -434,12 +434,12 @@ type
 
 // global variables/functions
 var
-  {: Set IncludeFilePath to indicate where to find your include file for your
+  { Set IncludeFilePath to indicate where to find your include file for your
      Cg source files. This avoids error from the Cg Compiler when the current
      directory is not the right path as the shader is being compiled. }
   IncludeFilePath : string;
 {$IFDEF OutputCompilerWarnings}
-  {: Edit the string WarningFilePath for the output filename. Default
+  { Edit the string WarningFilePath for the output filename. Default
      WarningFilePath is set to application path. }
   WarningFilePath : string;
 {$ENDIF}

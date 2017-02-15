@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Scene Editor, for adding + removing scene objects within the Delphi IDE.<p>
+   Scene Editor, for adding + removing scene objects within the Delphi IDE.
 
 	 History :  
    02/01/15 - PW - Fixed for Lazarus 1.2.6

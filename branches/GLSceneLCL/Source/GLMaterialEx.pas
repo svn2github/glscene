@@ -85,7 +85,7 @@ type
   published
      
     property Name: TGLMaterialComponentName read GetName write SetName;
-    {: Run-time flag, indicate that resource
+    { Run-time flag, indicate that resource
        should initialize in case of failure material's level. }
     property DefferedInit: Boolean read FDefferedInit write FDefferedInit
       default False;
@@ -169,10 +169,10 @@ type
   published
      
 
-    {: Texture magnification filter. }
+    { Texture magnification filter. }
     property MagFilter: TGLMagFilter read FMagFilter write SetMagFilter
       default maLinear;
-    {: Texture minification filter. }
+    { Texture minification filter. }
     property MinFilter: TGLMinFilter read FMinFilter write SetMinFilter
       default miLinearMipMapLinear;
     property FilteringQuality: TGLTextureFilteringQuality read FFilteringQuality
@@ -194,7 +194,7 @@ type
       write SetCompareMode default tcmNone;
     property CompareFunc: TDepthFunction read FCompareFunc
       write SetCompareFunc default cfLEqual;
-    {: Force retrieving the undecoded sRGB data from the
+    { Force retrieving the undecoded sRGB data from the
        texture and manipulate that directly. }
     property sRGB_Encode: Boolean read FDecodeSRGB write SetDecodeSRGB
       default True;
@@ -303,43 +303,43 @@ type
     property InternalFormat: TGLInternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
 
-    {: Automatic Image Alpha setting.<p>
+    { Automatic Image Alpha setting.
       Allows to control how and if the image's Alpha channel (transparency)
       is computed. }
     property ImageAlpha: TGLTextureImageAlpha read FImageAlpha write
       SetImageAlpha default tiaDefault;
-    {: Texture brightness correction.<p>
+    { Texture brightness correction.
       This correction is applied upon loading a TGLTextureImage, it's a
       simple saturating scaling applied to the RGB components of
       the 32 bits image, before it is passed to OpenGL, and before
       gamma correction (if any). }
     property ImageBrightness: Single read FImageBrightness write
       SetImageBrightness stored StoreBrightness;
-    {: Texture gamma correction.<p>
+    { Texture gamma correction.
       The gamma correction is applied upon loading a TGLTextureImage,
       applied to the RGB components of the 32 bits image, before it is
       passed to OpenGL, after brightness correction (if any). }
     property ImageGamma: Single read FImageGamma write SetImageGamma stored
       StoreGamma;
-    {: Texture compression control.<p>
+    { Texture compression control.
       If True the compressed TextureFormat variant (the OpenGL ICD must
       support GL_ARB_texture_compression, or this option is ignored). }
     property Compression: TGLTextureCompression read FCompression write
       SetCompression default tcDefault;
-    {: Normal Map scaling.<p>
+    { Normal Map scaling.
       Force normal map generation from height map and controls
       the intensity of the bumps. }
     property HeightToNormalScale: Single read FHeightToNormalScale
       write SetNormalMapScale stored StoreNormalMapScale;
-    {: Source file path and name. }
+    { Source file path and name. }
     property SourceFile: string read FSourceFile write SetSourceFile;
-    {: Force to store image levels in separate files in ready to transfer format. }
+    { Force to store image levels in separate files in ready to transfer format. }
     property InternallyStored: Boolean read FInternallyStored
       write SetInternallyStored default False;
-    {: Mipmap generation mode. }
+    { Mipmap generation mode. }
     property MipGenMode: TMipmapGenerationMode read FMipGenMode
       write SetMipGenMode default mgmOnFly;
-    {: Enable streaming loading. }
+    { Enable streaming loading. }
     property UseStreaming: Boolean read FUseStreaming
       write SetUseStreaming default False;
   end;
@@ -392,20 +392,20 @@ type
       write SetDepth default 0;
     property InternalFormat: TGLInternalFormat read FInternalFormat
       write SetInternalFormat default tfRGBA8;
-    {: This flag makes use render buffer as target which makes
+    { This flag makes use render buffer as target which makes
         it impossible to read it as texture, but improves efficiency. }
     property OnlyWrite: Boolean read FOnlyWrite
       write SetOnlyWrite default False;
-    {: Force targe be texture array. }
+    { Force targe be texture array. }
     property Layered: Boolean read FLayered
       write SetLayered default False;
-    {: Force target be cube map. }
+    { Force target be cube map. }
     property CubeMap: Boolean read FCubeMap
       write SetCubeMap default False;
-    {: Number of samples. Positive value makes texture be multisample. }
+    { Number of samples. Positive value makes texture be multisample. }
     property Samples: Integer read FSamples
       write SetSamples default -1;
-    {: FixedSamplesLocation flag makes image will use identical
+    { FixedSamplesLocation flag makes image will use identical
       sample locations and the same number of samples for all texels in
       the image, and the sample locations will not depend on the
       internalformat or size of the image. }
@@ -415,7 +415,7 @@ type
 
   // TGLTextureSwizzling
   //
-    {: Swizzle the components of a texture fetches in
+    { Swizzle the components of a texture fetches in
         shader or fixed-function pipeline. }
   TGLTextureSwizzling = class(TGLUpdateAbleObject)
   private
@@ -521,24 +521,24 @@ type
       write SetLibSamplerName;
     property TextureOffset: TGLCoordinates read GetTextureOffset write
       SetTextureOffset stored StoreTextureOffset;
-    {: Texture coordinates scaling.<p>
+    { Texture coordinates scaling.
        Scaling is applied before applying the offset, and is applied
        to the texture coordinates, meaning that a scale factor of (2, 2, 2)
        will make your texture look twice <i>smaller</i>. }
     property TextureScale: TGLCoordinates read GetTextureScale write
       SetTextureScale stored StoreTextureScale;
-    {: Texture coordinates rotating.<p>
+    { Texture coordinates rotating.
        Rotating is applied after applying offset and scale,
        and rotate ST direction around R axis. }
     property TextureRotate: Single read FTextureRotate write
       SetTextureRotate stored StoreTextureRotate;
-    {: Texture Environment color. }
+    { Texture Environment color. }
     property EnvColor: TGLColor read FEnvColor write SetEnvColor;
-    {: Texture coordinates mapping mode.<p>
+    { Texture coordinates mapping mode.
     This property controls automatic texture coordinates generation. }
     property MappingMode: TGLTextureMappingMode read FMappingMode write
       SetMappingMode default tmmUser;
-    {: Texture mapping coordinates mode for S, T, R and Q axis.<p>
+    { Texture mapping coordinates mode for S, T, R and Q axis.
     This property stores the coordinates for automatic texture
     coordinates generation. }
     property MappingSCoordinates: TGLCoordinates4 read GetMappingSCoordinates
@@ -549,7 +549,7 @@ type
       write SetMappingRCoordinates stored StoreMappingRCoordinates;
     property MappingQCoordinates: TGLCoordinates4 read GetMappingQCoordinates
       write SetMappingQCoordinates stored StoreMappingQCoordinates;
-    {: Texture color fetching parameters. }
+    { Texture color fetching parameters. }
     property Swizzling: TGLTextureSwizzling read FSwizzling write
       SetSwizzling stored StoreSwizzling;
   end;
@@ -588,7 +588,7 @@ type
 
     procedure Apply(var ARci: TRenderContextInfo);
     procedure UnApply(var ARci: TRenderContextInfo);
-    {: Returns True if the material is blended.<p> }
+    { Returns True if the material is blended. }
     function Blended: Boolean;
 
   published
@@ -612,10 +612,10 @@ type
     property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode
       default pmFill;
     property Texture: TGLTextureProperties read FTexProp write SetTexProp;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Next pass of FFP. }
+    { Next pass of FFP. }
     property NextPass;
   end;
 
@@ -742,17 +742,17 @@ type
       SetTexProps;
     property Texture3: TGLTextureProperties index 3 read GetTexProps write
       SetTexProps;
-    {: Texture application mode. }
+    { Texture application mode. }
     property TextureMode: TGLTextureMode read FTextureMode write SetTextureMode
       default tmDecal;
-    {: Pass light source direction to enviroment color of choosen texture.
+    { Pass light source direction to enviroment color of choosen texture.
        Vector in model space. }
     property LightDirTo: TLightDir2TexEnvColor read FLightDir
       write FLightDir default l2eNone;
-    {: Specify index of light source for LightDirTo. }
+    { Specify index of light source for LightDirTo. }
     property LightSourceIndex: Integer read FLightSourceIndex
       write SetLightSourceIndex default 0;
-    {: Next pass of combiner. }
+    { Next pass of combiner. }
     property NextPass;
   end;
 
@@ -1314,7 +1314,7 @@ type
     procedure SetLevelForAll(const ALevel: TGLMaterialLevel);
   published
      
-      {: The materials collection. }
+      { The materials collection. }
     property Materials: TGLLibMaterialsEx read GetMaterials write SetMaterials
       stored StoreMaterials;
     property Components: TGLMatLibComponents read FComponents

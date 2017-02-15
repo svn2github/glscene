@@ -144,7 +144,7 @@ type
     property Manager: TGLThorFXManager read FManager write SetManager;
   end;
 
-  { : Returns or creates the TGLBThorFX within the given object's effects.<p> }
+  { : Returns or creates the TGLBThorFX within the given object's effects. }
 function GetOrCreateThorFX(obj: TGLBaseSceneObject; const name: String = '')
   : TGLBThorFX;
 

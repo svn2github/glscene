@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Main purpose is as a fallback in cases where there is no other way to process images.<p>
+  Main purpose is as a fallback in cases where there is no other way to process images.
 
   History :  
    07/09/11 - Yar - Bugfixed memory overrun in Build2DMipmap (thanks to benok1)

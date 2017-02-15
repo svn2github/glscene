@@ -1,7 +1,7 @@
 @echo off
 del *.lrs
-lazres.exe GLSceneObjectsLCL.lrs @GLSceneObjectsLCL.rc
-lazres.exe GLSceneLCL.lrs @GLSceneLCL.rc
-lazres.exe nonGLSceneLCL.lrs @nonGLSceneLCL.rc
-lazres.exe GLSceneRunTimeLCL.lrs @GLSceneRunTimeLCL.rc
+lazres.exe GLSceneObjects.lrs @GLSceneObjects.rc
+lazres.exe GLScene.lrs @GLScene.rc
+lazres.exe nonGLScene.lrs @nonGLScene.rc
+lazres.exe GLSceneRunTime.lrs @GLSceneRunTime.rc
 pause

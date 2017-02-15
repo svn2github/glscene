@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Tools for managing an application-side cache of OpenGL state.<p>
+   Tools for managing an application-side cache of OpenGL state.
 
   History :  
        10/11/12 - PW - Added CPP compatibility: inserted GetDepthRangeFar/Near on access to properties
@@ -124,7 +124,7 @@ type
 
   // TGLState
   //
-//: Reflects all relevant (binary) states of OpenGL subsystem
+// Reflects all relevant (binary) states of OpenGL subsystem
   TGLState = (stAlphaTest, stAutoNormal,
     stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
     stFog, stLighting, stLineSmooth, stLineStipple,
@@ -167,7 +167,7 @@ type
 
   // TFaceWinding
   //
-//: Describe what kind of winding has a front face
+// Describe what kind of winding has a front face
   TFaceWinding = (fwCounterClockWise, fwClockWise);
 
   TPolygonMode = (pmFill, pmLines, pmPoints);
@@ -223,7 +223,7 @@ type
 
   // TGLStateCache
   //
-  {: Manages an application-side cache of OpenGL states and parameters.<p>
+  { Manages an application-side cache of OpenGL states and parameters.
      Purpose of this class is to eliminate redundant state and parameter
      changes, and there will typically be no more than one state cache per
      OpenGL context. }
@@ -622,7 +622,7 @@ type
     procedure SetGLFrontFaceCW; deprecated;
     procedure ResetAll; deprecated;
 
-    {: Adjusts material colors for a face. }
+    { Adjusts material colors for a face. }
     procedure SetGLMaterialColors(const aFace: TCullFaceMode;
       const emission, ambient, diffuse, specular: TVector;
       const shininess: Integer);
@@ -638,13 +638,13 @@ type
     property MaterialShininess[const aFace: TCullFaceMode]: Integer
       read GetMaterialShininess;
 
-    {: Adjusts material alpha channel for a face. }
+    { Adjusts material alpha channel for a face. }
     procedure SetGLMaterialAlphaChannel(const aFace: TGLEnum; const alpha: TGLFloat);
 
-    {: Adjusts material diffuse color for a face. }
+    { Adjusts material diffuse color for a face. }
     procedure SetGLMaterialDiffuseColor(const aFace: TGLEnum; const diffuse: TVector);
 
-    {: Lighting states }
+    { Lighting states }
     property FixedFunctionPipeLight: Boolean read FFFPLight write SetFFPLight;
     property MaxLights: Integer read GetMaxLights;
     property LightEnabling[Index: Integer]: Boolean read GetLightEnabling write
@@ -674,140 +674,140 @@ type
     property LightNumber: Integer read FLightNumber;
     property OnLightsChanged: TOnLightsChanged read FOnLightsChanged write FOnLightsChanged;
 
-    {: Blending states }
+    { Blending states }
     procedure SetGLAlphaFunction(func: TComparisonFunction; ref: TGLclampf);
 
     // Vertex Array Data state
-    {: The currently bound array buffer (calling glVertexAttribPointer
+    { The currently bound array buffer (calling glVertexAttribPointer
        locks this buffer to the currently bound VBO). }
     property VertexArrayBinding: TGLuint read FVertexArrayBinding write
       SetVertexArrayBinding;
-    {: The currently bound vertex buffer object (VAO). }
+    { The currently bound vertex buffer object (VAO). }
     property ArrayBufferBinding: TGLuint read GetArrayBufferBinding write
       SetArrayBufferBinding;
-    {: The currently bound element buffer object (EBO). }
+    { The currently bound element buffer object (EBO). }
     property ElementBufferBinding: TGLuint read GetElementBufferBinding write
       SetElementBufferBinding;
-    {: Determines whether primitive restart is turned on or off. }
+    { Determines whether primitive restart is turned on or off. }
     property EnablePrimitiveRestart: TGLboolean read GetEnablePrimitiveRestart
       write SetEnablePrimitiveRestart;
-    {: The index Value that causes a primitive restart. }
+    { The index Value that causes a primitive restart. }
     property PrimitiveRestartIndex: TGLuint read GetPrimitiveRestartIndex write
       SetPrimitiveRestartIndex;
-    {: The currently bound texture buffer object (TBO). }
+    { The currently bound texture buffer object (TBO). }
     property TextureBufferBinding: TGLuint read FTextureBufferBinding write
       SetTextureBufferBinding;
 
     // Transformation state
-    {: The viewport. }
+    { The viewport. }
     property ViewPort: TVector4i read FViewPort write SetViewPort;
-    {: Modifies the near + far clipping planes. }
+    { Modifies the near + far clipping planes. }
     procedure SetDepthRange(const ZNear, ZFar: TGLclampd);
-    {: The near clipping plane distance. }
+    { The near clipping plane distance. }
     property DepthRangeNear: TGLclampd read GetDepthRangeNear write
       SetDepthRangeNear;
-    {: The far clipping plane distance. }
+    { The far clipping plane distance. }
     property DepthRangeFar: TGLclampd read GetDepthRangeFar write
       SetDepthRangeFar;
-    {: Enables/Disables each of the clip distances, used in shaders. }
+    { Enables/Disables each of the clip distances, used in shaders. }
     property EnableClipDistance[Index: Cardinal]: TGLboolean read
     GetEnableClipDistance write SetEnableClipDistance;
-    {: Enables/Disables depth clamping. }
+    { Enables/Disables depth clamping. }
     property EnableDepthClamp: TGLboolean read FEnableDepthClamp write
       SetEnableDepthClamp;
 
     // Coloring state
-    {: Controls read color clamping. }
+    { Controls read color clamping. }
     property ClampReadColor: TGLenum read FClampReadColor write
       SetClampReadColor;
-    {: The provoking vertex used in flat shading.  All the vertices of each
+    { The provoking vertex used in flat shading.  All the vertices of each
        primitive will the same value determined by this property. }
     property ProvokingVertex: TGLenum read FProvokingVertex write
       SetProvokingVertex;
 
     // Rasterization state
-    {: The default point size, used when EnableProgramPointSize = false. }
+    { The default point size, used when EnableProgramPointSize = false. }
     property PointSize: TGLfloat read FPointSize write SetPointSize;
-    {: If multisampling is enabled, this can control when points are faded out.}
+    { If multisampling is enabled, this can control when points are faded out.}
     property PointFadeThresholdSize: TGLfloat read FPointFadeThresholdSize write
       SetPointFadeThresholdSize;
-    {: The texture coordinate origin of point sprites. }
+    { The texture coordinate origin of point sprites. }
     property PointSpriteCoordOrigin: TGLenum read FPointSpriteCoordOrigin write
       SetPointSpriteCoordOrigin;
-    {: The line width. }
+    { The line width. }
     property LineWidth: TGLfloat read FLineWidth write SetLineWidth;
-    {: The line stipple. }
+    { The line stipple. }
     property LineStippleFactor: TGLint read FLineStippleFactor write
       SetLineStippleFactor;
-    {: The line stipple. }
+    { The line stipple. }
     property LineStipplePattern: TGLushort read FLineStipplePattern write
       SetLineStipplePattern;
-    {: Enable/Disable line smoothing. }
+    { Enable/Disable line smoothing. }
     property EnableLineSmooth: TGLboolean read FEnableLineSmooth write
       SetEnableLineSmooth;
-    {: Enable/Disable face culling. }
+    { Enable/Disable face culling. }
     property EnableCullFace: TGLboolean read FEnableCullFace write
       SetEnableCullFace;
-    {: Selects which faces to cull: front, back or front+back.}
+    { Selects which faces to cull: front, back or front+back.}
     property CullFaceMode: TCullFaceMode read FCullFaceMode write
       SetCullFaceMode;
-    {: The winding direction that indicates a front facing primitive. }
+    { The winding direction that indicates a front facing primitive. }
     property FrontFace: {TGLenum} TFaceWinding read FFrontFace write
     SetFrontFace;
     // Enables/Disables polygon smoothing.
     property EnablePolygonSmooth: TGLboolean read FEnablePolygonSmooth write
       SetEnablePolygonSmooth;
-    {: Whether polygons appear filled, lines or points. }
+    { Whether polygons appear filled, lines or points. }
     property PolygonMode: TPolygonMode read FPolygonMode write SetPolygonMode;
-    {: Scales the maximum depth of the polygon. }
+    { Scales the maximum depth of the polygon. }
     property PolygonOffsetFactor: TGLfloat read FPolygonOffsetFactor write
       SetPolygonOffsetFactor;
-    {: Scales an implementation-dependent constant that relates to the usable
+    { Scales an implementation-dependent constant that relates to the usable
        resolution of the depth buffer. }
     property PolygonOffsetUnits: TGLfloat read FPolygonOffsetUnits write
       SetPolygonOffsetUnits;
-    {: Set polygon offset. }
+    { Set polygon offset. }
     procedure SetPolygonOffset(const factor, units: TGLfloat);
-    {: Enable/Disable polygon offset for polygons in point mode. }
+    { Enable/Disable polygon offset for polygons in point mode. }
     property EnablePolygonOffsetPoint: TGLboolean read FEnablePolygonOffsetPoint
       write SetEnablePolygonOffsetPoint;
-    {: Enable/Disable polygon offset for polygons in line mode. }
+    { Enable/Disable polygon offset for polygons in line mode. }
     property EnablePolygonOffsetLine: TGLboolean read FEnablePolygonOffsetLine
       write SetEnablePolygonOffsetLine;
-    {: Enable/Disable polygon offset for polygons in fill mode. }
+    { Enable/Disable polygon offset for polygons in fill mode. }
     property EnablePolygonOffsetFill: TGLboolean read FEnablePolygonOffsetFill
       write SetEnablePolygonOffsetFill;
 
     // Multisample state
-    {: Enable/Disable multisampling. }
+    { Enable/Disable multisampling. }
     property EnableMultisample: TGLboolean read FEnableMultisample write
       SetEnableMultisample;
-    {: Enable/Disable sample alpha to coverage. }
+    { Enable/Disable sample alpha to coverage. }
     property EnableSampleAlphaToCoverage: TGLboolean read
       FEnableSampleAlphaToCoverage write SetEnableSampleAlphaToCoverage;
-    {: Enable/Disable sample alpha to one. }
+    { Enable/Disable sample alpha to one. }
     property EnableSampleAlphaToOne: TGLboolean read FEnableSampleAlphaToOne
       write SetEnableSampleAlphaToOne;
-    {: Enable/Disable sample coverage. }
+    { Enable/Disable sample coverage. }
     property EnableSampleCoverage: TGLboolean read FEnableSampleCoverage write
       SetEnableSampleCoverage;
-    {: Sample coverage Value. }
+    { Sample coverage Value. }
     property SampleCoverageValue: TGLfloat read FSampleCoverageValue write
       SetSampleCoverageValue;
-    {: Inverts sample coverage Value. }
+    { Inverts sample coverage Value. }
     property SampleCoverageInvert: TGLboolean read FSampleCoverageInvert write
       SetSampleCoverageInvert;
-    {: Set sample coverage. }
+    { Set sample coverage. }
     procedure SetSampleCoverage(const Value: TGLfloat; invert: TGLboolean);
-    {: Enable/Disable sample mask. }
+    { Enable/Disable sample mask. }
     property EnableSampleMask: TGLboolean read FEnableSampleMask write
       SetEnableSampleMask;
-    {: Sample mask values. }
+    { Sample mask values. }
     property SampleMaskValue[Index: Integer]: TGLbitfield read GetSampleMaskValue
     write SetSampleMaskValue;
 
     // Textures
-    {: Textures bound to each texture unit + binding point. }
+    { Textures bound to each texture unit + binding point. }
     property TextureBinding[Index: Integer; target: TGLTextureTarget]: TGLuint
       read GetTextureBinding write SetTextureBinding;
     property TextureBindingTime[Index: Integer; target: TGLTextureTarget]: Double
@@ -826,235 +826,235 @@ type
     // TODO: GL_TEXTURE_BUFFER_DATA_STORE_BINDING ?
 
     // Active texture
-    {: The active texture unit.  Valid values are 0 .. Max texture units. }
+    { The active texture unit.  Valid values are 0 .. Max texture units. }
     property ActiveTexture: TGLint read FActiveTexture write SetActiveTexture;
 
     // Pixel operations
-    {: Enables/Disables scissor test. }
+    { Enables/Disables scissor test. }
     property EnableScissorTest: TGLboolean read FEnableScissorTest write
       SetEnableScissorTest;
-    {: The bounding box used in scissor test. }
+    { The bounding box used in scissor test. }
     property ScissorBox: TVector4i read FScissorBox write SetScissorBox;
-    {: Enables/Disables stencil test. }
+    { Enables/Disables stencil test. }
     property EnableStencilTest: TGLboolean read FEnableStencilTest write
       SetEnableStencilTest;
-    {: The stencil function.  Determines the comparison function to be used
+    { The stencil function.  Determines the comparison function to be used
        when comparing the reference + stored stencil values.  }
     property StencilFunc: TStencilFunction read FStencilFunc;
     // write SetStencilFunc;
-  {: The stencil value mask.  Masks both the reference + stored stencil
+  { The stencil value mask.  Masks both the reference + stored stencil
      values. }
     property StencilValueMask: TGLuint read FStencilValueMask;
     // write SetStencilValueMask;
-  {: The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
+  { The stencil reference value.  Clamped to 0..255 with an 8 bit stencil. }
     property StencilRef: TGLint read FStencilRef; // write SetStencilRef;
-    {: The operation to perform when stencil test fails. }
+    { The operation to perform when stencil test fails. }
     property StencilFail: TStencilOp read FStencilFail; // write SetStencilFail;
-    {: The operation to perform when stencil test passes + depth test fails. }
+    { The operation to perform when stencil test passes + depth test fails. }
     property StencilPassDepthFail: TStencilOp read FStencilPassDepthFail;
     // write SetStencilPassDepthFail;
-  {: The operation to perform when stencil test passes + depth test passes. }
+  { The operation to perform when stencil test passes + depth test passes. }
     property StencilPassDepthPass: TStencilOp read FStencilPassDepthPass;
     // write SetStencilPassDepthPass;
 
-  {: The stencil back function.  Determines the comparison function to be
+  { The stencil back function.  Determines the comparison function to be
      used when comparing the reference + stored stencil values on back
      facing primitives. }
     property StencilBackFunc: TStencilFunction read FStencilBackFunc;
     // write SetStencilBackFunc;
-  {: The stencil back value mask.  Masks both the reference + stored stencil
+  { The stencil back value mask.  Masks both the reference + stored stencil
      values. }
     property StencilBackValueMask: TGLuint read FStencilBackValueMask;
     // write SetStencilBackValueMask;
-  {: The stencil back reference value.  Clamped to 0..255 with an 8 bit
+  { The stencil back reference value.  Clamped to 0..255 with an 8 bit
      stencil. }
     property StencilBackRef: TGLuint read FStencilBackRef;
     // write SetStencilBackRef;
-  {: The operation to perform when stencil test fails on back facing
+  { The operation to perform when stencil test fails on back facing
      primitives. }
     property StencilBackFail: TStencilOp read FStencilBackFail;
     // write SetStencilBackFail;
-  {: The operation to perform when stencil test passes + depth test fails on
+  { The operation to perform when stencil test passes + depth test fails on
      back facing primitives. }
     property StencilBackPassDepthFail: TStencilOp read
       FStencilBackPassDepthFail;
     // write SetStencilBackPassDepthFail;
-  {: The operation to perform when stencil test passes + depth test passes on
+  { The operation to perform when stencil test passes + depth test passes on
      back facing primitives. }
     property StencilBackPassDepthPass: TStencilOp read
       FStencilBackPassDepthPass;
     // write SetStencilBackPassDepthPass;
-  {: Used to set stencil Function, Reference + Mask values, for both front +
+  { Used to set stencil Function, Reference + Mask values, for both front +
      back facing primitives. }
     procedure SetStencilFunc(const func: TStencilFunction; const ref: TGLint;
       const mask: TGLuint);
-    {: Used to set stencil Function, Reference + Mask values for either the
+    { Used to set stencil Function, Reference + Mask values for either the
        front or back facing primitives (or both, which is the same as calling
        SetStencilFunc). }
     procedure SetStencilFuncSeparate(const face: TCullFaceMode;
       const func: TStencilFunction; const ref: TGLint; const mask: TGLuint);
-    {: Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
+    { Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go. }
     procedure SetStencilOp(const fail, zfail, zpass: TStencilOp);
-    {: Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
+    { Used to set the StencilFail, StencilPassDepthFail + StencilPassDepthPass
        in one go, for either front or back facing primitives. }
     procedure SetStencilOpSeparate(const face: TCullFaceMode; const sfail,
       dpfail, dppass: TStencilOp);
 
-    {: Enables/disables depth testing. }
+    { Enables/disables depth testing. }
     property EnableDepthTest: TGLboolean read FEnableDepthTest write
       SetEnableDepthTest;
-    {: The depth function.  Used to determine whether to keep a fragment or
+    { The depth function.  Used to determine whether to keep a fragment or
        discard it, depending on the current value stored in the depth buffer. }
     property DepthFunc: TDepthFunction read FDepthFunc write SetDepthFunc;
-    {: Enables/disables blending for each draw buffer. }
+    { Enables/disables blending for each draw buffer. }
     property EnableBlend[Index: Integer]: TGLboolean read GetEnableBlend write
     SetEnableBlend;
-    {: The weighting factor used in blending equation, for source RGB. }
+    { The weighting factor used in blending equation, for source RGB. }
     property BlendSrcRGB: TBlendFunction read FBlendSrcRGB;
     // write SetBlendSrcRGB;
-  {: The weighting factor used in blending equation, for source alpha. }
+  { The weighting factor used in blending equation, for source alpha. }
     property BlendSrcAlpha: TBlendFunction read FBlendSrcAlpha;
     // write SetBlendSrcAlpha;
-  {: The weighting factor used in blending equation, for destination RGB. }
+  { The weighting factor used in blending equation, for destination RGB. }
     property BlendDstRGB: TDstBlendFunction read FBlendDstRGB;
     // write SetBlendDstRGB;
-  {: The weighting factor used in blending equation, for destination alpha. }
+  { The weighting factor used in blending equation, for destination alpha. }
     property BlendDstAlpha: TDstBlendFunction read FBlendDstAlpha;
     // write SetBlendDstAlpha;
-  {: Sets the weighting factors to be used by the blending equation, for
+  { Sets the weighting factors to be used by the blending equation, for
      both color + alpha. }
     procedure SetBlendFunc(const Src: TBlendFunction;
       const Dst: TDstBlendFunction);
-    {: Sets the weighting factors to be used by the blending equation, with
+    { Sets the weighting factors to be used by the blending equation, with
        separate values used for color + alpha components. }
     procedure SetBlendFuncSeparate(const SrcRGB: TBlendFunction;
       const DstRGB: TDstBlendFunction; const SrcAlpha: TBlendFunction;
       const DstAlpha: TDstBlendFunction);
-    {: The blending equation.  Determines how the incoming source fragment's
+    { The blending equation.  Determines how the incoming source fragment's
        RGB are combined with the destination RGB. }
     property BlendEquationRGB: TBlendEquation read FBlendEquationRGB;
     // write SetBlendEquationRGB;
-  {: The blending equation.  Determines how the incoming source fragment's
+  { The blending equation.  Determines how the incoming source fragment's
      alpha values are combined with the destination alpha values. }
     property BlendEquationAlpha: TBlendEquation read FBlendEquationAlpha;
     // write SetBlendEquationAlpha;
-  {: Sets the blend equation for RGB + alpha to the same value. }
+  { Sets the blend equation for RGB + alpha to the same value. }
     procedure SetBlendEquation(const mode: TBlendEquation);
-    {: Sets the blend equations for RGB + alpha separately. }
+    { Sets the blend equations for RGB + alpha separately. }
     procedure SetBlendEquationSeparate(const modeRGB, modeAlpha:
       TBlendEquation);
-    {: A constant blend color, that can be used in the blend equation. }
+    { A constant blend color, that can be used in the blend equation. }
     property BlendColor: TVector read FBlendColor write SetBlendColor;
-    {: Enables/disables framebuffer SRGB. }
+    { Enables/disables framebuffer SRGB. }
     property EnableFramebufferSRGB: TGLboolean read FEnableFramebufferSRGB write
       SetEnableFramebufferSRGB;
-    {: Enables/disables dithering. }
+    { Enables/disables dithering. }
     property EnableDither: TGLboolean read FEnableDither write SetEnableDither;
-    {: Enables/disables color logic op. }
+    { Enables/disables color logic op. }
     property EnableColorLogicOp: TGLboolean read FEnableColorLogicOp write
       SetEnableColorLogicOp;
-    {: Logic op mode. }
+    { Logic op mode. }
     property LogicOpMode: TLogicOp read FLogicOpMode write SetLogicOpMode;
 
     // Framebuffer control
-    {: The color write mask, for each draw buffer. }
+    { The color write mask, for each draw buffer. }
     property ColorWriteMask[Index: Integer]: TColorMask read GetColorWriteMask
     write SetColorWriteMask;
-    {: Set the color write mask for all draw buffers. }
+    { Set the color write mask for all draw buffers. }
     procedure SetColorMask(mask: TColorMask);
-    {: The depth write mask. }
+    { The depth write mask. }
     property DepthWriteMask: TGLBoolean read FDepthWriteMask write
       SetDepthWriteMask;
-    {: The stencil write mask. }
+    { The stencil write mask. }
     property StencilWriteMask: TGLuint read FStencilWriteMask write
       SetStencilWriteMask;
-    {: The stencil back write mask. }
+    { The stencil back write mask. }
     property StencilBackWriteMask: TGLuint read FStencilBackWriteMask write
       SetStencilBackWriteMask;
-    {: The color clear value. }
+    { The color clear value. }
     property ColorClearValue: TVector read FColorClearValue write
       SetColorClearValue;
-    {: The depth clear value. }
+    { The depth clear value. }
     property DepthClearValue: TGLfloat read FDepthClearValue write
       SetDepthClearValue;
-    {: The stencil clear value. }
+    { The stencil clear value. }
     property StencilClearValue: TGLuint read FStencilClearValue write
       SetStencilClearValue;
 
     // Framebuffer
-    {: Framebuffer to be used for draw operations, 0 = default framebuffer. }
+    { Framebuffer to be used for draw operations, 0 = default framebuffer. }
     property DrawFrameBuffer: TGLuint read FDrawFrameBuffer write
       SetDrawFrameBuffer;
-    {: Framebuffer to be used for read operations, 0 = default framebuffer. }
+    { Framebuffer to be used for read operations, 0 = default framebuffer. }
     property ReadFrameBuffer: TGLuint read FReadFrameBuffer write
       SetReadFrameBuffer;
-    {: set both draw + read framebuffer. }
+    { set both draw + read framebuffer. }
     procedure SetFrameBuffer(const Value: TGLuint);
     //property FrameBuffer: TGLuint read FDrawFrameBuffer write SetFrameBuffer;
 
     // Renderbuffer
-    {: Currently bound render buffer. }
+    { Currently bound render buffer. }
     property RenderBuffer: TGLuint read FRenderBuffer write SetRenderBuffer;
 
     // Pixels
-    {: Controls whether byte swapping occurs during pixel unpacking. }
+    { Controls whether byte swapping occurs during pixel unpacking. }
     property UnpackSwapBytes: TGLboolean read FUnpackSwapBytes write
       SetUnpackSwapBytes;
-    {: Whether unpacked data is required with LSB (least significant bit) first. }
+    { Whether unpacked data is required with LSB (least significant bit) first. }
     property UnpackLSBFirst: TGLboolean read FUnpackLSBFirst write
       SetUnpackLSBFirst;
-    {: Unpack image height. }
+    { Unpack image height. }
     property UnpackImageHeight: TGLuint read FUnpackImageHeight write
       SetUnpackImageHeight;
-    {: Unpack skip images. }
+    { Unpack skip images. }
     property UnpackSkipImages: TGLuint read FUnpackSkipImages write
       SetUnpackSkipImages;
-    {: Unpack row length. }
+    { Unpack row length. }
     property UnpackRowLength: TGLuint read FUnpackRowLength write
       SetUnpackRowLength;
-    {: Unpack skip rows. }
+    { Unpack skip rows. }
     property UnpackSkipRows: TGLuint read FUnpackSkipRows write
       SetUnpackSkipRows;
-    {: Unpack skip pixels. }
+    { Unpack skip pixels. }
     property UnpackSkipPixels: TGLuint read FUnpackSkipPixels write
       SetUnpackSkipPixels;
-    {: Unpack alignment. }
+    { Unpack alignment. }
     property UnpackAlignment: TGLuint read FUnpackAlignment write
       SetUnpackAlignment;
-    {: Controls whether byte swapping occurs during pixel packing. }
+    { Controls whether byte swapping occurs during pixel packing. }
     property PackSwapBytes: TGLboolean read FPackSwapBytes write
       SetPackSwapBytes;
-    {: Whether packed data is required with LSB (least significant bit) first. }
+    { Whether packed data is required with LSB (least significant bit) first. }
     property PackLSBFirst: TGLboolean read FPackLSBFirst write SetPackLSBFirst;
-    {: Pack image height. }
+    { Pack image height. }
     property PackImageHeight: TGLuint read FPackImageHeight write
       SetPackImageHeight;
-    {: Pack skip images. }
+    { Pack skip images. }
     property PackSkipImages: TGLuint read FPackSkipImages write
       SetPackSkipImages;
-    {: Pack row length. }
+    { Pack row length. }
     property PackRowLength: TGLuint read FPackRowLength write SetPackRowLength;
-    {: Pack skip rows. }
+    { Pack skip rows. }
     property PackSkipRows: TGLuint read FPackSkipRows write SetPackSkipRows;
-    {: Pack skip pixels. }
+    { Pack skip pixels. }
     property PackSkipPixels: TGLuint read FPackSkipPixels write
       SetPackSkipPixels;
-    {: Pack alignment. }
+    { Pack alignment. }
     property PackAlignment: TGLuint read FPackAlignment write SetPackAlignment;
-    {: Buffer bound for pixel packing (eg. ReadPixels). }
+    { Buffer bound for pixel packing (eg. ReadPixels). }
     property PixelPackBufferBinding: TGLuint read FPixelPackBufferBinding
       write SetPixelPackBufferBinding;
-    {: Buffer bound for pixel unpacking (eg. Tex*Image). }
+    { Buffer bound for pixel unpacking (eg. Tex*Image). }
     property PixelUnpackBufferBinding: TGLuint read FPixelUnpackBufferBinding
       write SetPixelUnpackBufferBinding;
 
     // Program
-    {: Currently bound program. }
+    { Currently bound program. }
     property CurrentProgram: TGLuint read FCurrentProgram write
       SetCurrentProgram;
     property MaxTextureUnits: TGLuint read GetMaxTextureUnits;
-    {: Currently bound uniform buffer. }
+    { Currently bound uniform buffer. }
     property UniformBufferBinding: TGLuint read FUniformBufferBinding
       write SetUniformBufferBinding;
 
@@ -1062,66 +1062,66 @@ type
     procedure SetBufferIndexedBinding(const Value: TGLuint; ATarget: TGLBufferBindingTarget; AIndex: TGLuint; AOffset: TGLintptr; ARangeSize: TGLsizeiptr); overload;
 
     // Vector + Geometry Shader state
-    {: Default values to be used when a vertex array is not used for that
+    { Default values to be used when a vertex array is not used for that
        attribute. }
     property CurrentVertexAttrib[Index: Integer]: TVector
     read GetCurrentVertexAttrib write SetCurrentVertexAttrib;
-    {: Enables/disables program point size. }
+    { Enables/disables program point size. }
     property EnableProgramPointSize: TGLboolean read FEnableProgramPointSize
       write SetEnableProgramPointSize;
 
     // Transform Feedback state
-    {: Currently bound transform feedbac buffer. }
+    { Currently bound transform feedbac buffer. }
     property TransformFeedbackBufferBinding: TGLuint
       read FTransformFeedbackBufferBinding write
       SetTransformFeedbackBufferBinding;
 
     // Hints
-    {: Line smooth hint. }
+    { Line smooth hint. }
     property LineSmoothHint: THintType read FLineSmoothHint write
       SetLineSmoothHint;
-    {: Polygon smooth hint. }
+    { Polygon smooth hint. }
     property PolygonSmoothHint: THintType read FPolygonSmoothHint write
       SetPolygonSmoothHint;
-    {: Texture compression hint. }
+    { Texture compression hint. }
     property TextureCompressionHint: THintType
       read FTextureCompressionHint write SetTextureCompressionHint;
-    {: Fragment shader derivitive hint. }
+    { Fragment shader derivitive hint. }
     property FragmentShaderDerivitiveHint: THintType
       read FFragmentShaderDerivitiveHint write SetFragmentShaderDerivitiveHint;
     property MultisampleFilterHint: THintType read FMultisampleFilterHint
       write SetMultisampleFilterHint;
 
     // Misc
-    {: Current queries. }
+    { Current queries. }
     property CurrentQuery[Index: TQueryType]: TGLuint read GetCurrentQuery;
-    {: Begins a query of "Target" type.  "Value" must be a valid query object. }
+    { Begins a query of "Target" type.  "Value" must be a valid query object. }
     procedure BeginQuery(const Target: TQueryType; const Value: TGLuint);
-    {: Ends current query of type "Target". }
+    { Ends current query of type "Target". }
     procedure EndQuery(const Target: TQueryType);
-    {: The buffer currently bound to the copy read buffer binding point, this
+    { The buffer currently bound to the copy read buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
     property CopyReadBufferBinding: TGLuint read FCopyReadBufferBinding
       write SetCopyReadBufferBinding;
-    {: The buffer currently bound to the copy write buffer binding point, this
+    { The buffer currently bound to the copy write buffer binding point, this
        is an extra binding point provided so that you don't need to overwrite
        other binding points to copy between buffers. }
     property CopyWriteBufferBinding: TGLuint read FCopyWriteBufferBinding
       write SetCopyWriteBufferBinding;
-    {: Enables/Disables seamless texture cube maps. }
+    { Enables/Disables seamless texture cube maps. }
     property EnableTextureCubeMapSeamless: TGLboolean read
       FEnableTextureCubeMapSeamless write SetEnableTextureCubeMapSeamless;
-    {: Indicates the current presence within the list. }
+    { Indicates the current presence within the list. }
     property InsideList: Boolean read FInsideList;
-    {: Begin new display list. }
+    { Begin new display list. }
     procedure NewList(list: TGLuint; mode: TGLEnum);
-    {: End display list. }
+    { End display list. }
     procedure EndList;
-    {: Call display list. }
+    { Call display list. }
     procedure CallList(list: TGLuint);
 
-    {: Defines the OpenGL texture matrix.<p>
+    { Defines the OpenGL texture matrix.
        Assumed texture mode is GL_MODELVIEW. }
     procedure SetGLTextureMatrix(const matrix: TMatrix);
     procedure ResetGLTextureMatrix;
@@ -1130,13 +1130,13 @@ type
     // note: needs to change to per draw-buffer
     procedure SetGLColorWriting(flag: Boolean);
 
-    {: Inverts front face winding (CCW/CW). }
+    { Inverts front face winding (CCW/CW). }
     procedure InvertGLFrontFace;
 
     // read only properties
     property States: TGLStates read FStates;
 
-    {: True for ignore deprecated and removed features in OpenGL 3x }
+    { True for ignore deprecated and removed features in OpenGL 3x }
     property ForwardContext: Boolean read FForwardContext
       write SetForwardContext;
 

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Texture combiners setup utility functions.<p>
+   Texture combiners setup utility functions.
 
     History :  
        05/03/11 - Yar - Added combiner's commands cache   
@@ -38,10 +38,10 @@ type
   ETextureCombinerError = class(Exception)
     ;
 
-  {: Parses a TC text description and setups combiners accordingly.<p>
+  { Parses a TC text description and setups combiners accordingly.
      *experimental* 
      Knowledge of texture combiners is a requirement 
-     Syntax: pascal-like, one instruction per line, use '//' for comment.<p>
+     Syntax: pascal-like, one instruction per line, use '//' for comment.
 
      Examples: 
       Tex1:=Tex0;   // replace texture 1 with texture 0
@@ -51,7 +51,7 @@ type
       Tex1:=Tex0+Tex1-0.5; // signed additive blending between textures 0 and 1
       Tex1:=Interpolate(Tex0, Tex1, PrimaryColor); // interpolation between textures 0 and 1 using primary color as factor
       Tex1:=Dot3(Tex0, Tex1); // dot3 product between textures 0 and 1
-      <p>
+      
 
      Accepted tokens: 
       Tex0, Tex1, etc. : texture unit

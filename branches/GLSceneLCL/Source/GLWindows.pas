@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   OpenGL windows management classes and structures<p>
+   OpenGL windows management classes and structures
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records,
@@ -127,13 +127,13 @@ type
     property GuiLayoutName: TGLGuiComponentName read FGuiLayoutName write
       SetGuiLayoutName;
 
-    {: This the ON-SCREEN rotation of the GuiComponent.<p>
+    { This the ON-SCREEN rotation of the GuiComponent.
        Rotatation=0 is handled faster. }
     property Rotation: TGLFloat read FRotation write SetRotation;
-    {: If different from 1, this value will replace that of Diffuse.Alpha }
+    { If different from 1, this value will replace that of Diffuse.Alpha }
     property AlphaChannel: Single read FAlphaChannel write SetAlphaChannel stored
       StoreAlphaChannel;
-    {: If True, GuiComponent will not write to Z-Buffer.<p>
+    { If True, GuiComponent will not write to Z-Buffer.
        GuiComponent will STILL be maskable by ZBuffer test. }
     property NoZWrite: Boolean read FNoZWrite write SetNoZWrite;
 

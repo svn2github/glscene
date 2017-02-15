@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Silhouette classes for GLBaseMesh and FaceGroups.<p>
+  Silhouette classes for GLBaseMesh and FaceGroups.
 
    History :  
    16/11/10 - Yar - Added mesh visibility checking in TGLBaseMeshConnectivity.SetGLBaseMesh (thanks to dalex65)
@@ -23,7 +23,11 @@ interface
 {$I GLScene.inc}
 
 uses
-  Classes, GLVectorGeometry, GLVectorLists, GLVectorFileObjects, GLSilhouette;
+  Classes, 
+  GLVectorGeometry, 
+  GLVectorLists, 
+  GLVectorFileObjects, 
+  GLSilhouette;
 
 type
   // TGLFaceGroupConnectivity

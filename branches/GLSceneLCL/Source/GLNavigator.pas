@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Unit for navigating TGLBaseObjects.<p>
+    Unit for navigating TGLBaseObjects.
 
 	 History :  
        20/02/07 - DaStr - Moved Notification(), SetObject(), SetUseVirtualUp(),
@@ -47,8 +47,8 @@ type
 
 	// TGLNavigator
 	//
-	{: TGLNavigator is the component for moving a TGLBaseSceneObject, and all Classes based on it,
-      this includes all the objects from the Scene Editor.<p>
+	{ TGLNavigator is the component for moving a TGLBaseSceneObject, and all Classes based on it,
+      this includes all the objects from the Scene Editor.
 
 	   The four calls to get you started is
        
@@ -122,7 +122,7 @@ type
 
 	// TGLUserInterface
 	//
-	{: TGLUserInterface is the component which reads the userinput and transform it into action.<p>
+	{ TGLUserInterface is the component which reads the userinput and transform it into action.
 
 	   The four calls to get you started is
        

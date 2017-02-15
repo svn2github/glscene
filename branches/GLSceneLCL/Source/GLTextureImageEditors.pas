@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Standard texture image editors for standard texture image classes.<p>
+   Standard texture image editors for standard texture image classes.
 
 	 History :  
        10/11/12 - PW - Added CPPB compatibility: used dummy method instead
@@ -29,7 +29,7 @@ type
    TGLTextureImageEditor = class(TObject)
 		public
          { Public Properties }
-			{: Request to edit a textureImage.<p>
+			{ Request to edit a textureImage.
 				Returns True if changes have been made. 
 				This method may be invoked from the IDE or at run-time. }
 			class function Edit(aTexImage : TGLTextureImage) : Boolean; virtual;{$IFNDEF GLS_CPPB}abstract;{$ENDIF}
@@ -70,7 +70,7 @@ type
    end;
 
 
-//: Invokes the editor for the given TGLTextureImage
+// Invokes the editor for the given TGLTextureImage
 function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
 procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
                                        texImageEditor : TGLTextureImageEditorClass);

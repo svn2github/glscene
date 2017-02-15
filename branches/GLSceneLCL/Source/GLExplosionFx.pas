@@ -17,7 +17,7 @@
   or if you define a null vector as the direction, a vector will be
   calculated for each triangle, based on the normal vector of that
   triangle, with a little random addition so things look better.
-  Pretty neat :)<p>
+  Pretty neat :)
 
   Note: the owner of this behaviour should be any class that derives
   from TGLBaseMesh class or any other class derived from TGLBaseMesh.

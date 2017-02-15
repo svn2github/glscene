@@ -5,8 +5,8 @@
    You can Improved it :
    The vertex displacement can be done by reading a 2D or 3D texture.
    It can be done along the normal or the tangent.
-   It can be scaled, twisted, modulated, inverted...<p>
-   <p>Converted from : https://www.clicktorelease.com/blog/vertex-displacement-noise-3d-webgl-glsl-three-js<p>
+   It can be scaled, twisted, modulated, inverted...
+   Converted from : https://www.clicktorelease.com/blog/vertex-displacement-noise-3d-webgl-glsl-three-js
 
 
    At this time only one light source is supported
@@ -32,7 +32,7 @@ uses
 
 //TGLCustomGLSLSimpleVertexDisplacementShader
 //
-{: Custom class for GLSLVertexDisplacementShader.<p>
+{ Custom class for GLSLVertexDisplacementShader.
  VertexDisplacement Shader : Spherical Environment Mapping }
 Type
   TGLCustomGLSLVertexDisplacementShader = class(TGLCustomGLSLShader)

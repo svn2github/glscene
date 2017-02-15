@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Movement path behaviour by Roger Cao<p>
+   Movement path behaviour by Roger Cao
 
    Note: It is recommended to set TGLMovementPath.RotationMode = rmUpDirection,
    but the default value is rmTurnPitchRoll for backwards compatibility.
@@ -97,10 +97,10 @@ type
 
     procedure InitializeByObject(const Obj: TGLBaseSceneObject);
 
-    {: Warning: does not take speed into account. }
+    { Warning: does not take speed into account. }
     function EqualNode(const aNode: TGLPathNode): boolean;
 
-    {: Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
+    { Rotation.X means PitchAngle, Rotation.Y means TurnAngle, Rotation.Z means RollAngle.}
     property RotationAsVector: TVector Read FRotation Write SetRotationAsVector;
     property PositionAsVector: TVector Read FPosition Write SetPositionAsVector;
     property ScaleAsVector: TVector Read FScale Write SetScaleAsVector;
@@ -243,7 +243,7 @@ type
   published
     property Name: string Read FName Write FName;
 
-    {: This property is currently ignored. }
+    { This property is currently ignored. }
     property PathSplineMode: TLineSplineMode read FPathSplineMode write SetPathSplineMode default lsmLines;
     property RotationMode: TGLMovementRotationMode read FRotationMode write FRotationMode default rmTurnPitchRoll;
 

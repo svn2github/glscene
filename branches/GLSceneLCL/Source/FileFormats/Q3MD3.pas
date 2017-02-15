@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Helper classes and methods for Quake3 MD3 actors<p>
+   Helper classes and methods for Quake3 MD3 actors
 
    History :
     14/04/03 - SG - Streamlined the TMD3TagList.LoadFromStream a little

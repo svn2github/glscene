@@ -2,17 +2,17 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   "Alternate" OpenGL functions to handle multi-texturing.<p>
+   "Alternate" OpenGL functions to handle multi-texturing.
 
    Using this functions allows specifying none/one/multiple ARB multi-texture
-   coordinates with standard texture specification call.<p>
+   coordinates with standard texture specification call.
 
    Before using any of the xglTexCoordXxxx fonctions, call one of the
-   xglMapTexCoordToXxxx functions to establish the redirectors.<p>
+   xglMapTexCoordToXxxx functions to establish the redirectors.
 
    This unit is Open-Source under MPL 
    Copyright 2001 - Eric Grange (egrange@glscene.org) 
-   http://glscene.org<p>
+   http://glscene.org
 
     History :  
        25/11/10 - Yar - Wrapped multitexturing in TGLMultitextureCoordinator class
@@ -131,38 +131,38 @@ type
 
     constructor Create(AOwner: TGLContext); override;
 
-    {: TexCoord functions will be ignored. }
+    { TexCoord functions will be ignored. }
     procedure MapTexCoordToNull;
-    {: TexCoord functions will define the main texture coordinates. }
+    { TexCoord functions will define the main texture coordinates. }
     procedure MapTexCoordToMain;
-    {: TexCoord functions will define the second texture unit coordinates. }
+    { TexCoord functions will define the second texture unit coordinates. }
     procedure MapTexCoordToSecond;
-    {: TexCoord functions will define the two first texture units coordinates. }
+    { TexCoord functions will define the two first texture units coordinates. }
     procedure MapTexCoordToDual;
-    {: TexCoord functions will define the specified texture units coordinates. }
+    { TexCoord functions will define the specified texture units coordinates. }
     procedure MapTexCoordToArbitrary(const units: array of Cardinal); overload;
     procedure MapTexCoordToArbitrary(const bitWiseUnits: Cardinal); overload;
     procedure MapTexCoordToArbitraryAdd(const bitWiseUnits: Cardinal);
 
-    {: Defers Map calls execution until EndUpdate is met.<p>
+    { Defers Map calls execution until EndUpdate is met.
        Calls to Begin/EndUpdate may be nested. }
     procedure BeginUpdate;
-    {: Applies Map calls if there were any since BeginUpdate was invoked.<p>
+    { Applies Map calls if there were any since BeginUpdate was invoked.
        Calls to Begin/EndUpdate may be nested. }
     procedure EndUpdate;
 
-    {: Saves XOpenGL State on the stack. }
+    { Saves XOpenGL State on the stack. }
     procedure PushState;
-    {: Restores XOpenGL State from the stack. }
+    { Restores XOpenGL State from the stack. }
     procedure PopState;
 
-    {: Whenever called, 2nd texture units changes will be forbidden to .<p>
+    { Whenever called, 2nd texture units changes will be forbidden to .
        Use this function when you're using the 2nd texture unit for your own
        purposes and don't want XOpenGL to alter it. }
     procedure ForbidSecondTextureUnit;
-    {: Allow XOpenGL to use the second texture unit again. }
+    { Allow XOpenGL to use the second texture unit again. }
     procedure AllowSecondTextureUnit;
-    {: Returns the complex mapping in bitwise form. }
+    { Returns the complex mapping in bitwise form. }
     function GetBitWiseMapping: Cardinal;
 
     property MapTexCoordMode: TMapTexCoordMode read FMapTexCoordMode write FMapTexCoordMode;

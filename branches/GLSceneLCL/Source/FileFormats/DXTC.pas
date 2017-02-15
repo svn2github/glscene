@@ -3,7 +3,7 @@
 //
 {
    DXTC (also S3TC) decoding. 
-   Adapted from DevIL image library (http://openil.sourceforge.net)<p>
+   Adapted from DevIL image library (http://openil.sourceforge.net)
 
     History :  
        04/11/10 - DaStr - Restored Delphi5 and Delphi6 compatibility     
@@ -75,7 +75,7 @@ type
       dwFlags,
       dwHeight,
       dwWidth,
-      dwPitchOrLinearSize, {: The number of bytes per scan line in an
+      dwPitchOrLinearSize, { The number of bytes per scan line in an
                               uncompressed texture; the total number of bytes
                               in the top level texture for a compressed texture.}
       dwDepth,

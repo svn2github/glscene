@@ -5,7 +5,7 @@
    The object manager is used for registering classes together with a category,
    description + icon, so that they can be displayed visually.  This can then
    be used by run-time or design-time scene editors for choosing which
-   scene objects to place into a scene.<p>
+   scene objects to place into a scene.
 
    TODO: add some notification code, so that when a scene object is registered/
    unregistered, any editor that is using the object manager can be notified.
@@ -88,7 +88,7 @@ type
     function GetCategory(ASceneObject: TGLSceneObjectClass): string;
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
     procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
-    //: Registers a stock object and adds it to the stock object list
+    // Registers a stock object and adds it to the stock object list
 {$IFNDEF FPC}
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string); overload;
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap); overload;
@@ -96,7 +96,7 @@ type
 {$ELSE}
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
 {$ENDIF}
-    //: Unregisters a stock object and removes it from the stock object list
+    // Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
     property ObjectIcons: TImageList read FObjectIcons;

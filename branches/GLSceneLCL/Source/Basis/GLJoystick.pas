@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Component for handling joystick messages<p>
+   Component for handling joystick messages
 
 	History :  
        17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
@@ -40,7 +40,7 @@ type
 
 	// TJoystick
 	//
-   {: A component interfacing the Joystick via the (regular) windows API. }
+   { A component interfacing the Joystick via the (regular) windows API. }
 	TGLJoystick = class (TComponent)
 	   private
 	       
@@ -84,13 +84,13 @@ type
 
 	   published
 	       
-         {: When set to True, the component attempts to capture the joystick.<p>
+         { When set to True, the component attempts to capture the joystick.
             If capture is successfull, retrieving joystick status is possible,
             if not, an error message is triggered. }
          property Capture : Boolean read FCapture write SetCapture default False;
-         {: If true joystick capture errors do not result in exceptions. }
+         { If true joystick capture errors do not result in exceptions. }
          property NoCaptureErrors : Boolean read FNoCaptureErrors write FNoCaptureErrors default True;
-         {: Polling frequency (milliseconds) }
+         { Polling frequency (milliseconds) }
          property Interval : Cardinal read FInterval write SetInterval default 100;
          property JoystickID: TJoystickID read FJoystickID write SetJoystickID default jidNoJoystick;
          property Threshold: Cardinal read FThreshold write SetThreshold default 1000;

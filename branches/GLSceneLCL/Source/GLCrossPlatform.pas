@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Cross platform support functions and types for GLScene.<p>
+   Cross platform support functions and types for GLScene.
 
    Ultimately, *no* cross-platform or cross-version defines should be present
-   in the core GLScene units, and have all moved here instead.<p>
+   in the core GLScene units, and have all moved here instead.
 
  History :  
        22/04/14 - PW -  Ceased support of GLS_DELPHI_5 and GLS_COMPILER_5 or DOWN
@@ -276,10 +276,10 @@ var
   vProjectTargetName: TProjectTargetNameFunc;
 
 function GLPoint(const x, y: Integer): TGLPoint;
-{: Builds a TColor from Red Green Blue components. }
+{ Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
 function GLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;{$NODEFINE GLRect}
-{: Increases or decreases the width and height of the specified rectangle.<p>
+{ Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
@@ -288,49 +288,49 @@ function PtInRect(const Rect: TGLRect; const P: TPoint): Boolean;
 
 procedure RaiseLastOSError;
 
-{: Number of pixels per logical inch along the screen width for the device.<p>
+{ Number of pixels per logical inch along the screen width for the device.
    Under Win32 awaits a HDC and returns its LOGPIXELSX. }
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
-{: Number of bits per pixel for the current desktop resolution. }
+{ Number of bits per pixel for the current desktop resolution. }
 function GetCurrentColorDepth: Integer;
-{: Returns the number of color bits associated to the given pixel format. }
+{ Returns the number of color bits associated to the given pixel format. }
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 
-{: Returns the bitmap's scanline for the specified row. }
+{ Returns the bitmap's scanline for the specified row. }
 function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
 
-{: Replace path delimiter to delimiter of the current platform. }
+{ Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
-{: Remove if possible part of path witch leads to project executable. }
+{ Remove if possible part of path witch leads to project executable. }
 function RelativePath(const S: string): string;
-{: Returns the current value of the highest-resolution counter.<p>
+{ Returns the current value of the highest-resolution counter.
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
 procedure QueryPerformanceCounter(var val: Int64);
-{: Returns the frequency of the counter used by QueryPerformanceCounter.<p>
+{ Returns the frequency of the counter used by QueryPerformanceCounter.
    Return value is in ticks per second (Hz), returns False if no precision
    counter is available. }
 function QueryPerformanceFrequency(var val: Int64): Boolean;
 
-{: Starts a precision timer.<p>
+{ Starts a precision timer.
    Returned value should just be considered as 'handle', even if it ain't so.
    Default platform implementation is to use QueryPerformanceCounter and
    QueryPerformanceFrequency, if higher precision references are available,
    they should be used. The timer will and must be stopped/terminated/released
    with StopPrecisionTimer. }
 function StartPrecisionTimer: Int64;
-{: Computes time elapsed since timer start.<p>
+{ Computes time elapsed since timer start.
    Return time lap in seconds. }
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
-{: Computes time elapsed since timer start and stop timer.<p>
+{ Computes time elapsed since timer start and stop timer.
    Return time lap in seconds. }
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 
-{: Returns time in milisecond from application start.<p>}
+{ Returns time in milisecond from application start.}
 function GLSTime: Double;
 
-{: Returns the number of CPU cycles since startup.<p>
+{ Returns the number of CPU cycles since startup.
    Use the similarly named CPU instruction. }
 function RDTSC: Int64;
 
@@ -366,7 +366,7 @@ function GetPlatformInfo: TPlatformInfo;
 function GetPlatformVersion : TPlatformVersion;
 function GetPlatformVersionStr : string;
 
-{: Determine if the directory is writable.<p> }
+{ Determine if the directory is writable. }
 function IsDirectoryWriteable(const AName: string): Boolean;
 
 function CharToWideChar(const AChar: AnsiChar): WideChar;

@@ -5673,7 +5673,7 @@ const
    EGL_VERSION_1_2 = 1;
    EGL_VERSION_1_3 = 1;
    EGL_VERSION_1_4 = 1;
-{: EGL Enumerants. Bitmasks and other exceptional cases aside, most
+{ EGL Enumerants. Bitmasks and other exceptional cases aside, most
  * enums are assigned unique values starting at 0x3000. }
 { EGL aliases  }
    EGL_FALSE = 0;
@@ -5869,7 +5869,7 @@ const
    EGL_COLORSPACE_LINEAR = EGL_VG_COLORSPACE_LINEAR;
    EGL_ALPHA_FORMAT_NONPRE = EGL_VG_ALPHA_FORMAT_NONPRE;
    EGL_ALPHA_FORMAT_PRE = EGL_VG_ALPHA_FORMAT_PRE;
-{: EGL extensions must request enum blocks from the Khronos
+{ EGL extensions must request enum blocks from the Khronos
  * API Registrar, who maintains the enumerant registry. Submit
  * a bug in Khronos Bugzilla against task "Registry". }
 

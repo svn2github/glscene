@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Just a good looking shader. And my first one;) <p>
+   Just a good looking shader. And my first one;) 
 
     History : 
        22/04/10 - Yar - Fixes after GLState revision
@@ -54,7 +54,7 @@ type
   TGLCgBombShaderTextureSource = (stsPrimaryTexture, stsSecondadyTexture,
                                   stsThirdTexture, stsUserSelectedTexture);
 
-  {: Just a good-looking shader. }
+  { Just a good-looking shader. }
   TGLCustomCGBombShader = class(TCadencableCustomCgShader, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLAbstractMaterialLibrary;

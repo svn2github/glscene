@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Registration unit for CG shader.<p>
+   Registration unit for CG shader.
 
     History : 
        11/11/09 - DaStr - Improved FPC compatibility

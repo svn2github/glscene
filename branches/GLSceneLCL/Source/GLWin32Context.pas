@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Win32 specific Context.<p>
+   Win32 specific Context.
 
     History :  
        11/09/11 - Yar - Added layers support (not tested because need Quadro or FireFX VGA)
@@ -118,7 +118,7 @@ type
 
   // TGLWin32Context
   //
-  {: A context driver for standard Windows OpenGL (via MS OpenGL). }
+  { A context driver for standard Windows OpenGL (via MS OpenGL). }
   TGLWin32Context = class(TGLContext)
   protected
      
@@ -153,7 +153,7 @@ type
     procedure DoDestroyContext; override;
     procedure DoActivate; override;
     procedure DoDeactivate; override;
-    {: DoGetHandles must be implemented in child classes,
+    { DoGetHandles must be implemented in child classes,
        and return the display + window }
 {$IFDEF FPC}
     procedure DoGetHandles(outputDevice: HWND; out XWin: HDC); virtual;

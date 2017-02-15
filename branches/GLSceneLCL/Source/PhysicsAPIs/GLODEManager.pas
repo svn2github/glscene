@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  An ODE Manager for GLScene.<p>
+  An ODE Manager for GLScene.
 
   Where can I find ... ? 
      GLScene              (http://glscene.org)
@@ -12,7 +12,7 @@
 
   Notes:
   This code is still being developed so any part of it may change at anytime.
-  To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.<p>
+  To install use the GLS_ODE?.dpk in the GLScene/Delphi? folder.
 
    History :  
      10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -308,7 +308,7 @@ type
 
   // TGLODEBehaviour
   //
-  {: Basis structures for GLScene behaviour style implementations. }
+  { Basis structures for GLScene behaviour style implementations. }
   TGLODEBehaviour = class (TGLBehaviour)
     private
       { Private Declartions }
@@ -538,7 +538,7 @@ type
 
   // TODEElementBox
   //
-  {: ODE box implementation. }
+  { ODE box implementation. }
   TODEElementBox = class (TODEElementBase)
     private
        
@@ -579,7 +579,7 @@ type
 
   // TODEElementSphere
   //
-  {: ODE sphere implementation. }
+  { ODE sphere implementation. }
   TODEElementSphere = class (TODEElementBase)
     private
        
@@ -615,7 +615,7 @@ type
 
   // TODEElementCapsule
   //
-  {: ODE capped cylinder implementation. }
+  { ODE capped cylinder implementation. }
   TODEElementCapsule = class (TODEElementBase)
     private
        
@@ -655,7 +655,7 @@ type
 
   // TODEElementCylinder
   //
-  {: ODE cylinder implementation. }
+  { ODE cylinder implementation. }
   TODEElementCylinder = class (TODEElementBase)
     private
        
@@ -696,7 +696,7 @@ type
 
   // TODEElementTriMesh
   //
-  {: ODE tri-mesh implementation. }
+  { ODE tri-mesh implementation. }
   TODEElementTriMesh = class (TODEElementBase)
     private
        
@@ -734,7 +734,7 @@ type
 
   // TODEElementPlane
   //
-  {: ODE plane implementation. }
+  { ODE plane implementation. }
   TODEElementPlane = class (TODEElementBase)
     protected
        
@@ -756,7 +756,7 @@ type
 
   // TGLODEJoints
   //
-  {: An XCollection decendant for ODE Joints. }
+  { An XCollection decendant for ODE Joints. }
   TODEJoints = class(TGLXCollection)
     protected
        
@@ -775,7 +775,7 @@ type
 
   // TGLODEJointList
   //
-  {: Component front-end for storing ODE Joints. }
+  { Component front-end for storing ODE Joints. }
   TGLODEJointList = class(TComponent)
     private
        
@@ -806,7 +806,7 @@ type
 
   // TODEJointBase
   //
-  {: Base structures for ODE Joints. }
+  { Base structures for ODE Joints. }
   TODEJointBase = class (TGLXCollectionItem)
     private
        
@@ -960,7 +960,7 @@ type
 
   // TODEJointHinge
   //
-  {: ODE hinge joint implementation. }
+  { ODE hinge joint implementation. }
   TODEJointHinge = class (TODEJointBase)
     private
        
@@ -1003,7 +1003,7 @@ type
 
   // TODEJointBall
   //
-  {: ODE ball joint implementation. }
+  { ODE ball joint implementation. }
   TODEJointBall = class (TODEJointBase)
     private
        
@@ -1037,7 +1037,7 @@ type
 
   // TODEJointSlider
   //
-  {: ODE slider joint implementation. }
+  { ODE slider joint implementation. }
   TODEJointSlider = class (TODEJointBase)
     private
        
@@ -1077,7 +1077,7 @@ type
 
   // TODEJointFixed
   //
-  {: ODE fixed joint implementation. }
+  { ODE fixed joint implementation. }
   TODEJointFixed = class (TODEJointBase)
     protected
        
@@ -1095,7 +1095,7 @@ type
 
   // TODEJointHinge2
   //
-  {: ODE hinge2 joint implementation. }
+  { ODE hinge2 joint implementation. }
   TODEJointHinge2 = class (TODEJointBase)
     private
        
@@ -1148,7 +1148,7 @@ type
 
   // TODEJointUniversal
   //
-  {: ODE universal joint implementation. }
+  { ODE universal joint implementation. }
   TODEJointUniversal = class (TODEJointBase)
     private
        
@@ -1200,10 +1200,10 @@ type
   end;
 
 
-{: ODE nearCallBack, throws near callback to the collision procedure
+{ ODE nearCallBack, throws near callback to the collision procedure
    of the ODE manager linked by the Data pointer. }
 procedure nearCallBack(Data:Pointer; o1,o2:PdxGeom); cdecl;
-{: Helper functions for extracting data from objects with different
+{ Helper functions for extracting data from objects with different
    inheritance. }
 function GetBodyFromObject(anObject : TObject):PdxBody;
 function GetBodyFromGLSceneObject(anObject : TGLBaseSceneObject):PdxBody;

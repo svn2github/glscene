@@ -2,8 +2,8 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Time based events mannager using the Cadencer<p>
-   can be useful to make animations with GlScene<p>
+   Time based events mannager using the Cadencer
+   can be useful to make animations with GlScene
 
 	 History :  
        07/01/10 - DaStr - Added TGLTimeEventsMGR.Reset()
@@ -114,9 +114,9 @@ type
          constructor Create(Collection : TCollection); override;
          destructor Destroy; override;
 
-         //: Number of times the event was triggered since activation
+         // Number of times the event was triggered since activation
          property TickCount : Cardinal read FTickCount;
-         //: Elapsed time since the event was activated
+         // Elapsed time since the event was activated
          property ElapsedTime : Double read FElapsedTime; 
 
       published

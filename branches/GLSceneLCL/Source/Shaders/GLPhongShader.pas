@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.<p>
+   An ARBvp1.0 + ARBfp1.0 shader that implements phong shading.
 
     History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter

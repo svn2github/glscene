@@ -11,7 +11,7 @@
          22/02/10 - Yar - Added LoadFromStream (thanks to mif)
          23/01/10 - Yar - Replaced TextureFormat to TextureFormatEx
          21/01/10 - Yar - Creation
-    <p>
+    
 }
 
 unit GLCompositeImage;

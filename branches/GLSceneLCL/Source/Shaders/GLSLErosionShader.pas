@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Erosion shader Erode surface object and render with Anisotropic Specular Reflection<p>
+   Erosion shader Erode surface object and render with Anisotropic Specular Reflection
 
    At this time one light source is supported
 
@@ -26,7 +26,7 @@ uses
 
 //TGLCustomGLSLSimpleErosionShader
 //
-{: Custom class for GLSLSimpleErosionShader.<p>
+{ Custom class for GLSLSimpleErosionShader.
  A shader that Erode surface object }
 Type
   TGLCustomGLSLSimpleErosionShader = class(TGLCustomGLSLShader)

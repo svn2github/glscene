@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Mesh optimization for GLScene.<p>
+   Mesh optimization for GLScene.
 
 	 History :  
        27/11/07 - mrqzzz - added FacesSmooth InvertNormals parameter. Now smoothes correctly.

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Class for managing a ROAM (square) patch.<p>
+  Class for managing a ROAM (square) patch.
 
    History :  
    29/12/14 - PW - Fixed SafeTesselation function that caused gaps between tiles
@@ -106,21 +106,21 @@ type
     procedure ConnectToTheWest(westPatch: TGLROAMPatch);
     procedure ConnectToTheNorth(northPatch: TGLROAMPatch);
 
-    { : AV free version of Tesselate.<p>
+    { : AV free version of Tesselate.
       When IncreaseTrianglesCapacity is called, all PROAMTriangleNode
       values in higher function became invalid due to the memory shifting.
       Recursivity is the main problem, that's why SafeTesselate is calling
       Tesselate in a try..except . }
     function SafeTesselate: boolean;
 
-    { : Render the patch in high-resolution.<p>
+    { : Render the patch in high-resolution.
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). High-resolution renders use
       display lists, and are assumed to be made together. }
     procedure RenderHighRes(vertices: TAffineVectorList;
       vertexIndices: TIntegerList; texCoords: TTexPointList;
       forceROAM: Boolean);
-    { : Render the patch by accumulating triangles.<p>
+    { : Render the patch by accumulating triangles.
       The lists are assumed to have enough capacity to allow AddNC calls
       (additions without capacity check). 
       Once at least autoFlushVertexCount vertices have been accumulated,
@@ -151,7 +151,7 @@ type
     { : Number of frames remaining to next occlusion test. }
     property OcclusionCounter: Integer read FOcclusionCounter
       write FOcclusionCounter;
-    { : Result for the last occlusion test.<p>
+    { : Result for the last occlusion test.
       Note that this value is updated upon rendering the tile in
       non-high-res mode only. }
     property LastOcclusionTestPassed: Boolean read FLastOcclusionTestPassed;

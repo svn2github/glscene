@@ -10,7 +10,7 @@
          22/04/10 - Yar - Fixes after GLState revision
          16/03/10 - Yar - Improved FPC compatibility
          05/03/10 - Yar - Creation
-    <p>
+    
 }
 unit GLFilePNG;
 
@@ -35,7 +35,7 @@ type
     procedure LoadFromStream(stream: TStream); override;
     procedure SaveToStream(stream: TStream); override;
 
-    {: Assigns from any Texture.}
+    { Assigns from any Texture.}
     procedure AssignFromTexture(textureContext: TGLContext;
       const textureHandle: TGLuint;
       textureTarget: TGLTextureTarget;
@@ -127,7 +127,7 @@ begin
   UnMipmap;
 
   try
-    {: Need to override the standard I/O methods since libPNG
+    { Need to override the standard I/O methods since libPNG
        may be linked against a different run-time }
     _png_set_read_fn(png_ptr, stream, pngReadFn);
     // skip the sig bytes
@@ -142,7 +142,7 @@ begin
 
     colorType := _png_get_color_type(png_ptr, info_ptr);
     bitDepth :=  _png_get_bit_depth(png_ptr, info_ptr);
-    {: Setup the read transforms
+    { Setup the read transforms
        expand palette images to RGB and low-bit-depth grayscale images to 8 bits
        convert transparency chunks to full alpha channel }
     if colorType = PNG_COLOR_TYPE_PALETTE then
@@ -277,7 +277,7 @@ begin
   end;
 
   try
-    {: Need to override the standard I/O methods since
+    { Need to override the standard I/O methods since
       libPNG may be linked against a different run-time }
     _png_set_write_fn(png_ptr, stream, pngWriteFn, nil);
     bit_depth := fElementSize * 8;

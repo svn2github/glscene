@@ -30,7 +30,7 @@ type
 
    // TGLLineParticle
    //
-   {: Linear particle.<p> }
+   { Linear particle. }
    TGLLineParticle = class (TGLParticle)
       private
           
@@ -45,15 +45,15 @@ type
          procedure WriteToFiler(writer : TVirtualWriter); override;
          procedure ReadFromFiler(reader : TVirtualReader); override;
 
-         {: Direction of the line. }
+         { Direction of the line. }
          property Direction : TAffineVector read FDirection write FDirection;
-         {: Length of the line }
+         { Length of the line }
          property Length : Single read FLength write FLength;
    end;
 
    // TGLLinePFXManager
    //
-   {: Polygonal particles FX manager.<p>
+   { Polygonal particles FX manager.
       The particles of this manager are made of N-face regular polygon with
       a core and edge color. No texturing is available. 
       If you render large particles and don't have T&L acceleration, consider

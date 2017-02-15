@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Nodes are used to describe lines, polygons + more.<p>
+  Nodes are used to describe lines, polygons + more.
 
    History :  
    01/03/11 - Vincent - Fix a bug in TGLNodes.Vector
@@ -58,11 +58,11 @@ type
     procedure Assign(Source: TPersistent); override;
 
     function AsAddress: PGLFloat;
-    { : The coordinates viewed as a vector.<p>
+    { : The coordinates viewed as a vector.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. }
     property AsVector: TVector read FCoords write SetAsVector;
-    { : The coordinates viewed as an affine vector.<p>
+    { : The coordinates viewed as an affine vector.
       Assigning a value to this property will trigger notification events,
       if you don't want so, use DirectVector instead. 
       The W component is automatically adjustes depending on style. }
@@ -120,13 +120,13 @@ type
 
     // : Calculates and returns the barycenter of the nodes
     function Barycenter: TAffineVector;
-    { : Computes normal based on the 1st three nodes.<p>
+    { : Computes normal based on the 1st three nodes.
       Returns NullVector if there are less than 3 nodes. }
     function Normal: TAffineVector;
     // : Returns normalized vector Nodes[i+1]-Nodes[i]
     function Vector(I: Integer): TAffineVector;
 
-    { : Calculates the extents of the nodes (min-max for all coordinates).<p>
+    { : Calculates the extents of the nodes (min-max for all coordinates).
       The returned values are also the two corners of the axis-aligned
       bounding box. }
     procedure GetExtents(var Min, Max: TAffineVector);

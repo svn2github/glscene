@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Methods for turning a TGLBaseMesh into a Verlet cloth / jelly<p>
+   Methods for turning a TGLBaseMesh into a Verlet cloth / jelly
 
 	 History :  
        16/09/10 - YP - Created public NodeList property of TFaceExtractor, it allow us to nail some vertex
@@ -35,7 +35,7 @@ uses
 
 
 type
-  {: Class that represents a face. This structure is not used for rendering, but
+  { Class that represents a face. This structure is not used for rendering, but
   for extracting info from meshes }
   TFace = class
   public
@@ -49,7 +49,7 @@ type
     constructor Create(aMeshObject : TGLMeshObject);
   end;
 
-  {: List of faces }
+  { List of faces }
   TFaceList = class(TList)
   private
     function GetItems(i: integer): TFace;
@@ -58,7 +58,7 @@ type
     property Items[i : integer] : TFace read GetItems write SetItems; default;
   end;
 
-  {: Class that extracts faces from a GLBaseMesh}
+  { Class that extracts faces from a GLBaseMesh}
   TFaceExtractor = class
   private
     FFaceList : TFaceList;

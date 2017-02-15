@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Miscellaneous support utilities & classes.<p>
+   Miscellaneous support utilities & classes.
 
   History :  
        02/01/13 - Yar - Added SetGLSceneMediaDir
@@ -48,68 +48,68 @@ type
   TSqrt255Array = array[0..255] of Byte;
   PSqrt255Array = ^TSqrt255Array;
 
-  //: Copies the values of Source to Dest (converting word values to integer values)
+  // Copies the values of Source to Dest (converting word values to integer values)
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
-//: Round ups to the nearest power of two, value must be positive
+// Round ups to the nearest power of two, value must be positive
 function RoundUpToPowerOf2(value: Integer): Integer;
-//: Round down to the nearest power of two, value must be strictly positive
+// Round down to the nearest power of two, value must be strictly positive
 function RoundDownToPowerOf2(value: Integer): Integer;
-//: Returns True if value is a true power of two
+// Returns True if value is a true power of two
 function IsPowerOf2(value: Integer): Boolean;
-{: Read a CRLF terminated string from a stream.<p>
+{ Read a CRLF terminated string from a stream.
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream: TStream): AnsiString;
-//: Write the string and a CRLF in the stream
+// Write the string and a CRLF in the stream
 procedure WriteCRLFString(aStream: TStream; const aString: AnsiString);
-//: Similar to SysUtils.TryStrToFloat, but ignores user's locale
+// Similar to SysUtils.TryStrToFloat, but ignores user's locale
 function TryStrToFloat(const strValue: string; var val: Extended): Boolean;
-//: Similar to SysUtils.StrToFloatDef, but ignores user's locale
+// Similar to SysUtils.StrToFloatDef, but ignores user's locale
 function StrToFloatDef(const strValue: string; defValue: Extended = 0): Extended;
 
-//: Converts a string into color
+// Converts a string into color
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
-//: Converts a string into color
+// Converts a string into color
 function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
-//: Converts a string into color
+// Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
-{: Parses the next integer in the string.<p>
+{ Parses the next integer in the string.
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. '+' and '-' are acknowledged. }
 function ParseInteger(var p: PChar): Integer;
-{: Parses the next integer in the string.<p>
+{ Parses the next integer in the string.
    Initial non-numeric characters are skipper, p is altered, returns 0 if none
    found. Both '.' and ',' are accepted as decimal separators. }
 function ParseFloat(var p: PChar): Extended;
 
-{: Saves "data" to "filename". }
+{ Saves "data" to "filename". }
 procedure SaveAnsiStringToFile(const fileName: string; const data: AnsiString);
-{: Returns the content of "filename". }
+{ Returns the content of "filename". }
 function LoadAnsiStringFromFile(const fileName: string): AnsiString;
 
-{: Saves component to a file. }
+{ Saves component to a file. }
 procedure SaveComponentToFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
-{: Loads component from a file. }
+{ Loads component from a file. }
 procedure LoadComponentFromFile(const Component: TComponent; const FileName: string; const AsText: Boolean = True);
 
-{: Returns the size of "filename".<p>
+{ Returns the size of "filename".
    Returns 0 (zero) is file does not exists. }
 function SizeOfFile(const fileName: string): Int64;
 
-{: Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
+{ Returns a pointer to an array containing the results of "255*sqrt(i/255)". }
 function GetSqrt255Array: PSqrt255Array;
 
-{: Pops up a simple dialog with msg and an Ok button. }
+{ Pops up a simple dialog with msg and an Ok button. }
 procedure InformationDlg(const msg: string);
-{: Pops up a simple question dialog with msg and yes/no buttons.<p>
+{ Pops up a simple question dialog with msg and yes/no buttons.
    Returns True if answer was "yes". }
 function QuestionDlg(const msg: string): Boolean;
-{: Posp a simple dialog with a string input. }
+{ Posp a simple dialog with a string input. }
 function InputDlg(const aCaption, aPrompt, aDefault: string): string;
 
-{: Pops up a simple save picture dialog. }
+{ Pops up a simple save picture dialog. }
 function SavePictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
-{: Pops up a simple open picture dialog. }
+{ Pops up a simple open picture dialog. }
 function OpenPictureDialog(var aFileName: string; const aTitle: string = ''): Boolean;
 
 procedure SetGLSceneMediaDir();

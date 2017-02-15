@@ -66,7 +66,7 @@ type
 
     procedure Bind;
     procedure Unbind;
-    {: Handle to the OpenGL render buffer object.<p>
+    { Handle to the OpenGL render buffer object.
       If the handle hasn't already been allocated, it will be allocated
       by this call (ie. do not use if no OpenGL context is active!) }
     property Handle: TGLuint read GetHandle;

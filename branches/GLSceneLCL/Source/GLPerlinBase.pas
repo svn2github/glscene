@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Functions for generating perlin noise.<p>
+  Functions for generating perlin noise.
 
    History :  
    20/05/10 - Yar - Fixes for Linux x64

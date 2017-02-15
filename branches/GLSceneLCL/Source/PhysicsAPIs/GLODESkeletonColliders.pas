@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Skeleton colliders for defining and controlling ODE geoms.<p>
+   Skeleton colliders for defining and controlling ODE geoms.
 
     History : 
        10/11/12 - PW - Added CPP compatibility: restored records with arrays instead of vector arrays
@@ -27,7 +27,7 @@ type
   
   // TSCODEBase
   //
-  {: Base ODE skeleton collider class. }
+  { Base ODE skeleton collider class. }
   TSCODEBase = class(TGLSkeletonCollider)
     private
       FGeom : PdxGeom;
@@ -39,13 +39,13 @@ type
       procedure AddToSpace(Space : PdxSpace); virtual;
       procedure AlignCollider; override;
 
-      {: The geoms are created through the AddToSpace procedure. }
+      { The geoms are created through the AddToSpace procedure. }
       property Geom : PdxGeom read FGeom;
   end;
 
   // TSCODESphere
   //
-  {: Sphere shaped ODE geom in a skeleton collider. }
+  { Sphere shaped ODE geom in a skeleton collider. }
   TSCODESphere = class(TSCODEBase)
     private
       FRadius : TdReal;
@@ -64,7 +64,7 @@ type
 
   // TSCODECCylinder
   //
-  {: Capsule (sphere capped cylinder) shaped ODE geom in a skeleton 
+  { Capsule (sphere capped cylinder) shaped ODE geom in a skeleton 
      collider. }
   TSCODECCylinder = class(TSCODEBase)
     private
@@ -87,7 +87,7 @@ type
 
   // TSCODEBox
   //
-  {: Box shaped ODE geom in a skeleton collider. }
+  { Box shaped ODE geom in a skeleton collider. }
   TSCODEBox = class(TSCODEBase)
     private
       FBoxWidth,
@@ -110,7 +110,7 @@ type
       property BoxDepth : TdReal read FBoxDepth write SetBoxDepth;
   end;
 
-{: After loading call this function to add all the geoms in a
+{ After loading call this function to add all the geoms in a
    skeleton collider list to a given ODE space. }
 procedure AddSCODEGeomsToODESpace(
   colliders : TGLSkeletonColliderList; space : PdxSpace);

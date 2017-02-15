@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
- Applies a blur effect over the viewport.<p>
+ Applies a blur effect over the viewport.
 
   History :  
          23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -129,7 +129,7 @@ type
     property OnAfterTargetRender: TNotifyEvent read FOnAfterTargetRender write SetOnAfterTargetRender;
   end;
 
-  {:
+  {
     This component blurs everything thatis rendered BEFORE it. So if you want part
     of your scene blured, the other not blured, make sure that the other part is
     rendered after this component. It is fast and does not require shaders.
@@ -154,16 +154,16 @@ type
     procedure DoOnAddedToParent; override;
     procedure InitializeObject(ASender: TObject; const ARci: TRenderContextInfo); virtual;
   public
-    {: This function is only valid AFTER OpenGL has been initialized. }
+    { This function is only valid AFTER OpenGL has been initialized. }
     function SupportsRequiredExtensions: Boolean;
     procedure DoRender(var ARci: TRenderContextInfo; ARenderSelf, ARenderChildren: Boolean); override;
     constructor Create(aOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
-    //: The more the intensity, the more blur you have.
+    // The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
 
-    //: From TGLBaseSceneObject.
+    // From TGLBaseSceneObject.
     property Visible;
     property OnProgress;
     property Behaviours;

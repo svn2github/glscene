@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Skydome object<p>
+   Skydome object
 
   History :  
        17/02/13 - Yar - Added SetSunAtTime method (thanks to Dimitriy) 
@@ -144,13 +144,13 @@ type
 
   published
      
-      {: Right Ascension, in degrees. }
+      { Right Ascension, in degrees. }
     property RA: Single read FRA write FRA;
-    {: Declination, in degrees. }
+    { Declination, in degrees. }
     property Dec: Single read FDec write FDec;
-    {: Absolute magnitude. }
+    { Absolute magnitude. }
     property Magnitude: Single read FMagnitude write FMagnitude;
-    {: Color of the star. }
+    { Color of the star. }
     property Color: TColor read FColor write FColor;
 
   end;
@@ -178,12 +178,12 @@ type
 
     procedure BuildList(var rci: TRenderContextInfo; twinkle: Boolean);
 
-    {: Adds nb random stars of the given color.<p>
+    { Adds nb random stars of the given color.
        Stars are homogenously scattered on the complete sphere, not only the band defined or visible dome. }
     procedure AddRandomStars(const nb: Integer; const color: TColor; const limitToTopDome: Boolean = False); overload;
     procedure AddRandomStars(const nb: Integer; const ColorMin, ColorMax:TVector3b; const Magnitude_min, Magnitude_max: Single;const limitToTopDome: Boolean = False); overload;
 
-    {: Load a 'stars' file, which is made of TGLStarRecord.<p>
+    { Load a 'stars' file, which is made of TGLStarRecord.
        Not that '.stars' files should already be sorted by magnitude and color. }
     procedure LoadStarsFile(const starsFileName: string);
   end;
@@ -195,12 +195,12 @@ type
 
   // TGLSkyDome
   //
-    {: Renders a sky dome always centered on the camera.<p>
+    { Renders a sky dome always centered on the camera.
        If you use this object make sure it is rendered *first*, as it ignores
        depth buffering and overwrites everything. All children of a skydome
-       are rendered in the skydome's coordinate system.<p>
+       are rendered in the skydome's coordinate system.
        The skydome is described by "bands", each "band" is an horizontal cut
-       of a sphere, and you can have as many bands as you wish.<p>
+       of a sphere, and you can have as many bands as you wish.
        Estimated CPU cost (K7-500, GeForce SDR, default bands): 
         800x600 fullscreen filled: 4.5 ms (220 FPS, worst case)
         Geometry cost (0% fill): 0.7 ms (1300 FPS, best case)
@@ -238,10 +238,10 @@ type
 
   // TGLEarthSkyDome
   //
-  {: Render a skydome like what can be seen on earth.<p>
+  { Render a skydome like what can be seen on earth.
      Color is based on sun position and turbidity, to "mimic" atmospheric
      Rayleigh and Mie scatterings. The colors can be adjusted to render
-     weird/extra-terrestrial atmospheres too.<p>
+     weird/extra-terrestrial atmospheres too.
      The default slices/stacks values make for an average quality rendering,
      for a very clean rendering, use 64/64 (more is overkill in most cases).
      The complexity is quite high though, making a T&L 3D board a necessity
@@ -294,9 +294,9 @@ type
 
   published
      
-      {: Elevation of the sun, measured in degrees. }
+      { Elevation of the sun, measured in degrees. }
     property SunElevation: Single read FSunElevation write SetSunElevation;
-    {: Expresses the purity of air.<p> Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
+    { Expresses the purity of air. Value range is from 1 (pure athmosphere) to 120 (very nebulous) }
     property Turbidity: Single read FTurbidity write SetTurbidity;
 
     property SunZenithColor: TGLColor read FSunZenithColor write SetSunZenithColor;

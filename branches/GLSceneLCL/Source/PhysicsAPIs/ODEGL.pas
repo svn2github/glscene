@@ -89,7 +89,7 @@ procedure CopyBodyFromCube(Body: PdxBody; var Geom: PdxGeom; Cube: TGLCube;  Spa
 function CreateGeomFromCube(Cube: TGLCube; Space: PdxSpace): PdxGeom;
 function CreateBodyFromCube(var Geom: PdxGeom; Cube: TGLCube; World: PdxWorld;  Space: PdxSpace): PdxBody;
 
-{: Note that this method requires you to manually deallocate vertices and
+{ Note that this method requires you to manually deallocate vertices and
   indices when you're done with the trimesh }
 function CreateTriMeshFromBaseMesh(
   GLBaseMesh: TGLBaseMesh;

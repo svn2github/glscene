@@ -2,13 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  3D Text component.<p>
+  3D Text component.
 
   Note: You can get valid extents (including AABB's) of this component only
   after it has been rendered for the first time. It means if you ask its
   extents during / after its creation, you will get zeros.
 
-  Also extents are valid only when SpaceText has one line. <p>
+  Also extents are valid only when SpaceText has one line. 
 
    History :  
    25/03/11 - Yar - Fixed issue with unsharable virtual handle of font entry
@@ -171,7 +171,7 @@ type
     function BarycenterAbsolutePosition: TVector; override;
   published
      
-    { : Adjusts the 3D font extrusion.<p>
+    { : Adjusts the 3D font extrusion.
       If Extrusion=0, the characters will be flat (2D), values >0 will
       give them a third dimension. }
     property Extrusion: Single read FExtrusion write SetExtrusion;
@@ -181,7 +181,7 @@ type
     { : Quality related, see Win32 help for wglUseFontOutlines }
     property allowedDeviation: Single read FAllowedDeviation
       write SetAllowedDeviation;
-    { : Character range to convert.<p>
+    { : Character range to convert.
       Converting less characters saves time and memory... }
     property CharacterRange: TSpaceTextCharRange read FCharacterRange
       write SetCharacterRange default stcrDefault;

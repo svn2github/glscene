@@ -3,10 +3,10 @@
 //
 {
   Support-Code to load DXF (Drawing eXchange Files) TGLFreeForm or
-  TGLActor Components in GLScene.<p>
+  TGLActor Components in GLScene.
 
   Note that you must manually add this unit to one of your project's uses
-  to enable support for DXF at run-time.<p>
+  to enable support for DXF at run-time.
 
   Turn on TwoSideLighting in your Buffer! DXF-Faces have no defined winding order
 
@@ -15,9 +15,9 @@
    08/01/06 - JCD - Now works with MaterialLibrary=NIL. (will not load any material, still assigns materialnames to meshobj)
    04/01/06 - JCD - Layer conversion code, material creation, code cleanup</li>
    24/04/04 - JCD - some basic stream code copied from GLScene Wavefront OBJ-Importer (09/09/03)</li>
-   <p>
+   
 
-  (c) 2004-2006 Jörn Daub http://www.daubnet.com<p>
+  (c) 2004-2006 Jörn Daub http://www.daubnet.com
 
   surrendered to Mozilla Public License for use in GLScene.
   Original author (Jörn Daub) retains the right to make changes without

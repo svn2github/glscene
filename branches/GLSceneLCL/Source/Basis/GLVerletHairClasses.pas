@@ -3,7 +3,7 @@
 //
 {
    Creates a single strand of hair using verlet classes. Can be used to simulate
-   ropes, fur or hair.<p>
+   ropes, fur or hair.
 
 	 History :  
        29/05/08 - DaStr - Added $I GLScene.inc
@@ -67,10 +67,10 @@ type
 
     property Data : pointer read FData write FData;
 
-    {: Anchor should be nailed down to give the hair stability }
+    { Anchor should be nailed down to give the hair stability }
     property Anchor : TVerletNode read GetAnchor;
 
-    {: Root should be nailed down to give the hair stability }
+    { Root should be nailed down to give the hair stability }
     property Root : TVerletNode read GetRoot;
   end;
 

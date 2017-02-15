@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GRD (Grid Text Format) vector file format implementation.<p>
+  GRD (Grid Text Format) vector file format implementation.
 
    History : 
    01/05/15 - PW - Fixed LoadFromStream procedure
@@ -27,7 +27,7 @@ uses
 type
   // TGLGRDVectorFile
   //
-  { : The GRD file represents ascii grid formats in 2D/3D.<p>
+  { The GRD file represents ascii grid formats in 2D/3D.
     This is a format for storing regular grid values as a
     matrices of cell centers. The format supports variations and
     subformats. This importer works for Sutfer, ArcInfo and GMS formats}

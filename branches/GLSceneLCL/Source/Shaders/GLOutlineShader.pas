@@ -2,14 +2,14 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A simple shader that adds an outline to an object. <p>
+   A simple shader that adds an outline to an object. 
 
    Limitations:  
        1. Object can be transparent (color alpha < 1) if it doesn't
                    overlap itself. Texture transparency doesn't work.
        2. Doesn't work with objects (e.g. TGLFreeForm) having it's own
                    color array.
-       3. Doesn't Works with visible backfaces.<p>
+       3. Doesn't Works with visible backfaces.
 
     History :  
        12/02/11 - Yar - Added skipping shader when enabled stencil test to avvoid conflict with shadow volume
@@ -64,7 +64,7 @@ type
   published
      
     property LineColor: TGLColor read FLineColor write FLineColor;
-    {: Line smoothing control }
+    { Line smoothing control }
     property LineSmooth: Boolean read FOutlineSmooth write SetOutlineSmooth
       default false;
     property LineWidth: Single read FOutlineWidth write SetOutlineWidth;

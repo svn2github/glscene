@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  GLScene cross IDE generic classes collection.<p>
+  GLScene cross IDE generic classes collection.
 
    History :  
    10/11/12 - PW - Added CPP compatibility: redeclared FOnChange: TNotifyEvent;

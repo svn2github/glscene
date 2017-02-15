@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    A simple component written by request from someone at the www.glscene.ru forums.<p>
-    Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff <p>
-    that all demos usually have in themselves. All that is just by dropping <p>
-    this component on the form.<p>
+    A simple component written by request from someone at the www.glscene.ru forums.
+    Allows to view the FPS and do the usual Zoom and MoveAroundTarget stuff 
+    that all demos usually have in themselves. All that is just by dropping 
+    this component on the form.
 
     History :  
        14/12/10 - DaStr - Fixed compiler hint
@@ -29,7 +29,7 @@
                              Added TGLSimpleNavigation.Assign
                              MouseWheel is now handled by default
        06/02/07 - DaStr - Creation (donated to GLScene)
-  <p>
+  
 
    Previous version history:
            v1.0   08 May        '2006  Creation

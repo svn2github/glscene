@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Support for Windows WAV format.<p>
+   Support for Windows WAV format.
 
 	 History :  
        17/11/09 - DaStr - Improved Unix compatibility
@@ -25,7 +25,7 @@ type
 
    // TGLWAVFile
    //
-   {: Support for Windows WAV format. }
+   { Support for Windows WAV format. }
    TGLWAVFile = class (TGLSoundFile)
       private
           

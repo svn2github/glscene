@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Support for MP3 format.<p>
+   Support for MP3 format.
 
 	 History :  
        25/07/09 - DaStr - Added $I GLScene.inc  
@@ -22,7 +22,7 @@ type
 
    // TGLMP3File
    //
-   {: Support for MP3 format.<p>
+   { Support for MP3 format.
       *Partial* support only, access to PCMData is NOT supported. }
    TGLMP3File = class (TGLSoundFile)
       private

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Particle systems for GLScene, based on replication of full-featured scene objects.<p>
+   Particle systems for GLScene, based on replication of full-featured scene objects.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -42,7 +42,7 @@ type
 
   // TGLParticles
   //
-  {: Manager object of a particle system.<p>
+  { Manager object of a particle system.
    Particles in a TGLParticles system are described as normal scene objects,
    however their children are to be : 
     "particle template" : the first object (index=0), this one will be
@@ -60,7 +60,7 @@ type
    behaviour, you should set the ParticlePoolSize property to a non-null
    value and use the KillParticle function instead of "Free" to kill a
        particle. 
-       All direct access to a TGLParticles children should be avoided.<p>
+       All direct access to a TGLParticles children should be avoided.
        For high-performance particle systems of basic particles, you should
        look into GLParticleFX instead, TGLParticles being rather focused on
        complex particles.
@@ -99,14 +99,14 @@ type
       ARenderSelf, ARenderChildren: Boolean); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    {: Request creation of a new particle.<p>
+    { Request creation of a new particle.
      Particle will be either created or retrieved from the particlePool. }
     function CreateParticle: TGLBaseSceneObject;
-    {: Kill given particle.<p>
+    { Kill given particle.
      If particlePool is not full, particle will be sent to the pool,
      if not, it will be freed. }
     procedure KillParticle(aParticle: TGLBaseSceneObject);
-    {: Kill all particles. }
+    { Kill all particles. }
     procedure KillParticles;
 
   published
@@ -115,29 +115,29 @@ type
     property EdgeColor: TGLColor read FEdgeColor write SetEdgeColor;
     property VisibleAtRunTime: Boolean read FVisibleAtRunTime write SetVisibleAtRunTime default False;
 
-    {: Size of the particle pool (for storing killed particles).<p>
+    { Size of the particle pool (for storing killed particles).
              Default size is zero, meaning the particlePool is disabled. }
     property ParticlePoolSize: Integer read FParticlePoolSize write SetParticlePoolSize default 0;
 
-    {: Fired a particle has been created as a template duplicate.<p>
+    { Fired a particle has been created as a template duplicate.
        When the event is triggered, the particle has yet been added  to
        the scene. }
     property OnCreateParticle: TGLParticleEvent read FOnCreateParticle write FOnCreateParticle;
-    {: Fired when a particle will get in the "live" list.<p>
+    { Fired when a particle will get in the "live" list.
        The particle has just been "Assigned" with the template, may happen
        after a creation or a pick from the particle pool. }
     property OnActivateParticle: TGLParticleEvent read FOnActivateParticle write FOnActivateParticle;
-    {: Triggered when a particle is killed.<p>
+    { Triggered when a particle is killed.
              When the event is fired, the particle is still parented, after this
              event, the particle will either go to the pool or be destroyed if
              the pool is full. }
     property OnKillParticle: TGLParticleEvent read FOnKillParticle write FOnKillParticle;
-    {: Triggered just before destroying a particle.<p>
+    { Triggered just before destroying a particle.
        The particle can be in the pool (ie. not parented). }
     property OnDestroyParticle: TGLParticleEvent read FOnDestroyParticle write FOnDestroyParticle;
-    {: Fired before rendering the first of the particles. }
+    { Fired before rendering the first of the particles. }
     property OnBeforeRenderParticles: TDirectRenderEvent read FOnBeforeRenderParticles write FOnBeforeRenderParticles;
-    {: Fired after rendering the last of the particles. }
+    { Fired after rendering the last of the particles. }
     property OnAfterRenderParticles: TDirectRenderEvent read FOnAfterRenderParticles write FOnAfterRenderParticles;
   end;
 

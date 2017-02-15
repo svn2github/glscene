@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   SMD vector file format implementation.<p>
+   SMD vector file format implementation.
 
 	 History : 
        24/03/07 - DaStr - Added explicit pointer dereferencing
@@ -26,10 +26,10 @@ uses
 type
    // TGLSMDVectorFile
    //
-   {: The SMD vector file is Half-life's skeleton format.<p>
+   { The SMD vector file is Half-life's skeleton format.
       The SMD is a text-based file format. They come in two flavors: one that
       old Skeleton and triangle (mesh) data, and animation files that store
-      Skeleton frames.<p>
+      Skeleton frames.
       This reader curently reads both, but requires that the main file
       (the one with mesh data) be read first. }
    TGLSMDVectorFile = class(TGLVectorFile)

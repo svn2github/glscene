@@ -35,7 +35,7 @@
        04/12/10 - Yar - Improved duplicate keys storing
        04/08/10 - Yar - Fixed field section for FPC 2.5.1 (Bugtracker ID = 3039424)
        19/04/10 - Yar - Creation (based on grbtree jzombi aka Jani Matyas)
-    <p>
+    
 }
 
 unit GLSRedBlackTree;
@@ -111,7 +111,7 @@ type
     destructor Destroy; override;
 
     procedure Clear;
-    {: Find value by key. }
+    { Find value by key. }
     function Find(const key: TKey; out Value: TValue): Boolean;
     function NextKey(var key: TKey; out Value: TValue): Boolean;
     function PrevKey(var key: TKey; out Value: TValue): Boolean;
@@ -349,7 +349,7 @@ begin
     FRightmost := z;
   end;
 
-  {: Insert node z }
+  { Insert node z }
   y := nil;
   x := FRoot;
   while (x <> nil) do
@@ -362,10 +362,10 @@ begin
       x := x.right
     else
     begin
-      {: Key already exists in tree. }
+      { Key already exists in tree. }
       if FDuplicateKeys then
       begin
-        {: Check twins chain for value dublicate. }
+        { Check twins chain for value dublicate. }
         repeat
           if FValueCompareFunc(Value, x.Value) then
           begin
@@ -377,14 +377,14 @@ begin
         until x = nil;
         if Assigned(y) then
         begin
-          {: Add dublicate key to end of twins chain. }
+          { Add dublicate key to end of twins chain. }
           y.Twin := z;
           Inc(FCount);
           if Assigned(FOnChange) then
             FOnChange(Self);
           exit;
         end;
-        {: Value already exists in tree. }
+        { Value already exists in tree. }
       end;
 {$IFDEF FPC}
       Dispose(z);

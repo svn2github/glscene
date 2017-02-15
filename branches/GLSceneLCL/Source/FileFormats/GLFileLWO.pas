@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Support-code to load Lightwave LWO Files (v6.0+, partial support).<p>
+    Support-code to load Lightwave LWO Files (v6.0+, partial support).
 
   History :  
        16/10/08 - UweR - Compatibility fix for Delphi 2009
@@ -13,7 +13,7 @@
        16/11/02 - BJ - Added smooth normals with crease angle
        17/11/02 - BJ - Added 2 and 4 point ngons -> triangles
        17/11/02 - BJ - Added Enviroment Map Image -> Cubic Projection Map
-    <p>
+    
 
    Original code: "Brian Johns" <brianjohns1@hotmail.com>
 }

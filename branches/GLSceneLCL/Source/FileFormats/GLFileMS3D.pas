@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Support for MS3D file format.<p>
+   Support for MS3D file format.
 
    History :
      24/11/10 - Yar - Foxed range check error
@@ -260,7 +260,7 @@ type
 type
   // TGLMS3DVectorFile
   //
-  {: The MilkShape vector file.<p>
+  { The MilkShape vector file.
      By Mattias Fagerlund, mattias@cambrianlabs.com. Yada yada. Eric rules! }
 
   TGLMS3DVectorFile = class(TGLVectorFile)

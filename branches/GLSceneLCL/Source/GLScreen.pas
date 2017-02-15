@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Routines to interact with the screen/desktop.<p>
+  Routines to interact with the screen/desktop.
 
   History :  
    04/11/10 - DaStr - Added Delphi5 and Delphi6 compatibility

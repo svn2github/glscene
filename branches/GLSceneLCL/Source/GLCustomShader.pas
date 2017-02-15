@@ -4,7 +4,7 @@
     A collection of pure abstract classes - descendants of TGLShader, which are
     used for purpose of not having to write the same stuff all over and over
     again in your own shader classes.
-    It also contains a procedures and function that can be used in all shaders.<p>
+    It also contains a procedures and function that can be used in all shaders.
 
 	 History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -134,7 +134,7 @@ type
   TGLLightSourceEnum = 1..glsShaderMaxLightSources;
   TGLLightSourceSet = set of TGLLightSourceEnum;
 
-  {: This interface describes user shaders, in order to be able to access them
+  { This interface describes user shaders, in order to be able to access them
     via a unified interface. If user shader does not support some option, don't
     raise an axception, just ignore it.
   }
@@ -155,17 +155,17 @@ type
     function GetShaderDescription: string;
   end;
 
-  {: Used in the TGLPostShaderHolder component. }
+  { Used in the TGLPostShaderHolder component. }
   IGLPostShader = interface
   ['{68A62362-AF0A-4CE8-A9E1-714FE02AFA4A}']
-    {: Called on every pass. }
+    { Called on every pass. }
     procedure DoUseTempTexture(const TempTexture: TGLTextureHandle;
       TextureTarget: TGLTextureTarget);
-    {: Called to determine if it is compatible. }
+    { Called to determine if it is compatible. }
     function GetTextureTarget: TGLTextureTarget;
   end;
 
-  {: A pure abstract class, must be overriden. }
+  { A pure abstract class, must be overriden. }
   TGLCustomShader = class(TGLShader)
   private
     FFragmentProgram: TGLFragmentProgram;
@@ -187,7 +187,7 @@ type
     property VertexProgram: TGLVertexProgram read FVertexProgram write SetVertexProgram stored StoreVertexProgram;
     property GeometryProgram: TGLGeometryProgram read FGeometryProgram write SetGeometryProgram stored StoreGeometryProgram;
 
-    {: Treats warnings as errors and displays this error,
+    { Treats warnings as errors and displays this error,
        instead of a general shader-not-supported message. }
     property DebugMode: Boolean read FDebugMode write SetDebugMode default False;
     property TagObject: TObject read FTagObject write FTagObject default nil;
@@ -199,7 +199,7 @@ type
     procedure LoadShaderPrograms(const VPFilename, FPFilename: string; GPFilename: string = '');
   end;
 
-  {: A custom shader program. }
+  { A custom shader program. }
   TGLShaderProgram = class(TPersistent)
   private
     FParent: TGLCustomShader;
@@ -252,7 +252,7 @@ type
     property VerticesOut: TGLint read FVerticesOut write SetVerticesOut default 0;
   end;
 
-  {: Wrapper around a parameter of the main program. }
+  { Wrapper around a parameter of the main program. }
   TGLCustomShaderParameter = class(TObject)
   private
      
@@ -318,47 +318,47 @@ type
   public
      
 
-    {: This overloaded SetAsVector accepts open array as input. e.g.
+    { This overloaded SetAsVector accepts open array as input. e.g.
        SetAsVectorF([0.1, 0.2]). Array length must between 1-4. }
     procedure SetAsVectorF(const Values: array of Single); overload;
     procedure SetAsVectorI(const Values: array of Integer); overload;
 
-    {: SetToTextureOf determines texture type on-the-fly.}
+    { SetToTextureOf determines texture type on-the-fly.}
     procedure SetToTextureOf(const LibMaterial: TGLLibMaterial; const TextureIndex: Integer); overload;
     procedure SetToTextureOf(const Texture: TGLTexture; const TextureIndex: Integer); overload;
 
-    //: GLScene-friendly properties.
+    // GLScene-friendly properties.
     property AsVector: TVector read GetAsVector4f write SetAsVector4f;
     property AsAffineVector: TAffineVector read GetAsVector3f write SetAsVector3f;
 
-    //: Standard types.
+    // Standard types.
     property AsFloat: Single read GetAsVector1f write SetAsVector1f;
     property AsInteger: Integer read GetAsVector1i write SetAsVector1i;
 
-    //: Float vector types.
+    // Float vector types.
     property AsVector1f: Single    read GetAsVector1f write SetAsVector1f;
     property AsVector2f: TVector2f read GetAsVector2f write SetAsVector2f;
     property AsVector3f: TVector3f read GetAsVector3f write SetAsVector3f;
     property AsVector4f: TVector4f read GetAsVector4f write SetAsVector4f;
 
-    //: Integer vector  types.
+    // Integer vector  types.
     property AsVector1i: Integer   read GetAsVector1i write SetAsVector1i;
     property AsVector2i: TVector2i read GetAsVector2i write SetAsVector2i;
     property AsVector3i: TVector3i read GetAsVector3i write SetAsVector3i;
     property AsVector4i: TVector4i read GetAsVector4i write SetAsVector4i;
 
-    //: Unsigned integer vector  types.
+    // Unsigned integer vector  types.
     property AsVector1ui: GLuint   read GetAsVector1ui write SetAsVector1ui;
     property AsVector2ui: TVector2ui read GetAsVector2ui write SetAsVector2ui;
     property AsVector3ui: TVector3ui read GetAsVector3ui write SetAsVector3ui;
     property AsVector4ui: TVector4ui read GetAsVector4ui write SetAsVector4ui;
 
-    //: Matrix Types.
+    // Matrix Types.
     property AsMatrix2f: TMatrix2f read GetAsMatrix2f write SetAsMatrix2f;
     property AsMatrix3f: TMatrix3f read GetAsMatrix3f write SetAsMatrix3f;
     property AsMatrix4f: TMatrix4f read GetAsMatrix4f write SetAsMatrix4f;
 
-    //: Texture Types.
+    // Texture Types.
     property AsTexture    [const TextureIndex: Integer]: TGLTexture write SetAsTexture;
     property AsTexture1D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture1D;
     property AsTexture2D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture2D;
@@ -372,7 +372,7 @@ type
   end;
 
 
-  {: Adds two more blending modes to standard ones.
+  { Adds two more blending modes to standard ones.
     Not sure how to name them or if they should be included in TBlending mode,
     so I created a new type here. }
   TGLBlendingModeEx = (bmxOpaque, bmxTransparency, bmxAdditive,

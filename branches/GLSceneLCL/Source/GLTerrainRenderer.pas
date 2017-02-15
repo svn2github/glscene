@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 { 
-  GLScene's brute-force terrain renderer.<p>
+  GLScene's brute-force terrain renderer.
 
    History :  
    10/01/13 - PW - Added CPP compatibility: considered sensitivity to upper case characters in identifiers
@@ -40,7 +40,7 @@
    21/07/01 - EG - Added Notication registration in SetHeightDataSource
    04/03/01 - EG - Completed for first release
    12/02/01 - EG - Creation
-   <p>
+   
 
   NOTA : multi-materials terrain support is not yet optimized to minimize
   texture switches (in case of resued tile textures).
@@ -80,11 +80,11 @@ type
 
   // TGLTerrainRenderer
 
-  { : Basic terrain renderer.<p>
+  { : Basic terrain renderer.
     This renderer uses no sophisticated meshing, it just builds and maintains
     a set of terrain tiles, performs basic visibility culling and renders its
     stuff. You can use it has a base class/sample for more specialized
-    terrain renderers.<p>
+    terrain renderers.
     The Terrain heightdata is retrieved directly from a THeightDataSource, and
     expressed as z=f(x, y) data. }
   // TGLTerrainRenderer = class (TGLSceneObject)
@@ -154,7 +154,7 @@ type
       intersectPoint: PVector = nil; intersectNormal: PVector = nil)
       : boolean; override;
 
-    { : Interpolates height for the given point.<p>
+    { : Interpolates height for the given point.
       Expects a point expressed in absolute coordinates. }
     function InterpolatedHeight(const p: TVector): single; overload; virtual;
     function InterpolatedHeight(const p: TAffineVector): single; overload;
@@ -167,27 +167,27 @@ type
     { : Specifies the HeightData provider component. }
     property HeightDataSource: THeightDataSource read FHeightDataSource
       write SetHeightDataSource;
-    { : Size of the terrain tiles.<p>
+    { : Size of the terrain tiles.
       Must be a power of two. }
     property TileSize: Integer read FTileSize write SetTileSize default 16;
     { : Number of tiles required for a full texture map. }
     property TilesPerTexture: single read FTilesPerTexture
       write SetTilesPerTexture;
-    { : Link to the material library holding terrain materials.<p>
+    { : Link to the material library holding terrain materials.
       If unspecified, and for all terrain tiles with unspecified material,
       the terrain renderer's material is used. }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary
       write SetMaterialLibrary;
 
-    { : Quality distance hint.<p>
+    { : Quality distance hint.
       This parameter gives an hint to the terrain renderer at which distance
       the terrain quality can be degraded to favor speed. The distance is
-      expressed in absolute coordinates units.<p>
+      expressed in absolute coordinates units.
       All tiles closer than this distance are rendered according to
       QualityStyle and with a static resolution. }
     property QualityDistance: single read FQualityDistance
       write FQualityDistance;
-    { : Determines how high-res tiles (closer than QualityDistance) are rendered.<p>
+    { : Determines how high-res tiles (closer than QualityDistance) are rendered.
       hrsFullGeometry (default value) means that the high-res tiles are rendered
       with full-geometry, and no LOD of any kind, while hrsTesselated means
       the tiles will be tesselated once, with the best output for the
@@ -195,18 +195,18 @@ type
       in further frames without any adpative tesselation. }
     property QualityStyle: TTerrainHighResStyle read FQualityStyle
       write SetQualityStyle default hrsFullGeometry;
-    { : Maximum number of CLOD triangles per scene.<p>
+    { : Maximum number of CLOD triangles per scene.
       Triangles in high-resolution tiles (closer than QualityDistance) do
       not count toward this limit. }
     property MaxCLODTriangles: Integer read FMaxCLODTriangles
       write FMaxCLODTriangles default 65536;
-    { : Precision of CLOD tiles.<p>
+    { : Precision of CLOD tiles.
       The lower the value, the higher the precision and triangle count.
       Large values will result in coarse terrain. 
       high-resolution tiles (closer than QualityDistance) ignore this setting. }
     property CLODPrecision: Integer read FCLODPrecision write SetCLODPrecision
       default 100;
-    { : Numbers of frames to skip for a tile when occlusion testing found it invisible.<p>
+    { : Numbers of frames to skip for a tile when occlusion testing found it invisible.
       Occlusion testing can help reduce CPU, T&L and fillrate requirements
       when tiles are occluded, either by the terrain itself (tiles behind
       a mountain or a cliff) or by geometry that was rendered before the
@@ -222,7 +222,7 @@ type
       This optimization requires the hardware to support GL_NV_occlusion_query. }
     property OcclusionFrameSkip: Integer read FOcclusionFrameSkip
       write SetOcclusionFrameSkip default 0;
-    { : Determines if and how occlusion testing affects tesselation.<p>
+    { : Determines if and how occlusion testing affects tesselation.
       Turning off tesselation of tiles determined invisible can improve
       performance, however, it may result in glitches since the tesselation
       of an ivisible tile can have a slight effect on the tesselation
@@ -235,25 +235,25 @@ type
       read FOcclusionTesselate write FOcclusionTesselate
       default totTesselateIfVisible;
 
-    { : Allows to specify terrain bounds.<p>
+    { : Allows to specify terrain bounds.
       Default rendering bounds will reach depth of view in all direction,
       with this event you can chose to specify a smaller rendered
       terrain area. }
     property OnGetTerrainBounds: TGetTerrainBoundsEvent read FOnGetTerrainBounds
       write FOnGetTerrainBounds;
-    { : Invoked for each rendered patch after terrain render has completed.<p>
+    { : Invoked for each rendered patch after terrain render has completed.
       The list holds TGLROAMPatch objects and allows per-patch
       post-processings, like waters, trees... It is invoked *before*
       OnHeightDataPostRender. }
     property OnPatchPostRender: TPatchPostRenderEvent read FOnPatchPostRender
       write FOnPatchPostRender;
-    { : Invoked for each heightData not culled out by the terrain renderer.<p>
+    { : Invoked for each heightData not culled out by the terrain renderer.
       The list holds THeightData objects and allows per-patch
       post-processings, like waters, trees... It is invoked *after*
       OnPatchPostRender. }
     property OnHeightDataPostRender: THeightDataPostRenderEvent
       read FOnHeightDataPostRender write FOnHeightDataPostRender;
-    { : Invoked whenever the MaxCLODTriangles limit was reached during last rendering.<p>
+    { : Invoked whenever the MaxCLODTriangles limit was reached during last rendering.
       This forced the terrain renderer to resize the buffer, which affects performance.
       If this event is fired frequently, one should increase MaxCLODTriangles.
     }

@@ -13,7 +13,7 @@
          23/01/10 - Yar - Added to AssignFromTexture CurrentFormat parameter
                              Fixed cube map loading bug
          20/01/10 - Yar - Creation
-    <p>
+    
 }
 unit GLFileO3TC;
 

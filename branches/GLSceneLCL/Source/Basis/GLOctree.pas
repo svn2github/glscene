@@ -2,9 +2,9 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  Octree management classes and structures.<p>
+  Octree management classes and structures.
 
-  TODO: move the many public vars/fields to private/protected<p>
+  TODO: move the many public vars/fields to private/protected
 
    History :  
    10/11/14 - PW - Renamed from "Octree.pas" to "GLOctree.pas" and added ListHandle in TOctreeNode
@@ -71,7 +71,7 @@ type
 
   // TOctree
   //
-  { : Manages an Octree containing references to triangles.<p> }
+  { : Manages an Octree containing references to triangles. }
   TOctree = class(TObject)
   private
      
@@ -136,7 +136,7 @@ type
     procedure WalkSphereToLeaf(Onode: POctreeNode; const P: TVector;
       Radius: Single);
 
-    { : Initializes the tree from the triangle list.<p>
+    { : Initializes the tree from the triangle list.
       All triangles must be contained in the world extent to be properly
       taken into account. }
     procedure InitializeTree(const AWorldMinExtent, AWorldMaxExtent

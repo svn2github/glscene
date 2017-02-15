@@ -1,9 +1,9 @@
 //
 // This unit is part of the GLScene Project, http://glscene.org
 //
-{  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.<p>
-  You may have only one instance of TGLSLogger<p>
-  To obtain it, call UserLog() function from any unit.<p>
+{  Activate GLS_LOGGING in "GLSCene.inc" to turn on inner GLScene logger.
+  You may have only one instance of TGLSLogger
+  To obtain it, call UserLog() function from any unit.
 
   History :  
    25/03/13 - DaStr - Added WriteInternalMessages and DisplayErrorDialogs options
@@ -54,7 +54,7 @@ type
   { : Log level setting type }
   TLogLevels = set of TLogLevel;
 
-  {: What to do when number of messages exceeds message limit. }
+  { What to do when number of messages exceeds message limit. }
   TLogMessageLimitAction = (mlaContinue, mlaStopLogging, mlaHalt);
 
 var
@@ -90,7 +90,7 @@ type
     { : include time elapsed since startup in the log }
     lfElapsed);
 
-  {: How log is buffered. }
+  { How log is buffered. }
   TLogBufferingMode =
   (
    lbmWriteEmidiatly,
@@ -102,7 +102,7 @@ type
   CLogSession = class of TGLLogSession;
   TGLLogSession = class;
 
-  {: Thread that periodically flushes the buffer to disk. }
+  { Thread that periodically flushes the buffer to disk. }
   TLogBufferFlushThread = class(TThread)
   private
     FParent: TGLLogSession;
@@ -112,7 +112,7 @@ type
     constructor Create(const AParent: TGLLogSession);
   end;
 
-  {: Thread that checks file size and splits the file if nessesary. }
+  { Thread that checks file size and splits the file if nessesary. }
   TLogCheckSizeThread = class(TThread)
   private
     FParent: TGLLogSession;
@@ -122,7 +122,7 @@ type
     constructor Create(const AParent: TGLLogSession);
   end;
 
-  {: Abstract Logger class }
+  { Abstract Logger class }
   TGLLogSession = class(TPersistent)
   private
     FBuffer: TStringList;
@@ -173,13 +173,13 @@ type
     { : Appends a string to log. Thread-safe. }
     procedure AppendLog(const AString: string; const ALevel: TLogLevel; const ALogTime: Boolean = True);
 
-    {: Writes string to log. Returns True if everything went ok.}
+    { Writes string to log. Returns True if everything went ok.}
     function DoWriteToLog(const AString: string): Boolean; virtual;
 
-    {: Writes FBuffer to log. Returns True if everything went ok.}
+    { Writes FBuffer to log. Returns True if everything went ok.}
     function DoWriteBufferToLog(): Boolean; virtual;
 
-    {: Resets log. Returns True if everything went ok.}
+    { Resets log. Returns True if everything went ok.}
     function DoResetLog: Boolean; virtual;
   public
     { Initializes a log session with the specified log file name, time and level settings }
@@ -231,12 +231,12 @@ type
     property MessageLimitAction: TLogMessageLimitAction read FMessageLimitAction write FMessageLimitAction default mlaHalt;
     property WriteInternalMessages: Boolean read FWriteInternalMessages write FWriteInternalMessages default True;
 
-    {: To always display log, put all log types. To never display log, leave this empty. }
+    { To always display log, put all log types. To never display log, leave this empty. }
     property DisplayLogOnExitIfItContains: TLogLevels read FDisplayLogOnExitIfItContains write FDisplayLogOnExitIfItContains
       default [lkDebug, lkInfo, lkNotice, lkWarning, lkError, lkFatalError];
 
 
-    {: If LogFileMaxSize is not 0, then:
+    { If LogFileMaxSize is not 0, then:
        1) At start, all logs with the same extention will be deleted.
        2) All logs wil be periodically cheked for FileSize.
           New log file will be created when this size exceeds limit.
@@ -248,7 +248,7 @@ type
   // TGLSLoger
   //
 
-  { : Abstract class for control loging.<p> }
+  { : Abstract class for control loging. }
 
   TGLSLogger = class(TComponent)
   private
@@ -344,14 +344,14 @@ const
                   'AnsiString  : ', 'Currency    : ', 'Variant     : ', 'Interface   : ',
                   'WideString  : ', 'Int64       : ', '#HLType     : ');
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ Function from HotLog by Olivier Touzot "QnnO".}
 Function GetOriginalValue(s:String):String;
 //  Called to remove the false 'AnsiString :' assertion, for pointers and objects
 Begin
   result := RightStr(s,Length(s)-19);
 End;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ Function from HotLog by Olivier Touzot "QnnO".}
 Function VarRecToStr(vr:TVarRec):String;
 // See D6PE help topic "TVarRec"
 Begin
@@ -390,7 +390,7 @@ Begin
   END;
 end;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ Function from HotLog by Olivier Touzot "QnnO".}
 Function GetBasicValue(s:String; vKind:Byte):String;
 var iTmp : Integer;
     wasTObject: Boolean;
@@ -412,7 +412,7 @@ Begin
   EXCEPT; END;
 End;
 
-{: Function from HotLog by Olivier Touzot "QnnO".}
+{ Function from HotLog by Olivier Touzot "QnnO".}
 function ConstArrayToString(const Elements: array of const): String;
 // -2-> Returns à string, surrounded by parenthesis : '(elts[0]; ...; elts[n-1]);'
 //      ("Basic infos" only.)

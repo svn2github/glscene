@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A shader that allows texture combiner setup.<p>
+   A shader that allows texture combiner setup.
 
     History :  
        05/03/11 - Yar - Added combiner's commands cache
@@ -31,7 +31,7 @@ type
 
   // TGLTexCombineShader
   //
-  {: A shader that can setup the texture combiner.<p> }
+  { A shader that can setup the texture combiner. }
   TGLTexCombineShader = class(TGLShader)
   private
      

@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   ZBuffer retrieval and computations.<p>
+   ZBuffer retrieval and computations.
 
    See readme.txt in the Demos/SpecialsFX/Shadows directory. 
-   By René Lindsay.<p>
+   By René Lindsay.
 
   History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records

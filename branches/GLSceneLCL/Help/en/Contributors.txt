@@ -1,4 +1,4 @@
-GLScene for VCL
+GLScene
 Developers and Contributors
 
 ===========================

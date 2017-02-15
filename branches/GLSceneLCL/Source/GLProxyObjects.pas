@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements specific proxying classes.<p>
+   Implements specific proxying classes.
 
   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
@@ -65,7 +65,7 @@ type
 
   // TGLColorProxy
   //
-  {: A proxy object with its own color.<p>
+  { A proxy object with its own color.
      This proxy object can have a unique color. Note that multi-material
      objects (Freeforms linked to a material library f.i.) won't honour
      the color. }
@@ -94,7 +94,7 @@ type
 
   // TGLMaterialProxy
   //
-  {: A proxy object with its own material.<p>
+  { A proxy object with its own material.
      This proxy object can take a mesh from one master and a materia from
      a material library. }
   TGLMaterialProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
@@ -119,7 +119,7 @@ type
 
     procedure DoRender(var ARci: TRenderContextInfo;
       ARenderSelf, ARenderChildren: Boolean); override;
-    {: Specifies the Material, that current master object will use.
+    { Specifies the Material, that current master object will use.
        Provides a faster way to access FMasterLibMaterial, compared to
        MasterLibMaterialName }
     property MasterLibMaterial: TGLLibMaterial read FMasterLibMaterial write
@@ -128,17 +128,17 @@ type
      
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    {: Specifies the Material, that current master object will use. }
+    { Specifies the Material, that current master object will use. }
     property MasterLibMaterialName: TGLLibMaterialName read
       GetMasterLibMaterialName write SetMasterLibMaterialName;
-    {: Redeclare as TGLCustomSceneObject. }
+    { Redeclare as TGLCustomSceneObject. }
     property MasterObject: TGLCustomSceneObject read GetMasterMaterialObject
       write SetMasterMaterialObject;
   end;
 
   // TGLFreeFormProxy
   //
-  {: A proxy object specialized for FreeForms.<p> }
+  { A proxy object specialized for FreeForms. }
   TGLFreeFormProxy = class(TGLProxyObject)
   private
     function GetMasterFreeFormObject: TGLFreeForm;
@@ -149,12 +149,12 @@ type
   public
      
 
-    {: If the MasterObject is a FreeForm, you can raycast against the Octree,
+    { If the MasterObject is a FreeForm, you can raycast against the Octree,
        which is alot faster.  You must build the octree before using. }
     function OctreeRayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean;
-    {: WARNING: This function is not yet 100% reliable with scale+rotation. }
+    { WARNING: This function is not yet 100% reliable with scale+rotation. }
     function OctreeSphereSweepIntersect(const rayStart, rayVector: TVector;
       const velocity, radius, modelscale: Single;
       intersectPoint: PVector = nil;
@@ -168,7 +168,7 @@ type
 
   // TBoneMatrixObj
   //
-  {: An object containing the bone matrix for TGLActorProxy.<p> }
+  { An object containing the bone matrix for TGLActorProxy. }
   TBoneMatrixObj = class
   public
     Matrix: TMatrix;
@@ -182,7 +182,7 @@ type
 
   // TGLActorProxy
   //
-  {: A proxy object specialized for Actors.<p> }
+  { A proxy object specialized for Actors. }
   TGLActorProxy = class(TGLProxyObject, IGLMaterialLibrarySupported)
   private
      
@@ -233,18 +233,18 @@ type
     property EndFrame: Integer read FEndFrame;
     property CurrentFrameDelta: Single read FCurrentFrameDelta;
     property CurrentTime: TProgressTimes read FCurrentTime;
-    {: Gets the Bones Matrix in the current animation frame.
+    { Gets the Bones Matrix in the current animation frame.
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     function BoneMatrix(BoneIndex: integer): TMatrix; overload;
     function BoneMatrix(BoneName: string): TMatrix; overload;
     procedure BoneMatricesClear;
 
-    {: A standard version of the RayCastIntersect function. }
+    { A standard version of the RayCastIntersect function. }
     function RayCastIntersect(const rayStart, rayVector: TVector;
       intersectPoint: PVector = nil;
       intersectNormal: PVector = nil): Boolean; override;
 
-    {: Raycasts on self, but actually on the "RefActor" Actor.
+    { Raycasts on self, but actually on the "RefActor" Actor.
        Note that the "RefActor" parameter does not necessarily have to be
        the same Actor refernced by the MasterObject property:
        This allows to pass a low-low-low-poly Actor to raycast in the "RefActor" parameter,
@@ -267,21 +267,21 @@ type
     // Redeclare without pooTransformation
     // (Don't know why it causes the object to be oriented incorrecly.)
     property ProxyOptions default [pooEffects, pooObjects];
-    {: Specifies the MaterialLibrary, that current proxy will use. }
+    { Specifies the MaterialLibrary, that current proxy will use. }
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    {: Specifies the Material, that current proxy will use. }
+    { Specifies the Material, that current proxy will use. }
     property LibMaterialName: TGLLibMaterialName read GetLibMaterialName write
       SetLibMaterialName;
-    {: Specifies if it will store the Bones Matrices, accessible via the BoneMatrix function
+    { Specifies if it will store the Bones Matrices, accessible via the BoneMatrix function
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     property StoreBonesMatrix: boolean read FStoreBonesMatrix write
       SetStoreBonesMatrix;
-    {: Specifies the names of the bones we want the matrices to be stored. If empty, all bones will be stored
+    { Specifies the names of the bones we want the matrices to be stored. If empty, all bones will be stored
      (since the masterobject is shared between all proxies, each proxy will have it's bones matrices) }
     property StoredBoneNames: TStrings read FStoredBoneNames write
       SetStoredBoneNames;
-    {: Event allowing to apply extra transformations (f.ex: bone rotations) to the referenced
+    { Event allowing to apply extra transformations (f.ex: bone rotations) to the referenced
        Actor on order to have the proxy render these changes.  }
     property OnBeforeRender: TGLProgressEvent read FOnBeforeRender write
       SetOnBeforeRender;

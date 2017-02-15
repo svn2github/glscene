@@ -3,7 +3,7 @@
 {
    Glass shader : Environment mapping with an
    equirectangular 2D texture and refraction mapping
-   with a background texture blended together using the Fresnel terms<p>
+   with a background texture blended together using the Fresnel terms
 
 
     History :  
@@ -27,7 +27,7 @@ uses
 
 //TGLCustomGLSLSimpleGlassShader
 //
-{: Custom class for GLSLGlassShader.<p>
+{ Custom class for GLSLGlassShader.
   Glass shader : Environment mapping and refraction mapping using the fresnel terms }
 Type
   TGLCustomGLSLGlassShader = class(TGLCustomGLSLShader)

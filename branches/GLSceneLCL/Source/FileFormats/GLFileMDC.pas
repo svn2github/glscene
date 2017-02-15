@@ -9,7 +9,7 @@
   of MD3 files. It has got all MD3 features (such as Tag frames)
   plus very small data!
 
-  Original code by Osman Turan (osmanturancom@yahoo.com)<p>
+  Original code by Osman Turan (osmanturancom@yahoo.com)
 
    History :
    06/06/10 - Yar - Fixes for Linux x64

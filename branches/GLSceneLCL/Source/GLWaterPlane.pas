@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A plane simulating animated water<p>
+   A plane simulating animated water
 
 	 History :  
        10/11/12 - PW - Added CPP compatibility: changed vector arrays to records
@@ -17,7 +17,7 @@
        01/01/03 - Sternas Stefanos - Original code
     
 
-   <p>The Original Code is part of Cosmos4D 
+   The Original Code is part of Cosmos4D 
    http://users.hol.gr/~sternas/ 
    Sternas Stefanos 2003
 }
@@ -105,7 +105,7 @@ type
          procedure CreateRippleRandom;
          procedure Reset;
 
-         {: CPU time (in seconds) taken by the last iteration step. }
+         { CPU time (in seconds) taken by the last iteration step. }
          property LastIterationStepTime : Single read FLastIterationStepTime;
 
       published
@@ -113,7 +113,7 @@ type
          
          property Active : Boolean read FActive write FActive default True;
 
-         {: Delay between raindrops in milliseconds (0 = no rain) }
+         { Delay between raindrops in milliseconds (0 = no rain) }
          property RainTimeInterval : Integer read FRainTimeInterval write SetRainTimeInterval default 500;
          property RainForce : Single read FRainForce write SetRainForce;
 
@@ -122,15 +122,15 @@ type
          property Resolution : Integer read FResolution write SetResolution default 64;
          property Options : TGLWaterPlaneOptions read FOptions write SetOptions default cDefaultWaterPlaneOptions;
 
-         {: A picture whose pixels determine what part of the waterplane is active.<p>
+         { A picture whose pixels determine what part of the waterplane is active.
             Pixels with a green/gray component beyond 128 are active, the others
-            are not (in short, white = active, black = inactive).<p>
+            are not (in short, white = active, black = inactive).
             The picture will automatically be stretched to match the resolution. }
          property Mask : TGLPicture read FMask write SetMask;
 
-         {: Maximum frequency (in Hz) at which simulation iterations happen. }
+         { Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
-         {: Maximum number of simulation iterations during catchups.<p>
+         { Maximum number of simulation iterations during catchups.
             Catchups happen when for a reason or another, the DoProgress doesn't
             happen as fast SimulationFrequency. }
          property MaximumCatchupIterations : Integer read FMaximumCatchupIterations write FMaximumCatchupIterations default 1;

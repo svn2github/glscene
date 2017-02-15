@@ -2,10 +2,10 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Ghoul2 (GLM/GLA) file format loading structures<p>
+   Ghoul2 (GLM/GLA) file format loading structures
 
    Note:
-	Also referred to as MDX (MDXM/MDXA) format in C source.<p>
+	Also referred to as MDX (MDXM/MDXA) format in C source.
 
 	 History : 
 	    09/05/03 - SG - Fixed compressed bone pool

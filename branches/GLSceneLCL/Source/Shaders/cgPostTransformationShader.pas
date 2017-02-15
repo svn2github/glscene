@@ -4,7 +4,7 @@
 {
    A shader that uses a texture to distort the view by adjusting texture
    coordinates.
-   Does not have any practical use, but is fun to play around with.<p>
+   Does not have any practical use, but is fun to play around with.
 
 	 History :  
        22/04/10 - Yar - Fixes after GLState revision

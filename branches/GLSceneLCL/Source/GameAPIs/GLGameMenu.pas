@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Manages a basic game menu UI<p>
+   Manages a basic game menu UI
 
   History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
@@ -42,7 +42,7 @@ type
 
   // TGLGameMenu
   //
-  {: Classic game menu interface made of several lines.<p> }
+  { Classic game menu interface made of several lines. }
   TGLGameMenu = class(TGLSceneObject, IGLMaterialLibrarySupported)
   private
     { Private Properties }

@@ -4,9 +4,9 @@
 {
    Simple TGA formats supports for Delphi. 
    Currently supports only 24 and 32 bits RGB formats (uncompressed
-   and RLE compressed).<p>
+   and RLE compressed).
 
-   Based on David McDuffee's document from www.wotsit.org<p>
+   Based on David McDuffee's document from www.wotsit.org
 
 	 History :  
             07/03/11 - Yar - Removed LazTGA, added workaround of ScanLine for Lazarus
@@ -23,20 +23,17 @@ interface
 
 {$I GLScene.inc}
 
-uses Classes, SysUtils, GLCrossPlatform;
+uses 
+  Classes, 
+  SysUtils, 
+  GLCrossPlatform;
 
 type
 
-	// TTGAImage
-	//
-   {: TGA image load/save capable class for Delphi.<p>
+   { TGA image load/save capable class for Delphi.
       TGA formats supported : 24 and 32 bits uncompressed or RLE compressed,
       saves only to uncompressed TGA. }
         TTGAImage = class (TGLBitmap)
-	   private
-	       
-
-	   protected
 	       
 
 	   public
@@ -48,8 +45,6 @@ type
          procedure SaveToStream(stream : TStream); override;
 	end;
 
-   // ETGAException
-   //
    ETGAException = class (Exception)
    end;
 
@@ -103,18 +98,23 @@ var
    b : Byte;
 begin
    bufEnd:=@destBuf[totalSize];
-   while destBuf<bufEnd do begin
+   while destBuf<bufEnd do 
+   begin
       stream.Read(b, 1);
-      if b>=128 then begin
+      if b>=128 then 
+	  begin
          // repetition packet
          stream.Read(color, 3);
          b:=(b and 127)+1;
-         while b>0 do begin
+         while b>0 do 
+		 begin
             PRGB24(destBuf)^:=color;
             Inc(destBuf, 3);
             Dec(b);
          end;
-      end else begin
+      end 
+	  else 
+	  begin
          n:=((b and 127)+1)*3;
          stream.Read(destBuf^, n);
          Inc(destBuf, n);
@@ -137,18 +137,23 @@ var
    b : Byte;
 begin
    bufEnd:=@destBuf[totalSize];
-   while destBuf<bufEnd do begin
+   while destBuf<bufEnd do 
+   begin
       stream.Read(b, 1);
-      if b>=128 then begin
+      if b>=128 then 
+	  begin
          // repetition packet
          stream.Read(color, 4);
          b:=(b and 127)+1;
-         while b>0 do begin
+         while b>0 do 
+		 begin
             PRGB32(destBuf)^:=color;
             Inc(destBuf, 4);
             Dec(b);
          end;
-      end else begin
+      end 
+	  else 
+	  begin
          n:=((b and 127)+1)*4;
          stream.Read(destBuf^, n);
          Inc(destBuf, n);

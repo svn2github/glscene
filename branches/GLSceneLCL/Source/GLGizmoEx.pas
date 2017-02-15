@@ -3,7 +3,7 @@
 //
 {
    Invisible component for helping to Move, Rotate and Scale an Object
-   under GLScene (usefull for an Editor).<p>
+   under GLScene (usefull for an Editor).
 
    This is an enhanced version of TGLGizmo, which was originally created and
    modified by Adirex, J.Delauney, Degiovani, Marcus Oblak and Da Stranger
@@ -501,7 +501,7 @@ type
 
     property GizmoThickness: Single read FGizmoThickness write SeTGLGizmoExThickness;
 
-    {: Indicates whether the gizmo is enabled or not.
+    { Indicates whether the gizmo is enabled or not.
        WARNING: When loading/editing (possibly whenever a structureChanged
        call is made) a model, sometimes the gizmo will trigger a
        bug if the mouse is inside the glscene Viewer. To prevent that,
@@ -509,11 +509,11 @@ type
        messages (i.e. application.processMessage) and then enable the gizmo
        again. }
 
-    {: Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
+    { Warning Enable is ReadOnly property if you set to False, Gizmo is not Hidden
       use Visible instead if you want to Hide, if you want to Hide but keep enabled
       see the VisibleGizmo property }
 
-    {: Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
+    { Use the property OperationMode=gomNone to unactivate gizmo and make it invisible}
     property Enabled: Boolean read FEnabled write FEnabled default True;
 
     property LabelFont: TGLCustomBitmapFont read FLabelFont write SetLabelFont default nil;

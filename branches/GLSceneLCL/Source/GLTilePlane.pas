@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements a tiled texture plane.<p>
+   Implements a tiled texture plane.
 
 	 History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -30,7 +30,7 @@ type
 
    // TGLTiledAreaRow
    //
-   {: Stores row information for a tiled area.<p> }
+   { Stores row information for a tiled area. }
    TGLTiledAreaRow = class (TPersistentObject)
 	   private
 			 
@@ -66,7 +66,7 @@ type
 
    // TGLTiledArea
    //
-   {: Stores tile information in a tiled area.<p>
+   { Stores tile information in a tiled area.
       Each tile stores an integer value with zero the default value,
       assumed as "empty". }
    TGLTiledArea = class (TPersistentObject)
@@ -107,7 +107,7 @@ type
 
    // TGLTilePlane
    //
-   {: A tiled textured plane.<p>
+   { A tiled textured plane.
       This plane object stores and displays texture tiles that composes it,
       and is optimized to minimize texture switches when rendering. 
       Its bounding dimensions are determined by its painted tile. }
@@ -137,9 +137,9 @@ type
                             ARenderSelf, ARenderChildren : Boolean); override;
          procedure BuildList(var rci : TRenderContextInfo); override;
 
-         //: Access to the TiledArea data
+         // Access to the TiledArea data
          property Tiles : TGLTiledArea read FTiles write SetTiles;
-         {: Controls the sorting of tiles by material.<p>
+         { Controls the sorting of tiles by material.
             This property should ideally be left always at its default, True,
             except for debugging and performance measurement, which is why
             it's only public and not published. }
@@ -148,9 +148,9 @@ type
 		published
 			 
 
-         {: If True the tiles are rendered without writing to the ZBuffer. }
+         { If True the tiles are rendered without writing to the ZBuffer. }
          property NoZWrite : Boolean read FNoZWrite write SetNoZWrite;
-         {: Material library where tiles materials will be stored/retrieved.<p>
+         { Material library where tiles materials will be stored/retrieved.
             The lower 16 bits of the tile integer value is understood as being
             the index of the tile's material in the library (material of
             index zero is thus unused). }

@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-  A sprite that uses a scrolling texture for animation.<p>
+  A sprite that uses a scrolling texture for animation.
 
    History :  
        16/03/11 - Yar - Fixes after emergence of GLMaterialEx
@@ -43,7 +43,7 @@ type
   TGLAnimatedSprite = class;
 
   // TSpriteAnimFrame
-  {: Used by the SpriteAnimation when Dimensions are set manual. The animation
+  { Used by the SpriteAnimation when Dimensions are set manual. The animation
      will use the offsets, width and height to determine the texture coodinates
      for this frame. }
   TSpriteAnimFrame = class(TGLXCollectionItem)
@@ -76,7 +76,7 @@ type
   end;
 
   // TSpriteAnimFrameList
-  {: The XCollection used for the TSpriteAnimFrame object. }
+  { The XCollection used for the TSpriteAnimFrame object. }
   TSpriteAnimFrameList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
@@ -85,13 +85,13 @@ type
   end;
 
   // TSpriteFrameDimensions
-  {: Determines if the texture coordinates are Automatically generated
+  { Determines if the texture coordinates are Automatically generated
      from the Animations properties or if they are Manually set through
      the Frames collection. }
   TSpriteFrameDimensions = (sfdAuto, sfdManual);
 
   // TSpriteAnimMargins
-  {: Used to mask the auto generated frames. The Left, Top, Right and
+  { Used to mask the auto generated frames. The Left, Top, Right and
      Bottom properties determines the number of pixels to be cropped
      from each corresponding side of the frame. Only applicable to
      auto dimensions. }
@@ -124,7 +124,7 @@ type
   end;
 
   // TSpriteAnimation
-  {: Animations define how the texture coordinates for each offset
+  { Animations define how the texture coordinates for each offset
      are to be determined. }
   TSpriteAnimation = class(TGLXCollectionItem, IGLMaterialLibrarySupported)
   private
@@ -166,42 +166,42 @@ type
     property LibMaterialCached: TGLLibMaterial read GetLibMaterialCached;
 
   published
-    //: The current showing frame for this animation.
+    // The current showing frame for this animation.
     property CurrentFrame: Integer read FCurrentFrame write SetCurrentFrame;
-    //: Defines the starting frame for auto dimension animations.
+    // Defines the starting frame for auto dimension animations.
     property StartFrame: Integer read FStartFrame write FStartFrame;
-    //: Defines the ending frame for auto dimension animations.
+    // Defines the ending frame for auto dimension animations.
     property EndFrame: Integer read FEndFrame write FEndFrame;
-    //: Width of each frame in an auto dimension animation.
+    // Width of each frame in an auto dimension animation.
     property FrameWidth: Integer read FFrameWidth write SetFrameWidth;
-    //: Height of each frame in an auto dimension animation.
+    // Height of each frame in an auto dimension animation.
     property FrameHeight: Integer read FFrameHeight write SetFrameHeight;
-    {: The name of the lib material the sprites associated material library
+    { The name of the lib material the sprites associated material library
        for this animation. }
     property LibMaterialName: TGLLibMaterialName read FLibMaterialName write
       SetLibMaterialName;
-    {: Manual dimension animation frames. Stores the offsets and dimensions
+    { Manual dimension animation frames. Stores the offsets and dimensions
        for each frame in the animation. }
     property Frames: TSpriteAnimFrameList read FFrames;
-    //: Automatic or manual texture coordinate generation.
+    // Automatic or manual texture coordinate generation.
     property Dimensions: TSpriteFrameDimensions read FDimensions write
       SetDimensions;
-    {: The number of milliseconds between each frame in the animation.
+    { The number of milliseconds between each frame in the animation.
        Will automatically calculate the FrameRate value when set.
        Will override the TGLAnimatedSprite Interval is greater than
        zero. }
     property Interval: Integer read FInterval write SetInterval;
-    {: The number of frames per second for the animation.
+    { The number of frames per second for the animation.
        Will automatically calculate the Interval value when set.
        Precision will depend on Interval since Interval has priority. }
     property FrameRate: Single read GetFrameRate write SetFrameRate;
-    //: Sets cropping margins for auto dimension animations.
+    // Sets cropping margins for auto dimension animations.
     property Margins: TSpriteAnimMargins read FMargins;
 
   end;
 
   // TSpriteAnimationList
-  {: A collection for storing TSpriteAnimation objects. }
+  { A collection for storing TSpriteAnimation objects. }
   TSpriteAnimationList = class(TGLXCollection)
   public
     constructor Create(aOwner: TPersistent); override;
@@ -210,7 +210,7 @@ type
   end;
 
   // TSpriteAnimationMode
-  {: Sets the current animation playback mode:  
+  { Sets the current animation playback mode:  
       samNone - No playback, the animation does not progress.
       samPlayOnce - Plays the animation once then switches to samNone.
       samLoop - Play the animation forward in a continuous loop.
@@ -224,7 +224,7 @@ type
     samBounceBackward, samLoopBackward);
 
   // TGLAnimatedSprite
-  {: An animated version of the TGLSprite using offset texture
+  { An animated version of the TGLSprite using offset texture
      coordinate animation. }
   TGLAnimatedSprite = class(TGLBaseSceneObject)
   private
@@ -265,39 +265,39 @@ type
     procedure BuildList(var rci: TRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    //: Steps the current animation to the next frame
+    // Steps the current animation to the next frame
     procedure NextFrame;
 
   published
-    {: A collection of animations. Stores the settings for animating
+    { A collection of animations. Stores the settings for animating
        then sprite. }
     property Animations: TSpriteAnimationList read FAnimations;
-    //: The material library that stores the lib materials for the animations.
+    // The material library that stores the lib materials for the animations.
     property MaterialLibrary: TGLMaterialLibrary read FMaterialLibrary write
       SetMaterialLibrary;
-    {: Sets the number of milliseconds between each frame. Will recalculate
+    { Sets the number of milliseconds between each frame. Will recalculate
        the Framerate when set. Will be overridden by the TSpriteAnimation
        Interval if it is greater than zero. }
     property Interval: Integer read FInterval write SetInterval;
-    //: Index of the sprite animation to be used.
+    // Index of the sprite animation to be used.
     property AnimationIndex: Integer read FAnimationIndex write
       SetAnimationIndex;
-    //: Playback mode for the current animation.
+    // Playback mode for the current animation.
     property AnimationMode: TSpriteAnimationMode read FAnimationMode write
       SetAnimationMode;
-    {: Used to automatically calculate the width and height of a sprite based
+    { Used to automatically calculate the width and height of a sprite based
        on the size of the frame it is showing. For example, if PixelRatio is
        set to 100 and the current animation frame is 100 pixels wide it will
        set the width of the sprite to 1. If the frame is 50 pixels widtdh the
        sprite will be 0.5 wide. }
     property PixelRatio: Integer read FPixelRatio write SetPixelRatio;
-    //: Rotates the sprite (in degrees).
+    // Rotates the sprite (in degrees).
     property Rotation: Integer read FRotation write SetRotation;
-    //: Mirror the generated texture coords in the U axis.
+    // Mirror the generated texture coords in the U axis.
     property MirrorU: Boolean read FMirrorU write SetMirrorU;
-    //: Mirror the generated texture coords in the V axis.
+    // Mirror the generated texture coords in the V axis.
     property MirrorV: Boolean read FMirrorV write SetMirrorV;
-    {: Sets the frames per second for the current animation. Automatically
+    { Sets the frames per second for the current animation. Automatically
        calculates the Interval. Precision will be restricted to the values
        of Interval since Interval takes priority. }
     property FrameRate: Single read GetFrameRate write SetFrameRate;
@@ -306,13 +306,13 @@ type
     property Scale;
     property Visible;
 
-    //: An event fired when the animation changes to it's next frame.
+    // An event fired when the animation changes to it's next frame.
     property OnFrameChanged: TNotifyEvent read FOnFrameChanged write
       FOnFrameChanged;
-    //: An event fired when the animation reaches the end frame.
+    // An event fired when the animation reaches the end frame.
     property OnEndFrameReached: TNotifyEvent read FOnEndFrameReached write
       FOnEndFrameReached;
-    //: An event fired when the animation reaches the start frame.
+    // An event fired when the animation reaches the start frame.
     property OnStartFrameReached: TNotifyEvent read FOnStartFrameReached write
       FOnStartFrameReached;
 

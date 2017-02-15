@@ -3,7 +3,7 @@
 //
 {
    Vector file object loading of Ghoul2 model and animation 
-   files into GLScene.<p>
+   files into GLScene.
 
 	 History : 
        24/03/07 - DaStr - Added explicit pointer dereferencing

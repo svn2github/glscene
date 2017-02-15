@@ -3,7 +3,7 @@
 //
 {
    Helper functions to convert between different three dimensional coordinate
-   systems. Room for optimisations.<p>
+   systems. Room for optimisations.
 
 	 History :  
        10/12/14 - PW - Renamed GeometryCoordinates unit to GLGeometryCoordinates
@@ -22,75 +22,75 @@ interface
 uses
   GLVectorGeometry;
 
-{: Convert cylindrical to cartesian [single]. theta in rad}
+{ Convert cylindrical to cartesian [single]. theta in rad}
 procedure Cylindrical_Cartesian(const r,theta,z1:single;var x,y,z:single);overload;
-{: Convert cylindrical to cartesian [double]. theta in rads}
+{ Convert cylindrical to cartesian [double]. theta in rads}
 procedure Cylindrical_Cartesian(const r,theta,z1:double;var x,y,z:double);overload;
-{: Convert cylindrical to cartesian [single] (with error check). theta in rad}
+{ Convert cylindrical to cartesian [single] (with error check). theta in rad}
 procedure Cylindrical_Cartesian(const r,theta,z1:single;var x,y,z:single;
   var ierr:integer);overload;
-{: Convert cylindrical to cartesian [double] (with error check). theta in rad}
+{ Convert cylindrical to cartesian [double] (with error check). theta in rad}
 procedure Cylindrical_Cartesian(const r,theta,z1:double;var x,y,z:double;
   var ierr:integer);overload;
 
-{: Convert cartesian to cylindrical [single]}
+{ Convert cartesian to cylindrical [single]}
 procedure Cartesian_Cylindrical(const x,y,z1:single; var r,theta,z:single);overload;
-{: Convert cartesion to cylindrical [double]}
+{ Convert cartesion to cylindrical [double]}
 procedure Cartesian_Cylindrical(const x,y,z1:double; var r,theta,z:double);overload;
 
-{: Convert spherical to cartesion. [single] theta,phi in rads}
+{ Convert spherical to cartesion. [single] theta,phi in rads}
 procedure Spherical_Cartesian(const r,theta,phi:single;var x,y,z:single);overload;
-{: Convert spherical to cartesion. [double] theta,phi in rads}
+{ Convert spherical to cartesion. [double] theta,phi in rads}
 procedure Spherical_Cartesian(const r,theta,phi:double;var x,y,z:double);overload;
-{: Convert spherical to cartesian [single] (with error check).theta,phi in rad}
+{ Convert spherical to cartesian [single] (with error check).theta,phi in rad}
 procedure Spherical_Cartesian(const r,theta,phi:single;var x,y,z:single;
   var ierr:integer);overload;
-{: Convert spherical to cartesian [double] (with error check).theta,phi in rad}
+{ Convert spherical to cartesian [double] (with error check).theta,phi in rad}
 procedure Spherical_Cartesian(const r,theta,phi:double;var x,y,z:double;
   var ierr:integer);overload;
 
-{: Convert cartesian to spherical [single]}
+{ Convert cartesian to spherical [single]}
 procedure Cartesian_Spherical(const x,y,z:single; var r,theta,phi:single);overload;
 procedure Cartesian_Spherical(const v : TAffineVector; var r, theta, phi : Single); overload;
-{: Convert cartesion to spherical [double]}
+{ Convert cartesion to spherical [double]}
 procedure Cartesian_Spherical(const x,y,z:double; var r,theta,phi:double);overload;
 
-{: Convert Prolate-Spheroidal to Cartesian. [single] eta, phi in rad}
+{ Convert Prolate-Spheroidal to Cartesian. [single] eta, phi in rad}
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single;
   var x,y,z:single);overload;
-{: Convert Prolate-Spheroidal to Cantesian. [double] eta,phi in rad}
+{ Convert Prolate-Spheroidal to Cantesian. [double] eta,phi in rad}
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double;
   var x,y,z:double);overload;
-{: Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
+{ Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
   var ierr:integer);overload;
-{: Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
+{ Convert Prolate-Spheroidal to Cartesian [single](with error check). eta,phi in rad}
 procedure ProlateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
   var ierr:integer);overload;
 
-{: Convert Oblate-Spheroidal to Cartesian. [Single] eta, phi in rad}
+{ Convert Oblate-Spheroidal to Cartesian. [Single] eta, phi in rad}
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single;
   var x,y,z:single);overload;
-{: Convert Oblate-Spheroidal to Cartesian. [Double] eta, phi in rad}
+{ Convert Oblate-Spheroidal to Cartesian. [Double] eta, phi in rad}
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double;
   var x,y,z:double);overload;
-{: Convert Oblate-Spheroidal to Cartesian (with error check). eta,phi in rad}
+{ Convert Oblate-Spheroidal to Cartesian (with error check). eta,phi in rad}
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:single; var x,y,z:single;
   var ierr:integer);overload;
-{: Convert Oblate-Spheroidal to Cartesian (with error check).[Double] eta,phi in rad}
+{ Convert Oblate-Spheroidal to Cartesian (with error check).[Double] eta,phi in rad}
 procedure OblateSpheroidal_Cartesian(const xi,eta,phi,a:double; var x,y,z:double;
   var ierr:integer);overload;
 
-{: Convert Bipolar to Cartesian. u in rad}
+{ Convert Bipolar to Cartesian. u in rad}
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single;
   var x,y,z:single);overload;
-{: Convert Bipolar to Cartesian. [Double] u in rad}
+{ Convert Bipolar to Cartesian. [Double] u in rad}
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double;
   var x,y,z:double);overload;
-{: Convert Bipolar to Cartesian (with error check). u in rad}
+{ Convert Bipolar to Cartesian (with error check). u in rad}
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:single; var x,y,z:single;
   var ierr:integer);overload;
-{: Convert Bipolar to Cartesian (with error check). [Double] u in rad}
+{ Convert Bipolar to Cartesian (with error check). [Double] u in rad}
 procedure BipolarCylindrical_Cartesian(const u,v,z1,a:double; var x,y,z:double;
   var ierr:integer);overload;
 

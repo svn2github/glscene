@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Stores contextual info useful during rendering methods.<p>
+   Stores contextual info useful during rendering methods.
 
   History :  
        23/08/10 - Yar - Removed modelViewMatrix, lightDisableCounter. Added PipelineTransformation.
@@ -35,7 +35,7 @@ type
 
   // TGLObjectsSorting
   //
-  {: Determines if objects are sorted, and how.<p>
+  { Determines if objects are sorted, and how.
      Sorting is done level by level (and not for all entities), values are : 
       osInherited : use inherited sorting mode, defaults to osRenderFarthestFirst
       osNone : do not sort objects.
@@ -52,7 +52,7 @@ type
 
   // TGLVisibilityCulling
   //
-  {: Determines the visibility culling mode.
+  { Determines the visibility culling mode.
      Culling is done level by level, allowed values are: 
       vcInherited : use inherited culling value, if selected for the root
         level, defaults to vcNone
@@ -82,7 +82,7 @@ type
 
   // TRenderContextInfo
   //
-  {: Stores contextual info useful during rendering methods. }
+  { Stores contextual info useful during rendering methods. }
   TRenderContextInfo = record
     scene: TObject; //usually TGLScene
     buffer: TObject; //usually TGLSceneBuffer

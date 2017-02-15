@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   Implements the standard Teapot, build from evaluators.<p>
+   Implements the standard Teapot, build from evaluators.
 
   History :  
        23/08/10 - Yar - Added OpenGLTokens to uses, replaced OpenGL1x functions to OpenGLAdapter
@@ -28,7 +28,7 @@ type
 
   // TGLTeapot
   //
-  {: The classic teapot.<p>
+  { The classic teapot.
      The only use of this object is as placeholder for testing... }
   TGLTeapot = class(TGLSceneObject)
   private
