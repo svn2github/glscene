@@ -211,7 +211,7 @@ type
     function GetLast: TObject;
     procedure SetLast(item: TObject);
 
-    //: Default event for ReadFromFiler
+    // Default event for ReadFromFiler
     procedure AfterObjectCreatedByReader(Sender: TObject); virtual;
     procedure DoClean;
 
@@ -502,7 +502,7 @@ begin
     Exit;
   end;
 
-  SetLength(Result, sLength); // create enough room
+  SetLength(Result, sLength); // creates enough room
 
   L := 1;
   T := 1;
@@ -546,7 +546,7 @@ end;
 // ------------------ TVirtualReader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TVirtualReader.Create(Stream: TStream);
@@ -593,7 +593,7 @@ end;
 // ------------------ TVirtualWriter ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TVirtualWriter.Create(Stream: TStream);
@@ -631,7 +631,7 @@ end;
 // ------------------ TPersistentObject ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TPersistentObject.Create;
@@ -648,7 +648,7 @@ begin
   ReadFromFiler(reader);
 end;
 
-// Destroy
+ 
 //
 
 destructor TPersistentObject.Destroy;
@@ -734,7 +734,7 @@ end;
 
 procedure TPersistentObject.RaiseFilerException(const archiveVersion: Integer);
 begin
-  raise EFilerException.Create(ClassName + strUnknownArchiveVersion + IntToStr(archiveVersion)); //:IGNORE
+  raise EFilerException.Create(ClassName + strUnknownArchiveVersion + IntToStr(archiveVersion)); //IGNORE
 end;
 
 // QueryInterface
@@ -831,7 +831,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TPersistentObject.LoadFromFile(const fileName: string; readerClass: TVirtualReaderClass = nil);
@@ -883,7 +883,7 @@ end;
 // ------------------ TPersistentObjectList ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TPersistentObjectList.Create;
@@ -892,7 +892,7 @@ begin
   FGrowthDelta := cDefaultListGrowthDelta;
 end;
 
-// Destroy
+ 
 //
 
 destructor TPersistentObjectList.Destroy;
@@ -2103,7 +2103,7 @@ end;
 // ------------------ TTextWriter ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TTextWriter.Create(aStream: TStream);
@@ -2111,7 +2111,7 @@ begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 
 destructor TTextWriter.Destroy;
@@ -2219,7 +2219,7 @@ end;
 // ------------------ TGLOwnedPersistent ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLOwnedPersistent.Create(AOwner: TPersistent);

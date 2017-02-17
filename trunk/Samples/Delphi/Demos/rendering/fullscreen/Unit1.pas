@@ -10,7 +10,7 @@ uses
   Vcl.Forms,
   Vcl.Controls,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLTeapot,

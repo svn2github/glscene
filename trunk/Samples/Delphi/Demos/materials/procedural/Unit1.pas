@@ -15,7 +15,7 @@ uses
   Vcl.Samples.Spin,
   Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLTexture,

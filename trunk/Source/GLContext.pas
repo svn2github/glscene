@@ -1152,7 +1152,7 @@ end;
 // ------------------ TGLContext ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLContext.Create;
@@ -1182,7 +1182,7 @@ begin
   FIsPraparationNeed := True;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLContext.Destroy;
@@ -1667,7 +1667,7 @@ end;
 // ------------------ TGLContextHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLContextHandle.Create;
@@ -1693,7 +1693,7 @@ begin
     raise EGLContext.Create('Auto-allocation failed');
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLContextHandle.Destroy;
@@ -3588,7 +3588,7 @@ end;
 // ------------------ TGLVertexShaderHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLVertexShaderHandle.Create;
@@ -3609,7 +3609,7 @@ end;
 // ------------------ TGLGeometryShaderHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLGeometryShaderHandle.Create;
@@ -3630,7 +3630,7 @@ end;
 // ------------------ TGLFragmentShaderHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLFragmentShaderHandle.Create;
@@ -3651,7 +3651,7 @@ end;
 // ------------------ TGLTessControlShaderHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTessControlShaderHandle.Create;
@@ -3672,7 +3672,7 @@ end;
 // ------------------ TGLTessEvaluationShaderHandle ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTessEvaluationShaderHandle.Create;
@@ -4177,7 +4177,7 @@ begin
   Assert(Result >= 0, Format(strUnknownParam, ['uniform block', aName, Name]));
 end;
 
-// Create
+ 
 //
 
 constructor TGLProgramHandle.Create;
@@ -4199,7 +4199,7 @@ begin
 end;
 {$ENDIF}
 
-// Create
+ 
 //
 
 constructor TGLContextManager.Create;
@@ -4213,7 +4213,7 @@ begin
   FList := TThreadList.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLContextManager.Destroy;

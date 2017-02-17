@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls,
   Vcl.StdCtrls,
-  //GLS
+  
   GLScene, GLObjects, GLCoordinates, GLCadencer,  GLVectorTypes,
   GLWin32Viewer, GLColor,  GLCrossPlatform, GLPhysX, GLKeyboard,
   GLBaseClasses, GLVectorGeometry, GLGeomObjects, GLGui, GLWindows;

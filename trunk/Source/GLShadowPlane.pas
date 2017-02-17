@@ -134,7 +134,7 @@ implementation
 // ------------------ TGLShadowPlane ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLShadowPlane.Create(AOwner: Tcomponent);
@@ -147,7 +147,7 @@ begin
   FShadowColor := TGLColor.CreateInitialized(Self, cDefaultShadowColor);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLShadowPlane.Destroy;

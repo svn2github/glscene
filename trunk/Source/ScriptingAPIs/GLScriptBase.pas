@@ -132,7 +132,7 @@ implementation
 // --------------- TGLScriptBase ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLScriptBase.Create(aOwner: TGLXCollection);
 begin
@@ -141,7 +141,7 @@ begin
   FErrors := TStringList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLScriptBase.Destroy;
 begin
@@ -246,7 +246,7 @@ end;
 // --------------- TGLScriptLibrary ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLScriptLibrary.Create(aOwner: TComponent);
 begin
@@ -254,7 +254,7 @@ begin
   FScripts := TGLScripts.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLScriptLibrary.Destroy;
 begin

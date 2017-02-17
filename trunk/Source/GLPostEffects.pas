@@ -19,7 +19,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLTexture,
@@ -119,7 +119,7 @@ type
     FPreset: TGLPostEffectPreset;
     FRenderBuffer: TGLPostEffectBuffer;
   protected
-    //: May be should be private...
+    // May be should be private...
     procedure MakeGrayEffect; virtual;
     procedure MakeNegativeEffect; virtual;
     procedure MakeDistortEffect; virtual;
@@ -133,9 +133,9 @@ type
     procedure Assign(Source: TPersistent); override;
   published
     property Preset: TGLPostEffectPreset read FPreset write FPreset default pepNone;
-    //: User creates this effect.
+    // User creates this effect.
     property OnCustomEffect: TGLOnCustomPostEffectEvent read FOnCustomEffect write FOnCustomEffect;
-    //: Publish some stuff from TGLBaseSCeneObject.
+    // Publish some stuff from TGLBaseSCeneObject.
     property Visible;
     property OnProgress;
   end;

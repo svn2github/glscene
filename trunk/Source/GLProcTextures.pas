@@ -202,7 +202,7 @@ begin
   Result := FNoiseMap;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLProcTextureNoise.FriendlyName: string;

@@ -18,7 +18,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLVectorTypes, GLVectorGeometry, GLVectorLists, GLPersistentClasses, GLUtils;
 
 type
@@ -169,14 +169,14 @@ end;
 // TDXFile
 // ----------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TDXFile.Create;
 begin
   FRootNode:=TDXNode.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TDXFile.Destroy;
 begin
@@ -589,7 +589,7 @@ end;
 // TDXMesh
 // ----------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TDXMesh.Create;
 begin
@@ -605,7 +605,7 @@ begin
   FMaterialList:=TDXMaterialList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TDXMesh.Destroy;
 begin
@@ -626,7 +626,7 @@ end;
 // TDXNode
 // ----------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TDXNode.Create;
 begin
@@ -667,7 +667,7 @@ end;
 // TDXFrame
 // ----------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TDXFrame.Create;
 begin

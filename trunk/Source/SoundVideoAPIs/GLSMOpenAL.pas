@@ -102,14 +102,14 @@ end;
 // ------------------ TGLSMOpenAL ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSMOpenAL.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
 end;
 
-// Destroy
+ 
 //
 destructor TGLSMOpenAL.Destroy;
 begin
@@ -239,7 +239,7 @@ begin
      // Clear any errors we may enter into procedure with
      ClearOpenALError;
 
-     // Create an OpenAL source object if needed, and put ID into aSource.ManagerTag
+     // Creates an OpenAL source object if needed, and put ID into aSource.ManagerTag
      if aSource.ManagerTag = 0 then begin
           alGenSources(1, PALuint(@aSource.managerTag));
           CheckOpenALError;

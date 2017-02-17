@@ -158,7 +158,7 @@ uses
 // ------------------ TGLTextureEmitter ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTextureEmitter.Create(aOwner: TComponent);
@@ -192,7 +192,7 @@ end;
 // ------------------ TGLTextureEmitterItem ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTextureEmitterItem.Create(ACollection: TCollection);
@@ -293,7 +293,7 @@ end;
 // ------------------ TGLProjectedTextures ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLProjectedTextures.Create(AOwner: TComponent);
@@ -303,7 +303,7 @@ begin
   FEmitters.FOwner := self;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLProjectedTextures.Destroy;

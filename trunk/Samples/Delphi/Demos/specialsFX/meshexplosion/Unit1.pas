@@ -14,7 +14,7 @@ uses
   Vcl.ComCtrls,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLScene, GLVectorFileObjects, GLWin32Viewer,
   GLCadencer, GLExplosionFx, GLFile3DS, GLCrossPlatform,
   GLCoordinates, GLUtils, GLBaseClasses;

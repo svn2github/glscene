@@ -126,7 +126,7 @@ implementation
 // ------------------ TFileMD2 ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TFileMD2.Create;
 begin
@@ -135,7 +135,7 @@ begin
   FrameNames := TStringList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TFileMD2.Destroy;
 begin

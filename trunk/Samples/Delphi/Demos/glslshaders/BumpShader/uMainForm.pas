@@ -6,36 +6,36 @@ uses
   System.SysUtils,
   System.Classes,
   System.Math,
-  Vcl.Graphics,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
 
-  // GLS
+  
   GLTexture,
   GLCadencer,
-  GLWin32Viewer, GLScene, GLObjects, GLPolyhedron,
-  GLVectorFileObjects, GLGraph,
-  GLGeomObjects, GLVectorGeometry,
+  GLWin32Viewer,
+  GLScene,
+  GLObjects,
+  GLPolyhedron,
+  GLVectorFileObjects,
+  GLGraph,
+  GLGeomObjects,
+  GLVectorGeometry,
   GLSLBumpShader,
   GLCustomShader,
   GLSLShader,
-  GLCrossPlatform,
   GLMaterial,
   GLCoordinates,
   GLBaseClasses,
   GLUtils,
-
-
-  // FileFormats
-  GLFileTGA,
   GLFileMS3D,
   GLFile3DS,
   DDSImage,
   GLFileMD2,
-  GLFileSMD;
+  GLFileSMD,
+  GLCrossPlatform;
 
 type
   TGLSLTestForm = class(TForm)
@@ -85,11 +85,6 @@ type
     procedure UseSpecularTextureCheckBoxClick(Sender: TObject);
     procedure UseNormalTextureCheckBoxClick(Sender: TObject);
     procedure ShowNotGLSceneObjectsCheckBoxClick(Sender: TObject);
-  private
-     
-
-  public
-     
   end;
 
 var

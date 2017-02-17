@@ -72,7 +72,7 @@ type
    end;
 
 
-//: Invokes the editor for the given TGLTextureImage
+// Invokes the editor for the given TGLTextureImage
 function EditGLTextureImage(aTexImage : TGLTextureImage) : Boolean;
 procedure RegisterGLTextureImageEditor(aTexImageClass : TGLTextureImageClass;
                                        texImageEditor : TGLTextureImageEditorClass);

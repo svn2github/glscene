@@ -27,7 +27,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLMaterial,
@@ -318,7 +318,7 @@ implementation
 // TGLTreeLeaves
 // -----------------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLTreeLeaves.Create(AOwner: TGLTree);
 begin
@@ -329,7 +329,7 @@ begin
   FTexCoords := TAffineVectorList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTreeLeaves.Destroy;
 begin
@@ -428,7 +428,7 @@ end;
 // TGLTreeBranch
 // -----------------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLTreeBranch.Create(AOwner: TGLTreeBranches;
   AParent: TGLTreeBranch);
@@ -453,7 +453,7 @@ begin
     FParentID := -1;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTreeBranch.Destroy;
 begin
@@ -678,7 +678,7 @@ end;
 // TGLTreeBranches
 // -----------------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLTreeBranches.Create(AOwner: TGLTree);
 begin
@@ -694,7 +694,7 @@ begin
   FCount := 0;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTreeBranches.Destroy;
 begin
@@ -799,14 +799,14 @@ end;
 // TGLTreeBranchNoise
 // -----------------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLTreeBranchNoise.Create;
 begin
   FBranchNoise := Random;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTreeBranchNoise.Destroy;
 begin
@@ -844,7 +844,7 @@ end;
 // TGLTree
 // -----------------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLTree.Create(AOwner: TComponent);
 begin
@@ -871,7 +871,7 @@ begin
   FNoise := TGLTreeBranchNoise.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTree.Destroy;
 begin
@@ -1425,7 +1425,7 @@ begin
   StrList.Free;
 end;
 
-// LoadFromFile
+ 
 //
 procedure TGLTree.LoadFromFile(aFileName: String);
 var

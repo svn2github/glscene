@@ -4337,7 +4337,7 @@ begin
             // begin search for MESH_MAT_GROUP and SMOOTH_GROUP
             FaceArrayChunk := Current;
 
-            // create a list of all mesh mat groups
+            // creates a list of all mesh mat groups
             DataChunk := FindChunk(FaceArrayChunk, MSH_MAT_GROUP);
             if Assigned(DataChunk) then
             begin

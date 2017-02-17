@@ -16,7 +16,7 @@ uses
   Vcl.Forms, 
   Vcl.Dialogs, 
   Vcl.Imaging.Jpeg,
-  //GLS
+  
   GLScene, 
   GLCadencer, 
   GLObjects, 

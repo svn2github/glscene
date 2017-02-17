@@ -6,7 +6,7 @@ uses
   Winapi.Windows,
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  //GLS
+  
   GLScene, GLObjects, GLCoordinates, GLCadencer, GLNGDManager,
   GLSimpleNavigation, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
   GLVectorFileObjects, GLGeomObjects, GLHUDObjects,

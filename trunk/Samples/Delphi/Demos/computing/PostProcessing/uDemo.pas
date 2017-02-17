@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls,
 
-  // GLS
+  
   GLScene, GLTeapot, GLCoordinates, GLObjects, GLGeomObjects,
   GLMaterial, GLSimpleNavigation, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLFBORenderer, GLHUDObjects, GLSCUDA, GLSCUDAGraphics,

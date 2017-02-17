@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Forms,
 
-  //GLS
+  
   GLScene, GLObjects, GLCadencer, GLVectorFileObjects,
   StdCtrls,  Graphics,  GLSkydome, GLWin32Viewer, GLNavigator,
   GLFileMD2, GLFile3DS, GLGeomObjects, GLCrossPlatform,

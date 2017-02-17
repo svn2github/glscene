@@ -16,7 +16,7 @@ uses
   Vcl.ExtDlgs,
   Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLTexture,

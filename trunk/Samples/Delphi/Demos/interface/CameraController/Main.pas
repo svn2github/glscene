@@ -16,7 +16,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ComCtrls,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLWin32Viewer,

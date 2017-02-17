@@ -806,7 +806,7 @@ begin
       triangleEdges.Count:=triangleIndices.Count;
    if Assigned(edgesTriangles) then
       edgesTriangles.Count:=0;
-   // Create Hash
+   // Creates Hash
    k:=(triangleIndices.Count div (cEdgesHashMax+1))+128;
    for j:=0 to High(edgesHash) do begin
       edgesHash[j]:=TIntegerList.Create;
@@ -849,7 +849,7 @@ begin
          end;
       end;
    end;
-   // Destroy Hash
+   // remove Hash
    for j:=0 to High(edgesHash) do
       edgesHash[j].Free;
 end;

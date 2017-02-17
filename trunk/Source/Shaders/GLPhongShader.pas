@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLTexture, GLVectorGeometry, GLVectorLists, OpenGLTokens, GLContext,
   GLAsmShader, GLRenderContextInfo, GLCustomShader, GLState;
 
@@ -119,7 +119,7 @@ begin
   end;
 end;
 
-// Create
+ 
 //
 constructor TGLPhongShader.Create(AOwner: TComponent);
 begin

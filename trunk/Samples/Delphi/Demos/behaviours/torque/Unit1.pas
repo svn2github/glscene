@@ -12,7 +12,7 @@ uses
   Vcl.Controls,
   Vcl.Dialogs,
   Vcl.Imaging.jpeg,
-  // GLS
+  
   GLObjects,
   GLScene,
   GLCadencer,

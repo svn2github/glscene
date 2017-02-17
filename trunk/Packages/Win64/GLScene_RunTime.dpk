@@ -74,7 +74,7 @@ contains
   GLConsole in '..\..\Source\GLConsole.pas',
   GLContext in '..\..\Source\GLContext.pas',
   GLContouring in '..\..\Source\GLContouring.pas',
-  GLCoordinates in '..\..\Source\GLCoordinates.pas',
+  GLCoordinates in '..\..\Source\Basis\GLCoordinates.pas',
   GLCrossPlatform in '..\..\Source\GLCrossPlatform.pas',
   GLCurvesAndSurfaces in '..\..\Source\GLCurvesAndSurfaces.pas',
   GLCustomShader in '..\..\Source\Shaders\GLCustomShader.pas',

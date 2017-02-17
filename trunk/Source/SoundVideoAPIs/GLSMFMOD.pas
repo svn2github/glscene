@@ -100,7 +100,7 @@ end;
 // ------------------ TGLSMFMOD ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSMFMOD.Create(AOwner : TComponent);
 begin
@@ -108,7 +108,7 @@ begin
    MaxChannels:=32;
 end;
 
-// Destroy
+ 
 //
 destructor TGLSMFMOD.Destroy;
 begin

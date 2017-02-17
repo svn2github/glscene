@@ -1811,7 +1811,7 @@ var
 
   //Filter object functions
 
-  // Create Filter objects.
+  // Creates Filter objects.
   ALGENFILTERS: procedure( n: TALsizei; filters: PALuint ); cdecl;
 
   // Delete Filter objects.
@@ -1838,7 +1838,7 @@ var
 
   // Auxiliary Slot object functions
 
-  // Create Auxiliary Slot objects.
+  // Creates Auxiliary Slot objects.
   ALGENAUXILIARYEFFECTSLOTS: procedure( n: TALsizei; slots: PALuint ); cdecl;
 
   // Delete Auxiliary Slot objects.

@@ -16,7 +16,7 @@
 
    History :  
      11/02/01 - EG - Creation
-     The whole history is logged in previous version of the unit.
+     The whole history is logged in previous version of the unit
 
 }
 unit GLHeightData;
@@ -30,9 +30,14 @@ uses
   System.Classes,
   System.SysUtils,
   System.Types,
+  Vcl.Graphics,
 
-  GLApplicationFileIO, GLUtils,
-  GLVectorGeometry, GLCrossPlatform, GLMaterial, GLBaseClasses;
+  GLApplicationFileIO,
+  GLUtils,
+  GLVectorGeometry,
+  GLCrossPlatform,
+  GLMaterial,
+  GLBaseClasses;
 
 type
   TByteArray = array [0 .. MaxInt div (2 * SizeOf(Byte))] of Byte;
@@ -437,9 +442,7 @@ type
 
   end;
 
-  // TGLBitmapHDS
-  //
-  {  Bitmap-based Height Data Source. 
+  {  Bitmap-based Height Data Source.
     The image is automatically wrapped if requested data is out of picture Size,
     or if requested data is larger than the picture. 
     The internal format is an 8 bit bitmap whose dimensions are a power of two,
@@ -449,14 +452,14 @@ type
   private
      
     FScanLineCache: array of PByteArray;
-    FBitmap: TGLBitmap;
-    FPicture: TGLPicture;
+    FBitmap: TBitmap;
+    FPicture: TPicture;
     FInfiniteWrap: boolean;
     FInverted: boolean;
 
   protected
     
-    procedure SetPicture(const Val: TGLPicture);
+    procedure SetPicture(const Val: TPicture);
     procedure OnPictureChanged(sender: TObject);
     procedure SetInfiniteWrap(Val: boolean);
     procedure SetInverted(Val: boolean);
@@ -480,7 +483,7 @@ type
       The picture is (if not already) internally converted to a 8 bit
       bitmap (grayscale). For better performance and to save memory,
       feed it this format! }
-    property Picture: TGLPicture read FPicture write SetPicture;
+    property Picture: TPicture read FPicture write SetPicture;
     {  If true the height field is wrapped indefinetely. }
     property InfiniteWrap: boolean read FInfiniteWrap write SetInfiniteWrap
       default True;
@@ -706,7 +709,7 @@ end;
 // ------------------ TGLHeightDataSource ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLHeightDataSource.Create(AOwner: TComponent);
 var
@@ -725,7 +728,7 @@ begin
     FThread.Start;
 end;
 
-// Destroy
+ 
 //
 destructor TGLHeightDataSource.Destroy;
 var
@@ -1176,7 +1179,7 @@ end;
 // ------------------ TGLHeightData ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLHeightData.Create(AOwner: TGLHeightDataSource;
   aXLeft, aYTop, aSize: Integer; aDataType: TGLHeightDataType);
@@ -1199,7 +1202,7 @@ begin
   DontUse := False;
 end;
 
-// Destroy
+ 
 //
 destructor TGLHeightData.Destroy;
 begin
@@ -1773,7 +1776,7 @@ end;
 // ------------------ TGLHeightDataThread ------------------
 // ------------------
 
-// Destroy
+ 
 //
 destructor TGLHeightDataThread.Destroy;
 begin
@@ -1786,18 +1789,18 @@ end;
 // ------------------ TGLBitmapHDS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLBitmapHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  FPicture := TGLPicture.Create;
+  FPicture := TPicture.Create;
   FPicture.OnChange := OnPictureChanged;
   FInfiniteWrap := True;
   FInverted := True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLBitmapHDS.Destroy;
 begin
@@ -1808,7 +1811,7 @@ end;
 
 // SetPicture
 //
-procedure TGLBitmapHDS.SetPicture(const Val: TGLPicture);
+procedure TGLBitmapHDS.SetPicture(const Val: TPicture);
 begin
   FPicture.Assign(Val);
 end;
@@ -1880,7 +1883,7 @@ var
   hPal: HPalette;
 begin
   size := RoundUpToPowerOf2(size);
-  FBitmap := TGLBitmap.Create;
+  FBitmap := TBitmap.Create;
   FBitmap.PixelFormat := glpf8bit;
   FBitmap.Width := size;
   FBitmap.Height := size;
@@ -2007,14 +2010,14 @@ end;
 // ------------------ TGLCustomHDS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLCustomHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-// Destroy
+ 
 //
 destructor TGLCustomHDS.Destroy;
 begin
@@ -2044,14 +2047,14 @@ end;
 // ------------------ TGLTerrainBaseHDS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTerrainBaseHDS.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 end;
 
-// Destroy
+ 
 //
 destructor TGLTerrainBaseHDS.Destroy;
 begin
@@ -2113,7 +2116,7 @@ begin
   FActive := True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLHeightDataSourceFilter.Destroy;
 begin

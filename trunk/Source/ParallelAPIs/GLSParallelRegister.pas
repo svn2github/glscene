@@ -182,7 +182,7 @@ begin
     info := CUDACompiler.ModuleInfo;
     parent := TCUDAModule(info.Owner);
 
-    // Create kernel's functions
+    // Creates kernel's functions
     for I := 0 to High(info.Func) do
     begin
       func := parent.KernelFunction[info.Func[I].KernelName];
@@ -196,7 +196,7 @@ begin
       end
       else
       begin
-        // destroy old parameters
+        // for old parameters
         while func.ItemsCount > 0 do
           func.Items[0].Destroy;
       end;
@@ -216,7 +216,7 @@ begin
         CreateFuncParams;
     end;
 
-    // Create kernel's textures
+    // Creates kernel's textures
     for I := 0 to High(info.TexRef) do
     begin
       tex := parent.KernelTexture[info.TexRef[I].Name];
@@ -244,7 +244,7 @@ begin
         Designer.DeleteSelection(True);
       end;
     end;
-    // Create kernel's constants
+    // Creates kernel's constants
     for I := 0 to High(info.Constant) do
     begin
       cnst := parent.KernelConstant[info.Constant[I].Name];
@@ -320,7 +320,7 @@ begin
   FModuleList := TStringList.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSCUDACompilerSourceProperty.Destroy;

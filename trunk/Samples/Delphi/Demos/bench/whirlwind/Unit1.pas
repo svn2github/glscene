@@ -15,7 +15,7 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLCrossPlatform,
   GLBaseClasses,
   GLScene,

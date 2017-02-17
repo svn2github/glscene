@@ -584,8 +584,8 @@ const
   SDL_HWPALETTE = $20000000; // Surface has exclusive palette
   SDL_DOUBLEBUF = $40000000; // Set up double-buffered video mode
   SDL_FULLSCREEN = $80000000; // Surface is a full screen display
-  SDL_OPENGL = $00000002; // Create an OpenGL rendering context
-  SDL_OPENGLBLIT = $00000002; // Create an OpenGL rendering context
+  SDL_OPENGL = $00000002; // Creates an OpenGL rendering context
+  SDL_OPENGLBLIT = $00000002; // Creates an OpenGL rendering context
   SDL_RESIZABLE = $00000010; // This video mode may be resized
   SDL_NOFRAME = $00000020; // No window caption or edge frame
   // Used internally (read-only)

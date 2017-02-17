@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Imaging.Jpeg,
 
-  // GLS
+  
   GLScene, GLVectorFileObjects, GLObjects, GLTexture, GLVectorLists, GLCadencer,
   GLWin32Viewer, GLSimpleNavigation, GLPostEffects, GLCrossPlatform,
   GLMeshUtils, GLVectorGeometry, GLMaterial, GLCoordinates, GLBaseClasses,

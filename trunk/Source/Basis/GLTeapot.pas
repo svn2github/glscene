@@ -55,7 +55,7 @@ implementation
 // ------------------ TGLTeapot ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTeapot.Create(AOwner: TComponent);

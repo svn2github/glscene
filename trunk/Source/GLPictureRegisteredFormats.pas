@@ -12,7 +12,7 @@ interface
 
 uses
   System.Classes,
-  VCL.Graphics,
+  Vcl.Graphics,
   GLCrossPlatform;
 
 {$DEFINE PRF_HACK_PASSES}
@@ -33,11 +33,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
-
-type
-  PInteger = ^integer;
-
-// GraphicClassForExtension
 
 function GraphicClassForExtension(const anExtension: string): TGraphicClass;
 var
@@ -73,7 +68,6 @@ type
     DescResID: integer;
   end;
 
-// HackTPictureRegisteredFormats
 {$ifopt R+}
   {$define HackTPictureRegisteredFormats_Disable_RangeCheck}
   {$R-}

@@ -308,7 +308,7 @@ end;
 // ---------- TdwsClassesUnit ----------
 // ----------
 
-// Create
+ 
 //
 constructor TdwsClassesUnit.Create(AOwner: TComponent);
 begin

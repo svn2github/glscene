@@ -104,7 +104,7 @@ type
   // ------------------ TGLO3TCImage ------------------
   // ------------------
 
-  // LoadFromFile
+   
   //
 
 procedure TGLO3TCImage.LoadFromFile(const filename: string);

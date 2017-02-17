@@ -17,7 +17,7 @@ uses
   Vcl.Imaging.GIFImg,
   Vcl.Imaging.Jpeg,
 
-  // GLS
+  
   GLScene,
   GLObjects,
   GLTerrainRenderer,

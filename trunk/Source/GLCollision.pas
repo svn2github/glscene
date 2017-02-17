@@ -609,7 +609,7 @@ end;
 // ------------------ TCollisionManager ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLCollisionManager.Create(AOwner: TComponent);
 begin
@@ -618,7 +618,7 @@ begin
    RegisterManager(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLCollisionManager.Destroy;
 begin
@@ -823,7 +823,7 @@ end;
 // ------------------ TGLBCollision ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLBCollision.Create(aOwner : TGLXCollection);
 begin
@@ -831,7 +831,7 @@ begin
 
 end;
 
-// Destroy
+ 
 //
 destructor TGLBCollision.Destroy;
 begin
@@ -839,7 +839,7 @@ begin
    inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLBCollision.FriendlyName : String;
 begin

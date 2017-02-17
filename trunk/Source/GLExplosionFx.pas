@@ -96,7 +96,7 @@ implementation
 
 { TGLBExplosionFx }
 
-// Create
+ 
 //
 constructor TGLBExplosionFx.Create(aOwner: TGLXCollection);
 begin
@@ -108,7 +108,7 @@ begin
   FDirection := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csPoint);
 end;
 
-// Destroy
+ 
 //
 destructor TGLBExplosionFX.Destroy;
 begin
@@ -121,7 +121,7 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLBExplosionFX.FriendlyName: string;
 begin

@@ -14,7 +14,7 @@ uses
   Vcl.StdCtrls,
   Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLVectorGeometry, GLWin32Viewer, GLScene, GLHUDObjects, GLParticleFX,
   GLVectorFileObjects, GLVectorTypes, GLObjects, GLBitmapFont,
   GLUtils,GLCadencer,  GLTexture, GLNavigator,

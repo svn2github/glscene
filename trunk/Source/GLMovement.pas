@@ -22,7 +22,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,

@@ -231,7 +231,7 @@ end;
 // ------------------ TGLFullScreenViewer ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLFullScreenViewer.Create(AOwner: TComponent);
 begin
@@ -244,7 +244,7 @@ begin
   Buffer.ViewerBeforeRender := DoBeforeRender;
 end;
 
-// Destroy
+ 
 //
 destructor TGLFullScreenViewer.Destroy;
 begin

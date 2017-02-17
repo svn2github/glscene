@@ -16,7 +16,7 @@ uses
   Vcl.ComCtrls,
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
-  // GLS
+  
   GLScene,
   GLObjects,
   GLParticles,

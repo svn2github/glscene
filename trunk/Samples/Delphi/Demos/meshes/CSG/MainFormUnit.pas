@@ -14,7 +14,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
 
-  //GLS
+  
   GLScene,
   GLVectorFileObjects,
   GLBSP,

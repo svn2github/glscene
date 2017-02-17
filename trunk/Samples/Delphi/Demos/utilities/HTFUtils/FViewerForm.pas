@@ -10,7 +10,7 @@ uses
   Vcl.ToolWin, Vcl.Menus,
   //GR32
   GR32_Image, GR32,
-  //GLS
+  
   GLHeightTileFile, GLVectorGeometry, GLUtils;
 
 type

@@ -113,7 +113,7 @@ end;
 // ------------------ TGLSMBASS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSMBASS.Create(AOwner : TComponent);
 begin
@@ -122,7 +122,7 @@ begin
    MaxChannels:=32;
 end;
 
-// Destroy
+ 
 //
 destructor TGLSMBASS.Destroy;
 begin

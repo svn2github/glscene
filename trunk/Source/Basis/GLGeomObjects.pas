@@ -1592,7 +1592,7 @@ end;
 // ------------------ TGLAnnulus ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLAnnulus.Create(AOwner: TComponent);
@@ -1903,7 +1903,7 @@ end;
 // ------------------ TGLTorus ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTorus.Create(AOwner: TComponent);
@@ -2334,7 +2334,7 @@ end;
 // ------------------ TGLArrowLine ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLArrowLine.Create(AOwner: TComponent);
@@ -2455,7 +2455,7 @@ begin
   end;
   cylHeight := Height;
   cylOffset := -FHeight * 0.5;
-  // create a new quadric
+  // creates a new quadric
   quadric := gluNewQuadric;
   SetupQuadricParams(quadric);
   // does the top arrow part - the cone
@@ -2542,7 +2542,7 @@ end;
 // ------------------ TGLArrowArc ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLArrowArc.Create(AOwner: TComponent);
@@ -3476,7 +3476,7 @@ end;
 // ------------------ TGLPolygon ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPolygon.Create(AOwner: TComponent);
@@ -3485,7 +3485,7 @@ begin
   FParts := [ppTop, ppBottom];
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPolygon.Destroy;

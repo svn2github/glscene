@@ -849,7 +849,7 @@ const
     (MAX, MAX, MIN), // Bottom right corner
     (MAX, MIN, MIN));
 
-  // Destroy
+   
   //
 destructor TGLOctree.Destroy;
 begin
@@ -1000,10 +1000,10 @@ begin
   if Level < MaxOlevel then
   begin
     for N := 0 to 7 do
-    begin // Create 8 new children under this parent.
+    begin // Creates 8 new children under this parent.
       Inc(NodeCount);
       New(Newnode);
-      Pwork[N] := Newnode; // Create work pointers for the next for loop.
+      Pwork[N] := Newnode; // Creates work pointers for the next for loop.
 
       // Generate new extents based on parent's extents
       Newnode^.MinExtent := GetExtent(FlagMin[N], ParentNode);
@@ -1395,7 +1395,7 @@ begin
       P2 := @Trianglefiler.List[K + 1];
       P3 := @Trianglefiler.List[K + 2];
 
-      // Create the normal for this triangle
+      // Creates the normal for this triangle
       PNormal := CalcPlaneNormal(P1^, P2^, P3^);
 
       // Ignore backfacing planes

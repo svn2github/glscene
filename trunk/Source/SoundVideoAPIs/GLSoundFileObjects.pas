@@ -172,7 +172,7 @@ end;
 // ------------------ TGLSoundSampling ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSoundSampling.Create(AOwner: TPersistent);
 begin
@@ -183,7 +183,7 @@ begin
    FBitsPerSample:=8;
 end;
 
-// Destroy
+ 
 //
 destructor TGLSoundSampling.Destroy;
 begin
@@ -239,7 +239,7 @@ end;
 // ------------------ TGLSoundFile ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSoundFile.Create(AOwner: TPersistent);
 begin
@@ -247,7 +247,7 @@ begin
    FSampling:=TGLSoundSampling.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLSoundFile.Destroy;
 begin
@@ -292,7 +292,7 @@ end;
 // ------------------ TGLSoundFileFormatsList ------------------
 // ------------------
 
-// Destroy
+ 
 //
 destructor TGLSoundFileFormatsList.Destroy;
 var

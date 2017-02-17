@@ -132,7 +132,7 @@ end;
 // ------------------ TGLSDLViewer ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSDLViewer.Create(AOwner: TComponent);
@@ -142,7 +142,7 @@ begin
   Height := 480;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSDLViewer.Destroy;
@@ -268,7 +268,7 @@ end;
 // ------------------ TGLSDLContext ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSDLContext.Create;
@@ -277,7 +277,7 @@ begin
   FSDLWin := TGLSDLWindow.Create(nil);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSDLContext.Destroy;

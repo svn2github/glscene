@@ -8,7 +8,7 @@ uses
   Vcl.Controls,
   Vcl.Dialogs,
   Vcl.Forms,
-  // GLS
+  
   GLScene,
   GLObjects,
   GLTexture,

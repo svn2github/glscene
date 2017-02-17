@@ -15,7 +15,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
   Vcl.StdCtrls,
-  // GLS
+  
   GLScene, GLObjects, GLKeyboard, GLTerrainRenderer, GLHeightData,
   GLCadencer, GLTexture, GLSkydome, GLWin32Viewer, GLVectorGeometry,
   GLLensFlare, GLBumpmapHDS, GLTexCombineShader, GLMaterial, GLCoordinates,

@@ -101,7 +101,7 @@ begin
   FDither := False;
 end;
 
-// LoadFromFile
+ 
 
 procedure TGLJPEGImage.LoadFromFile(const filename: string);
 var

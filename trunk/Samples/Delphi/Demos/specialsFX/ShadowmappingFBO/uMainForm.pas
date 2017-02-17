@@ -15,7 +15,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLScene, GLContext, GLObjects, GLHUDObjects, GLMaterial, GLTexture,
   GLWin32Viewer, GLGeomObjects, GLFBORenderer, GLCadencer, GLCustomShader,
   GLSLShader, GLVectorGeometry, GLPolyhedron, GLCoordinates, GLCrossPlatform,

@@ -12,10 +12,8 @@ uses
   CheckLst,
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
-  Vcl.Imaging.Jpeg,
   Vcl.ComCtrls,
 
-  // GLS
   GLTexture,
   GLCadencer,
   GLWin32Viewer,
@@ -33,14 +31,8 @@ uses
   GLCrossPlatform,
   GLMaterial,
   GLBaseClasses,
-
-  // GLSL shaders
   GLSLPostShaders,
-  //nVidia CG Shader
   GLcgPostTransformationShader,
-
-  // FileFormats
-  GLFileTGA,
   GLFileMD2,
   GLFileMS3D,
   GLFile3DS;
@@ -136,11 +128,6 @@ type
     procedure tbTroubleWidthChange(Sender: TObject);
     procedure tbTroubleHeightChange(Sender: TObject);
     procedure tbTroubleFreqChange(Sender: TObject);
-  private
-     
-
-  public
-     
   end;
 
 var

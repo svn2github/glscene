@@ -15,7 +15,7 @@ uses
   Vcl.Dialogs,
   Vcl.Imaging.Jpeg, 
   Vcl.ExtCtrls,
-  //GLS
+  
   OpenGLTokens, 
   GLWin32Viewer, 
   GLCadencer, 

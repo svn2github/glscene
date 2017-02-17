@@ -3,7 +3,6 @@
 //
 {  
    CUDA context  
-   History : see the previous version of the unit
 }
 
 unit GLSCUDAContext;
@@ -24,9 +23,6 @@ uses
   GLSCUDAApi;
 
 type
-
-  // TCUDADimensions
-  //
 
   TCUDADimensions = class(TGLUpdateAbleObject)
   private
@@ -165,9 +161,6 @@ type
   TCUDADeviceList = GList<TCUDADevice>;
   TCUDAContextList = GList<TCUDAContext>;
 
-  // CUDAContextManager
-  //
-
   {  Static class of CUDA contexts manager. }
 
   CUDAContextManager = class
@@ -228,8 +221,6 @@ threadvar
 // ------------------
 // ------------------ TCUDADimensions ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TCUDADimensions'}{$ENDIF}
 
 constructor TCUDADimensions.Create(AOwner: TPersistent);
 const
@@ -297,14 +288,10 @@ begin
     end;
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 // ------------------
 // ------------------ TCUDADevice ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TCUDAdevice'}{$ENDIF}
-// Create
-//
 
 constructor TCUDADevice.Create;
 begin
@@ -352,18 +339,12 @@ begin
   end;
 end;
 
-// Destroy
-//
-
 destructor TCUDADevice.Destroy;
 begin
   fMaxThreadsDim.Destroy;
   fMaxGridSize.Destroy;
   inherited;
 end;
-
-// Assign
-//
 
 procedure TCUDADevice.Assign(Source: TPersistent);
 var
@@ -383,16 +364,10 @@ begin
   inherited Assign(Source);
 end;
 
-// GetName
-//
-
 function TCUDADevice.GetName: string;
 begin
   Result := Format('%s (%d)', [string(fDeviceProperties.name), fID + 1]);
 end;
-
-// TotalMemory
-//
 
 function TCUDADevice.TotalMemory: Cardinal;
 begin
@@ -400,14 +375,9 @@ begin
   Result := fDeviceProperties.TotalGlobalMem;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TGLSCUDADevice ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TGLSCUDADevice'}{$ENDIF}
-// Create
-//
 
 constructor TGLSCUDADevice.Create(AOwner: TComponent);
 var
@@ -464,14 +434,10 @@ begin
     CUDAContextManager.CreateContextOf(Self.Device);
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+
 // ------------------
 // ------------------ TCUDAContextManager ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TCUDAcontextManager'}{$ENDIF}
-// Init
-//
 
 class procedure CUDAContextManager.Init;
 var
@@ -493,9 +459,6 @@ begin
       fDeviceList.Add(TCUDADevice.Create);
   end;
 end;
-
-// Done
-//
 
 class procedure CUDAContextManager.Done;
 var
@@ -521,9 +484,6 @@ begin
   CloseCUDA;
 end;
 
-// RegisterContext
-//
-
 class procedure CUDAContextManager.RegisterContext(aContext: TCUDAContext);
 begin
   if fContextList.IndexOf(aContext) >= 0 then
@@ -534,9 +494,6 @@ begin
   else
     fContextList.Add(aContext);
 end;
-
-// UnRegisterContext
-//
 
 class procedure CUDAContextManager.UnRegisterContext(aContext: TCUDAContext);
 begin
@@ -551,24 +508,15 @@ begin
   end;
 end;
 
-// ContextCount
-//
-
 class function CUDAContextManager.ContextCount: Integer;
 begin
   Result := fContextList.Count;
 end;
 
-// DeviceCount
-//
-
 class function CUDAContextManager.DeviceCount: Integer;
 begin
   Result := fDeviceList.Count;
 end;
-
-// GetDevice
-//
 
 class function CUDAContextManager.GetDevice(i: Integer): TCUDADevice;
 begin
@@ -577,18 +525,12 @@ begin
     Result := fDeviceList[i];
 end;
 
-// GetContext
-//
-
 class function CUDAContextManager.GetContext(i: Integer): TCUDAContext;
 begin
   Result := nil;
   if i < fContextList.Count then
     Result := fContextList[i];
 end;
-
-// FillUnusedDeviceList
-//
 
 class procedure CUDAContextManager.FillUnusedDeviceList(var AList: TStringList);
 var
@@ -602,9 +544,6 @@ begin
     if not fDeviceList[i].FUsed then
       AList.Add(fDeviceList[i].name);
 end;
-
-// GetDeviceByName
-//
 
 class function CUDAContextManager.GetDeviceByName(const AName: string)
   : TCUDADevice;
@@ -627,9 +566,6 @@ begin
   end;
 end;
 
-// GetMaxGflopsDevice
-//
-
 class function CUDAContextManager.GetMaxGflopsDevice: TCUDADevice;
 var
   max_gflops: Integer;
@@ -648,9 +584,6 @@ begin
   end;
   Result := Device;
 end;
-
-// GetNextUnusedDevice
-//
 
 class function CUDAContextManager.GetNextUnusedDevice: TCUDADevice;
 var
@@ -790,9 +723,6 @@ begin
   Result := FContextStacks[vStackIndex-1];
 end;
 
-// GetCurrentThreadContext
-//
-
 class function CUDAContextManager.GetCurrentThreadContext: TCUDAContext;
 begin
   if GetThreadStack.Count > 0 then
@@ -864,14 +794,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAHandlesMaster ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TCUDAHandlesMaster'}{$ENDIF}
-// AllocateHandles
-//
 
 procedure TCUDAHandlesMaster.AllocateHandles;
 var
@@ -891,14 +816,9 @@ begin
   GetContext.FHandleList.Remove(Self);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 // ------------------
 // ------------------ TCUDAContext ------------------
 // ------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TCUDAcontext'}{$ENDIF}
-// Create
-//
 
 constructor TCUDAContext.Create;
 begin
@@ -907,9 +827,6 @@ begin
   FDevice := nil;
   FHandleList := TCUDAHandleList.Create;
 end;
-
-// Destroy
-//
 
 destructor TCUDAContext.Destroy;
 begin
@@ -964,7 +881,6 @@ function TCUDAContext.IsValid: Boolean;
 begin
   Result := Assigned(fHandle);
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------

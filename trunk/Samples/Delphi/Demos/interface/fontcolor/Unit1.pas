@@ -10,7 +10,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
-  //GLS
+  
   GLWin32Viewer,
   GLScene,
   GLObjects,

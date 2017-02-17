@@ -337,7 +337,7 @@ uses
 // ------------------ TGLRevolutionSolid ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLRevolutionSolid.Create(AOwner: TComponent);
@@ -351,7 +351,7 @@ begin
   FParts := [rspOutside];
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLRevolutionSolid.Destroy;
@@ -805,7 +805,7 @@ end;
 // ------------------ TGLPipeNode ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPipeNode.Create(Collection: TCollection);
@@ -816,7 +816,7 @@ begin
   FTexCoordT := 1.0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPipeNode.Destroy;
@@ -923,7 +923,7 @@ end;
 // ------------------ TGLPipe ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPipe.Create(AOwner: TComponent);
@@ -948,7 +948,7 @@ begin
   FNodes := TGLPipeNodes.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPipe.Destroy;
@@ -1477,9 +1477,9 @@ begin
   end;
   if (SplineMode = lsmCubicSpline) and (Nodes.Count > 1) then
   begin
-    // create position spline
+    // creates position spline
     posSpline := Nodes.CreateNewCubicSpline;
-    // create radius spline
+    // creates radius spline
     GetMem(ra, SizeOf(TGLFloat) * Nodes.Count);
     for i := 0 to Nodes.Count - 1 do
       ra^[i] := TGLPipeNode(Nodes[i]).RadiusFactor;
@@ -1847,7 +1847,7 @@ begin
   end;
 end;
 
-// Create
+ 
 //
 
 constructor TGLExtrusionSolid.Create(AOwner: TComponent);
@@ -1862,7 +1862,7 @@ begin
   FAxisAlignedDimensionsCache.X := -1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLExtrusionSolid.Destroy;

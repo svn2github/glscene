@@ -11,7 +11,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Controls,
   Vcl.Dialogs,
-  //GLS
+  
   GLScene,
   GLObjects,
   GLTexture,
@@ -51,13 +51,10 @@ type
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
   private
-	  
 	 ballVector : TAffineVector;
 	 score : Integer;
 	 gameOver : Boolean;
 	 procedure ResetGame;
-  public
-	  
   end;
 
 var

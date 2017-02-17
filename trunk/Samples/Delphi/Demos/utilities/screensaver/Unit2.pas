@@ -23,7 +23,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.StdCtrls,
-  // GLS
+  
   GLScene, GLObjects, GLTexture, GLCadencer, GLWin32Viewer, GLSpaceText,
   GLGeomObjects, GLCoordinates, GLCrossPlatform, GLBaseClasses, GLBehaviours;
 

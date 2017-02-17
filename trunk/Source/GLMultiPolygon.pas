@@ -237,7 +237,7 @@ type
     FArrSize: Integer; // size of one page
     FUsedEntries: Integer; // used entries in actual page
     FAktArray: GLVectorGeometry.PByteArray; // pointer to actual page
-    procedure CreatePage; // create new page
+    procedure CreatePage; // creates new page
   public
     constructor Create(APageSize, AEntrySize: Integer);
     destructor Destroy; override;
@@ -438,7 +438,7 @@ end;
 
 { TMultiPolygonBase }
 
-// Create
+ 
 //
 
 constructor TMultiPolygonBase.Create(AOwner: TComponent);
@@ -450,7 +450,7 @@ begin
   FAxisAlignedDimensionsCache.X := -1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TMultiPolygonBase.Destroy;
@@ -691,7 +691,7 @@ begin
     n := 0;
     for i := 0 to Contours.Count - 1 do
       n := n + Path[i].Count;
-    // Create and initialize the GLU tesselator
+    // Creates and initialize the GLU tesselator
     vVertexPool := TVectorPool.Create(n, SizeOf(TAffineVector));
     tess := gluNewTess;
     try
@@ -754,7 +754,7 @@ begin
   n := 0;
   for i := 0 to Outline.Count - 1 do
     n := n + Outline.List[i].Count;
-  // Create and initialize a vertex pool and the GLU tesselator
+  // Creates and initialize a vertex pool and the GLU tesselator
   vVertexPool := TVectorPool.Create(n, Sizeof(TAffineVector));
   tess := gluNewTess;
   try
@@ -801,7 +801,7 @@ end;
 // ------------------ TGLMultiPolygon ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLMultiPolygon.Create(AOwner: TComponent);

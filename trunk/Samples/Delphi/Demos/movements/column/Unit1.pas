@@ -3,13 +3,24 @@ unit Unit1;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Vcl.Forms, Vcl.Controls, Vcl.ExtCtrls, Vcl.StdCtrls,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Forms,
+  Vcl.Controls,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
 
-  // GLS
-  GLScene, GLObjects, GLTexture, GLVectorTypes,
-  GLCadencer, GLWin32Viewer, GLColor, GLCrossPlatform,
-  GLCoordinates, GLBaseClasses, GLVectorGeometry;
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLVectorTypes,
+  GLCadencer,
+  GLWin32Viewer,
+  GLColor,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses,
+  GLVectorGeometry;
 
 type
   TForm1 = class(TForm)
@@ -24,10 +35,6 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject;
       const deltaTime, newTime: Double);
-  private
-     
-  public
-     
   end;
 
 var

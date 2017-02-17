@@ -794,7 +794,7 @@ end;
 // ---------- TdwsGLSceneUnit ----------
 // ----------
 
-// Create
+ 
 //
 constructor TdwsGLSceneUnit.Create(AOwner: TComponent);
 begin

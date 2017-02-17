@@ -52,7 +52,7 @@ implementation
 // ------------------ TGLPNGImage ------------------
 // ------------------
 
-// LoadFromFile
+ 
 //
 
 procedure TGLPNGImage.LoadFromFile(const filename: string);

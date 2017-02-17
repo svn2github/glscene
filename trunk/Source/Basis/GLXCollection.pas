@@ -301,7 +301,7 @@ end;
 // ------------------ TGLXCollectionItem ------------------
 // ------------------
 
-// Create
+ 
 
 constructor TGLXCollectionItem.Create(aOwner: TGLXCollection);
 begin
@@ -317,7 +317,7 @@ begin
   end;
 end;
 
-// Destroy
+ 
 
 destructor TGLXCollectionItem.Destroy;
 begin
@@ -483,7 +483,7 @@ end;
 // ------------------ TGLXCollection ------------------
 // ------------------
 
-// Create
+ 
 
 constructor TGLXCollection.Create(aOwner: TPersistent);
 begin
@@ -492,7 +492,7 @@ begin
   FList := TList.Create;
 end;
 
-// Destroy
+ 
 
 destructor TGLXCollection.Destroy;
 begin

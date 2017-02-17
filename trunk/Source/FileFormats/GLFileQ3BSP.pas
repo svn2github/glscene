@@ -2,18 +2,13 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-    Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene. 
+    Support-code to load Q3BSP Files into TGLFreeForm-Components in GLScene.
     Note that you must manually add this unit to one of your project's uses
-    to enable support for OBJ & OBJF at run-time. 
+    to enable support for OBJ & OBJF at run-time.
 
-  History :  
-       19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-       06/06/10 - Yar - Added GLVectorTypes to uses
-       22/01/10 - Yar - Added GLTextureFormat to uses
-       31/03/07 - DaStr - Added $I GLScene.inc
-       31/01/03 - EG - Materials support
-       30/01/03 - EG - Creation
-    
+  History :
+    30/01/03 - EG - Creation
+    The whole history is logged in previous version of the unit
 }
 unit GLFileQ3BSP;
 
@@ -22,24 +17,32 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry,
-  GLVectorTypes, GLVectorLists, Q3BSP, GLBSP, GLTexture,
-  GLGraphics, GLCrossPlatform, GLState, GLUtils,
-  GLMaterial, GLTextureFormat;
+  System.Classes,
+  System.SysUtils,
+  Vcl.Graphics,
+
+  GLVectorFileObjects,
+  GLApplicationFileIO,
+  GLVectorGeometry,
+  GLVectorTypes,
+  GLVectorLists,
+  Q3BSP,
+  GLBSP,
+  GLTexture,
+  GLGraphics,
+  GLCrossPlatform,
+  GLState,
+  GLUtils,
+  GLMaterial,
+  GLTextureFormat;
 
 type
 
-  // TGLQ3BSPVectorFile
-  //
   {The Q3BSP vector file (Quake III BSP).  }
   TGLQ3BSPVectorFile = class(TGLVectorFile)
   public
-    
     class function Capabilities: TGLDataFileCapabilities; override;
-
-    procedure LoadFromStream(aStream: TStream); override;
+     procedure LoadFromStream(aStream: TStream); override;
   end;
 
 var
@@ -56,16 +59,10 @@ implementation
 // ------------------ TGLSTLVectorFile ------------------
 // ------------------
 
-// Capabilities
-//
-
 class function TGLQ3BSPVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
-
-// LoadFromStream
-//
 
 procedure TGLQ3BSPVectorFile.LoadFromStream(aStream: TStream);
 
@@ -125,7 +122,7 @@ var
   i, j, n, y: Integer;
   facePtr: PBSPFace;
   lightmapLib: TGLMaterialLibrary;
-  lightmapBmp: TGLBitmap;
+  lightmapBmp: TBitmap;
   libMat: TGLLibMaterial;
   bspLightMap: PBSPLightmap;
   plane: THmgPlane;
@@ -149,7 +146,7 @@ begin
     begin
       // import lightmaps
       n := bsp.NumOfLightmaps;
-      lightmapBmp := TGLBitmap.Create;
+      lightmapBmp := TBitmap.Create;
       try
         lightmapBmp.PixelFormat := glpf24bit;
         lightmapBmp.Width := 128;

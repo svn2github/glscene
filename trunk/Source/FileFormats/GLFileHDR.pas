@@ -70,7 +70,7 @@ implementation
 // ------------------ TGLHDRImage ------------------
 // ------------------
 
-// LoadFromFile
+ 
 //
 
 procedure TGLHDRImage.LoadFromFile(const filename: string);

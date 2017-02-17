@@ -3,16 +3,11 @@
 //
 {
    Support-code to load OCT Files into TGLFreeForm-Components in GLScene.
-   (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html). 
+   (OCT being the format output from FSRad, http://www.fluidstudios.com/fsrad.html).
 
-   History :  
-       19/06/11 - Yar - Fixed problem with image converting in Lazarus (thanks to Johannes Pretorius, Bugtracker ID = 3322324)
-       22/01/10 - Yar - Added GLTextureFormat to uses
-       31/03/07 - DaStr - Added $I GLScene.inc
-       19/09/03 - EG - "Lighmap" -&gt; "LightMap"
-       06/05/03 - mrqzzz - added Gamma and Brightness correction variables (vGLFileOCTLightmapBrightness, vGLFileOCTLightmapGammaCorrection)
-       02/02/03 - EG     - Creation
-    
+   History :
+     02/02/03 - EG     - Creation
+     The whole history is logged in previous version of the unit
 }
 unit GLFileOCT;
 
@@ -21,31 +16,35 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorFileObjects, GLVectorGeometry, GLApplicationFileIO,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Graphics,
+
+  GLTexture,
+  GLMaterial,
+  GLGraphics,
+  GLCrossPlatform,
+  GLState,
+  GLUtils,
+  GLTextureFormat,
+  GLVectorFileObjects,
+  GLVectorGeometry,
+  GLApplicationFileIO,
   FileOCT;
 
 type
 
-  // TGLOCTGLVectorFile
-
   {The OCT vector file (FSRad output).  }
   TGLOCTGLVectorFile = class(TGLVectorFile)
   public
-    
     class function Capabilities: TGLDataFileCapabilities; override;
-
     procedure LoadFromStream(aStream: TStream); override;
   end;
 
 var
-  vGLFileOCTLightmapBrightness: single = 1;
-  // Mrqzzz : scaling factor, 1.0 = unchanged
-  vGLFileOCTLightmapGammaCorrection: single = 1;
-  // Mrqzzz : scaling factor, 1.0 = unchanged
-  vGLFileOCTAllocateMaterials: boolean = True;
-// Mrqzzz : Flag to avoid loading materials (useful for IDE Extensions or scene editors)
+  vGLFileOCTLightmapBrightness: single = 1;  // Scaling factor, 1.0 = unchanged
+  vGLFileOCTLightmapGammaCorrection: single = 1; // Scaling factor, 1.0 = unchanged
+  vGLFileOCTAllocateMaterials: boolean = True; // Flag to avoid loading materials (useful for IDE Ext or scene editors)
 
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -55,22 +54,14 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-uses
-  GLTexture, GLMaterial, GLGraphics, GLCrossPlatform, GLState,
-  GLUtils, GLTextureFormat;
-
 // ------------------
 // ------------------ TGLOCTGLVectorFile ------------------
 // ------------------
-
-// Capabilities
 
 class function TGLOCTGLVectorFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
-
-// LoadFromStream
 
 procedure TGLOCTGLVectorFile.LoadFromStream(aStream: TStream);
 var
@@ -81,7 +72,7 @@ var
   mo: TMeshObject;
   fg: TFGVertexIndexList;
   lightmapLib: TGLMaterialLibrary;
-  lightmapBmp: TGLBitmap;
+  lightmapBmp: TBitmap;
   libMat: TGLLibMaterial;
 begin
   oct := TOCTFile.Create(aStream);
@@ -94,7 +85,7 @@ begin
     begin
       // import lightmaps
       n := oct.Header.numLightmaps;
-      lightmapBmp := TGLBitmap.Create;
+      lightmapBmp := TBitmap.Create;
       try
         lightmapBmp.PixelFormat := glpf24bit;
         lightmapBmp.Width := 128;

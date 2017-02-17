@@ -233,7 +233,7 @@ implementation
 // ------------------ TGLSamplingScale ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSamplingScale.Create(AOwner: TPersistent);
@@ -242,7 +242,7 @@ begin
   FStep := 0.1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSamplingScale.Destroy;
@@ -375,7 +375,7 @@ begin
   FOptions := [hfoTwoSided];
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLHeightField.Destroy;
@@ -673,7 +673,7 @@ end;
 // ------------------ TGLXYZGrid ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLXYZGrid.Create(AOwner: TComponent);
@@ -686,7 +686,7 @@ begin
   FLinesStyle := glsSegments;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLXYZGrid.Destroy;

@@ -12,7 +12,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  //GLS
+  
   GLScene,
   GLObjects,
   GLExtrusion,

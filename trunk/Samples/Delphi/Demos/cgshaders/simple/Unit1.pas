@@ -14,7 +14,7 @@ uses
 
   //nVIDIA
   Cg, CgGL,
-  //GLS
+  
   GLScene,
   GLObjects,
   GLWin32Viewer,

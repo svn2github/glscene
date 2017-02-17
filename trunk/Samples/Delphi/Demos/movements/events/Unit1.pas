@@ -3,14 +3,24 @@ unit Unit1;
 interface
 
 uses
-  System.Classes, System.SysUtils,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.StdCtrls,
-  Vcl.ComCtrls, Vcl.ExtCtrls,
+  System.Classes,
+  System.SysUtils,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.ExtCtrls,
 
-  //GLS
-  GLScene, GLObjects, GLTexture,
-  GLCadencer, GLWin32Viewer, GLTimeEventsMgr,
-  GLCrossPlatform, GLCoordinates, GLBaseClasses;
+  GLScene,
+  GLObjects,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer,
+  GLTimeEventsMgr,
+  GLCrossPlatform,
+  GLCoordinates,
+  GLBaseClasses;
 
 type
   TForm1 = class(TForm)
@@ -31,10 +41,6 @@ type
     procedure GLTimeEventsMGR1Events3Event(event: TTimeEvent);
     procedure GLTimeEventsMGR1Events4Event(event: TTimeEvent);
     procedure GLTimeEventsMGR1Events5Event(event: TTimeEvent);
-  private
-     
-  public
-     
   end;
 
 var

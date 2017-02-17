@@ -19,7 +19,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -267,7 +267,7 @@ implementation
 // ------------------ TGLColorProxy ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLColorProxy.Create(AOwner: TComponent);
@@ -276,7 +276,7 @@ begin
   FFrontColor := TGLFaceProperties.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLColorProxy.Destroy;
@@ -460,7 +460,7 @@ end;
 // ------------------ TGLActorProxy ------------------
 // ------------------
 
-// Create
+ 
 //
 
 function TGLActorProxy.BoneMatrix(BoneIndex: integer): TMatrix;

@@ -713,7 +713,7 @@ begin
   Result.Frustum := AFrustum;
 
   // ************
-  // Create a bounding sphere for the entire frustum - only bspheres that
+  // Creates a bounding sphere for the entire frustum - only bspheres that
   // intersect this bounding sphere can in turn intersect the frustum
   ViewLen := AFarDist - ANearDist;
 
@@ -740,7 +740,7 @@ begin
     VectorScale(ALookVector, ViewLen / 2 + ANearDist));
 
   // ************
-  // Create a cone
+  // Creates a cone
   // calculate the length of the fov triangle
   { Depth  := AScreenHeight / tan(AFieldOfViewRadians / 2);
 
@@ -1779,7 +1779,7 @@ var
   MaxAABB, NewAABB: TAABB;
   AABBSize: TAffineVector;
 begin
-  // Create the new extents for the Octree
+  // Creates the new extents for the Octree
   MaxAABB := GetAABB;
   AABBSize := VectorSubtract(MaxAABB.Max, MaxAABB.Min);
 

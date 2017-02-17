@@ -224,7 +224,7 @@ begin
 
     // Load animation data
     for i:=0 to GLAFile.AnimHeader.numFrames-1 do begin
-      // Create the frame
+      // Creates the frame
       frame:=TGLSkeletonFrame.CreateOwned(TGLActor(Owner).Skeleton.Frames);
       frame.Name:='Frame'+IntToStr(i);
       frame.TransformMode:=sftQuaternion;

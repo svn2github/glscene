@@ -108,14 +108,14 @@ uses
 // ------------------ TOCTFile ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TOCTFile.Create;
 begin
    inherited Create;
 end;
 
-// Create
+ 
 //
 constructor TOCTFile.Create(octStream : TStream);
 begin

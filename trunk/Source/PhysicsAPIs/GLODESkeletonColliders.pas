@@ -196,7 +196,7 @@ end;
 // ------------------ TSCODESphere ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TSCODESphere.Create;
 begin
@@ -253,7 +253,7 @@ end;
 // ------------------ TSCODECCylinder ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TSCODECCylinder.Create;
 begin
@@ -323,7 +323,7 @@ end;
 // ------------------ TSCODEBox ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TSCODEBox.Create;
 begin

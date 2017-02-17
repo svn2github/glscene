@@ -86,7 +86,7 @@ implementation
 // ------------------ TGLMultisampleImage ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLMultisampleImage.Create(AOwner: TPersistent);
@@ -98,7 +98,7 @@ begin
   FSamplesCount := 0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLMultisampleImage.Destroy;
@@ -253,14 +253,14 @@ procedure TGLMultisampleImage.SaveToFile(const fileName: string);
 begin
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLMultisampleImage.LoadFromFile(const fileName: string);
 begin
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLMultisampleImage.FriendlyName: string;

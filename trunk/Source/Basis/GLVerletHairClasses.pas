@@ -117,7 +117,7 @@ begin
     if i=0 then
       Node.NailedDown := true
     else
-      // Create the hair link
+      // Creates the hair link
       VerletWorld.CreateStick(PrevNode, Node);
 
     PrevNode := Node;

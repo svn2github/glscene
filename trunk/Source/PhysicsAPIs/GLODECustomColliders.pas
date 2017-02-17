@@ -78,18 +78,18 @@ type
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
 
-    //: Test a position for a collision and fill out the contact information.
+    // Test a position for a collision and fill out the contact information.
     function Collide(aPos: TAffineVector; var Depth: Single;
       var cPos, cNorm: TAffineVector): Boolean; virtual; abstract;
 
-    //: Clears the contact list so it's ready for another collision.
+    // Clears the contact list so it's ready for another collision.
     procedure ClearContacts;
 
-    //: Add a contact point to the list for ApplyContacts to processes.
+    // Add a contact point to the list for ApplyContacts to processes.
     procedure AddContact(x, y, z: TdReal); overload;
     procedure AddContact(pos: TAffineVector); overload;
 
-    //: Sort the current contact list and apply the deepest to ODE.
+    // Sort the current contact list and apply the deepest to ODE.
     function ApplyContacts(o1, o2: PdxGeom; flags: Integer;
       contact: PdContactGeom; skip: Integer): Integer;
 
@@ -120,9 +120,9 @@ type
     {Toggle contact point rendering on and off. (Rendered through the assigned
        Manager.RenderPoint. }
     property RenderContacts: Boolean read FRenderContacts write SetRenderContacts;
-    //: Contact point rendering size (in pixels).
+    // Contact point rendering size (in pixels).
     property PointSize: Single read FPointSize write SetPointSize;
-    //: Contact point rendering color.
+    // Contact point rendering color.
     property ContactColor: TGLColor read FContactColor write SetContactColor;
 
   end;
@@ -487,7 +487,7 @@ end;
 // --------------- TGLODECustomCollider --------------
 // ---------------
 
-// Create
+ 
 //
 
 constructor TGLODECustomCollider.Create(AOwner: TGLXCollection);
@@ -505,7 +505,7 @@ begin
   FPointSize := 3;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLODECustomCollider.Destroy;
@@ -753,7 +753,7 @@ end;
 // --------------- TGLODEHeightField --------------
 // ---------------
 
-// Create
+ 
 //
 
 constructor TGLODEHeightField.Create(AOwner: TGLXCollection);
@@ -804,7 +804,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLODEHeightField.FriendlyName: string;

@@ -12,32 +12,30 @@ uses
   Vcl.Dialogs,
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
-  Vcl.Imaging.Jpeg,
-  //GLS
+
   OpenGLTokens,
   GLWin32Viewer,
-  GLScene, 
-  GLTexture, 
-  GLObjects, 
-  GLUtils, 
+  GLScene,
+  GLTexture,
+  GLObjects,
+  GLUtils,
   GLContext,
-  GLVectorGeometry, 
-  GLGeomObjects, 
-  GLCadencer, 
-  GLUserShader, 
+  GLVectorGeometry,
+  GLGeomObjects,
+  GLCadencer,
+  GLUserShader,
   GLGraph,
-  GLVectorTypes, 
-  GLSkydome, 
-  GLVectorLists, 
-  GLCrossPlatform, 
+  GLVectorTypes,
+  GLSkydome,
+  GLVectorLists,
+  GLCrossPlatform,
   GLMaterial,
-  GLCoordinates, 
-  GLBaseClasses, 
-  GLRenderContextInfo, 
+  GLCoordinates,
+  GLBaseClasses,
+  GLRenderContextInfo,
   GLSimpleNavigation,
-  GLTextureFormat, 
-  GLColor, 
-  GLFileTGA;
+  GLTextureFormat,
+  GLColor;
 
 type
   TForm1 = class(TForm)
@@ -74,10 +72,7 @@ type
     procedure DOOceanPlaneRender(Sender: TObject;
       var rci: TGLRenderContextInfo);
     procedure GLMemoryViewer1BeforeRender(Sender: TObject);
-  private
-     
   public
-     
     mx, my, dmx, dmy: Integer;
     programObject: TGLProgramHandle;
   end;
@@ -93,10 +88,7 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
   // Load the cube map which is used both for environment and as reflection texture
-  with MatLib.LibMaterialByName('water').Material.Texture do
-  begin
-    Image.LoadFromFile('noise.bmp');
-  end;
+  MatLib.LibMaterialByName('water').Material.Texture.Image.LoadFromFile('noise.bmp');
 
   with MatLib.LibMaterialByName('cubeMap').Material.Texture do
   begin

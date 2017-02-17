@@ -28,8 +28,6 @@ const
 
 type
 
-  // TGLAsyncTimer
-  //
   {  Asynchronous timer component (actual 1 ms resolution, if CPU fast enough). 
     Keep in mind timer resolution is obtained <i>in-between</i> events, but
     events are not triggered every x ms. For instance if you set the interval to
@@ -49,11 +47,9 @@ type
     function GetThreadPriority: TThreadPriority;
     procedure SetThreadPriority(Value: TThreadPriority);
     procedure DoTimer;
-
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
     property Enabled: Boolean read FEnabled write SetEnabled default False;
     property Interval: Word read GetInterval write SetInterval
@@ -63,19 +59,15 @@ type
       write SetThreadPriority default tpTimeCritical;
   end;
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
-
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
 type
-
-  // TTimerThread
-  //
   TTimerThread = class(TThread)
   private
     FOwner: TGLAsyncTimer;
@@ -86,15 +78,11 @@ type
     constructor Create(CreateSuspended: Boolean); virtual;
   end;
 
-  // Create
-  //
 constructor TTimerThread.Create(CreateSuspended: Boolean);
 begin
   inherited Create(CreateSuspended);
 end;
 
-// Execute
-//
 procedure TTimerThread.Execute;
 var
   lastTick, nextTick, curTick, perfFreq: Int64;
@@ -128,14 +116,14 @@ begin
   end;
 end;
 
-{ TGLAsyncTimer }
+//==============================================
+//============ TGLAsyncTimer 
+//==============================================
 
-// Create
-//
 constructor TGLAsyncTimer.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
-  // create timer thread
+  // creates timer thread
   FMutex := TCriticalSection.Create;
   FMutex.Acquire;
   FTimerThread := TTimerThread.Create(False);
@@ -149,8 +137,6 @@ begin
   end;
 end;
 
-// Destroy
-//
 destructor TGLAsyncTimer.Destroy;
 begin
   Enabled := False;
@@ -164,16 +150,12 @@ begin
   inherited Destroy;
 end;
 
-// DoTimer
-//
 procedure TGLAsyncTimer.DoTimer;
 begin
   if Enabled and Assigned(FOnTimer) then
     FOnTimer(Self);
 end;
 
-// SetEnabled
-//
 procedure TGLAsyncTimer.SetEnabled(Value: Boolean);
 begin
   if Value <> FEnabled then

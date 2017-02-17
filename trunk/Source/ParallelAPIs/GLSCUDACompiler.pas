@@ -353,7 +353,7 @@ begin
       start.dwFlags := STARTF_USESTDHANDLES + STARTF_USESHOWWINDOW;
       start.wShowWindow := SW_HIDE;
 
-      // Create a Console Child Process with redirected input and output
+      // Creates a Console Child Process with redirected input and output
 
       if CreateProcess(nil, PChar(nvcc+commands), @Security, @Security, true,
         CREATE_NO_WINDOW or NORMAL_PRIORITY_CLASS, nil, nil, start,

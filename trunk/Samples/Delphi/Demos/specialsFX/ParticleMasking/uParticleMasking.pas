@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
 
-  //GLS
+  
   GLBitmapFont, GLWindowsFont, GLTexture,  GLCadencer, GLWin32Viewer, GLScene,
   GLObjects,  GLParticleFX, GLVectorGeometry, GLVectorTypes, GLEParticleMasksManager,
   GLGeomObjects, GLAsyncTimer, GLCrossPlatform, GLMaterial, GLCoordinates,

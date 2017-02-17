@@ -16,7 +16,7 @@ uses
 //  Winapi.OpenGLext,
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   OpenGLTokens,
   OpenGLAdapter,
   GLVectorGeometry,

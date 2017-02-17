@@ -13,7 +13,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
   Vcl.Imaging.jpeg,
-  //GLS
+  
   OpenGLTokens,
   GLCadencer,
   GLWin32Viewer,

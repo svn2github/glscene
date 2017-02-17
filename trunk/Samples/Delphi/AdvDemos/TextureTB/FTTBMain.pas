@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Classes, System.Actions, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ExtDlgs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ActnList, 
   Vcl.ToolWin, Vcl.Menus, Vcl.ImgList, Vcl.Imaging.Jpeg,
-  //GLS
+  
   GLObjects, 
   GLHUDObjects, 
   GLScene, 

@@ -99,7 +99,7 @@ type
        generate the mesh data. Fills in Vertices, Normals, etc. }
     procedure GenerateMesh;
 
-    //: Control points define the parametric surface.
+    // Control points define the parametric surface.
     property ControlPoints: TAffineVectorList read FControlPoints write SetControlPoints;
     {KnotsU and KnotsV are the knot vectors in the U and V direction. Knots
        define the continuity of curves and how control points influence the
@@ -108,7 +108,7 @@ type
     property KnotsV: TSingleList read FKnotsV write SetKnotsV;
     {Weights define how much a control point effects the surface. }
     property Weights: TSingleList read FWeights write SetWeights;
-    //: OrderU and OrderV defines the curve order in the U and V direction
+    // OrderU and OrderV defines the curve order in the U and V direction
     property OrderU: Integer read FOrderU write FOrderU;
     property OrderV: Integer read FOrderV write FOrderV;
     {CountU and CountV describe the number of control points in the
@@ -129,7 +129,7 @@ type
     {Determines whether to use OpenGL calls (psrOpenGL) or the GLScene
        mesh objects (psrGLScene) to render the surface. }
     property Renderer: TParametricSurfaceRenderer read FRenderer write SetRenderer;
-    //: Basis determines the style of curve, psbBezier or psbBSpline
+    // Basis determines the style of curve, psbBezier or psbBSpline
     property Basis: TParametricSurfaceBasis read FBasis write SetBasis;
   end;
 
@@ -191,7 +191,7 @@ uses
 // ------------------ TMOParametricSurface ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TMOParametricSurface.Create;
@@ -207,7 +207,7 @@ begin
   Resolution := 20;
 end;
 
-// Destroy
+ 
 //
 
 destructor TMOParametricSurface.Destroy;
@@ -492,7 +492,7 @@ end;
 // ------------------ TFGBezierSurface ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TFGBezierSurface.Create;
@@ -513,7 +513,7 @@ begin
   FMaxV := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TFGBezierSurface.Destroy;

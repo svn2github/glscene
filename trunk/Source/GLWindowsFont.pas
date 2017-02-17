@@ -110,7 +110,7 @@ var
 // ------------------ TGLWindowsBitmapFont ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLWindowsBitmapFont.Create(AOwner: TComponent);
@@ -124,7 +124,7 @@ begin
   EnsureChars(' ', cDefaultLast);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLWindowsBitmapFont.Destroy;
@@ -174,7 +174,7 @@ end;
 
 procedure TGLWindowsBitmapFont.LoadWindowsFont;
 
-  procedure ComputeCharRects(bitmap: TGLBitmap);
+  procedure ComputeCharRects(bitmap: TBitmap);
   var
     px, py, cw, n, x, y: Integer;
     PaddedHeight : integer;
@@ -262,7 +262,7 @@ procedure TGLWindowsBitmapFont.LoadWindowsFont;
   end;
 
 var
-  bitmap: TGLBitmap;
+  bitmap: TBitmap;
   ch: widechar;
   i, cw, nbChars, n: Integer;
 begin

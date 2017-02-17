@@ -3,16 +3,9 @@
 //
 {
    Some useful methods for setting up bump maps. 
-   History :  
-       17/11/14 - PW - Removed function RGB that is included in GLCrossPlatform.pas
-       10/11/12 - PW - Added CPP compatibility: changed vector arrays to records with arrays
-       08/07/04 - LR - Replace Graphics by GLCrossPlatform for Linux
-       30/03/04 - SG - Minor optimizations
-       22/09/03 - SG - Partially fixed tangent space normal map creation,
-                          Fixed normal blending coefficients
-       18/09/03 - SG - Added methods for creating normal maps,
-                          CreateTangentSpaceNormalMap is a little buggy
-       28/07/03 - SG - Creation
+   History :
+     28/07/03 - SG - Creation
+     The whole history is logged in previous version of the unit
     
 }
 unit GLBumpMapping;
@@ -20,7 +13,11 @@ unit GLBumpMapping;
 interface
 
 uses
-  GLVectorGeometry, GLVectorLists, GLCrossPlatform, GLVectorTypes;
+  Vcl.Graphics,
+  GLVectorGeometry,
+  GLVectorLists,
+  GLCrossPlatform,
+  GLVectorTypes;
 
 type
   TNormalMapSpace = (nmsObject, nmsTangent);
@@ -29,7 +26,6 @@ type
 procedure CalcObjectSpaceLightVectors(Light : TAffineVector;
                                       Vertices: TAffineVectorList;
                                       Colors: TVectorList);
-
 // Tangent space
 procedure SetupTangentSpace(Vertices, Normals, TexCoords,
                             Tangents, BiNormals : TAffineVectorList);
@@ -39,11 +35,11 @@ procedure CalcTangentSpaceLightVectors(Light : TAffineVector;
                                        Colors: TVectorList);
 
 function CreateObjectSpaceNormalMap(Width, Height : Integer;
-                                    HiNormals,HiTexCoords : TAffineVectorList) : TGLBitmap;
+                                    HiNormals,HiTexCoords : TAffineVectorList) : TBitmap;
 function CreateTangentSpaceNormalMap(Width, Height : Integer;
                                      HiNormals, HiTexCoords,
                                      LoNormals, LoTexCoords,
-                                     Tangents, BiNormals : TAffineVectorList) : TGLBitmap;
+                                     Tangents, BiNormals : TAffineVectorList) : TBitmap;
 
 implementation
 
@@ -327,7 +323,7 @@ end;
 // CreateObjectSpaceNormalMap
 //
 function CreateObjectSpaceNormalMap(Width, Height : Integer;
-                                    HiNormals,HiTexCoords : TAffineVectorList) : TGLBitmap;
+                                    HiNormals,HiTexCoords : TAffineVectorList) : TBitmap;
 var
   i : integer;
   NormalMap : TAffineVectorList;
@@ -337,8 +333,8 @@ begin
 
   CalcObjectSpaceNormalMap(Width,Height,NormalMap,HiNormals,HiTexCoords);
 
-  // Create the bitmap
-  Result:=TGLBitmap.Create;
+  // Creates the bitmap
+  Result:=TBitmap.Create;
   Result.Width:=Width;
   Result.Height:=Height;
   Result.PixelFormat:=glpf24bit;
@@ -355,7 +351,7 @@ end;
 function CreateTangentSpaceNormalMap(Width, Height : Integer;
                                      HiNormals, HiTexCoords,
                                      LoNormals, LoTexCoords,
-                                     Tangents, BiNormals : TAffineVectorList) : TGLBitmap;
+                                     Tangents, BiNormals : TAffineVectorList) : TBitmap;
 
   function NormalToTangentSpace(Normal : TAffineVector;
                                 x,y,x1,y1,x2,y2,x3,y3 : Integer;
@@ -446,8 +442,8 @@ begin
       end;
   end;
 
-  // Create the bitmap
-  Result:=TGLBitmap.Create;
+  // Creates the bitmap
+  Result:=TBitmap.Create;
   Result.Width:=Width;
   Result.Height:=Height;
   Result.PixelFormat:=glpf24bit;

@@ -260,7 +260,7 @@ end;
 // ------------------ TGLSceneViewer ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSceneViewer.Create(AOwner: TComponent);
@@ -278,7 +278,7 @@ begin
   FBuffer.OnStructuralChange := DoBufferStructuralChange;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSceneViewer.Destroy;

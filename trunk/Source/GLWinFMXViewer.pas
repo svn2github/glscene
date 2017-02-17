@@ -26,7 +26,7 @@ uses
   FMX.Types3D,
   FMX.Controls,
   FMX.Graphics,
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLWin32Context,

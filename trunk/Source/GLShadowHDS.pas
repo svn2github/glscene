@@ -135,7 +135,7 @@ implementation
 uses
   OpenGLTokens, GLVectorLists;
 
-// Create
+ 
 //
 constructor TGLShadowHDS.Create(AOwner: TComponent);
 begin
@@ -153,7 +153,7 @@ begin
   SkipGenerate:=false; //Set to true in "OnSourceDataFetched" to skip shadow generation.
 end;
 
-// Destroy
+ 
 //
 destructor TGLShadowHDS.Destroy;
 begin

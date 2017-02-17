@@ -13,7 +13,7 @@ uses
   Vcl.StdCtrls,
   Vcl.Buttons,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLVectorGeometry,

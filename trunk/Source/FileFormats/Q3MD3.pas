@@ -243,7 +243,7 @@ end;
 // ------------------ TMD3TagList ------------------
 // ------------------
 
-// LoadFromFile
+ 
 //
 procedure TMD3TagList.LoadFromFile(FileName:String);
 var

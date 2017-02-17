@@ -5,7 +5,7 @@ interface
 uses
   System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  //GLS
+  
   GLSimpleNavigation, GLScene, GLCoordinates, GLNGDManager,
   GLBitmapFont, GLWindowsFont, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLObjects;

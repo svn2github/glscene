@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLFireFX, GLCadencer, GLScene, GLObjects, GLBehaviours, GLVectorGeometry,
   GLThorFX, GLSkydome, GLGraph, GLVectorTypes, GLWin32Viewer, GLCrossPlatform,
   GLCoordinates, GLBaseClasses, GLSimpleNavigation, GLUtils;

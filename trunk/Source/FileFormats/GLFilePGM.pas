@@ -57,7 +57,7 @@ implementation
   // ------------------ TGLPGMImage ------------------
   // ------------------
 
-  // LoadFromFile
+   
   //
 procedure TGLPGMImage.LoadFromFile(const filename: string);
 var

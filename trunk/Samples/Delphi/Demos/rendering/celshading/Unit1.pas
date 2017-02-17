@@ -13,7 +13,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
-  // GLS
+  
   GLScene, GLCadencer, GLWin32Viewer, GLVectorFileObjects,
   GLAsyncTimer, GLCelShader, GLGeomObjects, GLTexture, GLObjects,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,

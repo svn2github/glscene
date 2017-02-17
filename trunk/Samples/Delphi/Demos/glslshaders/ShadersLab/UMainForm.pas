@@ -20,7 +20,7 @@ uses
   // Picture FileFormats
   Vcl.Imaging.Jpeg,
   Vcl.Imaging.PngImage,
-  // GLS
+  
   GLFileTGA,
   GLMaterial, 
   GLScene, 
@@ -28,8 +28,10 @@ uses
   GLVectorFileObjects, 
   GLObjects,
   GLVectorGeometry, 
-  GLTexture, GLContext, 
-  GLVectorLists, GLCadencer,
+  GLTexture,
+  GLContext,
+  GLVectorLists,
+  GLCadencer,
   GLCoordinates, 
   GLCrossPlatform, 
   GLBaseClasses, 
@@ -46,7 +48,7 @@ uses
   GLUtils, 
   GLGeomObjects,
   GLSimpleNavigation, 
-  GLHUDObjects, 
+  GLHUDObjects,
 
   GLSLFurShader,
   GLSLLatticeShader,
@@ -56,6 +58,7 @@ uses
   GLSLSemShader,
   GLSLVertexDisplacementShader,
   GLSLGlassShader,
+  GLCustomShader,
   GLSLToonShader;
 
 type
@@ -439,11 +442,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Shape22MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
-  private
-    { Déclarations privées }
-  public
-    { Déclarations publiques }
-
   end;
 
 var
@@ -474,12 +472,9 @@ implementation
 {$R *.dfm}
 
 uses Math,
-  // Models FileFormats
   GLFileOBJ, GLFileSTL, GLFileLWO, GLFileQ3BSP, GLFileOCT, GLFileMS3D,
   GLFileNMF, GLFileMD3, GLFile3DS, GLFileMD2, GLFileSMD, GLFilePLY, GLFileGTS,
-  GLFileVRML, GLFileMD5, GLFileTIN, GLFileDXF, GLFileGRD,
-
-  GLCustomShader;
+  GLFileVRML, GLFileMD5, GLFileTIN, GLFileDXF, GLFileGRD;
 
 procedure TMainForm.Button10Click(Sender: TObject);
 begin
@@ -640,22 +635,14 @@ end;
 procedure TMainForm.cbxGootchBlendModeChange(Sender: TObject);
 begin
   case cbxGootchBlendMode.ItemIndex of
-    0:
-      GoochShader.BlendingMode := bmxOpaque;
-    1:
-      GoochShader.BlendingMode := bmxTransparency;
-    2:
-      GoochShader.BlendingMode := bmxAdditive;
-    3:
-      GoochShader.BlendingMode := bmxAlphaTest50;
-    4:
-      GoochShader.BlendingMode := bmxAlphaTest100;
-    5:
-      GoochShader.BlendingMode := bmxModulate;
-    6:
-      GoochShader.BlendingMode := bmxDestColorOne;
-    7:
-      GoochShader.BlendingMode := bmxDestAlphaOne;
+    0: GoochShader.BlendingMode := bmxOpaque;
+    1: GoochShader.BlendingMode := bmxTransparency;
+    2: GoochShader.BlendingMode := bmxAdditive;
+    3: GoochShader.BlendingMode := bmxAlphaTest50;
+    4: GoochShader.BlendingMode := bmxAlphaTest100;
+    5: GoochShader.BlendingMode := bmxModulate;
+    6: GoochShader.BlendingMode := bmxDestColorOne;
+    7: GoochShader.BlendingMode := bmxDestAlphaOne;
   end;
 end;
 
@@ -880,7 +867,6 @@ begin
   FreeForm.LoadFromFile('models\suzanne-blender.obj');
   FreeForm.Visible := False;
 
-
   // Then load textures
 
   MaterialLibrary.LibMaterialByName('ShaderMaterial')
@@ -899,7 +885,6 @@ begin
 
   MaterialLibrary.LibMaterialByName('MainTexture')
     .Material.Texture.Image.LoadFromFile('textures\bigtiger.jpg');
-
 
   // My Shader
 

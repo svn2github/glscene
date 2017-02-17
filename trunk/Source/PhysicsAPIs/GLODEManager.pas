@@ -1251,7 +1251,7 @@ end;
 // --------------- TGLODEManager ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEManager.Create(AOwner: TComponent);
 begin
@@ -1290,7 +1290,7 @@ begin
   RegisterManager(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEManager.Destroy;
 begin
@@ -1469,7 +1469,7 @@ begin
     end;
     if HandleCollision then
     begin
-      // Create and assign the contact joint
+      // Creates and assign the contact joint
       Joint := dJointCreateContact(FWorld, FContactGroup, @FContacts[i]);
       dJointAttach(Joint, b1, b2);
       // Increment the number of contact joints this step
@@ -1700,7 +1700,7 @@ end;
 // --------------- TGLODECollisionSurface ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODECollisionSurface.Create(AOwner: TPersistent);
 begin
@@ -1961,7 +1961,7 @@ end;
 // --------------- TGLODEBehaviour --------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEBehaviour.Create(AOwner: TGLXCollection);
 begin
@@ -1973,7 +1973,7 @@ begin
     RegisterGLSceneObject(OwnerBaseSceneObject);
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEBehaviour.Destroy;
 begin
@@ -2113,7 +2113,7 @@ end;
 // --------------- TGLODEDynamic ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEDynamic.Create(AOwner: TGLXCollection);
 begin
@@ -2123,7 +2123,7 @@ begin
   FEnabled := True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEDynamic.Destroy;
 begin
@@ -2151,7 +2151,7 @@ begin
     rci.PipelineTransformation.Pop;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEDynamic.FriendlyName: String;
 begin
@@ -2458,7 +2458,7 @@ end;
 // --------------- TGLODEStatic ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEStatic.Create(AOwner: TGLXCollection);
 begin
@@ -2466,7 +2466,7 @@ begin
   FElements := TGLODEElements.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEStatic.Destroy;
 begin
@@ -2493,7 +2493,7 @@ begin
     rci.PipelineTransformation.Pop;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEStatic.FriendlyName: String;
 begin
@@ -2587,7 +2587,7 @@ end;
 // --------------- TGLODEElements ---------------
 // ---------------
 
-// Destroy
+ 
 //
 destructor TGLODEElements.Destroy;
 begin
@@ -2653,7 +2653,7 @@ end;
 // --------------- TGLODEElementBase ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEElementBase.Create(AOwner: TGLXCollection);
 begin
@@ -2671,7 +2671,7 @@ begin
   FIsCalculating := False;
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEElementBase.Destroy;
 begin
@@ -3055,7 +3055,7 @@ begin
   GL.PopMatrix;
 end;
 
-// Create
+ 
 //
 constructor TODEElementBox.Create(AOwner: TGLXCollection);
 begin
@@ -3106,7 +3106,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TODEElementBox.FriendlyName: String;
 begin
@@ -3286,7 +3286,7 @@ begin
   GL.PopMatrix;
 end;
 
-// Create
+ 
 //
 constructor TODEElementSphere.Create(AOwner: TGLXCollection);
 begin
@@ -3331,7 +3331,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TODEElementSphere.FriendlyName: String;
 begin
@@ -3455,7 +3455,7 @@ begin
   GL.PopMatrix;
 end;
 
-// Create
+ 
 //
 constructor TODEElementCapsule.Create(AOwner: TGLXCollection);
 begin
@@ -3503,7 +3503,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TODEElementCapsule.FriendlyName: String;
 begin
@@ -3645,7 +3645,7 @@ begin
   GL.PopMatrix;
 end;
 
-// Create
+ 
 //
 constructor TODEElementCylinder.Create(AOwner: TGLXCollection);
 begin
@@ -3693,7 +3693,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TODEElementCylinder.FriendlyName: String;
 begin
@@ -3781,7 +3781,7 @@ end;
 // --------------- TGLODEElementTriMesh ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEElementTriMesh.Create(AOwner: TGLXCollection);
 begin
@@ -3790,7 +3790,7 @@ begin
   FIndices := TIntegerList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEElementTriMesh.Destroy;
 begin
@@ -3850,7 +3850,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEElementTriMesh.FriendlyName: String;
 begin
@@ -3953,7 +3953,7 @@ begin
     inherited;
 end;
 
-// FriendlyName
+ 
 //
 class function TODEElementPlane.FriendlyName: String;
 begin
@@ -4041,7 +4041,7 @@ end;
 // --------------- TGLODEJointList ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointList.Create(AOwner: TComponent);
 begin
@@ -4049,7 +4049,7 @@ begin
   FJoints := TGLODEJoints.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLODEJointList.Destroy;
 begin
@@ -4128,7 +4128,7 @@ end;
 // --------------- TGLODEJointBase ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointBase.Create(AOwner: TGLXCollection);
 begin
@@ -4138,7 +4138,7 @@ begin
   FInitialized := False;
 end;
 
-// Destroy
+ 
 destructor TGLODEJointBase.Destroy;
 begin
   Finalize;
@@ -4428,7 +4428,7 @@ end;
 // --------------- TGLODEJointParams ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointParams.Create(AOwner: TPersistent);
 begin
@@ -4800,7 +4800,7 @@ end;
 // --------------- TGLODEJointHinge ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointHinge.Create(AOwner: TGLXCollection);
 begin
@@ -4815,7 +4815,7 @@ begin
 
 end;
 
-// Destroy
+ 
 destructor TGLODEJointHinge.Destroy;
 begin
   FAnchor.Free;
@@ -4892,7 +4892,7 @@ begin
     dJointSetHingeAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointHinge.FriendlyName: String;
 begin
@@ -4960,7 +4960,7 @@ end;
 // --------------- TGLODEJointBall ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointBall.Create(AOwner: TGLXCollection);
 begin
@@ -4969,7 +4969,7 @@ begin
   FAnchor.OnNotifyChange := AnchorChange;
 end;
 
-// Destroy
+ 
 destructor TGLODEJointBall.Destroy;
 begin
   FAnchor.Free;
@@ -5025,7 +5025,7 @@ begin
     dJointSetBallAnchor(FJointID, FAnchor.X, FAnchor.Y, FAnchor.Z);
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointBall.FriendlyName: String;
 begin
@@ -5051,7 +5051,7 @@ end;
 // --------------- TGLODEJointSlider ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointSlider.Create(AOwner: TGLXCollection);
 begin
@@ -5063,7 +5063,7 @@ begin
   FAxisParams.GetCallback := GetAxisParam;
 end;
 
-// Destroy
+ 
 destructor TGLODEJointSlider.Destroy;
 begin
   FAxis.Free;
@@ -5128,7 +5128,7 @@ begin
     dJointSetSliderAxis(FJointID, FAxis.X, FAxis.Y, FAxis.Z);
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointSlider.FriendlyName: String;
 begin
@@ -5221,7 +5221,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointFixed.FriendlyName: String;
 begin
@@ -5240,7 +5240,7 @@ end;
 // --------------- TGLODEJointHinge2 ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointHinge2.Create(AOwner: TGLXCollection);
 begin
@@ -5261,7 +5261,7 @@ begin
   JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
-// Destroy
+ 
 destructor TGLODEJointHinge2.Destroy;
 begin
   FAnchor.Free;
@@ -5359,7 +5359,7 @@ begin
     dJointSetHinge2Axis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointHinge2.FriendlyName: String;
 begin
@@ -5469,7 +5469,7 @@ end;
 // --------------- TGLODEJointUniversal ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TGLODEJointUniversal.Create(AOwner: TGLXCollection);
 begin
@@ -5490,7 +5490,7 @@ begin
   JointOptions := [joBothObjectsMustBeAssigned];
 end;
 
-// Destroy
+ 
 destructor TGLODEJointUniversal.Destroy;
 begin
   FAnchor.Free;
@@ -5588,7 +5588,7 @@ begin
     dJointSetUniversalAxis2(FJointID, FAxis2.X, FAxis2.Y, FAxis2.Z);
 end;
 
-// FriendlyName
+ 
 //
 class function TGLODEJointUniversal.FriendlyName: String;
 begin

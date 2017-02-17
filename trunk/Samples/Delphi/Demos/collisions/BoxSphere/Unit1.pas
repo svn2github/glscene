@@ -17,7 +17,7 @@ uses
   Vcl.StdCtrls,
   Vcl.Samples.Spin,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLCadencer,

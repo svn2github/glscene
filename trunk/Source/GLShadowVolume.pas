@@ -310,7 +310,7 @@ implementation
 // ------------------ TGLShadowVolumeCaster ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLShadowVolumeCaster.Create(ACollection: TCollection);
@@ -332,7 +332,7 @@ begin
   Result := TGLShadowVolume(THackOwnedCollection(Collection).GetOwner);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLShadowVolumeCaster.Destroy;
@@ -410,7 +410,7 @@ end;
 // ------------------ TGLShadowVolumeLight ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLShadowVolumeLight.Create(ACollection: TCollection);
@@ -419,7 +419,7 @@ begin
   FSilhouettes := TPersistentObjectList.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLShadowVolumeLight.Destroy;
@@ -437,7 +437,7 @@ begin
   FSilhouettes.Clean;
 end;
 
-// Create
+ 
 //
 
 function TGLShadowVolumeLight.GetLightSource: TGLLightSource;
@@ -612,7 +612,7 @@ end;
 // ------------------ TGLShadowVolume ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLShadowVolume.Create(AOwner: Tcomponent);
@@ -628,7 +628,7 @@ begin
   FDarkeningColor := TGLColor.CreateInitialized(Self, VectorMake(0, 0, 0, 0.5));
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLShadowVolume.Destroy;

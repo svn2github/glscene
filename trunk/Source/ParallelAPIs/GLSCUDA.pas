@@ -14,7 +14,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   GLPersistentClasses,
   GLBaseClasses,
   GLCrossPlatform,
@@ -602,8 +602,8 @@ end;
 // ------------------ TGLSCUDA ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSCUDA'}{$ENDIF}
-// Create
+// ---------------------TGLSCUDA 
+ 
 //
 
 constructor TGLSCUDA.Create(AOwner: TComponent);
@@ -697,14 +697,14 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAModule ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAmodule'}{$ENDIF}
+// ---------------------TCUDAmodule 
 
-// Create
+ 
 //
 
 constructor TCUDAModule.Create(AOwner: TComponent);
@@ -916,7 +916,7 @@ begin
     TCUDAComponent(Items[I]).DestroyHandles;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TCUDAModule.LoadFromFile(const AFilename: string);
@@ -1076,12 +1076,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAComponent ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAComponent'}{$ENDIF}
+// ---------------------TCUDAComponent 
 
 destructor TCUDAComponent.Destroy;
 begin
@@ -1250,13 +1250,13 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAFunction ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAFunction'}{$ENDIF}
-// Create
+// ---------------------TCUDAFunction 
+ 
 //
 
 constructor TCUDAFunction.Create(AOwner: TComponent);
@@ -1269,7 +1269,7 @@ begin
   FLaunching := false;
 end;
 
-// Destroy
+ 
 //
 
 destructor TCUDAFunction.Destroy;
@@ -1681,12 +1681,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAMemData ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAMemData'}{$ENDIF}
+// ---------------------TCUDAMemData 
 
 constructor TCUDAMemData.Create(AOwner: TComponent);
 begin
@@ -2525,8 +2525,8 @@ end;
 // ------------------ TCUDATexture ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDATexture'}{$ENDIF}
-// Create
+// ---------------------TCUDATexture 
+ 
 //
 
 constructor TCUDATexture.Create(AOwner: TComponent);
@@ -2544,7 +2544,7 @@ begin
   fChannelNum := cnOne;
 end;
 
-// Destroy
+ 
 //
 
 destructor TCUDATexture.Destroy;
@@ -2787,12 +2787,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAGraphicResource ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGraphicResource'}{$ENDIF}
+// ---------------------TCUDAGraphicResource 
 
 procedure TCUDAGraphicResource.SetMapping(const Value: TCUDAMapping);
 begin
@@ -2877,12 +2877,12 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 // ------------------
 // ------------------ TCUDAUniform ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAUniform'}{$ENDIF}
+// ---------------------TCUDAUniform 
 
 constructor TCUDAUniform.Create(AOwner: TComponent);
 begin
@@ -2964,13 +2964,13 @@ begin
     CuNotifyChange(cuchSize);
   end;
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 // ------------------
 // ------------------ TCUDAConstant ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAConstant'}{$ENDIF}
+// ---------------------TCUDAConstant 
 
 procedure TCUDAConstant.AllocateHandles;
 var
@@ -3019,13 +3019,13 @@ begin
   Result := FHandle;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 // ------------------
 // ------------------ TCUDAFuncParam ------------------
 // ------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAFuncParam'}{$ENDIF}
+// ---------------------TCUDAFuncParam 
 
 procedure TCUDAFuncParam.AllocateHandles;
 begin
@@ -3053,7 +3053,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 initialization
 

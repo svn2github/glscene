@@ -23,7 +23,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLScene, GLVectorGeometry, GlColor, GLMaterial, GLStrings,
   GLVectorFileObjects, XOpenGL, GLState, GLPersistentClasses,
   GlCrossPlatform, GLCoordinates, GLRenderContextInfo;

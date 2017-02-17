@@ -669,7 +669,7 @@ end;
 // ------------------ TGLZShadows ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLZShadows.Create(AOwner: TComponent);

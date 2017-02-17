@@ -110,9 +110,6 @@ var
   vTrackedEvents: array of TNotifyEvent;
   vTrackingHook: HHOOK;
 
-  // TrackHookProc
-  //
-
 function TrackHookProc(nCode: Integer; wParam: wParam; lParam: LPARAM): Integer;
   stdcall;
 var
@@ -122,7 +119,7 @@ begin
   if nCode = HC_ACTION then
   begin
     p := PCWPStruct(lParam);
-    //   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin // destroy & close variant
+    //   if (p.message=WM_DESTROY) or (p.message=WM_CLOSE) then begin 
     if p.message = WM_DESTROY then
     begin
       // special care must be taken by this loop, items may go away unexpectedly
@@ -146,9 +143,6 @@ begin
     Result := CallNextHookEx(vTrackingHook, nCode, wParam, lParam);
 end;
 
-// TrackWindow
-//
-
 procedure TrackWindow(h: HWND; notifyEvent: TNotifyEvent);
 begin
   if not IsWindow(h) then
@@ -162,9 +156,6 @@ begin
   SetLength(vTrackedEvents, vTrackingCount);
   vTrackedEvents[vTrackingCount - 1] := notifyEvent;
 end;
-
-// UnTrackWindows
-//
 
 procedure UnTrackWindow(h: HWND);
 var
@@ -208,9 +199,6 @@ var
     lpszMenuName: nil;
     lpszClassName: 'GLSUtilWindow');
 
-  // CreateTempWnd
-  //
-
 function CreateTempWnd: HWND;
 var
   classRegistered: Boolean;
@@ -229,9 +217,6 @@ end;
 // ------------------ TGLWin32Context ------------------
 // ------------------
 
-  // Create
-  //
-
 constructor TGLWin32Context.Create;
 begin
   inherited Create;
@@ -239,7 +224,7 @@ begin
   ClearFAttribs;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLWin32Context.Destroy;

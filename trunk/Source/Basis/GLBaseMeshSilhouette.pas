@@ -149,7 +149,7 @@ procedure TGLFaceGroupConnectivity.RebuildEdgeList;
     // Make sure that the connectivity information is empty
     Clear;
 
-    // Create a list of edges for the meshobject
+    // Creates a list of edges for the meshobject
     for iFaceGroup := 0 to FMeshObject.FaceGroups.Count - 1 do
     begin
       Assert(FMeshObject.FaceGroups[iFaceGroup] is TFGVertexIndexList, 'Method only works for descendants of TFGVertexIndexList.');

@@ -8,7 +8,7 @@ uses
   System.Classes,
   Vcl.Controls,
   Vcl.Forms,
-  // GLS
+  
   GLScene,
   GLObjects,
   GLWin32Viewer,

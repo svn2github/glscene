@@ -24,8 +24,8 @@ uses
   xlib,
 {$ENDIF}
   System.Types, 
-  System.Classes, 
-  System.SysUtils, 
+  System.Classes,
+  System.SysUtils,
   System.StrUtils,
   VCL.Consts,   
   VCL.Graphics,
@@ -52,19 +52,18 @@ type
   // Several aliases to shield us from the need of ifdef'ing between
   // the "almost cross-platform" units like Graphics/QGraphics etc.
   // Gives a little "alien" look to names, but that's the only way around :(
-
   // DaStr: Actually, there is a way around, see TPenStyle for example.
 
   TGLPoint = TPoint;
 
-  PGLPoint = ^TGLPoint;
+  PGLPoint = ^TPoint;
   TGLRect = TRect;
-  PGLRect = ^TGLRect;
+  PGLRect = ^TRect;
   TDelphiColor = TColor;
 
+  TGLBitmap = TBitmap;
   TGLPicture = TPicture;
   TGLGraphic = TGraphic;
-  TGLBitmap = TBitmap;
   TGraphicClass = class of TGraphic;
 
   TGLTextLayout = (tlTop, tlCenter, tlBottom); // idem TTextLayout;
@@ -160,13 +159,11 @@ const
   glKey_NEXT = VK_NEXT;
   glKey_CONTROL = VK_CONTROL;
 
-  // TPenStyle.
-
   // Several define from unit Consts
 const
   glsAllFilter: string = sAllFilter;
-
   GLS_FONT_CHARS_COUNT = 2024;
+
 var
   IsDesignTime: Boolean = False;
   vProjectTargetName: TProjectTargetNameFunc;
@@ -175,7 +172,7 @@ function GLPoint(const x, y: Integer): TGLPoint;
 {Builds a TColor from Red Green Blue components. }
 function RGB(const r, g, b: Byte): TColor; {$NODEFINE RGB}
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
-{ Increases or decreases the width and height of the specified rectangle. 
+{ Increases or decreases the width and height of the specified rectangle.
    Adds dx units to the left and right ends of the rectangle and dy units to
    the top and bottom. }
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
@@ -193,13 +190,13 @@ function GetCurrentColorDepth: Integer;
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 
 {Returns the bitmap's scanline for the specified row. }
-function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
+function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 
 {Replace path delimiter to delimiter of the current platform. }
 procedure FixPathDelimiter(var S: string);
 {Remove if possible part of path witch leads to project executable. }
 function RelativePath(const S: string): string;
-{Returns the current value of the highest-resolution counter. 
+{Returns the current value of the highest-resolution counter.
    If the platform has none, should return a value derived from the highest
    precision time reference available, avoiding, if possible, timers that
    allocate specific system resources. }
@@ -331,25 +328,17 @@ begin
 {$ENDIF}
 end;
 
-// GLPoint
-//
-
 function GLPoint(const x, y: Integer): TGLPoint;
 begin
   Result.X := x;
   Result.Y := y;
 end;
 
-// RGB
-//
-
 function RGB(const r, g, b: Byte): TColor;
 begin
   Result := r or (g shl 8) or (b shl 16);
 end;
 
-// GLRect
-//
 function GetGLRect(const aLeft, aTop, aRight, aBottom: Integer): TGLRect;
 begin
   Result.Left := aLeft;
@@ -357,9 +346,6 @@ begin
   Result.Right := aRight;
   Result.Bottom := aBottom;
 end;
-
-// InflateRect
-//
 
 procedure InflateGLRect(var aRect: TGLRect; dx, dy: Integer);
 begin
@@ -372,9 +358,6 @@ begin
   if aRect.Bottom < aRect.Top then
     aRect.Bottom := aRect.Top;
 end;
-
-// IntersectGLRect
-//
 
 procedure IntersectGLRect(var aRect: TGLRect; const rect2: TGLRect);
 var
@@ -402,9 +385,6 @@ begin
       aRect.Bottom := rect2.Bottom;
   end;
 end;
-
-// RaiseLastOSError
-//
 
 procedure RaiseLastOSError;
 var
@@ -457,24 +437,15 @@ end;
 
 {$ENDIF}
 
-// GetDeviceLogicalPixelsX
-//
-
 function GetDeviceLogicalPixelsX(device: HDC): Integer;
 begin
   result := GetDeviceCapabilities().Xdpi;
 end;
 
-// GetCurrentColorDepth
-//
-
 function GetCurrentColorDepth: Integer;
 begin
   result := GetDeviceCapabilities().Depth;
 end;
-
-// PixelFormatToColorBits
-//
 
 function PixelFormatToColorBits(aPixelFormat: TPixelFormat): Integer;
 begin
@@ -494,10 +465,7 @@ begin
   end;
 end;
 
-// BitmapScanLine
-//
-
-function BitmapScanLine(aBitmap: TGLBitmap; aRow: Integer): Pointer;
+function BitmapScanLine(aBitmap: TBitmap; aRow: Integer): Pointer;
 begin
   Result := aBitmap.ScanLine[aRow];
 end;
@@ -539,8 +507,6 @@ begin
     Delete(Result, 1, Length(path));
 end;
 
-// QueryPerformanceCounter
-//
 {$IFDEF UNIX}
 var
   vProgStartSecond: int64;
@@ -571,9 +537,6 @@ begin
 end;
 {$ENDIF}
 
-// QueryPerformanceFrequency
-//
-
 function QueryPerformanceFrequency(var val: Int64): Boolean;
 {$IFDEF MSWINDOWS}
 begin
@@ -587,25 +550,16 @@ begin
 end;
 {$ENDIF}
 
-// StartPrecisionTimer
-//
-
 function StartPrecisionTimer: Int64;
 begin
   QueryPerformanceCounter(Result);
 end;
-
-// PrecisionTimeLap
-//
 
 function PrecisionTimerLap(const precisionTimer: Int64): Double;
 begin
   // we can do this, because we don't really stop anything
   Result := StopPrecisionTimer(precisionTimer);
 end;
-
-// StopPrecisionTimer
-//
 
 function StopPrecisionTimer(const precisionTimer: Int64): Double;
 var
@@ -970,7 +924,6 @@ begin
   {$ENDIF}
 end;
 
-
 function GetPlatformVersion : TPlatformVersion;
 {$IFDEF Unix}
 var
@@ -988,14 +941,14 @@ VersStr : array[TPlatformVersion] of string = (
   'Mandriva',
   'RedHat',
   'TurboLinux',
-  'Ubuntu',  // протестировано
+  'Ubuntu',  // tested
   'Xandros',
   'Oracle',
-  'Mac OS X' // теоретич. работает
+  'Mac OS X' // workable
   );
 {$ENDIF}
 begin
-  Result := pvUnknown;                      // Неизвестная версия ОС
+  Result := pvUnknown;
   {$IFDEF MSWINDOWS}
   with GetPlatformInfo do
   begin
@@ -1019,7 +972,7 @@ begin
           6:  case Minor of
                 0: Result := pvWinVista;         // Windows Vista
                 1: Result := pvWinSeven;          // Windows Seven
-                2: Result := pvWin2008;        // Windows 2008   //возможно
+                2: Result := pvWin2008;        // Windows 2008
                 3..4: Result := pvWinNew;
               end;
           7:  Result := pvWinNew;
@@ -1029,7 +982,7 @@ begin
   {$IFDEF Unix}
   with GetPlatformInfo do
   begin
-    if Version='' then Exit; //функция не смогла считать информацию
+    if Version='' then Exit;
     For i:= 13 to Length(VersStr)-1 do
      if ID=VersStr[TPlatformVersion(i)] then
        Result := TPlatformVersion(i);

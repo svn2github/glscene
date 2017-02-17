@@ -219,14 +219,14 @@ const
   // ------------------ TBSPClusterVisibility ------------------
   // ------------------
 
-  // Create
+   
   //
 constructor TBSPClusterVisibility.Create;
 begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 destructor TBSPClusterVisibility.Destroy;
 begin
@@ -324,7 +324,7 @@ begin
   FUseClusterVisibility := False;
 end;
 
-// Destroy
+ 
 //
 destructor TBSPMeshObject.Destroy;
 begin
@@ -625,7 +625,7 @@ begin
   FNegativeSubNodeIndex := 0;
 end;
 
-// Destroy
+ 
 //
 destructor TFGBSPNode.Destroy;
 begin

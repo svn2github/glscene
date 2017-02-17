@@ -146,7 +146,7 @@ end;
 // ------------------ TSCVerletSphere ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TSCVerletSphere.Create;
 begin
@@ -213,7 +213,7 @@ end;
 // ------------------ TSCVerletCapsule ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TSCVerletCapsule.Create;
 begin

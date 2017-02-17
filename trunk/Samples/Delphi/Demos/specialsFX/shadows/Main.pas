@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Imaging.JPeg,
 
-  // GLS
+  
   GLScene, GLGraph, GLObjects, GLTexture,
   GLGraphics, GLVectorTypes, GLVectorGeometry, GLHUDObjects,
   GLzBuffer, GLCadencer, GLAsyncTimer, GLWin32Viewer, GLTeapot,

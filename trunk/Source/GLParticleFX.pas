@@ -249,7 +249,7 @@ type
     procedure NotifyChange(Sender: TObject); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    //: Class of particles created by this manager. }
+    // Class of particles created by this manager. }
     class function ParticlesClass: TGLParticleClass; virtual;
     {Creates a new particle controled by the manager. }
     function CreateParticle: TGLParticle; virtual;
@@ -463,7 +463,7 @@ type
 
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    //: Instantaneously creates nb particles
+    // Instantaneously creates nb particles
     procedure Burst(time: Double; nb: Integer);
     procedure RingExplosion(time: Double;
       minInitialSpeed, maxInitialSpeed: Single;
@@ -991,7 +991,7 @@ end;
 // ------------------ TGLParticle ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLParticle.Create;
 begin
@@ -999,7 +999,7 @@ begin
   inherited Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLParticle.Destroy;
 begin
@@ -1069,7 +1069,7 @@ end;
 // ------------------ TGLParticleList ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLParticleList.Create;
@@ -1080,7 +1080,7 @@ begin
   FDirectList := nil;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLParticleList.Destroy;
@@ -1201,7 +1201,7 @@ end;
 // ------------------ TGLParticleFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLParticleFXManager.Create(aOwner: TComponent);
@@ -1214,7 +1214,7 @@ begin
   RegisterManager(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLParticleFXManager.Destroy;
@@ -1414,7 +1414,7 @@ end;
 // ------------------ TGLParticleFXEffect ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLParticleFXEffect.Create(aOwner: TGLXCollection);
@@ -1423,7 +1423,7 @@ begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLParticleFXEffect.Destroy;
@@ -1527,7 +1527,7 @@ end;
 // ------------------ TGLParticleFXRenderer ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLParticleFXRenderer.Create(aOwner: TComponent);
@@ -1541,7 +1541,7 @@ begin
   FBlendingMode := bmAdditive;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLParticleFXRenderer.Destroy;
@@ -1862,7 +1862,7 @@ end;
 // ------------------ TGLSourcePFXEffect ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSourcePFXEffect.Create(aOwner: TGLXCollection);
@@ -1881,7 +1881,7 @@ begin
   FDisabledIfOwnerInvisible := False;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSourcePFXEffect.Destroy;
@@ -1892,7 +1892,7 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLSourcePFXEffect.FriendlyName: string;
@@ -2139,7 +2139,7 @@ end;
 // ------------------ TPFXLifeColor ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TPFXLifeColor.Create(Collection: TCollection);
@@ -2153,7 +2153,7 @@ begin
   FRotateAngle := 0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TPFXLifeColor.Destroy;
@@ -2335,7 +2335,7 @@ end;
 // ------------------ TGLDynamicPFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLDynamicPFXManager.Create(aOwner: TComponent);
@@ -2345,7 +2345,7 @@ begin
   FFriction := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLDynamicPFXManager.Destroy;
@@ -2447,7 +2447,7 @@ end;
 // ------------------ TGLLifeColoredPFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLifeColoredPFXManager.Create(aOwner: TComponent);
@@ -2463,7 +2463,7 @@ begin
   FParticleSize := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLLifeColoredPFXManager.Destroy;
@@ -2910,7 +2910,7 @@ end;
 // ------------------ TGLPolygonPFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPolygonPFXManager.Create(aOwner: TComponent);
@@ -2919,7 +2919,7 @@ begin
   FNbSides := 6;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPolygonPFXManager.Destroy;
@@ -3057,7 +3057,7 @@ end;
 // ------------------ TGLBaseSpritePFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBaseSpritePFXManager.Create(aOwner: TComponent);
@@ -3068,7 +3068,7 @@ begin
   FAspectRatio := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBaseSpritePFXManager.Destroy;
@@ -3390,7 +3390,7 @@ end;
 // ------------------ TGLCustomSpritePFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLCustomSpritePFXManager.Create(aOwner: TComponent);
@@ -3400,7 +3400,7 @@ begin
   FSpritesPerTexture := sptOne;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCustomSpritePFXManager.Destroy;
@@ -3421,7 +3421,7 @@ end;
 // ------------------ TGLPointLightPFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPointLightPFXManager.Create(aOwner: TComponent);
@@ -3431,7 +3431,7 @@ begin
   FColorMode := scmInner;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPointLightPFXManager.Destroy;

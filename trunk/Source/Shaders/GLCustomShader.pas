@@ -18,7 +18,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   GLVectorGeometry,
   GLVectorTypes,
   GLTexture,
@@ -247,38 +247,38 @@ type
     procedure SetToTextureOf(const LibMaterial: TGLLibMaterial; const TextureIndex: Integer); overload;
     procedure SetToTextureOf(const Texture: TGLTexture; const TextureIndex: Integer); overload;
 
-    //: GLScene-friendly properties.
+    // GLScene-friendly properties.
     property AsVector: TVector read GetAsVector4f write SetAsVector4f;
     property AsAffineVector: TAffineVector read GetAsVector3f write SetAsVector3f;
 
-    //: Standard types.
+    // Standard types.
     property AsFloat: Single read GetAsVector1f write SetAsVector1f;
     property AsInteger: Integer read GetAsVector1i write SetAsVector1i;
 
-    //: Float vector types.
+    // Float vector types.
     property AsVector1f: Single    read GetAsVector1f write SetAsVector1f;
     property AsVector2f: TVector2f read GetAsVector2f write SetAsVector2f;
     property AsVector3f: TVector3f read GetAsVector3f write SetAsVector3f;
     property AsVector4f: TVector4f read GetAsVector4f write SetAsVector4f;
 
-    //: Integer vector  types.
+    // Integer vector  types.
     property AsVector1i: Integer   read GetAsVector1i write SetAsVector1i;
     property AsVector2i: TVector2i read GetAsVector2i write SetAsVector2i;
     property AsVector3i: TVector3i read GetAsVector3i write SetAsVector3i;
     property AsVector4i: TVector4i read GetAsVector4i write SetAsVector4i;
 
-    //: Unsigned integer vector  types.
+    // Unsigned integer vector  types.
     property AsVector1ui: Cardinal   read GetAsVector1ui write SetAsVector1ui;
     property AsVector2ui: TVector2ui read GetAsVector2ui write SetAsVector2ui;
     property AsVector3ui: TVector3ui read GetAsVector3ui write SetAsVector3ui;
     property AsVector4ui: TVector4ui read GetAsVector4ui write SetAsVector4ui;
 
-    //: Matrix Types.
+    // Matrix Types.
     property AsMatrix2f: TMatrix2f read GetAsMatrix2f write SetAsMatrix2f;
     property AsMatrix3f: TMatrix3f read GetAsMatrix3f write SetAsMatrix3f;
     property AsMatrix4f: TMatrix4f read GetAsMatrix4f write SetAsMatrix4f;
 
-    //: Texture Types.
+    // Texture Types.
     property AsTexture    [const TextureIndex: Integer]: TGLTexture write SetAsTexture;
     property AsTexture1D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture1D;
     property AsTexture2D  [const TextureIndex: Integer]: TGLTexture write SetAsTexture2D;
@@ -299,14 +299,14 @@ type
     bmxAlphaTest50, bmxAlphaTest100, bmxModulate,
     bmxDestColorOne, bmxDestAlphaOne);
 
-//: Exported procedures.
+// Exported procedures.
 procedure ApplyBlendingModeEx(const BlendingMode: TGLBlendingModeEx);
 procedure UnApplyBlendingModeEx;
 procedure InitTexture(
   const TextureHandle: Cardinal;
   const TextureSize: TGLSize;
   const TextureTarget: TGLTextureTarget = ttTexture2D);
-//: Probably need to give them proper names, instead of numbers...
+// Probably need to give them proper names, instead of numbers...
 procedure DrawTexturedScreenQuad;
 procedure DrawTexturedScreenQuad2(const ViewPortSize: TGLSize);
 procedure DrawTexturedScreenQuad3;

@@ -30,7 +30,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   OpenGLTokens,
   GLTexture,
   GLScene,
@@ -45,7 +45,7 @@ uses
 type
   EGLSLDiffuseSpecularShaderException = class(EGLSLShaderException);
 
-  //: Abstract class.
+  // Abstract class.
   TGLBaseCustomGLSLDiffuseSpecular = class(TGLCustomGLSLShader)
   private
     FLightPower: Single;
@@ -61,11 +61,11 @@ type
     property LightPower: Single read FLightPower write FLightPower;
     property RealisticSpecular: Boolean read FRealisticSpecular write SetRealisticSpecular;
 
-    //: User can disable fog support and save some FPS if he doesn't need it.
+    // User can disable fog support and save some FPS if he doesn't need it.
     property FogSupport: TGLShaderFogSupport read FFogSupport write SetFogSupport default sfsAuto;
   end;
 
-  //: Abstract class.
+  // Abstract class.
   TGLBaseGLSLDiffuseSpecularShaderMT = class(TGLBaseCustomGLSLDiffuseSpecular, IGLMaterialLibrarySupported)
   private
     FMaterialLibrary: TGLMaterialLibrary;
@@ -73,7 +73,7 @@ type
     FMainTextureName: TGLLibMaterialName;
     function GetMainTextureName: TGLLibMaterialName;
     procedure SetMainTextureName(const Value: TGLLibMaterialName);
-    //: Implementing IGLMaterialLibrarySupported.
+    // Implementing IGLMaterialLibrarySupported.
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
   protected
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary); virtual;

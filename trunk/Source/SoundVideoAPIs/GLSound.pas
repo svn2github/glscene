@@ -64,7 +64,7 @@ type
     function LengthInSamples: Integer;
     function LengthInSec: Single;
 
-    //: This Tag is reserved for sound manager use only
+    // This Tag is reserved for sound manager use only
     property ManagerTag: Integer read FTag write FTag;
 
   published
@@ -183,7 +183,7 @@ type
 
     function Sample: TGLSoundSample;
 
-    //: This Tag is reserved for sound manager use only
+    // This Tag is reserved for sound manager use only
     property ManagerTag: PtrUInt read FTag write FTag;
 
     {Origin object for the sound sources.
@@ -352,7 +352,7 @@ type
       TVector);
 
     function DoActivate: Boolean; dynamic;
-    //: Invoked AFTER all sources have been stopped
+    // Invoked AFTER all sources have been stopped
     procedure DoDeActivate; dynamic;
     {Effect mute of all sounds.
        Default implementation call MuteSource for all non-muted sources
@@ -375,7 +375,7 @@ type
     procedure Notify3DFactorsChanged; dynamic;
     procedure NotifyEnvironmentChanged; dynamic;
 
-    //: Called when a source will be freed
+    // Called when a source will be freed
     procedure KillSource(aSource: TGLBaseSoundSource); virtual;
     {Request to update source's data in low-level sound API.
        Default implementation just clears the "Changes" flags. }
@@ -597,7 +597,7 @@ end;
 // ------------------ TGLSoundSample ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSoundSample.Create(Collection: TCollection);
@@ -605,7 +605,7 @@ begin
   inherited Create(Collection);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSoundSample.Destroy;
@@ -697,7 +697,7 @@ begin
     Result := Format('%s (empty)', [Name]);
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLSoundSample.LoadFromFile(const fileName: string);
@@ -885,7 +885,7 @@ end;
 // ------------------ TGLBaseSoundSource ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBaseSoundSource.Create(Collection: TCollection);
@@ -902,7 +902,7 @@ begin
   FFrequency := -1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBaseSoundSource.Destroy;
@@ -1202,7 +1202,7 @@ end;
 // ------------------ TGLSoundSource ------------------
 // ------------------
 
-// Destroy
+ 
 //
 
 destructor TGLSoundSource.Destroy;
@@ -1253,7 +1253,7 @@ end;
 // ------------------ TGLSoundManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSoundManager.Create(AOwner: TComponent);
@@ -1270,7 +1270,7 @@ begin
   FDopplerFactor := 1.0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSoundManager.Destroy;
@@ -1791,7 +1791,7 @@ end;
 // ------------------ TGLBSoundEmitter ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBSoundEmitter.Create(aOwner: TGLXCollection);
@@ -1800,7 +1800,7 @@ begin
   FSource := TGLSoundSource.Create(nil);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBSoundEmitter.Destroy;
@@ -1861,7 +1861,7 @@ begin
     SetPlaying(FPlaying);
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLBSoundEmitter.FriendlyName: string;

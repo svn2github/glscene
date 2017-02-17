@@ -32,7 +32,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   GLScene,
   GLVectorGeometry,
   GLTexture,
@@ -188,7 +188,7 @@ implementation
 // ------------------ TGLMaterialMultiProxyMaster ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMaterialMultiProxyMaster.Create(Collection: TCollection);
 begin
@@ -196,7 +196,7 @@ begin
 
 end;
 
-// Destroy
+ 
 //
 destructor TGLMaterialMultiProxyMaster.Destroy;
 begin
@@ -347,7 +347,7 @@ end;
 // ------------------ TGLMaterialMultiProxyMasters ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMaterialMultiProxyMasters.Create(AOwner: TPersistent);
 begin
@@ -447,7 +447,7 @@ end;
 // ------------------ TGLMaterialMultiProxy ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMaterialMultiProxy.Create(AOwner: TComponent);
 begin
@@ -456,7 +456,7 @@ begin
   FMasterObjects := TGLMaterialMultiProxyMasters.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLMaterialMultiProxy.Destroy;
 begin

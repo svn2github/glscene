@@ -3,8 +3,8 @@ object Form1: TForm1
   Top = 93
   BorderWidth = 5
   Caption = 'Pong'
-  ClientHeight = 324
-  ClientWidth = 630
+  ClientHeight = 314
+  ClientWidth = 620
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -20,17 +20,15 @@ object Form1: TForm1
   object GLSceneViewer1: TGLSceneViewer
     Left = 0
     Top = 0
-    Width = 630
-    Height = 324
+    Width = 620
+    Height = 314
     Camera = GLCamera1
     Buffer.BackgroundColor = clBlack
     Buffer.ContextOptions = [roDoubleBuffer, roStencilBuffer, roRenderToWindow]
-    FieldOfView = 145.000000000000000000
+    FieldOfView = 143.956420898437500000
     Align = alClient
     OnMouseMove = GLSceneViewer1MouseMove
     TabOrder = 0
-    ExplicitWidth = 472
-    ExplicitHeight = 182
   end
   object GLScene1: TGLScene
     Left = 32
@@ -76,7 +74,7 @@ object Form1: TForm1
       object Ball: TGLSphere
         Material.MaterialLibrary = GLMaterialLibrary1
         Material.LibMaterialName = 'Ball'
-        Radius = 0.400000005960464400
+        Radius = 0.400000005960464500
         Slices = 12
         Stacks = 9
       end

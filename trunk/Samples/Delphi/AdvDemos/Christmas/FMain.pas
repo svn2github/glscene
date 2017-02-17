@@ -16,7 +16,7 @@ uses
   Vcl.Imaging.Jpeg,
   Vcl.Menus,
 
-  //GLS
+  
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLTexture, GLCadencer, GLSkydome, GLParticleFX, GLVectorGeometry,
   GLLensFlare, GLBitmapFont, GLWindowsFont, GLHUDObjects, GLVectorTypes,

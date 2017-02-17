@@ -5,12 +5,8 @@
    Basic sound manager based on WinMM  
 
    History :  
-       12/01/16 - PW - Removed RegisterClasses to GLSoundRegister unit 
-       17/11/09 - DaStr - Improved Unix compatibility
-                             (thanks Predator) (BugtrackerID = 2893580)
-       25/07/09 - DaStr - Added $I GLScene.inc
-       30/05/09 - DanB - Fixes for AV when sound finishes, and was repeating the same code more than necessary.
        24/04/09 - DanB - Creation, split from GLSound.pas, to remove windows dependency
+	   The whole history is logged in previous version of the unit
 	 
 }
 unit GLSMWaveOut;
@@ -18,19 +14,18 @@ unit GLSMWaveOut;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'} {$ENDIF}
 
 uses
   Winapi.MMSystem,
   System.Classes,
   System.SysUtils,
    
-  GLSound, GLSoundFileObjects;
+  GLSound, 
+  GLSoundFileObjects;
 
 type
 
-	// TGLSMWaveOut
-	//
    {Basic sound manager based on WinMM <i>waveOut</i> function. 
       This manager has NO 3D miximing capacity, this is merely a default manager
       that should work on any windows based system, and help showcasing/testing
@@ -39,24 +34,15 @@ type
       sampling conversions supported by the windows ACM driver are supported
       (ie. no 4bits samples playback etc.). }
 	TGLSMWaveOut = class (TGLSoundManager)
-	   private
-	       
-
 	   protected
-	      
 	      function DoActivate : Boolean; override;
 	      procedure DoDeActivate; override;
-
          procedure KillSource(aSource : TGLBaseSoundSource); override;
-
       public
-	      
-	      constructor Create(AOwner : TComponent); override;
-	      destructor Destroy; override;
-
+	    constructor Create(AOwner : TComponent); override;
+	    destructor Destroy; override;
         procedure UpdateSources; override;
       published
-	      
          property MaxChannels default 4;
 	end;
 
@@ -90,8 +76,6 @@ begin
       waveOutClose(hwo);
 end;
 
-// PlayOnWaveOut (waveformat)
-//
 function PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
                        waveFormat : TWaveFormatEx) : HWaveOut;
 var
@@ -114,8 +98,6 @@ begin
    Result:=hwo;
 end;
 
-// PlayOnWaveOut (sampling)
-//
 procedure PlayOnWaveOut(pcmData : Pointer; lengthInBytes : Integer;
                         sampling : TGLSoundSampling);
 var
@@ -129,30 +111,22 @@ end;
 // ------------------ TGLSMWaveOut ------------------
 // ------------------
 
-// Create
-//
 constructor TGLSMWaveOut.Create(AOwner : TComponent);
 begin
 	inherited Create(AOwner);
    MaxChannels:=4;
 end;
 
-// Destroy
-//
 destructor TGLSMWaveOut.Destroy;
 begin
 	inherited Destroy;
 end;
 
-// DoActivate
-//
 function TGLSMWaveOut.DoActivate : Boolean;
 begin
    Result:=True;
 end;
 
-// DoDeActivate
-//
 procedure TGLSMWaveOut.DoDeActivate;
 var
    i : Integer;
@@ -161,8 +135,6 @@ begin
       KillSource(Sources[i]);
 end;
 
-// KillSource
-//
 procedure TGLSMWaveOut.KillSource(aSource : TGLBaseSoundSource);
 var
   pRec: PWaveOutPlayingRec;
@@ -192,8 +164,6 @@ begin
    end;
 end;
 
-// UpdateSource
-//
 procedure TGLSMWaveOut.UpdateSources;
 var
    i, n : Integer;

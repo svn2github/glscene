@@ -13,7 +13,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.Samples.Spin,
-  //GLS
+  
   GLNGDManager,
   GLObjects,
   GLScene, GLCoordinates, GLSimpleNavigation, GLCadencer,

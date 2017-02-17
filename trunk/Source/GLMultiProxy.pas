@@ -164,7 +164,7 @@ implementation
 // ------------------ TGLMultiProxyMaster ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMultiProxyMaster.Create(Collection : TCollection);
 begin
@@ -172,7 +172,7 @@ begin
    FVisible:=True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLMultiProxyMaster.Destroy;
 begin
@@ -271,7 +271,7 @@ end;
 // ------------------ TGLMultiProxyMasters ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMultiProxyMasters.Create(AOwner : TPersistent);
 begin
@@ -350,7 +350,7 @@ end;
 // ------------------ TGLMultiProxy ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMultiProxy.Create(AOwner: TComponent);
 begin
@@ -359,7 +359,7 @@ begin
    FMasterObjects:=TGLMultiProxyMasters.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLMultiProxy.Destroy;
 begin

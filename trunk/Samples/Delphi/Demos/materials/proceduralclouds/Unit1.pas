@@ -16,7 +16,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Buttons,
 
-  //GLS
+  
   GLScene, GLObjects, GLTexture, GLHUDObjects, GLCadencer, GLWin32Viewer,
   GLProcTextures, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 

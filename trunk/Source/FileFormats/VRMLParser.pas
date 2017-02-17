@@ -227,7 +227,7 @@ end;
 // --------------- TVRMLNode ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLNode.Create;
 begin
@@ -243,7 +243,7 @@ begin
     AParent.Add(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TVRMLNode.Destroy;
 begin
@@ -308,7 +308,7 @@ end;
 // --------------- TVRMLSingleArray ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLSingleArray.Create;
 begin
@@ -316,7 +316,7 @@ begin
   FValues:=TSingleList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TVRMLSingleArray.Destroy;
 begin
@@ -329,7 +329,7 @@ end;
 // --------------- TVRMLIntegerArray ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLIntegerArray.Create;
 begin
@@ -337,7 +337,7 @@ begin
   FValues:=TIntegerList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TVRMLIntegerArray.Destroy;
 begin
@@ -350,7 +350,7 @@ end;
 // --------------- TVRMLMaterial ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLMaterial.Create;
 begin
@@ -369,7 +369,7 @@ end;
 // --------------- TVRMLTransform ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLTransform.Create;
 begin
@@ -384,7 +384,7 @@ end;
 // --------------- TVRMLParser ---------------
 // ---------------
 
-// Create
+ 
 //
 constructor TVRMLParser.Create;
 begin
@@ -394,7 +394,7 @@ begin
   FAllowUnknownNodes:=False;
 end;
 
-// Destroy
+ 
 //
 destructor TVRMLParser.Destroy;
 begin

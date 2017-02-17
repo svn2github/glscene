@@ -11,7 +11,7 @@ uses
   Vcl.Forms,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLExtrusion,

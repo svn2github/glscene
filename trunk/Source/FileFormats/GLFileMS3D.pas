@@ -288,14 +288,14 @@ implementation
 
 { TMS3DGroup }
 
-// create
+ 
 //
 constructor TMS3DGroup.Create;
 begin
   TriangleIndices := TList.Create;
 end;
 
-// destroy
+ 
 //
 destructor TMS3DGroup.Destroy;
 begin
@@ -510,7 +510,7 @@ begin
     // Then comes the number of vertices
     aStream.ReadBuffer(nNumVertices, sizeof(nNumVertices));
 
-    // Create the vertex list
+    // Creates the vertex list
     if Owner is TGLActor then
     begin
       MO := TGLSkeletonMeshObject.CreateOwned(Owner.MeshObjects);
@@ -608,7 +608,7 @@ begin
     for i := 0 to nNumMaterials - 1 do
     begin
       aStream.ReadBuffer(ms3d_material, sizeof(TMS3DMaterial));
-      // Create the material, if there's a materiallibrary!
+      // Creates the material, if there's a materiallibrary!
       if Assigned(Owner.MaterialLibrary) then
       begin
         libtexture := string(ms3d_material.texture);
@@ -645,7 +645,7 @@ begin
         end;
         GLLibMaterial.Material.Texture.TextureMode := tmModulate;
 
-        // Create a new face group and add all triangles for this material
+        // Creates a new face group and add all triangles for this material
         // here. We must cycle through all groups that have this material
         FaceGroup := TFGVertexNormalTexIndexList.CreateOwned(MO.FaceGroups);
         FaceGroup.MaterialName := GLLibMaterial.Name;

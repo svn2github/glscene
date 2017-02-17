@@ -10,7 +10,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
-  //GLS
+  
   GLScene, GLObjects, GLGeomObjects, GLTexture, GLMultiPolygon,
   GLVectorGeometry,  GLWin32Viewer, GLCrossPlatform, GLMaterial,
   GLCoordinates, GLBaseClasses, GLVectorTypes;

@@ -109,7 +109,7 @@ implementation
 // ------------------ TGLAsyncHDS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLAsyncHDS.Create(AOwner: TComponent);
 begin
@@ -119,7 +119,7 @@ begin
   FTilesUpdated:=true;
 end;
 
-// Destroy
+ 
 //
 destructor TGLAsyncHDS.Destroy;
 begin

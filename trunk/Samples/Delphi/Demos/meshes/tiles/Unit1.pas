@@ -15,7 +15,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
   Vcl.StdCtrls,
-  // GLS
+  
   GLObjects,
   GLGraph,
   GLScene,

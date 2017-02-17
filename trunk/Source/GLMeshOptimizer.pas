@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.Sysutils,
-  // GLS
+  
   GLVectorGeometry, GLVectorFileObjects;
 
 type
@@ -271,7 +271,7 @@ begin
   // never used these, free them all
   WeldedVertex.Free;
   indicesMap.Free;
-  // create a TexPoint list for save face infomation, where s=facegroup index, t=face index
+  // creates a TexPoint list for save face infomation, where s=facegroup index, t=face index
   FaceList := TIntegerList.Create;
   NormalList := TAffineVectorList.Create;
   FaceNormalList := TAffineVectorList.Create;

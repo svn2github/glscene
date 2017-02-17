@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Grids,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLWin32Viewer,

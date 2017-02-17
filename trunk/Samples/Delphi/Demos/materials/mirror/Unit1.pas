@@ -10,7 +10,7 @@ uses
   Vcl.Forms,
   Vcl.ExtCtrls, 
   Vcl.StdCtrls,
-  // GLS
+  
   GLCrossPlatform, 
   GLBaseClasses, 
   GLScene, 

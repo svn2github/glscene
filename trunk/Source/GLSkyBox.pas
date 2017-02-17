@@ -118,7 +118,7 @@ uses
 // ------------------ TGLSkyBox ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSkyBox.Create(AOwner: TComponent);
@@ -132,7 +132,7 @@ begin
     // the bigger, the more this extends the clouds cap to the horizon
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSkyBox.Destroy;

@@ -30,7 +30,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLApplicationFileIO, GLVectorGeometry, GLVectorLists, GLScene, GLTexture,
   GLVectorFileObjects, GLMaterial;
 
@@ -526,7 +526,7 @@ const
         if owner.MaterialLibrary <> NIL then
         begin
           libmat := owner.MaterialLibrary.Materials.GetLibMaterialByName(fgmat);
-          if libmat = NIL then // create a colored material
+          if libmat = NIL then // creates a colored material
           begin
             acadcolor := StrToIntDef(fgmat, 0);
             if acadcolor in [1 .. 255] then

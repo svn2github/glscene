@@ -6,16 +6,34 @@ uses
   System.SysUtils,
   System.Classes,
   Vcl.Controls,
-  Vcl.Forms, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
+  Vcl.Forms,
+  Vcl.ExtCtrls,
+  Vcl.StdCtrls,
 
-  // GLS
-  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects,
-  GLGraph, GLVectorLists, GLVectorTypes, GLVectorGeometry, GLSLShader,
-  GLGeomObjects, GLVectorFileObjects, GLSimpleNavigation, GLCustomShader,
-  GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses, GLUtils,
+  GLTexture,
+  GLCadencer,
+  GLWin32Viewer,
+  GLScene,
+  GLObjects,
+  GLGraph,
+  GLVectorLists,
+  GLVectorTypes,
+  GLVectorGeometry,
+  GLSLShader,
+  GLGeomObjects,
+  GLVectorFileObjects,
+  GLSimpleNavigation,
+  GLCustomShader,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
+  GLUtils,
 
-  // FileFormats
-  GLFileTGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
+  GLFileMD2,
+  GLFileMS3D,
+  GLFile3DS,
+  DDSImage;
 
 type
   TGLSLTestForm = class(TForm)
@@ -55,12 +73,6 @@ type
       Sender: TObject);
     procedure GLSLShaderInitializeEx(Shader: TGLCustomGLSLShader;
       Sender: TObject);
-  private
-     
-
-  public
-     
-
   end;
 
 var

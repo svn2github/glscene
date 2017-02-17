@@ -46,7 +46,7 @@ type
 
   // TGLCelShaderGetIntensity
   //
-  //: An event for user defined cel intensity.
+  // An event for user defined cel intensity.
   TGLCelShaderGetIntensity = procedure(Sender: TObject; var intensity: Byte) of
     object;
 
@@ -97,7 +97,7 @@ implementation
 // ------------------ TGLCelShader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLCelShader.Create(AOwner: TComponent);
@@ -125,7 +125,7 @@ begin
   FVPHandle := TGLARBVertexProgramHandle.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCelShader.Destroy;

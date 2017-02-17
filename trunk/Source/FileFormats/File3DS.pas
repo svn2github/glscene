@@ -773,7 +773,7 @@ begin
   CreateDatabase;
 end;
 
-// Destroy
+ 
 //
 destructor TFile3DS.Destroy;
 begin
@@ -789,7 +789,7 @@ end;
 
 procedure TFile3DS.AddToNodeList(Chunk: PChunk3DS);
 
-// create a node, put node in list and fill-in structure
+// creates a node, put node in list and fill-in structure
 
 var
   NewNode: PNodeList;
@@ -895,7 +895,7 @@ begin
                   end;
                 end
                 else
-                  KFAddParentName(HdrChunk, Name); // create PARENT_NAME chunk
+                  KFAddParentName(HdrChunk, Name); // creates PARENT_NAME chunk
               end;
             end;
           end;
@@ -1210,7 +1210,7 @@ begin
   ReleaseDatabase;
 end;
 
-// LoadFromFile
+ 
 //
 procedure TFile3DS.LoadFromFile(const FileName: String);
 begin

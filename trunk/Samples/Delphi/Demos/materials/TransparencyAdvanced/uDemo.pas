@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
   GLSJPG,
-  //GLS
+  
   GLScene, GLObjects, GLCoordinates, GLSimpleNavigation, GLMaterial,
   GLCadencer, GLCrossPlatform, GLBaseClasses, GLWin32Viewer, GLCustomShader,
   GLSLShader, GLTexture, GLFBORenderer, GLRenderContextInfo, GLGeomObjects,

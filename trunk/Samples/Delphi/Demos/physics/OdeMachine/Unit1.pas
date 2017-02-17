@@ -6,7 +6,7 @@ uses
   System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
 
-  //GLS
+  
   GLScene, GLObjects, GLWin32Viewer, GLODEManager, GLVectorGeometry,
   GLCadencer, GLGeomObjects, odeimport, GLHUDObjects, GLBitmapFont,
   GLWindowsFont, GLCrossPlatform, GLCoordinates, GLBaseClasses;

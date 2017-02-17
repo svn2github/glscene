@@ -32,29 +32,29 @@ type
   TSqrt255Array = array[0..255] of Byte;
   PSqrt255Array = ^TSqrt255Array;
 
-//: Copies the values of Source to Dest (converting word values to integer values)
+// Copies the values of Source to Dest (converting word values to integer values)
 procedure WordToIntegerArray(Source: PWordArray; Dest: PIntegerArray; Count: Cardinal);
-//: Round ups to the nearest power of two, value must be positive
+// Round ups to the nearest power of two, value must be positive
 function RoundUpToPowerOf2(value: Integer): Integer;
-//: Round down to the nearest power of two, value must be strictly positive
+// Round down to the nearest power of two, value must be strictly positive
 function RoundDownToPowerOf2(value: Integer): Integer;
-//: Returns True if value is a true power of two
+// Returns True if value is a true power of two
 function IsPowerOf2(value: Integer): Boolean;
 {Read a CRLF terminated string from a stream. 
    The CRLF is NOT in the returned string. }
 function ReadCRLFString(aStream: TStream): AnsiString;
-//: Write the string and a CRLF in the stream
+// Write the string and a CRLF in the stream
 procedure WriteCRLFString(aStream: TStream; const aString: AnsiString);
-//: Similar to SysUtils.TryStrToFloat, but ignores user's locale
+// Similar to SysUtils.TryStrToFloat, but ignores user's locale
 function TryStrToFloat(const strValue: string; var val: Extended): Boolean;
-//: Similar to SysUtils.StrToFloatDef, but ignores user's locale
+// Similar to SysUtils.StrToFloatDef, but ignores user's locale
 function StrToFloatDef(const strValue: string; defValue: Extended = 0): Extended;
 
-//: Converts a string into color
+// Converts a string into color
 function StringToColorAdvancedSafe(const Str: string; const Default: TColor): TColor;
-//: Converts a string into color
+// Converts a string into color
 function TryStringToColorAdvanced(const Str: string; var OutColor: TColor): Boolean;
-//: Converts a string into color
+// Converts a string into color
 function StringToColorAdvanced(const Str: string): TColor;
 
 {Parses the next integer in the string. 

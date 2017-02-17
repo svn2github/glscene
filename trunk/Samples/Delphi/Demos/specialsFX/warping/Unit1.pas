@@ -14,7 +14,7 @@ uses
   Vcl.ExtDlgs,
   Vcl.Menus,
 
-  //GLS
+  
   GLScene, GLGraphics, GLGraph, GLObjects, GLVectorGeometry, GLVectorTypes,
   GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 

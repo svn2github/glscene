@@ -20,7 +20,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.SyncObjs,
-  // GLS
+  
   OpenGLTokens,
   GLHeightData,
   GLGraphics,
@@ -114,7 +114,7 @@ implementation
 const
   cDefaultBumpScale = 0.01;
 
-  // Create
+   
   //
 
 constructor TGLBumpmapHDS.Create(AOwner: TComponent);
@@ -125,7 +125,7 @@ begin
   Uno := TCriticalSection.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBumpmapHDS.Destroy;

@@ -42,90 +42,65 @@ type
     aresFont,
     aresMesh);
 
-  // TAFIOCreateFileStream
-  //
   TAFIOCreateFileStream = function(const fileName: string; mode: Word): TStream;
 
-  // TAFIOFileStreamExists
-  //
   TAFIOFileStreamExists = function(const fileName: string): Boolean;
 
-  // TAFIOFileStreamEvent
-  //
-  TAFIOFileStreamEvent = function(const fileName: string; mode: Word): TStream of object;
+   TAFIOFileStreamEvent = procedure (const fileName : String; mode : Word; var Stream : TStream) of object;
 
-  // TAFIOFileStreamExistsEvent
-  //
   TAFIOFileStreamExistsEvent = function(const fileName: string): Boolean of object;
 
-  // TGLApplicationFileIO
-  //
-    {Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream. 
-       The component should be considered a helper only, you can directly specify
-       a function via the vAFIOCreateFileStream variable.
-       If multiple TGLApplicationFileIO components exist in the application,
-       the last one created will be the active one. }
+  { Allows specifying a custom behaviour for GLApplicationFileIO's CreateFileStream.
+    The component should be considered a helper only, you can directly specify
+    a function via the vAFIOCreateFileStream variable.
+    If multiple TGLApplicationFileIO components exist in the application,
+    the last one created will be the active one. }
   TGLApplicationFileIO = class(TComponent)
   private
-     
+
     FOnFileStream: TAFIOFileStreamEvent;
     FOnFileStreamExists: TAFIOFileStreamExistsEvent;
-
-  protected
-    
-
   public
-    
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-
   published
-    
-      {Event that allows you to specify a stream for the file. 
-         Destruction of the stream is at the discretion of the code that
-         invoked CreateFileStream. Return nil to let the default mechanism
-         take place (ie. attempt a regular file system access). }
+    { Event that allows you to specify a stream for the file.
+      Destruction of the stream is at the discretion of the code that
+      invoked CreateFileStream. Return nil to let the default mechanism
+      take place (ie. attempt a regular file system access). }
     property OnFileStream: TAFIOFileStreamEvent read FOnFileStream write FOnFileStream;
     {Event that allows you to specify if a stream for the file exists.  }
     property OnFileStreamExists: TAFIOFileStreamExistsEvent read FOnFileStreamExists write FOnFileStreamExists;
   end;
 
-  // TGLDataFileCapabilities
-  //
   TGLDataFileCapability = (dfcRead, dfcWrite);
   TGLDataFileCapabilities = set of TGLDataFileCapability;
 
-  // TGLDataFile
-  //
-  {Abstract base class for data file formats interfaces. 
+  {Abstract base class for data file formats interfaces.
      This class declares base file-related behaviours, ie. ability to load/save
-     from a file or a stream. 
+     from a file or a stream.
      It is highly recommended to overload ONLY the stream based methods, as the
      file-based one just call these, and stream-based behaviours allow for more
      enhancement (such as other I/O abilities, compression, cacheing, etc.)
      to this class, without the need to rewrite subclasses. }
   TGLDataFile = class(TGLUpdateAbleObject)
   private
-     
     FResourceName: string;
     procedure SetResourceName(const AName: string);
   public
-    
 
-    {Describes what the TGLDataFile is capable of. 
+    {Describes what the TGLDataFile is capable of.
        Default value is [dfcRead]. }
     class function Capabilities: TGLDataFileCapabilities; virtual;
-
-    {Duplicates Self and returns a copy. 
+    {Duplicates Self and returns a copy.
        Subclasses should override this method to duplicate their data. }
     function CreateCopy(AOwner: TPersistent): TGLDataFile; dynamic;
-
     procedure LoadFromFile(const fileName: string); dynamic;
     procedure SaveToFile(const fileName: string); dynamic;
-    procedure LoadFromStream(stream: TStream); virtual;
+    procedure LoadFromStream(stream: TStream); dynamic;
     procedure SaveToStream(stream: TStream); dynamic;
     procedure Initialize; dynamic;
-    {Optionnal resource name. 
+    {Optionnal resource name.
        When using LoadFromFile/SaveToFile, the filename is placed in it,
        when using the Stream variants, the caller may place the resource
        name in it for parser use. }
@@ -135,19 +110,19 @@ type
   TGLDataFileClass = class of TGLDataFile;
   TGLSResourceStream = TResourceStream;
 
-  //: Returns true if an GLApplicationFileIO has been defined
+// Returns true if an GLApplicationFileIO has been defined
 function ApplicationFileIODefined: Boolean;
 
-{Creates a file stream corresponding to the fileName. 
+(*Creates a file stream corresponding to the fileName.
    If the file does not exists, an exception will be triggered.
    Default mechanism creates a regular TFileStream, the 'mode' parameter
-   is similar to the one for TFileStream. }
+   is similar to the one for TFileStream. *)
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
-{Queries is a file stream corresponding to the fileName exists.  }
+// Queries is a file stream corresponding to the fileName exists.
 function FileStreamExists(const fileName: string): Boolean;
 
-{Create a resource stream. }
+// Create a resource stream.
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
 
 function StrToGLSResType(const AStrRes: string): TGLSApplicationResource;
@@ -167,17 +142,11 @@ implementation
 var
   vAFIO: TGLApplicationFileIO = nil;
 
-// ApplicationFileIODefined
-//
-
 function ApplicationFileIODefined: Boolean;
 begin
   Result := (Assigned(vAFIOCreateFileStream) and Assigned(vAFIOFileStreamExists))
     or Assigned(vAFIO);
 end;
-
-// CreateFileStream
-//
 
 function CreateFileStream(const fileName: string;
   mode: Word = fmOpenRead + fmShareDenyNone): TStream;
@@ -188,18 +157,17 @@ begin
   begin
       Result:=nil;
       if Assigned(vAFIO) and Assigned(vAFIO.FOnFileStream) then
-      Result := vAFIO.FOnFileStream(fileName, mode);
+         vAFIO.FOnFileStream(fileName, mode, Result);
       if not Assigned(Result) then 
 	  begin
          if ((mode and fmCreate)=fmCreate) or FileExists(fileName) then
-            Result:=TFileStream.Create(fileName, mode)
-         else raise Exception.Create('File not found: "'+fileName+'"');
+            Result := TFileStream.Create(fileName, mode)
+         else
+         raise
+           Exception.Create('File not found: "'+fileName+'"');
       end;
    end;
 end;
-
-// FileStreamExists
-//
 
 function FileStreamExists(const fileName: string): Boolean;
 begin
@@ -213,9 +181,6 @@ begin
       Result := FileExists(fileName);
   end;
 end;
-
-// FileStreamExists
-//
 
 function CreateResourceStream(const ResName: string; ResType: PChar): TGLSResourceStream;
 var
@@ -233,17 +198,11 @@ end;
 // ------------------ TGLApplicationFileIO ------------------
 // ------------------
 
-// Create
-//
-
 constructor TGLApplicationFileIO.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   vAFIO := Self;
 end;
-
-// Destroy
-//
 
 destructor TGLApplicationFileIO.Destroy;
 begin
@@ -255,16 +214,11 @@ end;
 // ------------------ TGLDataFile ------------------
 // ------------------
 
-// Capabilities
-//
 class function TGLDataFile.Capabilities: TGLDataFileCapabilities;
 begin
   Result := [dfcRead];
 end;
 
-
-// CreateCopy
-//
 function TGLDataFile.CreateCopy(AOwner: TPersistent): TGLDataFile;
 begin
   if Self <> nil then
@@ -272,9 +226,6 @@ begin
   else
     Result := nil;
 end;
-
-// LoadFromFile
-//
 
 procedure TGLDataFile.LoadFromFile(const fileName: string);
 var
@@ -289,9 +240,6 @@ begin
   end;
 end;
 
-// SaveToFile
-//
-
 procedure TGLDataFile.SaveToFile(const fileName: string);
 var
   fs: TStream;
@@ -305,16 +253,10 @@ begin
   end;
 end;
 
-// LoadFromStream
-//
-
 procedure TGLDataFile.LoadFromStream(stream: TStream);
 begin
   Assert(False, 'Import for ' + ClassName + ' to ' + stream.ClassName + ' not available.');
 end;
-
-// SaveToStream
-//
 
 procedure TGLDataFile.SaveToStream(stream: TStream);
 begin

@@ -33,7 +33,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLVectorFileObjects, GLApplicationFileIO, GLVectorGeometry, GLTexture,
   GLVectorLists, GLMaterial,
 

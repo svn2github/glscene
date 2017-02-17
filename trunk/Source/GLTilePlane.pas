@@ -167,7 +167,7 @@ implementation
 // ------------------ TGLTiledAreaRow ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTiledAreaRow.Create;
 begin
@@ -177,7 +177,7 @@ begin
    FColMax:=-1;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTiledAreaRow.Destroy;
 begin
@@ -320,7 +320,7 @@ end;
 // ------------------ TGLTiledArea ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTiledArea.Create;
 begin
@@ -329,7 +329,7 @@ begin
    FRowMax:=-1;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTiledArea.Destroy;
 begin
@@ -498,7 +498,7 @@ end;
 // ------------------ TGLTilePlane ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTilePlane.Create(AOwner:Tcomponent);
 begin
@@ -507,7 +507,7 @@ begin
    FSortByMaterials:=True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLTilePlane.Destroy;
 begin

@@ -319,7 +319,7 @@ type
     Viewport: procedure(X, y: TGLint; Width, Height: TGLsizei);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL 1.1 deprecated'}{$ENDIF}
+// ------------------------------ OpenGL 1.1 deprecated 
     Accum: procedure(op: Cardinal; Value: TGLfloat); {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     AlphaFunc: procedure(func: Cardinal; ref: Single);{$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
     AreTexturesResident: function(n: TGLsizei; textures: PGLuint; residences: PGLboolean): TGLboolean;
@@ -826,18 +826,16 @@ type
       Data: Pointer);
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 1.2'}
-{$ENDIF}
+ 
+// --------- New core function/procedure definitions in OpenGL 1.2'}
     BlendColor: PFNGLBLENDCOLORPROC;
     BlendEquation: PFNGLBLENDEQUATIONPROC;
     DrawRangeElements: PFNGLDRAWRANGEELEMENTSPROC;
     TexImage3D: PFNGLTEXIMAGE3DPROC;
     TexSubImage3D: PFNGLTEXSUBIMAGE3DPROC;
     CopyTexSubImage3D: PFNGLCOPYTEXSUBIMAGE3DPROC;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 1.4'}
-{$ENDIF}
+
+// -------- New core function/procedure definitions in OpenGL 1.4'}
     BlendFuncSeparate: PFNGLBLENDFUNCSEPARATEPROC;
     MultiDrawArrays: PFNGLMULTIDRAWARRAYSPROC;
     MultiDrawElements: PFNGLMULTIDRAWELEMENTSPROC;
@@ -845,16 +843,15 @@ type
     PointParameterfv: PFNGLPOINTPARAMETERFVPROC;
     PointParameteri: PFNGLPOINTPARAMETERIPROC;
     PointParameteriv: PFNGLPOINTPARAMETERIVPROC;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'New core function/procedure definitions in OpenGL 2.0'}
-{$ENDIF}
+ 
+// ------------- New core function/procedure definitions in OpenGL 2.0'}
     BlendEquationSeparate: PFNGLBLENDEQUATIONSEPARATEPROC;
     DrawBuffers: PFNGLDRAWBUFFERSPROC;
     StencilOpSeparate: PFNGLSTENCILOPSEPARATEPROC;
     StencilFuncSeparate: PFNGLSTENCILFUNCSEPARATEPROC;
     StencilMaskSeparate: PFNGLSTENCILMASKSEPARATEPROC;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Buffer objects'}{$ENDIF}
+
+// ---------------- Buffer objects
     LockArrays: PFNGLLOCKARRAYSEXTPROC; // EXT only
     UnlockArrays: PFNGLUNLOCKARRAYSEXTPROC; // EXT only
     BindBuffer: PFNGLBINDBUFFERPROC;
@@ -874,8 +871,7 @@ type
     BindBufferOffset: PFNGLBINDBUFFEROFFSETEXTPROC; // EXT + NV only
     BindBufferBase: PFNGLBINDBUFFERBASEPROC;
     TransformFeedbackAttribs: PFNGLTRANSFORMFEEDBACKATTRIBSNVPROC; // NV only
-    TransformFeedbackVaryingsNV: PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC;
-    // NV only
+    TransformFeedbackVaryingsNV: PFNGLTRANSFORMFEEDBACKVARYINGSNVPROC; // NV only
     TransformFeedbackVaryings: PFNGLTRANSFORMFEEDBACKVARYINGSPROC;
     GetTransformFeedbackVarying: PFNGLGETTRANSFORMFEEDBACKVARYINGPROC;
     BeginTransformFeedback: PFNGLBEGINTRANSFORMFEEDBACKPROC;
@@ -1049,8 +1045,8 @@ type
     VertexArrayVertexAttribLFormat: PFNGLVertexArrayVertexAttribLFormat;
     VertexArrayVertexAttribBinding: PFNGLVertexArrayVertexAttribBinding;
     VertexArrayVertexBindingDivisor: PFNGLVertexArrayVertexBindingDivisor;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Shader object'}{$ENDIF}
+ 
+// ------------------------------ Shader object 
     DeleteObject: PFNGLDELETEOBJECTARBPROC; // ARB only
     GetHandle: PFNGLGETHANDLEARBPROC; // ARB only
     DetachShader: PFNGLDETACHSHADERPROC;
@@ -1174,8 +1170,8 @@ type
     DispatchCompute: PFNGLDispatchCompute;
     DispatchComputeIndirect: PFNGLDispatchComputeIndirect;
     ShaderStorageBlockBinding: PFNGLShaderStorageBlockBinding;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Framebuffer object'}{$ENDIF}
+ 
+// ------------------------------ Framebuffer object 
     IsRenderbuffer: PFNGLISRENDERBUFFERPROC;
     BindRenderbuffer: PFNGLBINDRENDERBUFFERPROC;
     DeleteRenderbuffers: PFNGLDELETERENDERBUFFERSPROC;
@@ -1203,8 +1199,8 @@ type
     NamedFramebufferParameteri: PFNGLNamedFramebufferParameteri;
     GetNamedFramebufferParameteriv: PFNGLGetNamedFramebufferParameteriv;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Queries object'}{$ENDIF}
+ 
+// ------------------------------ Queries object 
     GenQueries: PFNGLGENQUERIESPROC;
     DeleteQueries: PFNGLDELETEQUERIESPROC;
     IsQuery: PFNGLISQUERYPROC;
@@ -1224,8 +1220,8 @@ type
     GetProgramResourceLocation: PFNGLGetProgramResourceLocation;
     GetProgramResourceLocationIndex: PFNGLGetProgramResourceLocationIndex;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Texture & Sampler object'}{$ENDIF}
+ 
+// ------------------------------ Texture & Sampler object 
     // promoted to core v1.3 from GL_ARB_multitexture (#1)
     ActiveTexture: PFNGLACTIVETEXTUREPROC;
     SampleCoverage: PFNGLSAMPLECOVERAGEPROC;
@@ -1340,8 +1336,8 @@ type
     BindVertexBuffers: PFNGLBindVertexBuffers;
     TextureView: PFNGLTextureView;
 
-    {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-    {$IFDEF GLS_REGIONS}{$REGION 'Direct access'}{$ENDIF}
+     
+    // ------------------------------ Direct access 
     ClientAttribDefault: PFNGLCLIENTATTRIBDEFAULTEXTPROC;
     PushClientAttribDefault: PFNGLPUSHCLIENTATTRIBDEFAULTEXTPROC;
     MatrixLoadf: PFNGLMATRIXLOADFEXTPROC;
@@ -1508,8 +1504,8 @@ type
     NamedFramebufferTextureFace: PFNGLNAMEDFRAMEBUFFERTEXTUREFACEEXTPROC;
     TextureRenderbuffer: PFNGLTEXTURERENDERBUFFEREXTPROC;
     MultiTexRenderbuffer: PFNGLMULTITEXRENDERBUFFEREXTPROC;
-   {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-   {$IFDEF GLS_REGIONS}{$REGION 'Debugging'}{$ENDIF}
+    
+   // ------------------------------ Debugging 
     // Special Gremedy debugger extension
     FrameTerminatorGREMEDY: PFNGLFRAMETERMINATORGREMEDYPROC;
     StringMarkerGREMEDY: PFNGLSTRINGMARKERGREMEDYPROC;
@@ -1547,8 +1543,8 @@ type
    {$IFDEF MSWINDOWS} stdcall;
    {$ELSE} cdecl;
    {$ENDIF}
-   {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-   {$IFDEF GLS_REGIONS}{$REGION 'Interrop'}{$ENDIF}
+    
+   // ------------------------------ Interrop 
     CreateSyncFromCLevent: PFNGLCreateSyncFromCLevent;
    {$IFDEF LINUX}
     VDPAUInitNV: procedure(const vdpDevice: Pointer;
@@ -1581,8 +1577,8 @@ type
       const surfaces: PGLvdpauSurfaceNV);
    {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
    {$ENDIF LINUX}
-   {$IFDEF GLS_REGIONS}{$ENDREGION 'Interrop'}{$ENDIF}
-   {$IFDEF GLS_REGIONS}{$REGION 'Path rendering'}{$ENDIF}
+   
+   // ------------------------------ Path rendering 
     GenPathsNV: PFNGLGENPATHSNVPROC;
     DeletePathsNV: PFNGLDELETEPATHSNVPROC;
     IsPathNV: PFNGLISPATHNVPROC;
@@ -1631,7 +1627,7 @@ type
     PointAlongPathNV: PFNGLPOINTALONGPATHNVPROC;
     PathStencilDepthOffsetNV: PFNGLPATHSTENCILDEPTHOFFSETNVPROC;
     PathCoverDepthFuncNV: PFNGLPATHCOVERDEPTHFUNCNVPROC;
-  {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+   
   {$IFDEF GLS_REGIONS}
   {$REGION 'Windows OpenGL (WGL) function/procedure definitions for ARB approved extensions'}
   {$ENDIF}
@@ -1703,7 +1699,7 @@ type
     WDXUnlockObjectsNV: PFNWGLDXUNLOCKOBJECTSNVPROC;
 
    {$ENDIF}
-   {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+    
    {$IFDEF GLS_REGIONS}
    {$REGION 'Windows OpenGL (WGL) function/procedure definitions for Vendor/EXT extensions'}
    {$ENDIF}
@@ -1721,9 +1717,9 @@ type
     WAllocateMemoryNV: PFNWGLALLOCATEMEMORYNVPROC;
     WFreeMemoryNV: PFNWGLFREEMEMORYNVPROC;
 {$ENDIF}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'GLX function/procedure definitions for ARB approved extensions'}
-{$ENDIF}
+ 
+// ------- GLX function/procedure definitions for ARB approved extensions'}
+
 {$IFDEF SUPPORT_GLX}
     // ###########################################################
     // function and procedure definitions for
@@ -1771,9 +1767,8 @@ type
     // X_ARB_create_context (EXT #56)
     XCreateContextAttribsARB: PFNGLXCREATECONTEXTATTRIBSARBPROC;
   {$ENDIF}
-  {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-  {$IFDEF GLS_REGIONS}{$REGION 'GLX function/procedure definitions for Vendor/EXT extensions'}
-  {$ENDIF}
+   
+  // ------------- GLX function/procedure definitions for Vendor/EXT extensions'}
   {$IFDEF SUPPORT_GLX}
     // ###########################################################
     // function and procedure definitions for
@@ -1855,8 +1850,8 @@ type
     XSwapIntervalEXT: PFNGLXSWAPINTERVALEXTPROC;
     XCopyImageSubDataNV: PFNGLXCOPYIMAGESUBDATANVPROC;
   {$ENDIF}
-  {$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-  {$IFDEF GLS_REGIONS}{$REGION 'AGL function/procedure'}{$ENDIF}
+   
+  // ------------------------------ AGL function/procedure 
   {$IFDEF DARWIN}
     // AGL extension checks
     A_aux_depth_stencil, A_client_storage, A_element_array, A_fence,
@@ -1947,8 +1942,8 @@ type
     AGetError: function(): Cardinal; cdecl;
     AErrorString: function(code: Cardinal): PAnsiChar; cdecl;
 {$ENDIF}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'EGL function/procedure'}{$ENDIF}
+ 
+// ------------------------------ EGL function/procedure 
 {$IFDEF EGL_SUPPORT}
     OES_depth24, OES_depth32, OES_depth_texture, OES_element_index_uint,
       OES_fbo_render_mipmap, OES_get_program_binary, OES_mapbuffer,
@@ -2039,8 +2034,8 @@ type
       target: EGLNativePixmapType): EGLBoolean;
 {$IFDEF MSWINDOWS}stdcall{$ELSE} cdecl{$ENDIF};
 {$ENDIF EGL_SUPPORT}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
+ 
+// ------------------------------ locate functions/procedures for OpenGL Utility (GLU) extensions'} {$ENDIF}
 
     // ###########################################################
     // locate functions and procedures for
@@ -2063,7 +2058,7 @@ type
     property DebugMode: boolean read FDebug write FDebug;
   end;
 
-{$IFDEF GLS_REGIONS}{$REGION 'Windows OpenGL (WGL) support functions'}{$ENDIF}
+// ------------------------------ Windows OpenGL (WGL) support functions 
 
 {$IFDEF SUPPORT_WGL}
 function wglGetProcAddress(ProcName: PAnsiChar): Pointer; stdcall; external opengl32;
@@ -2092,9 +2087,8 @@ function wglUseFontOutlines(p1: HDC; p2, p3, p4: DWORD; p5, p6: single;
   p7: integer; p8: PGlyphMetricsFloat): BOOL; stdcall; external opengl32 Name 'wglUseFontOutlinesA';
 {$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL Extension to the X Window System (GLX) support functions'}
-{$ENDIF}
+ 
+// ------------- OpenGL Extension to the X Window System (GLX) support functions'}
 {$IFDEF SUPPORT_GLX}
 // GLX 1.0
 function glXGetProcAddress(const Name: PAnsiChar): Pointer; cdecl;
@@ -2144,9 +2138,8 @@ function glXGetClientString(dpy: PDisplay; Name: TGLint): PAnsiChar; cdecl;
 // GLX 1.2 and later
 function glXGetCurrentDisplay: PDisplay; cdecl; external opengl32;
 {$ENDIF}
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL Extension to the Apple System (AGL) support functions'}
-{$ENDIF}
+ 
+// ------------- OpenGL Extension to the Apple System (AGL) support functions'}
 {$IFDEF DARWIN}
 function aglChoosePixelFormat(gdevs: PAGLDevice; ndev: GLint; attribs: PGLint): TAGLPixelFormat; cdecl; external libAGL;
 procedure aglDestroyPixelFormat(pix: TAGLPixelFormat); cdecl; external libAGL;
@@ -2156,9 +2149,7 @@ function aglDestroyContext(ctx: TAGLContext): GLboolean; cdecl; external libAGL;
 function aglSetCurrentContext(ctx: TAGLContext): GLboolean; cdecl; external libAGL;
 function aglSetDrawable(ctx: TAGLContext; draw: TAGLDrawable): GLboolean; cdecl; external libAGL;{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS} {$REGION 'OpenGL utility (GLU) functions and procedures'}{$ENDIF}
-
+ 
 function gluErrorString(errCode: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 function gluGetString(Name: Cardinal): PAnsiChar; {$IFDEF MSWINDOWS} stdcall;{$ENDIF} {$IFDEF UNIX} cdecl; {$ENDIF} external glu32;
 procedure gluOrtho2D(left, right, bottom, top: TGLdouble);

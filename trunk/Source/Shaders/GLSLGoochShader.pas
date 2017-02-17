@@ -22,7 +22,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLCrossPlatform,

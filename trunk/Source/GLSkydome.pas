@@ -20,7 +20,7 @@ uses
   System.SysUtils,
   System.Math,
   Vcl.Graphics,
-  // GLS
+  
   GLScene,
   GLVectorGeometry,
   GLGraphics,
@@ -301,7 +301,7 @@ uses
 // ------------------ TGLSkyDomeBand ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSkyDomeBand.Create(Collection: TCollection);
@@ -317,7 +317,7 @@ begin
   FStacks := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSkyDomeBand.Destroy;
@@ -561,7 +561,7 @@ end;
 // ------------------ TGLSkyDomeStar ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSkyDomeStar.Create(Collection: TCollection);
@@ -569,7 +569,7 @@ begin
   inherited Create(Collection);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSkyDomeStar.Destroy;
@@ -605,7 +605,7 @@ end;
 // ------------------ TGLSkyDomeStars ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSkyDomeStars.Create(AOwner: TComponent);
@@ -886,7 +886,7 @@ begin
   FStars := TGLSkyDomeStars.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSkyDome.Destroy;
@@ -997,7 +997,7 @@ begin
   PreCalculate;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLEarthSkyDome.Destroy;

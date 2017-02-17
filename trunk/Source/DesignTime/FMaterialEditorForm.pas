@@ -85,7 +85,7 @@ begin
   end;
 end;
 
-// Create
+ 
 //
 
 constructor TGLMaterialEditorForm.Create(AOwner: TComponent);

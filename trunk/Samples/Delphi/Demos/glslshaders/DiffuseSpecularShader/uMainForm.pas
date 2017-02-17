@@ -3,17 +3,41 @@ unit uMainForm;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms,
-  Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
+  System.SysUtils, 
+  System.Classes, 
+  Vcl.Graphics, 
+  Vcl.Controls, 
+  Vcl.Forms,
+  Vcl.Dialogs, 
+  Vcl.ExtCtrls, 
+  Vcl.StdCtrls, 
 
-  // GLScene
-  GLTexture, GLCadencer, GLWin32Viewer, GLScene, GLObjects, GLGraph,
-  GLVectorTypes, GLUserShader, GLContext, GLVectorGeometry, GLGeomObjects,
-  GLVectorFileObjects, GLSLDiffuseSpecularShader, GLSLShader, GLCustomShader,
-  GLSimpleNavigation, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
+  GLTexture, 
+  GLCadencer, 
+  GLWin32Viewer, 
+  GLScene, 
+  GLObjects, 
+  GLGraph,
+  GLVectorTypes, 
+  GLUserShader, 
+  GLContext, 
+  GLVectorGeometry, 
+  GLGeomObjects,
+  GLVectorFileObjects,
+  GLSLDiffuseSpecularShader,
+  GLSLShader,
+  GLCustomShader,
+  GLSimpleNavigation,
+  GLCrossPlatform,
+  GLMaterial,
+  GLCoordinates,
+  GLBaseClasses,
   GLUtils,
-  // FileFormats
-  GLFileTGA, GLFileMD2, GLFileMS3D, GLFile3DS, DDSImage;
+
+  GLFileMD2,
+  GLFileMS3D,
+  GLFile3DS, 
+  DDSImage;
 
 type
   TGLSLTestForm = class(TForm)
@@ -53,11 +77,6 @@ type
     procedure RealisticSpecularCheckBoxClick(Sender: TObject);
     procedure MultiLightShaderCheckBoxClick(Sender: TObject);
     procedure EnableFogCheckBoxClick(Sender: TObject);
-  private
-     
-
-  public
-     
   end;
 
 var

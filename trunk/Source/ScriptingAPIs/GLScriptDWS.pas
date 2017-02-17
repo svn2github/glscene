@@ -109,7 +109,7 @@ end;
 // ---------- TGLDelphiWebScript ----------
 // ----------
 
-// Create
+ 
 //
 constructor TGLDelphiWebScript.Create(AOnwer : TComponent);
 begin
@@ -117,7 +117,7 @@ begin
   RegisterManager(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLDelphiWebScript.Destroy;
 begin
@@ -130,7 +130,7 @@ end;
 // --------------- TGLScriptDWS2 ---------------
 // ---------------
 
-// Destroy
+ 
 //
 destructor TGLScriptDWS.Destroy;
 begin
@@ -201,7 +201,7 @@ begin
     Compiler:=nil;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLScriptDWS.FriendlyName : String;
 begin

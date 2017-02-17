@@ -25,7 +25,7 @@ interface
 
 uses
   System.Classes,
-  // GLS
+  
   GLTexture, GLScene, GLVectorGeometry, GLContext, GLMaterial,
   GLSLShader, GLCustomShader, GLRenderContextInfo, GLTextureFormat,
   GLVectorTypes;

@@ -109,7 +109,7 @@ begin
   B := C;
 end;
 
-{$IFDEF GLS_REGIONS}{$REGION 'OpenGL format image to RGBA Float'}{$ENDIF}
+// ------------------------------ OpenGL format image to RGBA Float 
 
 procedure UnsupportedToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColorFormat: Cardinal; AWidth, AHeight: Integer);
   begin
@@ -1619,8 +1619,8 @@ procedure UInt_10_10_10_2_Rev_ToImf(ASource: Pointer; ADest: PIntermediateFormat
     end;
   end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Decompression'}{$ENDIF}
+ 
+// ------------------------------ Decompression 
 
 procedure DecodeColor565(col: Word; out R, G, B: Byte);
   begin
@@ -2804,8 +2804,7 @@ procedure SRGTC2_ToImf(ASource: Pointer; ADest: PIntermediateFormatArray; AColor
     end;
   end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION 'Decompression'}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'RGBA Float to OpenGL format image'}{$ENDIF}
+// ------------------------------ RGBA Float to OpenGL format image 
 
 procedure UnsupportedFromImf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFormat: Cardinal; AWidth, AHeight: Integer);
   begin
@@ -4137,8 +4136,8 @@ procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
       raise EGLImageUtils.Create(strInvalidType);
     end;
   end;
-{$IFDEF GLS_REGIONS}{$ENDREGION 'RGBA Float to OpenGL format image'}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Compression'}{$ENDIF}
+
+// ------------------------------ Compression 
 { function FloatTo565(const AColor: TIntermediateFormat): Integer;
   var
   r, g, b: Integer;
@@ -4237,9 +4236,7 @@ procedure ImfToHalf(ASource: PIntermediateFormatArray; ADest: Pointer; AColorFor
   WriteColourBlock( a, b, remapped, block );
   end; }
 
-{$IFDEF GLS_REGIONS}{$ENDREGION 'Compression'}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Image filters'}{$ENDIF}
-
+// ------------------------------ Image filters 
 function ImageBoxFilter(Value: Single): Single;
   begin
     if (Value > -0.5) and (Value <= 0.5) then
@@ -4429,8 +4426,7 @@ type
   TCListList = array [0 .. MaxInt div (2 * SizeOf(TCList))] of TCList;
   PCListList = ^TCListList;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION 'Image filters'}{$ENDIF}
-{$IFDEF GLS_REGIONS}{$REGION 'Data type conversion table'}{$ENDIF}
+// ------------------------------ Data type conversion table 
 
 type
   TConvertTableRec = record
@@ -4514,8 +4510,6 @@ const
     (type_: GL_COMPRESSED_RG_RGTC2; proc1: RGTC2_ToImf; proc2: UnsupportedFromImf),
 
     (type_: GL_COMPRESSED_SIGNED_RG_RGTC2; proc1: SRGTC2_ToImf; proc2: UnsupportedFromImf));
-
-{$IFDEF GLS_REGIONS}{$ENDREGION 'Data type conversion table'}{$ENDIF}
 
 procedure ConvertImage(const ASrc: Pointer; const ADst: Pointer; ASrcColorFormat, ADstColorFormat: Cardinal; ASrcDataType, ADstDataType: Cardinal; AWidth, AHeight: Integer);
   var

@@ -111,7 +111,7 @@ type
   end;
   PBitMapInfoHeader = ^TBitMapInfoHeader;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLBMPImage.LoadFromFile(const filename: string);

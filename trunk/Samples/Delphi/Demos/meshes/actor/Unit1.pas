@@ -15,7 +15,7 @@ uses
   Vcl.ComCtrls,
   Vcl.Forms,
 
-  // GLS
+  
   GLCadencer,
   GLVectorFileObjects,
   GLScene,

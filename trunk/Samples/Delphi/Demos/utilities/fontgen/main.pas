@@ -12,7 +12,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
-  //GLS
+  
   GLBitmapFont, GLWindowsFont;
 
 type

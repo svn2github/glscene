@@ -11,7 +11,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.Controls,
 
-  // GLS
+  
   GLScene, GLObjects, GLParticles, GLBehaviours,
   GLVectorGeometry, GLCadencer, GLVectorTypes,
   GLWin32Viewer, GLCrossPlatform, GLCoordinates, GLBaseClasses, GLUtils;

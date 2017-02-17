@@ -159,7 +159,7 @@ implementation
 // ------------------ TQ3BSP ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TQ3BSP.Create(bspStream : TStream);
 begin

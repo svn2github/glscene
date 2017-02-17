@@ -76,11 +76,11 @@ type
     function GetCategory(ASceneObject: TGLSceneObjectClass): string;
     procedure GetRegisteredSceneObjects(ObjectList: TStringList);
     procedure PopulateMenuWithRegisteredSceneObjects(AMenuItem: TMenuItem; aClickEvent: TNotifyEvent);
-    //: Registers a stock object and adds it to the stock object list
+    // Registers a stock object and adds it to the stock object list
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string); overload;
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; aBitmap: TBitmap); overload;
     procedure RegisterSceneObject(ASceneObject: TGLSceneObjectClass; const aName, aCategory: string; ResourceModule: Cardinal; ResourceName: string = ''); overload;
-    //: Unregisters a stock object and removes it from the stock object list
+    // Unregisters a stock object and removes it from the stock object list
     procedure UnRegisterSceneObject(ASceneObject: TGLSceneObjectClass);
 
     property ObjectIcons: TImageList read FObjectIcons;
@@ -99,7 +99,7 @@ implementation
 
 //----------------- TGLObjectManager ---------------------------------------------
 
-// Create
+ 
 //
 constructor TGLObjectManager.Create(AOwner: TComponent);
 begin
@@ -109,7 +109,7 @@ begin
   FObjectIcons := TImageList.CreateSize(16, 16);
 end;
 
-// Destroy
+ 
 //
 destructor TGLObjectManager.Destroy;
 begin

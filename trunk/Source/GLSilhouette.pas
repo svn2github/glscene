@@ -169,7 +169,7 @@ implementation
 // ------------------ TGLSilhouette ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSilhouette.Create;
 begin
@@ -179,7 +179,7 @@ begin
   FCapIndices := TIntegerList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLSilhouette.Destroy;
 begin

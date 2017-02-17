@@ -2507,7 +2507,7 @@ var
 {$endif}
 begin
   {$ifdef DXGETTEXTDEBUG}
-  // Create the file if needed
+  // Creates the file if needed
   if (not fileexists(filename)) or (not append) then
     fileclose (filecreate (filename));
 

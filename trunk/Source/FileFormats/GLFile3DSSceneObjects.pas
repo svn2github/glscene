@@ -17,7 +17,7 @@ uses
   System.Classes,
   System.SysUtils,
   System.Math,
-  // GLS
+  
   OpenGLAdapter,
   GLVectorGeometry,
   OpenGLTokens,

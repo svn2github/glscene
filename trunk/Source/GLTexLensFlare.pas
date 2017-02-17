@@ -65,13 +65,13 @@ type
     procedure DoProgress(const progressTime: TProgressTimes); override;
   published
     
-    //: MaxRadius of the flare.
+    // MaxRadius of the flare.
     property Size: integer read FSize write SetSize default 50;
-    //: Random seed
+    // Random seed
     property Seed: Integer read FSeed write SetSeed;
-    //: Number of secondary flares.
+    // Number of secondary flares.
     property NumSecs: integer read FNumSecs write SetNumSecs default 8;
-    //: Number of segments used when rendering circles.
+    // Number of segments used when rendering circles.
     //property Resolution: integer read FResolution write SetResolution default 64;
     property AutoZTest: boolean read FAutoZTest write SetAutoZTest default True;
     // The Textures

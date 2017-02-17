@@ -5,12 +5,8 @@
    Component for handling joystick messages 
 
    History :  
-       17/03/07 - DaStr - Dropped Kylix support in favor of FPC (BugTracekrID=1681585)
-       29/01/02 - Egg - Added NoCaptureErrors
-       18/12/00 - Egg - Fix for supporting 2 joysticks simultaneously
-       14/04/00 - Egg - Various minor to major fixes, the component should
-                           now work properly for the 4 first buttons and XY axis
-	    20/03/00 - Egg - Creation from GLScene's TGLJoystick
+     20/03/00 - Egg - Creation from GLScene's TGLJoystick
+     The whole history is logged in previous version of the unit		
 	 
 }
 unit GLJoystick;
@@ -18,7 +14,7 @@ unit GLJoystick;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'} {$ENDIF}
 
 uses
   Winapi.Windows,
@@ -43,8 +39,6 @@ type
    TJoystickEvent = procedure(Sender: TObject; JoyID: TJoystickID; Buttons: TJoystickButtons;
                               XDeflection, YDeflection: Integer) of Object;
 
-	// TJoystick
-	//
    {A component interfacing the Joystick via the (regular) windows API. }
 	TGLJoystick = class (TComponent)
 	   private
@@ -64,9 +58,7 @@ type
          procedure SetInterval(AValue: Cardinal);
          procedure SetJoystickID(AValue: TJoystickID);
          procedure SetThreshold(AValue: Cardinal);
-
 	   protected
-	      
          function MakeJoyButtons(Param: UINT): TJoystickButtons;
          procedure DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
          procedure DoJoystickRelease(AJoystick: TJoystickID);
@@ -75,18 +67,14 @@ type
          procedure ReapplyCapture(AJoystick: TJoystickID);
          procedure WndProc(var Msg: TMessage);
          procedure Loaded; override;
-
       public
 	      
-	      constructor Create(AOwner : TComponent); override;
-	      destructor Destroy; override;
-
+         constructor Create(AOwner : TComponent); override;
+	     destructor Destroy; override;
          procedure Assign(Source: TPersistent); override;
-
          property JoyButtons : TJoystickButtons read FJoyButtons; 
          property XPosition : Integer read FXPosition;
          property YPosition : Integer read FYPosition;
-
 	   published
 	      
          {When set to True, the component attempts to capture the joystick. 
@@ -120,8 +108,6 @@ const
 // ------------------ TJoystick ------------------
 // ------------------
 
-// Create
-//
 constructor TGLJoystick.Create(AOwner: TComponent);
 begin
    inherited;
@@ -135,16 +121,12 @@ begin
    FNoCaptureErrors := True;
 end;
 
-// Destroy
-//
 destructor TGLJoystick.Destroy;
 begin
    DeallocateHWnd(FWindowHandle);
    inherited;
 end;
 
-// WndProc
-//
 procedure TGLJoystick.WndProc(var Msg: TMessage);
 begin
    with Msg do begin
@@ -187,16 +169,12 @@ begin
    end;
 end;
 
-// Loaded
-//
 procedure TGLJoystick.Loaded;
 begin
    inherited;
    ReapplyCapture(FJoystickID);
 end;
 
-// Assign
-//
 procedure TGLJoystick.Assign(Source: TPersistent);
 begin
    if Source is TGLJoystick then begin
@@ -214,8 +192,6 @@ begin
    end else inherited Assign(Source);
 end;
 
-// MakeJoyButtons
-//
 function TGLJoystick.MakeJoyButtons(Param: UINT): TJoystickButtons;
 begin
    Result := [];
@@ -226,15 +202,11 @@ begin
    FJoyButtons:=Result;
 end;
 
-// DoScale
-//
 function DoScale(aValue : Integer) : Integer;
 begin
   Result:=Round(AValue/1);
 end;
 
-// ReapplyCapture
-//
 procedure TGLJoystick.ReapplyCapture(AJoystick: TJoystickID);
 var
    jc : TJoyCaps;
@@ -254,8 +226,6 @@ begin
    end;
 end;
 
-// DoJoystickCapture
-//
 procedure TGLJoystick.DoJoystickCapture(AHandle: HWND; AJoystick: TJoystickID);
 var
    res : Cardinal;
@@ -275,16 +245,12 @@ begin
    end else joySetThreshold(cJoystickIDToNative[AJoystick], FThreshold);
 end;
 
-// DoJoystickRelease
-//
 procedure TGLJoystick.DoJoystickRelease(AJoystick: TJoystickID);
 begin
    if AJoystick <> jidNoJoystick then
       joyReleaseCapture(cJoystickIDToNative[AJoystick]);
 end;
 
-// SetCapture
-//
 procedure TGLJoystick.SetCapture(AValue: Boolean);
 begin
    if FCapture <> AValue then begin
@@ -300,8 +266,6 @@ begin
    end;
 end;
 
-// SetInterval
-//
 procedure TGLJoystick.SetInterval(AValue: Cardinal);
 begin
    if FInterval <> AValue then begin
@@ -311,8 +275,6 @@ begin
    end;
 end;
 
-// SetJoystickID
-//
 procedure TGLJoystick.SetJoystickID(AValue: TJoystickID);
 begin
    if FJoystickID <> AValue then begin
@@ -374,8 +336,6 @@ begin
   Result := Round(a0 + a1 * High(Data));
 end;
 
-// DoXYMove
-//
 procedure TGLJoystick.DoXYMove(Buttons: Word; XPos, YPos: Integer);
 var
    I: Integer;
@@ -409,8 +369,6 @@ begin
    end;
 end;
 
-// DoZMove
-//
 procedure TGLJoystick.DoZMove(Buttons: Word; ZPos: Integer);
 begin
    if FLastZ = -1 then

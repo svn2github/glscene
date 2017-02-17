@@ -141,7 +141,7 @@ implementation
 
 //----------------- TGLParticles -----------------------------------------------------
 
-// Create
+ 
 //
 
 constructor TGLParticles.Create(AOwner: TComponent);
@@ -154,7 +154,7 @@ begin
   particlePool := TList.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLParticles.Destroy;

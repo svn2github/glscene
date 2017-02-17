@@ -8,7 +8,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms,
   Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLNGDManager, GLMaterial, GLCadencer, GLWin32Viewer, GLCrossPlatform,
   GLBaseClasses, GLScene, GLGeomObjects, GLBitmapFont, GLWindowsFont, GLObjects,
   GLCoordinates, GLFile3DS, GLNavigator, GLKeyboard, GLVectorGeometry,

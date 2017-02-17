@@ -2,7 +2,7 @@
 // This unit is part of the GLScene Project, http://glscene.org
 //
 {
-   A plane simulating animated water 
+   A plane simulating animated water
    The Original Code is part of Cosmos4D
    http://users.hol.gr/~sternas/
 
@@ -19,7 +19,7 @@ interface
 
 uses
   System.Classes,
-  
+
   OpenGLTokens,
   GLVectorGeometry,
   GLScene,
@@ -32,9 +32,6 @@ uses
   GLVectorTypes;
 
 type
-
-   // TGLWaterPlaneOption
-   //
    TGLWaterPlaneOption = (wpoTextured);
    TGLWaterPlaneOptions = set of TGLWaterPlaneOption;
 
@@ -42,12 +39,8 @@ const
    cDefaultWaterPlaneOptions = [wpoTextured];
 
 type
-
-   // TGLWaterPlane
-   //
    TGLWaterPlane = class (TGLSceneObject)
 		private
-          
          FLocks : packed array of ByteBool;
          FPositions, FVelocity : packed array of Single;
          FPlaneQuadIndices : TPersistentObjectList;
@@ -66,9 +59,7 @@ type
          FLastIterationStepTime : Single;
          FMask : TGLPicture;
          FOptions : TGLWaterPlaneOptions;
-
       protected
-         
          procedure SetElastic(const value : Single);
          procedure SetResolution(const value : Integer);
          procedure SetRainTimeInterval(const val : Integer);
@@ -85,47 +76,34 @@ type
          procedure IterComputePositions;
          procedure IterComputeNormals;
          procedure Iterate;
-
       public
-         
          constructor Create(AOwner : TComponent); override;
          destructor Destroy; override;
-
          procedure DoProgress(const progressTime : TProgressTimes); override;
          procedure BuildList(var rci : TGLRenderContextInfo); override;
          procedure Assign(Source: TPersistent); override;
          function AxisAlignedDimensionsUnscaled : TVector; override;
-
-         
          procedure CreateRippleAtGridPos(X,Y:integer);
          procedure CreateRippleAtWorldPos(const x, y, z : Single); overload;
          procedure CreateRippleAtWorldPos(const pos : TVector); overload;
          procedure CreateRippleRandom;
          procedure Reset;
-
          {CPU time (in seconds) taken by the last iteration step. }
          property LastIterationStepTime : Single read FLastIterationStepTime;
-
       published
-         
-         
          property Active : Boolean read FActive write FActive default True;
-
          {Delay between raindrops in milliseconds (0 = no rain) }
          property RainTimeInterval : Integer read FRainTimeInterval write SetRainTimeInterval default 500;
          property RainForce : Single read FRainForce write SetRainForce;
-
          property Viscosity : Single read FViscosity write SetViscosity ;
          property Elastic : Single read FElastic write SetElastic;
          property Resolution : Integer read FResolution write SetResolution default 64;
          property Options : TGLWaterPlaneOptions read FOptions write SetOptions default cDefaultWaterPlaneOptions;
-
-         {A picture whose pixels determine what part of the waterplane is active. 
+         {A picture whose pixels determine what part of the waterplane is active.
             Pixels with a green/gray component beyond 128 are active, the others
-            are not (in short, white = active, black = inactive). 
+            are not (in short, white = active, black = inactive).
             The picture will automatically be stretched to match the resolution. }
          property Mask : TGLPicture read FMask write SetMask;
-
          {Maximum frequency (in Hz) at which simulation iterations happen. }
          property SimulationFrequency : Single read FSimulationFrequency write SetSimulationFrequency;
          {Maximum number of simulation iterations during catchups. 
@@ -142,8 +120,6 @@ implementation
 //-------------------------------------------------------------
 //-------------------------------------------------------------
 
-// Create
-//
 constructor TGLWaterPlane.Create(AOwner : TComponent);
 begin
    inherited Create(AOwner);
@@ -156,20 +132,17 @@ begin
    FViscosity:=0.99;
    FSimulationFrequency:=100; // 100 Hz
    FMaximumCatchupIterations:=1;
-   FOptions:=cDefaultWaterPlaneOptions;
+   FOptions := cDefaultWaterPlaneOptions;
 
    FPlaneQuadIndices:=TPersistentObjectList.Create;
    FPlaneQuadTexCoords:=TTexPointList.Create;
    FPlaneQuadVertices:=TAffineVectorList.Create;
    FPlaneQuadNormals:=TAffineVectorList.Create;
-   FMask:=TGLPicture.Create;
+   FMask := TGLPicture.Create;
    FMask.OnChange:=DoMaskChanged;
-
    SetResolution(64);
 end;
 
-// Destroy
-//
 destructor TGLWaterPlane.Destroy;
 begin
    FMask.Free;
@@ -180,8 +153,6 @@ begin
    inherited;
 end;
 
-// DoProgress
-//
 procedure TGLWaterPlane.DoProgress(const progressTime : TProgressTimes);
 var
    i : Integer;
@@ -220,16 +191,12 @@ begin
    end;
 end;
 
-// CreateRippleAtGridPos
-//
 procedure TGLWaterPlane.CreateRippleAtGridPos(x, y : Integer);
 begin
    if (x>0) and (y>0) and (x<Resolution-1) and (y<Resolution-1) then
       FVelocity[x+y*Resolution]:=FRainForce;
 end;
 
-// CreateRippleAtWorldPos
-//
 procedure TGLWaterPlane.CreateRippleAtWorldPos(const x, y, z : Single);
 var
    vv : TVector;
@@ -239,8 +206,6 @@ begin
                          Round((vv.Z+0.5)*Resolution));
 end;
 
-// CreateRippleAtWorldPos
-//
 procedure TGLWaterPlane.CreateRippleAtWorldPos(const pos : TVector);
 var
    vv : TVector;
@@ -250,15 +215,11 @@ begin
                          Round((vv.Z+0.5)*Resolution));
 end;
 
-// CreateRippleRandom
-//
 procedure TGLWaterPlane.CreateRippleRandom;
 begin
    CreateRippleAtGridPos(Random(Resolution-3)+2, Random(Resolution-3)+2);
 end;
 
-// InitResolution
-//
 procedure TGLWaterPlane.InitResolution;
 var
    i, j : Integer;
@@ -300,8 +261,6 @@ begin
    StructureChanged;
 end;
 
-// Reset
-//
 procedure TGLWaterPlane.Reset;
 var
    i, j, ij, resSqr : Integer;
@@ -317,7 +276,7 @@ begin
       FLocks[i]:=False;
    end;
    if FMask.Width>0 then begin
-      maskBmp:=TGLBitmap.Create;
+      maskBmp := TGLBitmap.Create;
       try
          maskBmp.PixelFormat:=glpf32bit;
          maskBmp.Width:=Resolution;
@@ -358,8 +317,6 @@ begin
    end;
 end;
 
-// IterComputeVelocity
-//
 procedure TGLWaterPlane.IterComputeVelocity;
 var
    i, j, ij : Integer;
@@ -388,8 +345,6 @@ begin
    end;
 end;
 
-// IterComputePositions
-//
 procedure TGLWaterPlane.IterComputePositions;
 const
    cVelocityIntegrationCoeff : Single = 0.02;
@@ -416,8 +371,6 @@ begin
    end;
 end;
 
-// IterComputeNormals
-//
 procedure TGLWaterPlane.IterComputeNormals;
 var
    i, j, ij : Integer;
@@ -439,8 +392,6 @@ begin
    end;
 end;
 
-// Iterate
-//
 procedure TGLWaterPlane.Iterate;
 var
    t : Int64;
@@ -456,8 +407,6 @@ begin
    end;
 end;
 
-// BuildList
-//
 procedure TGLWaterPlane.BuildList(var rci : TGLRenderContextInfo);
 var
    i : Integer;
@@ -488,8 +437,6 @@ begin
    GL.PopClientAttrib;
 end;
 
-// Assign
-//
 procedure TGLWaterPlane.Assign(Source: TPersistent);
 begin
    if Assigned(Source) and (Source is TGLWaterPlane) then begin
@@ -501,8 +448,6 @@ begin
    inherited Assign(Source);
 end;
 
-// AxisAlignedDimensionsUnscaled
-//
 function TGLWaterPlane.AxisAlignedDimensionsUnscaled : TVector;
 begin
   Result.X:=0.5*Abs(Resolution);
@@ -511,15 +456,11 @@ begin
 end;
 
 
-// SetElastic
-//
 procedure TGLWaterPlane.SetElastic(const Value: single);
 begin
    FElastic:=Value;
 end;
 
-// SetResolution
-//
 procedure TGLWaterPlane.SetResolution(const value : Integer);
 begin
    if value<>FResolution then begin
@@ -529,32 +470,24 @@ begin
    end;
 end;
 
-// SetRainTimeInterval
-//
 procedure TGLWaterPlane.SetRainTimeInterval(Const val:integer);
 begin
    if (val>=0) and (Val<=1000000) then
       fRainTimeInterval:=val;
 end;
 
-// SetViscosity
-//
 Procedure TGLWaterPlane.SetViscosity(const val : Single);
 begin
    if (val>=0) and (val<=1) then
       FViscosity:=val;
 end;
 
-// SetRainForce
-//
 procedure TGLWaterPlane.SetRainForce(const val : Single);
 begin
    if (val>=0) and (val<=1000000) then
       FRainForce:=val;
 end;
 
-// SetSimulationFrequency
-//
 procedure TGLWaterPlane.SetSimulationFrequency(const val : Single);
 begin
    if FSimulationFrequency<>val then begin
@@ -564,23 +497,17 @@ begin
    end;
 end;
 
-// SetMask
-//
 procedure TGLWaterPlane.SetMask(val : TGLPicture);
 begin
    FMask.Assign(val);
 end;
 
-// DoMaskChanged
-//
 procedure TGLWaterPlane.DoMaskChanged(Sender : TObject);
 begin
    Reset;
    StructureChanged;
 end;
 
-// SetOptions
-//
 procedure TGLWaterPlane.SetOptions(const val : TGLWaterPlaneOptions);
 begin
    if FOptions<>val then begin

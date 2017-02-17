@@ -67,7 +67,7 @@ implementation
 uses
   DXTC;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLDDSImage.LoadFromFile(const filename: string);

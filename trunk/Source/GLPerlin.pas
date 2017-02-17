@@ -18,12 +18,15 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils,
-   
-  GLVectorGeometry, GLPerlinBase, GLHeightData,
+  System.Classes,
+  System.SysUtils,
+
+  GLVectorGeometry,
+  GLPerlinBase,
+  GLHeightData,
   GLCrossPlatform;
 
-Type
+type
   TGLPerlinInterpolation = (pi_none, pi_simple, pi_linear, pi_Smoothed,
     pi_Cosine, pi_cubic);
 
@@ -108,7 +111,7 @@ Type
     Function GetPerlinValue_2D(x, y: Double): Double;
     Procedure MakeBitmap(Param: TGLBitmap);
     Procedure SetHeightData(heightData: TGLHeightData);
-  End;
+  end;
 
   TGLPerlinHDS = class(TGLHeightDataSource)
   private
@@ -147,15 +150,21 @@ Type
     Procedure Execute; override;
   end;
 
+//----------------------------------------------------------------
+//----------------------------------------------------------------
+//----------------------------------------------------------------
 implementation
+//----------------------------------------------------------------
+//----------------------------------------------------------------
+//----------------------------------------------------------------
 
 function TGLBasePerlin.PerlinNoise_1D(x: Double): Double;
 
-Var
+var
   int_x: Integer;
   frac_x: Double;
 
-Begin
+begin
   int_x := Round(Int(x));
   frac_x := x - int_x;
   case Interpolation of
@@ -470,7 +479,7 @@ Begin
     Y_Frac)) / 2;
 End;
 
-Function TGL2DPerlinOctav.GetCosine(x, y: Double): Double;
+function TGL2DPerlinOctav.GetCosine(x, y: Double): Double;
 
 Var
   X_Int: Integer;
@@ -522,7 +531,7 @@ Begin
     end;
 End;
 
-Function TGL2DPerlin.GetPerlinValue_2D(x, y: Double): Double;
+function TGL2DPerlin.GetPerlinValue_2D(x, y: Double): Double;
 Var
   total, frequency, Amplitude: Double;
   i: Integer;
@@ -541,7 +550,7 @@ Begin
   Result := total;
 End;
 
-Procedure TGL2DPerlin.MakeBitmap(Param: TGLBitmap);
+procedure TGL2DPerlin.MakeBitmap(Param: TGLBitmap);
 
 Var
   XC, YC: Integer;
@@ -593,7 +602,7 @@ Begin
   End;
 End;
 
-Procedure TGL2DPerlin.SetHeightData(heightData: TGLHeightData);
+procedure TGL2DPerlin.SetHeightData(heightData: TGLHeightData);
 
 Var
   XC, YC: Integer;
@@ -644,9 +653,9 @@ Begin
   End;
 End;
 
-Constructor TGLPerlinHDS.Create(AOwner: TComponent);
+constructor TGLPerlinHDS.Create(AOwner: TComponent);
 
-Begin
+begin
   inherited;
   FLines := TStringList.Create;
   FInterpolation := pi_Cosine;
@@ -664,7 +673,7 @@ Var
   Perlin: TGL2DPerlin;
   Thread: TGLPerlinHDSThread;
 
-Begin
+begin
   If Stall then
     heightData.DataState := hdsNone
   else
@@ -736,9 +745,9 @@ Begin
   Until False;
 End;
 
-Procedure TGLPerlinHDSThread.Execute;
+procedure TGLPerlinHDSThread.Execute;
 
-Begin
+begin
   Perlin.Generate;
   Perlin.SetHeightData(FHeightData);
   FHeightData.DataState := hdsReady;
@@ -751,10 +760,10 @@ Begin
   Perlin.Free;
 end;
 
-Procedure TGLPerlinHDSThread.OpdateOutSide;
+procedure TGLPerlinHDSThread.OpdateOutSide;
 
-Begin
-End;
+begin
+end;
 
 initialization
 

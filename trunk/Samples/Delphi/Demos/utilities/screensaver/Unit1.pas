@@ -11,7 +11,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
 
-  // GLS
+  
   GLScene, GLScreenSaver, GLObjects, GLBehaviours, GLCadencer,
   GLWin32Viewer, GLGeomObjects, GLCrossPlatform, GLCoordinates, GLBaseClasses;
 

@@ -17,12 +17,26 @@ interface
 {$I GLScene.inc}
 
 uses
-  System.Classes, System.SysUtils, System.Math,
+  System.Classes,
+  System.SysUtils,
+  System.Math,
 
-  GLObjects, GLState, GLUtils,
-  GLScene, GLHUDObjects, GLMaterial, OpenGLTokens, GLContext,
-  GLBitmapFont, GLWindowsFont, GLVectorGeometry, GLGui,
-  GLCrossPlatform, GLColor, GLRenderContextInfo, GLBaseClasses;
+  OpenGLTokens,
+  GLObjects,
+  GLState,
+  GLUtils,
+  GLScene,
+  GLHUDObjects,
+  GLMaterial,
+  GLContext,
+  GLBitmapFont,
+  GLWindowsFont,
+  GLVectorGeometry,
+  GLGui,
+  GLCrossPlatform,
+  GLColor,
+  GLRenderContextInfo,
+  GLBaseClasses;
 
 type
 

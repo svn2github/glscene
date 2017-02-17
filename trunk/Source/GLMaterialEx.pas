@@ -14,10 +14,8 @@
      i.e. if textures less than maximum units may be not one binding occur per frame.
 
   History :
-    13/04/11 - Yar - Added TGLASMVertexProgram, fixed multitexturing
-    11/04/11 - Yar - Added texture internal storing and streaming (yet only 2D images)
     11/03/11 - Yar - Created
-    
+    The whole history is logged in previous version of the unit
 }
 
 unit GLMaterialEx;
@@ -4914,7 +4912,7 @@ begin
 
                 if bNew then
                 begin
-                  // Create new uniform
+                  // Creates new uniform
                   if bSampler then
                   begin
                     LUniform := TGLShaderUniformTexture.Create(Self);

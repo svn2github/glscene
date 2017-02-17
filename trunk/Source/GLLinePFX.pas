@@ -108,7 +108,7 @@ implementation
 // ------------------ TGLLinePFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLLinePFXManager.Create(aOwner : TComponent);
 begin
@@ -116,7 +116,7 @@ begin
    FDefaultLength:=1;
 end;
 
-// Destroy
+ 
 //
 destructor TGLLinePFXManager.Destroy;
 begin

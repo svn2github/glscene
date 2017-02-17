@@ -151,7 +151,7 @@ implementation
 // ------------------ TGLBumpShader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBumpShader.Create(AOwner: TComponent);
@@ -169,7 +169,7 @@ begin
   FFragmentProgram := TStringList.Create;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBumpShader.Destroy;

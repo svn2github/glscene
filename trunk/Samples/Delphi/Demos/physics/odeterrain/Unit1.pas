@@ -9,7 +9,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Imaging.Jpeg,
 
-  //GLS
+  
   GLScene, GLTerrainRenderer, GLObjects, GLHeightData, GLKeyboard,
   GLCadencer, GLTexture, GLHUDObjects, GLBitmapFont,
   GLSkydome, GLWin32Viewer, GLVectorGeometry, GLLensFlare, GLODEManager,

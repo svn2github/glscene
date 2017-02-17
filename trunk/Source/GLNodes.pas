@@ -158,7 +158,7 @@ implementation
 // ------------------ TGLNode ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLNode.Create(ACollection: TCollection);
@@ -167,7 +167,7 @@ begin
   // nothing, yet
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLNode.Destroy;
@@ -257,7 +257,7 @@ end;
 // ------------------ TGLNodes ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLNodes.Create(AOwner: TPersistent;
@@ -725,7 +725,7 @@ var
 begin
   if Count > 2 then
   begin
-    // Create and initialize the GLU tesselator
+    // Creates and initialize the GLU tesselator
     Tess := GluNewTess;
     GluTessCallback(Tess, GLU_TESS_BEGIN, @GL.Begin_);
     if ATextured then

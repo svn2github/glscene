@@ -56,7 +56,7 @@ var
   Mo: TMeshObject;
   I, J: Integer;
   FaceGroup: TFGVertexIndexList;
-  // lightmapBmp : TGLBitmap;
+  // lightmapBmp : TBitmap;
   Node: PNODEChunk;
   B3DMat: TB3DMaterial;
   B3DTex: TB3DTexture;

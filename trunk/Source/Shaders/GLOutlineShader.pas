@@ -82,7 +82,7 @@ uses
 // ------------------ TGLOutlineShader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLOutlineShader.Create(AOwner: TComponent);
@@ -94,7 +94,7 @@ begin
   ShaderStyle := ssLowLevel;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLOutlineShader.Destroy;

@@ -26,8 +26,6 @@ uses
 
 type
 
-  // TGLDamping
-
   {Holds parameters for TGLScene basic damping model. 
     Damping is modeled by calculating a force from the speed, this force
     can then be transformed to an acceleration is you know the object's mass.
@@ -42,41 +40,29 @@ type
       }
   TGLDamping = class(TGLUpdateAbleObject)
   private
-     
     FConstant: single;
     FLinear: single;
     FQuadratic: single;
-
-  protected
-    
-
   public
-    
     constructor Create(aOwner: TPersistent); override;
     destructor Destroy; override;
-
     procedure WriteToFiler(writer: TWriter);
     procedure ReadFromFiler(reader: TReader);
-
     procedure Assign(Source: TPersistent); override;
       {Calculates attenuated speed over deltaTime. 
             Integration step is 0.01 sec, and the following formula is applied
             at each step: constant+linear*speed+quadratic*speed^2 }
     function Calculate(speed, deltaTime: double): double;
-    //: Returns a "[constant; linear; quadractic]" string
+    // Returns a "[constant; linear; quadractic]" string
     function AsString(const damping: TGLDamping): string;
     {Sets all damping parameters in a single call. }
     procedure SetDamping(const constant: single = 0; const linear: single = 0;
       const quadratic: single = 0);
-
   published
-    
     property Constant: single read FConstant write FConstant;
     property Linear: single read FLinear write FLinear;
     property Quadratic: single read FQuadratic write FQuadratic;
   end;
-
-  // TGLBInertia
 
   {Simple translation and rotation Inertia behaviour. 
     Stores translation and rotation speeds, to which you can apply
@@ -86,35 +72,25 @@ type
     if this approximation does not suits your needs :). }
   TGLBInertia = class(TGLBehaviour)
   private
-     
     FMass: single;
     FTranslationSpeed: TGLCoordinates;
     FTurnSpeed, FRollSpeed, FPitchSpeed: single;
     FTranslationDamping, FRotationDamping: TGLDamping;
     FDampingEnabled: boolean;
-
   protected
-    
     procedure SetTranslationSpeed(const val: TGLCoordinates);
     procedure SetTranslationDamping(const val: TGLDamping);
     procedure SetRotationDamping(const val: TGLDamping);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
   public
-    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
     {Adds time-proportionned acceleration to the speed. }
     procedure ApplyTranslationAcceleration(const deltaTime: double;
       const accel: TVector);
@@ -132,7 +108,6 @@ type
             restitution is the coefficient of restituted energy (1=no energy loss,
             0=no bounce). The normal is NOT assumed to be normalized. }
     procedure SurfaceBounce(const surfaceNormal: TVector; restitution: single);
-
   published
     
     property Mass: single read FMass write FMass;
@@ -160,36 +135,23 @@ type
     property RotationDamping: TGLDamping read FRotationDamping write SetRotationDamping;
   end;
 
-  // TGLBAcceleration
-
   {Applies a constant acceleration to a TGLBInertia.  }
   TGLBAcceleration = class(TGLBehaviour)
   private
-     
     FAcceleration: TGLCoordinates;
-
   protected
-    
     procedure SetAcceleration(const val: TGLCoordinates);
-
     procedure WriteToFiler(writer: TWriter); override;
     procedure ReadFromFiler(reader: TReader); override;
-
   public
-    
     constructor Create(aOwner: TGLXCollection); override;
     destructor Destroy; override;
-
     procedure Assign(Source: TPersistent); override;
-
     class function FriendlyName: string; override;
     class function FriendlyDescription: string; override;
     class function UniqueItem: boolean; override;
-
     procedure DoProgress(const progressTime: TProgressTimes); override;
-
   published
-    
     property Acceleration: TGLCoordinates read FAcceleration write FAcceleration;
   end;
 
@@ -213,8 +175,6 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// GetInertia
-
 function GetInertia(const AGLSceneObject: TGLBaseSceneObject): TGLBInertia;
 var
   i: integer;
@@ -225,8 +185,6 @@ begin
   else
     Result := nil;
 end;
-
-// GetOrCreateInertia (TGLBehaviours)
 
 function GetOrCreateInertia(behaviours: TGLBehaviours): TGLBInertia;
 var
@@ -239,14 +197,10 @@ begin
     Result := TGLBInertia.Create(behaviours);
 end;
 
-// GetOrCreateInertia (TGLBaseSceneObject)
-
 function GetOrCreateInertia(obj: TGLBaseSceneObject): TGLBInertia;
 begin
   Result := GetOrCreateInertia(obj.Behaviours);
 end;
-
-// GetOrCreateAcceleration (TGLBehaviours)
 
 function GetOrCreateAcceleration(behaviours: TGLBehaviours): TGLBAcceleration;
 var
@@ -259,8 +213,6 @@ begin
     Result := TGLBAcceleration.Create(behaviours);
 end;
 
-// GetOrCreateAcceleration (TGLBaseSceneObject)
-
 function GetOrCreateAcceleration(obj: TGLBaseSceneObject): TGLBAcceleration;
 begin
   Result := GetOrCreateAcceleration(obj.Behaviours);
@@ -269,8 +221,6 @@ end;
 // ------------------
 // ------------------ TGLDamping ------------------
 // ------------------
-
-// Create
 
 constructor TGLDamping.Create(aOwner: TPersistent);
 begin
@@ -281,8 +231,6 @@ destructor TGLDamping.Destroy;
 begin
   inherited Destroy;
 end;
-
-// Assign
 
 procedure TGLDamping.Assign(Source: TPersistent);
 begin
@@ -295,8 +243,6 @@ begin
   else
     inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TGLDamping.WriteToFiler(writer: TWriter);
 var
@@ -315,8 +261,6 @@ begin
     end;
   end;
 end;
-
-// ReadFromFiler
 
 procedure TGLDamping.ReadFromFiler(reader: TReader);
 begin
@@ -337,8 +281,6 @@ begin
     end;
   end;
 end;
-
-// Calculate
 
 function TGLDamping.Calculate(speed, deltaTime: double): double;
 var
@@ -361,14 +303,10 @@ begin
   Result := speed;
 end;
 
-// DampingAsString
-
 function TGLDamping.AsString(const damping: TGLDamping): string;
 begin
   Result := Format('[%f; %f; %f]', [Constant, Linear, Quadratic]);
 end;
-
-// SetDamping
 
 procedure TGLDamping.SetDamping(const constant: single = 0;
   const linear: single = 0; const quadratic: single = 0);
@@ -382,8 +320,6 @@ end;
 // ------------------ TGLBInertia ------------------
 // ------------------
 
-// Create
-
 constructor TGLBInertia.Create(aOwner: TGLXCollection);
 begin
   inherited Create(aOwner);
@@ -394,8 +330,6 @@ begin
   FRotationDamping := TGLDamping.Create(Self);
 end;
 
-// Destroy
-
 destructor TGLBInertia.Destroy;
 begin
   FRotationDamping.Free;
@@ -403,8 +337,6 @@ begin
   FTranslationSpeed.Free;
   inherited Destroy;
 end;
-
-// Assign
 
 procedure TGLBInertia.Assign(Source: TPersistent);
 begin
@@ -421,8 +353,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TGLBInertia.WriteToFiler(writer: TWriter);
 begin
@@ -441,8 +371,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-
 procedure TGLBInertia.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -460,49 +388,35 @@ begin
   end;
 end;
 
-// SetTranslationSpeed
-
 procedure TGLBInertia.SetTranslationSpeed(const val: TGLCoordinates);
 begin
   FTranslationSpeed.Assign(val);
 end;
-
-// SetTranslationDamping
 
 procedure TGLBInertia.SetTranslationDamping(const val: TGLDamping);
 begin
   FTranslationDamping.Assign(val);
 end;
 
-// SetRotationDamping
-
 procedure TGLBInertia.SetRotationDamping(const val: TGLDamping);
 begin
   FRotationDamping.Assign(val);
 end;
-
-// FriendlyName
 
 class function TGLBInertia.FriendlyName: string;
 begin
   Result := 'Simple Inertia';
 end;
 
-// FriendlyDescription
-
 class function TGLBInertia.FriendlyDescription: string;
 begin
   Result := 'A simple translation and rotation inertia';
 end;
 
-// UniqueBehaviour
-
 class function TGLBInertia.UniqueItem: boolean;
 begin
   Result := True;
 end;
-
-// DoProgress
 
 procedure TGLBInertia.DoProgress(const progressTime: TProgressTimes);
 var
@@ -565,8 +479,6 @@ begin
     end;
 end;
 
-// ApplyTranslationAcceleration
-
 procedure TGLBInertia.ApplyTranslationAcceleration(const deltaTime: double;
   const accel: TVector);
 begin
@@ -574,16 +486,12 @@ begin
     accel, 1, deltaTime);
 end;
 
-// ApplyForce
-
 procedure TGLBInertia.ApplyForce(const deltaTime: double; const force: TVector);
 begin
   if Mass <> 0 then
     FTranslationSpeed.AsVector :=
       VectorCombine(FTranslationSpeed.AsVector, force, 1, deltaTime / Mass);
 end;
-
-// ApplyTorque
 
 procedure TGLBInertia.ApplyTorque(const deltaTime: double;
   const turnTorque, rollTorque, pitchTorque: single);
@@ -599,14 +507,10 @@ begin
   end;
 end;
 
-// MirrorTranslation
-
 procedure TGLBInertia.MirrorTranslation;
 begin
   FTranslationSpeed.Invert;
 end;
-
-// SurfaceBounce
 
 procedure TGLBInertia.SurfaceBounce(const surfaceNormal: TVector; restitution: single);
 var
@@ -626,8 +530,6 @@ end;
 // ------------------ TGLBAcceleration ------------------
 // ------------------
 
-// Create
-
 constructor TGLBAcceleration.Create(aOwner: TGLXCollection);
 begin
   inherited;
@@ -637,15 +539,11 @@ begin
   FAcceleration := TGLCoordinates.CreateInitialized(Self, NullHmgVector, csVector);
 end;
 
-// Destroy
-
 destructor TGLBAcceleration.Destroy;
 begin
   inherited;
   FAcceleration.Free;
 end;
-
-// Assign
 
 procedure TGLBAcceleration.Assign(Source: TPersistent);
 begin
@@ -655,8 +553,6 @@ begin
   end;
   inherited Assign(Source);
 end;
-
-// WriteToFiler
 
 procedure TGLBAcceleration.WriteToFiler(writer: TWriter);
 begin
@@ -668,8 +564,6 @@ begin
   end;
 end;
 
-// ReadFromFiler
-
 procedure TGLBAcceleration.ReadFromFiler(reader: TReader);
 begin
   inherited;
@@ -680,35 +574,27 @@ begin
   end;
 end;
 
-// SetAcceleration
-
 procedure TGLBAcceleration.SetAcceleration(const val: TGLCoordinates);
 begin
   FAcceleration.Assign(val);
 end;
 
-// FriendlyName
+ 
 
 class function TGLBAcceleration.FriendlyName: string;
 begin
   Result := 'Simple Acceleration';
 end;
 
-// FriendlyDescription
-
 class function TGLBAcceleration.FriendlyDescription: string;
 begin
   Result := 'A simple and constant acceleration';
 end;
 
-// UniqueBehaviour
-
 class function TGLBAcceleration.UniqueItem: boolean;
 begin
   Result := False;
 end;
-
-// DoProgress
 
 procedure TGLBAcceleration.DoProgress(const progressTime: TProgressTimes);
 var
@@ -735,11 +621,11 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-  // class registrations
+// class registrations
   RegisterXCollectionItemClass(TGLBInertia);
   RegisterXCollectionItemClass(TGLBAcceleration);
 

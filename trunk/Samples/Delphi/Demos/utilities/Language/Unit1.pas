@@ -7,7 +7,7 @@ uses
   Vcl.Forms, Vcl.Controls, Vcl.Graphics, Vcl.Dialogs, Vcl.Menus,
   Vcl.StdCtrls, Vcl.ExtCtrls,
 
-  //GLS
+  
   GLScene, GLObjects, GLSLanguage;
 
 type

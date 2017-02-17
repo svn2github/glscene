@@ -114,7 +114,7 @@ implementation
 // ------------------ TGLLineSettings ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLineSettings.Create(AOwner: TPersistent);
@@ -127,7 +127,7 @@ begin
   ForceMaterial := false;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLLineSettings.Destroy;
@@ -217,7 +217,7 @@ end;
 // ------------------ TGLHiddenLineShader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLHiddenLineShader.Create(AOwner: TComponent);
@@ -235,7 +235,7 @@ begin
   FShadeModel := smDefault;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLHiddenLineShader.Destroy;

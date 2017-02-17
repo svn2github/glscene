@@ -131,7 +131,7 @@ begin
     Result := TGLSelectRenderModeTechnique;
 end;
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLPickList'}{$ENDIF}
+// ------------------------------ TGLPickList 
 // ------------------
 // ------------------ TGLPickList ------------------
 // ------------------
@@ -139,7 +139,7 @@ end;
 var
   vPickListSortFlag: TPickSortType;
 
-// Create
+ 
 //
 
 constructor TGLPickList.Create(aSortType: TPickSortType);
@@ -260,9 +260,9 @@ function TGLPickList.GetSubObjects(aValue: Integer): TPickSubobjects;
 begin
   Result := TPickRecord(Items[AValue]).SubObjects;
 end;
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLSelectRenderModeTechnique'}{$ENDIF}
+// ------------------------------ TGLSelectRenderModeTechnique 
 // ------------------
 // ------------------ TGLSelectRenderModeTechnique ------------------
 // ------------------
@@ -364,6 +364,6 @@ begin
   Inc(FCurrentName);
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+ 
 
 end.

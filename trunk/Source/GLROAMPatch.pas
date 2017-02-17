@@ -17,7 +17,7 @@ interface
 
 uses
   System.SysUtils,
-  // GLS
+  
   GLVectorGeometry, GLHeightData, GLVectorLists, GLCrossPlatform, GLContext,
   OpenGLTokens, XOpenGL, GLContouring;
 
@@ -355,7 +355,7 @@ begin
   end;
   with tri^ do
   begin
-    // Create children and cross-link them
+    // Creates children and cross-link them
     lc := @vTriangleNodes[n]; // left child
     rc := @vTriangleNodes[n + 1]; // right child
 
@@ -416,7 +416,7 @@ end;
 // ------------------ TGLROAMPatch ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLROAMPatch.Create;
 begin
@@ -428,7 +428,7 @@ begin
   FOcclusionQuery := TGLOcclusionQueryHandle.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLROAMPatch.Destroy;
 begin

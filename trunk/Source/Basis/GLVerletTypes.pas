@@ -369,10 +369,10 @@ type
          constructor Create(const aOwner : TGLVerletWorld); virtual;
          destructor Destroy; override;
 
-         //: Implementation should add force to force resultant for all relevant nodes
+         // Implementation should add force to force resultant for all relevant nodes
          procedure AddForce(const vpt : TVerletProgressTimes); virtual; abstract;
 
-         //: Notifies removal of a node
+         // Notifies removal of a node
          procedure RemoveNode(const aNode : TVerletNode); virtual; abstract;
 
          property Owner : TGLVerletWorld read FOwner;
@@ -596,7 +596,7 @@ type
 			
          procedure AddForce(const vpt : TVerletProgressTimes); override;
 
-         //: Must be invoked after adjust node locations or strength 
+         // Must be invoked after adjust node locations or strength 
          procedure SetRestLengthToCurrent;
 
          property Strength : Single read FStrength write FStrength;
@@ -839,7 +839,7 @@ implementation
 // ------------------ TVerletNode ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVerletNode.CreateOwned(const aOwner : TGLVerletWorld);
 begin
@@ -854,7 +854,7 @@ begin
    FFriction:=1;
 end;
 
-// Destroy
+ 
 //
 destructor TVerletNode.Destroy;
 begin
@@ -1015,7 +1015,7 @@ end;
 // ------------------ TVerletConstraint ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVerletConstraint.Create(const aOwner : TGLVerletWorld);
 begin
@@ -1025,7 +1025,7 @@ begin
    FEnabled:=True;
 end;
 
-// Destroy
+ 
 //
 destructor TVerletConstraint.Destroy;
 begin
@@ -1034,7 +1034,7 @@ begin
    inherited;
 end;
 
-// Create
+ 
 //
 procedure TVerletConstraint.BeforeIterations;
 begin
@@ -1061,7 +1061,7 @@ end;
 // ------------------ TVerletGroupConstraint ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVerletGroupConstraint.Create(const aOwner : TGLVerletWorld);
 begin
@@ -1069,7 +1069,7 @@ begin
    FNodes:=TVerletNodeList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TVerletGroupConstraint.Destroy;
 begin
@@ -1161,7 +1161,7 @@ end;
 // ------------------ TGLVerletGlobalFrictionConstraint ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLVerletGlobalFrictionConstraint.Create(const aOwner: TGLVerletWorld);
 begin
@@ -1232,7 +1232,7 @@ end;
 // ------------------ TGLVerletForce ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLVerletForce.Create(const aOwner : TGLVerletWorld);
 begin
@@ -1241,7 +1241,7 @@ begin
       aOwner.AddForce(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLVerletForce.Destroy;
 begin
@@ -1254,7 +1254,7 @@ end;
 // ------------------ TVerletGroupForce ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVerletGroupForce.Create(const aOwner : TGLVerletWorld);
 begin
@@ -1262,7 +1262,7 @@ begin
    FNodes:=TVerletNodeList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TVerletGroupForce.Destroy;
 begin
@@ -1338,7 +1338,7 @@ end;
 // ------------------ TGLVerletWorld ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLVerletWorld.Create;
 begin
@@ -1359,7 +1359,7 @@ begin
    FInertia := True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLVerletWorld.Destroy;
 var
@@ -1672,7 +1672,7 @@ end;
 // ------------------ TVFGravity ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVFGravity.Create(const aOwner : TGLVerletWorld);
 begin
@@ -1791,7 +1791,7 @@ end;
 // ------------------ TVCFloor ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TVCFloor.Create(const aOwner: TGLVerletWorld);
 begin

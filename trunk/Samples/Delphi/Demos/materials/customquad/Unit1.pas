@@ -11,7 +11,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.Imaging.Jpeg,
-  //GLS
+  
   GLCadencer, GLScene, GLObjects, GLTexture, GLBehaviours,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform, GLMaterial,
   GLCoordinates, GLBaseClasses, GLRenderContextInfo;

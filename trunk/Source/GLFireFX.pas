@@ -248,7 +248,7 @@ end;
 // ------------------ TGLFireFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLFireFXManager.Create(AOwner: TComponent);
@@ -279,7 +279,7 @@ begin
   FireInit;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLFireFXManager.Destroy;
@@ -650,7 +650,7 @@ end;
 // ------------------ TGLBFireFX ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBFireFX.Create(aOwner: TGLXCollection);
@@ -658,7 +658,7 @@ begin
   inherited Create(aOwner);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLBFireFX.Destroy;
@@ -667,7 +667,7 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLBFireFX.FriendlyName: string;

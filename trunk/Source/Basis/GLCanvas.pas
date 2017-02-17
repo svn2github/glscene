@@ -224,7 +224,7 @@ const
   // ------------------ TGLCanvas ------------------
   // ------------------
 
-  // Create
+   
   //
 
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY: Integer;
@@ -250,7 +250,7 @@ begin
   FArcDirection := adCounterClockWise;
 end;
 
-// Create
+ 
 //
 
 constructor TGLCanvas.Create(bufferSizeX, bufferSizeY: Integer);
@@ -258,7 +258,7 @@ begin
   Create(bufferSizeX, bufferSizeY, IdentityHmgMatrix);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCanvas.Destroy;

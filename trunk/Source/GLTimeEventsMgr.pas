@@ -115,9 +115,9 @@ type
          constructor Create(Collection : TCollection); override;
          destructor Destroy; override;
 
-         //: Number of times the event was triggered since activation
+         // Number of times the event was triggered since activation
          property TickCount : Cardinal read FTickCount;
-         //: Elapsed time since the event was activated
+         // Elapsed time since the event was activated
          property ElapsedTime : Double read FElapsedTime;
 
       published
@@ -138,7 +138,7 @@ implementation
 // ------------------ TGLTimeEventsMGR ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTimeEventsMGR.Create(aOwner : TComponent);
 begin
@@ -148,7 +148,7 @@ begin
     FEvents:=TTimeEvents.Create(self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLTimeEventsMGR.Destroy;
 begin
@@ -240,7 +240,7 @@ end;
 // ------------------ TTimeEvents ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TTimeEvents.Create(AOwner : TComponent);
 begin
@@ -301,7 +301,7 @@ end;
 // ------------------ TTimeEvent ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TTimeEvent.Create(Collection : TCollection);
 begin
@@ -311,7 +311,7 @@ begin
    FEnabled:=True;
 end;
 
-// Destroy
+ 
 //
 destructor TTimeEvent.Destroy;
 begin

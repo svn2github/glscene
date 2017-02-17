@@ -14,7 +14,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLCadencer,

@@ -19,7 +19,7 @@ uses
   System.Classes,
   Vcl.Dialogs,
   Vcl.Graphics,
-  // GLS
+  
   GLVectorTypes,
   GLVectorGeometry,
   GLCrossPlatform,
@@ -512,7 +512,7 @@ end;
 // ------------------ TGLColor ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLColor.Create(AOwner: TPersistent);
 begin
@@ -530,7 +530,7 @@ begin
   OnNotifyChange := changeEvent;
 end;
 
-// Destroy
+ 
 //
 destructor TGLColor.Destroy;
 begin
@@ -884,7 +884,7 @@ begin
       aColor.W]);
 end;
 
-// Destroy
+ 
 //
 destructor TGLColorManager.Destroy;
 var

@@ -290,7 +290,7 @@ end;
 // ------------------ TASAPHandler ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TASAPHandler.Create;
@@ -300,7 +300,7 @@ begin
   PostMessage(FWindowHandle, vWMTickCadencer, 0, 0);
 end;
 
-// Destroy
+ 
 //
 
 destructor TASAPHandler.Destroy;
@@ -407,7 +407,7 @@ end;
 // ------------------ TGLCadencer ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLCadencer.Create(AOwner: TComponent);
@@ -422,7 +422,7 @@ begin
   Enabled := True;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCadencer.Destroy;
@@ -776,7 +776,7 @@ end;
 // ------------------ TGLCustomCadencedComponent ------------------
 // ------------------
 
-// Destroy
+ 
 //
 
 destructor TGLCustomCadencedComponent.Destroy;

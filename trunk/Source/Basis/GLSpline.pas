@@ -207,7 +207,7 @@ end;
 // ------------------ TCubicSpline ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCubicSpline.Create(const X, Y, Z, W: PFloatArray; const nb : Integer); {$ifdef CLR}unsafe;{$endif}
 begin
@@ -219,7 +219,7 @@ begin
    FNb:=nb;
 end;
 
-// Destroy
+ 
 //
 destructor TCubicSpline.Destroy;
 begin

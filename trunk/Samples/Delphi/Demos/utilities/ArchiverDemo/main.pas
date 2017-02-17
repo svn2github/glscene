@@ -10,7 +10,7 @@ uses
   Vcl.Controls,
   Vcl.Graphics,
   Vcl.Dialogs,
-  // GLS
+  
   GLScene, GLObjects, GLVectorFileObjects, GLMaterial, GLCadencer,
   GLSArchiveManager, GLBaseClasses, GLVectorGeometry, GLFileMS3D,
   GLFileTGA, GLFileZLIB, GLCoordinates, GLCrossPlatform, GLWin32Viewer,

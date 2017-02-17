@@ -68,7 +68,7 @@ implementation
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 
-// Create
+ 
 //
 
 constructor TGLCompositeImage.Create(AOwner: TPersistent);
@@ -79,7 +79,7 @@ begin
   FDepth := 0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCompositeImage.Destroy;
@@ -244,7 +244,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLCompositeImage.LoadFromFile(const fileName: string);
@@ -301,7 +301,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TGLCompositeImage.FriendlyName: string;

@@ -16,7 +16,7 @@ interface
 
 uses
   System.Classes, System.SysUtils,
-  // GLS
+  
   GLVectorGeometry, GLScene, GLCrossPlatform, GLCoordinates, 
   GLScreen, GLVectorTypes;
 

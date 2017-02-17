@@ -53,7 +53,7 @@ uses
   System.SysUtils, System.Classes,
   VCL.StdCtrls,
 
-  // GLS
+  
   GLTexture, GLTextureFormat, GLGraphics, GLUtils, GLColor, GLCoordinates,
   GLMaterial, GLState;
 
@@ -1139,7 +1139,7 @@ begin
       tmpstr := extractvalue;
       tmpstr := deletespaces(tmpstr);
 
-      if valueexists('persistentimage{') then // loadfromfile
+      if valueexists('persistentimage{') then  
       repeat
          inc(count);
          Newmat.Material.Texture.ImageClassName := TGLPersistentImage.ClassName;
@@ -1147,7 +1147,7 @@ begin
          checkerror;
       until checkrepeatdone;
 
-      if valueexists('blankimage{') then // loadfromfile
+      if valueexists('blankimage{') then  
       repeat
          inc(count);
          Newmat.Material.Texture.ImageClassName := TGLBlankImage.ClassName;

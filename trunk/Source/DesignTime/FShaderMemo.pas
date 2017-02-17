@@ -120,7 +120,7 @@ implementation
 const
   cRegistryKey = 'Software\GLScene\GLSceneShaderEdit';
 
-{$IFDEF GLS_REGION}{$REGION 'Syntax keywords'}{$ENDIF}
+// ---------------------Syntax keywords 
 
 const
 
@@ -472,9 +472,9 @@ const
     // Shader Invocation Control Functions
     'barrier'
     );
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'Shader template'}{$ENDIF}
+// ---------------------Shader template 
 const
   cTemplates: array[0..6] of string =
   (
@@ -709,7 +709,7 @@ const
     'in vec2 Custom2;'#10#13
   );
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 type
   TFriendlyMemo = class(TGLSSynHiMemo);

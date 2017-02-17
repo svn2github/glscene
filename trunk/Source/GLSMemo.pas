@@ -20,8 +20,12 @@ uses
   System.Classes,
   System.UITypes,
   VCL.Graphics,
-  VCL.Controls, VCL.Forms, VCL.Dialogs, VCL.ClipBrd,
-  VCL.StdCtrls, VCL.ExtCtrls;
+  VCL.Controls, 
+  VCL.Forms, 
+  VCL.Dialogs, 
+  VCL.ClipBrd,
+  VCL.StdCtrls, 
+  VCL.ExtCtrls;
 
 
 
@@ -64,9 +68,6 @@ type
     property Style: TFontStyles read FStyle write FStyle;
   end;
 
-  // TStyleList
-  //
-
   TStyleList = class(TList)
   private
      
@@ -93,9 +94,6 @@ type
       TFontStyles);
   end;
 
-  // TGLAbstractMemoObject
-  //
-
   TGLAbstractMemoObject = class(TObject)
   public
     
@@ -107,9 +105,6 @@ type
       Boolean; virtual; abstract;
   end;
 
-  // TGLSMemoAbstractScrollableObject
-  //
-
   TGLSMemoScrollBar = class;
 
   TGLSMemoAbstractScrollableObject = class(TCustomControl)
@@ -120,9 +115,6 @@ type
     procedure DoScrollPage(Sender: TGLSMemoScrollBar; ByValue: integer);
       virtual; abstract;
   end;
-
-  // TGLSMemoScrollBar
-  //
 
   TGLSCustomMemo = class;
 
@@ -189,9 +181,6 @@ type
     property PageBackRect: TRect read GetPgBackRect;
   end;
 
-  // TGLSMemoStrings
-  //
-
   TGLSMemoStrings = class(TStringList)
   private
      
@@ -244,9 +233,6 @@ type
     procedure LoadFromFile(const FileName: string); override;
   end;
 
-  // TGLSMemoGutter
-  //
-
   TGLSMemoGutter = class(TObject)
   private
      
@@ -267,9 +253,6 @@ type
     property Height: integer index 3 read FHeight write SetParams;
     property FullRect: TRect read GetRect;
   end;
-
-  // TGLSMemoUndo
-  //
 
   TGLSMemoUndo = class
   private
@@ -487,33 +470,24 @@ type
     procedure WMSetFocus(var Msg: TWMSetFocus); message WM_SETFOCUS;
     procedure WMKillFocus(var Msg: TWMSetFocus); message WM_KILLFOCUS;
     procedure WMMouseWheel(var Message: TMessage); message WM_MOUSEWHEEL;
-
     procedure MoveCursor(dX, dY: integer; Shift: TShiftState);
-
     procedure ResizeEditor;
     procedure ResizeScrollBars;
     procedure ResizeGutter;
     procedure DoCommand(cmd: TCommand; const AShift: TShiftState);
-
     procedure DrawLine(LineNo: integer);
     function IsLineVisible(LineNo: integer): Boolean;
     procedure FreshLineBitmap;
-
     procedure SetUndoLimit(Value: integer);
-
   protected
     
     procedure WndProc(var Message: TMessage); override;
-
     function EditorRect: TRect;
-
     function LineRangeRect(FromLine, ToLine: integer): TRect;
     function ColRangeRect(FromCol, ToCol: integer): TRect;
     procedure InvalidateLineRange(FromLine, ToLine: integer);
-
     function AddString(S: string): integer;
     procedure InsertString(Index: integer; S: string);
-
     procedure GoHome(Shift: TShiftState);
     procedure GoEnd(Shift: TShiftState);
     procedure InsertChar(C: Char);
@@ -647,9 +621,6 @@ type
     property UndoList: TGLSMemoUndoList read FUndoList write FUndoList;
   end;
 
-  // TGLSMemo
-  //
-
   TGLSMemo = class(TGLSCustomMemo)
   published
     
@@ -706,16 +677,11 @@ type
     property OnUndoChange;
   end;
 
-  // TGLSMemoStringList
-  //
-
   TGLSMemoStringList = class(TStringList)
   private
-     
     procedure ReadStrings(Reader: TReader);
     procedure WriteStrings(Writer: TWriter);
   protected
-    
     procedure DefineProperties(Filer: TFiler); override;
   end;
 
@@ -777,11 +743,8 @@ type
     procedure AddWord(StyleNo: integer; ArrS: array of string);
     procedure AddSpecial(StyleNo: integer; ArrS: array of string);
     procedure AddBrackets(StyleNo: integer; ArrS: array of string);
-
     property Delimiters: TDelimiters read FDelimiters write FDelimiters;
   published
-    
-
     {TControl}
     property PopupMenu;
     {TCustomControl}
@@ -836,13 +799,11 @@ type
       FMultiCommentLeft;
     property MultiCommentRight: string read FMultiCommentRight write
       FMultiCommentRight;
-
     property WordList: TGLSMemoStringList read FWordList write SetWordList;
     property SpecialList: TGLSMemoStringList read FSpecialList write
       SetSpecialList;
     property BracketList: TGLSMemoStringList read FBracketList write
       SetBracketList;
-
     property DelimiterStyle: TCharStyle index 0 read FDelimiterStyle write
       SetStyle;
     property CommentStyle: TCharStyle index 1 read FCommentStyle write SetStyle;
@@ -883,7 +844,7 @@ var
   fIntelliMessage: UINT; // message sent from mouse on wheel roll
   fIntelliScrollLines: Integer; // number of lines to scroll per wheel roll
 
-{$IFDEF GLS_REGION}{$REGION 'Helper functions'}{$ENDIF}
+// ---------------------Helper functions 
 
 function PointInRect(P: TPoint; rct: TRect): Boolean;
 {$IFDEF GLS_INLINE}inline;{$ENDIF}
@@ -931,9 +892,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSCustomMemo functions'}{$ENDIF}
+// ---------------------TGLSCustomMemo functions 
 
 procedure TGLSCustomMemo.WndProc(var Message: TMessage);
   function GetShiftState: Integer;
@@ -3704,9 +3665,9 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSMemoScrollBar functions'}{$ENDIF}
+// ---------------------TGLSMemoScrollBar functions 
 
 procedure TGLSMemoScrollBar.SetParams(Index: integer; Value: integer);
 begin
@@ -4254,9 +4215,9 @@ begin
   Result := Rect(Left, Top, Left + Width, Top + Height);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TStyleList'}{$ENDIF}
+// ---------------------TStyleList 
 
 procedure TStyleList.CheckRange(Index: integer);
 begin
@@ -4357,9 +4318,9 @@ begin
   TCharStyle(Items[Index]).Style := Value;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSMemoStrings'}{$ENDIF}
+// ---------------------TGLSMemoStrings 
 
 destructor TGLSMemoStrings.Destroy;
 var
@@ -4676,9 +4637,9 @@ begin
   P.FCharAttrs := Value;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSMemoUndo'}{$ENDIF}
+// ---------------------TGLSMemoUndo 
 
 constructor TGLSMemoUndo.Create(ACurX0, ACurY0, ACurX, ACurY: integer; AText:
   string);
@@ -5010,9 +4971,9 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSSynHiMemo'}{$ENDIF}
+// ---------------------TGLSSynHiMemo 
 
 procedure TGLSSynHiMemo.SetStyle(Index: integer; Value: TCharStyle);
 var
@@ -5428,9 +5389,9 @@ begin
   inherited;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'TGLSMemoStringList'}{$ENDIF}
+// ---------------------TGLSMemoStringList 
 
 procedure TGLSMemoStringList.ReadStrings(Reader: TReader);
 var
@@ -5478,9 +5439,9 @@ begin
   Filer.DefineProperty('Strings', ReadStrings, WriteStrings, Count > 0);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
-{$IFDEF GLS_REGION}{$REGION 'ScrollBar bitmaps'}{$ENDIF}
+// ---------------------ScrollBar bitmaps 
 
 procedure CreateScrollBarBitmaps;
 var
@@ -5574,7 +5535,7 @@ begin
   bmScrollBarRight.Free;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 initialization
 

@@ -154,7 +154,7 @@ begin
   inherited CreateOwned(AOwner);
 end;
 
-// Destroy
+ 
 //
 destructor TPortalMeshObjectList.Destroy;
 begin
@@ -200,7 +200,7 @@ begin
   Mode := momFaceGroups;
 end;
 
-// Destroy
+ 
 //
 destructor TSectorMeshObject.Destroy;
 begin
@@ -270,7 +270,7 @@ begin
   Mode := fgmmTriangleFan;
 end;
 
-// Destroy
+ 
 //
 destructor TFGPolygon.Destroy;
 begin
@@ -295,7 +295,7 @@ begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 destructor TFGPortalPolygon.Destroy;
 begin
@@ -336,7 +336,7 @@ end;
 // ------------------ TGLPortal ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLPortal.Create(AOwner: TComponent);
 begin
@@ -346,7 +346,7 @@ begin
   UseMeshMaterials := True;
 end;
 
-// Destroy
+ 
 //
 destructor TGLPortal.Destroy;
 begin

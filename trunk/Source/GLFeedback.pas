@@ -76,10 +76,10 @@ type
       TexCoords: TAffineVectorList = nil;
       VertexIndices: TIntegerList = nil);
 
-    //: True when there is data in the buffer ready for parsing
+    // True when there is data in the buffer ready for parsing
     property Buffered: Boolean read FBuffered;
 
-    //: The feedback buffer
+    // The feedback buffer
     property Buffer: TSingleList read FBuffer;
 
     {Vertex positions in the buffer needs to be scaled by
@@ -89,11 +89,11 @@ type
   published
     
 
-    //: Maximum size allocated for the feedback buffer
+    // Maximum size allocated for the feedback buffer
     property MaxBufferSize: Cardinal read FMaxBufferSize write SetMaxBufferSize;
-    //: Toggles the feedback rendering
+    // Toggles the feedback rendering
     property Active: Boolean read FActive write FActive;
-    //: The type of data that is collected in the feedback buffer
+    // The type of data that is collected in the feedback buffer
     property Mode: TFeedbackMode read FMode write SetMode;
 
     property Visible;
@@ -111,7 +111,7 @@ implementation
 // ---------- TGLFeedback ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLFeedback.Create(AOwner: TComponent);
@@ -126,7 +126,7 @@ begin
   FMode := fm3DColorTexture;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLFeedback.Destroy;

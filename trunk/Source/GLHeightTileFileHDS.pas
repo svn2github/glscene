@@ -77,7 +77,7 @@ implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 
-// Create
+ 
 //
 constructor TGLHeightTileFileHDS.Create(AOwner: TComponent);
 begin
@@ -87,7 +87,7 @@ begin
    FMinElevation:=-32768;
 end;
 
-// Destroy
+ 
 //
 destructor TGLHeightTileFileHDS.Destroy;
 begin

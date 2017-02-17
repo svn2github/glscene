@@ -82,7 +82,7 @@ implementation
 
 {$R *.dfm}
 
-// Create
+ 
 //
 constructor TRTextureEdit.Create(AOwner: TComponent);
 var
@@ -107,7 +107,7 @@ begin
     CBTextureWrap.Items.Add(GetEnumName(TypeInfo(TGLTextureWrap), I));
 end;
 
-// Destroy
+ 
 //
 destructor TRTextureEdit.Destroy;
 begin

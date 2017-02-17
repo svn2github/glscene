@@ -138,7 +138,7 @@ begin
   // End Tesselation of polygon, THIS is where the data is processed! (And all the events triggered!)
   gluTessEndPolygon(tess);
 
-  // Destroy the Tessellation GLU object.
+  // Delete the Tessellation GLU object.
   gluDeleteTess(tess);
 
   // deallocate extra buffer used by GLU in complex polygons.

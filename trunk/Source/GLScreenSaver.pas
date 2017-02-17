@@ -20,18 +20,22 @@ unit GLScreenSaver;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$Message Error 'Unit not supported'}{$ENDIF}
+{$IFDEF UNIX}{$Message Error 'Unit not supported'} {$ENDIF}
 
 uses
-  Winapi.Windows, Winapi.Messages,
-  System.Classes, System.SysUtils, System.Win.Registry,
-  VCL.Dialogs, VCL.Controls, VCL.Forms, VCL.Extctrls;
+  Winapi.Windows, 
+  Winapi.Messages,
+  System.Classes, 
+  System.SysUtils, 
+  System.Win.Registry,
+  VCL.Dialogs, 
+  VCL.Controls, 
+  VCL.Forms, 
+  VCL.Extctrls;
 
 
 type
 
-   // TScreenSaverOptions
-   //
    {Options d'automatisation du screen-saver. 
       
        ssoAutoAdjustFormProperties : all relevant properties of main form
@@ -55,16 +59,12 @@ const
 
 type
 
-   // TScreenSaverPreviewEvent
-   //
    {This event is fired when screen saver should start in preview mode. 
       The passed hwnd is that of the small preview window in Windows Display
       Properties (or any other screen-saver previewing utility, so don't
       assume width/height is constant/universal or whatever). }
    TScreenSaverPreviewEvent = procedure (Sender: TObject; previewHwnd : HWND) of object;
 
-	// TScreenSaver
-	//
 	{Drop this component on your main form to make it a screensaver. 
 		You'll also need to change the extension from ".exe" to ".scr" (in the
 		project options / application tab). 
@@ -102,16 +102,12 @@ type
 			procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 			procedure FormKeyPress(Sender: TObject; var Key: Char);
          procedure OnMouseTimer(Sender: TObject);
-
 			procedure ConfigureSaver;
 			procedure PreviewSaver;
 			procedure ExecuteSaver;
-
 		public
-			
 			constructor Create(AOwner : TComponent); override;
 			destructor Destroy; override;
-
 			{Invokes the standard Windows dialog to set the password. 
 				May be invoked from your Properties/Configuration dialog. }
 			procedure SetPassword;
@@ -152,7 +148,6 @@ type
 			{Fired when screen-saver execution should close. 
 				It is invoked before querying for password (if there is a password). }
 			property OnCloseQuery : TCloseQueryEvent read FOnCloseQuery write FOnCloseQuery;
-
 	end;
 
 {Invokes the standard Windows dialog to set the password. 
@@ -167,8 +162,6 @@ implementation
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
 
-// GetSystemDirectory
-//
 {Returns system path and makes sure there is a trailing '\'.  }
 function GetSystemDirectory : String;
 var
@@ -181,8 +174,6 @@ begin
 		Result:=Result+'\';
 end;
 
-// SetScreenSaverPassword
-//
 procedure SetScreenSaverPassword;
 type
 	TSetPwdFunc = function(a: PAnsiChar; ParentHandle: THandle; b, c: Integer): Integer; stdcall;
@@ -204,8 +195,7 @@ end;
 // ------------------ TScreenSaver ------------------
 // ------------------
 
-// Create
-//
+ 
 constructor TGLScreenSaver.Create(AOwner : TComponent);
 begin
 	inherited;
@@ -215,18 +205,13 @@ begin
   FMutex := 0;
 end;
 
-// Destroy
-//
 destructor TGLScreenSaver.Destroy;
 begin
    // mouseTimer is owned, it'll be automatically destroyed if created
-
   CloseHandle(FMutex);
 	inherited;
 end;
 
-// Loaded
-//
 procedure TGLScreenSaver.Loaded;
 var
 	param : String;
@@ -251,8 +236,6 @@ begin
 	end;
 end;
 
-// ConfigureSaver
-//
 procedure TGLScreenSaver.ConfigureSaver;
 begin
 	if Assigned(FOnPropertiesRequested) then begin
@@ -262,15 +245,11 @@ begin
 		ShowMessage(FAboutString);
 end;
 
-// SetPassword
-//
 procedure TGLScreenSaver.SetPassword;
 begin
 	SetScreenSaverPassword;
 end;
 
-// PreviewSaver
-//
 procedure TGLScreenSaver.PreviewSaver;
 var
 	frm : TForm;
@@ -295,8 +274,6 @@ begin
 		FOnPreview(Self, previewHwnd);
 end;
 
-// ExecuteSaver
-//
 procedure TGLScreenSaver.ExecuteSaver;
 var
 	frm : TForm;
@@ -332,8 +309,6 @@ begin
     Application.Terminate;
 end;
 
-// CloseSaver
-//
 function TGLScreenSaver.CloseSaver : Boolean;
 type
 	TPwdProc = function(Parent : THandle): Boolean; stdcall;
@@ -376,8 +351,6 @@ begin
 	end;
 end;
 
-// FormMouseMove
-//
 procedure TGLScreenSaver.FormMouseMove(Sender: TObject; Shift: TShiftState; X,
   Y: Integer);
 begin
@@ -386,15 +359,11 @@ begin
 	else Dec(mouseEventsToIgnore);
 end;
 
-// FormKeyPress
-//
 procedure TGLScreenSaver.FormKeyPress(Sender: TObject; var Key: Char);
 begin
 	CloseSaver;
 end;
 
-// OnMouseTimer
-//
 procedure TGLScreenSaver.OnMouseTimer(Sender: TObject);
 var
    mousePos : TPoint;

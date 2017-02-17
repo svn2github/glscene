@@ -13,7 +13,7 @@ uses
   Vcl.Menus,
   Vcl.StdCtrls,
   Vcl.ExtDlgs,
-  //GLS
+  
   GLGui, GLScene, GLWin32Viewer,
   GLObjects, GLHUDObjects, GLWindows, GLBitmapFont, GLWindowsFont,
   GLTexture, FGuiSkinEditor, GLCrossPlatform, GLMaterial, GLCoordinates,

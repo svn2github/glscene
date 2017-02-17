@@ -148,7 +148,7 @@ implementation
 // ------------------ TGLMirror ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLMirror.Create(AOwner: Tcomponent);

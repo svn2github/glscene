@@ -1522,14 +1522,13 @@ function AngleBetweenVectors(const a, b, ACenterPoint: TAffineVector): Single; o
 
 { AOriginalPosition - Object initial position.
   ACenter - some point, from which is should be distanced.
-
-  ADistance + AFromCenterSpot - distance, which object should keep from ACenter
-  or
-  ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
-}
+  ADistance + AFromCenterSpot - distance, which object should keep from ACenter or
+  ADistance + not AFromCenterSpot - distance, which object should shift
+  from his current position away from center. }
 function ShiftObjectFromCenter(const AOriginalPosition: TVector;
   const ACenter: TVector; const ADistance: Single;
   const AFromCenterSpot: Boolean): TVector; overload;
+
 function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
   const ACenter: TAffineVector; const ADistance: Single;
   const AFromCenterSpot: Boolean): TAffineVector; overload;
@@ -1602,8 +1601,6 @@ begin
   end;
 end;
 
-// BeginFPUOnlySection
-//
 var
   vOldSIMD: Byte;
   vFPUOnlySectionCounter: Integer;
@@ -8477,8 +8474,6 @@ end;
 
 // ----------------- coordinate system manipulation functions -----------------------------------------------------------
 
-// Turn (Y axis)
-//
 function Turn(const Matrix: TMatrix; angle: Single): TMatrix;
 begin
   result := MatrixMultiply(Matrix,
@@ -8486,16 +8481,12 @@ begin
     Matrix.Y.Z), angle));
 end;
 
-// Turn (direction)
-//
 function Turn(const Matrix: TMatrix; const MasterUp: TAffineVector;
   angle: Single): TMatrix;
 begin
   result := MatrixMultiply(Matrix, CreateRotationMatrix(MasterUp, angle));
 end;
 
-// Pitch (X axis)
-//
 function Pitch(const Matrix: TMatrix; angle: Single): TMatrix;
 begin
   result := MatrixMultiply(Matrix,
@@ -8503,16 +8494,12 @@ begin
     Matrix.X.Z), angle));
 end;
 
-// Pitch (direction)
-//
 function Pitch(const Matrix: TMatrix; const MasterRight: TAffineVector;
   angle: Single): TMatrix; overload;
 begin
   result := MatrixMultiply(Matrix, CreateRotationMatrix(MasterRight, angle));
 end;
 
-// Roll (Z axis)
-//
 function Roll(const Matrix: TMatrix; angle: Single): TMatrix;
 begin
   result := MatrixMultiply(Matrix,
@@ -8520,8 +8507,6 @@ begin
     Matrix.Z.Z), angle));
 end;
 
-// Roll (direction)
-//
 function Roll(const Matrix: TMatrix; const MasterDirection: TAffineVector;
   angle: Single): TMatrix; overload;
 begin
@@ -8529,8 +8514,6 @@ begin
     CreateRotationMatrix(MasterDirection, angle));
 end;
 
-// RayCastPlaneIntersect (plane defined by point+normal)
-//
 function RayCastPlaneIntersect(const rayStart, rayVector: TVector;
   const planePoint, planeNormal: TVector;
   intersectPoint: PVector = nil): Boolean;
@@ -8552,8 +8535,6 @@ begin
   end;
 end;
 
-// RayCastPlaneXZIntersect
-//
 function RayCastPlaneXZIntersect(const rayStart, rayVector: TVector;
   const planeY: Single; intersectPoint: PVector = nil): Boolean;
 var
@@ -8575,8 +8556,6 @@ begin
   end;
 end;
 
-// RayCastTriangleIntersect
-//
 function RayCastTriangleIntersect(const rayStart, rayVector: TVector;
   const p1, p2, p3: TAffineVector; intersectPoint: PVector = nil;
   intersectNormal: PVector = nil): Boolean;
@@ -8620,8 +8599,6 @@ begin
   end;
 end;
 
-// RayCastMinDistToPoint
-//
 function RayCastMinDistToPoint(const rayStart, rayVector: TVector;
   const point: TVector): Single;
 var
@@ -8633,8 +8610,6 @@ begin
   result := VectorDistance(point, VectorCombine(rayStart, rayVector, 1, proj));
 end;
 
-// RayCastIntersectsSphere
-//
 function RayCastIntersectsSphere(const rayStart, rayVector: TVector;
   const sphereCenter: TVector; const SphereRadius: Single): Boolean;
 var
@@ -8647,8 +8622,6 @@ begin
     proj)) <= Sqr(SphereRadius));
 end;
 
-// RayCastSphereIntersect
-//
 function RayCastSphereIntersect(const rayStart, rayVector: TVector;
   const sphereCenter: TVector; const SphereRadius: Single;
   var i1, i2: TVector): Integer;
@@ -8693,8 +8666,6 @@ begin
   result := 0;
 end;
 
-// RayCastBoxIntersect
-//
 function RayCastBoxIntersect(const rayStart, rayVector, aMinExtent,
   aMaxExtent: TAffineVector; intersectPoint: PAffineVector = nil): Boolean;
 var
@@ -9053,8 +9024,6 @@ begin
   end;
 end;
 
-// IsVolumeClipped
-//
 function IsVolumeClipped(const objPos: TAffineVector; const objRadius: Single;
   const Frustum: TFrustum): Boolean;
 var
@@ -9069,16 +9038,12 @@ begin
     (PlaneEvaluatePoint(Frustum.pFar, objPos) < negRadius);
 end;
 
-// IsVolumeClipped
-//
 function IsVolumeClipped(const objPos: TVector; const objRadius: Single;
   const Frustum: TFrustum): Boolean;
 begin
   result := IsVolumeClipped(PAffineVector(@objPos)^, objRadius, Frustum);
 end;
 
-// IsVolumeClipped
-//
 function IsVolumeClipped(const min, max: TAffineVector;
   const Frustum: TFrustum): Boolean;
 begin
@@ -9087,8 +9052,6 @@ begin
     VectorDistance(min, max) * 0.5, Frustum);
 end;
 
-// MakeParallelProjectionMatrix
-//
 function MakeParallelProjectionMatrix(const plane: THmgPlane;
   const dir: TVector): TMatrix;
 // Based on material from a course by William D. Shoaff (www.cs.fit.edu)
@@ -9217,8 +9180,6 @@ begin
 {$HINTS ON}
 end;
 
-// UnPackRotationMatrix
-//
 function UnPackRotationMatrix(const packedMatrix
   : TPackedRotationMatrix): TMatrix;
 var
@@ -9237,8 +9198,6 @@ begin
   result := QuaternionToMatrix(Q);
 end;
 
-// BarycentricCoordinates
-//
 function BarycentricCoordinates(const V1, V2, V3, p: TAffineVector;
   var u, V: Single): Boolean;
 var
@@ -9289,8 +9248,6 @@ end;
 
 { ***************************************************************************** }
 
-// VectorMake functions
-// 2x
 function Vector2fMake(const X, Y: Single): TVector2f;
 begin
   result.X := X;
@@ -9387,7 +9344,6 @@ end;
 
 { ***************************************************************************** }
 
-// 3x
 function Vector3fMake(const X, Y, Z: Single): TVector3f;
 begin
   result.X := X;
@@ -9423,8 +9379,6 @@ begin
   result.Z := Z;
 end;
 
-// *******
-
 function Vector3fMake(const Vector: TVector2f; const Z: Single): TVector3f;
 begin
   result.X := Vector.X;
@@ -9459,8 +9413,6 @@ begin
   result.Y := Vector.Y;
   result.Z := Z;
 end;
-
-// *******
 
 function Vector3fMake(const Vector: TVector4f): TVector3f;
 begin
@@ -9499,7 +9451,6 @@ end;
 
 { ***************************************************************************** }
 
-// 4x
 function Vector4fMake(const X, Y, Z, W: Single): TVector4f;
 begin
   result.X := X;
@@ -9540,8 +9491,6 @@ begin
   result.W := W;
 end;
 
-// ********
-
 function Vector4fMake(const Vector: TVector3f; const W: Single): TVector4f;
 begin
   result.X := Vector.X;
@@ -9581,8 +9530,6 @@ begin
   result.Z := Vector.Z;
   result.W := W;
 end;
-
-// *******
 
 function Vector4fMake(const Vector: TVector2f; const Z: Single; const W: Single)
   : TVector4f;
@@ -9631,7 +9578,6 @@ end;
 
 { ***************************************************************************** }
 
-// 2
 function VectorEquals(const Vector1, Vector2: TVector2f): Boolean;
 begin
   result := (Vector1.X = Vector2.X) and (Vector1.Y = Vector2.Y);
@@ -9659,7 +9605,6 @@ end;
 
 { ***************************************************************************** }
 
-// 3
 function VectorEquals(const V1, V2: TVector3i): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z);
@@ -9682,7 +9627,6 @@ end;
 
 { ***************************************************************************** }
 
-// 4
 function VectorEquals(const V1, V2: TVector4i): Boolean;
 begin
   result := (V1.X = V2.X) and (V1.Y = V2.Y) and (V1.Z = V2.Z)
@@ -9709,7 +9653,6 @@ end;
 
 { ***************************************************************************** }
 
-// 3x3f
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3f): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9725,7 +9668,6 @@ begin
     VectorEquals(Matrix1.Z, Matrix2.Z);
 end;
 
-// 3x3d
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3d): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9733,7 +9675,6 @@ begin
     VectorEquals(Matrix1.Z, Matrix2.Z);
 end;
 
-// 3x3s
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3s): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9741,7 +9682,6 @@ begin
     VectorEquals(Matrix1.Z, Matrix2.Z);
 end;
 
-// 3x3b
 function MatrixEquals(const Matrix1, Matrix2: TMatrix3b): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9778,7 +9718,6 @@ begin
     VectorEquals(Matrix1.W, Matrix2.W);
 end;
 
-// 4x4s
 function MatrixEquals(const Matrix1, Matrix2: TMatrix4s): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9787,7 +9726,6 @@ begin
     VectorEquals(Matrix1.W, Matrix2.W);
 end;
 
-// 4x4b
 function MatrixEquals(const Matrix1, Matrix2: TMatrix4b): Boolean;
 begin
   result := VectorEquals(Matrix1.X, Matrix2.X) and
@@ -9798,8 +9736,6 @@ end;
 
 { ***************************************************************************** }
 
-// Vector comparison functions:
-// 3f
 function VectorMoreThen(const SourceVector, ComparedVector: TVector3f)
   : Boolean; overload;
 begin
@@ -9832,7 +9768,6 @@ begin
     (SourceVector.Z <= ComparedVector.Z);
 end;
 
-// 4f
 function VectorMoreThen(const SourceVector, ComparedVector: TVector4f)
   : Boolean; overload;
 begin
@@ -9869,8 +9804,6 @@ begin
     (SourceVector.W <= ComparedVector.W);
 end;
 
-// 3i
-// Vector comparison functions:
 function VectorMoreThen(const SourceVector, ComparedVector: TVector3i)
   : Boolean; overload;
 begin
@@ -9903,7 +9836,6 @@ begin
     (SourceVector.Z <= ComparedVector.Z);
 end;
 
-// 4i
 function VectorMoreThen(const SourceVector, ComparedVector: TVector4i)
   : Boolean; overload;
 begin
@@ -9940,8 +9872,6 @@ begin
     (SourceVector.W <= ComparedVector.W);
 end;
 
-// 3s
-// Vector comparison functions:
 function VectorMoreThen(const SourceVector, ComparedVector: TVector3s)
   : Boolean; overload;
 begin
@@ -10011,8 +9941,6 @@ begin
     (SourceVector.W <= ComparedVector.W);
 end;
 
-// ComparedNumber
-// 3f
 function VectorMoreThen(const SourceVector: TVector3f;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10045,7 +9973,6 @@ begin
     (SourceVector.Z <= ComparedNumber);
 end;
 
-// 4f
 function VectorMoreThen(const SourceVector: TVector4f;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10082,7 +10009,6 @@ begin
     (SourceVector.W <= ComparedNumber);
 end;
 
-// 3i
 function VectorMoreThen(const SourceVector: TVector3i;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10115,7 +10041,6 @@ begin
     (SourceVector.Z <= ComparedNumber);
 end;
 
-// 4i
 function VectorMoreThen(const SourceVector: TVector4i;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10152,7 +10077,6 @@ begin
     (SourceVector.W <= ComparedNumber);
 end;
 
-// 3s
 function VectorMoreThen(const SourceVector: TVector3s;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10185,7 +10109,6 @@ begin
     (SourceVector.Z <= ComparedNumber);
 end;
 
-// 4s
 function VectorMoreThen(const SourceVector: TVector4s;
   const ComparedNumber: Single): Boolean; overload;
 begin
@@ -10222,7 +10145,6 @@ begin
     (SourceVector.W <= ComparedNumber);
 end;
 
-{ Determine if 2 rectanges intersect. }
 function RectanglesIntersect(const ACenterOfRect1, ACenterOfRect2, ASizeOfRect1,
   ASizeOfRect2: TVector2f): Boolean;
 begin
@@ -10232,7 +10154,6 @@ begin
     (ASizeOfRect1.Y + ASizeOfRect2.Y) / 2);
 end;
 
-{ Determine if BigRect completely contains SmallRect. }
 function RectangleContains(const ACenterOfBigRect1, ACenterOfSmallRect2,
   ASizeOfBigRect1, ASizeOfSmallRect2: TVector2f;
   const AEps: Single = 0.0): Boolean;
@@ -10468,7 +10389,7 @@ begin
   pitchNow := ArcCosine(VectorDotProduct(AMovingObjectUp, normalT2C));
   pitchNow := ClampValue(pitchNow + DegToRadian(pitchDelta), 0 + 0.025,
     PI - 0.025);
-  // create a new vector pointing up and then rotate it down
+  // creates a new vector pointing up and then rotate it down
   // into the new position
   SetVector(normalT2C, AMovingObjectUp);
   RotateVector(normalT2C, normalCameraRight, -pitchNow);
@@ -10478,27 +10399,18 @@ begin
     originalT2C));
 end;
 
-{ Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const a, b, ACenterPoint: TVector): Single;
 begin
   result := ArcCosine(VectorAngleCosine(VectorNormalize(VectorSubtract(a,
     ACenterPoint)), VectorNormalize(VectorSubtract(b, ACenterPoint))));
 end;
 
-{ Calcualtes Angle between 2 Vectors: (A-CenterPoint) and (B-CenterPoint). In radians. }
 function AngleBetweenVectors(const a, b, ACenterPoint: TAffineVector): Single;
 begin
   result := ArcCosine(VectorAngleCosine(VectorNormalize(VectorSubtract(a,
     ACenterPoint)), VectorNormalize(VectorSubtract(b, ACenterPoint))));
 end;
 
-{ AOriginalPosition - Object initial position.
-  ACenter - some point, from which is should be distanced.
-
-  ADistance + AFromCenterSpot - distance, which object should keep from ACenter
-  or
-  ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
-}
 function ShiftObjectFromCenter(const AOriginalPosition: TVector;
   const ACenter: TVector; const ADistance: Single;
   const AFromCenterSpot: Boolean): TVector;
@@ -10512,13 +10424,6 @@ begin
     result := VectorAdd(AOriginalPosition, VectorScale(lDirection, ADistance))
 end;
 
-{ AOriginalPosition - Object initial position.
-  ACenter - some point, from which is should be distanced.
-
-  ADistance + AFromCenterSpot - distance, which object should keep from ACenter
-  or
-  ADistance + not AFromCenterSpot - distance, which object should shift from his current position away from center.
-}
 function ShiftObjectFromCenter(const AOriginalPosition: TAffineVector;
   const ACenter: TAffineVector; const ADistance: Single;
   const AFromCenterSpot: Boolean): TAffineVector;

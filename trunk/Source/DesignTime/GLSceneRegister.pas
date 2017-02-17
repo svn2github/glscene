@@ -4,12 +4,12 @@
 {
   Registration unit for GLScene library components, property editors and
   IDE experts.
-  History : 05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
-            30-DEC-99 ml: scene editor added, structural changes
+  History : 
+    05/02/00 - EG - Added TGLColorProperty and TGLCoordinatesProperty
+    30-DEC-99 ml: scene editor added, structural changes
 }
+
 unit GLSceneRegister;
-
-
 
 interface
 
@@ -39,39 +39,27 @@ uses
   GLObjectManager;
 
 type
-  // TGLLibMaterialNameProperty
-  //
   TGLLibMaterialNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TGLSceneViewerEditor
-  //
   TGLSceneViewerEditor = class(TComponentEditor)
   public
-    
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
 
-  // TGLSceneEditor
-  //
   TGLSceneEditor = class(TComponentEditor)
   public
-    
     procedure Edit; override;
-
     procedure ExecuteVerb(Index: Integer); override;
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
 
-  // TGLResolutionProperty
-  //
   TGLResolutionProperty = class(TPropertyEditor)
   public
     
@@ -81,46 +69,30 @@ type
     procedure SetValue(const Value: string); override;
   end;
 
-  // TClassProperty
-  //
   TGLTextureProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
   end;
 
-  // TGLTextureImageProperty
-  //
   TGLTextureImageProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TGLImageClassProperty
-  //
   TGLImageClassProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
     function GetValue: string; override;
     procedure SetValue(const Value: string); override;
   end;
 
-  // TGLColorProperty
-  //
   TGLColorProperty = class(TClassProperty, ICustomPropertyDrawing,
     ICustomPropertyListDrawing)
-  private
-     
-
   protected
-    
     function ColorToBorderColor(aColor: TColorVector;
       selected: Boolean): TColor;
-
   public
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
@@ -142,45 +114,31 @@ type
     procedure SetValue(const Value: string); override;
   end;
 
-  // TSoundFileProperty
-  //
   TSoundFileProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     function GetValue: string; override;
     procedure Edit; override;
   end;
 
-  // TSoundNameProperty
-  //
   TSoundNameProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  // TGLCoordinatesProperty
-  //
   TGLCoordinatesProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TGLMaterialProperty
-  //
   TGLMaterialProperty = class(TClassProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TGLGUILayoutEditor
-  //
   TGLGUILayoutEditor = class(TComponentEditor)
   public
     
@@ -191,8 +149,6 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TReuseableDefaultEditor
-  //
   {  Editor copied from DsgnIntf. 
     Could have been avoided, if only that guy at Borland didn't chose to
     publish only half of the stuff (and that's not the only class with
@@ -215,8 +171,6 @@ type
     procedure Edit; override;
   end;
 
-  // TGLMaterialLibraryEditor
-  //
   {  Editor for material library.  }
   TGLMaterialLibraryEditor = class(TReuseableDefaultEditor, IDefaultEditor)
   protected
@@ -228,8 +182,6 @@ type
     function GetVerbCount: Integer; override;
   end;
 
-  // TGLAnimationNameProperty
-  //
   TGLAnimationNameProperty = class(TStringProperty)
   public
     
@@ -253,8 +205,6 @@ type
     procedure RequiresUnits(Proc: TGetStrProc); override;
   end;
 
-  // TGLSArchiveManagerEditor
-  //
   {  Editor for GLScene Archive Manager.  }
   TGLSArchiveManagerEditor = class
     (TReuseableDefaultEditor, IDefaultEditor)
@@ -266,9 +216,6 @@ type
     function GetVerb(Index: Integer): string; override;
     function GetVerbCount: Integer; override;
   end;
-
-  // TGLMaterialComponentNameProperty
-  //
 
   TGLMaterialComponentNameProperty = class(TStringProperty)
   public
@@ -309,21 +256,15 @@ type
 
   TGLLibAsmProgNameProperty = class(TGLMaterialComponentNameProperty)
   public
-    
     procedure GetValues(Proc: TGetStrProc); override;
   end;
 
-  // TPictureFileProperty
-  //
   TPictureFileProperty = class(TStringProperty)
   public
-    
     function GetAttributes: TPropertyAttributes; override;
     procedure Edit; override;
   end;
 
-  // TShaderFileProperty
-  //
   TShaderFileProperty = class(TStringProperty)
   public
     
@@ -331,8 +272,6 @@ type
     procedure Edit; override;
   end;
 
-  // TAsmProgFileProperty
-  //
   TAsmProgFileProperty = class(TStringProperty)
   public
     
@@ -340,8 +279,6 @@ type
     procedure Edit; override;
   end;
 
-  // TUniformAutoSetProperty
-  //
   TUniformAutoSetProperty = class(TPropertyEditor)
   private
     procedure PassUniform(const S: string);
@@ -365,7 +302,7 @@ type
 
 procedure Register;
 
-// : Auto-create for object manager
+// Auto-create for object manager
 function ObjectManager: TGLObjectManager;
 
 // ------------------------------------------------------------------
@@ -553,9 +490,6 @@ begin
   Result := vObjectManager;
 end;
 
-// ExecuteVerb
-//
-
 procedure TGLSceneViewerEditor.ExecuteVerb(Index: Integer);
 var
   source: TGLSceneViewer;
@@ -567,9 +501,6 @@ begin
   end;
 end;
 
-// GetVerb
-//
-
 function TGLSceneViewerEditor.GetVerb(Index: Integer): string;
 begin
   case Index of
@@ -578,16 +509,10 @@ begin
   end;
 end;
 
-// GetVerbCount
-//
-
 function TGLSceneViewerEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
-
-// Edit
-//
 
 procedure TGLSceneEditor.Edit;
 begin
@@ -598,9 +523,6 @@ begin
   end;
 end;
 
-// ExecuteVerb
-//
-
 procedure TGLSceneEditor.ExecuteVerb(Index: Integer);
 begin
   case Index of
@@ -608,9 +530,6 @@ begin
       Edit;
   end;
 end;
-
-// GetVerb
-//
 
 function TGLSceneEditor.GetVerb(Index: Integer): string;
 begin
@@ -620,32 +539,20 @@ begin
   end;
 end;
 
-// GetVerbCount
-//
-
 function TGLSceneEditor.GetVerbCount: Integer;
 begin
   Result := 1;
 end;
-
-// GetAttributes
-//
 
 function TGLResolutionProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
 
-// GetValue
-//
-
 function TGLResolutionProperty.GetValue: string;
 begin
   Result := vVideoModes[GetOrdValue].Description;
 end;
-
-// GetValues
-//
 
 procedure TGLResolutionProperty.GetValues(Proc: TGetStrProc);
 var
@@ -654,9 +561,6 @@ begin
   for i := 0 to vNumberVideoModes - 1 do
     Proc(vVideoModes[i].Description);
 end;
-
-// SetValue
-//
 
 procedure TGLResolutionProperty.SetValue(const Value: string);
 
@@ -733,16 +637,10 @@ begin
   Result := [paSubProperties];
 end;
 
-// GetAttributes
-//
-
 function TGLTextureImageProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// Edit
-//
 
 procedure TGLTextureImageProperty.Edit;
 begin
@@ -750,16 +648,10 @@ begin
     Designer.Modified;
 end;
 
-// GetAttributes
-//
-
 function TGLImageClassProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TGLImageClassProperty.GetValues(Proc: TGetStrProc);
 var
@@ -775,16 +667,10 @@ begin
   end;
 end;
 
-// GetValue
-//
-
 function TGLImageClassProperty.GetValue: string;
 begin
   Result := FindGLTextureImageClass(GetStrValue).FriendlyName;
 end;
-
-// SetValue
-//
 
 procedure TGLImageClassProperty.SetValue(const Value: string);
 var
@@ -840,9 +726,6 @@ begin
   TGLColor(GetOrdValue).Color := ColorManager.GetColor(Value);
   Modified;
 end;
-
-// ColorToBorderColor
-//
 
 function TGLColorProperty.ColorToBorderColor(aColor: TColorVector;
   selected: Boolean): TColor;
@@ -912,16 +795,10 @@ begin
   DefaultPropertyDrawName(Self, ACanvas, ARect);
 end;
 
-// GetAttributes
-//
-
 function TSoundFileProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// GetValue
-//
 
 function TSoundFileProperty.GetValue: string;
 var
@@ -933,9 +810,6 @@ begin
   else
     Result := '(empty)';
 end;
-
-// Edit
-//
 
 procedure TSoundFileProperty.Edit;
 var
@@ -958,16 +832,10 @@ begin
   end;
 end;
 
-// GetAttributes
-//
-
 function TSoundNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TSoundNameProperty.GetValues(Proc: TGetStrProc);
 var
@@ -981,16 +849,10 @@ begin
         Proc(Samples[i].Name);
 end;
 
-// GetAttributes
-//
-
 function TGLCoordinatesProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paSubProperties];
 end;
-
-// Edit;
-//
 
 procedure TGLCoordinatesProperty.Edit;
 var
@@ -1008,16 +870,10 @@ begin
   end;
 end;
 
-// GetAttributes
-//
-
 function TGLMaterialProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog, paSubProperties];
 end;
-
-// Edit
-//
 
 procedure TGLMaterialProperty.Edit;
 begin
@@ -1052,17 +908,12 @@ begin
   Result := 1;
 end;
 
-// CheckEdit
-//
-
 procedure TReuseableDefaultEditor.CheckEdit(const Prop: IProperty);
 begin
   if FContinue then
     EditProperty(Prop, FContinue);
 end;
 
-// EditProperty
-//
 procedure TReuseableDefaultEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 var
@@ -1095,8 +946,6 @@ begin
         ReplaceBest;
 end;
 
-// Edit
-//
 procedure TReuseableDefaultEditor.Edit;
 var
   Components: IDesignerSelections;
@@ -1119,8 +968,6 @@ begin
   end;
 end;
 
-// EditProperty
-//
 procedure TGLMaterialLibraryEditor.EditProperty(const Prop: IProperty;
   var Continue: Boolean);
 begin
@@ -1151,16 +998,10 @@ begin
   Result := 1
 end;
 
-// GetAttributes
-//
-
 function TGLLibMaterialNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paDialog];
 end;
-
-// Edit
-//
 
 procedure TGLLibMaterialNameProperty.Edit;
 var
@@ -1184,16 +1025,10 @@ begin
     SetStrValue(buf);
 end;
 
-// GetAttributes
-//
-
 function TGLAnimationNameProperty.GetAttributes: TPropertyAttributes;
 begin
   Result := [paValueList];
 end;
-
-// GetValues
-//
 
 procedure TGLAnimationNameProperty.GetValues(Proc: TGetStrProc);
 var

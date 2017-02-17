@@ -160,7 +160,7 @@ implementation
 // ------------------ TGLThorFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLThorFXManager.Create(AOwner: TComponent);
 begin
@@ -185,7 +185,7 @@ begin
   ThorInit;
 end;
 
-// Destroy
+ 
 //
 destructor TGLThorFXManager.Destroy;
 begin
@@ -425,7 +425,7 @@ end;
 // ------------------ TGLBThorFX ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLBThorFX.Create(AOwner: TGLXCollection);
 begin
@@ -434,7 +434,7 @@ begin
   FTarget.Style := csPoint;
 end;
 
-// Destroy
+ 
 //
 destructor TGLBThorFX.Destroy;
 begin
@@ -443,7 +443,7 @@ begin
   inherited Destroy;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLBThorFX.FriendlyName: String;
 begin

@@ -175,7 +175,7 @@ uses
 // ------------------ TGLHUDSprite ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLHUDSprite.Create(AOwner: TComponent);
@@ -323,7 +323,7 @@ end;
 // ------------------ TGLHUDText ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLHUDText.Create(AOwner: TComponent);
@@ -333,7 +333,7 @@ begin
   FModulateColor := TGLColor.CreateInitialized(Self, clrWhite);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLHUDText.Destroy;
@@ -469,7 +469,7 @@ end;
 // ------------------ TGLResolutionIndependantHUDText ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLResolutionIndependantHUDText.Create(AOwner: TComponent);

@@ -296,7 +296,7 @@ type
   end;
 
 const
-  //: InternalFormat, ColorFormat, DataType
+  // InternalFormat, ColorFormat, DataType
   cTextureFormatToOpenGL: array[low(TGLInternalFormat)..high(TGLInternalFormat)] of TFormatDesc =
   (
     (IntFmt: GL_ALPHA4; ClrFmt: GL_ALPHA; DataFmt: GL_UNSIGNED_BYTE; RBit: 0; GBit: 0; BBit: 0; ABit: 4; LBit: 0; DBit: 0; Sign: False; Flt: False; Fix: False; Comp: False),

@@ -13,7 +13,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
-  //GLS
+  
   GLScene, GLObjects, GLVectorGeometry, GLTexture, GLCadencer, GLVectorTypes,
   GLWin32Viewer, GLGeomObjects, GLColor, GLCrossPlatform,
   GLCoordinates, GLBaseClasses, GLPolynomials;

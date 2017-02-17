@@ -9,7 +9,7 @@ uses
 
   //Graphics 32
   GR32, GR32_OrdinalMaps, GR32_Image,
-  //GLS
+  
   GLScene, GLObjects, GLHUDObjects, GLWin32Viewer, GLCadencer,
   GLCoordinates, GLCrossPlatform, GLBaseClasses, OpenGLTokens, GLMaterial;
 

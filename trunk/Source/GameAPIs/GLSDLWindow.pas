@@ -282,7 +282,7 @@ end;
 // ------------------ TSDLWindow ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLSDLWindow.Create(AOwner: TComponent);
 begin
@@ -296,7 +296,7 @@ begin
   FOptions := cDefaultSDLWindowOptions;
 end;
 
-// Destroy
+ 
 //
 destructor TGLSDLWindow.Destroy;
 begin

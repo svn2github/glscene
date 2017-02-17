@@ -92,7 +92,7 @@ type
 
   // TGLState
   //
-//: Reflects all relevant (binary) states of OpenGL subsystem
+// Reflects all relevant (binary) states of OpenGL subsystem
   TGLState = (stAlphaTest, stAutoNormal,
     stBlend, stColorMaterial, stCullFace, stDepthTest, stDither,
     stFog, stLighting, stLineSmooth, stLineStipple,
@@ -1230,7 +1230,7 @@ begin
   end;
 end;
 
-// Create
+ 
 //
 constructor TGLStateCache.Create;
 var
@@ -1437,7 +1437,7 @@ begin
   FInsideList := False;
 end;
 
-// Destroy
+ 
 //
 destructor TGLStateCache.Destroy;
 begin

@@ -8,7 +8,6 @@ uses
   System.SysUtils,
   System.Classes,
   Vcl.Graphics,
-  Vcl.Imaging.Jpeg,
   Vcl.Controls,
   Vcl.Forms,
   Vcl.Dialogs,
@@ -17,7 +16,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.ComCtrls,
   Vcl.StdCtrls,
-  //GLS
+  
   GLScene,
   GLObjects,
   GLWin32Viewer,
@@ -125,10 +124,7 @@ type
     procedure AsyncTimer1Timer(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-  private
-     
   public
-     
     mx,my : Integer;
     GLTree1 : TGLTree;
     procedure AlignControlsToTree;
@@ -188,12 +184,14 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   SetGLSceneMediaDir();
   // Set up default textures
-  with GLMaterialLibrary1.AddTextureMaterial('LeafFront','maple_multi.tga') do begin
+  with GLMaterialLibrary1.AddTextureMaterial('LeafFront','maple_multi.tga') do
+  begin
     Material.BlendingMode:=bmAlphaTest50;
     Material.Texture.TextureMode:=tmModulate;
     Material.Texture.TextureFormat:=tfRGBA;
   end;
-  with GLMaterialLibrary1.AddTextureMaterial('LeafBack','maple_multi.tga') do begin
+  with GLMaterialLibrary1.AddTextureMaterial('LeafBack','maple_multi.tga') do
+  begin
     Material.BlendingMode:=bmAlphaTest50;
     Material.Texture.TextureMode:=tmModulate;
     Material.Texture.TextureFormat:=tfRGBA;

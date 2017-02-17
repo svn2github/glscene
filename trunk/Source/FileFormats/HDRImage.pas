@@ -6,13 +6,9 @@
     so you may include both HDRImage (preview) and GLFileHDR (loading)
 
     History:
-       23/10/10 - Yar - Removed PBuffer    
-       23/08/10 - Yar - Changes after PBuffer upgrade
-       21/03/10 - Yar - Added Linux support
-                           (thanks to Rustam Asmandiarov aka Predator)
-       24/01/10 - Yar - Improved FPC compatibility
-       21/01/10 - Yar - Creation
-    
+      21/01/10 - Yar - Creation
+      The whole history is logged in previous version of the unit
+
 }
 
 unit HDRImage;

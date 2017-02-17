@@ -13,7 +13,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.FileCtrl,
   Vcl.Imaging.Jpeg,
-  //GLS
+  
   GLMaterial, GLTexCombineShader, GLCadencer, GLLensFlare,
   GLScene, GLObjects, GLCoordinates, GLSkydome, GLCrossPlatform, GLBaseClasses,
   GLWin32Viewer, GLTexture, GLRenderContextInfo, GLColor, GLState,

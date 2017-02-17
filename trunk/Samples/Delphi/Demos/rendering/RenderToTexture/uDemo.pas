@@ -14,7 +14,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLScene, GLWin32Viewer, GLFBORenderer, GLObjects, GLCoordinates, GLSimpleNavigation,
   GLMaterial, GLCadencer,  GLCrossPlatform, GLBaseClasses,
   GLRenderContextInfo, GLContext, GLAsyncTimer;

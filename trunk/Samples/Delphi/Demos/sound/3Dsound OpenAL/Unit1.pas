@@ -5,7 +5,7 @@ interface
 uses
   System.Classes, System.SysUtils, System.Math,
   Vcl.Forms, Vcl.ExtCtrls, Vcl.ComCtrls, Vcl.Controls, Vcl.StdCtrls,
-  //GLS
+  
   GLCadencer, GLScene, GLObjects, GLSound, GLWin32Viewer,
   GLGeomObjects, GLSMOpenAL, GLCrossPlatform, GLCoordinates, GLBaseClasses,
   GLFileWAV, GLFileMP3, GLUtils;

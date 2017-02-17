@@ -22,7 +22,7 @@ interface
 uses
   System.SysUtils,
   System.Classes,
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLObjects,
@@ -83,11 +83,11 @@ type
     property Slices: Integer read FSlices write SetSlices default 60;
     property Opacity: Single read FOpacity write FOpacity stored StoreOpacity;
 
-    //: AtmosphereRadius > PlanetRadius!!!
+    // AtmosphereRadius > PlanetRadius!!!
     property AtmosphereRadius: Single read FAtmosphereRadius write SetAtmosphereRadius stored StoreAtmosphereRadius;
     property PlanetRadius: Single read FPlanetRadius write SetPlanetRadius stored StorePlanetRadius;
 
-    //: Use value slightly lower than actual radius, for antialiasing effect.
+    // Use value slightly lower than actual radius, for antialiasing effect.
     property LowAtmColor: TGLColor read FLowAtmColor write SetLowAtmColor stored StoreLowAtmColor;
     property HighAtmColor: TGLColor read FHighAtmColor write SetHighAtmColor stored StoreHighAtmColor;
     property BlendingMode: TGLAtmosphereBlendingMode read FBlendingMode
@@ -97,14 +97,14 @@ type
     procedure SetOptimalAtmosphere2(const ARadius: Single); //relative
     procedure TogleBlendingMode; //changes between 2 blending modes
 
-    //: Standard component stuff.
+    // Standard component stuff.
     procedure Assign(Source: TPersistent); override;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    //: Main rendering procedure.
+    // Main rendering procedure.
     procedure DoRender(var rci: TGLRenderContextInfo; renderSelf, renderChildren: Boolean); override;
-    //: Used to determine extents.
+    // Used to determine extents.
     function AxisAlignedDimensionsUnscaled : TVector; override;
   end;
 

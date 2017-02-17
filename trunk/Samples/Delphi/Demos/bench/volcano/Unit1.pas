@@ -13,7 +13,7 @@ uses
   Vcl.ExtCtrls,
   Vcl.StdCtrls,
 
-  //GLS
+  
   GLScene,
   GLObjects,
   GLParticleFX,

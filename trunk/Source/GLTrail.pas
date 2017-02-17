@@ -20,7 +20,7 @@ uses
   System.Classes,
   System.SysUtils,
 
-  // GLS
+  
   GLScene,
   GLVectorTypes,
   GLMeshUtils,

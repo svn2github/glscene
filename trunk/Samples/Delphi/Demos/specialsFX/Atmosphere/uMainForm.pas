@@ -11,10 +11,20 @@ uses
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
 
-  // GLS
-  GLScene, GLObjects, GLCadencer, GLLensFlare, GLWin32Viewer,
-  GLTexture, GLSkydome, GLVectorGeometry, GLCrossPlatform,
-  GLAtmosphere, GLSimpleNavigation, GLBehaviours, GLCoordinates, GLBaseClasses,
+  GLScene,
+  GLObjects,
+  GLCadencer,
+  GLLensFlare,
+  GLWin32Viewer,
+  GLTexture,
+  GLSkydome,
+  GLVectorGeometry,
+  GLCrossPlatform,
+  GLAtmosphere,
+  GLSimpleNavigation,
+  GLBehaviours,
+  GLCoordinates,
+  GLBaseClasses,
   GLColor;
 
 type
@@ -59,10 +69,6 @@ type
     procedure Button10Click(Sender: TObject);
     procedure GLCadencer1Progress(Sender: TObject; const deltaTime,
       newTime: Double);
-  private
-     
-  public
-     
   end;
 
 var

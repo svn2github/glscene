@@ -77,7 +77,7 @@ implementation
 // ------------------ TGLTexturedHDS ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTexturedHDS.Create(AOwner: TComponent);
 begin
@@ -88,7 +88,7 @@ begin
 	inherited Create(AOwner);
 end;
 
-// Destroy
+ 
 //
 destructor TGLTexturedHDS.Destroy;
 begin

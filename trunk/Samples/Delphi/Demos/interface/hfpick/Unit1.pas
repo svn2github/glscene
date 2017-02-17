@@ -13,7 +13,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
 
-  // GLS
+  
   GLScene,
   GLGraph,
   GLWin32Viewer,

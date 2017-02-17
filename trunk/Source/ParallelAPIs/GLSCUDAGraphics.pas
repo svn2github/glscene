@@ -274,7 +274,6 @@ implementation
 uses
   {$IFDEF GLS_LOGGING} GLSLog {$ENDIF};
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGLImageResource'}{$ENDIF}
 // ------------------
 // ------------------ TCUDAGLImageResource ------------------
 // ------------------
@@ -450,9 +449,8 @@ begin
   SetArray(cudaArray, newArray, True, LTexture.TexDepth > 0);
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGION}{$REGION 'TCUDAGLGeometryResource'}{$ENDIF}
+
 // ------------------
 // ------------------ TCUDAGLGeometryResource ------------------
 // ------------------
@@ -736,13 +734,12 @@ begin
   Inc(Pbyte(Result), PtrUInt(MapPtr));
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 // -----------------------
 // ----------------------- TGLVertexAttribute -------------------
 // -----------------------
 
-{$IFDEF GLS_REGION}{$REGION 'TGLVertexAttribute'}{$ENDIF}
 
 constructor TGLVertexAttribute.Create(ACollection: TCollection);
 begin
@@ -801,13 +798,11 @@ procedure TGLVertexAttribute.NotifyChange(Sender: TObject);
 begin
   GetOwner.NotifyChange(Self);
 end;
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 // -----------------------
 // ----------------------- TGLVertexAttributes -------------------
 // -----------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TGLVertexAttributes'}{$ENDIF}
 
 function TGLVertexAttributes.Add: TGLVertexAttribute;
 begin
@@ -864,16 +859,11 @@ begin
   inherited Items[index] := AValue;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 // -----------------------
 // ----------------------- TGLCustomFeedBackMesh -------------------
 // -----------------------
-
-{$IFDEF GLS_REGION}{$REGION 'TGLCustomFeedBackMesh'}{$ENDIF}
-
-// AllocateHandles
-//
 
 procedure TGLCustomFeedBackMesh.AllocateHandles;
 var
@@ -912,51 +902,35 @@ begin
       begin
         EnabledLocations[I] := True;
         case Attributes[I].GLSLType of
+            GLSLType1F:  GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLType1F:
-              GL.VertexAttribPointer(L, 1, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType2F:  GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLType2F:
-              GL.VertexAttribPointer(L, 2, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType3F:  GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLType3F:
-              GL.VertexAttribPointer(L, 3, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType4F:  GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLType4F:
-              GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLType1I:  GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
 
-            GLSLType1I:
-              GL.VertexAttribIPointer(L, 1, GL_INT, 0, pointer(Offset));
+            GLSLType2I:  GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
 
-            GLSLType2I:
-              GL.VertexAttribIPointer(L, 2, GL_INT, 0, pointer(Offset));
+            GLSLType3I:  GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
 
-            GLSLType3I:
-              GL.VertexAttribIPointer(L, 3, GL_INT, 0, pointer(Offset));
+            GLSLType4I:  GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
 
-            GLSLType4I:
-              GL.VertexAttribIPointer(L, 4, GL_INT, 0, pointer(Offset));
+            GLSLType1UI: GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
 
-            GLSLType1UI:
-              GL.VertexAttribIPointer(L, 1, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType2UI: GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
 
-            GLSLType2UI:
-              GL.VertexAttribIPointer(L, 2, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType3UI: GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
 
-            GLSLType3UI:
-              GL.VertexAttribIPointer(L, 3, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLType4UI: GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
 
-            GLSLType4UI:
-              GL.VertexAttribIPointer(L, 4, GL_UNSIGNED_INT, 0, pointer(Offset));
+            GLSLTypeMat2F: GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLTypeMat2F:
-              GL.VertexAttribPointer(L, 4, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLTypeMat3F: GL.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
 
-            GLSLTypeMat3F:
-              GL.VertexAttribPointer(L, 9, GL_FLOAT, false, 0, pointer(Offset));
-
-            GLSLTypeMat4F:
-              GL.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
+            GLSLTypeMat4F: GL.VertexAttribPointer(L, 16, GL_FLOAT, false, 0, pointer(Offset));
 
         end; // of case
       end;
@@ -978,9 +952,6 @@ begin
   end;
 end;
 
-// Create
-//
-
 constructor TGLCustomFeedBackMesh.Create(AOwner: TComponent);
 begin
   inherited;
@@ -996,7 +967,7 @@ begin
   FBlend := False;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLCustomFeedBackMesh.Destroy;
@@ -1008,9 +979,6 @@ begin
   FEBO.Destroy;
   inherited;
 end;
-
-// LaunchKernels
-//
 
 procedure TGLCustomFeedBackMesh.LaunchKernels;
 var
@@ -1220,7 +1188,7 @@ begin
   FVAO.NotifyChangesOfData;
 end;
 
-{$IFDEF GLS_REGION}{$ENDREGION}{$ENDIF}
+ 
 
 initialization
 

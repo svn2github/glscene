@@ -14,7 +14,7 @@ uses
   Vcl.ComCtrls,
   Vcl.StdCtrls,
 
-  // GLS
+  
   GLScene,
   GLVectorFileObjects,
   GLObjects,

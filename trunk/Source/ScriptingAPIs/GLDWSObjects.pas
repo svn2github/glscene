@@ -94,7 +94,7 @@ end;
 // ---------- TGLDWSActiveBehaviour ----------
 // ----------
 
-// Create
+ 
 //
 constructor TGLDWSActiveBehaviour.Create(AOwner: TGLXCollection);
 begin
@@ -102,7 +102,7 @@ begin
   FScript:=TStringList.Create;
 end;
 
-// Destroy
+ 
 //
 destructor TGLDWSActiveBehaviour.Destroy;
 begin
@@ -111,7 +111,7 @@ begin
   inherited;
 end;
 
-// FriendlyName
+ 
 //
 class function TGLDWSActiveBehaviour.FriendlyName: String;
 begin

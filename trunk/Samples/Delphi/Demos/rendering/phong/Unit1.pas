@@ -11,7 +11,7 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
-  //GLS
+  
   GLScene, GLObjects, GLTeapot, GLTexture, GLPhongShader,
   GLWin32Viewer, GLAsyncTimer, GLCadencer, GLCustomShader,
   GLAsmShader, GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses;

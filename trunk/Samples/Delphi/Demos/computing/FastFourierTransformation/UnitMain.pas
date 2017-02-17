@@ -7,7 +7,7 @@ uses
   System.SysUtils, System.Classes, System.Types, System.Math,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
 
-  //GLS
+  
   GLUtils,
   GLFilePGM, GLGraphics, GLSCUDAUtility, GLSCUDADataAccess,
   GLVectorTypes, CPUFFT, GLSCUDAFFTPlan, GLSCUDA, GLSCUDAContext;

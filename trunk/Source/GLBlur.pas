@@ -18,7 +18,7 @@ uses
   System.SysUtils,
   VCL.Graphics,
 
-  // GLS
+  
   OpenGLTokens,
   GLScene,
   GLVectorGeometry,
@@ -156,10 +156,10 @@ type
     constructor Create(aOwner: TComponent); override;
     procedure Assign(Source: TPersistent); override;
   published
-    //: The more the intensity, the more blur you have.
+    // The more the intensity, the more blur you have.
     property Intensity: Single read FIntensity write FIntensity stored StoreIntensity;
 
-    //: From TGLBaseSceneObject.
+    // From TGLBaseSceneObject.
     property Visible;
     property OnProgress;
     property Behaviours;

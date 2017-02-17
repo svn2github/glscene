@@ -92,7 +92,7 @@ implementation
 // ------------------ TGLTexCombineShader ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTexCombineShader.Create(AOwner: TComponent);
@@ -105,7 +105,7 @@ begin
   FCommandCache := nil;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLTexCombineShader.Destroy;

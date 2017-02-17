@@ -22,7 +22,7 @@ uses
   System.Classes, 
   System.SysUtils, 
   System.Types,
-  // GLS
+  
   GLScene, 
   GLHeightData, 
   GLMaterial, 
@@ -270,7 +270,7 @@ end;
 // ------------------ TGLTerrainRenderer ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLTerrainRenderer.Create(AOwner: TComponent);
 var
@@ -293,7 +293,7 @@ begin
     tmAllocateNewTiles];
 end;
 
-// Destroy
+ 
 //
 destructor TGLTerrainRenderer.Destroy;
 var

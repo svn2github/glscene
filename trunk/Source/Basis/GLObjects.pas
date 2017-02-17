@@ -892,7 +892,7 @@ end;
 // ------------------ TGLDummyCube ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLDummyCube.Create(AOwner: TComponent);
@@ -906,7 +906,7 @@ begin
   CamInvarianceMode := cimNone;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLDummyCube.Destroy;
@@ -1075,7 +1075,7 @@ end;
 // ------------------ TGLPlane ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPlane.Create(AOwner: TComponent);
@@ -1520,7 +1520,7 @@ end;
 // ------------------ TGLSprite ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSprite.Create(AOwner: TComponent);
@@ -1725,7 +1725,7 @@ end;
 // ------------------ TGLPointParameters ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPointParameters.Create(AOwner: TPersistent);
@@ -1738,7 +1738,7 @@ begin
     csVector);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPointParameters.Destroy;
@@ -1899,7 +1899,7 @@ end;
 // ------------------ TGLPoints ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPoints.Create(AOwner: TComponent);
@@ -1914,7 +1914,7 @@ begin
   FPointParameters := TGLPointParameters.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPoints.Destroy;
@@ -2120,7 +2120,7 @@ end;
 // ------------------ TGLLineBase ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLineBase.Create(AOwner: TComponent);
@@ -2133,7 +2133,7 @@ begin
   FLineWidth := 1.0;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLLineBase.Destroy;
@@ -2264,7 +2264,7 @@ end;
 // ------------------ TGLLinesNode ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLinesNode.Create(Collection: TCollection);
@@ -2276,7 +2276,7 @@ begin
   FColor.OnNotifyChange := OnColorChange;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLLinesNode.Destroy;
@@ -2324,7 +2324,7 @@ end;
 // ------------------ TGLLinesNodes ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLinesNodes.Create(AOwner: TComponent);
@@ -2345,7 +2345,7 @@ end;
 // ------------------ TGLNodedLines ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLNodedLines.Create(AOwner: TComponent);
@@ -2360,7 +2360,7 @@ begin
   FNodeSize := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLNodedLines.Destroy;
@@ -2536,7 +2536,7 @@ end;
 // ------------------ TGLLines ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLLines.Create(AOwner: TComponent);
@@ -2549,7 +2549,7 @@ begin
   FNURBSTolerance := 50;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLLines.Destroy;
@@ -2797,7 +2797,7 @@ end;
 // ------------------ TGLCube ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLCube.Create(AOwner: TComponent);
@@ -3176,7 +3176,7 @@ end;
 // ------------------ TGLQuadricObject ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLQuadricObject.Create(AOwner: TComponent);
@@ -3264,7 +3264,7 @@ end;
 // ------------------ TGLSphere ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSphere.Create(AOwner: TComponent);
@@ -3663,7 +3663,7 @@ end;
 // ------------------ TGLPolygonBase ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLPolygonBase.Create(AOwner: TComponent);
@@ -3682,7 +3682,7 @@ begin
   FNodes := TGLNodes.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLPolygonBase.Destroy;
@@ -3804,7 +3804,7 @@ end;
 // ------------------ TGLSuperellipsoid ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSuperellipsoid.Create(AOwner: TComponent);

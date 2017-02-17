@@ -7,18 +7,13 @@
     RGB8, R10G10B10A2, RGBA8, RGBA16, R16F, RGBA16F, R32F, RGBA32F, GR16, GR16F, GR32F,
     Compressed RGB S3TC DXT1, Compressed RGBA S3TC DXT1, Compressed RGBA S3TC DXT3,
     Compressed RGBA S3TC DXT5
-    But it down color to RGBA8 because becomes to TGLBitmap
+    But it down color to RGBA8 because becomes to TBitmap
     Good for preview picture in OpenDialog,
     so you may include both DDSImage (preview) and GLFileDDS (loading)
 
   History :  
-         23/10/10 - Yar - Removed PBuffer
-         23/08/10 - Yar - Changes after PBuffer upgrade
-         20/05/10 - Yar - Fixes for Linux x64
-         21/03/10 - Yar - Added Linux support
-                             (thanks to Rustam Asmandiarov aka Predator)
-         24/01/10 - Yar - Improved FPC compatibility
-         21/01/10 - Yar - Creation
+     21/01/10 - Yar - Creation
+     The whole history is logged in previous version of the unit	 
     
 }
 
@@ -32,6 +27,7 @@ uses
   Winapi.Windows,
   System.Classes,
   System.SysUtils,
+  Vcl.Graphics,
    
   GLCrossPlatform,
   GLVectorGeometry,
@@ -41,7 +37,7 @@ uses
 
 type
 
-  TDDSImage = class(TGLBitmap)
+  TDDSImage = class(TBitmap)
   public
     
     procedure LoadFromStream(stream: TStream); override;
@@ -60,8 +56,6 @@ uses
 // ------------------
 // ------------------ TDDSImage ------------------
 // ------------------
-
-// LoadFromStream
 
 procedure TDDSImage.LoadFromStream(stream: TStream);
 var
@@ -164,22 +158,22 @@ end;
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
 initialization
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 
-  TGLPicture.RegisterFileFormat(
+  TPicture.RegisterFileFormat(
     'dds', 'Microsoft DirectDraw Surface', TDDSImage);
 
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 finalization
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
   // ------------------------------------------------------------------
 
-  TGLPicture.UnregisterGraphicClass(TDDSImage);
+  TPicture.UnregisterGraphicClass(TDDSImage);
 
 end.
 

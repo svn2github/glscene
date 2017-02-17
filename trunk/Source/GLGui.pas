@@ -18,7 +18,7 @@ interface
 uses
   System.Classes, System.SysUtils,
 
-  // GLS
+  
   GLScene, GLBitmapFont, GLMaterial, GLCrossPlatform, OpenGLTokens, GLContext,
   GLPersistentClasses, GLVectorGeometry, GLCoordinates, GLBaseClasses;
 
@@ -31,9 +31,9 @@ type
     FHeight: Single;
 
   protected
-    //: self notification on hide. Also notifies children.
+    // self notification on hide. Also notifies children.
     procedure NotifyHide; dynamic;
-    //: child notification on show. Also notifies children.
+    // child notification on show. Also notifies children.
     procedure NotifyShow; dynamic;
 
     procedure SetLeft(const Value: TGLFloat);
@@ -208,7 +208,7 @@ end;
 // ------------------ TGLBaseGuiObject ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLBaseGuiObject.Create(AOwner: TComponent);

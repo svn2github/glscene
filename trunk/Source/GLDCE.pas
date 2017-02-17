@@ -283,7 +283,7 @@ begin
   RegisterManager(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TGLDCEManager.Destroy;
 begin

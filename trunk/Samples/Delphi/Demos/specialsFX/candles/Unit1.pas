@@ -13,7 +13,7 @@ uses
   Vcl.ComCtrls,
   Vcl.ExtCtrls,
 
-  //GLS
+  
   GLObjects,
   GLExtrusion,
   GLScene,

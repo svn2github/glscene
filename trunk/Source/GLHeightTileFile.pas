@@ -213,7 +213,7 @@ begin
   SetLength(FHeightTile.data, aTileSize * aTileSize);
 end;
 
-// Create
+ 
 //
 constructor TGLHeightTileFile.Create(const fileName: String);
 var
@@ -257,7 +257,7 @@ begin
   SetLength(FTileMark, Length(FTileIndex));
 end;
 
-// Destroy
+ 
 //
 destructor TGLHeightTileFile.Destroy;
 var

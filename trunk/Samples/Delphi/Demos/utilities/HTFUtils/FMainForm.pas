@@ -8,7 +8,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, ValEdit, 
   Vcl.Grids, Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ToolWin, 
   Vcl.ExtCtrls, Vcl.ActnList, Vcl.ImgList,
-  //GLS
+  
   GLHeightTileFile;
 
 type

@@ -11,7 +11,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
 
-  // GLS
+  
   GLScene, GLVectorFileObjects, GLObjects, GLWin32Viewer,
   GLFile3ds, GLCadencer, GLGeomObjects, GLVectorGeometry,
   GLShadowPlane, GLParticleFX, GLPerlinPFX, GLCrossPlatform, GLCoordinates,

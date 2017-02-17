@@ -939,7 +939,7 @@ end;
 
 destructor TGLNGDManager.Destroy;
 begin
-  // Destroy joint before body.
+  // for joint before body.
   FreeAndNil(FNewtonJointGroup);
 
   // Unregister everything
@@ -1404,10 +1404,10 @@ begin
   maxID := 0;
   if not(csDesigning in ComponentState) then
   begin
-    // Destroy newton materials
+    // for newton materials
     NewtonMaterialDestroyAllGroupID(FNewtonWorld);
 
-    // Create materialID
+    // Creates materialID
     for I := 0 to FNewtonSurfaceItem.Count - 1 do
       maxID := MaxInteger((FNewtonSurfaceItem.Items[I] as TGLNGDSurfaceItem).ID,
         maxID);
@@ -1745,7 +1745,7 @@ begin
 
   if Assigned(FManager) then
   begin
-    // Create NewtonBody with null collision
+    // Creates NewtonBody with null collision
     FCollision := NewtonCreateNull(FManager.FNewtonWorld);
     FNewtonBodyMatrix := FOwnerBaseSceneObject.AbsoluteMatrix;
     FNewtonBody := NewtonCreateBody(FManager.FNewtonWorld, FCollision,
@@ -2787,7 +2787,7 @@ begin
   if FJointType = nj_KinematicController then
     if Assigned(FParentObject) then
     begin
-      // Create the joint
+      // Creates the joint
       if PickedActions = paAttach then
       begin
         if not Assigned(FNewtonUserJoint) then

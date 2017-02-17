@@ -7,7 +7,7 @@ uses
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
   //GR32
   GR32_Image, GR32, GR32_Layers,
-  //GLS
+  
   GLHeightTileFile;
 
 type

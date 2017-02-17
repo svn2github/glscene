@@ -3,14 +3,35 @@ unit uDemo;
 interface
 
 uses
-  System.SysUtils, System.Classes,
-  Vcl.Controls, Vcl.Forms, Vcl.StdCtrls, Vcl.Graphics,
-  // GLScene
-  GLScene, GLCadencer, GLWin32Viewer, GLCrossPlatform, GLBaseClasses,
-  GLCoordinates, GLContext, GLGui, GLBitmapFont, GLWindowsFont, GLCustomShader,
-  GLRenderContextInfo, GLState, GLMaterial, GLSLShader, GLWindows,
-  // CUDA
-  GLSCUDAContext, GLSCUDA, GLSCUDACompiler, GLSCUDAFFTPlan, GLSCUDAGraphics;
+  System.SysUtils, 
+  System.Classes,
+  Vcl.Controls, 
+  Vcl.Forms, 
+  Vcl.StdCtrls, 
+  Vcl.Graphics,
+  
+  GLScene, 
+  GLCadencer, 
+  GLWin32Viewer, 
+  GLCrossPlatform, 
+  GLBaseClasses,
+  GLCoordinates, 
+  GLContext, 
+  GLGui, 
+  GLBitmapFont, 
+  GLWindowsFont, 
+  GLCustomShader,
+  GLRenderContextInfo, 
+  GLState, 
+  GLMaterial, 
+  GLSLShader, 
+  GLWindows,
+  
+  GLSCUDAContext, 
+  GLSCUDA, 
+  GLSCUDACompiler, 
+  GLSCUDAFFTPlan, 
+  GLSCUDAGraphics;
 
 type
   TForm1 = class(TForm)

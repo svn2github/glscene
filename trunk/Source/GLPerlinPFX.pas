@@ -17,7 +17,7 @@ interface
 uses
   System.Classes,
   System.Math,
-  // GLS
+  
   GLParticleFX,
   GLGraphics,
   GLCrossPlatform,
@@ -116,7 +116,7 @@ implementation
 // ------------------ TGLPerlinPFXManager ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLPerlinPFXManager.Create(aOwner: TComponent);
 begin
@@ -131,7 +131,7 @@ begin
   ColorMode := scmInner;
 end;
 
-// Destroy
+ 
 //
 destructor TGLPerlinPFXManager.Destroy;
 begin

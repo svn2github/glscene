@@ -66,7 +66,7 @@ implementation
 // ------------------ TGLMultiMaterialShader ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLMultiMaterialShader.Create(aOwner : TComponent);
 begin

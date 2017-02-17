@@ -15,7 +15,7 @@ interface
 uses
   System.Classes,
   System.SysUtils,
-  // GLS
+  
   OpenGLTokens,
   GLVectorGeometry,
   GLVectorLists,
@@ -468,7 +468,7 @@ end;
 // ------------------ TCgProgram ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCgProgram.Create(AOwner: TPersistent);
 begin
@@ -480,7 +480,7 @@ begin
   FDetectProfile := True;
 end;
 
-// Destroy
+ 
 //
 destructor TCgProgram.Destroy;
 begin
@@ -498,7 +498,7 @@ begin
   FCode.Assign(val);
 end;
 
-// LoadFromFile
+ 
 //
 procedure TCgProgram.LoadFromFile(const fileName: String);
 begin
@@ -839,14 +839,14 @@ end;
 // ------------------ TCgParameter ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCgParameter.Create;
 begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 destructor TCgParameter.Destroy;
 begin
@@ -1138,7 +1138,7 @@ end;
 // ------------------ TCgVertexProgram ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCgVertexProgram.Create;
 begin
@@ -1177,7 +1177,7 @@ end;
 // ------------------ TCgFragmentProgram ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCgFragmentProgram.Create;
 begin
@@ -1238,7 +1238,7 @@ end;
 // ------------------ TCustomCgShader ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TCustomCgShader.Create(AOwner: TComponent);
 begin
@@ -1247,7 +1247,7 @@ begin
   FFragmentProgram := TCgFragmentProgram.Create(Self);
 end;
 
-// Destroy
+ 
 //
 destructor TCustomCgShader.Destroy;
 begin

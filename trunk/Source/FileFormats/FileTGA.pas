@@ -149,7 +149,7 @@ begin
   end;
 end;
 
-// LoadFromFile
+ 
 //
 
 procedure TGLTGAImage.LoadFromFile(const filename: string);

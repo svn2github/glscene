@@ -193,7 +193,7 @@ type
        Will automatically calculate the Interval value when set.
        Precision will depend on Interval since Interval has priority. }
     property FrameRate: Single read GetFrameRate write SetFrameRate;
-    //: Sets cropping margins for auto dimension animations.
+    // Sets cropping margins for auto dimension animations.
     property Margins: TSpriteAnimMargins read FMargins;
 
   end;
@@ -263,7 +263,7 @@ type
     procedure BuildList(var rci: TGLRenderContextInfo); override;
     procedure DoProgress(const progressTime: TProgressTimes); override;
 
-    //: Steps the current animation to the next frame
+    // Steps the current animation to the next frame
     procedure NextFrame;
 
   published
@@ -280,7 +280,7 @@ type
     // Index of the sprite animation to be used.
     property AnimationIndex: Integer read FAnimationIndex write
       SetAnimationIndex;
-    //: Playback mode for the current animation.
+    // Playback mode for the current animation.
     property AnimationMode: TSpriteAnimationMode read FAnimationMode write
       SetAnimationMode;
     {Used to automatically calculate the width and height of a sprite based
@@ -337,7 +337,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TSpriteAnimFrame.FriendlyName: string;
@@ -440,7 +440,7 @@ end;
 // ---------- TSpriteAnimFrameList ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TSpriteAnimFrameList.Create(aOwner: TPersistent);
@@ -460,7 +460,7 @@ end;
 // ---------- TSpriteAnimationMargins ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TSpriteAnimMargins.Create(Animation: TSpriteAnimation);
@@ -530,7 +530,7 @@ end;
 // ---------- TSpriteAnimation ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TSpriteAnimation.Create(aOwner: TGLXCollection);
@@ -540,7 +540,7 @@ begin
   FMargins := TSpriteAnimMargins.Create(Self);
 end;
 
-// Destroy
+ 
 //
 
 destructor TSpriteAnimation.Destroy;
@@ -567,7 +567,7 @@ begin
   end;
 end;
 
-// FriendlyName
+ 
 //
 
 class function TSpriteAnimation.FriendlyName: string;
@@ -783,7 +783,7 @@ end;
 // ---------- TSpriteAnimationList ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TSpriteAnimationList.Create(aOwner: TPersistent);
@@ -803,7 +803,7 @@ end;
 // ---------- TGLAnimatedSprite ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLAnimatedSprite.Create(AOwner: TComponent);
@@ -821,7 +821,7 @@ begin
   ObjectStyle := [osDirectDraw];
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLAnimatedSprite.Destroy;

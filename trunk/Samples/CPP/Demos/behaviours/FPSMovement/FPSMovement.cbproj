@@ -120,6 +120,7 @@
         <ILINK_LibraryPath>$(BDSLIB)\$(PLATFORM)\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+        <BT_BuildType>Debug</BT_BuildType>
         <Defines>_DEBUG;$(Defines)</Defines>
         <ILINK_LibraryPath>$(BDSCOMMONDIR)\Dcp;$(ILINK_LibraryPath)</ILINK_LibraryPath>
         <FinalOutputDir>.</FinalOutputDir>
@@ -147,10 +148,6 @@
         <CppCompile Include="FPSMovement.cpp">
             <BuildOrder>0</BuildOrder>
         </CppCompile>
-        <PCHCompile Include="FPSMovementPCH1.h">
-            <BuildOrder>1</BuildOrder>
-            <PCH>true</PCH>
-        </PCHCompile>
         <CppCompile Include="Unit1.cpp">
             <Form>Form1</Form>
             <DependentOn>Unit1.h</DependentOn>
@@ -262,6 +259,12 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
+                <DeployFile LocalName=".\FPSMovement.exe" Configuration="Debug" Class="ProjectOutput">
+                    <Platform Name="Win32">
+                        <RemoteName>FPSMovement.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'=='true'" LocalName="$(BDS)\bin\cc32240mt.dll" Class="DependencyModule">
                     <Platform Name="Win32">
                         <Overwrite>true</Overwrite>
@@ -274,6 +277,12 @@
                 </DeployFile>
                 <DeployFile Condition="'$(DynamicRTL)'=='true' And '$(Multithreaded)'!='true'" LocalName="$(BDS)\bin64\cc64240.dll" Class="DependencyModule">
                     <Platform Name="Win64">
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
+                <DeployFile LocalName=".\FPSMovement.tds" Configuration="Debug" Class="DebugSymbols">
+                    <Platform Name="Win32">
+                        <RemoteName>FPSMovement.tds</RemoteName>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>

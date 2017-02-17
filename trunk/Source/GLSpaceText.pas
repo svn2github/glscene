@@ -20,7 +20,7 @@ unit GLSpaceText;
 interface
 
 {$I GLScene.inc}
-{$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'}{$ENDIF}
+{$IFDEF UNIX}{$MESSAGE Error 'Unit not supported'} {$ENDIF}
 
 uses
   WinApi.Windows,
@@ -255,7 +255,7 @@ end;
 // ------------------ TGLTextAdjust ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLTextAdjust.Create;
@@ -311,7 +311,7 @@ end;
 // ------------------ TGLSpaceText ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSpaceText.Create(AOwner: TComponent);
@@ -328,7 +328,7 @@ begin
   FLines.OnChange := DoOnLinesChange;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSpaceText.Destroy;
@@ -829,7 +829,7 @@ end;
 // ------------------ TFontManager ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TFontManager.Create;
@@ -837,7 +837,7 @@ begin
   inherited;
 end;
 
-// Destroy
+ 
 //
 
 destructor TFontManager.Destroy;
@@ -946,7 +946,7 @@ begin
       NewEntry^.FClients.Add(client);
       Add(NewEntry);
     end;
-    // create a font to be used while display list creation
+    // creates a font to be used while display list creation
     AFont := TFont.Create;
     MemDC := CreateCompatibleDC(0);
     try

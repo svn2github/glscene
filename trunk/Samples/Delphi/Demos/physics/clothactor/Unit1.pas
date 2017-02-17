@@ -13,7 +13,7 @@ uses
   Vcl.StdCtrls,
   Vcl.ExtCtrls,
   Vcl.Imaging.Jpeg,
-  // GLS
+  
   GLScene,
   GLVectorFileObjects,
   GLObjects,

@@ -15,7 +15,7 @@ uses
   Vcl.Buttons,
   Vcl.ComCtrls,
 
-  // GLS
+  
   GLScene,
   GLCadencer,
   GLObjects,

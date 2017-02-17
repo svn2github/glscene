@@ -23,9 +23,7 @@ uses
   System.Math,
   VCL.Graphics,
   VCL.Imaging.Pngimage,
-{$IFDEF GLS_Graphics32_SUPPORT}
-  GR32,
-{$ENDIF}
+  {$IFDEF GLS_Graphics32_SUPPORT} GR32, {$ENDIF}
   GLApplicationFileIO,
   GLPersistentClasses,
   OpenGLTokens,
@@ -40,15 +38,12 @@ uses
   GLSLog;
 
 type
-  // TGLPixel24
-  //
+
   TGLPixel24 = packed record
     r, g, b: Byte;
   end;
   PGLPixel24 = ^TGLPixel24;
 
-  // TGLPixel32
-  //
   TGLPixel32 = packed record
     r, g, b, a: Byte;
   end;
@@ -59,8 +54,6 @@ type
 
   TGLLODStreamingState = (ssKeeping, ssLoading, ssLoaded, ssTransfered);
 
-  // TGLImageLevelDesc
-  //
   TGLImageLevelDesc = record
     Width: Integer;
     Height: Integer;
@@ -77,8 +70,6 @@ type
 
   TGLImagePiramid = array[TGLImageLODRange] of TGLImageLevelDesc;
 
-  // TGLBaseImage
-  //
   TGLBaseImage = class(TGLDataFile)
   private
     FSourceStream: TStream;
@@ -113,7 +104,6 @@ type
     function GetLevelSizeInByte(ALOD: TGLImageLODRange): Integer;
     function GetLevelStreamingState(ALOD: TGLImageLODRange): TGLLODStreamingState;
     procedure SetLevelStreamingState(ALOD: TGLImageLODRange; AState: TGLLODStreamingState);
-
     procedure SaveHeader;
     procedure LoadHeader;
     procedure StartStreaming;
@@ -196,28 +186,24 @@ type
 
   TGLBaseImageClass = class of TGLBaseImage;
 
-  // TGLImage
-  //
-    {Contains and manipulates a 32 bits (24+8) bitmap. 
+    {Contains and manipulates a 32 bits (24+8) bitmap.
        This is the base class for preparing and manipulating textures in GLScene,
        this function does not rely on a windows handle and should be used for
        in-memory manipulations only.
        16 bits textures are automatically converted to 24 bits and an opaque (255)
        alpha channel is assumed for all planes, the byte order is as specified
        in GL_RGBA. If 32 bits is used in this class, it can however output 16 bits texture
-       data for use in OpenGL. 
+       data for use in OpenGL.
        The class has support for registering its content as a texture, as well
        as for directly drawing/reading from the current OpenGL buffer. }
   TGLImage = class(TGLBaseImage)
   private
-     
     FVerticalReverseOnAssignFromBitmap: Boolean;
     FBlank: boolean;
     fOldColorFormat: Cardinal;
     fOldDataType: Cardinal;
     procedure DataConvertTask;
   protected
-    
     procedure SetWidth(val: Integer);
     procedure SetHeight(const val: Integer);
     procedure SetDepth(const val: Integer);
@@ -225,37 +211,33 @@ type
     procedure SetCubeMap(const val: Boolean);
     procedure SetArray(const val: Boolean);
     function GetScanLine(index: Integer): PGLPixel32Array;
-    procedure AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
-    procedure AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
-{$IFDEF GLS_Graphics32_SUPPORT}
+    procedure AssignFrom24BitsBitmap(aBitmap: TBitmap);
+    procedure AssignFrom32BitsBitmap(aBitmap: TBitmap);
+    {$IFDEF GLS_Graphics32_SUPPORT}
     procedure AssignFromBitmap32(aBitmap32: TBitmap32);
-{$ENDIF}
+    {$ENDIF}
     procedure AssignFromPngImage(aPngImage: TPngImage);
-
   public
-    
     constructor Create; override;
     destructor Destroy; override;
     {Accepts TGLImage and TGraphic subclasses. }
     procedure Assign(Source: TPersistent); override;
-    {Assigns from a 24 bits bitmap without swapping RGB. 
+    {Assigns from a 24 bits bitmap without swapping RGB.
       This is faster than a regular assignment, but R and B channels
       will be reversed (from what you would view in a TImage). Suitable
       if you do your own drawing and reverse RGB on the drawing side.
       If you're after speed, don't forget to set the bitmap's dimensions
       to a power of two! }
-    procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
-    {Assigns from a 2D Texture. 
+    procedure AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
+    {Assigns from a 2D Texture.
       The context which holds the texture must be active and the texture
       handle valid. }
     procedure AssignFromTexture2D(textureHandle: Cardinal); overload;
-    {Assigns from a Texture handle. 
+    {Assigns from a Texture handle.
       If the handle is invalid, the bitmap32 will be empty. }
     procedure AssignFromTexture2D(textureHandle: TGLTextureHandle); overload;
-
     {Create a 32 bits TBitmap from self content. }
-    function Create32BitsBitmap: TGLBitmap;
-
+    function Create32BitsBitmap: TBitmap;
     {Width of the bitmap.  }
     property Width: Integer read GetWidth write SetWidth;
     {Height of the bitmap. }
@@ -271,16 +253,13 @@ type
     property DataType: Cardinal read fDataType;
     {Size in bytes of pixel or block }
     property ElementSize: Integer read fElementSize;
-
     property CubeMap: Boolean read fCubeMap write SetCubeMap;
-
     property TextureArray: Boolean read fTextureArray write SetArray;
-    {Access to a specific Bitmap ScanLine. 
-      index should be in the [0; Height[ range. 
+    {Access to a specific Bitmap ScanLine.
+      index should be in the [0; Height[ range.
       Warning : this function is NOT protected against invalid indexes,
       and invoking it is invalid if the bitmap is Empty. }
     property ScanLine[index: Integer]: PGLPixel32Array read GetScanLine;
-
     property VerticalReverseOnAssignFromBitmap: Boolean read
       FVerticalReverseOnAssignFromBitmap write
       FVerticalReverseOnAssignFromBitmap;
@@ -289,13 +268,12 @@ type
       menory. 
       Useful for textures that are generated by the GPU on the fly. }
     property Blank: boolean read FBlank write SetBlank;
-
     {Recast image OpenGL data type and color format. }
     procedure SetColorFormatDataType(const AColorFormat, ADataType: Cardinal);
-    {Set Alpha channel values to the pixel intensity. 
+    {Set Alpha channel values to the pixel intensity.
       The intensity is calculated as the mean of RGB components. }
     procedure SetAlphaFromIntensity;
-    {Set Alpha channel to 0 for pixels of given color, 255 for others). 
+    {Set Alpha channel to 0 for pixels of given color, 255 for others).
       This makes pixels of given color totally transparent while the others
       are completely opaque. }
     procedure SetAlphaTransparentForColor(const aColor: TColor); overload;
@@ -305,7 +283,7 @@ type
     procedure SetAlphaToValue(const aValue: Byte);
     {Set Alpha channel values to given float [0..1] value. }
     procedure SetAlphaToFloatValue(const aValue: Single);
-    {Inverts the AlphaChannel component. 
+    {Inverts the AlphaChannel component.
       What was transparent becomes opaque and vice-versa. }
     procedure InvertAlpha;
     {AlphaChannel components are replaced by their sqrt.  }
@@ -315,29 +293,27 @@ type
     procedure BrightnessCorrection(const factor: Single);
     {Apply a gamma correction to the RGB components. }
     procedure GammaCorrection(const gamma: Single);
-
-    {Downsample the bitmap by a factor of 2 in both dimensions. 
+    {Downsample the bitmap by a factor of 2 in both dimensions.
       If one of the dimensions is 1 or less, does nothing. }
     procedure DownSampleByFactor2;
-
-    {Reads the given area from the current active OpenGL rendering context. 
+    {Reads the given area from the current active OpenGL rendering context.
       The best spot for reading pixels is within a SceneViewer's PostRender
       event : the scene has been fully rendered and the OpenGL context
       is still active. }
     procedure ReadPixels(const area: TGLRect);
-    {Draws the whole bitmap at given position in the current OpenGL context. 
-      This function must be called with a rendering context active. 
+    {Draws the whole bitmap at given position in the current OpenGL context.
+      This function must be called with a rendering context active.
       Blending and Alpha channel functions are not altered by this function
       and must be adjusted separately. }
     procedure DrawPixels(const x, y: Single);
-
     {Converts a grayscale 'elevation' bitmap to normal map.
       Actually, only the Green component in the original bitmap is used. }
     procedure GrayScaleToNormalMap(const scale: Single;
       wrapX: Boolean = True; wrapY: Boolean = True);
     {Assumes the bitmap content is a normal map and normalizes all pixels.  }
     procedure NormalizeNormalMap;
-    procedure AssignToBitmap(aBitmap: TGLBitmap);
+    //Converts a TImage back into a TBitmap
+    procedure AssignToBitmap(aBitmap: TBitmap);
     {Generate level of detail. }
     procedure GenerateMipmap(AFilter: TImageFilterFunction); override;
     {Clear all levels except first. }
@@ -346,8 +322,6 @@ type
 
   TGLBitmap32 = TGLImage;
 
-  // TRasterFileFormat
-  //
   TRasterFileFormat = class
   public
     BaseImageClass: TGLBaseImageClass;
@@ -356,14 +330,10 @@ type
     DescResID: Integer;
   end;
 
-  // TRasterFileFormatsList
-  //
   {Stores registered raster file formats. }
   TRasterFileFormatsList = class(TPersistentObjectList)
   public
-    
     destructor Destroy; override;
-
     procedure Add(const Ext, Desc: string; DescID: Integer; AClass:
       TGLBaseImageClass);
     function FindExt(ext: string): TGLBaseImageClass;
@@ -382,17 +352,13 @@ type
   EInvalidRasterFile = class(Exception);
 
 procedure Div2(var Value: Integer);
-
 procedure BGR24ToRGB24(src, dest: Pointer; pixelCount: Integer);
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer);
-
-procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
-  gamma: Single);
-procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
-  factor: Single);
-//: Read access to the list of registered vector file formats
+procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer; gamma: Single);
+procedure BrightenRGBArray(base: Pointer; pixelCount: Integer; factor: Single);
+// Read access to the list of registered vector file formats
 function GetRasterFileFormats: TRasterFileFormatsList;
 {Returns an extension by its index
    in the internal image files dialogs filter. 
@@ -402,14 +368,15 @@ function RasterFileFormatExtensionByIndex(index: Integer): string;
 procedure RegisterRasterFormat(const AExtension, ADescription: string;
   AClass: TGLBaseImageClass);
 procedure UnregisterRasterFormat(AClass: TGLBaseImageClass);
-//: Return an optimal number of texture pyramid
+// Return an optimal number of texture pyramid
 function GetImageLodNumber(w, h, d: integer; IsVolume: Boolean): Integer;
 
 var
   vVerticalFlipDDS: Boolean = true;
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
-  // ------------------------------------------------------------------
+
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
+// ------------------------------------------------------------------
 implementation
 // ------------------------------------------------------------------
 // ------------------------------------------------------------------
@@ -418,10 +385,7 @@ implementation
 var
   vRasterFileFormats: TRasterFileFormatsList;
 
-{$IFDEF GLS_REGIONS}{$REGION 'Raster File Registries'}{$ENDIF}
-
-  // GetRasterFileFormats
-  //
+// ------------------------------ Raster File Registries
 
 function GetRasterFileFormats: TRasterFileFormatsList;
 begin
@@ -430,9 +394,6 @@ begin
   Result := vRasterFileFormats;
 end;
 
-// RegisterRasterFormat
-//
-
 procedure RegisterRasterFormat(const AExtension, ADescription: string;
   AClass: TGLBaseImageClass);
 begin
@@ -440,34 +401,22 @@ begin
   GetRasterFileFormats.Add(AExtension, ADescription, 0, AClass);
 end;
 
-// UnregisterRasterFormat
-//
-
 procedure UnregisterRasterFormat(AClass: TGLBaseImageClass);
 begin
   if Assigned(vRasterFileFormats) then
     vRasterFileFormats.Remove(AClass);
 end;
 
-// RasterFileFormatExtensionByIndex
-//
-
 function RasterFileFormatExtensionByIndex(index: Integer): string;
 begin
   Result := GetRasterFileFormats.FindExtByIndex(index);
 end;
-
-// TRasterFileFormatsList.Destroy
-//
 
 destructor TRasterFileFormatsList.Destroy;
 begin
   Clean;
   inherited;
 end;
-
-// Add
-//
 
 procedure TRasterFileFormatsList.Add(const Ext, Desc: string; DescID: Integer;
   AClass: TGLBaseImageClass);
@@ -484,9 +433,6 @@ begin
   end;
   inherited Add(newRec);
 end;
-
-// FindExt
-//
 
 function TRasterFileFormatsList.FindExt(ext: string): TGLBaseImageClass;
 var
@@ -505,9 +451,6 @@ begin
   Result := nil;
 end;
 
-// FindFromFileName
-//
-
 function TRasterFileFormatsList.FindFromFileName(const fileName: string):
   TGLBaseImageClass;
 var
@@ -520,9 +463,6 @@ begin
     raise EInvalidRasterFile.CreateFmt(strUnknownExtension,
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
-
-// FindFromStream
-//
 
 function TRasterFileFormatsList.FindFromStream(const AStream: TStream):
   TGLBaseImageClass;
@@ -552,9 +492,6 @@ begin
       [ext, 'GLFile' + UpperCase(ext)]);
 end;
 
-// Remove
-//
-
 procedure TRasterFileFormatsList.Remove(AClass: TGLBaseImageClass);
 var
   i: Integer;
@@ -565,9 +502,6 @@ begin
       DeleteAndFree(i);
   end;
 end;
-
-// BuildFilterStrings
-//
 
 procedure TRasterFileFormatsList.BuildFilterStrings(
   imageFileClass: TGLBaseImageClass;
@@ -609,9 +543,6 @@ begin
     FmtStr(descriptions, '%s (%s)|%1:s|%s',
       [glsAllFilter, filters, descriptions]);
 end;
-
-// FindExtByIndex
-//
 
 function TRasterFileFormatsList.FindExtByIndex(index: Integer;
   formatsThatCanBeOpened: Boolean = True;
@@ -668,14 +599,11 @@ end;
 
 procedure CalcImagePiramid(var APiramid: TGLImagePiramid);
 begin
-
+  //
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$REGION 'RGBA Utils'}{$ENDIF}
-// GammaCorrectRGBArray
-//
+// -------------------- RGBA Utils
 
 procedure GammaCorrectRGBArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
@@ -703,9 +631,6 @@ begin
     Inc(ptr);
   end;
 end;
-
-// GammaCorrectRGBAArray
-//
 
 procedure GammaCorrectRGBAArray(base: Pointer; pixelCount: Integer;
   gamma: Single);
@@ -740,9 +665,6 @@ begin
   end;
 end;
 
-// BrightenRGBArray
-//
-
 procedure BrightenRGBArray(base: Pointer; pixelCount: Integer;
   factor: Single);
 var
@@ -769,9 +691,6 @@ begin
     Inc(ptr);
   end;
 end;
-
-// BrightenRGBAArray
-//
 
 procedure BrightenRGBAArray(base: Pointer; pixelCount: Integer;
   factor: Single);
@@ -807,9 +726,6 @@ begin
   end;
 end;
 
-// BGR24ToRGB24
-//
-
 procedure BGR24ToRGB24(src, dest: Pointer; pixelCount: Integer); register;
 begin
   while pixelCount > 0 do
@@ -823,8 +739,6 @@ begin
   end;
 end;
 
-// BGR24ToRGBA32
-//
 procedure BGR24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -839,8 +753,6 @@ begin
   end;
 end;
 
-// RGB24ToRGBA32
-//
 procedure RGB24ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
   while pixelCount > 0 do
@@ -854,9 +766,6 @@ begin
     Dec(pixelCount);
   end;
 end;
-
-// BGRA32ToRGBA32
-//
 
 procedure BGRA32ToRGBA32(src, dest: Pointer; pixelCount: Integer);
 begin
@@ -872,15 +781,10 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
 
 // ------------------
 // ------------------ TGLBaseImage ------------------
 // ------------------
-
-{$IFDEF GLS_REGIONS}{$REGION 'TGLBaseImage'}{$ENDIF}
-// Create
-//
 
 constructor TGLBaseImage.Create;
 begin
@@ -894,9 +798,6 @@ begin
   fCubeMap := false;
   fTextureArray := false;
 end;
-
-// Destroy
-//
 
 destructor TGLBaseImage.Destroy;
 var
@@ -915,9 +816,6 @@ begin
   FSourceStream.Free;
   inherited Destroy;
 end;
-
-// Assign
-//
 
 procedure TGLBaseImage.Assign(Source: TPersistent);
 var
@@ -966,9 +864,6 @@ begin
     and (FInternalFormat <= tfFLOAT_RGBA32)) then
     Result := ttTextureRect;
 end;
-
-// DataSize
-//
 
 function TGLBaseImage.DataSize: PtrUint;
 var
@@ -1056,25 +951,15 @@ begin
   Result := (GetWidth = 0) or (GetHeight = 0);
 end;
 
-// IsCompressed
-//
-
 function TGLBaseImage.IsCompressed: Boolean;
 begin
   Result := IsCompressedFormat(fInternalFormat);
 end;
 
-// IsVolume
-//
-
 function TGLBaseImage.IsVolume: boolean;
 begin
   Result := (GetDepth > 0) and not fTextureArray and not fCubeMap;
 end;
-
-
-// ConvertCrossToCubemap
-//
 
 function TGLBaseImage.ConvertCrossToCubemap: Boolean;
 var
@@ -1172,9 +1057,6 @@ begin
 
   Result := true;
 end;
-
-// ConvertToVolume
-//
 
 function TGLBaseImage.ConvertToVolume(const col, row: Integer; const MakeArray:
   Boolean): Boolean;
@@ -1283,9 +1165,6 @@ begin
   FLOD[ALOD].State := AState;
 end;
 
-// Narrow
-//
-
 procedure TGLBaseImage.Narrow;
 var
   size: Integer;
@@ -1324,9 +1203,6 @@ begin
   FreeMem(fData);
   fData := newData;
 end;
-
-// GemerateMipmap
-//
 
 procedure TGLBaseImage.GenerateMipmap(AFilter: TImageFilterFunction);
 var
@@ -2118,14 +1994,14 @@ begin
 end;
 {$ENDIF}
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+ 
 
 // ------------------
 // ------------------ TGLImage ------------------
 // ------------------
 
-{$IFDEF GLS_REGIONS}{$REGION 'TGLImage'}{$ENDIF}
-// Create
+// ------------------------------ TGLImage 
+ 
 //
 
 constructor TGLImage.Create;
@@ -2134,7 +2010,7 @@ begin
   SetBlank(false);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLImage.Destroy;
@@ -2147,8 +2023,8 @@ end;
 
 procedure TGLImage.Assign(Source: TPersistent);
 var
-  bmp: TGLBitmap;
-  graphic: TGLGraphic;
+  bmp: TBitmap;
+  graphic: TGraphic;
 begin
   if (Source is TGLImage) or (Source is TGLBaseImage) then
   begin
@@ -2171,23 +2047,23 @@ begin
       fTextureArray := TGLImage(Source).fTextureArray;
     end;
   end
-  else if Source is TGLGraphic then
+  else if Source is TGraphic then
   begin
-    if (Source is TGLBitmap)
-    and (TGLBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
-    and (((TGLBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
+    if (Source is TBitmap)
+    and (TBitmap(Source).PixelFormat in [glpf24bit, glpf32bit])
+    and (((TBitmap(Source).Width and 3) = 0) or GL.EXT_bgra) then
     begin
-      if TGLBitmap(Source).PixelFormat = glpf24bit then
-        AssignFrom24BitsBitmap(TGLBitmap(Source))
+      if TBitmap(Source).PixelFormat = glpf24bit then
+        AssignFrom24BitsBitmap(TBitmap(Source))
       else
-        AssignFrom32BitsBitmap(TGLBitmap(Source))
+        AssignFrom32BitsBitmap(TBitmap(Source))
     end
     else if Source is TPngImage then
       AssignFromPngImage(TPngImage(Source))
     else
     begin
-      graphic := TGLGraphic(Source);
-      bmp := TGLBitmap.Create;
+      graphic := TGraphic(Source);
+      bmp := TBitmap.Create;
       try
         // crossbuilder: useless to set pixelformat before setting the size ?
         //               or maybe just useless at all on gtk .. as soon as
@@ -2226,10 +2102,7 @@ begin
     inherited;
 end;
 
-// AssignFrom24BitsBitmap
-//
-
-procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFrom24BitsBitmap(aBitmap: TBitmap);
 var
   y, lineSize: Integer;
   rowOffset: Int64;
@@ -2306,10 +2179,7 @@ begin
   end;
 end;
 
-// AssignFromBitmap24WithoutRGBSwap
-//
-
-procedure TGLImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFromBitmap24WithoutRGBSwap(aBitmap: TBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -2360,10 +2230,7 @@ begin
   end;
 end;
 
-// AssignFrom32BitsBitmap
-//
-
-procedure TGLImage.AssignFrom32BitsBitmap(aBitmap: TGLBitmap);
+procedure TGLImage.AssignFrom32BitsBitmap(aBitmap: TBitmap);
 var
   y: Integer;
   rowOffset: Int64;
@@ -2435,8 +2302,6 @@ begin
 end;
 
 {$IFDEF GLS_Graphics32_SUPPORT}
-// AssignFromBitmap32
-//
 
 procedure TGLImage.AssignFromBitmap32(aBitmap32: TBitmap32);
 var
@@ -2471,8 +2336,6 @@ begin
 end;
 {$ENDIF}
 
-// AlphaChannel Support
-//
 procedure TGLImage.AssignFromPngImage(aPngImage: TPngImage);
 var
   i, j: Integer;
@@ -2536,9 +2399,6 @@ begin
   end;
 end;
 
-// AssignFromTexture2D
-//
-
 procedure TGLImage.AssignFromTexture2D(textureHandle: Cardinal);
 var
   oldTex: Cardinal;
@@ -2566,9 +2426,6 @@ begin
     TextureBinding[ActiveTexture, ttTexture2D] := oldTex;
   end;
 end;
-
-// AssignFromTexture2D
-//
 
 procedure TGLImage.AssignFromTexture2D(textureHandle: TGLTextureHandle);
 var
@@ -2614,10 +2471,7 @@ begin
   end;
 end;
 
-// Create32BitsBitmap
-//
-
-function TGLImage.Create32BitsBitmap: TGLBitmap;
+function TGLImage.Create32BitsBitmap: TBitmap;
 var
   y, x, x4: Integer;
   pSrc, pDest: PAnsiChar;
@@ -2629,7 +2483,7 @@ begin
   end;
   Narrow;
 
-  Result := TGLBitmap.Create;
+  Result := TBitmap.Create;
   Result.PixelFormat := glpf32bit;
   Result.Width := Width;
   Result.Height := Height;
@@ -2653,9 +2507,6 @@ begin
   end;
 end;
 
-// SetWidth
-//
-
 procedure TGLImage.SetWidth(val: Integer);
 begin
   if val <> FLOD[0].Width then
@@ -2665,9 +2516,6 @@ begin
     FBlank := true;
   end;
 end;
-
-// SetHeight
-//
 
 procedure TGLImage.SetHeight(const val: Integer);
 begin
@@ -2679,9 +2527,6 @@ begin
   end;
 end;
 
-// SetDepth
-//
-
 procedure TGLImage.SetDepth(const val: Integer);
 begin
   if val <> FLOD[0].Depth then
@@ -2692,9 +2537,6 @@ begin
   end;
 end;
 
-// SetCubeMap
-//
-
 procedure TGLImage.SetCubeMap(const val: Boolean);
 begin
   if val <> fCubeMap then
@@ -2704,9 +2546,6 @@ begin
   end;
 end;
 
-// SetArray
-//
-
 procedure TGLImage.SetArray(const val: Boolean);
 begin
   if val <> fTextureArray then
@@ -2715,9 +2554,6 @@ begin
     FBlank := true;
   end;
 end;
-
-// SetColorFormatDataType
-//
 
 procedure TGLImage.SetColorFormatDataType(const AColorFormat, ADataType: Cardinal);
 begin
@@ -2735,17 +2571,11 @@ begin
   DataConvertTask;
 end;
 
-// GetScanLine
-//
-
 function TGLImage.GetScanLine(index: Integer): PGLPixel32Array;
 begin
   Narrow;
   Result := PGLPixel32Array(@FData[index * GetWidth]);
 end;
-
-// SetAlphaFromIntensity
-//
 
 procedure TGLImage.SetAlphaFromIntensity;
 var
@@ -2757,9 +2587,6 @@ begin
       a := (Integer(r) + Integer(g) + Integer(b)) div 3;
 end;
 
-// SetAlphaTransparentForColor
-//
-
 procedure TGLImage.SetAlphaTransparentForColor(const aColor: TColor);
 var
   color: TGLPixel24;
@@ -2770,9 +2597,6 @@ begin
   SetAlphaTransparentForColor(color);
 end;
 
-// SetAlphaTransparentForColor
-//
-
 procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel32);
 var
   color: TGLPixel24;
@@ -2782,9 +2606,6 @@ begin
   color.b := aColor.b;
   SetAlphaTransparentForColor(color);
 end;
-
-// SetAlphaTransparentForColor
-//
 
 procedure TGLImage.SetAlphaTransparentForColor(const aColor: TGLPixel24);
 var
@@ -2800,9 +2621,6 @@ begin
       FData^[i].a := 255;
 end;
 
-// SetAlphaToValue
-//
-
 procedure TGLImage.SetAlphaToValue(const aValue: Byte);
 var
   i: Integer;
@@ -2812,16 +2630,10 @@ begin
     FData^[i].a := aValue
 end;
 
-// SetAlphaToFloatValue
-//
-
 procedure TGLImage.SetAlphaToFloatValue(const aValue: Single);
 begin
   SetAlphaToValue(Byte(Trunc(aValue * 255) and 255));
 end;
-
-// InvertAlpha
-//
 
 procedure TGLImage.InvertAlpha;
 var
@@ -2831,9 +2643,6 @@ begin
   for i := (DataSize div 4) - 1 downto 0 do
     FData^[i].a := 255 - FData^[i].a;
 end;
-
-// SqrtAlpha
-//
 
 procedure TGLImage.SqrtAlpha;
 var
@@ -2847,9 +2656,6 @@ begin
       a := sqrt255Array^[(Integer(r) + Integer(g) + Integer(b)) div 3];
 end;
 
-// BrightnessCorrection
-//
-
 procedure TGLImage.BrightnessCorrection(const factor: Single);
 begin
   if Assigned(FData) then
@@ -2859,9 +2665,6 @@ begin
   end;
 end;
 
-// GammaCorrection
-//
-
 procedure TGLImage.GammaCorrection(const gamma: Single);
 begin
   if Assigned(FData) then
@@ -2870,9 +2673,6 @@ begin
     GammaCorrectRGBAArray(Data, DataSize div 4, gamma);
   end;
 end;
-
-// DownSampleByFactor2
-//
 
 procedure TGLImage.DownSampleByFactor2;
 type
@@ -2984,9 +2784,6 @@ begin
   ReallocMem(FData, DataSize);
 end;
 
-// ReadPixels
-//
-
 procedure TGLImage.ReadPixels(const area: TGLRect);
 begin
   UnMipmap;
@@ -3004,9 +2801,6 @@ begin
   GL.ReadPixels(0, 0, GetWidth, GetHeight, GL_RGBA, GL_UNSIGNED_BYTE, FData);
 end;
 
-// DrawPixels
-//
-
 procedure TGLImage.DrawPixels(const x, y: Single);
 begin
   if fBlank or IsEmpty then
@@ -3015,9 +2809,6 @@ begin
   GL.RasterPos2f(x, y);
   GL.DrawPixels(Width, Height, fColorFormat, fDataType, FData);
 end;
-
-// TGLImage
-//
 
 procedure TGLImage.GrayScaleToNormalMap(const scale: Single;
   wrapX: Boolean = True; wrapY: Boolean = True);
@@ -3090,9 +2881,6 @@ begin
   end;
 end;
 
-// NormalizeNormalMap
-//
-
 procedure TGLImage.NormalizeNormalMap;
 var
   x, y: Integer;
@@ -3131,10 +2919,7 @@ begin
   FBlank := Value;
 end;
 
-//Converts a TGLImage back into a TBitmap
-//
-
-procedure TGLImage.AssignToBitmap(aBitmap: TGLBitmap); //TGLBitmap = TBitmap
+procedure TGLImage.AssignToBitmap(aBitmap: TBitmap);
 var
   y: integer;
   pSrc, pDest: PAnsiChar;
@@ -3163,17 +2948,11 @@ begin
   end;
 end;
 
-// GenerateMipmap
-//
-
 procedure TGLImage.GenerateMipmap(AFilter: TImageFilterFunction);
 begin
   if not FBlank then
     inherited GenerateMipmap(AFilter);
 end;
-
-// UnMipmap
-//
 
 procedure TGLImage.UnMipmap;
 begin
@@ -3221,7 +3000,7 @@ begin
   end;
 end;
 
-{$IFDEF GLS_REGIONS}{$ENDREGION}{$ENDIF}
+ 
 
 initialization
 

@@ -35,7 +35,7 @@ uses
   System.Classes,
   System.Math,
   VCL.Graphics,
-  // GLS
+  
   GLTexture,
   GLMaterial,
   GLScene,
@@ -77,9 +77,9 @@ type
     procedure SetYMask(const Value: TGLLibMaterialName);
     procedure SetZMask(const Value: TGLLibMaterialName);
     procedure SetMaterialLibrary(const Value: TGLMaterialLibrary);
-    function XCan: TGLBitmap;
-    function YCan: TGLBitmap;
-    function ZCan: TGLBitmap;
+    function XCan: TBitmap;
+    function YCan: TBitmap;
+    function ZCan: TBitmap;
     //implementing IGLMaterialLibrarySupported
     function GetMaterialLibrary: TGLAbstractMaterialLibrary;
     //implementing IInterface
@@ -264,8 +264,8 @@ end;
 procedure TGLEParticleMask.GenerateMaskFromProjection(FromMask,
   ToMask: TGLEProjectedParticleMask; Depth: Integer);
 var
-  FromBitMap: TGLBitmap;
-  ToBitMap: TGLBitmap;
+  FromBitMap: TBitmap;
+  ToBitMap: TBitmap;
   X, Y: Integer;
   Rect: TGLRect;
 begin
@@ -602,7 +602,7 @@ begin
   LZ := MaxInteger(IXW, IYH);
 end;
 
-function TGLEParticleMask.XCan: TGLBitmap;
+function TGLEParticleMask.XCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -614,11 +614,11 @@ begin
     Exit;
 
   Result :=
-    TGLBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FXMask).Material.Texture.Image as
     TGLPersistentImage).Picture.Bitmap);
 end;
 
-function TGLEParticleMask.YCan: TGLBitmap;
+function TGLEParticleMask.YCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -630,11 +630,11 @@ begin
     Exit;
 
   Result :=
-    TGLBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FYMask).Material.Texture.Image as
     TGLPersistentImage).Picture.Bitmap);
 end;
 
-function TGLEParticleMask.ZCan: TGLBitmap;
+function TGLEParticleMask.ZCan: TBitmap;
 begin
   Result := nil;
   if not assigned(FMaterialLibrary) then
@@ -646,7 +646,7 @@ begin
     Exit;
 
   Result :=
-    TGLBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as
+    TBitmap((FMaterialLibrary.LibMaterialByName(FZMask).Material.Texture.Image as
     TGLPersistentImage).Picture.Bitmap);
 end;
 

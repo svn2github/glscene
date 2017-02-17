@@ -67,7 +67,7 @@ implementation
 // ------------------ TGLPerlin3DNoise ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLPerlin3DNoise.Create(randomSeed : Integer);
 begin

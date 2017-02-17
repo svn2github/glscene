@@ -149,7 +149,7 @@ uses
 // ------------------ TGLGameMenu ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLGameMenu.Create(AOwner: TComponent);
@@ -169,7 +169,7 @@ begin
   FDisabledColor := TGLColor.CreateInitialized(Self, clrGray60, NotifyChange);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLGameMenu.Destroy;

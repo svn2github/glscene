@@ -12,7 +12,7 @@ uses
   Vcl.Buttons,
   Vcl.Dialogs,
   Vcl.ExtCtrls,
-  //GLS
+  
   GLParticleFX, GLCadencer, GLScene, GLObjects, GLWin32Viewer,
   GLBehaviours, GLVectorGeometry, GLCrossPlatform, GLFullScreenViewer,
   GLCoordinates, GLBaseClasses;

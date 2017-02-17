@@ -130,7 +130,7 @@ type
   private
      
     FRanges: TGLBitmapFontRanges;
-    FGlyphs: TGLPicture;
+    FGlyphs: TPicture;
     FCharWidth, FCharHeight: Integer;
     FGlyphsIntervalX, FGlyphsIntervalY: Integer;
     FHSpace, FVSpace, FHSpaceFix: Integer;
@@ -151,7 +151,7 @@ type
     procedure SetCharWidths(index, value: Integer);
 
     procedure SetRanges(const val: TGLBitmapFontRanges);
-    procedure SetGlyphs(const val: TGLPicture);
+    procedure SetGlyphs(const val: TPicture);
     procedure SetCharWidth(const val: Integer);
     procedure SetCharHeight(const val: Integer);
     procedure SetGlyphsIntervalX(const val: Integer);
@@ -178,7 +178,7 @@ type
 
     {  A single bitmap containing all the characters. 
       The transparent color is that of the top left pixel. }
-    property Glyphs: TGLPicture read FGlyphs write SetGlyphs;
+    property Glyphs: TPicture read FGlyphs write SetGlyphs;
     {  Nb of horizontal pixels between two columns in the Glyphs. }
     property GlyphsIntervalX: Integer read FGlyphsIntervalX
       write SetGlyphsIntervalX;
@@ -350,14 +350,14 @@ implementation
 // ------------------ TGLBitmapFontRange ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLBitmapFontRange.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
 end;
 
-// Destroy
+ 
 //
 destructor TGLBitmapFontRange.Destroy;
 begin
@@ -449,7 +449,7 @@ end;
 // ------------------ TGLBitmapFontRanges ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLBitmapFontRanges.Create(AOwner: TComponent);
 begin
@@ -457,7 +457,7 @@ begin
   inherited Create(TGLBitmapFontRange);
 end;
 
-// Destroy
+ 
 //
 destructor TGLBitmapFontRanges.Destroy;
 begin
@@ -590,13 +590,13 @@ end;
 // ------------------ TGLCustomBitmapFont ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLCustomBitmapFont.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
   FRanges := TGLBitmapFontRanges.Create(Self);
-  FGlyphs := TGLPicture.Create;
+  FGlyphs := TPicture.Create;
   FGlyphs.OnChange := OnGlyphsChanged;
   FCharWidth := 16;
   FCharHeight := 16;
@@ -609,7 +609,7 @@ begin
   FTextureModified := true;
 end;
 
-// Destroy
+ 
 //
 destructor TGLCustomBitmapFont.Destroy;
 begin
@@ -688,7 +688,7 @@ end;
 
 // SetGlyphs
 //
-procedure TGLCustomBitmapFont.SetGlyphs(const val: TGLPicture);
+procedure TGLCustomBitmapFont.SetGlyphs(const val: TPicture);
 begin
   FGlyphs.Assign(val);
 end;
@@ -835,7 +835,7 @@ end;
 //
 procedure TGLCustomBitmapFont.PrepareImage(var ARci: TGLRenderContextInfo);
 var
-  bitmap: TGLBitmap;
+  bitmap: TBitmap;
   bitmap32: TGLImage;
   cap: Integer;
   X, Y, w, h: Integer;
@@ -868,7 +868,7 @@ begin
   FTextRows := 1 + (h - 1) div FTextureHeight;
   FTextCols := 1 + (w - 1) div FTextureWidth;
 
-  bitmap := TGLBitmap.Create;
+  bitmap := TBitmap.Create;
   with bitmap do
   begin
 {$IFDEF MSWINDOWS}
@@ -1309,7 +1309,7 @@ end;
 // ------------------ TGLFlatText ------------------
 // ------------------
 
-// Create
+ 
 //
 constructor TGLFlatText.Create(AOwner: TComponent);
 begin
@@ -1318,7 +1318,7 @@ begin
   FModulateColor := TGLColor.CreateInitialized(Self, clrWhite);
 end;
 
-// Destroy
+ 
 //
 destructor TGLFlatText.Destroy;
 begin

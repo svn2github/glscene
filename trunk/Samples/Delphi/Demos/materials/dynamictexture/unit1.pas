@@ -10,7 +10,7 @@ uses
   Vcl.Controls,
   Vcl.Forms,
   Vcl.ExtCtrls,
-  //GLS
+  
   GLScene, GLWin32Viewer, GLObjects, GLTexture, GLCadencer,
   GLCrossPlatform, GLMaterial, GLCoordinates, GLBaseClasses,
   GLRenderContextInfo, GLContext, GLDynamicTexture, GLUtils;

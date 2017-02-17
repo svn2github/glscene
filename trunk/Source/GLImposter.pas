@@ -484,7 +484,7 @@ const
   // ---------- TImposter ----------
   // ----------
 
-  // Create
+   
   //
 
 constructor TImposter.Create(aBuilder: TGLImposterBuilder);
@@ -496,7 +496,7 @@ begin
   FAspectRatio := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TImposter.Destroy;
@@ -677,7 +677,7 @@ end;
 // ---------- TGLImposterBuilder ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLImposterBuilder.Create(AOwner: TComponent);
@@ -690,7 +690,7 @@ begin
   FAlphaTreshold := 0.5;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLImposterBuilder.Destroy;
@@ -933,7 +933,7 @@ end;
 // ---------- TGLStaticImposterBuilderCorona ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLStaticImposterBuilderCorona.Create(ACollection: TCollection);
@@ -942,7 +942,7 @@ begin
   FSamples := 8;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLStaticImposterBuilderCorona.Destroy;
@@ -1001,7 +1001,7 @@ end;
 // ---------- TGLStaticImposterBuilderCoronas ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLStaticImposterBuilderCoronas.Create(AOwner: TPersistent);
@@ -1210,7 +1210,7 @@ end;
 // ---------- TGLStaticImposterBuilder ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLStaticImposterBuilder.Create(AOwner: TComponent);
@@ -1225,7 +1225,7 @@ begin
   FSamplesAlphaScale := 1;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLStaticImposterBuilder.Destroy;
@@ -1575,7 +1575,7 @@ end;
 // ---------- TGLDynamicImposterBuilder ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLDynamicImposterBuilder.Create(AOwner: TComponent);
@@ -1587,7 +1587,7 @@ begin
   FMaxTexSize := 64;
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLDynamicImposterBuilder.Destroy;
@@ -1727,7 +1727,7 @@ end;
 // ---------- TGLImposter ----------
 // ----------
 
-// Create
+ 
 //
 
 constructor TGLImposter.Create(AOwner: TComponent);
@@ -1736,7 +1736,7 @@ begin
   ObjectStyle := ObjectStyle + [osDirectDraw];
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLImposter.Destroy;

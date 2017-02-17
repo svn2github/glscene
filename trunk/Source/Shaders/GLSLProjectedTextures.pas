@@ -166,7 +166,7 @@ implementation
 // ------------------ TGLSLTextureEmitter ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSLTextureEmitter.Create(aOwner: TComponent);
@@ -244,7 +244,7 @@ end;
 // ------------------ TGLSLTextureEmitterItem ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSLTextureEmitterItem.Create(Collection: TCollection);
@@ -350,7 +350,7 @@ end;
 // ------------------ TGLSLProjectedTextures ------------------
 // ------------------
 
-// Create
+ 
 //
 
 constructor TGLSLProjectedTextures.Create(AOwner: TComponent);
@@ -364,7 +364,7 @@ begin
   ambient.SetColor(0.5, 0.5, 0.5, 0.5);
 end;
 
-// Destroy
+ 
 //
 
 destructor TGLSLProjectedTextures.Destroy;
